@@ -3,6 +3,7 @@ import { DM_Sans } from "next/font/google";
 import "./globals.css";
 import Header from "@/components/layout/Header";
 import { ThemeProvider } from "@/components/providers";
+import PremiumButton from "@/components/premium/PremiumButton";
 
 const dmSans = DM_Sans({
   variable: "--font-dmsans",
@@ -32,6 +33,7 @@ export default function RootLayout({
           <main className="flex-1">
             {children}
           </main>
+          <PremiumButton />
         </ThemeProvider>
       </body>
     </html>

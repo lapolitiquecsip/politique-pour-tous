@@ -2,6 +2,7 @@
 
 import { useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
+/* Force Update - Institutional Photos v3 */
 import { ArrowLeft, ChevronRight } from "lucide-react";
 
 interface Institution {

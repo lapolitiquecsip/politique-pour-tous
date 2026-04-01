@@ -94,10 +94,10 @@ export default function FranceMap({
         {/* Subtle gradient overlay */}
         <div className="absolute inset-0 bg-gradient-to-br from-red-500/[0.03] via-transparent to-blue-500/[0.03] pointer-events-none rounded-2xl" />
 
-        {/* Tooltip */}
+        {/* Tooltip - Ajout de pointer-events-none pour ne pas gêner la souris */}
         {displayDept && (
           <div
-            className="absolute top-4 right-4 z-20 bg-foreground text-background px-4 py-2.5 rounded-xl shadow-xl text-sm font-bold animate-in fade-in zoom-in duration-200"
+            className="absolute top-4 right-4 z-20 bg-foreground text-background px-4 py-2.5 rounded-xl shadow-xl text-sm font-bold animate-in fade-in zoom-in duration-200 pointer-events-none"
           >
             <span className="text-red-400 mr-1.5 font-mono">{displayDept}</span>
             {getDepartmentName(displayDept)}
@@ -121,16 +121,15 @@ export default function FranceMap({
             [&_path]:cursor-pointer [&_path]:transition-all [&_path]:duration-200 [&_path]:outline-none
             [&_path]:fill-secondary [&_path]:stroke-border [&_path]:stroke-[0.7]
             
-            /* Hover effect (Délégation via CSS) */
-            hover:[&_path:hover]:fill-red-500 hover:[&_path:hover]:stroke-red-700 hover:[&_path:hover]:stroke-[1.5] hover:[&_path:hover]:scale-[1.03] hover:[&_path:hover]:translate-z-10
+            /* Crucial pour stabiliser le zoom */
+            [&_path]:origin-center [&_path]:[transform-box:fill-box]
             
-            /* Logic for selection states via data attributes or dynamic classes */
+            /* Hover effect (Délégation via CSS) */
+            hover:[&_path:hover]:fill-red-500 hover:[&_path:hover]:stroke-red-700 hover:[&_path:hover]:stroke-[1.5] hover:[&_path:hover]:scale-[1.04] hover:[&_path:hover]:translate-z-10
+            
+            /* Logic for selection states */
             ${selectedDepartment ? "[&_path]:opacity-40" : ""}
           `}
-          style={{
-            // Use inline style for the specific selected path to avoid full re-renders
-            // This is much faster than iterating over all paths
-          } as any}
         />
 
         {/* High-performance styling for selected department */}
@@ -142,7 +141,10 @@ export default function FranceMap({
               stroke-width: 1.5px !important;
               opacity: 1 !important;
               transform: scale(1.02);
-              filter: drop-shadow(0 4px 6px rgba(0,0,0,0.2));
+              transform-origin: center;
+              transform-box: fill-box;
+              filter: drop-shadow(0 4px 12px rgba(220, 38, 38, 0.4));
+              z-index: 50;
             }
           `}} />
         )}

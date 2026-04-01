@@ -171,7 +171,3 @@ export default function FranceMap({
     </div>
   );
 }
-      </div>
-    </div>
-  );
-}

@@ -2,7 +2,7 @@
 
 import { useState } from "react";
 import { supabase } from "@/lib/supabase";
-import { Crown, Sparkles, X, Loader2 } from "lucide-react";
+import { Star, RefreshCw as Loader2, X } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
 
 export default function PremiumButton() {
@@ -119,7 +119,7 @@ export default function PremiumButton() {
               {loading ? (
                 <Loader2 className="w-5 h-5 animate-spin" />
               ) : (
-                <Crown className="w-5 h-5 drop-shadow-sm" />
+                <Star className="w-5 h-5 drop-shadow-sm" />
               )}
 
               <span className="relative">
@@ -134,7 +134,7 @@ export default function PremiumButton() {
               )}
 
               {!loading && (
-                <Sparkles className="w-4 h-4 opacity-60 animate-pulse" />
+                <Star className="w-4 h-4 opacity-60 animate-pulse" />
               )}
             </button>
           </div>

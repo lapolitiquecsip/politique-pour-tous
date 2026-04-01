@@ -1,0 +1,103 @@
+"use client";
+
+import { useEffect, useState } from "react";
+import PoliticianCard from "@/components/promises/PoliticianCard";
+import { Search, Loader2 } from "lucide-react";
+
+export default function PromisesPage() {
+  const [politicians, setPoliticians] = useState<any[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [searchQuery, setSearchQuery] = useState("");
+  const [activeRole, setActiveRole] = useState("Tous");
+
+  const roles = ["Tous", "Président", "Ministre", "Député", "Sénateur", "Chef de file"];
+
+  useEffect(() => {
+    async function fetchPoliticians() {
+      try {
+        const API_URL = process.env.NEXT_PUBLIC_API_URL || "http://localhost:3001/api";
+        const res = await fetch(`${API_URL}/politicians`);
+        const data = await res.json();
+        setPoliticians(data);
+      } catch (error) {
+        console.error("Failed to fetch politicians:", error);
+      } finally {
+        setLoading(false);
+      }
+    }
+    fetchPoliticians();
+  }, []);
+
+  const filteredPoliticians = politicians.filter((pol) => {
+    const matchesRole = activeRole === "Tous" || pol.role.includes(activeRole);
+    const searchString = `${pol.first_name} ${pol.last_name}`.toLowerCase();
+    const matchesSearch = searchString.includes(searchQuery.toLowerCase());
+    return matchesRole && matchesSearch;
+  });
+
+  return (
+    <div className="min-h-screen bg-background">
+      <div className="bg-primary/5 py-16 px-4 mb-12 border-b border-border">
+        <div className="container mx-auto max-w-6xl text-center">
+          <h1 className="text-4xl md:text-5xl font-heading font-extrabold text-foreground mb-4">
+            Ils avaient dit que...
+          </h1>
+          <p className="text-xl text-muted-foreground max-w-2xl mx-auto">
+            Le baromètre transparent pour suivre, jour après jour, les engagements de la classe politique.
+          </p>
+        </div>
+      </div>
+
+      <div className="container mx-auto max-w-6xl px-4 pb-24">
+        <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-6 mb-12">
+          
+          <div className="flex flex-wrap gap-2">
+            {roles.map((role) => (
+              <button
+                key={role}
+                onClick={() => setActiveRole(role)}
+                className={`px-5 py-2.5 rounded-full text-sm font-semibold transition-colors border shadow-sm ${
+                  activeRole === role
+                    ? "bg-primary text-primary-foreground border-primary"
+                    : "bg-card text-foreground border-border hover:bg-muted"
+                }`}
+              >
+                {role}
+              </button>
+            ))}
+          </div>
+
+          <div className="relative w-full md:w-72">
+            <Search className="absolute left-3 top-1/2 -translate-y-1/2 text-muted-foreground w-5 h-5" />
+            <input 
+              type="text" 
+              placeholder="Rechercher par nom..." 
+              value={searchQuery}
+              onChange={(e) => setSearchQuery(e.target.value)}
+              className="w-full pl-10 pr-4 py-3 rounded-full border border-input bg-card shadow-sm focus:outline-none focus:ring-2 focus:ring-primary/50 transition-shadow"
+            />
+          </div>
+        </div>
+
+        {loading ? (
+          <div className="flex flex-col items-center justify-center py-20 text-muted-foreground">
+            <Loader2 className="w-12 h-12 animate-spin mb-4 text-primary opacity-50" />
+            <p className="font-medium text-lg">Recherche des archives...</p>
+          </div>
+        ) : filteredPoliticians.length === 0 ? (
+          <div className="text-center py-20 bg-card rounded-3xl border border-border shadow-sm">
+            <div className="text-5xl mb-4">🔍</div>
+            <h3 className="text-2xl font-bold font-heading mb-2">Aucun résultat trouvé</h3>
+            <p className="text-muted-foreground">Oups, nous n'avons trouvé aucun profil correspondant à "{searchQuery}".</p>
+          </div>
+        ) : (
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+            {filteredPoliticians.map((pol: any) => (
+              <PoliticianCard key={pol.id} politician={pol} />
+            ))}
+          </div>
+        )}
+      </div>
+    </div>
+  );
+}

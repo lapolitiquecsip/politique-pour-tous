@@ -16,19 +16,18 @@ export default function FranceMap({
   selectedDepartment,
   onDepartmentSelect,
 }: FranceMapProps) {
-  const [hoveredDept, setHoveredDept] = useState<string | null>(null);
   const [svgContent, setSvgContent] = useState<string | null>(null);
   const [loading, setLoading] = useState(true);
   const svgContainerRef = useRef<HTMLDivElement>(null);
-
-  const displayDept = hoveredDept || selectedDepartment;
+  const tooltipRef = useRef<HTMLDivElement>(null);
+  const tooltipTextRef = useRef<HTMLSpanElement>(null);
+  const tooltipCodeRef = useRef<HTMLSpanElement>(null);
 
   // Fetch the real SVG from CDN
   useEffect(() => {
     fetch(SVG_CDN_URL)
       .then((res) => res.text())
       .then((text) => {
-        // We clean the SVG string to remove hardcoded fills and allow CSS control
         const cleanedText = text
           .replace(/fill="[^"]*"/g, "")
           .replace(/stroke="[^"]*"/g, "")
@@ -39,16 +38,24 @@ export default function FranceMap({
       .catch(() => setLoading(false));
   }, []);
 
-  // Use event delegation instead of attaching 100+ listeners
+  // Update tooltip NATIVELY (Direct DOM) for 60fps performance
   const handleMouseMove = (e: React.MouseEvent) => {
     const target = e.target as SVGElement;
     if (target.tagName === "path") {
       const id = target.getAttribute("id");
-      if (id && id !== hoveredDept) {
-        setHoveredDept(id);
+      if (id && tooltipRef.current && tooltipTextRef.current && tooltipCodeRef.current) {
+        tooltipCodeRef.current.innerText = id;
+        tooltipTextRef.current.innerText = getDepartmentName(id);
+        tooltipRef.current.style.opacity = "1";
+        tooltipRef.current.style.transform = "scale(1)";
       }
-    } else {
-      setHoveredDept(null);
+    }
+  };
+
+  const handleMouseOut = () => {
+    if (tooltipRef.current) {
+      tooltipRef.current.style.opacity = "0";
+      tooltipRef.current.style.transform = "scale(0.95)";
     }
   };
 
@@ -60,7 +67,6 @@ export default function FranceMap({
         onDepartmentSelect(selectedDepartment === id ? null : id);
       }
     } else {
-      // Clic dans le vide de l'SVG : on réinitialise
       onDepartmentSelect(null);
     }
   };
@@ -92,22 +98,22 @@ export default function FranceMap({
       {/* Map container */}
       <div 
         className="relative bg-card border border-border rounded-2xl p-4 md:p-8 overflow-hidden transition-all duration-300 shadow-sm hover:shadow-md"
-        onMouseLeave={() => setHoveredDept(null)}
         onMouseMove={handleMouseMove}
+        onMouseLeave={handleMouseOut}
         onClick={handleClick}
       >
         {/* Subtle gradient overlay */}
         <div className="absolute inset-0 bg-gradient-to-br from-red-500/[0.05] via-transparent to-red-500/[0.02] pointer-events-none rounded-2xl" />
 
-        {/* Tooltip */}
-        {displayDept && (
-          <div
-            className="absolute top-6 right-6 z-20 bg-slate-900 dark:bg-slate-100 text-white dark:text-slate-900 px-4 py-2.5 rounded-xl shadow-2xl text-sm font-bold animate-in fade-in zoom-in duration-200 pointer-events-none flex flex-col"
-          >
-            <span className="text-[10px] uppercase tracking-wider opacity-60 mb-0.5">Département {displayDept}</span>
-            <span className="text-base">{getDepartmentName(displayDept)}</span>
-          </div>
-        )}
+        {/* Tooltip - Géré en DOM direct pour la fluidité */}
+        <div
+          ref={tooltipRef}
+          style={{ opacity: 0, transition: "all 0.1s ease-out", transform: "scale(0.95)" }}
+          className="absolute top-6 right-6 z-20 bg-slate-900 dark:bg-slate-100 text-white dark:text-slate-900 px-4 py-2.5 rounded-xl shadow-2xl text-sm font-bold pointer-events-none flex flex-col min-w-[140px]"
+        >
+          <span ref={tooltipCodeRef} className="text-[10px] uppercase tracking-wider opacity-60 mb-0.5">...</span>
+          <span ref={tooltipTextRef} className="text-base text-nowrap">Survolez la carte</span>
+        </div>
 
         {/* Loading state */}
         {loading && (
@@ -123,29 +129,29 @@ export default function FranceMap({
           dangerouslySetInnerHTML={svgContent ? { __html: svgContent } : undefined}
           className={`
             [&_svg]:w-full [&_svg]:h-auto [&_svg]:max-h-[500px] [&_svg]:mx-auto
-            [&_path]:cursor-pointer [&_path]:transition-all [&_path]:duration-300 [&_path]:outline-none
+            [&_path]:cursor-pointer [&_path]:transition-all [&_path]:duration-150 [&_path]:outline-none
             
-            /* État de base (Légèrement bleuté pour plus de modernité) */
-            [&_path]:fill-slate-100/80 dark:[&_path]:fill-slate-900 
+            /* État de base */
+            [&_path]:fill-blue-50/50 dark:[&_path]:fill-slate-900 
             [&_path]:stroke-blue-200 dark:[&_path]:stroke-slate-700
             [&_path]:stroke-[1.3]
             [&_path]:[stroke-linejoin:round]
             
-            /* Filtre pour créer le contour GLOBAL de la France */
+            /* Filtre Global */
             [&_svg]:[filter:drop-shadow(0px_0px_1px_#0f172a)_drop-shadow(0px_0px_1px_#0f172a)]
             dark:[&_svg]:[filter:drop-shadow(0px_0px_1px_#f8fafc)_drop-shadow(0px_0px_1px_#f8fafc)]
             
             [&_path]:origin-center [&_path]:[transform-box:fill-box]
             
-            /* Hover effect */
+            /* Hover effect (Géré 100% en CSS pour 0 latence) */
             hover:[&_path:hover]:fill-red-500 hover:[&_path:hover]:stroke-red-700 hover:[&_path:hover]:stroke-[2] hover:[&_path:hover]:scale-[1.04] hover:[&_path:hover]:translate-z-10
             
-            /* État quand un département est sélectionné (on passe en bleu clair) */
-            ${selectedDepartment ? "[&_path]:fill-sky-100 dark:[&_path]:fill-sky-950/40 [&_path]:opacity-60 [&_path]:stroke-sky-200 dark:[&_path]:stroke-sky-900" : ""}
+            /* État de sélection */
+            ${selectedDepartment ? "[&_path]:fill-sky-50 dark:[&_path]:fill-sky-950/30 [&_path]:opacity-60 [&_path]:stroke-sky-100 dark:[&_path]:stroke-sky-900" : ""}
           `}
         />
 
-        {/* High-performance styling for selected department */}
+        {/* High-performance selection style */}
         {selectedDepartment && (
           <style dangerouslySetInnerHTML={{ __html: `
             path[id="${selectedDepartment}"] {
@@ -161,6 +167,10 @@ export default function FranceMap({
             }
           `}} />
         )}
+      </div>
+    </div>
+  );
+}
       </div>
     </div>
   );

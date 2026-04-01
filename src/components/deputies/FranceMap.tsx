@@ -124,16 +124,20 @@ export default function FranceMap({
           className={`
             [&_svg]:w-full [&_svg]:h-auto [&_svg]:max-h-[500px] [&_svg]:mx-auto
             [&_path]:cursor-pointer [&_path]:transition-all [&_path]:duration-300 [&_path]:outline-none
-            [&_path]:fill-slate-200 dark:[&_path]:fill-slate-800 [&_path]:stroke-background [&_path]:stroke-[0.8]
+            
+            /* Délimitations bien marquées */
+            [&_path]:fill-slate-100 dark:[&_path]:fill-slate-900 
+            [&_path]:stroke-slate-300 dark:[&_path]:stroke-slate-700
+            [&_path]:stroke-[1.2]
             
             /* Crucial pour stabiliser le zoom */
             [&_path]:origin-center [&_path]:[transform-box:fill-box]
             
             /* Hover effect (Délégation via CSS) */
-            hover:[&_path:hover]:fill-red-400 hover:[&_path:hover]:stroke-red-600 hover:[&_path:hover]:stroke-[1.2] hover:[&_path:hover]:scale-[1.04] hover:[&_path:hover]:translate-z-10
+            hover:[&_path:hover]:fill-red-400 hover:[&_path:hover]:stroke-red-600 hover:[&_path:hover]:stroke-[1.5] hover:[&_path:hover]:scale-[1.04] hover:[&_path:hover]:translate-z-10
             
-            /* On ne baisse plus l'opacité radicalement, on change juste la couleur des autres */
-            ${selectedDepartment ? "[&_path]:fill-slate-100 dark:[&_path]:fill-slate-900 [&_path]:opacity-60" : ""}
+            /* On ne baisse plus l'opacité radicalement pour garder les contours visibles */
+            ${selectedDepartment ? "[&_path]:fill-slate-50 dark:[&_path]:fill-slate-950 [&_path]:opacity-40 [&_path]:stroke-slate-200 dark:[&_path]:stroke-slate-800" : ""}
           `}
         />
 
@@ -143,12 +147,12 @@ export default function FranceMap({
             path[id="${selectedDepartment}"] {
               fill: #ef4444 !important;
               stroke: #b91c1c !important;
-              stroke-width: 1.5px !important;
+              stroke-width: 2px !important;
               opacity: 1 !important;
-              transform: scale(1.05);
+              transform: scale(1.06);
               transform-origin: center;
               transform-box: fill-box;
-              filter: drop-shadow(0 0 15px rgba(239, 68, 68, 0.5));
+              filter: drop-shadow(0 0 15px rgba(239, 68, 68, 0.4));
               z-index: 50;
             }
           `}} />

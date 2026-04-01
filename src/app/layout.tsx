@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import { DM_Sans } from "next/font/google";
 import "./globals.css";
 import Header from "@/components/layout/Header";
+import { ThemeProvider } from "@/components/providers";
 
 const dmSans = DM_Sans({
   variable: "--font-dmsans",
@@ -23,12 +24,15 @@ export default function RootLayout({
     <html
       lang="fr"
       className={`${dmSans.variable} antialiased`}
+      suppressHydrationWarning
     >
-      <body className="min-h-screen flex flex-col font-sans bg-background text-foreground">
-        <Header />
-        <main className="flex-1">
-          {children}
-        </main>
+      <body className="min-h-screen flex flex-col font-sans bg-background text-foreground transition-colors duration-300">
+        <ThemeProvider>
+          <Header />
+          <main className="flex-1">
+            {children}
+          </main>
+        </ThemeProvider>
       </body>
     </html>
   );

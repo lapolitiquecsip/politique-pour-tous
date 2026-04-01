@@ -59,6 +59,9 @@ export default function FranceMap({
       if (id) {
         onDepartmentSelect(selectedDepartment === id ? null : id);
       }
+    } else {
+      // Clic dans le vide de l'SVG : on réinitialise
+      onDepartmentSelect(null);
     }
   };
 
@@ -69,38 +72,40 @@ export default function FranceMap({
         <div className="flex items-center gap-2">
           <MapPin className="w-5 h-5 text-red-500" />
           <span className="text-sm font-semibold text-foreground">
-            Cliquez sur un département pour filtrer
+            {selectedDepartment 
+              ? "Cliquez sur un autre département ou réinitialisez" 
+              : "Cliquez sur un département pour filtrer"}
           </span>
         </div>
 
         {selectedDepartment && (
           <button
             onClick={() => onDepartmentSelect(null)}
-            className="flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-red-500/10 text-red-600 dark:text-red-400 text-xs font-semibold hover:bg-red-500/20 transition-colors"
+            className="flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-red-500/10 text-red-600 dark:text-red-400 text-xs font-semibold hover:bg-red-500/20 transition-all hover:scale-105 active:scale-95"
           >
             <X className="w-3.5 h-3.5" />
-            Réinitialiser
+            Voir toute la France
           </button>
         )}
       </div>
 
       {/* Map container */}
       <div 
-        className="relative bg-card border border-border rounded-2xl p-4 md:p-6 overflow-hidden transition-all duration-300"
+        className="relative bg-card border border-border rounded-2xl p-4 md:p-8 overflow-hidden transition-all duration-300 shadow-sm hover:shadow-md"
         onMouseLeave={() => setHoveredDept(null)}
         onMouseMove={handleMouseMove}
         onClick={handleClick}
       >
         {/* Subtle gradient overlay */}
-        <div className="absolute inset-0 bg-gradient-to-br from-red-500/[0.03] via-transparent to-blue-500/[0.03] pointer-events-none rounded-2xl" />
+        <div className="absolute inset-0 bg-gradient-to-br from-red-500/[0.05] via-transparent to-red-500/[0.02] pointer-events-none rounded-2xl" />
 
-        {/* Tooltip - Ajout de pointer-events-none pour ne pas gêner la souris */}
+        {/* Tooltip */}
         {displayDept && (
           <div
-            className="absolute top-4 right-4 z-20 bg-foreground text-background px-4 py-2.5 rounded-xl shadow-xl text-sm font-bold animate-in fade-in zoom-in duration-200 pointer-events-none"
+            className="absolute top-6 right-6 z-20 bg-slate-900 dark:bg-slate-100 text-white dark:text-slate-900 px-4 py-2.5 rounded-xl shadow-2xl text-sm font-bold animate-in fade-in zoom-in duration-200 pointer-events-none flex flex-col"
           >
-            <span className="text-red-400 mr-1.5 font-mono">{displayDept}</span>
-            {getDepartmentName(displayDept)}
+            <span className="text-[10px] uppercase tracking-wider opacity-60 mb-0.5">Département {displayDept}</span>
+            <span className="text-base">{getDepartmentName(displayDept)}</span>
           </div>
         )}
 
@@ -108,7 +113,7 @@ export default function FranceMap({
         {loading && (
           <div className="flex items-center justify-center h-64">
             <Loader2 className="w-8 h-8 text-red-500 animate-spin" />
-            <span className="ml-3 text-muted-foreground text-sm">Chargement de la carte...</span>
+            <span className="ml-3 text-muted-foreground text-sm">Géographie en cours...</span>
           </div>
         )}
 
@@ -117,18 +122,18 @@ export default function FranceMap({
           ref={svgContainerRef}
           dangerouslySetInnerHTML={svgContent ? { __html: svgContent } : undefined}
           className={`
-            [&_svg]:w-full [&_svg]:h-auto [&_svg]:max-h-[520px] [&_svg]:mx-auto
-            [&_path]:cursor-pointer [&_path]:transition-all [&_path]:duration-200 [&_path]:outline-none
-            [&_path]:fill-secondary [&_path]:stroke-border [&_path]:stroke-[0.7]
+            [&_svg]:w-full [&_svg]:h-auto [&_svg]:max-h-[500px] [&_svg]:mx-auto
+            [&_path]:cursor-pointer [&_path]:transition-all [&_path]:duration-300 [&_path]:outline-none
+            [&_path]:fill-slate-200 dark:[&_path]:fill-slate-800 [&_path]:stroke-background [&_path]:stroke-[0.8]
             
             /* Crucial pour stabiliser le zoom */
             [&_path]:origin-center [&_path]:[transform-box:fill-box]
             
             /* Hover effect (Délégation via CSS) */
-            hover:[&_path:hover]:fill-red-500 hover:[&_path:hover]:stroke-red-700 hover:[&_path:hover]:stroke-[1.5] hover:[&_path:hover]:scale-[1.04] hover:[&_path:hover]:translate-z-10
+            hover:[&_path:hover]:fill-red-400 hover:[&_path:hover]:stroke-red-600 hover:[&_path:hover]:stroke-[1.2] hover:[&_path:hover]:scale-[1.04] hover:[&_path:hover]:translate-z-10
             
-            /* Logic for selection states */
-            ${selectedDepartment ? "[&_path]:opacity-40" : ""}
+            /* On ne baisse plus l'opacité radicalement, on change juste la couleur des autres */
+            ${selectedDepartment ? "[&_path]:fill-slate-100 dark:[&_path]:fill-slate-900 [&_path]:opacity-60" : ""}
           `}
         />
 
@@ -136,14 +141,14 @@ export default function FranceMap({
         {selectedDepartment && (
           <style dangerouslySetInnerHTML={{ __html: `
             path[id="${selectedDepartment}"] {
-              fill: #dc2626 !important;
-              stroke: #991b1b !important;
+              fill: #ef4444 !important;
+              stroke: #b91c1c !important;
               stroke-width: 1.5px !important;
               opacity: 1 !important;
-              transform: scale(1.02);
+              transform: scale(1.05);
               transform-origin: center;
               transform-box: fill-box;
-              filter: drop-shadow(0 4px 12px rgba(220, 38, 38, 0.4));
+              filter: drop-shadow(0 0 15px rgba(239, 68, 68, 0.5));
               z-index: 50;
             }
           `}} />

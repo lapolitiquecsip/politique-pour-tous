@@ -18,7 +18,7 @@ const INSTITUTIONS: Institution[] = [
     id: "assemblee",
     name: "Assemblée nationale",
     shortName: "Assemblée",
-    image: "https://images.unsplash.com/photo-1555685812-4b943f1cb0eb?w=800&q=80",
+    image: "https://savoirs.unistra.fr/fileadmin/upload/Savoirs/Societe/Assemblee_nationale.JPG",
     summary: "L'hémicycle examine les textes de loi et contrôle le gouvernement.",
     details: [
       "577 députés siègent au Palais Bourbon",
@@ -31,7 +31,7 @@ const INSTITUTIONS: Institution[] = [
     id: "senat",
     name: "Sénat",
     shortName: "Sénat",
-    image: "https://images.unsplash.com/photo-1502602898657-3e91760cbb34?w=800&q=80",
+    image: "https://upload.wikimedia.org/wikipedia/commons/7/7c/Palais_du_Luxembourg_Paris.jpg",
     summary: "Le Palais du Luxembourg représente les collectivités territoriales.",
     details: [
       "348 sénateurs composent la chambre haute",
@@ -44,7 +44,7 @@ const INSTITUTIONS: Institution[] = [
     id: "gouvernement",
     name: "Gouvernement",
     shortName: "Élysée",
-    image: "https://images.unsplash.com/photo-1549944850-84e00be4203b?w=800&q=80",
+    image: "https://upload.wikimedia.org/wikipedia/commons/d/db/Palais_de_l%27%C3%89lys%C3%A9e_2019.jpg",
     summary: "L'exécutif dirige la politique de la nation depuis l'Élysée.",
     details: [
       "Le Premier ministre coordonne l'action gouvernementale",

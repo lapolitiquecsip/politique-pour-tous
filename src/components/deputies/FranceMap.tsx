@@ -125,19 +125,24 @@ export default function FranceMap({
             [&_svg]:w-full [&_svg]:h-auto [&_svg]:max-h-[500px] [&_svg]:mx-auto
             [&_path]:cursor-pointer [&_path]:transition-all [&_path]:duration-300 [&_path]:outline-none
             
-            /* Délimitations bien marquées */
+            /* Délimitations internes (Style Dessin) */
             [&_path]:fill-slate-100 dark:[&_path]:fill-slate-900 
-            [&_path]:stroke-slate-300 dark:[&_path]:stroke-slate-700
-            [&_path]:stroke-[1.2]
+            [&_path]:stroke-slate-400 dark:[&_path]:stroke-slate-600
+            [&_path]:stroke-[1.3]
+            [&_path]:[stroke-linejoin:round]
+            
+            /* Filtre pour créer le contour GLOBAL de la France (Gras + Foncé) */
+            [&_svg]:[filter:drop-shadow(0px_0px_1px_#1e293b)_drop-shadow(0px_0px_1px_#1e293b)]
+            dark:[&_svg]:[filter:drop-shadow(0px_0px_1px_#f8fafc)_drop-shadow(0px_0px_1px_#f8fafc)]
             
             /* Crucial pour stabiliser le zoom */
             [&_path]:origin-center [&_path]:[transform-box:fill-box]
             
             /* Hover effect (Délégation via CSS) */
-            hover:[&_path:hover]:fill-red-400 hover:[&_path:hover]:stroke-red-600 hover:[&_path:hover]:stroke-[1.5] hover:[&_path:hover]:scale-[1.04] hover:[&_path:hover]:translate-z-10
+            hover:[&_path:hover]:fill-red-500 hover:[&_path:hover]:stroke-red-700 hover:[&_path:hover]:stroke-[2] hover:[&_path:hover]:scale-[1.04] hover:[&_path:hover]:translate-z-10
             
-            /* On ne baisse plus l'opacité radicalement pour garder les contours visibles */
-            ${selectedDepartment ? "[&_path]:fill-slate-50 dark:[&_path]:fill-slate-950 [&_path]:opacity-40 [&_path]:stroke-slate-200 dark:[&_path]:stroke-slate-800" : ""}
+            /* Sélection active */
+            ${selectedDepartment ? "[&_path]:fill-slate-50 dark:[&_path]:fill-slate-950 [&_path]:opacity-40 [&_path]:stroke-slate-300 dark:[&_path]:stroke-slate-700" : ""}
           `}
         />
 
@@ -146,13 +151,13 @@ export default function FranceMap({
           <style dangerouslySetInnerHTML={{ __html: `
             path[id="${selectedDepartment}"] {
               fill: #ef4444 !important;
-              stroke: #b91c1c !important;
-              stroke-width: 2px !important;
+              stroke: #991b1b !important;
+              stroke-width: 2.5px !important;
               opacity: 1 !important;
               transform: scale(1.06);
               transform-origin: center;
               transform-box: fill-box;
-              filter: drop-shadow(0 0 15px rgba(239, 68, 68, 0.4));
+              filter: drop-shadow(0 0 20px rgba(239, 68, 68, 0.6)) !important;
               z-index: 50;
             }
           `}} />

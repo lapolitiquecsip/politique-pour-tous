@@ -33,11 +33,12 @@ export default function DetailedLawDossier({ law }: DetailedLawDossierProps) {
     >
       {/* Background Image Layer (Immersive) */}
       {law.backgroundImage && (
-        <div className="absolute inset-0 z-0 pointer-events-none">
+        <div className="absolute inset-0 z-0 pointer-events-none overflow-hidden rounded-[2rem]">
           <img 
             src={law.backgroundImage} 
             alt="" 
-            className="w-full h-full object-cover opacity-[0.28] scale-105 transition-transform duration-[2s] group-hover:scale-110 saturate-[1.1]" 
+            decoding="async"
+            className="w-full h-full object-cover opacity-[0.28] scale-105 transition-transform duration-[2s] group-hover:scale-110 saturate-[1.1] transform-gpu backface-visibility-hidden will-change-transform" 
           />
           <div className="absolute inset-0 bg-gradient-to-br from-card/30 via-transparent to-card/50" />
           <div className="absolute inset-0 bg-gradient-to-b from-card/10 via-transparent to-card/30" />
@@ -47,7 +48,7 @@ export default function DetailedLawDossier({ law }: DetailedLawDossierProps) {
       {/* 1. HEADER (TOUJOURS VISIBLE) */}
       <button 
         onClick={() => setIsOpen(!isOpen)}
-        className="relative z-10 w-full text-left p-6 md:p-8 flex items-center justify-between gap-4 hover:bg-muted/10 transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/20"
+        className="relative z-10 w-full text-left p-6 md:p-8 flex items-center justify-between gap-4 hover:bg-muted/10 transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/20 transform-gpu"
       >
         <div className="flex flex-col md:flex-row md:items-center gap-4">
           <div className={`w-fit px-3 py-1 rounded-full text-[10px] font-black uppercase tracking-widest border ${badgeColor}`}>
@@ -60,14 +61,14 @@ export default function DetailedLawDossier({ law }: DetailedLawDossierProps) {
         
         <motion.div 
           animate={{ rotate: isOpen ? 180 : 0 }}
-          transition={{ duration: 0.3, ease: "easeInOut" }}
-          className={`p-2 rounded-full transform-gpu ${isOpen ? 'bg-primary/10 text-primary' : 'bg-muted/50'}`}
+          transition={{ duration: 0.2, ease: "circOut" }}
+          className="p-2 rounded-full transform-gpu bg-muted/50 text-foreground"
         >
           <ChevronDown className="w-6 h-6" />
         </motion.div>
       </button>
 
-      {/* 2. CONTENU DÉPLIABLE (ACCORDÉON OPTIMISÉ) */}
+      {/* 2. CONTENU DÉPLIABLE (ACCORDÉON OPTIMISÉ POUR L'INP) */}
       <motion.div
         initial={false}
         animate={{ 
@@ -75,10 +76,10 @@ export default function DetailedLawDossier({ law }: DetailedLawDossierProps) {
           opacity: isOpen ? 1 : 0
         }}
         transition={{ 
-          duration: 0.35, 
-          ease: [0.04, 0.62, 0.23, 0.98] // Ease optimisé pour la fluidité visuelle
+          duration: 0.25, 
+          ease: "circOut" // Transition plus sèche et réactive
         }}
-        className="overflow-hidden transform-gpu"
+        className="overflow-hidden transform-gpu will-change-[height,opacity]"
       >
         <div className="relative z-10 px-8 pb-12 pt-4 border-t border-border/50">
           <div className="flex items-center gap-2 text-sm font-semibold text-muted-foreground bg-muted/50 px-4 py-1.5 rounded-full capitalize italic w-fit mb-8">

@@ -42,24 +42,39 @@ export default function CalendarClient({ initialEvents }: { initialEvents: Calen
             Visualisez les débats, votes et auditions clés au cœur de la vie politique française.
           </p>
         </div>
+      </div>
 
-        {/* Sélecteurs Express */}
-        <div className="flex flex-wrap items-center gap-4">
-          <div className="flex bg-slate-100 p-1 rounded-2xl border border-slate-200">
-            {["Tous", "Assemblée", "Sénat", "Gouvernement"].map((f) => (
-              <button
-                key={f}
-                onClick={() => setActiveFilter(f === "Assemblée" ? "Assemblée nationale" : f)}
-                className={`px-6 py-2 rounded-xl text-xs font-black uppercase tracking-widest transition-all ${
-                  (activeFilter === f || (f === "Assemblée" && activeFilter === "Assemblée nationale"))
-                    ? "bg-white text-slate-900 shadow-xl"
-                    : "text-slate-400 hover:text-slate-600"
-                }`}
-              >
-                {f}
-              </button>
-            ))}
+      {/* Légende / Filtres Express */}
+      <div className="flex flex-col lg:flex-row lg:items-center justify-between gap-6 mb-8">
+        <div className="flex flex-wrap gap-6 p-5 bg-white/50 backdrop-blur-md rounded-3xl border border-slate-200">
+          <div className="flex items-center gap-3">
+            <div className="w-3 h-3 rounded-full bg-blue-500 shadow-[0_0_10px_rgba(59,130,246,0.6)]" />
+            <span className="text-[10px] font-black text-slate-700 uppercase tracking-widest">Assemblée Nationale</span>
           </div>
+          <div className="flex items-center gap-3">
+            <div className="w-3 h-3 rounded-full bg-indigo-500 shadow-[0_0_10px_rgba(129,140,248,0.6)]" />
+            <span className="text-[10px] font-black text-slate-700 uppercase tracking-widest">Sénat</span>
+          </div>
+          <div className="flex items-center gap-3">
+            <div className="w-3 h-3 rounded-full bg-red-500 shadow-[0_0_10px_rgba(239,68,68,0.6)]" />
+            <span className="text-[10px] font-black text-slate-700 uppercase tracking-widest">Gouvernement</span>
+          </div>
+        </div>
+
+        <div className="flex bg-slate-100 p-1 rounded-2xl border border-slate-200 self-start lg:self-auto">
+          {["Tous", "Assemblée", "Sénat", "Gouvernement"].map((f) => (
+            <button
+              key={f}
+              onClick={() => setActiveFilter(f === "Assemblée" ? "Assemblée nationale" : f)}
+              className={`px-5 py-2 rounded-xl text-[10px] font-black uppercase tracking-widest transition-all ${
+                (activeFilter === f || (f === "Assemblée" && activeFilter === "Assemblée nationale"))
+                  ? "bg-white text-slate-900 shadow-lg"
+                  : "text-slate-400 hover:text-slate-600"
+              }`}
+            >
+              {f}
+            </button>
+          ))}
         </div>
       </div>
 
@@ -92,22 +107,6 @@ export default function CalendarClient({ initialEvents }: { initialEvents: Calen
             events={filteredEvents}
           />
         </motion.div>
-      </div>
-
-      {/* Footer / Légende */}
-      <div className="mt-12 flex flex-wrap gap-8 p-8 bg-white/50 backdrop-blur-md rounded-[2rem] border border-slate-200">
-        <div className="flex items-center gap-3">
-          <div className="w-4 h-4 rounded-full bg-blue-500 shadow-[0_0_12px_rgba(59,130,246,0.6)]" />
-          <span className="text-xs font-black text-slate-700 uppercase tracking-widest">Assemblée Nationale</span>
-        </div>
-        <div className="flex items-center gap-3">
-          <div className="w-4 h-4 rounded-full bg-indigo-500 shadow-[0_0_12px_rgba(129,140,248,0.6)]" />
-          <span className="text-xs font-black text-slate-700 uppercase tracking-widest">Sénat</span>
-        </div>
-        <div className="flex items-center gap-3">
-          <div className="w-4 h-4 rounded-full bg-red-500 shadow-[0_0_12px_rgba(239,68,68,0.6)]" />
-          <span className="text-xs font-black text-slate-700 uppercase tracking-widest">Gouvernement</span>
-        </div>
       </div>
     </div>
   );

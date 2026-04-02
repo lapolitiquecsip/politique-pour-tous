@@ -23,12 +23,28 @@ export default async function Home() {
       {/* 1. HERO SECTION (POSTER IMPACT) */}
       <HomeHero />
 
-      {/* 2. LES 3 INSTITUTIONS (côte à côte avec zoom au clic) */}
-      <section id="institutions" className="scroll-mt-24 py-16 px-4 bg-background">
+      {/* 2. LES 3 INSTITUTIONS (POSTER IMPACT REBORN) */}
+      <section id="institutions" className="scroll-mt-24 py-20 px-4 bg-background">
         <div className="container mx-auto max-w-6xl">
-          <h2 className="text-3xl md:text-4xl font-bold mb-10 text-center">
-            Les institutions au quotidien
-          </h2>
+          <div className="relative mb-16 text-center">
+            <div className="relative z-10 flex flex-col md:flex-row items-center justify-center gap-4 md:gap-6">
+              <span className="text-slate-900 opacity-[0.08] absolute -top-10 left-1/2 -translate-x-1/2 select-none hidden md:block whitespace-nowrap text-8xl font-staatliches tracking-widest">
+                RÉPUBLIQUE • SYSTÈME
+              </span>
+              
+              <div className="flex items-center gap-4">
+                <span className="relative flex h-4 w-4 md:h-6 md:w-6">
+                  <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-red-400 opacity-75"></span>
+                  <span className="relative inline-flex rounded-full h-4 w-4 md:h-6 md:w-6 bg-red-600 shadow-[0_0_15px_rgba(220,38,38,0.5)]"></span>
+                </span>
+                
+                <h2 className="text-5xl md:text-7xl font-staatliches uppercase tracking-tighter leading-none inline">
+                  Les institutions <span className="bg-gradient-to-r from-blue-600 via-red-600 to-blue-600 bg-clip-text text-transparent">au quotidien</span>
+                </h2>
+              </div>
+            </div>
+            <div className="h-1.5 w-32 bg-gradient-to-r from-blue-600 to-red-600 mt-8 rounded-full mx-auto" />
+          </div>
           <InstitutionsGrid />
         </div>
       </section>

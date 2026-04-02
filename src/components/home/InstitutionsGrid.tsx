@@ -1,9 +1,7 @@
 "use client";
-
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { motion, AnimatePresence } from "framer-motion";
-/* Force Update - Institutional Photos v3 */
-import { ArrowLeft, ChevronRight } from "lucide-react";
+import { X, ChevronRight, Landmark } from "lucide-react";
 
 interface Institution {
   id: string;
@@ -12,6 +10,7 @@ interface Institution {
   image: string;
   summary: string;
   details: string[];
+  color: string;
 }
 
 const INSTITUTIONS: Institution[] = [
@@ -21,6 +20,7 @@ const INSTITUTIONS: Institution[] = [
     shortName: "Assemblée",
     image: "https://savoirs.unistra.fr/fileadmin/upload/Savoirs/Societe/Assemblee_nationale.JPG",
     summary: "L'hémicycle examine les textes de loi et contrôle le gouvernement.",
+    color: "from-blue-600",
     details: [
       "577 députés siègent au Palais Bourbon",
       "Examen des projets et propositions de loi",
@@ -34,6 +34,7 @@ const INSTITUTIONS: Institution[] = [
     shortName: "Sénat",
     image: "https://upload.wikimedia.org/wikipedia/commons/7/7c/Palais_du_Luxembourg_Paris.jpg",
     summary: "Le Palais du Luxembourg représente les collectivités territoriales.",
+    color: "from-indigo-600",
     details: [
       "348 sénateurs composent la chambre haute",
       "Navette parlementaire sur le projet de loi finances",
@@ -47,6 +48,7 @@ const INSTITUTIONS: Institution[] = [
     shortName: "Élysée",
     image: "https://upload.wikimedia.org/wikipedia/commons/d/db/Palais_de_l%27%C3%89lys%C3%A9e_2019.jpg",
     summary: "L'exécutif dirige la politique de la nation depuis l'Élysée.",
+    color: "from-red-600",
     details: [
       "Le Premier ministre coordonne l'action gouvernementale",
       "Conseil des ministres chaque mercredi à 10h",
@@ -57,134 +59,126 @@ const INSTITUTIONS: Institution[] = [
 ];
 
 export default function InstitutionsGrid() {
-  const [expanded, setExpanded] = useState<string | null>(null);
+  const [selectedInst, setSelectedInst] = useState<Institution | null>(null);
+
+  // Prevent scroll when modal is open
+  useEffect(() => {
+    if (selectedInst) {
+      document.body.style.overflow = "hidden";
+    } else {
+      document.body.style.overflow = "auto";
+    }
+  }, [selectedInst]);
 
   return (
     <div className="w-full">
-      <AnimatePresence mode="wait">
-        {expanded ? (
-          /* ── VUE DÉTAILLÉE (une institution agrandie) ── */
-          <motion.div
-            key={`expanded-${expanded}`}
-            initial={{ opacity: 0, scale: 0.95 }}
-            animate={{ opacity: 1, scale: 1 }}
-            exit={{ opacity: 0, scale: 0.95 }}
-            transition={{ duration: 0.4, ease: [0.22, 1, 0.36, 1] }}
-            className="w-full"
+      {/* ── GRILLE PRINCIPALE ── */}
+      <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+        {INSTITUTIONS.map((inst, index) => (
+          <motion.button
+            key={inst.id}
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ delay: index * 0.1 }}
+            onClick={() => setSelectedInst(inst)}
+            className="group relative h-[400px] rounded-[2.5rem] overflow-hidden shadow-lg hover:shadow-2xl transition-all duration-500 cursor-pointer text-left"
           >
-            {(() => {
-              const inst = INSTITUTIONS.find((i) => i.id === expanded)!;
-              return (
-                <div
-                  className="relative w-full min-h-[420px] rounded-3xl overflow-hidden shadow-xl"
-                  style={{
-                    backgroundImage: `url(${inst.image})`,
-                    backgroundSize: "cover",
-                    backgroundPosition: "center",
-                  }}
-                >
-                  {/* Overlay */}
-                  <div className="absolute inset-0 bg-gradient-to-r from-slate-900/80 via-slate-900/60 to-slate-900/40" />
+            {/* Image de fond avec zoom au survol */}
+            <div 
+              className="absolute inset-0 bg-cover bg-center transition-transform duration-700 group-hover:scale-110"
+              style={{ backgroundImage: `url(${inst.image})` }}
+            />
+            {/* Overlay dégradé */}
+            <div className={`absolute inset-0 bg-gradient-to-t ${inst.color}/80 via-slate-900/40 to-transparent group-hover:via-slate-900/20 transition-colors duration-500`} />
 
-                  {/* Contenu */}
-                  <div className="relative z-10 flex flex-col justify-between h-full min-h-[420px] p-8 md:p-12">
-                    <div>
-                      <button
-                        onClick={() => setExpanded(null)}
-                        className="inline-flex items-center gap-2 text-white/80 hover:text-white text-sm font-medium mb-6 transition-colors"
-                      >
-                        <ArrowLeft className="w-4 h-4" />
-                        Retour aux institutions
-                      </button>
-                      <h3 className="text-4xl md:text-5xl font-extrabold text-white mb-4">
-                        {inst.name}
-                      </h3>
-                      <p className="text-white/80 text-lg max-w-xl mb-8">
-                        {inst.summary}
-                      </p>
-                    </div>
-
-                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                      {inst.details.map((detail, i) => (
-                        <motion.div
-                          key={i}
-                          initial={{ opacity: 0, y: 20 }}
-                          animate={{ opacity: 1, y: 0 }}
-                          transition={{ delay: 0.15 + i * 0.1 }}
-                          className="bg-white/10 backdrop-blur-sm border border-white/20 rounded-2xl px-5 py-4 text-white font-medium"
-                        >
-                          {detail}
-                        </motion.div>
-                      ))}
-                    </div>
-                  </div>
-                </div>
-              );
-            })()}
-
-            {/* Mini-vignettes des autres institutions */}
-            <div className="flex gap-4 mt-4">
-              {INSTITUTIONS.filter((i) => i.id !== expanded).map((inst) => (
-                <button
-                  key={inst.id}
-                  onClick={() => setExpanded(inst.id)}
-                  className="flex-1 relative h-20 rounded-2xl overflow-hidden group cursor-pointer"
-                  style={{
-                    backgroundImage: `url(${inst.image})`,
-                    backgroundSize: "cover",
-                    backgroundPosition: "center",
-                  }}
-                >
-                  <div className="absolute inset-0 bg-slate-900/60 group-hover:bg-slate-900/40 transition-colors" />
-                  <div className="relative z-10 flex items-center justify-center h-full">
-                    <span className="text-white font-bold text-sm">{inst.shortName}</span>
-                  </div>
-                </button>
-              ))}
+            {/* Contenu */}
+            <div className="relative z-10 flex flex-col justify-end h-full p-8">
+              <div className="bg-white/20 backdrop-blur-md w-12 h-12 rounded-2xl flex items-center justify-center mb-4 border border-white/30 group-hover:scale-110 transition-transform">
+                <Landmark className="text-white w-6 h-6" />
+              </div>
+              <h3 className="text-3xl font-black text-white mb-3">
+                {inst.name}
+              </h3>
+              <p className="text-white/80 text-sm leading-relaxed mb-6 line-clamp-2">
+                {inst.summary}
+              </p>
+              <div className="flex items-center gap-2 text-white font-bold text-sm bg-white/20 backdrop-blur-md self-start px-5 py-2 rounded-full border border-white/30 group-hover:bg-white group-hover:text-slate-900 transition-all">
+                Voir le détail <ChevronRight className="w-4 h-4" />
+              </div>
             </div>
-          </motion.div>
-        ) : (
-          /* ── VUE 3 COLONNES (par défaut) ── */
-          <motion.div
-            key="grid"
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            exit={{ opacity: 0 }}
-            transition={{ duration: 0.3 }}
-            className="grid grid-cols-1 md:grid-cols-3 gap-5"
-          >
-            {INSTITUTIONS.map((inst, index) => (
-              <motion.button
-                key={inst.id}
-                initial={{ opacity: 0, y: 30 }}
-                animate={{ opacity: 1, y: 0 }}
-                transition={{ delay: index * 0.1, duration: 0.5 }}
-                onClick={() => setExpanded(inst.id)}
-                className="group relative h-72 md:h-80 rounded-3xl overflow-hidden shadow-lg hover:shadow-2xl transition-shadow cursor-pointer text-left"
-                style={{
-                  backgroundImage: `url(${inst.image})`,
-                  backgroundSize: "cover",
-                  backgroundPosition: "center",
-                }}
-              >
-                {/* Dark overlay */}
-                <div className="absolute inset-0 bg-gradient-to-t from-slate-900/80 via-slate-900/40 to-slate-900/20 group-hover:from-slate-900/70 transition-colors duration-300" />
+          </motion.button>
+        ))}
+      </div>
 
-                {/* Contenu carte */}
-                <div className="relative z-10 flex flex-col justify-end h-full p-6">
-                  <h3 className="text-2xl font-extrabold text-white mb-2 group-hover:translate-x-1 transition-transform">
-                    {inst.name}
-                  </h3>
-                  <p className="text-white/70 text-sm leading-relaxed mb-4">
-                    {inst.summary}
-                  </p>
-                  <span className="inline-flex items-center gap-1 text-white/90 text-sm font-semibold group-hover:gap-2 transition-all">
-                    Voir le détail <ChevronRight className="w-4 h-4" />
-                  </span>
+      {/* ── MODALE DE DÉTAIL ── */}
+      <AnimatePresence>
+        {selectedInst && (
+          <div className="fixed inset-0 z-[100] flex items-center justify-center p-4 md:p-8">
+            {/* Backdrop flouté */}
+            <motion.div
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              exit={{ opacity: 0 }}
+              onClick={() => setSelectedInst(null)}
+              className="absolute inset-0 bg-slate-950/60 backdrop-blur-xl"
+            />
+
+            {/* Contenu Modale */}
+            <motion.div
+              initial={{ opacity: 0, scale: 0.9, y: 20 }}
+              animate={{ opacity: 1, scale: 1, y: 0 }}
+              exit={{ opacity: 0, scale: 0.9, y: 20 }}
+              transition={{ type: "spring", damping: 25, stiffness: 300 }}
+              className="relative w-full max-w-5xl bg-slate-900 rounded-[3rem] overflow-hidden shadow-2xl border border-white/10"
+            >
+              {/* Bouton Fermer */}
+              <button
+                onClick={() => setSelectedInst(null)}
+                className="absolute top-6 right-6 z-50 p-3 rounded-full bg-black/40 text-white hover:bg-red-500 transition-colors backdrop-blur-md border border-white/20"
+              >
+                <X className="w-6 h-6" />
+              </button>
+
+              <div className="flex flex-col lg:flex-row h-full">
+                {/* Image Gauche */}
+                <div 
+                  className="w-full lg:w-1/2 h-64 lg:h-auto bg-cover bg-center"
+                  style={{ backgroundImage: `url(${selectedInst.image})` }}
+                >
+                  <div className={`w-full h-full bg-gradient-to-t lg:bg-gradient-to-r ${selectedInst.color}/40 to-transparent`} />
                 </div>
-              </motion.button>
-            ))}
-          </motion.div>
+
+                {/* Détails Droite */}
+                <div className="w-full lg:w-1/2 p-8 md:p-12 flex flex-col justify-center">
+                  <span className={`inline-block px-4 py-1 rounded-full text-xs font-black uppercase tracking-widest bg-white/10 text-white mb-6 border border-white/10`}>
+                    Institution
+                  </span>
+                  <h3 className="text-4xl md:text-5xl font-black text-white mb-6 leading-tight">
+                    {selectedInst.name}
+                  </h3>
+                  <p className="text-white/70 text-lg md:text-xl mb-10 leading-relaxed italic">
+                    &ldquo;{selectedInst.summary}&rdquo;
+                  </p>
+
+                  <div className="space-y-4">
+                    <p className="text-white/40 text-xs font-bold uppercase tracking-widest mb-4">Aujourd&apos;hui en direct :</p>
+                    {selectedInst.details.map((detail, i) => (
+                      <motion.div
+                        key={i}
+                        initial={{ opacity: 0, x: 20 }}
+                        animate={{ opacity: 1, x: 0 }}
+                        transition={{ delay: 0.2 + i * 0.1 }}
+                        className="flex items-center gap-4 bg-white/5 border border-white/10 rounded-2xl p-4 text-white/90 font-medium hover:bg-white/10 transition-colors"
+                      >
+                        <div className={`w-2 h-2 rounded-full bg-gradient-to-br ${selectedInst.color} to-white shadow-[0_0_8px_rgba(255,255,255,0.5)]`} />
+                        {detail}
+                      </motion.div>
+                    ))}
+                  </div>
+                </div>
+              </div>
+            </motion.div>
+          </div>
         )}
       </AnimatePresence>
     </div>

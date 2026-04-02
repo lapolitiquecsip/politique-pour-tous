@@ -1,12 +1,13 @@
 "use client";
 
-import { motion } from "framer-motion";
+import { useState } from "react";
+import { motion, AnimatePresence } from "framer-motion";
 import { 
   Calendar, 
   CheckCircle2, 
-  ArrowRight, 
+  ChevronDown,
   Sparkles, 
-  AlertCircle 
+  ArrowRight
 } from "lucide-react";
 import { type LawDossier } from "@/data/free-laws-dossiers";
 
@@ -15,6 +16,8 @@ interface DetailedLawDossierProps {
 }
 
 export default function DetailedLawDossier({ law }: DetailedLawDossierProps) {
+  const [isOpen, setIsOpen] = useState(false);
+
   const colorMap: Record<string, string> = {
     emerald: "border-emerald-200 bg-emerald-50 text-emerald-700",
     blue: "border-blue-200 bg-blue-50 text-blue-700",
@@ -25,89 +28,103 @@ export default function DetailedLawDossier({ law }: DetailedLawDossierProps) {
   const badgeColor = colorMap[law.color] || "border-gray-200 bg-gray-50 text-gray-700";
 
   return (
-    <motion.div 
-      initial={{ opacity: 0, y: 20 }}
-      whileInView={{ opacity: 1, y: 0 }}
-      viewport={{ once: true }}
-      className="bg-card border border-border rounded-[2rem] overflow-hidden shadow-sm hover:shadow-md transition-all mb-12"
+    <div 
+      className={`bg-card border border-border rounded-[2rem] overflow-hidden shadow-sm hover:shadow-md transition-all mb-4 ${isOpen ? 'ring-2 ring-primary/10' : ''}`}
     >
-      <div className="p-8 md:p-12">
-        {/* Header */}
-        <div className="flex flex-wrap items-center justify-between gap-4 mb-8">
-          <div className={`px-4 py-1.5 rounded-full text-xs font-bold uppercase tracking-widest border ${badgeColor}`}>
+      {/* 1. HEADER (TOUJOURS VISIBLE) */}
+      <button 
+        onClick={() => setIsOpen(!isOpen)}
+        className="w-full text-left p-6 md:p-8 flex items-center justify-between gap-4 hover:bg-muted/30 transition-colors"
+      >
+        <div className="flex flex-col md:flex-row md:items-center gap-4">
+          <div className={`w-fit px-3 py-1 rounded-full text-[10px] font-black uppercase tracking-widest border ${badgeColor}`}>
             {law.category}
           </div>
-          <div className="flex items-center gap-2 text-sm font-semibold text-muted-foreground bg-muted/50 px-4 py-1.5 rounded-full capitalize italic">
-            <span className={`w-2 h-2 rounded-full ${law.status === 'application' ? 'bg-green-500' : 'bg-amber-500'} animate-pulse`} />
-            {law.statusLabel}
-          </div>
+          <h3 className="text-xl md:text-2xl font-extrabold text-foreground tracking-tight italic">
+            {law.title}
+          </h3>
         </div>
+        
+        <div className={`p-2 rounded-full bg-muted/50 transition-transform duration-300 ${isOpen ? 'rotate-180 bg-primary/10 text-primary' : ''}`}>
+          <ChevronDown className="w-6 h-6" />
+        </div>
+      </button>
 
-        <h3 className="text-3xl md:text-4xl font-extrabold text-foreground mb-6 leading-tight">
-          {law.title}
-        </h3>
+      {/* 2. CONTENU DÉPLIABLE (ACCORDÉON) */}
+      <AnimatePresence>
+        {isOpen && (
+          <motion.div
+            initial={{ height: 0, opacity: 0 }}
+            animate={{ height: "auto", opacity: 1 }}
+            exit={{ height: 0, opacity: 0 }}
+            transition={{ duration: 0.4, ease: [0.22, 1, 0.36, 1] }}
+          >
+            <div className="px-8 pb-12 pt-4 border-t border-border/50">
+              <div className="flex items-center gap-2 text-sm font-semibold text-muted-foreground bg-muted/50 px-4 py-1.5 rounded-full capitalize italic w-fit mb-8">
+                <span className={`w-2 h-2 rounded-full ${law.status === 'application' ? 'bg-green-500' : 'bg-amber-500'} animate-pulse`} />
+                {law.statusLabel}
+              </div>
 
-        <p className="text-xl text-muted-foreground leading-relaxed mb-10">
-          {law.summary}
-        </p>
+              <p className="text-lg text-muted-foreground leading-relaxed mb-10 max-w-4xl">
+                {law.summary}
+              </p>
 
-        <div className="grid grid-cols-1 lg:grid-cols-2 gap-12">
-          {/* Main Impacts */}
-          <div className="space-y-6">
-            <h4 className="text-lg font-bold flex items-center gap-2 text-foreground">
-              <CheckCircle2 className="w-5 h-5 text-primary" />
-              Ce que ça change pour vous
-            </h4>
-            <div className="space-y-4">
-              {law.impacts.map((impact, idx) => (
-                <div key={idx} className="flex gap-3 items-start p-4 bg-muted/30 rounded-2xl border border-border/50">
-                  <div className="w-1.5 h-1.5 rounded-full bg-primary mt-2 shrink-0" />
-                  <p className="text-muted-foreground text-sm leading-relaxed">{impact}</p>
-                </div>
-              ))}
-            </div>
-          </div>
-
-          {/* Timeline & Premium */}
-          <div className="space-y-8">
-            {/* Timeline */}
-            <div>
-              <h4 className="text-lg font-bold flex items-center gap-2 text-foreground mb-6">
-                <Calendar className="w-5 h-5 text-primary" />
-                Calendrier d&apos;application
-              </h4>
-              <div className="space-y-6 pl-4 border-l-2 border-border ml-2">
-                {law.calendar.map((item, idx) => (
-                  <div key={idx} className="relative">
-                    <div className="absolute -left-[22px] top-1.5 w-4 h-4 rounded-full bg-card border-2 border-primary" />
-                    <p className="text-xs font-black uppercase text-primary tracking-tighter mb-1">{item.date}</p>
-                    <p className="text-sm text-foreground font-semibold">{item.event}</p>
+              <div className="grid grid-cols-1 lg:grid-cols-2 gap-12">
+                {/* Impacts */}
+                <div className="space-y-6">
+                  <h4 className="text-base font-black flex items-center gap-2 text-foreground uppercase tracking-widest">
+                    <CheckCircle2 className="w-5 h-5 text-primary" />
+                    Décryptage : ce que ça change
+                  </h4>
+                  <div className="space-y-3">
+                    {law.impacts.map((impact, idx) => (
+                      <div key={idx} className="flex gap-3 items-start p-4 bg-muted/20 rounded-2xl border border-border/40">
+                        <div className="w-1.5 h-1.5 rounded-full bg-primary mt-2 shrink-0" />
+                        <p className="text-muted-foreground text-sm leading-relaxed">{impact}</p>
+                      </div>
+                    ))}
                   </div>
-                ))}
-              </div>
-            </div>
+                </div>
 
-            {/* Premium Teaser (The "Hook") */}
-            <div className="p-6 bg-gradient-to-br from-amber-50 to-orange-50 border border-amber-200/50 rounded-3xl relative overflow-hidden group">
-              <div className="absolute top-0 right-0 p-4 opacity-10 group-hover:scale-110 transition-transform">
-                <Sparkles className="w-12 h-12 text-amber-600" />
+                {/* Timeline & Analysis */}
+                <div className="space-y-8">
+                  <div>
+                    <h4 className="text-base font-black flex items-center gap-2 text-foreground uppercase tracking-widest mb-6">
+                      <Calendar className="w-5 h-5 text-primary" />
+                      Calendrier législatif
+                    </h4>
+                    <div className="space-y-6 pl-4 border-l-2 border-border ml-2">
+                      {law.calendar.map((item, idx) => (
+                        <div key={idx} className="relative">
+                          <div className="absolute -left-[22px] top-1.5 w-4 h-4 rounded-full bg-card border-2 border-primary" />
+                          <p className="text-[10px] font-black uppercase text-primary tracking-tighter mb-1">{item.date}</p>
+                          <p className="text-sm text-foreground font-semibold">{item.event}</p>
+                        </div>
+                      ))}
+                    </div>
+                  </div>
+
+                  {/* Deep Analysis (Clean non-premium version) */}
+                  <div className="p-6 bg-slate-50 border border-slate-200 rounded-3xl relative overflow-hidden group">
+                    <h4 className="text-slate-900 font-black text-xs uppercase tracking-widest flex items-center gap-2 mb-4">
+                      <Sparkles className="w-4 h-4 text-primary" />
+                      Analyse approfondie de la rédaction
+                    </h4>
+                    <ul className="space-y-3">
+                      {law.premiumPoints.map((point, idx) => (
+                        <li key={idx} className="flex items-center gap-3 text-sm text-slate-600 font-medium italic">
+                          <ArrowRight className="w-4 h-4 text-primary opacity-40 shrink-0" />
+                          {point}
+                        </li>
+                      ))}
+                    </ul>
+                  </div>
+                </div>
               </div>
-              <h4 className="text-amber-800 font-black text-sm uppercase tracking-widest flex items-center gap-2 mb-4">
-                <Sparkles className="w-4 h-4" />
-                Inclus dans votre abonnement Premium
-              </h4>
-              <ul className="space-y-3">
-                {law.premiumPoints.map((point, idx) => (
-                  <li key={idx} className="flex items-center gap-3 text-sm text-amber-900/80 font-medium italic">
-                    <ArrowRight className="w-4 h-4 text-amber-500 shrink-0" />
-                    {point}
-                  </li>
-                ))}
-              </ul>
             </div>
-          </div>
-        </div>
-      </div>
-    </motion.div>
+          </motion.div>
+        )}
+      </AnimatePresence>
+    </div>
   );
 }

@@ -176,7 +176,7 @@ export default function NewsletterPage() {
           >
             <div className="inline-flex items-center gap-2 px-4 py-2 bg-white/10 backdrop-blur-sm border border-white/20 rounded-full text-sm font-medium mb-8">
               <Sparkles className="w-4 h-4 text-amber-400" />
-              Gratuit • Hebdomadaire • Sans jargon
+              Personnalisé • Hebdomadaire • Sans jargon
             </div>
           </motion.div>
 
@@ -396,7 +396,7 @@ export default function NewsletterPage() {
                   <h2 className="text-3xl md:text-4xl font-extrabold text-slate-900 mb-3">
                     Rejoignez <AnimatedCounter target={2847} suffix="+" /> abonnés
                   </h2>
-                  <p className="text-slate-500">Gratuit, sans engagement, désinscription en 1 clic.</p>
+                  <p className="text-slate-500">Un condensé politique sur-mesure, adapté à vos préférences.</p>
                 </div>
 
                 <form
@@ -521,14 +521,14 @@ export default function NewsletterPage() {
                         </>
                       ) : (
                         <>
-                          S&apos;abonner gratuitement
+                          S&apos;abonner à la newsletter
                           <ArrowRight className="w-5 h-5" />
                         </>
                       )}
                     </button>
 
                     <p className="text-center text-xs text-slate-400 font-medium">
-                      Aucun spam garanti. Désinscription en 1 clic. Un jour, une formule Premium sera proposée.
+                      Aucun spam garanti. Votre condensé personnalisé chaque lundi.
                     </p>
                   </div>
                 </form>

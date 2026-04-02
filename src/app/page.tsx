@@ -158,7 +158,7 @@ export default async function Home() {
               S&apos;inscrire
             </button>
           </form>
-          <p className="text-xs text-muted-foreground mt-4">Gratuit • Sans engagement • Désinscription en 1 clic</p>
+          <p className="text-xs text-muted-foreground mt-4">Personnalisé • Hebdomadaire • Sans jargon</p>
         </div>
       </section>
 

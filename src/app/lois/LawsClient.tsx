@@ -34,16 +34,10 @@ export default function LawsClient() {
     <div className="container mx-auto max-w-6xl px-4 pb-24">
       {/* 1. FILTRES THÉMATIQUES (3x2 GRID & INSTITUTIONAL TITLE) */}
       <div className="mb-20">
-        <div className="relative mb-12 flex items-center gap-6">
-          <div className="flex-none p-4 bg-gradient-to-br from-blue-950 to-slate-900 rounded-2xl shadow-xl border border-blue-500/20">
-            <Sparkles className="w-6 h-6 text-blue-400 animate-pulse" />
-          </div>
-          <div className="space-y-1">
-            <h3 className="text-3xl md:text-4xl font-staatliches uppercase tracking-wider bg-gradient-to-r from-blue-900 via-red-600 to-blue-900 bg-clip-text text-transparent">
-              Explorez par thématique
-            </h3>
-            <div className="h-1 w-32 bg-gradient-to-r from-blue-600 via-red-500 to-transparent rounded-full" />
-          </div>
+        <div className="relative mb-6">
+          <h3 className="text-3xl md:text-5xl font-staatliches uppercase tracking-wider bg-gradient-to-r from-blue-900 via-red-600 to-blue-900 bg-clip-text text-transparent">
+            Explorez par thématique
+          </h3>
         </div>
 
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">

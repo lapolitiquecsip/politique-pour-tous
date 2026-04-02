@@ -86,5 +86,11 @@ export const api = {
     const { data, error } = await supabase.from('subscribers').select('*').order('created_at', { ascending: false });
     if (error) { console.error(error); return []; }
     return data || [];
-  }
+  },
+
+  getPipelineLogs: async () => [], // Mode serverless : les logs de pipeline ne sont plus disponibles via Railway
+  
+  triggerAssembleePipeline: async () => ({ status: 'skipped', message: 'Pipeline requires a backend server. Run locally.' }),
+
+  triggerAssembleePipelineByName: async (name: string) => ({ status: 'skipped', message: `Pipeline ${name} requires a backend server.` })
 };

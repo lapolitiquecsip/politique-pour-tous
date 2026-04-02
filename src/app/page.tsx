@@ -142,7 +142,7 @@ export default async function Home() {
           <div className="absolute top-0 left-0 w-full h-2 bg-gradient-to-r from-primary via-white to-accent"></div>
           <h2 className="text-4xl md:text-5xl mb-4 text-primary font-staatliches tracking-wider uppercase">Chaque semaine, ton résumé 100% personnalisé sur la vie politique</h2>
           <p className="text-muted-foreground text-lg mb-10 max-w-2xl mx-auto leading-relaxed">
-            Ne laissez plus les décisions politiques vous surprendre. Chaque dimanche, recevez le décryptage exclusif des <span className="text-foreground font-bold">lois et projets</span> qui impactent directement votre ville et votre budget. L&apos;essentiel du Parlement, résumé en 3 minutes.
+            Ne laissez plus les décisions politiques vous surprendre. Chaque dimanche, recevez le décryptage exclusif des <span className="text-foreground font-bold">lois et projets</span>&nbsp;qui impactent directement votre ville et votre budget. L&apos;essentiel du Parlement, résumé en 3 minutes.
           </p>
           
           <div className="flex flex-col items-center gap-6">

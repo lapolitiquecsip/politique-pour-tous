@@ -16,7 +16,10 @@ import {
   BookOpen,
   CalendarDays,
   MessageSquareQuote,
-  Home
+  Home,
+  Users,
+  Scale,
+  Mail
 } from "lucide-react";
 
 export default function Header() {
@@ -59,13 +62,34 @@ export default function Header() {
 
           {/* Desktop Nav */}
           <div className="hidden md:flex items-center gap-5">
-            <Link href="/" className="text-sm font-semibold text-slate-600 hover:text-blue-600 transition-colors flex items-center gap-1"><Home size={14} />Accueil</Link>
-            <Link href="/deputes" className="text-sm font-semibold text-slate-600 hover:text-blue-600 transition-colors">Députés</Link>
-            <Link href="/lois" className="text-sm font-semibold text-slate-600 hover:text-blue-600 transition-colors">Lois</Link>
-            <Link href="/vocabulaire" className="text-sm font-semibold text-slate-600 hover:text-blue-600 transition-colors flex items-center gap-1"><BookOpen size={14} />Vocabulaire</Link>
-            <Link href="/calendrier" className="text-sm font-semibold text-slate-600 hover:text-blue-600 transition-colors flex items-center gap-1"><CalendarDays size={14} />Calendrier</Link>
-            <Link href="/promesses" className="text-sm font-semibold text-slate-600 hover:text-blue-600 transition-colors flex items-center gap-1"><MessageSquareQuote size={14} />Ils avaient dit...</Link>
-            <Link href="/newsletter" className="text-sm font-semibold text-slate-600 hover:text-blue-600 transition-colors underline decoration-red-400 decoration-2 underline-offset-4">Newsletter</Link>
+            <Link href="/" className="text-sm font-semibold text-slate-600 hover:text-blue-600 transition-colors flex items-center gap-1.5 group">
+              <Home size={16} className="text-indigo-500 group-hover:scale-110 transition-transform" />
+              Accueil
+            </Link>
+            <Link href="/deputes" className="text-sm font-semibold text-slate-600 hover:text-blue-600 transition-colors flex items-center gap-1.5 group">
+              <Users size={16} className="text-blue-500 group-hover:scale-110 transition-transform" />
+              Députés
+            </Link>
+            <Link href="/lois" className="text-sm font-semibold text-slate-600 hover:text-blue-600 transition-colors flex items-center gap-1.5 group">
+              <Scale size={16} className="text-red-500 group-hover:scale-110 transition-transform" />
+              Lois
+            </Link>
+            <Link href="/vocabulaire" className="text-sm font-semibold text-slate-600 hover:text-blue-600 transition-colors flex items-center gap-1.5 group">
+              <BookOpen size={16} className="text-emerald-500 group-hover:scale-110 transition-transform" />
+              Vocabulaire
+            </Link>
+            <Link href="/calendrier" className="text-sm font-semibold text-slate-600 hover:text-blue-600 transition-colors flex items-center gap-1.5 group">
+              <CalendarDays size={16} className="text-amber-500 group-hover:scale-110 transition-transform" />
+              Calendrier
+            </Link>
+            <Link href="/promesses" className="text-sm font-semibold text-slate-600 hover:text-blue-600 transition-colors flex items-center gap-1.5 group">
+              <MessageSquareQuote size={16} className="text-purple-500 group-hover:scale-110 transition-transform" />
+              Ils avaient dit...
+            </Link>
+            <Link href="/newsletter" className="text-sm font-semibold text-slate-600 hover:text-blue-600 transition-colors flex items-center gap-1.5 group underline decoration-red-400 decoration-2 underline-offset-4">
+              <Mail size={16} className="text-pink-500 group-hover:scale-110 transition-transform" />
+              Newsletter
+            </Link>
             
             <div className="h-6 w-[1px] bg-slate-200 mx-2" />
 
@@ -110,14 +134,30 @@ export default function Header() {
           animate={{ opacity: 1, y: 0 }}
           className="md:hidden bg-white border-b border-slate-100 px-4 py-6 space-y-4 shadow-xl"
         >
-          <Link href="/" className="flex items-center gap-2 text-lg font-bold text-slate-900" onClick={() => setIsMenuOpen(false)}><Home size={18} />Accueil</Link>
-          <Link href="/deputes" className="block text-lg font-bold text-slate-900" onClick={() => setIsMenuOpen(false)}>Les Députés</Link>
-          <Link href="/lois" className="block text-lg font-bold text-slate-900" onClick={() => setIsMenuOpen(false)}>Les Lois</Link>
-          <Link href="/vocabulaire" className="flex items-center gap-2 text-lg font-bold text-slate-900" onClick={() => setIsMenuOpen(false)}><BookOpen size={18} />Vocabulaire</Link>
-          <Link href="/calendrier" className="flex items-center gap-2 text-lg font-bold text-slate-900" onClick={() => setIsMenuOpen(false)}><CalendarDays size={18} />Calendrier</Link>
-          <Link href="/promesses" className="flex items-center gap-2 text-lg font-bold text-slate-900" onClick={() => setIsMenuOpen(false)}><MessageSquareQuote size={18} />Ils avaient dit que...</Link>
-          <Link href="/newsletter" className="block text-lg font-bold text-slate-900" onClick={() => setIsMenuOpen(false)}>Newsletter</Link>
-          <Link href="/login" className="block text-lg font-bold text-blue-600" onClick={() => setIsMenuOpen(false)}>Mon Compte</Link>
+          <Link href="/" className="flex items-center gap-3 text-lg font-bold text-slate-900" onClick={() => setIsMenuOpen(false)}>
+            <Home className="text-indigo-500" /> Accueil
+          </Link>
+          <Link href="/deputes" className="flex items-center gap-3 text-lg font-bold text-slate-900" onClick={() => setIsMenuOpen(false)}>
+            <Users className="text-blue-500" /> Les Députés
+          </Link>
+          <Link href="/lois" className="flex items-center gap-3 text-lg font-bold text-slate-900" onClick={() => setIsMenuOpen(false)}>
+            <Scale className="text-red-500" /> Les Lois
+          </Link>
+          <Link href="/vocabulaire" className="flex items-center gap-3 text-lg font-bold text-slate-900" onClick={() => setIsMenuOpen(false)}>
+            <BookOpen className="text-emerald-500" /> Vocabulaire
+          </Link>
+          <Link href="/calendrier" className="flex items-center gap-3 text-lg font-bold text-slate-900" onClick={() => setIsMenuOpen(false)}>
+            <CalendarDays className="text-amber-500" /> Calendrier
+          </Link>
+          <Link href="/promesses" className="flex items-center gap-3 text-lg font-bold text-slate-900" onClick={() => setIsMenuOpen(false)}>
+            <MessageSquareQuote className="text-purple-500" /> Ils avaient dit que...
+          </Link>
+          <Link href="/newsletter" className="flex items-center gap-3 text-lg font-bold text-slate-900" onClick={() => setIsMenuOpen(false)}>
+            <Mail className="text-pink-500" /> Newsletter
+          </Link>
+          <Link href="/login" className="flex items-center gap-3 text-lg font-bold text-blue-600" onClick={() => setIsMenuOpen(false)}>
+            <LogIn size={20} /> Mon Compte
+          </Link>
         </motion.div>
       )}
     </header>

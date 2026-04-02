@@ -37,12 +37,20 @@ export default function PromisesPage() {
 
   return (
     <div className="min-h-screen bg-background">
-      <div className="bg-primary/5 py-16 px-4 mb-12 border-b border-border">
+      {/* 1. SECTION HEADER (POSTER STYLE REBORN) */}
+      <div className="py-20 px-4 mb-12">
         <div className="container mx-auto max-w-6xl text-center">
-          <h1 className="text-4xl md:text-5xl font-heading font-extrabold text-foreground mb-4">
-            Ils avaient dit que...
-          </h1>
-          <p className="text-xl text-muted-foreground max-w-2xl mx-auto">
+          <div className="relative mb-10">
+            <h1 className="text-5xl md:text-7xl font-staatliches uppercase tracking-tighter leading-none relative z-10">
+              <span className="text-slate-900 opacity-[0.08] absolute -top-8 left-1/2 -translate-x-1/2 select-none hidden md:block whitespace-nowrap">
+                PAROLES • ENGAGEMENTS
+              </span>
+              Ils avaient <span className="bg-gradient-to-r from-blue-600 via-red-600 to-blue-600 bg-clip-text text-transparent">dit que...</span>
+            </h1>
+            <div className="h-1.5 w-32 bg-gradient-to-r from-blue-600 to-red-600 mt-6 rounded-full mx-auto" />
+          </div>
+          
+          <p className="text-xl md:text-2xl font-staatliches italic tracking-tight text-slate-500 mt-8 max-w-2xl mx-auto leading-relaxed">
             Le baromètre transparent pour suivre, jour après jour, les engagements de la classe politique.
           </p>
         </div>

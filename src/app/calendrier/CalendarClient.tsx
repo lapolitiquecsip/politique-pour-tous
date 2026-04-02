@@ -30,16 +30,25 @@ export default function CalendarClient({ initialEvents }: { initialEvents: Calen
   return (
     <div className="container mx-auto px-4 py-12 max-w-7xl">
       {/* En-tête Dynamique avec Filtres Modernes */}
-      <div className="flex flex-col lg:flex-row lg:items-end justify-between gap-8 mb-12">
-        <div className="flex-1">
-          <div className="inline-flex items-center gap-2 px-4 py-1 rounded-full bg-blue-500/10 border border-blue-500/20 text-blue-600 text-xs font-black uppercase mb-4">
+      {/* 1. SECTION HEADER (POSTER STYLE REBORN) */}
+      <div className="flex flex-col lg:flex-row lg:items-end justify-between gap-8 mb-16">
+        <div className="relative flex-1">
+          <div className="inline-flex items-center gap-2 px-4 py-1 rounded-full bg-blue-500/10 border border-blue-500/20 text-blue-600 text-xs font-black uppercase mb-6 relative z-20">
             <CalendarDays className="w-3 h-3" /> Agenda Parlementaire
           </div>
-          <h1 className="text-5xl md:text-6xl font-black text-slate-900 mb-6 leading-tight tracking-tight">
-            Calendrier <span className="text-blue-600 italic">simplifié</span>
-          </h1>
-          <p className="text-lg text-slate-500 max-w-2xl leading-relaxed">
-            Visualisez les débats, votes et auditions clés au cœur de la vie politique française.
+          
+          <div className="relative">
+            <h1 className="text-5xl md:text-7xl font-staatliches uppercase tracking-tighter leading-none relative z-10">
+              <span className="text-slate-900 opacity-[0.08] absolute -top-8 left-0 select-none hidden md:block whitespace-nowrap">
+                DIRECT • AGENDA
+              </span>
+              Calendrier <span className="bg-gradient-to-r from-blue-600 via-red-600 to-blue-600 bg-clip-text text-transparent">simplifié</span>
+            </h1>
+            <div className="h-1.5 w-32 bg-gradient-to-r from-blue-600 to-red-600 mt-6 rounded-full" />
+          </div>
+
+          <p className="text-xl md:text-2xl font-staatliches italic tracking-tight text-slate-500 mt-8 max-w-2xl leading-relaxed">
+            Visualisez les débats, votes et auditions clés au cœur de la vie politique.
           </p>
         </div>
       </div>

@@ -19,12 +19,12 @@ import DetailedLawDossier from "@/components/laws/DetailedLawDossier";
 import { FREE_LAWS } from "@/data/free-laws-dossiers";
 
 const CATEGORIES = [
-  { id: "edu", label: "Éducation", icon: GraduationCap, color: "bg-indigo-50 border-indigo-200 text-indigo-700 hover:bg-indigo-100", activeColor: "bg-indigo-600 text-white border-indigo-600", isFree: true },
-  { id: "env", label: "Environnement", icon: Leaf, color: "bg-emerald-50 border-emerald-200 text-emerald-700 hover:bg-emerald-100", activeColor: "bg-emerald-600 text-white border-emerald-600" },
-  { id: "eco", label: "Économie", icon: TrendingUp, color: "bg-blue-50 border-blue-200 text-blue-700 hover:bg-blue-100", activeColor: "bg-blue-600 text-white border-blue-600" },
-  { id: "sec", label: "Sécurité", icon: Shield, color: "bg-slate-50 border-slate-200 text-slate-700 hover:bg-slate-100", activeColor: "bg-slate-800 text-white border-slate-800" },
-  { id: "health", label: "Santé", icon: HeartPulse, color: "bg-rose-50 border-rose-200 text-rose-700 hover:bg-rose-100", activeColor: "bg-rose-600 text-white border-rose-600" },
-  { id: "social", label: "Social", icon: Users, color: "bg-orange-50 border-orange-200 text-orange-700 hover:bg-orange-100", activeColor: "bg-orange-600 text-white border-orange-600" },
+  { id: "edu", label: "Éducation", icon: GraduationCap, color: "bg-indigo-600 border-indigo-500 text-white hover:bg-indigo-700 shadow-indigo-200", isFree: true },
+  { id: "env", label: "Environnement", icon: Leaf, color: "bg-emerald-500 border-emerald-400 text-white hover:bg-emerald-600 shadow-emerald-200" },
+  { id: "eco", label: "Économie", icon: TrendingUp, color: "bg-blue-600 border-blue-500 text-white hover:bg-blue-700 shadow-blue-200" },
+  { id: "sec", label: "Sécurité", icon: Shield, color: "bg-slate-700 border-slate-600 text-white hover:bg-slate-800 shadow-slate-200" },
+  { id: "health", label: "Santé", icon: HeartPulse, color: "bg-rose-500 border-rose-400 text-white hover:bg-rose-600 shadow-rose-200" },
+  { id: "social", label: "Social", icon: Users, color: "bg-orange-500 border-orange-400 text-white hover:bg-orange-600 shadow-orange-200" },
 ];
 
 export default function LawsClient() {
@@ -46,17 +46,17 @@ export default function LawsClient() {
               <button
                 key={cat.id}
                 onClick={() => setSelectedCat(cat.id)}
-                className={`group relative flex items-center gap-3 px-6 py-4 rounded-2xl border transition-all duration-300 font-bold shadow-sm hover:shadow-md ${
-                  isActive ? cat.activeColor : `${cat.color}`
+                className={`group relative flex items-center gap-3 px-6 py-4 rounded-2xl border transition-all duration-300 font-bold shadow-lg ${cat.color} ${
+                  isActive ? "scale-105 ring-4 ring-white/30 z-10 shadow-xl" : "hover:-translate-y-1"
                 }`}
               >
-                <Icon className={`w-5 h-5 ${isActive ? "text-white" : ""}`} />
+                <Icon className={`w-5 h-5 ${isActive ? "animate-pulse" : ""}`} />
                 <span>{cat.label}</span>
                 {!cat.isFree && (
-                  <Lock className={`w-3.5 h-3.5 ml-1 transition-colors ${isActive ? "text-white/60" : "text-amber-500/50 group-hover:text-amber-500"}`} />
+                  <Lock className={`w-3.5 h-3.5 ml-1 transition-colors ${isActive ? "text-white" : "text-white/60 group-hover:text-white"}`} />
                 )}
                 {cat.isFree && !isActive && (
-                  <span className="ml-1 text-[9px] bg-white/50 text-indigo-600 px-1.5 py-0.5 rounded-md uppercase tracking-tighter">Gratuit</span>
+                  <span className="ml-1 text-[9px] bg-white/20 text-white px-1.5 py-0.5 rounded-md uppercase tracking-tighter border border-white/30">Gratuit</span>
                 )}
               </button>
             );

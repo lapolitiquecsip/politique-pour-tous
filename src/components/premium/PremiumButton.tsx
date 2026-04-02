@@ -2,8 +2,9 @@
 
 import { useState } from "react";
 import { supabase } from "@/lib/supabase";
-import { Star, RefreshCw as Loader2, X } from "lucide-react";
+import { Star, RefreshCw as Loader2, X, AlertCircle, ArrowRight } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
+import Link from "next/link";
 
 export default function PremiumButton() {
   const [loading, setLoading] = useState(false);

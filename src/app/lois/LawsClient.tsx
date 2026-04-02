@@ -19,12 +19,12 @@ import DetailedLawDossier from "@/components/laws/DetailedLawDossier";
 import { FREE_LAWS } from "@/data/free-laws-dossiers";
 
 const CATEGORIES = [
-  { id: "env", label: "Environnement", icon: Leaf },
-  { id: "eco", label: "Économie", icon: TrendingUp },
-  { id: "sec", label: "Sécurité", icon: Shield },
-  { id: "health", label: "Santé", icon: HeartPulse },
-  { id: "social", label: "Social", icon: Users },
-  { id: "edu", label: "Éducation", icon: GraduationCap },
+  { id: "edu", label: "Éducation", icon: GraduationCap, color: "bg-indigo-50 border-indigo-200 text-indigo-700 hover:bg-indigo-100", activeColor: "bg-indigo-600 text-white border-indigo-600", isFree: true },
+  { id: "env", label: "Environnement", icon: Leaf, color: "bg-emerald-50 border-emerald-200 text-emerald-700 hover:bg-emerald-100", activeColor: "bg-emerald-600 text-white border-emerald-600" },
+  { id: "eco", label: "Économie", icon: TrendingUp, color: "bg-blue-50 border-blue-200 text-blue-700 hover:bg-blue-100", activeColor: "bg-blue-600 text-white border-blue-600" },
+  { id: "sec", label: "Sécurité", icon: Shield, color: "bg-slate-50 border-slate-200 text-slate-700 hover:bg-slate-100", activeColor: "bg-slate-800 text-white border-slate-800" },
+  { id: "health", label: "Santé", icon: HeartPulse, color: "bg-rose-50 border-rose-200 text-rose-700 hover:bg-rose-100", activeColor: "bg-rose-600 text-white border-rose-600" },
+  { id: "social", label: "Social", icon: Users, color: "bg-orange-50 border-orange-200 text-orange-700 hover:bg-orange-100", activeColor: "bg-orange-600 text-white border-orange-600" },
 ];
 
 export default function LawsClient() {
@@ -32,28 +32,32 @@ export default function LawsClient() {
 
   return (
     <div className="container mx-auto max-w-6xl px-4 pb-24">
-      {/* 1. FILTRES THÉMATIQUES (PREMIUM LOOK) */}
+      {/* 1. FILTRES THÉMATIQUES (COLORS & ACCESS) */}
       <div className="mb-16">
         <h3 className="text-sm font-black uppercase tracking-[0.2em] text-muted-foreground/60 mb-6 flex items-center gap-3">
           <Sparkles className="w-4 h-4 text-amber-500" />
-          Explorer par thématique <span className="px-2 py-0.5 bg-amber-100 text-amber-700 rounded text-[10px] ml-2">Premium</span>
+          Parcourir par thématique
         </h3>
         <div className="flex flex-wrap gap-4">
           {CATEGORIES.map((cat) => {
             const Icon = cat.icon;
+            const isActive = selectedCat === cat.id;
             return (
               <button
                 key={cat.id}
                 onClick={() => setSelectedCat(cat.id)}
-                className={`group relative flex items-center gap-3 px-6 py-4 rounded-2xl border transition-all duration-300 ${
-                  selectedCat === cat.id 
-                    ? "border-amber-400 bg-amber-50 text-amber-900 shadow-md" 
-                    : "border-border bg-card hover:border-amber-200 text-muted-foreground hover:text-amber-700"
+                className={`group relative flex items-center gap-3 px-6 py-4 rounded-2xl border transition-all duration-300 font-bold shadow-sm hover:shadow-md ${
+                  isActive ? cat.activeColor : `${cat.color}`
                 }`}
               >
-                <Icon className="w-5 h-5" />
-                <span className="font-bold">{cat.label}</span>
-                <Lock className="w-3.5 h-3.5 text-amber-500/50 group-hover:text-amber-500 transition-colors" />
+                <Icon className={`w-5 h-5 ${isActive ? "text-white" : ""}`} />
+                <span>{cat.label}</span>
+                {!cat.isFree && (
+                  <Lock className={`w-3.5 h-3.5 ml-1 transition-colors ${isActive ? "text-white/60" : "text-amber-500/50 group-hover:text-amber-500"}`} />
+                )}
+                {cat.isFree && !isActive && (
+                  <span className="ml-1 text-[9px] bg-white/50 text-indigo-600 px-1.5 py-0.5 rounded-md uppercase tracking-tighter">Gratuit</span>
+                )}
               </button>
             );
           })}

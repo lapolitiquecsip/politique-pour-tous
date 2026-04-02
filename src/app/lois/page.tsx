@@ -12,18 +12,18 @@ export default function LawsPage() {
         </div>
         
         <div className="container mx-auto max-w-6xl text-center relative z-10">
-          <div className="inline-flex items-center gap-2 px-4 py-2 bg-white/10 backdrop-blur-md rounded-full text-xs font-bold uppercase tracking-widest text-amber-400 mb-6 border border-white/10 shadow-lg">
+          <div className="inline-flex items-center gap-3 px-6 py-2.5 bg-slate-950/50 backdrop-blur-xl rounded-full text-sm font-staatliches tracking-[0.15em] text-amber-400 mb-8 border border-amber-500/30 shadow-[0_0_20px_rgba(245,158,11,0.15)] uppercase">
             <Sparkles className="w-4 h-4" />
-            Exclusivité Premium
+            Accès Thématiques Premium
           </div>
           
-          <h1 className="text-5xl md:text-7xl font-extrabold mb-6 leading-tight tracking-tight">
+          <h1 className="text-5xl md:text-7xl font-extrabold mb-6 leading-tight tracking-tight text-white drop-shadow-sm">
             On va plus loin
           </h1>
           
           <p className="text-xl md:text-2xl text-white/70 max-w-3xl mx-auto leading-relaxed">
-            Les grands dossiers législatifs décryptés, de A à Z. <br className="hidden md:block" />
-            <span className="text-white font-bold italic">Ne vous laissez plus perdre par le jargon technique.</span>
+            Les dossiers législatifs décryptés en profondeur. <br className="hidden md:block" />
+            <span className="text-white font-bold italic">La recherche détaillée par thématique est réservée aux abonnés Premium.</span>
           </p>
         </div>
       </div>

@@ -129,52 +129,60 @@ export default function InstitutionsGrid() {
               animate={{ opacity: 1, scale: 1, y: 0 }}
               exit={{ opacity: 0, scale: 0.9, y: 20 }}
               transition={{ type: "spring", damping: 25, stiffness: 300 }}
-              className="relative w-full max-w-5xl bg-slate-900 rounded-[3rem] overflow-hidden shadow-2xl border border-white/10"
+              className="relative w-full max-w-5xl bg-[#0F172A] rounded-[3rem] overflow-hidden shadow-2xl border border-white/10 flex flex-col lg:flex-row"
             >
-              {/* Bouton Fermer */}
+              {/* Bouton Fermer Principal (Standard et ultra-visible) */}
               <button
                 onClick={() => setSelectedInst(null)}
-                className="absolute top-6 right-6 z-50 p-3 rounded-full bg-black/40 text-white hover:bg-red-500 transition-colors backdrop-blur-md border border-white/20"
+                className="absolute top-6 right-6 z-50 flex items-center gap-2 px-4 py-2 rounded-full bg-white/10 text-white hover:bg-red-500 transition-all backdrop-blur-md border border-white/20 group"
               >
-                <X className="w-6 h-6" />
+                <span className="text-xs font-bold uppercase tracking-widest hidden md:inline">Fermer</span>
+                <X className="w-5 h-5 group-hover:rotate-90 transition-transform" />
               </button>
 
-              <div className="flex flex-col lg:flex-row h-full">
-                {/* Image Gauche */}
+              {/* Partie Gauche (Image avec cadre et padding pour plus de modernité) */}
+              <div className="w-full lg:w-[45%] p-4 lg:p-6">
                 <div 
-                  className="w-full lg:w-1/2 h-64 lg:h-auto bg-cover bg-center"
+                  className="w-full h-64 lg:h-full rounded-[2rem] overflow-hidden bg-cover bg-center shadow-inner relative"
                   style={{ backgroundImage: `url(${selectedInst.image})` }}
                 >
-                  <div className={`w-full h-full bg-gradient-to-t lg:bg-gradient-to-r ${selectedInst.color}/40 to-transparent`} />
+                  <div className={`absolute inset-0 bg-gradient-to-t ${selectedInst.color}/30 to-transparent`} />
+                </div>
+              </div>
+
+              {/* Partie Droite (Texte Bleu - Conservée car excellente) */}
+              <div className="w-full lg:w-[55%] p-8 lg:p-12 lg:pl-4 flex flex-col justify-center">
+                <div className="flex items-center gap-3 mb-6">
+                  <div className={`w-10 h-10 rounded-xl bg-white/10 flex items-center justify-center border border-white/10`}>
+                    <Landmark className="w-5 h-5 text-white" />
+                  </div>
+                  <span className="px-4 py-1 rounded-full text-[10px] font-black uppercase tracking-[0.2em] bg-white/10 text-white border border-white/10">
+                    Institution Officielle
+                  </span>
                 </div>
 
-                {/* Détails Droite */}
-                <div className="w-full lg:w-1/2 p-8 md:p-12 flex flex-col justify-center">
-                  <span className={`inline-block px-4 py-1 rounded-full text-xs font-black uppercase tracking-widest bg-white/10 text-white mb-6 border border-white/10`}>
-                    Institution
-                  </span>
-                  <h3 className="text-4xl md:text-5xl font-black text-white mb-6 leading-tight">
-                    {selectedInst.name}
-                  </h3>
-                  <p className="text-white/70 text-lg md:text-xl mb-10 leading-relaxed italic">
-                    &ldquo;{selectedInst.summary}&rdquo;
-                  </p>
+                <h3 className="text-4xl md:text-5xl font-black text-white mb-6 leading-tight">
+                  {selectedInst.name}
+                </h3>
+                
+                <p className="text-blue-200/80 text-lg md:text-xl mb-10 leading-relaxed italic border-l-2 border-blue-500/50 pl-6">
+                  &ldquo;{selectedInst.summary}&rdquo;
+                </p>
 
-                  <div className="space-y-4">
-                    <p className="text-white/40 text-xs font-bold uppercase tracking-widest mb-4">Aujourd&apos;hui en direct :</p>
-                    {selectedInst.details.map((detail, i) => (
-                      <motion.div
-                        key={i}
-                        initial={{ opacity: 0, x: 20 }}
-                        animate={{ opacity: 1, x: 0 }}
-                        transition={{ delay: 0.2 + i * 0.1 }}
-                        className="flex items-center gap-4 bg-white/5 border border-white/10 rounded-2xl p-4 text-white/90 font-medium hover:bg-white/10 transition-colors"
-                      >
-                        <div className={`w-2 h-2 rounded-full bg-gradient-to-br ${selectedInst.color} to-white shadow-[0_0_8px_rgba(255,255,255,0.5)]`} />
-                        {detail}
-                      </motion.div>
-                    ))}
-                  </div>
+                <div className="space-y-4">
+                  <p className="text-white/40 text-[10px] font-black uppercase tracking-[0.2em] mb-4">Aujourd&apos;hui en direct :</p>
+                  {selectedInst.details.map((detail, i) => (
+                    <motion.div
+                      key={i}
+                      initial={{ opacity: 0, x: 20 }}
+                      animate={{ opacity: 1, x: 0 }}
+                      transition={{ delay: 0.2 + i * 0.1 }}
+                      className="flex items-center gap-4 bg-blue-900/20 border border-blue-500/20 rounded-2xl p-4 text-white/90 font-medium hover:bg-blue-800/30 transition-all hover:translate-x-1"
+                    >
+                      <div className={`w-2.5 h-2.5 rounded-full bg-blue-500 shadow-[0_0_12px_rgba(59,130,246,0.8)]`} />
+                      {detail}
+                    </motion.div>
+                  ))}
                 </div>
               </div>
             </motion.div>

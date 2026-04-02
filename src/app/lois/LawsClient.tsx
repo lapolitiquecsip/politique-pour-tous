@@ -30,6 +30,13 @@ const CATEGORIES = [
 export default function LawsClient() {
   const [selectedCat, setSelectedCat] = useState<string | null>(null);
 
+  const scrollToPremium = () => {
+    const element = document.getElementById("premium-section");
+    if (element) {
+      element.scrollIntoView({ behavior: "smooth" });
+    }
+  };
+
   return (
     <div className="container mx-auto max-w-6xl px-4 pb-24">
       {/* 1. FILTRES THÉMATIQUES (3x2 GRID & INSTITUTIONAL TITLE) */}
@@ -44,10 +51,19 @@ export default function LawsClient() {
           {CATEGORIES.map((cat) => {
             const Icon = cat.icon;
             const isActive = selectedCat === cat.id;
+            
+            const handleCategoryClick = () => {
+              if (cat.isFree) {
+                setSelectedCat(cat.id);
+              } else {
+                scrollToPremium();
+              }
+            };
+
             return (
               <button
                 key={cat.id}
-                onClick={() => setSelectedCat(cat.id)}
+                onClick={handleCategoryClick}
                 className={`group relative flex items-center gap-4 px-8 py-6 rounded-[2rem] border-2 transition-all duration-300 font-bold shadow-xl ${cat.color} ${
                   isActive 
                     ? "scale-[1.03] ring-offset-4 ring-4 ring-amber-500/20 z-10 shadow-2xl border-white/20" 
@@ -91,7 +107,7 @@ export default function LawsClient() {
       </div>
 
       {/* 3. LE RIDEAU DORÉ (SECTION PREMIUM VERROUILLÉE) */}
-      <div className="relative mt-32">
+      <div id="premium-section" className="relative mt-32">
         {/* Fake Blurry Content */}
         <div className="opacity-40 grayscale pointer-events-none select-none blur-md space-y-12 mb-12">
            <div className="h-[400px] w-full bg-muted rounded-[3rem] border border-border" />

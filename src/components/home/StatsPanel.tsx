@@ -1,5 +1,5 @@
 "use client";
-import { useState, useEffect, useCallback } from "react";
+import { useState, useEffect, useCallback, useRef } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { Zap, Info, ChevronLeft, ChevronRight, ShieldAlert, AlertCircle } from "lucide-react";
 
@@ -37,7 +37,7 @@ const SLIDES = [
     type: "Intox de la semaine",
     content: "\"La France est le pays qui taxe le plus en Europe\"",
     debunk: "FAUX. Le Danemark et la Belgique ont un taux de prélèvement supérieur.", 
-    color: "bg-[#FF4D00]", // Orange vif/Rouge
+    color: "bg-[#FF4D00]", 
     icon: <ShieldAlert className="w-12 h-12 mb-4 text-white animate-bounce" />,
     isLive: true
   }
@@ -46,21 +46,41 @@ const SLIDES = [
 export default function StatsPanel() {
   const [index, setIndex] = useState(0);
   const [direction, setDirection] = useState(0);
+  const [isPaused, setIsPaused] = useState(false);
+  const timerRef = useRef<NodeJS.Timeout | null>(null);
 
-  const nextSlide = useCallback(() => {
-    setDirection(1);
-    setIndex((prev) => (prev + 1) % SLIDES.length);
-  }, []);
-
-  const prevSlide = useCallback(() => {
-    setDirection(-1);
-    setIndex((prev) => (prev - 1 + SLIDES.length) % SLIDES.length);
-  }, []);
+  const startTimer = useCallback(() => {
+    if (timerRef.current) clearInterval(timerRef.current);
+    timerRef.current = setInterval(() => {
+      if (!isPaused) {
+        setDirection(1);
+        setIndex((prev) => (prev + 1) % SLIDES.length);
+      }
+    }, 6000);
+  }, [isPaused]);
 
   useEffect(() => {
-    const timer = setInterval(nextSlide, 6000);
-    return () => clearInterval(timer);
-  }, [nextSlide]);
+    startTimer();
+    return () => { if (timerRef.current) clearInterval(timerRef.current); };
+  }, [startTimer]);
+
+  const nextSlide = () => {
+    setDirection(1);
+    setIndex((prev) => (prev + 1) % SLIDES.length);
+    startTimer(); // Reset timer on manual click
+  };
+
+  const prevSlide = () => {
+    setDirection(-1);
+    setIndex((prev) => (prev - 1 + SLIDES.length) % SLIDES.length);
+    startTimer(); // Reset timer on manual click
+  };
+
+  const goToSlide = (i: number) => {
+    setDirection(i > index ? 1 : -1);
+    setIndex(i);
+    startTimer(); // Reset timer on manual click
+  };
 
   const slide = SLIDES[index];
 
@@ -80,7 +100,11 @@ export default function StatsPanel() {
   };
 
   return (
-    <div className="relative w-full h-[320px] md:h-[400px] rounded-[2.5rem] overflow-hidden shadow-2xl group transition-all duration-500">
+    <div 
+      className="relative w-full h-[320px] md:h-[400px] rounded-[2.5rem] overflow-hidden shadow-2xl group transition-all duration-500"
+      onMouseEnter={() => setIsPaused(true)}
+      onMouseLeave={() => setIsPaused(false)}
+    >
       <AnimatePresence mode="wait" custom={direction}>
         <motion.div
           key={index}
@@ -147,7 +171,7 @@ export default function StatsPanel() {
             {SLIDES.map((_, i) => (
               <button 
                 key={i} 
-                onClick={() => { setDirection(i > index ? 1 : -1); setIndex(i); }}
+                onClick={() => goToSlide(i)}
                 className={`h-2 rounded-full transition-all duration-300 ${i === index ? "w-10 bg-white" : "w-2 bg-white/30"}`}
               />
             ))}

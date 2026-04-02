@@ -1,14 +1,19 @@
-import type { Metadata } from "next";
-import { DM_Sans } from "next/font/google";
+import { DM_Sans, Staatliches } from "next/font/google";
 import "./globals.css";
 import Header from "@/components/layout/Header";
 import { ThemeProvider } from "@/components/providers";
 import PremiumButton from "@/components/premium/PremiumButton";
 
 const dmSans = DM_Sans({
-  variable: "--font-dmsans",
+  variable: "--font-dm-sans",
   subsets: ["latin"],
   weight: ["300", "400", "500", "600", "700", "800"],
+});
+
+const staatliches = Staatliches({
+  variable: "--font-staatliches",
+  subsets: ["latin"],
+  weight: ["400"],
 });
 
 export const metadata: Metadata = {
@@ -24,7 +29,7 @@ export default function RootLayout({
   return (
     <html
       lang="fr"
-      className={`${dmSans.variable} antialiased`}
+      className={`${dmSans.variable} ${staatliches.variable} antialiased`}
       suppressHydrationWarning
     >
       <body className="min-h-screen flex flex-col font-sans bg-background text-foreground transition-colors duration-300">

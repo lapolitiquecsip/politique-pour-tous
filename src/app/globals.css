@@ -12,6 +12,7 @@
   --font-display: var(--font-dmsans);
   --font-body: var(--font-dmsans);
   --font-stats: var(--font-dmsans);
+  --font-staatliches: var(--font-staatliches);
 
   /* Shadcn standard assignments */
   --color-background: var(--background);

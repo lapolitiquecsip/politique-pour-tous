@@ -37,10 +37,10 @@ export default function DetailedLawDossier({ law }: DetailedLawDossierProps) {
           <img 
             src={law.backgroundImage} 
             alt="" 
-            className="w-full h-full object-cover opacity-[0.12] scale-105 transition-transform duration-[2s] group-hover:scale-110 saturate-[0.8] blur-[0.5px]" 
+            className="w-full h-full object-cover opacity-[0.28] scale-105 transition-transform duration-[2s] group-hover:scale-110 saturate-[1.1]" 
           />
-          <div className="absolute inset-0 bg-gradient-to-br from-card/40 via-transparent to-card/60" />
-          <div className="absolute inset-0 bg-gradient-to-b from-card/20 via-transparent to-card/40" />
+          <div className="absolute inset-0 bg-gradient-to-br from-card/30 via-transparent to-card/50" />
+          <div className="absolute inset-0 bg-gradient-to-b from-card/10 via-transparent to-card/30" />
         </div>
       )}
 

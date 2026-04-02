@@ -15,7 +15,8 @@ import {
   Settings,
   BookOpen,
   CalendarDays,
-  MessageSquareQuote
+  MessageSquareQuote,
+  Home
 } from "lucide-react";
 
 export default function Header() {
@@ -58,6 +59,7 @@ export default function Header() {
 
           {/* Desktop Nav */}
           <div className="hidden md:flex items-center gap-5">
+            <Link href="/" className="text-sm font-semibold text-slate-600 hover:text-blue-600 transition-colors flex items-center gap-1"><Home size={14} />Accueil</Link>
             <Link href="/deputes" className="text-sm font-semibold text-slate-600 hover:text-blue-600 transition-colors">Députés</Link>
             <Link href="/lois" className="text-sm font-semibold text-slate-600 hover:text-blue-600 transition-colors">Lois</Link>
             <Link href="/vocabulaire" className="text-sm font-semibold text-slate-600 hover:text-blue-600 transition-colors flex items-center gap-1"><BookOpen size={14} />Vocabulaire</Link>
@@ -108,6 +110,7 @@ export default function Header() {
           animate={{ opacity: 1, y: 0 }}
           className="md:hidden bg-white border-b border-slate-100 px-4 py-6 space-y-4 shadow-xl"
         >
+          <Link href="/" className="flex items-center gap-2 text-lg font-bold text-slate-900" onClick={() => setIsMenuOpen(false)}><Home size={18} />Accueil</Link>
           <Link href="/deputes" className="block text-lg font-bold text-slate-900" onClick={() => setIsMenuOpen(false)}>Les Députés</Link>
           <Link href="/lois" className="block text-lg font-bold text-slate-900" onClick={() => setIsMenuOpen(false)}>Les Lois</Link>
           <Link href="/vocabulaire" className="flex items-center gap-2 text-lg font-bold text-slate-900" onClick={() => setIsMenuOpen(false)}><BookOpen size={18} />Vocabulaire</Link>

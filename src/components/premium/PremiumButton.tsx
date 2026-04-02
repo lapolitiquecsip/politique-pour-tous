@@ -61,7 +61,34 @@ export default function PremiumButton() {
       <div className="fixed bottom-6 right-6 z-50 flex flex-col items-end gap-3">
         {/* Message d'erreur */}
         <AnimatePresence>
-          {error && (
+          {error === "auth_required" && (
+            <motion.div
+              initial={{ opacity: 0, y: 10, scale: 0.95 }}
+              animate={{ opacity: 1, y: 0, scale: 1 }}
+              exit={{ opacity: 0, y: 10, scale: 0.95 }}
+              className="absolute bottom-full right-0 mb-4 w-72 bg-red-500 text-white p-4 rounded-2xl shadow-2xl z-50 flex items-start gap-3 border border-red-400"
+            >
+              <AlertCircle className="w-5 h-5 flex-shrink-0 mt-0.5" />
+              <div className="flex-1">
+                <p className="text-sm font-bold leading-tight">Authentification requise</p>
+                <p className="text-xs opacity-90 mt-1 mb-2">Veuillez vous connecter pour accéder au paiement.</p>
+                <Link 
+                  href="/login" 
+                  className="inline-flex items-center gap-1.5 px-3 py-1.5 bg-white text-red-600 rounded-lg text-xs font-extrabold hover:bg-red-50 transition-colors shadow-sm"
+                >
+                  Se connecter
+                  <ArrowRight size={12} />
+                </Link>
+              </div>
+              <button
+                onClick={() => setError(null)}
+                className="text-white/70 hover:text-white flex-shrink-0"
+              >
+                <X size={16} />
+              </button>
+            </motion.div>
+          )}
+          {error && error !== "auth_required" && (
             <motion.div
               initial={{ opacity: 0, y: 10, scale: 0.95 }}
               animate={{ opacity: 1, y: 0, scale: 1 }}

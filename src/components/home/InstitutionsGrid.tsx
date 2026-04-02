@@ -129,30 +129,30 @@ export default function InstitutionsGrid() {
               animate={{ opacity: 1, scale: 1, y: 0 }}
               exit={{ opacity: 0, scale: 0.9, y: 20 }}
               transition={{ type: "spring", damping: 25, stiffness: 300 }}
-              className="relative w-full max-w-5xl max-h-[85vh] bg-[#0F172A] rounded-[3rem] overflow-y-auto shadow-[0_20px_50px_rgba(0,0,0,0.5)] border border-white/10 flex flex-col lg:flex-row no-scrollbar"
+              className="relative w-full max-w-5xl h-auto max-h-[85vh] bg-[#0F172A] rounded-[3rem] shadow-[0_20px_50px_rgba(0,0,0,0.5)] border border-white/10 flex flex-col lg:flex-row overflow-hidden"
             >
               {/* Bouton Fermer Principal (Standard et ultra-visible) */}
               <button
                 onClick={() => setSelectedInst(null)}
-                className="absolute top-6 right-6 z-50 flex items-center gap-2 px-4 py-2 rounded-full bg-white/10 text-white hover:bg-red-500 transition-all backdrop-blur-md border border-white/20 group"
+                className="absolute top-6 right-6 z-50 flex items-center gap-2 px-4 py-2 rounded-full bg-black/40 text-white hover:bg-red-500 transition-all backdrop-blur-md border border-white/20 group"
               >
                 <span className="text-xs font-bold uppercase tracking-widest hidden md:inline">Fermer</span>
                 <X className="w-5 h-5 group-hover:rotate-90 transition-transform" />
               </button>
 
-              {/* Partie Gauche (Image avec cadre et padding pour plus de modernité) */}
-              <div className="w-full lg:w-[45%] p-4 lg:p-6">
+              {/* Partie Gauche (Image Fixe) */}
+              <div className="w-full lg:w-[45%] p-4 lg:p-6 shrink-0">
                 <div 
-                  className="w-full h-64 lg:h-full rounded-[2rem] overflow-hidden bg-cover bg-center shadow-inner relative"
+                  className="w-full h-48 lg:h-full rounded-[2rem] overflow-hidden bg-cover bg-center shadow-inner relative"
                   style={{ backgroundImage: `url(${selectedInst.image})` }}
                 >
                   <div className={`absolute inset-0 bg-gradient-to-t ${selectedInst.color}/30 to-transparent`} />
                 </div>
               </div>
 
-              {/* Partie Droite (Texte Bleu - Conservée car excellente) */}
-              <div className="w-full lg:w-[55%] p-8 lg:p-12 lg:pl-4 flex flex-col justify-center">
-                <div className="flex items-center gap-3 mb-6">
+              {/* Partie Droite (Contenu avec Scroll interne) */}
+              <div className="w-full lg:w-[55%] p-8 lg:p-12 lg:pl-4 flex flex-col h-full min-h-0">
+                <div className="flex items-center gap-3 mb-6 shrink-0">
                   <div className={`w-10 h-10 rounded-xl bg-white/10 flex items-center justify-center border border-white/10`}>
                     <Landmark className="w-5 h-5 text-white" />
                   </div>
@@ -161,16 +161,19 @@ export default function InstitutionsGrid() {
                   </span>
                 </div>
 
-                <h3 className="text-4xl md:text-5xl font-black text-white mb-6 leading-tight">
-                  {selectedInst.name}
-                </h3>
-                
-                <p className="text-blue-200/80 text-lg md:text-xl mb-10 leading-relaxed italic border-l-2 border-blue-500/50 pl-6">
-                  &ldquo;{selectedInst.summary}&rdquo;
-                </p>
+                <div className="shrink-0">
+                  <h3 className="text-4xl md:text-5xl font-black text-white mb-6 leading-tight">
+                    {selectedInst.name}
+                  </h3>
+                  
+                  <p className="text-blue-200/80 text-lg md:text-xl mb-10 leading-relaxed italic border-l-2 border-blue-500/50 pl-6">
+                    &ldquo;{selectedInst.summary}&rdquo;
+                  </p>
+                </div>
 
-                <div className="space-y-4">
-                  <p className="text-white/40 text-[10px] font-black uppercase tracking-[0.2em] mb-4">Aujourd&apos;hui en direct :</p>
+                {/* Zone de SCROLL LOCALE pour les détails */}
+                <div className="flex-1 overflow-y-auto pr-4 custom-scrollbar-blue space-y-4">
+                  <p className="text-white/40 text-[10px] font-black uppercase tracking-[0.2em] mb-4 sticky top-0 bg-[#0F172A] py-1">Aujourd&apos;hui en direct :</p>
                   {selectedInst.details.map((detail, i) => (
                     <motion.div
                       key={i}

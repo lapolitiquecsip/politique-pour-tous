@@ -56,14 +56,27 @@ export default async function Home() {
         </div>
       </section>
 
-      {/* 4. FIL D'ACTUALITÉ */}
+      {/* 4. FIL D'ACTUALITÉ (POSTER IMPACT REBORN) */}
       <section id="actualites" className="scroll-mt-24 py-20 px-4">
         <div className="container mx-auto max-w-6xl">
-          <div className="flex items-center justify-between mb-12">
-            <h2 className="text-3xl md:text-4xl font-bold flex items-center gap-3">
-              <Newspaper className="w-8 h-8 text-primary" />
-              Aujourd&apos;hui en politique
-            </h2>
+          <div className="relative mb-16 text-center md:text-left">
+            <div className="relative z-10 flex flex-col md:flex-row items-center gap-4 md:gap-6">
+              <span className="text-slate-900 opacity-[0.08] absolute -top-10 left-0 select-none hidden md:block whitespace-nowrap text-8xl font-staatliches tracking-widest">
+                ACTUALITÉ • DIRECT
+              </span>
+              
+              <div className="flex items-center gap-4">
+                <span className="relative flex h-4 w-4 md:h-6 md:w-6">
+                  <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-red-400 opacity-75"></span>
+                  <span className="relative inline-flex rounded-full h-4 w-4 md:h-6 md:w-6 bg-red-600 shadow-[0_0_15px_rgba(220,38,38,0.5)]"></span>
+                </span>
+                
+                <h2 className="text-5xl md:text-7xl font-staatliches uppercase tracking-tighter leading-none inline">
+                  Aujourd&apos;hui <span className="bg-gradient-to-r from-blue-600 via-red-600 to-blue-600 bg-clip-text text-transparent">en politique</span>
+                </h2>
+              </div>
+            </div>
+            <div className="h-1.5 w-32 bg-gradient-to-r from-blue-600 to-red-600 mt-8 rounded-full mx-auto md:mx-0" />
           </div>
 
           {!latestContent || latestContent.length === 0 ? (

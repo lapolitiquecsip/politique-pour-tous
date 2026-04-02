@@ -1,7 +1,7 @@
 "use client";
 import { useState, useEffect, useCallback } from "react";
 import { motion, AnimatePresence } from "framer-motion";
-import { Zap, Info, ChevronLeft, ChevronRight } from "lucide-react";
+import { Zap, Info, ChevronLeft, ChevronRight, ShieldAlert, AlertCircle } from "lucide-react";
 
 const SLIDES = [
   { 
@@ -35,15 +35,17 @@ const SLIDES = [
   { 
     id: 5,
     type: "Intox de la semaine",
-    content: "\"La France est le pays qui taxe le plus en Europe\" — FAUX. Le Danemark et la Belgique ont un taux de prélèvement supérieur.", 
-    color: "bg-orange-500",
-    icon: <Zap className="w-8 h-8 mb-4 opacity-50 text-white" />
+    content: "\"La France est le pays qui taxe le plus en Europe\"",
+    debunk: "FAUX. Le Danemark et la Belgique ont un taux de prélèvement supérieur.", 
+    color: "bg-[#FF4D00]", // Orange vif/Rouge
+    icon: <ShieldAlert className="w-12 h-12 mb-4 text-white animate-bounce" />,
+    isLive: true
   }
 ];
 
 export default function StatsPanel() {
   const [index, setIndex] = useState(0);
-  const [direction, setDirection] = useState(0); // -1 for left, 1 for right
+  const [direction, setDirection] = useState(0);
 
   const nextSlide = useCallback(() => {
     setDirection(1);
@@ -56,7 +58,7 @@ export default function StatsPanel() {
   }, []);
 
   useEffect(() => {
-    const timer = setInterval(nextSlide, 6000); // 6 seconds
+    const timer = setInterval(nextSlide, 6000);
     return () => clearInterval(timer);
   }, [nextSlide]);
 
@@ -78,7 +80,7 @@ export default function StatsPanel() {
   };
 
   return (
-    <div className="relative w-full h-[300px] md:h-[350px] rounded-[2.5rem] overflow-hidden shadow-2xl group transition-all duration-500">
+    <div className="relative w-full h-[320px] md:h-[400px] rounded-[2.5rem] overflow-hidden shadow-2xl group transition-all duration-500">
       <AnimatePresence mode="wait" custom={direction}>
         <motion.div
           key={index}
@@ -99,19 +101,44 @@ export default function StatsPanel() {
               >
                 {slide.value}
               </motion.span>
-              <p className="text-lg md:text-2xl font-bold max-w-2xl leading-tight opacity-90">
+              <p className="text-lg md:text-2xl font-bold max-w-2xl leading-tight opacity-90 uppercase tracking-wide">
                 {slide.label}
               </p>
             </>
           ) : (
             <>
               {slide.icon}
-              <span className="inline-block px-4 py-1 rounded-full text-xs font-bold bg-white/20 mb-6 uppercase tracking-widest">
-                {slide.type}
-              </span>
-              <p className="text-xl md:text-3xl font-extrabold max-w-3xl leading-snug">
+              <div className="flex items-center gap-2 mb-6 uppercase tracking-widest text-xs font-black">
+                {slide.isLive && (
+                  <span className="relative flex h-3 w-3">
+                    <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-red-400 opacity-75"></span>
+                    <span className="relative inline-flex rounded-full h-3 w-3 bg-red-500 shadow-[0_0_10px_rgba(239,68,68,0.8)]"></span>
+                  </span>
+                )}
+                <span className="px-3 py-1 rounded-full bg-white/20">
+                  {slide.type}
+                </span>
+              </div>
+              <p className="text-xl md:text-[2.2rem] font-bold max-w-4xl leading-[1.1] mb-6 italic opacity-90">
                 {slide.content}
               </p>
+              {slide.debunk && (
+                <div className="bg-white/10 backdrop-blur-md rounded-2xl p-4 md:p-6 border border-white/20 shadow-xl max-w-3xl">
+                  <p className="text-lg md:text-2xl font-black leading-snug">
+                    <span className="bg-black text-[#FF4D00] px-3 py-1 rounded-lg mr-3 shadow-lg ">
+                      FAUX
+                    </span>
+                    <span className="text-white">
+                      {slide.debunk.replace('FAUX. ', '')}
+                    </span>
+                  </p>
+                </div>
+              )}
+              {!slide.debunk && (
+                <p className="text-xl md:text-3xl font-extrabold max-w-3xl leading-snug">
+                  {slide.content}
+                </p>
+              )}
             </>
           )}
 
@@ -121,7 +148,7 @@ export default function StatsPanel() {
               <button 
                 key={i} 
                 onClick={() => { setDirection(i > index ? 1 : -1); setIndex(i); }}
-                className={`h-2 rounded-full transition-all duration-300 ${i === index ? "w-8 bg-white" : "w-2 bg-white/30"}`}
+                className={`h-2 rounded-full transition-all duration-300 ${i === index ? "w-10 bg-white" : "w-2 bg-white/30"}`}
               />
             ))}
           </div>
@@ -131,13 +158,13 @@ export default function StatsPanel() {
       {/* Navigation arrows */}
       <button 
         onClick={prevSlide}
-        className="absolute left-4 top-1/2 -translate-y-1/2 p-3 rounded-full bg-black/10 text-white hover:bg-black/30 backdrop-blur-sm opacity-0 group-hover:opacity-100 transition-all duration-300 transform -translate-x-4 group-hover:translate-x-0"
+        className="absolute left-4 top-1/2 -translate-y-1/2 p-3 rounded-full bg-white/10 text-white hover:bg-white/30 backdrop-blur-sm opacity-0 group-hover:opacity-100 transition-all duration-300 transform -translate-x-4 group-hover:translate-x-0"
       >
         <ChevronLeft className="w-8 h-8" />
       </button>
       <button 
         onClick={nextSlide}
-        className="absolute right-4 top-1/2 -translate-y-1/2 p-3 rounded-full bg-black/10 text-white hover:bg-black/30 backdrop-blur-sm opacity-0 group-hover:opacity-100 transition-all duration-300 transform translate-x-4 group-hover:translate-x-0"
+        className="absolute right-4 top-1/2 -translate-y-1/2 p-3 rounded-full bg-white/10 text-white hover:bg-white/30 backdrop-blur-sm opacity-0 group-hover:opacity-100 transition-all duration-300 transform translate-x-4 group-hover:translate-x-0"
       >
         <ChevronRight className="w-8 h-8" />
       </button>

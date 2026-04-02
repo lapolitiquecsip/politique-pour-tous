@@ -27,9 +27,17 @@ export const api = {
   },
 
   getContent: async (limit = 10) => {
-    const { data, error } = await supabase.from('content').select('*').limit(limit).order('created_at', { ascending: false });
-    if (error) { console.error(error); return []; }
-    return data || [];
+    try {
+      const { data, error } = await supabase.from('content').select('*').limit(limit).order('created_at', { ascending: false });
+      if (error) { 
+        console.warn('API Warning (Content):', error.message); 
+        return []; 
+      }
+      return data || [];
+    } catch (e) {
+      console.error('API Error (Content):', e);
+      return [];
+    }
   },
 
   getPoliticians: async () => {

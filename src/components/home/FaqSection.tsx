@@ -70,6 +70,8 @@ export default function FaqSection() {
   return (
     <section id="faq" className="relative py-32 px-4 bg-slate-50 overflow-hidden group border-t border-slate-200">
       {/* Decorative background elements (subtle for light mode) */}
+      <div className="absolute -top-40 -right-40 w-96 h-96 bg-red-600/5 rounded-full blur-[60px] z-10" />
+      <div className="absolute top-40 -left-10 w-96 h-96 bg-blue-600/10 rounded-full blur-[60px] z-10" />
       <div className="absolute inset-0 z-0 opacity-[0.03] pointer-events-none select-none">
         <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[120%] h-[120%] bg-[url('https://www.transparenttextures.com/patterns/felt.png')] opacity-20" />
       </div>
@@ -115,9 +117,9 @@ export default function FaqSection() {
                 onClick={() => setSelectedId(selectedId === item.id ? null : item.id)}
                 className={`relative px-6 py-4 rounded-3xl shadow-2xl max-w-[200px] md:max-w-[250px] select-none text-center
                   ${item.color === "red" 
-                    ? "bg-red-600 text-white border-red-500" 
-                    : "bg-white text-slate-900 border-slate-200"}
-                  border-b-4 border transform transition-all active:scale-95
+                    ? "bg-red-600/95 text-white border-red-500" 
+                    : "bg-white/95 text-slate-900 border-slate-200"}
+                  border-b-4 border transform transition-all active:scale-95 will-change-transform
                 `}
               >
                 {/* Speech Bubble "Tail" */}

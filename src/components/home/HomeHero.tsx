@@ -23,8 +23,8 @@ export default function HomeHero() {
       {/* Subtle Grain Texture Overlay */}
       <div className="absolute inset-0 z-10 opacity-[0.03] pointer-events-none bg-[url('https://www.transparenttextures.com/patterns/felt.png')]" />
 
-      <div className="absolute -top-40 -right-40 w-96 h-96 bg-red-600/10 rounded-full blur-[120px] z-10" />
-      <div className="absolute top-40 -left-40 w-96 h-96 bg-blue-600/15 rounded-full blur-[120px] z-10" />
+      <div className="absolute -top-40 -right-40 w-96 h-96 bg-red-600/5 rounded-full blur-[80px] z-10" />
+      <div className="absolute top-40 -left-10 w-96 h-96 bg-blue-600/10 rounded-full blur-[80px] z-10" />
       
       <div className="container mx-auto max-w-6xl text-center relative z-20 px-4">
         <motion.div 

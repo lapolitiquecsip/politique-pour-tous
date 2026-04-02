@@ -66,11 +66,11 @@ export default function LawsClient() {
               <button
                 key={cat.id}
                 onClick={handleCategoryClick}
-                className={`group relative flex flex-col items-start gap-6 p-8 rounded-[1.5rem] border-2 border-slate-200 bg-white hover:bg-slate-50 transition-all duration-500 shadow-sm overflow-hidden ${
+                className={`group relative flex flex-col items-start gap-4 p-6 rounded-[1.2rem] border-2 border-slate-200 bg-white hover:bg-slate-50 transition-all duration-500 shadow-sm overflow-hidden ${
                   isActive 
                     ? "ring-4 ring-blue-500/10 border-blue-500 bg-slate-950 text-white shadow-2xl scale-[1.02]" 
-                    : "hover:shadow-xl hover:-translate-y-2"
-                } ${cat.color} border-t-[8px]`}
+                    : "hover:shadow-xl hover:-translate-y-1.5"
+                } ${cat.color} border-t-[6px]`}
               >
                 {/* Background Pattern for Active state */}
                 {isActive && (
@@ -78,8 +78,8 @@ export default function LawsClient() {
                 )}
 
                 <div className="flex items-center justify-between w-full">
-                  <div className={`p-4 rounded-2xl ${isActive ? 'bg-white/10' : cat.iconBg} transition-all duration-500 group-hover:scale-110 group-hover:rotate-3`}>
-                    <Icon className={`w-8 h-8 ${isActive ? 'text-white' : cat.iconColor}`} />
+                  <div className={`p-3 rounded-xl ${isActive ? 'bg-white/10' : cat.iconBg} transition-all duration-500 group-hover:scale-110 group-hover:rotate-3`}>
+                    <Icon className={`w-7 h-7 ${isActive ? 'text-white' : cat.iconColor}`} />
                   </div>
                   
                   <div>
@@ -96,30 +96,33 @@ export default function LawsClient() {
                 </div>
                 
                 <div className="text-left">
-                  <span className={`text-3xl font-staatliches uppercase tracking-wide block mb-1 ${isActive ? 'text-white' : 'text-slate-900 group-hover:text-blue-600 transition-colors'}`}>
+                  <span className={`text-2xl font-staatliches uppercase tracking-wide block mb-0.5 ${isActive ? 'text-white' : 'text-slate-900 group-hover:text-blue-600 transition-colors'}`}>
                     {cat.label}
                   </span>
-                  <p className={`text-xs font-bold uppercase tracking-[0.2em] transition-opacity duration-300 ${isActive ? 'text-white/40' : 'text-slate-400 group-hover:opacity-100 opacity-60'}`}>
-                    Dossiers Législatifs
+                  <p className={`text-[10px] font-bold uppercase tracking-[0.2em] transition-opacity duration-300 ${isActive ? 'text-white/40' : 'text-slate-400 group-hover:opacity-100 opacity-60'}`}>
+                    Série Législative
                   </p>
                 </div>
 
                 {/* Decorative spotlight on hover */}
-                <div className="absolute -right-4 -bottom-4 w-24 h-24 bg-gradient-to-br from-transparent to-slate-200/50 rounded-full blur-2xl group-hover:scale-150 transition-transform duration-700" />
+                <div className="absolute -right-4 -bottom-4 w-16 h-16 bg-gradient-to-br from-transparent to-slate-200/50 rounded-full blur-xl group-hover:scale-150 transition-transform duration-700" />
               </button>
             );
           })}
         </div>
       </div>
 
-      {/* 2. DOSSIERS GRATUITS (L'ESSENTIEL) */}
+      {/* 2. DOSSIERS GRATUITS (POSTER STYLE REBORN) */}
       <div className="space-y-4 mb-20">
-        <div className="flex items-center justify-between mb-12">
-          <div>
-            <h2 className="text-4xl font-extrabold text-foreground mb-2">L&apos;essentiel en libre accès</h2>
-            <p className="text-muted-foreground">Une démonstration de notre expertise Premium sur 4 dossiers majeurs.</p>
-          </div>
-          <BookOpen className="w-12 h-12 text-primary opacity-10 hidden md:block" />
+        <div className="relative mb-16 text-center md:text-left">
+          <h2 className="text-5xl md:text-7xl font-staatliches uppercase tracking-tighter leading-none">
+            <span className="text-slate-900 opacity-10 absolute -top-8 left-0 select-none hidden md:block">INITIATIVE</span>
+            L&apos;essentiel en <span className="bg-gradient-to-r from-blue-600 via-red-600 to-blue-600 bg-clip-text text-transparent">libre accès</span>
+          </h2>
+          <div className="h-1.5 w-24 bg-gradient-to-r from-blue-600 to-red-600 mt-4 rounded-full mx-auto md:mx-0" />
+          <p className="text-lg md:text-xl font-bold italic tracking-tight text-slate-500 mt-6 max-w-2xl font-staatliches">
+            Une démonstration de notre expertise Premium sur 4 dossiers majeurs.
+          </p>
         </div>
 
         <div className="space-y-12">

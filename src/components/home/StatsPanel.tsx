@@ -1,7 +1,7 @@
 "use client";
-import { useState, useEffect } from "react";
+import { useState, useEffect, useCallback } from "react";
 import { motion, AnimatePresence } from "framer-motion";
-import { Zap, AlertCircle, Info } from "lucide-react";
+import { Zap, Info, ChevronLeft, ChevronRight } from "lucide-react";
 
 const SLIDES = [
   { 
@@ -43,26 +43,52 @@ const SLIDES = [
 
 export default function StatsPanel() {
   const [index, setIndex] = useState(0);
+  const [direction, setDirection] = useState(0); // -1 for left, 1 for right
+
+  const nextSlide = useCallback(() => {
+    setDirection(1);
+    setIndex((prev) => (prev + 1) % SLIDES.length);
+  }, []);
+
+  const prevSlide = useCallback(() => {
+    setDirection(-1);
+    setIndex((prev) => (prev - 1 + SLIDES.length) % SLIDES.length);
+  }, []);
 
   useEffect(() => {
-    const timer = setInterval(() => {
-      setIndex((prev) => (prev + 1) % SLIDES.length);
-    }, 2300); // 2.3 seconds
+    const timer = setInterval(nextSlide, 6000); // 6 seconds
     return () => clearInterval(timer);
-  }, []);
+  }, [nextSlide]);
 
   const slide = SLIDES[index];
 
+  const variants = {
+    initial: (dir: number) => ({
+      x: dir > 0 ? 300 : -300,
+      opacity: 0
+    }),
+    animate: {
+      x: 0,
+      opacity: 1
+    },
+    exit: (dir: number) => ({
+      x: dir > 0 ? -300 : 300,
+      opacity: 0
+    })
+  };
+
   return (
-    <div className="relative w-full h-[280px] md:h-[320px] rounded-[2.5rem] overflow-hidden shadow-2xl transition-colors duration-700">
-      <AnimatePresence mode="wait">
+    <div className="relative w-full h-[300px] md:h-[350px] rounded-[2.5rem] overflow-hidden shadow-2xl group transition-all duration-500">
+      <AnimatePresence mode="wait" custom={direction}>
         <motion.div
           key={index}
-          initial={{ x: 100, opacity: 0 }}
-          animate={{ x: 0, opacity: 1 }}
-          exit={{ x: -100, opacity: 0 }}
-          transition={{ duration: 0.5, ease: "easeInOut" }}
-          className={`absolute inset-0 w-full h-full flex flex-col items-center justify-center p-8 md:p-12 text-center text-white ${slide.color}`}
+          custom={direction}
+          variants={variants}
+          initial="initial"
+          animate="animate"
+          exit="exit"
+          transition={{ duration: 0.5, ease: [0.4, 0, 0.2, 1] }}
+          className={`absolute inset-0 w-full h-full flex flex-col items-center justify-center p-8 md:p-12 text-center text-white ${slide.color} transition-colors duration-700`}
         >
           {slide.value ? (
             <>
@@ -92,14 +118,29 @@ export default function StatsPanel() {
           {/* Dots indicators */}
           <div className="absolute bottom-6 flex gap-2">
             {SLIDES.map((_, i) => (
-              <div 
+              <button 
                 key={i} 
-                className={`w-2 h-2 rounded-full transition-all duration-300 ${i === index ? "w-8 bg-white" : "bg-white/30"}`}
+                onClick={() => { setDirection(i > index ? 1 : -1); setIndex(i); }}
+                className={`h-2 rounded-full transition-all duration-300 ${i === index ? "w-8 bg-white" : "w-2 bg-white/30"}`}
               />
             ))}
           </div>
         </motion.div>
       </AnimatePresence>
+
+      {/* Navigation arrows */}
+      <button 
+        onClick={prevSlide}
+        className="absolute left-4 top-1/2 -translate-y-1/2 p-3 rounded-full bg-black/10 text-white hover:bg-black/30 backdrop-blur-sm opacity-0 group-hover:opacity-100 transition-all duration-300 transform -translate-x-4 group-hover:translate-x-0"
+      >
+        <ChevronLeft className="w-8 h-8" />
+      </button>
+      <button 
+        onClick={nextSlide}
+        className="absolute right-4 top-1/2 -translate-y-1/2 p-3 rounded-full bg-black/10 text-white hover:bg-black/30 backdrop-blur-sm opacity-0 group-hover:opacity-100 transition-all duration-300 transform translate-x-4 group-hover:translate-x-0"
+      >
+        <ChevronRight className="w-8 h-8" />
+      </button>
     </div>
   );
 }

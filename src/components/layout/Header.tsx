@@ -1,102 +1,113 @@
 "use client";
 
+import { useState, useEffect } from "react";
+import { supabase } from "@/lib/supabase";
 import Link from "next/link";
-import { useState } from "react";
-import {
-  Landmark,
-  CalendarDays,
-  Quote,
-  BookOpen,
-  Vote,
-  Scale,
-  Mail,
-  Menu,
+import { motion } from "framer-motion";
+import { 
+  User, 
+  LogIn, 
+  LogOut, 
+  ShieldCheck, 
+  Menu, 
   X,
+  CreditCard,
+  Settings
 } from "lucide-react";
-import ThemeToggle from "./ThemeToggle";
-
-const NAVIGATION = [
-  { name: "Accueil", href: "/", icon: Landmark },
-  { name: "Calendrier", href: "/calendrier", icon: CalendarDays },
-  { name: "Promesses", href: "/promesses", icon: Quote },
-  { name: "Vocabulaire", href: "/vocabulaire", icon: BookOpen },
-  { name: "Députés", href: "/deputes", icon: Vote },
-  { name: "Lois", href: "/lois", icon: Scale },
-  { name: "Newsletter", href: "/newsletter", icon: Mail },
-];
 
 export default function Header() {
-  const [mobileOpen, setMobileOpen] = useState(false);
+  const [user, setUser] = useState<any>(null);
+  const [isMenuOpen, setIsMenuOpen] = useState(false);
+
+  useEffect(() => {
+    // Check initial session
+    supabase.auth.getSession().then(({ data: { session } }) => {
+      setUser(session?.user ?? null);
+    });
+
+    // Listen for auth changes
+    const { data: { subscription } } = supabase.auth.onAuthStateChange((_event, session) => {
+      setUser(session?.user ?? null);
+    });
+
+    return () => subscription.unsubscribe();
+  }, []);
+
+  const handleLogout = async () => {
+    await supabase.auth.signOut();
+    window.location.reload();
+  };
 
   return (
-    <header className="sticky top-0 z-50 w-full bg-white/95 dark:bg-slate-950/95 backdrop-blur-lg border-b border-slate-200/60 dark:border-slate-800/60 shadow-sm transition-colors duration-300">
-      <div className="max-w-7xl mx-auto flex h-16 items-center justify-between px-4 md:px-8">
-        {/* Logo */}
-        <Link href="/" className="flex items-center gap-2 group">
-          <div className="w-9 h-9 rounded-xl bg-gradient-to-br from-blue-900 to-red-600 flex items-center justify-center shadow-md group-hover:shadow-lg transition-shadow">
-            <span className="text-white font-extrabold text-sm leading-none">LP</span>
-          </div>
-          <div className="hidden sm:flex flex-col leading-tight">
-            <span className="text-[15px] font-extrabold text-slate-900 dark:text-white tracking-tight">
-              La Politique, C&apos;est Simple
-            </span>
-          </div>
-        </Link>
-
-        {/* Desktop Controls */}
-        <div className="flex items-center gap-4">
-          {/* Desktop Nav */}
-          <nav className="hidden lg:flex items-center gap-1">
-            {NAVIGATION.map((item) => {
-              const Icon = item.icon;
-              return (
-                <Link
-                  key={item.href}
-                  href={item.href}
-                  className="flex items-center gap-1.5 px-3 py-2 rounded-lg text-sm font-medium text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white hover:bg-slate-100 dark:hover:bg-slate-900 transition-all"
-                >
-                  <Icon className="w-4 h-4" />
-                  {item.name}
-                </Link>
-              );
-            })}
-          </nav>
-
-          <div className="h-6 w-px bg-slate-200 dark:bg-slate-800 hidden lg:block" />
+    <header className="fixed top-0 left-0 w-full z-40 bg-white/80 backdrop-blur-md border-b border-slate-100">
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        <div className="flex justify-between items-center h-16">
           
-          <ThemeToggle />
+          {/* Logo */}
+          <Link href="/" className="flex items-center gap-2 group">
+            <div className="w-8 h-8 bg-gradient-to-tr from-blue-600 to-red-600 rounded-lg flex items-center justify-center text-white font-black text-sm shadow-md group-hover:scale-110 transition-transform">
+              LP
+            </div>
+            <span className="font-extrabold text-slate-900 tracking-tight text-lg">
+              La Politique, <span className="text-blue-600">C'est Simple</span>
+            </span>
+          </Link>
 
-          {/* Mobile menu button */}
-          <button
-            onClick={() => setMobileOpen(!mobileOpen)}
-            className="lg:hidden p-2 rounded-lg text-slate-600 dark:text-slate-400 hover:bg-slate-100 dark:hover:bg-slate-900 transition"
-            aria-label="Menu"
-          >
-            {mobileOpen ? <X className="w-6 h-6" /> : <Menu className="w-6 h-6" />}
+          {/* Desktop Nav */}
+          <div className="hidden md:flex items-center gap-6">
+            <Link href="/deputes" className="text-sm font-semibold text-slate-600 hover:text-blue-600 transition-colors">Députés</Link>
+            <Link href="/lois" className="text-sm font-semibold text-slate-600 hover:text-blue-600 transition-colors">Lois</Link>
+            <Link href="/carte" className="text-sm font-semibold text-slate-600 hover:text-blue-600 transition-colors">Carte</Link>
+            <Link href="/newsletter" className="text-sm font-semibold text-slate-600 hover:text-blue-600 transition-colors underline decoration-red-400 decoration-2 underline-offset-4">Newsletter</Link>
+            
+            <div className="h-6 w-[1px] bg-slate-200 mx-2" />
+
+            {user ? (
+              <div className="flex items-center gap-4">
+                <div className="flex items-center gap-2 px-3 py-1.5 bg-slate-50 rounded-full border border-slate-100">
+                  <div className="w-5 h-5 rounded-full bg-blue-100 flex items-center justify-center text-blue-600">
+                    <User size={12} />
+                  </div>
+                  <span className="text-xs font-bold text-slate-700 truncate max-w-[120px]">{user.email}</span>
+                </div>
+                <button 
+                  onClick={handleLogout}
+                  className="text-slate-400 hover:text-red-500 transition-colors"
+                  title="Déconnexion"
+                >
+                  <LogOut size={20} />
+                </button>
+              </div>
+            ) : (
+              <Link 
+                href="/login"
+                className="inline-flex items-center gap-2 px-5 py-2 bg-slate-900 text-white rounded-xl text-sm font-bold hover:bg-blue-600 transition-all shadow-lg shadow-slate-900/10"
+              >
+                <LogIn size={16} />
+                Se connecter
+              </Link>
+            )}
+          </div>
+
+          {/* Mobile Menu Toggle */}
+          <button className="md:hidden text-slate-600" onClick={() => setIsMenuOpen(!isMenuOpen)}>
+            {isMenuOpen ? <X size={24} /> : <Menu size={24} />}
           </button>
         </div>
       </div>
 
-      {/* Mobile Nav Panel */}
-      {mobileOpen && (
-        <div className="lg:hidden bg-white dark:bg-slate-950 border-t border-slate-100 dark:border-slate-900 shadow-lg animate-fade-in transition-colors duration-300">
-          <nav className="flex flex-col p-4 gap-1">
-            {NAVIGATION.map((item) => {
-              const Icon = item.icon;
-              return (
-                <Link
-                  key={item.href}
-                  href={item.href}
-                  onClick={() => setMobileOpen(false)}
-                  className="flex items-center gap-3 px-4 py-3 rounded-xl text-slate-700 dark:text-slate-300 font-medium hover:bg-slate-50 dark:hover:bg-slate-900 hover:text-slate-900 dark:hover:text-white transition-all"
-                >
-                  <Icon className="w-5 h-5 text-slate-400" />
-                  {item.name}
-                </Link>
-              );
-            })}
-          </nav>
-        </div>
+      {/* Mobile Menu */}
+      {isMenuOpen && (
+        <motion.div 
+          initial={{ opacity: 0, y: -20 }}
+          animate={{ opacity: 1, y: 0 }}
+          className="md:hidden bg-white border-b border-slate-100 px-4 py-6 space-y-4 shadow-xl"
+        >
+          <Link href="/deputes" className="block text-lg font-bold text-slate-900">Les Députés</Link>
+          <Link href="/lois" className="block text-lg font-bold text-slate-900">Les Lois</Link>
+          <Link href="/carte" className="block text-lg font-bold text-slate-900">La Carte interactive</Link>
+          <Link href="/login" className="block text-lg font-bold text-blue-600">Mon Compte</Link>
+        </motion.div>
       )}
     </header>
   );

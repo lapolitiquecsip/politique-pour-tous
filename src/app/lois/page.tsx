@@ -1,5 +1,8 @@
+"use client";
+
+import { motion } from "framer-motion";
+import { BookOpen } from "lucide-react";
 import LawsClient from "./LawsClient";
-import { Sparkles } from "lucide-react";
 
 export default function LawsPage() {
   return (
@@ -26,14 +29,33 @@ export default function LawsPage() {
         <div className="absolute -top-40 -right-40 w-96 h-96 bg-red-600/10 rounded-full blur-[120px] z-10" />
         <div className="absolute top-40 -left-40 w-96 h-96 bg-blue-600/15 rounded-full blur-[120px] z-10" />
         
-        <div className="container mx-auto max-w-6xl text-center relative z-10 px-4">
-          <h1 className="text-4xl md:text-6xl font-extrabold mb-4 leading-tight tracking-tight text-white drop-shadow-md">
-            On va plus loin
-          </h1>
-          
-          <p className="text-lg md:text-xl text-white/70 max-w-2xl mx-auto leading-relaxed font-medium">
-            Les dossiers législatifs décryptés en profondeur.
-          </p>
+        <div className="container mx-auto max-w-6xl text-center relative z-20 px-4">
+          <motion.div 
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.8 }}
+            className="flex flex-col items-center"
+          >
+            {/* Iconic Decoration (Visual Hook) */}
+            <div className="w-16 h-16 rounded-3xl bg-blue-600/20 backdrop-blur-xl border border-blue-500/30 flex items-center justify-center mb-8 shadow-2xl shadow-blue-500/20 group-hover:scale-110 transition-transform duration-500">
+              <BookOpen className="w-8 h-8 text-blue-400" />
+            </div>
+
+            <h1 className="text-6xl md:text-8xl font-staatliches uppercase tracking-tight leading-none mb-6">
+              <span className="block text-white drop-shadow-[0_0_30px_rgba(255,255,255,0.2)]">On va</span>
+              <span className="bg-gradient-to-r from-blue-400 via-white to-red-400 bg-clip-text text-transparent italic decoration-blue-500/30 underline-offset-8">plus loin</span>
+            </h1>
+            
+            <p className="text-xl md:text-2xl text-white/80 max-w-2xl mx-auto leading-relaxed font-bold italic tracking-tight drop-shadow-md">
+              Comprendre les lois qui changent votre quotidien.
+            </p>
+
+            <div className="mt-10 flex items-center gap-2 text-blue-400/60 font-black text-[10px] uppercase tracking-[0.3em] animate-pulse">
+              <div className="w-8 h-px bg-blue-500/30" />
+              Expertise Légis
+              <div className="w-8 h-px bg-blue-500/30" />
+            </div>
+          </motion.div>
         </div>
       </div>
 

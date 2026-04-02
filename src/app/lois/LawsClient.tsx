@@ -32,13 +32,21 @@ export default function LawsClient() {
 
   return (
     <div className="container mx-auto max-w-6xl px-4 pb-24">
-      {/* 1. FILTRES THÉMATIQUES (COLORS & ACCESS) */}
-      <div className="mb-16">
-        <h3 className="text-sm font-black uppercase tracking-[0.2em] text-muted-foreground/60 mb-6 flex items-center gap-3">
-          <Sparkles className="w-4 h-4 text-amber-500" />
-          Parcourir par thématique
-        </h3>
-        <div className="flex flex-wrap gap-4">
+      {/* 1. FILTRES THÉMATIQUES (3x2 GRID & PREMIUM TITLE) */}
+      <div className="mb-20">
+        <div className="relative mb-12 flex items-center gap-6">
+          <div className="flex-none p-4 bg-gradient-to-br from-slate-900 to-slate-800 rounded-2xl shadow-xl border border-white/10">
+            <Sparkles className="w-6 h-6 text-amber-400 animate-pulse" />
+          </div>
+          <div className="space-y-1">
+            <h3 className="text-3xl md:text-4xl font-staatliches uppercase tracking-wider bg-gradient-to-r from-slate-900 via-amber-700 to-slate-900 bg-clip-text text-transparent">
+              Explorez par thématique
+            </h3>
+            <div className="h-1 w-32 bg-gradient-to-r from-amber-500/50 to-transparent rounded-full" />
+          </div>
+        </div>
+
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
           {CATEGORIES.map((cat) => {
             const Icon = cat.icon;
             const isActive = selectedCat === cat.id;
@@ -46,18 +54,25 @@ export default function LawsClient() {
               <button
                 key={cat.id}
                 onClick={() => setSelectedCat(cat.id)}
-                className={`group relative flex items-center gap-3 px-6 py-4 rounded-2xl border transition-all duration-300 font-bold shadow-lg ${cat.color} ${
-                  isActive ? "scale-105 ring-4 ring-white/30 z-10 shadow-xl" : "hover:-translate-y-1"
+                className={`group relative flex items-center gap-4 px-8 py-6 rounded-[2rem] border-2 transition-all duration-300 font-bold shadow-xl ${cat.color} ${
+                  isActive 
+                    ? "scale-[1.03] ring-offset-4 ring-4 ring-amber-500/20 z-10 shadow-2xl border-white/20" 
+                    : "hover:-translate-y-2 border-transparent"
                 }`}
               >
-                <Icon className={`w-5 h-5 ${isActive ? "animate-pulse" : ""}`} />
-                <span>{cat.label}</span>
-                {!cat.isFree && (
-                  <Lock className={`w-3.5 h-3.5 ml-1 transition-colors ${isActive ? "text-white" : "text-white/60 group-hover:text-white"}`} />
-                )}
-                {cat.isFree && !isActive && (
-                  <span className="ml-1 text-[9px] bg-white/20 text-white px-1.5 py-0.5 rounded-md uppercase tracking-tighter border border-white/30">Gratuit</span>
-                )}
+                <div className={`p-3 rounded-xl bg-white/20 backdrop-blur-sm transition-transform duration-500 ${isActive ? 'rotate-[360deg]' : 'group-hover:rotate-12'}`}>
+                  <Icon className="w-6 h-6 text-white" />
+                </div>
+                
+                <span className="text-xl tracking-tight">{cat.label}</span>
+                
+                <div className="ml-auto">
+                  {!cat.isFree ? (
+                    <Lock className={`w-4 h-4 transition-all ${isActive ? "text-white" : "text-white/40 group-hover:text-white"}`} />
+                  ) : (
+                    !isActive && <span className="text-[10px] bg-white/20 text-white px-2 py-1 rounded-lg uppercase tracking-tighter border border-white/30 backdrop-blur-sm font-black">Gratuit</span>
+                  )}
+                </div>
               </button>
             );
           })}

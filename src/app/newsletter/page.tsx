@@ -407,6 +407,22 @@ export default function NewsletterPage() {
                   <div className="absolute top-0 left-0 w-full h-1.5 bg-gradient-to-r from-blue-600 via-white to-red-500" />
 
                   <div className="space-y-7">
+                    {/* Prix Mis en avant */}
+                    <div className="bg-blue-50 border border-blue-100 p-4 rounded-2xl flex items-center justify-between">
+                      <div className="flex items-center gap-3">
+                        <div className="p-2 bg-blue-600 rounded-lg text-white">
+                          <Star className="w-5 h-5 fill-current" />
+                        </div>
+                        <div>
+                          <p className="text-sm font-bold text-blue-900 uppercase">Accès Premium illimité</p>
+                          <p className="text-xs text-blue-700/70">Sans engagement, résiliable en un clic.</p>
+                        </div>
+                      </div>
+                      <div className="text-right">
+                        <p className="text-2xl font-black text-blue-900">3€<span className="text-sm font-medium text-blue-700">/mois</span></p>
+                      </div>
+                    </div>
+
                     {/* Email */}
                     <div>
                       <label htmlFor="email" className="block text-sm font-bold text-slate-900 mb-2">
@@ -428,7 +444,7 @@ export default function NewsletterPage() {
 
                     {/* Preferences */}
                     <div className="space-y-3">
-                      <p className="font-bold text-slate-900 text-sm">Ce que vous souhaitez recevoir :</p>
+                      <p className="font-bold text-slate-900 text-sm">Contenu de votre abonnement :</p>
 
                       <label className="flex items-start gap-3 cursor-pointer group p-3 rounded-xl hover:bg-slate-50 transition-colors">
                         <input
@@ -440,9 +456,8 @@ export default function NewsletterPage() {
                         <div>
                           <span className="font-semibold text-slate-800 flex items-center gap-2">
                             <Building2 className="w-4 h-4 text-slate-400" />
-                            Le récap de l&apos;Assemblée
+                            Récap de l&apos;Assemblée
                           </span>
-                          <p className="text-xs text-slate-500 mt-0.5">L&apos;essentiel des débats et des votes de la semaine.</p>
                         </div>
                       </label>
 
@@ -456,9 +471,8 @@ export default function NewsletterPage() {
                         <div>
                           <span className="font-semibold text-slate-800 flex items-center gap-2">
                             <Bell className="w-4 h-4 text-slate-400" />
-                            Suivre les lois majeures
+                            Suivi des lois majeures
                           </span>
-                          <p className="text-xs text-slate-500 mt-0.5">Des décryptages complets lorsqu&apos;une loi de société avance.</p>
                         </div>
                       </label>
 
@@ -472,9 +486,8 @@ export default function NewsletterPage() {
                         <div>
                           <span className="font-semibold text-slate-800 flex items-center gap-2">
                             <MapPin className="w-4 h-4 text-slate-400" />
-                            Surveiller mon(ma) député(e)
+                            Alertes député(e)
                           </span>
-                          <p className="text-xs text-slate-500 mt-0.5">Soyez alerté quand votre élu(e) vote sur un grand texte.</p>
                         </div>
                       </label>
 
@@ -485,50 +498,40 @@ export default function NewsletterPage() {
                           transition={{ duration: 0.3 }}
                           className="ml-8 overflow-hidden"
                         >
-                          <label htmlFor="zip" className="block text-sm font-semibold text-slate-500 mb-2">
-                            Code postal
-                          </label>
                           <input
                             id="zip"
                             type="text"
-                            placeholder="Ex: 75011"
+                            placeholder="Code postal (ex: 75011)"
                             maxLength={5}
                             value={zipCode}
                             onChange={(e) => setZipCode(e.target.value.replace(/[^0-9]/g, ""))}
-                            className="w-full md:w-48 px-4 py-3 rounded-xl border border-slate-200 shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500/40"
+                            className="w-full md:w-56 px-4 py-3 rounded-xl border border-slate-200 shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500/40"
                           />
                         </motion.div>
                       )}
                     </div>
 
-                    {/* Error */}
-                    {error && (
-                      <div className="p-4 bg-red-50 text-red-600 rounded-xl text-sm font-medium border border-red-100 flex items-center gap-2">
-                        <AlertCircle className="w-4 h-4 flex-shrink-0" /> {error}
-                      </div>
-                    )}
-
                     {/* Submit */}
                     <button
                       type="submit"
                       disabled={loading}
-                      className="w-full flex items-center justify-center gap-2 py-4 rounded-2xl text-lg font-bold text-white bg-gradient-to-r from-blue-700 to-blue-900 hover:from-blue-800 hover:to-blue-950 transition-all shadow-lg hover:shadow-xl disabled:opacity-70 disabled:cursor-not-allowed"
+                      className="w-full flex flex-col items-center justify-center gap-1 py-5 rounded-2xl text-lg font-black text-white bg-gradient-to-r from-blue-700 to-blue-900 hover:from-blue-800 hover:to-blue-950 transition-all shadow-xl hover:shadow-blue-500/20 disabled:opacity-70 group"
                     >
                       {loading ? (
-                        <>
-                          <Loader2 className="w-6 h-6 animate-spin" />
-                          Traitement en cours...
-                        </>
+                        <Loader2 className="w-6 h-6 animate-spin mx-auto" />
                       ) : (
                         <>
-                          S&apos;abonner à la newsletter
-                          <ArrowRight className="w-5 h-5" />
+                          <div className="flex items-center gap-2">
+                            Passer au Premium
+                            <ArrowRight className="w-5 h-5 group-hover:translate-x-1 transition-transform" />
+                          </div>
+                          <span className="text-[10px] font-medium opacity-60 uppercase tracking-widest text-white">Souscription sécurisée • 3€ / mois</span>
                         </>
                       )}
                     </button>
 
                     <p className="text-center text-xs text-slate-400 font-medium">
-                      Aucun spam garanti. Votre condensé personnalisé chaque lundi.
+                      En continuant, vous acceptez les conditions de vente de La Politique, C&apos;est Simple.
                     </p>
                   </div>
                 </form>

@@ -136,29 +136,29 @@ export default async function Home() {
         </div>
       </section>
 
-      {/* 6. ENCART NEWSLETTER */}
+      {/* 6. ENCART NEWSLETTER PREMIUM */}
       <section className="py-24 px-4 bg-muted/30 border-t border-border">
         <div className="container mx-auto max-w-3xl text-center bg-card shadow-sm border border-border rounded-3xl p-12 relative overflow-hidden">
           <div className="absolute top-0 left-0 w-full h-2 bg-gradient-to-r from-primary via-white to-accent"></div>
-          <h2 className="text-3xl font-bold mb-4">Ne ratez plus l&apos;essentiel</h2>
-          <p className="text-muted-foreground text-lg mb-8 max-w-xl mx-auto">
-            Recevez un résumé politique hebdomadaire, adapté à votre profil et votre activité, directement dans votre boîte mail.
+          <h2 className="text-3xl font-bold mb-4 italic text-primary font-heading tracking-tight">Le résumé hebdomadaire sur-mesure</h2>
+          <p className="text-muted-foreground text-lg mb-10 max-w-xl mx-auto leading-relaxed">
+            Recevez chaque dimanche un condensé politique <span className="text-foreground font-bold">100% personnalisé</span> selon vos centres d&apos;intérêt et votre activité sur le site.
           </p>
-          <form className="flex flex-col sm:flex-row gap-3 max-w-lg mx-auto" action="/newsletter">
-            <input 
-              type="email" 
-              placeholder="votre@email.fr" 
-              required
-              className="flex-1 px-5 py-4 rounded-xl border border-input bg-background focus:outline-none focus:ring-2 focus:ring-primary/50 text-lg transition-shadow shadow-sm"
-            />
-            <button 
-              type="submit" 
-              className="px-8 py-4 bg-primary text-white font-bold rounded-xl hover:bg-primary/90 transition-colors shadow-sm whitespace-nowrap text-lg"
+          
+          <div className="flex flex-col items-center gap-6">
+            <Link 
+              href="/newsletter" 
+              className="px-10 py-5 bg-primary text-white font-black rounded-2xl hover:bg-primary/90 transition-all shadow-xl hover:shadow-primary/20 hover:-translate-y-1 text-xl flex items-center gap-3 group"
             >
-              S&apos;inscrire
-            </button>
-          </form>
-          <p className="text-xs text-muted-foreground mt-4">Personnalisé • Hebdomadaire • Sans jargon</p>
+              S&apos;abonner au service <span className="px-2 py-1 bg-white/20 rounded-lg text-sm">3€ / mois</span>
+              <ArrowRight className="w-5 h-5 group-hover:translate-x-1 transition-transform" />
+            </Link>
+            
+            <p className="text-sm font-bold text-slate-500 uppercase tracking-widest flex items-center gap-3">
+              <span className="w-2 h-2 rounded-full bg-green-500 animate-pulse"></span>
+              Personnalisé • Hebdomadaire • Sans jargon
+            </p>
+          </div>
         </div>
       </section>
 

@@ -129,7 +129,7 @@ export default function InstitutionsGrid() {
               animate={{ opacity: 1, scale: 1, y: 0 }}
               exit={{ opacity: 0, scale: 0.9, y: 20 }}
               transition={{ type: "spring", damping: 25, stiffness: 300 }}
-              className="relative w-full max-w-5xl h-auto max-h-[85vh] bg-[#0F172A] rounded-[3rem] shadow-[0_20px_50px_rgba(0,0,0,0.5)] border border-white/10 flex flex-col lg:flex-row overflow-hidden"
+              className="relative w-full max-w-5xl h-[85vh] md:h-auto md:max-h-[85vh] bg-[#0F172A] rounded-[3rem] shadow-[0_20px_50px_rgba(0,0,0,0.5)] border border-white/10 flex flex-col lg:flex-row overflow-hidden"
             >
               {/* Bouton Fermer Principal (Standard et ultra-visible) */}
               <button

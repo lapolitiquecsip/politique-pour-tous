@@ -68,24 +68,22 @@ export default function FaqSection() {
   const [selectedId, setSelectedId] = useState<number | null>(null);
 
   return (
-    <section className="relative py-32 px-4 bg-[#020617] overflow-hidden group border-t border-white/5">
-      {/* Decorative background elements (blurred figures idea) */}
+    <section id="faq" className="relative py-32 px-4 bg-slate-50 overflow-hidden group border-t border-slate-200">
+      {/* Decorative background elements (subtle for light mode) */}
       <div className="absolute inset-0 z-0 opacity-[0.03] pointer-events-none select-none">
-        <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[120%] h-[120%] bg-[url('https://www.transparenttextures.com/patterns/felt.png')] opacity-50" />
-        <div className="absolute top-20 left-10 w-64 h-64 bg-blue-500/20 rounded-full blur-[100px]" />
-        <div className="absolute bottom-20 right-10 w-64 h-64 bg-red-500/20 rounded-full blur-[100px]" />
+        <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[120%] h-[120%] bg-[url('https://www.transparenttextures.com/patterns/felt.png')] opacity-20" />
       </div>
 
       <div className="container mx-auto max-w-6xl relative z-10">
-        {/* Poster Title */}
+        {/* Poster Title (MATCHING QUE VOTE VOTRE DEPUTE STYLE) */}
         <div className="relative mb-24 text-center">
           <div className="relative z-10">
-            <span className="text-white opacity-[0.05] absolute -top-12 left-1/2 -translate-x-1/2 select-none hidden md:block whitespace-nowrap text-9xl font-staatliches tracking-widest leading-none">
+            <span className="text-slate-900 opacity-[0.06] absolute -top-12 left-1/2 -translate-x-1/2 select-none hidden md:block whitespace-nowrap text-9xl font-staatliches tracking-widest leading-none">
               QUESTIONS • RÉPONSES
             </span>
             
-            <h2 className="text-7xl md:text-9xl font-staatliches uppercase tracking-tighter leading-none">
-              F.A.<span className="bg-gradient-to-r from-blue-400 via-white to-red-400 bg-clip-text text-transparent">Q.</span>
+            <h2 className="text-7xl md:text-9xl font-staatliches uppercase tracking-tighter leading-none text-slate-900">
+              F.A.<span className="bg-gradient-to-r from-blue-600 via-red-600 to-blue-600 bg-clip-text text-transparent">Q.</span>
             </h2>
           </div>
           <div className="h-1.5 w-32 bg-gradient-to-r from-blue-600 to-red-600 mt-8 rounded-full mx-auto" />
@@ -115,16 +113,16 @@ export default function FaqSection() {
                 }}
                 whileHover={{ scale: 1.1, rotate: 0 }}
                 onClick={() => setSelectedId(selectedId === item.id ? null : item.id)}
-                className={`relative px-6 py-4 rounded-3xl shadow-xl max-w-[200px] md:max-w-[250px] select-none text-center
+                className={`relative px-6 py-4 rounded-3xl shadow-2xl max-w-[200px] md:max-w-[250px] select-none text-center
                   ${item.color === "red" 
                     ? "bg-red-600 text-white border-red-500" 
-                    : "bg-slate-50 text-slate-900 border-white"}
-                  border-b-4 transform transition-all active:scale-95
+                    : "bg-white text-slate-900 border-slate-200"}
+                  border-b-4 border transform transition-all active:scale-95
                 `}
               >
                 {/* Speech Bubble "Tail" */}
                 <div className={`absolute -bottom-3 left-1/2 -translate-x-1/2 w-0 h-0 border-l-[10px] border-l-transparent border-r-[10px] border-r-transparent border-t-[10px]
-                  ${item.color === "red" ? "border-t-red-600" : "border-t-slate-50"}
+                  ${item.color === "red" ? "border-t-red-600" : "border-t-white"}
                 `} />
 
                 <p className="font-bold text-sm md:text-base leading-tight">

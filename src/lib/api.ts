@@ -1,7 +1,4 @@
-/**
- * API Client
- * The base URL is configured via NEXT_PUBLIC_API_URL
- */
+import { supabase } from "./supabase";
 
 const API_URL = process.env.NEXT_PUBLIC_API_URL || "http://localhost:3001/api";
 
@@ -38,17 +35,29 @@ export const api = {
   getLaws: async () => fetcher('/laws'),
   getLaw: async (id: string) => fetcher(`/laws/${id}`),
   subscribeNewsletter: async (payload: { email: string, preferences: any, postal_code?: string }) => {
-    const API_URL = process.env.NEXT_PUBLIC_API_URL || "http://localhost:3001/api";
-    const res = await fetch(`${API_URL}/subscribers`, {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify(payload),
-    });
-    if (!res.ok) {
-      const err = await res.json();
-      throw new Error(err.error || "Une erreur est survenue");
+    const { email, preferences, postal_code } = payload;
+    
+    const { data, error } = await supabase
+      .from('subscribers')
+      .insert([
+        { 
+          email, 
+          preferences: preferences || {},
+          postal_code: postal_code || null,
+          status: 'active'
+        }
+      ])
+      .select()
+      .single();
+
+    if (error) {
+      if (error.code === '23505') {
+        throw new Error("Cet e-mail est déjà abonné.");
+      }
+      throw new Error(error.message || "Une erreur est survenue lors de l'inscription.");
     }
-    return res.json();
+    
+    return data;
   },
   getSubscribers: async () => fetcher('/subscribers'),
   getPipelineLogs: async () => fetcher('/admin/pipeline-logs'),

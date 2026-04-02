@@ -36,11 +36,6 @@ export default function LawsPage() {
             transition={{ duration: 0.8 }}
             className="flex flex-col items-center"
           >
-            {/* Iconic Decoration (Visual Hook) */}
-            <div className="w-16 h-16 rounded-3xl bg-blue-600/20 backdrop-blur-xl border border-blue-500/30 flex items-center justify-center mb-8 shadow-2xl shadow-blue-500/20 group-hover:scale-110 transition-transform duration-500">
-              <BookOpen className="w-8 h-8 text-blue-400" />
-            </div>
-
             <h1 className="text-6xl md:text-8xl font-staatliches uppercase tracking-tight leading-none mb-6">
               <span className="block text-white drop-shadow-[0_0_30px_rgba(255,255,255,0.2)]">On va</span>
               <span className="bg-gradient-to-r from-blue-400 via-white to-red-400 bg-clip-text text-transparent italic decoration-blue-500/30 underline-offset-8">plus loin</span>

@@ -13,36 +13,18 @@ import {
 import FeedItemCard from "@/components/home/FeedItemCard";
 import InstitutionsGrid from "@/components/home/InstitutionsGrid";
 import StatsPanel from "@/components/home/StatsPanel";
+import HomeHero from "@/components/home/HomeHero";
 
 export default async function Home() {
   const latestContent = await api.getContent(6);
 
   return (
     <div className="flex flex-col min-h-screen">
-      {/* 1. HERO SECTION */}
-      <section className="relative min-h-[80vh] flex flex-col items-center justify-center text-center px-4 -mt-16 pt-16">
-        <div className="max-w-4xl mx-auto space-y-8 animate-fade-in">
-          <h1 className="text-5xl md:text-7xl font-extrabold text-foreground leading-tight tracking-tight">
-            La politique, <br className="hidden md:block" />
-            <span className="text-primary">c&apos;est simple.</span>
-          </h1>
-          <p className="text-xl md:text-2xl text-muted-foreground max-w-2xl mx-auto font-medium leading-relaxed">
-            Comprendre la politique française n&apos;a jamais été aussi accessible.
-          </p>
-          <div className="pt-8">
-            <a 
-              href="#institutions" 
-              className="inline-flex items-center justify-center px-8 py-4 text-lg font-bold text-primary-foreground bg-primary rounded-full hover:bg-primary/90 transition-all shadow-md hover:shadow-lg hover:-translate-y-1 transform"
-            >
-              Explorer le site
-              <ArrowRight className="ml-2 w-5 h-5" />
-            </a>
-          </div>
-        </div>
-      </section>
+      {/* 1. HERO SECTION (POSTER IMPACT) */}
+      <HomeHero />
 
       {/* 2. LES 3 INSTITUTIONS (côte à côte avec zoom au clic) */}
-      <section id="institutions" className="scroll-mt-24 py-20 px-4">
+      <section id="institutions" className="scroll-mt-24 py-16 px-4 bg-background">
         <div className="container mx-auto max-w-6xl">
           <h2 className="text-3xl md:text-4xl font-bold mb-10 text-center">
             Les institutions au quotidien

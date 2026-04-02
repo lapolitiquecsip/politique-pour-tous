@@ -29,12 +29,25 @@ export default function DetailedLawDossier({ law }: DetailedLawDossierProps) {
 
   return (
     <div 
-      className={`bg-card border border-border rounded-[2rem] overflow-hidden shadow-sm hover:shadow-md transition-all mb-4 transform-gpu ${isOpen ? 'ring-2 ring-primary/10' : ''}`}
+      className={`relative bg-card border border-border rounded-[2rem] overflow-hidden shadow-sm hover:shadow-md transition-all mb-4 transform-gpu ${isOpen ? 'ring-2 ring-primary/10' : ''}`}
     >
+      {/* Background Image Layer (Immersive) */}
+      {law.backgroundImage && (
+        <div className="absolute inset-0 z-0 pointer-events-none">
+          <img 
+            src={law.backgroundImage} 
+            alt="" 
+            className="w-full h-full object-cover opacity-[0.12] scale-105 transition-transform duration-[2s] group-hover:scale-110 saturate-[0.8] blur-[0.5px]" 
+          />
+          <div className="absolute inset-0 bg-gradient-to-br from-card/40 via-transparent to-card/60" />
+          <div className="absolute inset-0 bg-gradient-to-b from-card/20 via-transparent to-card/40" />
+        </div>
+      )}
+
       {/* 1. HEADER (TOUJOURS VISIBLE) */}
       <button 
         onClick={() => setIsOpen(!isOpen)}
-        className="w-full text-left p-6 md:p-8 flex items-center justify-between gap-4 hover:bg-muted/30 transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/20"
+        className="relative z-10 w-full text-left p-6 md:p-8 flex items-center justify-between gap-4 hover:bg-muted/10 transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/20"
       >
         <div className="flex flex-col md:flex-row md:items-center gap-4">
           <div className={`w-fit px-3 py-1 rounded-full text-[10px] font-black uppercase tracking-widest border ${badgeColor}`}>
@@ -67,7 +80,7 @@ export default function DetailedLawDossier({ law }: DetailedLawDossierProps) {
         }}
         className="overflow-hidden transform-gpu"
       >
-        <div className="px-8 pb-12 pt-4 border-t border-border/50">
+        <div className="relative z-10 px-8 pb-12 pt-4 border-t border-border/50">
           <div className="flex items-center gap-2 text-sm font-semibold text-muted-foreground bg-muted/50 px-4 py-1.5 rounded-full capitalize italic w-fit mb-8">
             <span className={`w-2 h-2 rounded-full ${law.status === 'application' ? 'bg-green-500' : 'bg-amber-500'} animate-pulse`} />
             {law.statusLabel}

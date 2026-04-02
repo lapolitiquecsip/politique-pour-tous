@@ -9,6 +9,7 @@ export interface LawDossier {
   status: "vote" | "application" | "debat";
   statusLabel: string;
   color: string;
+  backgroundImage?: string;
 }
 
 export const FREE_LAWS: LawDossier[] = [
@@ -19,6 +20,7 @@ export const FREE_LAWS: LawDossier[] = [
     color: "emerald",
     status: "application",
     statusLabel: "En application",
+    backgroundImage: "https://images.pexels.com/photos/32975423/pexels-photo-32975423.jpeg",
     summary: "Issue de la Convention Citoyenne pour le Climat, cette loi chamboule notre quotidien : du logement à nos assiettes, en passant par nos trajets. C'est l'un des textes les plus denses du quinquennat.",
     impacts: [
       "Interdiction de louer les 'passoires thermiques' (G en 2025, F en 2028, E en 2034).",
@@ -43,6 +45,7 @@ export const FREE_LAWS: LawDossier[] = [
     color: "blue",
     status: "application",
     statusLabel: "Réforme en cours",
+    backgroundImage: "https://images.pexels.com/photos/19250066/pexels-photo-19250066.jpeg",
     summary: "Le gouvernement transforme Pôle Emploi en 'France Travail'. L'objectif : centraliser tous les acteurs de l'insertion et conditionner le RSA à une activité hebdomadaire.",
     impacts: [
       "Inscription automatique de tous les allocataires du RSA à France Travail.",
@@ -67,6 +70,7 @@ export const FREE_LAWS: LawDossier[] = [
     color: "slate",
     status: "vote",
     statusLabel: "Votée (Budget long terme)",
+    backgroundImage: "https://images.pexels.com/photos/20289796/pexels-photo-20289796.jpeg",
     summary: "Un effort financier colossal (413 milliards €) pour moderniser nos armées face aux nouvelles menaces mondiales. C'est le budget le plus élevé de la Ve République.",
     impacts: [
       "Modernisation de la dissuasion nucléaire française.",
@@ -91,6 +95,7 @@ export const FREE_LAWS: LawDossier[] = [
     color: "red",
     status: "application",
     statusLabel: "Application partielle",
+    backgroundImage: "https://images.pexels.com/photos/30646922/pexels-photo-30646922.jpeg",
     summary: "Une loi complexe qui divise, visant à 'mieux intégrer' par le travail et 'mieux expulser' les profils délinquants. Elle crée un nouveau titre de séjour spécifique.",
     impacts: [
       "Création du titre de séjour 'Métiers en tension' (BTP, restauration, aide à domicile).",

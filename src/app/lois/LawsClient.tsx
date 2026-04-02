@@ -19,12 +19,12 @@ import DetailedLawDossier from "@/components/laws/DetailedLawDossier";
 import { FREE_LAWS } from "@/data/free-laws-dossiers";
 
 const CATEGORIES = [
-  { id: "edu", label: "Éducation", icon: GraduationCap, color: "border-indigo-500", iconBg: "bg-indigo-500/20", iconColor: "text-indigo-400", isFree: true },
-  { id: "env", label: "Environnement", icon: Leaf, color: "border-emerald-500", iconBg: "bg-emerald-500/20", iconColor: "text-emerald-400" },
-  { id: "eco", label: "Économie", icon: TrendingUp, color: "border-blue-500", iconBg: "bg-blue-500/20", iconColor: "text-blue-400" },
-  { id: "sec", label: "Sécurité", icon: Shield, color: "border-slate-500", iconBg: "bg-slate-500/20", iconColor: "text-slate-400" },
-  { id: "health", label: "Santé", icon: HeartPulse, color: "border-rose-500", iconBg: "bg-rose-500/20", iconColor: "text-rose-400" },
-  { id: "social", label: "Social", icon: Users, color: "border-orange-500", iconBg: "bg-orange-500/20", iconColor: "text-orange-400" },
+  { id: "edu", label: "Éducation", icon: GraduationCap, color: "border-indigo-400", bgColor: "bg-indigo-50/80", iconBg: "bg-indigo-100", iconColor: "text-indigo-600", isFree: true },
+  { id: "env", label: "Environnement", icon: Leaf, color: "border-emerald-400", bgColor: "bg-emerald-50/80", iconBg: "bg-emerald-100", iconColor: "text-emerald-600" },
+  { id: "eco", label: "Économie", icon: TrendingUp, color: "border-blue-400", bgColor: "bg-blue-50/80", iconBg: "bg-blue-100", iconColor: "text-blue-600" },
+  { id: "sec", label: "Sécurité", icon: Shield, color: "border-slate-400", bgColor: "bg-slate-100/80", iconBg: "bg-slate-200", iconColor: "text-slate-600" },
+  { id: "health", label: "Santé", icon: HeartPulse, color: "border-rose-400", bgColor: "bg-rose-50/80", iconBg: "bg-rose-100", iconColor: "text-rose-600" },
+  { id: "social", label: "Social", icon: Users, color: "border-orange-400", bgColor: "bg-orange-50/80", iconBg: "bg-orange-100", iconColor: "text-orange-600" },
 ];
 
 export default function LawsClient() {
@@ -39,17 +39,17 @@ export default function LawsClient() {
 
   return (
     <div className="container mx-auto max-w-6xl px-4 pb-24">
-      {/* 1. FILTRES THÉMATIQUES (POSTER STYLE REBORN) */}
+      {/* 1. FILTRES THÉMATIQUES (ULTRA COMPACT BENTO STYLE) */}
       <div className="mb-24">
-        <div className="relative mb-12 text-center md:text-left">
+        <div className="relative mb-10 text-center md:text-left">
           <h3 className="text-5xl md:text-7xl font-staatliches uppercase tracking-tighter leading-none">
-            <span className="text-slate-900 opacity-10 absolute -top-8 left-0 select-none hidden md:block">COLLECTIONS</span>
+            <span className="text-slate-900 opacity-5 absolute -top-8 left-0 select-none hidden md:block">COLLECTIONS</span>
             Explorez par <span className="bg-gradient-to-r from-blue-600 via-red-600 to-blue-600 bg-clip-text text-transparent">thématique</span>
           </h3>
           <div className="h-1.5 w-24 bg-gradient-to-r from-blue-600 to-red-600 mt-4 rounded-full mx-auto md:mx-0" />
         </div>
 
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8">
+        <div className="grid grid-cols-2 lg:grid-cols-3 gap-4 md:gap-6">
           {CATEGORIES.map((cat) => {
             const Icon = cat.icon;
             const isActive = selectedCat === cat.id;
@@ -66,29 +66,27 @@ export default function LawsClient() {
               <button
                 key={cat.id}
                 onClick={handleCategoryClick}
-                className={`group relative flex flex-col items-start gap-4 p-6 rounded-[1.2rem] border-2 border-slate-200 bg-white hover:bg-slate-50 transition-all duration-500 shadow-sm overflow-hidden ${
+                className={`group relative flex flex-col items-start gap-3 p-4 md:p-5 rounded-[1rem] border transition-all duration-500 shadow-sm overflow-hidden ${
                   isActive 
-                    ? "ring-4 ring-blue-500/10 border-blue-500 bg-slate-950 text-white shadow-2xl scale-[1.02]" 
-                    : "hover:shadow-xl hover:-translate-y-1.5"
-                } ${cat.color} border-t-[6px]`}
+                    ? "ring-4 ring-blue-500/10 border-blue-500 bg-slate-950 text-white shadow-2xl scale-[1.02] border-t-4" 
+                    : `hover:shadow-lg hover:-translate-y-1 border-slate-200 ${cat.bgColor} border-t-4`
+                } ${cat.color}`}
               >
                 {/* Background Pattern for Active state */}
                 {isActive && (
                   <div className="absolute inset-0 opacity-5 pointer-events-none bg-[url('https://www.transparenttextures.com/patterns/felt.png')]" />
                 )}
 
-                <div className="flex items-center justify-between w-full">
-                  <div className={`p-3 rounded-xl ${isActive ? 'bg-white/10' : cat.iconBg} transition-all duration-500 group-hover:scale-110 group-hover:rotate-3`}>
-                    <Icon className={`w-7 h-7 ${isActive ? 'text-white' : cat.iconColor}`} />
+                <div className="flex items-center justify-between w-full mb-1">
+                  <div className={`p-2 md:p-2.5 rounded-lg ${isActive ? 'bg-white/10' : cat.iconBg} transition-all duration-500 group-hover:scale-110`}>
+                    <Icon className={`w-5 h-5 md:w-6 md:h-6 ${isActive ? 'text-white' : cat.iconColor}`} />
                   </div>
                   
                   <div>
                     {!cat.isFree ? (
-                      <div className="p-2 rounded-full bg-slate-100 text-slate-400">
-                        <Lock className="w-4 h-4" />
-                      </div>
+                      <Lock className={`w-3.5 h-3.5 shrink-0 ${isActive ? 'text-white/40' : 'text-slate-400'}`} />
                     ) : (
-                      <span className={`text-[10px] px-2 py-1 rounded-md uppercase tracking-widest font-black border ${isActive ? 'bg-white/20 border-white/30 text-white' : 'bg-indigo-50 border-indigo-100 text-indigo-600'}`}>
+                      <span className={`text-[9px] px-1.5 py-0.5 rounded uppercase tracking-widest font-black border ${isActive ? 'bg-white/20 border-white/30 text-white' : 'bg-white/50 border-indigo-100 text-indigo-600'}`}>
                         Libre
                       </span>
                     )}
@@ -96,16 +94,13 @@ export default function LawsClient() {
                 </div>
                 
                 <div className="text-left">
-                  <span className={`text-2xl font-staatliches uppercase tracking-wide block mb-0.5 ${isActive ? 'text-white' : 'text-slate-900 group-hover:text-blue-600 transition-colors'}`}>
+                  <span className={`text-xl md:text-2xl font-staatliches uppercase tracking-wide block leading-none ${isActive ? 'text-white' : 'text-slate-900 group-hover:text-blue-600 transition-colors'}`}>
                     {cat.label}
                   </span>
-                  <p className={`text-[10px] font-bold uppercase tracking-[0.2em] transition-opacity duration-300 ${isActive ? 'text-white/40' : 'text-slate-400 group-hover:opacity-100 opacity-60'}`}>
-                    Série Législative
+                  <p className={`text-[8px] md:text-[10px] font-bold uppercase tracking-[0.2em] mt-1 transition-opacity duration-300 ${isActive ? 'text-white/40' : 'text-slate-400'}`}>
+                    Dossiers
                   </p>
                 </div>
-
-                {/* Decorative spotlight on hover */}
-                <div className="absolute -right-4 -bottom-4 w-16 h-16 bg-gradient-to-br from-transparent to-slate-200/50 rounded-full blur-xl group-hover:scale-150 transition-transform duration-700" />
               </button>
             );
           })}

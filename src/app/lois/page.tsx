@@ -15,7 +15,7 @@ export default function LawsPage() {
         {/* Hémicycle Filigree (Visual Element) */}
         <div className="absolute inset-0 z-0 opacity-[0.06] select-none pointer-events-none flex items-center justify-center overflow-hidden">
           <img 
-            src="/hemicycle_line_art_dark_blue_v17751610606060_1775161082349.png" 
+            src="/hemicycle_line_art.png" 
             alt="" 
             className="w-full h-full object-cover md:object-contain scale-110 blur-[0.5px]" 
           />

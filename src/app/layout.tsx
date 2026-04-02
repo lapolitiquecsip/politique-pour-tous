@@ -1,3 +1,4 @@
+import type { Metadata } from "next";
 import { DM_Sans, Staatliches } from "next/font/google";
 import "./globals.css";
 import Header from "@/components/layout/Header";

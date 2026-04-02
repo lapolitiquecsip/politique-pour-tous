@@ -14,6 +14,7 @@ import FeedItemCard from "@/components/home/FeedItemCard";
 import InstitutionsGrid from "@/components/home/InstitutionsGrid";
 import StatsPanel from "@/components/home/StatsPanel";
 import HomeHero from "@/components/home/HomeHero";
+import FaqSection from "@/components/home/FaqSection";
 
 export default async function Home() {
   const latestContent = await api.getContent(6);
@@ -98,54 +99,10 @@ export default async function Home() {
         </div>
       </section>
 
-      {/* 5. APERÇU DES SECTIONS */}
-      <section className="py-24 px-4 container mx-auto max-w-6xl">
-        <h2 className="text-3xl font-bold mb-12 text-center">Explorez nos ressources</h2>
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-          <FeatureCard 
-            href="/calendrier" 
-            title="Calendrier" 
-            desc="L'ordre du jour du Parlement, semaine après semaine."
-            icon={<CalendarDays size={24} />}
-            colorClass="bg-blue-50 text-blue-600 border-blue-100"
-          />
-          <FeatureCard 
-            href="/promesses" 
-            title="Ils avaient dit que..." 
-            desc="Le suivi précis des promesses tenues ou oubliées."
-            icon={<MessageSquare size={24} />}
-            colorClass="bg-red-50 text-red-600 border-red-100"
-          />
-          <FeatureCard 
-            href="/vocabulaire" 
-            title="Vocabulaire" 
-            desc="Le dico pour décoder enfin le lexique politique."
-            icon={<BookOpen size={24} />}
-            colorClass="bg-purple-50 text-purple-600 border-purple-100"
-          />
-          <FeatureCard 
-            href="/deputes" 
-            title="Que vote votre député ?" 
-            desc="Trouvez votre circonscription et observez ses votes."
-            icon={<CheckSquare size={24} />}
-            colorClass="bg-orange-50 text-orange-600 border-orange-100"
-          />
-          <FeatureCard 
-            href="/lois" 
-            title="On va plus loin" 
-            desc="Des décryptages complets sur les grandes lois en cours."
-            icon={<Newspaper size={24} />}
-            colorClass="bg-emerald-50 text-emerald-600 border-emerald-100"
-          />
-          <FeatureCard 
-            href="/newsletter" 
-            title="Newsletter" 
-            desc="Recevez l'essentiel, adapté à votre profil, par mail."
-            icon={<Mail size={24} />}
-            colorClass="bg-pink-50 text-pink-600 border-pink-100"
-          />
-        </div>
-      </section>
+      {/* 5. F.A.Q. INTERACTIVE (POSTER IMPACT REBORN) */}
+      <div id="faq" className="scroll-mt-24">
+        <FaqSection />
+      </div>
 
       {/* 6. ENCART NEWSLETTER PREMIUM */}
       <section className="py-24 px-4 bg-muted/30 border-t border-border">
@@ -191,15 +148,3 @@ export default async function Home() {
   );
 }
 
-// Composant interne pour les cartes "Explorez"
-function FeatureCard({ href, title, desc, icon, colorClass }: { href: string, title: string, desc: string, icon: React.ReactNode, colorClass: string }) {
-  return (
-    <Link href={href} className="group flex flex-col p-6 bg-card border border-border rounded-2xl shadow-sm hover:shadow-md transition-all hover:-translate-y-1">
-      <div className={`w-12 h-12 rounded-xl flex items-center justify-center mb-5 border ${colorClass}`}>
-        {icon}
-      </div>
-      <h3 className="text-xl font-bold mb-2 text-foreground group-hover:text-primary transition-colors">{title}</h3>
-      <p className="text-muted-foreground">{desc}</p>
-    </Link>
-  );
-}

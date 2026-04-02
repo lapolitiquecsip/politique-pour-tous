@@ -72,7 +72,7 @@ export default async function Home() {
                 </span>
                 
                 <h2 className="text-5xl md:text-7xl font-staatliches uppercase tracking-tighter leading-none inline">
-                  Aujourd&apos;hui <span className="bg-gradient-to-r from-blue-600 via-red-600 to-blue-600 bg-clip-text text-transparent">en politique</span>
+                  Récemment <span className="bg-gradient-to-r from-blue-600 via-red-600 to-blue-600 bg-clip-text text-transparent">en politique</span>
                 </h2>
               </div>
             </div>

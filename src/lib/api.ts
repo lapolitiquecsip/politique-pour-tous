@@ -1,75 +1,90 @@
 import { supabase } from "./supabase";
 
-const API_URL = process.env.NEXT_PUBLIC_API_URL || "http://localhost:3001/api";
-
-async function fetcher(endpoint: string) {
-  try {
-    const response = await fetch(`${API_URL}${endpoint}`, { cache: 'no-store' });
-    if (!response.ok) {
-      throw new Error(`API error: ${response.statusText}`);
-    }
-    return await response.json();
-  } catch (error) {
-    console.error(`Fetch API Error on ${endpoint}:`, error);
-    return []; // Return empty array on failure
-  }
-}
+/**
+ * API Client — FULL SUPABASE MIGRATION (SERVERLESS)
+ * 🏛️ Direct connection to Supabase DB, bypassing the need for Railway/Express.
+ */
 
 export const api = {
-  health: async () => {
-    try {
-      const response = await fetch(`${API_URL}/health`);
-      return await response.json();
-    } catch (error) {
-      console.error("API Error (health):", error);
-      throw error;
-    }
+  health: async () => ({ status: 'ok', source: 'supabase-direct' }),
+
+  getVocabulary: async () => {
+    const { data, error } = await supabase.from('vocabulary').select('*').order('term');
+    if (error) { console.error(error); return []; }
+    return data || [];
   },
-  getVocabulary: async () => fetcher('/vocabulary'),
-  getDeputies: async () => fetcher('/deputies'),
-  getCalendarEvents: async () => fetcher('/calendar'),
-  getContent: async (limit = 10) => fetcher(`/content?limit=${limit}`),
-  getPoliticians: async () => fetcher('/politicians'),
-  getPolitician: async (id: string) => fetcher(`/politicians/${id}`),
-  getPoliticianPromises: async (id: string) => fetcher(`/politicians/${id}/promises`),
-  getLaws: async () => fetcher('/laws'),
-  getLaw: async (id: string) => fetcher(`/laws/${id}`),
+
+  getDeputies: async () => {
+    const { data, error } = await supabase.from('deputies').select('*').order('last_name');
+    if (error) { console.error(error); return []; }
+    return data || [];
+  },
+
+  getCalendarEvents: async () => {
+    const { data, error } = await supabase.from('calendar').select('*').order('date', { ascending: true });
+    if (error) { console.error(error); return []; }
+    return data || [];
+  },
+
+  getContent: async (limit = 10) => {
+    const { data, error } = await supabase.from('content').select('*').limit(limit).order('created_at', { ascending: false });
+    if (error) { console.error(error); return []; }
+    return data || [];
+  },
+
+  getPoliticians: async () => {
+    const { data, error } = await supabase.from('politicians').select('*').order('last_name');
+    if (error) { console.error(error); return []; }
+    return data || [];
+  },
+
+  getPolitician: async (id: string) => {
+    const { data, error } = await supabase.from('politicians').select('*').eq('id', id).single();
+    if (error) { console.error(error); return null; }
+    return data;
+  },
+
+  getPoliticianPromises: async (id: string) => {
+    const { data, error } = await supabase.from('promises').select('*').eq('politician_id', id).order('created_at', { ascending: false });
+    if (error) { console.error(error); return []; }
+    return data || [];
+  },
+
+  getLaws: async () => {
+    const { data, error } = await supabase.from('laws').select('*').order('created_at', { ascending: false });
+    if (error) { console.error(error); return []; }
+    return data || [];
+  },
+
+  getLaw: async (id: string) => {
+    const { data, error } = await supabase.from('laws').select('*').eq('id', id).single();
+    if (error) { console.error(error); return null; }
+    return data;
+  },
+
   subscribeNewsletter: async (payload: { email: string, preferences: any, postal_code?: string }) => {
     const { email, preferences, postal_code } = payload;
-    
     const { data, error } = await supabase
       .from('subscribers')
-      .insert([
-        { 
-          email, 
-          preferences: preferences || {},
-          postal_code: postal_code || null,
-          status: 'active'
-        }
-      ])
+      .insert([{ 
+        email, 
+        preferences: preferences || {}, 
+        postal_code: postal_code || null, 
+        status: 'active' 
+      }])
       .select()
       .single();
 
     if (error) {
-      if (error.code === '23505') {
-        throw new Error("Cet e-mail est déjà abonné.");
-      }
-      throw new Error(error.message || "Une erreur est survenue lors de l'inscription.");
+      if (error.code === '23505') throw new Error("Cet e-mail est déjà abonné.");
+      throw new Error(error.message || "Erreur d'inscription.");
     }
-    
     return data;
   },
-  getSubscribers: async () => fetcher('/subscribers'),
-  getPipelineLogs: async () => fetcher('/admin/pipeline-logs'),
-  triggerAssembleePipeline: async () => {
-    const API_URL = process.env.NEXT_PUBLIC_API_URL || "http://localhost:3001/api";
-    const res = await fetch(`${API_URL}/admin/run-pipeline?name=assemblee`, {
-      method: "POST",
-    });
-    if (!res.ok) {
-      const err = await res.json();
-      throw new Error(err.error || "Pipeline error");
-    }
-    return res.json();
+
+  getSubscribers: async () => {
+    const { data, error } = await supabase.from('subscribers').select('*').order('created_at', { ascending: false });
+    if (error) { console.error(error); return []; }
+    return data || [];
   }
 };

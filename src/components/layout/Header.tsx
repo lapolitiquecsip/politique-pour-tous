@@ -84,7 +84,7 @@ export default function Header() {
             </Link>
             <Link href="/promesses" className="text-sm font-semibold text-slate-600 hover:text-blue-600 transition-colors flex items-center gap-1.5 group">
               <MessageSquareQuote size={16} className="text-purple-500 group-hover:scale-110 transition-transform" />
-              Ils avaient dit...
+              Promesses
             </Link>
             <Link href="/newsletter" className="text-sm font-semibold text-slate-600 hover:text-blue-600 transition-colors flex items-center gap-1.5 group underline decoration-red-400 decoration-2 underline-offset-4">
               <Mail size={16} className="text-pink-500 group-hover:scale-110 transition-transform" />
@@ -150,7 +150,7 @@ export default function Header() {
             <CalendarDays className="text-amber-500" /> Calendrier
           </Link>
           <Link href="/promesses" className="flex items-center gap-3 text-lg font-bold text-slate-900" onClick={() => setIsMenuOpen(false)}>
-            <MessageSquareQuote className="text-purple-500" /> Ils avaient dit que...
+            <MessageSquareQuote className="text-purple-500" /> Promesses
           </Link>
           <Link href="/newsletter" className="flex items-center gap-3 text-lg font-bold text-slate-900" onClick={() => setIsMenuOpen(false)}>
             <Mail className="text-pink-500" /> Newsletter

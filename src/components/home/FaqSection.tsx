@@ -48,8 +48,8 @@ const faqData: FaqItem[] = [
   },
   {
     id: 5,
-    question: "C'est quoi l'Indice de Clarté ?",
-    answer: "C'est notre propre analyse qui évalue la complexité d'un texte de loi pour le rendre accessible à tous les citoyens.",
+    question: "Qui êtes-vous ?",
+    answer: "Nous sommes Hippolyte et Teva, deux étudiants de 19 ans. Nous avons créé ce site car nous étions frustrés par le manque de transparence politique et le déclin de notre démocratie.",
     color: "red",
     position: { top: "70%", left: "60%" },
     delay: 1.5,
@@ -75,7 +75,7 @@ export default function FaqSection() {
       </div>
 
       <div className="container mx-auto max-w-6xl relative z-10">
-        {/* Poster Title (MATCHING QUE VOTE VOTRE DEPUTE STYLE) */}
+        {/* Poster Title (CLEAN BLACK STYLE) */}
         <div className="relative mb-24 text-center">
           <div className="relative z-10">
             <span className="text-slate-900 opacity-[0.06] absolute -top-12 left-1/2 -translate-x-1/2 select-none hidden md:block whitespace-nowrap text-9xl font-staatliches tracking-widest leading-none">
@@ -83,7 +83,7 @@ export default function FaqSection() {
             </span>
             
             <h2 className="text-7xl md:text-9xl font-staatliches uppercase tracking-tighter leading-none text-slate-900">
-              F.A.<span className="bg-gradient-to-r from-blue-600 via-red-600 to-blue-600 bg-clip-text text-transparent">Q.</span>
+              F.A.Q.
             </h2>
           </div>
           <div className="h-1.5 w-32 bg-gradient-to-r from-blue-600 to-red-600 mt-8 rounded-full mx-auto" />

@@ -11,13 +11,41 @@ import { getDepartmentName } from "@/lib/department-mapping";
 import { motion, AnimatePresence } from "framer-motion";
 import { Map, List, Users, Landmark, ChevronRight } from "lucide-react";
 
+const MOCK_DEPUTIES: Deputy[] = [
+  {
+    id: "ruffin-francois",
+    firstName: "François",
+    lastName: "Ruffin",
+    party: "Picardie Debout",
+    department: "Somme",
+    constituencyNumber: 1
+  },
+  {
+    id: "melenchon-jean-luc",
+    firstName: "Jean-Luc",
+    lastName: "Mélenchon",
+    party: "LFI",
+    department: "Bouches-du-Rhône",
+    constituencyNumber: 4
+  },
+  {
+    id: "le-pen-marine",
+    firstName: "Marine",
+    lastName: "Le Pen",
+    party: "RN",
+    department: "Pas-de-Calais",
+    constituencyNumber: 11
+  }
+];
+
 export default function DeputyClient({ initialDeputies }: { initialDeputies: Deputy[] }) {
   const router = useRouter();
+  const deputiesList = initialDeputies.length > 0 ? initialDeputies : MOCK_DEPUTIES;
   const [searchQuery, setSearchQuery] = useState("");
   const [selectedDepartment, setSelectedDepartment] = useState<string | null>(null);
   const [showMap, setShowMap] = useState(true);
 
-  const filteredDeputies = initialDeputies.filter((deputy) => {
+  const filteredDeputies = deputiesList.filter((deputy) => {
     const q = searchQuery.toLowerCase();
     const fullName = `${deputy.firstName} ${deputy.lastName}`.toLowerCase();
 
@@ -27,11 +55,12 @@ export default function DeputyClient({ initialDeputies }: { initialDeputies: Dep
       (deputy.department && deputy.department.toLowerCase().includes(q)) ||
       (deputy.party && deputy.party.toLowerCase().includes(q));
 
+    const deptName = selectedDepartment ? getDepartmentName(selectedDepartment).toLowerCase() : "";
     const matchesDepartment =
       !selectedDepartment ||
       (deputy.department &&
-        deputy.department.toLowerCase() ===
-          getDepartmentName(selectedDepartment).toLowerCase());
+        (deputy.department.toLowerCase() === deptName || 
+         deputy.department.includes(selectedDepartment)));
 
     return matchesSearch && matchesDepartment;
   });

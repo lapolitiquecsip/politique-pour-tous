@@ -115,7 +115,7 @@ export default async function Home() {
           
           <div className="flex flex-col items-center gap-6">
             <Link 
-              href="/newsletter" 
+              href="/premium" 
               className="px-10 py-5 bg-primary text-white font-black rounded-2xl hover:bg-primary/90 transition-all shadow-xl hover:shadow-primary/20 hover:-translate-y-1 text-xl flex items-center gap-3 group"
             >
               S&apos;abonner au service <span className="px-2 py-1 bg-white/20 rounded-lg text-sm">3€ / mois</span>

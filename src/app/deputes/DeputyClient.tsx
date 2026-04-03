@@ -8,7 +8,7 @@ import { Deputy } from "@/components/deputies/DeputyCard";
 import DeputyCard from "@/components/deputies/DeputyCard";
 import { getDepartmentName } from "@/lib/department-mapping";
 import { motion, AnimatePresence } from "framer-motion";
-import { Map, List, Users } from "lucide-react";
+import { Map, List, Users, Landmark, ChevronRight } from "lucide-react";
 
 export default function DeputyClient({ initialDeputies }: { initialDeputies: Deputy[] }) {
   const [searchQuery, setSearchQuery] = useState("");
@@ -93,45 +93,86 @@ export default function DeputyClient({ initialDeputies }: { initialDeputies: Dep
             animate={{ opacity: 1, y: 0 }}
             exit={{ opacity: 0, y: -20 }}
             transition={{ duration: 0.4 }}
-            className="space-y-12"
+            className="flex flex-col lg:flex-row gap-6 items-start"
           >
-            <div className="bg-card/30 backdrop-blur-sm border border-border rounded-3xl p-2">
+            <motion.div 
+              layout 
+              className={`bg-card/30 backdrop-blur-sm border border-border rounded-3xl p-2 transition-all duration-500 w-full ${
+                selectedDepartment ? "lg:w-[60%]" : "lg:w-full"
+              }`}
+            >
               <FranceMap
                 selectedDepartment={selectedDepartment}
                 onDepartmentSelect={setSelectedDepartment}
               />
-            </div>
+            </motion.div>
 
-            {/* Display deputies directly under the map when a department is selected */}
+            {/* Panel de Circonscriptions (Side Panel en Desktop, sous la carte en Mobile) */}
             <AnimatePresence>
               {selectedDepartment && (
                 <motion.div
-                  initial={{ opacity: 0, height: 0 }}
-                  animate={{ opacity: 1, height: "auto" }}
-                  exit={{ opacity: 0, height: 0 }}
-                  className="space-y-8 overflow-hidden"
+                  initial={{ opacity: 0, x: 20, width: 0 }}
+                  animate={{ opacity: 1, x: 0, width: "100%" }}
+                  exit={{ opacity: 0, x: 20, width: 0 }}
+                  transition={{ duration: 0.4, type: "spring", bounce: 0.2 }}
+                  className="w-full lg:max-w-md shrink-0"
                 >
-                  <div className="flex items-center justify-between border-b border-border pb-4">
-                    <h3 className="text-2xl font-bold flex items-center gap-3">
-                      <Users className="w-6 h-6 text-red-500" />
-                      Députés du {getDepartmentName(selectedDepartment)}
-                      <span className="text-sm font-medium bg-red-500/10 text-red-500 px-2.5 py-1 rounded-full ml-2">
-                        {filteredDeputies.length}
-                      </span>
-                    </h3>
-                  </div>
-                  
-                  <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
-                    {filteredDeputies.map((deputy) => (
-                      <DeputyCard key={deputy.id} deputy={deputy} />
-                    ))}
-                  </div>
-
-                  {filteredDeputies.length === 0 && (
-                    <div className="text-center py-12 bg-secondary/20 rounded-2xl border border-dashed border-border">
-                      <p className="text-muted-foreground">Aucun député trouvé pour ce département.</p>
+                  <div className="bg-white dark:bg-slate-900 border border-border shadow-2xl rounded-3xl overflow-hidden flex flex-col max-h-[600px]">
+                    
+                    {/* Panel Header */}
+                    <div className="bg-slate-50 dark:bg-slate-800 p-6 border-b border-border">
+                      <div className="flex items-center justify-between">
+                        <div>
+                          <h3 className="text-2xl font-black text-slate-900 dark:text-white flex items-center gap-2">
+                            <Landmark className="w-6 h-6 text-red-500" />
+                            {getDepartmentName(selectedDepartment)}
+                          </h3>
+                          <p className="text-sm font-semibold text-slate-500 mt-1 uppercase tracking-widest">
+                            {filteredDeputies.length} circonscription{filteredDeputies.length > 1 ? "s" : ""}
+                          </p>
+                        </div>
+                      </div>
                     </div>
-                  )}
+
+                    {/* Découpage par circonscription */}
+                    <div className="overflow-y-auto p-4 space-y-3 custom-scrollbar flex-1 bg-slate-50/50 dark:bg-slate-950">
+                      {[...filteredDeputies]
+                        .sort((a, b) => a.constituencyNumber - b.constituencyNumber)
+                        .map((deputy) => (
+                          <div 
+                            key={deputy.id}
+                            className="bg-white dark:bg-slate-900 rounded-2xl p-4 border border-slate-100 dark:border-slate-800 shadow-sm hover:shadow-md transition-shadow flex items-center gap-4 group"
+                          >
+                            <div className="w-12 h-12 rounded-xl bg-slate-100 dark:bg-slate-800 flex items-center justify-center font-black text-slate-400 shrink-0">
+                              {deputy.constituencyNumber}
+                              <span className="text-[10px] absolute -mt-4 ml-3 opacity-50">ère</span>
+                            </div>
+                            
+                            <div className="flex-1 min-w-0">
+                              <p className="text-[10px] font-black uppercase text-slate-400 tracking-widest mb-0.5">
+                                Circonscription n°{deputy.constituencyNumber}
+                              </p>
+                              <p className="font-bold text-slate-900 dark:text-white truncate">
+                                {deputy.firstName} {deputy.lastName}
+                              </p>
+                              <p className="text-xs font-semibold text-slate-500 truncate">
+                                {deputy.party}
+                              </p>
+                            </div>
+
+                            <button className="w-8 h-8 rounded-full bg-slate-50 dark:bg-slate-800 flex items-center justify-center text-slate-400 hover:text-red-500 hover:bg-red-50 transition-colors shrink-0">
+                              <ChevronRight className="w-4 h-4" />
+                            </button>
+                          </div>
+                      ))}
+
+                      {filteredDeputies.length === 0 && (
+                        <div className="text-center py-12 px-4">
+                          <p className="text-slate-500 font-medium">Aucun député trouvé pour ce département.</p>
+                        </div>
+                      )}
+                    </div>
+                  </div>
                 </motion.div>
               )}
             </AnimatePresence>

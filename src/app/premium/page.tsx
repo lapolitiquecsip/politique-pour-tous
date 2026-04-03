@@ -79,7 +79,7 @@ const TESTIMONIALS = [
   {
     name: "Marc T.",
     role: "Cadre, Lyon",
-    text: "Je n'ai plus besoin de scroller Twitter pour comprendre ce qui se passe. La newsletter me donne l'essentiel sans le bruit.",
+    text: "Je n'ai plus besoin de scroller Twitter pour comprendre ce qui se passe. Le contenu Premium me donne l'essentiel sans le bruit.",
   },
   {
     name: "Sophie L.",
@@ -116,7 +116,7 @@ const CONTENTS = [
   },
 ];
 
-export default function NewsletterPage() {
+export default function PremiumPage() {
   const [email, setEmail] = useState("");
   const [prefAssemblee, setPrefAssemblee] = useState(true);
   const [prefLois, setPrefLois] = useState(true);
@@ -276,7 +276,7 @@ export default function NewsletterPage() {
             <h2 className="text-3xl md:text-4xl font-extrabold text-slate-900 mb-4">
               Aperçu d&apos;un email type
             </h2>
-            <p className="text-lg text-slate-500">Voici à quoi ressemblera votre newsletter chaque lundi.</p>
+            <p className="text-lg text-slate-500">Voici à quoi ressemblera votre résumé Premium chaque lundi.</p>
           </FadeIn>
 
           <FadeIn delay={0.15}>
@@ -289,7 +289,7 @@ export default function NewsletterPage() {
                   <span className="w-3 h-3 rounded-full bg-green-500" />
                 </div>
                 <span className="text-white/60 text-sm font-mono ml-4 truncate">
-                  newsletter@lapolitiquecestsimple.fr
+                  premium@lapolitiquecestsimple.fr
                 </span>
               </div>
 

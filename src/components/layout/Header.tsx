@@ -19,7 +19,7 @@ import {
   Home,
   Users,
   Scale,
-  Mail
+  Star
 } from "lucide-react";
 
 export default function Header() {
@@ -86,9 +86,9 @@ export default function Header() {
               <MessageSquareQuote size={16} className="text-purple-500 group-hover:scale-110 transition-transform" />
               Promesses
             </Link>
-            <Link href="/newsletter" className="text-sm font-semibold text-slate-600 hover:text-blue-600 transition-colors flex items-center gap-1.5 group underline decoration-red-400 decoration-2 underline-offset-4">
-              <Mail size={16} className="text-pink-500 group-hover:scale-110 transition-transform" />
-              Newsletter
+            <Link href="/premium" className="text-sm font-semibold text-slate-600 hover:text-blue-600 transition-colors flex items-center gap-1.5 group underline decoration-yellow-400 decoration-2 underline-offset-4">
+              <Star size={16} className="text-yellow-500 group-hover:scale-110 transition-transform" />
+              Premium
             </Link>
             
             <div className="h-6 w-[1px] bg-slate-200 mx-2" />
@@ -152,8 +152,8 @@ export default function Header() {
           <Link href="/promesses" className="flex items-center gap-3 text-lg font-bold text-slate-900" onClick={() => setIsMenuOpen(false)}>
             <MessageSquareQuote className="text-purple-500" /> Promesses
           </Link>
-          <Link href="/newsletter" className="flex items-center gap-3 text-lg font-bold text-slate-900" onClick={() => setIsMenuOpen(false)}>
-            <Mail className="text-pink-500" /> Newsletter
+          <Link href="/premium" className="flex items-center gap-3 text-lg font-bold text-slate-900" onClick={() => setIsMenuOpen(false)}>
+            <Star className="text-yellow-500" /> Premium
           </Link>
           <Link href="/login" className="flex items-center gap-3 text-lg font-bold text-blue-600" onClick={() => setIsMenuOpen(false)}>
             <LogIn size={20} /> Mon Compte

@@ -15,6 +15,7 @@ import {
   BookOpen
 } from "lucide-react";
 import Link from "next/link";
+import { useRouter } from "next/navigation";
 import DetailedLawDossier from "@/components/laws/DetailedLawDossier";
 import { FREE_LAWS } from "@/data/free-laws-dossiers";
 
@@ -28,6 +29,7 @@ const CATEGORIES = [
 ];
 
 export default function LawsClient() {
+  const router = useRouter();
   const [selectedCat, setSelectedCat] = useState<string | null>(null);
 
   const scrollToPremium = () => {
@@ -56,7 +58,11 @@ export default function LawsClient() {
             
             const handleCategoryClick = () => {
               if (cat.isFree) {
-                setSelectedCat(cat.id);
+                if (cat.id === "edu") {
+                  router.push("/lois/education");
+                } else {
+                  setSelectedCat(cat.id);
+                }
               } else {
                 scrollToPremium();
               }

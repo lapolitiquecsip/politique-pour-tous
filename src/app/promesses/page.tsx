@@ -4,6 +4,8 @@ import { useEffect, useState } from "react";
 import PoliticianCard from "@/components/promises/PoliticianCard";
 import { Search, Loader2 } from "lucide-react";
 
+import { api } from "@/lib/api";
+
 export default function PromisesPage() {
   const [politicians, setPoliticians] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
@@ -15,9 +17,7 @@ export default function PromisesPage() {
   useEffect(() => {
     async function fetchPoliticians() {
       try {
-        const API_URL = process.env.NEXT_PUBLIC_API_URL || "http://localhost:3001/api";
-        const res = await fetch(`${API_URL}/politicians`);
-        const data = await res.json();
+        const data = await api.getPoliticians();
         setPoliticians(data);
       } catch (error) {
         console.error("Failed to fetch politicians:", error);

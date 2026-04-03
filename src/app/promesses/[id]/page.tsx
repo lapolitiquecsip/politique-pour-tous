@@ -16,6 +16,8 @@ interface Politician {
   party_color: string;
 }
 
+import { api } from "@/lib/api";
+
 export default function PoliticianPromisesPage() {
   const { id } = useParams();
   const router = useRouter();
@@ -28,16 +30,12 @@ export default function PoliticianPromisesPage() {
   useEffect(() => {
     async function fetchData() {
       try {
-        const API_URL = process.env.NEXT_PUBLIC_API_URL || "http://localhost:3001/api";
-        const [polRes, promRes] = await Promise.all([
-          fetch(`${API_URL}/politicians/${id}`),
-          fetch(`${API_URL}/politicians/${id}/promises`)
+        const [polData, promData] = await Promise.all([
+          api.getPolitician(id as string),
+          api.getPoliticianPromises(id as string)
         ]);
 
-        if (!polRes.ok) throw new Error("Politician not found");
-
-        const polData = await polRes.json();
-        const promData = await promRes.json();
+        if (!polData) throw new Error("Politician not found");
 
         setPolitician(polData);
         setPromises(promData);

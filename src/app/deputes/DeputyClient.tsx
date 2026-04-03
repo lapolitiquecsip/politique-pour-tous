@@ -1,16 +1,18 @@
 "use client";
 
 import { useState } from "react";
+import { useRouter } from "next/navigation";
 import DeputySearch from "@/components/deputies/DeputySearch";
 import DeputyGrid from "@/components/deputies/DeputyGrid";
 import FranceMap from "@/components/deputies/FranceMap";
-import { Deputy } from "@/components/deputies/DeputyCard";
+import { Deputy, generateSlug } from "@/components/deputies/DeputyCard";
 import DeputyCard from "@/components/deputies/DeputyCard";
 import { getDepartmentName } from "@/lib/department-mapping";
 import { motion, AnimatePresence } from "framer-motion";
 import { Map, List, Users, Landmark, ChevronRight } from "lucide-react";
 
 export default function DeputyClient({ initialDeputies }: { initialDeputies: Deputy[] }) {
+  const router = useRouter();
   const [searchQuery, setSearchQuery] = useState("");
   const [selectedDepartment, setSelectedDepartment] = useState<string | null>(null);
   const [showMap, setShowMap] = useState(true);
@@ -138,33 +140,39 @@ export default function DeputyClient({ initialDeputies }: { initialDeputies: Dep
                     <div className="overflow-y-auto p-4 space-y-3 custom-scrollbar flex-1 bg-slate-50/50 dark:bg-slate-950">
                       {[...filteredDeputies]
                         .sort((a, b) => a.constituencyNumber - b.constituencyNumber)
-                        .map((deputy) => (
-                          <div 
-                            key={deputy.id}
-                            className="bg-white dark:bg-slate-900 rounded-2xl p-4 border border-slate-100 dark:border-slate-800 shadow-sm hover:shadow-md transition-shadow flex items-center gap-4 group"
-                          >
-                            <div className="w-12 h-12 rounded-xl bg-slate-100 dark:bg-slate-800 flex items-center justify-center font-black text-slate-400 shrink-0">
-                              {deputy.constituencyNumber}
-                              <span className="text-[10px] absolute -mt-4 ml-3 opacity-50">ère</span>
-                            </div>
-                            
-                            <div className="flex-1 min-w-0">
-                              <p className="text-[10px] font-black uppercase text-slate-400 tracking-widest mb-0.5">
-                                Circonscription n°{deputy.constituencyNumber}
-                              </p>
-                              <p className="font-bold text-slate-900 dark:text-white truncate">
-                                {deputy.firstName} {deputy.lastName}
-                              </p>
-                              <p className="text-xs font-semibold text-slate-500 truncate">
-                                {deputy.party}
-                              </p>
-                            </div>
+                        .map((deputy) => {
+                          const slug = deputy.slug || generateSlug(deputy.firstName, deputy.lastName);
+                          return (
+                            <div 
+                              key={deputy.id}
+                              className="bg-white dark:bg-slate-900 rounded-2xl p-4 border border-slate-100 dark:border-slate-800 shadow-sm hover:shadow-md transition-all flex items-center gap-4 group"
+                            >
+                              <div className="w-12 h-12 rounded-xl bg-slate-100 dark:bg-slate-800 flex items-center justify-center font-black text-slate-400 shrink-0">
+                                {deputy.constituencyNumber}
+                                <span className="text-[10px] absolute -mt-4 ml-3 opacity-50">ère</span>
+                              </div>
+                              
+                              <div className="flex-1 min-w-0">
+                                <p className="text-[10px] font-black uppercase text-slate-400 tracking-widest mb-0.5">
+                                  Circonscription n°{deputy.constituencyNumber}
+                                </p>
+                                <p className="font-bold text-slate-900 dark:text-white truncate">
+                                  {deputy.firstName} {deputy.lastName}
+                                </p>
+                                <p className="text-xs font-semibold text-slate-500 truncate">
+                                  {deputy.party}
+                                </p>
+                              </div>
 
-                            <button className="w-8 h-8 rounded-full bg-slate-50 dark:bg-slate-800 flex items-center justify-center text-slate-400 hover:text-red-500 hover:bg-red-50 transition-colors shrink-0">
-                              <ChevronRight className="w-4 h-4" />
-                            </button>
-                          </div>
-                      ))}
+                              <button 
+                                onClick={() => router.push(`/deputes/${slug}`)}
+                                className="w-8 h-8 rounded-full bg-slate-50 dark:bg-slate-800 flex items-center justify-center text-slate-400 hover:text-red-500 hover:bg-red-50 transition-colors shrink-0"
+                              >
+                                <ChevronRight className="w-4 h-4" />
+                              </button>
+                            </div>
+                          );
+                      })}
 
                       {filteredDeputies.length === 0 && (
                         <div className="text-center py-12 px-4">

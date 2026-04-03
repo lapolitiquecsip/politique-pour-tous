@@ -21,7 +21,7 @@ const partyColors: Record<string, string> = {
   "EELV": "bg-[#27AE60]",
 };
 
-function generateSlug(firstName: string, lastName: string): string {
+export function generateSlug(firstName: string, lastName: string): string {
   const normalize = (s: string) =>
     s.toLowerCase()
       .normalize("NFD")

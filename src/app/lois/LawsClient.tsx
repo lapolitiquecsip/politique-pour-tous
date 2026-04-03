@@ -16,6 +16,7 @@ import {
 } from "lucide-react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
+import { STRIPE_CHECKOUT_URL } from "@/lib/constants";
 import DetailedLawDossier from "@/components/laws/DetailedLawDossier";
 import { FREE_LAWS } from "@/data/free-laws-dossiers";
 
@@ -161,7 +162,7 @@ export default function LawsClient() {
 
             <div className="flex flex-col items-center gap-6">
               <Link
-                href="/newsletter"
+                href={STRIPE_CHECKOUT_URL}
                 className="group px-12 py-6 bg-gradient-to-r from-amber-500 to-orange-600 text-white font-black rounded-3xl hover:shadow-2xl hover:shadow-amber-500/30 transition-all hover:-translate-y-1 text-xl flex items-center gap-4"
               >
                 Devenir membre Premium

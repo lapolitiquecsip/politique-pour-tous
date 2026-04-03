@@ -3,6 +3,7 @@
 import { useState, useEffect, useRef } from "react";
 import { motion, useInView } from "framer-motion";
 import { api } from "@/lib/api";
+import { STRIPE_CHECKOUT_URL } from "@/lib/constants";
 import {
   CheckCircle2,
   Loader2,
@@ -127,33 +128,11 @@ export default function PremiumPage() {
   const [success, setSuccess] = useState(false);
   const [error, setError] = useState("");
 
-  const handleSubmit = async (e: React.FormEvent) => {
+  const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     setLoading(true);
-    setError("");
-
-    if (prefDepute && (!zipCode || zipCode.length !== 5)) {
-      setError("Veuillez entrer un code postal valide à 5 chiffres.");
-      setLoading(false);
-      return;
-    }
-
-    try {
-      await api.subscribeNewsletter({
-        email,
-        preferences: {
-          assemblee: prefAssemblee,
-          lois_majeures: prefLois,
-          suivi_depute: prefDepute,
-        },
-        postal_code: prefDepute ? zipCode : undefined,
-      });
-      setSuccess(true);
-    } catch (err: any) {
-      setError(err.message || "Une erreur inattendue est survenue.");
-    } finally {
-      setLoading(false);
-    }
+    // Redirection directe vers Stripe Checkout
+    window.location.href = STRIPE_CHECKOUT_URL;
   };
 
   return (

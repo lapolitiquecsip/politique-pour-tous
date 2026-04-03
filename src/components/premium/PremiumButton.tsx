@@ -5,53 +5,17 @@ import { supabase } from "@/lib/supabase";
 import { Star, RefreshCw as Loader2, X, AlertCircle, ArrowRight } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
 import Link from "next/link";
+import { STRIPE_CHECKOUT_URL } from "@/lib/constants";
 
 export default function PremiumButton() {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [dismissed, setDismissed] = useState(false);
 
-  const handlePremiumClick = async () => {
+  const handlePremiumClick = () => {
     setLoading(true);
-    setError(null);
-
-    try {
-      // 1. Vérifier si l'utilisateur est connecté
-      const {
-        data: { user },
-      } = await supabase.auth.getUser();
-
-      if (!user) {
-        setError("Veuillez vous connecter pour accéder au paiement");
-        setLoading(false);
-        return;
-      }
-
-      // 2. Appeler la Edge Function Supabase
-      const { data, error: fnError } = await supabase.functions.invoke(
-        "create-checkout",
-        {
-          body: { userId: user.id, email: user.email },
-        }
-      );
-
-      if (fnError) {
-        setError("Erreur lors de la création du paiement. Réessayez.");
-        setLoading(false);
-        return;
-      }
-
-      // 3. Rediriger vers Stripe Checkout
-      if (data?.url) {
-        window.location.href = data.url;
-      } else {
-        setError("Impossible de démarrer le paiement. Réessayez.");
-        setLoading(false);
-      }
-    } catch (err) {
-      setError("Une erreur inattendue est survenue.");
-      setLoading(false);
-    }
+    // Redirection directe vers Stripe Checkout
+    window.location.href = STRIPE_CHECKOUT_URL;
   };
 
   if (dismissed) return null;

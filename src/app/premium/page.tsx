@@ -19,6 +19,7 @@ import {
   ArrowRight,
   Quote,
   AlertCircle,
+  Scale,
 } from "lucide-react";
 import Link from "next/link";
 

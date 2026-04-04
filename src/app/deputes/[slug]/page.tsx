@@ -17,8 +17,8 @@ import { motion } from "framer-motion";
 
 // Mock data generator for votes
 const getMockVotes = () => [
-  { id: 1, title: "Loi Plein Emploi", date: "Janvier 2024", vote: "POUR", color: "text-emerald-500", bg: "bg-emerald-500/10", icon: CheckCircle2, lawSlug: "loi-plein-emploi" },
-  { id: 2, title: "Loi Programmation Militaire", date: "Octobre 2023", vote: "CONTRE", color: "text-red-500", bg: "bg-red-500/10", icon: XCircle, lawSlug: "loi-programmation-militaire" },
+  { id: 1, title: "Loi Plein Emploi", date: "Janvier 2024", vote: "POUR", color: "text-emerald-500", bg: "bg-emerald-500/10", icon: CheckCircle2, lawSlug: "plein-emploi" },
+  { id: 2, title: "Loi Programmation Militaire", date: "Octobre 2023", vote: "CONTRE", color: "text-red-500", bg: "bg-red-500/10", icon: XCircle, lawSlug: "loi-militaire" },
   { id: 3, title: "Loi Immigration", date: "Décembre 2023", vote: "ABSTENTION", color: "text-amber-500", bg: "bg-amber-500/10", icon: MinusCircle, lawSlug: "loi-immigration" },
   { id: 4, title: "Réforme des Retraites", date: "Mars 2023", vote: "CONTRE", color: "text-red-500", bg: "bg-red-500/10", icon: XCircle, lawSlug: "reforme-des-retraites" },
   { id: 5, title: "Loi Pouvoir d'Achat", date: "Juillet 2022", vote: "POUR", color: "text-emerald-500", bg: "bg-emerald-500/10", icon: CheckCircle2, lawSlug: "loi-pouvoir-achat" },

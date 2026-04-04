@@ -1,116 +1,240 @@
+"use client";
+
+import { use, useEffect, useState } from "react";
+import { useRouter } from "next/navigation";
+import { 
+  ArrowLeft, 
+  CheckCircle2, 
+  Calendar, 
+  Sparkles,
+  ChevronUp,
+  ArrowRight
+} from "lucide-react";
+import { motion } from "framer-motion";
+import { FREE_LAWS, LawDossier } from "@/data/free-laws-dossiers";
 import { api } from "@/lib/api";
 import Link from "next/link";
-import { ArrowLeft, CheckCircle2, XCircle, FileText, AlertCircle } from "lucide-react";
-import LawTimeline from "@/components/laws/LawTimeline";
-import HemicycleChart from "@/components/laws/HemicycleChart";
-import LawAccordions from "@/components/laws/LawAccordions";
-import { notFound } from "next/navigation";
+import { STRIPE_CHECKOUT_URL } from "@/lib/constants";
 
-export default async function LawDetailPage({ params }: { params: { id: string } }) {
-  let law;
-  try {
-    law = await api.getLaw(params.id);
-  } catch (err) {
-    //
-  }
+export default function LawDetailPage({ params }: { params: Promise<{ id: string }> }) {
+  const router = useRouter();
+  const { id } = use(params);
+  const [law, setLaw] = useState<LawDossier | null>(null);
+  const [loading, setLoading] = useState(true);
 
-  if (!law) {
-    notFound();
-  }
+  useEffect(() => {
+    const fetchLaw = async () => {
+      // 1. Check Mock Data (Priorité pour la démo)
+      const mockLaw = FREE_LAWS.find(l => l.id === id);
+      if (mockLaw) {
+        setLaw(mockLaw);
+        setLoading(false);
+        return;
+      }
 
-  const dateStr = law.created_at 
-    ? new Date(law.created_at).toLocaleDateString("fr-FR", { year: 'numeric', month: 'long', day: 'numeric' })
-    : "";
+      // 2. Try API if not in mock
+      try {
+        const dbLaw = await api.getLaw(id);
+        if (dbLaw) {
+          setLaw({
+            id: dbLaw.id,
+            title: dbLaw.title,
+            category: dbLaw.category,
+            summary: dbLaw.summary,
+            impacts: [], 
+            calendar: [], 
+            premiumPoints: [],
+            status: "application",
+            statusLabel: dbLaw.vote_result || "Décryptage en cours",
+            color: "blue"
+          });
+        }
+      } catch (err) {
+        console.error("Error fetching law:", err);
+      } finally {
+        setLoading(false);
+      }
+    };
 
-  let pros: string[] = [];
-  let cons: string[] = [];
-  try {
-    const impact = JSON.parse(law.impact);
-    pros = impact.pros || [];
-    cons = impact.cons || [];
-  } catch (e) {
-    // Failed to parse impact as JSON
-  }
+    fetchLaw();
+  }, [id]);
 
-  let timelineEvents = [];
-  try {
-    timelineEvents = typeof law.timeline === "string" ? JSON.parse(law.timeline) : law.timeline;
-  } catch (e) {
-    //
-  }
+  if (loading) return (
+    <div className="min-h-screen bg-slate-950 flex items-center justify-center font-staatliches">
+      <div className="flex flex-col items-center gap-6">
+        <div className="w-16 h-16 border-4 border-red-600 border-t-transparent rounded-full animate-spin shadow-2xl shadow-red-500/20" />
+        <span className="text-white tracking-[0.3em] uppercase animate-pulse">Chargement du dossier</span>
+      </div>
+    </div>
+  );
+
+  if (!law) return (
+    <div className="min-h-screen bg-slate-950 flex flex-col items-center justify-center p-4">
+      <h1 className="text-4xl font-staatliches text-white mb-4 uppercase">Dossier non trouvé</h1>
+      <button onClick={() => router.back()} className="text-red-500 font-bold hover:underline">
+        Retourner à la page précédente
+      </button>
+    </div>
+  );
 
   return (
-    <div className="min-h-screen bg-background pb-20">
-      {/* Header */}
-      <div className="bg-primary/5 border-b border-border pt-12 pb-16 px-4">
-        <div className="container mx-auto max-w-4xl">
-          <Link href="/lois" className="inline-flex items-center text-muted-foreground hover:text-primary transition-colors mb-8 text-sm font-semibold">
-            <ArrowLeft className="w-4 h-4 mr-2" /> Retour aux dossiers
-          </Link>
+    <div className="min-h-screen bg-white pb-32 overflow-x-hidden relative">
+      {/* 1. IMMERSIVE HEADER */}
+      <div className="relative h-[65vh] min-h-[550px] w-full flex items-end overflow-hidden">
+        {/* Background Image Layer */}
+        {law.backgroundImage && (
+          <div className="absolute inset-0 z-0">
+             <img 
+               src={law.backgroundImage} 
+               alt="" 
+               className="w-full h-full object-cover saturate-[1.2] brightness-[0.4] scale-110 lg:scale-100 transition-transform duration-[10s] transform-gpu motion-safe:hover:scale-110"
+             />
+             <div className="absolute inset-0 bg-gradient-to-t from-white via-transparent to-black/30" />
+          </div>
+        )}
 
-          <div className="flex flex-col md:flex-row md:items-center justify-between gap-6 mb-6">
+        {/* Floating Top Nav */}
+        <div className="absolute top-0 left-0 right-0 z-30 p-8 container mx-auto max-w-6xl flex justify-between items-center">
+            <button 
+              onClick={() => router.back()}
+              className="inline-flex items-center gap-2 px-6 py-3 bg-white/10 backdrop-blur-xl rounded-2xl text-white text-xs font-black uppercase tracking-widest border border-white/20 hover:bg-white/20 transition-all group"
+            >
+              <ArrowLeft className="w-4 h-4 group-hover:-translate-x-1 transition-transform" />
+              Retour
+            </button>
             <div className="flex items-center gap-3">
-              <span className="px-3 py-1 bg-primary/10 text-primary text-xs font-bold uppercase tracking-wider rounded-md">
-                {law.category}
-              </span>
-              <span className="text-muted-foreground text-sm font-medium">Déposé le {dateStr}</span>
+              <div className="w-2 h-2 rounded-full bg-red-600 animate-pulse shadow-[0_0_10px_rgba(220,38,38,0.8)]" />
+              <span className="text-[10px] font-black text-white/60 uppercase tracking-widest">Analyse en direct</span>
             </div>
-            {law.vote_result && (
-              <span className="px-4 py-2 bg-card border border-border shadow-sm rounded-full text-sm font-bold flex items-center gap-2">
-                {law.vote_result.toLowerCase() === "adoptée" && <CheckCircle2 className="w-4 h-4 text-green-500" />}
-                {law.vote_result.toLowerCase() === "rejetée" && <XCircle className="w-4 h-4 text-red-500" />}
-                {law.vote_result.toLowerCase() === "en cours" && <AlertCircle className="w-4 h-4 text-yellow-500" />}
-                {law.vote_result}
-              </span>
-            )}
-          </div>
-          
-          <h1 className="text-4xl md:text-5xl font-extrabold text-foreground leading-tight">
-            {law.title}
-          </h1>
         </div>
-      </div>
 
-      <div className="container mx-auto max-w-4xl px-4 mt-12 grid grid-cols-1 md:grid-cols-3 gap-12">
-        {/* Colonne de gauche (Main content) */}
-        <div className="md:col-span-2 space-y-10">
-          
-          {/* Le texte en bref */}
-          <section className="bg-card p-8 rounded-3xl border border-border shadow-sm">
-            <h2 className="text-2xl font-bold flex gap-2 items-center mb-6">
-              <div className="w-10 h-10 rounded-xl bg-orange-100 text-orange-600 flex items-center justify-center">
-                <FileText className="w-5 h-5" />
+        <div className="container mx-auto px-4 pb-16 relative z-10 max-w-6xl">
+           <div className="flex flex-col gap-6">
+              <div className="flex items-center gap-4">
+                 <span className="px-4 py-1.5 bg-blue-600 text-white text-[10px] font-black uppercase tracking-[0.2em] rounded-lg shadow-xl shadow-blue-600/30">
+                   {law.category}
+                 </span>
+                 <div className="flex items-center gap-2 px-4 py-1.5 bg-white/95 rounded-full text-slate-950 border border-white shadow-xl">
+                    <div className="w-2 h-2 rounded-full bg-green-500 animate-pulse" />
+                    <span className="text-[10px] font-black uppercase tracking-widest">{law.statusLabel}</span>
+                 </div>
               </div>
-              Le texte en bref
-            </h2>
-            <div className="prose prose-lg prose-slate text-foreground/80 leading-relaxed max-w-none">
-              <p className="font-semibold text-lg text-foreground">{law.summary}</p>
-              <p className="mt-4">{law.context}</p>
-            </div>
-          </section>
-
-          {/* Jauge de vote (existante — on la garde) + Hémicycle */}
-          <section className="bg-card p-8 rounded-3xl border border-border shadow-sm">
-            <h2 className="text-2xl font-bold mb-6">Résultat du vote à l&apos;Assemblée</h2>
-            <HemicycleChart />
-          </section>
-
-          {/* Arguments Pour / Contre + Positions — EN ACCORDÉON */}
-          <LawAccordions pros={pros} cons={cons} />
-
+              <motion.h1 
+                initial={{ y: 40, opacity: 0 }}
+                animate={{ y: 0, opacity: 1 }}
+                className="text-7xl md:text-9xl font-staatliches text-slate-900 leading-[0.8] uppercase italic drop-shadow-2xl"
+              >
+                {law.title}
+              </motion.h1>
+           </div>
         </div>
-
-        {/* Colonne de droite (Timeline) */}
-        <div>
-          <div className="sticky top-8">
-            <h2 className="text-2xl font-bold mb-6">La chronologie</h2>
-            <div className="bg-card p-6 rounded-3xl border border-border shadow-sm">
-              <LawTimeline events={timelineEvents} />
-            </div>
-          </div>
-        </div>
-        
       </div>
+
+      {/* 2. MAIN CONTENT BENTO GRID */}
+      <div className="container mx-auto px-4 max-w-6xl -mt-20 relative z-20">
+         <div className="bg-white rounded-[3.5rem] p-1 shadow-2xl border border-slate-100 ring-1 ring-slate-400/5">
+            <div className="p-8 md:p-12 lg:p-20">
+               <div className="max-w-4xl mb-24">
+                  <p className="text-base font-black text-red-600 uppercase tracking-[0.3em] mb-6">Résumé du projet</p>
+                  <p className="text-3xl md:text-5xl font-bold text-slate-900 leading-tight tracking-tight">
+                     {law.summary}
+                  </p>
+               </div>
+
+               <div className="grid grid-cols-1 lg:grid-cols-2 gap-20">
+                  {/* LEFT: DECRYPTAGE */}
+                  <div className="space-y-12">
+                     <div className="flex items-center gap-4">
+                        <div className="w-14 h-14 rounded-2xl bg-blue-50 flex items-center justify-center text-blue-600 border border-blue-100 shadow-sm">
+                           <CheckCircle2 className="w-7 h-7" />
+                        </div>
+                        <h2 className="text-3xl font-black uppercase tracking-tighter text-slate-900">Décryptage</h2>
+                     </div>
+
+                     <div className="space-y-6">
+                        {law.impacts.map((impact, idx) => (
+                           <motion.div 
+                             key={idx}
+                             initial={{ opacity: 0, x: -20 }}
+                             whileInView={{ opacity: 1, x: 0 }}
+                             viewport={{ once: true }}
+                             transition={{ delay: idx * 0.1 }}
+                             className="p-8 bg-slate-50/50 rounded-[2.5rem] border border-slate-100 flex gap-6 items-start hover:bg-white hover:shadow-xl hover:border-blue-100 transition-all duration-500 group"
+                           >
+                              <div className="w-8 h-8 rounded-xl bg-white border border-slate-200 flex items-center justify-center shrink-0 mt-1 shadow-sm group-hover:border-blue-600 transition-colors">
+                                 <div className="w-2.5 h-2.5 rounded-full bg-blue-600" />
+                              </div>
+                              <p className="font-bold text-slate-700 text-lg md:text-xl leading-relaxed italic">« {impact} »</p>
+                           </motion.div>
+                        ))}
+                     </div>
+                  </div>
+
+                  {/* RIGHT: CALENDAR */}
+                  <div className="space-y-12">
+                     <div className="flex items-center gap-4">
+                        <div className="w-14 h-14 rounded-2xl bg-red-50 flex items-center justify-center text-red-600 border border-red-100 shadow-sm">
+                           <Calendar className="w-7 h-7" />
+                        </div>
+                        <h2 className="text-3xl font-black uppercase tracking-tighter text-slate-900">Calendrier</h2>
+                     </div>
+
+                     <div className="relative pl-10 space-y-16 border-l-4 border-slate-100 ml-6">
+                        {law.calendar.map((item, idx) => (
+                           <div key={idx} className="relative">
+                              <div className="absolute -left-[54px] top-0 w-8 h-8 rounded-full bg-white border-[6px] border-red-600 shadow-xl" />
+                              <span className="text-xs font-black text-red-600 uppercase tracking-widest block mb-2">{item.date}</span>
+                              <p className="text-2xl font-bold text-slate-900 leading-none">{item.event}</p>
+                           </div>
+                        ))}
+                     </div>
+                  </div>
+               </div>
+            </div>
+         </div>
+      </div>
+
+      {/* 3. PREMIUM FLOATING PAYWALL */}
+      <div className="fixed bottom-0 left-0 right-0 z-50 p-6 md:p-12 pointer-events-none">
+         <motion.div 
+           initial={{ y: 150 }}
+           animate={{ y: 0 }}
+           className="container mx-auto max-w-5xl bg-gradient-to-r from-amber-400 via-orange-500 to-amber-500 p-[1.5px] rounded-[3rem] shadow-[0_30px_100px_rgba(251,191,36,0.2)] pointer-events-auto overflow-hidden"
+         >
+            <div className="bg-slate-950/95 backdrop-blur-3xl p-5 md:p-8 rounded-[2.9rem] flex flex-col md:flex-row items-center justify-between gap-8">
+               <div className="flex items-center gap-8 text-left">
+                  <div className="w-16 h-16 rounded-[1.5rem] bg-gradient-to-br from-amber-300 to-amber-500 flex items-center justify-center text-slate-950 shrink-0 shadow-lg shadow-amber-500/20">
+                     <Sparkles className="w-8 h-8" />
+                  </div>
+                  <div>
+                     <h4 className="text-2xl font-black text-white uppercase tracking-tighter leading-none mb-1.5">Guide de vote complet</h4>
+                     <p className="text-[10px] text-amber-400/80 uppercase tracking-[0.3em] font-black">Accès réservé aux membres Premium</p>
+                  </div>
+               </div>
+               
+               <div className="flex items-center gap-6">
+                   <div className="hidden lg:flex flex-col items-end gap-1 px-8 border-r border-white/10 mr-2">
+                       <span className="text-white text-xs font-bold leading-none">Vérifié par la rédaction</span>
+                       <span className="text-white/40 text-[9px] uppercase tracking-widest leading-none">Source : Assemblée Nationale</span>
+                   </div>
+                  <Link 
+                    href={STRIPE_CHECKOUT_URL}
+                    className="px-10 py-5 bg-amber-400 text-slate-950 font-black rounded-2xl hover:bg-white transition-all text-sm flex items-center gap-3 group shadow-xl shadow-amber-400/20"
+                  >
+                    Débloquer le dossier
+                    <ArrowRight className="w-5 h-5 group-hover:translate-x-2 transition-transform duration-300" />
+                  </Link>
+               </div>
+            </div>
+         </motion.div>
+      </div>
+
+      <button 
+        onClick={() => window.scrollTo({ top: 0, behavior: 'smooth' })}
+        className="fixed bottom-36 right-8 w-14 h-14 bg-white/80 backdrop-blur-md border border-slate-200 rounded-2xl flex items-center justify-center text-slate-900 shadow-2xl hover:bg-white transition-all z-10 group"
+      >
+        <ChevronUp className="w-6 h-6 group-hover:-translate-y-1 transition-transform" />
+      </button>
     </div>
   );
 }

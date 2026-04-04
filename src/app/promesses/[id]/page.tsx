@@ -20,15 +20,106 @@ import { api } from "@/lib/api";
 
 const MOCK_PROMISES: Record<string, any[]> = {
   "emmanuel-macron": [
-    { id: "p1", citation: "Suppression de la redevance audiovisuelle pour tous les Français.", status: "kept", date_made: "2022-03-15", category: "Économie", source_url: "https://www.service-public.fr" },
-    { id: "p2", citation: "Planter 1 milliard d'arbres sur le territoire national d'ici 2032.", status: "in-progress", date_made: "2022-10-21", category: "Écologie", source_url: "https://www.ecologie.gouv.fr" },
-    { id: "p3", citation: "Zéro SDF : personne ne doit plus dormir dans la rue d'ici la fin de l'année.", status: "broken", date_made: "2017-07-27", category: "Social", source_url: "https://www.lemonde.fr" },
-    { id: "p4", citation: "Doublement des classes de CP et CE1 dans les zones d'éducation prioritaire.", status: "kept", date_made: "2017-05-01", category: "Éducation", source_url: "https://www.education.gouv.fr" },
-    { id: "p5", citation: "Mise en place d'un système de retraite universel par points.", status: "pending", date_made: "2019-12-11", category: "Social", source_url: "https://www.gouvernement.fr" },
+    { 
+      id: "p1", 
+      citation: "Suppression de la redevance audiovisuelle pour tous les Français.", 
+      status: "kept", 
+      date_made: "2022-03-15", 
+      category: "Économie", 
+      source_url: "https://www.service-public.fr",
+      actions: [
+        "Loi de finances rectificative d'août 2022 adoptée.",
+        "Suppression effective dès l'automne 2022.",
+        "Financement garanti par une fraction de la TVA."
+      ],
+      justification: "La taxe de 138€ a été totalement supprimée pour 23 millions de foyers, respectant l'engagement de campagne dès le début du second quinquennat."
+    },
+    { 
+      id: "p2", 
+      citation: "Planter 1 milliard d'arbres sur le territoire national d'ici 2032.", 
+      status: "in-progress", 
+      date_made: "2022-10-21", 
+      category: "Écologie", 
+      source_url: "https://www.ecologie.gouv.fr",
+      actions: [
+        "Lancement du plan de reboisement en 2023.",
+        "Financement via le fonds Vert (2 milliards €).",
+        "80 millions d'arbres déjà plantés fin 2025."
+      ],
+      justification: "Le rythme de plantation est conforme aux prévisions, mais l'objectif à 10 ans nécessite un maintien de l'effort budgétaire."
+    },
+    { 
+      id: "p3", 
+      citation: "Zéro SDF : personne ne doit plus dormir dans la rue d'ici la fin de l'année.", 
+      status: "broken", 
+      date_made: "2017-07-27", 
+      category: "Social", 
+      source_url: "https://www.lemonde.fr",
+      actions: [
+        "Création de 200 000 places d'hébergement d'urgence.",
+        "Lancement du Logement d'abord.",
+        "Maintien de campements précaires dans les métropoles."
+      ],
+      justification: "Malgré l'augmentation massive des places d'hébergement, le nombre de personnes sans domicile n'a pas atteint zéro, l'objectif est considéré comme non tenu."
+    },
+    { 
+      id: "p4", 
+      citation: "Doublement des classes de CP et CE1 dans les zones d'éducation prioritaire.", 
+      status: "kept", 
+      date_made: "2017-05-01", 
+      category: "Éducation", 
+      source_url: "https://www.education.gouv.fr",
+      actions: [
+        "Déploiement progressif entre 2017 et 2019.",
+        "Plafond à 12 élèves par classe en REP+.",
+        "300 000 élèves concernés dès la rentrée 2020."
+      ],
+      justification: "Objectif atteint et pérennisé. L'encadrement a permis d'améliorer les scores de lecture et d'écriture en zone prioritaire."
+    },
+    { 
+      id: "p5", 
+      citation: "Mise en place d'un système de retraite universel par points.", 
+      status: "pending", 
+      date_made: "2019-12-11", 
+      category: "Social", 
+      source_url: "https://www.gouvernement.fr",
+      actions: [
+        "Retrait provisoire lors de la crise COVID.",
+        "Remplacé par la réforme de décalage de l'âge de départ (64 ans).",
+        "Projet universel par points mis en pause."
+      ],
+      justification: "La réforme paramétrique (âge) a pris le dessus sur la réforme systémique initialement promise, qui reste en attente de réouverture."
+    },
   ],
   "gabriel-attal": [
-    { id: "a1", citation: "Mise en œuvre du Service National Universel (SNU) pour toute une classe d'âge.", status: "in-progress", date_made: "2023-06-12", category: "Jeunesse", source_url: "https://www.snu.gouv.fr" },
-    { id: "a2", citation: "Expérimentation de la semaine de 4 jours dans l'administration.", status: "in-progress", date_made: "2024-01-30", category: "Travail", source_url: "https://www.lefigaro.fr" },
+    { 
+      id: "a1", 
+      citation: "Mise en œuvre du Service National Universel (SNU) pour toute une classe d'âge.", 
+      status: "in-progress", 
+      date_made: "2023-06-12", 
+      category: "Jeunesse", 
+      source_url: "https://www.snu.gouv.fr",
+      actions: [
+        "Généralisation progressive aux classes de seconde.",
+        "Phase de test sur volontariat réussie en 2024.",
+        "Projet de généralisation totale d'ici 2026."
+      ],
+      justification: "Le déploiement technique et logistique est en cours, mais la généralisation obligatoire reste un sujet politique majeur."
+    },
+    { 
+      id: "a2", 
+      citation: "Expérimentation de la semaine de 4 jours dans l'administration.", 
+      status: "in-progress", 
+      date_made: "2024-01-30", 
+      category: "Travail", 
+      source_url: "https://www.lefigaro.fr",
+      actions: [
+        "Lancement de tests à l'URSSAF Picardie.",
+        "Élargissement aux ministères début 2025.",
+        "Évaluation du gain de productivité et de bien-être en cours."
+      ],
+      justification: "L'expérimentation avance mais les syndicats et les servicesRH analysent encore l'impact sur le temps de travail hebdomadaire."
+    },
   ]
 };
 

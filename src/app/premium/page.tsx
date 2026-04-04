@@ -330,7 +330,7 @@ export default function PremiumPage() {
       {/* ═══════════════════════════════════════════ */}
       {/* 4. TÉMOIGNAGES                              */}
       {/* ═══════════════════════════════════════════ */}
-      <section className="py-24 px-4 bg-white">
+      <section className="py-24 px-4 bg-white overflow-hidden relative">
         <div className="max-w-6xl mx-auto">
           <FadeIn className="text-center mb-16 relative">
             <p className="text-sm font-bold text-amber-500 uppercase tracking-widest mb-4">Expériences</p>
@@ -370,7 +370,7 @@ export default function PremiumPage() {
       {/* ═══════════════════════════════════════════ */}
       {/* 4. FORMULAIRE PREMIUM                       */}
       {/* ═══════════════════════════════════════════ */}
-      <section className="py-24 px-4 bg-white relative">
+      <section className="py-24 px-4 bg-white relative overflow-hidden">
         {/* Decorative gold sphere */}
         <div className="absolute bottom-0 right-0 w-96 h-96 bg-amber-100/30 rounded-full blur-[100px] -mr-48 -mb-48" />
         

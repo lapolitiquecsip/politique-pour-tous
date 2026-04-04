@@ -6,21 +6,37 @@ import { Star, RefreshCw as Loader2, X, AlertCircle, ArrowRight } from "lucide-r
 import { motion, AnimatePresence } from "framer-motion";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
+import { usePremium } from "@/lib/hooks/usePremium";
 import { STRIPE_CHECKOUT_URL } from "@/lib/constants";
 
 export default function PremiumButton() {
   const pathname = usePathname();
+  const { isPremium, loading: statusLoading, userId } = usePremium();
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [dismissed, setDismissed] = useState(false);
 
-  const handlePremiumClick = () => {
+  const handlePremiumClick = async () => {
+    if (!userId) {
+      setError("auth_required");
+      return;
+    }
+
     setLoading(true);
+    
+    // On ajoute l'ID de l'utilisateur pour que le webhook puisse le reconnaître
+    const checkoutUrl = `${STRIPE_CHECKOUT_URL}?client_reference_id=${userId}`;
+    
     // Redirection directe vers Stripe Checkout
-    window.location.href = STRIPE_CHECKOUT_URL;
+    window.location.href = checkoutUrl;
   };
 
-  if (dismissed || pathname === "/premium") return null;
+  // Ne pas afficher si :
+  // 1. Déjà Premium
+  // 2. Sur la page /premium
+  // 3. Masqué manuellement
+  // 4. Chargement du statut en cours
+  if (isPremium || statusLoading || dismissed || pathname === "/premium") return null;
 
   return (
     <>

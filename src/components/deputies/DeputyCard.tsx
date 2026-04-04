@@ -1,6 +1,8 @@
 "use client";
 
 import { useState } from "react";
+import Link from "next/link";
+import { ChevronRight } from "lucide-react";
 
 export interface Deputy {
   id: string;
@@ -41,7 +43,10 @@ export default function DeputyCard({ deputy }: { deputy: Deputy }) {
   const [imgError, setImgError] = useState(false);
 
   return (
-    <div className="bg-card border border-border shadow-sm rounded-2xl p-6 flex flex-col items-center hover:shadow-md transition-shadow text-center relative overflow-hidden">
+    <Link 
+      href={`/deputes/${slug}`}
+      className="bg-card border border-border shadow-sm rounded-2xl p-6 flex flex-col items-center hover:shadow-lg hover:border-slate-300 transition-all text-center relative overflow-hidden group cursor-pointer"
+    >
       <div className="tricolor-band"><span></span><span></span><span></span></div>
 
       {/* Photo ou fallback initiales */}
@@ -50,17 +55,17 @@ export default function DeputyCard({ deputy }: { deputy: Deputy }) {
           src={photoUrl}
           alt={`${deputy.firstName} ${deputy.lastName}`}
           onError={() => setImgError(true)}
-          className="w-24 h-24 rounded-full object-cover mt-2 mb-4 shadow-sm border-2 border-slate-100"
+          className="w-24 h-24 rounded-full object-cover mt-2 mb-4 shadow-sm border-2 border-slate-100 group-hover:scale-105 transition-transform"
         />
       ) : (
         <div 
-          className={`w-24 h-24 rounded-full flex items-center justify-center text-white text-3xl font-bold mt-2 mb-4 shadow-sm ${colorClass}`}
+          className={`w-24 h-24 rounded-full flex items-center justify-center text-white text-3xl font-bold mt-2 mb-4 shadow-sm group-hover:scale-105 transition-transform ${colorClass}`}
         >
           {initials}
         </div>
       )}
       
-      <h3 className="text-xl font-bold text-foreground mb-2">
+      <h3 className="text-xl font-bold text-foreground mb-2 group-hover:text-blue-600 transition-colors">
         {deputy.firstName} {deputy.lastName}
       </h3>
       
@@ -71,6 +76,10 @@ export default function DeputyCard({ deputy }: { deputy: Deputy }) {
       <p className="text-muted-foreground text-sm">
         {deputy.department} • {deputy.constituencyNumber}ème circ.
       </p>
-    </div>
+      
+      <div className="absolute top-4 right-4 text-slate-300 opacity-0 group-hover:opacity-100 group-hover:text-blue-500 transition-all transform translate-x-2 group-hover:translate-x-0">
+        <ChevronRight className="w-6 h-6" />
+      </div>
+    </Link>
   );
 }

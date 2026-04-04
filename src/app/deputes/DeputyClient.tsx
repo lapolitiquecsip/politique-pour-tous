@@ -13,6 +13,62 @@ import { Map, List, Users, Landmark, ChevronRight } from "lucide-react";
 
 const MOCK_DEPUTIES: Deputy[] = [
   {
+    id: "attal-gabriel",
+    firstName: "Gabriel",
+    lastName: "Attal",
+    party: "EPR",
+    department: "Hauts-de-Seine",
+    constituencyNumber: 10
+  },
+  {
+    id: "berge-aurore",
+    firstName: "Aurore",
+    lastName: "Bergé",
+    party: "EPR",
+    department: "Yvelines",
+    constituencyNumber: 10
+  },
+  {
+    id: "braun-pivet-yael",
+    firstName: "Yaël",
+    lastName: "Braun-Pivet",
+    party: "EPR",
+    department: "Yvelines",
+    constituencyNumber: 5
+  },
+  {
+    id: "chatelain-cyrielle",
+    firstName: "Cyrielle",
+    lastName: "Chatelain",
+    party: "EELV",
+    department: "Isère",
+    constituencyNumber: 2
+  },
+  {
+    id: "chenu-sebastien",
+    firstName: "Sébastien",
+    lastName: "Chenu",
+    party: "RN",
+    department: "Nord",
+    constituencyNumber: 19
+  },
+  {
+    id: "ciotti-eric",
+    firstName: "Éric",
+    lastName: "Ciotti",
+    party: "LR",
+    department: "Alpes-Maritimes",
+    constituencyNumber: 1
+  },
+  {
+    id: "faure-olivier",
+    firstName: "Olivier",
+    lastName: "Faure",
+    party: "PS",
+    department: "Seine-et-Marne",
+    constituencyNumber: 11
+  },
+  {
     id: "ruffin-francois",
     firstName: "François",
     lastName: "Ruffin",

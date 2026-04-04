@@ -29,16 +29,16 @@ const SLIDES = [
     id: 4,
     type: "Le saviez-vous ?",
     content: "La plus longue séance de l'Assemblée nationale a duré 25 heures lors du débat sur les retraites en 2023.", 
-    color: "bg-emerald-600",
-    icon: <Info className="w-8 h-8 mb-4 opacity-50" />
+    color: "bg-gradient-to-br from-emerald-600 to-teal-800",
+    icon: <Info className="w-12 h-12 mb-4 opacity-30" />
   },
   { 
     id: 5,
     type: "Intox de la semaine",
     content: "\"La France est le pays qui taxe le plus en Europe\"",
-    debunk: "FAUX. Le Danemark et la Belgique ont un taux de prélèvement supérieur.", 
-    color: "bg-[#FF4D00]", 
-    icon: <ShieldAlert className="w-12 h-12 mb-4 text-white animate-bounce" />,
+    debunk: "Le Danemark et la Belgique ont un taux de prélèvement supérieur.", 
+    color: "bg-gradient-to-br from-orange-600 to-red-800", 
+    icon: <ShieldAlert className="w-14 h-14 mb-4 text-white opacity-40" />,
     isLive: true
   }
 ];
@@ -132,36 +132,33 @@ export default function StatsPanel() {
           ) : (
             <>
               {slide.icon}
-              <div className="flex items-center gap-2 mb-6 uppercase tracking-widest text-xs font-black">
+              <div className="flex items-center gap-2 mb-8 uppercase tracking-[0.3em] text-[10px] font-black">
                 {slide.isLive && (
                   <span className="relative flex h-3 w-3">
-                    <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-red-400 opacity-75"></span>
-                    <span className="relative inline-flex rounded-full h-3 w-3 bg-red-500 shadow-[0_0_10px_rgba(239,68,68,0.8)]"></span>
+                    <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-white opacity-75"></span>
+                    <span className="relative inline-flex rounded-full h-3 w-3 bg-white"></span>
                   </span>
                 )}
-                <span className="px-3 py-1 rounded-full bg-white/20">
+                <span className="px-4 py-1 rounded-full bg-white/20 border border-white/20 backdrop-blur-sm">
                   {slide.type}
                 </span>
               </div>
-              <p className="text-xl md:text-[2.2rem] font-bold max-w-4xl leading-[1.1] mb-6 italic opacity-90">
+              
+              <h2 className="text-2xl md:text-5xl font-black max-w-5xl leading-[1.1] mb-8 uppercase tracking-tight">
                 {slide.content}
-              </p>
+              </h2>
+
               {slide.debunk && (
-                <div className="bg-white/10 backdrop-blur-md rounded-2xl p-4 md:p-6 border border-white/20 shadow-xl max-w-3xl">
-                  <p className="text-lg md:text-2xl font-black leading-snug">
-                    <span className="bg-black text-[#FF4D00] px-3 py-1 rounded-lg mr-3 shadow-lg ">
-                      FAUX
+                <div className="bg-black/30 backdrop-blur-xl rounded-[2rem] p-6 md:p-8 border border-white/10 shadow-2xl max-w-3xl transform hover:scale-105 transition-transform duration-500">
+                  <p className="text-xl md:text-3xl font-black leading-tight flex flex-col md:flex-row items-center gap-4">
+                    <span className="bg-white text-black px-4 py-1 rounded-full text-sm uppercase tracking-widest shrink-0">
+                      RÉALITÉ
                     </span>
-                    <span className="text-white">
-                      {slide.debunk.replace('FAUX. ', '')}
+                    <span className="text-white/90">
+                      {slide.debunk}
                     </span>
                   </p>
                 </div>
-              )}
-              {!slide.debunk && (
-                <p className="text-xl md:text-3xl font-extrabold max-w-3xl leading-snug">
-                  {slide.content}
-                </p>
               )}
             </>
           )}

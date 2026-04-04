@@ -131,7 +131,7 @@ export default function PremiumPage() {
   const [age, setAge] = useState("");
   const [csp, setCsp] = useState("");
   const [zipCode, setZipCode] = useState("");
-  const { userId } = usePremium();
+  const { userId, isPremium } = usePremium();
 
   const [loading, setLoading] = useState(false);
   const [success, setSuccess] = useState(false);
@@ -409,7 +409,46 @@ export default function PremiumPage() {
         
         <div className="max-w-xl mx-auto relative z-10">
           <FadeIn>
-            {success ? (
+            {isPremium ? (
+              <div className="bg-amber-50 border-2 border-amber-200 rounded-[2.5rem] p-10 md:p-16 text-center shadow-2xl relative overflow-hidden group">
+                {/* Background decorative elements */}
+                <div className="absolute top-0 right-0 w-32 h-32 bg-amber-200/20 rounded-bl-full -mr-16 -mt-16 group-hover:scale-110 transition-transform" />
+                
+                <div className="relative z-10">
+                  <div className="mx-auto w-24 h-24 rounded-full bg-amber-400 flex items-center justify-center text-slate-900 mb-8 shadow-lg shadow-amber-200">
+                    <Star size={44} className="fill-current" />
+                  </div>
+                  
+                  <h2 className="text-4xl md:text-5xl font-staatliches uppercase tracking-tighter text-slate-900 mb-6">
+                    Vous êtes <span className="text-amber-500">Membre Elite</span>
+                  </h2>
+                  
+                  <p className="text-slate-600 text-lg md:text-xl max-w-md mx-auto mb-10 leading-relaxed font-medium">
+                    Merci de votre confiance ! Votre abonnement est actif et vous profitez de tous les avantages Premium.
+                  </p>
+                  
+                  <div className="flex flex-col sm:flex-row gap-4 justify-center">
+                    <Link
+                      href="/lois"
+                      className="inline-flex items-center justify-center gap-2 px-8 py-4 font-bold text-slate-900 bg-amber-400 rounded-2xl hover:bg-amber-500 transition-all shadow-lg shadow-amber-200 hover:-translate-y-1"
+                    >
+                      <FileText size={20} />
+                      Explorer les Lois
+                    </Link>
+                    <Link
+                      href="/"
+                      className="inline-flex items-center justify-center gap-2 px-8 py-4 font-bold text-slate-500 bg-slate-100 rounded-2xl hover:bg-slate-200 transition-all hover:-translate-y-1"
+                    >
+                      Retour à l&apos;accueil
+                    </Link>
+                  </div>
+                  
+                  <p className="mt-12 text-xs text-slate-400 font-bold uppercase tracking-widest">
+                    Votre accès est illimité • Merci de soutenir l&apos;indépendance du projet
+                  </p>
+                </div>
+              </div>
+            ) : success ? (
               <div className="bg-amber-50 border border-amber-200 rounded-3xl p-10 text-center shadow-2xl animate-fade-in">
                 <div className="mx-auto w-20 h-20 rounded-full bg-amber-100 flex items-center justify-center text-amber-600 mb-6">
                   <CheckCircle2 size={40} />

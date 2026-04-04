@@ -20,7 +20,7 @@ export default function PremiumButton() {
     window.location.href = STRIPE_CHECKOUT_URL;
   };
 
-  if (dismissed || pathname === "/premium") return null;
+  if (dismissed || pathname === "/premium" || pathname.startsWith("/lois/")) return null;
 
   return (
     <>

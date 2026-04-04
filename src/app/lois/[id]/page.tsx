@@ -8,7 +8,8 @@ import {
   Calendar, 
   Sparkles,
   ChevronUp,
-  ArrowRight
+  ArrowRight,
+  X as CloseIcon
 } from "lucide-react";
 import { motion } from "framer-motion";
 import { FREE_LAWS, LawDossier } from "@/data/free-laws-dossiers";
@@ -23,6 +24,7 @@ export default function LawDetailPage({ params }: { params: Promise<{ id: string
   const { isPremium, loading: premiumLoading } = usePremium();
   const [law, setLaw] = useState<LawDossier | null>(null);
   const [loading, setLoading] = useState(true);
+  const [isBannerDismissed, setIsBannerDismissed] = useState(false);
 
   useEffect(() => {
     const fetchLaw = async () => {
@@ -197,14 +199,22 @@ export default function LawDetailPage({ params }: { params: Promise<{ id: string
       </div>
 
       {/* 3. PREMIUM FLOATING PAYWALL */}
-      {!isPremium && !premiumLoading && (
+      {!isPremium && !premiumLoading && !isBannerDismissed && (
         <div className="fixed bottom-0 left-0 right-0 z-50 p-6 md:p-12 pointer-events-none">
           <motion.div 
             initial={{ y: 150 }}
             animate={{ y: 0 }}
-            className="container mx-auto max-w-5xl bg-gradient-to-r from-amber-400 via-orange-500 to-amber-500 p-[1.5px] rounded-[3rem] shadow-[0_30px_100px_rgba(251,191,36,0.2)] pointer-events-auto overflow-hidden"
+            className="container mx-auto max-w-5xl bg-gradient-to-r from-amber-400 via-orange-500 to-amber-500 p-[1.5px] rounded-[3rem] shadow-[0_30px_100px_rgba(251,191,36,0.2)] pointer-events-auto overflow-hidden relative"
           >
               <div className="bg-slate-950/95 backdrop-blur-3xl p-5 md:p-8 rounded-[2.9rem] flex flex-col md:flex-row items-center justify-between gap-8">
+                {/* Close Button */}
+                <button 
+                  onClick={() => setIsBannerDismissed(true)}
+                  className="absolute top-6 right-8 text-white/40 hover:text-white transition-colors group"
+                >
+                  <CloseIcon className="w-5 h-5" />
+                </button>
+
                 <div className="flex items-center gap-8 text-left">
                     <div className="w-16 h-16 rounded-[1.5rem] bg-gradient-to-br from-amber-300 to-amber-500 flex items-center justify-center text-slate-950 shrink-0 shadow-lg shadow-amber-500/20">
                       <Sparkles className="w-8 h-8" />

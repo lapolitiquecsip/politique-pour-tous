@@ -20,6 +20,9 @@ import {
   Quote,
   AlertCircle,
   Scale,
+  ChevronDown,
+  User,
+  Briefcase
 } from "lucide-react";
 import Link from "next/link";
 
@@ -124,17 +127,45 @@ export default function PremiumPage() {
   const [prefAssemblee, setPrefAssemblee] = useState(true);
   const [prefLois, setPrefLois] = useState(true);
   const [prefDepute, setPrefDepute] = useState(false);
+  const [age, setAge] = useState("");
+  const [csp, setCsp] = useState("");
   const [zipCode, setZipCode] = useState("");
 
   const [loading, setLoading] = useState(false);
   const [success, setSuccess] = useState(false);
   const [error, setError] = useState("");
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setLoading(true);
-    // Redirection directe vers Stripe Checkout
-    window.location.href = STRIPE_CHECKOUT_URL;
+    setError("");
+
+    try {
+      // 1. Enregistrer les informations de profil dans Supabase
+      await api.subscribeNewsletter({
+        email,
+        preferences: {
+          newsletter: prefAssemblee,
+          lois_illimite: prefLois,
+          alertes_depute: prefDepute,
+        },
+        postal_code: zipCode || undefined,
+        age,
+        csp
+      });
+
+      // 2. Redirection vers Stripe Checkout
+      window.location.href = STRIPE_CHECKOUT_URL;
+    } catch (err: any) {
+      console.error("Erreur d'inscription:", err);
+      // Même si l'email existe déjà, on redirige vers Stripe pour le paiement
+      if (err.message?.includes("déjà abonné")) {
+        window.location.href = STRIPE_CHECKOUT_URL;
+      } else {
+        setError("Une erreur est survenue lors de l'enregistrement de vos informations. Veuillez réessayer.");
+        setLoading(false);
+      }
+    }
   };
 
   return (
@@ -427,6 +458,62 @@ export default function PremiumPage() {
                       </div>
                     </div>
 
+                    {/* Grid for Age and CSP */}
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                      {/* Age */}
+                      <div>
+                        <label htmlFor="age" className="block text-sm font-bold text-slate-900 mb-2 ml-1">
+                          Votre âge
+                        </label>
+                        <div className="relative group">
+                          <User className="absolute left-5 top-1/2 -translate-y-1/2 text-slate-400 w-5 h-5 group-focus-within:text-amber-500 transition-colors" />
+                          <select
+                            id="age"
+                            required
+                            value={age}
+                            onChange={(e) => setAge(e.target.value)}
+                            className="w-full pl-14 pr-10 py-5 rounded-2xl border border-slate-200 shadow-sm focus:outline-none focus:ring-4 focus:ring-amber-500/10 focus:border-amber-400 text-lg transition-all appearance-none bg-white font-medium"
+                          >
+                            <option value="" disabled>Tranche d&apos;âge</option>
+                            <option value="-18">Moins de 18 ans</option>
+                            <option value="18-24">18 - 24 ans</option>
+                            <option value="25-34">25 - 34 ans</option>
+                            <option value="35-49">35 - 49 ans</option>
+                            <option value="50-64">50 - 64 ans</option>
+                            <option value="65+">65 ans et +</option>
+                          </select>
+                          <ChevronDown className="absolute right-5 top-1/2 -translate-y-1/2 text-slate-400 w-5 h-5 pointer-events-none" />
+                        </div>
+                      </div>
+
+                      {/* CSP */}
+                      <div>
+                        <label htmlFor="csp" className="block text-sm font-bold text-slate-900 mb-2 ml-1">
+                          Votre situation
+                        </label>
+                        <div className="relative group">
+                          <Briefcase className="absolute left-5 top-1/2 -translate-y-1/2 text-slate-400 w-5 h-5 group-focus-within:text-amber-500 transition-colors" />
+                          <select
+                            id="csp"
+                            required
+                            value={csp}
+                            onChange={(e) => setCsp(e.target.value)}
+                            className="w-full pl-14 pr-10 py-5 rounded-2xl border border-slate-200 shadow-sm focus:outline-none focus:ring-4 focus:ring-amber-500/10 focus:border-amber-400 text-lg transition-all appearance-none bg-white font-medium"
+                          >
+                            <option value="" disabled>Secteur d&apos;activité</option>
+                            <option value="etudiant">Étudiant(e)</option>
+                            <option value="salarie_prive">Salarié (Secteur privé)</option>
+                            <option value="fonctionnaire">Fonctionnaire / Service Public</option>
+                            <option value="independant">Indépendant / Chef d&apos;entreprise</option>
+                            <option value="demandeur">Demandeur d&apos;emploi</option>
+                            <option value="retraite">Retraité(e)</option>
+                            <option value="autre">Autre</option>
+                          </select>
+                          <ChevronDown className="absolute right-5 top-1/2 -translate-y-1/2 text-slate-400 w-5 h-5 pointer-events-none" />
+                        </div>
+                      </div>
+                    </div>
+
                     {/* Email */}
                     <div>
                       <label htmlFor="email" className="block text-sm font-bold text-slate-900 mb-2 ml-1">
@@ -441,9 +528,10 @@ export default function PremiumPage() {
                           placeholder="votre.email@institution.fr"
                           value={email}
                           onChange={(e) => setEmail(e.target.value)}
-                          className="w-full pl-14 pr-4 py-5 rounded-2xl border border-slate-200 shadow-sm focus:outline-none focus:ring-4 focus:ring-amber-500/10 focus:border-amber-400 text-lg transition-all"
+                          className="w-full pl-14 pr-4 py-5 rounded-2xl border border-slate-200 shadow-sm focus:outline-none focus:ring-4 focus:ring-amber-500/10 focus:border-amber-400 text-lg transition-all font-medium"
                         />
                       </div>
+                      {error && <p className="text-red-500 text-xs font-bold mt-2 ml-1">{error}</p>}
                     </div>
 
                     {/* Preferences checkbox styled gold */}

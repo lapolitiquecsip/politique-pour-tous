@@ -70,13 +70,13 @@ export const api = {
     return data;
   },
 
-  subscribeNewsletter: async (payload: { email: string, preferences: any, postal_code?: string }) => {
-    const { email, preferences, postal_code } = payload;
+  subscribeNewsletter: async (payload: { email: string, preferences: any, postal_code?: string, age?: string, csp?: string }) => {
+    const { email, preferences, postal_code, age, csp } = payload;
     const { data, error } = await supabase
       .from('subscribers')
       .insert([{ 
         email, 
-        preferences: preferences || {}, 
+        preferences: { ...(preferences || {}), age, csp }, 
         postal_code: postal_code || null, 
         status: 'active' 
       }])
@@ -86,6 +86,19 @@ export const api = {
     if (error) {
       if (error.code === '23505') throw new Error("Cet e-mail est déjà abonné.");
       throw new Error(error.message || "Erreur d'inscription.");
+    }
+    return data;
+  },
+
+  getProfile: async (email: string) => {
+    const { data, error } = await supabase
+      .from('subscribers')
+      .select('*')
+      .eq('email', email)
+      .single();
+    if (error) {
+      console.warn("Profile not found or error:", error.message);
+      return null;
     }
     return data;
   },

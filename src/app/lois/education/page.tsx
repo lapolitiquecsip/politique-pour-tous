@@ -38,7 +38,7 @@ export default function EducationLawPage() {
             </div>
             
             <h1 className="text-5xl md:text-7xl font-extrabold text-white tracking-tight leading-tight mb-6">
-              Loi pour l'École de la <span className="bg-gradient-to-r from-indigo-400 to-blue-400 bg-clip-text text-transparent italic">Réussite</span>
+              Les institutions <span className="bg-gradient-to-r from-blue-600 via-red-600 to-blue-600 bg-clip-text text-transparent">au quotidien</span>
             </h1>
             
             <p className="text-xl text-slate-300 leading-relaxed max-w-2xl font-medium">
@@ -82,10 +82,10 @@ export default function EducationLawPage() {
           </div>
         </motion.div>
 
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-12">
+        <div className="flex flex-col gap-12">
           
           {/* Main Context */}
-          <div className="md:col-span-2 space-y-12">
+          <div className="w-full space-y-12">
             
             <section className="bg-white p-8 md:p-10 rounded-3xl shadow-sm border border-slate-200">
               <h2 className="text-2xl font-black text-slate-900 mb-6 flex items-center gap-3">
@@ -127,7 +127,7 @@ export default function EducationLawPage() {
 
             <section className="bg-slate-900 text-white p-8 md:p-10 rounded-3xl shadow-xl">
               <h2 className="text-2xl font-black mb-6">Le débat à l'Assemblée</h2>
-              <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
+              <div className="flex flex-col gap-20">
                 <div className="bg-white/10 p-5 rounded-2xl border border-white/10">
                   <div className="flex items-center gap-2 text-emerald-400 font-bold mb-3">
                     <CheckCircle2 className="w-5 h-5" /> Arguments Pour
@@ -152,9 +152,9 @@ export default function EducationLawPage() {
             </section>
           </div>
 
-          {/* Sidebar / Timeline */}
-          <div className="md:col-span-1 space-y-6">
-            <div className="bg-white p-6 rounded-3xl border border-slate-200 shadow-sm sticky top-24">
+          {/* Bottom Feed / Timeline */}
+          <div className="w-full space-y-6">
+            <div className="bg-white p-8 md:p-12 rounded-[3.5rem] border border-slate-200 shadow-xl">
               <h3 className="text-lg font-black text-slate-900 uppercase tracking-widest mb-6 flex items-center gap-2">
                 <Calendar className="w-5 h-5 text-indigo-500" /> Calendrier
               </h3>

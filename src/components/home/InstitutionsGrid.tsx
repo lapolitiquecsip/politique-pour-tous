@@ -113,14 +113,14 @@ export default function InstitutionsGrid() {
       {/* ── MODALE DE DÉTAIL ── */}
       <AnimatePresence>
         {selectedInst && (
-          <div className="fixed inset-0 z-[100] flex items-center justify-center p-4 md:p-8">
+          <div className="fixed inset-0 z-[100] flex items-start justify-center p-4 md:p-8 overflow-y-auto scrollbar-hide">
             {/* Backdrop flouté */}
             <motion.div
               initial={{ opacity: 0 }}
               animate={{ opacity: 1 }}
               exit={{ opacity: 0 }}
               onClick={() => setSelectedInst(null)}
-              className="absolute inset-0 bg-slate-950/60 backdrop-blur-xl"
+              className="fixed inset-0 bg-slate-950/60 backdrop-blur-xl"
             />
 
             {/* Contenu Modale */}
@@ -129,7 +129,7 @@ export default function InstitutionsGrid() {
               animate={{ opacity: 1, scale: 1, y: 0 }}
               exit={{ opacity: 0, scale: 0.9, y: 20 }}
               transition={{ type: "spring", damping: 25, stiffness: 300 }}
-              className="relative w-full max-w-5xl h-[85vh] bg-[#0F172A] rounded-[3rem] shadow-[0_20px_50px_rgba(0,0,0,0.5)] border border-white/10 flex flex-col lg:flex-row overflow-hidden"
+              className="relative w-full max-w-4xl bg-[#0F172A] rounded-[3rem] shadow-[0_20px_50px_rgba(0,0,0,0.5)] border border-white/10 flex flex-col overflow-visible my-8"
             >
               {/* Bouton Fermer Principal (Standard et ultra-visible) */}
               <button
@@ -140,52 +140,63 @@ export default function InstitutionsGrid() {
                 <X className="w-5 h-5 group-hover:rotate-90 transition-transform" />
               </button>
 
-              {/* Partie Gauche (Image Fixe) */}
-              <div className="w-full lg:w-[45%] p-4 lg:p-6 shrink-0">
+              {/* Partie Haute (Bannière Immersive) */}
+              <div className="w-full h-64 md:h-[400px] shrink-0 relative">
                 <div 
-                  className="w-full h-48 lg:h-full rounded-[2rem] overflow-hidden bg-cover bg-center shadow-inner relative"
+                  className="w-full h-full bg-cover bg-center shadow-inner"
                   style={{ backgroundImage: `url(${selectedInst.image})` }}
                 >
-                  <div className={`absolute inset-0 bg-gradient-to-t ${selectedInst.color}/30 to-transparent`} />
+                  <div className={`absolute inset-0 bg-gradient-to-t from-[#0F172A] via-[#0F172A]/20 to-transparent`} />
+                  <div className={`absolute inset-0 bg-gradient-to-r from-[#0F172A]/40 to-transparent`} />
+                </div>
+                
+                {/* Overlay Text on Image */}
+                <div className="absolute bottom-8 left-8 md:left-12">
+                   <div className={`w-12 h-12 rounded-2xl bg-white/10 flex items-center justify-center border border-white/20 backdrop-blur-md mb-4`}>
+                    <Landmark className="w-6 h-6 text-white" />
+                  </div>
+                  <h3 className="text-4xl md:text-6xl font-black text-white leading-tight tracking-tighter">
+                    {selectedInst.name}
+                  </h3>
                 </div>
               </div>
 
-              {/* Partie Droite (Contenu avec Scroll interne) */}
-              <div className="w-full lg:w-[55%] p-8 lg:p-12 lg:pl-4 flex flex-col h-full min-h-0">
-                <div className="flex items-center gap-3 mb-6 shrink-0">
-                  <div className={`w-10 h-10 rounded-xl bg-white/10 flex items-center justify-center border border-white/10`}>
-                    <Landmark className="w-5 h-5 text-white" />
-                  </div>
-                  <span className="px-4 py-1 rounded-full text-[10px] font-black uppercase tracking-[0.2em] bg-white/10 text-white border border-white/10">
+              {/* Partie Basse (Contenu avec Scroll Naturel) */}
+              <div className="w-full p-8 md:p-12 md:pt-8 flex flex-col overflow-visible">
+                <div className="flex items-center gap-3 mb-8">
+                  <span className="px-4 py-1.5 rounded-full text-[10px] font-black uppercase tracking-[0.2em] bg-white/10 text-white border border-white/10">
                     Institution Officielle
                   </span>
                 </div>
 
-                <div className="shrink-0">
-                  <h3 className="text-4xl md:text-5xl font-black text-white mb-6 leading-tight">
-                    {selectedInst.name}
-                  </h3>
-                  
-                  <p className="text-blue-200/80 text-lg md:text-xl mb-10 leading-relaxed italic border-l-2 border-blue-500/50 pl-6">
+                <div className="mb-12">
+                  <p className="text-blue-200/80 text-lg md:text-xl leading-relaxed italic border-l-2 border-blue-500/50 pl-6">
                     &ldquo;{selectedInst.summary}&rdquo;
                   </p>
                 </div>
 
-                {/* Zone de SCROLL LOCALE pour les détails */}
-                <div className="flex-1 overflow-y-auto pr-4 custom-scrollbar-blue space-y-4">
-                  <p className="text-white/40 text-[10px] font-black uppercase tracking-[0.2em] mb-4 sticky top-0 bg-[#0F172A] py-1">Aujourd&apos;hui en direct :</p>
-                  {selectedInst.details.map((detail, i) => (
-                    <motion.div
-                      key={i}
-                      initial={{ opacity: 0, x: 20 }}
-                      animate={{ opacity: 1, x: 0 }}
-                      transition={{ delay: 0.2 + i * 0.1 }}
-                      className="flex items-center gap-4 bg-blue-900/20 border border-blue-500/20 rounded-2xl p-4 text-white/90 font-medium hover:bg-blue-800/30 transition-all hover:translate-x-1"
-                    >
-                      <div className={`w-2.5 h-2.5 rounded-full bg-blue-500 shadow-[0_0_12px_rgba(59,130,246,0.8)]`} />
-                      {detail}
-                    </motion.div>
-                  ))}
+                {/* Section "En Direct" - Plus de scrollbar interne, tout est fluide */}
+                <div className="space-y-6">
+                  <div className="flex items-center gap-4 mb-6">
+                    <span className="h-px flex-1 bg-white/10" />
+                    <p className="text-white/40 text-[10px] font-black uppercase tracking-[0.2em]">✨ En direct du site :</p>
+                    <span className="h-px flex-1 bg-white/10" />
+                  </div>
+
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    {selectedInst.details.map((detail, i) => (
+                      <motion.div
+                        key={i}
+                        initial={{ opacity: 0, y: 10 }}
+                        animate={{ opacity: 1, y: 0 }}
+                        transition={{ delay: 0.1 + i * 0.05 }}
+                        className="flex items-start gap-4 bg-white/5 border border-white/10 rounded-3xl p-6 text-white/90 font-medium hover:bg-white/10 transition-all group"
+                      >
+                        <div className={`mt-1.5 w-2 h-2 rounded-full bg-blue-500 shadow-[0_0_12px_rgba(59,130,246,0.8)] group-hover:scale-125 transition-transform`} />
+                        <span className="leading-relaxed">{detail}</span>
+                      </motion.div>
+                    ))}
+                  </div>
                 </div>
               </div>
             </motion.div>

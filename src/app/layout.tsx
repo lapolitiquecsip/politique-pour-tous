@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import { DM_Sans, Staatliches } from "next/font/google";
 import "./globals.css";
 import Header from "@/components/layout/Header";
+import Footer from "@/components/layout/Footer";
 import { ThemeProvider } from "@/components/providers";
 import PremiumButton from "@/components/premium/PremiumButton";
 
@@ -39,6 +40,7 @@ export default function RootLayout({
           <main className="flex-1 pt-16">
             {children}
           </main>
+          <Footer />
           <PremiumButton />
         </ThemeProvider>
       </body>

@@ -3,7 +3,8 @@
 import { useState, useEffect, useRef } from "react";
 import { motion, useInView } from "framer-motion";
 import { api } from "@/lib/api";
-import { STRIPE_CHECKOUT_URL } from "@/lib/constants";
+import { usePremium } from "@/lib/hooks/usePremium";
+import { getPremiumUrl } from "@/lib/utils";
 import {
   CheckCircle2,
   Loader2,
@@ -130,6 +131,7 @@ export default function PremiumPage() {
   const [age, setAge] = useState("");
   const [csp, setCsp] = useState("");
   const [zipCode, setZipCode] = useState("");
+  const { userId } = usePremium();
 
   const [loading, setLoading] = useState(false);
   const [success, setSuccess] = useState(false);
@@ -154,13 +156,13 @@ export default function PremiumPage() {
         csp
       });
 
-      // 2. Redirection vers Stripe Checkout
-      window.location.href = STRIPE_CHECKOUT_URL;
+      // 2. Redirection vers Stripe Checkout sécurisé
+      window.location.href = getPremiumUrl(userId);
     } catch (err: any) {
       console.error("Erreur d'inscription:", err);
       // Même si l'email existe déjà, on redirige vers Stripe pour le paiement
       if (err.message?.includes("déjà abonné")) {
-        window.location.href = STRIPE_CHECKOUT_URL;
+        window.location.href = getPremiumUrl(userId);
       } else {
         setError("Une erreur est survenue lors de l'enregistrement de vos informations. Veuillez réessayer.");
         setLoading(false);

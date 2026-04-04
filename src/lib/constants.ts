@@ -1,4 +1,4 @@
 /**
  * Stripe Related Constants
  */
-export const STRIPE_CHECKOUT_URL = "https://checkout.stripe.com/c/pay/cs_test_a1imJj8eHKdPiR03Ms7XNDXZ29T3qJHHqKJM0VktBt6I9zzKMGJQwk3y9i#fidnandhYHdWcXxpYCc%2FJ2FgY2RwaXEnKSdkdWxOYHwnPyd1blpxYHZxWjA0UU1UZDxUbFZAQTZjS0wxSnEyXXwwfG5xUDBPbVRVcTdvSkM9bDZVaEdka0xUYHRUQkNcPWtNYnFPSkhQMHFpaHNqMDB0Q3JyQjd3M0pPSEM9cDVENlRANTVKczNSbGM9QicpJ2N3amhWYHdzYHcnP3F3cGApJ2dkZm5id2pwa2FGamlqdyc%2FJyZjY2NjY2MnKSdpZHxqcHFRfHVgJz8ndmxrYmlgWmxxYGgnKSdga2RnaWBVaWRmYG1qaWFgd3YnP3F3cGB4JSUl";
+export const STRIPE_CHECKOUT_URL = "https://buy.stripe.com/test_00w7sNdi4gIA4zDemn4Ni00";

@@ -15,13 +15,13 @@ import { motion } from "framer-motion";
 import { FREE_LAWS, LawDossier } from "@/data/free-laws-dossiers";
 import { api } from "@/lib/api";
 import Link from "next/link";
-import { STRIPE_CHECKOUT_URL } from "@/lib/constants";
+import { getPremiumUrl } from "@/lib/utils";
 import { usePremium } from "@/lib/hooks/usePremium";
 
 export default function LawDetailPage({ params }: { params: Promise<{ id: string }> }) {
   const router = useRouter();
   const { id } = use(params);
-  const { isPremium, loading: premiumLoading } = usePremium();
+  const { isPremium, loading: premiumLoading, userId } = usePremium();
   const [law, setLaw] = useState<LawDossier | null>(null);
   const [loading, setLoading] = useState(true);
   const [isBannerDismissed, setIsBannerDismissed] = useState(false);
@@ -231,7 +231,7 @@ export default function LawDetailPage({ params }: { params: Promise<{ id: string
                         <span className="text-white/40 text-[9px] uppercase tracking-widest leading-none">Source : Assemblée Nationale</span>
                     </div>
                     <Link 
-                      href={STRIPE_CHECKOUT_URL}
+                      href={getPremiumUrl(userId)}
                       className="px-10 py-5 bg-amber-400 text-slate-950 font-black rounded-2xl hover:bg-white transition-all text-sm flex items-center gap-3 group shadow-xl shadow-amber-400/20"
                     >
                       Débloquer le dossier

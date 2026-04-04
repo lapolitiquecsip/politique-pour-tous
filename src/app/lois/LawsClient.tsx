@@ -18,7 +18,7 @@ import {
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { usePremium } from "@/lib/hooks/usePremium";
-import { STRIPE_CHECKOUT_URL } from "@/lib/constants";
+import { getPremiumUrl } from "@/lib/utils";
 import DetailedLawDossier from "@/components/laws/DetailedLawDossier";
 import { FREE_LAWS } from "@/data/free-laws-dossiers";
 
@@ -34,7 +34,7 @@ const CATEGORIES = [
 export default function LawsClient() {
   const router = useRouter();
   const [selectedCat, setSelectedCat] = useState<string | null>(null);
-  const { isPremium, loading } = usePremium();
+  const { isPremium, loading, userId } = usePremium();
 
   const scrollToPremium = () => {
     const element = document.getElementById("premium-section");
@@ -169,7 +169,7 @@ export default function LawsClient() {
 
               <div className="flex flex-col items-center gap-6">
                 <Link
-                  href={STRIPE_CHECKOUT_URL}
+                  href={getPremiumUrl(userId)}
                   className="group px-12 py-6 bg-gradient-to-r from-amber-500 to-orange-600 text-white font-black rounded-3xl hover:shadow-2xl hover:shadow-amber-500/30 transition-all hover:-translate-y-1 text-xl flex items-center gap-4"
                 >
                   Devenir membre Premium

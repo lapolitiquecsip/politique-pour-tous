@@ -4,9 +4,10 @@ import { motion } from "framer-motion";
 import { ArrowLeft, CheckCircle2, AlertCircle, Calendar, Sparkles, BookOpen, GraduationCap, XCircle } from "lucide-react";
 import Link from "next/link";
 import { usePremium } from "@/lib/hooks/usePremium";
+import { getPremiumUrl } from "@/lib/utils";
 
 export default function EducationLawPage() {
-  const { isPremium, loading } = usePremium();
+  const { isPremium, loading, userId } = usePremium();
 
   if (loading) return (
     <div className="min-h-screen bg-slate-950 flex items-center justify-center font-staatliches">
@@ -201,8 +202,8 @@ export default function EducationLawPage() {
                 <p className="text-amber-50 text-sm leading-relaxed mb-6">
                   Cet exemple de dossier législatif vous est offert. Pour accéder aux autres lois décryptées, souscrivez au Premium.
                 </p>
-                <Link href="/premium" className="block text-center bg-white text-orange-600 font-bold py-3 rounded-xl hover:shadow-lg transition-all w-full">
-                  S'abonner (3€/mois)
+                <Link href={getPremiumUrl(userId)} className="block text-center bg-white text-orange-600 font-bold py-3 rounded-xl hover:shadow-lg transition-all w-full">
+                  S&apos;abonner (3€/mois)
                 </Link>
               </div>
             )}

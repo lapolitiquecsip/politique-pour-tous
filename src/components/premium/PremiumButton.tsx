@@ -24,8 +24,10 @@ export default function PremiumButton() {
 
     setLoading(true);
     
-    // On ajoute l'ID de l'utilisateur pour que le webhook puisse le reconnaître
-    const checkoutUrl = `${STRIPE_CHECKOUT_URL}?client_reference_id=${userId}`;
+    // Construction propre de l'URL pour ne pas casser le lien (gestion du # et des params existants)
+    const url = new URL(STRIPE_CHECKOUT_URL);
+    url.searchParams.set("client_reference_id", userId);
+    const checkoutUrl = url.toString();
     
     // Redirection directe vers Stripe Checkout
     window.location.href = checkoutUrl;

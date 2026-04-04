@@ -6,6 +6,45 @@ import { Search, Loader2 } from "lucide-react";
 
 import { api } from "@/lib/api";
 
+const MOCK_POLITICIANS = [
+  { 
+    id: "emmanuel-macron", 
+    first_name: "Emmanuel", 
+    last_name: "Macron", 
+    role: "Président", 
+    party: "RE", 
+    party_color: "#005EB8", 
+    promises: { total: 142, kept: 89, inProgress: 32, broken: 15, pending: 6 } 
+  },
+  { 
+    id: "gabriel-attal", 
+    first_name: "Gabriel", 
+    last_name: "Attal", 
+    role: "Ministre (Chef de file)", 
+    party: "RE", 
+    party_color: "#005EB8", 
+    promises: { total: 58, kept: 34, inProgress: 18, broken: 4, pending: 2 } 
+  },
+  { 
+    id: "yael-braun-pivet", 
+    first_name: "Yaël", 
+    last_name: "Braun-Pivet", 
+    role: "Député (PR)", 
+    party: "RE", 
+    party_color: "#005EB8", 
+    promises: { total: 24, kept: 12, inProgress: 8, broken: 2, pending: 2 } 
+  },
+  { 
+    id: "gerard-larcher", 
+    first_name: "Gérard", 
+    last_name: "Larcher", 
+    role: "Sénateur (PR)", 
+    party: "LR", 
+    party_color: "#0055ff", 
+    promises: { total: 45, kept: 28, inProgress: 12, broken: 3, pending: 2 } 
+  },
+];
+
 export default function PromisesPage() {
   const [politicians, setPoliticians] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
@@ -18,9 +57,15 @@ export default function PromisesPage() {
     async function fetchPoliticians() {
       try {
         const data = await api.getPoliticians();
-        setPoliticians(data);
+        // If API returns no data, populate with mock for demonstration/template purposes
+        if (!data || data.length === 0) {
+          setPoliticians(MOCK_POLITICIANS);
+        } else {
+          setPoliticians(data);
+        }
       } catch (error) {
         console.error("Failed to fetch politicians:", error);
+        setPoliticians(MOCK_POLITICIANS); // Fallback on error too
       } finally {
         setLoading(false);
       }
@@ -38,16 +83,16 @@ export default function PromisesPage() {
   return (
     <div className="min-h-screen bg-background">
       {/* 1. SECTION HEADER (POSTER STYLE REBORN) */}
-      <div className="py-20 px-4 mb-12">
+      <div className="py-24 px-4 mb-2">
         <div className="container mx-auto max-w-6xl text-center">
-          <div className="relative mb-10">
-            <h1 className="text-5xl md:text-7xl font-staatliches uppercase tracking-tighter leading-none relative z-10">
-              <span className="text-slate-900 opacity-[0.08] absolute -top-8 left-1/2 -translate-x-1/2 select-none hidden md:block whitespace-nowrap">
+          <div className="relative mb-12">
+            <h1 className="text-6xl md:text-8xl font-staatliches uppercase tracking-tighter leading-none relative z-10">
+              <span className="text-slate-900 opacity-[0.05] absolute -top-8 left-1/2 -translate-x-1/2 select-none hidden md:block whitespace-nowrap">
                 PAROLES • ENGAGEMENTS
               </span>
-              Ils avaient <span className="bg-gradient-to-r from-blue-600 via-red-600 to-blue-600 bg-clip-text text-transparent">dit que...</span>
+              Ils avaient <span className="bg-gradient-to-r from-blue-600 via-red-600 to-blue-600 bg-clip-text text-transparent italic">dit que...</span>
             </h1>
-            <div className="h-1.5 w-32 bg-gradient-to-r from-blue-600 to-red-600 mt-6 rounded-full mx-auto" />
+            <div className="h-2 w-40 bg-gradient-to-r from-blue-600 to-red-600 mt-8 rounded-full mx-auto" />
           </div>
           
           <p className="text-xl md:text-2xl font-staatliches italic tracking-tight text-slate-500 mt-8 max-w-2xl mx-auto leading-relaxed">

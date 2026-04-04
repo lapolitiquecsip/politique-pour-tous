@@ -23,24 +23,32 @@ export default function PoliticianCard({ politician }: { politician: Politician 
   
   return (
     <Link href={`/promesses/${politician.id}`} className="block group">
-      <div className="bg-card border border-border rounded-3xl p-6 shadow-sm hover:shadow-md transition-all group-hover:-translate-y-1 relative overflow-hidden flex flex-col h-full">
+      <div className="bg-card border border-slate-200 rounded-[2.5rem] p-8 shadow-sm hover:shadow-2xl transition-all duration-500 group-hover:-translate-y-2 relative overflow-hidden flex flex-col h-full bg-gradient-to-br from-white to-slate-50">
         {/* Tricolor band for style consistency */}
-        <div className="tricolor-band"><span></span><span></span><span></span></div>
+        <div className="absolute top-0 left-0 w-full h-1.5 flex">
+          <div className="flex-1 bg-blue-600" />
+          <div className="flex-1 bg-white" />
+          <div className="flex-1 bg-red-600" />
+        </div>
         
-        <div className="flex items-start gap-4 mb-6 relative z-10">
+        <div className="flex items-start gap-6 mb-8 relative z-10 transition-transform duration-500 group-hover:scale-[1.02]">
           <div 
-            className="w-16 h-16 rounded-full flex-shrink-0 flex items-center justify-center text-white text-xl font-bold shadow-sm"
-            style={{ backgroundColor: politician.party_color || '#95A5A6' }}
+            className="w-20 h-20 rounded-2xl flex-shrink-0 flex items-center justify-center text-white text-3xl font-extrabold shadow-xl transition-all duration-500 group-hover:rotate-3 group-hover:rounded-[2rem]"
+            style={{ 
+              backgroundColor: politician.party_color || '#95A5A6',
+              backgroundImage: 'linear-gradient(135deg, rgba(255,255,255,0.2) 0%, transparent 100%)'
+            }}
           >
             {initials}
           </div>
           <div>
-            <h3 className="text-xl font-heading font-bold text-foreground group-hover:text-primary transition-colors">
-              {politician.first_name} {politician.last_name}
+            <p className="text-amber-500 text-[10px] uppercase tracking-[0.2em] font-black mb-1">{politician.role}</p>
+            <h3 className="text-3xl md:text-4xl font-staatliches uppercase tracking-tight text-slate-900 group-hover:text-blue-600 transition-colors leading-none mb-3">
+              {politician.first_name} <br/>
+              <span className="bg-gradient-to-r from-slate-900 to-slate-700 bg-clip-text text-transparent">{politician.last_name}</span>
             </h3>
-            <p className="text-muted-foreground text-sm mb-1">{politician.role}</p>
             <span 
-              className="px-2 py-0.5 text-xs font-semibold rounded-full text-white inline-block"
+              className="px-3 py-1 text-[10px] font-black uppercase tracking-widest rounded-lg text-white inline-block shadow-sm"
               style={{ backgroundColor: politician.party_color || '#95A5A6' }}
             >
               {politician.party}

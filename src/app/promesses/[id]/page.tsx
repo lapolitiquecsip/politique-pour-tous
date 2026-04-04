@@ -18,6 +18,27 @@ interface Politician {
 
 import { api } from "@/lib/api";
 
+const MOCK_PROMISES: Record<string, any[]> = {
+  "emmanuel-macron": [
+    { id: "p1", citation: "Suppression de la redevance audiovisuelle pour tous les Français.", status: "kept", date_made: "2022-03-15", category: "Économie", source_url: "https://www.service-public.fr" },
+    { id: "p2", citation: "Planter 1 milliard d'arbres sur le territoire national d'ici 2032.", status: "in-progress", date_made: "2022-10-21", category: "Écologie", source_url: "https://www.ecologie.gouv.fr" },
+    { id: "p3", citation: "Zéro SDF : personne ne doit plus dormir dans la rue d'ici la fin de l'année.", status: "broken", date_made: "2017-07-27", category: "Social", source_url: "https://www.lemonde.fr" },
+    { id: "p4", citation: "Doublement des classes de CP et CE1 dans les zones d'éducation prioritaire.", status: "kept", date_made: "2017-05-01", category: "Éducation", source_url: "https://www.education.gouv.fr" },
+    { id: "p5", citation: "Mise en place d'un système de retraite universel par points.", status: "pending", date_made: "2019-12-11", category: "Social", source_url: "https://www.gouvernement.fr" },
+  ],
+  "gabriel-attal": [
+    { id: "a1", citation: "Mise en œuvre du Service National Universel (SNU) pour toute une classe d'âge.", status: "in-progress", date_made: "2023-06-12", category: "Jeunesse", source_url: "https://www.snu.gouv.fr" },
+    { id: "a2", citation: "Expérimentation de la semaine de 4 jours dans l'administration.", status: "in-progress", date_made: "2024-01-30", category: "Travail", source_url: "https://www.lefigaro.fr" },
+  ]
+};
+
+const MOCK_POLITICIANS_MAP: Record<string, any> = {
+  "emmanuel-macron": { id: "emmanuel-macron", first_name: "Emmanuel", last_name: "Macron", role: "Président de la République", party: "Renaissance", party_color: "#005EB8" },
+  "gabriel-attal": { id: "gabriel-attal", first_name: "Gabriel", last_name: "Attal", role: "Premier Ministre", party: "Renaissance", party_color: "#005EB8" },
+  "yael-braun-pivet": { id: "yael-braun-pivet", first_name: "Yaël", last_name: "Braun-Pivet", role: "Pr. de l'Assemblée Nationale", party: "Renaissance", party_color: "#005EB8" },
+  "gerard-larcher": { id: "gerard-larcher", first_name: "Gérard", last_name: "Larcher", role: "Président du Sénat", party: "Les Républicains", party_color: "#0055ff" },
+};
+
 export default function PoliticianPromisesPage() {
   const { id } = useParams();
   const router = useRouter();
@@ -35,12 +56,21 @@ export default function PoliticianPromisesPage() {
           api.getPoliticianPromises(id as string)
         ]);
 
-        if (!polData) throw new Error("Politician not found");
-
-        setPolitician(polData);
-        setPromises(promData);
+        if (polData) {
+          setPolitician(polData);
+          setPromises(promData || []);
+        } else if (MOCK_POLITICIANS_MAP[id as string]) {
+          setPolitician(MOCK_POLITICIANS_MAP[id as string]);
+          setPromises(MOCK_PROMISES[id as string] || []);
+        } else {
+          throw new Error("Politician not found");
+        }
       } catch (error) {
         console.error("Failed to fetch:", error);
+        if (MOCK_POLITICIANS_MAP[id as string]) {
+          setPolitician(MOCK_POLITICIANS_MAP[id as string]);
+          setPromises(MOCK_PROMISES[id as string] || []);
+        }
       } finally {
         setLoading(false);
       }

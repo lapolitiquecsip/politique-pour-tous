@@ -17,11 +17,11 @@ import { motion } from "framer-motion";
 
 // Mock data generator for votes
 const getMockVotes = () => [
-  { id: 1, title: "Loi Plein Emploi", date: "Janvier 2024", vote: "POUR", color: "text-emerald-500", bg: "bg-emerald-500/10", icon: CheckCircle2 },
-  { id: 2, title: "Loi Programmation Militaire", date: "Octobre 2023", vote: "CONTRE", color: "text-red-500", bg: "bg-red-500/10", icon: XCircle },
-  { id: 3, title: "Loi Immigration", date: "Décembre 2023", vote: "ABSTENTION", color: "text-amber-500", bg: "bg-amber-500/10", icon: MinusCircle },
-  { id: 4, title: "Réforme des Retraites", date: "Mars 2023", vote: "CONTRE", color: "text-red-500", bg: "bg-red-500/10", icon: XCircle },
-  { id: 5, title: "Loi Pouvoir d'Achat", date: "Juillet 2022", vote: "POUR", color: "text-emerald-500", bg: "bg-emerald-500/10", icon: CheckCircle2 },
+  { id: 1, title: "Loi Plein Emploi", date: "Janvier 2024", vote: "POUR", color: "text-emerald-500", bg: "bg-emerald-500/10", icon: CheckCircle2, lawSlug: "loi-plein-emploi" },
+  { id: 2, title: "Loi Programmation Militaire", date: "Octobre 2023", vote: "CONTRE", color: "text-red-500", bg: "bg-red-500/10", icon: XCircle, lawSlug: "loi-programmation-militaire" },
+  { id: 3, title: "Loi Immigration", date: "Décembre 2023", vote: "ABSTENTION", color: "text-amber-500", bg: "bg-amber-500/10", icon: MinusCircle, lawSlug: "loi-immigration" },
+  { id: 4, title: "Réforme des Retraites", date: "Mars 2023", vote: "CONTRE", color: "text-red-500", bg: "bg-red-500/10", icon: XCircle, lawSlug: "reforme-des-retraites" },
+  { id: 5, title: "Loi Pouvoir d'Achat", date: "Juillet 2022", vote: "POUR", color: "text-emerald-500", bg: "bg-emerald-500/10", icon: CheckCircle2, lawSlug: "loi-pouvoir-achat" },
 ];
 
 export default function DeputyDetailPage({ params }: { params: Promise<{ slug: string }> }) {
@@ -134,34 +134,36 @@ export default function DeputyDetailPage({ params }: { params: Promise<{ slug: s
             </div>
 
             <div className="space-y-4">
-              {votes.map((vote, idx) => (
-                <motion.div 
-                  key={vote.id}
-                  initial={{ opacity: 0, x: 20 }}
-                  animate={{ opacity: 1, x: 0 }}
-                  transition={{ delay: 0.3 + (idx * 0.1) }}
-                  className="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-[2rem] p-6 flex flex-col md:flex-row items-center gap-6 group hover:border-red-500/50 transition-colors"
-                >
-                  <div className="flex-1 flex items-center gap-6 min-w-0">
-                    <div className="w-14 h-14 rounded-2xl bg-slate-50 dark:bg-slate-800 flex items-center justify-center text-slate-400 group-hover:text-red-500 transition-colors shrink-0">
-                      <Vote className="w-6 h-6" />
-                    </div>
-                    <div className="min-w-0">
-                      <div className="flex items-center gap-3 mb-1">
-                        <Calendar className="w-3 h-3 text-slate-400" />
-                        <span className="text-[10px] font-black text-slate-400 uppercase tracking-widest">{vote.date}</span>
+              {votes.map((vote: any, idx) => (
+                <Link key={vote.id} href={`/lois/${vote.lawSlug || 'reforme-des-retraites'}`}>
+                  <motion.div 
+                    initial={{ opacity: 0, x: 20 }}
+                    animate={{ opacity: 1, x: 0 }}
+                    transition={{ delay: 0.3 + (idx * 0.1) }}
+                    className="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-[2rem] p-6 flex flex-col md:flex-row items-center gap-6 group hover:border-red-500 hover:shadow-2xl hover:shadow-red-500/10 transition-all duration-300 transform hover:-translate-y-1 mb-4"
+                  >
+                    <div className="flex-1 flex items-center gap-6 min-w-0">
+                      <div className="w-14 h-14 rounded-2xl bg-slate-50 dark:bg-slate-800 flex items-center justify-center text-slate-400 group-hover:text-red-500 transition-colors shrink-0">
+                        <Vote className="w-6 h-6" />
                       </div>
-                      <h3 className="text-xl font-bold text-slate-900 dark:text-white truncate">
-                        {vote.title}
-                      </h3>
+                      <div className="min-w-0">
+                        <div className="flex items-center gap-3 mb-1">
+                          <Calendar className="w-3 h-3 text-slate-400" />
+                          <span className="text-[10px] font-black text-slate-400 uppercase tracking-widest">{vote.date}</span>
+                        </div>
+                        <h3 className="text-xl font-bold text-slate-900 dark:text-white group-hover:text-red-600 transition-colors truncate">
+                          {vote.title}
+                        </h3>
+                        <p className="text-[10px] font-bold text-slate-400 uppercase tracking-widest mt-1 opacity-0 group-hover:opacity-100 transition-opacity">Consulter le dossier &rarr;</p>
+                      </div>
                     </div>
-                  </div>
 
-                  <div className={`flex items-center gap-3 px-6 py-4 rounded-2xl ${vote.bg} ${vote.color} border border-transparent group-hover:border-current transition-all shrink-0 min-w-[160px] justify-center`}>
-                     <vote.icon className="w-5 h-5" />
-                     <span className="font-black text-sm tracking-tighter italic">POSITION : {vote.vote}</span>
-                  </div>
-                </motion.div>
+                    <div className={`flex items-center gap-3 px-6 py-4 rounded-2xl ${vote.bg} ${vote.color} border border-transparent shadow-sm group-hover:shadow-lg transition-all shrink-0 min-w-[160px] justify-center`}>
+                       <vote.icon className="w-5 h-5" />
+                       <span className="font-black text-sm tracking-tighter italic">POSITION : {vote.vote}</span>
+                    </div>
+                  </motion.div>
+                </Link>
               ))}
             </div>
 

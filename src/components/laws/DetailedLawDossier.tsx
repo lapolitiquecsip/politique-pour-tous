@@ -82,60 +82,60 @@ export default function DetailedLawDossier({ law }: DetailedLawDossierProps) {
         className="overflow-hidden transform-gpu will-change-[height,opacity]"
       >
         <div className="relative z-10 px-8 pb-12 pt-4 border-t border-border/50">
-          <div className="flex items-center gap-2 text-sm font-semibold text-muted-foreground bg-muted/50 px-4 py-1.5 rounded-full capitalize italic w-fit mb-8">
+          <div className="flex items-center gap-2 text-sm font-semibold text-slate-600 bg-slate-100/80 px-4 py-1.5 rounded-full capitalize w-fit mb-8">
             <span className={`w-2 h-2 rounded-full ${law.status === 'application' ? 'bg-green-500' : 'bg-amber-500'} animate-pulse`} />
             {law.statusLabel}
           </div>
 
-          <p className="text-lg text-muted-foreground leading-relaxed mb-10 max-w-4xl">
+          <p className="text-lg md:text-xl text-slate-800 font-medium leading-relaxed mb-10 max-w-4xl">
             {law.summary}
           </p>
 
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-12">
             {/* Impacts */}
             <div className="space-y-6">
-              <h4 className="text-base font-black flex items-center gap-2 text-foreground uppercase tracking-widest leading-none">
+              <h4 className="text-lg font-bold flex items-center gap-2 text-slate-900 uppercase tracking-wider mb-6">
                 <CheckCircle2 className="w-5 h-5 text-primary" />
                 Décryptage : ce que ça change
               </h4>
-              <div className="space-y-3">
+              <div className="space-y-4">
                 {law.impacts.map((impact, idx) => (
-                  <div key={idx} className="flex gap-3 items-start p-4 bg-muted/20 rounded-2xl border border-border/40">
-                    <div className="w-1.5 h-1.5 rounded-full bg-primary mt-2 shrink-0" />
-                    <p className="text-muted-foreground text-sm leading-relaxed">{impact}</p>
+                  <div key={idx} className="flex gap-4 items-start p-5 bg-slate-50/80 rounded-2xl border border-slate-200/60 shadow-sm">
+                    <div className="w-2 h-2 rounded-full bg-primary mt-2 shrink-0" />
+                    <p className="text-slate-700 text-base font-medium leading-relaxed">{impact}</p>
                   </div>
                 ))}
               </div>
             </div>
 
             {/* Timeline & Analysis */}
-            <div className="space-y-8">
+            <div className="space-y-10">
               <div>
-                <h4 className="text-base font-black flex items-center gap-2 text-foreground uppercase tracking-widest mb-6 leading-none">
+                <h4 className="text-lg font-bold flex items-center gap-2 text-slate-900 uppercase tracking-wider mb-6">
                   <Calendar className="w-5 h-5 text-primary" />
                   Calendrier législatif
                 </h4>
-                <div className="space-y-6 pl-4 border-l-2 border-border ml-2">
+                <div className="space-y-7 pl-6 border-l-2 border-slate-200 ml-2">
                   {law.calendar.map((item, idx) => (
                     <div key={idx} className="relative">
-                      <div className="absolute -left-[22px] top-1.5 w-4 h-4 rounded-full bg-card border-2 border-primary" />
-                      <p className="text-[10px] font-black uppercase text-primary tracking-tighter mb-1">{item.date}</p>
-                      <p className="text-sm text-foreground font-semibold line-clamp-2">{item.event}</p>
+                      <div className="absolute -left-[31px] top-1.5 w-4 h-4 rounded-full bg-card border-2 border-primary" />
+                      <p className="text-xs font-bold uppercase text-primary tracking-widest mb-1.5">{item.date}</p>
+                      <p className="text-base text-slate-800 font-semibold">{item.event}</p>
                     </div>
                   ))}
                 </div>
               </div>
 
               {/* Deep Analysis */}
-              <div className="p-6 bg-slate-50 border border-slate-200 rounded-3xl relative overflow-hidden group shadow-inner">
-                <h4 className="text-slate-900 font-black text-xs uppercase tracking-widest flex items-center gap-2 mb-4 leading-none">
-                  <Sparkles className="w-4 h-4 text-primary" />
+              <div className="p-7 bg-blue-50/50 border border-blue-100 rounded-3xl relative overflow-hidden group shadow-sm">
+                <h4 className="text-slate-900 font-bold text-sm uppercase tracking-wider flex items-center gap-2 mb-5">
+                  <Sparkles className="w-5 h-5 text-amber-500" />
                   Analyse approfondie de la rédaction
                 </h4>
-                <ul className="space-y-3">
+                <ul className="space-y-4">
                   {law.premiumPoints.map((point, idx) => (
-                    <li key={idx} className="flex items-center gap-3 text-sm text-slate-600 font-medium italic">
-                      <ArrowRight className="w-4 h-4 text-primary opacity-40 shrink-0" />
+                    <li key={idx} className="flex items-start gap-3 text-base text-slate-700 font-medium">
+                      <ArrowRight className="w-5 h-5 text-amber-500/60 shrink-0 mt-0.5" />
                       {point}
                     </li>
                   ))}

@@ -116,23 +116,33 @@ export default function StatsPanel() {
           transition={{ duration: 0.5, ease: [0.4, 0, 0.2, 1] }}
           className={`absolute inset-0 w-full h-full flex flex-col items-center justify-center p-8 md:p-12 text-center text-white ${slide.color} transition-colors duration-700`}
         >
+          {!slide.value && (
+            <div className="absolute inset-0 flex items-center justify-center overflow-hidden pointer-events-none select-none">
+              <span className="text-[15rem] md:text-[25rem] font-black text-white/5 uppercase tracking-tighter leading-none transform -rotate-12 translate-y-12">
+                {slide.type?.split(' ')[0]}
+              </span>
+            </div>
+          )}
+
           {slide.value ? (
             <>
               <motion.span 
                 initial={{ scale: 0.8 }}
                 animate={{ scale: 1 }}
-                className="text-7xl md:text-9xl font-black mb-4 tracking-tighter"
+                className="relative z-10 text-7xl md:text-9xl font-black mb-4 tracking-tighter"
               >
                 {slide.value}
               </motion.span>
-              <p className="text-lg md:text-2xl font-bold max-w-2xl leading-tight opacity-90 uppercase tracking-wide">
+              <p className="relative z-10 text-lg md:text-2xl font-bold max-w-2xl leading-tight opacity-90 uppercase tracking-wide">
                 {slide.label}
               </p>
             </>
           ) : (
             <>
-              {slide.icon}
-              <div className="flex items-center gap-2 mb-8 uppercase tracking-[0.3em] text-[10px] font-black">
+              <div className="relative z-10">
+                {slide.icon}
+              </div>
+              <div className="relative z-10 flex items-center gap-2 mb-8 uppercase tracking-[0.3em] text-[10px] font-black">
                 {slide.isLive && (
                   <span className="relative flex h-3 w-3">
                     <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-white opacity-75"></span>
@@ -144,12 +154,12 @@ export default function StatsPanel() {
                 </span>
               </div>
               
-              <h2 className="text-2xl md:text-5xl font-black max-w-5xl leading-[1.1] mb-8 uppercase tracking-tight">
+              <h2 className="relative z-10 text-2xl md:text-5xl font-black max-w-5xl leading-[1.1] mb-8 uppercase tracking-tight">
                 {slide.content}
               </h2>
 
               {slide.debunk && (
-                <div className="bg-black/30 backdrop-blur-xl rounded-[2rem] p-6 md:p-8 border border-white/10 shadow-2xl max-w-3xl transform hover:scale-105 transition-transform duration-500">
+                <div className="relative z-10 bg-black/30 backdrop-blur-xl rounded-[2rem] p-6 md:p-8 border border-white/10 shadow-2xl max-w-3xl transform hover:scale-105 transition-transform duration-500">
                   <p className="text-xl md:text-3xl font-black leading-tight flex flex-col md:flex-row items-center gap-4">
                     <span className="bg-white text-black px-4 py-1 rounded-full text-sm uppercase tracking-widest shrink-0">
                       RÉALITÉ

@@ -17,9 +17,7 @@ import {
 } from "lucide-react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
-import { useEffect } from "react";
-import { supabase } from "@/lib/supabase";
-import { api } from "@/lib/api";
+import { usePremium } from "@/lib/hooks/usePremium";
 import { STRIPE_CHECKOUT_URL } from "@/lib/constants";
 import DetailedLawDossier from "@/components/laws/DetailedLawDossier";
 import { FREE_LAWS } from "@/data/free-laws-dossiers";
@@ -36,29 +34,7 @@ const CATEGORIES = [
 export default function LawsClient() {
   const router = useRouter();
   const [selectedCat, setSelectedCat] = useState<string | null>(null);
-  const [isPremium, setIsPremium] = useState(false);
-  const [loading, setLoading] = useState(true);
-
-  useEffect(() => {
-    const checkAuthAndPremium = async () => {
-      try {
-        const { data: { session } } = await supabase.auth.getSession();
-        if (session?.user?.email) {
-          const profile = await api.getProfile(session.user.email);
-          // On vérifie si l'utilisateur est premium (champ is_premium ou status 'active' dans subscribers)
-          if (profile?.is_premium || profile?.status === 'active') {
-            setIsPremium(true);
-          }
-        }
-      } catch (err) {
-        console.error("Error checking premium status:", err);
-      } finally {
-        setLoading(false);
-      }
-    };
-
-    checkAuthAndPremium();
-  }, []);
+  const { isPremium, loading } = usePremium();
 
   const scrollToPremium = () => {
     const element = document.getElementById("premium-section");

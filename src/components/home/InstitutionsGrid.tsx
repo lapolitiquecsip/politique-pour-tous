@@ -32,7 +32,7 @@ const INSTITUTIONS: Institution[] = [
     id: "senat",
     name: "Sénat",
     shortName: "Sénat",
-    image: "https://upload.wikimedia.org/wikipedia/commons/7/7c/Palais_du_Luxembourg_Paris.jpg",
+    image: "https://photos.senat.fr/file/v/preview?id=299927&indexInCurrentSeach=0",
     summary: "Le Palais du Luxembourg représente les collectivités territoriales.",
     color: "from-indigo-600",
     details: [

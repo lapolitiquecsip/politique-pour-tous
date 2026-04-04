@@ -31,16 +31,12 @@ export default function PremiumButton() {
     window.location.href = checkoutUrl;
   };
 
-<<<<<<< HEAD
-  if (dismissed || pathname === "/premium" || pathname.startsWith("/lois/")) return null;
-=======
   // Ne pas afficher si :
   // 1. Déjà Premium
-  // 2. Sur la page /premium
+  // 2. Sur la page /premium ou une page de loi
   // 3. Masqué manuellement
   // 4. Chargement du statut en cours
-  if (isPremium || statusLoading || dismissed || pathname === "/premium") return null;
->>>>>>> d3e74846778d293717a30bd5e34f0365420e3702
+  if (isPremium || statusLoading || dismissed || pathname === "/premium" || pathname.startsWith("/lois/")) return null;
 
   return (
     <>

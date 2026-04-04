@@ -15,10 +15,12 @@ import { FREE_LAWS, LawDossier } from "@/data/free-laws-dossiers";
 import { api } from "@/lib/api";
 import Link from "next/link";
 import { STRIPE_CHECKOUT_URL } from "@/lib/constants";
+import { usePremium } from "@/lib/hooks/usePremium";
 
 export default function LawDetailPage({ params }: { params: Promise<{ id: string }> }) {
   const router = useRouter();
   const { id } = use(params);
+  const { isPremium, loading: premiumLoading } = usePremium();
   const [law, setLaw] = useState<LawDossier | null>(null);
   const [loading, setLoading] = useState(true);
 
@@ -59,7 +61,7 @@ export default function LawDetailPage({ params }: { params: Promise<{ id: string
     fetchLaw();
   }, [id]);
 
-  if (loading) return (
+  if (loading || premiumLoading) return (
     <div className="min-h-screen bg-slate-950 flex items-center justify-center font-staatliches">
       <div className="flex flex-col items-center gap-6">
         <div className="w-16 h-16 border-4 border-red-600 border-t-transparent rounded-full animate-spin shadow-2xl shadow-red-500/20" />
@@ -103,7 +105,7 @@ export default function LawDetailPage({ params }: { params: Promise<{ id: string
               Retour
             </button>
             <div className="flex items-center gap-3">
-              <div className="w-2 h-2 rounded-full bg-red-600 animate-pulse shadow-[0_0_10px_rgba(220,38,38,0.8)]" />
+              <div className="w-2 h-2 rounded-full bg-red-600 animate-pulse shadow-[0_0_100px_rgba(220,38,38,0.8)]" />
               <span className="text-[10px] font-black text-white/60 uppercase tracking-widest">Analyse en direct</span>
             </div>
         </div>
@@ -195,39 +197,41 @@ export default function LawDetailPage({ params }: { params: Promise<{ id: string
       </div>
 
       {/* 3. PREMIUM FLOATING PAYWALL */}
-      <div className="fixed bottom-0 left-0 right-0 z-50 p-6 md:p-12 pointer-events-none">
-         <motion.div 
-           initial={{ y: 150 }}
-           animate={{ y: 0 }}
-           className="container mx-auto max-w-5xl bg-gradient-to-r from-amber-400 via-orange-500 to-amber-500 p-[1.5px] rounded-[3rem] shadow-[0_30px_100px_rgba(251,191,36,0.2)] pointer-events-auto overflow-hidden"
-         >
-            <div className="bg-slate-950/95 backdrop-blur-3xl p-5 md:p-8 rounded-[2.9rem] flex flex-col md:flex-row items-center justify-between gap-8">
-               <div className="flex items-center gap-8 text-left">
-                  <div className="w-16 h-16 rounded-[1.5rem] bg-gradient-to-br from-amber-300 to-amber-500 flex items-center justify-center text-slate-950 shrink-0 shadow-lg shadow-amber-500/20">
-                     <Sparkles className="w-8 h-8" />
-                  </div>
-                  <div>
-                     <h4 className="text-2xl font-black text-white uppercase tracking-tighter leading-none mb-1.5">Guide de vote complet</h4>
-                     <p className="text-[10px] text-amber-400/80 uppercase tracking-[0.3em] font-black">Accès réservé aux membres Premium</p>
-                  </div>
-               </div>
-               
-               <div className="flex items-center gap-6">
-                   <div className="hidden lg:flex flex-col items-end gap-1 px-8 border-r border-white/10 mr-2">
-                       <span className="text-white text-xs font-bold leading-none">Vérifié par la rédaction</span>
-                       <span className="text-white/40 text-[9px] uppercase tracking-widest leading-none">Source : Assemblée Nationale</span>
-                   </div>
-                  <Link 
-                    href={STRIPE_CHECKOUT_URL}
-                    className="px-10 py-5 bg-amber-400 text-slate-950 font-black rounded-2xl hover:bg-white transition-all text-sm flex items-center gap-3 group shadow-xl shadow-amber-400/20"
-                  >
-                    Débloquer le dossier
-                    <ArrowRight className="w-5 h-5 group-hover:translate-x-2 transition-transform duration-300" />
-                  </Link>
-               </div>
-            </div>
-         </motion.div>
-      </div>
+      {!isPremium && !premiumLoading && (
+        <div className="fixed bottom-0 left-0 right-0 z-50 p-6 md:p-12 pointer-events-none">
+          <motion.div 
+            initial={{ y: 150 }}
+            animate={{ y: 0 }}
+            className="container mx-auto max-w-5xl bg-gradient-to-r from-amber-400 via-orange-500 to-amber-500 p-[1.5px] rounded-[3rem] shadow-[0_30px_100px_rgba(251,191,36,0.2)] pointer-events-auto overflow-hidden"
+          >
+              <div className="bg-slate-950/95 backdrop-blur-3xl p-5 md:p-8 rounded-[2.9rem] flex flex-col md:flex-row items-center justify-between gap-8">
+                <div className="flex items-center gap-8 text-left">
+                    <div className="w-16 h-16 rounded-[1.5rem] bg-gradient-to-br from-amber-300 to-amber-500 flex items-center justify-center text-slate-950 shrink-0 shadow-lg shadow-amber-500/20">
+                      <Sparkles className="w-8 h-8" />
+                    </div>
+                    <div>
+                      <h4 className="text-2xl font-black text-white uppercase tracking-tighter leading-none mb-1.5">Guide de vote complet</h4>
+                      <p className="text-[10px] text-amber-400/80 uppercase tracking-[0.3em] font-black">Accès réservé aux membres Premium</p>
+                    </div>
+                </div>
+                
+                <div className="flex items-center gap-6">
+                    <div className="hidden lg:flex flex-col items-end gap-1 px-8 border-r border-white/10 mr-2">
+                        <span className="text-white text-xs font-bold leading-none">Vérifié par la rédaction</span>
+                        <span className="text-white/40 text-[9px] uppercase tracking-widest leading-none">Source : Assemblée Nationale</span>
+                    </div>
+                    <Link 
+                      href={STRIPE_CHECKOUT_URL}
+                      className="px-10 py-5 bg-amber-400 text-slate-950 font-black rounded-2xl hover:bg-white transition-all text-sm flex items-center gap-3 group shadow-xl shadow-amber-400/20"
+                    >
+                      Débloquer le dossier
+                      <ArrowRight className="w-5 h-5 group-hover:translate-x-2 transition-transform duration-300" />
+                    </Link>
+                </div>
+              </div>
+          </motion.div>
+        </div>
+      )}
 
       <button 
         onClick={() => window.scrollTo({ top: 0, behavior: 'smooth' })}

@@ -3,8 +3,20 @@
 import { motion } from "framer-motion";
 import { ArrowLeft, CheckCircle2, AlertCircle, Calendar, Sparkles, BookOpen, GraduationCap, XCircle } from "lucide-react";
 import Link from "next/link";
+import { usePremium } from "@/lib/hooks/usePremium";
 
 export default function EducationLawPage() {
+  const { isPremium, loading } = usePremium();
+
+  if (loading) return (
+    <div className="min-h-screen bg-slate-950 flex items-center justify-center font-staatliches">
+      <div className="flex flex-col items-center gap-6">
+        <div className="w-16 h-16 border-4 border-red-600 border-t-transparent rounded-full animate-spin shadow-2xl shadow-red-500/20" />
+        <span className="text-white tracking-[0.3em] uppercase animate-pulse">Chargement du dossier</span>
+      </div>
+    </div>
+  );
+
   return (
     <div className="min-h-screen bg-slate-50 pb-24">
       {/* HEADER SECTION */}
@@ -181,17 +193,19 @@ export default function EducationLawPage() {
               </div>
             </div>
             
-            <div className="bg-gradient-to-br from-amber-500 to-orange-600 p-6 rounded-3xl shadow-xl text-white">
-              <h3 className="font-black text-xl mb-2 flex items-center gap-2">
-                <AlertCircle className="w-5 h-5" /> Dossier Libre
-              </h3>
-              <p className="text-amber-50 text-sm leading-relaxed mb-6">
-                Cet exemple de dossier législatif vous est offert. Pour accéder aux autres lois décryptées, souscrivez au Premium.
-              </p>
-              <Link href="/premium" className="block text-center bg-white text-orange-600 font-bold py-3 rounded-xl hover:shadow-lg transition-all w-full">
-                S'abonner (3€/mois)
-              </Link>
-            </div>
+            {!isPremium && (
+              <div className="bg-gradient-to-br from-amber-500 to-orange-600 p-6 rounded-3xl shadow-xl text-white">
+                <h3 className="font-black text-xl mb-2 flex items-center gap-2">
+                  <AlertCircle className="w-5 h-5" /> Dossier Libre
+                </h3>
+                <p className="text-amber-50 text-sm leading-relaxed mb-6">
+                  Cet exemple de dossier législatif vous est offert. Pour accéder aux autres lois décryptées, souscrivez au Premium.
+                </p>
+                <Link href="/premium" className="block text-center bg-white text-orange-600 font-bold py-3 rounded-xl hover:shadow-lg transition-all w-full">
+                  S'abonner (3€/mois)
+                </Link>
+              </div>
+            )}
           </div>
 
         </div>

@@ -5,9 +5,11 @@ import { supabase } from "@/lib/supabase";
 import { Star, RefreshCw as Loader2, X, AlertCircle, ArrowRight } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
 import Link from "next/link";
+import { usePathname } from "next/navigation";
 import { STRIPE_CHECKOUT_URL } from "@/lib/constants";
 
 export default function PremiumButton() {
+  const pathname = usePathname();
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [dismissed, setDismissed] = useState(false);
@@ -18,7 +20,7 @@ export default function PremiumButton() {
     window.location.href = STRIPE_CHECKOUT_URL;
   };
 
-  if (dismissed) return null;
+  if (dismissed || pathname === "/premium") return null;
 
   return (
     <>

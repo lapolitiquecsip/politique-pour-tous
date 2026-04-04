@@ -95,7 +95,7 @@ const CONTENTS = [
   {
     icon: Mail,
     title: "Newsletter Hebdomadaire",
-    desc: "Les 5 faits politiques majeurs de la semaine, décryptés en langage clair. Livré chaque lundi matin.",
+    desc: "100% personnalisée. Selon votre localisation, âge et catégorie socio-pro, nous calculons l'impact direct des nouvelles lois (impôts, aides, etc.) sur votre quotidien.",
     color: "bg-amber-50 text-amber-600 border-amber-100",
   },
   {
@@ -103,6 +103,7 @@ const CONTENTS = [
     title: "Explications de lois illimitées",
     desc: "Accédez à l'intégralité de nos décryptages sans aucune restriction. Comprenez chaque vote en profondeur.",
     color: "bg-amber-50 text-amber-600 border-amber-100",
+    href: "/lois",
   },
   {
     icon: Sparkles,
@@ -190,7 +191,7 @@ export default function PremiumPage() {
           >
             <div className="text-center group">
               <p className="text-4xl md:text-5xl font-extrabold text-amber-400 group-hover:scale-110 transition-transform">
-                <AnimatedCounter target={2847} suffix="+" />
+                <AnimatedCounter target={302} suffix="+" />
               </p>
               <p className="text-sm text-white/50 mt-1 font-medium italic">Citoyens Premium</p>
             </div>
@@ -230,19 +231,29 @@ export default function PremiumPage() {
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
             {CONTENTS.map((item, i) => {
               const Icon = item.icon;
+              const content = (
+                <div className="group flex gap-5 p-8 rounded-3xl border border-slate-100 bg-white hover:shadow-2xl hover:border-amber-200 transition-all h-full">
+                  <div className={`w-16 h-16 rounded-2xl flex items-center justify-center flex-shrink-0 border ${item.color} group-hover:scale-110 transition-transform`}>
+                    <Icon className="w-8 h-8" />
+                  </div>
+                  <div>
+                    <h3 className="text-xl font-bold text-slate-900 mb-2 group-hover:text-amber-600 transition-colors">
+                      {item.title}
+                    </h3>
+                    <p className="text-slate-500 text-base leading-relaxed">{item.desc}</p>
+                  </div>
+                </div>
+              );
+
               return (
                 <FadeIn key={i} delay={i * 0.1}>
-                  <div className="group flex gap-5 p-8 rounded-3xl border border-slate-100 bg-white hover:shadow-2xl hover:border-amber-200 transition-all">
-                    <div className={`w-16 h-16 rounded-2xl flex items-center justify-center flex-shrink-0 border ${item.color} group-hover:scale-110 transition-transform`}>
-                      <Icon className="w-8 h-8" />
-                    </div>
-                    <div>
-                      <h3 className="text-xl font-bold text-slate-900 mb-2 group-hover:text-amber-600 transition-colors">
-                        {item.title}
-                      </h3>
-                      <p className="text-slate-500 text-base leading-relaxed">{item.desc}</p>
-                    </div>
-                  </div>
+                  {item.href ? (
+                    <Link href={item.href} className="block h-full">
+                      {content}
+                    </Link>
+                  ) : (
+                    content
+                  )}
                 </FadeIn>
               );
             })}

@@ -15,11 +15,15 @@ import {
   MinusCircle,
   Loader2,
   Calendar,
-  LayoutDashboard
+  LayoutDashboard,
+  LogOut,
+  Settings,
+  ArrowRight
 } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
 import { api } from "@/lib/api";
 import { usePremium } from "@/lib/hooks/usePremium";
+import { FREE_LAWS } from "@/data/free-laws-dossiers";
 
 export default function DashboardPage() {
   const { userId, isPremium, loading: authLoading } = usePremium();
@@ -170,32 +174,46 @@ export default function DashboardPage() {
                         <Link href="/lois" className="text-slate-950 font-black uppercase text-xs tracking-widest hover:underline">Voir les lois &rarr;</Link>
                       </div>
                     ) : (
-                      userVotes.map((v) => (
-                        <div key={v.id} className="group flex items-center gap-6 p-6 rounded-3xl border border-slate-100 hover:border-slate-300 hover:shadow-xl transition-all">
-                          <div className="w-14 h-14 rounded-2xl bg-slate-50 flex items-center justify-center text-slate-400 group-hover:text-slate-900 transition-colors">
-                            <LayoutDashboard size={24} />
-                          </div>
-                          <div className="flex-1 min-w-0">
-                            <div className="flex items-center gap-3 mb-1">
-                               <Calendar size={12} className="text-slate-400" />
-                               <span className="text-[10px] font-black text-slate-400 uppercase tracking-widest">
-                                 {new Date(v.created_at).toLocaleDateString("fr-FR", { month: "short", year: "numeric" })}
-                               </span>
+                      userVotes.map((v) => {
+                        const lawInfo = v.laws || FREE_LAWS.find(l => l.id === v.law_id);
+                        const voteConfig = {
+                          "POUR": { color: "bg-emerald-100 text-emerald-700", icon: CheckCircle2 },
+                          "CONTRE": { color: "bg-red-100 text-red-700", icon: XCircle },
+                          "ABSTENTION": { color: "bg-slate-100 text-slate-700", icon: MinusCircle }
+                        }[v.vote as string] || { color: "bg-slate-100 text-slate-700", icon: Vote };
+
+                        return (
+                          <div key={v.id} className="group flex flex-col md:flex-row md:items-center gap-6 p-6 rounded-3xl border border-slate-100 hover:border-slate-300 hover:shadow-xl transition-all bg-white relative">
+                            <div className="w-14 h-14 rounded-2xl bg-slate-50 flex items-center justify-center text-slate-400 group-hover:text-slate-900 transition-colors shrink-0">
+                              <voteConfig.icon size={24} />
                             </div>
-                            <h4 className="text-xl font-bold text-slate-900 truncate">
-                              {v.laws?.title || "Loi inconnue"}
-                            </h4>
+                            <div className="flex-1 min-w-0">
+                              <div className="flex items-center gap-3 mb-1">
+                                <span className="text-[10px] font-black uppercase tracking-widest text-slate-400 bg-slate-50 px-2 py-0.5 rounded border border-slate-100">
+                                  {lawInfo?.category || "Législation"}
+                                </span>
+                                <div className="flex items-center gap-1.5 text-[10px] font-bold text-slate-400">
+                                  <Calendar size={10} />
+                                  {new Date(v.created_at).toLocaleDateString('fr-FR', { day: 'numeric', month: 'short' })}
+                                </div>
+                              </div>
+                              <h3 className="text-lg font-bold text-slate-900 truncate italic">
+                                {lawInfo?.title || `Loi #${v.law_id}`}
+                              </h3>
+                            </div>
+                            <div className={`px-4 py-2 rounded-full text-[10px] font-black uppercase tracking-widest flex items-center gap-2 ${voteConfig.color}`}>
+                              <voteConfig.icon size={12} />
+                              Position : {v.vote}
+                            </div>
+                            <Link 
+                              href={`/lois`}
+                              className="w-10 h-10 rounded-full border border-slate-100 flex items-center justify-center text-slate-400 hover:bg-slate-950 hover:text-white hover:border-slate-950 transition-all shrink-0"
+                            >
+                              <ArrowRight size={18} />
+                            </Link>
                           </div>
-                          <div className={`px-6 py-3 rounded-2xl font-black text-xs uppercase tracking-tighter italic border ${
-                            v.vote === 'POUR' ? "bg-emerald-50 text-emerald-600 border-emerald-100" :
-                            v.vote === 'CONTRE' ? "bg-red-50 text-red-600 border-red-100" :
-                            "bg-amber-50 text-amber-600 border-amber-100"
-                          }`}>
-                            VOUS AVEZ VOTÉ : {v.vote}
-                          </div>
-                          <ChevronRight className="text-slate-300 group-hover:translate-x-1 transition-transform" />
-                        </div>
-                      ))
+                        );
+                      })
                     )}
                   </motion.div>
                 ) : (

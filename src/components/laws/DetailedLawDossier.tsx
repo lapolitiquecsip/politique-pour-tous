@@ -24,6 +24,32 @@ interface DetailedLawDossierProps {
 export default function DetailedLawDossier({ law }: DetailedLawDossierProps) {
   const [isOpen, setIsOpen] = useState(false);
   const { isPremium, userId } = usePremium();
+  const [userVote, setUserVote] = useState<string | null>(null);
+  const [isVoting, setIsVoting] = useState(false);
+
+  // Charger le vote existant
+  useState(() => {
+    if (userId) {
+      api.getUserVotes(userId).then(votes => {
+        const existing = votes.find((v: any) => v.law_id === law.id);
+        if (existing) setUserVote(existing.vote);
+      });
+    }
+  });
+
+  const handleVote = async (btnVal: string) => {
+    if (!userId) return;
+    setIsVoting(true);
+    try {
+      await api.saveUserVote(userId, law.id, btnVal as any);
+      setUserVote(btnVal);
+      alert(`Votre position "${btnVal}" a été enregistrée avec succès !`);
+    } catch (err) {
+      console.error("Erreur vote:", err);
+    } finally {
+      setIsVoting(false);
+    }
+  };
 
   const colorMap: Record<string, string> = {
     emerald: "border-emerald-200 bg-emerald-50 text-emerald-700",
@@ -166,36 +192,44 @@ export default function DetailedLawDossier({ law }: DetailedLawDossierProps) {
                   <h4 className="text-3xl font-staatliches uppercase mb-4 italic tracking-tight text-white leading-none">
                     Votre Position <span className={isPremium ? "text-amber-500" : "text-blue-400"}>Citoyenne</span>
                   </h4>
-                  <p className="text-slate-400 text-sm mb-8 leading-relaxed max-w-2xl">
-                    {isPremium 
-                      ? "En tant que membre Premium, enregistrez votre vote pour le comparer à celui des députés dans votre dashboard." 
-                      : "Prenez position sur ce projet de loi. Connectez-vous à votre espace personnel pour suivre votre historique."}
-                  </p>
+                  
+                  {userVote ? (
+                    <div className="flex items-center gap-3 bg-white/10 border border-white/10 px-4 py-3 rounded-2xl mb-8 w-fit text-sm font-bold text-amber-200">
+                      <CheckCircle2 size={16} />
+                      Vous avez voté : <span className="uppercase text-white">{userVote}</span>
+                    </div>
+                  ) : (
+                    <p className="text-slate-400 text-sm mb-8 leading-relaxed max-w-2xl">
+                      {isPremium 
+                        ? "En tant que membre Premium, enregistrez votre vote pour le comparer à celui des députés dans votre dashboard." 
+                        : "Prenez position sur ce projet de loi. Connectez-vous à votre espace personnel pour suivre votre historique."}
+                    </p>
+                  )}
 
                   <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
                     {[
-                      { label: "POUR", val: "POUR", color: "bg-emerald-500/10 text-emerald-500 border-emerald-500/20 hover:bg-emerald-500 hover:text-white", icon: CheckCircle2 },
-                      { label: "CONTRE", val: "CONTRE", color: "bg-red-500/10 text-red-500 border-red-500/20 hover:bg-red-500 hover:text-white", icon: XCircle },
-                      { label: "ABSTENTION", val: "ABSTENTION", color: "bg-slate-800 text-slate-400 border-slate-700 hover:bg-slate-700 hover:text-white", icon: MinusCircle }
-                    ].map((btn) => (
-                      <button
-                        key={btn.val}
-                        onClick={async (e) => {
-                          e.stopPropagation();
-                          if (!userId) return;
-                          try {
-                            await api.saveUserVote(userId, law.id, btn.val as any);
-                            alert("Votre position a été enregistrée avec succès ! Retrouvez-la dans votre dashboard.");
-                          } catch (err) {
-                            console.error("Erreur vote:", err);
-                          }
-                        }}
-                        className={`group p-6 rounded-2xl border flex flex-col items-center justify-center gap-2 transition-all duration-300 hover:scale-105 active:scale-95 ${btn.color}`}
-                      >
-                        <btn.icon size={20} className="group-hover:rotate-12 transition-transform" />
-                        <span className="font-black text-[10px] tracking-widest">{btn.label}</span>
-                      </button>
-                    ))}
+                      { label: "POUR", val: "POUR", color: "bg-emerald-500/10 text-emerald-500 border-emerald-500/20 hover:bg-emerald-500 hover:text-white", activeColor: "bg-emerald-500 text-white border-transparent", icon: CheckCircle2 },
+                      { label: "CONTRE", val: "CONTRE", color: "bg-red-500/10 text-red-500 border-red-500/20 hover:bg-red-500 hover:text-white", activeColor: "bg-red-500 text-white border-transparent", icon: XCircle },
+                      { label: "ABSTENTION", val: "ABSTENTION", color: "bg-slate-800 text-slate-400 border-slate-700 hover:bg-slate-700 hover:text-white", activeColor: "bg-slate-700 text-white border-transparent", icon: MinusCircle }
+                    ].map((btn) => {
+                      const isActive = userVote === btn.val;
+                      return (
+                        <button
+                          key={btn.val}
+                          disabled={isVoting}
+                          onClick={(e) => {
+                            e.stopPropagation();
+                            handleVote(btn.val);
+                          }}
+                          className={`group p-6 rounded-2xl border flex flex-col items-center justify-center gap-2 transition-all duration-300 hover:scale-105 active:scale-95 ${
+                            isActive ? btn.activeColor : btn.color
+                          } ${isVoting ? 'opacity-50 cursor-not-allowed' : ''}`}
+                        >
+                          <btn.icon size={20} className={isActive ? "" : "group-hover:rotate-12 transition-transform"} />
+                          <span className="font-black text-[10px] tracking-widest">{btn.label}</span>
+                        </button>
+                      );
+                    })}
                   </div>
                 </div>
               </div>

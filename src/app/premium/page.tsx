@@ -114,7 +114,7 @@ const CONTENTS = [
   },
   {
     icon: Mail,
-    title: "Newsletter sur-mesure (IA)",
+    title: "Newsletter sur-mesure",
     desc: "Le condensé politique le plus précis de France. Focus municipal, institutionnel et analyse d'impact profil.",
     color: "from-emerald-500 to-teal-600",
   },

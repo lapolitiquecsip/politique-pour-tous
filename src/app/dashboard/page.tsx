@@ -78,7 +78,7 @@ export default function DashboardPage() {
   return (
     <div className="min-h-screen bg-slate-50 pb-20">
       {/* 1. Dashboard Header */}
-      <section className="bg-slate-950 text-white pt-24 pb-16 px-4 relative overflow-hidden">
+      <section className="bg-slate-950 text-white pt-24 pb-32 px-4 relative overflow-hidden">
         <div className="absolute top-0 right-0 w-1/3 h-full bg-gradient-to-l from-amber-500/10 to-transparent pointer-none" />
         <div className="container mx-auto max-w-6xl relative z-10">
           <div className="flex flex-col md:flex-row items-center gap-8 justify-between">
@@ -91,18 +91,20 @@ export default function DashboardPage() {
                     {isPremium && <Star size={12} className="fill-current" />}
                     {isPremium ? "Membre Elite" : "Compte Citoyen"}
                   </div>
-                  <h1 className="text-4xl font-staatliches uppercase tracking-tight italic">Mon Espace Personnel</h1>
-                  <p className="text-slate-400 text-sm">Gérez votre activité citoyenne et vos députés favoris.</p>
+                  <h1 className="text-4xl md:text-6xl font-staatliches uppercase tracking-tight italic leading-none">
+                    Mon Espace <span className="text-amber-500">Personnel</span>
+                  </h1>
+                  <p className="text-slate-400 text-sm mt-2">Gérez votre activité citoyenne et vos députés favoris.</p>
                </div>
             </div>
 
             <div className="flex gap-4">
                <div className="bg-slate-900/50 backdrop-blur-md border border-slate-800 p-4 rounded-3xl text-center min-w-[120px]">
-                  <p className="text-2xl font-black text-amber-400">{userVotes.length}</p>
+                  <p className="text-2xl font-black text-white">{userVotes.length}</p>
                   <p className="text-[10px] uppercase font-bold text-slate-500 tracking-widest">Votes</p>
                </div>
                <div className="bg-slate-900/50 backdrop-blur-md border border-slate-800 p-4 rounded-3xl text-center min-w-[120px]">
-                  <p className="text-2xl font-black text-white">{followedDeputies.length}</p>
+                  <p className="text-2xl font-black text-amber-400">{followedDeputies.length}</p>
                   <p className="text-[10px] uppercase font-bold text-slate-500 tracking-widest">Suivis</p>
                </div>
             </div>
@@ -110,7 +112,7 @@ export default function DashboardPage() {
         </div>
       </section>
 
-      <div className="container mx-auto max-w-6xl px-4 -mt-8">
+      <div className="container mx-auto max-w-6xl px-4 -mt-16">
         <div className="bg-white rounded-[2.5rem] border border-slate-200 shadow-2xl overflow-hidden min-h-[600px]">
           
           {/* Tabs Navigation */}

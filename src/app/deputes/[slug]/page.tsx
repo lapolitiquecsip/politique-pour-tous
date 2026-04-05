@@ -56,7 +56,18 @@ export default function DeputyDetailPage({ params }: { params: Promise<{ slug: s
   }, [slug, userId]);
 
   const handleFollow = async () => {
-    if (!userId || !isPremium || !deputy) return;
+    if (!userId) {
+      console.error("Suivi impossible : Utilisateur non connecté");
+      return;
+    }
+    if (!isPremium) {
+      console.error("Suivi impossible : Compte non Premium");
+      return;
+    }
+    if (!deputy) {
+      console.error("Suivi impossible : Données du député non trouvées en base de données", { slug });
+      return;
+    }
     
     setLoadingFollow(true);
     const previousState = isFollowing;
@@ -68,8 +79,8 @@ export default function DeputyDetailPage({ params }: { params: Promise<{ slug: s
       } else {
         await api.followDeputy(userId, deputy.id);
       }
-    } catch (err) {
-      console.error("Erreur de suivi:", err);
+    } catch (err: any) {
+      console.error("Erreur technique de suivi:", err.message);
       setIsFollowing(previousState); // Rollback on error
     } finally {
       setLoadingFollow(false);

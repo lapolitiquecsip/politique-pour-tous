@@ -246,20 +246,22 @@ export default function LawDetailPage({ params }: { params: Promise<{ id: string
         </div>
       )}
 
-      {/* 4. VOTING MODULE (ELITE) */}
-      {isPremium && (
+      {/* 4. VOTING MODULE (ELITE/CITIZEN) */}
+      {userId && (
         <div className="container mx-auto px-4 max-w-6xl mt-20 relative z-20">
-          <div className="bg-slate-950 rounded-[3.5rem] p-12 md:p-20 text-white shadow-2xl relative overflow-hidden border border-slate-800">
+          <div className={`rounded-[3.5rem] p-12 md:p-20 text-white shadow-2xl relative overflow-hidden border ${isPremium ? "bg-slate-950 border-slate-800" : "bg-slate-900 border-slate-700 opacity-95"}`}>
             <div className="absolute top-0 right-0 w-1/2 h-full bg-gradient-to-l from-amber-500/5 to-transparent pointer-events-none" />
             
             <div className="max-w-4xl relative z-10">
-              <div className="inline-flex items-center gap-2 px-4 py-2 bg-amber-400 text-slate-950 text-[10px] font-black uppercase rounded-full mb-8">
-                <Star size={12} className="fill-current" />
-                Action Citoyenne Elite
+              <div className={`inline-flex items-center gap-2 px-4 py-2 text-[10px] font-black uppercase rounded-full mb-8 ${isPremium ? "bg-amber-400 text-slate-950" : "bg-slate-800 text-slate-300"}`}>
+                <Star size={12} className={isPremium ? "fill-current" : ""} />
+                {isPremium ? "Action Citoyenne Elite" : "Action Citoyenne (Membre)"}
               </div>
               <h2 className="text-4xl md:text-6xl font-staatliches uppercase mb-6 italic">Positionnement Personnel</h2>
               <p className="text-xl text-slate-400 mb-12 max-w-2xl leading-relaxed">
-                En tant que membre Premium, votre voix compte. Enregistrez votre position sur ce projet de loi pour suivre l&apos;écart avec le vote officiel des députés.
+                {isPremium 
+                  ? "En tant que membre Premium, votre voix compte. Enregistrez votre position sur ce projet de loi pour suivre l'écart avec le vote officiel des députés." 
+                  : "Prenez position sur ce projet de loi. Pour comparer votre vote avec l'analyse détaillée des députés, passez à l'offre Elite."}
               </p>
 
               <div className="grid grid-cols-1 md:grid-cols-3 gap-6">

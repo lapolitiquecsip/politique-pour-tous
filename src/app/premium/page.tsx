@@ -23,7 +23,10 @@ import {
   Scale,
   ChevronDown,
   User,
-  Briefcase
+  Briefcase,
+  LayoutDashboard,
+  BellRing,
+  Zap
 } from "lucide-react";
 import Link from "next/link";
 
@@ -97,29 +100,42 @@ const TESTIMONIALS = [
 /* ── What You Receive (Expanded for Premium) ── */
 const CONTENTS = [
   {
+    icon: LayoutDashboard,
+    title: "Dashboard de Pilotage Elite",
+    desc: "Un espace personnel unique pour suivre l'écart entre vos convictions et les votes réels de l'Hémicycle.",
+    color: "from-amber-400 to-orange-500",
+    href: "/dashboard"
+  },
+  {
+    icon: BellRing,
+    title: "Suivi des Députés Interactif",
+    desc: "Abonnez-vous à vos élus favoris. Recevez un flux d'activité en temps réel sur leurs prises de position.",
+    color: "from-blue-500 to-indigo-600",
+  },
+  {
     icon: Mail,
-    title: "Newsletter Hebdomadaire",
-    desc: "100% personnalisée. Selon votre localisation, âge et catégorie socio-pro, nous calculons l'impact direct des nouvelles lois (impôts, aides, etc.) sur votre quotidien.",
-    color: "bg-amber-50 text-amber-600 border-amber-100",
+    title: "Newsletter sur-mesure (IA)",
+    desc: "Le condensé politique le plus précis de France. Focus municipal, institutionnel et analyse d'impact profil.",
+    color: "from-emerald-500 to-teal-600",
   },
   {
     icon: FileText,
-    title: "Explications de lois illimitées",
-    desc: "Accédez à l'intégralité de nos décryptages sans aucune restriction. Comprenez chaque vote en profondeur.",
-    color: "bg-amber-50 text-amber-600 border-amber-100",
+    title: "Décryptages de Lois Illimités",
+    desc: "Accédez à l'intégralité de nos analyses 'Avant/Après' sans aucune restriction ni publicité.",
+    color: "from-red-500 to-rose-600",
     href: "/lois",
   },
   {
-    icon: Sparkles,
-    title: "Filtrage par domaines",
-    desc: "Personnalisez votre expérience en filtrant par thématique : écologie, santé, économie, social...",
-    color: "bg-amber-50 text-amber-600 border-amber-100",
+    icon: Zap,
+    title: "Alertes Votes Cruciaux",
+    desc: "Soyez notifié instantanément lors des votes à fort impact sur votre catégorie socio-professionnelle.",
+    color: "from-purple-500 to-fuchsia-600",
   },
   {
-    icon: Bell,
-    title: "Alertes Député & Proximité",
-    desc: "Soyez prévenu dès que votre député prend part à un vote crucial et recevez les actualités politiques qui impactent directement votre région.",
-    color: "bg-amber-50 text-amber-600 border-amber-100",
+    icon: Sparkles,
+    title: "Filtres Thématiques Avancés",
+    desc: "Économie, Écologie, Santé... Ne recevez que ce qui compte vraiment pour vous grâce à nos filtres IA.",
+    color: "from-amber-200 to-yellow-400",
   },
 ];
 
@@ -290,19 +306,29 @@ export default function PremiumPage() {
             </p>
           </FadeIn>
 
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
             {CONTENTS.map((item, i) => {
               const Icon = item.icon;
               const content = (
-                <div className="group flex gap-5 p-8 rounded-3xl border border-slate-100 bg-white hover:shadow-2xl hover:border-amber-200 transition-all h-full">
-                  <div className={`w-16 h-16 rounded-2xl flex items-center justify-center flex-shrink-0 border ${item.color} group-hover:scale-110 transition-transform`}>
-                    <Icon className="w-8 h-8" />
+                <div className="group relative p-8 rounded-[2.5rem] bg-white border border-slate-100 hover:border-transparent transition-all duration-500 h-full overflow-hidden">
+                  {/* Hover Gradient Overlay */}
+                  <div className={`absolute inset-0 bg-gradient-to-br ${item.color} opacity-0 group-hover:opacity-[0.03] transition-opacity`} />
+                  <div className={`absolute -right-4 -top-4 w-24 h-24 bg-gradient-to-br ${item.color} opacity-0 group-hover:opacity-10 rounded-full blur-2xl transition-all duration-700 group-hover:scale-150`} />
+
+                  <div className={`w-14 h-14 rounded-2xl flex items-center justify-center mb-6 bg-gradient-to-br ${item.color} text-white shadow-lg group-hover:scale-110 transition-transform duration-500`}>
+                    <Icon className="w-7 h-7" />
                   </div>
-                  <div>
-                    <h3 className="text-xl font-bold text-slate-900 mb-2 group-hover:text-amber-600 transition-colors">
-                      {item.title}
-                    </h3>
-                    <p className="text-slate-500 text-base leading-relaxed">{item.desc}</p>
+                  
+                  <h3 className="text-xl font-bold text-slate-900 mb-3 group-hover:text-slate-950 transition-colors">
+                    {item.title}
+                  </h3>
+                  <p className="text-slate-500 text-sm leading-relaxed mb-6">
+                    {item.desc}
+                  </p>
+
+                  <div className="flex items-center gap-2 text-[10px] font-black uppercase tracking-widest text-slate-300 group-hover:text-amber-500 transition-colors mt-auto">
+                    <span>Exclusivité Elite</span>
+                    <ArrowRight size={12} className="opacity-0 group-hover:opacity-100 group-hover:translate-x-1 transition-all" />
                   </div>
                 </div>
               );

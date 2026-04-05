@@ -58,18 +58,18 @@ export default function DashboardPage() {
     );
   }
 
-  if (!isPremium) {
+  if (!userId && !authLoading) {
     return (
       <div className="min-h-[80vh] flex flex-col items-center justify-center p-4 text-center">
-        <div className="w-20 h-20 bg-amber-100 rounded-full flex items-center justify-center text-amber-600 mb-6">
-          <Star size={40} className="fill-current" />
+        <div className="w-20 h-20 bg-slate-100 rounded-full flex items-center justify-center text-slate-400 mb-6">
+          <User size={40} />
         </div>
-        <h1 className="text-3xl font-staatliches uppercase mb-4">Espace Réservé Elite</h1>
+        <h1 className="text-3xl font-staatliches uppercase mb-4">Connexion Requise</h1>
         <p className="text-slate-500 max-w-md mb-8">
-          Le tableau de bord personnalisé et le suivi des députés sont des fonctionnalités exclusives aux membres Premium.
+          Veuillez vous connecter pour accéder à votre espace personnel et suivre votre activité citoyenne.
         </p>
-        <Link href="/premium" className="px-8 py-4 bg-slate-900 text-white rounded-2xl font-bold hover:bg-slate-800 transition-all">
-          Découvrir les avantages
+        <Link href="/login" className="px-8 py-4 bg-slate-900 text-white rounded-2xl font-bold hover:bg-slate-800 transition-all">
+          Se connecter
         </Link>
       </div>
     );
@@ -83,13 +83,13 @@ export default function DashboardPage() {
         <div className="container mx-auto max-w-6xl relative z-10">
           <div className="flex flex-col md:flex-row items-center gap-8 justify-between">
             <div className="flex items-center gap-6">
-               <div className="w-20 h-20 rounded-full bg-slate-800 border-2 border-amber-400 p-1 flex items-center justify-center text-amber-400">
+               <div className={`w-20 h-20 rounded-full bg-slate-800 border-2 p-1 flex items-center justify-center ${isPremium ? 'border-amber-400 text-amber-400' : 'border-slate-600 text-slate-400'}`}>
                   <User size={40} />
                </div>
                <div>
-                  <div className="inline-flex items-center gap-2 px-3 py-1 bg-amber-400 text-slate-950 text-[10px] font-black uppercase rounded-full mb-2">
-                    <Star size={12} className="fill-current" />
-                    Membre Elite
+                  <div className={`inline-flex items-center gap-2 px-3 py-1 text-[10px] font-black uppercase rounded-full mb-2 ${isPremium ? 'bg-amber-400 text-slate-950' : 'bg-slate-800 text-slate-400'}`}>
+                    {isPremium && <Star size={12} className="fill-current" />}
+                    {isPremium ? "Membre Elite" : "Compte Citoyen"}
                   </div>
                   <h1 className="text-4xl font-staatliches uppercase tracking-tight italic">Mon Espace Personnel</h1>
                   <p className="text-slate-400 text-sm">Gérez votre activité citoyenne et vos députés favoris.</p>
@@ -197,7 +197,20 @@ export default function DashboardPage() {
                     exit={{ opacity: 0, y: -10 }}
                     className="grid grid-cols-1 md:grid-cols-2 gap-6"
                   >
-                    {followedDeputies.length === 0 ? (
+                    {!isPremium ? (
+                      <div className="col-span-full text-center py-20 bg-slate-50 rounded-[2.5rem] border-2 border-dashed border-amber-200">
+                        <div className="w-16 h-16 bg-amber-100 rounded-full flex items-center justify-center text-amber-600 mx-auto mb-6">
+                            <Star size={32} className="fill-current" />
+                        </div>
+                        <h3 className="text-2xl font-staatliches uppercase mb-2">Suivi Député Réservé Elite</h3>
+                        <p className="text-slate-500 mb-8 max-w-sm mx-auto">
+                          Suivez vos députés favoris et recevez leurs derniers votes directement ici en passant Premium.
+                        </p>
+                        <Link href="/premium" className="inline-flex items-center gap-2 px-8 py-4 bg-slate-900 text-white rounded-2xl font-bold hover:bg-slate-800 transition-all">
+                          Devenir Premium Elite
+                        </Link>
+                      </div>
+                    ) : followedDeputies.length === 0 ? (
                       <div className="col-span-full text-center py-20 bg-slate-50 rounded-[2rem] border border-dashed border-slate-200">
                         <Users className="mx-auto mb-4 text-slate-300" size={48} />
                         <h3 className="text-xl font-bold mb-2">Aucun député suivi</h3>

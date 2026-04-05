@@ -652,8 +652,8 @@ export default function PremiumPage() {
       <section className="py-24 px-4 bg-slate-50">
         <div className="max-w-3xl mx-auto">
           <FadeIn className="text-center mb-12">
-            <h2 className="text-3xl md:text-4xl font-extrabold text-slate-900 mb-4">
-              Aperçu d&apos;un email type
+            <h2 className="text-3xl md:text-5xl font-staatliches uppercase tracking-tighter text-slate-900 mb-4">
+              Aperçu d&apos;un <span className="text-amber-500">email type</span>
             </h2>
             <p className="text-lg text-slate-500">Voici à quoi ressemblera votre résumé Premium chaque lundi.</p>
           </FadeIn>

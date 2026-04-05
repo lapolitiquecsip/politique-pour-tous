@@ -92,9 +92,16 @@ export default function DashboardPage() {
                     {isPremium ? "Membre Elite" : "Compte Citoyen"}
                   </div>
                   <h1 className="text-4xl md:text-6xl font-staatliches uppercase tracking-tight italic leading-none">
-                    Mon Espace <span className="text-amber-500">Personnel</span>
+                    Mon Espace{" "}
+                    <span className={isPremium 
+                      ? "text-amber-500" 
+                      : "bg-gradient-to-r from-blue-400 via-red-400 to-blue-500 bg-clip-text text-transparent"
+                    }>
+                      Personnel
+                    </span>
                   </h1>
                   <p className="text-slate-400 text-sm mt-2">Gérez votre activité citoyenne et vos députés favoris.</p>
+                  <div className={`h-1.5 w-24 mt-6 rounded-full ${isPremium ? 'bg-amber-500' : 'bg-gradient-to-r from-blue-600 to-red-600'}`} />
                </div>
             </div>
 

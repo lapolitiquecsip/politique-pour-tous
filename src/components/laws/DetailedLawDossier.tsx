@@ -27,25 +27,31 @@ export default function DetailedLawDossier({ law }: DetailedLawDossierProps) {
   const [userVote, setUserVote] = useState<string | null>(null);
   const [isVoting, setIsVoting] = useState(false);
 
-  // Charger le vote existant
-  useState(() => {
+  // Charger le vote existant avec useEffect (correct)
+  useEffect(() => {
     if (userId) {
       api.getUserVotes(userId).then(votes => {
         const existing = votes.find((v: any) => v.law_id === law.id);
         if (existing) setUserVote(existing.vote);
+      }).catch(err => {
+        console.error("Erreur chargement vote existant:", err);
       });
     }
-  });
+  }, [userId, law.id]);
 
   const handleVote = async (btnVal: string) => {
-    if (!userId) return;
+    if (!userId) {
+      alert("Vous devez être connecté pour voter.");
+      return;
+    }
     setIsVoting(true);
     try {
       await api.saveUserVote(userId, law.id, btnVal as any);
       setUserVote(btnVal);
       alert(`Votre position "${btnVal}" a été enregistrée avec succès !`);
-    } catch (err) {
+    } catch (err: any) {
       console.error("Erreur vote:", err);
+      alert(`Erreur lors de l'enregistrement : ${err.message || "Problème de connexion"}`);
     } finally {
       setIsVoting(false);
     }

@@ -486,7 +486,7 @@ export default function PremiumPage() {
                         </div>
                         <h3 className="font-bold text-slate-900 uppercase tracking-tight text-sm">MA LOCALISATION</h3>
                       </div>
-                      <p className="text-xs text-slate-500 font-medium italic -mt-4 mb-2 ml-1">
+                      <p className="text-xs text-slate-500 font-medium italic mb-4 ml-1">
                         Pour recevoir des informations personnalisées sur tout ce qui vous entoure.
                       </p>
 

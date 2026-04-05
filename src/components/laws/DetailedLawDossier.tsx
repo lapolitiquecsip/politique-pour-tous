@@ -1,6 +1,4 @@
-"use client";
-
-import { useState, useEffect } from "react";
+import { useState, useEffect, useTransition } from "react";
 import { motion } from "framer-motion";
 import { 
   Calendar, 
@@ -23,9 +21,11 @@ interface DetailedLawDossierProps {
 
 export default function DetailedLawDossier({ law }: DetailedLawDossierProps) {
   const [isOpen, setIsOpen] = useState(false);
+  const [isPending, startTransition] = useTransition();
   const { isPremium, userId } = usePremium();
   const [userVote, setUserVote] = useState<string | null>(null);
   const [isVoting, setIsVoting] = useState(false);
+  const [showHeavyContent, setShowHeavyContent] = useState(false);
 
   // Charger le vote existant avec useEffect (correct)
   useEffect(() => {
@@ -38,6 +38,16 @@ export default function DetailedLawDossier({ law }: DetailedLawDossierProps) {
       });
     }
   }, [userId, law.id]);
+
+  // Différer le contenu lourd pour optimiser l'INP
+  useEffect(() => {
+    if (isOpen) {
+      const timer = setTimeout(() => setShowHeavyContent(true), 150);
+      return () => clearTimeout(timer);
+    } else {
+      setShowHeavyContent(false);
+    }
+  }, [isOpen]);
 
   const handleVote = async (btnVal: string) => {
     if (!userId) {
@@ -86,7 +96,11 @@ export default function DetailedLawDossier({ law }: DetailedLawDossierProps) {
 
       {/* 1. HEADER (TOUJOURS VISIBLE) */}
       <button 
-        onClick={() => setIsOpen(!isOpen)}
+        onClick={() => {
+          startTransition(() => {
+            setIsOpen(!isOpen);
+          });
+        }}
         className="relative z-10 w-full text-left p-6 md:p-8 flex items-center justify-between gap-4 hover:bg-muted/10 transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/20 transform-gpu"
       >
         <div className="flex flex-col md:flex-row md:items-center gap-4">
@@ -100,10 +114,10 @@ export default function DetailedLawDossier({ law }: DetailedLawDossierProps) {
         
         <motion.div 
           animate={{ rotate: isOpen ? 180 : 0 }}
-          transition={{ duration: 0.2, ease: "circOut" }}
+          transition={{ duration: 0.15, ease: "easeOut" }}
           className="p-2 rounded-full transform-gpu bg-muted/50 text-foreground"
         >
-          <ChevronDown className="w-6 h-6" />
+          <ChevronDown className={`w-6 h-6 ${isPending ? 'opacity-30' : ''}`} />
         </motion.div>
       </button>
 
@@ -115,8 +129,8 @@ export default function DetailedLawDossier({ law }: DetailedLawDossierProps) {
           opacity: isOpen ? 1 : 0
         }}
         transition={{ 
-          duration: 0.25, 
-          ease: "circOut" // Transition plus sèche et réactive
+          duration: 0.2, 
+          ease: "circOut"
         }}
         className="overflow-hidden transform-gpu will-change-[height,opacity]"
       >
@@ -130,116 +144,123 @@ export default function DetailedLawDossier({ law }: DetailedLawDossierProps) {
             {law.summary}
           </p>
 
-          <div className="grid grid-cols-1 lg:grid-cols-2 gap-12">
-            {/* Impacts */}
-            <div className="space-y-6">
-              <h4 className="text-lg font-bold flex items-center gap-2 text-slate-900 uppercase tracking-wider mb-6">
-                <CheckCircle2 className="w-5 h-5 text-primary" />
-                Décryptage : ce que ça change
-              </h4>
-              <div className="space-y-4">
-                {law.impacts.map((impact, idx) => (
-                  <div key={idx} className="flex gap-4 items-start p-5 bg-slate-50/80 rounded-2xl border border-slate-200/60 shadow-sm">
-                    <div className="w-2 h-2 rounded-full bg-primary mt-2 shrink-0" />
-                    <p className="text-slate-700 text-base font-medium leading-relaxed">{impact}</p>
-                  </div>
-                ))}
-              </div>
-            </div>
-
-            {/* Timeline & Analysis */}
-            <div className="space-y-10">
-              <div>
-                <h4 className="text-lg font-bold flex items-center gap-2 text-slate-900 uppercase tracking-wider mb-6">
-                  <Calendar className="w-5 h-5 text-primary" />
-                  Calendrier législatif
-                </h4>
-                <div className="space-y-7 pl-6 border-l-2 border-slate-200 ml-2">
-                  {law.calendar.map((item, idx) => (
-                    <div key={idx} className="relative">
-                      <div className="absolute -left-[31px] top-1.5 w-4 h-4 rounded-full bg-card border-2 border-primary" />
-                      <p className="text-xs font-bold uppercase text-primary tracking-widest mb-1.5">{item.date}</p>
-                      <p className="text-base text-slate-800 font-semibold">{item.event}</p>
-                    </div>
-                  ))}
-                </div>
-              </div>
-
-              {/* Deep Analysis */}
-              <div className="p-7 bg-blue-50/50 border border-blue-100 rounded-3xl relative overflow-hidden group shadow-sm">
-                <h4 className="text-slate-900 font-bold text-sm uppercase tracking-wider flex items-center gap-2 mb-5">
-                  <Sparkles className="w-5 h-5 text-amber-500" />
-                  Analyse approfondie de la rédaction
-                </h4>
-                <ul className="space-y-4">
-                  {law.premiumPoints.map((point, idx) => (
-                    <li key={idx} className="flex items-start gap-3 text-base text-slate-700 font-medium">
-                      <ArrowRight className="w-5 h-5 text-amber-500/60 shrink-0 mt-0.5" />
-                      {point}
-                    </li>
-                  ))}
-                </ul>
-              </div>
-              </div>
-            </div>
-          </div>
-
-          {/* 3. MODULE DE VOTE CITOYEN */}
-          {userId && (
-            <div className="mt-12 pt-12 border-t border-slate-100">
-              <div className={`p-8 md:p-12 rounded-[2.5rem] text-white shadow-2xl relative overflow-hidden border ${isPremium ? "bg-slate-950 border-slate-800" : "bg-slate-900 border-slate-700"}`}>
-                <div className="absolute top-0 right-0 w-1/2 h-full bg-gradient-to-l from-amber-500/5 to-transparent pointer-events-none" />
-                
-                <div className="relative z-10">
-                  <div className={`inline-flex items-center gap-2 px-3 py-1 text-[9px] font-black uppercase rounded-full mb-6 ${isPremium ? "bg-amber-400 text-slate-950" : "bg-slate-800 text-slate-400"}`}>
-                    <Star size={10} className={isPremium ? "fill-current" : ""} />
-                    {isPremium ? "Action Citoyenne Elite" : "Action Citoyenne (Membre)"}
-                  </div>
-                  <h4 className="text-3xl font-staatliches uppercase mb-4 italic tracking-tight text-white leading-none">
-                    Votre Position <span className={isPremium ? "text-amber-500" : "text-blue-400"}>Citoyenne</span>
+          {showHeavyContent && (
+            <motion.div 
+              initial={{ opacity: 0, y: 10 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.3 }}
+            >
+              <div className="grid grid-cols-1 lg:grid-cols-2 gap-12">
+                {/* Impacts */}
+                <div className="space-y-6">
+                  <h4 className="text-lg font-bold flex items-center gap-2 text-slate-900 uppercase tracking-wider mb-6">
+                    <CheckCircle2 className="w-5 h-5 text-primary" />
+                    Décryptage : ce que ça change
                   </h4>
-                  
-                  {userVote ? (
-                    <div className="flex items-center gap-3 bg-white/10 border border-white/10 px-4 py-3 rounded-2xl mb-8 w-fit text-sm font-bold text-amber-200">
-                      <CheckCircle2 size={16} />
-                      Vous avez voté : <span className="uppercase text-white">{userVote}</span>
-                    </div>
-                  ) : (
-                    <p className="text-slate-400 text-sm mb-8 leading-relaxed max-w-2xl">
-                      {isPremium 
-                        ? "En tant que membre Premium, enregistrez votre vote pour le comparer à celui des députés dans votre dashboard." 
-                        : "Prenez position sur ce projet de loi. Connectez-vous à votre espace personnel pour suivre votre historique."}
-                    </p>
-                  )}
+                  <div className="space-y-4">
+                    {law.impacts.map((impact, idx) => (
+                      <div key={idx} className="flex gap-4 items-start p-5 bg-slate-50/80 rounded-2xl border border-slate-200/60 shadow-sm">
+                        <div className="w-2 h-2 rounded-full bg-primary mt-2 shrink-0" />
+                        <p className="text-slate-700 text-base font-medium leading-relaxed">{impact}</p>
+                      </div>
+                    ))}
+                  </div>
+                </div>
 
-                  <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-                    {[
-                      { label: "POUR", val: "POUR", color: "bg-emerald-500/10 text-emerald-500 border-emerald-500/20 hover:bg-emerald-500 hover:text-white", activeColor: "bg-emerald-500 text-white border-transparent", icon: CheckCircle2 },
-                      { label: "CONTRE", val: "CONTRE", color: "bg-red-500/10 text-red-500 border-red-500/20 hover:bg-red-500 hover:text-white", activeColor: "bg-red-500 text-white border-transparent", icon: XCircle },
-                      { label: "ABSTENTION", val: "ABSTENTION", color: "bg-slate-800 text-slate-400 border-slate-700 hover:bg-slate-700 hover:text-white", activeColor: "bg-slate-700 text-white border-transparent", icon: MinusCircle }
-                    ].map((btn) => {
-                      const isActive = userVote === btn.val;
-                      return (
-                        <button
-                          key={btn.val}
-                          disabled={isVoting}
-                          onClick={(e) => {
-                            e.stopPropagation();
-                            handleVote(btn.val);
-                          }}
-                          className={`group p-6 rounded-2xl border flex flex-col items-center justify-center gap-2 transition-all duration-300 hover:scale-105 active:scale-95 ${
-                            isActive ? btn.activeColor : btn.color
-                          } ${isVoting ? 'opacity-50 cursor-not-allowed' : ''}`}
-                        >
-                          <btn.icon size={20} className={isActive ? "" : "group-hover:rotate-12 transition-transform"} />
-                          <span className="font-black text-[10px] tracking-widest">{btn.label}</span>
-                        </button>
-                      );
-                    })}
+                {/* Timeline & Analysis */}
+                <div className="space-y-10">
+                  <div>
+                    <h4 className="text-lg font-bold flex items-center gap-2 text-slate-900 uppercase tracking-wider mb-6">
+                      <Calendar className="w-5 h-5 text-primary" />
+                      Calendrier législatif
+                    </h4>
+                    <div className="space-y-7 pl-6 border-l-2 border-slate-200 ml-2">
+                      {law.calendar.map((item, idx) => (
+                        <div key={idx} className="relative">
+                          <div className="absolute -left-[31px] top-1.5 w-4 h-4 rounded-full bg-card border-2 border-primary" />
+                          <p className="text-xs font-bold uppercase text-primary tracking-widest mb-1.5">{item.date}</p>
+                          <p className="text-base text-slate-800 font-semibold">{item.event}</p>
+                        </div>
+                      ))}
+                    </div>
+                  </div>
+
+                  {/* Deep Analysis */}
+                  <div className="p-7 bg-blue-50/50 border border-blue-100 rounded-3xl relative overflow-hidden group shadow-sm">
+                    <h4 className="text-slate-900 font-bold text-sm uppercase tracking-wider flex items-center gap-2 mb-5">
+                      <Sparkles className="w-5 h-5 text-amber-500" />
+                      Analyse approfondie de la rédaction
+                    </h4>
+                    <ul className="space-y-4">
+                      {law.premiumPoints.map((point, idx) => (
+                        <li key={idx} className="flex items-start gap-3 text-base text-slate-700 font-medium">
+                          <ArrowRight className="w-5 h-5 text-amber-500/60 shrink-0 mt-0.5" />
+                          {point}
+                        </li>
+                      ))}
+                    </ul>
                   </div>
                 </div>
               </div>
-            </div>
+
+              {/* 3. MODULE DE VOTE CITOYEN */}
+              {userId && (
+                <div className="mt-12 pt-12 border-t border-slate-100">
+                  <div className={`p-8 md:p-12 rounded-[2.5rem] text-white shadow-2xl relative overflow-hidden border ${isPremium ? "bg-slate-950 border-slate-800" : "bg-slate-900 border-slate-700"}`}>
+                    <div className="absolute top-0 right-0 w-1/2 h-full bg-gradient-to-l from-amber-500/5 to-transparent pointer-events-none" />
+                    
+                    <div className="relative z-10">
+                      <div className={`inline-flex items-center gap-2 px-3 py-1 text-[9px] font-black uppercase rounded-full mb-6 ${isPremium ? "bg-amber-400 text-slate-950" : "bg-slate-800 text-slate-400"}`}>
+                        <Star size={10} className={isPremium ? "fill-current" : ""} />
+                        {isPremium ? "Action Citoyenne Elite" : "Action Citoyenne (Membre)"}
+                      </div>
+                      <h4 className="text-3xl font-staatliches uppercase mb-4 italic tracking-tight text-white leading-none">
+                        Votre Position <span className={isPremium ? "text-amber-500" : "text-blue-400"}>Citoyenne</span>
+                      </h4>
+                      
+                      {userVote ? (
+                        <div className="flex items-center gap-3 bg-white/10 border border-white/10 px-4 py-3 rounded-2xl mb-8 w-fit text-sm font-bold text-amber-200">
+                          <CheckCircle2 size={16} />
+                          Vous avez voté : <span className="uppercase text-white">{userVote}</span>
+                        </div>
+                      ) : (
+                        <p className="text-slate-400 text-sm mb-8 leading-relaxed max-w-2xl">
+                          {isPremium 
+                            ? "En tant que membre Premium, enregistrez votre vote pour le comparer à celui des députés dans votre dashboard." 
+                            : "Prenez position sur ce projet de loi. Connectez-vous à votre espace personnel pour suivre votre historique."}
+                        </p>
+                      )}
+
+                      <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+                        {[
+                          { label: "POUR", val: "POUR", color: "bg-emerald-500/10 text-emerald-500 border-emerald-500/20 hover:bg-emerald-500 hover:text-white", activeColor: "bg-emerald-500 text-white border-transparent", icon: CheckCircle2 },
+                          { label: "CONTRE", val: "CONTRE", color: "bg-red-500/10 text-red-500 border-red-500/20 hover:bg-red-500 hover:text-white", activeColor: "bg-red-500 text-white border-transparent", icon: XCircle },
+                          { label: "ABSTENTION", val: "ABSTENTION", color: "bg-slate-800 text-slate-400 border-slate-700 hover:bg-slate-700 hover:text-white", activeColor: "bg-slate-700 text-white border-transparent", icon: MinusCircle }
+                        ].map((btn) => {
+                          const isActive = userVote === btn.val;
+                          return (
+                            <button
+                              key={btn.val}
+                              disabled={isVoting}
+                              onClick={(e) => {
+                                e.stopPropagation();
+                                handleVote(btn.val);
+                              }}
+                              className={`group p-6 rounded-2xl border flex flex-col items-center justify-center gap-2 transition-all duration-300 hover:scale-105 active:scale-95 ${
+                                isActive ? btn.activeColor : btn.color
+                              } ${isVoting ? 'opacity-50 cursor-not-allowed' : ''}`}
+                            >
+                              <btn.icon size={20} className={isActive ? "" : "group-hover:rotate-12 transition-transform"} />
+                              <span className="font-black text-[10px] tracking-widest">{btn.label}</span>
+                            </button>
+                          );
+                        })}
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              )}
+            </motion.div>
           )}
         </motion.div>
       </div>

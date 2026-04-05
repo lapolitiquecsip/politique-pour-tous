@@ -187,10 +187,15 @@ export default function DetailedLawDossier({ law }: DetailedLawDossierProps) {
 
                   {/* Deep Analysis */}
                   <div className="p-7 bg-blue-50/50 border border-blue-100 rounded-3xl relative overflow-hidden group shadow-sm">
-                    <h4 className="text-slate-900 font-bold text-sm uppercase tracking-wider flex items-center gap-2 mb-5">
-                      <Sparkles className="w-5 h-5 text-amber-500" />
-                      Analyse approfondie de la rédaction
-                    </h4>
+                    <div className="flex items-center justify-between gap-4 mb-5">
+                      <h4 className="text-slate-900 font-bold text-sm uppercase tracking-wider flex items-center gap-2">
+                        <Sparkles className="w-5 h-5 text-amber-500" />
+                        Analyse approfondie de la rédaction
+                      </h4>
+                      <div className="px-2 py-0.5 bg-amber-100 text-amber-600 text-[9px] font-black uppercase rounded border border-amber-200 tracking-tighter">
+                        Accès Premium Offert
+                      </div>
+                    </div>
                     <ul className="space-y-4">
                       {law.premiumPoints.map((point, idx) => (
                         <li key={idx} className="flex items-start gap-3 text-base text-slate-700 font-medium">
@@ -262,7 +267,8 @@ export default function DetailedLawDossier({ law }: DetailedLawDossierProps) {
               )}
             </motion.div>
           )}
-        </motion.div>
-      </div>
+        </div>
+      </motion.div>
+    </div>
   );
 }

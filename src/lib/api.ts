@@ -143,6 +143,26 @@ export const api = {
     return data;
   },
 
+  getLawVoteStats: async (lawId: string) => {
+    const { data, error } = await supabase
+      .from('user_votes')
+      .select('vote')
+      .eq('law_id', lawId);
+    
+    if (error) {
+      console.error("Erreur stats vote:", error);
+      return { POUR: 0, CONTRE: 0, ABSTENTION: 0, total: 0 };
+    }
+
+    const stats = { POUR: 0, CONTRE: 0, ABSTENTION: 0, total: data.length };
+    data.forEach((v: any) => {
+      if (v.vote === 'POUR') stats.POUR++;
+      else if (v.vote === 'CONTRE') stats.CONTRE++;
+      else if (v.vote === 'ABSTENTION') stats.ABSTENTION++;
+    });
+    return stats;
+  },
+
   getUserFollows: async (userId: string) => {
     const { data, error } = await supabase
       .from('user_follows')

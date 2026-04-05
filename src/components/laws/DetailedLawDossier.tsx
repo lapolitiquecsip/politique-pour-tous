@@ -26,13 +26,23 @@ export default function DetailedLawDossier({ law }: DetailedLawDossierProps) {
   const [userVote, setUserVote] = useState<string | null>(null);
   const [isVoting, setIsVoting] = useState(false);
   const [showHeavyContent, setShowHeavyContent] = useState(false);
+  const [communityStats, setCommunityStats] = useState<{POUR:number, CONTRE:number, ABSTENTION:number, total:number} | null>(null);
+
+  // Charger les stats globales
+  const fetchCommunityStats = async () => {
+    const stats = await api.getLawVoteStats(law.id);
+    setCommunityStats(stats);
+  };
 
   // Charger le vote existant avec useEffect (correct)
   useEffect(() => {
     if (userId) {
       api.getUserVotes(userId).then(votes => {
         const existing = votes.find((v: any) => v.law_id === law.id);
-        if (existing) setUserVote(existing.vote);
+        if (existing) {
+          setUserVote(existing.vote);
+          fetchCommunityStats();
+        }
       }).catch(err => {
         console.error("Erreur chargement vote existant:", err);
       });
@@ -58,6 +68,7 @@ export default function DetailedLawDossier({ law }: DetailedLawDossierProps) {
     try {
       await api.saveUserVote(userId, law.id, btnVal as any);
       setUserVote(btnVal);
+      fetchCommunityStats();
       alert(`Votre position "${btnVal}" a été enregistrée avec succès !`);
     } catch (err: any) {
       console.error("Erreur vote:", err);
@@ -261,6 +272,54 @@ export default function DetailedLawDossier({ law }: DetailedLawDossierProps) {
                           );
                         })}
                       </div>
+
+                      {/* RÉSULTATS COMMUNAUTAIRES (VISIBLE APRÈS VOTE) */}
+                      {userVote && communityStats && (
+                        <motion.div 
+                          initial={{ opacity: 0, y: 20 }}
+                          animate={{ opacity: 1, y: 0 }}
+                          className="mt-10 p-6 bg-white/5 rounded-3xl border border-white/10 backdrop-blur-sm"
+                        >
+                          <div className="flex items-center justify-between mb-6">
+                            <h5 className="font-staatliches text-xl italic tracking-wide text-amber-500">
+                              Résultats de la Communauté
+                            </h5>
+                            <span className="text-[10px] font-bold text-slate-500 uppercase tracking-widest">
+                              {communityStats.total} votes cumulés
+                            </span>
+                          </div>
+
+                          <div className="space-y-5">
+                            {[
+                              { label: "POUR", val: communityStats.POUR, color: "bg-emerald-500", raw: "POUR" },
+                              { label: "CONTRE", val: communityStats.CONTRE, color: "bg-red-500", raw: "CONTRE" },
+                              { label: "ABSTENTION", val: communityStats.ABSTENTION, color: "bg-slate-500", raw: "ABSTENTION" }
+                            ].map((stat) => {
+                              const percentage = communityStats.total > 0 
+                                ? Math.round((stat.val / communityStats.total) * 100) 
+                                : 0;
+                              return (
+                                <div key={stat.label} className="space-y-1.5">
+                                  <div className="flex justify-between text-[10px] font-black tracking-tighter">
+                                    <span className={userVote === stat.raw ? "text-white" : "text-slate-400"}>
+                                      {stat.label} {userVote === stat.raw && " (Votre choix)"}
+                                    </span>
+                                    <span>{percentage}% ({stat.val})</span>
+                                  </div>
+                                  <div className="h-2 bg-white/5 rounded-full overflow-hidden">
+                                    <motion.div 
+                                      initial={{ width: 0 }}
+                                      animate={{ width: `${percentage}%` }}
+                                      transition={{ duration: 1, ease: "circOut" }}
+                                      className={`h-full ${stat.color} shadow-[0_0_10px_rgba(0,0,0,0.5)]`}
+                                    />
+                                  </div>
+                                </div>
+                              );
+                            })}
+                          </div>
+                        </motion.div>
+                      )}
                     </div>
                   </div>
                 </div>

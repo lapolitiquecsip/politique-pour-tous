@@ -126,7 +126,7 @@ export const api = {
   getUserVotes: async (userId: string) => {
     const { data, error } = await supabase
       .from('user_votes')
-      .select('*, laws(*)')
+      .select('*')
       .eq('user_id', userId)
       .order('created_at', { ascending: false });
     if (error) { console.error(error); return []; }

@@ -65,46 +65,10 @@ export default function ContactPage() {
       </section>
 
       {/* ── FORMULAIRE ── */}
-      <section className="container mx-auto px-6 max-w-5xl -mt-16 pb-32 relative z-20">
-        <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
-          
-          {/* Info Card */}
-          <div className="lg:col-span-1 bg-red-600 rounded-[3rem] p-10 text-white shadow-2xl flex flex-col justify-between overflow-hidden relative group">
-            <div className="absolute -top-12 -right-12 w-48 h-48 bg-white/10 rounded-full blur-3xl group-hover:scale-150 transition-transform duration-700" />
-            
-            <div className="relative z-10">
-              <h3 className="text-3xl font-black uppercase tracking-tighter mb-8 leading-none">Canaux <br/>Directs</h3>
-              <div className="space-y-8">
-                <div className="flex items-start gap-4">
-                  <div className="w-10 h-10 rounded-xl bg-white/10 flex items-center justify-center shrink-0 border border-white/10">
-                    <Mail className="w-5 h-5" />
-                  </div>
-                  <div>
-                    <p className="text-xs font-black uppercase tracking-widest text-white/40 mb-1">Email</p>
-                    <p className="font-bold">contact@lapolitiquesimple.fr</p>
-                  </div>
-                </div>
-                <div className="flex items-start gap-4">
-                  <div className="w-10 h-10 rounded-xl bg-white/10 flex items-center justify-center shrink-0 border border-white/10">
-                    <MessageSquare className="w-5 h-5" />
-                  </div>
-                  <div>
-                    <p className="text-xs font-black uppercase tracking-widest text-white/40 mb-1">Presse</p>
-                    <p className="font-bold">presse@lapolitiquesimple.fr</p>
-                  </div>
-                </div>
-              </div>
-            </div>
-
-            <div className="mt-12 bg-white/10 p-6 rounded-2xl border border-white/10 relative z-10 backdrop-blur-sm">
-                <p className="text-xs font-bold leading-relaxed">
-                  « Nous croyons en une communication transparente pour renforcer le lien démocratique. »
-                </p>
-            </div>
-          </div>
-
+      <section className="container mx-auto px-6 max-w-4xl -mt-16 pb-32 relative z-20">
+        <div className="flex justify-center">
           {/* Main Form Card */}
-          <div className="lg:col-span-2 bg-white rounded-[3.5rem] p-8 md:p-16 border border-slate-200 shadow-2xl overflow-hidden relative">
+          <div className="w-full bg-white rounded-[3.5rem] p-8 md:p-16 border border-slate-200 shadow-2xl overflow-hidden relative">
             <AnimatePresence mode="wait">
               {!isSubmitted ? (
                 <motion.form 

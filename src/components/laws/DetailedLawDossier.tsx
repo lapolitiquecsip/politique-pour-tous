@@ -7,9 +7,15 @@ import {
   CheckCircle2, 
   ChevronDown,
   Sparkles, 
-  ArrowRight
+  ArrowRight,
+  Star,
+  XCircle,
+  MinusCircle,
+  Vote
 } from "lucide-react";
 import { type LawDossier } from "@/data/free-laws-dossiers";
+import { usePremium } from "@/lib/hooks/usePremium";
+import { api } from "@/lib/api";
 
 interface DetailedLawDossierProps {
   law: LawDossier;
@@ -17,6 +23,7 @@ interface DetailedLawDossierProps {
 
 export default function DetailedLawDossier({ law }: DetailedLawDossierProps) {
   const [isOpen, setIsOpen] = useState(false);
+  const { isPremium, userId } = usePremium();
 
   const colorMap: Record<string, string> = {
     emerald: "border-emerald-200 bg-emerald-50 text-emerald-700",
@@ -141,8 +148,59 @@ export default function DetailedLawDossier({ law }: DetailedLawDossierProps) {
                   ))}
                 </ul>
               </div>
+              </div>
             </div>
           </div>
+
+          {/* 3. MODULE DE VOTE CITOYEN */}
+          {userId && (
+            <div className="mt-12 pt-12 border-t border-slate-100">
+              <div className={`p-8 md:p-12 rounded-[2.5rem] text-white shadow-2xl relative overflow-hidden border ${isPremium ? "bg-slate-950 border-slate-800" : "bg-slate-900 border-slate-700"}`}>
+                <div className="absolute top-0 right-0 w-1/2 h-full bg-gradient-to-l from-amber-500/5 to-transparent pointer-events-none" />
+                
+                <div className="relative z-10">
+                  <div className={`inline-flex items-center gap-2 px-3 py-1 text-[9px] font-black uppercase rounded-full mb-6 ${isPremium ? "bg-amber-400 text-slate-950" : "bg-slate-800 text-slate-400"}`}>
+                    <Star size={10} className={isPremium ? "fill-current" : ""} />
+                    {isPremium ? "Action Citoyenne Elite" : "Action Citoyenne (Membre)"}
+                  </div>
+                  <h4 className="text-3xl font-staatliches uppercase mb-4 italic tracking-tight text-white leading-none">
+                    Votre Position <span className={isPremium ? "text-amber-500" : "text-blue-400"}>Citoyenne</span>
+                  </h4>
+                  <p className="text-slate-400 text-sm mb-8 leading-relaxed max-w-2xl">
+                    {isPremium 
+                      ? "En tant que membre Premium, enregistrez votre vote pour le comparer à celui des députés dans votre dashboard." 
+                      : "Prenez position sur ce projet de loi. Connectez-vous à votre espace personnel pour suivre votre historique."}
+                  </p>
+
+                  <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+                    {[
+                      { label: "POUR", val: "POUR", color: "bg-emerald-500/10 text-emerald-500 border-emerald-500/20 hover:bg-emerald-500 hover:text-white", icon: CheckCircle2 },
+                      { label: "CONTRE", val: "CONTRE", color: "bg-red-500/10 text-red-500 border-red-500/20 hover:bg-red-500 hover:text-white", icon: XCircle },
+                      { label: "ABSTENTION", val: "ABSTENTION", color: "bg-slate-800 text-slate-400 border-slate-700 hover:bg-slate-700 hover:text-white", icon: MinusCircle }
+                    ].map((btn) => (
+                      <button
+                        key={btn.val}
+                        onClick={async (e) => {
+                          e.stopPropagation();
+                          if (!userId) return;
+                          try {
+                            await api.saveUserVote(userId, law.id, btn.val as any);
+                            alert("Votre position a été enregistrée avec succès ! Retrouvez-la dans votre dashboard.");
+                          } catch (err) {
+                            console.error("Erreur vote:", err);
+                          }
+                        }}
+                        className={`group p-6 rounded-2xl border flex flex-col items-center justify-center gap-2 transition-all duration-300 hover:scale-105 active:scale-95 ${btn.color}`}
+                      >
+                        <btn.icon size={20} className="group-hover:rotate-12 transition-transform" />
+                        <span className="font-black text-[10px] tracking-widest">{btn.label}</span>
+                      </button>
+                    ))}
+                  </div>
+                </div>
+              </div>
+            </div>
+          )}
         </div>
       </motion.div>
     </div>

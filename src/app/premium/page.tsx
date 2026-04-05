@@ -659,52 +659,128 @@ export default function PremiumPage() {
           </FadeIn>
 
           <FadeIn delay={0.15}>
-            <div className="bg-white rounded-3xl border border-slate-200 shadow-xl overflow-hidden">
-              {/* Email header */}
-              <div className="bg-slate-900 px-6 py-4 flex items-center gap-3">
+            <div className="bg-white rounded-[2.5rem] border border-slate-200 shadow-2xl overflow-hidden relative group hover:border-amber-200 transition-all duration-500">
+              {/* Fake Browser/Email header - Premium Dark Style */}
+              <div className="bg-slate-900 px-6 py-4 flex items-center justify-between">
                 <div className="flex gap-1.5">
-                  <span className="w-3 h-3 rounded-full bg-red-500" />
-                  <span className="w-3 h-3 rounded-full bg-yellow-500" />
-                  <span className="w-3 h-3 rounded-full bg-green-500" />
+                  <span className="w-3 h-3 rounded-full bg-slate-700" />
+                  <span className="w-3 h-3 rounded-full bg-slate-700" />
+                  <span className="w-3 h-3 rounded-full bg-slate-700" />
                 </div>
-                <span className="text-white/60 text-sm font-mono ml-4 truncate">
-                  premium@lapolitiquecestsimple.fr
+                <div className="flex items-center gap-2">
+                  <Star size={12} className="text-amber-400 fill-current" />
+                  <span className="text-amber-400 text-[10px] font-bold uppercase tracking-[0.2em]">Cible : Elite Marseille</span>
+                </div>
+                <span className="text-white/40 text-[10px] font-mono truncate max-w-[100px] md:max-w-none">
+                  elite@lapolitiquecestsimple.fr
                 </span>
               </div>
 
-              {/* Email body */}
-              <div className="p-8 md:p-10 space-y-6">
-                <div className="flex items-center gap-3 pb-4 border-b border-slate-100">
-                  <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-blue-900 to-red-600 flex items-center justify-center">
-                    <span className="text-white font-extrabold text-xs">LP</span>
+              {/* Email Content Body */}
+              <div className="p-0">
+                {/* 1. Header Branded */}
+                <div className="p-8 md:p-12 bg-slate-50 flex items-center justify-between border-b border-slate-200">
+                  <div className="flex items-center gap-4">
+                    <div className="w-14 h-14 rounded-2xl bg-slate-900 flex items-center justify-center shadow-lg shadow-slate-200 rotate-3 group-hover:rotate-0 transition-transform">
+                      <span className="text-white font-black text-xl">P.</span>
+                    </div>
+                    <div>
+                      <p className="text-lg font-bold text-slate-900 tracking-tight">Bonjour Marc,</p>
+                      <p className="text-slate-500 text-sm font-medium">Votre synthèse Elite • Lundi 24 mars 2026</p>
+                    </div>
                   </div>
-                  <div>
-                    <p className="text-sm font-bold text-slate-900">La Politique, C&apos;est Simple</p>
-                    <p className="text-xs text-slate-400">Semaine du 24 mars 2026</p>
-                  </div>
-                </div>
-
-                <h3 className="text-2xl font-extrabold text-slate-900">
-                  🇫🇷 Cette semaine au Parlement
-                </h3>
-
-                <div className="space-y-4 text-sm text-slate-600 leading-relaxed">
-                  <div className="bg-blue-50 border border-blue-100 rounded-xl p-4">
-                    <p className="font-bold text-blue-900 mb-1">📋 Loi « Fin de vie » — Vote solennel mardi</p>
-                    <p className="text-blue-800/70">L&apos;Assemblée votera mardi sur ce texte-clé. 340 députés devraient voter pour, mais le Sénat reste incertain.</p>
-                  </div>
-                  <div className="bg-emerald-50 border border-emerald-100 rounded-xl p-4">
-                    <p className="font-bold text-emerald-900 mb-1">✅ Votre député(e) a voté POUR le budget de la Sécu</p>
-                    <p className="text-emerald-800/70">Marie Dupont (EPR, Loire-Atlantique) a voté en faveur du PLFSS 2027.</p>
-                  </div>
-                  <div className="bg-amber-50 border border-emerald-100 rounded-xl p-4">
-                    <p className="font-bold text-amber-900 mb-1">💡 Le saviez-vous ?</p>
-                    <p className="text-amber-800/70">Le mot « amendement » vient du latin emendare (corriger). En 2025, 14 000 amendements ont été déposés à l&apos;AN.</p>
+                  <div className="hidden md:flex flex-col items-end">
+                    <div className="px-3 py-1 bg-amber-100 text-amber-700 text-[10px] font-black uppercase rounded-full tracking-widest leading-none mb-1">Impact : Élevé</div>
+                    <p className="text-[10px] text-slate-400 font-bold uppercase">Marseille (PACA)</p>
                   </div>
                 </div>
 
-                <div className="pt-4 border-t border-slate-100 text-center">
-                  <span className="text-xs text-slate-400">Se désabonner • Modifier mes préférences</span>
+                <div className="p-8 md:p-12 space-y-12">
+                  {/* 2. Elite Intelligence Section - IMPACT PROFIL */}
+                  <div className="space-y-6">
+                    <div className="flex items-center gap-3">
+                      <div className="w-2 h-6 bg-amber-400 rounded-full" />
+                      <h3 className="text-xl font-bold text-slate-900 uppercase tracking-tighter">1. Analyse de votre situation (Cadre)</h3>
+                    </div>
+                    <div className="bg-slate-900 text-white rounded-[2rem] p-8 relative overflow-hidden group/card shadow-xl">
+                      <div className="absolute top-0 right-0 w-32 h-32 bg-amber-400 opacity-[0.05] rounded-bl-full -mr-10 -mt-10" />
+                      <div className="flex items-start gap-4 mb-6">
+                        <div className="p-3 bg-white/10 rounded-xl backdrop-blur-md">
+                          <TrendingUp className="w-6 h-6 text-amber-400" />
+                        </div>
+                        <div>
+                          <p className="text-lg font-bold text-white mb-2 leading-tight">Loi &quot;Plein Emploi&quot; : + 450€ / an pour votre profil</p>
+                          <p className="text-slate-300 text-sm leading-relaxed">
+                            En tant que <span className="text-white font-bold underline decoration-amber-400 underline-offset-4">Cadre du secteur privé</span>, le nouveau plafonnement des cotisations cadres vous impactera directement dès Juillet.
+                          </p>
+                        </div>
+                      </div>
+                      <div className="grid grid-cols-2 gap-4 border-t border-white/10 pt-6">
+                        <div>
+                          <p className="text-[10px] font-bold text-amber-400 uppercase tracking-widest mb-1">Votre Impact</p>
+                          <p className="text-xl font-black text-white">+1.2% net</p>
+                        </div>
+                        <div>
+                          <p className="text-[10px] font-bold text-amber-400 uppercase tracking-widest mb-1">Confiance Vote</p>
+                          <p className="text-xl font-black text-white">Adoption 98%</p>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+
+                  {/* 3. Ma Localisation PACA/Marseille */}
+                  <div className="space-y-6">
+                    <div className="flex items-center gap-3">
+                      <div className="w-2 h-6 bg-blue-600 rounded-full" />
+                      <h3 className="text-xl font-bold text-slate-900 uppercase tracking-tighter">2. Ma Localisation : PACA & Marseille</h3>
+                    </div>
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                      <div className="border border-slate-100 rounded-3xl p-6 hover:bg-slate-50 transition-colors">
+                        <div className="flex items-center gap-2 mb-3">
+                          <div className="w-8 h-8 rounded-lg bg-blue-100 text-blue-600 flex items-center justify-center">
+                            <Building2 size={16} />
+                          </div>
+                          <p className="text-xs font-bold text-blue-600 uppercase tracking-widest">Grand Port Marseille</p>
+                        </div>
+                        <h4 className="font-bold text-slate-900 mb-2">Vote imminent du budget &quot;Mer Propre&quot;</h4>
+                        <p className="text-xs text-slate-500 leading-relaxed">L&apos;État injecte 200M€ dans le port de Marseille. Un impact majeur sur l&apos;emploi local dans les 24 prochains mois.</p>
+                      </div>
+
+                      <div className="border border-slate-100 rounded-3xl p-6 hover:bg-slate-50 transition-colors">
+                        <div className="flex items-center gap-2 mb-3">
+                          <div className="w-8 h-8 rounded-lg bg-red-100 text-red-600 flex items-center justify-center">
+                            <MapPin size={16} />
+                          </div>
+                          <p className="text-xs font-bold text-red-600 uppercase tracking-widest">Votre Député • 4e Circ.</p>
+                        </div>
+                        <h4 className="font-bold text-slate-900 mb-2">Manuel Bompard a voté CONTRE</h4>
+                        <p className="text-xs text-slate-500 leading-relaxed">Le député de votre secteur s&apos;oppose au projet de loi logement débattu mercredi dernier à l&apos;Assemblée.</p>
+                      </div>
+                    </div>
+                  </div>
+
+                  {/* 4. Le Verdict Elite (Conclusion) */}
+                  <div className="bg-amber-50 rounded-3xl p-8 border border-amber-200">
+                    <div className="flex items-center gap-3 mb-4">
+                      <Sparkles size={20} className="text-amber-500" />
+                      <p className="font-black text-slate-900 text-sm uppercase tracking-widest">Le Verdict Elite</p>
+                    </div>
+                    <p className="text-slate-800 font-medium italic border-l-4 border-amber-400 pl-4 py-1 leading-relaxed">
+                      &quot;Une semaine charnière pour les cadres marseillais. Entre baisse de charges nationales et investissements portuaires, le pouvoir d&apos;achat local respire.&quot;
+                    </p>
+                  </div>
+                </div>
+
+                {/* Email footer actions */}
+                <div className="bg-slate-50 p-8 border-t border-slate-200 text-center">
+                  <div className="flex justify-center gap-6 mb-4">
+                    <span className="text-[10px] font-bold text-slate-400 uppercase tracking-widest cursor-pointer hover:text-slate-900">Dashboard Elite</span>
+                    <span className="text-[10px] font-bold text-slate-400 uppercase tracking-widest cursor-pointer hover:text-slate-900">Préférences</span>
+                    <span className="text-[10px] font-bold text-slate-400 uppercase tracking-widest cursor-pointer hover:text-slate-900">Archives</span>
+                  </div>
+                  <p className="text-[10px] text-slate-400 font-medium leading-none">
+                    Ceci est une simulation de l&apos;email Premium que vous recevrez chaque lundi.
+                  </p>
                 </div>
               </div>
             </div>

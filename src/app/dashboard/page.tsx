@@ -112,14 +112,26 @@ export default function DashboardPage() {
             </div>
 
             <div className="flex gap-4">
-               <div className="bg-slate-900/50 backdrop-blur-md border border-slate-800 p-4 rounded-3xl text-center min-w-[120px]">
+               <button 
+                 onClick={() => startTransition(() => {
+                   setActiveTab("votes");
+                   window.scrollTo({ top: 400, behavior: 'smooth' });
+                 })}
+                 className={`bg-slate-900/50 backdrop-blur-md border p-4 rounded-3xl text-center min-w-[120px] transition-all hover:scale-105 active:scale-95 ${activeTab === 'votes' ? 'border-amber-500/50 ring-2 ring-amber-500/20' : 'border-slate-800'}`}
+               >
                   <p className="text-2xl font-black text-white">{userVotes.length}</p>
                   <p className="text-[10px] uppercase font-bold text-slate-500 tracking-widest">Votes</p>
-               </div>
-               <div className="bg-slate-900/50 backdrop-blur-md border border-slate-800 p-4 rounded-3xl text-center min-w-[120px]">
+               </button>
+               <button 
+                 onClick={() => startTransition(() => {
+                   setActiveTab("deputies");
+                   window.scrollTo({ top: 400, behavior: 'smooth' });
+                 })}
+                 className={`bg-slate-900/50 backdrop-blur-md border p-4 rounded-3xl text-center min-w-[120px] transition-all hover:scale-105 active:scale-95 ${activeTab === 'deputies' ? 'border-amber-500/50 ring-2 ring-amber-500/20' : 'border-slate-800'}`}
+               >
                   <p className="text-2xl font-black text-amber-400">{followedDeputies.length}</p>
                   <p className="text-[10px] uppercase font-bold text-slate-500 tracking-widest">Suivis</p>
-               </div>
+               </button>
             </div>
           </div>
         </div>

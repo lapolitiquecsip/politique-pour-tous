@@ -22,31 +22,31 @@ interface Petition {
 
 const MOCK_PETITIONS: Petition[] = [
   {
-    id: "retraites",
-    title: "Abrogation de la réforme des retraites",
-    description: "Visant à revenir sur le passage de l'âge légal de départ de 62 à 64 ans via une proposition de loi citoyenne.",
-    signatures: 124500,
-    threshold: 500000,
+    id: "aah",
+    title: "Déconjugalisation de l'AAH",
+    description: "L'une des pétitions les plus marquantes ayant abouti à une réforme historique du mode de calcul de l'allocation adulte handicapé.",
+    signatures: 110000,
+    threshold: 100000,
     category: "Social",
-    url: "https://petitions.assemblee-nationale.fr/p/abrogation-retraites"
+    url: "https://petitions.assemblee-nationale.fr/p/271"
   },
   {
     id: "nitrites",
     title: "Interdiction des additifs nitrés",
-    description: "Protection de la santé publique en interdisant l'utilisation des nitrites dans la charcuterie industrielle.",
-    signatures: 87200,
+    description: "Sujet au cœur des débats parlementaires suite à une forte mobilisation citoyenne contre les risques liés aux sels nitrités.",
+    signatures: 92400,
     threshold: 100000,
     category: "Santé",
-    url: "https://petitions.assemblee-nationale.fr/p/interdiction-nitrites"
+    url: "https://petitions.assemblee-nationale.fr/recherche?q=nitrites"
   },
   {
     id: "vote-blanc",
     title: "Reconnaissance du vote blanc",
-    description: "Pour que le suffrage reste l'expression réelle de la volonté citoyenne, même en l'absence de choix convaincant.",
+    description: "Plusieurs pétitions demandent que le vote blanc soit pris en compte pour refléter la réelle expression des électeurs.",
     signatures: 45600,
     threshold: 100000,
     category: "Institutions",
-    url: "https://petitions.assemblee-nationale.fr/p/vote-blanc"
+    url: "https://petitions.assemblee-nationale.fr/recherche?q=vote+blanc"
   }
 ];
 

@@ -117,20 +117,45 @@ const CONTENTS = [
   },
   {
     icon: Bell,
-    title: "Alertes Député Personnalisées",
-    desc: "Soyez prévenu dès que votre député prend part à un vote crucial à l'Assemblée Nationale.",
+    title: "Alertes Député & Proximité",
+    desc: "Soyez prévenu dès que votre député prend part à un vote crucial et recevez les actualités politiques qui impactent directement votre région.",
     color: "bg-amber-50 text-amber-600 border-amber-100",
   },
 ];
 
+const REGIONS = [
+  "Auvergne-Rhône-Alpes",
+  "Bourgogne-Franche-Comté",
+  "Bretagne",
+  "Centre-Val de Loire",
+  "Corse",
+  "Grand Est",
+  "Hauts-de-France",
+  "Île-de-France",
+  "Normandie",
+  "Nouvelle-Aquitaine",
+  "Occitanie",
+  "Pays de la Loire",
+  "Provence-Alpes-Côte d'Azur",
+  "Guadeloupe",
+  "Guyane",
+  "Martinique",
+  "La Réunion",
+  "Mayotte"
+].sort();
+
 export default function PremiumPage() {
   const [email, setEmail] = useState("");
-  const [prefAssemblee, setPrefAssemblee] = useState(true);
-  const [prefLois, setPrefLois] = useState(true);
-  const [prefDepute, setPrefDepute] = useState(false);
   const [age, setAge] = useState("");
   const [csp, setCsp] = useState("");
+  const [region, setRegion] = useState("");
   const [zipCode, setZipCode] = useState("");
+  
+  const [prefAssemblee, setPrefAssemblee] = useState(true);
+  const [prefLois, setPrefLois] = useState(true);
+  const [prefDepute, setPrefDepute] = useState(true);
+  const [prefLocalNews, setPrefLocalNews] = useState(true);
+
   const { userId, isPremium } = usePremium();
 
   const [loading, setLoading] = useState(false);
@@ -150,6 +175,10 @@ export default function PremiumPage() {
           newsletter: prefAssemblee,
           lois_illimite: prefLois,
           alertes_depute: prefDepute,
+          actualites_locales: prefLocalNews,
+          region: region,
+          age,
+          csp
         },
         postal_code: zipCode || undefined,
         age,
@@ -449,6 +478,59 @@ export default function PremiumPage() {
                       </div>
                     </div>
 
+                    {/* Bloc Ma Proximité */}
+                    <div className="p-6 rounded-3xl border-2 border-amber-100 bg-amber-50/30 space-y-6">
+                      <div className="flex items-center gap-3 mb-2">
+                        <div className="p-2 bg-amber-400 rounded-lg text-slate-900">
+                          <MapPin size={18} className="fill-current" />
+                        </div>
+                        <h3 className="font-bold text-slate-900 uppercase tracking-tight text-sm">Ma Proximité Elite</h3>
+                      </div>
+
+                      <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                        {/* Région */}
+                        <div>
+                          <label htmlFor="region" className="block text-xs font-bold text-slate-600 mb-2 ml-1 uppercase">
+                            Ma Région
+                          </label>
+                          <div className="relative group">
+                            <Building2 className="absolute left-4 top-1/2 -translate-y-1/2 text-slate-400 w-4 h-4" />
+                            <select
+                              id="region"
+                              required
+                              value={region}
+                              onChange={(e) => setRegion(e.target.value)}
+                              className="w-full pl-11 pr-10 py-4 rounded-xl border border-slate-200 focus:ring-2 focus:ring-amber-400/20 bg-white text-sm font-medium appearance-none"
+                            >
+                              <option value="" disabled>Sélectionner...</option>
+                              {REGIONS.map(r => <option key={r} value={r}>{r}</option>)}
+                            </select>
+                            <ChevronDown className="absolute right-4 top-1/2 -translate-y-1/2 text-slate-400 w-4 h-4 pointer-events-none" />
+                          </div>
+                        </div>
+
+                        {/* Code Postal */}
+                        <div>
+                          <label htmlFor="zipCode" className="block text-xs font-bold text-slate-600 mb-2 ml-1 uppercase">
+                            Code Postal
+                          </label>
+                          <div className="relative group">
+                            <MapPin className="absolute left-4 top-1/2 -translate-y-1/2 text-slate-400 w-4 h-4" />
+                            <input
+                              id="zipCode"
+                              type="text"
+                              required
+                              placeholder="75001"
+                              maxLength={5}
+                              value={zipCode}
+                              onChange={(e) => setZipCode(e.target.value.replace(/[^0-9]/g, ""))}
+                              className="w-full pl-11 pr-4 py-4 rounded-xl border border-slate-200 focus:ring-2 focus:ring-amber-400/20 bg-white text-sm font-medium"
+                            />
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+
                     {/* Email */}
                     <div>
                       <label htmlFor="email" className="block text-sm font-bold text-slate-900 mb-2 ml-1">
@@ -504,6 +586,19 @@ export default function PremiumPage() {
                           <input
                             type="checkbox"
                             className="w-5 h-5 rounded border-slate-300 text-amber-500 focus:ring-amber-500 accent-amber-500"
+                            checked={prefLocalNews}
+                            onChange={(e) => setPrefLocalNews(e.target.checked)}
+                          />
+                          <span className="font-bold text-slate-800 text-sm flex items-center gap-2">
+                            <Sparkles className="w-4 h-4 text-amber-500" />
+                            Actualités de ma Région
+                          </span>
+                        </label>
+
+                        <label className="flex items-center gap-3 cursor-pointer group p-4 rounded-2xl border border-slate-100 hover:border-amber-200 hover:bg-amber-50/30 transition-all">
+                          <input
+                            type="checkbox"
+                            className="w-5 h-5 rounded border-slate-300 text-amber-500 focus:ring-amber-500 accent-amber-500"
                             checked={prefDepute}
                             onChange={(e) => setPrefDepute(e.target.checked)}
                           />
@@ -513,23 +608,6 @@ export default function PremiumPage() {
                           </span>
                         </label>
                       </div>
-
-                      {prefDepute && (
-                        <motion.div
-                          initial={{ height: 0, opacity: 0 }}
-                          animate={{ height: "auto", opacity: 1 }}
-                          className="ml-2 overflow-hidden"
-                        >
-                          <input
-                            type="text"
-                            placeholder="Code postal (5 chiffres)"
-                            maxLength={5}
-                            value={zipCode}
-                            onChange={(e) => setZipCode(e.target.value.replace(/[^0-9]/g, ""))}
-                            className="w-full px-5 py-4 rounded-2xl border border-slate-200 focus:ring-2 focus:ring-amber-400/50"
-                          />
-                        </motion.div>
-                      )}
                     </div>
 
                     {/* Submit Button Gold - Styled like the screenshot */}

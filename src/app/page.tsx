@@ -109,20 +109,6 @@ export default async function Home() {
       {/* 6. ENCART NEWSLETTER PREMIUM DYNAMIQUE */}
       <NewsletterBanner />
 
-      {/* 7. FOOTER */}
-      <footer className="bg-card border-t border-border py-12 px-4 shadow-[0_-1px_3px_rgba(0,0,0,0.02)]">
-        <div className="container mx-auto max-w-6xl flex flex-col md:flex-row justify-between items-center gap-6">
-          <div className="flex flex-col items-center md:items-start">
-            <p className="font-bold text-xl mb-2 text-foreground">La Politique, C&apos;est Simple</p>
-            <p className="text-sm text-muted-foreground">© 2026. Tous droits réservés.</p>
-          </div>
-          <div className="flex gap-6 text-sm font-medium">
-            <Link href="/contact" className="text-muted-foreground hover:text-primary transition-colors">Contact</Link>
-            <Link href="/mentions-legales" className="text-muted-foreground hover:text-primary transition-colors">Mentions légales</Link>
-            <Link href="/politique-confidentialite" className="text-muted-foreground hover:text-primary transition-colors">Confidentialité</Link>
-          </div>
-        </div>
-      </footer>
     </div>
   );
 }

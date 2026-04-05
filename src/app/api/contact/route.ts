@@ -24,7 +24,7 @@ export async function POST(request: Request) {
     // Important: On the free tier, you can only send TO the email you signed up with unless you verify a domain.
     const { data, error } = await resend.emails.send({
       from: "La Politique C'est Simple <onboarding@resend.dev>",
-      to: process.env.CONTACT_RECEIVER_EMAIL || "contact@lapolitiquesimple.fr",
+      to: process.env.CONTACT_RECEIVER_EMAIL || "lapolitiquecsimple@gmail.com",
       subject: `[CONTACT] ${subject.toUpperCase()} - ${name}`,
       replyTo: email,
       html: `

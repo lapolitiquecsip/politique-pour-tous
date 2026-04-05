@@ -17,6 +17,7 @@ import StatsPanel from "@/components/home/StatsPanel";
 import HomeHero from "@/components/home/HomeHero";
 import FaqSection from "@/components/home/FaqSection";
 import NewsletterBanner from "@/components/home/NewsletterBanner";
+import PetitionsSection from "@/components/home/PetitionsSection";
 
 export default async function Home() {
   const latestContent = await api.getContent(6);
@@ -100,6 +101,9 @@ export default async function Home() {
           )}
         </div>
       </section>
+
+      {/* NEW: SECTION PÉTITIONS CITOYENNES */}
+      <PetitionsSection />
 
       {/* 5. F.A.Q. INTERACTIVE (POSTER IMPACT REBORN) */}
       <div id="faq" className="scroll-mt-24">

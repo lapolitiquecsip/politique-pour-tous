@@ -759,7 +759,35 @@ export default function PremiumPage() {
                     </div>
                   </div>
 
-                  {/* 4. Le Verdict Elite (Conclusion) */}
+                  {/* 4. L'Échiquier Institutionnel */}
+                  <div className="space-y-6">
+                    <div className="flex items-center gap-3">
+                      <div className="w-2 h-6 bg-slate-900 rounded-full" />
+                      <h3 className="text-xl font-bold text-slate-900 uppercase tracking-tighter">3. L&apos;Échiquier Institutionnel</h3>
+                    </div>
+                    
+                    <div className="border border-slate-200 rounded-[2rem] overflow-hidden">
+                      <div className="grid grid-cols-1 md:grid-cols-3 divide-y md:divide-y-0 md:divide-x divide-slate-100">
+                        <div className="p-6 hover:bg-slate-50 transition-colors">
+                          <p className="text-[10px] font-black text-slate-400 uppercase tracking-widest mb-3">Gouvernement</p>
+                          <h5 className="font-bold text-slate-900 text-sm mb-2 text-balance">Conseil des Ministres : Focus Simplification</h5>
+                          <p className="text-[11px] text-slate-500 leading-relaxed">Le Gvt a présenté 14 mesures pour réduire la paperasse des PME. Marc, cela pourrait impacter vos process RH.</p>
+                        </div>
+                        <div className="p-6 hover:bg-slate-50 transition-colors">
+                          <p className="text-[10px] font-black text-slate-400 uppercase tracking-widest mb-3">Sénat</p>
+                          <h5 className="font-bold text-slate-900 text-sm mb-2 text-balance">Loi Montagne II : Le Sénat durcit le ton</h5>
+                          <p className="text-[11px] text-slate-500 leading-relaxed">Les sénateurs ont ajouté 3 amendements sur la préservation des glaciers. Le texte repart à l&apos;Assemblée.</p>
+                        </div>
+                        <div className="p-6 hover:bg-slate-50 transition-colors">
+                          <p className="text-[10px] font-black text-slate-400 uppercase tracking-widest mb-3">Assemblée</p>
+                          <h5 className="font-bold text-slate-900 text-sm mb-2 text-balance">Commissions : Audition sous tension</h5>
+                          <p className="text-[11px] text-slate-500 leading-relaxed">La commission des finances a auditionné le PDG d&apos;EDF sur les tarifs 2027. Rien n&apos;est encore tranché.</p>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+
+                  {/* 5. Le Verdict Elite (Conclusion) */}
                   <div className="bg-amber-50 rounded-3xl p-8 border border-amber-200">
                     <div className="flex items-center gap-3 mb-4">
                       <Sparkles size={20} className="text-amber-500" />

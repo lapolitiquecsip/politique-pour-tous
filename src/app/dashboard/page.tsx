@@ -1,7 +1,8 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState, useEffect, useTransition } from "react";
 import Link from "next/link";
+// ... (imports lucide-react)
 import { 
   User, 
   Star, 
@@ -31,6 +32,7 @@ export default function DashboardPage() {
   const [userVotes, setUserVotes] = useState<any[]>([]);
   const [followedDeputies, setFollowedDeputies] = useState<any[]>([]);
   const [activeTab, setActiveTab] = useState<"votes" | "deputies">("votes");
+  const [isPending, startTransition] = useTransition();
 
   useEffect(() => {
     if (!userId || authLoading) return;
@@ -129,22 +131,22 @@ export default function DashboardPage() {
           {/* Tabs Navigation */}
           <div className="flex border-b border-slate-100">
             <button 
-              onClick={() => setActiveTab("votes")}
+              onClick={() => startTransition(() => setActiveTab("votes"))}
               className={`flex-1 py-6 font-bold text-sm uppercase tracking-widest flex items-center justify-center gap-3 transition-all ${
                 activeTab === "votes" ? "text-slate-900 bg-white" : "text-slate-400 bg-slate-50 hover:bg-slate-100"
               }`}
             >
-              <Vote size={18} />
+              <Vote size={18} className={isPending && activeTab !== "votes" ? "opacity-30" : ""} />
               Mon Historique de Vote
               {activeTab === "votes" && <div className="absolute bottom-0 w-32 h-1 bg-slate-900 rounded-full" />}
             </button>
             <button 
-              onClick={() => setActiveTab("deputies")}
+              onClick={() => startTransition(() => setActiveTab("deputies"))}
               className={`flex-1 py-6 font-bold text-sm uppercase tracking-widest flex items-center justify-center gap-3 transition-all ${
                 activeTab === "deputies" ? "text-slate-900 bg-white" : "text-slate-400 bg-slate-50 hover:bg-slate-100"
               }`}
             >
-              <Users size={18} />
+              <Users size={18} className={isPending && activeTab !== "deputies" ? "opacity-30" : ""} />
               Mes Députés Suivis
               {activeTab === "deputies" && <div className="absolute bottom-0 w-32 h-1 bg-slate-900 rounded-full" />}
             </button>

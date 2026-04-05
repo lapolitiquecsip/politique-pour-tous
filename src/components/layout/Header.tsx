@@ -98,7 +98,7 @@ export default function Header() {
 
             {user ? (
               <div className="flex items-center gap-4">
-                <Link href="/dashboard" className={`flex items-center gap-2 px-3 py-1.5 rounded-full border transition-all hover:shadow-md ${isPremium ? 'bg-amber-50 border-amber-200 shadow-sm hover:border-amber-400' : 'bg-slate-50 border-slate-100 hover:bg-slate-100'}`}>
+                <Link href="/dashboard" className={`flex items-center gap-2 px-3 py-1.5 rounded-full border transition-[background-color,border-color,box-shadow] duration-200 hover:shadow-md ${isPremium ? 'bg-amber-50 border-amber-200 shadow-sm hover:border-amber-400' : 'bg-slate-50 border-slate-100 hover:bg-slate-100'}`}>
                   <div className={`w-5 h-5 rounded-full flex items-center justify-center ${isPremium ? 'bg-amber-400 text-white' : 'bg-blue-100 text-blue-600'}`}>
                     {isPremium ? <Star size={10} fill="currentColor" /> : <User size={12} />}
                   </div>

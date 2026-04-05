@@ -1,5 +1,5 @@
 "use client";
-import { useState, useEffect } from "react";
+import { useState, useEffect, memo } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { X, ChevronRight, Landmark } from "lucide-react";
 
@@ -58,6 +58,48 @@ const INSTITUTIONS: Institution[] = [
   },
 ];
 
+// Composant mémorisé pour éviter les re-renders inutiles
+const InstitutionCard = memo(({ inst, index, onClick }: { inst: Institution, index: number, onClick: () => void }) => {
+  return (
+    <motion.button
+      key={inst.id}
+      initial={{ opacity: 0, y: 20 }}
+      animate={{ opacity: 1, y: 0 }}
+      transition={{ delay: index * 0.1 }}
+      onClick={onClick}
+      // Accélération matérielle
+      style={{ willChange: "transform, opacity", transform: "translateZ(0)" }}
+      className="group relative h-[400px] rounded-[2.5rem] overflow-hidden shadow-lg hover:shadow-2xl transition-all duration-500 cursor-pointer text-left w-full"
+    >
+      {/* Image de fond avec zoom au survol */}
+      <div 
+        className="absolute inset-0 bg-cover bg-center transition-transform duration-700 group-hover:scale-110"
+        style={{ backgroundImage: `url(${inst.image})`, willChange: "transform" }}
+      />
+      {/* Overlay dégradé */}
+      <div className={`absolute inset-0 bg-gradient-to-t ${inst.color}/80 via-slate-900/40 to-transparent group-hover:via-slate-900/20 transition-colors duration-500`} />
+
+      {/* Contenu */}
+      <div className="relative z-10 flex flex-col justify-end h-full p-8">
+        <div className="bg-white/20 backdrop-blur-md w-12 h-12 rounded-2xl flex items-center justify-center mb-4 border border-white/30 group-hover:scale-110 transition-transform">
+          <Landmark className="text-white w-6 h-6" />
+        </div>
+        <h3 className="text-3xl font-black text-white mb-3">
+          {inst.name}
+        </h3>
+        <p className="text-white/80 text-sm leading-relaxed mb-6 line-clamp-2">
+          {inst.summary}
+        </p>
+        <div className="flex items-center gap-2 text-white font-bold text-sm bg-white/20 backdrop-blur-md self-start px-5 py-2 rounded-full border border-white/30 group-hover:bg-white group-hover:text-slate-900 transition-all">
+          Voir le détail <ChevronRight className="w-4 h-4" />
+        </div>
+      </div>
+    </motion.button>
+  );
+});
+
+InstitutionCard.displayName = "InstitutionCard";
+
 export default function InstitutionsGrid() {
   const [selectedInst, setSelectedInst] = useState<Institution | null>(null);
 
@@ -75,43 +117,17 @@ export default function InstitutionsGrid() {
       {/* ── GRILLE PRINCIPALE ── */}
       <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
         {INSTITUTIONS.map((inst, index) => (
-          <motion.button
-            key={inst.id}
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ delay: index * 0.1 }}
-            onClick={() => setSelectedInst(inst)}
-            className="group relative h-[400px] rounded-[2.5rem] overflow-hidden shadow-lg hover:shadow-2xl transition-all duration-500 cursor-pointer text-left"
-          >
-            {/* Image de fond avec zoom au survol */}
-            <div 
-              className="absolute inset-0 bg-cover bg-center transition-transform duration-700 group-hover:scale-110"
-              style={{ backgroundImage: `url(${inst.image})` }}
-            />
-            {/* Overlay dégradé */}
-            <div className={`absolute inset-0 bg-gradient-to-t ${inst.color}/80 via-slate-900/40 to-transparent group-hover:via-slate-900/20 transition-colors duration-500`} />
-
-            {/* Contenu */}
-            <div className="relative z-10 flex flex-col justify-end h-full p-8">
-              <div className="bg-white/20 backdrop-blur-md w-12 h-12 rounded-2xl flex items-center justify-center mb-4 border border-white/30 group-hover:scale-110 transition-transform">
-                <Landmark className="text-white w-6 h-6" />
-              </div>
-              <h3 className="text-3xl font-black text-white mb-3">
-                {inst.name}
-              </h3>
-              <p className="text-white/80 text-sm leading-relaxed mb-6 line-clamp-2">
-                {inst.summary}
-              </p>
-              <div className="flex items-center gap-2 text-white font-bold text-sm bg-white/20 backdrop-blur-md self-start px-5 py-2 rounded-full border border-white/30 group-hover:bg-white group-hover:text-slate-900 transition-all">
-                Voir le détail <ChevronRight className="w-4 h-4" />
-              </div>
-            </div>
-          </motion.button>
+          <InstitutionCard 
+            key={inst.id} 
+            inst={inst} 
+            index={index} 
+            onClick={() => setSelectedInst(inst)} 
+          />
         ))}
       </div>
 
       {/* ── MODALE DE DÉTAIL ── */}
-      <AnimatePresence>
+      <AnimatePresence mode="wait">
         {selectedInst && (
           <div className="fixed inset-0 z-[100] flex items-start justify-center p-4 md:p-8 overflow-y-auto scrollbar-hide">
             {/* Backdrop flouté */}
@@ -120,18 +136,22 @@ export default function InstitutionsGrid() {
               animate={{ opacity: 1 }}
               exit={{ opacity: 0 }}
               onClick={() => setSelectedInst(null)}
+              // Accélération matérielle pour le flou
+              style={{ willChange: "opacity", transform: "translateZ(0)" }}
               className="fixed inset-0 bg-slate-950/60 backdrop-blur-xl"
             />
 
             {/* Contenu Modale */}
             <motion.div
-              initial={{ opacity: 0, scale: 0.9, y: 20 }}
+              initial={{ opacity: 0, scale: 0.95, y: 20 }}
               animate={{ opacity: 1, scale: 1, y: 0 }}
-              exit={{ opacity: 0, scale: 0.9, y: 20 }}
-              transition={{ type: "spring", damping: 25, stiffness: 300 }}
+              exit={{ opacity: 0, scale: 0.95, y: 20 }}
+              transition={{ type: "spring", damping: 30, stiffness: 400 }}
+              // Optimisation GPU
+              style={{ willChange: "transform, opacity", transform: "translateZ(0)" }}
               className="relative w-full max-w-4xl bg-[#0F172A] rounded-[3rem] shadow-[0_20px_50px_rgba(0,0,0,0.5)] border border-white/10 flex flex-col overflow-visible my-8"
             >
-              {/* Bouton Fermer Principal (Standard et ultra-visible) */}
+              {/* Bouton Fermer Principal */}
               <button
                 onClick={() => setSelectedInst(null)}
                 className="absolute top-6 right-6 z-50 flex items-center gap-2 px-4 py-2 rounded-full bg-black/40 text-white hover:bg-red-500 transition-all backdrop-blur-md border border-white/20 group"
@@ -144,7 +164,7 @@ export default function InstitutionsGrid() {
               <div className="w-full h-64 md:h-[400px] shrink-0 relative">
                 <div 
                   className="w-full h-full bg-cover bg-center shadow-inner"
-                  style={{ backgroundImage: `url(${selectedInst.image})` }}
+                  style={{ backgroundImage: `url(${selectedInst.image})`, willChange: "transform" }}
                 >
                   <div className={`absolute inset-0 bg-gradient-to-t from-[#0F172A] via-[#0F172A]/20 to-transparent`} />
                   <div className={`absolute inset-0 bg-gradient-to-r from-[#0F172A]/40 to-transparent`} />
@@ -161,7 +181,7 @@ export default function InstitutionsGrid() {
                 </div>
               </div>
 
-              {/* Partie Basse (Contenu avec Scroll Naturel) */}
+              {/* Partie Basse */}
               <div className="w-full p-8 md:p-12 md:pt-8 flex flex-col overflow-visible">
                 <div className="flex items-center gap-3 mb-8">
                   <span className="px-4 py-1.5 rounded-full text-[10px] font-black uppercase tracking-[0.2em] bg-white/10 text-white border border-white/10">
@@ -175,7 +195,7 @@ export default function InstitutionsGrid() {
                   </p>
                 </div>
 
-                {/* Section "En Direct" - Plus de scrollbar interne, tout est fluide */}
+                {/* Section "En Direct" */}
                 <div className="space-y-6">
                   <div className="flex items-center gap-4 mb-6">
                     <span className="h-px flex-1 bg-white/10" />
@@ -190,6 +210,7 @@ export default function InstitutionsGrid() {
                         initial={{ opacity: 0, y: 10 }}
                         animate={{ opacity: 1, y: 0 }}
                         transition={{ delay: 0.1 + i * 0.05 }}
+                        style={{ willChange: "transform, opacity" }}
                         className="flex items-start gap-4 bg-white/5 border border-white/10 rounded-3xl p-6 text-white/90 font-medium hover:bg-white/10 transition-all group"
                       >
                         <div className={`mt-1.5 w-2 h-2 rounded-full bg-blue-500 shadow-[0_0_12px_rgba(59,130,246,0.8)] group-hover:scale-125 transition-transform`} />

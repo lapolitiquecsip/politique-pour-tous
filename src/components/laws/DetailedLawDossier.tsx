@@ -201,8 +201,7 @@ export default function DetailedLawDossier({ law }: DetailedLawDossierProps) {
               </div>
             </div>
           )}
-        </div>
-      </motion.div>
-    </div>
+        </motion.div>
+      </div>
   );
 }

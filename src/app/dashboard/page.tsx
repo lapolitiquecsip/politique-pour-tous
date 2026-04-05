@@ -22,14 +22,14 @@ import { api } from "@/lib/api";
 import { usePremium } from "@/lib/hooks/usePremium";
 
 export default function DashboardPage() {
-  const { userId, isPremium } = usePremium();
+  const { userId, isPremium, loading: authLoading } = usePremium();
   const [loading, setLoading] = useState(true);
   const [userVotes, setUserVotes] = useState<any[]>([]);
   const [followedDeputies, setFollowedDeputies] = useState<any[]>([]);
   const [activeTab, setActiveTab] = useState<"votes" | "deputies">("votes");
 
   useEffect(() => {
-    if (!userId) return;
+    if (!userId || authLoading) return;
 
     const loadDashboardData = async () => {
       try {
@@ -47,9 +47,18 @@ export default function DashboardPage() {
     };
 
     loadDashboardData();
-  }, [userId]);
+  }, [userId, authLoading]);
 
-  if (!isPremium && !loading) {
+  if (authLoading) {
+    return (
+      <div className="min-h-screen bg-slate-950 flex flex-col items-center justify-center p-4">
+        <Loader2 size={40} className="animate-spin text-amber-500 mb-4" />
+        <p className="text-white font-staatliches uppercase tracking-[0.2em]">Authentification en cours...</p>
+      </div>
+    );
+  }
+
+  if (!isPremium) {
     return (
       <div className="min-h-[80vh] flex flex-col items-center justify-center p-4 text-center">
         <div className="w-20 h-20 bg-amber-100 rounded-full flex items-center justify-center text-amber-600 mb-6">

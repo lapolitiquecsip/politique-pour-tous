@@ -756,6 +756,20 @@ export default function PremiumPage() {
                         <h4 className="font-bold text-slate-900 mb-2">Manuel Bompard a voté CONTRE</h4>
                         <p className="text-xs text-slate-500 leading-relaxed">Le député de votre secteur s&apos;oppose au projet de loi logement débattu mercredi dernier à l&apos;Assemblée.</p>
                       </div>
+
+                      <div className="border border-slate-100 rounded-3xl p-6 bg-slate-900 text-white md:col-span-2 group/local transition-all">
+                        <div className="flex items-center justify-between mb-3">
+                          <div className="flex items-center gap-2">
+                            <div className="w-8 h-8 rounded-lg bg-amber-400 text-slate-900 flex items-center justify-center">
+                              <Building2 size={16} />
+                            </div>
+                            <p className="text-xs font-bold text-amber-400 uppercase tracking-widest">Hôtel de Ville • Marseille</p>
+                          </div>
+                          <div className="px-2 py-0.5 bg-white/10 rounded text-[10px] font-bold">EXCLUSIF</div>
+                        </div>
+                        <h4 className="font-bold text-white mb-2">Benoît Payan lance le plan &quot;Écoles de demain&quot;</h4>
+                        <p className="text-xs text-slate-400 leading-relaxed">Le Maire de Marseille débloque 45M€ pour la rénovation thermique du groupe scolaire de votre quartier. Chantier prévu automne 2026.</p>
+                      </div>
                     </div>
                   </div>
 
@@ -822,6 +836,20 @@ export default function PremiumPage() {
                           <div className="mt-6 w-full h-2 bg-slate-100 rounded-full overflow-hidden">
                             <div className="w-[85%] h-full bg-emerald-500" />
                           </div>
+                        </div>
+                      </div>
+
+                      {/* Vote Interactif */}
+                      <div className="mt-10 pt-8 border-t border-slate-200 flex flex-col md:flex-row items-center justify-between gap-6">
+                        <div className="flex items-center gap-3">
+                          <div className="p-2 bg-amber-400 rounded-lg">
+                            <Star size={16} className="fill-current" />
+                          </div>
+                          <p className="text-sm font-bold text-slate-900 uppercase tracking-tight">ET VOUS ? Auriez-vous voté POUR cette loi ?</p>
+                        </div>
+                        <div className="flex gap-3">
+                          <button className="px-6 py-2 bg-slate-900 text-white rounded-xl text-xs font-bold hover:bg-slate-800 transition-colors">OUI</button>
+                          <button className="px-6 py-2 border-2 border-slate-900 text-slate-900 rounded-xl text-xs font-bold hover:bg-slate-100 transition-colors">NON</button>
                         </div>
                       </div>
                     </div>

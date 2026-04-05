@@ -484,8 +484,11 @@ export default function PremiumPage() {
                         <div className="p-2 bg-amber-400 rounded-lg text-slate-900">
                           <MapPin size={18} className="fill-current" />
                         </div>
-                        <h3 className="font-bold text-slate-900 uppercase tracking-tight text-sm">Ma Proximité Elite</h3>
+                        <h3 className="font-bold text-slate-900 uppercase tracking-tight text-sm">MA LOCALISATION</h3>
                       </div>
+                      <p className="text-xs text-slate-500 font-medium italic -mt-4 mb-2 ml-1">
+                        Pour recevoir des informations personnalisées sur tout ce qui vous entoure.
+                      </p>
 
                       <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                         {/* Région */}

@@ -9,7 +9,10 @@ import {
   Sparkles,
   ChevronUp,
   ArrowRight,
-  X as CloseIcon
+  X as CloseIcon,
+  Star,
+  XCircle,
+  MinusCircle
 } from "lucide-react";
 import { motion } from "framer-motion";
 import { FREE_LAWS, LawDossier } from "@/data/free-laws-dossiers";

@@ -787,7 +787,47 @@ export default function PremiumPage() {
                     </div>
                   </div>
 
-                  {/* 5. Le Verdict Elite (Conclusion) */}
+                  {/* 5. L'Analyse de la semaine - FOCUS DÉTAILLÉ */}
+                  <div className="space-y-6">
+                    <div className="flex items-center gap-3">
+                      <div className="w-2 h-6 bg-emerald-500 rounded-full" />
+                      <h3 className="text-xl font-bold text-slate-900 uppercase tracking-tighter">4. L&apos;Analyse de la semaine : Loi Industrie Verte</h3>
+                    </div>
+
+                    <div className="bg-slate-50 border border-slate-200 rounded-[2rem] p-8 md:p-10">
+                      <div className="flex flex-col md:flex-row gap-8">
+                        <div className="flex-1 space-y-4">
+                          <div className="inline-flex items-center gap-2 px-3 py-1 bg-emerald-100 text-emerald-700 text-[10px] font-black uppercase rounded-full tracking-widest">Votée & Validée</div>
+                          <h4 className="text-2xl font-bold text-slate-900 leading-tight italic decoration-emerald-200 underline underline-offset-8 decoration-4 mb-6">Simplification du droit pour la souveraineté économique</h4>
+                          <p className="text-sm text-slate-600 leading-relaxed font-medium">Marc, cette loi phare du Gvt vise à diviser par deux les délais d&apos;implantation d&apos;usines industrielles. Pour un cadre marseillais en lien avec le Port, le projet &quot;Marseille Vert&quot; passe en priorité nationale.</p>
+                          
+                          <div className="grid grid-cols-1 md:grid-cols-2 gap-6 pt-4">
+                            <div className="space-y-2">
+                              <p className="text-xs font-black text-slate-900 uppercase tracking-widest">Avant / Après</p>
+                              <div className="text-[11px] space-y-2">
+                                <p className="text-red-500 line-through">17 mois d&apos;autorisation</p>
+                                <p className="text-emerald-600 font-bold">9 mois garantis (Procédure accélérée)</p>
+                              </div>
+                            </div>
+                            <div className="space-y-2">
+                              <p className="text-xs font-black text-slate-900 uppercase tracking-widest">Impact Clé</p>
+                              <p className="text-[11px] text-slate-600">Le crédit d&apos;impôt vert est étendu aux PME marseillaises de la Supply Chain.</p>
+                            </div>
+                          </div>
+                        </div>
+                        <div className="w-full md:w-56 bg-white border border-slate-100 rounded-3xl p-6 flex flex-col justify-center items-center text-center">
+                          <p className="text-[10px] font-black text-slate-400 uppercase tracking-widest mb-2">Pourquoi c&apos;est Elite ?</p>
+                          <p className="text-3xl font-black text-slate-900 mb-1">C+</p>
+                          <p className="text-[10px] font-bold text-slate-500 uppercase">Notation Impact Étalon</p>
+                          <div className="mt-6 w-full h-2 bg-slate-100 rounded-full overflow-hidden">
+                            <div className="w-[85%] h-full bg-emerald-500" />
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+
+                  {/* 6. Le Verdict Elite (Conclusion) */}
                   <div className="bg-amber-50 rounded-3xl p-8 border border-amber-200">
                     <div className="flex items-center gap-3 mb-4">
                       <Sparkles size={20} className="text-amber-500" />

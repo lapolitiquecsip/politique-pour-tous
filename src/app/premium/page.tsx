@@ -830,9 +830,9 @@ export default function PremiumPage() {
                           </div>
                         </div>
                         <div className="w-full md:w-56 bg-white border border-slate-100 rounded-3xl p-6 flex flex-col justify-center items-center text-center">
-                          <p className="text-[10px] font-black text-slate-400 uppercase tracking-widest mb-2">Pourquoi c&apos;est Elite ?</p>
-                          <p className="text-3xl font-black text-slate-900 mb-1">C+</p>
-                          <p className="text-[10px] font-bold text-slate-500 uppercase">Notation Impact Étalon</p>
+                          <p className="text-[10px] font-black text-slate-400 uppercase tracking-widest mb-2">Pertinence Profil</p>
+                          <p className="text-3xl font-black text-slate-900 mb-1">A+</p>
+                          <p className="text-[10px] font-bold text-slate-500 uppercase leading-tight">Score d&apos;impact personnel</p>
                           <div className="mt-6 w-full h-2 bg-slate-100 rounded-full overflow-hidden">
                             <div className="w-[85%] h-full bg-emerald-500" />
                           </div>

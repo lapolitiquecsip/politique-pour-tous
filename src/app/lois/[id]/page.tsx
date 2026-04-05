@@ -243,6 +243,48 @@ export default function LawDetailPage({ params }: { params: Promise<{ id: string
         </div>
       )}
 
+      {/* 4. VOTING MODULE (ELITE) */}
+      {isPremium && (
+        <div className="container mx-auto px-4 max-w-6xl mt-20 relative z-20">
+          <div className="bg-slate-950 rounded-[3.5rem] p-12 md:p-20 text-white shadow-2xl relative overflow-hidden border border-slate-800">
+            <div className="absolute top-0 right-0 w-1/2 h-full bg-gradient-to-l from-amber-500/5 to-transparent pointer-events-none" />
+            
+            <div className="max-w-4xl relative z-10">
+              <div className="inline-flex items-center gap-2 px-4 py-2 bg-amber-400 text-slate-950 text-[10px] font-black uppercase rounded-full mb-8">
+                <Star size={12} className="fill-current" />
+                Action Citoyenne Elite
+              </div>
+              <h2 className="text-4xl md:text-6xl font-staatliches uppercase mb-6 italic">Positionnement Personnel</h2>
+              <p className="text-xl text-slate-400 mb-12 max-w-2xl leading-relaxed">
+                En tant que membre Premium, votre voix compte. Enregistrez votre position sur ce projet de loi pour suivre l&apos;écart avec le vote officiel des députés.
+              </p>
+
+              <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+                {[
+                  { label: "POUR", val: "POUR", color: "bg-emerald-500 hover:bg-emerald-400", icon: CheckCircle2 },
+                  { label: "CONTRE", val: "CONTRE", color: "bg-red-500 hover:bg-red-400", icon: XCircle },
+                  { label: "ABSTENTION", val: "ABSTENTION", color: "bg-slate-700 hover:bg-slate-600", icon: MinusCircle }
+                ].map((btn) => (
+                  <button
+                    key={btn.val}
+                    onClick={async () => {
+                      if (!userId) return;
+                      await api.saveUserVote(userId, id, btn.val);
+                      // On pourrait ajouter un toast de succès ici
+                      alert("Votre vote a été enregistré dans votre dashboard !");
+                    }}
+                    className={`group relative overflow-hidden p-8 rounded-3xl flex flex-col items-center justify-center gap-4 transition-all hover:scale-105 active:scale-95 ${btn.color}`}
+                  >
+                    <btn.icon size={32} className="group-hover:rotate-12 transition-transform" />
+                    <span className="font-black text-xs tracking-[0.2em]">{btn.label}</span>
+                  </button>
+                ))}
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
+
       <button 
         onClick={() => window.scrollTo({ top: 0, behavior: 'smooth' })}
         className="fixed bottom-36 right-8 w-14 h-14 bg-white/80 backdrop-blur-md border border-slate-200 rounded-2xl flex items-center justify-center text-slate-900 shadow-2xl hover:bg-white transition-all z-10 group"

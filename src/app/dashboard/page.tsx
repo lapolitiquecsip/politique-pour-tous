@@ -249,33 +249,33 @@ export default function DashboardPage() {
                     ) : (
                       followedDeputies.map((f) => (
                         <Link key={f.id} href={`/deputes/${f.deputies?.slug}`}>
-                          <div className="group flex items-center gap-6 p-6 rounded-3xl border border-slate-100 hover:border-amber-400 hover:shadow-xl transition-all h-full bg-white">
+                          <div className="group flex items-center gap-6 p-6 rounded-3xl border border-slate-100 hover:border-amber-400 hover:shadow-xl transition-all h-full bg-white relative overflow-hidden">
+                            <div className="absolute top-0 right-0 w-24 h-24 bg-amber-500/5 rounded-full -mr-12 -mt-12 group-hover:bg-amber-500/10 transition-colors" />
+                            
                             <img 
                               src={`https://www.nosdeputes.fr/depute/photo/${f.deputies?.slug}/100`} 
-                              className="w-20 h-20 rounded-2xl object-cover grayscale group-hover:grayscale-0 transition-all duration-500"
+                              className="w-20 h-20 rounded-2xl object-cover grayscale group-hover:grayscale-0 transition-all duration-500 shadow-lg"
                               alt={f.deputies?.last_name}
+                              onError={(e) => {
+                                (e.target as HTMLImageElement).src = `https://ui-avatars.com/api/?name=${f.deputies?.first_name}+${f.deputies?.last_name}&background=fcd34d&color=1e293b`;
+                              }}
                             />
-                            <div className="flex-1">
-                              <h4 className="text-lg font-bold text-slate-900 group-hover:text-amber-600 transition-colors">
+                            <div className="flex-1 min-w-0">
+                              <h4 className="text-xl font-bold text-slate-900 group-hover:text-amber-600 transition-colors truncate">
                                 {f.deputies?.first_name} {f.deputies?.last_name}
                               </h4>
-                              <div className="flex items-center gap-2 text-slate-400 mb-3">
-                                <MapPin size={12} />
-                                <span className="text-[10px] font-bold uppercase tracking-widest">
-                                  {f.deputies?.department} - {f.deputies?.circonscription}e
+                              <div className="flex items-center gap-2 text-slate-400">
+                                <MapPin size={12} className="text-amber-500" />
+                                <span className="text-[10px] font-black uppercase tracking-widest truncate">
+                                  {f.deputies?.department || "Circonscription"}
                                 </span>
                               </div>
-                              
-                              <div className="flex gap-1">
-                                {[1, 2, 3].map(i => (
-                                  <div key={i} className={`w-6 h-6 rounded-lg flex items-center justify-center text-[10px] font-black ${i === 1 ? "bg-emerald-500/10 text-emerald-600" : "bg-slate-100 text-slate-400"}`}>
-                                    {i === 1 ? "P" : "?"}
-                                  </div>
-                                ))}
-                                <span className="text-[10px] font-bold text-slate-400 ml-2">Derniers votes</span>
+                              <div className="flex items-center gap-2 text-[10px] font-black text-amber-600 uppercase tracking-widest bg-amber-50 px-3 py-1 rounded-lg w-fit mt-3">
+                                <Bell size={10} fill="currentColor" />
+                                Suivi Actif
                               </div>
                             </div>
-                            <ChevronRight className="text-slate-300 group-hover:text-amber-500" />
+                            <ChevronRight size={20} className="text-slate-300 group-hover:text-amber-500 transition-colors shrink-0" />
                           </div>
                         </Link>
                       ))

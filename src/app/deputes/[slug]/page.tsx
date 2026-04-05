@@ -59,16 +59,18 @@ export default function DeputyDetailPage({ params }: { params: Promise<{ slug: s
     if (!userId || !isPremium || !deputy) return;
     
     setLoadingFollow(true);
+    const previousState = isFollowing;
+    setIsFollowing(!previousState); // Optimistic update
+
     try {
-      if (isFollowing) {
+      if (previousState) {
         await api.unfollowDeputy(userId, deputy.id);
-        setIsFollowing(false);
       } else {
         await api.followDeputy(userId, deputy.id);
-        setIsFollowing(true);
       }
     } catch (err) {
       console.error("Erreur de suivi:", err);
+      setIsFollowing(previousState); // Rollback on error
     } finally {
       setLoadingFollow(false);
     }

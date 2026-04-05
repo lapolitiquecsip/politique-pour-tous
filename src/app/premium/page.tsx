@@ -295,113 +295,7 @@ export default function PremiumPage() {
       </section>
 
       {/* ═══════════════════════════════════════════ */}
-      {/* 3. TÉMOIGNAGES (POSTER STYLE TITLE)          */}
-      {/* ═══════════════════════════════════════════ */}
-      <section className="py-24 px-4 bg-slate-50">
-        <div className="max-w-3xl mx-auto">
-          <FadeIn className="text-center mb-12">
-            <h2 className="text-3xl md:text-4xl font-extrabold text-slate-900 mb-4">
-              Aperçu d&apos;un email type
-            </h2>
-            <p className="text-lg text-slate-500">Voici à quoi ressemblera votre résumé Premium chaque lundi.</p>
-          </FadeIn>
-
-          <FadeIn delay={0.15}>
-            <div className="bg-white rounded-3xl border border-slate-200 shadow-xl overflow-hidden">
-              {/* Email header */}
-              <div className="bg-slate-900 px-6 py-4 flex items-center gap-3">
-                <div className="flex gap-1.5">
-                  <span className="w-3 h-3 rounded-full bg-red-500" />
-                  <span className="w-3 h-3 rounded-full bg-yellow-500" />
-                  <span className="w-3 h-3 rounded-full bg-green-500" />
-                </div>
-                <span className="text-white/60 text-sm font-mono ml-4 truncate">
-                  premium@lapolitiquecestsimple.fr
-                </span>
-              </div>
-
-              {/* Email body */}
-              <div className="p-8 md:p-10 space-y-6">
-                <div className="flex items-center gap-3 pb-4 border-b border-slate-100">
-                  <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-blue-900 to-red-600 flex items-center justify-center">
-                    <span className="text-white font-extrabold text-xs">LP</span>
-                  </div>
-                  <div>
-                    <p className="text-sm font-bold text-slate-900">La Politique, C&apos;est Simple</p>
-                    <p className="text-xs text-slate-400">Semaine du 24 mars 2026</p>
-                  </div>
-                </div>
-
-                <h3 className="text-2xl font-extrabold text-slate-900">
-                  🇫🇷 Cette semaine au Parlement
-                </h3>
-
-                <div className="space-y-4 text-sm text-slate-600 leading-relaxed">
-                  <div className="bg-blue-50 border border-blue-100 rounded-xl p-4">
-                    <p className="font-bold text-blue-900 mb-1">📋 Loi « Fin de vie » — Vote solennel mardi</p>
-                    <p className="text-blue-800/70">L&apos;Assemblée votera mardi sur ce texte-clé. 340 députés devraient voter pour, mais le Sénat reste incertain.</p>
-                  </div>
-                  <div className="bg-emerald-50 border border-emerald-100 rounded-xl p-4">
-                    <p className="font-bold text-emerald-900 mb-1">✅ Votre député(e) a voté POUR le budget de la Sécu</p>
-                    <p className="text-emerald-800/70">Marie Dupont (EPR, Loire-Atlantique) a voté en faveur du PLFSS 2027.</p>
-                  </div>
-                  <div className="bg-amber-50 border border-emerald-100 rounded-xl p-4">
-                    <p className="font-bold text-amber-900 mb-1">💡 Le saviez-vous ?</p>
-                    <p className="text-amber-800/70">Le mot « amendement » vient du latin emendare (corriger). En 2025, 14 000 amendements ont été déposés à l&apos;AN.</p>
-                  </div>
-                </div>
-
-                <div className="pt-4 border-t border-slate-100 text-center">
-                  <span className="text-xs text-slate-400">Se désabonner • Modifier mes préférences</span>
-                </div>
-              </div>
-            </div>
-          </FadeIn>
-        </div>
-      </section>
-
-      {/* ═══════════════════════════════════════════ */}
-      {/* 4. TÉMOIGNAGES                              */}
-      {/* ═══════════════════════════════════════════ */}
-      <section className="py-24 px-4 bg-white overflow-hidden relative">
-        <div className="max-w-6xl mx-auto">
-          <FadeIn className="text-center mb-16 relative">
-            <p className="text-sm font-bold text-amber-500 uppercase tracking-widest mb-4">Expériences</p>
-            <h2 className="text-4xl md:text-7xl font-staatliches uppercase tracking-tighter leading-none text-slate-900 relative z-10">
-              <span className="text-slate-900 opacity-[0.04] absolute -top-8 left-1/2 -translate-x-1/2 select-none hidden md:block whitespace-nowrap">
-                SATISFACTION • COMMUNAUTÉ
-              </span>
-              Ils en parlent <span className="text-amber-500">mieux que nous</span>
-            </h2>
-          </FadeIn>
-
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
-            {TESTIMONIALS.map((t, i) => (
-              <FadeIn key={i} delay={i * 0.12}>
-                <div className="bg-white rounded-3xl p-8 border border-white hover:shadow-xl transition-all h-full flex flex-col relative overflow-hidden group">
-                  <div className="absolute top-0 right-0 w-24 h-24 bg-amber-50 rounded-bl-full -mr-12 -mt-12 transition-all group-hover:scale-110" />
-                  <Quote className="w-10 h-10 text-amber-200 mb-6 relative z-10" />
-                  <p className="text-slate-700 text-lg leading-relaxed flex-1 italic relative z-10">
-                    &ldquo;{t.text}&rdquo;
-                  </p>
-                  <div className="mt-8 pt-6 border-t border-slate-50 flex items-center gap-4 relative z-10">
-                    <div className="w-12 h-12 rounded-full bg-gradient-to-br from-amber-400 to-yellow-500 flex items-center justify-center text-slate-900 font-bold shadow-md">
-                      {t.name.charAt(0)}
-                    </div>
-                    <div>
-                      <p className="text-base font-bold text-slate-900">{t.name}</p>
-                      <p className="text-sm text-slate-500">{t.role}</p>
-                    </div>
-                  </div>
-                </div>
-              </FadeIn>
-            ))}
-          </div>
-        </div>
-      </section>
-
-      {/* ═══════════════════════════════════════════ */}
-      {/* 4. FORMULAIRE PREMIUM                       */}
+      {/* 3. FORMULAIRE PREMIUM (REJOIGNEZ L'ELITE)    */}
       {/* ═══════════════════════════════════════════ */}
       <section className="py-24 px-4 bg-white relative overflow-hidden">
         {/* Decorative gold sphere */}
@@ -668,6 +562,111 @@ export default function PremiumPage() {
               </div>
             )}
           </FadeIn>
+        </div>
+      </section>
+
+      {/* ═══════════════════════════════════════════ */}
+      {/* 4. APERÇU EMAIL TYPE                         */}
+      {/* ═══════════════════════════════════════════ */}
+      <section className="py-24 px-4 bg-slate-50">
+        <div className="max-w-3xl mx-auto">
+          <FadeIn className="text-center mb-12">
+            <h2 className="text-3xl md:text-4xl font-extrabold text-slate-900 mb-4">
+              Aperçu d&apos;un email type
+            </h2>
+            <p className="text-lg text-slate-500">Voici à quoi ressemblera votre résumé Premium chaque lundi.</p>
+          </FadeIn>
+
+          <FadeIn delay={0.15}>
+            <div className="bg-white rounded-3xl border border-slate-200 shadow-xl overflow-hidden">
+              {/* Email header */}
+              <div className="bg-slate-900 px-6 py-4 flex items-center gap-3">
+                <div className="flex gap-1.5">
+                  <span className="w-3 h-3 rounded-full bg-red-500" />
+                  <span className="w-3 h-3 rounded-full bg-yellow-500" />
+                  <span className="w-3 h-3 rounded-full bg-green-500" />
+                </div>
+                <span className="text-white/60 text-sm font-mono ml-4 truncate">
+                  premium@lapolitiquecestsimple.fr
+                </span>
+              </div>
+
+              {/* Email body */}
+              <div className="p-8 md:p-10 space-y-6">
+                <div className="flex items-center gap-3 pb-4 border-b border-slate-100">
+                  <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-blue-900 to-red-600 flex items-center justify-center">
+                    <span className="text-white font-extrabold text-xs">LP</span>
+                  </div>
+                  <div>
+                    <p className="text-sm font-bold text-slate-900">La Politique, C&apos;est Simple</p>
+                    <p className="text-xs text-slate-400">Semaine du 24 mars 2026</p>
+                  </div>
+                </div>
+
+                <h3 className="text-2xl font-extrabold text-slate-900">
+                  🇫🇷 Cette semaine au Parlement
+                </h3>
+
+                <div className="space-y-4 text-sm text-slate-600 leading-relaxed">
+                  <div className="bg-blue-50 border border-blue-100 rounded-xl p-4">
+                    <p className="font-bold text-blue-900 mb-1">📋 Loi « Fin de vie » — Vote solennel mardi</p>
+                    <p className="text-blue-800/70">L&apos;Assemblée votera mardi sur ce texte-clé. 340 députés devraient voter pour, mais le Sénat reste incertain.</p>
+                  </div>
+                  <div className="bg-emerald-50 border border-emerald-100 rounded-xl p-4">
+                    <p className="font-bold text-emerald-900 mb-1">✅ Votre député(e) a voté POUR le budget de la Sécu</p>
+                    <p className="text-emerald-800/70">Marie Dupont (EPR, Loire-Atlantique) a voté en faveur du PLFSS 2027.</p>
+                  </div>
+                  <div className="bg-amber-50 border border-emerald-100 rounded-xl p-4">
+                    <p className="font-bold text-amber-900 mb-1">💡 Le saviez-vous ?</p>
+                    <p className="text-amber-800/70">Le mot « amendement » vient du latin emendare (corriger). En 2025, 14 000 amendements ont été déposés à l&apos;AN.</p>
+                  </div>
+                </div>
+
+                <div className="pt-4 border-t border-slate-100 text-center">
+                  <span className="text-xs text-slate-400">Se désabonner • Modifier mes préférences</span>
+                </div>
+              </div>
+            </div>
+          </FadeIn>
+        </div>
+      </section>
+
+      {/* 5. TÉMOIGNAGES (RETOURS D'EXPÉRIENCE)         */}
+      {/* ═══════════════════════════════════════════ */}
+      <section className="py-24 px-4 bg-white overflow-hidden relative">
+        <div className="max-w-6xl mx-auto">
+          <FadeIn className="text-center mb-16 relative">
+            <p className="text-sm font-bold text-amber-500 uppercase tracking-widest mb-4">Expériences</p>
+            <h2 className="text-4xl md:text-7xl font-staatliches uppercase tracking-tighter leading-none text-slate-900 relative z-10">
+              <span className="text-slate-900 opacity-[0.04] absolute -top-8 left-1/2 -translate-x-1/2 select-none hidden md:block whitespace-nowrap">
+                SATISFACTION • COMMUNAUTÉ
+              </span>
+              Ils en parlent <span className="text-amber-500">mieux que nous</span>
+            </h2>
+          </FadeIn>
+
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
+            {TESTIMONIALS.map((t, i) => (
+              <FadeIn key={i} delay={i * 0.12}>
+                <div className="bg-white rounded-3xl p-8 border border-white hover:shadow-xl transition-all h-full flex flex-col relative overflow-hidden group">
+                  <div className="absolute top-0 right-0 w-24 h-24 bg-amber-50 rounded-bl-full -mr-12 -mt-12 transition-all group-hover:scale-110" />
+                  <Quote className="w-10 h-10 text-amber-200 mb-6 relative z-10" />
+                  <p className="text-slate-700 text-lg leading-relaxed flex-1 italic relative z-10">
+                    &ldquo;{t.text}&rdquo;
+                  </p>
+                  <div className="mt-8 pt-6 border-t border-slate-50 flex items-center gap-4 relative z-10">
+                    <div className="w-12 h-12 rounded-full bg-gradient-to-br from-amber-400 to-yellow-500 flex items-center justify-center text-slate-900 font-bold shadow-md">
+                      {t.name.charAt(0)}
+                    </div>
+                    <div>
+                      <p className="text-base font-bold text-slate-900">{t.name}</p>
+                      <p className="text-sm text-slate-500">{t.role}</p>
+                    </div>
+                  </div>
+                </div>
+              </FadeIn>
+            ))}
+          </div>
         </div>
       </section>
     </div>

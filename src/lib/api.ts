@@ -20,6 +20,12 @@ export const api = {
     return data || [];
   },
 
+  getDeputyBySlug: async (slug: string) => {
+    const { data, error } = await supabase.from('deputies').select('*').eq('slug', slug).single();
+    if (error) { console.error(error); return null; }
+    return data;
+  },
+
   getCalendarEvents: async () => {
     const { data, error } = await supabase.from('calendar').select('*').order('date', { ascending: true });
     if (error) { console.error(error); return []; }
@@ -113,5 +119,56 @@ export const api = {
   
   triggerAssembleePipeline: async () => ({ status: 'skipped', message: 'Pipeline requires a backend server. Run locally.' }),
 
-  triggerAssembleePipelineByName: async (name: string) => ({ status: 'skipped', message: `Pipeline ${name} requires a backend server.` })
+  triggerAssembleePipelineByName: async (name: string) => ({ status: 'skipped', message: `Pipeline ${name} requires a backend server.` }),
+
+  // --- USER ACTIVITY (VOte & Follow) ---
+  
+  getUserVotes: async (userId: string) => {
+    const { data, error } = await supabase
+      .from('user_votes')
+      .select('*, laws(*)')
+      .eq('user_id', userId)
+      .order('created_at', { ascending: false });
+    if (error) { console.error(error); return []; }
+    return data || [];
+  },
+
+  saveUserVote: async (userId: string, lawId: string, vote: string) => {
+    const { data, error } = await supabase
+      .from('user_votes')
+      .upsert([{ user_id: userId, law_id: lawId, vote }], { onConflict: 'user_id,law_id' })
+      .select()
+      .single();
+    if (error) { throw new Error(error.message); }
+    return data;
+  },
+
+  getUserFollows: async (userId: string) => {
+    const { data, error } = await supabase
+      .from('user_follows')
+      .select('*, deputies(*)')
+      .eq('user_id', userId);
+    if (error) { console.error(error); return []; }
+    return data || [];
+  },
+
+  followDeputy: async (userId: string, deputyId: string) => {
+    const { data, error } = await supabase
+      .from('user_follows')
+      .insert([{ user_id: userId, deputy_id: deputyId }])
+      .select()
+      .single();
+    if (error) { throw new Error(error.message); }
+    return data;
+  },
+
+  unfollowDeputy: async (userId: string, deputyId: string) => {
+    const { error } = await supabase
+      .from('user_follows')
+      .delete()
+      .eq('user_id', userId)
+      .eq('deputy_id', deputyId);
+    if (error) { throw new Error(error.message); }
+    return true;
+  }
 };

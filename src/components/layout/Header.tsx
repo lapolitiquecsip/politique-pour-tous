@@ -98,17 +98,17 @@ export default function Header() {
 
             {user ? (
               <div className="flex items-center gap-4">
-                <div className={`flex items-center gap-2 px-3 py-1.5 rounded-full border ${isPremium ? 'bg-amber-50 border-amber-200 shadow-sm' : 'bg-slate-50 border-slate-100'}`}>
+                <Link href="/dashboard" className={`flex items-center gap-2 px-3 py-1.5 rounded-full border transition-all hover:shadow-md ${isPremium ? 'bg-amber-50 border-amber-200 shadow-sm hover:border-amber-400' : 'bg-slate-50 border-slate-100 hover:bg-slate-100'}`}>
                   <div className={`w-5 h-5 rounded-full flex items-center justify-center ${isPremium ? 'bg-amber-400 text-white' : 'bg-blue-100 text-blue-600'}`}>
                     {isPremium ? <Star size={10} fill="currentColor" /> : <User size={12} />}
                   </div>
                   <div className="flex flex-col">
                     <span className="text-[10px] font-black uppercase text-slate-400 leading-none mb-0.5">
-                      {isPremium ? <span className="text-amber-600">Membre Premium</span> : "Compte"}
+                      {isPremium ? <span className="text-amber-600">Tableau de Bord</span> : "Mon Compte"}
                     </span>
                     <span className="text-xs font-bold text-slate-700 truncate max-w-[120px] leading-none">{user.email}</span>
                   </div>
-                </div>
+                </Link>
                 <button 
                   onClick={handleLogout}
                   className="text-slate-400 hover:text-red-500 transition-colors"

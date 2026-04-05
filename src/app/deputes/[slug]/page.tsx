@@ -1,6 +1,6 @@
 "use client";
 
-import { use } from "react";
+import { use, useState, useEffect } from "react";
 import Link from "next/link";
 import { 
   ChevronLeft, 
@@ -11,9 +11,15 @@ import {
   XCircle, 
   MinusCircle, 
   Calendar,
-  ExternalLink
+  ExternalLink,
+  Bell,
+  BellRing,
+  Loader2,
+  Star
 } from "lucide-react";
 import { motion } from "framer-motion";
+import { api } from "@/lib/api";
+import { usePremium } from "@/lib/hooks/usePremium";
 
 // Mock data generator for votes
 const getMockVotes = () => [
@@ -26,12 +32,55 @@ const getMockVotes = () => [
 
 export default function DeputyDetailPage({ params }: { params: Promise<{ slug: string }> }) {
   const { slug } = use(params);
+  const { userId, isPremium } = usePremium();
   
+  const [deputy, setDeputy] = useState<any>(null);
+  const [isFollowing, setIsFollowing] = useState(false);
+  const [loadingFollow, setLoadingFollow] = useState(false);
+  const [checkingFollow, setCheckingFollow] = useState(true);
+
+  // Load real deputy and follow status
+  useEffect(() => {
+    const loadDeputyData = async () => {
+      const dbDeputy = await api.getDeputyBySlug(slug);
+      setDeputy(dbDeputy);
+
+      if (dbDeputy && userId) {
+        const follows = await api.getUserFollows(userId);
+        const following = follows.some((f: any) => f.deputy_id === dbDeputy.id);
+        setIsFollowing(following);
+      }
+      setCheckingFollow(false);
+    };
+    loadDeputyData();
+  }, [slug, userId]);
+
+  const handleFollow = async () => {
+    if (!userId || !isPremium || !deputy) return;
+    
+    setLoadingFollow(true);
+    try {
+      if (isFollowing) {
+        await api.unfollowDeputy(userId, deputy.id);
+        setIsFollowing(false);
+      } else {
+        await api.followDeputy(userId, deputy.id);
+        setIsFollowing(true);
+      }
+    } catch (err) {
+      console.error("Erreur de suivi:", err);
+    } finally {
+      setLoadingFollow(false);
+    }
+  };
+
   // Format slug back to name for display
-  const name = slug
-    .split("-")
-    .map(word => word.charAt(0).toUpperCase() + word.slice(1))
-    .join(" ");
+  const name = deputy?.first_name 
+    ? `${deputy.first_name} ${deputy.last_name}`
+    : slug
+      .split("-")
+      .map(word => word.charAt(0).toUpperCase() + word.slice(1))
+      .join(" ");
 
   const votes = getMockVotes();
   const photoUrl = `https://www.nosdeputes.fr/depute/photo/${slug}/250`;
@@ -108,12 +157,47 @@ export default function DeputyDetailPage({ params }: { params: Promise<{ slug: s
             <div className="bg-red-600 rounded-[2rem] p-8 text-white shadow-xl shadow-red-600/20">
                <h4 className="text-xl font-staatliches uppercase mb-4 tracking-tight">Contact Parlementaire</h4>
                <p className="text-sm opacity-90 leading-relaxed mb-6">
-                 Vous pouvez contacter ce député pour toute question relative à l'activité législative.
+                 Vous pouvez contacter ce député pour toute question relative à l&apos;activité législative.
                </p>
-               <button className="w-full py-4 rounded-2xl bg-white text-red-600 font-bold text-sm flex items-center justify-center gap-2 hover:bg-slate-100 transition-colors">
-                  <ExternalLink className="w-4 h-4" />
-                  Envoyer un message
-               </button>
+               <div className="space-y-3">
+                 <button className="w-full py-4 rounded-2xl bg-white text-red-600 font-bold text-sm flex items-center justify-center gap-2 hover:bg-slate-100 transition-colors">
+                    <ExternalLink className="w-4 h-4" />
+                    Envoyer un message
+                 </button>
+
+                 {isPremium && (
+                   <button 
+                     onClick={handleFollow}
+                     disabled={loadingFollow}
+                     className={`w-full py-4 rounded-2xl font-bold text-sm flex items-center justify-center gap-2 transition-all border-2 ${
+                       isFollowing 
+                         ? "bg-transparent border-white text-white hover:bg-white/10" 
+                         : "bg-slate-900 border-slate-900 text-white hover:bg-slate-800 shadow-lg"
+                     }`}
+                   >
+                     {loadingFollow ? (
+                       <Loader2 className="w-4 h-4 animate-spin" />
+                     ) : isFollowing ? (
+                       <>
+                         <BellRing className="w-4 h-4" />
+                         Suivi activé
+                       </>
+                     ) : (
+                       <>
+                         <Bell className="w-4 h-4" />
+                         Suivre ce député
+                       </>
+                     )}
+                   </button>
+                 )}
+
+                 {!isPremium && (
+                   <Link href="/premium" className="w-full py-4 rounded-2xl bg-amber-400 text-slate-900 font-bold text-sm flex items-center justify-center gap-2 hover:bg-amber-300 transition-colors group/premium">
+                      <Star size={16} className="fill-current group-hover:rotate-12 transition-transform" />
+                      Suivre (Premium)
+                   </Link>
+                 )}
+               </div>
             </div>
           </motion.div>
 

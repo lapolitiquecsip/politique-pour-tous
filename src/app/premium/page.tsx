@@ -184,7 +184,7 @@ export default function PremiumPage() {
     elite: { name: "Elite", monthly: "3.99€", annually: "38€", desc: "L'expérience complète sans compromis.", popular: true, comingSoon: false },
     institution: { name: "Institution", monthly: "7.99€", annually: "77€", desc: "Suivi multi-circos & analyses poussées.", popular: false, comingSoon: true }
   };
-直线
+
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setLoading(true);

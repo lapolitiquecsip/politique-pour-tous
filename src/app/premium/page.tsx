@@ -394,6 +394,42 @@ export default function PremiumPage() {
         </div>
       </section>
 
+      {/* 🏙️ SECTION : LES AVANTAGES COMPLETS */}
+      <section className="py-24 px-4 bg-slate-50 overflow-hidden">
+        <div className="max-w-6xl mx-auto">
+          <div className="text-center mb-16">
+            <h2 className="text-4xl font-staatliches uppercase tracking-tighter mb-4">
+              Tout ce que <span className="text-amber-500">votre abonnement</span> contient
+            </h2>
+            <p className="text-slate-500 text-lg">Une expérience sans limite, sans bruit, 100% citoyenne.</p>
+          </div>
+
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 md:gap-8">
+            {CONTENTS.map((item, index) => (
+              <FadeIn key={index} delay={index * 0.1}>
+                <div className="group bg-white p-8 rounded-[2rem] border border-slate-200 hover:border-amber-200 hover:shadow-2xl transition-all duration-500 h-full relative overflow-hidden">
+                  {/* Left accent color bar */}
+                  <div className={`absolute left-0 top-0 bottom-0 w-1.5 bg-gradient-to-b ${item.color}`} />
+                  
+                  <div className="flex items-start justify-between mb-6">
+                    <div className={`p-4 rounded-2xl bg-gradient-to-br ${item.color} text-white shadow-lg group-hover:scale-110 transition-transform`}>
+                      <item.icon size={24} />
+                    </div>
+                  </div>
+                  
+                  <h3 className="text-xl font-bold mb-3 text-slate-900 group-hover:text-amber-600 transition-colors">
+                    {item.title}
+                  </h3>
+                  <p className="text-slate-500 text-sm leading-relaxed font-medium">
+                    {item.desc}
+                  </p>
+                </div>
+              </FadeIn>
+            ))}
+          </div>
+        </div>
+      </section>
+
       {/* ═══════════════════════════════════════════ */}
       {/* 3. FORMULAIRE DE PERSONNALISATION            */}
       {/* ═══════════════════════════════════════════ */}

@@ -180,9 +180,9 @@ export default function PremiumPage() {
   const [selectedPlan, setSelectedPlan] = useState<'student' | 'elite' | 'family'>('elite');
 
   const plans = {
-    student: { name: "Étudiant", monthly: "1.99€", annually: "19€", desc: "Pour les citoyens de -26 ans." },
+    student: { name: "Étudiant", monthly: "1.99€", annually: "19€", desc: "Pour les citoyens de -26 ans.", popular: false },
     elite: { name: "Elite", monthly: "3.99€", annually: "38€", desc: "L'expérience complète sans compromis.", popular: true },
-    family: { name: "Famille", monthly: "7.99€", annually: "77€", desc: "Pour 2 à 4 membres d'un foyer." }
+    family: { name: "Famille", monthly: "7.99€", annually: "77€", desc: "Pour 2 à 4 membres d'un foyer.", popular: false }
   };
 
   const handleSubmit = async (e: React.FormEvent) => {

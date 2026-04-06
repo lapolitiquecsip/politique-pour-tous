@@ -26,7 +26,8 @@ import {
   Briefcase,
   LayoutDashboard,
   BellRing,
-  Zap
+  Zap,
+  Users
 } from "lucide-react";
 import Link from "next/link";
 
@@ -172,11 +173,14 @@ export default function PremiumPage() {
   const [prefDepute, setPrefDepute] = useState(true);
   const [prefLocalNews, setPrefLocalNews] = useState(true);
 
-  const { userId, isPremium } = usePremium();
+  const [billingCycle, setBillingCycle] = useState<'monthly' | 'annually'>('monthly');
+  const [selectedPlan, setSelectedPlan] = useState<'student' | 'elite' | 'family'>('elite');
 
-  const [loading, setLoading] = useState(false);
-  const [success, setSuccess] = useState(false);
-  const [error, setError] = useState("");
+  const plans = {
+    student: { name: "Étudiant", monthly: "1.99€", annually: "19€", desc: "Pour les citoyens de -26 ans." },
+    elite: { name: "Elite", monthly: "3.99€", annually: "38€", desc: "L'expérience complète sans compromis.", popular: true },
+    family: { name: "Famille", monthly: "7.99€", annually: "77€", desc: "Pour 2 à 4 membres d'un foyer." }
+  };
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -194,20 +198,21 @@ export default function PremiumPage() {
           actualites_locales: prefLocalNews,
           region: region,
           age,
-          csp
+          csp,
+          plan: selectedPlan,
+          cycle: billingCycle
         },
         postal_code: zipCode || undefined,
         age,
         csp
       });
 
-      // 2. Redirection vers Stripe Checkout sécurisé
-      window.location.href = getPremiumUrl(userId);
+      // 2. Redirection vers Stripe Checkout sécurisé en fonction du plan
+      window.location.href = getPremiumUrl(userId, selectedPlan, billingCycle);
     } catch (err: any) {
       console.error("Erreur d'inscription:", err);
-      // Même si l'email existe déjà, on redirige vers Stripe pour le paiement
       if (err.message?.includes("déjà abonné")) {
-        window.location.href = getPremiumUrl(userId);
+        window.location.href = getPremiumUrl(userId, selectedPlan, billingCycle);
       } else {
         setError("Une erreur est survenue lors de l'enregistrement de vos informations. Veuillez réessayer.");
         setLoading(false);
@@ -216,10 +221,8 @@ export default function PremiumPage() {
   };
 
   return (
-    <div className="min-h-screen bg-background">
-      {/* ═══════════════════════════════════════════ */}
-      {/* 1. HERO SPECTACULAIRE (OFFRE PREMIUM GOLD)   */}
-      {/* ═══════════════════════════════════════════ */}
+    <div className="min-h-screen bg-background pb-20">
+      {/* ... (Hero section omitted for brevity, keeping the same structure) */}
       <section className="relative overflow-hidden bg-gradient-to-br from-slate-950 via-slate-900 to-amber-950 text-white py-28 px-4">
         {/* Animated background dots - Theme Gold */}
         <div className="absolute inset-0 opacity-20">
@@ -260,7 +263,6 @@ export default function PremiumPage() {
             Newsletter hebdomadaire, décryptages de lois illimités et filtres thématiques exclusifs. Tout ce qu&apos;il vous faut pour comprendre.
           </motion.p>
 
-          {/* Compteurs animés */}
           <motion.div
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
@@ -290,59 +292,99 @@ export default function PremiumPage() {
       </section>
 
       {/* ═══════════════════════════════════════════ */}
-      {/* 2. CE QUE VOUS DÉBLOQUEZ                     */}
+      {/* 2. GRILLE DES PRIX & SÉLECTION              */}
       {/* ═══════════════════════════════════════════ */}
-      <section className="py-24 px-4 bg-white relative overflow-hidden">
-        {/* Subtle background pattern */}
-        <div className="absolute inset-0 opacity-[0.03] pointer-events-none" style={{ backgroundImage: 'radial-gradient(#d97706 1px, transparent 1px)', backgroundSize: '32px 32px' }} />
-        
-        <div className="max-w-6xl mx-auto relative z-10">
-          <FadeIn className="text-center mb-16">
-            <h2 className="text-3xl md:text-5xl font-staatliches uppercase tracking-tighter text-slate-900 mb-4">
-              Vos privilèges <span className="text-amber-500">Premium</span>
-            </h2>
-            <p className="text-lg text-slate-500 max-w-2xl mx-auto">
-              Une vision claire et personnalisée de la vie politique française.
-            </p>
-          </FadeIn>
+      <section className="py-24 px-4 bg-white">
+        <div className="max-w-6xl mx-auto">
+          <div className="text-center mb-16">
+            <h2 className="text-4xl font-staatliches uppercase mb-4 tracking-tighter">Choisissez votre <span className="text-amber-500">engagement</span></h2>
+            
+            {/* Billing Switch */}
+            <div className="flex items-center justify-center gap-4 mt-8">
+              <span className={`text-sm font-bold ${billingCycle === 'monthly' ? 'text-slate-900' : 'text-slate-400'}`}>Mensuel</span>
+              <button 
+                onClick={() => setBillingCycle(billingCycle === 'monthly' ? 'annually' : 'monthly')}
+                className="w-14 h-8 bg-slate-900 rounded-full p-1 relative transition-colors"
+              >
+                <motion.div 
+                  animate={{ x: billingCycle === 'monthly' ? 0 : 24 }}
+                  className="w-6 h-6 bg-amber-400 rounded-full shadow-lg"
+                />
+              </button>
+              <span className={`text-sm font-bold flex items-center gap-2 ${billingCycle === 'annually' ? 'text-slate-900' : 'text-slate-400'}`}>
+                Annuel
+                <span className="px-2 py-0.5 bg-emerald-500 text-white text-[10px] rounded-full animate-bounce">
+                  -20% 🔥
+                </span>
+              </span>
+            </div>
+          </div>
 
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
-            {CONTENTS.map((item, i) => {
-              const Icon = item.icon;
-              const content = (
-                <div className="group relative p-8 rounded-[2.5rem] bg-white border border-slate-100 hover:border-transparent transition-all duration-500 h-full overflow-hidden">
-                  {/* Hover Gradient Overlay */}
-                  <div className={`absolute inset-0 bg-gradient-to-br ${item.color} opacity-0 group-hover:opacity-[0.03] transition-opacity`} />
-                  <div className={`absolute -right-4 -top-4 w-24 h-24 bg-gradient-to-br ${item.color} opacity-0 group-hover:opacity-10 rounded-full blur-2xl transition-all duration-700 group-hover:scale-150`} />
+          <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
+            {(Object.keys(plans) as Array<keyof typeof plans>).map((planId) => {
+              const plan = plans[planId];
+              const isSelected = selectedPlan === planId;
+              
+              return (
+                <div 
+                  key={planId}
+                  onClick={() => setSelectedPlan(planId)}
+                  className={`relative p-8 rounded-[2.5rem] border-2 cursor-pointer transition-all duration-500 ${
+                    isSelected 
+                      ? 'border-amber-400 bg-amber-50/30 shadow-2xl scale-105 z-10' 
+                      : 'border-slate-100 bg-white hover:border-slate-200 opacity-80'
+                  }`}
+                >
+                  {plan.popular && (
+                    <div className="absolute top-0 left-1/2 -translate-x-1/2 -translate-y-1/2 bg-slate-900 text-white px-4 py-1 rounded-full text-[10px] font-black uppercase tracking-widest">
+                      Plus Populaire
+                    </div>
+                  )}
 
-                  <div className={`w-14 h-14 rounded-2xl flex items-center justify-center mb-6 bg-gradient-to-br ${item.color} text-white shadow-lg group-hover:scale-110 transition-transform duration-500`}>
-                    <Icon className="w-7 h-7" />
+                  <div className="mb-6">
+                    <h3 className="text-2xl font-bold mb-2">{plan.name}</h3>
+                    <p className="text-slate-500 text-xs leading-relaxed">{plan.desc}</p>
                   </div>
-                  
-                  <h3 className="text-xl font-bold text-slate-900 mb-3 group-hover:text-slate-950 transition-colors">
-                    {item.title}
-                  </h3>
-                  <p className="text-slate-500 text-sm leading-relaxed mb-6">
-                    {item.desc}
-                  </p>
 
-                  <div className="flex items-center gap-2 text-[10px] font-black uppercase tracking-widest text-slate-300 group-hover:text-amber-500 transition-colors mt-auto">
-                    <span>Exclusivité Elite</span>
-                    <ArrowRight size={12} className="opacity-0 group-hover:opacity-100 group-hover:translate-x-1 transition-all" />
+                  <div className="mb-8">
+                    <div className="flex items-baseline gap-1">
+                      <span className="text-5xl font-black text-slate-900">
+                        {billingCycle === 'monthly' ? plan.monthly : plan.annually}
+                      </span>
+                      <span className="text-slate-400 font-bold text-sm">
+                        /{billingCycle === 'monthly' ? 'mois' : 'an'}
+                      </span>
+                    </div>
+                    {billingCycle === 'annually' && (
+                      <p className="text-emerald-600 text-xs font-bold mt-2 italic">
+                        Soit environ {(parseInt(plan.annually) / 12).toFixed(2)}€/mois
+                      </p>
+                    )}
+                  </div>
+
+                  <div className="space-y-4 mb-8">
+                    <div className="flex items-center gap-3 text-sm font-medium">
+                      <CheckCircle2 size={18} className="text-emerald-500" />
+                      Newsletter Elite
+                    </div>
+                    <div className="flex items-center gap-3 text-sm font-medium">
+                      <CheckCircle2 size={18} className="text-emerald-500" />
+                      Décryptages illimités
+                    </div>
+                    {planId === 'family' && (
+                        <div className="flex items-center gap-3 text-sm font-medium">
+                            <Users size={18} className="text-amber-500" />
+                            Jusqu'à 4 membres
+                        </div>
+                    )}
+                  </div>
+
+                  <div className={`w-full py-4 rounded-2xl font-bold text-center transition-all ${
+                    isSelected ? 'bg-slate-900 text-white' : 'bg-slate-100 text-slate-400'
+                  }`}>
+                    {isSelected ? 'Offre sélectionnée' : 'Choisir ce plan'}
                   </div>
                 </div>
-              );
-
-              return (
-                <FadeIn key={i} delay={i * 0.1}>
-                  {item.href ? (
-                    <Link href={item.href} className="block h-full">
-                      {content}
-                    </Link>
-                  ) : (
-                    content
-                  )}
-                </FadeIn>
               );
             })}
           </div>
@@ -350,103 +392,41 @@ export default function PremiumPage() {
       </section>
 
       {/* ═══════════════════════════════════════════ */}
-      {/* 3. FORMULAIRE PREMIUM (REJOIGNEZ L'ELITE)    */}
+      {/* 3. FORMULAIRE DE PERSONNALISATION            */}
       {/* ═══════════════════════════════════════════ */}
-      <section className="py-24 px-4 bg-white relative overflow-hidden">
-        {/* Decorative gold sphere */}
-        <div className="absolute bottom-0 right-0 w-96 h-96 bg-amber-100/30 rounded-full blur-[100px] -mr-48 -mb-48" />
-        
-        <div className="max-w-xl mx-auto relative z-10">
-          <FadeIn>
-            {isPremium ? (
-              <div className="bg-amber-50 border-2 border-amber-200 rounded-[2.5rem] p-10 md:p-16 text-center shadow-2xl relative overflow-hidden group">
-                {/* Background decorative elements */}
-                <div className="absolute top-0 right-0 w-32 h-32 bg-amber-200/20 rounded-bl-full -mr-16 -mt-16 group-hover:scale-110 transition-transform" />
-                
-                <div className="relative z-10">
-                  <div className="mx-auto w-24 h-24 rounded-full bg-amber-400 flex items-center justify-center text-slate-900 mb-8 shadow-lg shadow-amber-200">
-                    <Star size={44} className="fill-current" />
+      <section className="py-12 px-4 bg-white" id="final-form">
+        <div className="max-w-xl mx-auto">
+          <div className="text-center mb-10">
+            <p className="text-amber-500 font-bold uppercase tracking-widest text-sm mb-2">Dernière étape</p>
+            <h2 className="text-4xl font-staatliches uppercase tracking-tighter">Personnalisez votre <span className="text-amber-500">Expérience</span></h2>
+            <p className="text-slate-500 text-sm italic mt-2">Nous adaptons nos résumés à votre profil.</p>
+          </div>
+
+          <form
+            onSubmit={handleSubmit}
+            className="bg-white border border-slate-200 shadow-2xl rounded-[2.5rem] p-8 md:p-12 relative overflow-hidden"
+          >
+            {/* Top gold bar */}
+            <div className="absolute top-0 left-0 w-full h-2 bg-amber-400" />
+
+            <div className="space-y-8">
+              {/* Résumé de l'offre */}
+              <div className="bg-slate-900 p-6 rounded-3xl flex items-center justify-between border border-amber-400/20 shadow-inner">
+                <div className="flex items-center gap-4">
+                  <div className="p-3 bg-amber-400 rounded-2xl text-slate-900">
+                    <Star className="w-6 h-6 fill-current" />
                   </div>
-                  
-                  <h2 className="text-4xl md:text-5xl font-staatliches uppercase tracking-tighter text-slate-900 mb-6">
-                    Vous êtes <span className="text-amber-500">Membre Elite</span>
-                  </h2>
-                  
-                  <p className="text-slate-600 text-lg md:text-xl max-w-md mx-auto mb-10 leading-relaxed font-medium">
-                    Merci de votre confiance ! Votre abonnement est actif et vous profitez de tous les avantages Premium.
-                  </p>
-                  
-                  <div className="flex flex-col sm:flex-row gap-4 justify-center">
-                    <Link
-                      href="/lois"
-                      className="inline-flex items-center justify-center gap-2 px-8 py-4 font-bold text-slate-900 bg-amber-400 rounded-2xl hover:bg-amber-500 transition-all shadow-lg shadow-amber-200 hover:-translate-y-1"
-                    >
-                      <FileText size={20} />
-                      Explorer les Lois
-                    </Link>
-                    <Link
-                      href="/"
-                      className="inline-flex items-center justify-center gap-2 px-8 py-4 font-bold text-slate-500 bg-slate-100 rounded-2xl hover:bg-slate-200 transition-all hover:-translate-y-1"
-                    >
-                      Retour à l&apos;accueil
-                    </Link>
+                  <div>
+                    <p className="text-sm font-bold text-amber-400 uppercase tracking-widest">{plans[selectedPlan].name}</p>
+                    <p className="text-xs text-amber-100/60 font-medium italic">Facturation {billingCycle === 'monthly' ? 'mensuelle' : 'annuelle'}</p>
                   </div>
-                  
-                  <p className="mt-12 text-xs text-slate-400 font-bold uppercase tracking-widest">
-                    Votre accès est illimité • Merci de soutenir l&apos;indépendance du projet
+                </div>
+                <div className="text-right">
+                  <p className="text-4xl font-black text-white">
+                    {billingCycle === 'monthly' ? plans[selectedPlan].monthly : plans[selectedPlan].annually}
                   </p>
                 </div>
               </div>
-            ) : success ? (
-              <div className="bg-amber-50 border border-amber-200 rounded-3xl p-10 text-center shadow-2xl animate-fade-in">
-                <div className="mx-auto w-20 h-20 rounded-full bg-amber-100 flex items-center justify-center text-amber-600 mb-6">
-                  <CheckCircle2 size={40} />
-                </div>
-                <h2 className="text-3xl font-staatliches uppercase tracking-tighter text-amber-900 mb-4">Bienvenue dans l&apos;Elite !</h2>
-                <p className="text-amber-800/80 text-lg mb-8">
-                  Votre accès Premium est maintenant actif. Vous recevrez nos analyses dès lundi.
-                </p>
-                <Link
-                  href="/"
-                  className="inline-flex items-center justify-center px-8 py-4 font-bold text-slate-900 bg-amber-400 rounded-2xl hover:bg-amber-500 transition-colors shadow-lg shadow-amber-200"
-                >
-                  Découvrir les Lois
-                </Link>
-              </div>
-            ) : (
-              <div>
-                <div className="text-center mb-10">
-                  <p className="text-amber-500 font-bold uppercase tracking-widest text-sm mb-2">Offre de lancement</p>
-                  <h2 className="text-4xl md:text-6xl font-staatliches uppercase tracking-tighter text-slate-900 mb-3">
-                    Rejoignez <span className="text-amber-500">l&apos;Elite</span>
-                  </h2>
-                  <p className="text-slate-500 text-lg italic">Un condensé politique sur-mesure, adapté à vos préférences.</p>
-                </div>
-
-                <form
-                  onSubmit={handleSubmit}
-                  className="bg-white border border-slate-200 shadow-2xl rounded-[2.5rem] p-8 md:p-12 relative overflow-hidden"
-                >
-                  {/* Top gold bar */}
-                  <div className="absolute top-0 left-0 w-full h-2 bg-amber-400" />
-
-                  <div className="space-y-8">
-                    {/* Prix Premium Gold Style */}
-                    <div className="bg-slate-900 p-6 rounded-3xl flex items-center justify-between border border-amber-400/20 shadow-inner">
-                      <div className="flex items-center gap-4">
-                        <div className="p-3 bg-amber-400 rounded-2xl text-slate-900">
-                          <Star className="w-6 h-6 fill-current" />
-                        </div>
-                        <div>
-                          <p className="text-sm font-bold text-amber-400 uppercase tracking-widest">Accès Total</p>
-                          <p className="text-xs text-amber-100/60 font-medium italic">Sans engagement</p>
-                        </div>
-                      </div>
-                      <div className="text-right">
-                        <p className="text-4xl font-black text-white">3€</p>
-                        <p className="text-[10px] font-bold text-amber-400 uppercase">/ mois</p>
-                      </div>
-                    </div>
 
                     {/* Grid for Age and CSP */}
                     <div className="grid grid-cols-1 md:grid-cols-2 gap-6">

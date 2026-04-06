@@ -15,7 +15,6 @@ import {
   Sparkles,
   Star,
   TrendingUp,
-  Users,
   FileText,
   ArrowRight,
   Quote,
@@ -162,6 +161,10 @@ const REGIONS = [
 ].sort();
 
 export default function PremiumPage() {
+  const { isPremium, userId, loading: statusLoading } = usePremium();
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState("");
+  
   const [email, setEmail] = useState("");
   const [age, setAge] = useState("");
   const [csp, setCsp] = useState("");
@@ -645,11 +648,8 @@ export default function PremiumPage() {
                       Sécurisé par Stripe • Résiliable à tout moment
                     </p>
                   </div>
-                </form>
-              </div>
-            )}
-          </FadeIn>
-        </div>
+              </form>
+            </div>
       </section>
 
       {/* ═══════════════════════════════════════════ */}

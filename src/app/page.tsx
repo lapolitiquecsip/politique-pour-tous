@@ -1,6 +1,5 @@
 import { api } from "@/lib/api";
 import Link from "next/link";
-import { STRIPE_CHECKOUT_URL } from "@/lib/constants";
 import { 
   BookOpen, 
   CalendarDays, 

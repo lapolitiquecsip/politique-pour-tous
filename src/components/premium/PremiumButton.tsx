@@ -7,7 +7,8 @@ import { motion, AnimatePresence } from "framer-motion";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { usePremium } from "@/lib/hooks/usePremium";
-import { STRIPE_CHECKOUT_URL } from "@/lib/constants";
+import { STRIPE_LINKS } from "@/lib/constants";
+import { getPremiumUrl } from "@/lib/utils";
 
 export default function PremiumButton() {
   const pathname = usePathname();
@@ -24,13 +25,8 @@ export default function PremiumButton() {
 
     setLoading(true);
     
-    // Construction propre de l'URL pour ne pas casser le lien (gestion du # et des params existants)
-    const url = new URL(STRIPE_CHECKOUT_URL);
-    url.searchParams.set("client_reference_id", userId);
-    const checkoutUrl = url.toString();
-    
-    // Redirection directe vers Stripe Checkout
-    window.location.href = checkoutUrl;
+    // Redirection directe vers Stripe Checkout (Plan Elite par défaut)
+    window.location.href = getPremiumUrl(userId, 'elite', 'monthly');
   };
 
   // Ne pas afficher si :

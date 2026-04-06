@@ -177,7 +177,7 @@ export default function PremiumPage() {
   const [prefLocalNews, setPrefLocalNews] = useState(true);
 
   const [billingCycle, setBillingCycle] = useState<'monthly' | 'annually'>('monthly');
-  const [selectedPlan, setSelectedPlan] = useState<'student' | 'elite'>('elite');
+  const [selectedPlan, setSelectedPlan] = useState<'student' | 'elite' | 'institution'>('elite');
 
   const plans = {
     student: { name: "Étudiant", monthly: "1.99€", annually: "19€", desc: "Pour les citoyens de -26 ans.", popular: false, comingSoon: false },
@@ -324,7 +324,7 @@ export default function PremiumPage() {
           </div>
 
           <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
-            {(Object.keys(plans) as Array<keyof typeof plans>).map((planId) => {
+            {(['student', 'elite', 'institution'] as const).map((planId) => {
               const plan = plans[planId] as any;
               const isSelected = selectedPlan === planId;
               const isComingSoon = plan.comingSoon;

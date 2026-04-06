@@ -177,12 +177,11 @@ export default function PremiumPage() {
   const [prefLocalNews, setPrefLocalNews] = useState(true);
 
   const [billingCycle, setBillingCycle] = useState<'monthly' | 'annually'>('monthly');
-  const [selectedPlan, setSelectedPlan] = useState<'student' | 'elite' | 'family'>('elite');
+  const [selectedPlan, setSelectedPlan] = useState<'student' | 'elite'>('elite');
 
   const plans = {
     student: { name: "Étudiant", monthly: "1.99€", annually: "19€", desc: "Pour les citoyens de -26 ans.", popular: false },
-    elite: { name: "Elite", monthly: "3.99€", annually: "38€", desc: "L'expérience complète sans compromis.", popular: true },
-    family: { name: "Famille", monthly: "7.99€", annually: "77€", desc: "Pour 2 à 4 membres d'un foyer.", popular: false }
+    elite: { name: "Elite", monthly: "3.99€", annually: "38€", desc: "L'expérience complète sans compromis.", popular: true }
   };
 
   const handleSubmit = async (e: React.FormEvent) => {
@@ -374,12 +373,6 @@ export default function PremiumPage() {
                       <CheckCircle2 size={18} className="text-emerald-500" />
                       Décryptages illimités
                     </div>
-                    {planId === 'family' && (
-                        <div className="flex items-center gap-3 text-sm font-medium">
-                            <Users size={18} className="text-amber-500" />
-                            Jusqu'à 4 membres
-                        </div>
-                    )}
                   </div>
 
                   <div className={`w-full py-4 rounded-2xl font-bold text-center transition-all ${

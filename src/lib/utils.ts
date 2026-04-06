@@ -8,7 +8,7 @@ export function cn(...inputs: ClassValue[]) {
 
 export function getPremiumUrl(
   userId?: string | null, 
-  plan: 'student' | 'elite' | 'family' = 'elite', 
+  plan: 'student' | 'elite' = 'elite', 
   cycle: 'monthly' | 'annually' = 'monthly'
 ) {
   try {

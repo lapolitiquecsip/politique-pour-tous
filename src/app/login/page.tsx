@@ -66,7 +66,7 @@ export default function LoginPage() {
       <motion.div 
         initial={{ opacity: 0, y: 20 }}
         animate={{ opacity: 1, y: 0 }}
-        className="max-w-md w-full bg-white/5 backdrop-blur-xl border border-white/10 p-8 rounded-[32px] shadow-2xl relative z-10"
+        className="max-w-md w-full bg-white border border-slate-200 p-8 rounded-[32px] shadow-2xl relative z-10"
       >
         {/* Logo/Icon */}
         <div className="flex justify-center mb-8">
@@ -76,10 +76,10 @@ export default function LoginPage() {
         </div>
 
         <div className="text-center mb-8">
-          <h1 className="text-3xl font-extrabold text-white mb-2">
+          <h1 className="text-3xl font-extrabold text-slate-900 mb-2">
             {success ? "Vérifiez vos mails !" : (isLogin ? "Bon retour !" : "Rejoignez-nous")}
           </h1>
-          <p className="text-slate-400">
+          <p className="text-slate-500">
             {success 
               ? "Un lien de confirmation vous a été envoyé." 
               : "Accédez à votre espace Politique, C'est Simple."}
@@ -90,15 +90,15 @@ export default function LoginPage() {
           <motion.div 
             initial={{ scale: 0.9, opacity: 0 }}
             animate={{ scale: 1, opacity: 1 }}
-            className="bg-emerald-500/10 border border-emerald-500/20 p-6 rounded-2xl text-center"
+            className="bg-emerald-50 border border-emerald-100 p-6 rounded-2xl text-center"
           >
             <CheckCircle2 className="w-12 h-12 text-emerald-500 mx-auto mb-4" />
-            <p className="text-emerald-200 text-sm leading-relaxed">
+            <p className="text-emerald-900 text-sm leading-relaxed">
               Nous avons envoyé un e-mail à <strong>{email}</strong>. Cliquez sur le lien pour valider votre compte.
             </p>
             <button 
               onClick={() => setSuccess(false)}
-              className="mt-6 text-emerald-400 text-sm font-bold hover:underline"
+              className="mt-6 text-emerald-600 text-sm font-bold hover:underline"
             >
               Retour à la connexion
             </button>
@@ -107,9 +107,9 @@ export default function LoginPage() {
           <form onSubmit={handleSubmit} className="space-y-5">
             {/* Email Field */}
             <div className="space-y-2">
-              <label className="text-xs font-bold text-slate-400 uppercase tracking-wider ml-1">Adresse E-mail</label>
+              <label className="text-xs font-bold text-slate-500 uppercase tracking-wider ml-1">Adresse E-mail</label>
               <div className="relative group">
-                <div className="absolute left-4 top-1/2 -translate-y-1/2 text-slate-500 group-focus-within:text-blue-500 transition-colors">
+                <div className="absolute left-4 top-1/2 -translate-y-1/2 text-slate-400 group-focus-within:text-blue-500 transition-colors">
                   <Mail size={18} />
                 </div>
                 <input 
@@ -118,16 +118,16 @@ export default function LoginPage() {
                   placeholder="exemple@mail.com"
                   value={email}
                   onChange={(e) => setEmail(e.target.value)}
-                  className="w-full bg-white/5 border border-white/10 rounded-2xl py-4 pl-12 pr-4 text-white placeholder:text-slate-600 focus:outline-none focus:ring-2 focus:ring-blue-500/40 focus:border-blue-500 transition-all"
+                  className="w-full bg-slate-50 border border-slate-200 rounded-2xl py-4 pl-12 pr-4 text-slate-900 placeholder:text-slate-400 focus:outline-none focus:ring-2 focus:ring-blue-500/40 focus:border-blue-500 transition-all font-medium"
                 />
               </div>
             </div>
 
             {/* Password Field */}
             <div className="space-y-2">
-              <label className="text-xs font-bold text-slate-400 uppercase tracking-wider ml-1">Mot de passe</label>
+              <label className="text-xs font-bold text-slate-500 uppercase tracking-wider ml-1">Mot de passe</label>
               <div className="relative group">
-                <div className="absolute left-4 top-1/2 -translate-y-1/2 text-slate-500 group-focus-within:text-blue-500 transition-colors">
+                <div className="absolute left-4 top-1/2 -translate-y-1/2 text-slate-400 group-focus-within:text-blue-500 transition-colors">
                   <Lock size={18} />
                 </div>
                 <input 
@@ -136,7 +136,7 @@ export default function LoginPage() {
                   placeholder="••••••••"
                   value={password}
                   onChange={(e) => setPassword(e.target.value)}
-                  className="w-full bg-white/5 border border-white/10 rounded-2xl py-4 pl-12 pr-4 text-white placeholder:text-slate-600 focus:outline-none focus:ring-2 focus:ring-blue-500/40 focus:border-blue-500 transition-all"
+                  className="w-full bg-slate-50 border border-slate-200 rounded-2xl py-4 pl-12 pr-4 text-slate-900 placeholder:text-slate-400 focus:outline-none focus:ring-2 focus:ring-blue-500/40 focus:border-blue-500 transition-all font-medium"
                 />
               </div>
             </div>

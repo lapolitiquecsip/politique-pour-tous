@@ -332,7 +332,12 @@ export default function PremiumPage() {
               return (
                 <div 
                   key={planId}
-                  onClick={() => !isComingSoon && setSelectedPlan(planId as any)}
+                  onClick={() => {
+                    if (!isComingSoon) {
+                      setSelectedPlan(planId as any);
+                      document.getElementById('final-form')?.scrollIntoView({ behavior: 'smooth' });
+                    }
+                  }}
                   className={`relative p-8 rounded-[2.5rem] border-2 cursor-pointer transition-all duration-500 ${
                     isSelected 
                       ? 'border-amber-400 bg-amber-50/30 shadow-2xl scale-105 z-10' 

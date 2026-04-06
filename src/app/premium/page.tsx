@@ -180,10 +180,11 @@ export default function PremiumPage() {
   const [selectedPlan, setSelectedPlan] = useState<'student' | 'elite'>('elite');
 
   const plans = {
-    student: { name: "Étudiant", monthly: "1.99€", annually: "19€", desc: "Pour les citoyens de -26 ans.", popular: false },
-    elite: { name: "Elite", monthly: "3.99€", annually: "38€", desc: "L'expérience complète sans compromis.", popular: true }
+    student: { name: "Étudiant", monthly: "1.99€", annually: "19€", desc: "Pour les citoyens de -26 ans.", popular: false, comingSoon: false },
+    elite: { name: "Elite", monthly: "3.99€", annually: "38€", desc: "L'expérience complète sans compromis.", popular: true, comingSoon: false },
+    institution: { name: "Institution", monthly: "7.99€", annually: "77€", desc: "Suivi multi-circos & analyses poussées.", popular: false, comingSoon: true }
   };
-
+直线
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setLoading(true);
@@ -324,17 +325,20 @@ export default function PremiumPage() {
 
           <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
             {(Object.keys(plans) as Array<keyof typeof plans>).map((planId) => {
-              const plan = plans[planId];
+              const plan = plans[planId] as any;
               const isSelected = selectedPlan === planId;
+              const isComingSoon = plan.comingSoon;
               
               return (
                 <div 
                   key={planId}
-                  onClick={() => setSelectedPlan(planId)}
+                  onClick={() => !isComingSoon && setSelectedPlan(planId as any)}
                   className={`relative p-8 rounded-[2.5rem] border-2 cursor-pointer transition-all duration-500 ${
                     isSelected 
                       ? 'border-amber-400 bg-amber-50/30 shadow-2xl scale-105 z-10' 
-                      : 'border-slate-100 bg-white hover:border-slate-200 opacity-80'
+                      : isComingSoon
+                        ? 'border-slate-100 bg-slate-50 opacity-60 cursor-not-allowed'
+                        : 'border-slate-100 bg-white hover:border-slate-200 opacity-80'
                   }`}
                 >
                   {plan.popular && (
@@ -376,9 +380,11 @@ export default function PremiumPage() {
                   </div>
 
                   <div className={`w-full py-4 rounded-2xl font-bold text-center transition-all ${
-                    isSelected ? 'bg-slate-900 text-white' : 'bg-slate-100 text-slate-400'
+                    isComingSoon 
+                      ? 'bg-slate-200 text-slate-500'
+                      : isSelected ? 'bg-slate-900 text-white' : 'bg-slate-100 text-slate-400'
                   }`}>
-                    {isSelected ? 'Offre sélectionnée' : 'Choisir ce plan'}
+                    {isComingSoon ? 'Bientôt disponible' : isSelected ? 'Offre sélectionnée' : 'Choisir ce plan'}
                   </div>
                 </div>
               );

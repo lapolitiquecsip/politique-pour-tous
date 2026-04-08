@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useMemo, useCallback } from "react";
 import { useRouter } from "next/navigation";
 import DeputySearch from "@/components/deputies/DeputySearch";
 import DeputyGrid from "@/components/deputies/DeputyGrid";
@@ -101,25 +101,35 @@ export default function DeputyClient({ initialDeputies }: { initialDeputies: Dep
   const [selectedDepartment, setSelectedDepartment] = useState<string | null>(null);
   const [showMap, setShowMap] = useState(true);
 
-  const filteredDeputies = deputiesList.filter((deputy) => {
-    const q = searchQuery.toLowerCase();
-    const fullName = `${deputy.firstName} ${deputy.lastName}`.toLowerCase();
+  const filteredDeputies = useMemo(() => {
+    return deputiesList.filter((deputy) => {
+      const q = searchQuery.toLowerCase();
+      const fullName = `${deputy.firstName} ${deputy.lastName}`.toLowerCase();
 
-    const matchesSearch =
-      !searchQuery ||
-      fullName.includes(q) ||
-      (deputy.department && deputy.department.toLowerCase().includes(q)) ||
-      (deputy.party && deputy.party.toLowerCase().includes(q));
+      const matchesSearch =
+        !searchQuery ||
+        fullName.includes(q) ||
+        (deputy.department && deputy.department.toLowerCase().includes(q)) ||
+        (deputy.party && deputy.party.toLowerCase().includes(q));
 
-    const deptName = selectedDepartment ? getDepartmentName(selectedDepartment).toLowerCase() : "";
-    const matchesDepartment =
-      !selectedDepartment ||
-      (deputy.department &&
-        (deputy.department.toLowerCase() === deptName || 
-         deputy.department.includes(selectedDepartment)));
+      const deptName = selectedDepartment ? getDepartmentName(selectedDepartment).toLowerCase() : "";
+      const matchesDepartment =
+        !selectedDepartment ||
+        (deputy.department &&
+          (deputy.department.toLowerCase() === deptName || 
+           deputy.department.includes(selectedDepartment)));
 
-    return matchesSearch && matchesDepartment;
-  });
+      return matchesSearch && matchesDepartment;
+    });
+  }, [deputiesList, searchQuery, selectedDepartment]);
+
+  const handleDepartmentSelect = useCallback((dept: string | null) => {
+    setSelectedDepartment(dept);
+  }, []);
+
+  const handleSetShowMap = useCallback((show: boolean) => {
+    setShowMap(show);
+  }, []);
 
   return (
     <div className="container mx-auto px-4 py-12 max-w-7xl animate-in fade-in duration-700">
@@ -143,7 +153,7 @@ export default function DeputyClient({ initialDeputies }: { initialDeputies: Dep
       <div className="flex flex-col md:flex-row items-center justify-between gap-6 mb-10">
         <div className="inline-flex items-center gap-1 bg-secondary/50 border border-border rounded-xl p-1 shrink-0">
           <button
-            onClick={() => setShowMap(true)}
+            onClick={() => handleSetShowMap(true)}
             className={`flex items-center gap-2 px-4 py-2 rounded-lg text-sm font-medium transition-all ${
               showMap
                 ? "bg-card text-foreground shadow-sm"
@@ -154,7 +164,7 @@ export default function DeputyClient({ initialDeputies }: { initialDeputies: Dep
             Vue Carte
           </button>
           <button
-            onClick={() => setShowMap(false)}
+            onClick={() => handleSetShowMap(false)}
             className={`flex items-center gap-2 px-4 py-2 rounded-lg text-sm font-medium transition-all ${
               !showMap
                 ? "bg-card text-foreground shadow-sm"
@@ -190,7 +200,7 @@ export default function DeputyClient({ initialDeputies }: { initialDeputies: Dep
             >
               <FranceMap
                 selectedDepartment={selectedDepartment}
-                onDepartmentSelect={setSelectedDepartment}
+                onDepartmentSelect={handleDepartmentSelect}
               />
             </motion.div>
 
@@ -278,7 +288,10 @@ export default function DeputyClient({ initialDeputies }: { initialDeputies: Dep
             exit={{ opacity: 0, y: -20 }}
             transition={{ duration: 0.4 }}
           >
-            <DeputyGrid deputies={filteredDeputies} />
+            <DeputyGrid 
+              key={`${searchQuery}-${selectedDepartment}`}
+              deputies={filteredDeputies} 
+            />
           </motion.div>
         )}
       </AnimatePresence>

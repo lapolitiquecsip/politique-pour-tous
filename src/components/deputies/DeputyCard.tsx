@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useState, memo } from "react";
 import Link from "next/link";
 import { ChevronRight } from "lucide-react";
 
@@ -34,7 +34,7 @@ export function generateSlug(firstName: string, lastName: string): string {
   return `${normalize(firstName)}-${normalize(lastName)}`;
 }
 
-export default function DeputyCard({ deputy }: { deputy: Deputy }) {
+export const DeputyCard = memo(function DeputyCard({ deputy }: { deputy: Deputy }) {
   const colorClass = partyColors[deputy.party] || "bg-[#95A5A6]";
   const initials = `${deputy.firstName.charAt(0)}${deputy.lastName.charAt(0)}`;
   const slug = deputy.slug || generateSlug(deputy.firstName, deputy.lastName);
@@ -82,4 +82,6 @@ export default function DeputyCard({ deputy }: { deputy: Deputy }) {
       </div>
     </Link>
   );
-}
+});
+
+export default DeputyCard;

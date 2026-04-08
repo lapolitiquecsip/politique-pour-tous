@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState, memo } from "react";
 import DeputyCard, { Deputy } from "./DeputyCard";
 import { Plus, ArrowDown } from "lucide-react";
 
@@ -8,13 +8,8 @@ interface DeputyGridProps {
   deputies: Deputy[];
 }
 
-export default function DeputyGrid({ deputies }: DeputyGridProps) {
+export const DeputyGrid = memo(function DeputyGrid({ deputies }: DeputyGridProps) {
   const [displayLimit, setDisplayLimit] = useState(24);
-
-  // Reset pagination when the total list changes (new search or filter)
-  useEffect(() => {
-    setDisplayLimit(24);
-  }, [deputies]);
 
   const displayedDeputies = deputies.slice(0, displayLimit);
   const hasMore = displayLimit < deputies.length;
@@ -51,4 +46,6 @@ export default function DeputyGrid({ deputies }: DeputyGridProps) {
       )}
     </div>
   );
-}
+});
+
+export default DeputyGrid;

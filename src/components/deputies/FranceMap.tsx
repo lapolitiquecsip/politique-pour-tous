@@ -29,23 +29,20 @@ const MemoizedSVG = memo(({ content, selectedDepartment }: { content: string, se
         [&_svg]:w-full [&_svg]:h-auto [&_svg]:max-h-[500px] [&_svg]:mx-auto
         [&_path]:cursor-pointer [&_path]:transition-all [&_path]:duration-150 [&_path]:outline-none
         
-        /* Accélération matérielle */
-        [&_path]:will-change-[transform,fill]
-        
         /* État de base */
         [&_path]:fill-blue-50/50 dark:[&_path]:fill-slate-900 
         [&_path]:stroke-blue-200 dark:[&_path]:stroke-slate-700
         [&_path]:stroke-[1.3]
         [&_path]:[stroke-linejoin:round]
         
-        /* Filtre Global (Optimisé) */
-        [&_svg]:[filter:drop-shadow(0px_0px_2px_rgba(15,23,42,0.1))]
-        dark:[&_svg]:[filter:drop-shadow(0px_0px_2px_rgba(248,250,252,0.1))]
+        /* Filtre Global */
+        [&_svg]:[filter:drop-shadow(0px_0px_1px_#0f172a)_drop-shadow(0px_0px_1px_#0f172a)]
+        dark:[&_svg]:[filter:drop-shadow(0px_0px_1px_#f8fafc)_drop-shadow(0px_0px_1px_#f8fafc)]
         
         [&_path]:origin-center [&_path]:[transform-box:fill-box]
         
-        /* Hover effect (Hardware accelerated) */
-        hover:[&_path:hover]:fill-red-500 hover:[&_path:hover]:stroke-red-700 hover:[&_path:hover]:stroke-[2] hover:[&_path:hover]:scale-[1.04] hover:[&_path:hover]:[transform:translate3d(0,0,0)]
+        /* Hover effect (Géré 100% en CSS pour 0 latence) */
+        hover:[&_path:hover]:fill-red-500 hover:[&_path:hover]:stroke-red-700 hover:[&_path:hover]:stroke-[2] hover:[&_path:hover]:scale-[1.04] hover:[&_path:hover]:translate-z-10
         
         /* État de sélection */
         ${selectedDepartment ? "[&_path]:fill-sky-50 dark:[&_path]:fill-sky-950/30 [&_path]:opacity-60 [&_path]:stroke-sky-100 dark:[&_path]:stroke-sky-900" : ""}

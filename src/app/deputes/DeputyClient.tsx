@@ -11,92 +11,9 @@ import { getDepartmentName } from "@/lib/department-mapping";
 import { motion, AnimatePresence } from "framer-motion";
 import { Map, List, Users, Landmark, ChevronRight } from "lucide-react";
 
-const MOCK_DEPUTIES: Deputy[] = [
-  {
-    id: "attal-gabriel",
-    firstName: "Gabriel",
-    lastName: "Attal",
-    party: "EPR",
-    department: "Hauts-de-Seine",
-    constituencyNumber: 10
-  },
-  {
-    id: "berge-aurore",
-    firstName: "Aurore",
-    lastName: "Bergé",
-    party: "EPR",
-    department: "Yvelines",
-    constituencyNumber: 10
-  },
-  {
-    id: "braun-pivet-yael",
-    firstName: "Yaël",
-    lastName: "Braun-Pivet",
-    party: "EPR",
-    department: "Yvelines",
-    constituencyNumber: 5
-  },
-  {
-    id: "chatelain-cyrielle",
-    firstName: "Cyrielle",
-    lastName: "Chatelain",
-    party: "EELV",
-    department: "Isère",
-    constituencyNumber: 2
-  },
-  {
-    id: "chenu-sebastien",
-    firstName: "Sébastien",
-    lastName: "Chenu",
-    party: "RN",
-    department: "Nord",
-    constituencyNumber: 19
-  },
-  {
-    id: "ciotti-eric",
-    firstName: "Éric",
-    lastName: "Ciotti",
-    party: "LR",
-    department: "Alpes-Maritimes",
-    constituencyNumber: 1
-  },
-  {
-    id: "faure-olivier",
-    firstName: "Olivier",
-    lastName: "Faure",
-    party: "PS",
-    department: "Seine-et-Marne",
-    constituencyNumber: 11
-  },
-  {
-    id: "ruffin-francois",
-    firstName: "François",
-    lastName: "Ruffin",
-    party: "Picardie Debout",
-    department: "Somme",
-    constituencyNumber: 1
-  },
-  {
-    id: "melenchon-jean-luc",
-    firstName: "Jean-Luc",
-    lastName: "Mélenchon",
-    party: "LFI",
-    department: "Bouches-du-Rhône",
-    constituencyNumber: 4
-  },
-  {
-    id: "le-pen-marine",
-    firstName: "Marine",
-    lastName: "Le Pen",
-    party: "RN",
-    department: "Pas-de-Calais",
-    constituencyNumber: 11
-  }
-];
-
 export default function DeputyClient({ initialDeputies }: { initialDeputies: Deputy[] }) {
   const router = useRouter();
-  const deputiesList = initialDeputies.length > 0 ? initialDeputies : MOCK_DEPUTIES;
+  const deputiesList = initialDeputies;
   const [searchQuery, setSearchQuery] = useState("");
   const [selectedDepartment, setSelectedDepartment] = useState<string | null>(null);
   const [showMap, setShowMap] = useState(true);

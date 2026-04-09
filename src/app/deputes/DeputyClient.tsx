@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useMemo, useCallback } from "react";
+import { useState, useMemo, useCallback, startTransition } from "react";
 import { useRouter } from "next/navigation";
 import DeputySearch from "@/components/deputies/DeputySearch";
 import DeputyGrid from "@/components/deputies/DeputyGrid";
@@ -41,7 +41,9 @@ export default function DeputyClient({ initialDeputies }: { initialDeputies: Dep
   }, [deputiesList, searchQuery, selectedDepartment]);
 
   const handleDepartmentSelect = useCallback((dept: string | null) => {
-    setSelectedDepartment(dept);
+    startTransition(() => {
+      setSelectedDepartment(dept);
+    });
   }, []);
 
   const handleSetShowMap = useCallback((show: boolean) => {

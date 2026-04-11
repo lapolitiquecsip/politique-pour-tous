@@ -20,6 +20,7 @@ import {
   ShieldCheck,
   Gavel,
   AlertTriangle,
+  ChevronDown,
   X,
   Quote
 } from "lucide-react";
@@ -45,6 +46,7 @@ export default function DeputyDetailPage({ params }: { params: Promise<{ slug: s
   const [loadingFollow, setLoadingFollow] = useState(false);
   const [checkingFollow, setCheckingFollow] = useState(true);
   const [showLegalModal, setShowLegalModal] = useState(false);
+  const [isBioExpanded, setIsBioExpanded] = useState(false);
 
   // Load real deputy and follow status
   useEffect(() => {
@@ -272,56 +274,75 @@ export default function DeputyDetailPage({ params }: { params: Promise<{ slug: s
             transition={{ delay: 0.2 }}
             className="lg:col-span-2 space-y-10"
           >
-            {/* NEW: Biography / Background Section (Editorial Style) */}
+            {/* NEW: Biography / Background Section (Collapsible Editorial Style) */}
             {deputy?.biography && (
-              <div className="bg-white dark:bg-slate-900 rounded-[3rem] p-10 md:p-14 border border-slate-200 dark:border-slate-800 shadow-2xl relative overflow-hidden group">
+              <div className="bg-white dark:bg-slate-900 rounded-[3rem] border border-slate-200 dark:border-slate-800 shadow-xl relative overflow-hidden group pb-2">
                 {/* Decorative background elements */}
                 <div className="absolute top-0 right-0 w-64 h-64 bg-blue-500/5 rounded-full -mr-32 -mt-32 blur-3xl group-hover:bg-blue-500/10 transition-colors duration-1000" />
-                <div className="absolute bottom-0 left-0 w-64 h-64 bg-red-500/5 rounded-full -ml-32 -mb-32 blur-3xl" />
                 
-                <div className="relative z-10">
-                  {/* Badge Expertise */}
-                  <div className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-blue-500/10 border border-blue-500/20 text-blue-600 dark:text-blue-400 text-[10px] font-black uppercase tracking-[0.2em] mb-8">
-                    <span className="w-1.5 h-1.5 rounded-full bg-blue-500 animate-pulse" />
-                    Expertise Professionnelle
-                  </div>
-
-                  <div className="flex flex-col md:flex-row gap-8 items-start mb-10">
-                    <div className="w-16 h-16 rounded-2xl bg-slate-900 dark:bg-slate-800 flex items-center justify-center text-white shrink-0 shadow-xl group-hover:rotate-6 transition-transform duration-500">
-                      <Quote className="w-8 h-8 opacity-50" />
+                <button 
+                  onClick={() => setIsBioExpanded(!isBioExpanded)}
+                  className="w-full text-left p-8 md:px-12 md:py-10 relative z-10 flex items-center justify-between group/header"
+                >
+                  <div className="flex flex-col md:flex-row gap-6 items-center">
+                    <div className="w-12 h-12 rounded-xl bg-slate-900 dark:bg-slate-800 flex items-center justify-center text-white shrink-0 shadow-lg group-hover/header:rotate-6 transition-transform duration-500">
+                      <Quote className="w-6 h-6 opacity-50" />
                     </div>
-                    <h3 className="text-4xl md:text-5xl font-staatliches uppercase tracking-tight text-slate-900 dark:text-white leading-none">
-                      Portrait & <span className="text-blue-600 underline decoration-blue-500/30 underline-offset-8">Parcours</span>
-                    </h3>
+                    <div className="flex flex-col">
+                      <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-blue-500/10 border border-blue-500/20 text-blue-600 dark:text-blue-400 text-[10px] font-black uppercase tracking-widest w-fit mb-2">
+                        <span className="w-1.5 h-1.5 rounded-full bg-blue-500 animate-pulse" />
+                        Expertise Professionnelle
+                      </div>
+                      <h3 className="text-3xl font-staatliches uppercase tracking-tight text-slate-900 dark:text-white leading-none">
+                        Portrait & <span className="text-blue-600">Parcours</span>
+                      </h3>
+                    </div>
                   </div>
+                  <div className={`w-10 h-10 rounded-full bg-slate-100 dark:bg-slate-800 flex items-center justify-center text-slate-500 transition-transform duration-500 ${isBioExpanded ? 'rotate-180' : ''}`}>
+                    <ChevronDown className="w-5 h-5" />
+                  </div>
+                </button>
 
-                  <div className="font-playfair text-base md:text-lg text-slate-700 dark:text-slate-300 leading-[1.8] italic font-medium">
-                    {(() => {
-                      const bio = deputy.biography;
-                      const firstChar = bio.charAt(0);
-                      const rest = bio.slice(1);
-                      
-                      return (
-                        <div className="relative">
-                          <span className="float-left text-5xl md:text-6xl font-staatliches text-blue-600 mr-3 mt-1 leading-[0.8] drop-shadow-sm select-none">
-                            {firstChar}
-                          </span>
-                          {rest.split(/(\*\*.*?\*\*)/).map((part: string, i: number) => 
-                            part.startsWith('**') && part.endsWith('**') 
-                              ? <strong key={i} className="font-bold text-slate-900 dark:text-white not-italic bg-blue-500/5 px-1 rounded-sm">{part.slice(2, -2)}</strong>
-                              : part
-                          )}
+                <AnimatePresence>
+                  {isBioExpanded && (
+                    <motion.div
+                      initial={{ height: 0, opacity: 0 }}
+                      animate={{ height: "auto", opacity: 1 }}
+                      exit={{ height: 0, opacity: 0 }}
+                      transition={{ duration: 0.5, ease: [0.04, 0.62, 0.23, 0.98] }}
+                      className="overflow-hidden"
+                    >
+                      <div className="px-8 pb-10 md:px-12 md:pb-12 relative z-10">
+                        <div className="font-playfair text-base md:text-lg text-slate-700 dark:text-slate-300 leading-[1.8] italic font-medium">
+                          {(() => {
+                            const bio = deputy.biography;
+                            const firstChar = bio.charAt(0);
+                            const rest = bio.slice(1);
+                            
+                            return (
+                              <div className="relative">
+                                <span className="float-left text-5xl md:text-6xl font-staatliches text-blue-600 mr-3 mt-1 leading-[0.8] drop-shadow-sm select-none">
+                                  {firstChar}
+                                </span>
+                                {rest.split(/(\*\*.*?\*\*)/).map((part: string, i: number) => 
+                                  part.startsWith('**') && part.endsWith('**') 
+                                    ? <strong key={i} className="font-bold text-slate-900 dark:text-white not-italic bg-blue-500/5 px-1 rounded-sm">{part.slice(2, -2)}</strong>
+                                    : part
+                                )}
+                              </div>
+                            );
+                          })()}
                         </div>
-                      );
-                    })()}
-                  </div>
-                </div>
-
-                {/* Bottom Signature Decor */}
-                <div className="mt-12 pt-8 border-t border-slate-100 dark:border-slate-800 flex items-center justify-between opacity-50">
-                  <p className="text-[10px] font-black uppercase tracking-widest text-slate-400">Archive Législative Officielle</p>
-                  <div className="h-px w-24 bg-gradient-to-r from-transparent to-slate-200 dark:to-slate-700" />
-                </div>
+                        
+                        {/* Bottom Signature Decor */}
+                        <div className="mt-12 pt-8 border-t border-slate-100 dark:border-slate-800 flex items-center justify-between opacity-50">
+                          <p className="text-[10px] font-black uppercase tracking-widest text-slate-400">Archive Législative Officielle</p>
+                          <div className="h-px w-24 bg-gradient-to-r from-transparent to-slate-200 dark:to-slate-700" />
+                        </div>
+                      </div>
+                    </motion.div>
+                  )}
+                </AnimatePresence>
               </div>
             )}
 

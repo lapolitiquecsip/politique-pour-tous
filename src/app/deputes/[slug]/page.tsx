@@ -273,8 +273,9 @@ export default function DeputyDetailPage({ params }: { params: Promise<{ slug: s
           >
             {/* NEW: Biography / Background Section */}
             {deputy?.biography && (
-              <div className="bg-white dark:bg-slate-900 rounded-[2.5rem] p-8 border border-slate-200 dark:border-slate-800 shadow-sm">
-                <div className="flex items-center gap-3 mb-6">
+              <div className="bg-white dark:bg-slate-900 rounded-[2.5rem] p-8 border border-slate-200 dark:border-slate-800 shadow-sm relative overflow-hidden group">
+                <div className="absolute top-0 right-0 w-32 h-32 bg-blue-500/5 rounded-full -mr-16 -mt-16 blur-3xl group-hover:bg-blue-500/10 transition-colors" />
+                <div className="flex items-center gap-3 mb-6 relative z-10">
                   <div className="w-10 h-10 rounded-xl bg-blue-100 dark:bg-blue-900/30 flex items-center justify-center text-blue-600">
                     <History className="w-5 h-5" />
                   </div>
@@ -282,9 +283,13 @@ export default function DeputyDetailPage({ params }: { params: Promise<{ slug: s
                     Parcours & <span className="text-blue-600">Expérience</span>
                   </h3>
                 </div>
-                <p className="text-slate-600 dark:text-slate-400 leading-relaxed font-medium">
-                  {deputy.biography}
-                </p>
+                <div className="text-slate-600 dark:text-slate-400 leading-relaxed font-normal relative z-10 whitespace-pre-line">
+                  {deputy.biography.split(/(\*\*.*?\*\*)/).map((part: string, i: number) => 
+                    part.startsWith('**') && part.endsWith('**') 
+                      ? <strong key={i} className="font-extrabold text-slate-900 dark:text-white uppercase tracking-tight">{part.slice(2, -2)}</strong>
+                      : part
+                  )}
+                </div>
               </div>
             )}
 

@@ -20,7 +20,8 @@ import {
   ShieldCheck,
   Gavel,
   AlertTriangle,
-  X
+  X,
+  Quote
 } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
 import { api } from "@/lib/api";
@@ -271,24 +272,55 @@ export default function DeputyDetailPage({ params }: { params: Promise<{ slug: s
             transition={{ delay: 0.2 }}
             className="lg:col-span-2 space-y-10"
           >
-            {/* NEW: Biography / Background Section */}
+            {/* NEW: Biography / Background Section (Editorial Style) */}
             {deputy?.biography && (
-              <div className="bg-white dark:bg-slate-900 rounded-[2.5rem] p-8 border border-slate-200 dark:border-slate-800 shadow-sm relative overflow-hidden group">
-                <div className="absolute top-0 right-0 w-32 h-32 bg-blue-500/5 rounded-full -mr-16 -mt-16 blur-3xl group-hover:bg-blue-500/10 transition-colors" />
-                <div className="flex items-center gap-3 mb-6 relative z-10">
-                  <div className="w-10 h-10 rounded-xl bg-blue-100 dark:bg-blue-900/30 flex items-center justify-center text-blue-600">
-                    <History className="w-5 h-5" />
+              <div className="bg-white dark:bg-slate-900 rounded-[3rem] p-10 md:p-14 border border-slate-200 dark:border-slate-800 shadow-2xl relative overflow-hidden group">
+                {/* Decorative background elements */}
+                <div className="absolute top-0 right-0 w-64 h-64 bg-blue-500/5 rounded-full -mr-32 -mt-32 blur-3xl group-hover:bg-blue-500/10 transition-colors duration-1000" />
+                <div className="absolute bottom-0 left-0 w-64 h-64 bg-red-500/5 rounded-full -ml-32 -mb-32 blur-3xl" />
+                
+                <div className="relative z-10">
+                  {/* Badge Expertise */}
+                  <div className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-blue-500/10 border border-blue-500/20 text-blue-600 dark:text-blue-400 text-[10px] font-black uppercase tracking-[0.2em] mb-8">
+                    <span className="w-1.5 h-1.5 rounded-full bg-blue-500 animate-pulse" />
+                    Expertise Professionnelle
                   </div>
-                  <h3 className="text-2xl font-staatliches uppercase tracking-tight text-slate-900 dark:text-white">
-                    Parcours & <span className="text-blue-600">Expérience</span>
-                  </h3>
+
+                  <div className="flex flex-col md:flex-row gap-8 items-start mb-10">
+                    <div className="w-16 h-16 rounded-2xl bg-slate-900 dark:bg-slate-800 flex items-center justify-center text-white shrink-0 shadow-xl group-hover:rotate-6 transition-transform duration-500">
+                      <Quote className="w-8 h-8 opacity-50" />
+                    </div>
+                    <h3 className="text-4xl md:text-5xl font-staatliches uppercase tracking-tight text-slate-900 dark:text-white leading-none">
+                      Portrait & <span className="text-blue-600 underline decoration-blue-500/30 underline-offset-8">Parcours</span>
+                    </h3>
+                  </div>
+
+                  <div className="font-playfair text-xl md:text-2xl text-slate-700 dark:text-slate-300 leading-[1.8] italic font-medium">
+                    {(() => {
+                      const bio = deputy.biography;
+                      const firstChar = bio.charAt(0);
+                      const rest = bio.slice(1);
+                      
+                      return (
+                        <div className="relative">
+                          <span className="float-left text-7xl md:text-8xl font-staatliches text-blue-600 mr-4 mt-2 leading-[0.8] drop-shadow-sm select-none">
+                            {firstChar}
+                          </span>
+                          {rest.split(/(\*\*.*?\*\*)/).map((part: string, i: number) => 
+                            part.startsWith('**') && part.endsWith('**') 
+                              ? <strong key={i} className="font-extrabold text-slate-900 dark:text-white not-italic uppercase tracking-tighter bg-blue-500/5 px-1 rounded-sm">{part.slice(2, -2)}</strong>
+                              : part
+                          )}
+                        </div>
+                      );
+                    })()}
+                  </div>
                 </div>
-                <div className="text-slate-600 dark:text-slate-400 leading-relaxed font-normal relative z-10 whitespace-pre-line">
-                  {deputy.biography.split(/(\*\*.*?\*\*)/).map((part: string, i: number) => 
-                    part.startsWith('**') && part.endsWith('**') 
-                      ? <strong key={i} className="font-extrabold text-slate-900 dark:text-white uppercase tracking-tight">{part.slice(2, -2)}</strong>
-                      : part
-                  )}
+
+                {/* Bottom Signature Decor */}
+                <div className="mt-12 pt-8 border-t border-slate-100 dark:border-slate-800 flex items-center justify-between opacity-50">
+                  <p className="text-[10px] font-black uppercase tracking-widest text-slate-400">Archive Législative Officielle</p>
+                  <div className="h-px w-24 bg-gradient-to-r from-transparent to-slate-200 dark:to-slate-700" />
                 </div>
               </div>
             )}

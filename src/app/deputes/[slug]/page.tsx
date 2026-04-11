@@ -289,10 +289,6 @@ export default function DeputyDetailPage({ params }: { params: Promise<{ slug: s
                       <Quote className="w-6 h-6 opacity-50" />
                     </div>
                     <div className="flex flex-col">
-                      <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-blue-500/10 border border-blue-500/20 text-blue-600 dark:text-blue-400 text-[10px] font-black uppercase tracking-widest w-fit mb-2">
-                        <span className="w-1.5 h-1.5 rounded-full bg-blue-500 animate-pulse" />
-                        Expertise Professionnelle
-                      </div>
                       <h3 className="text-3xl font-staatliches uppercase tracking-tight text-slate-900 dark:text-white leading-none">
                         Portrait & <span className="text-blue-600">Parcours</span>
                       </h3>

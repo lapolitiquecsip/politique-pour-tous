@@ -295,7 +295,7 @@ export default function DeputyDetailPage({ params }: { params: Promise<{ slug: s
                     </h3>
                   </div>
 
-                  <div className="font-playfair text-xl md:text-2xl text-slate-700 dark:text-slate-300 leading-[1.8] italic font-medium">
+                  <div className="font-playfair text-base md:text-lg text-slate-700 dark:text-slate-300 leading-[1.8] italic font-medium">
                     {(() => {
                       const bio = deputy.biography;
                       const firstChar = bio.charAt(0);
@@ -303,12 +303,12 @@ export default function DeputyDetailPage({ params }: { params: Promise<{ slug: s
                       
                       return (
                         <div className="relative">
-                          <span className="float-left text-7xl md:text-8xl font-staatliches text-blue-600 mr-4 mt-2 leading-[0.8] drop-shadow-sm select-none">
+                          <span className="float-left text-5xl md:text-6xl font-staatliches text-blue-600 mr-3 mt-1 leading-[0.8] drop-shadow-sm select-none">
                             {firstChar}
                           </span>
                           {rest.split(/(\*\*.*?\*\*)/).map((part: string, i: number) => 
                             part.startsWith('**') && part.endsWith('**') 
-                              ? <strong key={i} className="font-extrabold text-slate-900 dark:text-white not-italic uppercase tracking-tighter bg-blue-500/5 px-1 rounded-sm">{part.slice(2, -2)}</strong>
+                              ? <strong key={i} className="font-bold text-slate-900 dark:text-white not-italic bg-blue-500/5 px-1 rounded-sm">{part.slice(2, -2)}</strong>
                               : part
                           )}
                         </div>

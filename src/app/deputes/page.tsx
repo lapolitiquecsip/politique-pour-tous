@@ -13,6 +13,8 @@ export default async function DeputesPage() {
     party: d.party || '',
     department: d.department || '',
     constituencyNumber: d.constituency_number,
+    anId: d.an_id,
+    slug: d.slug,
   }));
 
   return <DeputyClient initialDeputies={mappedDeputies} />;

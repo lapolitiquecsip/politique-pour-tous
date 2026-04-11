@@ -12,6 +12,7 @@ export interface Deputy {
   department: string;
   constituencyNumber: number;
   slug?: string;
+  anId?: string;
 }
 
 const partyColors: Record<string, string> = {
@@ -38,7 +39,12 @@ export const DeputyCard = memo(function DeputyCard({ deputy }: { deputy: Deputy 
   const colorClass = partyColors[deputy.party] || "bg-[#95A5A6]";
   const initials = `${deputy.firstName.charAt(0)}${deputy.lastName.charAt(0)}`;
   const slug = deputy.slug || generateSlug(deputy.firstName, deputy.lastName);
-  const photoUrl = `https://www.nosdeputes.fr/depute/photo/${slug}/120`;
+  
+  // Official Assembly Image (Primary) -> Fallback to nosdeputes.fr
+  const anImageId = deputy.anId ? deputy.anId.replace('PA', '') : null;
+  const photoUrl = anImageId 
+    ? `https://www.assemblee-nationale.fr/dyn/static/tribun/17/photos/carre/${anImageId}.jpg`
+    : `https://www.nosdeputes.fr/depute/photo/${slug}/120`;
 
   const [imgError, setImgError] = useState(false);
 

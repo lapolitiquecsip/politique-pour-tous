@@ -154,39 +154,9 @@ export default function DeputyClient({ initialDeputies }: { initialDeputies: Dep
                     <div className="overflow-y-auto p-4 space-y-3 custom-scrollbar flex-1 bg-slate-50/50 dark:bg-slate-950">
                       {[...filteredDeputies]
                         .sort((a, b) => a.constituencyNumber - b.constituencyNumber)
-                        .map((deputy) => {
-                          const slug = deputy.slug || generateSlug(deputy.firstName, deputy.lastName);
-                          return (
-                            <div 
-                              key={deputy.id}
-                              className="bg-white dark:bg-slate-900 rounded-2xl p-4 border border-slate-100 dark:border-slate-800 shadow-sm hover:shadow-md transition-all flex items-center gap-4 group"
-                            >
-                              <div className="w-12 h-12 rounded-xl bg-slate-100 dark:bg-slate-800 flex items-center justify-center font-black text-slate-400 shrink-0">
-                                {deputy.constituencyNumber}
-                                <span className="text-[10px] absolute -mt-4 ml-3 opacity-50">ère</span>
-                              </div>
-                              
-                              <div className="flex-1 min-w-0">
-                                <p className="text-[10px] font-black uppercase text-slate-400 tracking-widest mb-0.5">
-                                  Circonscription n°{deputy.constituencyNumber}
-                                </p>
-                                <p className="font-bold text-slate-900 dark:text-white truncate">
-                                  {deputy.firstName} {deputy.lastName}
-                                </p>
-                                <p className="text-xs font-semibold text-slate-500 truncate">
-                                  {deputy.party}
-                                </p>
-                              </div>
-
-                              <button 
-                                onClick={() => router.push(`/deputes/${slug}`)}
-                                className="w-8 h-8 rounded-full bg-slate-50 dark:bg-slate-800 flex items-center justify-center text-slate-400 hover:text-red-500 hover:bg-red-50 transition-colors shrink-0"
-                              >
-                                <ChevronRight className="w-4 h-4" />
-                              </button>
-                            </div>
-                          );
-                      })}
+                        .map((deputy) => (
+                          <SidebarDeputyItem key={deputy.id} deputy={deputy} router={router} />
+                        ))}
 
                       {filteredDeputies.length === 0 && (
                         <div className="text-center py-12 px-4">
@@ -217,3 +187,65 @@ export default function DeputyClient({ initialDeputies }: { initialDeputies: Dep
     </div>
   );
 }
+
+function SidebarDeputyItem({ deputy, router }: { deputy: Deputy; router: any }) {
+  const [imgError, setImgError] = useState(false);
+  const slug = deputy.slug || generateSlug(deputy.firstName, deputy.lastName);
+  
+  const anImageId = deputy.anId ? deputy.anId.replace('PA', '') : null;
+  const photoUrl = anImageId 
+    ? `https://www.assemblee-nationale.fr/dyn/static/tribun/17/photos/carre/${anImageId}.jpg`
+    : `https://www.nosdeputes.fr/depute/photo/${slug}/120`;
+
+  const initials = `${deputy.firstName.charAt(0)}${deputy.lastName.charAt(0)}`;
+  const partyColorClass = partyColors[deputy.party] || "bg-slate-400";
+
+  return (
+    <div 
+      className="bg-white dark:bg-slate-900 rounded-2xl p-3 border border-slate-100 dark:border-slate-800 shadow-sm hover:shadow-md transition-all flex items-center gap-4 group"
+    >
+      <div className="relative shrink-0">
+        {!imgError ? (
+          <img
+            src={photoUrl}
+            alt={deputy.lastName}
+            onError={() => setImgError(true)}
+            className="w-14 h-14 rounded-xl object-cover border border-slate-100 dark:border-slate-800 shadow-md"
+          />
+        ) : (
+          <div className={`w-14 h-14 rounded-xl flex items-center justify-center text-white font-bold shadow-md ${partyColorClass}`}>
+            {initials}
+          </div>
+        )}
+        <div className="absolute -bottom-1 -right-1 w-6 h-6 bg-white dark:bg-slate-800 rounded-lg shadow-sm border border-slate-100 dark:border-slate-700 flex items-center justify-center text-[10px] font-black text-slate-500">
+          {deputy.constituencyNumber}
+        </div>
+      </div>
+      
+      <div className="flex-1 min-w-0">
+        <p className="font-bold text-slate-900 dark:text-white truncate leading-tight">
+          {deputy.firstName} {deputy.lastName}
+        </p>
+        <p className="text-xs font-semibold text-slate-500 truncate mt-0.5">
+          {deputy.party}
+        </p>
+      </div>
+
+      <button 
+        onClick={() => router.push(`/deputes/${slug}`)}
+        className="w-8 h-8 rounded-full bg-slate-50 dark:bg-slate-800 flex items-center justify-center text-slate-400 hover:text-red-500 hover:bg-red-50 transition-colors shrink-0"
+      >
+        <ChevronRight className="w-4 h-4" />
+      </button>
+    </div>
+  );
+}
+
+const partyColors: Record<string, string> = {
+  "LFI-NFP": "bg-[#E74C3C]",
+  "EPR": "bg-[#E67E22]",
+  "RN": "bg-[#2C3E50]",
+  "PS": "bg-[#E91E8C]",
+  "LR": "bg-[#3498DB]",
+  "EELV": "bg-[#27AE60]",
+};

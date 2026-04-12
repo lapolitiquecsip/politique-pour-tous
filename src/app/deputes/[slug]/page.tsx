@@ -389,7 +389,7 @@ export default function DeputyDetailPage({ params }: { params: Promise<{ slug: s
                   </div>
                   
                   {(() => {
-                    const integrityMatch = deputy?.biography?.match(/<!-- INTEGRITY_START -->\n<!-- (.*?) -->\n<!-- INTEGRITY_END -->/s);
+                    const integrityMatch = deputy?.biography?.match(/<!-- INTEGRITY_START -->\n<!-- ([\s\S]*?) -->\n<!-- INTEGRITY_END -->/);
                     const integrityData = integrityMatch ? JSON.parse(integrityMatch[1]) : null;
                     
                     if (!integrityData) return (

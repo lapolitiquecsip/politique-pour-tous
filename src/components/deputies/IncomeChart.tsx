@@ -11,9 +11,10 @@ interface ChartItem {
 interface IncomeChartProps {
   data: ChartItem[];
   totalLabel?: string;
+  unit?: string;
 }
 
-export default function IncomeChart({ data, totalLabel = "Revenu Mensuel" }: IncomeChartProps) {
+export default function IncomeChart({ data, totalLabel = "Revenu Mensuel", unit = "/ mois" }: IncomeChartProps) {
   const total = data.reduce((acc, item) => acc + item.value, 0);
   
   // Calculate SVG paths for pie slices
@@ -26,8 +27,8 @@ export default function IncomeChart({ data, totalLabel = "Revenu Mensuel" }: Inc
   };
 
   return (
-    <div className="flex flex-col md:flex-row items-center gap-10">
-      <div className="relative w-48 h-48 md:w-56 md:h-56 shrink-0">
+    <div className="flex flex-col items-center gap-6">
+      <div className="relative w-40 h-40 shrink-0">
         <svg viewBox="-1.1 -1.1 2.2 2.2" className="w-full h-full -rotate-90">
           {data.map((item, i) => {
             const [startX, startY] = getCoordinatesForPercent(cumulativePercent);
@@ -67,7 +68,7 @@ export default function IncomeChart({ data, totalLabel = "Revenu Mensuel" }: Inc
           <span className="text-xl font-bold text-slate-900 dark:text-white leading-none">
             {new Intl.NumberFormat('fr-FR', { style: 'currency', currency: 'EUR', maximumFractionDigits: 0 }).format(total)}
           </span>
-          <span className="text-[10px] font-bold text-slate-500 mt-1 italic">/ mois</span>
+          <span className="text-[10px] font-bold text-slate-500 mt-1 italic">{unit}</span>
         </div>
       </div>
 

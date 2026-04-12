@@ -400,9 +400,9 @@ export default function DeputyDetailPage({ params }: { params: Promise<{ slug: s
                     );
 
                     return (
-                      <div className="space-y-12">
-                        <div className="grid grid-cols-1 lg:grid-cols-2 gap-12">
-                          <div className="space-y-6">
+                      <div className="space-y-16">
+                        <div className="grid grid-cols-1 xl:grid-cols-2 gap-16 xl:gap-24">
+                          <div className="space-y-8 bg-slate-50/50 dark:bg-slate-800/20 p-8 rounded-[2.5rem] border border-slate-100 dark:border-slate-800">
                             <div className="flex items-center gap-2 px-3 py-1 bg-orange-500/10 rounded-full w-fit">
                               <div className="w-1.5 h-1.5 rounded-full bg-orange-500 animate-pulse" />
                               <span className="text-[10px] font-black text-orange-600 uppercase tracking-widest">Flux : Revenus</span>
@@ -420,6 +420,7 @@ export default function DeputyDetailPage({ params }: { params: Promise<{ slug: s
                             <IncomeChart 
                               data={integrityData.patrimony}
                               totalLabel="Actifs Déclarés"
+                              unit=""
                             />
                           </div>
                         </div>

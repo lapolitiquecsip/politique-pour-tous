@@ -318,80 +318,84 @@ export default function DeputyDetailPage({ params }: { params: Promise<{ slug: s
             {/* NEW: Biography / Background Section (Collapsible Editorial Style) */}
             {deputy?.biography && (
               <div className="bg-white dark:bg-slate-900 rounded-[3rem] border border-slate-200 dark:border-slate-800 shadow-xl relative overflow-hidden group pb-2">
-                {/* Decorative background elements */}
-                <div className="absolute top-0 right-0 w-64 h-64 bg-blue-500/5 rounded-full -mr-32 -mt-32 blur-3xl group-hover:bg-blue-500/10 transition-colors duration-1000" />
-                
-                <button 
-                  onClick={() => setIsBioExpanded(!isBioExpanded)}
-                  className="w-full text-left p-8 md:px-12 md:py-10 relative z-10 flex items-center justify-between group/header"
-                >
-                  <div className="flex flex-col md:flex-row gap-6 items-center">
-                    <div className="w-12 h-12 rounded-xl bg-slate-900 dark:bg-slate-800 flex items-center justify-center text-white shrink-0 shadow-lg group-hover/header:rotate-6 transition-transform duration-500">
-                      <Quote className="w-6 h-6 opacity-50" />
-                    </div>
-                    <div className="flex flex-col">
-                      <h3 className="text-3xl font-staatliches uppercase tracking-tight text-slate-900 dark:text-white leading-none">
-                        Portrait & <span className="text-blue-600">Parcours</span>
-                      </h3>
-                    </div>
-                  </div>
-                  <div className={`w-10 h-10 rounded-full bg-slate-100 dark:bg-slate-800 flex items-center justify-center text-slate-500 transition-transform duration-500 ${isBioExpanded ? 'rotate-180' : ''}`}>
-                    <ChevronDown className="w-5 h-5" />
-                  </div>
-                </button>
-
-                <AnimatePresence>
-                  {isBioExpanded && (
-                    <motion.div
-                      initial={{ height: 0, opacity: 0 }}
-                      animate={{ height: "auto", opacity: 1 }}
-                      exit={{ height: 0, opacity: 0 }}
-                      transition={{ duration: 0.5, ease: [0.04, 0.62, 0.23, 0.98] }}
-                      className="overflow-hidden"
-                    >
-                      <div className="px-8 pb-10 md:px-12 md:pb-12 relative z-10 space-y-4">
-                        {deputy.biography.split('\n\n').filter(Boolean).map((paragraph: string, pIdx: number) => {
-                          let Icon = History;
-                          const pLower = paragraph.toLowerCase();
-                          if (pLower.includes('profession')) Icon = Briefcase;
-                          if (pLower.includes('milieu social d\'origine')) Icon = Layers;
-                          if (pLower.includes('origine')) Icon = MapPin;
-                          if (pLower.includes('ancienneté')) Icon = Clock;
-                          if (pLower.includes('groupe')) Icon = Landmark;
-                          if (pLower.includes('commission')) Icon = FileText;
-                          if (pLower.includes('amitiés internationales')) Icon = Globe;
-
-                          return (
-                            <motion.div 
-                              key={pIdx}
-                              initial={{ opacity: 0, x: -10 }}
-                              animate={{ opacity: 1, x: 0 }}
-                              transition={{ delay: 0.1 * pIdx }}
-                              className="flex gap-4 items-start bg-slate-50/50 dark:bg-slate-800/20 p-4 rounded-2xl border border-slate-100/50 dark:border-slate-800/50 group/item hover:bg-white dark:hover:bg-slate-800 transition-colors"
-                            >
-                              <div className="w-10 h-10 rounded-xl bg-white dark:bg-slate-700 flex items-center justify-center text-blue-600 shadow-sm shrink-0 group-hover/item:scale-110 transition-transform">
-                                <Icon className="w-5 h-5" />
-                              </div>
-                              <div className="font-playfair text-base md:text-lg text-slate-700 dark:text-slate-300 leading-relaxed italic pt-1">
-                                {paragraph.split(/(\*\*.*?\*\*)/).map((part: string, i: number) => 
-                                  part.startsWith('**') && part.endsWith('**') 
-                                    ? <strong key={i} className="font-bold text-slate-900 dark:text-white not-italic bg-blue-500/10 px-1.5 py-0.5 rounded-md mx-0.5">{part.slice(2, -2)}</strong>
-                                    : part
-                                )}
-                              </div>
-                            </motion.div>
-                          );
-                        })}
-                        
-                        {/* Bottom Signature Decor */}
-                        <div className="mt-8 pt-6 border-t border-slate-100 dark:border-slate-800 flex items-center justify-between opacity-50">
-                          <p className="text-[10px] font-black uppercase tracking-widest text-slate-400">Dossier Certifié Assemblée Nationale</p>
-                          <div className="h-px w-24 bg-gradient-to-r from-transparent to-slate-200 dark:to-slate-700" />
+                {(() => {
+                  const displayBio = deputy.biography.split('<!-- INTEGRITY_START -->')[0] || '';
+                  return (
+                    <>
+                      {/* Decorative background elements */}
+                      <div className="absolute top-0 right-0 w-64 h-64 bg-blue-500/5 rounded-full -mr-32 -mt-32 blur-3xl group-hover:bg-blue-500/10 transition-colors duration-1000" />
+                      
+                      <button 
+                        onClick={() => setIsBioExpanded(!isBioExpanded)}
+                        className="w-full text-left p-8 md:px-12 md:py-10 relative z-10 flex items-center justify-between group/header"
+                      >
+                        <div className="flex flex-col md:flex-row gap-6 items-center">
+                          <div className="w-12 h-12 rounded-xl bg-slate-900 dark:bg-slate-800 flex items-center justify-center text-white shrink-0 shadow-lg group-hover/header:rotate-6 transition-transform duration-500">
+                            <Quote className="w-6 h-6 opacity-50" />
+                          </div>
+                          <div className="flex flex-col">
+                            <h3 className="text-3xl font-staatliches uppercase tracking-tight text-slate-900 dark:text-white leading-none">
+                              Portrait & <span className="text-blue-600">Parcours</span>
+                            </h3>
+                          </div>
                         </div>
-                      </div>
-                    </motion.div>
-                  )}
-                </AnimatePresence>
+                        <div className={`w-10 h-10 rounded-full bg-slate-100 dark:bg-slate-800 flex items-center justify-center text-slate-500 transition-transform duration-500 ${isBioExpanded ? 'rotate-180' : ''}`}>
+                          <ChevronDown className="w-5 h-5" />
+                        </div>
+                      </button>
+
+                      <AnimatePresence>
+                        {isBioExpanded && (
+                          <motion.div
+                            initial={{ height: 0, opacity: 0 }}
+                            animate={{ height: "auto", opacity: 1 }}
+                            exit={{ height: 0, opacity: 0 }}
+                            transition={{ duration: 0.4, ease: "circOut" }}
+                            className="overflow-hidden"
+                          >
+                            <div className="px-8 pb-10 md:px-12 md:pb-12 relative z-10 space-y-4">
+                              {displayBio.split('\n\n').filter(Boolean).map((paragraph: string, pIdx: number) => {
+                                let Icon = History;
+                                const pLower = paragraph.toLowerCase();
+                                if (pLower.includes('profession')) Icon = Briefcase;
+                                if (pLower.includes('milieu social d\'origine')) Icon = Layers;
+                                if (pLower.includes('origine')) Icon = MapPin;
+                                if (pLower.includes('ancienneté')) Icon = Clock;
+                                if (pLower.includes('groupe')) Icon = Landmark;
+                                if (pLower.includes('commission')) Icon = FileText;
+                                if (pLower.includes('amitiés internationales')) Icon = Globe;
+
+                                return (
+                                  <div 
+                                    key={pIdx}
+                                    className="flex gap-4 items-start bg-slate-50/50 dark:bg-slate-800/20 p-4 rounded-2xl border border-slate-100/50 dark:border-slate-800/50 group/item hover:bg-white dark:hover:bg-slate-800 transition-colors"
+                                  >
+                                    <div className="w-10 h-10 rounded-xl bg-white dark:bg-slate-700 flex items-center justify-center text-blue-600 shadow-sm shrink-0 group-hover/item:scale-110 transition-transform">
+                                      <Icon className="w-5 h-5" />
+                                    </div>
+                                    <div className="font-playfair text-base md:text-lg text-slate-700 dark:text-slate-300 leading-relaxed italic pt-1">
+                                      {paragraph.split(/(\*\*.*?\*\*)/).map((part: string, i: number) => 
+                                        part.startsWith('**') && part.endsWith('**') 
+                                          ? <strong key={i} className="font-bold text-slate-900 dark:text-white not-italic bg-blue-500/10 px-1.5 py-0.5 rounded-md mx-0.5">{part.slice(2, -2)}</strong>
+                                          : part
+                                      )}
+                                    </div>
+                                  </div>
+                                );
+                              })}
+                              
+                              {/* Bottom Signature Decor */}
+                              <div className="mt-8 pt-6 border-t border-slate-100 dark:border-slate-800 flex items-center justify-between opacity-50">
+                                <p className="text-[10px] font-black uppercase tracking-widest text-slate-400">Dossier Certifié Assemblée Nationale</p>
+                                <div className="h-px w-24 bg-gradient-to-r from-transparent to-slate-200 dark:to-slate-700" />
+                              </div>
+                            </div>
+                          </motion.div>
+                        )}
+                      </AnimatePresence>
+                    </>
+                  );
+                })()}
               </div>
             )}
 
@@ -424,13 +428,13 @@ export default function DeputyDetailPage({ params }: { params: Promise<{ slug: s
 
               <AnimatePresence>
                 {isFinancesExpanded && (
-                  <motion.div
-                    initial={{ height: 0, opacity: 0 }}
-                    animate={{ height: "auto", opacity: 1 }}
-                    exit={{ height: 0, opacity: 0 }}
-                    transition={{ duration: 0.5, ease: [0.04, 0.62, 0.23, 0.98] }}
-                    className="overflow-hidden"
-                  >
+                    <motion.div
+                      initial={{ height: 0, opacity: 0 }}
+                      animate={{ height: "auto", opacity: 1 }}
+                      exit={{ height: 0, opacity: 0 }}
+                      transition={{ duration: 0.4, ease: "circOut" }}
+                      className="overflow-hidden"
+                    >
                     <div className="p-8 md:p-12 space-y-12">
                       {/* 1. Revenus & Rémunérations (Le Camembert) */}
                       <div>

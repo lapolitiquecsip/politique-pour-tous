@@ -135,8 +135,33 @@ export default function DeputyDetailPage({ params }: { params: Promise<{ slug: s
       .map(word => word.charAt(0).toUpperCase() + word.slice(1))
       .join(" ");
 
+  const anImageId = deputy?.an_id ? deputy.an_id.replace('PA', '') : null;
+  const sources = useMemo(() => {
+    if (!anImageId) return [`https://www.nosdeputes.fr/depute/photo/${slug}/250`];
+    return [
+      `https://www.assemblee-nationale.fr/dyn/static/tribun/17/photos/carre/${anImageId}.jpg`,
+      `https://www.nosdeputes.fr/depute/photo/${slug}/250`,
+      `https://www.assemblee-nationale.fr/dyn/static/tribun/photos/carre/${anImageId}.jpg`,
+    ];
+  }, [anImageId, slug]);
+
+  const [srcIndex, setSrcIndex] = useState(0);
+  const [imgError, setImgError] = useState(false);
+
+  useEffect(() => {
+    setSrcIndex(0);
+    setImgError(false);
+  }, [deputy?.id]);
+
+  const handleImgError = () => {
+    if (srcIndex < sources.length - 1) {
+      setSrcIndex(srcIndex + 1);
+    } else {
+      setImgError(true);
+    }
+  };
+
   const votes = getMockVotes();
-  const photoUrl = `https://www.nosdeputes.fr/depute/photo/${slug}/250`;
 
   return (
     <div className="min-h-screen bg-slate-50 dark:bg-slate-950 pb-20">
@@ -167,13 +192,20 @@ export default function DeputyDetailPage({ params }: { params: Promise<{ slug: s
             className="lg:col-span-1 space-y-6"
           >
             <div className="bg-white dark:bg-slate-900 rounded-[2.5rem] border border-slate-200 dark:border-slate-800 overflow-hidden shadow-2xl">
-              <div className="relative aspect-[4/5]">
-                <img 
-                  src={photoUrl} 
-                  alt={name}
-                  className="w-full h-full object-cover"
-                />
-                <div className="absolute inset-0 bg-gradient-to-t from-slate-900 via-transparent to-transparent" />
+              <div className="relative aspect-[4/5] bg-slate-200 dark:bg-slate-800 flex items-center justify-center overflow-hidden">
+                {!imgError ? (
+                  <img 
+                    src={sources[srcIndex]} 
+                    alt={name}
+                    onError={handleImgError}
+                    className="w-full h-full object-cover"
+                  />
+                ) : (
+                  <div className="text-6xl font-black text-slate-300 dark:text-slate-700 select-none">
+                    {deputy?.first_name?.charAt(0)}{deputy?.last_name?.charAt(0)}
+                  </div>
+                )}
+                <div className="absolute inset-0 bg-gradient-to-t from-slate-900 via-transparent to-transparent opacity-80" />
                 <div className="absolute bottom-8 left-8 right-8">
                   <h1 className="text-4xl font-staatliches text-white tracking-tight uppercase leading-none mb-2">
                     {name}

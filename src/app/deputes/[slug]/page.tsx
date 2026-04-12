@@ -440,53 +440,6 @@ export default function DeputyDetailPage({ params }: { params: Promise<{ slug: s
                   })()}
                 </div>
 
-                {/* 2. Engagements & Mandats Passés */}
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
-                   <div className="space-y-4">
-                      <div className="flex items-center gap-2 mb-2">
-                        <Users className="w-4 h-4 text-orange-500" />
-                        <h4 className="text-[10px] font-black uppercase tracking-widest text-slate-400">Engagement Associatif</h4>
-                      </div>
-                      <div className="space-y-2">
-                        {deputy?.biography?.split('\n\n')
-                          .filter((p: string) => p.includes('Amitiés') || p.includes('Commission'))
-                          .map((p: string, i: number) => (
-                            <div key={i} className="flex items-center gap-3 p-3 rounded-xl bg-slate-50 dark:bg-slate-800/50 border border-slate-100 dark:border-slate-800">
-                               <CheckCircle2 className="w-4 h-4 text-emerald-500" />
-                               <span className="text-xs font-bold text-slate-600 dark:text-slate-400 truncate">{p.split('** : ')[1] || p}</span>
-                            </div>
-                          ))
-                        }
-                        {!deputy?.biography?.includes('Amitiés') && (
-                          <p className="text-xs italic text-slate-400">Aucun engagement associatif majeur déclaré.</p>
-                        )}
-                      </div>
-                   </div>
-
-                   <div className="space-y-4">
-                      <div className="flex items-center gap-2 mb-2">
-                        <Clock className="w-4 h-4 text-orange-500" />
-                        <h4 className="text-[10px] font-black uppercase tracking-widest text-slate-400">Anciens Mandats Locaux</h4>
-                      </div>
-                      <div className="space-y-2">
-                        {deputy?.biography?.split('\n\n')
-                          .find((p: string) => p.includes('Mandats locaux'))
-                          ?.split('** : ')[1]
-                          ?.split(', ')
-                          ?.map((mandate: string, i: number) => (
-                            <div key={i} className="flex items-center gap-3 p-3 rounded-xl bg-orange-50 dark:bg-orange-500/5 border border-orange-100 dark:border-orange-500/10">
-                               <Landmark className="w-4 h-4 text-orange-600" />
-                               <span className="text-xs font-bold text-orange-700 dark:text-orange-400">{mandate}</span>
-                            </div>
-                          ))
-                        }
-                        {!deputy?.biography?.includes('Mandats locaux') && (
-                          <p className="text-xs italic text-slate-400">Premier mandat électif d'importance nationale.</p>
-                        )}
-                      </div>
-                   </div>
-                </div>
-
                 {/* Bottom Assurance */}
                 <div className="bg-slate-950 border border-slate-800 rounded-3xl p-6 flex flex-col md:flex-row items-center justify-between gap-4">
                   <div className="flex items-center gap-4">

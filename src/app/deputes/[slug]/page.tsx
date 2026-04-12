@@ -24,7 +24,10 @@ import {
   X,
   Quote,
   Briefcase,
-  FileText
+  FileText,
+  Clock,
+  Globe,
+  Layers
 } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
 import { api } from "@/lib/api";
@@ -310,13 +313,17 @@ export default function DeputyDetailPage({ params }: { params: Promise<{ slug: s
                       transition={{ duration: 0.5, ease: [0.04, 0.62, 0.23, 0.98] }}
                       className="overflow-hidden"
                     >
-                      <div className="px-8 pb-10 md:px-12 md:pb-12 relative z-10 space-y-6">
+                      <div className="px-8 pb-10 md:px-12 md:pb-12 relative z-10 space-y-4">
                         {deputy.biography.split('\n\n').filter(Boolean).map((paragraph: string, pIdx: number) => {
                           let Icon = History;
-                          if (paragraph.toLowerCase().includes('profession')) Icon = Briefcase;
-                          if (paragraph.toLowerCase().includes('origine')) Icon = MapPin;
-                          if (paragraph.toLowerCase().includes('groupe')) Icon = Landmark;
-                          if (paragraph.toLowerCase().includes('commission')) Icon = FileText;
+                          const pLower = paragraph.toLowerCase();
+                          if (pLower.includes('profession')) Icon = Briefcase;
+                          if (pLower.includes('catégorie')) Icon = Layers;
+                          if (pLower.includes('origine')) Icon = MapPin;
+                          if (pLower.includes('ancienneté')) Icon = Clock;
+                          if (pLower.includes('groupe')) Icon = Landmark;
+                          if (pLower.includes('commission')) Icon = FileText;
+                          if (pLower.includes('diplomatie')) Icon = Globe;
 
                           return (
                             <motion.div 
@@ -324,9 +331,9 @@ export default function DeputyDetailPage({ params }: { params: Promise<{ slug: s
                               initial={{ opacity: 0, x: -10 }}
                               animate={{ opacity: 1, x: 0 }}
                               transition={{ delay: 0.1 * pIdx }}
-                              className="flex gap-5 items-start bg-slate-50/50 dark:bg-slate-800/20 p-4 rounded-2xl border border-slate-100/50 dark:border-slate-800/50"
+                              className="flex gap-4 items-start bg-slate-50/50 dark:bg-slate-800/20 p-4 rounded-2xl border border-slate-100/50 dark:border-slate-800/50 group/item hover:bg-white dark:hover:bg-slate-800 transition-colors"
                             >
-                              <div className="w-10 h-10 rounded-xl bg-white dark:bg-slate-800 flex items-center justify-center text-blue-600 shadow-sm shrink-0">
+                              <div className="w-10 h-10 rounded-xl bg-white dark:bg-slate-700 flex items-center justify-center text-blue-600 shadow-sm shrink-0 group-hover/item:scale-110 transition-transform">
                                 <Icon className="w-5 h-5" />
                               </div>
                               <div className="font-playfair text-base md:text-lg text-slate-700 dark:text-slate-300 leading-relaxed italic pt-1">

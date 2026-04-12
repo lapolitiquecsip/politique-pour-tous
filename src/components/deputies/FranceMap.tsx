@@ -7,6 +7,9 @@ import { getDepartmentName } from "@/lib/department-mapping";
 const SVG_CDN_URL =
   "https://cdn.jsdelivr.net/npm/@svg-maps/france.departments@1.0.1/france.departments.svg";
 
+// Global cache to avoid re-parsing on every mount (Critical for INP)
+let cachedSvgContent: string | null = null;
+
 const DROM_COM_PATHS = [
   { id: "971", name: "Guadeloupe", d: "M35.87,487.13l0.7,7.2l-4.5-1.1l-2,1.7l-5.8-0.6l-1.7-1.2l4.9,0.5l3.2-4.4L35.87,487.13z M104.87,553.63 l-4.4-1.8l-1.9,0.8l0.2,2.1l-1.9,0.3l-2.2,4.9l0.7,2.4l1.7,2.9l3.4,1.2l3.4-0.5l5.3-5l-0.4-2.5L104.87,553.63z M110.27,525.53 l-6.7-2.2l-2.4-4.2l-11.1-2.5l-2.7-5.7l-0.7-7.7l-6.2-4.7l-5.9,5.5l-0.8,2.9l1.2,4.5l3.1,1.2l-1,3.4l-2.6,1.2l-2.5,5.1l-1.9-0.2 l-1,1.9l-4.3-0.7l1.8-0.7l-3.5-3.7l-10.4-4.1l-3.4,1.6l-2.4,4.8l-0.5,3.5l3.1,9.7l0.6,12l6.3,9l0.6,2.7c3-1.2,6-2.5,9.1-3.7l5.9-6.9 l-0.4-8.7l-2.8-5.3l0.2-5.5l3.6,0.2l0.9-1.7l1.4,3.1l6.8,2l13.8-4.9L110.27,525.53z" },
   { id: "972", name: "Martinique", d: "m44.23,433.5l1.4-4.1l-6.2-7.5l0.3-5.8l4.8-4 l4.9-0.9l17,9.9l7,8.8l9.4-5.2l1.8,2.2l-2.8,0.8l0.7,2.6l-2.9,1l-2.2-2.4l-1.9,1.7l0.6,2.5l5.1,1.6l-5.3,4.9l1.6,2.3l4.5-1.5 l-0.8,5.6l3.7,0.2l7.6,19l-1.8,5.5l-4.1,5.1h-2.6l-2-3l3.7-5.7l-4.3,1.7l-2.5-2.5l-2.4,1.2l-6-2.8l-5.5,0.1l-5.4,3.5l-2.4-2.1 l0.2-2.7l-2-2l2.5-4.9l3.4-2.5l4.9,3.4l3.2-1.9l-4.4-4.7l0.2-2.4l-1.8,1.2l-7.2-1.1l-7.6-7L44.23,433.5z" },
@@ -66,8 +69,14 @@ export const FranceMap = memo(function FranceMap({
   const tooltipTextRef = useRef<HTMLSpanElement>(null);
   const tooltipCodeRef = useRef<HTMLSpanElement>(null);
 
-  // Fetch and manipulate SVG
+  // Fetch and manipulate SVG with global caching
   useEffect(() => {
+    if (cachedSvgContent) {
+      setSvgContent(cachedSvgContent);
+      setLoading(false);
+      return;
+    }
+
     fetch(SVG_CDN_URL)
       .then((res) => res.text())
       .then((text) => {
@@ -77,14 +86,12 @@ export const FranceMap = memo(function FranceMap({
 
         if (svgElement) {
           // 1. Expand ViewBox (adding space on the left for DROM-COM)
-          // Original: 0 0 613 585 -> New: 0 0 740 585
           svgElement.setAttribute("viewBox", "0 0 740 585");
 
           // 2. Wrap mainland paths in a shifted group
           const mainlandGroup = doc.createElementNS("http://www.w3.org/2000/svg", "g");
           mainlandGroup.setAttribute("transform", "translate(125, 0)");
           
-          // Move all current children (paths) to the group
           while (svgElement.firstChild) {
             mainlandGroup.appendChild(svgElement.firstChild);
           }
@@ -92,10 +99,8 @@ export const FranceMap = memo(function FranceMap({
 
           // 3. Add Separation Line
           const line = doc.createElementNS("http://www.w3.org/2000/svg", "line");
-          line.setAttribute("x1", "120");
-          line.setAttribute("y1", "40");
-          line.setAttribute("x2", "120");
-          line.setAttribute("y2", "545");
+          line.setAttribute("x1", "120"); line.setAttribute("y1", "40");
+          line.setAttribute("x2", "120"); line.setAttribute("y2", "545");
           line.setAttribute("stroke", "currentColor");
           line.setAttribute("stroke-width", "1.5");
           line.setAttribute("opacity", "0.3");
@@ -121,6 +126,7 @@ export const FranceMap = memo(function FranceMap({
             .replace(/stroke="[^"]*"/g, "")
             .replace(/stroke-width="[^"]*"/g, "");
 
+          cachedSvgContent = manipulatedSvg;
           setSvgContent(manipulatedSvg);
         }
         setLoading(false);

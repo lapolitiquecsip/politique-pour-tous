@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useMemo, useCallback, startTransition } from "react";
+import { useState, useMemo, useCallback, startTransition, useTransition } from "react";
 import { useRouter } from "next/navigation";
 import DeputySearch from "@/components/deputies/DeputySearch";
 import DeputyGrid from "@/components/deputies/DeputyGrid";
@@ -9,7 +9,7 @@ import { Deputy, generateSlug } from "@/components/deputies/DeputyCard";
 import DeputyCard from "@/components/deputies/DeputyCard";
 import { getDepartmentName } from "@/lib/department-mapping";
 import { motion, AnimatePresence } from "framer-motion";
-import { Map, List, Users, Landmark, ChevronRight } from "lucide-react";
+import { Map, List, Users, Landmark, ChevronRight, Loader2 } from "lucide-react";
 
 export default function DeputyClient({ initialDeputies }: { initialDeputies: Deputy[] }) {
   const router = useRouter();
@@ -17,6 +17,7 @@ export default function DeputyClient({ initialDeputies }: { initialDeputies: Dep
   const [searchQuery, setSearchQuery] = useState("");
   const [selectedDepartment, setSelectedDepartment] = useState<string | null>(null);
   const [showMap, setShowMap] = useState(true);
+  const [isPending, startTransition] = useTransition();
 
   const filteredDeputies = useMemo(() => {
     return deputiesList.filter((deputy) => {
@@ -47,7 +48,9 @@ export default function DeputyClient({ initialDeputies }: { initialDeputies: Dep
   }, []);
 
   const handleSetShowMap = useCallback((show: boolean) => {
-    setShowMap(show);
+    startTransition(() => {
+      setShowMap(show);
+    });
   }, []);
 
   return (
@@ -70,29 +73,38 @@ export default function DeputyClient({ initialDeputies }: { initialDeputies: Dep
 
       {/* Toggle View & Search */}
       <div className="flex flex-col md:flex-row items-center justify-between gap-6 mb-10">
-        <div className="inline-flex items-center gap-1 bg-secondary/50 border border-border rounded-xl p-1 shrink-0">
-          <button
-            onClick={() => handleSetShowMap(true)}
-            className={`flex items-center gap-2 px-4 py-2 rounded-lg text-sm font-medium transition-all ${
-              showMap
-                ? "bg-card text-foreground shadow-sm"
-                : "text-muted-foreground hover:text-foreground"
-            }`}
-          >
-            <Map className="w-4 h-4" />
-            Vue Carte
-          </button>
-          <button
-            onClick={() => handleSetShowMap(false)}
-            className={`flex items-center gap-2 px-4 py-2 rounded-lg text-sm font-medium transition-all ${
-              !showMap
-                ? "bg-card text-foreground shadow-sm"
-                : "text-muted-foreground hover:text-foreground"
-            }`}
-          >
-            <List className="w-4 h-4" />
-            Vue Liste
-          </button>
+        <div className="flex gap-4 items-center">
+          <div className="inline-flex items-center gap-1 bg-secondary/50 border border-border rounded-xl p-1 shrink-0 relative">
+            <button
+              onClick={() => handleSetShowMap(true)}
+              className={`flex items-center gap-2 px-4 py-2 rounded-lg text-sm font-medium transition-all ${
+                showMap
+                  ? "bg-card text-foreground shadow-sm"
+                  : "text-muted-foreground hover:text-foreground"
+              }`}
+            >
+              <Map className="w-4 h-4" />
+              Vue Carte
+            </button>
+            <button
+              onClick={() => handleSetShowMap(false)}
+              className={`flex items-center gap-2 px-4 py-2 rounded-lg text-sm font-medium transition-all ${
+                !showMap
+                  ? "bg-card text-foreground shadow-sm"
+                  : "text-muted-foreground hover:text-foreground"
+              }`}
+            >
+              <List className="w-4 h-4" />
+              Vue Liste
+            </button>
+          </div>
+          
+          {isPending && (
+            <div className="flex items-center gap-2 text-blue-600 animate-in fade-in slide-in-from-left-2">
+              <Loader2 className="w-4 h-4 animate-spin" />
+              <span className="text-xs font-bold uppercase tracking-widest">Mise à jour...</span>
+            </div>
+          )}
         </div>
 
         <div className="w-full max-w-md">
@@ -101,7 +113,8 @@ export default function DeputyClient({ initialDeputies }: { initialDeputies: Dep
       </div>
 
       {/* Main Content Area */}
-      <AnimatePresence mode="wait">
+      <div className={`transition-opacity duration-300 ${isPending ? "opacity-40" : "opacity-100"}`}>
+        <AnimatePresence mode="wait">
         {showMap ? (
           <motion.div
             key="map-view"
@@ -183,7 +196,8 @@ export default function DeputyClient({ initialDeputies }: { initialDeputies: Dep
             />
           </motion.div>
         )}
-      </AnimatePresence>
+        </AnimatePresence>
+      </div>
     </div>
   );
 }

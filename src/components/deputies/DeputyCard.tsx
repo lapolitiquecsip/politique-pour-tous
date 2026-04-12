@@ -40,13 +40,28 @@ export const DeputyCard = memo(function DeputyCard({ deputy }: { deputy: Deputy 
   const initials = `${deputy.firstName.charAt(0)}${deputy.lastName.charAt(0)}`;
   const slug = deputy.slug || generateSlug(deputy.firstName, deputy.lastName);
   
-  // Official Assembly Image (Primary) -> Fallback to nosdeputes.fr
+  // Official Assembly Image (Primary) -> Fallback to nosdeputes.fr -> Fallback archive
   const anImageId = deputy.anId ? deputy.anId.replace('PA', '') : null;
-  const photoUrl = anImageId 
-    ? `https://www.assemblee-nationale.fr/dyn/static/tribun/17/photos/carre/${anImageId}.jpg`
-    : `https://www.nosdeputes.fr/depute/photo/${slug}/120`;
 
+  const sources = useMemo(() => {
+    if (!anImageId) return [`https://www.nosdeputes.fr/depute/photo/${slug}/250`];
+    return [
+      `https://www.assemblee-nationale.fr/dyn/static/tribun/17/photos/carre/${anImageId}.jpg`,
+      `https://www.nosdeputes.fr/depute/photo/${slug}/250`,
+      `https://www.assemblee-nationale.fr/dyn/static/tribun/photos/carre/${anImageId}.jpg`,
+    ];
+  }, [anImageId, slug]);
+
+  const [srcIndex, setSrcIndex] = useState(0);
   const [imgError, setImgError] = useState(false);
+
+  const handleImgError = () => {
+    if (srcIndex < sources.length - 1) {
+      setSrcIndex(srcIndex + 1);
+    } else {
+      setImgError(true);
+    }
+  };
 
   return (
     <Link 
@@ -58,9 +73,9 @@ export const DeputyCard = memo(function DeputyCard({ deputy }: { deputy: Deputy 
       {/* Photo ou fallback initiales */}
       {!imgError ? (
         <img
-          src={photoUrl}
+          src={sources[srcIndex]}
           alt={`${deputy.firstName} ${deputy.lastName}`}
-          onError={() => setImgError(true)}
+          onError={handleImgError}
           className="w-24 h-24 rounded-full object-cover mt-2 mb-4 shadow-sm border-2 border-slate-100 group-hover:scale-105 transition-transform"
         />
       ) : (

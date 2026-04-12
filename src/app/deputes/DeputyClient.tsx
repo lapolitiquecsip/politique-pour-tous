@@ -203,13 +203,28 @@ export default function DeputyClient({ initialDeputies }: { initialDeputies: Dep
 }
 
 function SidebarDeputyItem({ deputy, router }: { deputy: Deputy; router: any }) {
-  const [imgError, setImgError] = useState(false);
   const slug = deputy.slug || generateSlug(deputy.firstName, deputy.lastName);
-  
   const anImageId = deputy.anId ? deputy.anId.replace('PA', '') : null;
-  const photoUrl = anImageId 
-    ? `https://www.assemblee-nationale.fr/dyn/static/tribun/17/photos/carre/${anImageId}.jpg`
-    : `https://www.nosdeputes.fr/depute/photo/${slug}/120`;
+
+  const sources = useMemo(() => {
+    if (!anImageId) return [`https://www.nosdeputes.fr/depute/photo/${slug}/250`];
+    return [
+      `https://www.assemblee-nationale.fr/dyn/static/tribun/17/photos/carre/${anImageId}.jpg`,
+      `https://www.nosdeputes.fr/depute/photo/${slug}/250`,
+      `https://www.assemblee-nationale.fr/dyn/static/tribun/photos/carre/${anImageId}.jpg`,
+    ];
+  }, [anImageId, slug]);
+
+  const [srcIndex, setSrcIndex] = useState(0);
+  const [imgError, setImgError] = useState(false);
+
+  const handleImgError = () => {
+    if (srcIndex < sources.length - 1) {
+      setSrcIndex(srcIndex + 1);
+    } else {
+      setImgError(true);
+    }
+  };
 
   const initials = `${deputy.firstName.charAt(0)}${deputy.lastName.charAt(0)}`;
   const partyColorClass = partyColors[deputy.party] || "bg-slate-400";
@@ -221,9 +236,9 @@ function SidebarDeputyItem({ deputy, router }: { deputy: Deputy; router: any }) 
       <div className="relative shrink-0">
         {!imgError ? (
           <img
-            src={photoUrl}
+            src={sources[srcIndex]}
             alt={deputy.lastName}
-            onError={() => setImgError(true)}
+            onError={handleImgError}
             className="w-14 h-14 rounded-xl object-cover border border-slate-100 dark:border-slate-800 shadow-md"
           />
         ) : (

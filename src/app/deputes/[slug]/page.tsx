@@ -28,7 +28,8 @@ import {
   Clock,
   Globe,
   Layers,
-  Users
+  Users,
+  Coins
 } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
 import { api } from "@/lib/api";
@@ -369,14 +370,14 @@ export default function DeputyDetailPage({ params }: { params: Promise<{ slug: s
               className="bg-white dark:bg-slate-900 rounded-[3rem] border border-slate-200 dark:border-slate-800 shadow-xl overflow-hidden"
             >
               <div className="p-8 md:px-12 md:py-10 border-b border-slate-100 dark:border-slate-800 flex items-center gap-6">
-                <div className="w-12 h-12 rounded-xl bg-orange-500 flex items-center justify-center text-white shadow-lg shadow-orange-500/20">
-                  <ShieldCheck className="w-6 h-6" />
+                <div className="w-12 h-12 rounded-xl bg-emerald-600 flex items-center justify-center text-white shadow-lg shadow-emerald-500/20">
+                  <Coins className="w-6 h-6" />
                 </div>
                 <div>
                   <h3 className="text-3xl font-staatliches uppercase tracking-tight text-slate-900 dark:text-white leading-none">
-                    Transparence & <span className="text-orange-500">Intégrité</span>
+                    Finances & <span className="text-emerald-600">Patrimoine</span>
                   </h3>
-                  <p className="text-[10px] font-black text-slate-400 uppercase tracking-widest mt-1">Données Factuelles - Source HATVP / AN</p>
+                  <p className="text-[10px] font-black text-slate-400 uppercase tracking-widest mt-1">Déclarations Officielles - Source HATVP</p>
                 </div>
               </div>
 
@@ -384,7 +385,7 @@ export default function DeputyDetailPage({ params }: { params: Promise<{ slug: s
                 {/* 1. Revenus & Rémunérations (Le Camembert) */}
                 <div>
                   <div className="flex items-center gap-2 mb-8">
-                    <History className="w-4 h-4 text-orange-500" />
+                    <History className="w-4 h-4 text-emerald-600" />
                     <h4 className="text-sm font-black uppercase tracking-tighter text-slate-700 dark:text-slate-300">Analyse de la Richesse Déclarée</h4>
                   </div>
                   
@@ -394,7 +395,7 @@ export default function DeputyDetailPage({ params }: { params: Promise<{ slug: s
                     
                     if (!integrityData) return (
                       <div className="py-12 text-center bg-slate-50 dark:bg-slate-800/50 rounded-3xl border border-dashed border-slate-200 dark:border-slate-800">
-                        <Loader2 className="w-8 h-8 text-orange-500 animate-spin mx-auto mb-3" />
+                        <Loader2 className="w-8 h-8 text-emerald-600 animate-spin mx-auto mb-3" />
                         <p className="text-sm text-slate-500 font-medium italic">Chargement des données de transparence...</p>
                       </div>
                     );
@@ -403,9 +404,9 @@ export default function DeputyDetailPage({ params }: { params: Promise<{ slug: s
                       <div className="space-y-16">
                         <div className="grid grid-cols-1 xl:grid-cols-2 gap-16 xl:gap-24">
                           <div className="space-y-8 bg-slate-50/50 dark:bg-slate-800/20 p-8 rounded-[2.5rem] border border-slate-100 dark:border-slate-800">
-                            <div className="flex items-center gap-2 px-3 py-1 bg-orange-500/10 rounded-full w-fit">
-                              <div className="w-1.5 h-1.5 rounded-full bg-orange-500 animate-pulse" />
-                              <span className="text-[10px] font-black text-orange-600 uppercase tracking-widest">Flux : Revenus</span>
+                            <div className="flex items-center gap-2 px-3 py-1 bg-emerald-500/10 rounded-full w-fit">
+                              <div className="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse" />
+                              <span className="text-[10px] font-black text-emerald-600 uppercase tracking-widest">Flux : Revenus</span>
                             </div>
                             <IncomeChart 
                               data={integrityData.income}

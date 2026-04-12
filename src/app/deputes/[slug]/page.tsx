@@ -318,12 +318,12 @@ export default function DeputyDetailPage({ params }: { params: Promise<{ slug: s
                           let Icon = History;
                           const pLower = paragraph.toLowerCase();
                           if (pLower.includes('profession')) Icon = Briefcase;
-                          if (pLower.includes('catégorie')) Icon = Layers;
+                          if (pLower.includes('secteur de carrière')) Icon = Layers;
                           if (pLower.includes('origine')) Icon = MapPin;
                           if (pLower.includes('ancienneté')) Icon = Clock;
                           if (pLower.includes('groupe')) Icon = Landmark;
                           if (pLower.includes('commission')) Icon = FileText;
-                          if (pLower.includes('diplomatie')) Icon = Globe;
+                          if (pLower.includes('amitiés internationales')) Icon = Globe;
 
                           return (
                             <motion.div 

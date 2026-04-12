@@ -318,7 +318,7 @@ export default function DeputyDetailPage({ params }: { params: Promise<{ slug: s
                           let Icon = History;
                           const pLower = paragraph.toLowerCase();
                           if (pLower.includes('profession')) Icon = Briefcase;
-                          if (pLower.includes('milieu social d'origine')) Icon = Layers;
+                          if (pLower.includes('milieu social d\'origine')) Icon = Layers;
                           if (pLower.includes('origine')) Icon = MapPin;
                           if (pLower.includes('ancienneté')) Icon = Clock;
                           if (pLower.includes('groupe')) Icon = Landmark;

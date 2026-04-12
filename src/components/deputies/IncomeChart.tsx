@@ -59,15 +59,21 @@ export default function IncomeChart({ data, totalLabel = "Revenu Mensuel", unit 
             );
           })}
           {/* Inner Circle (Donut effect) */}
-          <circle cx="0" cy="0" r="0.6" fill="white" className="dark:fill-slate-900" />
+          <circle cx="0" cy="0" r="0.65" fill="white" className="dark:fill-slate-900" />
         </svg>
         
         {/* Center Label */}
-        <div className="absolute inset-0 flex flex-col items-center justify-center pointer-events-none">
+        <div className="absolute inset-0 flex flex-col items-center justify-center pointer-events-none px-4">
           <span className="text-[10px] font-black text-slate-400 uppercase tracking-widest leading-none mb-1">Total</span>
-          <span className="text-xl font-bold text-slate-900 dark:text-white leading-none">
-            {new Intl.NumberFormat('fr-FR', { style: 'currency', currency: 'EUR', maximumFractionDigits: 0 }).format(total)}
-          </span>
+          {(() => {
+            const formattedTotal = new Intl.NumberFormat('fr-FR', { style: 'currency', currency: 'EUR', maximumFractionDigits: 0 }).format(total);
+            const fontSize = formattedTotal.length > 10 ? 'text-sm' : formattedTotal.length > 8 ? 'text-base' : 'text-lg';
+            return (
+              <span className={`${fontSize} font-bold text-slate-900 dark:text-white leading-none text-center`}>
+                {formattedTotal}
+              </span>
+            );
+          })()}
           <span className="text-[10px] font-bold text-slate-500 mt-1 italic">{unit}</span>
         </div>
       </div>

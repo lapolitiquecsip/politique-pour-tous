@@ -385,16 +385,58 @@ export default function DeputyDetailPage({ params }: { params: Promise<{ slug: s
                 <div>
                   <div className="flex items-center gap-2 mb-8">
                     <History className="w-4 h-4 text-orange-500" />
-                    <h4 className="text-sm font-black uppercase tracking-tighter text-slate-700 dark:text-slate-300">Répartition des Revenus (Estimation Mensuelle)</h4>
+                    <h4 className="text-sm font-black uppercase tracking-tighter text-slate-700 dark:text-slate-300">Analyse de la Richesse Déclarée</h4>
                   </div>
                   
-                  <IncomeChart 
-                    data={[
-                      { label: "Indemnité Parlementaire", value: 7605, color: "#f97316" },
-                      { label: "Mandats Locaux (Est.)", value: deputy?.biography?.toLowerCase()?.includes('maire') ? 2200 : (deputy?.biography?.toLowerCase()?.includes('conseiller') ? 1100 : 0), color: "#3b82f6" },
-                      { label: "Activités Prof.", value: deputy?.biography?.toLowerCase()?.includes('profession') ? 1800 : 0, color: "#10b981" },
-                    ].filter(d => d.value > 0)}
-                  />
+                  {(() => {
+                    const integrityMatch = deputy?.biography?.match(/<!-- INTEGRITY_START -->\n<!-- (.*?) -->\n<!-- INTEGRITY_END -->/s);
+                    const integrityData = integrityMatch ? JSON.parse(integrityMatch[1]) : null;
+                    
+                    if (!integrityData) return (
+                      <div className="py-12 text-center bg-slate-50 dark:bg-slate-800/50 rounded-3xl border border-dashed border-slate-200 dark:border-slate-800">
+                        <Loader2 className="w-8 h-8 text-orange-500 animate-spin mx-auto mb-3" />
+                        <p className="text-sm text-slate-500 font-medium italic">Chargement des données de transparence...</p>
+                      </div>
+                    );
+
+                    return (
+                      <div className="space-y-12">
+                        <div className="grid grid-cols-1 lg:grid-cols-2 gap-12">
+                          <div className="space-y-6">
+                            <div className="flex items-center gap-2 px-3 py-1 bg-orange-500/10 rounded-full w-fit">
+                              <div className="w-1.5 h-1.5 rounded-full bg-orange-500 animate-pulse" />
+                              <span className="text-[10px] font-black text-orange-600 uppercase tracking-widest">Flux : Revenus</span>
+                            </div>
+                            <IncomeChart 
+                              data={integrityData.income}
+                            />
+                          </div>
+
+                          <div className="space-y-6">
+                            <div className="flex items-center gap-2 px-3 py-1 bg-purple-500/10 rounded-full w-fit">
+                              <div className="w-1.5 h-1.5 rounded-full bg-purple-500 animate-pulse" />
+                              <span className="text-[10px] font-black text-purple-600 uppercase tracking-widest">Stock : Patrimoine Global</span>
+                            </div>
+                            <IncomeChart 
+                              data={integrityData.patrimony}
+                              totalLabel="Actifs Déclarés"
+                            />
+                          </div>
+                        </div>
+
+                        <div className="p-6 rounded-3xl bg-blue-500/5 border border-blue-500/10">
+                          <div className="flex gap-4">
+                            <div className="w-8 h-8 rounded-full bg-blue-500/20 flex items-center justify-center text-blue-500 shrink-0">
+                               <MapPin className="w-4 h-4" />
+                            </div>
+                            <div className="text-xs text-slate-600 dark:text-slate-400 leading-relaxed italic">
+                              <strong>Note Légale</strong> : Conformément à l&apos;article LO135-2 du Code Électoral, le détail des biens immobiliers personnels et des comptes bancaires n&apos;est pas diffusable numériquement. Ces éléments sont regroupés ici par catégorie pour offrir une vue globale de la structure de fortune de l&apos;élu.
+                            </div>
+                          </div>
+                        </div>
+                      </div>
+                    );
+                  })()}
                 </div>
 
                 {/* 2. Engagements & Mandats Passés */}

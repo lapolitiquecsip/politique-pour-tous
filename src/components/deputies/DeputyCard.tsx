@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, memo } from "react";
+import { useState, memo, useMemo } from "react";
 import Link from "next/link";
 import { ChevronRight } from "lucide-react";
 

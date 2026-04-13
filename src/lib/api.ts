@@ -26,6 +26,18 @@ export const api = {
     return data;
   },
 
+  getSenators: async () => {
+    const { data, error } = await supabase.from('senators').select('*').order('last_name');
+    if (error) { console.error(error); return []; }
+    return data || [];
+  },
+
+  getSenatorBySlug: async (slug: string) => {
+    const { data, error } = await supabase.from('senators').select('*').eq('slug', slug).single();
+    if (error) { console.error(error); return null; }
+    return data;
+  },
+
   getCalendarEvents: async () => {
     const { data, error } = await supabase.from('calendar').select('*').order('date', { ascending: true });
     if (error) { console.error(error); return []; }

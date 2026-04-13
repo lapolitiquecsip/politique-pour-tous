@@ -1,11 +1,11 @@
 import { api } from "@/lib/api";
-import DeputyClient from "./DeputyClient";
+import DiscoveryClient from "./DiscoveryClient";
 
 // React Server Component
 export default async function DeputesPage() {
   const deputies = await api.getDeputies();
   
-  // Transform db snake_case to camelCase expectations of frontend for the mock format if needed
+  // Transform db snake_case to camelCase expectations of frontend
   const mappedDeputies = deputies.map((d: any) => ({
     id: d.id,
     firstName: d.first_name || '',
@@ -17,5 +17,5 @@ export default async function DeputesPage() {
     slug: d.slug,
   }));
 
-  return <DeputyClient initialDeputies={mappedDeputies} />;
+  return <DiscoveryClient initialDeputies={mappedDeputies} />;
 }

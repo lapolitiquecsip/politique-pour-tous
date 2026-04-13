@@ -1,18 +1,17 @@
 "use client";
 
 import { useState, useEffect, useMemo } from "react";
-import { createClientComponentClient } from "@supabase/auth-helpers-nextjs";
 import { Search, Map as MapIcon, Users, Lock, Sparkles } from "lucide-react";
 import FranceMap from "@/components/deputies/FranceMap";
 import SenatorCard, { Senator } from "@/components/senators/SenatorCard";
 import { usePremium } from "@/lib/hooks/usePremium"; 
+import { supabase } from "@/lib/supabase";
 
 export default function SenatorClient() {
   const [senators, setSenators] = useState<Senator[]>([]);
   const [loading, setLoading] = useState(true);
   const [search, setSearch] = useState("");
   const [selectedDept, setSelectedDept] = useState<string | null>(null);
-  const supabase = createClientComponentClient();
   
   // Mocking premium for now or using a hook
   const { isPremium } = usePremium() || { isPremium: false };

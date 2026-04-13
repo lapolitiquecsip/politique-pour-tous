@@ -2,7 +2,7 @@
 
 import { useState } from "react";
 import DeputyClient from "./DeputyClient";
-import SenatorClient from "./SenatorClient";
+import SenatorClient from "@/components/senators/SenatorClient";
 import { Users, GraduationCap } from "lucide-react";
 
 export default function DiscoveryClient({ initialDeputies }: { initialDeputies: any[] }) {

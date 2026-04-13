@@ -24,7 +24,8 @@ import {
   FileText,
   Clock,
   Globe,
-  Layers
+  Layers,
+  Users
 } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
 import { api } from "@/lib/api";

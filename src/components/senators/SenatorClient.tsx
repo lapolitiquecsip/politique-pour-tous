@@ -82,8 +82,8 @@ export default function SenatorClient() {
           
           <div className={`${!isPremium ? "blur-sm grayscale opacity-50 pointer-events-none" : ""}`}>
             <FranceMap 
-              onSelectDept={(deptName) => setSelectedDept(deptName)} 
-              activeDept={selectedDept}
+              onDepartmentSelect={(deptName) => setSelectedDept(deptName)} 
+              selectedDepartment={selectedDept}
             />
           </div>
 

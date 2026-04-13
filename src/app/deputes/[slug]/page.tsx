@@ -422,39 +422,6 @@ export default function DeputyDetailPage({ params }: { params: Promise<{ slug: s
               </div>
             )}
 
-                              <div className="p-6 rounded-3xl bg-blue-500/5 border border-blue-500/10">
-                                <div className="flex gap-4">
-                                  <div className="w-8 h-8 rounded-full bg-blue-500/20 flex items-center justify-center text-blue-500 shrink-0">
-                                     <MapPin className="w-4 h-4" />
-                                  </div>
-                                  <div className="text-xs text-slate-600 dark:text-slate-400 leading-relaxed italic">
-                                    <strong>Note Légale</strong> : Conformément à l&apos;article LO135-2 du Code Électoral, le détail des biens immobiliers personnels et des comptes bancaires n&apos;est pas diffusable numériquement. Ces éléments sont regroupés ici par catégorie pour offrir une vue globale de la structure de fortune de l&apos;élu.
-                                  </div>
-                                </div>
-                              </div>
-                            </div>
-                          );
-                        })()}
-                      </div>
-
-                      {/* Bottom Assurance */}
-                      <div className="bg-slate-950 border border-slate-800 rounded-3xl p-6 flex flex-col md:flex-row items-center justify-between gap-4">
-                        <div className="flex items-center gap-4">
-                          <AlertTriangle className="w-5 h-5 text-amber-500" />
-                          <div>
-                            <p className="text-xs font-bold text-white mb-0.5">Données Transparantes</p>
-                            <p className="text-[10px] text-slate-400 italic">Mise à jour trimestrielle - Sources HATVP (Haute Autorité pour la Transparence).</p>
-                          </div>
-                        </div>
-                        <button className="px-6 py-2.5 rounded-xl bg-white/5 text-white text-[10px] font-black uppercase tracking-widest hover:bg-white/10 transition-all border border-white/10">
-                          Source Officielle
-                        </button>
-                      </div>
-                    </div>
-                  </motion.div>
-                )}
-              </AnimatePresence>
-            </motion.div>
 
             <div>
               <h2 className="text-4xl font-staatliches uppercase tracking-tight text-slate-900 dark:text-white mb-4">

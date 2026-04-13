@@ -350,7 +350,7 @@ export default function DeputyDetailPage({ params }: { params: Promise<{ slug: s
                             initial={{ height: 0, opacity: 0 }}
                             animate={{ height: "auto", opacity: 1 }}
                             exit={{ height: 0, opacity: 0 }}
-                            transition={{ duration: 0.4, ease: "circOut" }}
+                            transition={{ duration: 0.3, ease: "easeOut" }}
                             className="overflow-hidden"
                           >
                             <div className="px-8 pb-10 md:px-12 md:pb-12 relative z-10 space-y-4">

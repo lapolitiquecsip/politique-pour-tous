@@ -26,8 +26,12 @@ export default function IncomeChart({ data, totalLabel = "Revenu Mensuel", unit 
     return [x, y];
   };
 
-  return (
-    <div className="flex flex-col items-center gap-6">
+    <motion.div 
+      initial={{ opacity: 0, y: 10 }}
+      animate={{ opacity: 1, y: 0 }}
+      transition={{ duration: 0.5 }}
+      className="flex flex-col items-center gap-6 w-full"
+    >
       <div className="relative w-40 h-40 shrink-0">
         <svg viewBox="-1.1 -1.1 2.2 2.2" className="w-full h-full -rotate-90">
           {data.map((item, i) => {
@@ -47,13 +51,10 @@ export default function IncomeChart({ data, totalLabel = "Revenu Mensuel", unit 
             ].join(' ');
 
             return (
-              <motion.path
+              <path
                 key={i}
                 d={pathData}
                 fill={item.color}
-                initial={{ opacity: 0, scale: 0.8 }}
-                animate={{ opacity: 1, scale: 1 }}
-                transition={{ delay: i * 0.1, duration: 0.5 }}
                 className="hover:opacity-80 transition-opacity cursor-pointer"
               />
             );
@@ -80,11 +81,8 @@ export default function IncomeChart({ data, totalLabel = "Revenu Mensuel", unit 
 
       <div className="flex-1 space-y-3 w-full">
         {data.map((item, i) => (
-          <motion.div 
+          <div 
             key={i}
-            initial={{ opacity: 0, x: 20 }}
-            animate={{ opacity: 1, x: 0 }}
-            transition={{ delay: 0.3 + (i * 0.1) }}
             className="flex items-center justify-between p-3 rounded-2xl bg-slate-50 dark:bg-slate-800/40 border border-slate-100 dark:border-slate-800"
           >
             <div className="flex items-center gap-3">
@@ -99,9 +97,9 @@ export default function IncomeChart({ data, totalLabel = "Revenu Mensuel", unit 
                 {Math.round((item.value / total) * 100)}%
               </span>
             </div>
-          </motion.div>
+          </div>
         ))}
       </div>
-    </div>
+    </motion.div>
   );
 }

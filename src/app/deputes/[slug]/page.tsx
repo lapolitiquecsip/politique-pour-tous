@@ -28,11 +28,6 @@ import {
   Clock,
   Globe,
   Layers,
-  Briefcase,
-  FileText,
-  Clock,
-  Globe,
-  Layers,
   Users
 } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";

@@ -28,13 +28,16 @@ import {
   Clock,
   Globe,
   Layers,
-  Users,
-  Coins
+  Briefcase,
+  FileText,
+  Clock,
+  Globe,
+  Layers,
+  Users
 } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
 import { api } from "@/lib/api";
 import { usePremium } from "@/lib/hooks/usePremium";
-import IncomeChart from "@/components/deputies/IncomeChart";
 
 // Mock data generator for votes
 const getMockVotes = () => [
@@ -54,8 +57,7 @@ export default function DeputyDetailPage({ params }: { params: Promise<{ slug: s
   const [loadingFollow, setLoadingFollow] = useState(false);
   const [checkingFollow, setCheckingFollow] = useState(true);
   const [showLegalModal, setShowLegalModal] = useState(false);
-  const [isBioExpanded, setIsBioExpanded] = useState(false);
-  const [isFinancesExpanded, setIsFinancesExpanded] = useState(false);
+  const [isBioExpanded, setIsBioExpanded] = useState(true);
 
   // Load real deputy and follow status
   useEffect(() => {
@@ -419,91 +421,6 @@ export default function DeputyDetailPage({ params }: { params: Promise<{ slug: s
                 })()}
               </div>
             )}
-
-            {/* NEW: Transparence & Intégrité Section */}
-            <motion.div 
-              initial={{ opacity: 0, y: 20 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ delay: 0.3 }}
-              className="bg-white dark:bg-slate-900 rounded-[3rem] border border-slate-200 dark:border-slate-800 shadow-xl overflow-hidden pb-2"
-            >
-              <button 
-                onClick={() => setIsFinancesExpanded(!isFinancesExpanded)}
-                className="w-full text-left p-8 md:px-12 md:py-10 border-b border-slate-100 dark:border-slate-800 flex items-center justify-between group/header"
-              >
-                <div className="flex items-center gap-6">
-                  <div className="w-12 h-12 rounded-xl bg-emerald-600 flex items-center justify-center text-white shadow-lg shadow-emerald-500/20 group-hover/header:rotate-6 transition-transform duration-500">
-                    <Coins className="w-6 h-6" />
-                  </div>
-                  <div>
-                    <h3 className="text-3xl font-staatliches uppercase tracking-tight text-slate-900 dark:text-white leading-none">
-                      Finances & <span className="text-emerald-600">Patrimoine</span>
-                    </h3>
-                    <p className="text-[10px] font-black text-slate-400 uppercase tracking-widest mt-1">
-                      {deputy?.biography?.includes('"isReal":true') 
-                        ? "Données Officielles - Source HATVP" 
-                        : "Simulation - En attente des données HATVP"}
-                    </p>
-                  </div>
-                </div>
-                <div className={`w-10 h-10 rounded-full bg-slate-100 dark:bg-slate-800 flex items-center justify-center text-slate-500 transition-transform duration-500 ${isFinancesExpanded ? 'rotate-180' : ''}`}>
-                  <ChevronDown className="w-5 h-5" />
-                </div>
-              </button>
-
-              <AnimatePresence>
-                {isFinancesExpanded && (
-                    <motion.div
-                      initial={{ height: 0, opacity: 0 }}
-                      animate={{ height: "auto", opacity: 1 }}
-                      exit={{ height: 0, opacity: 0 }}
-                      transition={{ duration: 0.4, ease: "circOut" }}
-                      className="overflow-hidden"
-                    >
-                    <div className="p-8 md:p-12 space-y-12">
-                      {/* 1. Revenus & Rémunérations (Le Camembert) */}
-                      <div>
-                        <div className="flex items-center gap-2 mb-8">
-                          <History className="w-4 h-4 text-emerald-600" />
-                          <h4 className="text-sm font-black uppercase tracking-tighter text-slate-700 dark:text-slate-300">Analyse de la Richesse Déclarée</h4>
-                        </div>
-                        
-                        {(() => {
-                          const integrityMatch = deputy?.biography?.match(/<!-- INTEGRITY_START -->\n<!-- ([\s\S]*?) -->\n<!-- INTEGRITY_END -->/);
-                          const integrityData = integrityMatch ? JSON.parse(integrityMatch[1]) : null;
-                          
-                          if (!integrityData) return (
-                            <div className="py-12 text-center bg-slate-50 dark:bg-slate-800/50 rounded-3xl border border-dashed border-slate-200 dark:border-slate-800">
-                              <Loader2 className="w-8 h-8 text-emerald-600 animate-spin mx-auto mb-3" />
-                              <p className="text-sm text-slate-500 font-medium italic">Chargement des données de transparence...</p>
-                            </div>
-                          );
-
-                          return (
-                            <div className="space-y-16">
-                              <div className="grid grid-cols-1 xl:grid-cols-2 gap-16 xl:gap-24">
-                                <div className="space-y-8 bg-slate-50/50 dark:bg-slate-800/20 p-8 rounded-[2.5rem] border border-slate-100 dark:border-slate-800">
-                                  <div className="flex items-center gap-2 px-3 py-1 bg-emerald-500/10 rounded-full w-fit">
-                                    <div className="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse" />
-                                    <span className="text-[10px] font-black text-emerald-600 uppercase tracking-widest">Flux : Revenus</span>
-                                  </div>
-                                  <IncomeChart 
-                                    data={integrityData.income}
-                                  />
-                                </div>
-
-                                <div className="space-y-6">
-                                  <div className="flex items-center gap-2 px-3 py-1 bg-purple-500/10 rounded-full w-fit">
-                                    <div className="w-1.5 h-1.5 rounded-full bg-purple-500 animate-pulse" />
-                                    <span className="text-[10px] font-black text-purple-600 uppercase tracking-widest">Stock : Patrimoine Global</span>
-                                  </div>
-                                  <IncomeChart 
-                                    data={integrityData.patrimony}
-                                    totalLabel="Actifs Déclarés"
-                                    unit=""
-                                  />
-                                </div>
-                              </div>
 
                               <div className="p-6 rounded-3xl bg-blue-500/5 border border-blue-500/10">
                                 <div className="flex gap-4">

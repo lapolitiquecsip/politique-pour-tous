@@ -127,6 +127,24 @@ export default function DeputyDetailPage({ params }: { params: Promise<{ slug: s
     }
   };
 
+  // Political groups mapping
+  const GROUP_NAMES: Record<string, string> = {
+    'RN': 'Rassemblement National',
+    'ENS': 'Ensemble pour la République',
+    'EPR': 'Ensemble pour la République',
+    'LFI': 'La France Insoumise - NFP',
+    'SOC': 'Socialistes et apparentés',
+    'DR': 'Droite Républicaine',
+    'EcoS': 'Écologiste et Social',
+    'DEM': 'Les Démocrates',
+    'HOR': 'Horizons et apparentés',
+    'LIOT': 'Libertés, Indépendants, Outre-mer et Territoires',
+    'GDR': 'Gauche Démocrate et Républicaine',
+    'NI': 'Non-Inscrits (Indépendants)'
+  };
+
+  const groupFullName = deputy?.party ? (GROUP_NAMES[deputy.party] || deputy.party) : 'Non renseigné';
+
   // Format slug back to name for display
   const name = deputy?.first_name 
     ? `${deputy.first_name} ${deputy.last_name}`
@@ -224,7 +242,10 @@ export default function DeputyDetailPage({ params }: { params: Promise<{ slug: s
                    <div>
                      <p className="text-[10px] font-black text-slate-400 uppercase tracking-wider">Groupe Politique</p>
                      <p className="font-bold text-slate-900 dark:text-white truncate">
-                       {deputy?.party || (slug === 'gabriel-attal' ? 'EPR' : 'Non spécifié')}
+                       {deputy?.party || (slug === 'gabriel-attal' ? 'EPR' : 'NI')}
+                     </p>
+                     <p className="text-[10px] font-medium text-slate-500 uppercase tracking-wider mt-0.5 whitespace-normal break-words">
+                       {groupFullName}
                      </p>
                    </div>
                 </div>
@@ -418,7 +439,11 @@ export default function DeputyDetailPage({ params }: { params: Promise<{ slug: s
                     <h3 className="text-3xl font-staatliches uppercase tracking-tight text-slate-900 dark:text-white leading-none">
                       Finances & <span className="text-emerald-600">Patrimoine</span>
                     </h3>
-                    <p className="text-[10px] font-black text-slate-400 uppercase tracking-widest mt-1">Déclarations Officielles - Source HATVP</p>
+                    <p className="text-[10px] font-black text-slate-400 uppercase tracking-widest mt-1">
+                      {deputy?.biography?.includes('"isReal":true') 
+                        ? "Données Officielles - Source HATVP" 
+                        : "Simulation - En attente des données HATVP"}
+                    </p>
                   </div>
                 </div>
                 <div className={`w-10 h-10 rounded-full bg-slate-100 dark:bg-slate-800 flex items-center justify-center text-slate-500 transition-transform duration-500 ${isFinancesExpanded ? 'rotate-180' : ''}`}>

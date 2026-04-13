@@ -133,10 +133,11 @@ export default function DeputyDetailPage({ params }: { params: Promise<{ slug: s
     'SOC': 'Socialistes et apparentés',
     'DR': 'Droite Républicaine',
     'EcoS': 'Écologiste et Social',
-    'DEM': 'Les Démocrates',
+    'Dem': 'Les Démocrates',
     'HOR': 'Horizons et apparentés',
     'LIOT': 'Libertés, Indépendants, Outre-mer et Territoires',
     'GDR': 'Gauche Démocrate et Républicaine',
+    'UDR': 'Union des droites pour la République',
     'NI': 'Non-Inscrits (Indépendants)'
   };
 
@@ -225,8 +226,15 @@ export default function DeputyDetailPage({ params }: { params: Promise<{ slug: s
                   <h1 className="text-4xl font-staatliches text-white tracking-tight uppercase leading-none mb-2">
                     {name}
                   </h1>
-                  <p className="text-red-400 font-bold tracking-widest text-xs uppercase">
-                    Député de la Nation
+                  <p className="text-red-400 font-bold tracking-widest text-xs uppercase flex items-center gap-2">
+                    {deputy?.biography?.includes('**Ministre**') ? (
+                      <>
+                        <ShieldCheck className="w-3 h-3" />
+                        Membre du Gouvernement
+                      </>
+                    ) : (
+                      'Député de la Nation'
+                    )}
                   </p>
                 </div>
               </div>

@@ -26,6 +26,7 @@ export default function IncomeChart({ data, totalLabel = "Revenu Mensuel", unit 
     return [x, y];
   };
 
+  return (
     <motion.div 
       initial={{ opacity: 0, y: 10 }}
       animate={{ opacity: 1, y: 0 }}

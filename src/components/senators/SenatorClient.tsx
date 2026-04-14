@@ -1,6 +1,7 @@
 "use client";
 
 import { useState, useEffect, useMemo } from "react";
+import Link from "next/link";
 import { Search, Map as MapIcon, Users, Lock, Sparkles } from "lucide-react";
 import FranceMap from "@/components/deputies/FranceMap";
 import SenatorCard, { Senator } from "@/components/senators/SenatorCard";
@@ -96,10 +97,10 @@ export default function SenatorClient() {
                 <p className="text-slate-600 max-w-xs mb-6">
                     Connectez-vous à votre compte <strong>Premium</strong> pour accéder à la carte interactive du Sénat.
                 </p>
-                <button className="bg-black text-white px-8 py-3 rounded-full font-bold flex items-center gap-2 hover:scale-105 transition-transform">
+                <Link href="/premium" className="bg-black text-white px-8 py-3 rounded-full font-bold flex items-center gap-2 hover:scale-105 transition-transform active:scale-95">
                     <Sparkles className="w-4 h-4 text-amber-400" />
                     Passer au Premium
-                </button>
+                </Link>
             </div>
           )}
         </div>
@@ -129,9 +130,9 @@ export default function SenatorClient() {
              <div className="absolute bottom-0 left-0 w-full h-64 bg-gradient-to-t from-white via-white/90 to-transparent flex items-end justify-center pb-8 p-4 text-center">
                 <div className="space-y-4">
                     <p className="text-slate-500 text-sm font-medium">Découvrez les 348 sénateurs avec un abonnement Premium</p>
-                    <button className="bg-amber-600 text-white px-8 py-3 rounded-full font-bold shadow-xl hover:bg-amber-700 transition-colors">
+                    <Link href="/premium" className="bg-amber-600 text-white px-8 py-3 rounded-full font-bold shadow-xl hover:bg-amber-700 transition-colors inline-block active:scale-95">
                         Débloquer le Sénat
-                    </button>
+                    </Link>
                 </div>
              </div>
           )}

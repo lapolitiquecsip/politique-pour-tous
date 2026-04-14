@@ -2,6 +2,7 @@
 
 import { useState, memo, useMemo } from "react";
 import Link from "next/link";
+import { ChevronRight } from "lucide-react";
 import { generateSlug } from "@/lib/slug-generator";
 import { getFullPartyName } from "@/lib/party-utils";
 

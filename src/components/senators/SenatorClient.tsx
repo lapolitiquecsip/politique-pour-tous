@@ -132,7 +132,7 @@ export default function SenatorClient() {
             </h2>
           </div>
 
-          <div className={`grid grid-cols-1 sm:grid-cols-2 gap-4 ${!isPremium ? "max-h-[600px] overflow-hidden" : ""}`}>
+          <div className={`grid grid-cols-1 sm:grid-cols-2 gap-x-4 gap-y-16 mt-12 ${!isPremium ? "max-h-[600px] overflow-hidden" : ""}`}>
             {loading ? (
               Array(6).fill(0).map((_, i) => (
                 <div key={i} className="h-48 bg-slate-100 animate-pulse rounded-2xl" />

@@ -3,6 +3,7 @@
 import { useState, memo, useMemo } from "react";
 import Link from "next/link";
 import { ChevronRight, Lock } from "lucide-react";
+import { getFullPartyName } from "@/lib/party-utils";
 
 export interface Senator {
   id: string;
@@ -96,7 +97,7 @@ function SenatorContent({ senator, isBlurred, imgError, setImgError, initials, c
       </h3>
       
       <span className={`px-3 py-1 text-[10px] font-bold uppercase tracking-wider rounded-full text-white mb-3 ${colorClass} max-w-full truncate block`}>
-        {senator.party}
+        {getFullPartyName(senator.party)}
       </span>
       
       <p className="text-slate-500 text-sm">

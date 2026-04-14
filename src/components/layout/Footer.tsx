@@ -30,7 +30,7 @@ export default function Footer() {
             <h4 className="text-xs font-black uppercase tracking-[0.3em] text-white/40 mb-6 font-staatliches">Navigation</h4>
             <ul className="space-y-4">
               <li><Link href="/" className="text-slate-300 hover:text-white hover:translate-x-1 transition-all inline-block font-medium">Accueil</Link></li>
-              <li><Link href="/deputes" className="text-slate-300 hover:text-white hover:translate-x-1 transition-all inline-block font-medium whitespace-nowrap">Vote des élus</Link></li>
+              <li><Link href="/deputes" className="text-slate-300 hover:text-white hover:translate-x-1 transition-all inline-block font-medium whitespace-nowrap">Votes des élus</Link></li>
               <li><Link href="/lois" className="text-slate-300 hover:text-white hover:translate-x-1 transition-all inline-block font-medium">Dossiers Législatifs</Link></li>
             </ul>
           </div>

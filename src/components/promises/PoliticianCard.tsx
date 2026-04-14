@@ -1,6 +1,7 @@
 import React from 'react';
 import Link from 'next/link';
 import ProgressBar from './ProgressBar';
+import { getFullPartyName } from '@/lib/party-utils';
 
 interface Politician {
   id: string;
@@ -51,7 +52,7 @@ export default function PoliticianCard({ politician }: { politician: Politician 
               className="px-3 py-1 text-[10px] font-black uppercase tracking-widest rounded-lg text-white inline-block shadow-sm"
               style={{ backgroundColor: politician.party_color || '#95A5A6' }}
             >
-              {politician.party}
+              {getFullPartyName(politician.party)}
             </span>
           </div>
         </div>

@@ -2,8 +2,8 @@
 
 import { useState, memo, useMemo } from "react";
 import Link from "next/link";
-import { ChevronRight } from "lucide-react";
 import { generateSlug } from "@/lib/slug-generator";
+import { getFullPartyName } from "@/lib/party-utils";
 
 export interface Deputy {
   id: string;
@@ -89,8 +89,8 @@ export const DeputyCard = memo(function DeputyCard({ deputy }: { deputy: Deputy 
         {deputy.firstName} {deputy.lastName}
       </h3>
       
-      <span className={`px-3 py-1 text-xs font-semibold rounded-full text-white mb-3 ${colorClass}`}>
-        {deputy.party}
+      <span className={`px-3 py-1 text-xs font-semibold rounded-full text-white mb-3 ${colorClass} max-w-full truncate`}>
+        {getFullPartyName(deputy.party)}
       </span>
       
       <p className="text-muted-foreground text-sm">

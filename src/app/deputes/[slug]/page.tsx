@@ -33,6 +33,7 @@ import {
 import { motion, AnimatePresence } from "framer-motion";
 import { api } from "@/lib/api";
 import { usePremium } from "@/lib/hooks/usePremium";
+import { getFullPartyName } from "@/lib/party-utils";
 
 // Mock data generator for votes
 const getMockVotes = () => [
@@ -124,24 +125,7 @@ export default function DeputyDetailPage({ params }: { params: Promise<{ slug: s
     }
   };
 
-  // Political groups mapping
-  const GROUP_NAMES: Record<string, string> = {
-    'RN': 'Rassemblement National',
-    'ENS': 'Ensemble pour la République',
-    'EPR': 'Ensemble pour la République',
-    'LFI': 'La France Insoumise - NFP',
-    'SOC': 'Socialistes et apparentés',
-    'DR': 'Droite Républicaine',
-    'EcoS': 'Écologiste et Social',
-    'Dem': 'Les Démocrates',
-    'HOR': 'Horizons et apparentés',
-    'LIOT': 'Libertés, Indépendants, Outre-mer et Territoires',
-    'GDR': 'Gauche Démocrate et Républicaine',
-    'UDR': 'Union des droites pour la République',
-    'NI': 'Non-Inscrits (Indépendants)'
-  };
-
-  const groupFullName = deputy?.party ? (GROUP_NAMES[deputy.party] || deputy.party) : 'Non renseigné';
+  const groupFullName = getFullPartyName(deputy?.party || (slug === 'gabriel-attal' ? 'EPR' : ''));
 
   // Format slug back to name for display
   const name = deputy?.first_name 

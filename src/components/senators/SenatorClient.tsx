@@ -42,8 +42,16 @@ export default function SenatorClient() {
         fullName.includes(q) || 
         (s.department && s.department.toLowerCase().includes(q));
 
-      const deptName = selectedDept ? getDepartmentName(selectedDept) : null;
-      const matchesDept = !deptName || s.department === deptName;
+      const deptName = selectedDept ? getDepartmentName(selectedDept).toLowerCase() : "";
+      
+      const normalize = (str: string) => 
+        str.toLowerCase()
+           .normalize("NFD")
+           .replace(/[\u0300-\u036f]/g, "")
+           .replace(/[^a-z0-9]/g, " ");
+
+      const matchesDept = !deptName || 
+        (s.department && normalize(s.department).includes(normalize(deptName)));
       
       return matchesSearch && matchesDept;
     });

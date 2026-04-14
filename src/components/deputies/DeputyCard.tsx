@@ -63,7 +63,7 @@ export const DeputyCard = memo(function DeputyCard({ deputy }: { deputy: Deputy 
       <div className="tricolor-band"><span></span><span></span><span></span></div>
 
       {/* Photo ou fallback initiales */}
-      {!imgError ?            <div className="relative mb-4">
+      {!imgError ? (
               <img
                 src={sources[srcIndex]}
                 alt={deputy.lastName}

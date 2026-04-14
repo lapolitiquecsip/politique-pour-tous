@@ -16,8 +16,8 @@ export default function Footer() {
               <div className="w-10 h-10 rounded-xl bg-red-600 flex items-center justify-center shadow-lg shadow-red-600/20 group-hover:scale-110 transition-transform">
                 <Landmark className="w-6 h-6 text-white" />
               </div>
-              <span className="text-xl font-staatliches tracking-wider uppercase italic">
-                La Politique, <span className="text-red-500">C'est Simple</span>
+              <span className="text-xl font-staatliches tracking-wider uppercase italic leading-none">
+                <span className="text-white">La Politique,</span> <span className="text-red-500">C'est Simple</span>
               </span>
             </Link>
             <p className="text-slate-400 text-sm leading-relaxed max-w-xs">

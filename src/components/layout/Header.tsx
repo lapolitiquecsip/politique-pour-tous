@@ -18,8 +18,9 @@ import {
   MessageSquareQuote,
   Home,
   Users,
-  Scale,
-  Star
+  Scale, 
+  Star,
+  Landmark
 } from "lucide-react";
 
 import { usePremium } from "@/lib/hooks/usePremium";
@@ -55,14 +56,13 @@ export default function Header() {
           
           {/* Logo */}
           <Link href="/" className="flex items-center gap-2 group">
-            <div className="w-8 h-8 bg-gradient-to-tr from-blue-600 to-red-600 rounded-lg flex items-center justify-center text-white font-black text-sm shadow-md group-hover:scale-110 transition-transform">
-              LP
+            <div className="w-9 h-9 bg-red-600 rounded-xl flex items-center justify-center text-white shadow-lg shadow-red-600/20 group-hover:scale-110 transition-transform">
+              <Landmark size={20} />
             </div>
-            <span className="font-extrabold text-slate-900 tracking-tight text-lg">
-              La Politique, <span className="text-blue-600">C'est Simple</span>
+            <span className="font-staatliches text-2xl tracking-wider uppercase italic leading-none pt-1">
+              <span className="text-slate-900">La Politique,</span> <span className="text-red-600">C'est Simple</span>
             </span>
           </Link>
-
           {/* Desktop Nav */}
           <div className="hidden md:flex items-center gap-3">
             <Link href="/" className="text-sm font-semibold text-slate-600 hover:text-blue-600 transition-colors flex items-center gap-1.5 group flex-shrink-0">

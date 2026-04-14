@@ -7,6 +7,7 @@ import FranceMap from "@/components/deputies/FranceMap";
 import SenatorCard, { Senator } from "@/components/senators/SenatorCard";
 import { usePremium } from "@/lib/hooks/usePremium"; 
 import { supabase } from "@/lib/supabase";
+import { getDepartmentName } from "@/lib/department-mapping";
 
 export default function SenatorClient() {
   const [senators, setSenators] = useState<Senator[]>([]);
@@ -33,8 +34,17 @@ export default function SenatorClient() {
 
   const filteredSenators = useMemo(() => {
     return senators.filter(s => {
-      const matchesSearch = `${s.first_name} ${s.last_name}`.toLowerCase().includes(search.toLowerCase());
-      const matchesDept = !selectedDept || s.department === selectedDept;
+      const q = search.toLowerCase();
+      const fullName = `${s.first_name} ${s.last_name}`.toLowerCase();
+      
+      const matchesSearch = 
+        !search || 
+        fullName.includes(q) || 
+        (s.department && s.department.toLowerCase().includes(q));
+
+      const deptName = selectedDept ? getDepartmentName(selectedDept) : null;
+      const matchesDept = !deptName || s.department === deptName;
+      
       return matchesSearch && matchesDept;
     });
   }, [senators, search, selectedDept]);

@@ -64,12 +64,12 @@ export default function Header() {
           </Link>
 
           {/* Desktop Nav */}
-          <div className="hidden md:flex items-center gap-5">
-            <Link href="/" className="text-sm font-semibold text-slate-600 hover:text-blue-600 transition-colors flex items-center gap-1.5 group">
+          <div className="hidden md:flex items-center gap-3">
+            <Link href="/" className="text-sm font-semibold text-slate-600 hover:text-blue-600 transition-colors flex items-center gap-1.5 group flex-shrink-0">
               <Home size={16} className="text-indigo-500 group-hover:scale-110 transition-transform" />
               Accueil
             </Link>
-            <Link href="/deputes" className="text-sm font-semibold text-slate-600 hover:text-blue-600 transition-colors flex items-center gap-1.5 group whitespace-nowrap">
+            <Link href="/deputes" className="text-sm font-semibold text-slate-600 hover:text-blue-600 transition-colors flex items-center gap-1.5 group whitespace-nowrap flex-shrink-0">
               <Users size={16} className="text-blue-500 group-hover:scale-110 transition-transform" />
               Vote des élus
             </Link>

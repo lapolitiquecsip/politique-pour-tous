@@ -17,13 +17,15 @@ export interface Senator {
 
 const partyColors: Record<string, string> = {
   "Les Républicains": "bg-[#0055A4]",
-  "Socialiste, Écologiste et Républicain": "bg-[#E1001A]",
-  "Union Centriste": "bg-[#00BFFF]",
-  "Rassemblement des démocrates, progressistes et indépendants": "bg-[#FFD700]",
-  "Communiste républicain citoyen et écologiste": "bg-[#DD0000]",
+  "Droite Républicaine": "bg-[#0055A4]",
+  "Socialiste, Écologiste et Républicain": "bg-pink-500",
+  "Union Centriste": "bg-orange-500",
+  "Rassemblement des démocrates, progressistes et indépendants": "bg-amber-400",
+  "Communiste Républicain Citoyen Écologiste - Kanaky": "bg-red-600",
   "Rassemblement National": "bg-[#0D2145]",
-  "Écologiste - Solidarité et Territoires": "bg-[#008000]",
-  "Les Indépendants - République et Territoires": "bg-[#ED8D05]",
+  "Écologiste - Solidarité et Territoires": "bg-emerald-600",
+  "Les Indépendants - République et Territoires": "bg-cyan-600",
+  "Rassemblement Démocratique et Social Européen": "bg-rose-700",
 };
 
 export const SenatorCard = memo(function SenatorCard({ 

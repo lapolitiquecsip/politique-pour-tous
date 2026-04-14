@@ -25,7 +25,7 @@ const playfairDisplay = Playfair_Display({
 });
 
 export const metadata: Metadata = {
-  title: "La Politique, C'est Simple",
+  title: "INSTITUTIONS AU QUOTIDIEN",
   description: "Comprendre la politique française simplement.",
 };
 

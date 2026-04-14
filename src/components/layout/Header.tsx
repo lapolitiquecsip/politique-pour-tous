@@ -59,8 +59,8 @@ export default function Header() {
             <div className="w-9 h-9 bg-red-600 rounded-xl flex items-center justify-center text-white shadow-lg shadow-red-600/20 group-hover:scale-110 transition-transform">
               <Landmark size={20} />
             </div>
-            <span className="font-staatliches text-2xl tracking-wider uppercase italic leading-none pt-1">
-              <span className="text-slate-900">La Politique,</span> <span className="text-red-600">C'est Simple</span>
+            <span className="font-staatliches text-2xl tracking-wider uppercase leading-none pt-1">
+              <span className="text-slate-900">Institutions</span> <span className="bg-gradient-to-r from-blue-600 via-purple-600 to-red-600 bg-clip-text text-transparent">au quotidien</span>
             </span>
           </Link>
           {/* Desktop Nav */}

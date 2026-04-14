@@ -54,24 +54,8 @@ export default function DeputyClient({ initialDeputies }: { initialDeputies: Dep
   }, []);
 
   return (
-    <div className="container mx-auto px-4 py-12 max-w-7xl animate-in fade-in duration-700">
-      {/* 1. SECTION HEADER (POSTER STYLE REBORN) */}
-      <div className="mb-16">
-        <div className="relative mb-10 text-center">
-          <h1 className="text-5xl md:text-7xl font-staatliches uppercase tracking-tighter leading-none relative z-10">
-            <span className="text-slate-900 opacity-[0.08] absolute -top-8 left-1/2 -translate-x-1/2 select-none hidden md:block whitespace-nowrap">
-              RÉPUBLIQUE • ÉLUS
-            </span>
-            Que vote <span className="bg-gradient-to-r from-blue-600 via-red-600 to-blue-600 bg-clip-text text-transparent">votre député ?</span>
-          </h1>
-          <div className="h-1.5 w-32 bg-gradient-to-r from-blue-600 to-red-600 mt-6 rounded-full mx-auto" />
-          <p className="text-xl md:text-2xl font-staatliches italic tracking-tight text-slate-500 mt-8 max-w-2xl mx-auto">
-            Recherchez par nom, par parti politique ou par département.
-          </p>
-        </div>
-      </div>
-
-      {/* Toggle View & Search */}
+    <div className="container mx-auto px-4 py-4 max-w-7xl animate-in fade-in duration-700">
+      {/* Search & Mode Switcher Row */}
       <div className="flex flex-col md:flex-row items-center justify-between gap-6 mb-10">
         <div className="flex gap-4 items-center">
           <div className="inline-flex items-center gap-1 bg-secondary/50 border border-border rounded-xl p-1 shrink-0 relative">

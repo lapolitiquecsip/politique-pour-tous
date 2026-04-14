@@ -71,7 +71,7 @@ export default function Header() {
             </Link>
             <Link href="/deputes" className="text-sm font-semibold text-slate-600 hover:text-blue-600 transition-colors flex items-center gap-1.5 group">
               <Users size={16} className="text-blue-500 group-hover:scale-110 transition-transform" />
-              Députés
+              Votes des élus
             </Link>
             <Link href="/lois" className="text-sm font-semibold text-slate-600 hover:text-blue-600 transition-colors flex items-center gap-1.5 group">
               <Scale size={16} className="text-red-500 group-hover:scale-110 transition-transform" />
@@ -146,7 +146,7 @@ export default function Header() {
             <Home className="text-indigo-500" /> Accueil
           </Link>
           <Link href="/deputes" className="flex items-center gap-3 text-lg font-bold text-slate-900" onClick={() => setIsMenuOpen(false)}>
-            <Users className="text-blue-500" /> Les Députés
+            <Users className="text-blue-500" /> Votes des élus
           </Link>
           <Link href="/lois" className="flex items-center gap-3 text-lg font-bold text-slate-900" onClick={() => setIsMenuOpen(false)}>
             <Scale className="text-red-500" /> Les Lois

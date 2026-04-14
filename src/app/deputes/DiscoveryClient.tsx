@@ -28,30 +28,30 @@ export default function DiscoveryClient({ initialDeputies }: { initialDeputies: 
           </p>
         </div>
 
-        {/* 2. INTEGRATED VISUAL SWITCHER */}
+        {/* 2. INTEGRATED VISUAL SWITCHER (PREMIUM RE-DESIGN) */}
         <div className="flex justify-center">
-          <div className="inline-flex p-1.5 bg-slate-100 dark:bg-slate-900 rounded-3xl border border-slate-200 dark:border-slate-800 shadow-inner">
+          <div className="inline-flex p-1.5 bg-slate-50/80 dark:bg-slate-900/80 backdrop-blur-md rounded-[2rem] border border-slate-200 dark:border-slate-800 shadow-xl shadow-slate-200/40 dark:shadow-none">
             <button
               onClick={() => setActiveMode("deputies")}
-              className={`flex items-center gap-3 px-8 py-3 rounded-2xl font-bold transition-all duration-300 ${
+              className={`flex items-center gap-3 px-10 py-4 rounded-[1.5rem] font-black tracking-tight transition-all duration-300 active:scale-95 ${
                 activeMode === "deputies"
-                  ? "bg-white dark:bg-slate-800 text-blue-600 shadow-lg ring-1 ring-slate-200 dark:ring-slate-700"
-                  : "text-slate-500 hover:text-slate-900 dark:hover:text-slate-200"
+                  ? "bg-white dark:bg-slate-800 text-blue-600 shadow-2xl shadow-blue-500/10 ring-1 ring-slate-200 dark:ring-slate-700"
+                  : "text-slate-400 hover:text-slate-600 dark:hover:text-slate-300"
               }`}
             >
-              <div className={`w-2 h-2 rounded-full ${activeMode === "deputies" ? "bg-blue-600 animate-pulse" : "bg-slate-300"}`} />
-              Députés
+              <div className={`w-2.5 h-2.5 rounded-full transition-colors ${activeMode === "deputies" ? "bg-blue-600 shadow-[0_0_8px_rgba(37,99,235,0.6)] animate-pulse" : "bg-slate-300"}`} />
+              DÉPUTÉS
             </button>
             <button
               onClick={() => setActiveMode("senators")}
-              className={`flex items-center gap-3 px-8 py-3 rounded-2xl font-bold transition-all duration-300 ${
+              className={`flex items-center gap-3 px-10 py-4 rounded-[1.5rem] font-black tracking-tight transition-all duration-300 active:scale-95 ${
                 activeMode === "senators"
-                  ? "bg-white dark:bg-slate-800 text-amber-600 shadow-lg ring-1 ring-slate-200 dark:ring-slate-700"
-                  : "text-slate-500 hover:text-slate-900 dark:hover:text-slate-200"
+                  ? "bg-white dark:bg-slate-800 text-amber-600 shadow-2xl shadow-amber-500/10 ring-1 ring-slate-200 dark:ring-slate-700"
+                  : "text-slate-400 hover:text-slate-600 dark:hover:text-slate-300"
               }`}
             >
-              <div className={`w-2 h-2 rounded-full ${activeMode === "senators" ? "bg-amber-600 animate-pulse" : "bg-slate-300"}`} />
-              Sénateurs
+              <div className={`w-2.5 h-2.5 rounded-full transition-colors ${activeMode === "senators" ? "bg-amber-600 shadow-[0_0_8px_rgba(217,119,6,0.6)] animate-pulse" : "bg-slate-300"}`} />
+              SÉNATEURS
             </button>
           </div>
         </div>

@@ -35,7 +35,8 @@ export const SenatorCard = memo(function SenatorCard({
   senator: Senator; 
   isBlurred?: boolean;
 }) {
-  const colorClass = partyColors[senator.party] || "bg-slate-500";
+  const expandedParty = getFullPartyName(senator.party);
+  const colorClass = partyColors[expandedParty] || "bg-slate-500";
   const initials = `${senator.first_name.charAt(0)}${senator.last_name.charAt(0)}`;
   
   const [imgError, setImgError] = useState(false);

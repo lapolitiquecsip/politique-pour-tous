@@ -73,24 +73,25 @@ export const SenatorCard = memo(function SenatorCard({
 
 function SenatorContent({ senator, isBlurred, imgError, setImgError, initials, colorClass }: any) {
   return (
-    <div className={`${isBlurred ? "blur-md select-none" : ""}`}>
-      {/* Photo */}
-      {!imgError ? (
-        <img
-          src={senator.photo_url}
-          alt={`${senator.first_name} ${senator.last_name}`}
-          onError={() => setImgError(true)}
-          className="w-24 h-24 rounded-full object-cover mt-2 mb-4 shadow-sm border-2 border-slate-100 group-hover:scale-105 transition-transform"
-        />
-      ) : (
-        <div 
-          className={`w-24 h-24 rounded-full flex items-center justify-center text-white text-3xl font-bold mt-2 mb-4 shadow-sm group-hover:scale-105 transition-transform ${colorClass}`}
-        >
-          {initials}
+    <div className={`${isBlurred ? "blur-md select-none" : ""} w-full flex flex-col items-center`}>
+      <div className="absolute -top-12 left-1/2 -translate-x-1/2">
+        <div className="relative group/photo">
+          {!imgError ? (
+            <img
+              src={senator.photo_url}
+              alt={senator.last_name}
+              className="w-24 h-24 rounded-full object-cover border-[3px] border-slate-200 shadow-md transform group-hover/photo:scale-110 transition-transform duration-500"
+              onError={() => setImgError(true)}
+            />
+          ) : (
+            <div className="w-24 h-24 rounded-full bg-gradient-to-br from-slate-400 to-slate-600 border-[3px] border-slate-200 shadow-md flex items-center justify-center text-white text-2xl font-black">
+              {initials}
+            </div>
+          )}
         </div>
-      )}
+      </div>
       
-      <h3 className="text-xl font-bold text-slate-900 mb-2 group-hover:text-amber-700 transition-colors">
+      <h3 className="text-xl font-bold text-slate-900 mb-2 group-hover:text-amber-700 transition-colors mt-12">
         {senator.first_name} {senator.last_name}
       </h3>
       

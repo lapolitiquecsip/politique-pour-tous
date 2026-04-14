@@ -60,7 +60,7 @@ export default function Header() {
               <Landmark size={20} />
             </div>
             <span className="font-staatliches text-2xl tracking-wider uppercase leading-none pt-1">
-              <span className="text-slate-900">Institutions</span> <span className="bg-gradient-to-r from-blue-600 via-purple-600 to-red-600 bg-clip-text text-transparent">au quotidien</span>
+              <span className="text-slate-900">La politique</span> <span className="bg-gradient-to-r from-blue-600 via-purple-600 to-red-600 bg-clip-text text-transparent">c simple</span>
             </span>
           </Link>
           {/* Desktop Nav */}

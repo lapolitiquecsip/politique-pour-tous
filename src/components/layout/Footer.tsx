@@ -17,7 +17,7 @@ export default function Footer() {
                 <Landmark className="w-6 h-6 text-white" />
               </div>
               <span className="text-xl font-staatliches tracking-wider uppercase leading-none">
-                <span className="text-white">Institutions</span> <span className="bg-gradient-to-r from-blue-400 via-purple-400 to-red-400 bg-clip-text text-transparent">au quotidien</span>
+                <span className="text-white">La politique</span> <span className="bg-gradient-to-r from-blue-400 via-purple-400 to-red-400 bg-clip-text text-transparent">c simple</span>
               </span>
             </Link>
             <p className="text-slate-400 text-sm leading-relaxed max-w-xs">

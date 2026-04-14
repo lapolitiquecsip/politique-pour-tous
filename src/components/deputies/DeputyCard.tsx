@@ -3,6 +3,7 @@
 import { useState, memo, useMemo } from "react";
 import Link from "next/link";
 import { ChevronRight } from "lucide-react";
+import { generateSlug } from "@/lib/slug-generator";
 
 export interface Deputy {
   id: string;
@@ -24,16 +25,7 @@ const partyColors: Record<string, string> = {
   "EELV": "bg-[#27AE60]",
 };
 
-export function generateSlug(firstName: string, lastName: string): string {
-  const normalize = (s: string) =>
-    s.toLowerCase()
-      .normalize("NFD")
-      .replace(/[\u0300-\u036f]/g, "")
-      .replace(/[^a-z]/g, "-")
-      .replace(/-+/g, "-")
-      .replace(/^-|-$/g, "");
-  return `${normalize(firstName)}-${normalize(lastName)}`;
-}
+// Removed local generateSlug in favor of @/lib/slug-generator
 
 export const DeputyCard = memo(function DeputyCard({ deputy }: { deputy: Deputy }) {
   const colorClass = partyColors[deputy.party] || "bg-[#95A5A6]";

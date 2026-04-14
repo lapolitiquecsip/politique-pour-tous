@@ -70,7 +70,7 @@ export const DeputyCard = memo(function DeputyCard({ deputy }: { deputy: Deputy 
               src={sources[srcIndex]}
               alt={deputy.lastName}
               onError={handleImgError}
-              className="w-24 h-24 rounded-full object-cover border-[3px] border-slate-200 shadow-md transform group-hover:scale-110 transition-transform duration-500"
+              className="w-24 h-24 rounded-full object-cover object-top border-[3px] border-slate-200 shadow-md transform group-hover:scale-110 transition-transform duration-500"
             />
             <div className="absolute -bottom-2 -right-2 w-8 h-8 bg-white dark:bg-slate-800 rounded-xl shadow-lg border border-slate-100 dark:border-slate-700 flex items-center justify-center text-xs font-black text-slate-500">
               {deputy.constituencyNumber}

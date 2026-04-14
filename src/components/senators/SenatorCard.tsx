@@ -39,7 +39,7 @@ export const SenatorCard = memo(function SenatorCard({
 
   return (
     <div 
-      className={`bg-white border border-slate-200 shadow-sm rounded-2xl p-6 flex flex-col items-center transition-all text-center relative overflow-hidden group ${
+      className={`bg-white border border-slate-200 shadow-sm rounded-2xl p-6 flex flex-col items-center transition-all text-center relative group ${
         isBlurred ? "pointer-events-none" : "hover:shadow-lg hover:border-slate-300 cursor-pointer"
       }`}
     >
@@ -80,7 +80,7 @@ function SenatorContent({ senator, isBlurred, imgError, setImgError, initials, c
             <img
               src={senator.photo_url}
               alt={senator.last_name}
-              className="w-24 h-24 rounded-full object-cover border-[3px] border-slate-200 shadow-md transform group-hover/photo:scale-110 transition-transform duration-500"
+              className="w-24 h-24 rounded-full object-cover object-top border-[3px] border-slate-200 shadow-md transform group-hover/photo:scale-110 transition-transform duration-500"
               onError={() => setImgError(true)}
             />
           ) : (

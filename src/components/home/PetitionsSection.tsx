@@ -20,33 +20,60 @@ interface Petition {
   url: string;
 }
 
-const MOCK_PETITIONS: Petition[] = [
+const OFFICIAL_PETITIONS: Petition[] = [
   {
-    id: "aah",
-    title: "Déconjugalisation de l'AAH",
-    description: "L'une des pétitions les plus marquantes ayant abouti à une réforme historique du mode de calcul de l'allocation adulte handicapé.",
-    signatures: 110000,
-    threshold: 100000,
-    category: "Social",
-    url: "https://petitions.assemblee-nationale.fr/p/271"
+    id: "loi-yadan",
+    title: "Non à la loi Yadan",
+    description: "Mobilisation massive contre la proposition de loi visant à renforcer la lutte contre l'antisémitisme, jugée liberticide par ses détracteurs.",
+    signatures: 707957,
+    threshold: 500000,
+    category: "Libertés",
+    url: "https://petitions.assemblee-nationale.fr/initiatives/i-5158"
   },
   {
-    id: "nitrites",
-    title: "Interdiction des additifs nitrés",
-    description: "Sujet au cœur des débats parlementaires suite à une forte mobilisation citoyenne contre les risques liés aux sels nitrités.",
-    signatures: 92400,
+    id: "insecticides",
+    title: "Non c’est Non, Monsieur Duplomb !",
+    description: "Opposition citoyenne à la réintroduction de l'acétamipride (néonicotinoïde), dénoncée comme un recul écologique majeur.",
+    signatures: 400380,
     threshold: 100000,
-    category: "Santé",
-    url: "https://petitions.assemblee-nationale.fr/recherche?q=nitrites"
+    category: "Environnement",
+    url: "https://petitions.assemblee-nationale.fr/initiatives/i-5103"
   },
   {
-    id: "vote-blanc",
-    title: "Reconnaissance du vote blanc",
-    description: "Plusieurs pétitions demandent que le vote blanc soit pris en compte pour refléter la réelle expression des électeurs.",
-    signatures: 45600,
+    id: "brav-m",
+    title: "Dissolution de la BRAV-M",
+    description: "Demande de démantèlement des Brigades de Répression de l'Action Violente Motorisée suite à de nombreux signalements de violences.",
+    signatures: 263867,
     threshold: 100000,
+    category: "Police",
+    url: "https://petitions.assemblee-nationale.fr/initiatives/i-1319"
+  },
+  {
+    id: "destitution",
+    title: "Destitution du Président",
+    description: "Pétition demandant l'ouverture d'une procédure de destitution d'Emmanuel Macron en vertu de l'article 68 de la Constitution.",
+    signatures: 203852,
+    threshold: 500000,
     category: "Institutions",
-    url: "https://petitions.assemblee-nationale.fr/recherche?q=vote+blanc"
+    url: "https://petitions.assemblee-nationale.fr/initiatives/i-2743"
+  },
+  {
+    id: "cyberharcelement",
+    title: "Protection Cyberharcèlement",
+    description: "Initiative (Mehdi Bassit) pour une régulation plus stricte des réseaux sociaux afin de protéger les citoyens des attaques en ligne.",
+    signatures: 105799,
+    threshold: 100000,
+    category: "Société",
+    url: "https://petitions.assemblee-nationale.fr/initiatives/i-3603"
+  },
+  {
+    id: "motos",
+    title: "Abrogation CT Motos",
+    description: "Mouvement contre le contrôle technique obligatoire des deux-roues motorisés, jugé punitif et peu efficace pour la sécurité.",
+    signatures: 79438,
+    threshold: 100000,
+    category: "Transport",
+    url: "https://petitions.assemblee-nationale.fr/initiatives/i-3070"
   }
 ];
 
@@ -110,7 +137,7 @@ export default function PetitionsSection() {
 
         {/* Grille des Pétitions */}
         <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
-          {MOCK_PETITIONS.map((petition, idx) => {
+          {OFFICIAL_PETITIONS.map((petition, idx) => {
             const percentage = Math.min(Math.round((petition.signatures / petition.threshold) * 100), 100);
             return (
               <motion.div

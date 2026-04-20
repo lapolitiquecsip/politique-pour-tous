@@ -1,5 +1,7 @@
 "use client";
 
+import { useEffect, useState } from "react";
+
 import { motion } from "framer-motion";
 import { 
   FileSignature, 
@@ -7,8 +9,10 @@ import {
   ArrowUpRight, 
   Info,
   CheckCircle2,
-  AlertCircle
+  AlertCircle,
+  Loader2
 } from "lucide-react";
+import { api } from "@/lib/api";
 
 interface Petition {
   id: string;
@@ -20,64 +24,23 @@ interface Petition {
   url: string;
 }
 
-const OFFICIAL_PETITIONS: Petition[] = [
-  {
-    id: "loi-yadan",
-    title: "Non à la loi Yadan",
-    description: "Mobilisation massive contre la proposition de loi visant à renforcer la lutte contre l'antisémitisme, jugée liberticide par ses détracteurs.",
-    signatures: 707957,
-    threshold: 500000,
-    category: "Libertés",
-    url: "https://petitions.assemblee-nationale.fr/initiatives/i-5158"
-  },
-  {
-    id: "insecticides",
-    title: "Non c’est Non, Monsieur Duplomb !",
-    description: "Opposition citoyenne à la réintroduction de l'acétamipride (néonicotinoïde), dénoncée comme un recul écologique majeur.",
-    signatures: 400380,
-    threshold: 100000,
-    category: "Environnement",
-    url: "https://petitions.assemblee-nationale.fr/initiatives/i-5103"
-  },
-  {
-    id: "brav-m",
-    title: "Dissolution de la BRAV-M",
-    description: "Demande de démantèlement des Brigades de Répression de l'Action Violente Motorisée suite à de nombreux signalements de violences.",
-    signatures: 263867,
-    threshold: 100000,
-    category: "Police",
-    url: "https://petitions.assemblee-nationale.fr/initiatives/i-1319"
-  },
-  {
-    id: "destitution",
-    title: "Destitution du Président",
-    description: "Pétition demandant l'ouverture d'une procédure de destitution d'Emmanuel Macron en vertu de l'article 68 de la Constitution.",
-    signatures: 203852,
-    threshold: 500000,
-    category: "Institutions",
-    url: "https://petitions.assemblee-nationale.fr/initiatives/i-2743"
-  },
-  {
-    id: "cyberharcelement",
-    title: "Protection Cyberharcèlement",
-    description: "Initiative (Mehdi Bassit) pour une régulation plus stricte des réseaux sociaux afin de protéger les citoyens des attaques en ligne.",
-    signatures: 105799,
-    threshold: 100000,
-    category: "Société",
-    url: "https://petitions.assemblee-nationale.fr/initiatives/i-3603"
-  },
-  {
-    id: "motos",
-    title: "Abrogation CT Motos",
-    description: "Mouvement contre le contrôle technique obligatoire des deux-roues motorisés, jugé punitif et peu efficace pour la sécurité.",
-    signatures: 79438,
-    threshold: 100000,
-    category: "Transport",
-    url: "https://petitions.assemblee-nationale.fr/initiatives/i-3070"
-  }
-];
+// Data is now fetched from Supabase
 
 export default function PetitionsSection() {
+  const [petitions, setPetitions] = useState<Petition[]>([]);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    const load = async () => {
+      const data = await api.getPetitions();
+      if (data && data.length > 0) {
+        setPetitions(data.slice(0, 6));
+      }
+      setLoading(false);
+    };
+    load();
+  }, []);
+
   return (
     <section className="py-24 px-4 bg-slate-50 relative overflow-hidden">
       {/* Fond décoratif */}
@@ -136,9 +99,15 @@ export default function PetitionsSection() {
         </div>
 
         {/* Grille des Pétitions */}
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
-          {OFFICIAL_PETITIONS.map((petition, idx) => {
-            const percentage = Math.min(Math.round((petition.signatures / petition.threshold) * 100), 100);
+        {loading ? (
+          <div className="flex flex-col items-center justify-center py-20 gap-4">
+            <Loader2 className="animate-spin text-blue-500" size={40} />
+            <p className="text-sm font-black uppercase tracking-widest text-slate-400">Récupération des pétitions en cours...</p>
+          </div>
+        ) : (
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
+            {petitions.map((petition, idx) => {
+              const percentage = Math.min(Math.round((petition.signatures / petition.threshold) * 100), 100);
             return (
               <motion.div
                 key={petition.id}
@@ -196,6 +165,7 @@ export default function PetitionsSection() {
             );
           })}
         </div>
+      )}
 
         <div className="mt-16 text-center">
           <p className="text-xs font-bold text-slate-400 uppercase tracking-widest mb-4">Portail Officiel</p>

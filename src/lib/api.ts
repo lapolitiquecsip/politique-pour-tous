@@ -38,8 +38,14 @@ export const api = {
     return data;
   },
 
+  getPetitions: async () => {
+    const { data, error } = await supabase.from('petitions').select('*').order('signatures', { ascending: false });
+    if (error) { console.error(error); return []; }
+    return data || [];
+  },
+
   getCalendarEvents: async () => {
-    const { data, error } = await supabase.from('calendar').select('*').order('date', { ascending: true });
+    const { data, error } = await supabase.from('events').select('*').order('date', { ascending: true });
     if (error) { console.error(error); return []; }
     return data || [];
   },
@@ -202,5 +208,19 @@ export const api = {
       .eq('deputy_id', deputyId);
     if (error) { throw new Error(error.message); }
     return true;
+  },
+
+  getVotesByDeputy: async (anId: string) => {
+    const { data, error } = await supabase
+      .from('deputy_votes')
+      .select('*, scrutins(*)')
+      .eq('deputy_an_id', anId)
+      .order('created_at', { ascending: false });
+    
+    if (error) {
+      console.error("Erreur récupération votes député:", error);
+      return [];
+    }
+    return data || [];
   }
 };

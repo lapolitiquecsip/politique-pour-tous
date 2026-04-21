@@ -59,8 +59,24 @@ export default function DeputyDetailPage({ params }: { params: Promise<{ slug: s
   const [checkingFollow, setCheckingFollow] = useState(true);
   const [showLegalModal, setShowLegalModal] = useState(false);
   const [isBioExpanded, setIsBioExpanded] = useState(true);
+
   const [votes, setVotes] = useState<any[]>([]);
   const [loadingVotes, setLoadingVotes] = useState(true);
+  const [selectedCategory, setSelectedCategory] = useState("Tout");
+  const [selectedType, setSelectedType] = useState("TOUT");
+
+  // Filtering Logic
+  const filteredVotes = useMemo(() => {
+    return votes.filter(v => {
+      const s = v.scrutins;
+      if (!s) return false;
+      
+      const matchesCategory = selectedCategory === "Tout" || s.category === selectedCategory;
+      const matchesType = selectedType === "TOUT" || (s.type === selectedType);
+      
+      return matchesCategory && matchesType;
+    });
+  }, [votes, selectedCategory, selectedType]);
 
   // Load real deputy and follow status
   useEffect(() => {
@@ -425,13 +441,55 @@ export default function DeputyDetailPage({ params }: { params: Promise<{ slug: s
             )}
 
 
+
             <div>
               <h2 className="text-4xl font-staatliches uppercase tracking-tight text-slate-900 dark:text-white mb-4">
                 Positions sur <span className="text-red-600">les scrutins</span>
               </h2>
-              <p className="text-slate-500 font-medium max-w-xl">
+              <p className="text-slate-500 font-medium max-w-xl mb-8">
                 Retrouvez comment cet élu s&apos;est positionné sur l&apos;intégralité des textes législatifs de la législature actuelle.
               </p>
+
+              {/* FILTERS UI */}
+              {!loadingVotes && votes.length > 0 && (
+                <div className="space-y-6 mb-10">
+                  {/* Category Tabs */}
+                  <div className="flex flex-wrap gap-2 pb-2">
+                    {["Tout", "Économie & Finances", "Sécurité & Intérieur", "Santé & Social", "Environnement", "Éducation & Culture", "Justice", "International", "Agriculture", "Autres"].map((cat) => (
+                      <button
+                        key={cat}
+                        onClick={() => setSelectedCategory(cat)}
+                        className={`px-4 py-2 rounded-xl text-xs font-bold transition-all border ${
+                          selectedCategory === cat 
+                            ? "bg-slate-900 text-white border-slate-900 shadow-lg scale-105" 
+                            : "bg-white dark:bg-slate-900 text-slate-500 border-slate-200 dark:border-slate-800 hover:border-slate-400"
+                        }`}
+                      >
+                        {cat}
+                      </button>
+                    ))}
+                  </div>
+
+                  {/* Type Filter */}
+                  <div className="flex items-center gap-4">
+                    <div className="bg-slate-200 dark:bg-slate-800 p-1 rounded-xl flex gap-1">
+                      {["TOUT", "LOI", "AMENDEMENT"].map((t) => (
+                        <button
+                          key={t}
+                          onClick={() => setSelectedType(t)}
+                          className={`px-6 py-2 rounded-lg text-[10px] font-black tracking-widest transition-all ${
+                            selectedType === t 
+                              ? "bg-white dark:bg-slate-700 text-slate-900 dark:text-white shadow-sm" 
+                              : "text-slate-500 hover:text-slate-700"
+                          }`}
+                        >
+                          {t}
+                        </button>
+                      ))}
+                    </div>
+                  </div>
+                </div>
+              )}
             </div>
 
             <div className="space-y-4">
@@ -442,18 +500,25 @@ export default function DeputyDetailPage({ params }: { params: Promise<{ slug: s
                 </div>
               )}
 
-              {votes.length === 0 && !loadingVotes && (
+              {filteredVotes.length === 0 && !loadingVotes && (
                 <div className="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-[2rem] p-12 text-center">
                   <Vote className="w-12 h-12 mx-auto text-slate-300 mb-4" />
-                  <p className="text-slate-500 font-bold">Aucun vote enregistré pour l&apos;instant pour cette législature.</p>
+                  <p className="text-slate-500 font-bold">
+                    {votes.length === 0 
+                      ? "Aucun vote enregistré pour l'instant pour cette législature."
+                      : "Aucun scrutin ne correspond à vos filtres actuels."}
+                  </p>
                 </div>
               )}
 
-              {votes.map((v: any, idx) => {
+              {filteredVotes.map((v: any, idx) => {
                 const voteInfo = getVoteDisplay(v.position);
                 const dateStr = v.scrutins?.date_scrutin 
-                  ? new Date(v.scrutins.date_scrutin).toLocaleDateString('fr-FR', { month: 'long', year: 'numeric' })
+                  ? new Date(v.scrutins.date_scrutin).toLocaleDateString('fr-FR', { day: 'numeric', month: 'long', year: 'numeric' })
                   : 'Date inconnue';
+                
+                const type = v.scrutins?.type || 'AUTRE';
+                const category = v.scrutins?.category || 'Autres';
 
                 return (
                   <motion.div 
@@ -463,16 +528,25 @@ export default function DeputyDetailPage({ params }: { params: Promise<{ slug: s
                     transition={{ delay: 0.1 + (idx * 0.05) }}
                     className="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-[2rem] p-6 flex flex-col md:flex-row items-center gap-6 group hover:border-red-500 hover:shadow-2xl hover:shadow-red-500/10 transition-all duration-300 transform hover:-translate-y-1 mb-4"
                   >
-                    <div className="flex-1 flex items-center gap-6 min-w-0">
+                    <div className="flex-1 flex items-center gap-6 min-w-0 w-full">
                       <div className="w-14 h-14 rounded-2xl bg-slate-50 dark:bg-slate-800 flex items-center justify-center text-slate-400 group-hover:text-red-500 transition-colors shrink-0">
-                        <Vote className="w-6 h-6" />
+                        {type === 'LOI' ? <Landmark className="w-6 h-6" /> : <Layers className="w-6 h-6" />}
                       </div>
-                      <div className="min-w-0">
-                        <div className="flex items-center gap-3 mb-1">
-                          <Calendar className="w-3 h-3 text-slate-400" />
-                          <span className="text-[10px] font-black text-slate-400 uppercase tracking-widest">{dateStr}</span>
+                      <div className="min-w-0 flex-1">
+                        <div className="flex flex-wrap items-center gap-3 mb-2">
+                          <span className="text-[10px] font-black text-slate-400 uppercase tracking-widest flex items-center gap-1">
+                            <Calendar className="w-3 h-3" /> {dateStr}
+                          </span>
+                          <span className={`text-[9px] font-black px-2 py-0.5 rounded-md uppercase tracking-tighter ${
+                            type === 'LOI' ? 'bg-blue-500/10 text-blue-600' : 'bg-orange-500/10 text-orange-600'
+                          }`}>
+                            {type}
+                          </span>
+                          <span className="text-[9px] font-black px-2 py-0.5 rounded-md uppercase tracking-tighter bg-slate-100 dark:bg-slate-800 text-slate-500">
+                            {category}
+                          </span>
                         </div>
-                        <h3 className="text-xl font-bold text-slate-900 dark:text-white group-hover:text-red-600 transition-colors">
+                        <h3 className="text-xl font-bold text-slate-900 dark:text-white group-hover:text-red-600 transition-colors line-clamp-2">
                           {v.scrutins?.objet || "Vote sans titre"}
                         </h3>
                       </div>
@@ -480,7 +554,7 @@ export default function DeputyDetailPage({ params }: { params: Promise<{ slug: s
 
                     <div className={`flex items-center gap-3 px-6 py-4 rounded-2xl ${voteInfo.bg} ${voteInfo.color} border border-transparent shadow-sm group-hover:shadow-lg transition-all shrink-0 min-w-[160px] justify-center`}>
                        <voteInfo.icon className="w-5 h-5" />
-                       <span className="font-black text-sm tracking-tighter italic">POSITION : {voteInfo.label}</span>
+                       <span className="font-black text-sm tracking-tighter italic">VOTE : {voteInfo.label}</span>
                     </div>
                   </motion.div>
                 );

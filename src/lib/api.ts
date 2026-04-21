@@ -210,17 +210,23 @@ export const api = {
     return true;
   },
 
+
   getVotesByDeputy: async (anId: string) => {
     const { data, error } = await supabase
       .from('deputy_votes')
-      .select('*, scrutins(*)')
-      .eq('deputy_an_id', anId)
-      .order('created_at', { ascending: false });
+      .select('*, scrutins(id, numero, date_scrutin, objet, resultat, type, category)')
+      .eq('deputy_an_id', anId);
     
     if (error) {
       console.error("Erreur récupération votes député:", error);
       return [];
     }
-    return data || [];
+
+    // Sort manually by date since ordering through relations in Supabase JS can be tricky
+    return (data || []).sort((a: any, b: any) => {
+      const dateA = new Date(a.scrutins?.date_scrutin || 0).getTime();
+      const dateB = new Date(b.scrutins?.date_scrutin || 0).getTime();
+      return dateB - dateA;
+    });
   }
 };

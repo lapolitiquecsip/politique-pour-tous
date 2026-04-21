@@ -68,13 +68,19 @@ export default function DeputyDetailPage({ params }: { params: Promise<{ slug: s
 
   // Filtering Logic (now only on category as type is filtered by API)
   const filteredVotes = useMemo(() => {
-    return votes.filter(v => {
-      const s = v.scrutins;
-      if (!s) return false;
-      
-      const matchesCategory = selectedCategory === "Tout" || s.category === selectedCategory;
-      return matchesCategory;
-    });
+    return votes
+      .filter(v => {
+        const s = v.scrutins;
+        if (!s) return false;
+        
+        const matchesCategory = selectedCategory === "Tout" || s.category === selectedCategory;
+        return matchesCategory;
+      })
+      .sort((a, b) => {
+        const dateA = new Date(a.scrutins?.date_scrutin || 0).getTime();
+        const dateB = new Date(b.scrutins?.date_scrutin || 0).getTime();
+        return dateB - dateA;
+      });
   }, [votes, selectedCategory]);
 
   // Load real deputy and follow status
@@ -156,6 +162,7 @@ export default function DeputyDetailPage({ params }: { params: Promise<{ slug: s
   };
 
   const groupFullName = getFullPartyName(deputy?.party || (slug === 'gabriel-attal' ? 'EPR' : ''));
+
 
   // Format slug back to name for display
   const name = deputy?.first_name 
@@ -454,14 +461,14 @@ export default function DeputyDetailPage({ params }: { params: Promise<{ slug: s
                 <div className="space-y-6 mb-10">
                   {/* Category Tabs */}
                   <div className="flex flex-wrap gap-2 pb-2">
-                    {["Tout", "Économie & Finances", "Sécurité & Intérieur", "Santé & Social", "Environnement", "Éducation & Culture", "Justice", "International", "Agriculture", "Autres"].map((cat) => (
+                    {["Tout", "Sécurité & Justice", "Économie & Budget", "Santé & Social", "Environnement & Énergie", "Éducation & Culture", "International & Défense", "Institution & Citoyenneté", "Autre"].map((cat) => (
                       <button
                         key={cat}
                         onClick={() => setSelectedCategory(cat)}
-                        className={`px-4 py-2 rounded-xl text-xs font-bold transition-all border ${
+                        className={`px-4 py-2 rounded-xl text-[10px] font-black uppercase tracking-widest transition-all border ${
                           selectedCategory === cat 
-                            ? "bg-slate-900 text-white border-slate-900 shadow-lg scale-105" 
-                            : "bg-white dark:bg-slate-900 text-slate-500 border-slate-200 dark:border-slate-800 hover:border-slate-400"
+                            ? "bg-red-600 text-white border-red-600 shadow-lg scale-105" 
+                            : "bg-white dark:bg-slate-900 text-slate-500 border-slate-200 dark:border-slate-800 hover:border-red-500"
                         }`}
                       >
                         {cat}

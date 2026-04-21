@@ -34,6 +34,7 @@ import { motion, AnimatePresence } from "framer-motion";
 import { api } from "@/lib/api";
 import { usePremium } from "@/lib/hooks/usePremium";
 import { getFullPartyName } from "@/lib/party-utils";
+import VoteDetailsModal from "@/components/deputies/VoteDetailsModal";
 
 // Vote position formatting helper
 const getVoteDisplay = (position: string) => {
@@ -63,6 +64,7 @@ export default function DeputyDetailPage({ params }: { params: Promise<{ slug: s
   const [votes, setVotes] = useState<any[]>([]);
   const [loadingVotes, setLoadingVotes] = useState(true);
   const [selectedCategory, setSelectedCategory] = useState("Tout");
+  const [selectedVoteForModal, setSelectedVoteForModal] = useState<any | null>(null);
 
   // Filtering Logic (now only on category as type is filtered by API)
   const filteredVotes = useMemo(() => {
@@ -500,10 +502,12 @@ export default function DeputyDetailPage({ params }: { params: Promise<{ slug: s
                 return (
                   <motion.div 
                     key={v.id}
+                    layout
                     initial={{ opacity: 0, x: 20 }}
                     animate={{ opacity: 1, x: 0 }}
                     transition={{ delay: 0.1 + (idx * 0.05) }}
-                    className="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-[2rem] p-6 flex flex-col md:flex-row items-center gap-6 group hover:border-red-500 hover:shadow-2xl hover:shadow-red-500/10 transition-all duration-300 transform hover:-translate-y-1 mb-4"
+                    onClick={() => setSelectedVoteForModal(v)}
+                    className="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-[2rem] p-6 flex flex-col md:flex-row items-center gap-6 group hover:border-red-500 hover:shadow-2xl hover:shadow-red-500/10 cursor-pointer transition-all duration-300 transform hover:-translate-y-1 mb-4"
                   >
                     <div className="flex-1 flex items-center gap-6 min-w-0 w-full">
                       <div className="w-14 h-14 rounded-2xl bg-slate-50 dark:bg-slate-800 flex items-center justify-center text-slate-400 group-hover:text-red-500 transition-colors shrink-0">
@@ -609,6 +613,16 @@ export default function DeputyDetailPage({ params }: { params: Promise<{ slug: s
               </div>
             </motion.div>
           </>
+        )}
+      </AnimatePresence>
+
+      {/* NEW: Vote Details Modal */}
+      <AnimatePresence>
+        {selectedVoteForModal && (
+          <VoteDetailsModal 
+            vote={selectedVoteForModal} 
+            onClose={() => setSelectedVoteForModal(null)} 
+          />
         )}
       </AnimatePresence>
     </div>

@@ -215,18 +215,15 @@ export const api = {
     const { data, error } = await supabase
       .from('deputy_votes')
       .select('*, scrutins(id, numero, date_scrutin, objet, resultat, type, category)')
-      .eq('deputy_an_id', anId);
+      .eq('deputy_an_id', anId)
+      .order('date_scrutin', { ascending: false })
+      .limit(1000);
     
     if (error) {
       console.error("Erreur récupération votes député:", error);
       return [];
     }
 
-    // Sort manually by date since ordering through relations in Supabase JS can be tricky
-    return (data || []).sort((a: any, b: any) => {
-      const dateA = new Date(a.scrutins?.date_scrutin || 0).getTime();
-      const dateB = new Date(b.scrutins?.date_scrutin || 0).getTime();
-      return dateB - dateA;
-    });
+    return data || [];
   }
 };

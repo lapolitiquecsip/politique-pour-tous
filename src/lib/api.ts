@@ -212,10 +212,13 @@ export const api = {
 
 
   getVotesByDeputy: async (anId: string) => {
+    // Note: We filter for type 'LOI' as requested, to avoid useless amendment noise.
+    // 'scrutins!inner' allows filtering on the related table
     const { data, error } = await supabase
       .from('deputy_votes')
-      .select('*, scrutins(id, numero, date_scrutin, objet, resultat, type, category)')
+      .select('*, scrutins!inner(id, numero, date_scrutin, objet, resultat, type, category)')
       .eq('deputy_an_id', anId)
+      .eq('scrutins.type', 'LOI')
       .order('date_scrutin', { ascending: false })
       .limit(1000);
     

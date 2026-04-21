@@ -63,20 +63,17 @@ export default function DeputyDetailPage({ params }: { params: Promise<{ slug: s
   const [votes, setVotes] = useState<any[]>([]);
   const [loadingVotes, setLoadingVotes] = useState(true);
   const [selectedCategory, setSelectedCategory] = useState("Tout");
-  const [selectedType, setSelectedType] = useState("TOUT");
 
-  // Filtering Logic
+  // Filtering Logic (now only on category as type is filtered by API)
   const filteredVotes = useMemo(() => {
     return votes.filter(v => {
       const s = v.scrutins;
       if (!s) return false;
       
       const matchesCategory = selectedCategory === "Tout" || s.category === selectedCategory;
-      const matchesType = selectedType === "TOUT" || (s.type === selectedType);
-      
-      return matchesCategory && matchesType;
+      return matchesCategory;
     });
-  }, [votes, selectedCategory, selectedType]);
+  }, [votes, selectedCategory]);
 
   // Load real deputy and follow status
   useEffect(() => {
@@ -469,25 +466,6 @@ export default function DeputyDetailPage({ params }: { params: Promise<{ slug: s
                       </button>
                     ))}
                   </div>
-
-                  {/* Type Filter */}
-                  <div className="flex items-center gap-4">
-                    <div className="bg-slate-200 dark:bg-slate-800 p-1 rounded-xl flex gap-1">
-                      {["TOUT", "LOI", "AMENDEMENT"].map((t) => (
-                        <button
-                          key={t}
-                          onClick={() => setSelectedType(t)}
-                          className={`px-6 py-2 rounded-lg text-[10px] font-black tracking-widest transition-all ${
-                            selectedType === t 
-                              ? "bg-white dark:bg-slate-700 text-slate-900 dark:text-white shadow-sm" 
-                              : "text-slate-500 hover:text-slate-700"
-                          }`}
-                        >
-                          {t}
-                        </button>
-                      ))}
-                    </div>
-                  </div>
                 </div>
               )}
             </div>
@@ -496,7 +474,7 @@ export default function DeputyDetailPage({ params }: { params: Promise<{ slug: s
               {loadingVotes && (
                 <div className="flex flex-col items-center py-20 text-slate-400">
                   <Loader2 className="w-10 h-10 animate-spin mb-4" />
-                  <p className="text-sm font-bold uppercase tracking-widest">Chargement des votes...</p>
+                  <p className="text-sm font-bold uppercase tracking-widest">Chargement des lois...</p>
                 </div>
               )}
 
@@ -505,8 +483,8 @@ export default function DeputyDetailPage({ params }: { params: Promise<{ slug: s
                   <Vote className="w-12 h-12 mx-auto text-slate-300 mb-4" />
                   <p className="text-slate-500 font-bold">
                     {votes.length === 0 
-                      ? "Aucun vote enregistré pour l'instant pour cette législature."
-                      : "Aucun scrutin ne correspond à vos filtres actuels."}
+                      ? "Aucun scrutin législatif enregistré pour l'instant."
+                      : "Aucune loi ne correspond à cette thématique."}
                   </p>
                 </div>
               )}
@@ -517,7 +495,6 @@ export default function DeputyDetailPage({ params }: { params: Promise<{ slug: s
                   ? new Date(v.scrutins.date_scrutin).toLocaleDateString('fr-FR', { day: 'numeric', month: 'long', year: 'numeric' })
                   : 'Date inconnue';
                 
-                const type = v.scrutins?.type || 'AUTRE';
                 const category = v.scrutins?.category || 'Autres';
 
                 return (
@@ -530,24 +507,22 @@ export default function DeputyDetailPage({ params }: { params: Promise<{ slug: s
                   >
                     <div className="flex-1 flex items-center gap-6 min-w-0 w-full">
                       <div className="w-14 h-14 rounded-2xl bg-slate-50 dark:bg-slate-800 flex items-center justify-center text-slate-400 group-hover:text-red-500 transition-colors shrink-0">
-                        {type === 'LOI' ? <Landmark className="w-6 h-6" /> : <Layers className="w-6 h-6" />}
+                        <Landmark className="w-6 h-6" />
                       </div>
                       <div className="min-w-0 flex-1">
                         <div className="flex flex-wrap items-center gap-3 mb-2">
                           <span className="text-[10px] font-black text-slate-400 uppercase tracking-widest flex items-center gap-1">
                             <Calendar className="w-3 h-3" /> {dateStr}
                           </span>
-                          <span className={`text-[9px] font-black px-2 py-0.5 rounded-md uppercase tracking-tighter ${
-                            type === 'LOI' ? 'bg-blue-500/10 text-blue-600' : 'bg-orange-500/10 text-orange-600'
-                          }`}>
-                            {type}
+                          <span className={`text-[9px] font-black px-2 py-0.5 rounded-md uppercase tracking-tighter bg-blue-500/10 text-blue-600`}>
+                            LOI
                           </span>
                           <span className="text-[9px] font-black px-2 py-0.5 rounded-md uppercase tracking-tighter bg-slate-100 dark:bg-slate-800 text-slate-500">
                             {category}
                           </span>
                         </div>
                         <h3 className="text-xl font-bold text-slate-900 dark:text-white group-hover:text-red-600 transition-colors line-clamp-2">
-                          {v.scrutins?.objet || "Vote sans titre"}
+                          {v.scrutins?.objet || "Texte législatif"}
                         </h3>
                       </div>
                     </div>

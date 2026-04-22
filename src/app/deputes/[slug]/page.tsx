@@ -66,22 +66,83 @@ export default function DeputyDetailPage({ params }: { params: Promise<{ slug: s
   const [selectedCategory, setSelectedCategory] = useState("Tout");
   const [selectedVoteForModal, setSelectedVoteForModal] = useState<any | null>(null);
 
-  // Filtering Logic (now only on category as type is filtered by API)
+  // Helper to extract law info and group them
+  const extractLawInfo = (objet: string) => {
+    // 1. Check for global vote
+    const globalMatch = objet.match(/l'ensemble d[ue]\s+(?:projet|proposition) de loi\s+(?:relatif à|visant à|autorisant|relative à)?\s*(.*?)(?:\s*\(|$)/i);
+    if (globalMatch) {
+      return { title: globalMatch[1].trim(), isGlobal: true, isArticle: false };
+    }
+
+    // 2. Check for article vote
+    const articleMatch = objet.match(/l'article\s+(.*?)\s+de la\s+(?:proposition|projet) de loi\s+(?:relatif à|visant à|autorisant|relative à)?\s*(.*?)(?:\s*\(|$)/i);
+    if (articleMatch) {
+      // If it mentions an amendment "to" an article, we skip as user said "Pas les amendements"
+      if (objet.toLowerCase().includes("l'amendement n°")) return null;
+      return { title: articleMatch[2].trim(), isGlobal: false, isArticle: true, article: articleMatch[1].trim() };
+    }
+
+    // 3. Fallback for "le projet de loi ..." without "l'ensemble"
+    const genericMatch = objet.match(/(?:projet|proposition) de loi\s+(?:relatif à|visant à|autorisant|relative à)?\s*(.*?)(?:\s*\(|$)/i);
+    if (genericMatch) {
+      return { title: genericMatch[1].trim(), isGlobal: true, isArticle: false };
+    }
+
+    return { title: objet, isGlobal: false, isArticle: false };
+  };
+
+  // Grouping Logic
+  const groupedVotes = useMemo(() => {
+    const groups: Record<string, any> = {};
+
+    votes.forEach(v => {
+      const s = v.scrutins;
+      if (!s) return;
+
+      const info = extractLawInfo(s.objet);
+      if (!info) return; // Skip if null (like amendments)
+
+      const key = info.title.toLowerCase();
+      if (!groups[key]) {
+        groups[key] = {
+          id: v.id,
+          title: info.title.charAt(0).toUpperCase() + info.title.slice(1), // Capitalize
+          category: s.category || "Autre",
+          date: s.date_scrutin,
+          mainVote: null,
+          subVotes: [],
+          // Keep a ref to the "best" scrutin for the main display
+          representative: v
+        };
+      }
+
+      if (info.isGlobal) {
+        groups[key].mainVote = v;
+        groups[key].representative = v;
+      } else if (info.isArticle) {
+        groups[key].subVotes.push({ ...v, articleLabel: info.article });
+      } else if (!groups[key].mainVote) {
+        // If we don't have a global yet, this one is the representative
+        groups[key].representative = v;
+      }
+    });
+
+    return Object.values(groups);
+  }, [votes]);
+
+  // Filtering Logic (now on the GROUPED items)
   const filteredVotes = useMemo(() => {
-    return votes
-      .filter(v => {
-        const s = v.scrutins;
-        if (!s) return false;
-        
-        const matchesCategory = selectedCategory === "Tout" || s.category === selectedCategory;
+    return groupedVotes
+      .filter(g => {
+        const matchesCategory = selectedCategory === "Tout" || g.category === selectedCategory;
         return matchesCategory;
       })
       .sort((a, b) => {
-        const dateA = new Date(a.scrutins?.date_scrutin || 0).getTime();
-        const dateB = new Date(b.scrutins?.date_scrutin || 0).getTime();
+        const dateA = new Date(a.date || 0).getTime();
+        const dateB = new Date(b.date || 0).getTime();
         return dateB - dateA;
       });
-  }, [votes, selectedCategory]);
+  }, [groupedVotes, selectedCategory]);
 
   // Load real deputy and follow status
   useEffect(() => {
@@ -498,22 +559,23 @@ export default function DeputyDetailPage({ params }: { params: Promise<{ slug: s
                 </div>
               )}
 
-              {filteredVotes.map((v: any, idx) => {
+              {filteredVotes.map((group: any, idx) => {
+                const v = group.representative;
                 const voteInfo = getVoteDisplay(v.position);
-                const dateStr = v.scrutins?.date_scrutin 
-                  ? new Date(v.scrutins.date_scrutin).toLocaleDateString('fr-FR', { day: 'numeric', month: 'long', year: 'numeric' })
+                const dateStr = group.date 
+                  ? new Date(group.date).toLocaleDateString('fr-FR', { day: 'numeric', month: 'long', year: 'numeric' })
                   : 'Date inconnue';
                 
-                const category = v.scrutins?.category || 'Autres';
+                const category = group.category;
 
                 return (
                   <motion.div 
-                    key={v.id}
+                    key={group.id}
                     layout
                     initial={{ opacity: 0, x: 20 }}
                     animate={{ opacity: 1, x: 0 }}
                     transition={{ delay: 0.1 + (idx * 0.05) }}
-                    onClick={() => setSelectedVoteForModal(v)}
+                    onClick={() => setSelectedVoteForModal({ ...v, subVotes: group.subVotes, cleanedTitle: group.title })}
                     className="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-[2rem] p-6 flex flex-col md:flex-row items-center gap-6 group hover:border-red-500 hover:shadow-2xl hover:shadow-red-500/10 cursor-pointer transition-all duration-300 transform hover:-translate-y-1 mb-4"
                   >
                     <div className="flex-1 flex items-center gap-6 min-w-0 w-full">
@@ -533,7 +595,7 @@ export default function DeputyDetailPage({ params }: { params: Promise<{ slug: s
                           </span>
                         </div>
                         <h3 className="text-xl font-bold text-slate-900 dark:text-white group-hover:text-red-600 transition-colors line-clamp-2">
-                          {v.scrutins?.objet || "Texte législatif"}
+                          {group.title}
                         </h3>
                       </div>
                     </div>

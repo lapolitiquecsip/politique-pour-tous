@@ -30,6 +30,9 @@ const VoteDetailsModal: React.FC<VoteDetailsModalProps> = ({ vote, onClose }) =>
     ? new Date(s.date_scrutin).toLocaleDateString('fr-FR', { day: 'numeric', month: 'long', year: 'numeric' })
     : 'Date inconnue';
 
+  const subVotes = vote.subVotes || [];
+  const title = vote.cleanedTitle || s.objet;
+
   return (
     <AnimatePresence>
       <div className="fixed inset-0 z-[100] flex items-center justify-center p-4 md:p-6">
@@ -73,14 +76,16 @@ const VoteDetailsModal: React.FC<VoteDetailsModalProps> = ({ vote, onClose }) =>
             </div>
 
             <h2 className="text-2xl font-black text-slate-900 dark:text-white mb-6 leading-tight">
-              {s.objet}
+              {title}
             </h2>
 
             <div className="space-y-8">
               {/* Summary Section */}
               <div className="space-y-3">
                 <div className="flex items-center gap-2 text-slate-900 dark:text-white">
-                  <Info className="w-5 h-5 text-red-500" />
+                  <div className="w-8 h-8 rounded-lg bg-red-500/10 flex items-center justify-center">
+                    <Info className="w-4 h-4 text-red-500" />
+                  </div>
                   <h3 className="font-bold text-lg">Résumé de la loi</h3>
                 </div>
                 <p className="text-slate-600 dark:text-slate-400 leading-relaxed italic">
@@ -104,10 +109,10 @@ const VoteDetailsModal: React.FC<VoteDetailsModalProps> = ({ vote, onClose }) =>
               {/* Vote Info Card */}
               <div className={`p-6 rounded-3xl ${voteInfo.bg} flex items-center justify-between border border-transparent`}>
                 <div className="space-y-1">
-                  <span className="text-[10px] font-black text-slate-500 uppercase tracking-widest">Position du député</span>
-                  <div className={`flex items-center gap-2 ${voteInfo.color} font-black text-xl italic`}>
+                  <span className="text-[10px] font-black text-slate-500 uppercase tracking-widest">Position globale</span>
+                  <div className={`flex items-center gap-2 ${voteInfo.color} font-black text-xl italic uppercase`}>
                     <voteInfo.icon className="w-6 h-6" />
-                    VOTE : {voteInfo.label}
+                    {voteInfo.label}
                   </div>
                 </div>
                 {s.dossier_url && (
@@ -121,6 +126,30 @@ const VoteDetailsModal: React.FC<VoteDetailsModalProps> = ({ vote, onClose }) =>
                   </a>
                 )}
               </div>
+
+              {/* Sub-votes breakdown */}
+              {subVotes.length > 0 && (
+                <div className="space-y-4 pt-4">
+                  <div className="flex items-center gap-2 text-slate-900 dark:text-white">
+                     <Layers className="w-5 h-5 text-blue-500" />
+                     <h3 className="font-bold text-lg">Détail par article</h3>
+                  </div>
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
+                    {subVotes.map((sv: any) => {
+                      const svDisplay = getVoteDisplay(sv.position);
+                      return (
+                        <div key={sv.id} className="flex items-center justify-between p-4 rounded-2xl bg-white dark:bg-slate-800 border border-slate-100 dark:border-slate-700">
+                           <span className="text-sm font-bold text-slate-700 dark:text-slate-300">Article {sv.articleLabel}</span>
+                           <div className={`flex items-center gap-1.5 px-3 py-1 rounded-full ${svDisplay.bg} ${svDisplay.color} text-[10px] font-black`}>
+                              <svDisplay.icon className="w-3 h-3" />
+                              {svDisplay.label}
+                           </div>
+                        </div>
+                      );
+                    })}
+                  </div>
+                </div>
+              )}
             </div>
           </div>
         </motion.div>

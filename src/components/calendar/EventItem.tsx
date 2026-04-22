@@ -3,12 +3,12 @@ export interface CalendarEvent {
   date: Date;
   title: string;
   description: string;
-  institution: "Assemblée" | "Sénat" | "Gouvernement";
+  institution: "Assemblée nationale" | "Sénat" | "Élysée" | "Gouvernement" | "Assemblée";
   category: string;
 }
 
 export default function EventItem({ event }: { event: CalendarEvent }) {
-  const isAssemblee = event.institution === "Assemblée";
+  const isAssemblee = event.institution === "Assemblée nationale" || event.institution === "Assemblée";
   const isSenat = event.institution === "Sénat";
 
   const badgeColor = isAssemblee

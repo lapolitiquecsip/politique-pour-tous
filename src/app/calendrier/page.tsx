@@ -1,5 +1,6 @@
 import { api } from "@/lib/api";
 import CalendarClient from "./CalendarClient";
+import { CalendarEvent } from '@/components/calendar/EventItem';
 
 export default async function CalendarPage() {
   const eventsRaw = await api.getCalendarEvents();

@@ -35,7 +35,27 @@ export default function PetitionsSection() {
     const load = async () => {
       const data = await api.getPetitions();
       if (data && data.length > 0) {
-        setPetitions(data.slice(0, 6));
+        // 1. Get Top 3 most voted
+        const popular = [...data]
+          .sort((a, b) => b.signatures - a.signatures)
+          .slice(0, 3);
+        
+        const popularIds = new Set(popular.map(p => p.id));
+        
+        // 2. Get Top 3 most recent (not already in popular)
+        // Note: data from api is already sorted by signatures, 
+        // but we want the newest available in the DB for the "Recent" slots
+        const recent = [...data]
+          .filter(p => !popularIds.has(p.id))
+          .sort((a, b) => {
+            // Compare IDs or creation dates if available. 
+            // In Decidim, higher IDs are usually newer, 
+            // but we'll use a secondary sort or just the natural order if it matches
+            return b.id.localeCompare(a.id); 
+          })
+          .slice(0, 3);
+
+        setPetitions([...popular, ...recent]);
       }
       setLoading(false);
     };
@@ -171,7 +191,7 @@ export default function PetitionsSection() {
         <div className="mt-16 text-center">
           <p className="text-xs font-bold text-slate-400 uppercase tracking-widest mb-4">Portail Officiel</p>
           <a 
-            href="https://petitions.assemblee-nationale.fr/"
+            href="https://petitions.assemblee-nationale.fr/initiatives"
             target="_blank"
             rel="noopener noreferrer"
             className="inline-flex items-center gap-2 text-slate-900 font-extrabold hover:text-blue-600 transition-colors"

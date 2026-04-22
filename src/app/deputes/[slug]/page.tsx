@@ -71,21 +71,27 @@ export default function DeputyDetailPage({ params }: { params: Promise<{ slug: s
     // 1. Check for global vote
     const globalMatch = objet.match(/l'ensemble d[ue]\s+(?:projet|proposition) de loi\s+(?:relatif à|visant à|autorisant|relative à)?\s*(.*?)(?:\s*\(|$)/i);
     if (globalMatch) {
-      return { title: globalMatch[1].trim(), isGlobal: true, isArticle: false };
+      let title = globalMatch[1].trim();
+      title = title.replace(/\s*\(.*?\)\s*$/, "").replace(/\s*$/, "");
+      return { title: title.charAt(0).toUpperCase() + title.slice(1), isGlobal: true, isArticle: false };
     }
 
-    // 2. Check for article vote
-    const articleMatch = objet.match(/l'article\s+(.*?)\s+de la\s+(?:proposition|projet) de loi\s+(?:relatif à|visant à|autorisant|relative à)?\s*(.*?)(?:\s*\(|$)/i);
+    // 2. Check for article vote (Accepts "du" and "de la")
+    const articleMatch = objet.match(/l'article\s+(.*?)\s+(?:du|de la)\s+(?:proposition|projet) de loi\s+(?:relatif à|visant à|autorisant|relative à)?\s*(.*?)(?:\s*\(|$)/i);
     if (articleMatch) {
       // If it mentions an amendment "to" an article, we skip as user said "Pas les amendements"
       if (objet.toLowerCase().includes("l'amendement n°")) return null;
-      return { title: articleMatch[2].trim(), isGlobal: false, isArticle: true, article: articleMatch[1].trim() };
+      let title = articleMatch[2].trim();
+      title = title.replace(/\s*\(.*?\)\s*$/, "").replace(/\s*$/, "");
+      return { title: title.charAt(0).toUpperCase() + title.slice(1), isGlobal: false, isArticle: true, article: articleMatch[1].trim() };
     }
 
     // 3. Fallback for "le projet de loi ..." without "l'ensemble"
     const genericMatch = objet.match(/(?:projet|proposition) de loi\s+(?:relatif à|visant à|autorisant|relative à)?\s*(.*?)(?:\s*\(|$)/i);
     if (genericMatch) {
-      return { title: genericMatch[1].trim(), isGlobal: true, isArticle: false };
+      let title = genericMatch[1].trim();
+      title = title.replace(/\s*\(.*?\)\s*$/, "").replace(/\s*$/, "");
+      return { title: title.charAt(0).toUpperCase() + title.slice(1), isGlobal: true, isArticle: false };
     }
 
     return { title: objet, isGlobal: false, isArticle: false };

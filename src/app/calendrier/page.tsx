@@ -10,7 +10,7 @@ export default async function CalendarPage() {
     date: new Date(e.date || e.created_at),
     title: e.title || '',
     description: e.description || '',
-    institution: e.institution || 'Assemblée',
+    institution: e.institution || 'Assemblée nationale',
     category: e.category || '',
   }));
 

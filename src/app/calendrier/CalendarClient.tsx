@@ -65,13 +65,13 @@ export default function CalendarClient({ initialEvents }: { initialEvents: Calen
             <span className="text-[10px] font-black text-slate-700 uppercase tracking-widest">Sénat</span>
           </div>
           <div className="flex items-center gap-3">
-            <div className="w-3 h-3 rounded-full bg-red-500 shadow-[0_0_10px_rgba(239,68,68,0.6)]" />
-            <span className="text-[10px] font-black text-slate-700 uppercase tracking-widest">Gouvernement</span>
+            <div className="w-3 h-3 rounded-full bg-amber-500 shadow-[0_0_10px_rgba(245,158,11,0.6)]" />
+            <span className="text-[10px] font-black text-slate-700 uppercase tracking-widest">Élysée</span>
           </div>
         </div>
 
         <div className="flex bg-slate-100 p-1 rounded-2xl border border-slate-200 self-start lg:self-auto">
-          {["Tous", "Assemblée", "Sénat", "Gouvernement"].map((f) => (
+          {["Tous", "Assemblée", "Sénat", "Élysée"].map((f) => (
             <button
               key={f}
               onClick={() => setActiveFilter(f === "Assemblée" ? "Assemblée nationale" : f)}

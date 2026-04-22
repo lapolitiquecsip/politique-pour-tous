@@ -218,7 +218,7 @@ export const api = {
       .from('deputy_votes')
       .select('*, scrutins!inner(id, numero, date_scrutin, objet, resultat, type, category, summary, why_it_matters)')
       .eq('deputy_an_id', anId)
-      .eq('scrutins.type', 'LOI')
+      .in('scrutins.type', ['LOI', 'ARTICLE'])
       .order('date_scrutin', { ascending: false })
       .limit(1000);
     

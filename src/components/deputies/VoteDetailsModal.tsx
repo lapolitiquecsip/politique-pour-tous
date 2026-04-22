@@ -138,12 +138,19 @@ const VoteDetailsModal: React.FC<VoteDetailsModalProps> = ({ vote, onClose }) =>
                     {subVotes.map((sv: any) => {
                       const svDisplay = getVoteDisplay(sv.position);
                       return (
-                        <div key={sv.id} className="flex items-center justify-between p-4 rounded-2xl bg-white dark:bg-slate-800 border border-slate-100 dark:border-slate-700">
-                           <span className="text-sm font-bold text-slate-700 dark:text-slate-300">Article {sv.articleLabel}</span>
-                           <div className={`flex items-center gap-1.5 px-3 py-1 rounded-full ${svDisplay.bg} ${svDisplay.color} text-[10px] font-black`}>
-                              <svDisplay.icon className="w-3 h-3" />
-                              {svDisplay.label}
+                        <div key={sv.id} className="flex flex-col p-4 rounded-2xl bg-white dark:bg-slate-800 border border-slate-100 dark:border-slate-700">
+                           <div className="flex items-center justify-between">
+                             <span className="text-sm font-bold text-slate-700 dark:text-slate-300">Article {sv.articleLabel}</span>
+                             <div className={`flex items-center gap-1.5 px-3 py-1 rounded-full ${svDisplay.bg} ${svDisplay.color} text-[10px] font-black`}>
+                                <svDisplay.icon className="w-3 h-3" />
+                                {svDisplay.label}
+                             </div>
                            </div>
+                           {sv.scrutins?.summary && (
+                             <p className="text-xs text-slate-500 dark:text-slate-400 italic mt-2 leading-relaxed">
+                               {sv.scrutins.summary}
+                             </p>
+                           )}
                         </div>
                       );
                     })}

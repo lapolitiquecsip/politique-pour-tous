@@ -36,6 +36,26 @@ function InstitutionSection({
   
   if (events.length === 0) return null;
 
+  const categorize = (evs: CalendarEvent[]) => {
+    const categories: Record<string, CalendarEvent[]> = {
+      "Auditions": evs.filter(e => e.title.toLowerCase().includes('audition')),
+      "Examens de textes": evs.filter(e => e.title.toLowerCase().includes('examen') || e.title.toLowerCase().includes('loi')),
+      "Tables rondes": evs.filter(e => e.title.toLowerCase().includes('table ronde')),
+      "Séances Publiques": evs.filter(e => e.title.toLowerCase().includes('séance') || e.title.toLowerCase().includes('public')),
+      "Divers": evs.filter(e => 
+        !e.title.toLowerCase().includes('audition') && 
+        !e.title.toLowerCase().includes('examen') && 
+        !e.title.toLowerCase().includes('loi') && 
+        !e.title.toLowerCase().includes('table ronde') && 
+        !e.title.toLowerCase().includes('séance') && 
+        !e.title.toLowerCase().includes('public')
+      )
+    };
+    return categories;
+  };
+
+  const cats = categorize(events);
+
   return (
     <div className={`mb-4 rounded-3xl border-2 ${isOpen ? 'border-white/20 bg-white/5' : 'border-white/5 hover:border-white/10'} transition-all overflow-hidden`}>
       <button 
@@ -62,29 +82,12 @@ function InstitutionSection({
             exit={{ height: 0, opacity: 0 }}
             className="px-6 pb-6"
           >
-            <div className="space-y-4 pt-4 border-t border-white/5">
-              {events.map((event, idx) => (
-                <div key={event.id} className="group/item">
-                  <div className="flex justify-between items-start gap-4">
-                    <h5 className="text-xs font-bold text-slate-200 leading-snug flex-1 group-hover/item:text-white transition-colors">
-                      {event.title}
-                    </h5>
-                    <a 
-                      href={event.source_url} 
-                      target="_blank" 
-                      rel="noopener noreferrer"
-                      className="text-slate-500 hover:text-white transition-colors"
-                    >
-                      <ExternalLink className="w-3 h-3" />
-                    </a>
-                  </div>
-                  {event.description && (
-                    <p className="mt-1 text-[10px] text-slate-500 line-clamp-2 italic">
-                      {event.description}
-                    </p>
-                  )}
-                </div>
-              ))}
+            <div className="pt-4 border-t border-white/5 space-y-1">
+              <SubSection label="Auditions" events={cats["Auditions"]} color={color} />
+              <SubSection label="Examens de textes" events={cats["Examens de textes"]} color={color} />
+              <SubSection label="Tables rondes" events={cats["Tables rondes"]} color={color} />
+              <SubSection label="Séances Publiques" events={cats["Séances Publiques"]} color={color} />
+              <SubSection label="Divers" events={cats["Divers"]} color={color} />
             </div>
           </motion.div>
         )}

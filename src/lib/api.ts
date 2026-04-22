@@ -47,15 +47,16 @@ export const api = {
   getCalendarEvents: async () => {
     // Dynamic range to ensure we get relevant events without hitting row limits
     const now = new Date();
-    const threeMonthsAgo = new Date(now.getFullYear(), now.getMonth() - 3, 1).toISOString().split('T')[0];
-    const sixMonthsAhead = new Date(now.getFullYear(), now.getMonth() + 6, 1).toISOString().split('T')[0];
+    const oneMonthAgo = new Date(now.getFullYear(), now.getMonth() - 1, 1).toISOString().split('T')[0];
+    const threeMonthsAhead = new Date(now.getFullYear(), now.getMonth() + 3, 1).toISOString().split('T')[0];
 
     const { data, error } = await supabase
       .from('events')
       .select('*')
-      .gte('date', threeMonthsAgo)
-      .lte('date', sixMonthsAhead)
-      .order('date', { ascending: true });
+      .gte('date', oneMonthAgo)
+      .lte('date', threeMonthsAhead)
+      .order('date', { ascending: true })
+      .limit(5000);
     
     if (error) { console.error(error); return []; }
     return data || [];

@@ -1,4 +1,5 @@
 "use client";
+// Version 1.1.2 - Mise à jour des synchronisations pétitions et IA
 
 import { useEffect, useState } from "react";
 

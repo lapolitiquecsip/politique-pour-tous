@@ -12,6 +12,7 @@ export default async function CalendarPage() {
     description: e.description || '',
     institution: e.institution || 'Assemblée nationale',
     category: e.category || '',
+    source_url: e.source_url || '',
   }));
 
   return <CalendarClient initialEvents={events} />;

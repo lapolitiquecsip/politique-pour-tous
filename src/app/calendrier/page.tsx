@@ -5,11 +5,16 @@ export default async function CalendarPage() {
   const eventsRaw = await api.getCalendarEvents();
   
   // Transform DB rows to expected format
-  const events = eventsRaw.map((e: any) => ({
+  const cleanText = (text: string) => {
+    if (!text) return '';
+    return text.replace(/^\["/, '').replace(/"\]$/, '').replace(/\\"/g, '"').replace(/^"/, '').replace(/"$/, '').trim();
+  };
+
+  const events: CalendarEvent[] = eventsRaw.map((e: any) => ({
     id: e.id,
     date: new Date(e.date || e.created_at),
-    title: e.title || '',
-    description: e.description || '',
+    title: cleanText(e.title || 'Réunion'),
+    description: cleanText(e.description || ''),
     institution: e.institution || 'Assemblée nationale',
     category: e.category || '',
     source_url: e.source_url || '',

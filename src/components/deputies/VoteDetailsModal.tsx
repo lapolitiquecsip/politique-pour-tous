@@ -1,7 +1,9 @@
 
 import React from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { X, Landmark, ExternalLink, Info, CheckCircle2, XCircle, MinusCircle, AlertCircle, Layers } from 'lucide-react';
+import { X, Landmark, ExternalLink, Info, CheckCircle2, XCircle, MinusCircle, AlertCircle, Layers, Lock, Star } from 'lucide-react';
+import { usePremium } from "@/lib/hooks/usePremium";
+import Link from 'next/link';
 
 interface VoteDetailsModalProps {
   vote: any;
@@ -22,6 +24,7 @@ const getVoteDisplay = (position: string) => {
 };
 
 const VoteDetailsModal: React.FC<VoteDetailsModalProps> = ({ vote, onClose }) => {
+  const { isPremium } = usePremium();
   if (!vote) return null;
 
   const s = vote.scrutins;
@@ -32,6 +35,15 @@ const VoteDetailsModal: React.FC<VoteDetailsModalProps> = ({ vote, onClose }) =>
 
   const subVotes = vote.subVotes || [];
   const title = vote.cleanedTitle || s.objet;
+
+  let mattersPart = s?.why_it_matters;
+  let detailedPart = null;
+
+  if (s?.why_it_matters && s.why_it_matters.includes("|||DETAILED|||")) {
+    const parts = s.why_it_matters.split("|||DETAILED|||");
+    mattersPart = parts[0];
+    detailedPart = parts[1];
+  }
 
   return (
     <AnimatePresence>
@@ -96,15 +108,43 @@ const VoteDetailsModal: React.FC<VoteDetailsModalProps> = ({ vote, onClose }) =>
               )}
 
               {/* Why it matters */}
-              {s.why_it_matters && (
+              {mattersPart && (
                 <div className="space-y-3 p-6 bg-slate-50 dark:bg-slate-800/50 rounded-2xl border border-slate-100 dark:border-slate-800">
                   <h3 className="font-bold text-slate-900 dark:text-white flex items-center gap-2">
                     <span className="w-2 h-6 bg-red-500 rounded-full" />
                     L'enjeu principal
                   </h3>
                   <p className="text-sm text-slate-600 dark:text-slate-400">
-                    {s.why_it_matters}
+                    {mattersPart}
                   </p>
+                </div>
+              )}
+
+              {/* Premium Detailed Summary */}
+              {detailedPart && (
+                <div className="space-y-3 p-6 bg-amber-50 dark:bg-amber-900/10 rounded-2xl border border-amber-100 dark:border-amber-900/30 relative overflow-hidden">
+                  <h3 className="font-bold text-slate-900 dark:text-white flex items-center gap-2">
+                    <Star className="w-4 h-4 text-amber-500" />
+                    Ce que propose concrètement la loi
+                  </h3>
+                  
+                  <div className={`relative ${!isPremium ? "select-none" : ""}`}>
+                    <p className={`text-sm text-slate-700 dark:text-slate-300 whitespace-pre-wrap leading-relaxed ${!isPremium ? "blur-[5px] opacity-60" : ""}`}>
+                      {detailedPart}
+                    </p>
+                    
+                    {!isPremium && (
+                      <div className="absolute inset-0 flex items-center justify-center pointer-events-none pb-2">
+                        <Link 
+                          href="/premium"
+                          className="pointer-events-auto flex items-center gap-2 bg-gradient-to-r from-amber-500 to-amber-600 text-white px-5 py-2.5 rounded-xl font-bold shadow-lg hover:shadow-xl hover:-translate-y-0.5 transition-all w-max"
+                        >
+                          <Lock className="w-4 h-4" />
+                          Débloquer l'analyse détaillée
+                        </Link>
+                      </div>
+                    )}
+                  </div>
                 </div>
               )}
 

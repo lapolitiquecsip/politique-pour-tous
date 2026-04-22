@@ -81,17 +81,19 @@ const VoteDetailsModal: React.FC<VoteDetailsModalProps> = ({ vote, onClose }) =>
 
             <div className="space-y-8">
               {/* Summary Section */}
-              <div className="space-y-3">
-                <div className="flex items-center gap-2 text-slate-900 dark:text-white">
-                  <div className="w-8 h-8 rounded-lg bg-red-500/10 flex items-center justify-center">
-                    <Info className="w-4 h-4 text-red-500" />
+              {s.summary && (
+                <div className="space-y-3">
+                  <div className="flex items-center gap-2 text-slate-900 dark:text-white">
+                    <div className="w-8 h-8 rounded-lg bg-red-500/10 flex items-center justify-center">
+                      <Info className="w-4 h-4 text-red-500" />
+                    </div>
+                    <h3 className="font-bold text-lg">Résumé de la loi</h3>
                   </div>
-                  <h3 className="font-bold text-lg">Résumé de la loi</h3>
+                  <p className="text-slate-600 dark:text-slate-400 leading-relaxed italic">
+                    {s.summary}
+                  </p>
                 </div>
-                <p className="text-slate-600 dark:text-slate-400 leading-relaxed italic">
-                  {s.summary || "L'explication simplifiée est en cours de génération par notre IA..."}
-                </p>
-              </div>
+              )}
 
               {/* Why it matters */}
               {s.why_it_matters && (

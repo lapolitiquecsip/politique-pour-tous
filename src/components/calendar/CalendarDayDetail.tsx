@@ -5,13 +5,55 @@ import { motion, AnimatePresence } from "framer-motion";
 import { Calendar, Clock, MapPin, ExternalLink, Bookmark, ChevronDown, User } from "lucide-react";
 import { CalendarEvent } from "./EventItem";
 
-interface InstitutionTabProps {
-  id: string;
-  label: string;
-  count: number;
-  active: boolean;
-  onClick: () => void;
-  color: string;
+function SubSection({ label, events, color }: { label: string, events: CalendarEvent[], color: string }) {
+  const [isOpen, setIsOpen] = useState(false);
+  if (events.length === 0) return null;
+
+  return (
+    <div className="mb-2">
+      <button 
+        onClick={() => setIsOpen(!isOpen)}
+        className="w-full py-2 px-3 flex items-center justify-between bg-white/5 hover:bg-white/10 rounded-xl transition-all border border-white/5"
+      >
+        <div className="flex items-center gap-2">
+          <ChevronDown className={`w-3 h-3 text-slate-500 transition-transform ${isOpen ? "" : "-rotate-90"}`} />
+          <span className="text-[10px] font-black uppercase tracking-widest text-slate-300">{label}</span>
+        </div>
+        <span className={`text-[10px] font-bold ${color}`}>{events.length}</span>
+      </button>
+      
+      <AnimatePresence>
+        {isOpen && (
+          <motion.div
+            initial={{ height: 0, opacity: 0 }}
+            animate={{ height: "auto", opacity: 1 }}
+            exit={{ height: 0, opacity: 0 }}
+            className="overflow-hidden"
+          >
+            <div className="py-3 pl-4 space-y-4">
+              {events.map((event) => (
+                <div key={event.id} className="group/item">
+                  <div className="flex justify-between items-start gap-4">
+                    <h5 className="text-[11px] font-bold text-slate-200 leading-snug flex-1 group-hover/item:text-white transition-colors">
+                      {event.title}
+                    </h5>
+                    <a href={event.source_url} target="_blank" rel="noopener noreferrer" className="text-slate-600 hover:text-white">
+                      <ExternalLink className="w-3 h-3" />
+                    </a>
+                  </div>
+                  {event.description && (
+                    <p className="mt-1 text-[9px] text-slate-500 line-clamp-2 italic">
+                      {event.description}
+                    </p>
+                  )}
+                </div>
+              ))}
+            </div>
+          </motion.div>
+        )}
+      </AnimatePresence>
+    </div>
+  );
 }
 
 interface CalendarDayDetailProps {

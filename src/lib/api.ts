@@ -216,7 +216,7 @@ export const api = {
     // 'scrutins!inner' allows filtering on the related table
     const { data, error } = await supabase
       .from('deputy_votes')
-      .select('*, scrutins!inner(id, numero, date_scrutin, objet, resultat, type, category)')
+      .select('*, scrutins!inner(id, numero, date_scrutin, objet, resultat, type, category, summary, why_it_matters)')
       .eq('deputy_an_id', anId)
       .eq('scrutins.type', 'LOI')
       .order('date_scrutin', { ascending: false })

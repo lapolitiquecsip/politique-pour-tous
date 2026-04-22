@@ -14,6 +14,11 @@ interface InstitutionTabProps {
   color: string;
 }
 
+interface CalendarDayDetailProps {
+  selectedDate: Date | null;
+  events: CalendarEvent[];
+}
+
 function InstitutionSection({ 
   label, 
   events, 

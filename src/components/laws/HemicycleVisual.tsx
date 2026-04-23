@@ -15,18 +15,25 @@ interface HemicycleVisualProps {
   groups: GroupResult[];
 }
 
+const LEGISLATURE_TOTALS: any = {
+  "PO845485": 17, // GDR
+  "PO845407": 72, // LFI
+  "PO845470": 38, // ÉCO
+  "PO845413": 66, // SOC
+  "PO845514": 21, // LIOT
+  "PO845401": 99, // EPR
+  "PO845439": 36, // DEM
+  "PO845454": 31, // HOR
+  "PO845425": 47, // DR
+  "PO872880": 16, // UDR
+  "PO845419": 126, // RN
+  "NI": 8,        // Non Inscrits
+};
+
 const GROUP_ORDER = [
-  "PO845485", // GDR
-  "PO845407", // LFI
-  "PO845470", // ÉCO
-  "PO845413", // SOC
-  "PO845514", // LIOT
-  "PO845401", // EPR
-  "PO845439", // DEM
-  "PO845454", // HOR
-  "PO845425", // DR
-  "PO872880", // UDR
-  "PO845419", // RN
+  "PO845485", "PO845407", "PO845470", "PO845413", "PO845514", 
+  "PO845401", "PO845439", "PO845454", "PO845425", "PO872880", 
+  "PO845419", "NI"
 ];
 
 const GROUP_MAPPING: any = {
@@ -41,6 +48,7 @@ const GROUP_MAPPING: any = {
   "PO845485": { name: "Gauche Démocrate et Républicaine", short: "GDR", color: "#DD0000" },
   "PO845514": { name: "Libertés, Indépendants, Outre-mer et Territoires", short: "LIOT", color: "#F5B000" },
   "PO872880": { name: "Union des Droites pour la République", short: "UDR", color: "#004792" },
+  "NI": { name: "Non inscrits", short: "NI", color: "#94a3b8" },
 };
 
 export default function HemicycleVisual({ groups }: HemicycleVisualProps) {
@@ -48,13 +56,13 @@ export default function HemicycleVisual({ groups }: HemicycleVisualProps) {
   const [tooltipPos, setTooltipPos] = useState({ x: 0, y: 0 });
 
   const seats = useMemo(() => {
-    const totalSeats = 577;
+    const totalPhysicalSeats = 650; // Use more dots to account for gaps
     const rows = 12;
     const result: any[] = [];
     
     for (let row = 0; row < rows; row++) {
       const radius = 100 + row * 12;
-      const seatsInRow = Math.floor(radius * Math.PI / 12);
+      const seatsInRow = Math.floor(radius * Math.PI / 11); // Slightly denser
       const angleStep = Math.PI / (seatsInRow - 1);
       
       for (let i = 0; i < seatsInRow; i++) {
@@ -62,7 +70,7 @@ export default function HemicycleVisual({ groups }: HemicycleVisualProps) {
         result.push({
           x: radius * Math.cos(angle),
           y: radius * Math.sin(angle),
-          radius: 3.5,
+          radius: 3.2,
         });
       }
     }
@@ -71,39 +79,40 @@ export default function HemicycleVisual({ groups }: HemicycleVisualProps) {
       const angleA = Math.atan2(a.y, a.x);
       const angleB = Math.atan2(b.y, b.x);
       return angleA - angleB;
-    }).slice(0, totalSeats);
+    });
 
     let currentSeatIdx = 0;
     const finalSeats: any[] = [];
 
-    const activeGroups = GROUP_ORDER.map(id => {
-      const g = groups.find(item => item.group_id === id);
-      return g || { group_id: id, pour: 0, contre: 0, abstention: 0, total: 0 };
-    }).filter(g => g.total > 0);
+    GROUP_ORDER.forEach((id, groupIdx) => {
+      const g = groups.find(item => item.group_id === id) || { group_id: id, pour: 0, contre: 0, abstention: 0, total: 0 };
+      const groupSeatsCount = LEGISLATURE_TOTALS[id] || 0;
+      
+      let pourCount = g.pour;
+      let contreCount = g.contre;
+      let abstentionCount = g.abstention;
 
-    activeGroups.forEach(group => {
-      const groupSeatsCount = group.total;
-      let pourCount = group.pour;
-      let contreCount = group.contre;
-      let abstentionCount = group.abstention;
+      // Add a gap of 2 dots between groups
+      if (groupIdx > 0) currentSeatIdx += 3;
 
       for (let i = 0; i < groupSeatsCount && currentSeatIdx < sortedSeats.length; i++) {
-        let voteColor = "#e2e8f0";
-        let opacity = 0.3;
+        let voteColor = "#cbd5e1"; // Base color for the group background
+        let dotColor = "#e2e8f0";
+        let opacity = 0.2;
         let voteType = 'absent';
 
         if (pourCount > 0) {
-          voteColor = "#10b981";
+          dotColor = "#10b981";
           pourCount--;
           opacity = 1;
           voteType = 'pour';
         } else if (contreCount > 0) {
-          voteColor = "#ef4444";
+          dotColor = "#ef4444";
           contreCount--;
           opacity = 1;
           voteType = 'contre';
         } else if (abstentionCount > 0) {
-          voteColor = "#94a3b8";
+          dotColor = "#64748b";
           abstentionCount--;
           opacity = 1;
           voteType = 'abstention';
@@ -111,12 +120,13 @@ export default function HemicycleVisual({ groups }: HemicycleVisualProps) {
 
         finalSeats.push({
           ...sortedSeats[currentSeatIdx],
-          groupColor: GROUP_MAPPING[group.group_id]?.color || "#cbd5e1",
-          voteColor,
+          groupColor: GROUP_MAPPING[id]?.color || "#cbd5e1",
+          voteColor: dotColor,
           opacity,
-          groupId: group.group_id,
+          groupId: id,
           voteType,
-          groupInfo: group
+          groupInfo: g,
+          realTotal: groupSeatsCount
         });
         currentSeatIdx++;
       }
@@ -129,18 +139,19 @@ export default function HemicycleVisual({ groups }: HemicycleVisualProps) {
     setTooltipPos({ x: e.clientX, y: e.clientY });
   };
 
-  const hoveredGroupData = hoveredGroupId ? groups.find(g => g.group_id === hoveredGroupId) : null;
+  const hoveredGroupData = hoveredGroupId ? (groups.find(g => g.group_id === hoveredGroupId) || { pour: 0, contre: 0, abstention: 0, total: 0 }) : null;
   const hoveredGroupInfo = hoveredGroupId ? GROUP_MAPPING[hoveredGroupId] : null;
+  const hoveredRealTotal = hoveredGroupId ? LEGISLATURE_TOTALS[hoveredGroupId] : 0;
 
   return (
     <div className="w-full relative flex flex-col items-center" onMouseMove={handleMouseMove}>
       <div className="w-full aspect-[2/1] relative flex items-center justify-center overflow-hidden">
         <svg viewBox="-260 -240 520 250" className="w-full h-full">
           <path 
-            d="M -230 0 A 230 230 0 0 1 230 0" 
+            d="M -235 0 A 235 235 0 0 1 235 0" 
             fill="none" 
-            stroke="#f8fafc" 
-            strokeWidth="50" 
+            stroke="#f1f5f9" 
+            strokeWidth="55" 
             strokeLinecap="round"
           />
           
@@ -153,8 +164,8 @@ export default function HemicycleVisual({ groups }: HemicycleVisualProps) {
                 key={i} 
                 initial={false}
                 animate={{ 
-                  scale: isHovered ? 1.4 : 1,
-                  opacity: isDimmed ? 0.2 : 1
+                  scale: isHovered ? 1.5 : 1,
+                  opacity: isDimmed ? 0.15 : 1
                 }}
                 onMouseEnter={() => setHoveredGroupId(seat.groupId)}
                 onMouseLeave={() => setHoveredGroupId(null)}
@@ -163,9 +174,10 @@ export default function HemicycleVisual({ groups }: HemicycleVisualProps) {
                  <circle
                     cx={seat.x}
                     cy={seat.y}
-                    r={seat.radius + 1}
+                    r={seat.radius + 1.2}
                     fill={seat.groupColor}
-                    className="opacity-20"
+                    opacity={isHovered ? 0.4 : 0.15}
+                    className="transition-opacity duration-300"
                  />
                  <circle
                     cx={seat.x}
@@ -180,7 +192,6 @@ export default function HemicycleVisual({ groups }: HemicycleVisualProps) {
           })}
         </svg>
 
-        {/* Floating Tooltip */}
         <AnimatePresence>
           {hoveredGroupId && hoveredGroupInfo && hoveredGroupData && (
             <motion.div
@@ -193,31 +204,31 @@ export default function HemicycleVisual({ groups }: HemicycleVisualProps) {
                 top: tooltipPos.y + 15,
                 zIndex: 100 
               }}
-              className="bg-slate-900/95 backdrop-blur-md text-white p-4 rounded-2xl shadow-2xl border border-white/10 pointer-events-none min-w-[200px]"
+              className="bg-slate-900/95 backdrop-blur-md text-white p-5 rounded-[2rem] shadow-2xl border border-white/10 pointer-events-none min-w-[220px]"
             >
-              <div className="flex items-center gap-2 mb-3">
-                <div className="w-3 h-3 rounded-full" style={{ backgroundColor: hoveredGroupInfo.color }} />
+              <div className="flex items-center gap-2 mb-4">
+                <div className="w-3.5 h-3.5 rounded-full shadow-lg shadow-white/10" style={{ backgroundColor: hoveredGroupInfo.color }} />
                 <span className="text-xs font-black uppercase tracking-widest">{hoveredGroupInfo.short}</span>
               </div>
-              <p className="text-[10px] text-slate-400 font-bold mb-3 leading-tight">
+              <p className="text-[10px] text-slate-400 font-bold mb-4 leading-tight uppercase tracking-tighter">
                 {hoveredGroupInfo.name}
               </p>
-              <div className="space-y-1.5 border-t border-white/10 pt-3">
-                <div className="flex justify-between items-center text-[10px]">
-                  <span className="text-emerald-400 font-black">POUR</span>
-                  <span className="font-mono font-bold">{hoveredGroupData.pour}</span>
+              <div className="space-y-2 border-t border-white/10 pt-4">
+                <div className="flex justify-between items-center">
+                  <span className="text-[10px] text-emerald-400 font-black tracking-widest">POUR</span>
+                  <span className="text-xs font-black font-mono">{hoveredGroupData.pour}</span>
                 </div>
-                <div className="flex justify-between items-center text-[10px]">
-                  <span className="text-red-400 font-black">CONTRE</span>
-                  <span className="font-mono font-bold">{hoveredGroupData.contre}</span>
+                <div className="flex justify-between items-center">
+                  <span className="text-[10px] text-red-400 font-black tracking-widest">CONTRE</span>
+                  <span className="text-xs font-black font-mono">{hoveredGroupData.contre}</span>
                 </div>
-                <div className="flex justify-between items-center text-[10px]">
-                  <span className="text-slate-400 font-black">ABS</span>
-                  <span className="font-mono font-bold">{hoveredGroupData.abstention}</span>
+                <div className="flex justify-between items-center">
+                  <span className="text-[10px] text-slate-400 font-black tracking-widest">ABS</span>
+                  <span className="text-xs font-black font-mono">{hoveredGroupData.abstention}</span>
                 </div>
-                <div className="flex justify-between items-center text-[10px] pt-1.5 mt-1.5 border-t border-white/5">
-                  <span className="text-slate-500 font-bold">TOTAL SIÈGES</span>
-                  <span className="font-mono font-bold">{hoveredGroupData.total}</span>
+                <div className="flex justify-between items-center pt-2 mt-2 border-t border-white/5">
+                  <span className="text-[10px] text-slate-500 font-black">TOTAL GROUPE</span>
+                  <span className="text-xs font-black font-mono text-blue-400">{hoveredRealTotal}</span>
                 </div>
               </div>
             </motion.div>
@@ -225,23 +236,22 @@ export default function HemicycleVisual({ groups }: HemicycleVisualProps) {
         </AnimatePresence>
       </div>
 
-      {/* Legend */}
-      <div className="flex flex-wrap justify-center gap-x-4 gap-y-2 mt-4 px-6 py-3 bg-white/50 backdrop-blur-sm rounded-full border border-slate-100 shadow-sm">
-        <div className="flex items-center gap-1.5">
-          <div className="w-2.5 h-2.5 rounded-full bg-emerald-500" />
-          <span className="text-[9px] font-black uppercase tracking-wider text-slate-500">Pour</span>
+      <div className="flex flex-wrap justify-center gap-x-6 gap-y-2 mt-6 px-8 py-4 bg-white border border-slate-100 rounded-full shadow-sm">
+        <div className="flex items-center gap-2">
+          <div className="w-3 h-3 rounded-full bg-emerald-500 shadow-lg shadow-emerald-500/20" />
+          <span className="text-[10px] font-black uppercase tracking-widest text-slate-600">Pour</span>
         </div>
-        <div className="flex items-center gap-1.5 border-l border-slate-200 pl-4">
-          <div className="w-2.5 h-2.5 rounded-full bg-red-500" />
-          <span className="text-[9px] font-black uppercase tracking-wider text-slate-500">Contre</span>
+        <div className="flex items-center gap-2 border-l border-slate-100 pl-6">
+          <div className="w-3 h-3 rounded-full bg-red-500 shadow-lg shadow-red-500/20" />
+          <span className="text-[10px] font-black uppercase tracking-widest text-slate-600">Contre</span>
         </div>
-        <div className="flex items-center gap-1.5 border-l border-slate-200 pl-4">
-          <div className="w-2.5 h-2.5 rounded-full bg-slate-400" />
-          <span className="text-[9px] font-black uppercase tracking-wider text-slate-500">Abs</span>
+        <div className="flex items-center gap-2 border-l border-slate-100 pl-6">
+          <div className="w-3 h-3 rounded-full bg-slate-500 shadow-lg shadow-slate-500/20" />
+          <span className="text-[10px] font-black uppercase tracking-widest text-slate-600">Abs</span>
         </div>
-        <div className="flex items-center gap-1.5 border-l border-slate-200 pl-4">
-          <div className="w-2.5 h-2.5 rounded-full bg-slate-200" />
-          <span className="text-[9px] font-black uppercase tracking-wider text-slate-300">Absent</span>
+        <div className="flex items-center gap-2 border-l border-slate-100 pl-6">
+          <div className="w-3 h-3 rounded-full bg-slate-200" />
+          <span className="text-[10px] font-black uppercase tracking-widest text-slate-300">Absent</span>
         </div>
       </div>
     </div>

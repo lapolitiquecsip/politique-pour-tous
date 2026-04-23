@@ -16,17 +16,17 @@ interface HemicycleVisualProps {
 }
 
 const LEGISLATURE_TOTALS: any = {
-  "PO845485": 17, // GDR
+  "PO845485": 17, // GDR (Gauche)
   "PO845407": 72, // LFI
   "PO845470": 38, // ÉCO
-  "PO845413": 66, // SOC
-  "PO845514": 21, // LIOT
-  "PO845401": 99, // EPR
+  "PO845413": 66, // SOC (PS)
+  "PO845514": 21, // LIOT (Centre)
+  "PO845401": 99, // EPR (Macronistes)
   "PO845439": 36, // DEM
   "PO845454": 31, // HOR
-  "PO845425": 47, // DR
-  "PO872880": 16, // UDR
-  "PO845419": 126, // RN
+  "PO845425": 47, // DR (Droite)
+  "PO872880": 16, // UDR (Alliés RN)
+  "PO845419": 126, // RN (Extrême Droite)
   "NI": 8,        // Non Inscrits
 };
 
@@ -40,7 +40,7 @@ const GROUP_MAPPING: any = {
   "PO845419": { name: "Rassemblement National", short: "RN", color: "#0D2149" },
   "PO845401": { name: "Ensemble pour la République", short: "EPR", color: "#FFD600" },
   "PO845407": { name: "La France Insoumise - NFP", short: "LFI-NFP", color: "#CC2443" },
-  "PO845413": { name: "Socialistes et apparentés", short: "SOC", color: "#E1001A" },
+  "PO845413": { name: "Socialistes et apparentés (PS)", short: "SOC", color: "#E1001A" },
   "PO845425": { name: "Droite Républicaine", short: "DR", color: "#0066CC" },
   "PO845439": { name: "Les Démocrates", short: "DEM", color: "#FF9900" },
   "PO845454": { name: "Horizons et apparentés", short: "HOR", color: "#00A0E2" },
@@ -56,13 +56,13 @@ export default function HemicycleVisual({ groups }: HemicycleVisualProps) {
   const [tooltipPos, setTooltipPos] = useState({ x: 0, y: 0 });
 
   const seats = useMemo(() => {
-    const totalPhysicalSeats = 650; // Use more dots to account for gaps
+    const totalPhysicalSeats = 650;
     const rows = 12;
     const result: any[] = [];
     
     for (let row = 0; row < rows; row++) {
       const radius = 100 + row * 12;
-      const seatsInRow = Math.floor(radius * Math.PI / 11); // Slightly denser
+      const seatsInRow = Math.floor(radius * Math.PI / 11);
       const angleStep = Math.PI / (seatsInRow - 1);
       
       for (let i = 0; i < seatsInRow; i++) {
@@ -75,15 +75,17 @@ export default function HemicycleVisual({ groups }: HemicycleVisualProps) {
       }
     }
 
+    // CRITICAL: Sort by Angle FIRST to create "sectors" (Vertical slices)
+    // This keeps LFI on the left, PS in the middle-left, RN on the right.
     const sortedSeats = result.sort((a, b) => {
-      // Sort primarily by radius (row) then by angle (left to right)
-      const distA = Math.sqrt(a.x * a.x + a.y * a.y);
-      const distB = Math.sqrt(b.x * b.x + b.y * b.y);
-      if (Math.abs(distA - distB) > 1) return distA - distB;
-      
       const angleA = Math.atan2(a.y, a.x);
       const angleB = Math.atan2(b.y, b.x);
-      return angleA - angleB;
+      
+      if (Math.abs(angleA - angleB) > 0.01) return angleA - angleB;
+      
+      const distA = Math.sqrt(a.x * a.x + a.y * a.y);
+      const distB = Math.sqrt(b.x * b.x + b.y * b.y);
+      return distA - distB;
     });
 
     let currentSeatIdx = 0;
@@ -98,12 +100,12 @@ export default function HemicycleVisual({ groups }: HemicycleVisualProps) {
       let contreCount = g.contre;
       let abstentionCount = g.abstention;
 
-      // Gap between groups
-      if (groupIdx > 0) currentSeatIdx += 2;
+      // Small gap between sectors
+      if (groupIdx > 0) currentSeatIdx += 4;
 
       for (let i = 0; i < groupSeatsCount && currentSeatIdx < sortedSeats.length; i++) {
         let dotColor = groupColor;
-        let opacity = 0.15; // Default for non-votants: very light group color
+        let opacity = 0.15;
         let voteType = 'non-votant';
 
         if (pourCount > 0) {
@@ -117,7 +119,7 @@ export default function HemicycleVisual({ groups }: HemicycleVisualProps) {
           opacity = 1;
           voteType = 'contre';
         } else if (abstentionCount > 0) {
-          dotColor = "#64748b"; // Distinct color for active abstention
+          dotColor = "#64748b";
           abstentionCount--;
           opacity = 1;
           voteType = 'abstention';
@@ -265,5 +267,8 @@ export default function HemicycleVisual({ groups }: HemicycleVisualProps) {
         </div>
       </div>
     </div>
+  );
+}
+/div>
   );
 }

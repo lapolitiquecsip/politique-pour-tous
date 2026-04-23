@@ -269,6 +269,3 @@ export default function HemicycleVisual({ groups }: HemicycleVisualProps) {
     </div>
   );
 }
-/div>
-  );
-}

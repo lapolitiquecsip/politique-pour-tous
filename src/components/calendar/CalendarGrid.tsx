@@ -133,7 +133,7 @@ export default function CalendarGrid({
               whileTap={{ scale: 0.95 }}
               onClick={() => onSelectDate(dayObj.date)}
               className={`
-                relative h-20 md:h-28 p-2 rounded-2xl transition-all border-2 flex flex-col items-start gap-1
+                relative overflow-hidden h-20 md:h-28 p-2 rounded-2xl transition-all border-2 flex flex-col items-start gap-1
                 ${current ? 'bg-white' : 'bg-slate-50/50 opacity-40'}
                 ${active ? 'border-blue-500 shadow-lg z-10' : 'border-transparent hover:border-slate-200'}
                 ${today ? 'bg-blue-50/50' : ''}

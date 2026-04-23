@@ -122,75 +122,57 @@ export default function HemicycleVisual({ groups }: HemicycleVisualProps) {
   }, [groups]);
 
   return (
-    <div className="w-full aspect-[2/1] relative flex items-center justify-center overflow-hidden bg-white rounded-[3rem] border border-slate-100 p-8 shadow-inner">
-      <svg viewBox="-250 -250 500 250" className="w-full h-full drop-shadow-2xl">
-        {/* Background Hémicycle Path */}
-        <path 
-          d="M -220 0 A 220 220 0 0 1 220 0" 
-          fill="none" 
-          stroke="#f1f5f9" 
-          strokeWidth="40" 
-          strokeLinecap="round"
-          className="opacity-20"
-        />
-        
-        {seats.map((seat, i) => (
-          <g key={i}>
-             {/* Halo for the group */}
-             <circle
-                cx={seat.x}
-                cy={seat.y}
-                r={seat.radius + 1.5}
-                fill={seat.groupColor}
-                className="opacity-20"
-             />
-             {/* The Vote Seat */}
-             <circle
-                cx={seat.x}
-                cy={seat.y}
-                r={seat.radius}
-                fill={seat.voteColor}
-                opacity={seat.opacity}
-                className="transition-all duration-700 ease-out"
-             />
-          </g>
-        ))}
+    <div className="w-full relative flex flex-col items-center">
+      <div className="w-full aspect-[2/1] relative flex items-center justify-center overflow-hidden">
+        <svg viewBox="-260 -240 520 250" className="w-full h-full">
+          {/* Background Hémicycle Path */}
+          <path 
+            d="M -230 0 A 230 230 0 0 1 230 0" 
+            fill="none" 
+            stroke="#f8fafc" 
+            strokeWidth="50" 
+            strokeLinecap="round"
+          />
+          
+          {seats.map((seat, i) => (
+            <g key={i} className="hover:scale-150 transition-transform origin-center cursor-help">
+               <circle
+                  cx={seat.x}
+                  cy={seat.y}
+                  r={seat.radius + 1}
+                  fill={seat.groupColor}
+                  className="opacity-20"
+               />
+               <circle
+                  cx={seat.x}
+                  cy={seat.y}
+                  r={seat.radius}
+                  fill={seat.voteColor}
+                  opacity={seat.opacity}
+                  className="transition-all duration-700 ease-out"
+               />
+            </g>
+          ))}
+        </svg>
+      </div>
 
-        {/* Legend / Central Info */}
-        <g transform="translate(0, -30)">
-          <text 
-            textAnchor="middle" 
-            className="text-[40px] font-black fill-slate-900 font-staatliches uppercase tracking-tighter"
-          >
-            Hémicycle
-          </text>
-          <text 
-            y="25" 
-            textAnchor="middle" 
-            className="text-[12px] font-bold fill-slate-400 uppercase tracking-[0.3em]"
-          >
-            XVIIe Législature
-          </text>
-        </g>
-      </svg>
-
-      {/* Legend overlay */}
-      <div className="absolute bottom-6 left-1/2 -translate-x-1/2 flex gap-6">
-        <div className="flex items-center gap-2">
-          <div className="w-3 h-3 rounded-full bg-emerald-500" />
-          <span className="text-[10px] font-black uppercase tracking-widest text-slate-600">Pour</span>
+      {/* Legend overlay (smaller and cleaner) */}
+      <div className="flex flex-wrap justify-center gap-x-4 gap-y-2 mt-4 px-4 py-2 bg-slate-50 rounded-full border border-slate-100">
+        <div className="flex items-center gap-1.5">
+          <div className="w-2.5 h-2.5 rounded-full bg-emerald-500" />
+          <span className="text-[9px] font-black uppercase tracking-wider text-slate-500">Pour</span>
         </div>
-        <div className="flex items-center gap-2">
-          <div className="w-3 h-3 rounded-full bg-red-500" />
-          <span className="text-[10px] font-black uppercase tracking-widest text-slate-600">Contre</span>
+        <div className="flex items-center gap-1.5 border-l border-slate-200 pl-4">
+          <div className="w-2.5 h-2.5 rounded-full bg-red-500" />
+          <span className="text-[9px] font-black uppercase tracking-wider text-slate-500">Contre</span>
         </div>
-        <div className="flex items-center gap-2">
-          <div className="w-3 h-3 rounded-full bg-slate-400" />
-          <span className="text-[10px] font-black uppercase tracking-widest text-slate-600">Abstention</span>
+        <div className="flex items-center gap-1.5 border-l border-slate-200 pl-4">
+          <div className="w-2.5 h-2.5 rounded-full bg-slate-400" />
+          <span className="text-[9px] font-black uppercase tracking-wider text-slate-500">Abs</span>
         </div>
-        <div className="flex items-center gap-2">
-          <div className="w-3 h-3 rounded-full bg-slate-200" />
-          <span className="text-[10px] font-black uppercase tracking-widest text-slate-300">Absent</span>
+        <div className="flex items-center gap-1.5 border-l border-slate-200 pl-4">
+          <div className="w-2.5 h-2.5 rounded-full bg-slate-200" />
+          <span className="text-[9px] font-black uppercase tracking-wider text-slate-300">Absent</span>
         </div>
       </div>
     </div>

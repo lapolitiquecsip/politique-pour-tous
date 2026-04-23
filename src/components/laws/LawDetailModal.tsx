@@ -88,72 +88,24 @@ export default function LawDetailModal({ law, isOpen, onClose }: LawDetailModalP
                   <HemicycleVisual groups={law.group_results || []} />
                 </div>
 
-                {/* Global Stats (Right/Bottom) */}
-                <div className="lg:col-span-5 space-y-8">
-                  <div className="flex items-center gap-3">
-                    <div className="w-1.5 h-8 bg-emerald-600 rounded-full" />
-                    <h3 className="text-2xl font-black uppercase tracking-tighter italic">Bilan Global</h3>
-                  </div>
-
-                  <div className="grid grid-cols-1 gap-4">
-                     <div className="bg-slate-50 border border-slate-100 p-8 rounded-[2.5rem] text-center relative overflow-hidden group">
-                        <div className={`absolute top-0 left-0 w-full h-1.5 ${law.resultat?.includes('adopté') ? 'bg-emerald-500' : 'bg-red-500'}`} />
-                        <p className="text-[10px] font-black text-slate-400 uppercase tracking-[0.3em] mb-4">Résultat Final</p>
-                        <p className={`text-4xl font-black italic tracking-tighter ${law.resultat?.includes('adopté') ? 'text-emerald-600' : 'text-red-600'}`}>
-                          {law.resultat}
-                        </p>
-                     </div>
-
-                     <div className="grid grid-cols-3 gap-4">
-                        <div className="bg-emerald-50/50 border border-emerald-100 p-6 rounded-[2rem] text-center">
-                           <p className="text-3xl font-black text-emerald-600 italic">{law.pour}</p>
-                           <p className="text-[9px] font-bold text-emerald-600/60 uppercase tracking-widest mt-1">Pour</p>
-                        </div>
-                        <div className="bg-red-50/50 border border-red-100 p-6 rounded-[2rem] text-center">
-                           <p className="text-3xl font-black text-red-600 italic">{law.contre}</p>
-                           <p className="text-[9px] font-bold text-red-600/60 uppercase tracking-widest mt-1">Contre</p>
-                        </div>
-                        <div className="bg-slate-50 border border-slate-100 p-6 rounded-[2rem] text-center">
-                           <p className="text-3xl font-black text-slate-400 italic">{law.abstention}</p>
-                           <p className="text-[9px] font-bold text-slate-400 uppercase tracking-widest mt-1">Abs</p>
-                        </div>
-                     </div>
-
-                     {/* 3 Detail Boxes (Conditionally rendered) */}
-                     <div className="grid grid-cols-2 gap-4">
-                        <div className="bg-emerald-50/30 border border-emerald-100/50 p-4 rounded-2xl flex items-center gap-3">
-                           <CheckCircle2 size={18} className="text-emerald-500" />
-                           <div>
-                              <p className="text-[8px] font-black text-emerald-600/50 uppercase tracking-widest">Statut</p>
-                              <p className="text-xs font-black text-slate-900">{law.status_detail || "En application"}</p>
-                           </div>
-                        </div>
-                        {law.impact_detail && 
-                         law.impact_detail !== "Population générale" && 
-                         law.impact_detail !== "Impact global" && (
-                          <div className="bg-blue-50/30 border border-blue-100/50 p-4 rounded-2xl flex items-center gap-3">
-                            <Users size={18} className="text-blue-500" />
-                            <div>
-                              <p className="text-[8px] font-black text-blue-600/50 uppercase tracking-widest">Concernés</p>
-                              <p className="text-xs font-black text-slate-900 truncate max-w-[100px]">{law.impact_detail}</p>
-                            </div>
-                          </div>
-                        )}
-                     </div>
-                  </div>
-                </div>
-              </div>
-
-              {/* Vote Breakdown by Party */}
-              {law.group_results && law.group_results.length > 0 && (
-                <div className="space-y-8">
+                {/* Global Stats & Party Breakdown (Right/Bottom) */}
+                <div className="lg:col-span-5 space-y-6">
                   <div className="flex items-center gap-3">
                     <div className="w-1.5 h-8 bg-blue-600 rounded-full" />
-                    <h3 className="text-2xl font-black uppercase tracking-tighter">Vote par groupe politique</h3>
+                    <h3 className="text-2xl font-black uppercase tracking-tighter italic">Vote par groupe</h3>
                   </div>
 
-                  <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                    {law.group_results.map((group: any) => {
+                  <div className="bg-slate-50 border border-slate-100 p-6 rounded-[2rem] text-center relative overflow-hidden group">
+                    <div className={`absolute top-0 left-0 w-full h-1.5 ${law.resultat?.includes('adopté') ? 'bg-emerald-500' : 'bg-red-500'}`} />
+                    <p className="text-[10px] font-black text-slate-400 uppercase tracking-[0.3em] mb-2">Résultat Final</p>
+                    <p className={`text-3xl font-black italic tracking-tighter ${law.resultat?.includes('adopté') ? 'text-emerald-600' : 'text-red-600'}`}>
+                      {law.resultat}
+                    </p>
+                  </div>
+
+                  {/* Compact Party List */}
+                  <div className="space-y-3 max-h-[400px] overflow-y-auto pr-2 custom-scrollbar">
+                    {law.group_results && law.group_results.map((group: any) => {
                       const mapping: any = {
                         "PO845419": { name: "RN", color: "#0D2149" },
                         "PO845401": { name: "EPR", color: "#FFD600" },
@@ -172,41 +124,44 @@ export default function LawDetailModal({ law, isOpen, onClose }: LawDetailModalP
                       if (total === 0) return null;
 
                       return (
-                        <div key={group.group_id} className="bg-white border border-slate-100 p-5 rounded-2xl shadow-sm hover:shadow-md transition-shadow">
-                          <div className="flex justify-between items-center mb-3">
+                        <div key={group.group_id} className="bg-white border border-slate-100 p-3 rounded-xl shadow-sm">
+                          <div className="flex justify-between items-center mb-2">
                             <div className="flex items-center gap-2">
-                              <div className="w-3 h-3 rounded-full" style={{ backgroundColor: info.color }} />
-                              <span className="font-black text-slate-900">{info.name}</span>
+                              <div className="w-2 h-2 rounded-full" style={{ backgroundColor: info.color }} />
+                              <span className="text-xs font-black text-slate-900">{info.name}</span>
                             </div>
-                            <span className="text-[10px] font-bold text-slate-400 uppercase tracking-widest">{total} votants</span>
+                            <div className="flex gap-2">
+                               <span className="text-[10px] font-black text-emerald-600">{group.pour} <span className="text-[8px] font-bold text-slate-300">P</span></span>
+                               <span className="text-[10px] font-black text-red-600">{group.contre} <span className="text-[8px] font-bold text-slate-300">C</span></span>
+                            </div>
                           </div>
-                          
-                          <div className="h-2 w-full bg-slate-100 rounded-full overflow-hidden flex">
-                            <div className="bg-emerald-500 h-full transition-all" style={{ width: `${(group.pour / total) * 100}%` }} />
-                            <div className="bg-red-500 h-full transition-all" style={{ width: `${(group.contre / total) * 100}%` }} />
-                            <div className="bg-slate-400 h-full transition-all" style={{ width: `${(group.abstention / total) * 100}%` }} />
-                          </div>
-
-                          <div className="flex justify-between mt-2">
-                             <div className="flex items-center gap-1">
-                                <div className="w-1.5 h-1.5 rounded-full bg-emerald-500" />
-                                <span className="text-[9px] font-black text-slate-900">{group.pour}</span>
-                             </div>
-                             <div className="flex items-center gap-1">
-                                <div className="w-1.5 h-1.5 rounded-full bg-red-500" />
-                                <span className="text-[9px] font-black text-slate-900">{group.contre}</span>
-                             </div>
-                             <div className="flex items-center gap-1">
-                                <div className="w-1.5 h-1.5 rounded-full bg-slate-400" />
-                                <span className="text-[9px] font-black text-slate-900">{group.abstention}</span>
-                             </div>
+                          <div className="h-1.5 w-full bg-slate-100 rounded-full overflow-hidden flex">
+                            <div className="bg-emerald-500 h-full" style={{ width: `${(group.pour / total) * 100}%` }} />
+                            <div className="bg-red-500 h-full" style={{ width: `${(group.contre / total) * 100}%` }} />
+                            <div className="bg-slate-400 h-full" style={{ width: `${(group.abstention / total) * 100}%` }} />
                           </div>
                         </div>
                       );
                     })}
                   </div>
+
+                  {/* Compact Global Summary */}
+                  <div className="grid grid-cols-3 gap-2 pt-4 border-t border-slate-100">
+                     <div className="text-center">
+                        <p className="text-xl font-black text-emerald-600 leading-none">{law.pour}</p>
+                        <p className="text-[8px] font-bold text-slate-400 uppercase">Pour</p>
+                     </div>
+                     <div className="text-center border-x border-slate-100">
+                        <p className="text-xl font-black text-red-600 leading-none">{law.contre}</p>
+                        <p className="text-[8px] font-bold text-slate-400 uppercase">Contre</p>
+                     </div>
+                     <div className="text-center">
+                        <p className="text-xl font-black text-slate-400 leading-none">{law.abstention}</p>
+                        <p className="text-[8px] font-bold text-slate-400 uppercase">Abs</p>
+                     </div>
+                  </div>
                 </div>
-              )}
+              </div>
 
               {/* Official Link */}
               <div className="pt-8 flex justify-center">

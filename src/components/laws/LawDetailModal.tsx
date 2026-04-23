@@ -1,16 +1,32 @@
 "use client";
 
 import { motion, AnimatePresence } from "framer-motion";
-import { X, CheckCircle2, Users, Info, ExternalLink } from "lucide-react";
+import { X, CheckCircle2, Users, Info, ExternalLink, ChevronLeft, ChevronRight } from "lucide-react";
+import { useEffect } from "react";
 import HemicycleVisual from "./HemicycleVisual";
 
 interface LawDetailModalProps {
   law: any;
   isOpen: boolean;
   onClose: () => void;
+  onNext?: () => void;
+  onPrevious?: () => void;
 }
 
-export default function LawDetailModal({ law, isOpen, onClose }: LawDetailModalProps) {
+export default function LawDetailModal({ law, isOpen, onClose, onNext, onPrevious }: LawDetailModalProps) {
+  useEffect(() => {
+    if (!isOpen) return;
+    
+    const handleKeyDown = (e: KeyboardEvent) => {
+      if (e.key === "ArrowRight" && onNext) onNext();
+      if (e.key === "ArrowLeft" && onPrevious) onPrevious();
+      if (e.key === "Escape") onClose();
+    };
+
+    window.addEventListener("keydown", handleKeyDown);
+    return () => window.removeEventListener("keydown", handleKeyDown);
+  }, [isOpen, onNext, onPrevious, onClose]);
+
   if (!law) return null;
 
   return (
@@ -26,12 +42,32 @@ export default function LawDetailModal({ law, isOpen, onClose }: LawDetailModalP
             className="absolute inset-0 bg-slate-950/60 backdrop-blur-sm"
           />
 
+          {/* Navigation Arrows (Desktop) */}
+          <div className="absolute inset-x-4 md:inset-x-12 top-1/2 -translate-y-1/2 flex justify-between pointer-events-none z-[110]">
+            <motion.button
+              initial={{ opacity: 0, x: -20 }}
+              animate={{ opacity: 1, x: 0 }}
+              onClick={(e) => { e.stopPropagation(); onPrevious?.(); }}
+              className={`p-4 rounded-full bg-white/10 backdrop-blur-md border border-white/20 text-white pointer-events-auto transition-all hover:bg-white hover:text-slate-900 shadow-2xl ${!onPrevious ? 'invisible' : ''}`}
+            >
+              <ChevronLeft size={32} strokeWidth={3} />
+            </motion.button>
+            <motion.button
+              initial={{ opacity: 0, x: 20 }}
+              animate={{ opacity: 1, x: 0 }}
+              onClick={(e) => { e.stopPropagation(); onNext?.(); }}
+              className={`p-4 rounded-full bg-white/10 backdrop-blur-md border border-white/20 text-white pointer-events-auto transition-all hover:bg-white hover:text-slate-900 shadow-2xl ${!onNext ? 'invisible' : ''}`}
+            >
+              <ChevronRight size={32} strokeWidth={3} />
+            </motion.button>
+          </div>
+
           {/* Modal Content */}
           <motion.div
             initial={{ opacity: 0, scale: 0.95, y: 20 }}
             animate={{ opacity: 1, scale: 1, y: 0 }}
             exit={{ opacity: 0, scale: 0.95, y: 20 }}
-            className="relative w-full max-w-5xl bg-white rounded-[3rem] shadow-2xl overflow-hidden flex flex-col max-h-[90vh]"
+            className="relative w-full max-w-5xl bg-white rounded-[3rem] shadow-2xl overflow-hidden flex flex-col max-h-[90vh] z-[105]"
           >
             {/* Header (Sticky) */}
             <div className="p-8 border-b border-slate-100 flex justify-between items-start bg-slate-50/50 sticky top-0 z-[60] backdrop-blur-md">

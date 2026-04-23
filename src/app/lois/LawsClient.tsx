@@ -72,6 +72,14 @@ export default function LawsClient() {
         law={selectedLaw} 
         isOpen={!!selectedLaw} 
         onClose={() => setSelectedLaw(null)} 
+        onNext={() => {
+          const idx = dbLaws.findIndex(l => l.id === selectedLaw?.id);
+          if (idx < dbLaws.length - 1) setSelectedLaw(dbLaws[idx + 1]);
+        }}
+        onPrevious={() => {
+          const idx = dbLaws.findIndex(l => l.id === selectedLaw?.id);
+          if (idx > 0) setSelectedLaw(dbLaws[idx - 1]);
+        }}
       />
 
       {/* TABS NAVIGATION (STUCK AT TOP ON SCROLL) */}

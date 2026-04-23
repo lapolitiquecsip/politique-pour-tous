@@ -177,11 +177,6 @@ export default function LawsClient() {
       </div>
 
 
-          </div>
-        </>
-      )}
-
-
       {/* 3. DOSSIERS GRATUITS (POSTER STYLE REBORN) */}
       <div className="space-y-4 mb-32">
         <div className="relative mb-16 text-center md:text-left">

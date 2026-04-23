@@ -44,7 +44,7 @@ export default function LawDetailModal({ law, isOpen, onClose }: LawDetailModalP
                     Scrutin public n°{law.numero} — {new Date(law.date_scrutin).toLocaleDateString('fr-FR', { day: 'numeric', month: 'long', year: 'numeric' })}
                   </span>
                 </div>
-                <h2 className="text-2xl md:text-3xl font-black text-slate-900 leading-tight italic tracking-tighter">
+                <h2 className="text-lg md:text-xl font-black text-slate-900 leading-tight italic tracking-tighter">
                   {law.objet}
                 </h2>
               </div>

@@ -76,6 +76,11 @@ export default function HemicycleVisual({ groups }: HemicycleVisualProps) {
     }
 
     const sortedSeats = result.sort((a, b) => {
+      // Sort primarily by radius (row) then by angle (left to right)
+      const distA = Math.sqrt(a.x * a.x + a.y * a.y);
+      const distB = Math.sqrt(b.x * b.x + b.y * b.y);
+      if (Math.abs(distA - distB) > 1) return distA - distB;
+      
       const angleA = Math.atan2(a.y, a.x);
       const angleB = Math.atan2(b.y, b.x);
       return angleA - angleB;
@@ -87,19 +92,19 @@ export default function HemicycleVisual({ groups }: HemicycleVisualProps) {
     GROUP_ORDER.forEach((id, groupIdx) => {
       const g = groups.find(item => item.group_id === id) || { group_id: id, pour: 0, contre: 0, abstention: 0, total: 0 };
       const groupSeatsCount = LEGISLATURE_TOTALS[id] || 0;
+      const groupColor = GROUP_MAPPING[id]?.color || "#cbd5e1";
       
       let pourCount = g.pour;
       let contreCount = g.contre;
       let abstentionCount = g.abstention;
 
-      // Add a gap of 2 dots between groups
-      if (groupIdx > 0) currentSeatIdx += 3;
+      // Gap between groups
+      if (groupIdx > 0) currentSeatIdx += 2;
 
       for (let i = 0; i < groupSeatsCount && currentSeatIdx < sortedSeats.length; i++) {
-        let voteColor = "#cbd5e1"; // Base color for the group background
-        let dotColor = "#e2e8f0";
-        let opacity = 0.2;
-        let voteType = 'absent';
+        let dotColor = groupColor;
+        let opacity = 0.15; // Default for non-votants: very light group color
+        let voteType = 'non-votant';
 
         if (pourCount > 0) {
           dotColor = "#10b981";
@@ -112,7 +117,7 @@ export default function HemicycleVisual({ groups }: HemicycleVisualProps) {
           opacity = 1;
           voteType = 'contre';
         } else if (abstentionCount > 0) {
-          dotColor = "#64748b";
+          dotColor = "#64748b"; // Distinct color for active abstention
           abstentionCount--;
           opacity = 1;
           voteType = 'abstention';
@@ -120,7 +125,7 @@ export default function HemicycleVisual({ groups }: HemicycleVisualProps) {
 
         finalSeats.push({
           ...sortedSeats[currentSeatIdx],
-          groupColor: GROUP_MAPPING[id]?.color || "#cbd5e1",
+          groupColor,
           voteColor: dotColor,
           opacity,
           groupId: id,
@@ -142,6 +147,7 @@ export default function HemicycleVisual({ groups }: HemicycleVisualProps) {
   const hoveredGroupData = hoveredGroupId ? (groups.find(g => g.group_id === hoveredGroupId) || { pour: 0, contre: 0, abstention: 0, total: 0 }) : null;
   const hoveredGroupInfo = hoveredGroupId ? GROUP_MAPPING[hoveredGroupId] : null;
   const hoveredRealTotal = hoveredGroupId ? LEGISLATURE_TOTALS[hoveredGroupId] : 0;
+  const nonVotants = hoveredGroupData && hoveredRealTotal ? (hoveredRealTotal - (hoveredGroupData.pour + hoveredGroupData.contre + hoveredGroupData.abstention)) : 0;
 
   return (
     <div className="w-full relative flex flex-col items-center" onMouseMove={handleMouseMove}>
@@ -176,7 +182,7 @@ export default function HemicycleVisual({ groups }: HemicycleVisualProps) {
                     cy={seat.y}
                     r={seat.radius + 1.2}
                     fill={seat.groupColor}
-                    opacity={isHovered ? 0.4 : 0.15}
+                    opacity={isHovered ? 0.4 : 0.1}
                     className="transition-opacity duration-300"
                  />
                  <circle
@@ -223,12 +229,16 @@ export default function HemicycleVisual({ groups }: HemicycleVisualProps) {
                   <span className="text-xs font-black font-mono">{hoveredGroupData.contre}</span>
                 </div>
                 <div className="flex justify-between items-center">
-                  <span className="text-[10px] text-slate-400 font-black tracking-widest">ABS</span>
+                  <span className="text-[10px] text-slate-400 font-black tracking-widest">ABSTENTION</span>
                   <span className="text-xs font-black font-mono">{hoveredGroupData.abstention}</span>
                 </div>
-                <div className="flex justify-between items-center pt-2 mt-2 border-t border-white/5">
-                  <span className="text-[10px] text-slate-500 font-black">TOTAL GROUPE</span>
-                  <span className="text-xs font-black font-mono text-blue-400">{hoveredRealTotal}</span>
+                <div className="flex justify-between items-center border-t border-white/5 pt-2 mt-2">
+                  <span className="text-[10px] text-slate-500 font-bold tracking-widest">NON-VOTANTS</span>
+                  <span className="text-xs font-black font-mono text-slate-500">{nonVotants}</span>
+                </div>
+                <div className="flex justify-between items-center pt-2 mt-2 border-t border-white/10">
+                  <span className="text-[10px] text-blue-400 font-black uppercase">TOTAL GROUPE</span>
+                  <span className="text-sm font-black font-mono text-blue-400">{hoveredRealTotal}</span>
                 </div>
               </div>
             </motion.div>

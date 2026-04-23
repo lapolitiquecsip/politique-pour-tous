@@ -27,79 +27,98 @@ export default function LawDetailModal({ law, isOpen, onClose }: LawDetailModalP
           />
 
           {/* Modal Content */}
-          {/* Modal Content */}
           <motion.div
             initial={{ opacity: 0, scale: 0.95, y: 20 }}
             animate={{ opacity: 1, scale: 1, y: 0 }}
             exit={{ opacity: 0, scale: 0.95, y: 20 }}
-            className="relative w-full max-w-5xl bg-white rounded-[3rem] shadow-2xl overflow-hidden flex flex-col max-h-[95vh]"
+            className="relative w-full max-w-6xl bg-white rounded-[3rem] shadow-2xl overflow-hidden flex flex-col max-h-[95vh] border border-slate-100"
           >
-            {/* Close Button (Fixed) */}
-            <button 
-              onClick={onClose}
-              className="absolute top-6 right-6 z-[60] p-3 bg-white/80 backdrop-blur-md hover:bg-white rounded-full transition-all shadow-lg border border-slate-100 group"
-            >
-              <X size={24} className="text-slate-400 group-hover:text-red-500 transition-colors" />
-            </button>
-
-            {/* Content Body (Scrolling) */}
-            <div className="flex-1 overflow-y-auto bg-white custom-scrollbar">
-              
-              {/* 1. HERO VISUALIZATION (THE HEMICYCLE) */}
-              <div className="bg-slate-50/50 p-8 pt-12 border-b border-slate-100">
-                <div className="max-w-4xl mx-auto space-y-8">
-                  <div className="flex flex-col items-center text-center space-y-2 mb-4">
-                    <span className="px-3 py-1 bg-blue-600 text-white text-[10px] font-black uppercase tracking-widest rounded-lg shadow-lg shadow-blue-500/20">
-                      {law.category}
-                    </span>
-                    <h2 className="text-xl font-bold text-slate-400 uppercase tracking-widest">
-                      Scrutin public n°{law.numero} — {new Date(law.date_scrutin).toLocaleDateString('fr-FR', { day: 'numeric', month: 'long', year: 'numeric' })}
-                    </h2>
+            {/* 1. STICKY TOP HEADER (HEMICYCLE) */}
+            <div className="relative z-50 bg-white border-b border-slate-100 shadow-sm">
+               <div className="p-6 md:p-8 flex flex-col items-center">
+                  <div className="flex justify-between items-center w-full mb-6">
+                    <div className="flex flex-col">
+                       <span className="px-3 py-1 bg-blue-600 text-white text-[9px] font-black uppercase tracking-widest rounded-lg w-fit mb-2">
+                         {law.category}
+                       </span>
+                       <h2 className="text-[10px] font-bold text-slate-400 uppercase tracking-widest">
+                         Scrutin n°{law.numero} — {new Date(law.date_scrutin).toLocaleDateString('fr-FR', { day: 'numeric', month: 'long', year: 'numeric' })}
+                       </h2>
+                    </div>
+                    <button 
+                      onClick={onClose}
+                      className="p-3 bg-slate-50 hover:bg-slate-100 rounded-full transition-all border border-slate-200 group"
+                    >
+                      <X size={20} className="text-slate-400 group-hover:text-red-500 transition-colors" />
+                    </button>
                   </div>
                   
-                  <HemicycleVisual groups={law.group_results || []} />
-                </div>
-              </div>
+                  <div className="w-full max-w-3xl">
+                    <HemicycleVisual groups={law.group_results || []} />
+                  </div>
+               </div>
+            </div>
 
-              {/* 2. THE TITLE & GLOBAL STATS SECTION */}
-              <div className="p-8 md:p-12 space-y-12">
-                <div className="grid grid-cols-1 lg:grid-cols-12 gap-12 items-start">
-                  
-                  {/* Left: The Law Subject */}
-                  <div className="lg:col-span-7 space-y-6">
-                    <h1 className="text-3xl md:text-5xl font-black text-slate-900 leading-[1.1] italic tracking-tighter">
+            {/* 2. SCROLLING CONTENT BODY */}
+            <div className="flex-1 overflow-y-auto bg-slate-50/30 custom-scrollbar p-8 md:p-12">
+              <div className="grid grid-cols-1 lg:grid-cols-12 gap-12 max-w-6xl mx-auto">
+                
+                {/* Left: Law Information */}
+                <div className="lg:col-span-7 space-y-8">
+                  <div className="space-y-4">
+                    <h1 className="text-3xl md:text-5xl font-black text-slate-900 leading-tight italic tracking-tighter">
                       {law.objet}
                     </h1>
-                    
-                    {/* Lexique / Aide */}
-                    {(law.objet.includes("Motion de Rejet") || law.objet.includes("Loi complète")) && (
-                      <div className="bg-slate-950 text-white p-6 rounded-[2.5rem] flex items-start gap-5 shadow-2xl border-t border-blue-500/30">
-                        <div className="w-12 h-12 rounded-full bg-blue-600 flex items-center justify-center flex-shrink-0 mt-1">
-                          <Info size={24} />
-                        </div>
-                        <div>
-                          <p className="text-xs font-black mb-1 uppercase tracking-widest text-blue-400">Décryptage</p>
-                          <p className="text-sm leading-relaxed text-slate-300 font-medium">
-                            {law.objet.includes("Motion de Rejet") 
-                              ? "Une 'Motion de Rejet' est un vote de procédure. Si elle est adoptée, le projet de loi est rejeté immédiatement, avant même que les députés ne commencent à en discuter le contenu."
-                              : "Ce vote porte sur l'intégralité du projet de loi après les débats. C'est l'étape finale qui décide si le texte est adopté ou non."}
-                          </p>
-                        </div>
-                      </div>
-                    )}
                   </div>
 
-                  {/* Right: Detailed Breakdown */}
-                  <div className="lg:col-span-5 space-y-6">
-                    <div className="bg-slate-950 text-white p-8 rounded-[2.5rem] text-center relative overflow-hidden shadow-2xl">
-                      <div className={`absolute top-0 left-0 w-full h-1.5 ${law.resultat?.includes('adopté') ? 'bg-emerald-500' : 'bg-red-500'}`} />
-                      <p className="text-[10px] font-black text-slate-500 uppercase tracking-[0.3em] mb-4">Résultat Final</p>
-                      <p className={`text-4xl font-black italic tracking-tighter ${law.resultat?.includes('adopté') ? 'text-emerald-400' : 'text-red-400'}`}>
-                        {law.resultat}
-                      </p>
+                  {/* Lexique / Aide */}
+                  {(law.objet.includes("Motion de Rejet") || law.objet.includes("Loi complète")) && (
+                    <div className="bg-white border border-slate-200 p-8 rounded-[2.5rem] flex items-start gap-6 shadow-sm">
+                      <div className="w-12 h-12 rounded-full bg-blue-600 flex items-center justify-center flex-shrink-0 mt-1 shadow-lg shadow-blue-500/20">
+                        <Info size={24} className="text-white" />
+                      </div>
+                      <div>
+                        <p className="text-xs font-black mb-1 uppercase tracking-widest text-blue-600">Comprendre ce vote</p>
+                        <p className="text-sm leading-relaxed text-slate-600 font-medium">
+                          {law.objet.includes("Motion de Rejet") 
+                            ? "Une 'Motion de Rejet' est un vote de procédure. Si elle est adoptée, le projet de loi est rejeté immédiatement, avant même que les députés ne commencent à en discuter le contenu."
+                            : "Ce vote porte sur l'intégralité du projet de loi après les débats. C'est l'étape finale qui décide si le texte est adopté ou non."}
+                        </p>
+                      </div>
                     </div>
+                  )}
 
-                    <div className="space-y-3 max-h-[500px] overflow-y-auto pr-2 custom-scrollbar">
+                  {/* Official Link */}
+                  <div className="flex items-center gap-4">
+                     {law.dossier_url && (
+                       <a 
+                         href={law.dossier_url}
+                         target="_blank"
+                         rel="noopener noreferrer"
+                         className="flex items-center gap-3 px-8 py-4 bg-slate-950 text-white rounded-2xl font-black uppercase tracking-widest text-[10px] hover:bg-blue-600 transition-all shadow-xl shadow-slate-950/10"
+                       >
+                         Consulter le dossier officiel
+                         <ExternalLink size={14} />
+                       </a>
+                     )}
+                  </div>
+                </div>
+
+                {/* Right: Detailed Stats */}
+                <div className="lg:col-span-5 space-y-6">
+                  {/* Result Card */}
+                  <div className="bg-white border border-slate-200 p-8 rounded-[2.5rem] text-center shadow-sm relative overflow-hidden">
+                    <div className={`absolute top-0 left-0 w-full h-1.5 ${law.resultat?.includes('adopté') ? 'bg-emerald-500' : 'bg-red-500'}`} />
+                    <p className="text-[10px] font-black text-slate-400 uppercase tracking-[0.3em] mb-4">Résultat du scrutin</p>
+                    <p className={`text-3xl font-black italic tracking-tighter ${law.resultat?.includes('adopté') ? 'text-emerald-600' : 'text-red-600'}`}>
+                      {law.resultat}
+                    </p>
+                  </div>
+
+                  {/* Party Breakdown List */}
+                  <div className="bg-white border border-slate-200 rounded-[2.5rem] p-6 space-y-3 shadow-sm">
+                    <p className="text-[10px] font-black text-slate-400 uppercase tracking-widest mb-4 px-2">Répartition par parti</p>
+                    <div className="space-y-4 max-h-[400px] overflow-y-auto pr-2 custom-scrollbar">
                       {law.group_results && law.group_results.map((group: any) => {
                         const mapping: any = {
                           "PO845419": { name: "RN", color: "#0D2149" },
@@ -119,18 +138,18 @@ export default function LawDetailModal({ law, isOpen, onClose }: LawDetailModalP
                         if (total === 0) return null;
 
                         return (
-                          <div key={group.group_id} className="bg-slate-50 border border-slate-100 p-4 rounded-2xl">
-                            <div className="flex justify-between items-center mb-2">
+                          <div key={group.group_id} className="group/party">
+                            <div className="flex justify-between items-center mb-2 px-1">
                               <div className="flex items-center gap-2">
-                                <div className="w-2.5 h-2.5 rounded-full" style={{ backgroundColor: info.color }} />
-                                <span className="text-[11px] font-black text-slate-900">{info.name}</span>
+                                <div className="w-2 h-2 rounded-full" style={{ backgroundColor: info.color }} />
+                                <span className="text-[11px] font-black text-slate-900 uppercase tracking-tighter">{info.name}</span>
                               </div>
                               <div className="flex gap-2">
-                                 <span className="text-[11px] font-black text-emerald-600">{group.pour} <span className="text-[8px] font-bold text-slate-300">P</span></span>
-                                 <span className="text-[11px] font-black text-red-600">{group.contre} <span className="text-[8px] font-bold text-slate-300">C</span></span>
+                                 <span className="text-[10px] font-black text-emerald-600">{group.pour} P</span>
+                                 <span className="text-[10px] font-black text-red-600">{group.contre} C</span>
                               </div>
                             </div>
-                            <div className="h-2 w-full bg-slate-200 rounded-full overflow-hidden flex">
+                            <div className="h-1.5 w-full bg-slate-100 rounded-full overflow-hidden flex">
                               <div className="bg-emerald-500 h-full" style={{ width: `${(group.pour / total) * 100}%` }} />
                               <div className="bg-red-500 h-full" style={{ width: `${(group.contre / total) * 100}%` }} />
                               <div className="bg-slate-400 h-full" style={{ width: `${(group.abstention / total) * 100}%` }} />
@@ -139,35 +158,23 @@ export default function LawDetailModal({ law, isOpen, onClose }: LawDetailModalP
                         );
                       })}
                     </div>
+                  </div>
 
-                    {/* Global Summary */}
-                    <div className="grid grid-cols-3 gap-2 pt-6 border-t border-slate-100">
+                  {/* Totals Summary */}
+                  <div className="bg-slate-950 text-white p-8 rounded-[2.5rem] shadow-xl">
+                    <div className="grid grid-cols-3 gap-4">
                        <div className="text-center">
-                          <p className="text-2xl font-black text-emerald-600 leading-none">{law.pour}</p>
-                          <p className="text-[9px] font-bold text-slate-400 uppercase tracking-widest mt-1">Pour</p>
+                          <p className="text-2xl font-black text-emerald-400 leading-none">{law.pour}</p>
+                          <p className="text-[8px] font-bold text-slate-500 uppercase tracking-widest mt-2">Pour</p>
                        </div>
-                       <div className="text-center border-x border-slate-100">
-                          <p className="text-2xl font-black text-red-600 leading-none">{law.contre}</p>
-                          <p className="text-[9px] font-bold text-slate-400 uppercase tracking-widest mt-1">Contre</p>
+                       <div className="text-center border-x border-white/10">
+                          <p className="text-2xl font-black text-red-400 leading-none">{law.contre}</p>
+                          <p className="text-[8px] font-bold text-slate-500 uppercase tracking-widest mt-2">Contre</p>
                        </div>
                        <div className="text-center">
                           <p className="text-2xl font-black text-slate-400 leading-none">{law.abstention}</p>
-                          <p className="text-[9px] font-bold text-slate-400 uppercase tracking-widest mt-1">Abs</p>
+                          <p className="text-[8px] font-bold text-slate-500 uppercase tracking-widest mt-2">Abs</p>
                        </div>
-                    </div>
-
-                    <div className="pt-6">
-                       {law.dossier_url && (
-                         <a 
-                           href={law.dossier_url}
-                           target="_blank"
-                           rel="noopener noreferrer"
-                           className="flex items-center justify-center gap-3 w-full py-4 bg-slate-100 text-slate-600 rounded-2xl font-black uppercase tracking-widest text-[10px] hover:bg-slate-900 hover:text-white transition-all"
-                         >
-                           Dossier Officiel AN
-                           <ExternalLink size={14} />
-                         </a>
-                       )}
                     </div>
                   </div>
                 </div>

@@ -5,70 +5,6 @@ import { motion, AnimatePresence } from "framer-motion";
 import { Calendar, Clock, MapPin, Bookmark, ChevronDown, User } from "lucide-react";
 import { CalendarEvent } from "./EventItem";
 
-function highlightText(text: string) {
-  // Broad Unicode regex for names (supporting accents, special chars like ğ, etc.)
-  // We look for:
-  // 1. Classic titles and their variations
-  // 2. Sequences of capitalized words after "avec", "de", "par", "le", "la"
-  // 3. Middle names like "ben", "al", "von", "van", "de"
-  const titles = "(M\\.|Mme|MM\\.|Mmes|Président|Prince|Premier ministre|Roi|Reine|Chancelier|Ministre|Ambassadeur|Secrétaire)";
-  const namePart = "([A-Z\\u00C0-\\u017F][a-z\\u00C0-\\u017F\\-]+|ben|al|von|van|de|l')";
-  
-  // Pattern 1: Title followed by names
-  const pattern1 = new RegExp(`${titles}(\\s+${namePart})+`, 'g');
-  // Pattern 2: After a preposition, a sequence of capitalized words
-  const pattern2 = /(avec|de|par)\s+([A-Z\u00C0-\u017F][a-z\u00C0-\u017F\-]+(\s+[A-Z\u00C0-\u017F][a-z\u00C0-\u017F\-]+)+)/g;
-  
-  // Combine all matches
-  const matches: { start: number, end: number, text: string, type: 'full' | 'prep' }[] = [];
-  
-  let m;
-  while ((m = pattern1.exec(text)) !== null) {
-    matches.push({ start: m.index, end: pattern1.lastIndex, text: m[0], type: 'full' });
-  }
-  while ((m = pattern2.exec(text)) !== null) {
-    const fullText = m[0];
-    const prep = m[1];
-    const nameOnly = m[2];
-    matches.push({ 
-      start: m.index + prep.length + 1, 
-      end: m.index + fullText.length, 
-      text: nameOnly, 
-      type: 'prep' 
-    });
-  }
-
-  // Sort and filter overlapping matches
-  const sorted = matches.sort((a, b) => a.start - b.start);
-  const filtered: typeof matches = [];
-  let currentEnd = -1;
-  for (const match of sorted) {
-    if (match.start >= currentEnd) {
-      filtered.push(match);
-      currentEnd = match.end;
-    }
-  }
-
-  const parts = [];
-  let lastIndex = 0;
-  for (const match of filtered) {
-    if (match.start > lastIndex) {
-      parts.push(text.substring(lastIndex, match.start));
-    }
-    parts.push(
-      <span key={match.start} className="inline-block px-1 rounded-sm bg-amber-500/20 border-b-2 border-amber-400/40 text-amber-50">
-        {match.text}
-      </span>
-    );
-    lastIndex = match.end;
-  }
-
-  if (lastIndex < text.length) {
-    parts.push(text.substring(lastIndex));
-  }
-
-  return parts.length > 0 ? parts : text;
-}
 
 function SubSection({ label, events, color }: { label: string, events: CalendarEvent[], color: string }) {
   const [isOpen, setIsOpen] = useState(false);
@@ -100,7 +36,7 @@ function SubSection({ label, events, color }: { label: string, events: CalendarE
                 <div key={event.id} className="group/item">
                   <div className="flex justify-between items-start gap-4">
                     <h5 className="text-[11px] font-bold text-slate-200 leading-snug flex-1 group-hover/item:text-white transition-colors">
-                      {highlightText(event.title)}
+                      {event.title}
                     </h5>
                   </div>
                 </div>

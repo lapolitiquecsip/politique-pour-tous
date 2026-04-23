@@ -5,6 +5,39 @@ import { motion, AnimatePresence } from "framer-motion";
 import { Calendar, Clock, MapPin, Bookmark, ChevronDown, User } from "lucide-react";
 import { CalendarEvent } from "./EventItem";
 
+function highlightText(text: string) {
+  // Regex to match "M.", "Mme", "MM.", "Mmes" followed by words (usually names)
+  // We'll highlight the whole block "Mme Name Name"
+  const regex = /(M\.|Mme|MM\.|Mmes)\s+([A-ZÀ-ÿ][a-zà-ÿ-]+(\s+[A-ZÀ-ÿ][a-zà-ÿ-]+)*)/g;
+  
+  const parts = [];
+  let lastIndex = 0;
+  let match;
+
+  while ((match = regex.exec(text)) !== null) {
+    // Add text before the match
+    if (match.index > lastIndex) {
+      parts.push(text.substring(lastIndex, match.index));
+    }
+
+    // Add the highlighted match
+    parts.push(
+      <span key={match.index} className="inline-block px-1 rounded-sm bg-blue-500/20 border-b-2 border-blue-400/30 text-blue-100">
+        {match[0]}
+      </span>
+    );
+
+    lastIndex = regex.lastIndex;
+  }
+
+  // Add remaining text
+  if (lastIndex < text.length) {
+    parts.push(text.substring(lastIndex));
+  }
+
+  return parts.length > 0 ? parts : text;
+}
+
 function SubSection({ label, events, color }: { label: string, events: CalendarEvent[], color: string }) {
   const [isOpen, setIsOpen] = useState(false);
   if (events.length === 0) return null;
@@ -35,7 +68,7 @@ function SubSection({ label, events, color }: { label: string, events: CalendarE
                 <div key={event.id} className="group/item">
                   <div className="flex justify-between items-start gap-4">
                     <h5 className="text-[11px] font-bold text-slate-200 leading-snug flex-1 group-hover/item:text-white transition-colors">
-                      {event.title}
+                      {highlightText(event.title)}
                     </h5>
                   </div>
                 </div>

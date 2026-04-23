@@ -81,15 +81,19 @@ export default function LawDetailModal({ law, isOpen, onClose }: LawDetailModalP
                   </div>
                 </div>
 
-                <div className="bg-blue-50/50 border border-blue-100 p-6 rounded-[2rem] flex items-center gap-4">
-                  <div className="w-12 h-12 rounded-full bg-blue-100 flex items-center justify-center text-blue-600">
-                    <Users size={24} />
+                {law.impact_detail && 
+                 law.impact_detail !== "Population générale" && 
+                 law.impact_detail !== "Impact global" && (
+                  <div className="bg-blue-50/50 border border-blue-100 p-6 rounded-[2rem] flex items-center gap-4">
+                    <div className="w-12 h-12 rounded-full bg-blue-100 flex items-center justify-center text-blue-600">
+                      <Users size={24} />
+                    </div>
+                    <div>
+                      <p className="text-[10px] font-black text-blue-600/60 uppercase tracking-widest">Concernés</p>
+                      <p className="text-lg font-black text-slate-900 leading-none">{law.impact_detail}</p>
+                    </div>
                   </div>
-                  <div>
-                    <p className="text-[10px] font-black text-blue-600/60 uppercase tracking-widest">Concernés</p>
-                    <p className="text-lg font-black text-slate-900 leading-none">{law.impact_detail || "Population générale"}</p>
-                  </div>
-                </div>
+                )}
               </div>
 
               {/* Vote Breakdown */}

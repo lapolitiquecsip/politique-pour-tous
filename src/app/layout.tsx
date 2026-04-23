@@ -29,6 +29,8 @@ export const metadata: Metadata = {
   description: "Comprendre la politique française simplement.",
 };
 
+import GlossaryProvider from "@/components/providers/GlossaryProvider";
+
 export default function RootLayout({
   children,
 }: Readonly<{
@@ -42,12 +44,14 @@ export default function RootLayout({
     >
       <body className="min-h-screen flex flex-col font-sans bg-background text-foreground transition-colors duration-300">
         <ThemeProvider>
-          <Header />
-          <main className="flex-1 pt-16">
-            {children}
-          </main>
-          <Footer />
-          <PremiumButton />
+          <GlossaryProvider>
+            <Header />
+            <main className="flex-1 pt-16">
+              {children}
+            </main>
+            <Footer />
+            <PremiumButton />
+          </GlossaryProvider>
         </ThemeProvider>
       </body>
     </html>

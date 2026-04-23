@@ -35,6 +35,7 @@ import { api } from "@/lib/api";
 import { usePremium } from "@/lib/hooks/usePremium";
 import { getFullPartyName } from "@/lib/party-utils";
 import VoteDetailsModal from "@/components/deputies/VoteDetailsModal";
+import { useGlossary } from "@/components/providers/GlossaryProvider";
 
 // Vote position formatting helper
 const getVoteDisplay = (position: string) => {
@@ -53,6 +54,7 @@ const getVoteDisplay = (position: string) => {
 export default function DeputyDetailPage({ params }: { params: Promise<{ slug: string }> }) {
   const { slug } = use(params);
   const { userId, isPremium } = usePremium();
+  const { wrapWithGlossary } = useGlossary();
   
   const [deputy, setDeputy] = useState<any>(null);
   const [isFollowing, setIsFollowing] = useState(false);
@@ -491,7 +493,7 @@ export default function DeputyDetailPage({ params }: { params: Promise<{ slug: s
                                       {paragraph.split(/(\*\*.*?\*\*)/).map((part: string, i: number) => 
                                         part.startsWith('**') && part.endsWith('**') 
                                           ? <strong key={i} className="font-bold text-slate-900 dark:text-white not-italic bg-blue-500/10 px-1.5 py-0.5 rounded-md mx-0.5">{part.slice(2, -2)}</strong>
-                                          : part
+                                          : wrapWithGlossary(part)
                                       )}
                                     </div>
                                   </div>
@@ -621,7 +623,7 @@ export default function DeputyDetailPage({ params }: { params: Promise<{ slug: s
                 <Landmark className="w-5 h-5" />
               </div>
               <p className="text-sm text-slate-500 leading-relaxed italic">
-                Les données de vote sont issues des scrutins publics de l'Assemblée nationale. 
+                Les données de vote sont issues des scrutins publics de l&apos;Assemblée nationale. 
                 Une absence de vote peut être due à une délégation de vote ou un congé maladie.
               </p>
             </div>
@@ -667,9 +669,9 @@ export default function DeputyDetailPage({ params }: { params: Promise<{ slug: s
                     </div>
                     <div>
                       <p className="text-sm font-bold text-slate-900 dark:text-white mb-2">Statut Officiel</p>
-                      <p className="text-slate-600 dark:text-slate-400 leading-relaxed text-sm">
-                        {deputy?.legal_issues || "Aucune affaire judiciaire n'a été signalée ou enregistrée pour ce député à ce jour dans nos bases de données."}
-                      </p>
+                      <div className="text-slate-600 dark:text-slate-400 leading-relaxed text-sm">
+                        {wrapWithGlossary(deputy?.legal_issues || "Aucune affaire judiciaire n'a été signalée ou enregistrée pour ce député à ce jour dans nos bases de données.")}
+                      </div>
                     </div>
                   </div>
                 </div>

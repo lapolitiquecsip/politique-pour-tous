@@ -4,6 +4,7 @@ import React, { useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { upcomingElections, Election } from '@/data/electionsData';
 import { Building2, User, Users, Globe, Info, Calendar, ChevronRight, X, LucideIcon } from 'lucide-react';
+import { useGlossary } from '@/components/providers/GlossaryProvider';
 
 const iconMap: Record<string, LucideIcon> = {
   Building2,
@@ -41,6 +42,7 @@ const colorMap: Record<string, { bg: string, text: string, accent: string, gradi
 
 export default function ElectionsBanner() {
   const [selectedElection, setSelectedElection] = useState<Election | null>(null);
+  const { wrapWithGlossary } = useGlossary();
 
   return (
     <div className="mb-12">
@@ -87,7 +89,7 @@ export default function ElectionsBanner() {
                   </h3>
                   
                   <p className="text-xs text-slate-500 line-clamp-2 mb-4 leading-relaxed">
-                    {election.description}
+                    {wrapWithGlossary(election.description)}
                   </p>
                   
                   <div className="flex items-center gap-1 text-[10px] font-bold text-blue-600 uppercase tracking-wider opacity-0 group-hover:opacity-100 transition-opacity">
@@ -147,9 +149,9 @@ export default function ElectionsBanner() {
                     <h4 className="text-[10px] font-black uppercase tracking-widest text-slate-400 mb-2 flex items-center gap-2">
                       <Info size={14} /> Fonctionnement
                     </h4>
-                    <p className="text-slate-600 leading-relaxed text-sm">
-                      {selectedElection.howItWorks}
-                    </p>
+                    <div className="text-slate-600 leading-relaxed text-sm">
+                      {wrapWithGlossary(selectedElection.howItWorks)}
+                    </div>
                   </div>
                 </div>
 

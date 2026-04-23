@@ -14,6 +14,7 @@ import {
 import { type LawDossier } from "@/data/free-laws-dossiers";
 import { usePremium } from "@/lib/hooks/usePremium";
 import { api } from "@/lib/api";
+import { useGlossary } from "@/components/providers/GlossaryProvider";
 
 interface DetailedLawDossierProps {
   law: LawDossier;
@@ -27,6 +28,7 @@ export default function DetailedLawDossier({ law }: DetailedLawDossierProps) {
   const [isVoting, setIsVoting] = useState(false);
   const [showHeavyContent, setShowHeavyContent] = useState(false);
   const [communityStats, setCommunityStats] = useState<{POUR:number, CONTRE:number, ABSTENTION:number, total:number} | null>(null);
+  const { wrapWithGlossary } = useGlossary();
 
   // Charger les stats globales
   const fetchCommunityStats = async () => {
@@ -151,9 +153,9 @@ export default function DetailedLawDossier({ law }: DetailedLawDossierProps) {
             {law.statusLabel}
           </div>
 
-          <p className="text-lg md:text-xl text-slate-800 font-medium leading-relaxed mb-10 max-w-4xl">
-            {law.summary}
-          </p>
+          <div className="text-lg md:text-xl text-slate-800 font-medium leading-relaxed mb-10 max-w-4xl">
+            {wrapWithGlossary(law.summary)}
+          </div>
 
           {showHeavyContent && (
             <motion.div 
@@ -172,7 +174,7 @@ export default function DetailedLawDossier({ law }: DetailedLawDossierProps) {
                     {law.impacts.map((impact, idx) => (
                       <div key={idx} className="flex gap-4 items-start p-5 bg-slate-50/80 rounded-2xl border border-slate-200/60 shadow-sm">
                         <div className="w-2 h-2 rounded-full bg-primary mt-2 shrink-0" />
-                        <p className="text-slate-700 text-base font-medium leading-relaxed">{impact}</p>
+                        <div className="text-slate-700 text-base font-medium leading-relaxed">{wrapWithGlossary(impact)}</div>
                       </div>
                     ))}
                   </div>

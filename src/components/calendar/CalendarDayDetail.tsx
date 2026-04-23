@@ -6,24 +6,41 @@ import { Calendar, Clock, MapPin, Bookmark, ChevronDown, User } from "lucide-rea
 import { CalendarEvent } from "./EventItem";
 
 function highlightText(text: string) {
-  // Regex to match "M.", "Mme", "MM.", "Mmes" followed by words (usually names)
-  // We'll highlight the whole block "Mme Name Name"
-  const regex = /(M\.|Mme|MM\.|Mmes)\s+([A-ZÀ-ÿ][a-zà-ÿ-]+(\s+[A-ZÀ-ÿ][a-zà-ÿ-]+)*)/g;
+  // Regex to match titles and names
+  // 1. Classic prefixes: M., Mme, etc.
+  // 2. Official titles: Président, Prince, Premier ministre, Roi, etc.
+  // 3. Sequences of capitalized words after "avec", "de", "par"
+  const regex = /(M\.|Mme|MM\.|Mmes|Président|Prince|Premier ministre|Roi|Reine|Chancelier)\s+([A-ZÀ-ÿ][a-zà-ÿ-]+(\s+[A-ZÀ-ÿ][a-zà-ÿ-]+)*)|(avec|de)\s+([A-ZÀ-ÿ][a-zà-ÿ-]+(\s+[A-ZÀ-ÿ][a-zà-ÿ-]+)+)/g;
   
   const parts = [];
   let lastIndex = 0;
   let match;
 
   while ((match = regex.exec(text)) !== null) {
+    // We want to highlight only the name part if it was a preposition match
+    const fullMatch = match[0];
+    let highlightPart = fullMatch;
+    let prefixPart = "";
+
+    if (match[4]) { // Preposition match (avec/de)
+      prefixPart = match[4] + " ";
+      highlightPart = fullMatch.substring(prefixPart.length);
+    }
+
     // Add text before the match
     if (match.index > lastIndex) {
       parts.push(text.substring(lastIndex, match.index));
     }
 
-    // Add the highlighted match
+    // Add prefix if any
+    if (prefixPart) {
+      parts.push(prefixPart);
+    }
+
+    // Add the highlighted match (Yellow/Amber pastel)
     parts.push(
-      <span key={match.index} className="inline-block px-1 rounded-sm bg-blue-500/20 border-b-2 border-blue-400/30 text-blue-100">
-        {match[0]}
+      <span key={match.index} className="inline-block px-1 rounded-sm bg-amber-500/20 border-b-2 border-amber-400/30 text-amber-100">
+        {highlightPart}
       </span>
     );
 

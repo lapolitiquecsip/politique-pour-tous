@@ -35,6 +35,7 @@ import { api } from "@/lib/api";
 import { usePremium } from "@/lib/hooks/usePremium";
 import { getFullPartyName } from "@/lib/party-utils";
 import VoteDetailsModal from "@/components/deputies/VoteDetailsModal";
+import LegalStatusModal from "@/components/deputies/LegalStatusModal";
 import { useGlossary } from "@/components/providers/GlossaryProvider";
 
 // Vote position formatting helper
@@ -230,6 +231,12 @@ export default function DeputyDetailPage({ params }: { params: Promise<{ slug: s
     }
   };
 
+  const isLegalClean = useMemo(() => {
+    const issues = deputy?.legal_issues || "";
+    if (!issues) return true;
+    return issues.toLowerCase().includes("aucune") || issues.toLowerCase().includes("casier vierge");
+  }, [deputy]);
+
   const groupFullName = getFullPartyName(deputy?.party || (slug === 'gabriel-attal' ? 'EPR' : ''));
 
 
@@ -359,23 +366,36 @@ export default function DeputyDetailPage({ params }: { params: Promise<{ slug: s
               </div>
             </div>
 
-            {/* NEW: Integrity Badge Section */}
-            <div className="bg-white dark:bg-slate-900 rounded-[2rem] p-6 border border-slate-200 dark:border-slate-800 shadow-lg relative overflow-hidden group">
-               <div className="absolute top-0 left-0 w-2 h-full bg-emerald-500" />
-               <div className="flex items-center justify-between">
-                  <div>
-                    <p className="text-[10px] font-black text-slate-400 uppercase tracking-widest mb-1">Intégrité & Transparence</p>
-                    <h4 className="text-lg font-bold text-slate-900 dark:text-white">Situation Juridique</h4>
+            {/* NEW: Integrity Badge Section (Bento Style) */}
+            <motion.div 
+              whileHover={{ y: -4 }}
+              className="bg-white dark:bg-slate-900 rounded-[2rem] p-6 border border-slate-200 dark:border-slate-800 shadow-xl relative overflow-hidden group transition-all duration-500"
+            >
+               <div className={`absolute top-0 left-0 w-2 h-full transition-colors duration-500 ${isLegalClean ? 'bg-emerald-500' : 'bg-amber-500'}`} />
+               <div className="flex items-center justify-between gap-4">
+                  <div className="min-w-0">
+                    <p className="text-[9px] font-black text-slate-400 uppercase tracking-[0.2em] mb-1">Intégrité & Transparence</p>
+                    <h4 className="text-lg font-bold text-slate-900 dark:text-white truncate">Situation Juridique</h4>
+                    <div className="flex items-center gap-2 mt-1">
+                      <div className={`w-1.5 h-1.5 rounded-full animate-pulse ${isLegalClean ? 'bg-emerald-500' : 'bg-amber-500'}`} />
+                      <span className={`text-[10px] font-black uppercase tracking-widest ${isLegalClean ? 'text-emerald-600' : 'text-amber-600'}`}>
+                        {isLegalClean ? 'Dossier Vierge' : 'Données à consulter'}
+                      </span>
+                    </div>
                   </div>
                   <button 
                     onClick={() => setShowLegalModal(true)}
-                    className="flex items-center gap-2 px-4 py-2 rounded-xl bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 text-xs font-bold hover:bg-emerald-500 hover:text-white transition-all transform active:scale-95 border border-emerald-500/20"
+                    className={`flex items-center gap-2 px-5 py-3 rounded-2xl text-[10px] font-black uppercase tracking-widest transition-all transform active:scale-95 shadow-lg border ${
+                      isLegalClean 
+                        ? 'bg-emerald-500/10 text-emerald-600 border-emerald-500/20 hover:bg-emerald-500 hover:text-white shadow-emerald-500/10' 
+                        : 'bg-amber-500/10 text-amber-600 border-amber-500/20 hover:bg-amber-500 hover:text-white shadow-amber-500/10'
+                    }`}
                   >
-                    <ShieldCheck className="w-4 h-4" />
+                    <ShieldCheck className="w-3.5 h-3.5" />
                     Consulter
                   </button>
                </div>
-            </div>
+            </motion.div>
 
             <div className="bg-red-600 rounded-[2rem] p-8 text-white shadow-xl shadow-red-600/20">
                <h4 className="text-xl font-staatliches uppercase mb-4 tracking-tight">Contact Parlementaire</h4>
@@ -633,65 +653,11 @@ export default function DeputyDetailPage({ params }: { params: Promise<{ slug: s
       </div>
 
       {/* NEW: Legal Information Modal */}
-      <AnimatePresence>
-        {showLegalModal && (
-          <>
-            <motion.div 
-              initial={{ opacity: 0 }}
-              animate={{ opacity: 1 }}
-              exit={{ opacity: 0 }}
-              onClick={() => setShowLegalModal(false)}
-              className="fixed inset-0 bg-slate-950/60 backdrop-blur-sm z-[100]"
-            />
-            <motion.div 
-              initial={{ opacity: 0, scale: 0.9, y: 20 }}
-              animate={{ opacity: 1, scale: 1, y: 0 }}
-              exit={{ opacity: 0, scale: 0.9, y: 20 }}
-              className="fixed top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-full max-w-lg bg-white dark:bg-slate-900 rounded-[2.5rem] shadow-2xl z-[101] overflow-hidden border border-slate-200 dark:border-slate-800"
-            >
-              <div className="p-8 pb-4 flex items-center justify-between border-b border-slate-100 dark:border-slate-800">
-                <div className="flex items-center gap-3">
-                  <div className="w-10 h-10 rounded-xl bg-emerald-500 flex items-center justify-center text-white">
-                    <Gavel className="w-5 h-5" />
-                  </div>
-                  <h3 className="text-2xl font-staatliches uppercase tracking-tight">Dossier Juridique</h3>
-                </div>
-                <button onClick={() => setShowLegalModal(false)} className="w-10 h-10 rounded-full bg-slate-100 dark:bg-slate-800 flex items-center justify-center text-slate-500 hover:rotate-90 transition-transform">
-                  <X className="w-5 h-5" />
-                </button>
-              </div>
-              
-              <div className="p-8 space-y-6">
-                <div className="p-6 rounded-3xl bg-slate-50 dark:bg-slate-800/50 border border-slate-100 dark:border-slate-800">
-                  <div className="flex items-start gap-4">
-                    <div className="w-8 h-8 rounded-full bg-emerald-500/20 flex items-center justify-center text-emerald-600 mt-1">
-                      <ShieldCheck className="w-4 h-4" />
-                    </div>
-                    <div>
-                      <p className="text-sm font-bold text-slate-900 dark:text-white mb-2">Statut Officiel</p>
-                      <div className="text-slate-600 dark:text-slate-400 leading-relaxed text-sm">
-                        {wrapWithGlossary(deputy?.legal_issues || "Aucune affaire judiciaire n'a été signalée ou enregistrée pour ce député à ce jour dans nos bases de données.")}
-                      </div>
-                    </div>
-                  </div>
-                </div>
-
-                <div className="flex items-center gap-3 p-4 rounded-2xl bg-amber-500/5 border border-amber-500/10 text-amber-600">
-                   <AlertTriangle className="w-4 h-4" />
-                   <p className="text-[10px] font-bold uppercase tracking-widest">Information mise à jour en temps réel selon les sources officielles</p>
-                </div>
-
-                <button 
-                  onClick={() => setShowLegalModal(false)}
-                  className="w-full py-4 rounded-2xl bg-slate-900 text-white font-bold text-sm hover:bg-slate-800 transition-colors"
-                >
-                  Fermer le dossier
-                </button>
-              </div>
-            </motion.div>
-          </>
-        )}
-      </AnimatePresence>
+      <LegalStatusModal 
+        isOpen={showLegalModal} 
+        onClose={() => setShowLegalModal(false)} 
+        deputy={deputy} 
+      />
 
       {/* NEW: Vote Details Modal */}
       <AnimatePresence>

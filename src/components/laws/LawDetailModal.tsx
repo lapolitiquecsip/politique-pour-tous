@@ -148,17 +148,17 @@ export default function LawDetailModal({ law, isOpen, onClose }: LawDetailModalP
                   <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                     {law.group_results.map((group: any) => {
                       const mapping: any = {
-                        "PO840017": { name: "RN", color: "#0D2149" },
-                        "PO840030": { name: "EPR", color: "#FFD600" },
-                        "PO840044": { name: "LFI-NFP", color: "#CC2443" },
-                        "PO840058": { name: "SOC", color: "#E1001A" },
-                        "PO840010": { name: "DR", color: "#0066CC" },
-                        "PO840051": { name: "ÉCO", color: "#00B050" },
-                        "PO840037": { name: "LIOT", color: "#F5B000" },
-                        "PO840003": { name: "GDR", color: "#DD0000" },
-                        "PO840024": { name: "UDR", color: "#004792" },
-                        "PO840011": { name: "DEM", color: "#FF9900" },
-                        "PO840025": { name: "HOR", color: "#00A0E2" },
+                        "PO845419": { name: "RN", color: "#0D2149" },
+                        "PO845401": { name: "EPR", color: "#FFD600" },
+                        "PO845407": { name: "LFI-NFP", color: "#CC2443" },
+                        "PO845413": { name: "SOC", color: "#E1001A" },
+                        "PO845425": { name: "DR", color: "#0066CC" },
+                        "PO845439": { name: "DEM", color: "#FF9900" },
+                        "PO845454": { name: "HOR", color: "#00A0E2" },
+                        "PO845470": { name: "ÉCO", color: "#00B050" },
+                        "PO845485": { name: "GDR", color: "#DD0000" },
+                        "PO845514": { name: "LIOT", color: "#F5B000" },
+                        "PO872880": { name: "UDR", color: "#004792" },
                       };
                       const info = mapping[group.group_id] || { name: group.group_id, color: "#94a3b8" };
                       const total = group.pour + group.contre + group.abstention;

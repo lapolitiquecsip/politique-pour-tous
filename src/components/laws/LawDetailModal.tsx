@@ -59,6 +59,23 @@ export default function LawDetailModal({ law, isOpen, onClose }: LawDetailModalP
             {/* Content Body */}
             <div className="flex-1 overflow-y-auto p-8 space-y-12">
               
+              {/* Lexique / Aide (si besoin) */}
+              {(law.objet.includes("Motion de Rejet") || law.objet.includes("Loi complète")) && (
+                <div className="bg-slate-900 text-white p-6 rounded-[2rem] flex items-start gap-4">
+                  <div className="w-10 h-10 rounded-full bg-blue-500 flex items-center justify-center flex-shrink-0 mt-1">
+                    <Info size={20} />
+                  </div>
+                  <div>
+                    <p className="text-sm font-bold mb-1 uppercase tracking-widest text-blue-400">Comprendre ce vote</p>
+                    <p className="text-sm leading-relaxed text-slate-300">
+                      {law.objet.includes("Motion de Rejet") 
+                        ? "Une 'Motion de Rejet' est un vote de procédure. Si elle est adoptée, le projet de loi est rejeté immédiatement, avant même que les députés ne commencent à en discuter le contenu."
+                        : "Ce vote porte sur l'intégralité du projet de loi après les débats. C'est l'étape finale qui décide si le texte est adopté ou non."}
+                    </p>
+                  </div>
+                </div>
+              )}
+              
               {/* 3 Detail Boxes (from user screenshot) */}
               <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
                 <div className="bg-emerald-50/50 border border-emerald-100 p-6 rounded-[2rem] flex items-center gap-4">

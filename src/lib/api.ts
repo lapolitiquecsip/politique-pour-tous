@@ -39,7 +39,11 @@ export const api = {
   },
 
   getPetitions: async () => {
-    const { data, error } = await supabase.from('petitions').select('*').order('signatures', { ascending: false });
+    const { data, error } = await supabase
+      .from('petitions')
+      .select('*')
+      .eq('institution', 'AN')
+      .order('signatures', { ascending: false });
     if (error) { console.error(error); return []; }
     return data || [];
   },

@@ -27,6 +27,64 @@ interface Petition {
 
 // Data is now fetched from Supabase
 
+// Sub-component for individual petition cards
+function PetitionCard({ petition, percentage, idx }: { petition: Petition, percentage: number, idx: number }) {
+  return (
+    <motion.div
+      initial={{ opacity: 0, y: 20 }}
+      whileInView={{ opacity: 1, y: 0 }}
+      transition={{ delay: idx * 0.1 }}
+      className="group bg-white rounded-[2.5rem] border border-slate-200 overflow-hidden hover:shadow-2xl transition-all duration-500 hover:-translate-y-2 flex flex-col h-full"
+    >
+      <div className="p-8 flex flex-col h-full">
+        <div className="flex justify-between items-start mb-6">
+          <span className="px-3 py-1 bg-slate-100 text-slate-600 text-[10px] font-black uppercase tracking-widest rounded-full">
+            {petition.category}
+          </span>
+          <FileSignature className="text-blue-500 opacity-20 group-hover:opacity-100 transition-opacity" size={24} />
+        </div>
+
+        <h3 className="text-2xl font-bold mb-4 italic leading-tight group-hover:text-blue-600 transition-colors line-clamp-3">
+          {petition.title}
+        </h3>
+        
+        <div className="text-slate-500 text-sm mb-8 flex-1 font-medium leading-relaxed line-clamp-4 whitespace-pre-line">
+          {petition.description}
+        </div>
+
+        <div className="space-y-4 mt-auto">
+          <div className="flex justify-between text-[11px] font-black uppercase tracking-wider mb-2">
+            <div className="flex items-center gap-2">
+              <Users size={14} className="text-slate-400" />
+              <span>{petition.signatures.toLocaleString()} Votants</span>
+            </div>
+            <span className="text-blue-600">{percentage}% du palier</span>
+          </div>
+
+          <div className="h-2 bg-slate-100 rounded-full overflow-hidden">
+            <motion.div 
+              initial={{ width: 0 }}
+              whileInView={{ width: `${percentage}%` }}
+              transition={{ duration: 1.5, ease: "circOut" }}
+              className="h-full bg-gradient-to-r from-blue-600 to-indigo-600"
+            />
+          </div>
+
+          <a 
+            href={petition.url}
+            target="_blank"
+            rel="noopener noreferrer"
+            className="inline-flex items-center justify-center gap-2 w-full py-4 mt-4 bg-slate-950 text-white rounded-2xl text-xs font-black uppercase tracking-widest hover:bg-blue-600 transition-all group-hover:shadow-[0_10px_20px_rgba(37,99,235,0.2)]"
+          >
+            Détails & Signer
+            <ArrowUpRight size={16} />
+          </a>
+        </div>
+      </div>
+    </motion.div>
+  );
+}
+
 export default function PetitionsSection() {
   const [petitions, setPetitions] = useState<Petition[]>([]);
   const [loading, setLoading] = useState(true);
@@ -43,16 +101,9 @@ export default function PetitionsSection() {
         const popularIds = new Set(popular.map(p => p.id));
         
         // 2. Get Top 3 most recent (not already in popular)
-        // Note: data from api is already sorted by signatures, 
-        // but we want the newest available in the DB for the "Recent" slots
         const recent = [...data]
           .filter(p => !popularIds.has(p.id))
-          .sort((a, b) => {
-            // Compare IDs or creation dates if available. 
-            // In Decidim, higher IDs are usually newer, 
-            // but we'll use a secondary sort or just the natural order if it matches
-            return b.id.localeCompare(a.id); 
-          })
+          .sort((a, b) => new Date(b.created_at).getTime() - new Date(a.created_at).getTime())
           .slice(0, 3);
 
         setPetitions([...popular, ...recent]);
@@ -126,66 +177,45 @@ export default function PetitionsSection() {
             <p className="text-sm font-black uppercase tracking-widest text-slate-400">Récupération des pétitions en cours...</p>
           </div>
         ) : (
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
-            {petitions.map((petition, idx) => {
-              const percentage = Math.min(Math.round((petition.signatures / petition.threshold) * 100), 100);
-            return (
-              <motion.div
-                key={petition.id}
-                initial={{ opacity: 0, y: 20 }}
-                whileInView={{ opacity: 1, y: 0 }}
-                transition={{ delay: idx * 0.1 }}
-                className="group bg-white rounded-[2.5rem] border border-slate-200 overflow-hidden hover:shadow-2xl transition-all duration-500 hover:-translate-y-2 flex flex-col h-full"
-              >
-                <div className="p-8 flex flex-col h-full">
-                  <div className="flex justify-between items-start mb-6">
-                    <span className="px-3 py-1 bg-slate-100 text-slate-600 text-[10px] font-black uppercase tracking-widest rounded-full">
-                      {petition.category}
-                    </span>
-                    <FileSignature className="text-blue-500 opacity-20 group-hover:opacity-100 transition-opacity" size={24} />
-                  </div>
+          <div className="space-y-16">
+            {/* 1. Les plus populaires */}
+            <div>
+              <div className="flex items-center gap-4 mb-8">
+                <div className="h-px flex-1 bg-slate-200" />
+                <h3 className="text-xl font-staatliches text-blue-600 uppercase tracking-widest italic">
+                  Les plus mobilisées (Top 3)
+                </h3>
+                <div className="h-px flex-1 bg-slate-200" />
+              </div>
+              <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
+                {petitions.slice(0, 3).map((petition, idx) => {
+                  const percentage = Math.min(Math.round((petition.signatures / petition.threshold) * 100), 100);
+                  return (
+                    <PetitionCard key={petition.id} petition={petition} percentage={percentage} idx={idx} />
+                  );
+                })}
+              </div>
+            </div>
 
-                  <h3 className="text-2xl font-bold mb-4 italic leading-tight group-hover:text-blue-600 transition-colors">
-                    {petition.title}
-                  </h3>
-                  
-                  <p className="text-slate-500 text-sm mb-8 flex-1 font-medium leading-relaxed">
-                    {petition.description}
-                  </p>
-
-                  <div className="space-y-4 mt-auto">
-                    <div className="flex justify-between text-[11px] font-black uppercase tracking-wider mb-2">
-                      <div className="flex items-center gap-2">
-                        <Users size={14} className="text-slate-400" />
-                        <span>{petition.signatures.toLocaleString()} Votants</span>
-                      </div>
-                      <span className="text-blue-600">{percentage}% du palier</span>
-                    </div>
-
-                    <div className="h-2 bg-slate-100 rounded-full overflow-hidden">
-                      <motion.div 
-                        initial={{ width: 0 }}
-                        whileInView={{ width: `${percentage}%` }}
-                        transition={{ duration: 1.5, ease: "circOut" }}
-                        className="h-full bg-gradient-to-r from-blue-600 to-indigo-600"
-                      />
-                    </div>
-
-                    <a 
-                      href={petition.url}
-                      target="_blank"
-                      rel="noopener noreferrer"
-                      className="inline-flex items-center justify-center gap-2 w-full py-4 mt-4 bg-slate-950 text-white rounded-2xl text-xs font-black uppercase tracking-widest hover:bg-blue-600 transition-all group-hover:shadow-[0_10px_20px_rgba(37,99,235,0.2)]"
-                    >
-                      Détails & Signer
-                      <ArrowUpRight size={16} />
-                    </a>
-                  </div>
-                </div>
-              </motion.div>
-            );
-          })}
-        </div>
+            {/* 2. Les plus récentes */}
+            <div>
+              <div className="flex items-center gap-4 mb-8">
+                <div className="h-px flex-1 bg-slate-200" />
+                <h3 className="text-xl font-staatliches text-indigo-600 uppercase tracking-widest italic">
+                  Dernières déposées par les citoyens
+                </h3>
+                <div className="h-px flex-1 bg-slate-200" />
+              </div>
+              <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
+                {petitions.slice(3, 6).map((petition, idx) => {
+                  const percentage = Math.min(Math.round((petition.signatures / petition.threshold) * 100), 100);
+                  return (
+                    <PetitionCard key={petition.id} petition={petition} percentage={percentage} idx={idx + 3} />
+                  );
+                })}
+              </div>
+            </div>
+          </div>
       )}
 
         <div className="mt-16 text-center">

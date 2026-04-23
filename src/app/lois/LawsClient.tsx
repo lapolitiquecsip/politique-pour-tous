@@ -97,7 +97,7 @@ export default function LawsClient() {
             }`}
           >
             <Vote size={18} />
-            Historique des votes
+            Historique des lois
           </button>
         </div>
       </div>
@@ -238,7 +238,7 @@ export default function LawsClient() {
                <span className="px-3 py-1 bg-blue-100 text-blue-600 text-[10px] font-black uppercase tracking-widest rounded-full">XVIIe Législature</span>
             </div>
             <h2 className="text-5xl md:text-7xl font-staatliches uppercase tracking-tighter leading-none">
-              Historique des <span className="bg-gradient-to-r from-slate-900 to-slate-500 bg-clip-text text-transparent">votes</span>
+              Historique des <span className="bg-gradient-to-r from-slate-900 to-slate-500 bg-clip-text text-transparent">lois</span>
             </h2>
             <div className="h-1.5 w-24 bg-slate-950 mt-4 rounded-full mx-auto md:mx-0" />
             <p className="text-lg font-bold italic text-slate-500 mt-6 max-w-2xl font-staatliches">

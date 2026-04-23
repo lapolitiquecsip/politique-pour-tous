@@ -37,6 +37,7 @@ const CATEGORIES = [
 export default function LawsClient() {
   const router = useRouter();
   const [activeTab, setActiveTab] = useState<'dossiers' | 'history'>('dossiers');
+  const [selectedCat, setSelectedCat] = useState<string | null>(null);
   const { isPremium, loading: pLoading, userId } = usePremium();
   const [dbLaws, setDbLaws] = useState<any[]>([]);
   const [loadingLaws, setLoadingLaws] = useState(true);

@@ -2,7 +2,7 @@
 
 import { useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
-import { Calendar, Clock, MapPin, ExternalLink, Bookmark, ChevronDown, User } from "lucide-react";
+import { Calendar, Clock, MapPin, Bookmark, ChevronDown, User } from "lucide-react";
 import { CalendarEvent } from "./EventItem";
 
 function SubSection({ label, events, color }: { label: string, events: CalendarEvent[], color: string }) {
@@ -37,9 +37,6 @@ function SubSection({ label, events, color }: { label: string, events: CalendarE
                     <h5 className="text-[11px] font-bold text-slate-200 leading-snug flex-1 group-hover/item:text-white transition-colors">
                       {event.title}
                     </h5>
-                    <a href={event.source_url} target="_blank" rel="noopener noreferrer" className="text-slate-600 hover:text-white">
-                      <ExternalLink className="w-3 h-3" />
-                    </a>
                   </div>
                   {event.description && (
                     <p className="mt-1 text-[9px] text-slate-500 line-clamp-2 italic">

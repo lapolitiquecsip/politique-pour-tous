@@ -38,11 +38,6 @@ function SubSection({ label, events, color }: { label: string, events: CalendarE
                       {event.title}
                     </h5>
                   </div>
-                  {event.description && (
-                    <p className="mt-1 text-[9px] text-slate-500 line-clamp-2 italic">
-                      {event.description}
-                    </p>
-                  )}
                 </div>
               ))}
             </div>

@@ -75,13 +75,13 @@ export default function LawsClient() {
       />
 
       {/* TABS NAVIGATION (STUCK AT TOP ON SCROLL) */}
-      <div className="sticky top-20 z-40 bg-slate-50/80 backdrop-blur-xl py-6 mb-12 border-b border-slate-200 -mx-4 px-4">
+      <div className="sticky top-0 z-[50] bg-white/90 backdrop-blur-md py-6 mb-12 border-b border-slate-100 -mx-4 px-4 shadow-sm">
         <div className="flex flex-wrap items-center justify-center gap-4">
           <button
             onClick={() => setActiveTab('dossiers')}
-            className={`px-8 py-3 rounded-full font-black uppercase tracking-widest text-sm transition-all duration-500 flex items-center gap-3 ${
+            className={`px-8 py-3 rounded-full font-black uppercase tracking-widest text-xs transition-all duration-300 flex items-center gap-3 ${
               activeTab === 'dossiers' 
-                ? 'bg-slate-950 text-white shadow-xl scale-105' 
+                ? 'bg-slate-950 text-white shadow-2xl shadow-slate-950/20 scale-105' 
                 : 'bg-white text-slate-400 hover:text-slate-600 border border-slate-100 hover:border-slate-300'
             }`}
           >
@@ -90,9 +90,9 @@ export default function LawsClient() {
           </button>
           <button
             onClick={() => setActiveTab('history')}
-            className={`px-8 py-3 rounded-full font-black uppercase tracking-widest text-sm transition-all duration-500 flex items-center gap-3 ${
+            className={`px-8 py-3 rounded-full font-black uppercase tracking-widest text-xs transition-all duration-300 flex items-center gap-3 ${
               activeTab === 'history' 
-                ? 'bg-slate-950 text-white shadow-xl scale-105' 
+                ? 'bg-slate-950 text-white shadow-2xl shadow-slate-950/20 scale-105' 
                 : 'bg-white text-slate-400 hover:text-slate-600 border border-slate-100 hover:border-slate-300'
             }`}
           >

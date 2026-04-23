@@ -147,24 +147,8 @@ export default function LawsClient() {
         </div>
       </div>
 
-      {/* 2. DOSSIERS GRATUITS (POSTER STYLE REBORN) */}
-      <div className="space-y-4 mb-32">
-        <div className="relative mb-16 text-center md:text-left">
-          <h2 className="text-5xl md:text-7xl font-staatliches uppercase tracking-tighter leading-none">
-            <span className="text-slate-900 opacity-10 absolute -top-8 left-0 select-none hidden md:block">INITIATIVE</span>
-            L&apos;essentiel en <span className="bg-gradient-to-r from-blue-600 via-red-600 to-blue-600 bg-clip-text text-transparent">libre accès</span>
-          </h2>
-          <div className="h-1.5 w-24 bg-gradient-to-r from-blue-600 to-red-600 mt-4 rounded-full mx-auto md:mx-0" />
-        </div>
 
-        <div className="space-y-12">
-          {FREE_LAWS.map((law) => (
-            <DetailedLawDossier key={law.id} law={law} />
-          ))}
-        </div>
-      </div>
-
-      {/* 3. HISTORIQUE DES VOTES (DYNAMIC FROM DB) */}
+      {/* 2. HISTORIQUE DES VOTES (DYNAMIC FROM DB) */}
       <div className="space-y-12 mb-32">
         <div className="relative mb-16 text-center md:text-left">
           <div className="flex items-center gap-3 mb-4 justify-center md:justify-start">
@@ -245,6 +229,26 @@ export default function LawsClient() {
              <p className="text-slate-400 font-bold uppercase tracking-widest text-sm">Aucun vote enregistré pour le moment</p>
           </div>
         )}
+      </div>
+
+      {/* 3. DOSSIERS GRATUITS (POSTER STYLE REBORN) */}
+      <div className="space-y-4 mb-32">
+        <div className="relative mb-16 text-center md:text-left">
+          <h2 className="text-5xl md:text-7xl font-staatliches uppercase tracking-tighter leading-none">
+            <span className="text-slate-900 opacity-10 absolute -top-8 left-0 select-none hidden md:block">PREVIEW</span>
+            L&apos;essentiel en <span className="bg-gradient-to-r from-blue-600 via-red-600 to-blue-600 bg-clip-text text-transparent">libre accès</span>
+          </h2>
+          <div className="h-1.5 w-24 bg-gradient-to-r from-blue-600 to-red-600 mt-4 rounded-full mx-auto md:mx-0" />
+          <p className="text-lg font-bold italic text-slate-500 mt-6 max-w-2xl font-staatliches">
+            Voici une prévisualisation de nos dossiers Premium : une analyse complète pour chaque grande loi.
+          </p>
+        </div>
+
+        <div className="space-y-12">
+          {FREE_LAWS.map((law) => (
+            <DetailedLawDossier key={law.id} law={law} />
+          ))}
+        </div>
       </div>
 
       {/* 4. LE RIDEAU DORÉ (SECTION PREMIUM VERROUILLÉE) */}

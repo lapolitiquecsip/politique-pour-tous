@@ -1,6 +1,4 @@
-"use client";
-
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { motion } from "framer-motion";
 import { 
   Leaf, 
@@ -13,7 +11,9 @@ import {
   Sparkles,
   ArrowRight,
   BookOpen,
-  CheckCircle2
+  CheckCircle2,
+  Calendar as CalendarIcon,
+  Vote
 } from "lucide-react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
@@ -21,6 +21,8 @@ import { usePremium } from "@/lib/hooks/usePremium";
 import { getPremiumUrl } from "@/lib/utils";
 import DetailedLawDossier from "@/components/laws/DetailedLawDossier";
 import { FREE_LAWS } from "@/data/free-laws-dossiers";
+import { api } from "@/lib/api";
+import VoteHemicycle from "@/components/laws/VoteHemicycle";
 
 const CATEGORIES = [
   { id: "edu", label: "Éducation", icon: GraduationCap, color: "border-indigo-400", bgColor: "bg-indigo-50/80", iconBg: "bg-indigo-100", iconColor: "text-indigo-600", isFree: true },
@@ -34,7 +36,18 @@ const CATEGORIES = [
 export default function LawsClient() {
   const router = useRouter();
   const [selectedCat, setSelectedCat] = useState<string | null>(null);
-  const { isPremium, loading, userId } = usePremium();
+  const { isPremium, loading: pLoading, userId } = usePremium();
+  const [dbLaws, setDbLaws] = useState<any[]>([]);
+  const [loadingLaws, setLoadingLaws] = useState(true);
+
+  useEffect(() => {
+    const loadLaws = async () => {
+      const data = await api.getVotedLaws(40);
+      setDbLaws(data);
+      setLoadingLaws(false);
+    };
+    loadLaws();
+  }, []);
 
   const scrollToPremium = () => {
     const element = document.getElementById("premium-section");
@@ -65,7 +78,6 @@ export default function LawsClient() {
                 if (cat.id === "edu") {
                   router.push("/lois/education");
                 } else if (cat.id === "env") {
-                  // Exemple pour l'environnement
                   router.push("/lois/environnement");
                 } else {
                   setSelectedCat(cat.id);
@@ -121,16 +133,13 @@ export default function LawsClient() {
       </div>
 
       {/* 2. DOSSIERS GRATUITS (POSTER STYLE REBORN) */}
-      <div className="space-y-4 mb-20">
+      <div className="space-y-4 mb-32">
         <div className="relative mb-16 text-center md:text-left">
           <h2 className="text-5xl md:text-7xl font-staatliches uppercase tracking-tighter leading-none">
             <span className="text-slate-900 opacity-10 absolute -top-8 left-0 select-none hidden md:block">INITIATIVE</span>
             L&apos;essentiel en <span className="bg-gradient-to-r from-blue-600 via-red-600 to-blue-600 bg-clip-text text-transparent">libre accès</span>
           </h2>
           <div className="h-1.5 w-24 bg-gradient-to-r from-blue-600 to-red-600 mt-4 rounded-full mx-auto md:mx-0" />
-          <p className="text-lg md:text-xl font-bold italic tracking-tight text-slate-500 mt-6 max-w-2xl font-staatliches">
-            Une démonstration de notre expertise Premium sur 4 dossiers majeurs.
-          </p>
         </div>
 
         <div className="space-y-12">
@@ -140,63 +149,119 @@ export default function LawsClient() {
         </div>
       </div>
 
-      {/* 3. LE RIDEAU DORÉ (SECTION PREMIUM VERROUILLÉE) */}
-      {!isPremium && !loading && (
+      {/* 3. HISTORIQUE DES VOTES (DYNAMIC FROM DB) */}
+      <div className="space-y-12 mb-32">
+        <div className="relative mb-16 text-center md:text-left">
+          <div className="flex items-center gap-3 mb-4 justify-center md:justify-start">
+             <span className="px-3 py-1 bg-blue-100 text-blue-600 text-[10px] font-black uppercase tracking-widest rounded-full">XVIIe Législature</span>
+          </div>
+          <h2 className="text-5xl md:text-7xl font-staatliches uppercase tracking-tighter leading-none">
+            Historique des <span className="bg-gradient-to-r from-slate-900 to-slate-500 bg-clip-text text-transparent">votes</span>
+          </h2>
+          <div className="h-1.5 w-24 bg-slate-950 mt-4 rounded-full mx-auto md:mx-0" />
+          <p className="text-lg font-bold italic text-slate-500 mt-6 max-w-2xl font-staatliches">
+            Toutes les lois votées à l&apos;Assemblée Nationale en temps réel.
+          </p>
+        </div>
+
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
+          {dbLaws.map((law, idx) => (
+            <motion.div
+              key={law.id}
+              initial={{ opacity: 0, y: 20 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              transition={{ delay: idx * 0.05 }}
+              className="bg-white rounded-[2.5rem] border border-slate-200 overflow-hidden hover:shadow-2xl transition-all duration-500 flex flex-col md:flex-row"
+            >
+              <div className="p-8 flex-1 flex flex-col justify-between">
+                <div>
+                  <div className="flex justify-between items-start mb-6">
+                    <span className="px-3 py-1 bg-slate-100 text-slate-600 text-[10px] font-black uppercase tracking-widest rounded-full">
+                      {law.category}
+                    </span>
+                    <div className="flex items-center gap-2 text-slate-400">
+                      <CalendarIcon size={14} />
+                      <span className="text-[10px] font-bold uppercase tracking-wider">
+                        {new Date(law.date_scrutin).toLocaleDateString('fr-FR', { day: 'numeric', month: 'short', year: 'numeric' })}
+                      </span>
+                    </div>
+                  </div>
+                  <h3 className="text-xl font-bold mb-4 italic leading-tight line-clamp-3">
+                    {law.objet}
+                  </h3>
+                  <div className="flex items-center gap-3 mt-4">
+                    <span className={`px-2 py-0.5 rounded-lg text-[9px] font-black uppercase tracking-widest border ${
+                      law.resultat?.includes('adopté') 
+                        ? 'bg-emerald-50 border-emerald-100 text-emerald-600' 
+                        : 'bg-red-50 border-red-100 text-red-600'
+                    }`}>
+                      {law.resultat}
+                    </span>
+                  </div>
+                </div>
+
+                {law.dossier_url && (
+                  <a 
+                    href={law.dossier_url}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="mt-8 flex items-center gap-2 text-[10px] font-black uppercase tracking-widest text-slate-400 hover:text-blue-600 transition-colors"
+                  >
+                    Dossier Législatif <ArrowRight size={12} />
+                  </a>
+                )}
+              </div>
+
+              {/* Diagramme de vote */}
+              <div className="w-full md:w-56 bg-slate-50/50 p-8 flex items-center justify-center border-t md:border-t-0 md:border-l border-slate-100">
+                <VoteHemicycle 
+                  pour={law.pour || 0} 
+                  contre={law.contre || 0} 
+                  abstention={law.abstention || 0} 
+                />
+              </div>
+            </motion.div>
+          ))}
+        </div>
+        
+        {dbLaws.length === 0 && !loadingLaws && (
+          <div className="text-center py-20 bg-slate-50 rounded-[3rem] border border-dashed border-slate-300">
+             <Vote className="w-12 h-12 text-slate-300 mx-auto mb-4" />
+             <p className="text-slate-400 font-bold uppercase tracking-widest text-sm">Aucun vote enregistré pour le moment</p>
+          </div>
+        )}
+      </div>
+
+      {/* 4. LE RIDEAU DORÉ (SECTION PREMIUM VERROUILLÉE) */}
+      {!isPremium && !pLoading && (
         <div id="premium-section" className="relative mt-32">
           {/* Fake Blurry Content */}
           <div className="opacity-40 grayscale pointer-events-none select-none blur-md space-y-12 mb-12">
              <div className="h-[400px] w-full bg-muted rounded-[3rem] border border-border" />
-             <div className="h-[400px] w-full bg-muted rounded-[3rem] border border-border hidden md:block" />
           </div>
 
-          {/* The Golden Paywall Overlay */}
           <div className="absolute inset-0 z-10 flex flex-col items-center justify-center -top-20">
             <div className="w-full max-w-2xl bg-card/80 backdrop-blur-2xl border border-amber-200/50 rounded-[3rem] p-10 md:p-16 text-center shadow-2xl relative overflow-hidden">
-              {/* Background Gradient */}
-              <div className="absolute inset-0 bg-gradient-to-br from-amber-500/5 to-transparent pointer-events-none" />
-              
-              <div className="inline-flex items-center justify-center w-20 h-20 rounded-full bg-gradient-to-br from-amber-400 to-orange-500 text-white mb-8 shadow-xl shadow-amber-500/20">
+              <div className="inline-flex items-center justify-center w-20 h-20 rounded-full bg-gradient-to-br from-amber-400 to-orange-500 text-white mb-8">
                 <Lock className="w-10 h-10" />
               </div>
-
               <h3 className="text-3xl md:text-5xl font-black text-foreground mb-6 leading-tight">
                 Accédez à <span className="text-amber-600 italic">tous</span> les dossiers
               </h3>
-              
               <p className="text-lg text-muted-foreground mb-10 max-w-md mx-auto leading-relaxed">
-                Plus de <span className="text-foreground font-bold">150 dossiers législatifs</span> décryptés, mis à jour en temps réel et classés par domaines.
+                Plus de <span className="text-foreground font-bold">150 dossiers législatifs</span> décryptés, mis à jour en temps réel.
               </p>
-
-              <div className="flex flex-col items-center gap-6">
-                <Link
-                  href={getPremiumUrl(userId)}
-                  className="group px-12 py-6 bg-gradient-to-r from-amber-500 to-orange-600 text-white font-black rounded-3xl hover:shadow-2xl hover:shadow-amber-500/30 transition-all hover:-translate-y-1 text-xl flex items-center gap-4"
-                >
-                  Devenir membre Premium
-                  <span className="px-3 py-1 bg-white/20 rounded-xl text-sm border border-white/30 tracking-tight">3€ / mois</span>
-                  <ArrowRight className="w-6 h-6 group-hover:translate-x-1 transition-transform" />
-                </Link>
-                
-                <div className="flex flex-wrap justify-center gap-x-8 gap-y-3">
-                  <div className="flex items-center gap-2 text-xs font-bold text-amber-700/60 uppercase tracking-widest leading-none">
-                    <div className="w-1.5 h-1.5 rounded-full bg-amber-500" />
-                    Mise à jour J+1
-                  </div>
-                  <div className="flex items-center gap-2 text-xs font-bold text-amber-700/60 uppercase tracking-widest leading-none">
-                    <div className="w-1.5 h-1.5 rounded-full bg-amber-500" />
-                    Guide législatif complet
-                  </div>
-                  <div className="flex items-center gap-2 text-xs font-bold text-amber-700/60 uppercase tracking-widest leading-none">
-                    <div className="w-1.5 h-1.5 rounded-full bg-amber-500" />
-                    Sans engagement
-                  </div>
-                </div>
-              </div>
+              <Link
+                href={getPremiumUrl(userId)}
+                className="group px-12 py-6 bg-gradient-to-r from-amber-500 to-orange-600 text-white font-black rounded-3xl hover:shadow-2xl transition-all text-xl flex items-center gap-4 mx-auto w-fit"
+              >
+                Devenir membre Premium
+                <ArrowRight className="w-6 h-6" />
+              </Link>
             </div>
           </div>
         </div>
       )}
-
       {/* Message de bienvenue Premium */}
       {isPremium && (
         <div className="mt-20 p-8 rounded-[3rem] bg-gradient-to-br from-amber-50 to-orange-50 border border-amber-200 flex flex-col md:flex-row items-center gap-8 shadow-xl">

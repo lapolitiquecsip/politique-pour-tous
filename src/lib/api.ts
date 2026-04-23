@@ -48,6 +48,17 @@ export const api = {
     return data || [];
   },
 
+  getVotedLaws: async (limit = 20) => {
+    const { data, error } = await supabase
+      .from('scrutins')
+      .select('*')
+      .eq('type', 'LOI')
+      .order('date_scrutin', { ascending: false })
+      .limit(limit);
+    if (error) { console.error(error); return []; }
+    return data || [];
+  },
+
   getCalendarEvents: async () => {
     // Dynamic range to ensure we get relevant events without hitting row limits
     const now = new Date();

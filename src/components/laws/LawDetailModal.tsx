@@ -137,6 +137,70 @@ export default function LawDetailModal({ law, isOpen, onClose }: LawDetailModalP
                 </div>
               </div>
 
+              {/* Vote Breakdown by Party */}
+              {law.group_results && law.group_results.length > 0 && (
+                <div className="space-y-8">
+                  <div className="flex items-center gap-3">
+                    <div className="w-1.5 h-8 bg-blue-600 rounded-full" />
+                    <h3 className="text-2xl font-black uppercase tracking-tighter">Vote par groupe politique</h3>
+                  </div>
+
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                    {law.group_results.map((group: any) => {
+                      const mapping: any = {
+                        "PO840017": { name: "RN", color: "#0D2149" },
+                        "PO840030": { name: "EPR", color: "#FFD600" },
+                        "PO840044": { name: "LFI-NFP", color: "#CC2443" },
+                        "PO840058": { name: "SOC", color: "#E1001A" },
+                        "PO840010": { name: "DR", color: "#0066CC" },
+                        "PO840051": { name: "ÉCO", color: "#00B050" },
+                        "PO840037": { name: "LIOT", color: "#F5B000" },
+                        "PO840003": { name: "GDR", color: "#DD0000" },
+                        "PO840024": { name: "UDR", color: "#004792" },
+                        "PO840011": { name: "DEM", color: "#FF9900" },
+                        "PO840025": { name: "HOR", color: "#00A0E2" },
+                      };
+                      const info = mapping[group.group_id] || { name: group.group_id, color: "#94a3b8" };
+                      const total = group.pour + group.contre + group.abstention;
+                      if (total === 0) return null;
+
+                      return (
+                        <div key={group.group_id} className="bg-white border border-slate-100 p-5 rounded-2xl shadow-sm hover:shadow-md transition-shadow">
+                          <div className="flex justify-between items-center mb-3">
+                            <div className="flex items-center gap-2">
+                              <div className="w-3 h-3 rounded-full" style={{ backgroundColor: info.color }} />
+                              <span className="font-black text-slate-900">{info.name}</span>
+                            </div>
+                            <span className="text-[10px] font-bold text-slate-400 uppercase tracking-widest">{total} votants</span>
+                          </div>
+                          
+                          <div className="h-2 w-full bg-slate-100 rounded-full overflow-hidden flex">
+                            <div className="bg-emerald-500 h-full transition-all" style={{ width: `${(group.pour / total) * 100}%` }} />
+                            <div className="bg-red-500 h-full transition-all" style={{ width: `${(group.contre / total) * 100}%` }} />
+                            <div className="bg-slate-400 h-full transition-all" style={{ width: `${(group.abstention / total) * 100}%` }} />
+                          </div>
+
+                          <div className="flex justify-between mt-2">
+                             <div className="flex items-center gap-1">
+                                <div className="w-1.5 h-1.5 rounded-full bg-emerald-500" />
+                                <span className="text-[9px] font-black text-slate-900">{group.pour}</span>
+                             </div>
+                             <div className="flex items-center gap-1">
+                                <div className="w-1.5 h-1.5 rounded-full bg-red-500" />
+                                <span className="text-[9px] font-black text-slate-900">{group.contre}</span>
+                             </div>
+                             <div className="flex items-center gap-1">
+                                <div className="w-1.5 h-1.5 rounded-full bg-slate-400" />
+                                <span className="text-[9px] font-black text-slate-900">{group.abstention}</span>
+                             </div>
+                          </div>
+                        </div>
+                      );
+                    })}
+                  </div>
+                </div>
+              )}
+
               {/* Official Link */}
               <div className="pt-8 flex justify-center">
                  {law.dossier_url && (

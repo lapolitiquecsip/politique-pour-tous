@@ -146,9 +146,10 @@ export default function CalendarGrid({
               {/* Indicateurs d'évènements */}
               <div className="flex flex-wrap gap-1 mt-auto">
                 {dayEvents.map((e, idx) => {
-                  const dotColor = e.institution === "Assemblée nationale" ? "bg-blue-500" : 
-                                   e.institution === "Sénat" ? "bg-indigo-500" : 
-                                   e.institution === "Élysée" ? "bg-amber-500" : "bg-red-500";
+                  const inst = e.institution?.toLowerCase() || '';
+                  const dotColor = inst.includes('assemblée') ? "bg-blue-500" : 
+                                   inst.includes('sénat') ? "bg-indigo-500" : 
+                                   inst.includes('élysée') ? "bg-amber-500" : "bg-slate-400";
                   return (
                     <div 
                       key={idx} 

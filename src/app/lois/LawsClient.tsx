@@ -36,7 +36,7 @@ const CATEGORIES = [
 
 export default function LawsClient() {
   const router = useRouter();
-  const [selectedCat, setSelectedCat] = useState<string | null>(null);
+  const [activeTab, setActiveTab] = useState<'dossiers' | 'history'>('dossiers');
   const { isPremium, loading: pLoading, userId } = usePremium();
   const [dbLaws, setDbLaws] = useState<any[]>([]);
   const [loadingLaws, setLoadingLaws] = useState(true);
@@ -44,15 +44,14 @@ export default function LawsClient() {
 
   useEffect(() => {
     const loadLaws = async () => {
-      const data = await api.getVotedLaws(40);
+      const data = await api.getVotedLaws(60);
       setDbLaws(data);
       setLoadingLaws(false);
     };
     loadLaws();
     
-    // Refresh every 30 seconds if some laws have 0 votes (syncing)
     const interval = setInterval(async () => {
-      const data = await api.getVotedLaws(40);
+      const data = await api.getVotedLaws(60);
       setDbLaws(data);
     }, 30000);
     
@@ -73,7 +72,37 @@ export default function LawsClient() {
         isOpen={!!selectedLaw} 
         onClose={() => setSelectedLaw(null)} 
       />
-      {/* 1. FILTRES THÉMATIQUES (ULTRA COMPACT BENTO STYLE) */}
+
+      {/* TABS NAVIGATION (STUCK AT TOP ON SCROLL) */}
+      <div className="sticky top-20 z-40 bg-slate-50/80 backdrop-blur-xl py-6 mb-12 border-b border-slate-200 -mx-4 px-4">
+        <div className="flex flex-wrap items-center justify-center gap-4">
+          <button
+            onClick={() => setActiveTab('dossiers')}
+            className={`px-8 py-3 rounded-full font-black uppercase tracking-widest text-sm transition-all duration-500 flex items-center gap-3 ${
+              activeTab === 'dossiers' 
+                ? 'bg-slate-950 text-white shadow-xl scale-105' 
+                : 'bg-white text-slate-400 hover:text-slate-600 border border-slate-100 hover:border-slate-300'
+            }`}
+          >
+            <BookOpen size={18} />
+            Dossiers Premium
+          </button>
+          <button
+            onClick={() => setActiveTab('history')}
+            className={`px-8 py-3 rounded-full font-black uppercase tracking-widest text-sm transition-all duration-500 flex items-center gap-3 ${
+              activeTab === 'history' 
+                ? 'bg-slate-950 text-white shadow-xl scale-105' 
+                : 'bg-white text-slate-400 hover:text-slate-600 border border-slate-100 hover:border-slate-300'
+            }`}
+          >
+            <Vote size={18} />
+            Historique des votes
+          </button>
+        </div>
+      </div>
+      {activeTab === 'dossiers' && (
+        <>
+          {/* 1. FILTRES THÉMATIQUES (ULTRA COMPACT BENTO STYLE) */}
       <div className="mb-24">
         <div className="relative mb-10 text-center md:text-left">
           <h3 className="text-5xl md:text-7xl font-staatliches uppercase tracking-tighter leading-none">
@@ -148,88 +177,10 @@ export default function LawsClient() {
       </div>
 
 
-      {/* 2. HISTORIQUE DES VOTES (DYNAMIC FROM DB) */}
-      <div className="space-y-12 mb-32">
-        <div className="relative mb-16 text-center md:text-left">
-          <div className="flex items-center gap-3 mb-4 justify-center md:justify-start">
-             <span className="px-3 py-1 bg-blue-100 text-blue-600 text-[10px] font-black uppercase tracking-widest rounded-full">XVIIe Législature</span>
           </div>
-          <h2 className="text-5xl md:text-7xl font-staatliches uppercase tracking-tighter leading-none">
-            Historique des <span className="bg-gradient-to-r from-slate-900 to-slate-500 bg-clip-text text-transparent">votes</span>
-          </h2>
-          <div className="h-1.5 w-24 bg-slate-950 mt-4 rounded-full mx-auto md:mx-0" />
-          <p className="text-lg font-bold italic text-slate-500 mt-6 max-w-2xl font-staatliches">
-            Toutes les lois votées à l&apos;Assemblée Nationale en temps réel.
-          </p>
-        </div>
+        </>
+      )}
 
-        <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
-          {dbLaws.map((law, idx) => {
-            const hasVotes = (law.pour + law.contre + law.abstention) > 0;
-            
-            return (
-              <motion.div
-                key={law.id}
-                initial={{ opacity: 0, y: 20 }}
-                whileInView={{ opacity: 1, y: 0 }}
-                transition={{ delay: idx * 0.05 }}
-                onClick={() => setSelectedLaw(law)}
-                className="bg-white rounded-[2.5rem] border border-slate-200 overflow-hidden hover:shadow-2xl transition-all duration-500 flex flex-col md:flex-row cursor-pointer group"
-              >
-                <div className="p-8 flex-1 flex flex-col justify-between">
-                  <div>
-                    <div className="flex justify-between items-start mb-6">
-                      <span className="px-3 py-1 bg-slate-100 text-slate-600 text-[10px] font-black uppercase tracking-widest rounded-full group-hover:bg-blue-600 group-hover:text-white transition-colors">
-                        {law.category}
-                      </span>
-                      <div className="flex items-center gap-2 text-slate-400">
-                        <CalendarIcon size={14} />
-                        <span className="text-[10px] font-bold uppercase tracking-wider">
-                          {new Date(law.date_scrutin).toLocaleDateString('fr-FR', { day: 'numeric', month: 'short', year: 'numeric' })}
-                        </span>
-                      </div>
-                    </div>
-                    <h3 className="text-xl font-bold mb-4 italic leading-tight line-clamp-3 group-hover:text-blue-600 transition-colors">
-                      {law.objet}
-                    </h3>
-                    <div className="flex items-center gap-3 mt-4">
-                      <span className={`px-2 py-0.5 rounded-lg text-[9px] font-black uppercase tracking-widest border ${
-                        law.resultat?.includes('adopté') 
-                          ? 'bg-emerald-50 border-emerald-100 text-emerald-600' 
-                          : 'bg-red-50 border-red-100 text-red-600'
-                      }`}>
-                        {law.resultat}
-                      </span>
-                    </div>
-                  </div>
-                </div>
-
-                <div className="w-full md:w-56 bg-slate-50/50 p-8 flex flex-col items-center justify-center border-t md:border-t-0 md:border-l border-slate-100">
-                  {hasVotes ? (
-                    <VoteHemicycle 
-                      pour={law.pour || 0} 
-                      contre={law.contre || 0} 
-                      abstention={law.abstention || 0} 
-                    />
-                  ) : (
-                    <div className="text-center space-y-2">
-                       <div className="w-12 h-12 rounded-full border-2 border-slate-200 border-t-blue-500 animate-spin mx-auto" />
-                       <p className="text-[8px] font-black text-slate-400 uppercase tracking-widest">Calcul des votes...</p>
-                    </div>
-                  )}
-                </div>
-              </motion.div>
-            );
-          })}
-        </div>
-        
-        {dbLaws.length === 0 && !loadingLaws && (
-          <div className="text-center py-20 bg-slate-50 rounded-[3rem] border border-dashed border-slate-300">
-             <Vote className="w-12 h-12 text-slate-300 mx-auto mb-4" />
-             <p className="text-slate-400 font-bold uppercase tracking-widest text-sm">Aucun vote enregistré pour le moment</p>
-          </div>
-        )}
-      </div>
 
       {/* 3. DOSSIERS GRATUITS (POSTER STYLE REBORN) */}
       <div className="space-y-4 mb-32">
@@ -281,7 +232,92 @@ export default function LawsClient() {
           </div>
         </div>
       )}
-      {/* Message de bienvenue Premium */}
+        </>
+      )}
+
+      {activeTab === 'history' && (
+        <div className="space-y-12 mb-32">
+          <div className="relative mb-16 text-center md:text-left">
+            <div className="flex items-center gap-3 mb-4 justify-center md:justify-start">
+               <span className="px-3 py-1 bg-blue-100 text-blue-600 text-[10px] font-black uppercase tracking-widest rounded-full">XVIIe Législature</span>
+            </div>
+            <h2 className="text-5xl md:text-7xl font-staatliches uppercase tracking-tighter leading-none">
+              Historique des <span className="bg-gradient-to-r from-slate-900 to-slate-500 bg-clip-text text-transparent">votes</span>
+            </h2>
+            <div className="h-1.5 w-24 bg-slate-950 mt-4 rounded-full mx-auto md:mx-0" />
+            <p className="text-lg font-bold italic text-slate-500 mt-6 max-w-2xl font-staatliches">
+              Toutes les lois votées à l&apos;Assemblée Nationale en temps réel.
+            </p>
+          </div>
+
+          <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
+            {dbLaws.map((law, idx) => {
+              const hasVotes = (law.pour + law.contre + law.abstention) > 0;
+              
+              return (
+                <motion.div
+                  key={law.id}
+                  initial={{ opacity: 0, y: 20 }}
+                  whileInView={{ opacity: 1, y: 0 }}
+                  transition={{ delay: idx * 0.05 }}
+                  onClick={() => setSelectedLaw(law)}
+                  className="bg-white rounded-[2.5rem] border border-slate-200 overflow-hidden hover:shadow-2xl transition-all duration-500 flex flex-col md:flex-row cursor-pointer group"
+                >
+                  <div className="p-8 flex-1 flex flex-col justify-between">
+                    <div>
+                      <div className="flex justify-between items-start mb-6">
+                        <span className="px-3 py-1 bg-slate-100 text-slate-600 text-[10px] font-black uppercase tracking-widest rounded-full group-hover:bg-blue-600 group-hover:text-white transition-colors">
+                          {law.category}
+                        </span>
+                        <div className="flex items-center gap-2 text-slate-400">
+                          <CalendarIcon size={14} />
+                          <span className="text-[10px] font-bold uppercase tracking-wider">
+                            {new Date(law.date_scrutin).toLocaleDateString('fr-FR', { day: 'numeric', month: 'short', year: 'numeric' })}
+                          </span>
+                        </div>
+                      </div>
+                      <h3 className="text-xl font-bold mb-4 italic leading-tight line-clamp-3 group-hover:text-blue-600 transition-colors">
+                        {law.objet}
+                      </h3>
+                      <div className="flex items-center gap-3 mt-4">
+                        <span className={`px-2 py-0.5 rounded-lg text-[9px] font-black uppercase tracking-widest border ${
+                          law.resultat?.includes('adopté') 
+                            ? 'bg-emerald-50 border-emerald-100 text-emerald-600' 
+                            : 'bg-red-50 border-red-100 text-red-600'
+                        }`}>
+                          {law.resultat}
+                        </span>
+                      </div>
+                    </div>
+                  </div>
+
+                  <div className="w-full md:w-56 bg-slate-50/50 p-8 flex flex-col items-center justify-center border-t md:border-t-0 md:border-l border-slate-100">
+                    {hasVotes ? (
+                      <VoteHemicycle 
+                        pour={law.pour || 0} 
+                        contre={law.contre || 0} 
+                        abstention={law.abstention || 0} 
+                      />
+                    ) : (
+                      <div className="text-center space-y-2">
+                         <div className="w-12 h-12 rounded-full border-2 border-slate-200 border-t-blue-500 animate-spin mx-auto" />
+                         <p className="text-[8px] font-black text-slate-400 uppercase tracking-widest">Calcul des votes...</p>
+                      </div>
+                    )}
+                  </div>
+                </motion.div>
+              );
+            })}
+          </div>
+          
+          {dbLaws.length === 0 && !loadingLaws && (
+            <div className="text-center py-20 bg-slate-50 rounded-[3rem] border border-dashed border-slate-300">
+               <Vote className="w-12 h-12 text-slate-300 mx-auto mb-4" />
+               <p className="text-slate-400 font-bold uppercase tracking-widest text-sm">Aucun vote enregistré pour le moment</p>
+            </div>
+          )}
+        </div>
+      )}
       {isPremium && (
         <div className="mt-20 p-8 rounded-[3rem] bg-gradient-to-br from-amber-50 to-orange-50 border border-amber-200 flex flex-col md:flex-row items-center gap-8 shadow-xl">
           <div className="w-20 h-20 rounded-full bg-amber-400 flex items-center justify-center text-slate-900 shadow-lg shadow-amber-200/50 flex-shrink-0">

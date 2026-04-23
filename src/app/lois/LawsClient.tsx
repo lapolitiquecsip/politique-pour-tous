@@ -23,6 +23,7 @@ import DetailedLawDossier from "@/components/laws/DetailedLawDossier";
 import { FREE_LAWS } from "@/data/free-laws-dossiers";
 import { api } from "@/lib/api";
 import VoteHemicycle from "@/components/laws/VoteHemicycle";
+import LawDetailModal from "@/components/laws/LawDetailModal";
 
 const CATEGORIES = [
   { id: "edu", label: "Éducation", icon: GraduationCap, color: "border-indigo-400", bgColor: "bg-indigo-50/80", iconBg: "bg-indigo-100", iconColor: "text-indigo-600", isFree: true },
@@ -39,6 +40,7 @@ export default function LawsClient() {
   const { isPremium, loading: pLoading, userId } = usePremium();
   const [dbLaws, setDbLaws] = useState<any[]>([]);
   const [loadingLaws, setLoadingLaws] = useState(true);
+  const [selectedLaw, setSelectedLaw] = useState<any | null>(null);
 
   useEffect(() => {
     const loadLaws = async () => {
@@ -47,6 +49,14 @@ export default function LawsClient() {
       setLoadingLaws(false);
     };
     loadLaws();
+    
+    // Refresh every 30 seconds if some laws have 0 votes (syncing)
+    const interval = setInterval(async () => {
+      const data = await api.getVotedLaws(40);
+      setDbLaws(data);
+    }, 30000);
+    
+    return () => clearInterval(interval);
   }, []);
 
   const scrollToPremium = () => {
@@ -58,6 +68,11 @@ export default function LawsClient() {
 
   return (
     <div className="container mx-auto max-w-6xl px-4 pb-24">
+      <LawDetailModal 
+        law={selectedLaw} 
+        isOpen={!!selectedLaw} 
+        onClose={() => setSelectedLaw(null)} 
+      />
       {/* 1. FILTRES THÉMATIQUES (ULTRA COMPACT BENTO STYLE) */}
       <div className="mb-24">
         <div className="relative mb-10 text-center md:text-left">

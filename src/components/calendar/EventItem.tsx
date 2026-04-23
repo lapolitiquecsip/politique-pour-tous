@@ -3,7 +3,7 @@ export interface CalendarEvent {
   date: Date;
   title: string;
   description: string;
-  institution: "Assemblée nationale" | "Sénat" | "Élysée" | "Gouvernement" | "Assemblée";
+  institution: "Assemblée nationale" | "Sénat" | "Élysée" | "Gouvernement" | "Assemblée" | "Élection";
   category: string;
   source_url?: string;
 }
@@ -16,6 +16,8 @@ export default function EventItem({ event }: { event: CalendarEvent }) {
     ? "bg-accent-blue text-white"
     : isSenat
     ? "bg-accent-red text-white"
+    : event.institution === "Élection"
+    ? "bg-blue-800 text-white"
     : "bg-gray-600 text-white";
 
   const timeFormatted = event.date.toLocaleTimeString("fr-FR", {

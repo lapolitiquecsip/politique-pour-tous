@@ -1,20 +1,34 @@
 "use client";
 
 import { useState } from "react";
-import { Calendar, ChevronDown, LayoutGrid, CalendarDays } from "lucide-react";
+import { CalendarDays } from "lucide-react";
 import CalendarGrid from "@/components/calendar/CalendarGrid";
 import CalendarDayDetail from "@/components/calendar/CalendarDayDetail";
 import { CalendarEvent } from "@/components/calendar/EventItem";
 import { motion } from "framer-motion";
+import ElectionsBanner from "@/components/calendar/ElectionsBanner";
+import { upcomingElections } from "@/data/electionsData";
 
 export default function CalendarClient({ initialEvents }: { initialEvents: CalendarEvent[] }) {
   const [viewDate, setViewDate] = useState(new Date());
   const [selectedDate, setSelectedDate] = useState<Date | null>(new Date());
   const [activeFilter, setActiveFilter] = useState("Tous");
 
+  // Inject upcoming elections as calendar events
+  const electionEvents: CalendarEvent[] = upcomingElections.map(e => ({
+    id: e.id,
+    date: e.exactDate,
+    title: e.title,
+    description: e.description,
+    institution: "Élection",
+    category: "Scrutin"
+  }));
+
+  const allEvents = [...initialEvents, ...electionEvents];
+
   const filteredEvents = activeFilter === "Tous"
-    ? initialEvents
-    : initialEvents.filter((e) => e.institution === activeFilter);
+    ? allEvents
+    : allEvents.filter((e) => e.institution === activeFilter);
 
   const handlePrevMonth = () => {
     setViewDate(new Date(viewDate.getFullYear(), viewDate.getMonth() - 1, 1));
@@ -24,8 +38,7 @@ export default function CalendarClient({ initialEvents }: { initialEvents: Calen
     setViewDate(new Date(viewDate.getFullYear(), viewDate.getMonth() + 1, 1));
   };
 
-  const months = ["Janvier", "Février", "Mars", "Avril", "Mai", "Juin", "Juillet", "Août", "Septembre", "Octobre", "Novembre", "Décembre"];
-  const years = [2024, 2025, 2026, 2027];
+  // months and years removed as they were unused
 
   return (
     <div className="container mx-auto px-4 py-12 max-w-7xl">
@@ -53,6 +66,9 @@ export default function CalendarClient({ initialEvents }: { initialEvents: Calen
         </div>
       </div>
 
+      {/* 2. ELECTIONS BANNER */}
+      <ElectionsBanner />
+
       {/* Légende / Filtres Express */}
       <div className="flex flex-col lg:flex-row lg:items-center justify-between gap-6 mb-8">
         <div className="flex flex-wrap gap-6 p-5 bg-white/50 backdrop-blur-md rounded-3xl border border-slate-200">
@@ -71,7 +87,7 @@ export default function CalendarClient({ initialEvents }: { initialEvents: Calen
         </div>
 
         <div className="flex bg-slate-100 p-1 rounded-2xl border border-slate-200 self-start lg:self-auto">
-          {["Tous", "Assemblée", "Sénat", "Élysée"].map((f) => (
+          {["Tous", "Assemblée", "Sénat", "Élysée", "Élection"].map((f) => (
             <button
               key={f}
               onClick={() => setActiveFilter(f === "Assemblée" ? "Assemblée nationale" : f)}
@@ -81,7 +97,7 @@ export default function CalendarClient({ initialEvents }: { initialEvents: Calen
                   : "text-slate-400 hover:text-slate-600"
               }`}
             >
-              {f}
+              {f === "Élection" ? "Élections" : f}
             </button>
           ))}
         </div>

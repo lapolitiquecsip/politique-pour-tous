@@ -86,10 +86,12 @@ const InstitutionCard = memo(({ inst, index, onClick }: { inst: Institution, ind
           <Landmark className="text-blue-400 w-6 h-6" />
         </div>
         
-        <div className="flex items-center gap-2 mb-2">
+        <div className="flex items-center gap-3 mb-3">
           <p className="text-blue-400 font-bold uppercase tracking-[0.3em] text-[10px] opacity-80">Institution</p>
-          <div className="h-1 w-1 rounded-full bg-red-500 animate-pulse shadow-[0_0_8px_rgba(239,68,68,0.8)]" />
-          <p className="text-red-500 font-black text-[9px] uppercase tracking-widest">En Direct</p>
+          <div className="flex items-center gap-2 px-2.5 py-1 bg-red-500 rounded-full shadow-[0_0_15px_rgba(239,68,68,0.4)] animate-pulse">
+            <div className="h-1.5 w-1.5 rounded-full bg-white" />
+            <p className="text-white font-black text-[9px] uppercase tracking-widest">En Direct</p>
+          </div>
         </div>
         
         <h3 className="text-4xl font-staatliches uppercase tracking-tighter text-white mb-4 group-hover:text-blue-400 transition-colors">
@@ -100,8 +102,8 @@ const InstitutionCard = memo(({ inst, index, onClick }: { inst: Institution, ind
           {inst.summary}
         </p>
         
-        <div className="flex items-center gap-3 text-white font-bold text-xs self-start transition-all group-hover:translate-x-2">
-          DÉCOUVRIR L'INSTITUTION <ChevronRight className="w-4 h-4 text-blue-500" />
+        <div className="flex items-center gap-3 text-white font-bold text-[10px] uppercase tracking-widest self-start transition-all group-hover:translate-x-2">
+          Que se passe-t-il aujourd'hui ? <ChevronRight className="w-4 h-4 text-blue-500" />
         </div>
       </div>
       

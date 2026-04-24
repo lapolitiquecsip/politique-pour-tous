@@ -3,6 +3,8 @@ import { useState, useEffect, memo } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { X, ChevronRight, Landmark } from "lucide-react";
 
+import { api } from "@/lib/api";
+
 interface Institution {
   id: string;
   name: string;
@@ -11,6 +13,7 @@ interface Institution {
   summary: string;
   details: string[];
   color: string;
+  dbInstitution: string; // Mapping for Supabase events table
 }
 
 const INSTITUTIONS: Institution[] = [
@@ -18,6 +21,7 @@ const INSTITUTIONS: Institution[] = [
     id: "assemblee",
     name: "Assemblée nationale",
     shortName: "Assemblée",
+    dbInstitution: "AN",
     image: "https://savoirs.unistra.fr/fileadmin/upload/Savoirs/Societe/Assemblee_nationale.JPG",
     summary: "L'hémicycle examine les textes de loi et contrôle le gouvernement.",
     color: "from-blue-600",
@@ -25,35 +29,32 @@ const INSTITUTIONS: Institution[] = [
       "577 députés siègent au Palais Bourbon",
       "Examen des projets et propositions de loi",
       "Questions au gouvernement chaque mardi et mercredi",
-      "Commission des finances en séance aujourd'hui",
     ],
   },
   {
     id: "senat",
     name: "Sénat",
     shortName: "Sénat",
+    dbInstitution: "Sénat",
     image: "https://upload.wikimedia.org/wikipedia/commons/a/a2/S%C3%A9nat_fran%C3%A7ais_Luxembourg.jpg",
     summary: "Le Palais du Luxembourg représente les collectivités territoriales.",
     color: "from-indigo-600",
     details: [
       "348 sénateurs composent la chambre haute",
       "Navette parlementaire sur le projet de loi finances",
-      "Commission des affaires étrangères en audition",
-      "Débat sur la décentralisation prévu cette semaine",
     ],
   },
   {
     id: "gouvernement",
     name: "Gouvernement",
     shortName: "Élysée",
+    dbInstitution: "Élysée",
     image: "https://upload.wikimedia.org/wikipedia/commons/d/db/Palais_de_l%27%C3%89lys%C3%A9e_2019.jpg",
     summary: "L'exécutif dirige la politique de la nation depuis l'Élysée.",
     color: "from-red-600",
     details: [
       "Le Premier ministre coordonne l'action gouvernementale",
       "Conseil des ministres chaque mercredi à 10h",
-      "Arbitrages budgétaires en cours pour le PLF 2027",
-      "Déplacement présidentiel prévu en région cette semaine",
     ],
   },
 ];
@@ -81,13 +82,17 @@ const InstitutionCard = memo(({ inst, index, onClick }: { inst: Institution, ind
 
       {/* Contenu */}
       <div className="relative z-10 flex flex-col justify-end h-full p-10">
-        <div className="bg-amber-500/20 backdrop-blur-md w-12 h-12 rounded-xl flex items-center justify-center mb-6 border border-amber-400/30 group-hover:scale-110 transition-transform">
-          <Landmark className="text-amber-400 w-6 h-6" />
+        <div className="bg-blue-500/20 backdrop-blur-md w-12 h-12 rounded-xl flex items-center justify-center mb-6 border border-blue-400/30 group-hover:scale-110 transition-transform">
+          <Landmark className="text-blue-400 w-6 h-6" />
         </div>
         
-        <p className="text-amber-400 font-bold uppercase tracking-[0.3em] text-[10px] mb-2 opacity-80">Institution</p>
+        <div className="flex items-center gap-2 mb-2">
+          <p className="text-blue-400 font-bold uppercase tracking-[0.3em] text-[10px] opacity-80">Institution</p>
+          <div className="h-1 w-1 rounded-full bg-red-500 animate-pulse shadow-[0_0_8px_rgba(239,68,68,0.8)]" />
+          <p className="text-red-500 font-black text-[9px] uppercase tracking-widest">En Direct</p>
+        </div>
         
-        <h3 className="text-4xl font-staatliches uppercase tracking-tighter text-white mb-4 group-hover:text-amber-400 transition-colors">
+        <h3 className="text-4xl font-staatliches uppercase tracking-tighter text-white mb-4 group-hover:text-blue-400 transition-colors">
           {inst.name}
         </h3>
         
@@ -96,12 +101,12 @@ const InstitutionCard = memo(({ inst, index, onClick }: { inst: Institution, ind
         </p>
         
         <div className="flex items-center gap-3 text-white font-bold text-xs self-start transition-all group-hover:translate-x-2">
-          DÉCOUVRIR L'INSTITUTION <ChevronRight className="w-4 h-4 text-amber-500" />
+          DÉCOUVRIR L'INSTITUTION <ChevronRight className="w-4 h-4 text-blue-500" />
         </div>
       </div>
       
       {/* Bottom accent bar */}
-      <div className="absolute bottom-0 left-0 w-full h-1.5 bg-amber-500 transform scale-x-0 group-hover:scale-x-100 transition-transform origin-left duration-500" />
+      <div className="absolute bottom-0 left-0 w-full h-1.5 bg-blue-600 transform scale-x-0 group-hover:scale-x-100 transition-transform origin-left duration-500" />
     </motion.button>
   );
 });
@@ -110,14 +115,38 @@ InstitutionCard.displayName = "InstitutionCard";
 
 export default function InstitutionsGrid() {
   const [selectedInst, setSelectedInst] = useState<Institution | null>(null);
+  const [events, setEvents] = useState<any[]>([]);
+  const [loading, setLoading] = useState(false);
 
   useEffect(() => {
     if (selectedInst) {
       document.body.style.overflow = "hidden";
+      fetchTodayEvents(selectedInst);
     } else {
       document.body.style.overflow = "auto";
+      setEvents([]);
     }
   }, [selectedInst]);
+
+  const fetchTodayEvents = async (inst: Institution) => {
+    setLoading(true);
+    try {
+      const allEvents = await api.getCalendarEvents();
+      const today = new Date().toISOString().split('T')[0];
+      
+      // Filtrer les événements de l'institution pour aujourd'hui
+      const filtered = allEvents.filter(e => 
+        e.institution === inst.dbInstitution && 
+        e.date === today
+      );
+      
+      setEvents(filtered);
+    } catch (err) {
+      console.error("Erreur chargement événements institution:", err);
+    } finally {
+      setLoading(false);
+    }
+  };
 
   return (
     <div className="w-full">
@@ -186,9 +215,14 @@ export default function InstitutionsGrid() {
               {/* Partie Droite (Contenu Editorial) */}
               <div className="flex-1 p-8 md:p-12 flex flex-col justify-center bg-background">
                 <div className="mb-10">
-                  <span className="px-4 py-1.5 rounded-full text-[10px] font-black uppercase tracking-[0.2em] bg-amber-100 text-amber-700 border border-amber-200 mb-6 inline-block">
-                    Institution Officielle
-                  </span>
+                  <div className="flex items-center gap-2 mb-6">
+                    <span className="px-4 py-1.5 rounded-full text-[10px] font-black uppercase tracking-[0.2em] bg-blue-100 text-blue-700 border border-blue-200 inline-block">
+                      Institution Officielle
+                    </span>
+                    <div className="h-1.5 w-1.5 rounded-full bg-red-500 animate-pulse" />
+                    <span className="text-red-500 font-bold text-[10px] uppercase tracking-widest">En Direct</span>
+                  </div>
+                  
                   <p className="text-slate-600 text-lg md:text-2xl leading-relaxed font-serif italic text-pretty">
                     &ldquo;{selectedInst.summary}&rdquo;
                   </p>
@@ -197,27 +231,60 @@ export default function InstitutionsGrid() {
                 {/* Section "En Direct" - Style Dashboard Premium */}
                 <div className="space-y-6">
                   <div className="flex items-center gap-4 mb-4">
-                    <p className="text-slate-400 text-[10px] font-black uppercase tracking-[0.3em]">Missions & Actualités</p>
+                    <p className="text-slate-400 text-[10px] font-black uppercase tracking-[0.3em]">Aujourd'hui à l'institution</p>
                     <span className="h-px flex-1 bg-border" />
                   </div>
 
                   <div className="grid grid-cols-1 gap-4">
-                    {selectedInst.details.map((detail, i) => (
-                      <motion.div
-                        key={i}
-                        initial={{ opacity: 0, x: -20 }}
-                        animate={{ opacity: 1, x: 0 }}
-                        transition={{ delay: 0.1 + i * 0.05 }}
-                        className="flex items-center gap-5 p-4 rounded-2xl bg-card border border-border/50 hover:border-amber-200 hover:shadow-md transition-all group"
-                      >
-                        <div className="flex-shrink-0 w-10 h-10 rounded-xl bg-amber-50 flex items-center justify-center text-amber-600 group-hover:bg-amber-500 group-hover:text-white transition-colors">
-                           <ChevronRight size={18} />
-                        </div>
-                        <span className="text-slate-700 font-semibold text-sm leading-tight group-hover:text-slate-900 transition-colors">
-                          {detail}
-                        </span>
-                      </motion.div>
-                    ))}
+                    {loading ? (
+                      Array(3).fill(0).map((_, i) => (
+                        <div key={i} className="h-20 bg-slate-100 animate-pulse rounded-2xl border border-slate-200" />
+                      ))
+                    ) : events.length > 0 ? (
+                      events.map((event, i) => (
+                        <motion.div
+                          key={i}
+                          initial={{ opacity: 0, x: -20 }}
+                          animate={{ opacity: 1, x: 0 }}
+                          transition={{ delay: 0.1 + i * 0.05 }}
+                          className="flex items-center gap-5 p-4 rounded-2xl bg-card border border-border/50 hover:border-blue-200 hover:shadow-md transition-all group"
+                        >
+                          <div className="flex-shrink-0 w-12 h-12 rounded-xl bg-blue-50 flex flex-col items-center justify-center text-blue-600 group-hover:bg-blue-600 group-hover:text-white transition-colors">
+                             <span className="text-[10px] font-black leading-none mb-1">{event.time || 'JOUR'}</span>
+                             <Landmark size={14} />
+                          </div>
+                          <div className="flex-1">
+                            <span className="text-slate-900 font-bold text-sm leading-tight block mb-1">
+                              {event.title}
+                            </span>
+                            {event.description && (
+                              <span className="text-slate-500 text-[11px] line-clamp-1">
+                                {event.description}
+                              </span>
+                            )}
+                          </div>
+                          <ChevronRight size={18} className="text-slate-300" />
+                        </motion.div>
+                      ))
+                    ) : (
+                      // Fallback si aucun événement n'est trouvé aujourd'hui
+                      selectedInst.details.map((detail, i) => (
+                        <motion.div
+                          key={i}
+                          initial={{ opacity: 0, x: -20 }}
+                          animate={{ opacity: 1, x: 0 }}
+                          transition={{ delay: 0.1 + i * 0.05 }}
+                          className="flex items-center gap-5 p-4 rounded-2xl bg-card border border-border/50 hover:border-blue-200 hover:shadow-md transition-all group"
+                        >
+                          <div className="flex-shrink-0 w-10 h-10 rounded-xl bg-slate-50 flex items-center justify-center text-slate-400 group-hover:bg-blue-600 group-hover:text-white transition-colors">
+                             <ChevronRight size={18} />
+                          </div>
+                          <span className="text-slate-600 font-semibold text-sm leading-tight group-hover:text-slate-900 transition-colors">
+                            {detail}
+                          </span>
+                        </motion.div>
+                      ))
+                    )}
                   </div>
                 </div>
 
@@ -227,11 +294,11 @@ export default function InstitutionsGrid() {
                       {[1,2,3].map(i => (
                         <div key={i} className="w-8 h-8 rounded-full border-2 border-background bg-slate-200" />
                       ))}
-                      <div className="w-8 h-8 rounded-full border-2 border-background bg-amber-100 flex items-center justify-center text-[10px] font-bold text-amber-700">
+                      <div className="w-8 h-8 rounded-full border-2 border-background bg-blue-100 flex items-center justify-center text-[10px] font-bold text-blue-700">
                         +577
                       </div>
                    </div>
-                   <button className="text-xs font-black uppercase tracking-widest text-slate-400 hover:text-amber-600 transition-colors flex items-center gap-2">
+                   <button className="text-xs font-black uppercase tracking-widest text-slate-400 hover:text-blue-600 transition-colors flex items-center gap-2">
                       Explorer l'annuaire <ChevronRight size={14} />
                    </button>
                 </div>

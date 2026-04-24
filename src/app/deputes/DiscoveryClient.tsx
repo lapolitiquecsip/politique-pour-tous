@@ -1,13 +1,26 @@
 "use client";
 // Force redeploy for premium links sync
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
+import { useSearchParams, usePathname } from "next/navigation";
 import DeputyClient from "./DeputyClient";
 import SenatorClient from "@/components/senators/SenatorClient";
 import { Users, GraduationCap } from "lucide-react";
 
 export default function DiscoveryClient({ initialDeputies }: { initialDeputies: any[] }) {
-  const [activeMode, setActiveMode] = useState<"deputies" | "senators">("deputies");
+  const searchParams = useSearchParams();
+  const pathname = usePathname();
+  const modeParam = searchParams.get("mode");
+  
+  const [activeMode, setActiveMode] = useState<"deputies" | "senators">(
+    modeParam === "senators" || pathname.includes("senateurs") ? "senators" : "deputies"
+  );
+
+  // Synchronize state if param or path changes
+  useEffect(() => {
+    if (modeParam === "senators" || pathname.includes("senateurs")) setActiveMode("senators");
+    else if (modeParam === "deputies" || pathname.includes("deputes")) setActiveMode("deputies");
+  }, [modeParam, pathname]);
 
   return (
     <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">

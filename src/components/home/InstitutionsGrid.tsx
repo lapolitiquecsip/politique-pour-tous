@@ -146,9 +146,10 @@ export default function InstitutionsGrid() {
     setLoading(true);
     try {
       const allEvents = await api.getCalendarEvents();
-      const today = new Date().toISOString().split('T')[0];
+      // Use local date in YYYY-MM-DD format (en-CA is standardized for this)
+      const today = new Date().toLocaleDateString('en-CA');
       
-      // Filtrer les événements de l'institution pour aujourd'hui
+      console.log(`[InstitutionsGrid] Fetching for ${inst.dbInstitution} on ${today}. Total events available: ${allEvents.length}`);
       const filtered = allEvents.filter(e => 
         e.institution === inst.dbInstitution && 
         e.date === today

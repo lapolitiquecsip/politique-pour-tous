@@ -30,7 +30,8 @@ import {
 import { motion, AnimatePresence } from "framer-motion";
 import { api } from "@/lib/api";
 import { usePremium } from "@/lib/hooks/usePremium";
-import { getFullPartyName } from "@/lib/party-utils";
+import VoteDetailsModal from "@/components/deputies/VoteDetailsModal";
+import LegalStatusModal from "@/components/deputies/LegalStatusModal";
 
 // Mock data for senators (Senate votes are often different)
 const getMockSenateVotes = () => [
@@ -46,6 +47,7 @@ export default function SenatorDetailPage({ params }: { params: Promise<{ slug: 
   const [senator, setSenator] = useState<any>(null);
   const [loading, setLoading] = useState(true);
   const [isBioExpanded, setIsBioExpanded] = useState(true);
+  const [showLegalModal, setShowLegalModal] = useState(false);
 
   useEffect(() => {
     const loadSenatorData = async () => {
@@ -73,6 +75,12 @@ export default function SenatorDetailPage({ params }: { params: Promise<{ slug: 
       </div>
     );
   }
+
+  const isLegalClean = useMemo(() => {
+    const issues = senator?.legal_issues || "";
+    if (!issues) return true;
+    return issues.toLowerCase().includes("aucune") || issues.toLowerCase().includes("casier vierge");
+  }, [senator]);
 
   const name = `${senator.first_name} ${senator.last_name}`;
   const votes = getMockSenateVotes();
@@ -136,7 +144,7 @@ export default function SenatorDetailPage({ params }: { params: Promise<{ slug: 
                     <div className="min-w-0">
                       <p className="text-[10px] font-black text-slate-400 uppercase tracking-wider">Groupe Politique</p>
                       <p className="font-bold text-slate-900 dark:text-white truncate">
-                        {getFullPartyName(senator.party)}
+                        {senator.party}
                       </p>
                     </div>
                  </div>
@@ -154,6 +162,37 @@ export default function SenatorDetailPage({ params }: { params: Promise<{ slug: 
                 </div>
               </div>
             </div>
+
+            {/* Integrity Badge Section */}
+            <motion.div 
+              whileHover={{ y: -4 }}
+              className="bg-white dark:bg-slate-900 rounded-[2rem] p-6 border border-slate-200 dark:border-slate-800 shadow-xl relative overflow-hidden group transition-all duration-500"
+            >
+               <div className={`absolute top-0 left-0 w-2 h-full transition-colors duration-500 ${isLegalClean ? 'bg-emerald-500' : 'bg-amber-500'}`} />
+               <div className="flex items-center justify-between gap-4">
+                  <div className="min-w-0">
+                    <p className="text-[9px] font-black text-slate-400 uppercase tracking-[0.2em] mb-1">Intégrité & Transparence</p>
+                    <h4 className="text-lg font-bold text-slate-900 dark:text-white truncate">Historique Juridique</h4>
+                    <div className="flex items-center gap-2 mt-1">
+                      <div className={`w-1.5 h-1.5 rounded-full animate-pulse ${isLegalClean ? 'bg-emerald-500' : 'bg-amber-500'}`} />
+                      <span className={`text-[10px] font-black uppercase tracking-widest ${isLegalClean ? 'text-emerald-600' : 'text-amber-600'}`}>
+                        {isLegalClean ? 'Dossier Vierge' : 'Données à consulter'}
+                      </span>
+                    </div>
+                  </div>
+                  <button 
+                    onClick={() => setShowLegalModal(true)}
+                    className={`flex items-center gap-2 px-5 py-3 rounded-2xl text-[10px] font-black uppercase tracking-widest transition-all transform active:scale-95 shadow-lg border ${
+                      isLegalClean 
+                        ? 'bg-emerald-500/10 text-emerald-600 border-emerald-500/20 hover:bg-emerald-500 hover:text-white shadow-emerald-500/10' 
+                        : 'bg-amber-500/10 text-amber-600 border-amber-500/20 hover:bg-amber-500 hover:text-white shadow-amber-500/10'
+                    }`}
+                  >
+                    <ShieldCheck className="w-3.5 h-3.5" />
+                    Consulter
+                  </button>
+               </div>
+            </motion.div>
 
             <div className="bg-amber-600 rounded-[2rem] p-8 text-white shadow-xl shadow-amber-600/20">
                <h4 className="text-xl font-staatliches uppercase mb-4 tracking-tight">Contact Sénat</h4>
@@ -240,6 +279,12 @@ export default function SenatorDetailPage({ params }: { params: Promise<{ slug: 
 
         </div>
       </div>
+
+      <LegalStatusModal 
+        isOpen={showLegalModal} 
+        onClose={() => setShowLegalModal(false)} 
+        deputy={senator} 
+      />
     </div>
   );
 }

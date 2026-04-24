@@ -67,33 +67,41 @@ const InstitutionCard = memo(({ inst, index, onClick }: { inst: Institution, ind
       animate={{ opacity: 1, y: 0 }}
       transition={{ delay: index * 0.1 }}
       onClick={onClick}
-      // Accélération matérielle
       style={{ willChange: "transform, opacity", transform: "translateZ(0)" }}
-      className="group relative h-[400px] rounded-[2.5rem] overflow-hidden shadow-lg hover:shadow-2xl transition-all duration-500 cursor-pointer text-left w-full"
+      className="group relative h-[450px] rounded-[2rem] overflow-hidden shadow-sm hover:shadow-2xl transition-all duration-500 cursor-pointer text-left w-full border border-border/50"
     >
       {/* Image de fond avec zoom au survol */}
       <div 
-        className="absolute inset-0 bg-cover bg-center transition-transform duration-700 group-hover:scale-110"
-        style={{ backgroundImage: `url(${inst.image})`, willChange: "transform" }}
+        className="absolute inset-0 bg-cover bg-center transition-transform duration-1000 group-hover:scale-105"
+        style={{ backgroundImage: `url(${inst.image})`, opacity: 0.9 }}
       />
-      {/* Overlay dégradé */}
-      <div className={`absolute inset-0 bg-gradient-to-t ${inst.color}/80 via-slate-900/40 to-transparent group-hover:via-slate-900/20 transition-colors duration-500`} />
+      
+      {/* Overlay dégradé - PRÉSERVÉ & AMÉLIORÉ */}
+      <div className={`absolute inset-0 bg-gradient-to-t from-slate-950 via-slate-950/40 to-transparent group-hover:from-slate-900 group-hover:via-slate-900/20 transition-colors duration-500`} />
 
       {/* Contenu */}
-      <div className="relative z-10 flex flex-col justify-end h-full p-8">
-        <div className="bg-white/20 backdrop-blur-md w-12 h-12 rounded-2xl flex items-center justify-center mb-4 border border-white/30 group-hover:scale-110 transition-transform">
-          <Landmark className="text-white w-6 h-6" />
+      <div className="relative z-10 flex flex-col justify-end h-full p-10">
+        <div className="bg-amber-500/20 backdrop-blur-md w-12 h-12 rounded-xl flex items-center justify-center mb-6 border border-amber-400/30 group-hover:scale-110 transition-transform">
+          <Landmark className="text-amber-400 w-6 h-6" />
         </div>
-        <h3 className="text-3xl font-black text-white mb-3">
+        
+        <p className="text-amber-400 font-bold uppercase tracking-[0.3em] text-[10px] mb-2 opacity-80">Institution</p>
+        
+        <h3 className="text-4xl font-staatliches uppercase tracking-tighter text-white mb-4 group-hover:text-amber-400 transition-colors">
           {inst.name}
         </h3>
-        <p className="text-white/80 text-sm leading-relaxed mb-6 line-clamp-2">
+        
+        <p className="text-white/70 text-sm leading-relaxed mb-8 line-clamp-2 font-medium">
           {inst.summary}
         </p>
-        <div className="flex items-center gap-2 text-white font-bold text-sm bg-white/20 backdrop-blur-md self-start px-5 py-2 rounded-full border border-white/30 group-hover:bg-white group-hover:text-slate-900 transition-all">
-          Voir le détail <ChevronRight className="w-4 h-4" />
+        
+        <div className="flex items-center gap-3 text-white font-bold text-xs self-start transition-all group-hover:translate-x-2">
+          DÉCOUVRIR L'INSTITUTION <ChevronRight className="w-4 h-4 text-amber-500" />
         </div>
       </div>
+      
+      {/* Bottom accent bar */}
+      <div className="absolute bottom-0 left-0 w-full h-1.5 bg-amber-500 transform scale-x-0 group-hover:scale-x-100 transition-transform origin-left duration-500" />
     </motion.button>
   );
 });
@@ -103,7 +111,6 @@ InstitutionCard.displayName = "InstitutionCard";
 export default function InstitutionsGrid() {
   const [selectedInst, setSelectedInst] = useState<Institution | null>(null);
 
-  // Prevent scroll when modal is open
   useEffect(() => {
     if (selectedInst) {
       document.body.style.overflow = "hidden";
@@ -115,7 +122,7 @@ export default function InstitutionsGrid() {
   return (
     <div className="w-full">
       {/* ── GRILLE PRINCIPALE ── */}
-      <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+      <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
         {INSTITUTIONS.map((inst, index) => (
           <InstitutionCard 
             key={inst.id} 
@@ -126,19 +133,17 @@ export default function InstitutionsGrid() {
         ))}
       </div>
 
-      {/* ── MODALE DE DÉTAIL ── */}
+      {/* ── MODALE DE DÉTAIL (REDESIGN PREMIUM) ── */}
       <AnimatePresence mode="wait">
         {selectedInst && (
-          <div className="fixed inset-0 z-[100] flex items-start justify-center p-4 md:p-8 overflow-y-auto scrollbar-hide">
-            {/* Backdrop flouté */}
+          <div className="fixed inset-0 z-[100] flex items-center justify-center p-4 md:p-8 overflow-y-auto bg-slate-950/40 backdrop-blur-sm">
+            {/* Backdrop */}
             <motion.div
               initial={{ opacity: 0 }}
               animate={{ opacity: 1 }}
               exit={{ opacity: 0 }}
               onClick={() => setSelectedInst(null)}
-              // Accélération matérielle pour le flou
-              style={{ willChange: "opacity", transform: "translateZ(0)" }}
-              className="fixed inset-0 bg-slate-950/60 backdrop-blur-xl"
+              className="fixed inset-0"
             />
 
             {/* Contenu Modale */}
@@ -147,77 +152,88 @@ export default function InstitutionsGrid() {
               animate={{ opacity: 1, scale: 1, y: 0 }}
               exit={{ opacity: 0, scale: 0.95, y: 20 }}
               transition={{ type: "spring", damping: 30, stiffness: 400 }}
-              // Optimisation GPU
-              style={{ willChange: "transform, opacity", transform: "translateZ(0)" }}
-              className="relative w-full max-w-4xl bg-[#0F172A] rounded-[3rem] shadow-[0_20px_50px_rgba(0,0,0,0.5)] border border-white/10 flex flex-col overflow-visible my-8"
+              className="relative w-full max-w-5xl bg-background rounded-[2.5rem] shadow-2xl border border-border overflow-hidden flex flex-col md:flex-row min-h-[600px]"
             >
-              {/* Bouton Fermer Principal */}
+              {/* Bouton Fermer */}
               <button
                 onClick={() => setSelectedInst(null)}
-                className="absolute top-6 right-6 z-50 flex items-center gap-2 px-4 py-2 rounded-full bg-black/40 text-white hover:bg-red-500 transition-all backdrop-blur-md border border-white/20 group"
+                className="absolute top-6 right-6 z-50 p-2 rounded-full bg-white/20 text-white md:text-slate-900 md:bg-slate-100 hover:bg-amber-500 hover:text-white transition-all backdrop-blur-md border border-black/5 md:border-slate-200 group"
               >
-                <span className="text-xs font-bold uppercase tracking-widest hidden md:inline">Fermer</span>
-                <X className="w-5 h-5 group-hover:rotate-90 transition-transform" />
+                <X className="w-6 h-6 group-hover:rotate-90 transition-transform" />
               </button>
 
-              {/* Partie Haute (Bannière Immersive) */}
-              <div className="w-full h-64 md:h-[400px] shrink-0 relative">
+              {/* Partie Gauche (Image & Titre Immersif) */}
+              <div className="w-full md:w-2/5 relative min-h-[300px] md:min-h-full overflow-hidden">
                 <div 
-                  className="w-full h-full bg-cover bg-center shadow-inner"
-                  style={{ backgroundImage: `url(${selectedInst.image})`, willChange: "transform" }}
-                >
-                  <div className={`absolute inset-0 bg-gradient-to-t from-[#0F172A] via-[#0F172A]/20 to-transparent`} />
-                  <div className={`absolute inset-0 bg-gradient-to-r from-[#0F172A]/40 to-transparent`} />
-                </div>
-                
-                {/* Overlay Text on Image */}
-                <div className="absolute bottom-8 left-8 md:left-12">
-                   <div className={`w-12 h-12 rounded-2xl bg-white/10 flex items-center justify-center border border-white/20 backdrop-blur-md mb-4`}>
+                  className="absolute inset-0 bg-cover bg-center"
+                  style={{ backgroundImage: `url(${selectedInst.image})` }}
+                />
+                {/* Image Fade - PRÉSERVÉ */}
+                <div className="absolute inset-0 bg-gradient-to-t from-slate-950 via-slate-900/40 to-transparent md:bg-gradient-to-r md:from-transparent md:to-background/10" />
+                <div className="absolute inset-0 bg-slate-900/20" />
+
+                <div className="absolute bottom-8 left-8 right-8">
+                   <div className="bg-amber-500 w-12 h-12 rounded-xl flex items-center justify-center mb-4 shadow-xl">
                     <Landmark className="w-6 h-6 text-white" />
                   </div>
-                  <h3 className="text-4xl md:text-6xl font-black text-white leading-tight tracking-tighter">
+                  <h3 className="text-4xl md:text-5xl font-staatliches uppercase tracking-tighter text-white leading-none">
                     {selectedInst.name}
                   </h3>
+                  <div className="h-1 w-20 bg-amber-500 mt-4 rounded-full" />
                 </div>
               </div>
 
-              {/* Partie Basse */}
-              <div className="w-full p-8 md:p-12 md:pt-8 flex flex-col overflow-visible">
-                <div className="flex items-center gap-3 mb-8">
-                  <span className="px-4 py-1.5 rounded-full text-[10px] font-black uppercase tracking-[0.2em] bg-white/10 text-white border border-white/10">
+              {/* Partie Droite (Contenu Editorial) */}
+              <div className="flex-1 p-8 md:p-12 flex flex-col justify-center bg-background">
+                <div className="mb-10">
+                  <span className="px-4 py-1.5 rounded-full text-[10px] font-black uppercase tracking-[0.2em] bg-amber-100 text-amber-700 border border-amber-200 mb-6 inline-block">
                     Institution Officielle
                   </span>
-                </div>
-
-                <div className="mb-12">
-                  <p className="text-blue-200/80 text-lg md:text-xl leading-relaxed italic border-l-2 border-blue-500/50 pl-6">
+                  <p className="text-slate-600 text-lg md:text-2xl leading-relaxed font-serif italic text-pretty">
                     &ldquo;{selectedInst.summary}&rdquo;
                   </p>
                 </div>
 
-                {/* Section "En Direct" */}
+                {/* Section "En Direct" - Style Dashboard Premium */}
                 <div className="space-y-6">
-                  <div className="flex items-center gap-4 mb-6">
-                    <span className="h-px flex-1 bg-white/10" />
-                    <p className="text-white/40 text-[10px] font-black uppercase tracking-[0.2em]">✨ En direct du site :</p>
-                    <span className="h-px flex-1 bg-white/10" />
+                  <div className="flex items-center gap-4 mb-4">
+                    <p className="text-slate-400 text-[10px] font-black uppercase tracking-[0.3em]">Missions & Actualités</p>
+                    <span className="h-px flex-1 bg-border" />
                   </div>
 
-                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                  <div className="grid grid-cols-1 gap-4">
                     {selectedInst.details.map((detail, i) => (
                       <motion.div
                         key={i}
-                        initial={{ opacity: 0, y: 10 }}
-                        animate={{ opacity: 1, y: 0 }}
+                        initial={{ opacity: 0, x: -20 }}
+                        animate={{ opacity: 1, x: 0 }}
                         transition={{ delay: 0.1 + i * 0.05 }}
-                        style={{ willChange: "transform, opacity" }}
-                        className="flex items-start gap-4 bg-white/5 border border-white/10 rounded-3xl p-6 text-white/90 font-medium hover:bg-white/10 transition-all group"
+                        className="flex items-center gap-5 p-4 rounded-2xl bg-card border border-border/50 hover:border-amber-200 hover:shadow-md transition-all group"
                       >
-                        <div className={`mt-1.5 w-2 h-2 rounded-full bg-blue-500 shadow-[0_0_12px_rgba(59,130,246,0.8)] group-hover:scale-125 transition-transform`} />
-                        <span className="leading-relaxed">{detail}</span>
+                        <div className="flex-shrink-0 w-10 h-10 rounded-xl bg-amber-50 flex items-center justify-center text-amber-600 group-hover:bg-amber-500 group-hover:text-white transition-colors">
+                           <ChevronRight size={18} />
+                        </div>
+                        <span className="text-slate-700 font-semibold text-sm leading-tight group-hover:text-slate-900 transition-colors">
+                          {detail}
+                        </span>
                       </motion.div>
                     ))}
                   </div>
+                </div>
+
+                {/* Footer CTA */}
+                <div className="mt-10 pt-8 border-t border-border flex items-center justify-between">
+                   <div className="flex -space-x-2">
+                      {[1,2,3].map(i => (
+                        <div key={i} className="w-8 h-8 rounded-full border-2 border-background bg-slate-200" />
+                      ))}
+                      <div className="w-8 h-8 rounded-full border-2 border-background bg-amber-100 flex items-center justify-center text-[10px] font-bold text-amber-700">
+                        +577
+                      </div>
+                   </div>
+                   <button className="text-xs font-black uppercase tracking-widest text-slate-400 hover:text-amber-600 transition-colors flex items-center gap-2">
+                      Explorer l'annuaire <ChevronRight size={14} />
+                   </button>
                 </div>
               </div>
             </motion.div>

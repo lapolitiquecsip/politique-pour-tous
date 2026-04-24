@@ -30,7 +30,7 @@ import {
 import { motion, AnimatePresence } from "framer-motion";
 import { api } from "@/lib/api";
 import { usePremium } from "@/lib/hooks/usePremium";
-import VoteDetailsModal from "@/components/deputies/VoteDetailsModal";
+import { getFullPartyName } from "@/lib/party-utils";
 import LegalStatusModal from "@/components/deputies/LegalStatusModal";
 
 // Mock data for senators (Senate votes are often different)
@@ -144,7 +144,7 @@ export default function SenatorDetailPage({ params }: { params: Promise<{ slug: 
                     <div className="min-w-0">
                       <p className="text-[10px] font-black text-slate-400 uppercase tracking-wider">Groupe Politique</p>
                       <p className="font-bold text-slate-900 dark:text-white truncate">
-                        {senator.party}
+                        {getFullPartyName(senator.party)}
                       </p>
                     </div>
                  </div>

@@ -93,7 +93,7 @@ export default function LegalStatusModal({ isOpen, onClose, deputy }: LegalStatu
                    
                    {!isClean ? (
                     <div className="space-y-4 mt-6">
-                      {rawIssues.split('\n\n\n').filter(Boolean).map((issue, idx) => {
+                      {rawIssues.split('\n\n\n').filter(Boolean).map((issue: string, idx: number) => {
                         const lines = issue.split('\n').filter(Boolean);
                         const title = lines[0];
                         const details = lines.slice(1).join('\n');

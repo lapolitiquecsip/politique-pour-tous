@@ -42,13 +42,13 @@ export default function InstitutionGuidePage() {
             <div className="bg-blue-600 w-16 h-16 rounded-2xl flex items-center justify-center mb-6 shadow-2xl">
               <Landmark className="w-8 h-8 text-white" />
             </div>
-            <h1 className="text-5xl md:text-8xl font-staatliches uppercase tracking-tighter text-white leading-none">
+            <h1 className="text-5xl md:text-9xl font-staatliches uppercase tracking-tighter text-white leading-none">
               {guide.name}
             </h1>
-            <div className="pt-4">
-              <span className="inline-block py-2 px-6 rounded-full bg-blue-600/20 backdrop-blur-md border border-blue-400/30 text-blue-100 text-sm md:text-xl font-serif italic tracking-wide">
+            <div className="max-w-4xl border-l-4 border-blue-600 pl-8 mt-10">
+              <p className="text-2xl md:text-4xl text-white/90 font-serif italic leading-tight">
                 &ldquo; {guide.fullTitle} &rdquo;
-              </span>
+              </p>
             </div>
           </motion.div>
         </div>

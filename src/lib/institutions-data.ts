@@ -13,29 +13,33 @@ export const INSTITUTION_GUIDES: Record<string, InstitutionGuide> = {
   "assemblee": {
     slug: "assemblee",
     name: "Assemblée nationale",
-    fullTitle: "Le sanctuaire de la loi et le miroir de la Nation",
+    fullTitle: "L'institution garante du débat contradictoire et de la souveraineté populaire",
     heroImage: "https://savoirs.unistra.fr/fileadmin/upload/Savoirs/Societe/Assemblee_nationale.JPG",
-    role: "L'Assemblée nationale est l'institution centrale de la Ve République. Composée de 577 députés élus au suffrage universel direct, elle est la seule chambre du Parlement à pouvoir renverser le Gouvernement. Son rôle dépasse le simple vote de la loi : elle est le lieu où se règlent les conflits politiques par la parole et le débat démocratique.",
-    history: "Héritière de la Révolution française de 1789, l'Assemblée nationale siège au Palais Bourbon depuis 1798. Elle a traversé toutes les Républiques, s'affirmant comme le lieu où s'exprime la souveraineté nationale. Chaque brique du Palais Bourbon raconte une lutte pour la liberté, de la proclamation de la République aux grandes lois sociales qui ont façonné la France moderne.",
+    role: "L'Assemblée nationale est le poumon de la vie démocratique française. Composée de 577 députés, elle est actuellement dans sa 17ème législature. C'est ici que les lois sont forgées, débattues et votées. Elle dispose d'un pouvoir unique : celui d'engager la responsabilité du Gouvernement. Présidée par le Président de l'Assemblée (actuellement Yaël Braun-Pivet), elle assure l'équilibre des pouvoirs au sommet de l'État.",
+    history: "Siégeant au Palais Bourbon depuis la Révolution française, l'Assemblée a vu naître les textes les plus fondamentaux de notre Histoire, de l'abolition de la peine de mort à la création de la Sécurité Sociale. Elle est le témoin permanent des mutations de la société française, transformant les aspirations des citoyens en normes juridiques.",
     keyPowers: [
       {
         title: "Le vote de la loi",
-        description: "Elle détient le 'dernier mot' législatif. En cas de désaccord avec le Sénat, c'est la volonté des députés, élus directement par le peuple, qui l'emporte."
+        description: "Elle détient le pouvoir législatif suprême. Si l'Assemblée et le Sénat ne s'entendent pas, c'est l'Assemblée qui a le dernier mot, car ses membres sont élus directement par le peuple."
       },
       {
         title: "La Motion de Censure",
-        description: "Un pouvoir unique : les députés peuvent voter une motion de censure pour renverser le Gouvernement s'ils désapprouvent sa politique. C'est l'arme suprême du contrôle parlementaire."
+        description: "L'Assemblée peut voter une motion de censure pour renverser le Gouvernement. C'est le seul contre-pouvoir capable de mettre fin immédiatement aux fonctions du Premier ministre."
       },
       {
-        title: "Le Contrôle et l'Évaluation",
-        description: "Questions au gouvernement, commissions d'enquête, rapports d'information... Les députés scrutent chaque euro dépensé et chaque décision prise par l'exécutif."
+        title: "Les 8 Commissions Permanentes",
+        description: "Chaque projet de loi est d'abord scruté par l'une des 8 commissions (Finances, Lois, Affaires sociales, etc.) où les députés effectuent un travail technique de fond avant le débat public."
       },
       {
-        title: "La Représentation Nationale",
-        description: "Chaque député, bien qu'élu dans une circonscription, représente la Nation tout entière. Il est le relais entre les citoyens et la loi."
+        title: "La Dissolution",
+        description: "En contrepartie de son pouvoir de renverser le Gouvernement, l'Assemblée peut elle-même être dissoute par le Président de la République, provoquant de nouvelles élections législatives."
+      },
+      {
+        title: "Questions au Gouvernement",
+        description: "Chaque semaine, les ministres doivent répondre publiquement aux interrogations des députés, assurant une transparence totale de l'action publique."
       }
     ],
-    importance: "Sans l'Assemblée, il n'y a pas de contre-pouvoir efficace. Elle est le rempart contre l'arbitraire et le garant que chaque loi est passée au crible du débat contradictoire. Elle peut être dissoute par le Président, mais elle seule peut renvoyer son Premier ministre : c'est l'équilibre fragile et vital de notre démocratie."
+    importance: "L'Assemblée nationale est le seul lieu où toutes les sensibilités politiques de la France se rencontrent pour décider de l'avenir commun. C'est le miroir de la Nation : chaque député porte la voix de sa circonscription tout en agissant au nom de l'intérêt général. Elle est le coeur battant du contre-pouvoir législatif."
   },
   "senat": {
     slug: "senat",

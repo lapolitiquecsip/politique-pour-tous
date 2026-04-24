@@ -135,6 +135,11 @@ export default function InstitutionsGrid() {
       document.body.style.overflow = "auto";
       setEvents([]);
     }
+
+    // Cleanup function to restore scroll when navigating away
+    return () => {
+      document.body.style.overflow = "auto";
+    };
   }, [selectedInst]);
 
   const fetchTodayEvents = async (inst: Institution) => {

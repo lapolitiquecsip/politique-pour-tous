@@ -24,6 +24,8 @@ import { FREE_LAWS } from "@/data/free-laws-dossiers";
 import { api } from "@/lib/api";
 import VoteHemicycle from "@/components/laws/VoteHemicycle";
 import LawDetailModal from "@/components/laws/LawDetailModal";
+import LawsGrid from "@/components/laws/LawsGrid";
+import { FileText } from "lucide-react";
 
 const CATEGORIES = [
   { id: "edu", label: "Éducation", icon: GraduationCap, color: "border-indigo-400", bgColor: "bg-indigo-50/80", iconBg: "bg-indigo-100", iconColor: "text-indigo-600", isFree: true },
@@ -36,7 +38,7 @@ const CATEGORIES = [
 
 export default function LawsClient() {
   const router = useRouter();
-  const [activeTab, setActiveTab] = useState<'dossiers' | 'history'>('dossiers');
+  const [activeTab, setActiveTab] = useState<'dossiers' | 'history' | 'proposals'>('dossiers');
   const [selectedCat, setSelectedCat] = useState<string | null>(null);
   const { isPremium, loading: pLoading, userId } = usePremium();
   const [dbLaws, setDbLaws] = useState<any[]>([]);
@@ -107,8 +109,34 @@ export default function LawsClient() {
             <Vote size={18} />
             Historique des lois
           </button>
+          <button
+            onClick={() => setActiveTab('proposals')}
+            className={`px-8 py-3 rounded-full font-black uppercase tracking-widest text-xs transition-all duration-300 flex items-center gap-3 ${
+              activeTab === 'proposals' 
+                ? 'bg-slate-950 text-white shadow-2xl shadow-slate-950/20 scale-105' 
+                : 'bg-white text-slate-400 hover:text-slate-600 border border-slate-100 hover:border-slate-300'
+            }`}
+          >
+            <FileText size={18} />
+            Propositions & Projets
+          </button>
         </div>
       </div>
+      {activeTab === 'proposals' && (
+        <div className="mt-12 mb-32">
+          <div className="relative mb-16 text-center md:text-left">
+            <h2 className="text-5xl md:text-7xl font-staatliches uppercase tracking-tighter leading-none">
+              <span className="text-slate-900 opacity-10 absolute -top-8 left-0 select-none hidden md:block">EN COURS</span>
+              Propositions & <span className="bg-gradient-to-r from-blue-600 via-red-600 to-blue-600 bg-clip-text text-transparent">Projets de loi</span>
+            </h2>
+            <div className="h-1.5 w-24 bg-blue-600 mt-4 rounded-full mx-auto md:mx-0" />
+            <p className="text-lg font-bold italic text-slate-500 mt-6 max-w-2xl font-staatliches">
+              Consultez les textes déposés et en cours d&apos;examen au Parlement.
+            </p>
+          </div>
+          <LawsGrid />
+        </div>
+      )}
       {activeTab === 'dossiers' && (
         <>
           {/* 1. FILTRES THÉMATIQUES (ULTRA COMPACT BENTO STYLE) */}

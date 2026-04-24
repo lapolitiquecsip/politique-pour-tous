@@ -5,7 +5,6 @@ import { useState, useEffect } from "react";
 import { useSearchParams, usePathname } from "next/navigation";
 import DeputyClient from "./DeputyClient";
 import SenatorClient from "@/components/senators/SenatorClient";
-import LawsGrid from "@/components/laws/LawsGrid";
 import { Users, GraduationCap } from "lucide-react";
 
 export default function DiscoveryClient({ initialDeputies }: { initialDeputies: any[] }) {
@@ -13,15 +12,13 @@ export default function DiscoveryClient({ initialDeputies }: { initialDeputies: 
   const pathname = usePathname();
   const modeParam = searchParams.get("mode");
   
-  const [activeMode, setActiveMode] = useState<"deputies" | "senators" | "laws">(
-    modeParam === "laws" ? "laws" :
+  const [activeMode, setActiveMode] = useState<"deputies" | "senators">(
     modeParam === "senators" || pathname.includes("senateurs") ? "senators" : "deputies"
   );
 
   // Synchronize state if param or path changes
   useEffect(() => {
-    if (modeParam === "laws") setActiveMode("laws");
-    else if (modeParam === "senators" || pathname.includes("senateurs")) setActiveMode("senators");
+    if (modeParam === "senators" || pathname.includes("senateurs")) setActiveMode("senators");
     else if (modeParam === "deputies" || pathname.includes("deputes")) setActiveMode("deputies");
   }, [modeParam, pathname]);
 
@@ -49,36 +46,25 @@ export default function DiscoveryClient({ initialDeputies }: { initialDeputies: 
           <div className="inline-flex p-1.5 bg-slate-50/80 dark:bg-slate-900/80 backdrop-blur-md rounded-[2rem] border border-slate-200 dark:border-slate-800 shadow-xl shadow-slate-200/40 dark:shadow-none">
             <button
               onClick={() => setActiveMode("deputies")}
-              className={`flex items-center gap-3 px-8 py-4 rounded-[1.5rem] font-black tracking-tight transition-all duration-300 active:scale-95 ${
+              className={`flex items-center gap-3 px-10 py-4 rounded-[1.5rem] font-black tracking-tight transition-all duration-300 active:scale-95 ${
                 activeMode === "deputies"
                   ? "bg-white dark:bg-slate-800 text-blue-600 shadow-2xl shadow-blue-500/10 ring-1 ring-slate-200 dark:ring-slate-700"
                   : "text-slate-400 hover:text-slate-600 dark:hover:text-slate-300"
               }`}
             >
-              <div className={`w-2 h-2 rounded-full transition-colors ${activeMode === "deputies" ? "bg-blue-600 shadow-[0_0_8px_rgba(37,99,235,0.6)] animate-pulse" : "bg-slate-300"}`} />
+              <div className={`w-2.5 h-2.5 rounded-full transition-colors ${activeMode === "deputies" ? "bg-blue-600 shadow-[0_0_8px_rgba(37,99,235,0.6)] animate-pulse" : "bg-slate-300"}`} />
               DÉPUTÉS
             </button>
             <button
               onClick={() => setActiveMode("senators")}
-              className={`flex items-center gap-3 px-8 py-4 rounded-[1.5rem] font-black tracking-tight transition-all duration-300 active:scale-95 ${
+              className={`flex items-center gap-3 px-10 py-4 rounded-[1.5rem] font-black tracking-tight transition-all duration-300 active:scale-95 ${
                 activeMode === "senators"
                   ? "bg-white dark:bg-slate-800 text-amber-600 shadow-2xl shadow-amber-500/10 ring-1 ring-slate-200 dark:ring-slate-700"
                   : "text-slate-400 hover:text-slate-600 dark:hover:text-slate-300"
               }`}
             >
-              <div className={`w-2 h-2 rounded-full transition-colors ${activeMode === "senators" ? "bg-amber-600 shadow-[0_0_8px_rgba(217,119,6,0.6)] animate-pulse" : "bg-slate-300"}`} />
+              <div className={`w-2.5 h-2.5 rounded-full transition-colors ${activeMode === "senators" ? "bg-amber-600 shadow-[0_0_8px_rgba(217,119,6,0.6)] animate-pulse" : "bg-slate-300"}`} />
               SÉNATEURS
-            </button>
-            <button
-              onClick={() => setActiveMode("laws")}
-              className={`flex items-center gap-3 px-8 py-4 rounded-[1.5rem] font-black tracking-tight transition-all duration-300 active:scale-95 ${
-                activeMode === "laws"
-                  ? "bg-white dark:bg-slate-800 text-red-600 shadow-2xl shadow-red-500/10 ring-1 ring-slate-200 dark:ring-slate-700"
-                  : "text-slate-400 hover:text-slate-600 dark:hover:text-slate-300"
-              }`}
-            >
-              <div className={`w-2 h-2 rounded-full transition-colors ${activeMode === "laws" ? "bg-red-600 shadow-[0_0_8px_rgba(220,38,38,0.6)] animate-pulse" : "bg-slate-300"}`} />
-              LOIS
             </button>
           </div>
         </div>
@@ -88,10 +74,8 @@ export default function DiscoveryClient({ initialDeputies }: { initialDeputies: 
       <div className="transition-all duration-500">
         {activeMode === "deputies" ? (
           <DeputyClient initialDeputies={initialDeputies} />
-        ) : activeMode === "senators" ? (
-          <SenatorClient />
         ) : (
-          <LawsGrid />
+          <SenatorClient />
         )}
       </div>
     </div>

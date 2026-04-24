@@ -485,7 +485,7 @@ export default function PremiumPage() {
                             required
                             value={age}
                             onChange={(e) => setAge(e.target.value)}
-                            className="w-full pl-14 pr-10 py-5 rounded-2xl border border-slate-200 shadow-sm focus:outline-none focus:ring-4 focus:ring-amber-500/10 focus:border-amber-400 text-lg transition-all appearance-none bg-white font-medium"
+                            className="w-full pl-14 pr-10 py-5 rounded-2xl border border-border shadow-sm focus:outline-none focus:ring-4 focus:ring-amber-500/10 focus:border-amber-400 text-lg transition-all appearance-none bg-card text-foreground font-medium"
                           >
                             <option value="" disabled>Tranche d&apos;âge</option>
                             <option value="-18">Moins de 18 ans</option>
@@ -511,7 +511,7 @@ export default function PremiumPage() {
                             required
                             value={csp}
                             onChange={(e) => setCsp(e.target.value)}
-                            className="w-full pl-14 pr-10 py-5 rounded-2xl border border-slate-200 shadow-sm focus:outline-none focus:ring-4 focus:ring-amber-500/10 focus:border-amber-400 text-lg transition-all appearance-none bg-white font-medium"
+                            className="w-full pl-14 pr-10 py-5 rounded-2xl border border-border shadow-sm focus:outline-none focus:ring-4 focus:ring-amber-500/10 focus:border-amber-400 text-lg transition-all appearance-none bg-card text-foreground font-medium"
                           >
                             <option value="" disabled>Secteur d&apos;activité</option>
                             <option value="etudiant">Étudiant(e)</option>
@@ -552,7 +552,7 @@ export default function PremiumPage() {
                               required
                               value={region}
                               onChange={(e) => setRegion(e.target.value)}
-                              className="w-full pl-11 pr-10 py-4 rounded-xl border border-slate-200 focus:ring-2 focus:ring-amber-400/20 bg-white text-sm font-medium appearance-none"
+                              className="w-full pl-11 pr-10 py-4 rounded-xl border border-border focus:ring-2 focus:ring-amber-400/20 bg-card text-foreground text-sm font-medium appearance-none"
                             >
                               <option value="" disabled>Sélectionner...</option>
                               {REGIONS.map(r => <option key={r} value={r}>{r}</option>)}
@@ -576,7 +576,7 @@ export default function PremiumPage() {
                               maxLength={5}
                               value={zipCode}
                               onChange={(e) => setZipCode(e.target.value.replace(/[^0-9]/g, ""))}
-                              className="w-full pl-11 pr-4 py-4 rounded-xl border border-slate-200 focus:ring-2 focus:ring-amber-400/20 bg-white text-sm font-medium"
+                              className="w-full pl-11 pr-4 py-4 rounded-xl border border-border focus:ring-2 focus:ring-amber-400/20 bg-card text-foreground text-sm font-medium"
                             />
                           </div>
                         </div>
@@ -597,7 +597,7 @@ export default function PremiumPage() {
                           placeholder="votre.email@institution.fr"
                           value={email}
                           onChange={(e) => setEmail(e.target.value)}
-                          className="w-full pl-14 pr-4 py-5 rounded-2xl border border-slate-200 shadow-sm focus:outline-none focus:ring-4 focus:ring-amber-500/10 focus:border-amber-400 text-lg transition-all font-medium"
+                          className="w-full pl-14 pr-4 py-5 rounded-2xl border border-border shadow-sm focus:outline-none focus:ring-4 focus:ring-amber-500/10 focus:border-amber-400 text-lg transition-all text-foreground bg-card font-medium"
                         />
                       </div>
                       {error && <p className="text-red-500 text-xs font-bold mt-2 ml-1">{error}</p>}

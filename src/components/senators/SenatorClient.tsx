@@ -60,7 +60,7 @@ export default function SenatorClient() {
   return (
     <div className="space-y-8 relative">
       {/* Header & Search */}
-      <div className="bg-white rounded-3xl p-8 shadow-sm border border-slate-100 flex flex-col md:flex-row gap-6 items-end">
+      <div className="bg-card rounded-3xl p-8 shadow-sm border border-border flex flex-col md:flex-row gap-6 items-end">
         <div className="flex-1 w-full space-y-4">
           <label className="text-sm font-semibold text-slate-500 flex items-center gap-2">
             <Search className="w-4 h-4" /> RECHERCHER UN SÉNATEUR
@@ -70,7 +70,7 @@ export default function SenatorClient() {
             placeholder="Nom, département..."
             value={search}
             onChange={(e) => setSearch(e.target.value)}
-            className="w-full bg-slate-50 border-none rounded-2xl p-4 text-lg focus:ring-2 focus:ring-amber-500/20 transition-all outline-none"
+            className="w-full bg-muted text-foreground border-none rounded-2xl p-4 text-lg focus:ring-2 focus:ring-amber-500/20 transition-all outline-none placeholder:text-muted-foreground"
           />
         </div>
         

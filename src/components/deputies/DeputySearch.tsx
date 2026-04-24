@@ -13,7 +13,7 @@ export default function DeputySearch({ searchQuery, setSearchQuery }: DeputySear
       </div>
       <input
         type="text"
-        className="block w-full pl-10 pr-3 py-4 border border-border rounded-xl leading-5 bg-white placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-accent-blue focus:border-accent-blue sm:text-lg shadow-sm"
+        className="block w-full pl-10 pr-3 py-4 border border-border rounded-xl leading-5 bg-card text-foreground placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-primary focus:border-primary sm:text-lg shadow-sm transition-all"
         placeholder="Rechercher par nom, parti ou département..."
         value={searchQuery}
         onChange={(e) => setSearchQuery(e.target.value)}

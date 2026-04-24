@@ -255,31 +255,37 @@ export default function InstitutionsGrid() {
                         <div key={i} className="h-20 bg-slate-100 animate-pulse rounded-2xl border border-slate-200" />
                       ))
                     ) : events.length > 0 ? (
-                      events.map((event, i) => (
-                        <motion.div
-                          key={i}
-                          initial={{ opacity: 0, x: -20 }}
-                          animate={{ opacity: 1, x: 0 }}
-                          transition={{ delay: 0.1 + i * 0.05 }}
-                          className="flex items-center gap-5 p-4 rounded-2xl bg-card border border-border/50 hover:border-blue-200 hover:shadow-md transition-all group"
-                        >
-                          <div className="flex-shrink-0 w-12 h-12 rounded-xl bg-blue-50 flex flex-col items-center justify-center text-blue-600 group-hover:bg-blue-600 group-hover:text-white transition-colors">
-                             <span className="text-[10px] font-black leading-none mb-1">{event.time || 'JOUR'}</span>
-                             <Landmark size={14} />
-                          </div>
-                          <div className="flex-1">
-                            <span className="text-slate-900 font-bold text-sm leading-tight block mb-1">
-                              {event.title}
-                            </span>
-                            {event.description && (
-                              <span className="text-slate-500 text-[11px] line-clamp-1">
-                                {event.description}
+                      events.map((event, i) => {
+                        const timeMatch = event.title.match(/^\[(\d{2}:\d{2})\]/);
+                        const displayTime = timeMatch ? timeMatch[1] : (event.time || 'JOUR');
+                        const displayTitle = event.title.replace(/^\[\d{2}:\d{2}\]\s*/, '');
+
+                        return (
+                          <motion.div
+                            key={i}
+                            initial={{ opacity: 0, x: -20 }}
+                            animate={{ opacity: 1, x: 0 }}
+                            transition={{ delay: 0.1 + i * 0.05 }}
+                            className="flex items-center gap-5 p-4 rounded-2xl bg-card border border-border/50 hover:border-blue-200 hover:shadow-md transition-all group"
+                          >
+                            <div className="flex-shrink-0 w-12 h-12 rounded-xl bg-blue-50 flex flex-col items-center justify-center text-blue-600 group-hover:bg-blue-600 group-hover:text-white transition-colors">
+                               <span className="text-[10px] font-black leading-none mb-1">{displayTime}</span>
+                               <Landmark size={14} />
+                            </div>
+                            <div className="flex-1">
+                              <span className="text-slate-900 font-bold text-sm leading-tight block mb-1">
+                                {displayTitle}
                               </span>
-                            )}
-                          </div>
-                          <ChevronRight size={18} className="text-slate-300" />
-                        </motion.div>
-                      ))
+                              {event.description && (
+                                <span className="text-slate-500 text-[11px] line-clamp-1">
+                                  {event.description}
+                                </span>
+                              )}
+                            </div>
+                            <ChevronRight size={18} className="text-slate-300" />
+                          </motion.div>
+                        );
+                      })
                     ) : (
                       // Fallback si aucun événement n'est trouvé aujourd'hui
                       selectedInst.details.map((detail, i) => (

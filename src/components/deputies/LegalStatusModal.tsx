@@ -57,7 +57,7 @@ export default function LegalStatusModal({ isOpen, onClose, deputy }: LegalStatu
                 <div>
                   <p className="text-[10px] font-black text-slate-400 uppercase tracking-[0.3em] mb-1">Dossier Numérisé n°{deputy?.an_id || '---'}</p>
                   <h3 className="text-3xl font-staatliches uppercase tracking-tight text-slate-900 dark:text-white leading-none">
-                    Situation <span className={isClean ? 'text-emerald-600' : 'text-amber-600'}>Juridique</span>
+                    Historique <span className={isClean ? 'text-emerald-600' : 'text-amber-600'}>Juridique</span>
                   </h3>
                 </div>
               </div>
@@ -90,34 +90,36 @@ export default function LegalStatusModal({ isOpen, onClose, deputy }: LegalStatu
                        ? `Le dossier de ${deputy?.first_name} ${deputy?.last_name} ne présente aucune mention judiciaire.`
                        : `Des éléments juridiques ont été relevés concernant ${deputy?.first_name} ${deputy?.last_name}.`}
                    </h4>
-                   <div className="text-slate-600 dark:text-slate-400 text-sm leading-relaxed bg-white/50 dark:bg-slate-900/50 p-6 rounded-2xl border border-white/50 dark:border-white/5 shadow-inner font-medium italic">
-                     {rawIssues}
-                   </div>
+                   
+                   {!isClean ? (
+                    <div className="space-y-4 mt-6">
+                      {rawIssues.split('\n\n\n').filter(Boolean).map((issue, idx) => {
+                        const lines = issue.split('\n').filter(Boolean);
+                        const title = lines[0];
+                        const details = lines.slice(1).join('\n');
+                        
+                        return (
+                          <div key={idx} className="relative pl-8 border-l-2 border-amber-500/20 dark:border-amber-500/10 py-2 group">
+                            <div className="absolute left-[-9px] top-4 w-4 h-4 rounded-full bg-amber-500 shadow-lg shadow-amber-500/20 group-hover:scale-125 transition-transform" />
+                            <div className="bg-white/60 dark:bg-slate-900/40 backdrop-blur-sm p-5 rounded-2xl border border-white dark:border-white/5 shadow-sm group-hover:shadow-md transition-all">
+                              <h5 className="text-xs font-black text-slate-900 dark:text-white uppercase tracking-tight mb-2 leading-tight">
+                                {title}
+                              </h5>
+                              <div className="text-[10px] text-slate-500 dark:text-slate-400 font-bold uppercase tracking-wider leading-relaxed">
+                                {details}
+                              </div>
+                            </div>
+                          </div>
+                        );
+                      })}
+                    </div>
+                   ) : (
+                    <div className="text-slate-600 dark:text-slate-400 text-sm leading-relaxed bg-white/50 dark:bg-slate-900/50 p-6 rounded-2xl border border-white/50 dark:border-white/5 shadow-inner font-medium italic whitespace-pre-line">
+                      {rawIssues}
+                    </div>
+                   )}
                 </div>
               </div>
-
-              {/* TIMELINE / DETAILS SECTION */}
-              {!isClean && (
-                <div className="space-y-6">
-                   <div className="flex items-center gap-3">
-                     <div className="w-1.5 h-6 bg-slate-900 dark:bg-white rounded-full" />
-                     <h5 className="text-lg font-staatliches uppercase tracking-wider">Chronologie des faits</h5>
-                   </div>
-                   
-                   <div className="space-y-4">
-                      {/* Placeholder for real timeline data if we start having it */}
-                      <div className="relative pl-8 border-l-2 border-slate-100 dark:border-slate-800 py-2">
-                        <div className="absolute left-[-9px] top-4 w-4 h-4 rounded-full bg-amber-500 shadow-lg shadow-amber-500/20" />
-                        <div className="bg-slate-50 dark:bg-slate-800/50 p-4 rounded-2xl border border-slate-100 dark:border-slate-700">
-                          <p className="text-[10px] font-black text-slate-400 uppercase tracking-widest mb-1 flex items-center gap-2">
-                            <Clock size={12} /> Date du signalement
-                          </p>
-                          <p className="text-sm font-bold text-slate-900 dark:text-white">Élément relevé dans la presse ou rapports officiels</p>
-                        </div>
-                      </div>
-                   </div>
-                </div>
-              )}
 
               {/* SOURCES & VERIFICATION */}
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4">

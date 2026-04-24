@@ -3,6 +3,7 @@ import { useState, useEffect, memo } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { X, ChevronRight, Landmark } from "lucide-react";
 
+import Link from "next/link";
 import { api } from "@/lib/api";
 
 interface Institution {
@@ -14,6 +15,8 @@ interface Institution {
   details: string[];
   color: string;
   dbInstitution: string; // Mapping for Supabase events table
+  memberCount?: number;
+  directoryUrl?: string;
 }
 
 const INSTITUTIONS: Institution[] = [
@@ -22,6 +25,8 @@ const INSTITUTIONS: Institution[] = [
     name: "Assemblée nationale",
     shortName: "Assemblée",
     dbInstitution: "AN",
+    memberCount: 577,
+    directoryUrl: "/deputes",
     image: "https://savoirs.unistra.fr/fileadmin/upload/Savoirs/Societe/Assemblee_nationale.JPG",
     summary: "L'hémicycle examine les textes de loi et contrôle le gouvernement.",
     color: "from-blue-600",
@@ -36,6 +41,8 @@ const INSTITUTIONS: Institution[] = [
     name: "Sénat",
     shortName: "Sénat",
     dbInstitution: "Sénat",
+    memberCount: 348,
+    directoryUrl: "/senateurs",
     image: "https://upload.wikimedia.org/wikipedia/commons/a/a2/S%C3%A9nat_fran%C3%A7ais_Luxembourg.jpg",
     summary: "Le Palais du Luxembourg représente les collectivités territoriales.",
     color: "from-indigo-600",
@@ -290,20 +297,25 @@ export default function InstitutionsGrid() {
                   </div>
                 </div>
 
-                {/* Footer CTA */}
-                <div className="mt-10 pt-8 border-t border-border flex items-center justify-between">
-                   <div className="flex -space-x-2">
-                      {[1,2,3].map(i => (
-                        <div key={i} className="w-8 h-8 rounded-full border-2 border-background bg-slate-200" />
-                      ))}
-                      <div className="w-8 h-8 rounded-full border-2 border-background bg-blue-100 flex items-center justify-center text-[10px] font-bold text-blue-700">
-                        +577
-                      </div>
-                   </div>
-                   <button className="text-xs font-black uppercase tracking-widest text-slate-400 hover:text-blue-600 transition-colors flex items-center gap-2">
-                      Explorer l'annuaire <ChevronRight size={14} />
-                   </button>
-                </div>
+                {/* Footer CTA - Conditionally rendered */}
+                {selectedInst.directoryUrl && (
+                  <div className="mt-10 pt-8 border-t border-border flex items-center justify-between">
+                    <div className="flex -space-x-2">
+                        {[1,2,3].map(i => (
+                          <div key={i} className="w-8 h-8 rounded-full border-2 border-background bg-slate-200" />
+                        ))}
+                        <div className="w-8 h-8 rounded-full border-2 border-background bg-blue-100 flex items-center justify-center text-[10px] font-bold text-blue-700">
+                          +{selectedInst.memberCount}
+                        </div>
+                    </div>
+                    <Link 
+                      href={selectedInst.directoryUrl}
+                      className="text-xs font-black uppercase tracking-widest text-slate-400 hover:text-blue-600 transition-colors flex items-center gap-2"
+                    >
+                        Explorer l'annuaire <ChevronRight size={14} />
+                    </Link>
+                  </div>
+                )}
               </div>
             </motion.div>
           </div>

@@ -13,25 +13,29 @@ export const INSTITUTION_GUIDES: Record<string, InstitutionGuide> = {
   "assemblee": {
     slug: "assemblee",
     name: "Assemblée nationale",
-    fullTitle: "Le Coeur Battant de la Démocratie Française",
+    fullTitle: "Le sanctuaire de la loi et le miroir de la Nation",
     heroImage: "https://savoirs.unistra.fr/fileadmin/upload/Savoirs/Societe/Assemblee_nationale.JPG",
-    role: "L'Assemblée nationale est la chambre basse du Parlement. Son rôle principal est de débattre, d'amender et de voter les lois, ainsi que de contrôler l'action du Gouvernement. Elle a le dernier mot en cas de désaccord avec le Sénat sur un texte de loi.",
-    history: "Héritière de la Révolution française de 1789, l'Assemblée nationale siège au Palais Bourbon depuis 1798. Elle a traversé toutes les Républiques, s'affirmant comme le lieu où s'exprime la souveraineté nationale à travers les représentants élus au suffrage universel direct.",
+    role: "L'Assemblée nationale est l'institution centrale de la Ve République. Composée de 577 députés élus au suffrage universel direct, elle est la seule chambre du Parlement à pouvoir renverser le Gouvernement. Son rôle dépasse le simple vote de la loi : elle est le lieu où se règlent les conflits politiques par la parole et le débat démocratique.",
+    history: "Héritière de la Révolution française de 1789, l'Assemblée nationale siège au Palais Bourbon depuis 1798. Elle a traversé toutes les Républiques, s'affirmant comme le lieu où s'exprime la souveraineté nationale. Chaque brique du Palais Bourbon raconte une lutte pour la liberté, de la proclamation de la République aux grandes lois sociales qui ont façonné la France moderne.",
     keyPowers: [
       {
         title: "Le vote de la loi",
-        description: "Elle examine chaque année le budget de l'État et les projets de lois proposés par le Gouvernement ou les députés."
+        description: "Elle détient le 'dernier mot' législatif. En cas de désaccord avec le Sénat, c'est la volonté des députés, élus directement par le peuple, qui l'emporte."
       },
       {
-        title: "Le renversement du Gouvernement",
-        description: "C'est le pouvoir le plus puissant : par le vote d'une 'motion de censure', l'Assemblée peut obliger le Premier ministre et son équipe à démissionner."
+        title: "La Motion de Censure",
+        description: "Un pouvoir unique : les députés peuvent voter une motion de censure pour renverser le Gouvernement s'ils désapprouvent sa politique. C'est l'arme suprême du contrôle parlementaire."
       },
       {
-        title: "Les commissions d'enquête",
-        description: "Elle peut créer des commissions pour enquêter sur des faits déterminés ou sur la gestion de services publics."
+        title: "Le Contrôle et l'Évaluation",
+        description: "Questions au gouvernement, commissions d'enquête, rapports d'information... Les députés scrutent chaque euro dépensé et chaque décision prise par l'exécutif."
+      },
+      {
+        title: "La Représentation Nationale",
+        description: "Chaque député, bien qu'élu dans une circonscription, représente la Nation tout entière. Il est le relais entre les citoyens et la loi."
       }
     ],
-    importance: "L'Assemblée est le contre-pouvoir essentiel à l'exécutif. C'est ici que les grands débats de société prennent vie et que la voix des citoyens est portée directement au sommet de l'État par les 577 députés."
+    importance: "Sans l'Assemblée, il n'y a pas de contre-pouvoir efficace. Elle est le rempart contre l'arbitraire et le garant que chaque loi est passée au crible du débat contradictoire. Elle peut être dissoute par le Président, mais elle seule peut renvoyer son Premier ministre : c'est l'équilibre fragile et vital de notre démocratie."
   },
   "senat": {
     slug: "senat",

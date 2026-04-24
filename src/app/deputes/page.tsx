@@ -1,6 +1,8 @@
 import { api } from "@/lib/api";
 import DiscoveryClient from "./DiscoveryClient";
 
+import { Suspense } from "react";
+
 // React Server Component
 export default async function DeputesPage() {
   const deputies = await api.getDeputies();
@@ -17,5 +19,9 @@ export default async function DeputesPage() {
     slug: d.slug,
   }));
 
-  return <DiscoveryClient initialDeputies={mappedDeputies} />;
+  return (
+    <Suspense fallback={<div className="h-screen flex items-center justify-center">Chargement...</div>}>
+      <DiscoveryClient initialDeputies={mappedDeputies} />
+    </Suspense>
+  );
 }

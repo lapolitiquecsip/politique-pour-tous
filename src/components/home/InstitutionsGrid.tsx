@@ -288,12 +288,12 @@ export default function InstitutionsGrid() {
                         );
                       })
                     ) : (
-                      <>
+                      <div className="space-y-6">
                         {/* Message "Pas de séance" spécifique */}
                         <motion.div
                           initial={{ opacity: 0, y: 10 }}
                           animate={{ opacity: 1, y: 0 }}
-                          className="flex items-center gap-5 p-6 rounded-2xl bg-slate-50 border border-slate-200 mb-2"
+                          className="flex items-center gap-5 p-6 rounded-2xl bg-slate-50 border border-slate-200"
                         >
                           <div className="flex-shrink-0 w-12 h-12 rounded-xl bg-slate-200 flex items-center justify-center text-slate-500">
                              <Landmark size={20} />
@@ -304,24 +304,29 @@ export default function InstitutionsGrid() {
                           </div>
                         </motion.div>
 
-                        {/* Missions par défaut en complément */}
-                        {selectedInst.details.map((detail, i) => (
+                        {/* Gros bouton vers le guide de l'institution */}
+                        <Link href={`/institutions/${selectedInst.id}`}>
                           <motion.div
-                            key={i}
-                            initial={{ opacity: 0, x: -20 }}
-                            animate={{ opacity: 1, x: 0 }}
-                            transition={{ delay: 0.1 + i * 0.05 }}
-                            className="flex items-center gap-5 p-4 rounded-2xl bg-card border border-border/50 hover:border-blue-200 hover:shadow-md transition-all group"
+                            whileHover={{ scale: 1.02 }}
+                            whileTap={{ scale: 0.98 }}
+                            className="bg-blue-600 p-8 rounded-[2rem] text-white shadow-xl shadow-blue-500/20 group cursor-pointer relative overflow-hidden"
                           >
-                            <div className="flex-shrink-0 w-10 h-10 rounded-xl bg-slate-50 flex items-center justify-center text-slate-400 group-hover:bg-blue-600 group-hover:text-white transition-colors">
-                               <ChevronRight size={18} />
+                            <Landmark className="absolute -bottom-6 -right-6 w-32 h-32 text-white/10 rotate-12 group-hover:rotate-0 transition-transform duration-700" />
+                            <div className="relative z-10 space-y-4">
+                               <p className="text-blue-200 font-bold uppercase tracking-[0.3em] text-[10px]">Guide Pédagogique</p>
+                               <h4 className="text-2xl font-bold leading-tight">
+                                 Comprendre le rôle de <br /> {selectedInst.name}
+                               </h4>
+                               <p className="text-blue-100/80 text-sm leading-relaxed max-w-sm">
+                                 Pourquoi est-elle importante ? Quels sont ses contre-pouvoirs ? Découvrez son histoire et son impact sur votre quotidien.
+                               </p>
+                               <div className="flex items-center gap-2 text-sm font-black uppercase tracking-widest pt-2">
+                                 Découvrir l'institution <ChevronRight size={16} className="group-hover:translate-x-2 transition-transform" />
+                               </div>
                             </div>
-                            <span className="text-slate-600 font-semibold text-sm leading-tight group-hover:text-slate-900 transition-colors">
-                              {detail}
-                            </span>
                           </motion.div>
-                        ))}
-                      </>
+                        </Link>
+                      </div>
                     )}
                   </div>
                 </div>

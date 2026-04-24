@@ -288,23 +288,40 @@ export default function InstitutionsGrid() {
                         );
                       })
                     ) : (
-                      // Fallback si aucun événement n'est trouvé aujourd'hui
-                      selectedInst.details.map((detail, i) => (
+                      <>
+                        {/* Message "Pas de séance" spécifique */}
                         <motion.div
-                          key={i}
-                          initial={{ opacity: 0, x: -20 }}
-                          animate={{ opacity: 1, x: 0 }}
-                          transition={{ delay: 0.1 + i * 0.05 }}
-                          className="flex items-center gap-5 p-4 rounded-2xl bg-card border border-border/50 hover:border-blue-200 hover:shadow-md transition-all group"
+                          initial={{ opacity: 0, y: 10 }}
+                          animate={{ opacity: 1, y: 0 }}
+                          className="flex items-center gap-5 p-6 rounded-2xl bg-slate-50 border border-slate-200 mb-2"
                         >
-                          <div className="flex-shrink-0 w-10 h-10 rounded-xl bg-slate-50 flex items-center justify-center text-slate-400 group-hover:bg-blue-600 group-hover:text-white transition-colors">
-                             <ChevronRight size={18} />
+                          <div className="flex-shrink-0 w-12 h-12 rounded-xl bg-slate-200 flex items-center justify-center text-slate-500">
+                             <Landmark size={20} />
                           </div>
-                          <span className="text-slate-600 font-semibold text-sm leading-tight group-hover:text-slate-900 transition-colors">
-                            {detail}
-                          </span>
+                          <div className="flex-1">
+                            <p className="text-slate-900 font-bold text-sm">Aucune séance prévue aujourd'hui</p>
+                            <p className="text-slate-500 text-xs mt-0.5">Le calendrier de l'institution ne prévoit pas d'activité publique ce jour.</p>
+                          </div>
                         </motion.div>
-                      ))
+
+                        {/* Missions par défaut en complément */}
+                        {selectedInst.details.map((detail, i) => (
+                          <motion.div
+                            key={i}
+                            initial={{ opacity: 0, x: -20 }}
+                            animate={{ opacity: 1, x: 0 }}
+                            transition={{ delay: 0.1 + i * 0.05 }}
+                            className="flex items-center gap-5 p-4 rounded-2xl bg-card border border-border/50 hover:border-blue-200 hover:shadow-md transition-all group"
+                          >
+                            <div className="flex-shrink-0 w-10 h-10 rounded-xl bg-slate-50 flex items-center justify-center text-slate-400 group-hover:bg-blue-600 group-hover:text-white transition-colors">
+                               <ChevronRight size={18} />
+                            </div>
+                            <span className="text-slate-600 font-semibold text-sm leading-tight group-hover:text-slate-900 transition-colors">
+                              {detail}
+                            </span>
+                          </motion.div>
+                        ))}
+                      </>
                     )}
                   </div>
                 </div>

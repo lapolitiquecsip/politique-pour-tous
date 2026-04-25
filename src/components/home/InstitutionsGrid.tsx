@@ -1,7 +1,7 @@
 "use client";
 import { useState, useEffect, memo } from "react";
 import { motion, AnimatePresence } from "framer-motion";
-import { X, ChevronRight, ChevronLeft, Landmark } from "lucide-react";
+import { X, ChevronRight, ChevronLeft, Landmark, CalendarDays } from "lucide-react";
 
 import Link from "next/link";
 import { api } from "@/lib/api";

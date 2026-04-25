@@ -293,9 +293,20 @@ export default function InstitutionsGrid() {
 
                 {/* Section "En Direct" - Style Dashboard Premium */}
                 <div className="space-y-6">
-                  <div className="flex items-center gap-4 mb-4">
-                    <p className="text-slate-400 text-[10px] font-black uppercase tracking-[0.3em]">Aujourd'hui à l'institution</p>
-                    <span className="h-px flex-1 bg-border" />
+                  <div className="flex items-center justify-between mb-6">
+                    <div className="flex items-center gap-3">
+                      <div className="w-8 h-8 bg-blue-100 text-blue-600 rounded-lg flex items-center justify-center">
+                        <CalendarDays size={18} />
+                      </div>
+                      <p className="text-slate-900 text-sm font-black uppercase tracking-widest">En Direct aujourd'hui</p>
+                    </div>
+                    <Link 
+                      href="/calendrier" 
+                      className="px-4 py-2 bg-slate-900 text-white rounded-xl text-[10px] font-black uppercase tracking-widest hover:bg-blue-600 transition-all shadow-lg shadow-slate-900/10 flex items-center gap-2 group/cal"
+                    >
+                      Voir le calendrier
+                      <ChevronRight size={12} className="group-hover/cal:translate-x-1 transition-transform" />
+                    </Link>
                   </div>
 
                   <div className="grid grid-cols-1 gap-4">
@@ -352,28 +363,47 @@ export default function InstitutionsGrid() {
                           </div>
                         </motion.div>
 
-                        {/* Gros bouton vers le guide de l'institution */}
-                        <Link href={`/institutions/${selectedInst.id}`}>
-                          <motion.div
-                            whileHover={{ scale: 1.02 }}
-                            whileTap={{ scale: 0.98 }}
-                            className="bg-blue-600 p-8 rounded-[2rem] text-white shadow-xl shadow-blue-500/20 group cursor-pointer relative overflow-hidden"
-                          >
-                            <Landmark className="absolute -bottom-6 -right-6 w-32 h-32 text-white/10 rotate-12 group-hover:rotate-0 transition-transform duration-700" />
-                            <div className="relative z-10 space-y-4">
-                               <p className="text-blue-200 font-bold uppercase tracking-[0.3em] text-[10px]">Guide Pédagogique</p>
-                               <h4 className="text-2xl font-bold leading-tight">
-                                 Comprendre le rôle de <br /> {selectedInst.name}
-                               </h4>
-                               <p className="text-blue-100/80 text-sm leading-relaxed max-w-sm">
-                                 Pourquoi est-elle importante ? Quels sont ses contre-pouvoirs ? Découvrez son histoire et son impact sur votre quotidien.
-                               </p>
-                               <div className="flex items-center gap-2 text-sm font-black uppercase tracking-widest pt-2">
-                                 Découvrir l'institution <ChevronRight size={16} className="group-hover:translate-x-2 transition-transform" />
-                               </div>
-                            </div>
-                          </motion.div>
-                        </Link>
+                        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                          {/* Gros bouton vers le guide de l'institution */}
+                          <Link href={`/institutions/${selectedInst.id}`}>
+                            <motion.div
+                              whileHover={{ scale: 1.02 }}
+                              whileTap={{ scale: 0.98 }}
+                              className="bg-blue-600 p-8 rounded-[2rem] text-white shadow-xl shadow-blue-500/20 group cursor-pointer relative overflow-hidden h-full"
+                            >
+                              <Landmark className="absolute -bottom-6 -right-6 w-32 h-32 text-white/10 rotate-12 group-hover:rotate-0 transition-transform duration-700" />
+                              <div className="relative z-10 space-y-4">
+                                 <p className="text-blue-200 font-bold uppercase tracking-[0.3em] text-[10px]">Guide Pédagogique</p>
+                                 <h4 className="text-2xl font-bold leading-tight">
+                                   Comprendre {selectedInst.shortName}
+                                 </h4>
+                                 <div className="flex items-center gap-2 text-xs font-black uppercase tracking-widest pt-2">
+                                   Découvrir <ChevronRight size={16} className="group-hover:translate-x-2 transition-transform" />
+                                 </div>
+                              </div>
+                            </motion.div>
+                          </Link>
+
+                          {/* Bouton vers le calendrier (alternative quand vide) */}
+                          <Link href="/calendrier">
+                            <motion.div
+                              whileHover={{ scale: 1.02 }}
+                              whileTap={{ scale: 0.98 }}
+                              className="bg-slate-900 p-8 rounded-[2rem] text-white shadow-xl shadow-slate-900/20 group cursor-pointer relative overflow-hidden h-full"
+                            >
+                              <CalendarDays className="absolute -bottom-6 -right-6 w-32 h-32 text-white/10 rotate-12 group-hover:rotate-0 transition-transform duration-700" />
+                              <div className="relative z-10 space-y-4">
+                                 <p className="text-slate-400 font-bold uppercase tracking-[0.3em] text-[10px]">Agenda Complet</p>
+                                 <h4 className="text-2xl font-bold leading-tight">
+                                   Prochaines <br /> Séances
+                                 </h4>
+                                 <div className="flex items-center gap-2 text-xs font-black uppercase tracking-widest pt-2">
+                                   Calendrier <ChevronRight size={16} className="group-hover:translate-x-2 transition-transform" />
+                                 </div>
+                              </div>
+                            </motion.div>
+                          </Link>
+                        </div>
                       </div>
                     )}
                   </div>

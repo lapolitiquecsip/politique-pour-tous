@@ -1,4 +1,7 @@
+"use client";
+
 import { api } from "@/lib/api";
+import { motion } from "framer-motion";
 import Link from "next/link";
 import { 
   BookOpen, 
@@ -98,6 +101,44 @@ export default async function Home() {
               ))}
             </div>
           )}
+        </div>
+      </section>
+
+      {/* 4.5 CALENDAR CTA SECTION (NEW) */}
+      <section className="py-12 px-4 bg-slate-50/50">
+        <div className="container mx-auto max-w-6xl">
+          <Link href="/calendrier" className="block group">
+            <motion.div 
+              whileHover={{ scale: 1.01 }}
+              whileTap={{ scale: 0.99 }}
+              className="bg-white p-8 md:p-12 rounded-[3rem] border border-slate-200 shadow-xl shadow-slate-200/20 flex flex-col md:flex-row items-center justify-between gap-8 group-hover:border-amber-200 transition-all duration-500 overflow-hidden relative"
+            >
+              <div className="absolute -top-12 -left-12 w-48 h-48 bg-amber-500/5 rounded-full blur-3xl" />
+              <div className="absolute -bottom-12 -right-12 w-48 h-48 bg-blue-500/5 rounded-full blur-3xl" />
+
+              <div className="flex flex-col md:flex-row items-center gap-8 relative z-10">
+                <div className="w-20 h-20 bg-amber-500 rounded-3xl flex items-center justify-center text-white shadow-2xl shadow-amber-500/40 rotate-3 group-hover:rotate-0 transition-transform duration-500">
+                  <CalendarDays size={40} />
+                </div>
+                <div className="text-center md:text-left space-y-2">
+                  <h3 className="text-3xl md:text-4xl font-staatliches uppercase tracking-tighter leading-none">
+                    L'agenda <span className="text-amber-500">Complet</span> de la république
+                  </h3>
+                  <p className="text-slate-500 font-medium text-lg italic">
+                    Découvrez toutes les séances, auditions et événements politiques à venir.
+                  </p>
+                </div>
+              </div>
+
+              <div className="flex flex-col items-center gap-2 relative z-10">
+                <div className="px-10 py-6 bg-slate-950 text-white rounded-[2rem] font-black uppercase tracking-widest text-sm flex items-center gap-3 group-hover:bg-amber-600 transition-all shadow-2xl shadow-slate-900/20 group-hover:shadow-amber-500/40">
+                  Voir le calendrier
+                  <ArrowRight size={20} className="group-hover:translate-x-2 transition-transform" />
+                </div>
+                <span className="text-[10px] font-black uppercase tracking-widest text-slate-400">AN • SÉNAT • GOUVERNEMENT</span>
+              </div>
+            </motion.div>
+          </Link>
         </div>
       </section>
 

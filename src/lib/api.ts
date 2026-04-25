@@ -77,9 +77,15 @@ export const api = {
     return data || [];
   },
 
-  getContent: async (limit = 10) => {
+  getContent: async (limit = 10, institution?: string) => {
     try {
-      const { data, error } = await supabase.from('content').select('*').limit(limit).order('created_at', { ascending: false });
+      let query = supabase.from('content').select('*').limit(limit).order('created_at', { ascending: false });
+      
+      if (institution) {
+        query = query.eq('institution', institution);
+      }
+
+      const { data, error } = await query;
       if (error) { 
         console.warn('API Warning (Content):', error.message); 
         return []; 

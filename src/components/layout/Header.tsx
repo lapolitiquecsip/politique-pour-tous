@@ -14,7 +14,6 @@ import {
   CreditCard,
   Settings,
   BookOpen,
-  CalendarDays,
   MessageSquareQuote,
   Home,
   Users,
@@ -81,9 +80,9 @@ export default function Header() {
               <BookOpen size={16} className="text-emerald-500 group-hover:scale-110 transition-transform" />
               Vocabulaire
             </Link>
-            <Link href="/calendrier" className="text-sm font-semibold text-slate-600 hover:text-blue-600 transition-colors flex items-center gap-1.5 group">
-              <CalendarDays size={16} className="text-amber-500 group-hover:scale-110 transition-transform" />
-              Calendrier
+            <Link href="/executif" className="text-sm font-semibold text-slate-600 hover:text-blue-600 transition-colors flex items-center gap-1.5 group">
+              <ShieldCheck size={16} className="text-amber-500 group-hover:scale-110 transition-transform" />
+              Exécutif
             </Link>
             <Link href="/promesses" className="text-sm font-semibold text-slate-600 hover:text-blue-600 transition-colors flex items-center gap-1.5 group">
               <MessageSquareQuote size={16} className="text-purple-500 group-hover:scale-110 transition-transform" />
@@ -154,8 +153,8 @@ export default function Header() {
           <Link href="/vocabulaire" className="flex items-center gap-3 text-lg font-bold text-slate-900" onClick={() => setIsMenuOpen(false)}>
             <BookOpen className="text-emerald-500" /> Vocabulaire
           </Link>
-          <Link href="/calendrier" className="flex items-center gap-3 text-lg font-bold text-slate-900" onClick={() => setIsMenuOpen(false)}>
-            <CalendarDays className="text-amber-500" /> Calendrier
+          <Link href="/executif" className="flex items-center gap-3 text-lg font-bold text-slate-900" onClick={() => setIsMenuOpen(false)}>
+            <ShieldCheck className="text-amber-500" /> Exécutif
           </Link>
           <Link href="/promesses" className="flex items-center gap-3 text-lg font-bold text-slate-900" onClick={() => setIsMenuOpen(false)}>
             <MessageSquareQuote className="text-purple-500" /> Promesses

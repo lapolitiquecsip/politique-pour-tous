@@ -19,7 +19,8 @@ import {
   Users,
   Scale, 
   Star,
-  Landmark
+  Landmark,
+  MapPin
 } from "lucide-react";
 
 import { usePremium } from "@/lib/hooks/usePremium";
@@ -76,9 +77,9 @@ export default function Header() {
               <Scale size={16} className="text-red-500 group-hover:scale-110 transition-transform" />
               Lois
             </Link>
-            <Link href="/vocabulaire" className="text-sm font-semibold text-slate-600 hover:text-blue-600 transition-colors flex items-center gap-1.5 group">
-              <BookOpen size={16} className="text-emerald-500 group-hover:scale-110 transition-transform" />
-              Vocabulaire
+            <Link href="/local" className="text-sm font-semibold text-slate-600 hover:text-blue-600 transition-colors flex items-center gap-1.5 group">
+              <MapPin size={16} className="text-emerald-500 group-hover:scale-110 transition-transform" />
+              Local
             </Link>
             <Link href="/executif" className="text-sm font-semibold text-slate-600 hover:text-blue-600 transition-colors flex items-center gap-1.5 group">
               <ShieldCheck size={16} className="text-amber-500 group-hover:scale-110 transition-transform" />
@@ -150,8 +151,8 @@ export default function Header() {
           <Link href="/lois" className="flex items-center gap-3 text-lg font-bold text-slate-900" onClick={() => setIsMenuOpen(false)}>
             <Scale className="text-red-500" /> Les Lois
           </Link>
-          <Link href="/vocabulaire" className="flex items-center gap-3 text-lg font-bold text-slate-900" onClick={() => setIsMenuOpen(false)}>
-            <BookOpen className="text-emerald-500" /> Vocabulaire
+          <Link href="/local" className="flex items-center gap-3 text-lg font-bold text-slate-900" onClick={() => setIsMenuOpen(false)}>
+            <MapPin className="text-emerald-500" /> Politique Locale
           </Link>
           <Link href="/executif" className="flex items-center gap-3 text-lg font-bold text-slate-900" onClick={() => setIsMenuOpen(false)}>
             <ShieldCheck className="text-amber-500" /> Exécutif

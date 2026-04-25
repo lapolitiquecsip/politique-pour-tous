@@ -19,6 +19,7 @@ import Link from "next/link";
 import { useState, useEffect } from "react";
 import { api } from "@/lib/api";
 import FeedItemCard from "@/components/home/FeedItemCard";
+import GlossaryText from "@/components/ui/GlossaryText";
 
 // Mock Data for the demonstration
 const MINISTERS = [
@@ -128,7 +129,9 @@ export default function ExecutifPage() {
             </h1>
             
             <p className="text-xl md:text-2xl text-slate-500 font-medium italic leading-relaxed max-w-3xl mx-auto">
-              Comprendre l'action ministérielle, les budgets alloués et les décisions réglementaires qui façonnent la France au quotidien.
+              <GlossaryText>
+                Comprendre l'action ministérielle, les budgets alloués et les décisions réglementaires qui façonnent la France au quotidien.
+              </GlossaryText>
             </p>
 
             <div className="h-1.5 w-32 bg-gradient-to-r from-blue-600 to-red-600 mt-8 rounded-full" />

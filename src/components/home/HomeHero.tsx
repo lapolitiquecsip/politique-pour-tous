@@ -2,6 +2,7 @@
 
 import { motion } from "framer-motion";
 import { Landmark } from "lucide-react";
+import GlossaryText from "@/components/ui/GlossaryText";
 
 export default function HomeHero() {
   return (
@@ -39,7 +40,9 @@ export default function HomeHero() {
           </h1>
           
           <p className="text-xl md:text-2xl text-white/80 max-w-2xl mx-auto leading-relaxed font-bold italic tracking-tight drop-shadow-md">
-            Comprendre la politique française n'a jamais été aussi accessible.
+            <GlossaryText>
+              Comprendre la politique française n'a jamais été aussi accessible.
+            </GlossaryText>
           </p>
 
           <div className="mt-10 flex items-center gap-2 text-blue-400/60 font-black text-[10px] uppercase tracking-[0.3em] animate-pulse">

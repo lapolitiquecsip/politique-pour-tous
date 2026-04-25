@@ -19,7 +19,7 @@ export default function GlossaryTooltip({ term, definition, children }: Glossary
       onMouseEnter={() => setIsHovered(true)}
       onMouseLeave={() => setIsHovered(false)}
     >
-      <span className="cursor-help border-b-2 border-dotted border-blue-400 hover:border-blue-600 hover:bg-blue-50 transition-colors px-0.5 rounded-sm">
+      <span className="cursor-help border-b border-emerald-500/30 hover:border-emerald-500 hover:bg-emerald-50/50 transition-all px-0.5 rounded-sm decoration-skip-ink">
         {children}
       </span>
 

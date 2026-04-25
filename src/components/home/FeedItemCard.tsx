@@ -1,4 +1,5 @@
 import Link from "next/link";
+import GlossaryText from "@/components/ui/GlossaryText";
 
 interface ContentItem {
   id: string;
@@ -49,11 +50,11 @@ export default function FeedItemCard({ item }: { item: ContentItem }) {
       </div>
 
       <h3 className="text-xl font-heading font-bold text-foreground mb-3 leading-snug">
-        {item.titre_simplifie}
+        <GlossaryText>{item.titre_simplifie}</GlossaryText>
       </h3>
 
       <p className="text-foreground/80 flex-grow mb-4 leading-relaxed">
-        {item.resume_flash}
+        <GlossaryText>{item.resume_flash}</GlossaryText>
       </p>
 
       {item.source_url ? (

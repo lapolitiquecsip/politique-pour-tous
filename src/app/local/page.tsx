@@ -175,21 +175,23 @@ export default function LocalPoliticsPage() {
           {/* MAIN CONTENT - ITEMS GRID */}
           <div className="lg:col-span-8 space-y-12">
             
-            {/* SEARCH & FILTERS - SHOW FOR COMMUNE & DEPARTEMENT */}
-            {(activeTab === 'commune' || activeTab === 'departement') && (
-              <div className="flex flex-col md:flex-row gap-6 items-center justify-between">
-                <div className="relative w-full md:max-w-md">
-                  <Search className="absolute left-4 top-1/2 -translate-y-1/2 text-slate-400" size={18} />
-                  <input 
-                    type="text"
-                    placeholder={activeTab === 'commune' ? "Rechercher une ville, un maire..." : "Rechercher un département, un président..."}
-                    value={search}
-                    onChange={(e) => setSearch(e.target.value)}
-                    className="w-full pl-12 pr-4 py-4 rounded-2xl bg-white border border-slate-200 focus:ring-2 focus:ring-rose-500 outline-none transition-all shadow-sm font-medium"
-                  />
-                </div>
+            {/* SEARCH & FILTERS */}
+            <div className="flex flex-col md:flex-row gap-6 items-center justify-between">
+              <div className="relative w-full md:max-w-md">
+                <Search className="absolute left-4 top-1/2 -translate-y-1/2 text-slate-400" size={18} />
+                <input 
+                  type="text"
+                  placeholder={
+                    activeTab === 'commune' ? "Rechercher une ville, un maire..." : 
+                    activeTab === 'departement' ? "Rechercher un département, un président..." :
+                    "Rechercher une région, un président..."
+                  }
+                  value={search}
+                  onChange={(e) => setSearch(e.target.value)}
+                  className="w-full pl-12 pr-4 py-4 rounded-2xl bg-white border border-slate-200 focus:ring-2 focus:ring-rose-500 outline-none transition-all shadow-sm font-medium"
+                />
               </div>
-            )}
+            </div>
 
             <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
               {filteredItems.map((item: any, idx: number) => (

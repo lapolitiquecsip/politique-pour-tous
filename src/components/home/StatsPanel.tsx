@@ -8,29 +8,25 @@ const SLIDES = [
     id: 1,
     value: "142", 
     label: "amendements déposés cette semaine à l'Assemblée", 
-    color: "bg-blue-600",
-    icon: <Zap className="w-12 h-12 mb-4 text-blue-200 opacity-20" />
+    color: "bg-blue-600"
   },
   { 
     id: 2,
     value: "38", 
     label: "questions au gouvernement posées par vos députés", 
-    color: "bg-rose-600",
-    icon: <Landmark className="w-12 h-12 mb-4 text-rose-200 opacity-20" />
+    color: "bg-rose-600"
   },
   { 
     id: 3,
     value: "12", 
     label: "textes de loi adoptés définitivement ce mois-ci", 
-    color: "bg-slate-900",
-    icon: <CheckSquare className="w-12 h-12 mb-4 text-slate-400 opacity-20" />
+    color: "bg-slate-900"
   },
   { 
     id: 4,
     type: "Le saviez-vous ?",
     content: "La plus longue séance de l'Assemblée nationale a duré 25 heures lors du débat sur les retraites en 2023.", 
-    color: "bg-[#2d0a15]", // Dark Burgundy
-    icon: <Info className="w-12 h-12 mb-4 text-rose-500 opacity-40" />
+    color: "bg-[#2d0a15]" // Dark Burgundy
   },
   { 
     id: 5,
@@ -38,7 +34,6 @@ const SLIDES = [
     content: "\"La France est le pays qui taxe le plus en Europe\"",
     debunk: "Le Danemark et la Belgique ont un taux de prélèvement supérieur.", 
     color: "bg-slate-950", 
-    icon: <ShieldAlert className="w-14 h-14 mb-4 text-red-500 opacity-40" />,
     isLive: true
   }
 ];
@@ -141,9 +136,6 @@ export default function StatsPanel() {
             </>
           ) : (
             <>
-              <div className="relative z-10">
-                {slide.icon}
-              </div>
               <div className="relative z-10 flex items-center gap-2 mb-6">
                 <span className="px-3 py-1 rounded-full bg-white/10 border border-white/5 text-[9px] font-black uppercase tracking-[0.3em] backdrop-blur-md">
                   {slide.type}

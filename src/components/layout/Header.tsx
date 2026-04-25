@@ -71,7 +71,7 @@ export default function Header() {
             </div>
             <span className="font-staatliches text-2xl tracking-wider uppercase leading-none pt-1">
               <span className="text-slate-900">La politique</span>{" "}
-            <span className="italic bg-gradient-to-r from-blue-600 via-red-600 to-blue-600 bg-clip-text text-transparent">
+            <span className="italic bg-gradient-to-r from-blue-500 via-red-600 to-blue-500 bg-clip-text text-transparent">
                 c simple
               </span>
             </span>

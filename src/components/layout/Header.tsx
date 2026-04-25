@@ -72,13 +72,13 @@ export default function Header() {
             <span className="font-staatliches text-2xl tracking-wider uppercase leading-none pt-1">
               <span className="text-slate-900">La politique</span>{" "}
             <span className="italic">
-                <span className="text-blue-600 drop-shadow-[0_0_5px_rgba(37,99,235,0.4)]">c</span>{" "}
-                <span className="text-blue-600 drop-shadow-[0_0_5px_rgba(37,99,235,0.4)]">s</span>
-                <span className="text-blue-600 drop-shadow-[0_0_5px_rgba(37,99,235,0.4)]">i</span>
-                <span className="text-red-600 drop-shadow-[0_0_5px_rgba(220,38,38,0.6)]">m</span>
-                <span className="text-red-600 drop-shadow-[0_0_5px_rgba(220,38,38,0.6)]">p</span>
-                <span className="text-blue-600 drop-shadow-[0_0_5px_rgba(37,99,235,0.4)]">l</span>
-                <span className="text-blue-600 drop-shadow-[0_0_5px_rgba(37,99,235,0.4)]">e</span>
+                <span className="text-blue-600">c</span>{" "}
+                <span className="text-purple-600">s</span>
+                <span className="text-purple-600">i</span>
+                <span className="text-red-600">m</span>
+                <span className="text-purple-600">p</span>
+                <span className="text-purple-600">l</span>
+                <span className="text-blue-600">e</span>
               </span>
             </span>
           </Link>

@@ -49,6 +49,16 @@ export default function Header() {
     window.location.reload();
   };
 
+  const navLinks = [
+    { href: "/", label: "Accueil", icon: Home, color: "text-indigo-600", iconColor: "text-indigo-500" },
+    { href: "/deputes", label: "Votes des élus", icon: Users, color: "text-blue-600", iconColor: "text-blue-500" },
+    { href: "/lois", label: "Lois", icon: Scale, color: "text-red-600", iconColor: "text-red-500" },
+    { href: "/local", label: "Local", icon: MapPin, color: "text-rose-600", iconColor: "text-rose-500" },
+    { href: "/executif", label: "Exécutif", icon: ShieldCheck, color: "text-amber-600", iconColor: "text-amber-500" },
+    { href: "/promesses", label: "Promesses", icon: MessageSquareQuote, color: "text-purple-600", iconColor: "text-purple-500" },
+    { href: "/premium", label: "Premium", icon: Star, color: "text-yellow-600", iconColor: "text-yellow-500", isSpecial: true },
+  ];
+
   return (
     <header className="fixed top-0 left-0 w-full z-40 bg-white/80 backdrop-blur-md border-b border-slate-100">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
@@ -63,38 +73,26 @@ export default function Header() {
               <span className="text-slate-900">La politique</span> <span className="bg-gradient-to-r from-blue-600 via-purple-600 to-red-600 bg-clip-text text-transparent">c simple</span>
             </span>
           </Link>
+
           {/* Desktop Nav */}
-          <div className="hidden md:flex items-center gap-3">
-            <Link href="/" className="text-sm font-semibold text-slate-600 hover:text-blue-600 transition-colors flex items-center gap-1.5 group flex-shrink-0">
-              <Home size={16} className="text-indigo-500 group-hover:scale-110 transition-transform" />
-              Accueil
-            </Link>
-            <Link href="/deputes" className="text-sm font-semibold text-slate-600 hover:text-blue-600 transition-colors flex items-center gap-1.5 group whitespace-nowrap flex-shrink-0">
-              <Users size={16} className="text-blue-500 group-hover:scale-110 transition-transform" />
-              Votes des élus
-            </Link>
-            <Link href="/lois" className="text-sm font-semibold text-slate-600 hover:text-blue-600 transition-colors flex items-center gap-1.5 group">
-              <Scale size={16} className="text-red-500 group-hover:scale-110 transition-transform" />
-              Lois
-            </Link>
-            <Link href="/local" className="flex items-center gap-1 group">
-              <MapPin size={14} className="text-rose-500 group-hover:scale-110 transition-transform" />
-              <span className="font-staatliches text-xl uppercase tracking-wider text-rose-600 pt-0.5 group-hover:text-rose-700 transition-colors">Local</span>
-            </Link>
-            <Link href="/executif" className="text-sm font-semibold text-slate-600 hover:text-blue-600 transition-colors flex items-center gap-1.5 group">
-              <ShieldCheck size={16} className="text-amber-500 group-hover:scale-110 transition-transform" />
-              Exécutif
-            </Link>
-            <Link href="/promesses" className="text-sm font-semibold text-slate-600 hover:text-blue-600 transition-colors flex items-center gap-1.5 group">
-              <MessageSquareQuote size={16} className="text-purple-500 group-hover:scale-110 transition-transform" />
-              Promesses
-            </Link>
-            <Link href="/premium" className="text-sm font-semibold text-slate-600 hover:text-blue-600 transition-colors flex items-center gap-1.5 group underline decoration-yellow-400 decoration-2 underline-offset-4">
-              <Star size={16} className="text-yellow-500 group-hover:scale-110 transition-transform" />
-              Premium
-            </Link>
+          <div className="hidden md:flex items-center gap-4">
+            {navLinks.map((link) => {
+              const Icon = link.icon;
+              return (
+                <Link 
+                  key={link.href}
+                  href={link.href} 
+                  className={`flex items-center gap-1 group transition-all duration-300 ${link.isSpecial ? 'underline decoration-yellow-400 decoration-2 underline-offset-4' : ''}`}
+                >
+                  <Icon size={link.label === 'Local' ? 14 : 15} className={`${link.iconColor} group-hover:scale-110 transition-transform`} />
+                  <span className={`font-staatliches text-xl uppercase tracking-wider ${link.color} pt-0.5 group-hover:opacity-80 transition-all`}>
+                    {link.label}
+                  </span>
+                </Link>
+              );
+            })}
             
-            <div className="h-6 w-[1px] bg-slate-200 mx-2" />
+            <div className="h-6 w-[1px] bg-slate-200 mx-1" />
 
             {user ? (
               <div className="flex items-center gap-4">
@@ -142,31 +140,28 @@ export default function Header() {
           animate={{ opacity: 1, y: 0 }}
           className="md:hidden bg-white border-b border-slate-100 px-4 py-6 space-y-4 shadow-xl"
         >
-          <Link href="/" className="flex items-center gap-3 text-lg font-bold text-slate-900" onClick={() => setIsMenuOpen(false)}>
-            <Home className="text-indigo-500" /> Accueil
-          </Link>
-          <Link href="/deputes" className="flex items-center gap-3 text-lg font-bold text-slate-900 whitespace-nowrap" onClick={() => setIsMenuOpen(false)}>
-            <Users className="text-blue-500" /> Votes des élus
-          </Link>
-          <Link href="/lois" className="flex items-center gap-3 text-lg font-bold text-slate-900" onClick={() => setIsMenuOpen(false)}>
-            <Scale className="text-red-500" /> Les Lois
-          </Link>
-          <Link href="/local" className="flex items-center gap-3 text-lg font-bold text-slate-900 group" onClick={() => setIsMenuOpen(false)}>
-            <MapPin className="text-rose-500" /> 
-            <span className="font-staatliches text-2xl uppercase tracking-wider text-rose-600 pt-1">Politique Locale</span>
-          </Link>
-          <Link href="/executif" className="flex items-center gap-3 text-lg font-bold text-slate-900" onClick={() => setIsMenuOpen(false)}>
-            <ShieldCheck className="text-amber-500" /> Exécutif
-          </Link>
-          <Link href="/promesses" className="flex items-center gap-3 text-lg font-bold text-slate-900" onClick={() => setIsMenuOpen(false)}>
-            <MessageSquareQuote className="text-purple-500" /> Promesses
-          </Link>
-          <Link href="/premium" className="flex items-center gap-3 text-lg font-bold text-slate-900" onClick={() => setIsMenuOpen(false)}>
-            <Star className="text-yellow-500" /> Premium
-          </Link>
-          <Link href="/login" className="flex items-center gap-3 text-lg font-bold text-blue-600" onClick={() => setIsMenuOpen(false)}>
-            <LogIn size={20} /> Mon Compte
-          </Link>
+          {navLinks.map((link) => {
+            const Icon = link.icon;
+            return (
+              <Link 
+                key={link.href}
+                href={link.href} 
+                className="flex items-center gap-3 group" 
+                onClick={() => setIsMenuOpen(false)}
+              >
+                <Icon className={link.iconColor} size={20} /> 
+                <span className={`font-staatliches text-2xl uppercase tracking-wider ${link.color} pt-1`}>
+                  {link.label}
+                </span>
+              </Link>
+            );
+          })}
+          
+          <div className="pt-2">
+            <Link href="/login" className="flex items-center gap-3 text-lg font-bold text-blue-600" onClick={() => setIsMenuOpen(false)}>
+              <LogIn size={20} /> Mon Compte
+            </Link>
+          </div>
         </motion.div>
       )}
     </header>

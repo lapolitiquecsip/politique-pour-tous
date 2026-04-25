@@ -38,8 +38,19 @@ export default function LawsPage() {
           >
             <h1 className="text-6xl md:text-[7rem] font-staatliches uppercase tracking-tight leading-none mb-6 flex flex-wrap justify-center gap-x-6">
               <span className="text-white">Tout sur les</span>
-              <span className="italic underline decoration-red-600 underline-offset-8 bg-gradient-to-r from-blue-500 via-white to-red-500 bg-clip-text text-transparent pr-8">
+              <span className="relative italic bg-gradient-to-r from-blue-500 via-white to-red-500 bg-clip-text text-transparent pr-8">
                 Lois
+                {/* Hand-drawn red underline SVG */}
+                <svg
+                  viewBox="0 0 200 20"
+                  fill="none"
+                  stroke="#dc2626"
+                  strokeWidth="4"
+                  strokeLinecap="round"
+                  className="absolute -bottom-2 left-0 w-full h-4 opacity-80"
+                >
+                  <path d="M5,10 Q50,15 100,10 T195,10" />
+                </svg>
               </span>
             </h1>
             

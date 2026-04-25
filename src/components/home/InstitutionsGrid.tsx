@@ -229,7 +229,7 @@ export default function InstitutionsGrid() {
               <div className="absolute inset-y-0 left-4 md:left-8 flex items-center z-50 pointer-events-none">
                 <button
                   onClick={(e) => { e.stopPropagation(); handlePrev(); }}
-                  className="pointer-events-auto p-3 rounded-full bg-white/20 text-white hover:bg-amber-500 transition-all backdrop-blur-md border border-white/10 group shadow-xl"
+                  className="pointer-events-auto p-4 rounded-full bg-slate-900 text-white hover:bg-rose-500 transition-all shadow-2xl border border-white/10 group"
                   title="Précédent"
                 >
                   <ChevronLeft className="w-6 h-6 group-hover:-translate-x-1 transition-transform" />
@@ -239,7 +239,7 @@ export default function InstitutionsGrid() {
               <div className="absolute inset-y-0 right-4 md:right-8 flex items-center z-50 pointer-events-none">
                 <button
                   onClick={(e) => { e.stopPropagation(); handleNext(); }}
-                  className="pointer-events-auto p-3 rounded-full bg-white/20 text-white hover:bg-amber-500 transition-all backdrop-blur-md border border-white/10 group shadow-xl"
+                  className="pointer-events-auto p-4 rounded-full bg-slate-900 text-white hover:bg-rose-500 transition-all shadow-2xl border border-white/10 group"
                   title="Suivant"
                 >
                   <ChevronRight className="w-6 h-6 group-hover:translate-x-1 transition-transform" />

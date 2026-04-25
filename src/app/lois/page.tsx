@@ -38,26 +38,26 @@ export default function LawsPage() {
           >
             <h1 className="text-6xl md:text-[7rem] font-staatliches uppercase tracking-tight leading-none mb-6 flex flex-wrap justify-center gap-x-6">
               <div className="flex">
-                <span className="text-blue-500 drop-shadow-[0_0_10px_rgba(59,130,246,0.5)]">T</span>
-                <span className="text-indigo-500 drop-shadow-[0_0_10px_rgba(99,102,241,0.5)]">O</span>
-                <span className="text-red-500 drop-shadow-[0_0_10px_rgba(239,68,68,0.5)]">U</span>
-                <span className="text-rose-500 drop-shadow-[0_0_10px_rgba(244,63,94,0.5)]">T</span>
+                <span style={{ color: '#272757', filter: 'drop-shadow(0 0 10px rgba(39, 39, 87, 0.4))' }}>T</span>
+                <span style={{ color: '#8686AC', filter: 'drop-shadow(0 0 10px rgba(134, 134, 172, 0.4))' }}>O</span>
+                <span style={{ color: '#505081', filter: 'drop-shadow(0 0 10px rgba(80, 80, 129, 0.4))' }}>U</span>
+                <span style={{ color: '#0F0E47', filter: 'drop-shadow(0 0 10px rgba(15, 14, 71, 0.4))' }}>T</span>
               </div>
               <div className="flex">
-                <span className="text-amber-500 drop-shadow-[0_0_10px_rgba(245,158,11,0.5)]">S</span>
-                <span className="text-purple-500 drop-shadow-[0_0_10px_rgba(168,85,247,0.5)]">U</span>
-                <span className="text-blue-500 drop-shadow-[0_0_10px_rgba(59,130,246,0.5)]">R</span>
+                <span style={{ color: '#272757', filter: 'drop-shadow(0 0 10px rgba(39, 39, 87, 0.4))' }}>S</span>
+                <span style={{ color: '#8686AC', filter: 'drop-shadow(0 0 10px rgba(134, 134, 172, 0.4))' }}>U</span>
+                <span style={{ color: '#505081', filter: 'drop-shadow(0 0 10px rgba(80, 80, 129, 0.4))' }}>R</span>
               </div>
               <div className="flex">
-                <span className="text-indigo-500 drop-shadow-[0_0_10px_rgba(99,102,241,0.5)]">L</span>
-                <span className="text-red-500 drop-shadow-[0_0_10px_rgba(239,68,68,0.5)]">E</span>
-                <span className="text-rose-500 drop-shadow-[0_0_10px_rgba(244,63,94,0.5)]">S</span>
+                <span style={{ color: '#0F0E47', filter: 'drop-shadow(0 0 10px rgba(15, 14, 71, 0.4))' }}>L</span>
+                <span style={{ color: '#272757', filter: 'drop-shadow(0 0 10px rgba(39, 39, 87, 0.4))' }}>E</span>
+                <span style={{ color: '#8686AC', filter: 'drop-shadow(0 0 10px rgba(134, 134, 172, 0.4))' }}>S</span>
               </div>
               <div className="flex italic underline decoration-rose-500/30 underline-offset-8">
-                <span className="text-amber-500 drop-shadow-[0_0_10px_rgba(245,158,11,0.5)]">L</span>
-                <span className="text-purple-500 drop-shadow-[0_0_10px_rgba(168,85,247,0.5)]">O</span>
-                <span className="text-blue-500 drop-shadow-[0_0_10px_rgba(59,130,246,0.5)]">I</span>
-                <span className="text-indigo-500 drop-shadow-[0_0_10px_rgba(99,102,241,0.5)]">S</span>
+                <span style={{ color: '#505081', filter: 'drop-shadow(0 0 10px rgba(80, 80, 129, 0.4))' }}>L</span>
+                <span style={{ color: '#0F0E47', filter: 'drop-shadow(0 0 10px rgba(15, 14, 71, 0.4))' }}>O</span>
+                <span style={{ color: '#272757', filter: 'drop-shadow(0 0 10px rgba(39, 39, 87, 0.4))' }}>I</span>
+                <span style={{ color: '#8686AC', filter: 'drop-shadow(0 0 10px rgba(134, 134, 172, 0.4))' }}>S</span>
               </div>
             </h1>
             

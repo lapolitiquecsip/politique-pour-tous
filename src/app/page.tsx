@@ -3,6 +3,7 @@
 import { api } from "@/lib/api";
 import { motion } from "framer-motion";
 import Link from "next/link";
+import { useState, useEffect } from "react";
 import { 
   BookOpen, 
   CalendarDays, 
@@ -21,8 +22,23 @@ import FaqSection from "@/components/home/FaqSection";
 import NewsletterBanner from "@/components/home/NewsletterBanner";
 import PetitionsSection from "@/components/home/PetitionsSection";
 
-export default async function Home() {
-  const latestContent = await api.getContent(6);
+export default function Home() {
+  const [latestContent, setLatestContent] = useState<any[]>([]);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    async function load() {
+      try {
+        const data = await api.getContent(6);
+        setLatestContent(data || []);
+      } catch (err) {
+        console.error("Error loading home content:", err);
+      } finally {
+        setLoading(false);
+      }
+    }
+    load();
+  }, []);
 
   return (
     <div className="flex flex-col min-h-screen">
@@ -85,7 +101,13 @@ export default async function Home() {
             <div className="h-1.5 w-32 bg-gradient-to-r from-blue-600 to-red-600 mt-8 rounded-full mx-auto md:mx-0" />
           </div>
 
-          {!latestContent || latestContent.length === 0 ? (
+          {loading ? (
+            <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-6">
+              {Array(3).fill(0).map((_, i) => (
+                <div key={i} className="h-64 bg-slate-100 animate-pulse rounded-3xl" />
+              ))}
+            </div>
+          ) : !latestContent || latestContent.length === 0 ? (
             <div className="bg-card text-center p-12 rounded-3xl border shadow-sm flex flex-col items-center justify-center max-w-3xl mx-auto">
               <Landmark className="w-16 h-16 text-muted-foreground/30 mb-6" />
               <h3 className="text-2xl font-bold mb-3">Les actualités arrivent bientôt</h3>
@@ -156,4 +178,3 @@ export default async function Home() {
     </div>
   );
 }
-

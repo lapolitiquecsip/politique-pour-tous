@@ -300,13 +300,6 @@ export default function InstitutionsGrid() {
                       </div>
                       <p className="text-slate-900 text-sm font-black uppercase tracking-widest">En Direct aujourd'hui</p>
                     </div>
-                    <Link 
-                      href="/calendrier" 
-                      className="px-4 py-2 bg-slate-900 text-white rounded-xl text-[10px] font-black uppercase tracking-widest hover:bg-blue-600 transition-all shadow-lg shadow-slate-900/10 flex items-center gap-2 group/cal"
-                    >
-                      Voir le calendrier
-                      <ChevronRight size={12} className="group-hover/cal:translate-x-1 transition-transform" />
-                    </Link>
                   </div>
 
                   <div className="grid grid-cols-1 gap-4">

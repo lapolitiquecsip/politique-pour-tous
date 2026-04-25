@@ -94,7 +94,7 @@ const InstitutionCard = memo(({ inst, index, onClick }: { inst: Institution, ind
         </div>
         
         <div className="flex items-center gap-3 mb-3">
-          <p className="text-blue-400 font-bold uppercase tracking-[0.3em] text-[10px] opacity-80">Institution</p>
+
           <div className="flex items-center gap-2 px-2.5 py-1 bg-red-500 rounded-full shadow-[0_0_15px_rgba(239,68,68,0.4)] animate-pulse">
             <div className="h-1.5 w-1.5 rounded-full bg-white" />
             <p className="text-white font-black text-[9px] uppercase tracking-widest">En Direct</p>

@@ -89,13 +89,12 @@ export default function HomeHero() {
                     strokeLinejoin="round" 
                     className="w-10 h-10 md:w-14 md:h-14 drop-shadow-[0_0_15px_rgba(74,222,128,0.8)]"
                   >
-                    {/* Left Eye */}
-                    <path d="M2 10s3-5 8-5 8 5 8 5-3 5-8 5-8-5-8-5z" transform="translate(-1, 0) scale(0.7)" />
-                    <circle cx="9" cy="10" r="2" transform="translate(-1, 0) scale(0.7)" />
-                    
-                    {/* Right Eye */}
-                    <path d="M2 10s3-5 8-5 8 5 8 5-3 5-8 5-8-5-8-5z" transform="translate(8, 0) scale(0.7)" />
-                    <circle cx="15" cy="10" r="2" transform="translate(2, 0) scale(0.7)" />
+                    <line x1="3" y1="21" x2="21" y2="21" />
+                    <line x1="3" y1="7" x2="21" y2="7" />
+                    <path d="M9 21V10" />
+                    <path d="M15 21V10" />
+                    <path d="M12 21V10" />
+                    <path d="M3 7l9-4 9 4" />
                   </svg>
                 </motion.div>
 

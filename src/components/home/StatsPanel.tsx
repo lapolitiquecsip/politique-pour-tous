@@ -7,41 +7,43 @@ const SLIDES = [
   { 
     id: 1,
     value: "142", 
-    label: "amendements déposés cette semaine à l'Assemblée nationale", 
-    color: "bg-red-600",
-    icon: null
+    label: "amendements déposés cette semaine à l'Assemblée", 
+    color: "bg-blue-600",
+    icon: <Zap className="w-12 h-12 mb-4 text-blue-200 opacity-20" />
   },
   { 
     id: 2,
     value: "38", 
     label: "questions au gouvernement posées par vos députés", 
-    color: "bg-blue-600",
-    icon: null
+    color: "bg-rose-600",
+    icon: <Landmark className="w-12 h-12 mb-4 text-rose-200 opacity-20" />
   },
   { 
     id: 3,
     value: "12", 
     label: "textes de loi adoptés définitivement ce mois-ci", 
-    color: "bg-indigo-600",
-    icon: null
+    color: "bg-slate-900",
+    icon: <CheckSquare className="w-12 h-12 mb-4 text-slate-400 opacity-20" />
   },
   { 
     id: 4,
     type: "Le saviez-vous ?",
     content: "La plus longue séance de l'Assemblée nationale a duré 25 heures lors du débat sur les retraites en 2023.", 
-    color: "bg-gradient-to-br from-emerald-600 to-teal-800",
-    icon: <Info className="w-12 h-12 mb-4 opacity-30" />
+    color: "bg-[#2d0a15]", // Dark Burgundy
+    icon: <Info className="w-12 h-12 mb-4 text-rose-500 opacity-40" />
   },
   { 
     id: 5,
     type: "Intox de la semaine",
     content: "\"La France est le pays qui taxe le plus en Europe\"",
     debunk: "Le Danemark et la Belgique ont un taux de prélèvement supérieur.", 
-    color: "bg-gradient-to-br from-orange-600 to-red-800", 
-    icon: <ShieldAlert className="w-14 h-14 mb-4 text-white opacity-40" />,
+    color: "bg-slate-950", 
+    icon: <ShieldAlert className="w-14 h-14 mb-4 text-red-500 opacity-40" />,
     isLive: true
   }
 ];
+
+import { CheckSquare, Landmark } from "lucide-react";
 
 export default function StatsPanel() {
   const [index, setIndex] = useState(0);
@@ -118,7 +120,7 @@ export default function StatsPanel() {
         >
           {!slide.value && (
             <div className="absolute inset-0 flex items-center justify-center overflow-hidden pointer-events-none select-none">
-              <span className="text-[15rem] md:text-[25rem] font-black text-white/5 uppercase tracking-tighter leading-none transform -rotate-12 translate-y-12">
+              <span className="text-[15rem] md:text-[25rem] font-staatliches text-white/5 uppercase tracking-tighter leading-none transform -rotate-12 translate-y-12">
                 {slide.type?.split(' ')[0]}
               </span>
             </div>
@@ -129,11 +131,11 @@ export default function StatsPanel() {
               <motion.span 
                 initial={{ scale: 0.8 }}
                 animate={{ scale: 1 }}
-                className="relative z-10 text-7xl md:text-9xl font-black mb-4 tracking-tighter"
+                className="relative z-10 text-8xl md:text-[10rem] font-staatliches mb-4 tracking-tighter leading-none drop-shadow-[0_0_30px_rgba(255,255,255,0.2)]"
               >
                 {slide.value}
               </motion.span>
-              <p className="relative z-10 text-lg md:text-2xl font-bold max-w-2xl leading-tight opacity-90 uppercase tracking-wide">
+              <p className="relative z-10 text-lg md:text-2xl font-bold max-w-2xl leading-tight opacity-90 uppercase tracking-[0.15em]">
                 {slide.label}
               </p>
             </>
@@ -145,26 +147,26 @@ export default function StatsPanel() {
               <div className="relative z-10 flex items-center gap-2 mb-8 uppercase tracking-[0.3em] text-[10px] font-black">
                 {slide.isLive && (
                   <span className="relative flex h-3 w-3">
-                    <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-white opacity-75"></span>
-                    <span className="relative inline-flex rounded-full h-3 w-3 bg-white"></span>
+                    <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-red-500 opacity-75"></span>
+                    <span className="relative inline-flex rounded-full h-3 w-3 bg-red-600"></span>
                   </span>
                 )}
-                <span className="px-4 py-1 rounded-full bg-white/20 border border-white/20 backdrop-blur-sm">
+                <span className="px-5 py-2 rounded-xl bg-white/10 border border-white/10 backdrop-blur-md shadow-xl">
                   {slide.type}
                 </span>
               </div>
               
-              <h2 className="relative z-10 text-2xl md:text-5xl font-black max-w-5xl leading-[1.1] mb-8 uppercase tracking-tight">
+              <h2 className="relative z-10 text-2xl md:text-6xl font-staatliches max-w-5xl leading-none mb-10 uppercase tracking-tight text-balance italic">
                 {slide.content}
               </h2>
 
               {slide.debunk && (
-                <div className="relative z-10 bg-black/30 backdrop-blur-xl rounded-[2rem] p-6 md:p-8 border border-white/10 shadow-2xl max-w-3xl transform hover:scale-105 transition-transform duration-500">
-                  <p className="text-xl md:text-3xl font-black leading-tight flex flex-col md:flex-row items-center gap-4">
-                    <span className="bg-white text-black px-4 py-1 rounded-full text-sm uppercase tracking-widest shrink-0">
+                <div className="relative z-10 bg-slate-900/60 backdrop-blur-2xl rounded-[2.5rem] p-8 md:p-10 border border-white/10 shadow-2xl max-w-4xl transform hover:scale-[1.02] transition-transform duration-500">
+                  <p className="text-xl md:text-4xl font-staatliches leading-tight flex flex-col md:flex-row items-center gap-6">
+                    <span className="bg-blue-600 text-white px-6 py-2 rounded-xl text-xs uppercase tracking-[0.3em] shrink-0 font-black">
                       RÉALITÉ
                     </span>
-                    <span className="text-white/90">
+                    <span className="text-white/95 text-balance">
                       {slide.debunk}
                     </span>
                   </p>

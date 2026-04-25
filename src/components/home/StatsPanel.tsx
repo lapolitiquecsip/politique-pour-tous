@@ -120,7 +120,7 @@ export default function StatsPanel() {
         >
           {!slide.value && (
             <div className="absolute inset-0 flex items-center justify-center overflow-hidden pointer-events-none select-none">
-              <span className="text-[15rem] md:text-[25rem] font-staatliches text-white/5 uppercase tracking-tighter leading-none transform -rotate-12 translate-y-12">
+              <span className="text-[12rem] md:text-[20rem] font-staatliches text-white/[0.03] uppercase tracking-tighter leading-none transform -rotate-6">
                 {slide.type?.split(' ')[0]}
               </span>
             </div>
@@ -129,13 +129,13 @@ export default function StatsPanel() {
           {slide.value ? (
             <>
               <motion.span 
-                initial={{ scale: 0.8 }}
-                animate={{ scale: 1 }}
-                className="relative z-10 text-8xl md:text-[10rem] font-staatliches mb-4 tracking-tighter leading-none drop-shadow-[0_0_30px_rgba(255,255,255,0.2)]"
+                initial={{ scale: 0.8, y: 10 }}
+                animate={{ scale: 1, y: 0 }}
+                className="relative z-10 text-8xl md:text-[9rem] font-staatliches mb-2 tracking-tighter leading-none"
               >
                 {slide.value}
               </motion.span>
-              <p className="relative z-10 text-lg md:text-2xl font-bold max-w-2xl leading-tight opacity-90 uppercase tracking-[0.15em]">
+              <p className="relative z-10 text-sm md:text-xl font-bold max-w-xl leading-snug opacity-70 uppercase tracking-[0.2em]">
                 {slide.label}
               </p>
             </>
@@ -144,32 +144,35 @@ export default function StatsPanel() {
               <div className="relative z-10">
                 {slide.icon}
               </div>
-              <div className="relative z-10 flex items-center gap-2 mb-8 uppercase tracking-[0.3em] text-[10px] font-black">
-                {slide.isLive && (
-                  <span className="relative flex h-3 w-3">
-                    <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-red-500 opacity-75"></span>
-                    <span className="relative inline-flex rounded-full h-3 w-3 bg-red-600"></span>
-                  </span>
-                )}
-                <span className="px-5 py-2 rounded-xl bg-white/10 border border-white/10 backdrop-blur-md shadow-xl">
+              <div className="relative z-10 flex items-center gap-2 mb-6">
+                <span className="px-3 py-1 rounded-full bg-white/10 border border-white/5 text-[9px] font-black uppercase tracking-[0.3em] backdrop-blur-md">
                   {slide.type}
                 </span>
+                {slide.isLive && (
+                  <div className="flex items-center gap-1.5 px-2 py-0.5 bg-red-500/20 rounded-full border border-red-500/20">
+                    <span className="relative flex h-1.5 w-1.5">
+                      <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-red-400 opacity-75"></span>
+                      <span className="relative inline-flex rounded-full h-1.5 w-1.5 bg-red-500"></span>
+                    </span>
+                    <span className="text-[8px] font-black text-red-400 uppercase tracking-widest">Live</span>
+                  </div>
+                )}
               </div>
               
-              <h2 className="relative z-10 text-2xl md:text-6xl font-staatliches max-w-5xl leading-none mb-10 uppercase tracking-tight text-balance italic">
+              <h2 className="relative z-10 text-xl md:text-4xl font-bold max-w-3xl leading-[1.3] mb-10 tracking-tight text-white/90">
                 {slide.content}
               </h2>
 
               {slide.debunk && (
-                <div className="relative z-10 bg-slate-900/60 backdrop-blur-2xl rounded-[2.5rem] p-8 md:p-10 border border-white/10 shadow-2xl max-w-4xl transform hover:scale-[1.02] transition-transform duration-500">
-                  <p className="text-xl md:text-4xl font-staatliches leading-tight flex flex-col md:flex-row items-center gap-6">
-                    <span className="bg-blue-600 text-white px-6 py-2 rounded-xl text-xs uppercase tracking-[0.3em] shrink-0 font-black">
+                <div className="relative z-10 bg-white/5 backdrop-blur-xl rounded-3xl p-6 md:p-8 border border-white/10 shadow-xl max-w-2xl">
+                  <div className="flex items-start gap-4">
+                    <span className="bg-blue-600 text-white px-3 py-1 rounded-lg text-[9px] uppercase tracking-[0.2em] font-black mt-1">
                       RÉALITÉ
                     </span>
-                    <span className="text-white/95 text-balance">
-                      {slide.debunk}
-                    </span>
-                  </p>
+                    <p className="text-base md:text-xl font-medium leading-relaxed text-white/80 italic">
+                      &ldquo;{slide.debunk}&rdquo;
+                    </p>
+                  </div>
                 </div>
               )}
             </>

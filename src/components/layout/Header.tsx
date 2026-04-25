@@ -73,11 +73,11 @@ export default function Header() {
               <span className="text-slate-900">La politique</span>{" "}
             <span className="italic">
                 <span className="text-blue-600 drop-shadow-[0_0_5px_rgba(37,99,235,0.4)]">c</span>{" "}
-                <span className="text-purple-700 drop-shadow-[0_0_5px_rgba(126,34,206,0.4)]">s</span>
-                <span className="text-purple-700 drop-shadow-[0_0_5px_rgba(126,34,206,0.4)]">i</span>
+                <span className="text-blue-600 drop-shadow-[0_0_5px_rgba(37,99,235,0.4)]">s</span>
+                <span className="text-blue-600 drop-shadow-[0_0_5px_rgba(37,99,235,0.4)]">i</span>
                 <span className="text-red-600 drop-shadow-[0_0_5px_rgba(220,38,38,0.6)]">m</span>
-                <span className="text-purple-700 drop-shadow-[0_0_5px_rgba(126,34,206,0.4)]">p</span>
-                <span className="text-purple-700 drop-shadow-[0_0_5px_rgba(126,34,206,0.4)]">l</span>
+                <span className="text-red-600 drop-shadow-[0_0_5px_rgba(220,38,38,0.6)]">p</span>
+                <span className="text-blue-600 drop-shadow-[0_0_5px_rgba(37,99,235,0.4)]">l</span>
                 <span className="text-blue-600 drop-shadow-[0_0_5px_rgba(37,99,235,0.4)]">e</span>
               </span>
             </span>

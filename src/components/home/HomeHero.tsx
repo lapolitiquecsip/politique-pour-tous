@@ -39,10 +39,10 @@ export default function HomeHero() {
             <span className="italic decoration-rose-500/30 underline-offset-8 uppercase">
               <span className="text-white">c'est </span>
               <span className="text-blue-600 drop-shadow-[0_0_10px_rgba(37,99,235,0.4)]">s</span>
-              <span className="text-purple-700 drop-shadow-[0_0_10px_rgba(126,34,206,0.4)]">i</span>
+              <span className="text-blue-600 drop-shadow-[0_0_10px_rgba(37,99,235,0.4)]">i</span>
               <span className="text-red-600 drop-shadow-[0_0_10px_rgba(220,38,38,0.6)]">m</span>
-              <span className="text-purple-700 drop-shadow-[0_0_10px_rgba(126,34,206,0.4)]">p</span>
-              <span className="text-purple-700 drop-shadow-[0_0_10px_rgba(126,34,206,0.4)]">l</span>
+              <span className="text-red-600 drop-shadow-[0_0_10px_rgba(220,38,38,0.6)]">p</span>
+              <span className="text-blue-600 drop-shadow-[0_0_10px_rgba(37,99,235,0.4)]">l</span>
               <span className="text-blue-600 drop-shadow-[0_0_10px_rgba(37,99,235,0.4)]">e</span>
               <span className="text-white">.</span>
             </span>

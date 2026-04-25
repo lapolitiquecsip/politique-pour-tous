@@ -175,23 +175,25 @@ export default function LocalPoliticsPage() {
           {/* MAIN CONTENT - ITEMS GRID */}
           <div className="lg:col-span-8 space-y-12">
             
-            {/* SEARCH & FILTERS */}
-            <div className="flex flex-col md:flex-row gap-6 items-center justify-between">
-              <div className="relative w-full md:max-w-md">
-                <Search className="absolute left-4 top-1/2 -translate-y-1/2 text-slate-400" size={18} />
-                <input 
-                  type="text"
-                  placeholder="Rechercher une ville, un maire..."
-                  value={search}
-                  onChange={(e) => setSearch(e.target.value)}
-                  className="w-full pl-12 pr-4 py-4 rounded-2xl bg-white border border-slate-200 focus:ring-2 focus:ring-rose-500 outline-none transition-all shadow-sm font-medium"
-                />
+            {/* SEARCH & FILTERS - ONLY SHOW FOR COMMUNE */}
+            {activeTab === 'commune' && (
+              <div className="flex flex-col md:flex-row gap-6 items-center justify-between">
+                <div className="relative w-full md:max-w-md">
+                  <Search className="absolute left-4 top-1/2 -translate-y-1/2 text-slate-400" size={18} />
+                  <input 
+                    type="text"
+                    placeholder="Rechercher une ville, un maire..."
+                    value={search}
+                    onChange={(e) => setSearch(e.target.value)}
+                    className="w-full pl-12 pr-4 py-4 rounded-2xl bg-white border border-slate-200 focus:ring-2 focus:ring-rose-500 outline-none transition-all shadow-sm font-medium"
+                  />
+                </div>
+                <div className="flex items-center gap-2 px-6 py-4 bg-white rounded-2xl border border-slate-200 shadow-sm">
+                  <Building2 size={18} className="text-rose-600" />
+                  <span className="text-sm font-bold text-slate-700">Territoires Connectés</span>
+                </div>
               </div>
-              <div className="flex items-center gap-2 px-6 py-4 bg-white rounded-2xl border border-slate-200 shadow-sm">
-                <Building2 size={18} className="text-rose-600" />
-                <span className="text-sm font-bold text-slate-700">Territoires Connectés</span>
-              </div>
-            </div>
+            )}
 
             <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
               {filteredItems.map((item: any, idx: number) => (

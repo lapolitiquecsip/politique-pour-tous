@@ -366,19 +366,6 @@ export default function ExecutifPage() {
               </div>
             </motion.div>
 
-            {/* HOW IT WORKS SECTION */}
-            <div className="bg-white p-8 rounded-[2.5rem] border border-slate-200">
-               <div className="flex items-center gap-3 mb-6">
-                 <Building2 className="text-blue-600" size={24} />
-                 <h3 className="text-xl font-staatliches uppercase tracking-wide text-slate-900">Le Pouvoir Exécutif</h3>
-               </div>
-               <p className="text-sm text-slate-500 leading-relaxed font-medium italic mb-6">
-                 Le Gouvernement détermine et conduit la politique de la Nation. Il dispose de l'administration et de la force armée.
-               </p>
-               <Link href="/vocabulaire" className="inline-flex items-center gap-2 text-[10px] font-black uppercase tracking-widest text-blue-600 hover:translate-x-1 transition-transform">
-                 En savoir plus sur Matignon <ChevronRight size={14} />
-               </Link>
-            </div>
           </div>
         </div>
       </div>

@@ -36,9 +36,15 @@ export default function HomeHero() {
         >
           <h1 className="text-6xl md:text-8xl font-staatliches uppercase tracking-tight leading-none mb-6">
             <span className="block text-white drop-shadow-[0_0_30px_rgba(255,255,255,0.2)]">La politique,</span>
-            <span className="italic decoration-rose-500/30 underline-offset-8">
+            <span className="italic decoration-rose-500/30 underline-offset-8 uppercase">
               <span className="text-white">c'est </span>
-              <span className="text-rose-500 drop-shadow-[0_0_15px_rgba(244,63,94,0.3)]">simple.</span>
+              <span className="text-blue-400 drop-shadow-[0_0_10px_rgba(96,165,250,0.5)]">s</span>
+              <span className="text-indigo-400 drop-shadow-[0_0_10px_rgba(129,140,248,0.5)]">i</span>
+              <span className="text-red-500 drop-shadow-[0_0_10px_rgba(239,68,68,0.5)]">m</span>
+              <span className="text-rose-400 drop-shadow-[0_0_10px_rgba(251,113,133,0.5)]">p</span>
+              <span className="text-amber-400 drop-shadow-[0_0_10px_rgba(251,191,36,0.5)]">l</span>
+              <span className="text-purple-400 drop-shadow-[0_0_10px_rgba(192,132,252,0.5)]">e</span>
+              <span className="text-white">.</span>
             </span>
           </h1>
           

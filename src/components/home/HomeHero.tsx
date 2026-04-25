@@ -62,15 +62,19 @@ export default function HomeHero() {
                 </svg>
               </span>
             </span>
-            <span className="italic decoration-rose-500/30 underline-offset-8 uppercase flex items-center flex-wrap">
-              <span className="text-white">c'est </span>
-              <span style={{ color: '#2E6F40' }}>s</span>
-              <span style={{ color: '#CFFFDC' }}>i</span>
-              <span style={{ color: '#68BA7F' }}>m</span>
-              <span style={{ color: '#253D2C' }}>p</span>
-              <span style={{ color: '#2E6F40' }}>l</span>
-              <span style={{ color: '#CFFFDC' }}>e</span>
-              <span className="text-white">.</span>
+            <span className="italic uppercase flex items-center flex-wrap">
+              <span className="text-white mr-4">c'est </span>
+              <span className="relative inline-block text-white">
+                simple.
+                {/* Multi-tone green underline */}
+                <div 
+                  className="absolute -bottom-1 left-0 w-full h-[6px] md:h-[8px] rounded-full"
+                  style={{ 
+                    background: 'linear-gradient(to right, #2E6F40, #CFFFDC, #68BA7F, #253D2C)',
+                    filter: 'drop-shadow(0 0 5px rgba(46, 111, 64, 0.4))'
+                  }}
+                />
+              </span>
               
               {/* Cluster of hand-drawn neon stars */}
               <div className="relative inline-block ml-6 align-middle">

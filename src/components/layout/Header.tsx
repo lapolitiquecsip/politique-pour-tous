@@ -70,7 +70,14 @@ export default function Header() {
               <Landmark size={20} />
             </div>
             <span className="font-staatliches text-2xl tracking-wider uppercase leading-none pt-1">
-              <span className="text-slate-900">La politique</span> <span className="bg-gradient-to-r from-blue-500 via-rose-500 to-amber-500 bg-clip-text text-transparent">c simple</span>
+              <span className="text-slate-900">La politique</span>{" "}
+              <span className="text-blue-500">c</span>{" "}
+              <span className="text-indigo-500">s</span>
+              <span className="text-red-500">i</span>
+              <span className="text-rose-500">m</span>
+              <span className="text-amber-500">p</span>
+              <span className="text-purple-500">l</span>
+              <span className="text-blue-500">e</span>
             </span>
           </Link>
 

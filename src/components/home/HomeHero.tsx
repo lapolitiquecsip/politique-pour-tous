@@ -38,7 +38,13 @@ export default function HomeHero() {
             <span className="block text-white drop-shadow-[0_0_30px_rgba(255,255,255,0.2)]">La politique,</span>
             <span className="italic decoration-rose-500/30 underline-offset-8 uppercase">
               <span className="text-white">c'est </span>
-              <span className="bg-gradient-to-r from-sky-400 via-rose-500 to-sky-400 bg-clip-text text-transparent">simple.</span>
+              <span style={{ color: '#2E6F40' }}>s</span>
+              <span style={{ color: '#CFFFDC' }}>i</span>
+              <span style={{ color: '#68BA7F' }}>m</span>
+              <span style={{ color: '#253D2C' }}>p</span>
+              <span style={{ color: '#2E6F40' }}>l</span>
+              <span style={{ color: '#CFFFDC' }}>e</span>
+              <span className="text-white">.</span>
             </span>
           </h1>
           

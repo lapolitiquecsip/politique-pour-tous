@@ -38,12 +38,12 @@ export default function HomeHero() {
             <span className="block text-white drop-shadow-[0_0_30px_rgba(255,255,255,0.2)]">La politique,</span>
             <span className="italic decoration-rose-500/30 underline-offset-8 uppercase">
               <span className="text-white">c'est </span>
-              <span className="text-cyan-400 drop-shadow-[0_0_10px_rgba(34,211,238,0.5)]">s</span>
-              <span className="text-blue-500 drop-shadow-[0_0_10px_rgba(59,130,246,0.5)]">i</span>
-              <span className="text-purple-500 drop-shadow-[0_0_10px_rgba(168,85,247,0.5)]">m</span>
-              <span className="text-pink-500 drop-shadow-[0_0_10px_rgba(236,72,153,0.5)]">p</span>
-              <span className="text-orange-400 drop-shadow-[0_0_10px_rgba(251,146,60,0.5)]">l</span>
-              <span className="text-yellow-400 drop-shadow-[0_0_10px_rgba(250,204,21,0.5)]">e</span>
+              <span className="text-blue-600 drop-shadow-[0_0_10px_rgba(37,99,235,0.4)]">s</span>
+              <span className="text-purple-700 drop-shadow-[0_0_10px_rgba(126,34,206,0.4)]">i</span>
+              <span className="text-red-600 drop-shadow-[0_0_10px_rgba(220,38,38,0.6)]">m</span>
+              <span className="text-purple-700 drop-shadow-[0_0_10px_rgba(126,34,206,0.4)]">p</span>
+              <span className="text-purple-700 drop-shadow-[0_0_10px_rgba(126,34,206,0.4)]">l</span>
+              <span className="text-blue-600 drop-shadow-[0_0_10px_rgba(37,99,235,0.4)]">e</span>
               <span className="text-white">.</span>
             </span>
           </h1>

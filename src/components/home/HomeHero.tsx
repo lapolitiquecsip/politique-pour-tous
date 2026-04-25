@@ -34,7 +34,7 @@ export default function HomeHero() {
           transition={{ duration: 0.8 }}
           className="flex flex-col items-center"
         >
-          <h1 className="text-6xl md:text-8xl font-staatliches uppercase tracking-tight leading-none mb-6">
+          <h1 className="text-6xl md:text-8xl font-staatliches uppercase tracking-tight leading-none mb-6 flex flex-col items-start">
             <span className="block text-white drop-shadow-[0_0_30px_rgba(255,255,255,0.2)]">La politique,</span>
             <span className="italic decoration-rose-500/30 underline-offset-8 uppercase">
               <span className="text-white">c'est </span>

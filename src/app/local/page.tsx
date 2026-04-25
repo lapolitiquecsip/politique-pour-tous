@@ -382,8 +382,8 @@ export default function LocalPoliticsPage() {
                 <div className="space-y-2 mb-6">
                   <h4 className="text-xl font-staatliches uppercase tracking-tight text-amber-600">Le Comparateur <span className="text-slate-900">Territorial</span></h4>
                   <p className="text-[10px] text-slate-500 font-black uppercase tracking-widest leading-relaxed">
-                    Villes, Départements, Régions : <br />
-                    Analysez tout le territoire français.
+                    Villes vs Villes, Départements vs Départements <br />
+                    ou Régions vs Régions : comparez tout.
                   </p>
                 </div>
                 <div className="px-6 py-3 bg-slate-900 text-white text-[10px] font-black uppercase tracking-widest rounded-xl shadow-xl transition-all group-hover:bg-amber-500 group-hover:scale-105">

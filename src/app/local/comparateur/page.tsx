@@ -35,10 +35,18 @@ export default function ComparateurConcept() {
             </h1>
 
             <p className="text-xl md:text-2xl text-slate-500 font-medium italic leading-relaxed max-w-2xl">
-              L'outil ultime pour comprendre pourquoi votre territoire est unique, ou pour choisir votre prochain lieu de vie en toute connaissance de cause.
+              Comparez deux <strong>Communes</strong>, deux <strong>Départements</strong> ou deux <strong>Régions</strong> entre eux pour comprendre les différences de gestion et de qualité de vie.
             </p>
 
-            <div className="h-1.5 w-32 bg-amber-500 rounded-full" />
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-4 w-full max-w-2xl mt-4">
+               {["Villes vs Villes", "Dépts vs Dépts", "Régions vs Régions"].map((text) => (
+                 <div key={text} className="px-4 py-2 bg-amber-50 text-amber-700 rounded-full text-[10px] font-black uppercase tracking-widest border border-amber-100">
+                   {text}
+                 </div>
+               ))}
+            </div>
+
+            <div className="h-1.5 w-32 bg-amber-500 rounded-full mt-4" />
           </motion.div>
         </div>
       </section>

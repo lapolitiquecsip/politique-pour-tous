@@ -78,7 +78,7 @@ export default function Header() {
               Lois
             </Link>
             <Link href="/local" className="text-sm font-semibold text-slate-600 hover:text-blue-600 transition-colors flex items-center gap-1.5 group">
-              <MapPin size={16} className="text-emerald-500 group-hover:scale-110 transition-transform" />
+              <MapPin size={16} className="text-rose-500 group-hover:scale-110 transition-transform" />
               Local
             </Link>
             <Link href="/executif" className="text-sm font-semibold text-slate-600 hover:text-blue-600 transition-colors flex items-center gap-1.5 group">
@@ -152,7 +152,7 @@ export default function Header() {
             <Scale className="text-red-500" /> Les Lois
           </Link>
           <Link href="/local" className="flex items-center gap-3 text-lg font-bold text-slate-900" onClick={() => setIsMenuOpen(false)}>
-            <MapPin className="text-emerald-500" /> Politique Locale
+            <MapPin className="text-rose-500" /> Politique Locale
           </Link>
           <Link href="/executif" className="flex items-center gap-3 text-lg font-bold text-slate-900" onClick={() => setIsMenuOpen(false)}>
             <ShieldCheck className="text-amber-500" /> Exécutif

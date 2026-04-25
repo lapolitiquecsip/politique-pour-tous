@@ -8,14 +8,19 @@ import Link from "next/link";
 
 export default function LawsGrid() {
   const [laws, setLaws] = useState<any[]>([]);
+  const [deputies, setDeputies] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
   const [search, setSearch] = useState("");
 
   useEffect(() => {
     async function load() {
       try {
-        const data = await api.getLaws();
-        setLaws(data);
+        const [lawsData, deputiesData] = await Promise.all([
+          api.getLaws(),
+          api.getDeputies()
+        ]);
+        setLaws(lawsData);
+        setDeputies(deputiesData);
       } catch (err) {
         console.error("Error loading laws:", err);
       } finally {
@@ -24,6 +29,20 @@ export default function LawsGrid() {
     }
     load();
   }, []);
+
+  const findDeputySlug = (authorName: string) => {
+    if (!authorName || authorName === 'Le Gouvernement') return null;
+    
+    // Normalize name: "M. Nicolas Tryzna" -> "Nicolas Tryzna"
+    const cleanName = authorName.replace(/^(M\.|Mme\.|Monsieur|Madame)\s+/, "").trim().toLowerCase();
+    
+    const deputy = deputies.find(d => {
+      const fullName = `${d.first_name} ${d.last_name}`.toLowerCase();
+      return fullName.includes(cleanName) || cleanName.includes(fullName);
+    });
+
+    return deputy ? deputy.slug : null;
+  };
 
   const filteredLaws = laws
     .filter(law => 
@@ -85,17 +104,30 @@ export default function LawsGrid() {
                   {law.summary}
                 </p>
 
-                {law.author && (
-                  <div className="flex items-center gap-3 mb-6 p-3 rounded-2xl bg-slate-50 border border-slate-100/50">
-                    <div className="w-8 h-8 rounded-full bg-white shadow-sm flex items-center justify-center text-blue-600 border border-blue-50">
-                      <UserCheck size={14} />
+                {law.author && (() => {
+                  const slug = findDeputySlug(law.author);
+                  const content = (
+                    <div className={`flex items-center gap-3 mb-6 p-3 rounded-2xl border transition-all duration-300 ${slug ? 'bg-blue-50/50 border-blue-100 hover:bg-blue-50 hover:border-blue-200 cursor-pointer' : 'bg-slate-50 border-slate-100/50'}`}>
+                      <div className={`w-8 h-8 rounded-full shadow-sm flex items-center justify-center border transition-colors ${slug ? 'bg-white text-blue-600 border-blue-100 group-hover:bg-blue-600 group-hover:text-white' : 'bg-white text-slate-400 border-slate-100'}`}>
+                        <UserCheck size={14} />
+                      </div>
+                      <div className="flex flex-col">
+                        <span className="text-[10px] font-black uppercase tracking-wider text-slate-400 leading-none mb-1">
+                          {law.category === 'Projet de loi' ? 'Initiative' : 'Déposé par'}
+                        </span>
+                        <span className={`text-xs font-bold leading-none ${slug ? 'text-blue-700' : 'text-slate-700'}`}>
+                          {law.author}
+                        </span>
+                      </div>
                     </div>
-                    <div className="flex flex-col">
-                      <span className="text-[10px] font-black uppercase tracking-wider text-slate-400 leading-none mb-1">Déposé par</span>
-                      <span className="text-xs font-bold text-slate-700 leading-none">{law.author}</span>
-                    </div>
-                  </div>
-                )}
+                  );
+
+                  return slug ? (
+                    <Link href={`/deputes/${slug}`} className="block">
+                      {content}
+                    </Link>
+                  ) : content;
+                })()}
               </div>
 
               <div className="flex items-center justify-between pt-6 border-t border-slate-100">

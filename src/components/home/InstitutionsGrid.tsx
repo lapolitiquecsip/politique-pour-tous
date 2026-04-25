@@ -1,7 +1,7 @@
 "use client";
 import { useState, useEffect, memo } from "react";
 import { motion, AnimatePresence } from "framer-motion";
-import { X, ChevronRight, Landmark } from "lucide-react";
+import { X, ChevronRight, ChevronLeft, Landmark } from "lucide-react";
 
 import Link from "next/link";
 import { api } from "@/lib/api";
@@ -142,6 +142,32 @@ export default function InstitutionsGrid() {
     };
   }, [selectedInst]);
 
+  const handleNext = () => {
+    if (!selectedInst) return;
+    const currentIndex = INSTITUTIONS.findIndex(i => i.id === selectedInst.id);
+    const nextIndex = (currentIndex + 1) % INSTITUTIONS.length;
+    setSelectedInst(INSTITUTIONS[nextIndex]);
+  };
+
+  const handlePrev = () => {
+    if (!selectedInst) return;
+    const currentIndex = INSTITUTIONS.findIndex(i => i.id === selectedInst.id);
+    const prevIndex = (currentIndex - 1 + INSTITUTIONS.length) % INSTITUTIONS.length;
+    setSelectedInst(INSTITUTIONS[prevIndex]);
+  };
+
+  useEffect(() => {
+    const handleKeyDown = (e: KeyboardEvent) => {
+      if (!selectedInst) return;
+      if (e.key === "ArrowRight") handleNext();
+      if (e.key === "ArrowLeft") handlePrev();
+      if (e.key === "Escape") setSelectedInst(null);
+    };
+
+    window.addEventListener("keydown", handleKeyDown);
+    return () => window.removeEventListener("keydown", handleKeyDown);
+  }, [selectedInst]);
+
   const fetchTodayEvents = async (inst: Institution) => {
     setLoading(true);
     try {
@@ -192,12 +218,34 @@ export default function InstitutionsGrid() {
 
             {/* Contenu Modale */}
             <motion.div
+              key={selectedInst.id}
               initial={{ opacity: 0, scale: 0.95, y: 20 }}
               animate={{ opacity: 1, scale: 1, y: 0 }}
               exit={{ opacity: 0, scale: 0.95, y: 20 }}
               transition={{ type: "spring", damping: 30, stiffness: 400 }}
               className="relative w-full max-w-5xl bg-background rounded-[2.5rem] shadow-2xl border border-border overflow-hidden flex flex-col md:flex-row min-h-[600px]"
             >
+              {/* Boutons de Navigation (Flèches) */}
+              <div className="absolute inset-y-0 left-4 md:left-8 flex items-center z-50 pointer-events-none">
+                <button
+                  onClick={(e) => { e.stopPropagation(); handlePrev(); }}
+                  className="pointer-events-auto p-3 rounded-full bg-white/20 text-white hover:bg-amber-500 transition-all backdrop-blur-md border border-white/10 group shadow-xl"
+                  title="Précédent"
+                >
+                  <ChevronLeft className="w-6 h-6 group-hover:-translate-x-1 transition-transform" />
+                </button>
+              </div>
+
+              <div className="absolute inset-y-0 right-4 md:right-8 flex items-center z-50 pointer-events-none">
+                <button
+                  onClick={(e) => { e.stopPropagation(); handleNext(); }}
+                  className="pointer-events-auto p-3 rounded-full bg-white/20 text-white hover:bg-amber-500 transition-all backdrop-blur-md border border-white/10 group shadow-xl"
+                  title="Suivant"
+                >
+                  <ChevronRight className="w-6 h-6 group-hover:translate-x-1 transition-transform" />
+                </button>
+              </div>
+
               {/* Bouton Fermer */}
               <button
                 onClick={() => setSelectedInst(null)}

@@ -25,10 +25,12 @@ export default function LawsGrid() {
     load();
   }, []);
 
-  const filteredLaws = laws.filter(law => 
-    law.title.toLowerCase().includes(search.toLowerCase()) ||
-    (law.category && law.category.toLowerCase().includes(search.toLowerCase()))
-  );
+  const filteredLaws = laws
+    .filter(law => 
+      law.title.toLowerCase().includes(search.toLowerCase()) ||
+      (law.category && law.category.toLowerCase().includes(search.toLowerCase()))
+    )
+    .sort((a, b) => (b.context || "").localeCompare(a.context || ""));
 
   return (
     <div className="space-y-8">
@@ -87,7 +89,7 @@ export default function LawsGrid() {
               <div className="flex items-center justify-between pt-6 border-t border-slate-100">
                 <div className="flex items-center gap-2 text-slate-400 text-xs">
                   <Calendar size={14} />
-                  <span>Dossier en cours</span>
+                  <span>{law.context?.replace(/\[.*?\]\s*/, "") || "Dossier en cours"}</span>
                 </div>
                 <Link 
                   href={law.source_urls?.[0] || "#"} 

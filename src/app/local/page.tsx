@@ -97,8 +97,8 @@ export default function LocalPoliticsPage() {
               <span className="text-xs font-black uppercase tracking-widest text-emerald-600">Action Locale</span>
             </div>
 
-            <h1 className="text-6xl md:text-8xl font-staatliches uppercase tracking-tighter leading-none mb-8">
-              La Politique <span className="bg-gradient-to-r from-emerald-600 via-teal-600 to-emerald-600 bg-clip-text text-transparent italic">Locale</span>
+            <h1 className="text-6xl md:text-8xl font-staatliches uppercase tracking-tighter leading-[1.1] mb-8 pb-2">
+              La Politique <span className="bg-gradient-to-r from-emerald-600 via-teal-600 to-emerald-600 bg-clip-text text-transparent italic px-1">Locale</span>
             </h1>
             
             <p className="text-xl md:text-2xl text-slate-500 font-medium italic leading-relaxed max-w-3xl mx-auto text-pretty">

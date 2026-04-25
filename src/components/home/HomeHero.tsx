@@ -91,9 +91,10 @@ export default function HomeHero() {
                   >
                     <line x1="3" y1="21" x2="21" y2="21" />
                     <line x1="3" y1="7" x2="21" y2="7" />
-                    <path d="M9 21V10" />
-                    <path d="M15 21V10" />
-                    <path d="M12 21V10" />
+                    <path d="M7 21V10" />
+                    <path d="M10.3 21V10" />
+                    <path d="M13.6 21V10" />
+                    <path d="M17 21V10" />
                     <path d="M3 7l9-4 9 4" />
                   </svg>
                 </motion.div>

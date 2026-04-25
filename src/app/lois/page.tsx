@@ -36,13 +36,29 @@ export default function LawsPage() {
             transition={{ duration: 0.8 }}
             className="flex flex-col items-center"
           >
-            <h1 className="text-6xl md:text-[7rem] font-staatliches uppercase tracking-tight leading-none mb-6">
-              <span 
-                className="block bg-clip-text text-transparent drop-shadow-[0_0_20px_rgba(39,39,87,0.3)]"
-                style={{ backgroundImage: 'linear-gradient(to r, #272757, #8686AC, #505081, #0F0E47)' }}
-              >
-                Tout sur les lois
-              </span>
+            <h1 className="text-6xl md:text-[7rem] font-staatliches uppercase tracking-tight leading-none mb-6 flex flex-wrap justify-center gap-x-6">
+              <div className="flex">
+                <span style={{ color: '#8686AC', filter: 'drop-shadow(0 0 15px rgba(255, 255, 255, 0.2))' }}>T</span>
+                <span style={{ color: '#505081', filter: 'drop-shadow(0 0 15px rgba(255, 255, 255, 0.2))' }}>O</span>
+                <span style={{ color: '#8686AC', filter: 'drop-shadow(0 0 15px rgba(255, 255, 255, 0.2))' }}>U</span>
+                <span style={{ color: '#505081', filter: 'drop-shadow(0 0 15px rgba(255, 255, 255, 0.2))' }}>T</span>
+              </div>
+              <div className="flex">
+                <span style={{ color: '#8686AC', filter: 'drop-shadow(0 0 15px rgba(255, 255, 255, 0.2))' }}>S</span>
+                <span style={{ color: '#505081', filter: 'drop-shadow(0 0 15px rgba(255, 255, 255, 0.2))' }}>U</span>
+                <span style={{ color: '#8686AC', filter: 'drop-shadow(0 0 15px rgba(255, 255, 255, 0.2))' }}>R</span>
+              </div>
+              <div className="flex">
+                <span style={{ color: '#505081', filter: 'drop-shadow(0 0 15px rgba(255, 255, 255, 0.2))' }}>L</span>
+                <span style={{ color: '#8686AC', filter: 'drop-shadow(0 0 15px rgba(255, 255, 255, 0.2))' }}>E</span>
+                <span style={{ color: '#505081', filter: 'drop-shadow(0 0 15px rgba(255, 255, 255, 0.2))' }}>S</span>
+              </div>
+              <div className="flex italic underline decoration-rose-500/30 underline-offset-8">
+                <span style={{ color: '#8686AC', filter: 'drop-shadow(0 0 15px rgba(255, 255, 255, 0.2))' }}>L</span>
+                <span style={{ color: '#505081', filter: 'drop-shadow(0 0 15px rgba(255, 255, 255, 0.2))' }}>O</span>
+                <span style={{ color: '#8686AC', filter: 'drop-shadow(0 0 15px rgba(255, 255, 255, 0.2))' }}>I</span>
+                <span style={{ color: '#505081', filter: 'drop-shadow(0 0 15px rgba(255, 255, 255, 0.2))' }}>S</span>
+              </div>
             </h1>
             
             <p className="text-xl md:text-2xl text-white/80 max-w-2xl mx-auto leading-relaxed font-bold italic tracking-tight drop-shadow-md">

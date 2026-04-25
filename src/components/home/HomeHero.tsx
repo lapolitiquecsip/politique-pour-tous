@@ -40,7 +40,7 @@ export default function HomeHero() {
               <span className="relative inline-block px-4 py-2">
                 <span className="inline-flex">
                   {(() => {
-                    const colors = ["#C2B280", "#E35336", "#98A869", "#7dd3fc"]; // Replaced dark #272757 with light blue #7dd3fc for visibility
+                    const colors = ["#90D5FF", "#57B9FF", "#77B1D4", "#a5c9e1"]; // Replaced dark #517891 with a slightly lighter #a5c9e1 for better visibility
                     return "politique,".split("").map((char, i) => (
                       <motion.span
                         key={i}

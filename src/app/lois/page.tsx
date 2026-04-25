@@ -36,9 +36,29 @@ export default function LawsPage() {
             transition={{ duration: 0.8 }}
             className="flex flex-col items-center"
           >
-            <h1 className="text-6xl md:text-8xl font-staatliches uppercase tracking-tight leading-none mb-6">
-              <span className="block text-white drop-shadow-[0_0_30px_rgba(255,255,255,0.2)]">Tout sur</span>
-              <span className="bg-gradient-to-r from-sky-400 via-rose-500 to-sky-400 bg-clip-text text-transparent italic decoration-rose-500/30 underline-offset-8">les lois</span>
+            <h1 className="text-6xl md:text-[7rem] font-staatliches uppercase tracking-tight leading-none mb-6 flex flex-wrap justify-center gap-x-6">
+              <div className="flex">
+                <span className="text-blue-500 drop-shadow-[0_0_10px_rgba(59,130,246,0.5)]">T</span>
+                <span className="text-indigo-500 drop-shadow-[0_0_10px_rgba(99,102,241,0.5)]">O</span>
+                <span className="text-red-500 drop-shadow-[0_0_10px_rgba(239,68,68,0.5)]">U</span>
+                <span className="text-rose-500 drop-shadow-[0_0_10px_rgba(244,63,94,0.5)]">T</span>
+              </div>
+              <div className="flex">
+                <span className="text-amber-500 drop-shadow-[0_0_10px_rgba(245,158,11,0.5)]">S</span>
+                <span className="text-purple-500 drop-shadow-[0_0_10px_rgba(168,85,247,0.5)]">U</span>
+                <span className="text-blue-500 drop-shadow-[0_0_10px_rgba(59,130,246,0.5)]">R</span>
+              </div>
+              <div className="flex">
+                <span className="text-indigo-500 drop-shadow-[0_0_10px_rgba(99,102,241,0.5)]">L</span>
+                <span className="text-red-500 drop-shadow-[0_0_10px_rgba(239,68,68,0.5)]">E</span>
+                <span className="text-rose-500 drop-shadow-[0_0_10px_rgba(244,63,94,0.5)]">S</span>
+              </div>
+              <div className="flex italic underline decoration-rose-500/30 underline-offset-8">
+                <span className="text-amber-500 drop-shadow-[0_0_10px_rgba(245,158,11,0.5)]">L</span>
+                <span className="text-purple-500 drop-shadow-[0_0_10px_rgba(168,85,247,0.5)]">O</span>
+                <span className="text-blue-500 drop-shadow-[0_0_10px_rgba(59,130,246,0.5)]">I</span>
+                <span className="text-indigo-500 drop-shadow-[0_0_10px_rgba(99,102,241,0.5)]">S</span>
+              </div>
             </h1>
             
             <p className="text-xl md:text-2xl text-white/80 max-w-2xl mx-auto leading-relaxed font-bold italic tracking-tight drop-shadow-md">

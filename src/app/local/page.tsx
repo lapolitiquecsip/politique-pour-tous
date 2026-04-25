@@ -113,21 +113,21 @@ export default function LocalPoliticsPage() {
           >
             <div className="flex items-center gap-3 mb-2">
               <span className="relative flex h-3 w-3">
-                <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-blue-400 opacity-75"></span>
-                <span className="relative inline-flex rounded-full h-3 w-3 bg-blue-600"></span>
+                <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-rose-400 opacity-75"></span>
+                <span className="relative inline-flex rounded-full h-3 w-3 bg-rose-600"></span>
               </span>
-              <span className="text-xs font-black uppercase tracking-widest text-blue-600">Action Locale</span>
+              <span className="text-xs font-black uppercase tracking-widest text-rose-600">Action Locale</span>
             </div>
 
             <h1 className="text-6xl md:text-8xl font-staatliches uppercase tracking-tight leading-tight mb-8 py-4">
-              La Politique <span className="inline-block bg-gradient-to-r from-blue-600 via-indigo-600 to-blue-600 bg-clip-text text-transparent italic px-2">Locale</span>
+              La Politique <span className="inline-block bg-gradient-to-r from-rose-600 via-fuchsia-600 to-rose-600 bg-clip-text text-transparent italic px-2">Locale</span>
             </h1>
             
             <p className="text-xl md:text-2xl text-slate-500 font-medium italic leading-relaxed max-w-3xl mx-auto text-pretty">
               Découvrez les acteurs de vos territoires, des maires aux conseillers municipaux, et comprenez comment vos impôts locaux façonnent votre ville.
             </p>
 
-            <div className="h-1.5 w-32 bg-gradient-to-r from-blue-600 to-indigo-600 mt-8 rounded-full" />
+            <div className="h-1.5 w-32 bg-gradient-to-r from-rose-600 to-fuchsia-600 mt-8 rounded-full" />
           </motion.div>
         </div>
       </section>
@@ -149,21 +149,21 @@ export default function LocalPoliticsPage() {
                   onClick={() => setActiveTab(tab.id as any)}
                   className={`
                     flex-1 flex items-center justify-center gap-4 py-8 rounded-[2rem] transition-all duration-500 relative overflow-hidden group
-                    ${isActive ? 'bg-white text-blue-600 shadow-[0_20px_50px_rgba(37,99,235,0.15)] border border-blue-100 translate-y-[-4px]' : 'hover:bg-slate-50 text-slate-400'}
+                    ${isActive ? 'bg-white text-rose-600 shadow-[0_20px_50px_rgba(225,29,72,0.15)] border border-rose-100 translate-y-[-4px]' : 'hover:bg-slate-50 text-slate-400'}
                   `}
                 >
                   {isActive && (
                     <motion.div 
                       layoutId="activeGlow"
-                      className="absolute inset-0 bg-gradient-to-r from-blue-50 to-indigo-50 pointer-events-none" 
+                      className="absolute inset-0 bg-gradient-to-r from-rose-50 to-fuchsia-50 pointer-events-none" 
                     />
                   )}
-                  <Icon size={24} className={isActive ? 'text-blue-600' : 'group-hover:text-slate-600'} />
+                  <Icon size={24} className={isActive ? 'text-rose-600' : 'group-hover:text-slate-600'} />
                   <div className="text-left relative z-10">
-                    <p className={`text-[10px] font-black uppercase tracking-[0.2em] mb-1 ${isActive ? 'text-blue-400' : 'text-slate-300'}`}>Échelon</p>
+                    <p className={`text-[10px] font-black uppercase tracking-[0.2em] mb-1 ${isActive ? 'text-rose-400' : 'text-slate-300'}`}>Échelon</p>
                     <span className="text-xl font-bold font-staatliches uppercase tracking-wide">{tab.label}</span>
                   </div>
-                  {isActive && <div className="absolute bottom-0 left-1/2 -translate-x-1/2 w-16 h-1 bg-blue-600 rounded-t-full" />}
+                  {isActive && <div className="absolute bottom-0 left-1/2 -translate-x-1/2 w-16 h-1 bg-rose-600 rounded-t-full" />}
                 </button>
               );
             })}
@@ -184,11 +184,11 @@ export default function LocalPoliticsPage() {
                   placeholder="Rechercher une ville, un maire..."
                   value={search}
                   onChange={(e) => setSearch(e.target.value)}
-                  className="w-full pl-12 pr-4 py-4 rounded-2xl bg-white border border-slate-200 focus:ring-2 focus:ring-blue-500 outline-none transition-all shadow-sm font-medium"
+                  className="w-full pl-12 pr-4 py-4 rounded-2xl bg-white border border-slate-200 focus:ring-2 focus:ring-rose-500 outline-none transition-all shadow-sm font-medium"
                 />
               </div>
               <div className="flex items-center gap-2 px-6 py-4 bg-white rounded-2xl border border-slate-200 shadow-sm">
-                <Building2 size={18} className="text-blue-600" />
+                <Building2 size={18} className="text-rose-600" />
                 <span className="text-sm font-bold text-slate-700">Territoires Connectés</span>
               </div>
             </div>
@@ -211,7 +211,7 @@ export default function LocalPoliticsPage() {
                     />
                     <div className="absolute inset-0 bg-gradient-to-t from-slate-950/80 to-transparent" />
                     <div className="absolute bottom-4 left-6">
-                      <p className="text-blue-400 font-black text-[9px] uppercase tracking-widest mb-1">
+                      <p className="text-rose-400 font-black text-[9px] uppercase tracking-widest mb-1">
                         {activeTab === 'region' ? 'Région' : activeTab === 'departement' ? 'Département' : 'Commune'}
                       </p>
                       <h4 className="text-white font-bold text-xl leading-tight">{item.name}</h4>
@@ -224,9 +224,9 @@ export default function LocalPoliticsPage() {
                         <span className="text-[10px] font-black uppercase text-slate-400 tracking-widest">
                           {activeTab === 'region' || activeTab === 'departement' ? 'Président(e)' : 'Maire'}
                         </span>
-                        <span className="px-2 py-0.5 bg-blue-50 text-blue-600 text-[10px] font-bold rounded-full">{item.party}</span>
+                        <span className="px-2 py-0.5 bg-rose-50 text-rose-600 text-[10px] font-bold rounded-full">{item.party}</span>
                       </div>
-                      <h3 className="text-2xl font-bold text-slate-900 group-hover:text-blue-600 transition-colors leading-tight">
+                      <h3 className="text-2xl font-bold text-slate-900 group-hover:text-rose-600 transition-colors leading-tight">
                         {item.president || item.mayor}
                       </h3>
                     </div>
@@ -246,9 +246,9 @@ export default function LocalPoliticsPage() {
                       </div>
                     </div>
 
-                    <button className="w-full flex items-center justify-between group/btn text-slate-900 hover:text-blue-600 transition-colors pt-2">
+                    <button className="w-full flex items-center justify-between group/btn text-slate-900 hover:text-rose-600 transition-colors pt-2">
                       <span className="text-[10px] font-black uppercase tracking-widest">Voir les compétences</span>
-                      <div className="w-10 h-10 rounded-full bg-slate-50 flex items-center justify-center group-hover/btn:bg-blue-600 group-hover/btn:text-white transition-all">
+                      <div className="w-10 h-10 rounded-full bg-slate-50 flex items-center justify-center group-hover/btn:bg-rose-600 group-hover/btn:text-white transition-all">
                         <ChevronRight size={18} />
                       </div>
                     </button>
@@ -258,12 +258,12 @@ export default function LocalPoliticsPage() {
             </div>
 
             {/* SECTION: ÉLECTIONS */}
-            <section className="bg-blue-900 rounded-[3rem] p-10 md:p-16 text-white relative overflow-hidden">
+            <section className="bg-rose-950 rounded-[3rem] p-10 md:p-16 text-white relative overflow-hidden">
                <Vote className="absolute -bottom-10 -right-10 w-64 h-64 text-white/5 -rotate-12" />
                <div className="relative z-10 space-y-8">
                  <div className="space-y-4">
                    <h2 className="text-4xl md:text-6xl font-staatliches uppercase tracking-tighter leading-none">
-                     Prochaines <span className="text-blue-300 italic">Échéances</span>
+                     Prochaines <span className="text-rose-400 italic">Échéances</span>
                    </h2>
                    <p className="text-white/60 text-lg md:text-xl font-medium max-w-2xl leading-relaxed">
                      Préparez-vous pour les scrutins de 2026. La démocratie commence au bas de chez vous.
@@ -272,17 +272,17 @@ export default function LocalPoliticsPage() {
                  
                  <div className="grid grid-cols-1 md:grid-cols-3 gap-6 pt-4">
                    <div className="p-6 bg-white/5 border border-white/10 rounded-2xl">
-                     <p className="text-blue-300 font-black text-[10px] uppercase tracking-widest mb-4">Printemps 2026</p>
+                     <p className="text-rose-400 font-black text-[10px] uppercase tracking-widest mb-4">Printemps 2026</p>
                      <h4 className="text-xl font-bold mb-2">Municipales</h4>
                      <p className="text-white/40 text-sm">Élection des maires pour 6 ans.</p>
                    </div>
                    <div className="p-6 bg-white/5 border border-white/10 rounded-2xl">
-                     <p className="text-indigo-300 font-black text-[10px] uppercase tracking-widest mb-4">2027</p>
+                     <p className="text-fuchsia-400 font-black text-[10px] uppercase tracking-widest mb-4">2027</p>
                      <h4 className="text-xl font-bold mb-2">Législatives</h4>
                      <p className="text-white/40 text-sm">Renouvellement des députés.</p>
                    </div>
                    <div className="p-6 bg-white/5 border border-white/10 rounded-2xl">
-                     <p className="text-slate-300 font-black text-[10px] uppercase tracking-widest mb-4">2028</p>
+                     <p className="text-pink-400 font-black text-[10px] uppercase tracking-widest mb-4">2028</p>
                      <h4 className="text-xl font-bold mb-2">Sénatoriales</h4>
                      <p className="text-white/40 text-sm">Renouvellement partiel.</p>
                    </div>
@@ -297,7 +297,7 @@ export default function LocalPoliticsPage() {
             {/* INFO INTRO */}
             <div className="bg-white p-8 rounded-[2.5rem] border border-slate-200 shadow-xl shadow-slate-200/20 relative overflow-hidden">
                <div className="relative z-10 space-y-6">
-                 <div className="w-12 h-12 bg-blue-100 text-blue-600 rounded-2xl flex items-center justify-center">
+                 <div className="w-12 h-12 bg-rose-100 text-rose-600 rounded-2xl flex items-center justify-center">
                    <History size={24} />
                  </div>
                  <div className="space-y-2">
@@ -325,9 +325,9 @@ export default function LocalPoliticsPage() {
                </div>
                <div className="space-y-6">
                  {[
-                   { label: "Paris", val: 100, color: "bg-blue-600" },
-                   { label: "Marseille", val: 16, color: "bg-indigo-600" },
-                   { label: "Lyon", val: 8, color: "bg-slate-600" }
+                   { label: "Paris", val: 100, color: "bg-rose-600" },
+                   { label: "Marseille", val: 16, color: "bg-fuchsia-600" },
+                   { label: "Lyon", val: 8, color: "bg-pink-600" }
                  ].map((item, i) => (
                    <div key={i} className="space-y-2">
                      <div className="flex justify-between text-[11px] font-bold">
@@ -348,13 +348,13 @@ export default function LocalPoliticsPage() {
             </div>
 
             {/* CTA GUIDE */}
-            <div className="bg-gradient-to-br from-blue-600 to-indigo-700 p-8 rounded-[2.5rem] text-white shadow-2xl shadow-blue-600/20 group">
+            <div className="bg-gradient-to-br from-rose-600 to-fuchsia-700 p-8 rounded-[2.5rem] text-white shadow-2xl shadow-rose-600/20 group">
                <Building2 className="w-12 h-12 mb-6 text-white/50 group-hover:scale-110 transition-transform" />
                <h4 className="text-2xl font-staatliches uppercase tracking-wide leading-none mb-4">Comprendre la <br />Décentralisation</h4>
-               <p className="text-blue-50/80 text-sm leading-relaxed mb-6">
+               <p className="text-rose-50/80 text-sm leading-relaxed mb-6">
                  Comment les compétences sont-elles réparties entre l'État et les communes ? Notre guide pédagogique vous explique tout.
                </p>
-               <button className="w-full py-4 bg-white text-blue-700 rounded-2xl text-[10px] font-black uppercase tracking-widest hover:bg-blue-50 transition-all flex items-center justify-center gap-2">
+               <button className="w-full py-4 bg-white text-rose-700 rounded-2xl text-[10px] font-black uppercase tracking-widest hover:bg-rose-50 transition-all flex items-center justify-center gap-2">
                  Lire le guide <ArrowRight size={14} />
                </button>
             </div>

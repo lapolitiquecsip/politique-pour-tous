@@ -38,26 +38,26 @@ export default function LawsPage() {
           >
             <h1 className="text-5xl md:text-[7rem] font-staatliches uppercase tracking-tight leading-none mb-6 flex flex-wrap justify-center gap-x-6">
               <div className="flex">
-                <span style={{ color: 'white', filter: 'drop-shadow(0 0 15px #272757) drop-shadow(0 0 5px #272757)' }}>T</span>
-                <span style={{ color: 'white', filter: 'drop-shadow(0 0 15px #8686AC) drop-shadow(0 0 5px #8686AC)' }}>O</span>
-                <span style={{ color: 'white', filter: 'drop-shadow(0 0 15px #505081) drop-shadow(0 0 5px #505081)' }}>U</span>
-                <span style={{ color: 'white', filter: 'drop-shadow(0 0 15px #0F0E47) drop-shadow(0 0 5px #0F0E47)' }}>T</span>
+                <span style={{ color: 'white', filter: 'drop-shadow(0 0 15px #60a5fa) drop-shadow(0 0 5px white)' }}>T</span>
+                <span style={{ color: 'white', filter: 'drop-shadow(0 0 15px #38bdf8) drop-shadow(0 0 5px white)' }}>O</span>
+                <span style={{ color: 'white', filter: 'drop-shadow(0 0 15px #818cf8) drop-shadow(0 0 5px white)' }}>U</span>
+                <span style={{ color: 'white', filter: 'drop-shadow(0 0 15px #a78bfa) drop-shadow(0 0 5px white)' }}>T</span>
               </div>
               <div className="flex">
-                <span style={{ color: 'white', filter: 'drop-shadow(0 0 15px #272757) drop-shadow(0 0 5px #272757)' }}>S</span>
-                <span style={{ color: 'white', filter: 'drop-shadow(0 0 15px #8686AC) drop-shadow(0 0 5px #8686AC)' }}>U</span>
-                <span style={{ color: 'white', filter: 'drop-shadow(0 0 15px #505081) drop-shadow(0 0 5px #505081)' }}>R</span>
+                <span style={{ color: 'white', filter: 'drop-shadow(0 0 15px #93c5fd) drop-shadow(0 0 5px white)' }}>S</span>
+                <span style={{ color: 'white', filter: 'drop-shadow(0 0 15px #7dd3fc) drop-shadow(0 0 5px white)' }}>U</span>
+                <span style={{ color: 'white', filter: 'drop-shadow(0 0 15px #6366f1) drop-shadow(0 0 5px white)' }}>R</span>
               </div>
               <div className="flex">
-                <span style={{ color: 'white', filter: 'drop-shadow(0 0 15px #0F0E47) drop-shadow(0 0 5px #0F0E47)' }}>L</span>
-                <span style={{ color: 'white', filter: 'drop-shadow(0 0 15px #272757) drop-shadow(0 0 5px #272757)' }}>E</span>
-                <span style={{ color: 'white', filter: 'drop-shadow(0 0 15px #8686AC) drop-shadow(0 0 5px #8686AC)' }}>S</span>
+                <span style={{ color: 'white', filter: 'drop-shadow(0 0 15px #0ea5e9) drop-shadow(0 0 5px white)' }}>L</span>
+                <span style={{ color: 'white', filter: 'drop-shadow(0 0 15px #60a5fa) drop-shadow(0 0 5px white)' }}>E</span>
+                <span style={{ color: 'white', filter: 'drop-shadow(0 0 15px #38bdf8) drop-shadow(0 0 5px white)' }}>S</span>
               </div>
               <div className="flex italic underline decoration-rose-500/30 underline-offset-8">
-                <span style={{ color: 'white', filter: 'drop-shadow(0 0 15px #505081) drop-shadow(0 0 5px #505081)' }}>L</span>
-                <span style={{ color: 'white', filter: 'drop-shadow(0 0 15px #0F0E47) drop-shadow(0 0 5px #0F0E47)' }}>O</span>
-                <span style={{ color: 'white', filter: 'drop-shadow(0 0 15px #272757) drop-shadow(0 0 5px #272757)' }}>I</span>
-                <span style={{ color: 'white', filter: 'drop-shadow(0 0 15px #8686AC) drop-shadow(0 0 5px #8686AC)' }}>S</span>
+                <span style={{ color: 'white', filter: 'drop-shadow(0 0 15px #818cf8) drop-shadow(0 0 5px white)' }}>L</span>
+                <span style={{ color: 'white', filter: 'drop-shadow(0 0 15px #a78bfa) drop-shadow(0 0 5px white)' }}>O</span>
+                <span style={{ color: 'white', filter: 'drop-shadow(0 0 15px #93c5fd) drop-shadow(0 0 5px white)' }}>I</span>
+                <span style={{ color: 'white', filter: 'drop-shadow(0 0 15px #7dd3fc) drop-shadow(0 0 5px white)' }}>S</span>
               </div>
             </h1>
             

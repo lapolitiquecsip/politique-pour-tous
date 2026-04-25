@@ -46,28 +46,67 @@ export default function HomeHero() {
               <span style={{ color: '#CFFFDC' }}>e</span>
               <span className="text-white">.</span>
               
-              {/* Hand-drawn neon star */}
-              <motion.div
-                initial={{ scale: 0, rotate: -20 }}
-                animate={{ scale: 1, rotate: 12 }}
-                transition={{ delay: 1, type: "spring", stiffness: 200 }}
-                className="inline-block ml-4 align-middle"
-              >
-                <svg 
-                  viewBox="0 0 24 24" 
-                  fill="none" 
-                  stroke="#fbbf24" 
-                  strokeWidth="2.5" 
-                  strokeLinecap="round" 
-                  strokeLinejoin="round" 
-                  className="w-10 h-10 md:w-14 md:h-14 drop-shadow-[0_0_15px_rgba(251,191,36,0.8)] filter"
+              {/* Cluster of hand-drawn neon stars */}
+              <div className="relative inline-block ml-6 align-middle">
+                {/* Initial Yellow Star */}
+                <motion.div
+                  initial={{ scale: 0, rotate: -20 }}
+                  animate={{ scale: 1, rotate: 12 }}
+                  transition={{ delay: 1, type: "spring", stiffness: 200 }}
                 >
-                  <path d="M12 3l2.5 5h5.5l-4.5 3.5 1.5 5.5-5-4-5 4 1.5-5.5-4.5-3.5h5.5z" />
-                  {/* Small extra scribble to enhance child-like feel */}
-                  <path d="M12 3v1" opacity="0.5" />
-                  <path d="M19 8l-1 0.5" opacity="0.5" />
-                </svg>
-              </motion.div>
+                  <svg 
+                    viewBox="0 0 24 24" 
+                    fill="none" 
+                    stroke="#fbbf24" 
+                    strokeWidth="2.5" 
+                    strokeLinecap="round" 
+                    strokeLinejoin="round" 
+                    className="w-10 h-10 md:w-14 md:h-14 drop-shadow-[0_0_15px_rgba(251,191,36,0.8)]"
+                  >
+                    <path d="M12 3l2.5 5h5.5l-4.5 3.5 1.5 5.5-5-4-5 4 1.5-5.5-4.5-3.5h5.5z" />
+                  </svg>
+                </motion.div>
+
+                {/* Small Red Star (Above Left) */}
+                <motion.div
+                  initial={{ scale: 0, opacity: 0 }}
+                  animate={{ scale: 0.7, opacity: 1, rotate: -15 }}
+                  transition={{ delay: 1.3, type: "spring" }}
+                  className="absolute -top-6 -left-4"
+                >
+                  <svg 
+                    viewBox="0 0 24 24" 
+                    fill="none" 
+                    stroke="#ef4444" 
+                    strokeWidth="3" 
+                    strokeLinecap="round" 
+                    strokeLinejoin="round" 
+                    className="w-6 h-6 md:w-8 md:h-8 drop-shadow-[0_0_10px_rgba(239,68,68,0.8)]"
+                  >
+                    <path d="M12 3l2.5 5h5.5l-4.5 3.5 1.5 5.5-5-4-5 4 1.5-5.5-4.5-3.5h5.5z" />
+                  </svg>
+                </motion.div>
+
+                {/* Small Blue Star (Above Right) */}
+                <motion.div
+                  initial={{ scale: 0, opacity: 0 }}
+                  animate={{ scale: 0.6, opacity: 1, rotate: 25 }}
+                  transition={{ delay: 1.5, type: "spring" }}
+                  className="absolute -top-8 -right-2"
+                >
+                  <svg 
+                    viewBox="0 0 24 24" 
+                    fill="none" 
+                    stroke="#3b82f6" 
+                    strokeWidth="3" 
+                    strokeLinecap="round" 
+                    strokeLinejoin="round" 
+                    className="w-6 h-6 md:w-8 md:h-8 drop-shadow-[0_0_10px_rgba(59,130,246,0.8)]"
+                  >
+                    <path d="M12 3l2.5 5h5.5l-4.5 3.5 1.5 5.5-5-4-5 4 1.5-5.5-4.5-3.5h5.5z" />
+                  </svg>
+                </motion.div>
+              </div>
             </span>
           </h1>
           

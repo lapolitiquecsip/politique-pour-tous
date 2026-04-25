@@ -82,7 +82,7 @@ export default function Header() {
                 <Link 
                   key={link.href}
                   href={link.href} 
-                  className={`flex items-center gap-1 group transition-all duration-300 ${link.isSpecial ? 'underline decoration-yellow-400 decoration-2 underline-offset-4' : ''}`}
+                  className={`flex items-center gap-1 group transition-all duration-300 whitespace-nowrap ${link.isSpecial ? 'underline decoration-yellow-400 decoration-2 underline-offset-4' : ''}`}
                 >
                   <Icon size={link.label === 'Local' ? 14 : 15} className={`${link.iconColor} group-hover:scale-110 transition-transform`} />
                   <span className={`font-staatliches text-xl uppercase tracking-wider ${link.color} pt-0.5 group-hover:opacity-80 transition-all`}>

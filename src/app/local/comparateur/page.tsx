@@ -1,5 +1,7 @@
 "use client";
 
+import { useEffect } from "react";
+import { useRouter } from "next/navigation";
 import { motion } from "framer-motion";
 import { Map, ArrowRight, ShieldCheck, Zap, Globe, ChevronLeft } from "lucide-react";
 import Link from "next/link";
@@ -7,7 +9,14 @@ import { usePremium } from "@/lib/hooks/usePremium";
 import { getPremiumUrl } from "@/lib/utils";
 
 export default function ComparateurConcept() {
-  const { userId } = usePremium();
+  const { userId, isPremium, loading } = usePremium();
+  const router = useRouter();
+
+  useEffect(() => {
+    if (!loading && isPremium) {
+      router.replace("/local/comparateur/app");
+    }
+  }, [isPremium, loading, router]);
 
   return (
     <main className="min-h-screen bg-white">

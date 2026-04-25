@@ -85,7 +85,7 @@ const DEPARTMENTS = [
 ];
 
 export default function LocalPoliticsPage() {
-  const { userId, isPremium } = usePremium();
+  const { userId, isPremium, loading: pLoading } = usePremium();
   const [activeTab, setActiveTab] = useState<"region" | "departement" | "commune">("commune");
   const [search, setSearch] = useState("");
 
@@ -381,7 +381,7 @@ export default function LocalPoliticsPage() {
               </div>
 
               {/* TEASER OVERLAY - ONLY FOR NON-PREMIUM */}
-              {!isPremium && (
+              {(!isPremium && !pLoading) && (
                 <div className="absolute inset-0 bg-white/20 backdrop-blur-[2px] flex flex-col items-center justify-center p-6 text-center z-10">
                   <div className="space-y-2 mb-6">
                     <h4 className="text-xl font-staatliches uppercase tracking-tight text-amber-600">Le Comparateur <span className="text-slate-900">Territorial</span></h4>
@@ -432,7 +432,7 @@ export default function LocalPoliticsPage() {
               </div>
 
               {/* TEASER OVERLAY - ONLY FOR NON-PREMIUM */}
-              {!isPremium && (
+              {(!isPremium && !pLoading) && (
                 <div className="absolute inset-0 bg-slate-900/40 backdrop-blur-[3px] flex flex-col items-center justify-center p-6 text-center z-30">
                   <div className="space-y-2 mb-6">
                     <h4 className="text-xl font-staatliches uppercase tracking-tight text-white">Radar des <span className="text-amber-500 italic">Grands Travaux</span></h4>

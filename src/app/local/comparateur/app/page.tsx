@@ -1,7 +1,7 @@
 "use client";
 
 import { motion } from "framer-motion";
-import { Map, ChevronLeft, Search, TrendingUp, ShieldCheck, HeartPulse } from "lucide-react";
+import { Map, ChevronLeft, Search, TrendingUp, ShieldCheck, HeartPulse, Zap } from "lucide-react";
 import Link from "next/link";
 
 export default function ComparateurApp() {

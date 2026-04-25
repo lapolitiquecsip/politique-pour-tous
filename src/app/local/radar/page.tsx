@@ -1,5 +1,7 @@
 "use client";
 
+import { useEffect } from "react";
+import { useRouter } from "next/navigation";
 import { motion } from "framer-motion";
 import { Building2, ArrowRight, Eye, Landmark, TrendingUp, ChevronLeft } from "lucide-react";
 import Link from "next/link";
@@ -7,7 +9,14 @@ import { usePremium } from "@/lib/hooks/usePremium";
 import { getPremiumUrl } from "@/lib/utils";
 
 export default function RadarConcept() {
-  const { userId } = usePremium();
+  const { userId, isPremium, loading } = usePremium();
+  const router = useRouter();
+
+  useEffect(() => {
+    if (!loading && isPremium) {
+      router.replace("/local/radar/app");
+    }
+  }, [isPremium, loading, router]);
 
   return (
     <main className="min-h-screen bg-slate-950 text-white">

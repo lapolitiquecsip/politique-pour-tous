@@ -62,7 +62,7 @@ export default function DeputyDetailPage({ params }: { params: Promise<{ slug: s
   const [loadingFollow, setLoadingFollow] = useState(false);
   const [checkingFollow, setCheckingFollow] = useState(true);
   const [showLegalModal, setShowLegalModal] = useState(false);
-  const [isBioExpanded, setIsBioExpanded] = useState(true);
+  const [isBioExpanded, setIsBioExpanded] = useState(false);
 
   const [votes, setVotes] = useState<any[]>([]);
   const [loadingVotes, setLoadingVotes] = useState(true);

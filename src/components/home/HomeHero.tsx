@@ -144,23 +144,27 @@ export default function HomeHero() {
                   </svg>
                 </motion.div>
 
-                {/* Small Blue Star (Above Right) */}
+                {/* French Flag */}
                 <motion.div
-                  initial={{ scale: 0, opacity: 0 }}
-                  animate={{ scale: 0.6, opacity: 1, rotate: 25 }}
-                  transition={{ delay: 1.5, type: "spring" }}
-                  className="absolute -top-8 -right-2"
+                  animate={{ 
+                    y: [0, -10, 0],
+                    rotate: [0, -5, 0]
+                  }}
+                  transition={{ 
+                    duration: 4, 
+                    repeat: Infinity, 
+                    ease: "easeInOut",
+                    delay: 0.5
+                  }}
+                  className="absolute -top-4 -right-16 md:-right-20"
                 >
                   <svg 
-                    viewBox="0 0 24 24" 
-                    fill="none" 
-                    stroke="#3b82f6" 
-                    strokeWidth="3" 
-                    strokeLinecap="round" 
-                    strokeLinejoin="round" 
-                    className="w-6 h-6 md:w-8 md:h-8 drop-shadow-[0_0_10px_rgba(59,130,246,0.8)]"
+                    viewBox="0 0 30 20" 
+                    className="w-10 h-6 md:w-12 md:h-8 shadow-lg rounded-sm overflow-hidden"
                   >
-                    <path d="M12 3l2.5 5h5.5l-4.5 3.5 1.5 5.5-5-4-5 4 1.5-5.5-4.5-3.5h5.5z" />
+                    <rect width="10" height="20" fill="#002395" className="drop-shadow-[0_0_8px_rgba(0,35,149,0.5)]" />
+                    <rect x="10" width="10" height="20" fill="#ffffff" className="drop-shadow-[0_0_8px_rgba(255,255,255,0.5)]" />
+                    <rect x="20" width="10" height="20" fill="#ed2939" className="drop-shadow-[0_0_8px_rgba(237,41,57,0.5)]" />
                   </svg>
                 </motion.div>
               </div>

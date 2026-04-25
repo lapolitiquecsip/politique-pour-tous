@@ -35,8 +35,34 @@ export default function HomeHero() {
           className="flex flex-col items-center"
         >
           <h1 className="text-6xl md:text-8xl font-staatliches uppercase tracking-tight leading-none mb-6 flex flex-col items-start">
-            <span className="block text-white drop-shadow-[0_0_30px_rgba(255,255,255,0.2)]">La politique,</span>
-            <span className="italic decoration-rose-500/30 underline-offset-8 uppercase">
+            <span className="block text-white drop-shadow-[0_0_30px_rgba(255,255,255,0.2)]">
+              La{" "}
+              <span className="relative inline-block px-4 py-2">
+                politique,
+                {/* Hand-drawn rough circle SVG */}
+                <svg
+                  viewBox="0 0 300 100"
+                  fill="none"
+                  stroke="currentColor"
+                  strokeWidth="3.5"
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  className="absolute inset-0 w-full h-full text-rose-500/60 drop-shadow-[0_0_10px_rgba(244,63,94,0.4)] pointer-events-none -rotate-2 -translate-y-1 scale-125"
+                >
+                  <path 
+                    d="M15,50 C15,20 80,8 150,8 C220,8 285,20 285,50 C285,80 220,92 150,92 C80,92 15,80 15,50 Z" 
+                    className="animate-[dash_2s_ease-out_forwards]"
+                    style={{ strokeDasharray: 1000, strokeDashoffset: 1000 }}
+                  />
+                  <style>{`
+                    @keyframes dash {
+                      to { strokeDashoffset: 0; }
+                    }
+                  `}</style>
+                </svg>
+              </span>
+            </span>
+            <span className="italic decoration-rose-500/30 underline-offset-8 uppercase flex items-center flex-wrap">
               <span className="text-white">c'est </span>
               <span style={{ color: '#2E6F40' }}>s</span>
               <span style={{ color: '#CFFFDC' }}>i</span>

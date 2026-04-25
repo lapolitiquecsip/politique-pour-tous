@@ -20,6 +20,8 @@ import {
 import Link from "next/link";
 import { useState } from "react";
 import GlossaryText from "@/components/ui/GlossaryText";
+import { usePremium } from "@/lib/hooks/usePremium";
+import { getPremiumUrl } from "@/lib/utils";
 
 // Mock Data for Local Politics
 const CITIES = [
@@ -83,6 +85,7 @@ const DEPARTMENTS = [
 ];
 
 export default function LocalPoliticsPage() {
+  const { userId, isPremium } = usePremium();
   const [activeTab, setActiveTab] = useState<"region" | "departement" | "commune">("commune");
   const [search, setSearch] = useState("");
 
@@ -348,74 +351,98 @@ export default function LocalPoliticsPage() {
                </div>
             </div>
 
-            {/* PREMIUM: COMPARATEUR DE TERRITOIRES */}
-            <div className="relative group overflow-hidden bg-white p-8 rounded-[2.5rem] border border-slate-200 shadow-xl shadow-slate-200/20">
+            {/* PREMIUM: LE COMPARATEUR TERRITORIAL */}
+            <Link 
+              href={getPremiumUrl(userId)}
+              className="relative group block overflow-hidden bg-white p-8 rounded-[2.5rem] border border-slate-200 shadow-xl shadow-slate-200/20 transition-all hover:scale-[1.02] active:scale-[0.98]"
+            >
               <div className="flex items-center justify-between mb-8">
-                <h3 className="text-xl font-bold text-slate-900">Comparateur</h3>
-                <Map size={20} className="text-rose-500" />
+                <h3 className="text-xl font-bold text-slate-900">Comparateur Territorial</h3>
+                <div className="w-8 h-8 rounded-full bg-amber-100 flex items-center justify-center text-amber-600">
+                  <Map size={16} />
+                </div>
               </div>
               
-              <div className="space-y-4 opacity-40 blur-[2px] pointer-events-none">
+              <div className="space-y-4 opacity-40 blur-[4px] pointer-events-none">
                 <div className="p-4 bg-slate-50 rounded-2xl border border-slate-100 flex items-center justify-between">
-                  <span className="text-sm font-bold text-slate-400">Ville A...</span>
+                  <span className="text-sm font-bold text-slate-400">Région A...</span>
                   <ChevronRight size={14} className="text-slate-300" />
                 </div>
                 <div className="flex justify-center">
-                  <div className="w-8 h-8 rounded-full bg-rose-50 flex items-center justify-center text-rose-600 font-black text-xs">VS</div>
+                  <div className="w-10 h-10 rounded-full bg-amber-500 flex items-center justify-center text-white font-black text-xs shadow-lg shadow-amber-500/40">VS</div>
                 </div>
                 <div className="p-4 bg-slate-50 rounded-2xl border border-slate-100 flex items-center justify-between">
-                  <span className="text-sm font-bold text-slate-400">Ville B...</span>
+                  <span className="text-sm font-bold text-slate-400">Région B...</span>
                   <ChevronRight size={14} className="text-slate-300" />
                 </div>
               </div>
 
-              {/* LOCK OVERLAY */}
-              <div className="absolute inset-0 bg-white/40 backdrop-blur-[1px] flex flex-col items-center justify-center p-6 text-center z-10">
-                <div className="w-12 h-12 bg-white rounded-2xl shadow-xl flex items-center justify-center text-rose-600 mb-4 ring-1 ring-rose-100">
-                  <Lock size={24} />
+              {/* GOLD LOCK OVERLAY */}
+              <div className="absolute inset-0 bg-white/30 backdrop-blur-[2px] flex flex-col items-center justify-center p-6 text-center z-10">
+                <div className="w-16 h-16 bg-gradient-to-br from-amber-400 to-yellow-600 rounded-3xl shadow-2xl shadow-amber-500/50 flex items-center justify-center text-white mb-6 transform rotate-3 group-hover:rotate-0 transition-transform duration-500">
+                  <Lock size={32} />
                 </div>
-                <h4 className="text-sm font-black uppercase tracking-widest text-slate-900 mb-2">Comparateur Premium</h4>
-                <p className="text-[10px] text-slate-500 font-medium leading-relaxed mb-4">Comparez sécurité, éducation et fiscalité entre deux villes.</p>
-                <button className="px-6 py-2 bg-rose-600 text-white text-[10px] font-black uppercase tracking-widest rounded-xl shadow-lg shadow-rose-600/20 hover:scale-105 transition-all">
-                  Débloquer l'accès
-                </button>
+                <div className="space-y-2 mb-6">
+                  <h4 className="text-xl font-staatliches uppercase tracking-tight text-amber-600">Le Comparateur <span className="text-slate-900">Premium</span></h4>
+                  <p className="text-[10px] text-slate-500 font-black uppercase tracking-widest leading-relaxed">
+                    Villes, Départements, Régions : <br />
+                    Comparez tout le territoire français.
+                  </p>
+                </div>
+                <div className="px-6 py-3 bg-slate-900 text-white text-[10px] font-black uppercase tracking-widest rounded-xl shadow-xl transition-all group-hover:bg-amber-500 group-hover:scale-105">
+                  Découvrir l'outil
+                </div>
               </div>
-            </div>
+            </Link>
 
-            {/* PREMIUM: GRANDS PROJETS URBAINS */}
-            <div className="relative group overflow-hidden bg-slate-900 p-8 rounded-[2.5rem] text-white shadow-2xl shadow-rose-900/20">
-              <div className="flex items-center justify-between mb-8">
-                <h3 className="text-xl font-bold">Grands Projets</h3>
-                <Building2 size={20} className="text-rose-400" />
+            {/* PREMIUM: RADAR DES GRANDS TRAVAUX */}
+            <Link 
+              href={getPremiumUrl(userId)}
+              className="relative group block overflow-hidden bg-slate-900 p-8 rounded-[2.5rem] text-white shadow-2xl shadow-slate-900/40 transition-all hover:scale-[1.02] active:scale-[0.98]"
+            >
+              <div className="absolute top-0 right-0 p-8 opacity-10">
+                <Building2 size={80} className="text-amber-400" />
               </div>
 
-              <div className="space-y-4 opacity-30 blur-[2px] pointer-events-none">
+              <div className="flex items-center justify-between mb-8 relative z-20">
+                <h3 className="text-xl font-bold">Radar des Grands Travaux</h3>
+                <div className="w-8 h-8 rounded-full bg-amber-500 flex items-center justify-center text-white shadow-lg shadow-amber-500/20">
+                  <TrendingUp size={16} />
+                </div>
+              </div>
+
+              <div className="space-y-4 opacity-20 blur-[5px] pointer-events-none relative z-10">
                 <div className="p-4 rounded-2xl bg-white/5 border border-white/10">
-                  <h4 className="text-xs font-bold mb-2">Tramway Ligne T10</h4>
+                  <h4 className="text-xs font-bold mb-2">Extension du Métro</h4>
                   <div className="h-1 bg-white/10 rounded-full overflow-hidden">
-                    <div className="h-full bg-rose-500 w-2/3" />
+                    <div className="h-full bg-amber-500 w-2/3 shadow-[0_0_10px_#f59e0b]" />
                   </div>
                 </div>
                 <div className="p-4 rounded-2xl bg-white/5 border border-white/10">
-                  <h4 className="text-xs font-bold mb-2">Éco-quartier Flaubert</h4>
+                  <h4 className="text-xs font-bold mb-2">Pôle Santé Régional</h4>
                   <div className="h-1 bg-white/10 rounded-full overflow-hidden">
-                    <div className="h-full bg-rose-500 w-1/3" />
+                    <div className="h-full bg-amber-500 w-1/3 shadow-[0_0_10px_#f59e0b]" />
                   </div>
                 </div>
               </div>
 
-              {/* LOCK OVERLAY */}
-              <div className="absolute inset-0 bg-slate-900/60 backdrop-blur-[2px] flex flex-col items-center justify-center p-6 text-center z-10">
-                <div className="w-12 h-12 bg-white/10 backdrop-blur-xl rounded-2xl border border-white/20 flex items-center justify-center text-rose-400 mb-4">
-                  <Lock size={24} />
+              {/* GOLD LOCK OVERLAY */}
+              <div className="absolute inset-0 bg-slate-900/50 backdrop-blur-[3px] flex flex-col items-center justify-center p-6 text-center z-30">
+                <div className="w-16 h-16 bg-white/10 backdrop-blur-xl rounded-3xl border border-amber-400/30 flex items-center justify-center text-amber-400 mb-6 group-hover:scale-110 transition-transform duration-500">
+                  <Lock size={32} className="drop-shadow-[0_0_8px_rgba(245,158,11,0.6)]" />
                 </div>
-                <h4 className="text-sm font-black uppercase tracking-widest text-white mb-2">Suivi des Chantiers</h4>
-                <p className="text-[10px] text-white/50 font-medium leading-relaxed mb-4">Coûts réels, retards et impact de l'investissement public.</p>
-                <button className="px-6 py-2 bg-white text-slate-900 text-[10px] font-black uppercase tracking-widest rounded-xl hover:bg-rose-500 hover:text-white transition-all">
-                  Voir les dossiers
-                </button>
+                <div className="space-y-2 mb-6">
+                  <h4 className="text-xl font-staatliches uppercase tracking-tight text-white">Radar des <span className="text-amber-500 italic">Grands Travaux</span></h4>
+                  <p className="text-[10px] text-white/50 font-black uppercase tracking-widest leading-relaxed">
+                    Suivi budgétaire, retards et <br />
+                    coulisses des chantiers locaux.
+                  </p>
+                </div>
+                <div className="px-6 py-3 bg-amber-500 text-slate-900 text-[10px] font-black uppercase tracking-widest rounded-xl shadow-lg shadow-amber-500/20 group-hover:bg-white group-hover:text-amber-600 transition-all">
+                  Accéder aux dossiers
+                </div>
               </div>
-            </div>
+            </Link>
 
           </div>
         </div>

@@ -70,7 +70,7 @@ export default function Header() {
               <Landmark size={20} />
             </div>
             <span className="font-staatliches text-2xl tracking-wider uppercase leading-none pt-1">
-              <span className="text-slate-900">La politique</span> <span className="bg-gradient-to-r from-rose-500 to-rose-600 bg-clip-text text-transparent">c simple</span>
+              <span className="text-slate-900">La politique</span> <span className="bg-gradient-to-r from-blue-500 via-rose-500 to-amber-500 bg-clip-text text-transparent">c simple</span>
             </span>
           </Link>
 
@@ -118,7 +118,7 @@ export default function Header() {
             ) : (
               <Link 
                 href="/login"
-                className="inline-flex items-center gap-2 px-5 py-2 bg-slate-900 text-white rounded-xl text-sm font-bold hover:bg-rose-500 transition-all shadow-lg shadow-slate-900/10"
+                className="inline-flex items-center gap-2 px-5 py-2 bg-slate-900 text-white rounded-xl text-sm font-bold hover:bg-gradient-to-r hover:from-blue-600 hover:to-rose-600 transition-all shadow-lg shadow-slate-900/10"
               >
                 <LogIn size={16} />
                 Se connecter
@@ -158,7 +158,7 @@ export default function Header() {
           })}
           
           <div className="pt-2">
-            <Link href="/login" className="flex items-center gap-3 text-lg font-bold text-rose-600" onClick={() => setIsMenuOpen(false)}>
+            <Link href="/login" className="flex items-center gap-3 text-lg font-bold text-rose-600 hover:text-blue-600 transition-colors" onClick={() => setIsMenuOpen(false)}>
               <LogIn size={20} /> Mon Compte
             </Link>
           </div>

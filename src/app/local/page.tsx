@@ -14,7 +14,8 @@ import {
   ChevronRight,
   Map,
   Layers,
-  LayoutGrid
+  LayoutGrid,
+  Lock
 } from "lucide-react";
 import Link from "next/link";
 import { useState } from "react";
@@ -345,6 +346,75 @@ export default function LocalPoliticsPage() {
                    </div>
                  ))}
                </div>
+            </div>
+
+            {/* PREMIUM: COMPARATEUR DE TERRITOIRES */}
+            <div className="relative group overflow-hidden bg-white p-8 rounded-[2.5rem] border border-slate-200 shadow-xl shadow-slate-200/20">
+              <div className="flex items-center justify-between mb-8">
+                <h3 className="text-xl font-bold text-slate-900">Comparateur</h3>
+                <Map size={20} className="text-rose-500" />
+              </div>
+              
+              <div className="space-y-4 opacity-40 blur-[2px] pointer-events-none">
+                <div className="p-4 bg-slate-50 rounded-2xl border border-slate-100 flex items-center justify-between">
+                  <span className="text-sm font-bold text-slate-400">Ville A...</span>
+                  <ChevronRight size={14} className="text-slate-300" />
+                </div>
+                <div className="flex justify-center">
+                  <div className="w-8 h-8 rounded-full bg-rose-50 flex items-center justify-center text-rose-600 font-black text-xs">VS</div>
+                </div>
+                <div className="p-4 bg-slate-50 rounded-2xl border border-slate-100 flex items-center justify-between">
+                  <span className="text-sm font-bold text-slate-400">Ville B...</span>
+                  <ChevronRight size={14} className="text-slate-300" />
+                </div>
+              </div>
+
+              {/* LOCK OVERLAY */}
+              <div className="absolute inset-0 bg-white/40 backdrop-blur-[1px] flex flex-col items-center justify-center p-6 text-center z-10">
+                <div className="w-12 h-12 bg-white rounded-2xl shadow-xl flex items-center justify-center text-rose-600 mb-4 ring-1 ring-rose-100">
+                  <Lock size={24} />
+                </div>
+                <h4 className="text-sm font-black uppercase tracking-widest text-slate-900 mb-2">Comparateur Premium</h4>
+                <p className="text-[10px] text-slate-500 font-medium leading-relaxed mb-4">Comparez sécurité, éducation et fiscalité entre deux villes.</p>
+                <button className="px-6 py-2 bg-rose-600 text-white text-[10px] font-black uppercase tracking-widest rounded-xl shadow-lg shadow-rose-600/20 hover:scale-105 transition-all">
+                  Débloquer l'accès
+                </button>
+              </div>
+            </div>
+
+            {/* PREMIUM: GRANDS PROJETS URBAINS */}
+            <div className="relative group overflow-hidden bg-slate-900 p-8 rounded-[2.5rem] text-white shadow-2xl shadow-rose-900/20">
+              <div className="flex items-center justify-between mb-8">
+                <h3 className="text-xl font-bold">Grands Projets</h3>
+                <Building2 size={20} className="text-rose-400" />
+              </div>
+
+              <div className="space-y-4 opacity-30 blur-[2px] pointer-events-none">
+                <div className="p-4 rounded-2xl bg-white/5 border border-white/10">
+                  <h4 className="text-xs font-bold mb-2">Tramway Ligne T10</h4>
+                  <div className="h-1 bg-white/10 rounded-full overflow-hidden">
+                    <div className="h-full bg-rose-500 w-2/3" />
+                  </div>
+                </div>
+                <div className="p-4 rounded-2xl bg-white/5 border border-white/10">
+                  <h4 className="text-xs font-bold mb-2">Éco-quartier Flaubert</h4>
+                  <div className="h-1 bg-white/10 rounded-full overflow-hidden">
+                    <div className="h-full bg-rose-500 w-1/3" />
+                  </div>
+                </div>
+              </div>
+
+              {/* LOCK OVERLAY */}
+              <div className="absolute inset-0 bg-slate-900/60 backdrop-blur-[2px] flex flex-col items-center justify-center p-6 text-center z-10">
+                <div className="w-12 h-12 bg-white/10 backdrop-blur-xl rounded-2xl border border-white/20 flex items-center justify-center text-rose-400 mb-4">
+                  <Lock size={24} />
+                </div>
+                <h4 className="text-sm font-black uppercase tracking-widest text-white mb-2">Suivi des Chantiers</h4>
+                <p className="text-[10px] text-white/50 font-medium leading-relaxed mb-4">Coûts réels, retards et impact de l'investissement public.</p>
+                <button className="px-6 py-2 bg-white text-slate-900 text-[10px] font-black uppercase tracking-widest rounded-xl hover:bg-rose-500 hover:text-white transition-all">
+                  Voir les dossiers
+                </button>
+              </div>
             </div>
 
           </div>

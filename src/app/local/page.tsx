@@ -11,7 +11,10 @@ import {
   Vote,
   History,
   Building,
-  ChevronRight
+  ChevronRight,
+  Map,
+  Layers,
+  LayoutGrid
 } from "lucide-react";
 import Link from "next/link";
 import { useState } from "react";
@@ -66,13 +69,32 @@ const CITIES = [
   }
 ];
 
+const REGIONS = [
+  { name: "Île-de-France", president: "Valérie Pécresse", party: "LR", budget: "5.0 Md€", population: "12.3M", image: "https://images.unsplash.com/photo-1502602898657-3e91760cbb34?auto=format&fit=crop&q=80&w=800" },
+  { name: "Auvergne-Rhône-Alpes", president: "Laurent Wauquiez", party: "LR", budget: "3.6 Md€", population: "8.1M", image: "https://images.unsplash.com/photo-1549144511-f099e773c147?auto=format&fit=crop&q=80&w=800" },
+  { name: "Hauts-de-France", president: "Xavier Bertrand", party: "LR", budget: "3.4 Md€", population: "6.0M", image: "https://images.unsplash.com/photo-1595863266931-1509a259c40a?auto=format&fit=crop&q=80&w=800" }
+];
+
+const DEPARTMENTS = [
+  { name: "Nord", president: "Christian Poiret", party: "DVD", budget: "3.5 Md€", population: "2.6M", image: "https://images.unsplash.com/photo-1595113316349-9fa4ee24f884?auto=format&fit=crop&q=80&w=800" },
+  { name: "Bouches-du-Rhône", president: "Martine Vassal", party: "DVD", budget: "2.8 Md€", population: "2.0M", image: "https://images.unsplash.com/photo-1563606734-706798032742?auto=format&fit=crop&q=80&w=800" },
+  { name: "Gironde", president: "Jean-Luc Gleyze", party: "PS", budget: "2.1 Md€", population: "1.6M", image: "https://images.unsplash.com/photo-1517404212328-40a61576d1ff?auto=format&fit=crop&q=80&w=800" }
+];
+
 export default function LocalPoliticsPage() {
+  const [activeTab, setActiveTab] = useState<"region" | "departement" | "commune">("commune");
   const [search, setSearch] = useState("");
 
-  const filteredCities = CITIES.filter(c => 
-    c.name.toLowerCase().includes(search.toLowerCase()) || 
-    c.mayor.toLowerCase().includes(search.toLowerCase())
-  );
+  const filteredItems = (() => {
+    const s = search.toLowerCase();
+    if (activeTab === "commune") {
+      return CITIES.filter(c => c.name.toLowerCase().includes(s) || c.mayor.toLowerCase().includes(s));
+    } else if (activeTab === "region") {
+      return REGIONS.filter(r => r.name.toLowerCase().includes(s) || r.president.toLowerCase().includes(s));
+    } else {
+      return DEPARTMENTS.filter(d => d.name.toLowerCase().includes(s) || d.president.toLowerCase().includes(s));
+    }
+  })();
 
   return (
     <main className="min-h-screen bg-slate-50 pb-20">
@@ -111,6 +133,43 @@ export default function LocalPoliticsPage() {
       </section>
 
       <div className="container mx-auto max-w-7xl px-4 mt-12">
+        {/* 1.5 TABS NAVIGATION (GROS PANNEAU) */}
+        <div className="mb-16">
+          <div className="bg-white p-2 rounded-[2.5rem] border border-slate-200 shadow-2xl shadow-slate-200/50 flex flex-col md:flex-row gap-2">
+            {[
+              { id: "region", label: "La Région", icon: Map, color: "emerald" },
+              { id: "departement", label: "Le Département", icon: Layers, color: "blue" },
+              { id: "commune", label: "La Commune", icon: LayoutGrid, color: "slate" }
+            ].map((tab) => {
+              const isActive = activeTab === tab.id;
+              const Icon = tab.icon;
+              return (
+                <button
+                  key={tab.id}
+                  onClick={() => setActiveTab(tab.id as any)}
+                  className={`
+                    flex-1 flex items-center justify-center gap-4 py-8 rounded-[2rem] transition-all duration-500 relative overflow-hidden group
+                    ${isActive ? 'bg-slate-900 text-white shadow-xl translate-y-[-4px]' : 'hover:bg-slate-50 text-slate-400'}
+                  `}
+                >
+                  {isActive && (
+                    <motion.div 
+                      layoutId="activeGlow"
+                      className="absolute inset-0 bg-gradient-to-r from-emerald-500/10 via-transparent to-blue-500/10 pointer-events-none" 
+                    />
+                  )}
+                  <Icon size={24} className={isActive ? 'text-emerald-400' : 'group-hover:text-slate-600'} />
+                  <div className="text-left">
+                    <p className={`text-[10px] font-black uppercase tracking-[0.2em] mb-1 ${isActive ? 'text-emerald-400/80' : 'text-slate-300'}`}>Échelon</p>
+                    <span className="text-xl font-bold font-staatliches uppercase tracking-wide">{tab.label}</span>
+                  </div>
+                  {isActive && <div className="absolute bottom-0 left-1/2 -translate-x-1/2 w-12 h-1 bg-emerald-500 rounded-t-full" />}
+                </button>
+              );
+            })}
+          </div>
+        </div>
+
         <div className="grid grid-cols-1 lg:grid-cols-12 gap-8">
           
           {/* MAIN CONTENT - CITIES GRID */}
@@ -134,38 +193,41 @@ export default function LocalPoliticsPage() {
               </div>
             </div>
 
-            {/* CITIES GRID */}
             <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
-              {filteredCities.map((city, idx) => (
+              {filteredItems.map((item: any, idx: number) => (
                 <motion.div
-                  key={idx}
+                  key={`${activeTab}-${idx}`}
                   initial={{ opacity: 0, y: 20 }}
-                  whileInView={{ opacity: 1, y: 0 }}
+                  animate={{ opacity: 1, y: 0 }}
                   viewport={{ once: true }}
                   transition={{ delay: idx * 0.1 }}
                   className="group bg-white rounded-[2.5rem] border border-slate-200 overflow-hidden hover:shadow-2xl transition-all duration-500"
                 >
                   <div className="relative h-48 overflow-hidden">
                     <img 
-                      src={city.image} 
-                      alt={city.name}
+                      src={item.image} 
+                      alt={item.name}
                       className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-700"
                     />
                     <div className="absolute inset-0 bg-gradient-to-t from-slate-950/80 to-transparent" />
                     <div className="absolute bottom-4 left-6">
-                      <p className="text-emerald-400 font-black text-[9px] uppercase tracking-widest mb-1">Commune</p>
-                      <h4 className="text-white font-bold text-xl leading-tight">{city.name}</h4>
+                      <p className="text-emerald-400 font-black text-[9px] uppercase tracking-widest mb-1">
+                        {activeTab === 'region' ? 'Région' : activeTab === 'departement' ? 'Département' : 'Commune'}
+                      </p>
+                      <h4 className="text-white font-bold text-xl leading-tight">{item.name}</h4>
                     </div>
                   </div>
 
                   <div className="p-8 space-y-6">
                     <div>
                       <div className="flex items-center justify-between mb-2">
-                        <span className="text-[10px] font-black uppercase text-slate-400 tracking-widest">Le Maire</span>
-                        <span className="px-2 py-0.5 bg-emerald-50 text-emerald-600 text-[10px] font-bold rounded-full">{city.party}</span>
+                        <span className="text-[10px] font-black uppercase text-slate-400 tracking-widest">
+                          {activeTab === 'region' || activeTab === 'departement' ? 'Président(e)' : 'Maire'}
+                        </span>
+                        <span className="px-2 py-0.5 bg-emerald-50 text-emerald-600 text-[10px] font-bold rounded-full">{item.party}</span>
                       </div>
                       <h3 className="text-2xl font-bold text-slate-900 group-hover:text-emerald-600 transition-colors leading-tight">
-                        {city.mayor}
+                        {item.president || item.mayor}
                       </h3>
                     </div>
 
@@ -174,18 +236,18 @@ export default function LocalPoliticsPage() {
                         <span className="text-[9px] font-black uppercase text-slate-400 tracking-widest flex items-center gap-1">
                           <TrendingUp size={10} /> Budget
                         </span>
-                        <p className="text-sm font-black text-slate-900">{city.budget}</p>
+                        <p className="text-sm font-black text-slate-900">{item.budget}</p>
                       </div>
                       <div className="space-y-1">
                         <span className="text-[9px] font-black uppercase text-slate-400 tracking-widest flex items-center gap-1">
-                          <Vote size={10} /> Élu avec
+                          <Users size={10} /> Population
                         </span>
-                        <p className="text-sm font-black text-slate-900">{city.score}</p>
+                        <p className="text-sm font-black text-slate-900">{item.population || "N/A"}</p>
                       </div>
                     </div>
 
                     <button className="w-full flex items-center justify-between group/btn text-slate-900 hover:text-emerald-600 transition-colors pt-2">
-                      <span className="text-[10px] font-black uppercase tracking-widest">Voir le détail du mandat</span>
+                      <span className="text-[10px] font-black uppercase tracking-widest">Voir les compétences</span>
                       <div className="w-10 h-10 rounded-full bg-slate-50 flex items-center justify-center group-hover/btn:bg-emerald-600 group-hover/btn:text-white transition-all">
                         <ChevronRight size={18} />
                       </div>

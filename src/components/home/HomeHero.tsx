@@ -38,7 +38,9 @@ export default function HomeHero() {
             <span className="block text-white drop-shadow-[0_0_30px_rgba(255,255,255,0.2)]">
               La{" "}
               <span className="relative inline-block px-4 py-2">
-                politique,
+                <span className="bg-gradient-to-r from-white via-blue-100 to-white bg-[length:200%_auto] bg-clip-text text-transparent animate-shimmer drop-shadow-[0_0_10px_rgba(255,255,255,0.3)]">
+                  politique,
+                </span>
                 {/* Hand-drawn rough circle SVG */}
                 <svg
                   viewBox="0 0 300 100"

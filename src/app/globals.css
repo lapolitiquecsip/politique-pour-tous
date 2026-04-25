@@ -60,6 +60,12 @@
   --animate-fade-in: fade-in 0.5s ease-out forwards;
   --animate-pulse-soft: pulse-soft 2s ease-in-out infinite;
   --animate-bounce-soft: bounce-soft 2s ease-in-out infinite;
+  --animate-shimmer: shimmer 3s linear infinite;
+
+  @keyframes shimmer {
+    from { background-position: 200% center; }
+    to { background-position: 0 center; }
+  }
 
   @keyframes fade-in {
     0% { opacity: 0; transform: translateY(10px); }

@@ -53,7 +53,7 @@ export default function LawsPage() {
                 <span style={{ color: '#60a5fa', filter: 'drop-shadow(0 0 8px rgba(96, 165, 250, 0.4))' }}>E</span>
                 <span style={{ color: '#818cf8', filter: 'drop-shadow(0 0 8px rgba(129, 140, 248, 0.4))' }}>S</span>
               </div>
-              <div className="flex italic underline decoration-rose-500/30 underline-offset-8">
+              <div className="flex italic underline decoration-red-600 underline-offset-8">
                 <span style={{ color: '#a78bfa', filter: 'drop-shadow(0 0 8px rgba(167, 139, 250, 0.4))' }}>L</span>
                 <span style={{ color: '#93c5fd', filter: 'drop-shadow(0 0 8px rgba(147, 197, 253, 0.4))' }}>O</span>
                 <span style={{ color: '#7dd3fc', filter: 'drop-shadow(0 0 8px rgba(125, 211, 252, 0.4))' }}>I</span>

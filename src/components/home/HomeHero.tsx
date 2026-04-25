@@ -38,22 +38,26 @@ export default function HomeHero() {
             <span className="block text-white drop-shadow-[0_0_30px_rgba(255,255,255,0.2)]">
               La{" "}
               <span className="relative inline-block px-4 py-2">
-                <span className="text-white inline-flex">
-                  {"politique,".split("").map((char, i) => (
-                    <motion.span
-                      key={i}
-                      initial={{ y: 20, opacity: 0, scale: 0.8 }}
-                      animate={{ y: 0, opacity: 1, scale: 1 }}
-                      transition={{ 
-                        delay: 0.5 + i * 0.05, 
-                        type: "spring",
-                        stiffness: 300,
-                        damping: 15
-                      }}
-                    >
-                      {char}
-                    </motion.span>
-                  ))}
+                <span className="inline-flex">
+                  {(() => {
+                    const colors = ["#C2B280", "#E35336", "#98A869", "#7dd3fc"]; // Replaced dark #272757 with light blue #7dd3fc for visibility
+                    return "politique,".split("").map((char, i) => (
+                      <motion.span
+                        key={i}
+                        initial={{ y: 20, opacity: 0, scale: 0.8 }}
+                        animate={{ y: 0, opacity: 1, scale: 1 }}
+                        style={{ color: colors[i % colors.length] }}
+                        transition={{ 
+                          delay: 0.5 + i * 0.05, 
+                          type: "spring",
+                          stiffness: 300,
+                          damping: 15
+                        }}
+                      >
+                        {char}
+                      </motion.span>
+                    ));
+                  })()}
                 </span>
                 {/* Hand-drawn rough circle SVG */}
                 <svg

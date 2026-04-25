@@ -83,11 +83,11 @@ export default function HomeHero() {
                   <svg 
                     viewBox="0 0 24 24" 
                     fill="none" 
-                    stroke="#fbbf24" 
+                    stroke="#4ade80" 
                     strokeWidth="2.5" 
                     strokeLinecap="round" 
                     strokeLinejoin="round" 
-                    className="w-10 h-10 md:w-14 md:h-14 drop-shadow-[0_0_15px_rgba(251,191,36,0.8)]"
+                    className="w-10 h-10 md:w-14 md:h-14 drop-shadow-[0_0_15px_rgba(74,222,128,0.8)]"
                   >
                     <path d="M12 3l2.5 5h5.5l-4.5 3.5 1.5 5.5-5-4-5 4 1.5-5.5-4.5-3.5h5.5z" />
                   </svg>

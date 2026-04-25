@@ -89,9 +89,7 @@ const InstitutionCard = memo(({ inst, index, onClick }: { inst: Institution, ind
 
       {/* Contenu */}
       <div className="relative z-10 flex flex-col justify-end h-full p-10">
-        <div className="bg-blue-500/20 backdrop-blur-md w-12 h-12 rounded-xl flex items-center justify-center mb-6 border border-blue-400/30 group-hover:scale-110 transition-transform">
-          <Landmark className="text-blue-400 w-6 h-6" />
-        </div>
+
         
         <div className="flex items-center gap-3 mb-3">
 

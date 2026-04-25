@@ -136,20 +136,7 @@ export default function StatsPanel() {
             </>
           ) : (
             <>
-              <div className="relative z-10 flex items-center gap-2 mb-6">
-                <span className="px-3 py-1 rounded-full bg-white/10 border border-white/5 text-[9px] font-black uppercase tracking-[0.3em] backdrop-blur-md">
-                  {slide.type}
-                </span>
-                {slide.isLive && (
-                  <div className="flex items-center gap-1.5 px-2 py-0.5 bg-red-500/20 rounded-full border border-red-500/20">
-                    <span className="relative flex h-1.5 w-1.5">
-                      <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-red-400 opacity-75"></span>
-                      <span className="relative inline-flex rounded-full h-1.5 w-1.5 bg-red-500"></span>
-                    </span>
-                    <span className="text-[8px] font-black text-red-400 uppercase tracking-widest">Live</span>
-                  </div>
-                )}
-              </div>
+              {/* Category tag and live badge removed */}
               
               <h2 className="relative z-10 text-xl md:text-4xl font-bold max-w-3xl leading-[1.3] mb-10 tracking-tight text-white/90">
                 {slide.content}

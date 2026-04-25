@@ -22,8 +22,108 @@ const PROJECTS_BY_CITY: Record<string, any[]> = {
     { title: "Ligne de Tram T10", budget: "180 M€", progress: 20, status: "Terrassement", delay: "0" }
   ],
   "Toulouse": [
-    { title: "3ème Ligne de Métro (Toulouse Aerospace Express)", budget: "2.7 Md€", progress: 15, status: "Études/Forage", delay: "0" },
+    { title: "3ème Ligne de Métro (TAE)", budget: "2.7 Md€", progress: 15, status: "Études/Forage", delay: "0" },
     { title: "Rénovation Basilique St-Sernin", budget: "45 M€", progress: 70, status: "Restauration", delay: "6 mois" }
+  ],
+  "Nice": [
+    { title: "Ligne 4 du Tramway", budget: "250 M€", progress: 40, status: "Génie Civil", delay: "3 mois" },
+    { title: "Extension de la Promenade des Anglais", budget: "15 M€", progress: 85, status: "Aménagements", delay: "0" }
+  ],
+  "Nantes": [
+    { title: "Nouveau CHU de l'île de Nantes", budget: "1.2 Md€", progress: 50, status: "Second œuvre", delay: "5 mois" },
+    { title: "Lignes de Tram 6 et 7", budget: "280 M€", progress: 15, status: "Travaux préparatoires", delay: "0" }
+  ],
+  "Montpellier": [
+    { title: "Ligne 5 du Tramway", budget: "440 M€", progress: 65, status: "Pose rails", delay: "2 mois" },
+    { title: "Quartier Cambacérès", budget: "120 M€", progress: 35, status: "Bâtiments", delay: "0" }
+  ],
+  "Bordeaux": [
+    { title: "Pont Simone Veil", budget: "150 M€", progress: 95, status: "Finitions", delay: "2 ans" },
+    { title: "Bus Express (BHNS)", budget: "110 M€", progress: 70, status: "Voirie", delay: "4 mois" }
+  ],
+  "Lille": [
+    { title: "Rénovation du Palais Rameau", budget: "18 M€", progress: 45, status: "Désamiantage", delay: "2 mois" },
+    { title: "Modernisation du Métro (Doublement rames)", budget: "660 M€", progress: 85, status: "Tests signalisation", delay: "6 ans" }
+  ],
+  "Strasbourg": [
+    { title: "Extension Tram vers Koenigshoffen", budget: "45 M€", progress: 90, status: "Essais", delay: "0" },
+    { title: "Quartier d'affaires Archipel 2", budget: "180 M€", progress: 25, status: "Terrassement", delay: "0" }
+  ],
+  "Rennes": [
+    { title: "Ligne B du Métro (Maintenance)", budget: "25 M€", progress: 100, status: "Terminé", delay: "18 mois" },
+    { title: "Projet EuroRennes", budget: "320 M€", progress: 60, status: "Bâtiments", delay: "3 mois" }
+  ],
+  "Reims": [
+    { title: "Projet Reims Grand Centre", budget: "150 M€", progress: 75, status: "Aménagements", delay: "0" }
+  ],
+  "Toulon": [
+    { title: "Pôle d'échanges multimodal", budget: "45 M€", progress: 30, status: "Gros œuvre", delay: "1 mois" }
+  ],
+  "Saint-Étienne": [
+    { title: "Quartier Manufacture-Plaine-Achille", budget: "85 M€", progress: 55, status: "Rénovation", delay: "0" }
+  ],
+  "Le Havre": [
+    { title: "Extension du réseau de Tramway", budget: "120 M€", progress: 10, status: "Études", delay: "0" }
+  ],
+  "Grenoble": [
+    { title: "Câble 1 (Téléphérique urbain)", budget: "65 M€", progress: 20, status: "Pylônes", delay: "2 mois" }
+  ],
+  "Dijon": [
+    { title: "Cité Internationale de la Gastronomie", budget: "250 M€", progress: 100, status: "Livré", delay: "0" }
+  ],
+  "Angers": [
+    { title: "Lignes B et C du Tramway", budget: "270 M€", progress: 100, status: "Livré", delay: "0" }
+  ],
+  "Nîmes": [
+    { title: "Ligne T2 du BHNS", budget: "95 M€", progress: 80, status: "Voirie", delay: "1 mois" }
+  ],
+  "Villeurbanne": [
+    { title: "Prolongement Tram T6", budget: "140 M€", progress: 35, status: "Dévoiement réseaux", delay: "0" }
+  ],
+  "Aix-en-Provence": [
+    { title: "BHNS L'Aixpress - Phase 2", budget: "65 M€", progress: 15, status: "Études", delay: "0" }
+  ],
+  "Clermont-Ferrand": [
+    { title: "InspiRe (Restructuration réseau transport)", budget: "310 M€", progress: 25, status: "Travaux", delay: "0" }
+  ],
+  "Brest": [
+    { title: "Ligne 2 du Tramway et Téléphérique", budget: "210 M€", progress: 5, status: "Lancement", delay: "0" }
+  ],
+  "Le Mans": [
+    { title: "Chronolignes (Bus haut niveau service)", budget: "80 M€", progress: 30, status: "Travaux", delay: "0" }
+  ],
+  "Amiens": [
+    { title: "ZAC Intercampus", budget: "55 M€", progress: 60, status: "Bâtiments", delay: "0" }
+  ],
+  "Annecy": [
+    { title: "Bus à Haut Niveau de Service", budget: "45 M€", progress: 10, status: "Consultation", delay: "0" }
+  ],
+  "Limoges": [
+    { title: "Modernisation des lignes de Trolleybus", budget: "35 M€", progress: 40, status: "Câblage", delay: "0" }
+  ],
+  "Boulogne-Billancourt": [
+    { title: "Aménagement de l'Île Seguin", budget: "450 M€", progress: 50, status: "Gros œuvre", delay: "4 ans" }
+  ],
+  "Metz": [
+    { title: "Ligne C du Mettis", budget: "90 M€", progress: 15, status: "Début chantier", delay: "0" }
+  ],
+  "Besançon": [
+    { title: "Eco-quartier Vauban", budget: "40 M€", progress: 70, status: "Finitions", delay: "0" }
+  ],
+  "Perpignan": [
+    { title: "Réhabilitation du Centre Historique", budget: "25 M€", progress: 30, status: "Ravalement", delay: "0" }
+  ],
+  "Orléans": [
+    { title: "CO&MET (Centre Orléans Métropole)", budget: "110 M€", progress: 100, status: "Livré", delay: "0" }
+  ],
+  "Rouen": [
+    { title: "Aménagement des quais rive gauche", budget: "45 M€", progress: 85, status: "Plantations", delay: "0" }
+  ],
+  "Caen": [
+    { title: "Extension du Tramway 2028", budget: "250 M€", progress: 5, status: "Études", delay: "0" }
+  ],
+  "Nancy": [
+    { title: "Nouveau Trolleybus", budget: "65 M€", progress: 75, status: "Lignes aériennes", delay: "3 mois" }
   ]
 };
 
@@ -58,7 +158,7 @@ export default function RadarApp() {
                   onChange={(e) => setSelectedCity(e.target.value)}
                   className="w-full bg-white/5 border border-white/10 rounded-2xl pl-12 pr-10 py-4 text-sm font-bold appearance-none outline-none focus:ring-2 focus:ring-amber-500/50 transition-all cursor-pointer group-hover:bg-white/10"
                 >
-                  {Object.keys(PROJECTS_BY_CITY).map(city => (
+                  {Object.keys(PROJECTS_BY_CITY).sort().map(city => (
                     <option key={city} value={city} className="bg-slate-900 text-white">{city}</option>
                   ))}
                 </select>

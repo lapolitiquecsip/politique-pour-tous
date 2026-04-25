@@ -38,7 +38,7 @@ export default function LawsPage() {
           >
             <h1 className="text-6xl md:text-[7rem] font-staatliches uppercase tracking-tight leading-none mb-6 flex flex-wrap justify-center gap-x-6">
               <span className="text-white">Tout sur les</span>
-              <span className="italic underline decoration-red-600 underline-offset-8 bg-gradient-to-r from-blue-500 via-white to-red-500 bg-clip-text text-transparent">
+              <span className="italic underline decoration-red-600 underline-offset-8 bg-gradient-to-r from-blue-500 via-white to-red-500 bg-clip-text text-transparent pr-8">
                 Lois
               </span>
             </h1>

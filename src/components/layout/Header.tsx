@@ -77,9 +77,9 @@ export default function Header() {
               <Scale size={16} className="text-red-500 group-hover:scale-110 transition-transform" />
               Lois
             </Link>
-            <Link href="/local" className="text-sm font-semibold text-slate-600 hover:text-blue-600 transition-colors flex items-center gap-1.5 group">
-              <MapPin size={16} className="text-rose-500 group-hover:scale-110 transition-transform" />
-              Local
+            <Link href="/local" className="flex items-center gap-1 group">
+              <MapPin size={14} className="text-rose-500 group-hover:scale-110 transition-transform" />
+              <span className="font-staatliches text-xl uppercase tracking-wider text-rose-600 pt-0.5 group-hover:text-rose-700 transition-colors">Local</span>
             </Link>
             <Link href="/executif" className="text-sm font-semibold text-slate-600 hover:text-blue-600 transition-colors flex items-center gap-1.5 group">
               <ShieldCheck size={16} className="text-amber-500 group-hover:scale-110 transition-transform" />
@@ -151,8 +151,9 @@ export default function Header() {
           <Link href="/lois" className="flex items-center gap-3 text-lg font-bold text-slate-900" onClick={() => setIsMenuOpen(false)}>
             <Scale className="text-red-500" /> Les Lois
           </Link>
-          <Link href="/local" className="flex items-center gap-3 text-lg font-bold text-slate-900" onClick={() => setIsMenuOpen(false)}>
-            <MapPin className="text-rose-500" /> Politique Locale
+          <Link href="/local" className="flex items-center gap-3 text-lg font-bold text-slate-900 group" onClick={() => setIsMenuOpen(false)}>
+            <MapPin className="text-rose-500" /> 
+            <span className="font-staatliches text-2xl uppercase tracking-wider text-rose-600 pt-1">Politique Locale</span>
           </Link>
           <Link href="/executif" className="flex items-center gap-3 text-lg font-bold text-slate-900" onClick={() => setIsMenuOpen(false)}>
             <ShieldCheck className="text-amber-500" /> Exécutif

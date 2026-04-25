@@ -188,10 +188,6 @@ export default function LocalPoliticsPage() {
                     className="w-full pl-12 pr-4 py-4 rounded-2xl bg-white border border-slate-200 focus:ring-2 focus:ring-rose-500 outline-none transition-all shadow-sm font-medium"
                   />
                 </div>
-                <div className="flex items-center gap-2 px-6 py-4 bg-white rounded-2xl border border-slate-200 shadow-sm">
-                  <Building2 size={18} className="text-rose-600" />
-                  <span className="text-sm font-bold text-slate-700">Territoires Connectés</span>
-                </div>
               </div>
             )}
 
@@ -349,17 +345,6 @@ export default function LocalPoliticsPage() {
                </div>
             </div>
 
-            {/* CTA GUIDE */}
-            <div className="bg-gradient-to-br from-rose-600 to-fuchsia-700 p-8 rounded-[2.5rem] text-white shadow-2xl shadow-rose-600/20 group">
-               <Building2 className="w-12 h-12 mb-6 text-white/50 group-hover:scale-110 transition-transform" />
-               <h4 className="text-2xl font-staatliches uppercase tracking-wide leading-none mb-4">Comprendre la <br />Décentralisation</h4>
-               <p className="text-rose-50/80 text-sm leading-relaxed mb-6">
-                 Comment les compétences sont-elles réparties entre l'État et les communes ? Notre guide pédagogique vous explique tout.
-               </p>
-               <button className="w-full py-4 bg-white text-rose-700 rounded-2xl text-[10px] font-black uppercase tracking-widest hover:bg-rose-50 transition-all flex items-center justify-center gap-2">
-                 Lire le guide <ArrowRight size={14} />
-               </button>
-            </div>
           </div>
         </div>
       </div>

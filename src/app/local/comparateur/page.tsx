@@ -97,7 +97,7 @@ export default function ComparateurConcept() {
             </div>
 
             <div className="inline-flex flex-col items-center gap-2">
-              <span className="text-5xl font-black text-white">1,99€<span className="text-xl text-white/40">/mois</span></span>
+              <span className="text-5xl font-black text-white">2,99€<span className="text-xl text-white/40">/mois</span></span>
               <p className="text-[10px] font-black uppercase tracking-[0.3em] text-amber-500">Sans engagement</p>
             </div>
 

@@ -175,14 +175,14 @@ export default function LocalPoliticsPage() {
           {/* MAIN CONTENT - ITEMS GRID */}
           <div className="lg:col-span-8 space-y-12">
             
-            {/* SEARCH & FILTERS - ONLY SHOW FOR COMMUNE */}
-            {activeTab === 'commune' && (
+            {/* SEARCH & FILTERS - SHOW FOR COMMUNE & DEPARTEMENT */}
+            {(activeTab === 'commune' || activeTab === 'departement') && (
               <div className="flex flex-col md:flex-row gap-6 items-center justify-between">
                 <div className="relative w-full md:max-w-md">
                   <Search className="absolute left-4 top-1/2 -translate-y-1/2 text-slate-400" size={18} />
                   <input 
                     type="text"
-                    placeholder="Rechercher une ville, un maire..."
+                    placeholder={activeTab === 'commune' ? "Rechercher une ville, un maire..." : "Rechercher un département, un président..."}
                     value={search}
                     onChange={(e) => setSearch(e.target.value)}
                     className="w-full pl-12 pr-4 py-4 rounded-2xl bg-white border border-slate-200 focus:ring-2 focus:ring-rose-500 outline-none transition-all shadow-sm font-medium"

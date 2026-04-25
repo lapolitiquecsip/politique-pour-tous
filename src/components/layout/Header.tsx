@@ -71,14 +71,8 @@ export default function Header() {
             </div>
             <span className="font-staatliches text-2xl tracking-wider uppercase leading-none pt-1">
               <span className="text-slate-900">La politique</span>{" "}
-            <span className="italic">
-                <span className="text-blue-600">c</span>{" "}
-                <span className="text-purple-600">s</span>
-                <span className="text-purple-600">i</span>
-                <span className="text-red-600">m</span>
-                <span className="text-purple-600">p</span>
-                <span className="text-purple-600">l</span>
-                <span className="text-blue-600">e</span>
+            <span className="italic bg-gradient-to-r from-blue-600 via-red-600 to-blue-600 bg-clip-text text-transparent">
+                c simple
               </span>
             </span>
           </Link>

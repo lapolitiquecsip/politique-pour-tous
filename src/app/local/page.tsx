@@ -351,9 +351,9 @@ export default function LocalPoliticsPage() {
                </div>
             </div>
 
-            {/* PREMIUM: LE COMPARATEUR TERRITORIAL */}
+            {/* TEASER: LE COMPARATEUR TERRITORIAL */}
             <Link 
-              href={getPremiumUrl(userId)}
+              href="/local/comparateur"
               className="relative group block overflow-hidden bg-white p-8 rounded-[2.5rem] border border-slate-200 shadow-xl shadow-slate-200/20 transition-all hover:scale-[1.02] active:scale-[0.98]"
             >
               <div className="flex items-center justify-between mb-8">
@@ -363,7 +363,7 @@ export default function LocalPoliticsPage() {
                 </div>
               </div>
               
-              <div className="space-y-4 opacity-40 blur-[4px] pointer-events-none">
+              <div className="space-y-4 opacity-40 blur-[5px] pointer-events-none">
                 <div className="p-4 bg-slate-50 rounded-2xl border border-slate-100 flex items-center justify-between">
                   <span className="text-sm font-bold text-slate-400">Région A...</span>
                   <ChevronRight size={14} className="text-slate-300" />
@@ -377,16 +377,13 @@ export default function LocalPoliticsPage() {
                 </div>
               </div>
 
-              {/* GOLD LOCK OVERLAY */}
-              <div className="absolute inset-0 bg-white/30 backdrop-blur-[2px] flex flex-col items-center justify-center p-6 text-center z-10">
-                <div className="w-16 h-16 bg-gradient-to-br from-amber-400 to-yellow-600 rounded-3xl shadow-2xl shadow-amber-500/50 flex items-center justify-center text-white mb-6 transform rotate-3 group-hover:rotate-0 transition-transform duration-500">
-                  <Lock size={32} />
-                </div>
+              {/* TEASER OVERLAY */}
+              <div className="absolute inset-0 bg-white/20 backdrop-blur-[2px] flex flex-col items-center justify-center p-6 text-center z-10">
                 <div className="space-y-2 mb-6">
-                  <h4 className="text-xl font-staatliches uppercase tracking-tight text-amber-600">Le Comparateur <span className="text-slate-900">Premium</span></h4>
+                  <h4 className="text-xl font-staatliches uppercase tracking-tight text-amber-600">Le Comparateur <span className="text-slate-900">Territorial</span></h4>
                   <p className="text-[10px] text-slate-500 font-black uppercase tracking-widest leading-relaxed">
                     Villes, Départements, Régions : <br />
-                    Comparez tout le territoire français.
+                    Analysez tout le territoire français.
                   </p>
                 </div>
                 <div className="px-6 py-3 bg-slate-900 text-white text-[10px] font-black uppercase tracking-widest rounded-xl shadow-xl transition-all group-hover:bg-amber-500 group-hover:scale-105">
@@ -395,9 +392,9 @@ export default function LocalPoliticsPage() {
               </div>
             </Link>
 
-            {/* PREMIUM: RADAR DES GRANDS TRAVAUX */}
+            {/* TEASER: RADAR DES GRANDS TRAVAUX */}
             <Link 
-              href={getPremiumUrl(userId)}
+              href="/local/radar"
               className="relative group block overflow-hidden bg-slate-900 p-8 rounded-[2.5rem] text-white shadow-2xl shadow-slate-900/40 transition-all hover:scale-[1.02] active:scale-[0.98]"
             >
               <div className="absolute top-0 right-0 p-8 opacity-10">
@@ -411,7 +408,7 @@ export default function LocalPoliticsPage() {
                 </div>
               </div>
 
-              <div className="space-y-4 opacity-20 blur-[5px] pointer-events-none relative z-10">
+              <div className="space-y-4 opacity-20 blur-[6px] pointer-events-none relative z-10">
                 <div className="p-4 rounded-2xl bg-white/5 border border-white/10">
                   <h4 className="text-xs font-bold mb-2">Extension du Métro</h4>
                   <div className="h-1 bg-white/10 rounded-full overflow-hidden">
@@ -426,11 +423,8 @@ export default function LocalPoliticsPage() {
                 </div>
               </div>
 
-              {/* GOLD LOCK OVERLAY */}
-              <div className="absolute inset-0 bg-slate-900/50 backdrop-blur-[3px] flex flex-col items-center justify-center p-6 text-center z-30">
-                <div className="w-16 h-16 bg-white/10 backdrop-blur-xl rounded-3xl border border-amber-400/30 flex items-center justify-center text-amber-400 mb-6 group-hover:scale-110 transition-transform duration-500">
-                  <Lock size={32} className="drop-shadow-[0_0_8px_rgba(245,158,11,0.6)]" />
-                </div>
+              {/* TEASER OVERLAY */}
+              <div className="absolute inset-0 bg-slate-900/40 backdrop-blur-[3px] flex flex-col items-center justify-center p-6 text-center z-30">
                 <div className="space-y-2 mb-6">
                   <h4 className="text-xl font-staatliches uppercase tracking-tight text-white">Radar des <span className="text-amber-500 italic">Grands Travaux</span></h4>
                   <p className="text-[10px] text-white/50 font-black uppercase tracking-widest leading-relaxed">

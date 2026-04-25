@@ -71,14 +71,14 @@ export default function Header() {
             </div>
             <span className="font-staatliches text-2xl tracking-wider uppercase leading-none pt-1">
               <span className="text-slate-900">La politique</span>{" "}
-              <span className="italic">
-                <span className="text-blue-500 drop-shadow-[0_0_5px_rgba(59,130,246,0.5)]">c</span>{" "}
+            <span className="italic">
+                <span className="text-sky-500 drop-shadow-[0_0_5px_rgba(14,165,233,0.5)]">c</span>{" "}
                 <span className="text-indigo-500 drop-shadow-[0_0_5px_rgba(99,102,241,0.5)]">s</span>
-                <span className="text-red-500 drop-shadow-[0_0_5px_rgba(239,68,68,0.5)]">i</span>
+                <span className="text-purple-500 drop-shadow-[0_0_5px_rgba(168,85,247,0.5)]">i</span>
                 <span className="text-rose-500 drop-shadow-[0_0_5px_rgba(244,63,94,0.5)]">m</span>
-                <span className="text-amber-500 drop-shadow-[0_0_5px_rgba(245,158,11,0.5)]">p</span>
-                <span className="text-purple-500 drop-shadow-[0_0_5px_rgba(168,85,247,0.5)]">l</span>
-                <span className="text-blue-500 drop-shadow-[0_0_5px_rgba(59,130,246,0.5)]">e</span>
+                <span className="text-orange-500 drop-shadow-[0_0_5px_rgba(249,115,22,0.5)]">p</span>
+                <span className="text-amber-500 drop-shadow-[0_0_5px_rgba(245,158,11,0.5)]">l</span>
+                <span className="text-sky-500 drop-shadow-[0_0_5px_rgba(14,165,233,0.5)]">e</span>
               </span>
             </span>
           </Link>

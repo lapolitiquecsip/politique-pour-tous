@@ -3,7 +3,7 @@
 import { useState, useEffect } from "react";
 import { api } from "@/lib/api";
 import { motion } from "framer-motion";
-import { FileText, Calendar, ChevronRight, Search, Filter } from "lucide-react";
+import { FileText, Calendar, ChevronRight, Search, Filter, UserCheck } from "lucide-react";
 import Link from "next/link";
 
 export default function LawsGrid() {
@@ -84,6 +84,18 @@ export default function LawsGrid() {
                 <p className="text-slate-500 text-sm leading-relaxed mb-6 line-clamp-2">
                   {law.summary}
                 </p>
+
+                {law.author && (
+                  <div className="flex items-center gap-3 mb-6 p-3 rounded-2xl bg-slate-50 border border-slate-100/50">
+                    <div className="w-8 h-8 rounded-full bg-white shadow-sm flex items-center justify-center text-blue-600 border border-blue-50">
+                      <UserCheck size={14} />
+                    </div>
+                    <div className="flex flex-col">
+                      <span className="text-[10px] font-black uppercase tracking-wider text-slate-400 leading-none mb-1">Déposé par</span>
+                      <span className="text-xs font-bold text-slate-700 leading-none">{law.author}</span>
+                    </div>
+                  </div>
+                )}
               </div>
 
               <div className="flex items-center justify-between pt-6 border-t border-slate-100">

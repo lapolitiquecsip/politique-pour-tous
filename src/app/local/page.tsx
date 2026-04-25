@@ -351,50 +351,55 @@ export default function LocalPoliticsPage() {
                </div>
             </div>
 
-            {/* TEASER: LE COMPARATEUR TERRITORIAL */}
+            {/* TEASER/TOOL: LE COMPARATEUR TERRITORIAL */}
             <Link 
-              href="/local/comparateur"
+              href={isPremium ? "/local/comparateur/app" : "/local/comparateur"}
               className="relative group block overflow-hidden bg-white p-8 rounded-[2.5rem] border border-slate-200 shadow-xl shadow-slate-200/20 transition-all hover:scale-[1.02] active:scale-[0.98]"
             >
               <div className="flex items-center justify-between mb-8">
-                <h3 className="text-xl font-bold text-slate-900">Comparateur Territorial</h3>
+                <div className="flex items-center gap-2">
+                  <h3 className="text-xl font-bold text-slate-900">Comparateur Territorial</h3>
+                  {isPremium && <span className="px-2 py-0.5 bg-amber-100 text-amber-600 text-[8px] font-black uppercase rounded-full">Premium Unlocked</span>}
+                </div>
                 <div className="w-8 h-8 rounded-full bg-amber-100 flex items-center justify-center text-amber-600">
                   <Map size={16} />
                 </div>
               </div>
               
-              <div className="space-y-4 opacity-40 blur-[5px] pointer-events-none">
+              <div className={`space-y-4 transition-all duration-700 ${!isPremium ? 'opacity-40 blur-[5px] pointer-events-none' : 'opacity-100'}`}>
                 <div className="p-4 bg-slate-50 rounded-2xl border border-slate-100 flex items-center justify-between">
-                  <span className="text-sm font-bold text-slate-400">Région A...</span>
+                  <span className="text-sm font-bold text-slate-400">{isPremium ? "Sélectionner une ville..." : "Région A..."}</span>
                   <ChevronRight size={14} className="text-slate-300" />
                 </div>
                 <div className="flex justify-center">
                   <div className="w-10 h-10 rounded-full bg-amber-500 flex items-center justify-center text-white font-black text-xs shadow-lg shadow-amber-500/40">VS</div>
                 </div>
                 <div className="p-4 bg-slate-50 rounded-2xl border border-slate-100 flex items-center justify-between">
-                  <span className="text-sm font-bold text-slate-400">Région B...</span>
+                  <span className="text-sm font-bold text-slate-400">{isPremium ? "Comparer avec..." : "Région B..."}</span>
                   <ChevronRight size={14} className="text-slate-300" />
                 </div>
               </div>
 
-              {/* TEASER OVERLAY */}
-              <div className="absolute inset-0 bg-white/20 backdrop-blur-[2px] flex flex-col items-center justify-center p-6 text-center z-10">
-                <div className="space-y-2 mb-6">
-                  <h4 className="text-xl font-staatliches uppercase tracking-tight text-amber-600">Le Comparateur <span className="text-slate-900">Territorial</span></h4>
-                  <p className="text-[10px] text-slate-500 font-black uppercase tracking-widest leading-relaxed">
-                    Villes vs Villes, Départements vs Départements <br />
-                    ou Régions vs Régions : comparez tout.
-                  </p>
+              {/* TEASER OVERLAY - ONLY FOR NON-PREMIUM */}
+              {!isPremium && (
+                <div className="absolute inset-0 bg-white/20 backdrop-blur-[2px] flex flex-col items-center justify-center p-6 text-center z-10">
+                  <div className="space-y-2 mb-6">
+                    <h4 className="text-xl font-staatliches uppercase tracking-tight text-amber-600">Le Comparateur <span className="text-slate-900">Territorial</span></h4>
+                    <p className="text-[10px] text-slate-500 font-black uppercase tracking-widest leading-relaxed">
+                      Villes vs Villes, Départements vs Départements <br />
+                      ou Régions vs Régions : comparez tout.
+                    </p>
+                  </div>
+                  <div className="px-6 py-3 bg-slate-900 text-white text-[10px] font-black uppercase tracking-widest rounded-xl shadow-xl transition-all group-hover:bg-amber-500 group-hover:scale-105">
+                    Découvrir l'outil
+                  </div>
                 </div>
-                <div className="px-6 py-3 bg-slate-900 text-white text-[10px] font-black uppercase tracking-widest rounded-xl shadow-xl transition-all group-hover:bg-amber-500 group-hover:scale-105">
-                  Découvrir l'outil
-                </div>
-              </div>
+              )}
             </Link>
 
-            {/* TEASER: RADAR DES GRANDS TRAVAUX */}
+            {/* TEASER/TOOL: RADAR DES GRANDS TRAVAUX */}
             <Link 
-              href="/local/radar"
+              href={isPremium ? "/local/radar/app" : "/local/radar"}
               className="relative group block overflow-hidden bg-slate-900 p-8 rounded-[2.5rem] text-white shadow-2xl shadow-slate-900/40 transition-all hover:scale-[1.02] active:scale-[0.98]"
             >
               <div className="absolute top-0 right-0 p-8 opacity-10">
@@ -402,13 +407,16 @@ export default function LocalPoliticsPage() {
               </div>
 
               <div className="flex items-center justify-between mb-8 relative z-20">
-                <h3 className="text-xl font-bold">Radar des Grands Travaux</h3>
+                <div className="flex items-center gap-2">
+                  <h3 className="text-xl font-bold">Radar des Grands Travaux</h3>
+                  {isPremium && <span className="px-2 py-0.5 bg-amber-500/20 text-amber-400 text-[8px] font-black uppercase rounded-full border border-amber-500/30">Accès Illimité</span>}
+                </div>
                 <div className="w-8 h-8 rounded-full bg-amber-500 flex items-center justify-center text-white shadow-lg shadow-amber-500/20">
                   <TrendingUp size={16} />
                 </div>
               </div>
 
-              <div className="space-y-4 opacity-20 blur-[6px] pointer-events-none relative z-10">
+              <div className={`space-y-4 transition-all duration-700 relative z-10 ${!isPremium ? 'opacity-20 blur-[6px] pointer-events-none' : 'opacity-100'}`}>
                 <div className="p-4 rounded-2xl bg-white/5 border border-white/10">
                   <h4 className="text-xs font-bold mb-2">Extension du Métro</h4>
                   <div className="h-1 bg-white/10 rounded-full overflow-hidden">
@@ -423,19 +431,21 @@ export default function LocalPoliticsPage() {
                 </div>
               </div>
 
-              {/* TEASER OVERLAY */}
-              <div className="absolute inset-0 bg-slate-900/40 backdrop-blur-[3px] flex flex-col items-center justify-center p-6 text-center z-30">
-                <div className="space-y-2 mb-6">
-                  <h4 className="text-xl font-staatliches uppercase tracking-tight text-white">Radar des <span className="text-amber-500 italic">Grands Travaux</span></h4>
-                  <p className="text-[10px] text-white/50 font-black uppercase tracking-widest leading-relaxed">
-                    Suivi budgétaire, retards et <br />
-                    coulisses des chantiers locaux.
-                  </p>
+              {/* TEASER OVERLAY - ONLY FOR NON-PREMIUM */}
+              {!isPremium && (
+                <div className="absolute inset-0 bg-slate-900/40 backdrop-blur-[3px] flex flex-col items-center justify-center p-6 text-center z-30">
+                  <div className="space-y-2 mb-6">
+                    <h4 className="text-xl font-staatliches uppercase tracking-tight text-white">Radar des <span className="text-amber-500 italic">Grands Travaux</span></h4>
+                    <p className="text-[10px] text-white/50 font-black uppercase tracking-widest leading-relaxed">
+                      Suivi budgétaire, retards et <br />
+                      coulisses des chantiers locaux.
+                    </p>
+                  </div>
+                  <div className="px-6 py-3 bg-amber-500 text-slate-900 text-[10px] font-black uppercase tracking-widest rounded-xl shadow-lg shadow-amber-500/20 group-hover:bg-white group-hover:text-amber-600 transition-all">
+                    Accéder aux dossiers
+                  </div>
                 </div>
-                <div className="px-6 py-3 bg-amber-500 text-slate-900 text-[10px] font-black uppercase tracking-widest rounded-xl shadow-lg shadow-amber-500/20 group-hover:bg-white group-hover:text-amber-600 transition-all">
-                  Accéder aux dossiers
-                </div>
-              </div>
+              )}
             </Link>
 
           </div>

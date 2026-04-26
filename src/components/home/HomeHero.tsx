@@ -115,7 +115,7 @@ export default function HomeHero() {
               </span>
               
               {/* Cluster of hand-drawn neon stars */}
-              <div className="relative inline-block ml-6 align-middle">
+              <div className="relative inline-block ml-2 align-middle">
                 {/* Initial Yellow Star */}
                 <motion.div
                   initial={{ scale: 0, rotate: -20 }}

@@ -172,8 +172,7 @@ export default function Home() {
         <FaqSection />
       </div>
 
-      {/* 6. ENCART NEWSLETTER PREMIUM DYNAMIQUE */}
-      <NewsletterBanner />
+
 
     </div>
   );

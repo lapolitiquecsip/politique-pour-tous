@@ -242,8 +242,8 @@ export default function LawsClient() {
              <div className="h-[400px] w-full bg-muted rounded-[3rem] border border-border" />
           </div>
 
-          <div className="absolute inset-0 z-10 flex flex-col items-center justify-center -top-20">
-            <div className="w-full max-w-2xl bg-card/80 backdrop-blur-2xl border border-amber-200/50 rounded-[3rem] p-10 md:p-16 text-center shadow-2xl relative overflow-hidden">
+          <div className="absolute inset-0 z-10 flex flex-col items-center justify-center">
+            <div className="w-full max-w-2xl bg-card/90 backdrop-blur-3xl border border-amber-200/50 rounded-[3rem] p-10 md:p-16 text-center shadow-2xl relative">
               <div className="inline-flex items-center justify-center w-20 h-20 rounded-full bg-gradient-to-br from-amber-400 to-orange-500 text-white mb-8">
                 <Lock className="w-10 h-10" />
               </div>

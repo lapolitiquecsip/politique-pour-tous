@@ -38,6 +38,26 @@ export default function HomeHero() {
             <span className="block text-white drop-shadow-[0_0_30px_rgba(255,255,255,0.2)]">
               La{" "}
               <span className="relative inline-block px-4 py-2">
+                {/* Loudspeaker Waves Effect */}
+                <div className="absolute inset-0 flex items-center justify-center pointer-events-none">
+                  {[1, 2, 3].map((i) => (
+                    <motion.div
+                      key={i}
+                      initial={{ scale: 1, opacity: 0 }}
+                      animate={{ 
+                        scale: [1, 2.5], 
+                        opacity: [0.4, 0] 
+                      }}
+                      transition={{ 
+                        duration: 3, 
+                        repeat: Infinity, 
+                        delay: i * 0.8,
+                        ease: "easeOut" 
+                      }}
+                      className="absolute w-full h-full border-2 border-blue-400/20 rounded-full"
+                    />
+                  ))}
+                </div>
                 <span className="inline-flex">
                   {(() => {
                     const colors = ["#90D5FF", "#57B9FF", "#77B1D4", "#a5c9e1"]; // Replaced dark #517891 with a slightly lighter #a5c9e1 for better visibility
@@ -45,28 +65,13 @@ export default function HomeHero() {
                       <motion.span
                         key={i}
                         initial={{ y: 20, opacity: 0, scale: 0.8 }}
-                        animate={{ 
-                          y: 0, 
-                          opacity: 1, 
-                          scaleY: [1, 1.2, 0.9, 1.1, 1],
-                        }}
-                        style={{ 
-                          color: colors[i % colors.length],
-                          display: "inline-block",
-                          transformOrigin: "bottom"
-                        }}
+                        animate={{ y: 0, opacity: 1, scale: 1 }}
+                        style={{ color: colors[i % colors.length] }}
                         transition={{ 
-                          // Entrance transition
-                          y: { delay: 0.5 + i * 0.05, type: "spring", stiffness: 300, damping: 15 },
-                          opacity: { delay: 0.5 + i * 0.05 },
-                          // Continuous "voice" vibration
-                          scaleY: {
-                            duration: 1.5 + (i % 3) * 0.2,
-                            repeat: Infinity,
-                            repeatType: "reverse",
-                            ease: "easeInOut",
-                            delay: 1 + i * 0.1
-                          }
+                          delay: 0.5 + i * 0.05, 
+                          type: "spring",
+                          stiffness: 300,
+                          damping: 15
                         }}
                       >
                         {char}

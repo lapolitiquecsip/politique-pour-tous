@@ -108,18 +108,12 @@ export default function HomeHero() {
                     viewBox="0 0 24 24" 
                     fill="none" 
                     stroke="#4ade80" 
-                    strokeWidth="2.5" 
+                    strokeWidth="3.5" 
                     strokeLinecap="round" 
                     strokeLinejoin="round" 
                     className="w-10 h-10 md:w-14 md:h-14 drop-shadow-[0_0_15px_rgba(74,222,128,0.8)]"
                   >
-                    <line x1="3" y1="21" x2="21" y2="21" />
-                    <line x1="3" y1="7" x2="21" y2="7" />
-                    <path d="M7 21V10" />
-                    <path d="M10.3 21V10" />
-                    <path d="M13.6 21V10" />
-                    <path d="M17 21V10" />
-                    <path d="M3 7l9-4 9 4" />
+                    <polyline points="20 6 9 17 4 12" />
                   </svg>
                 </motion.div>
 

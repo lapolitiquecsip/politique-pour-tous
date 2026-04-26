@@ -120,26 +120,7 @@ export default function HomeHero() {
                   </svg>
                 </motion.div>
 
-                {/* Small Red Voting Envelope (Above Left) */}
-                <motion.div
-                  initial={{ scale: 0, opacity: 0 }}
-                  animate={{ scale: 0.8, opacity: 1, rotate: -10 }}
-                  transition={{ delay: 1.3, type: "spring" }}
-                  className="absolute -top-6 -left-6"
-                >
-                  <svg 
-                    viewBox="0 0 24 24" 
-                    fill="none" 
-                    stroke="#ef4444" 
-                    strokeWidth="2.5" 
-                    strokeLinecap="round" 
-                    strokeLinejoin="round" 
-                    className="w-6 h-6 md:w-8 md:h-8 drop-shadow-[0_0_10px_rgba(239,68,68,0.8)]"
-                  >
-                    <rect x="2" y="4" width="20" height="16" rx="2" />
-                    <path d="m22 7-8.97 5.7a1.94 1.94 0 0 1-2.06 0L2 7" />
-                  </svg>
-                </motion.div>
+
 
 
               </div>

@@ -83,7 +83,10 @@ export default function HomeHero() {
               </span>
             </span>
             <span className="italic uppercase flex items-center flex-wrap">
-              <span className="text-white mr-4">c'est </span>
+              <span className="mr-4">
+                <span className="text-red-600">c</span>
+                <span className="text-white">'est </span>
+              </span>
               <span className="relative inline-block text-white">
                 simple.
                 {/* Multi-tone green underline */}

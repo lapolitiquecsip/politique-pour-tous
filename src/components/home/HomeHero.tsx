@@ -144,49 +144,7 @@ export default function HomeHero() {
                   </svg>
                 </motion.div>
 
-                {/* Hand-drawn Neon French Flag */}
-                <motion.div
-                  animate={{ 
-                    y: [0, -8, 0],
-                    rotate: [5, 10, 5]
-                  }}
-                  transition={{ 
-                    duration: 5, 
-                    repeat: Infinity, 
-                    ease: "easeInOut",
-                  }}
-                  className="absolute -top-12 -right-4 md:-right-8"
-                >
-                  <svg 
-                    viewBox="0 0 40 30" 
-                    fill="none"
-                    strokeWidth="2.5"
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                    className="w-10 h-8 md:w-12 md:h-10"
-                  >
-                    {/* Blue part */}
-                    <path 
-                      d="M5 5 L15 5 L15 25 L5 25 Z" 
-                      stroke="#60a5fa" 
-                      className="drop-shadow-[0_0_8px_rgba(96,165,250,0.8)]"
-                    />
-                    {/* White part */}
-                    <path 
-                      d="M15 5 L25 5 L25 25 L15 25 Z" 
-                      stroke="#ffffff" 
-                      className="drop-shadow-[0_0_8px_rgba(255,255,255,0.8)]"
-                    />
-                    {/* Red part */}
-                    <path 
-                      d="M25 5 L35 5 L35 25 L25 25 Z" 
-                      stroke="#ef4444" 
-                      className="drop-shadow-[0_0_8px_rgba(239,68,68,0.8)]"
-                    />
-                    {/* Flag pole (optional hand-drawn touch) */}
-                    <path d="M5 5 L5 28" stroke="#ffffff" strokeWidth="1.5" className="opacity-40" />
-                  </svg>
-                </motion.div>
+
               </div>
             </span>
           </h1>

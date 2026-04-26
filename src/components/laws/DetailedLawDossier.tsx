@@ -123,6 +123,9 @@ export default function DetailedLawDossier({ law }: DetailedLawDossierProps) {
           <h3 className="text-xl md:text-2xl font-extrabold text-foreground tracking-tight italic">
             {law.title}
           </h3>
+          <div className="px-2 py-0.5 bg-amber-100 text-amber-600 text-[9px] font-black uppercase rounded border border-amber-200 tracking-tighter shrink-0">
+            Accès Premium Offert
+          </div>
         </div>
         
         <motion.div 
@@ -205,9 +208,6 @@ export default function DetailedLawDossier({ law }: DetailedLawDossierProps) {
                         <Sparkles className="w-5 h-5 text-amber-500" />
                         Analyse approfondie de la rédaction
                       </h4>
-                      <div className="px-2 py-0.5 bg-amber-100 text-amber-600 text-[9px] font-black uppercase rounded border border-amber-200 tracking-tighter">
-                        Accès Premium Offert
-                      </div>
                     </div>
                     <ul className="space-y-4">
                       {law.premiumPoints.map((point, idx) => (

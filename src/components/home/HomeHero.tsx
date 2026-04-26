@@ -45,13 +45,28 @@ export default function HomeHero() {
                       <motion.span
                         key={i}
                         initial={{ y: 20, opacity: 0, scale: 0.8 }}
-                        animate={{ y: 0, opacity: 1, scale: 1 }}
-                        style={{ color: colors[i % colors.length] }}
+                        animate={{ 
+                          y: 0, 
+                          opacity: 1, 
+                          scaleY: [1, 1.2, 0.9, 1.1, 1],
+                        }}
+                        style={{ 
+                          color: colors[i % colors.length],
+                          display: "inline-block",
+                          transformOrigin: "bottom"
+                        }}
                         transition={{ 
-                          delay: 0.5 + i * 0.05, 
-                          type: "spring",
-                          stiffness: 300,
-                          damping: 15
+                          // Entrance transition
+                          y: { delay: 0.5 + i * 0.05, type: "spring", stiffness: 300, damping: 15 },
+                          opacity: { delay: 0.5 + i * 0.05 },
+                          // Continuous "voice" vibration
+                          scaleY: {
+                            duration: 1.5 + (i % 3) * 0.2,
+                            repeat: Infinity,
+                            repeatType: "reverse",
+                            ease: "easeInOut",
+                            delay: 1 + i * 0.1
+                          }
                         }}
                       >
                         {char}

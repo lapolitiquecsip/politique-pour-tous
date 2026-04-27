@@ -49,7 +49,16 @@ export default function LawsGrid() {
       law.title.toLowerCase().includes(search.toLowerCase()) ||
       (law.category && law.category.toLowerCase().includes(search.toLowerCase()))
     )
-    .sort((a, b) => (b.context || "").localeCompare(a.context || ""));
+    .sort((a, b) => {
+      // Prioritize laws with [YYYY-MM-DD] dates
+      const dateA = a.context?.match(/\[(\d{4}-\d{2}-\d{2})\]/)?.[1] || "0000-00-00";
+      const dateB = b.context?.match(/\[(\d{4}-\d{2}-\d{2})\]/)?.[1] || "0000-00-00";
+      
+      if (dateA !== dateB) return dateB.localeCompare(dateA);
+      
+      // Fallback to created_at if dates are the same or missing
+      return new Date(b.created_at).getTime() - new Date(a.created_at).getTime();
+    });
 
   return (
     <div className="space-y-8">

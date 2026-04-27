@@ -1,6 +1,10 @@
+"use client";
+
+import { useState, useEffect } from "react";
+import { api } from "@/lib/api";
+import { motion, AnimatePresence } from "framer-motion";
 import { FileText, Calendar, ChevronRight, Search, Filter, UserCheck, X, Zap, ArrowRight, CheckCircle2 } from "lucide-react";
 import Link from "next/link";
-import { AnimatePresence } from "framer-motion";
 
 export default function LawsGrid() {
   const [laws, setLaws] = useState<any[]>([]);

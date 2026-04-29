@@ -340,10 +340,8 @@ export default function InstitutionsGrid() {
                       events.map((event, i) => {
                         const timeMatch = event.title.match(/^\[(\d{2}:\d{2})\]/);
                         const displayTime = timeMatch ? timeMatch[1] : (event.time || 'JOUR');
-                        
-                        // Use short_title if available, otherwise clean the original title
                         const displayTitle = event.short_title || cleanTitle(event.title);
-                        const displayDescription = cleanDescription(event.description);
+                        const displayDescription = event.short_summary || cleanDescription(event.description);
 
                         return (
                           <motion.button
@@ -363,7 +361,7 @@ export default function InstitutionsGrid() {
                                 {displayTitle}
                               </span>
                               {displayDescription && (
-                                <span className="text-slate-500 text-[11px] line-clamp-1">
+                                <span className="text-slate-500 text-[11px] font-medium leading-relaxed line-clamp-2">
                                   {displayDescription}
                                 </span>
                               )}
@@ -384,8 +382,14 @@ export default function InstitutionsGrid() {
                              <Landmark size={20} />
                           </div>
                           <div className="flex-1">
-                            <p className="text-slate-900 font-bold text-sm">Aucune séance prévue aujourd'hui</p>
-                            <p className="text-slate-500 text-xs mt-0.5">Le calendrier de l'institution ne prévoit pas d'activité publique ce jour.</p>
+                            <p className="text-slate-900 font-bold text-sm">
+                              {selectedInst.id === 'gouvernement' ? "Aucune activité publique prévue" : "Aucune séance prévue aujourd'hui"}
+                            </p>
+                            <p className="text-slate-500 text-xs mt-0.5">
+                              {selectedInst.id === 'gouvernement' 
+                                ? "L'agenda de l'exécutif ne mentionne pas de rendez-vous public pour ce jour." 
+                                : "Le calendrier de l'institution ne prévoit pas d'activité publique ce jour."}
+                            </p>
                           </div>
                         </motion.div>
 
@@ -503,8 +507,16 @@ export default function InstitutionsGrid() {
                       <div className="h-px bg-slate-100 mb-8" />
 
                       <div className="space-y-4 max-h-[40vh] overflow-y-auto pr-4 custom-scrollbar-blue">
-                        <p className="text-[10px] font-black uppercase tracking-[0.2em] text-blue-500 mb-2">Description complète</p>
-                        <div className="text-slate-600 text-lg leading-relaxed whitespace-pre-wrap">
+                        {selectedEvent.short_summary && (
+                          <div className="mb-6">
+                            <p className="text-[10px] font-black uppercase tracking-[0.2em] text-blue-500 mb-2">Résumé Claude 4.5</p>
+                            <p className="text-slate-900 text-lg font-medium leading-relaxed italic">
+                              &ldquo;{selectedEvent.short_summary}&rdquo;
+                            </p>
+                          </div>
+                        )}
+                        <p className="text-[10px] font-black uppercase tracking-[0.2em] text-slate-400 mb-2">Détails de l'événement</p>
+                        <div className="text-slate-600 text-base leading-relaxed whitespace-pre-wrap">
                           {cleanDescription(selectedEvent.description) || "Aucune description détaillée disponible."}
                         </div>
                       </div>

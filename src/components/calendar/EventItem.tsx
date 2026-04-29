@@ -6,6 +6,8 @@ export interface CalendarEvent {
   institution: "Assemblée nationale" | "Sénat" | "Élysée" | "Gouvernement" | "Assemblée" | "Élection";
   category: string;
   source_url?: string;
+  short_title?: string;
+  displayTitle?: string;
 }
 
 export default function EventItem({ event }: { event: CalendarEvent }) {

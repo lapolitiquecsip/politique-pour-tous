@@ -1,7 +1,7 @@
 "use client";
 import { useState, useEffect, memo } from "react";
 import { motion, AnimatePresence } from "framer-motion";
-import { X, ChevronRight, ChevronLeft, Landmark, CalendarDays } from "lucide-react";
+import { X, ChevronRight, ChevronLeft, Landmark, CalendarDays, Clock } from "lucide-react";
 
 import Link from "next/link";
 import { api } from "@/lib/api";
@@ -454,10 +454,11 @@ export default function InstitutionsGrid() {
                     </Link>
                   </div>
                 )}
+                </div>
               </div>
             </motion.div>
 
-            {/* ── DETAIL OVERLAY (Click on event) ── */}
+            {/* --- DETAIL OVERLAY (Click on event) --- */}
             <AnimatePresence>
               {selectedEvent && (
                 <motion.div 

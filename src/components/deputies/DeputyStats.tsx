@@ -89,8 +89,15 @@ const DeputyStats: React.FC<DeputyStatsProps> = ({ deputy }) => {
                <div className="flex items-center gap-3">
                  <Medal className="w-5 h-5 text-amber-500" />
                  <div>
-                   <p className="text-[10px] font-black text-amber-600 uppercase tracking-widest">Élu au {election.round}er tour</p>
-                   <p className="font-bold text-slate-900 dark:text-white">Performance Majoritaire</p>
+                   <p className="text-[10px] font-black text-amber-600 uppercase tracking-widest">Élu au {election.round === 1 ? '1er' : '2nd'} tour</p>
+                   <div className="flex items-center gap-2">
+                     <p className="font-bold text-slate-900 dark:text-white">Performance Majoritaire</p>
+                     {election.candidates[0]?.party && (
+                       <span className="text-[9px] font-black px-1.5 py-0.5 rounded bg-amber-500/10 text-amber-600 uppercase">
+                         {election.candidates[0].party}
+                       </span>
+                     )}
+                   </div>
                  </div>
                </div>
                <span className="text-xl font-black text-slate-900 dark:text-white">
@@ -102,7 +109,14 @@ const DeputyStats: React.FC<DeputyStatsProps> = ({ deputy }) => {
                <p className="text-[10px] font-black text-slate-400 uppercase tracking-widest mb-3">Principaux Adversaires</p>
                {election.candidates.slice(1, 4).map((cand: any, i: number) => (
                  <div key={i} className="flex items-center justify-between text-sm py-2 border-b border-slate-50 dark:border-slate-800 last:border-0">
-                    <span className="text-slate-600 dark:text-slate-400 font-medium">{cand.name}</span>
+                    <div className="flex flex-col">
+                      <span className="text-slate-900 dark:text-white font-bold">{cand.name}</span>
+                      {cand.party && (
+                        <span className="text-[9px] font-black px-1.5 py-0.5 rounded bg-slate-100 dark:bg-slate-800 text-slate-500 uppercase w-fit">
+                          {cand.party}
+                        </span>
+                      )}
+                    </div>
                     <span className="font-bold text-slate-400">{cand.percent}</span>
                  </div>
                ))}

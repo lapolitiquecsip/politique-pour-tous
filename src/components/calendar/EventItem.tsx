@@ -8,6 +8,7 @@ export interface CalendarEvent {
   source_url?: string;
   short_title?: string;
   displayTitle?: string;
+  time?: string;
 }
 
 export default function EventItem({ event }: { event: CalendarEvent }) {

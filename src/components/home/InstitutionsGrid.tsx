@@ -508,6 +508,17 @@ export default function InstitutionsGrid() {
                             <p className="text-slate-900 text-xl font-semibold leading-relaxed italic">
                               &ldquo;{selectedEvent.short_summary}&rdquo;
                             </p>
+                            
+                            {/* Optionnel: Bouton pour voir le texte brut s'il est différent/plus long */}
+                            <details className="mt-8 group">
+                              <summary className="text-[10px] font-black uppercase tracking-widest text-slate-400 cursor-pointer hover:text-blue-500 transition-colors list-none flex items-center gap-2">
+                                <ChevronRight size={12} className="group-open:rotate-90 transition-transform" />
+                                Voir le texte original
+                              </summary>
+                              <div className="mt-4 p-6 rounded-2xl bg-slate-50 border border-slate-100 text-slate-600 text-sm leading-relaxed whitespace-pre-wrap">
+                                {cleanDescription(selectedEvent.description) || "Aucune information supplémentaire."}
+                              </div>
+                            </details>
                           </div>
                         ) : (
                           <>

@@ -27,7 +27,7 @@ const INSTITUTIONS: Institution[] = [
     dbInstitution: "AN",
     memberCount: 577,
     directoryUrl: "/deputes",
-    image: "https://images.unsplash.com/photo-1590247813693-5541d1c609fd?q=80&w=2000&auto=format&fit=crop",
+    image: "https://savoirs.unistra.fr/fileadmin/upload/Savoirs/Societe/Assemblee_nationale.JPG",
     summary: "L'hémicycle examine les textes de loi et contrôle le gouvernement.",
     color: "from-blue-600",
     details: [
@@ -43,7 +43,7 @@ const INSTITUTIONS: Institution[] = [
     dbInstitution: "Sénat",
     memberCount: 348,
     directoryUrl: "/senateurs",
-    image: "https://images.unsplash.com/photo-1555992336-03a23c7b20ee?q=80&w=2000&auto=format&fit=crop",
+    image: "https://upload.wikimedia.org/wikipedia/commons/a/a2/S%C3%A9nat_fran%C3%A7ais_Luxembourg.jpg",
     summary: "Le Palais du Luxembourg représente les collectivités territoriales.",
     color: "from-indigo-600",
     details: [
@@ -56,7 +56,7 @@ const INSTITUTIONS: Institution[] = [
     name: "Gouvernement",
     shortName: "Élysée",
     dbInstitution: "Élysée",
-    image: "https://images.unsplash.com/photo-1563283537-8ec953796f60?q=80&w=2000&auto=format&fit=crop",
+    image: "https://upload.wikimedia.org/wikipedia/commons/d/db/Palais_de_l%27%C3%89lys%C3%A9e_2019.jpg",
     summary: "L'exécutif dirige la politique de la nation depuis l'Élysée.",
     color: "from-red-600",
     details: [

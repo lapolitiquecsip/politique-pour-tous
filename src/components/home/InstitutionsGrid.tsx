@@ -99,13 +99,9 @@ const InstitutionCard = memo(({ inst, index, onClick }: { inst: Institution, ind
           </div>
         </div>
         
-        <h3 className="text-4xl font-staatliches uppercase tracking-tighter text-white mb-4 group-hover:text-blue-400 transition-colors">
+        <h3 className="text-4xl font-staatliches uppercase tracking-tighter text-white mb-8 group-hover:text-blue-400 transition-colors">
           {inst.name}
         </h3>
-        
-        <p className="text-white/70 text-sm leading-relaxed mb-8 line-clamp-2 font-medium">
-          {inst.summary}
-        </p>
         
         <div className="flex items-center gap-3 text-white font-bold text-[10px] uppercase tracking-widest self-start transition-all group-hover:translate-x-2">
           Que se passe-t-il aujourd'hui ? <ChevronRight className="w-4 h-4 text-blue-500" />
@@ -507,18 +503,20 @@ export default function InstitutionsGrid() {
                       <div className="h-px bg-slate-100 mb-8" />
 
                       <div className="space-y-4 max-h-[40vh] overflow-y-auto pr-4 custom-scrollbar-blue">
-                        {selectedEvent.short_summary && (
+                        {selectedEvent.short_summary ? (
                           <div className="mb-6">
-                            <p className="text-[10px] font-black uppercase tracking-[0.2em] text-blue-500 mb-2">Résumé Claude 4.5</p>
-                            <p className="text-slate-900 text-lg font-medium leading-relaxed italic">
+                            <p className="text-slate-900 text-xl font-semibold leading-relaxed italic">
                               &ldquo;{selectedEvent.short_summary}&rdquo;
                             </p>
                           </div>
+                        ) : (
+                          <>
+                            <p className="text-[10px] font-black uppercase tracking-[0.2em] text-slate-400 mb-2">Détails de l'événement</p>
+                            <div className="text-slate-600 text-base leading-relaxed whitespace-pre-wrap">
+                              {cleanDescription(selectedEvent.description) || "Aucune description détaillée disponible."}
+                            </div>
+                          </>
                         )}
-                        <p className="text-[10px] font-black uppercase tracking-[0.2em] text-slate-400 mb-2">Détails de l'événement</p>
-                        <div className="text-slate-600 text-base leading-relaxed whitespace-pre-wrap">
-                          {cleanDescription(selectedEvent.description) || "Aucune description détaillée disponible."}
-                        </div>
                       </div>
 
                       <div className="mt-10 pt-8 border-t border-slate-100 flex justify-end">

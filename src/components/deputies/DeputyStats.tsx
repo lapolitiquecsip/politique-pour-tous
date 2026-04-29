@@ -166,10 +166,20 @@ const DeputyStats: React.FC<DeputyStatsProps> = ({ deputy }) => {
                         </span>
                       )}
                     </div>
-                    <p className="font-bold text-slate-900 dark:text-white text-lg">{mandate.label}</p>
+                    <p className="font-bold text-slate-900 dark:text-white text-lg">
+                      {mandate.organe ? (
+                        mandate.label.toLowerCase() === 'membre' || mandate.label.toLowerCase() === 'membre du'
+                          ? `Membre : ${mandate.organe}`
+                          : `${mandate.label} - ${mandate.organe}`
+                      ) : mandate.label}
+                    </p>
                     <p className="text-sm text-slate-500 flex items-center gap-1 mt-1">
                       <Users className="w-3.5 h-3.5" />
-                      {mandate.type}
+                      {mandate.type === 'GP' ? 'Groupe Politique' : 
+                       mandate.type === 'COMPER' ? 'Commission Permanente' :
+                       mandate.type === 'GE' ? "Groupe d'Étude" :
+                       mandate.type === 'GVT' ? 'Gouvernement' :
+                       mandate.type}
                     </p>
                   </div>
                 </div>

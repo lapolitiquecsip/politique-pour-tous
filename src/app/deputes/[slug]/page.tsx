@@ -36,6 +36,7 @@ import { usePremium } from "@/lib/hooks/usePremium";
 import { getFullPartyName } from "@/lib/party-utils";
 import VoteDetailsModal from "@/components/deputies/VoteDetailsModal";
 import LegalStatusModal from "@/components/deputies/LegalStatusModal";
+import DeputyStats from "@/components/deputies/DeputyStats";
 import { useGlossary } from "@/components/providers/GlossaryProvider";
 
 // Vote position formatting helper
@@ -537,7 +538,10 @@ export default function DeputyDetailPage({ params }: { params: Promise<{ slug: s
 
 
 
-            <div>
+            {/* NEW: Statistics & History Section (Premium Data) */}
+            <DeputyStats deputy={deputy} />
+
+            <div className="pt-8">
               <h2 className="text-4xl font-staatliches uppercase tracking-tight text-slate-900 dark:text-white mb-4">
                 Positions sur <span className="text-red-600">les scrutins</span>
               </h2>

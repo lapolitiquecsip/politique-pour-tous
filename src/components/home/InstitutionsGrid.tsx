@@ -122,8 +122,30 @@ InstitutionCard.displayName = "InstitutionCard";
 
 export default function InstitutionsGrid() {
   const [selectedInst, setSelectedInst] = useState<Institution | null>(null);
+  const [selectedEvent, setSelectedEvent] = useState<any | null>(null);
   const [events, setEvents] = useState<any[]>([]);
   const [loading, setLoading] = useState(false);
+
+  const cleanTitle = (title: string) => {
+    if (!title) return "";
+    return title
+      .replace(/^\[\d{2}:\d{2}\]\s*/, '')
+      .replace(/^-+\s*/, '')
+      .replace(/\s*,-+\s*/g, ' • ')
+      .trim();
+  };
+
+  const cleanDescription = (desc: string) => {
+    if (!desc) return null;
+    if (typeof desc !== 'string') return desc;
+    if (desc.startsWith('[') && desc.endsWith(']')) {
+      try {
+        const parsed = JSON.parse(desc);
+        if (Array.isArray(parsed)) return parsed.join(' • ');
+      } catch (e) {}
+    }
+    return desc.replace(/^-+\s*/, '').trim();
+  };
 
   useEffect(() => {
     if (selectedInst) {
@@ -132,9 +154,9 @@ export default function InstitutionsGrid() {
     } else {
       document.body.style.overflow = "auto";
       setEvents([]);
+      setSelectedEvent(null);
     }
 
-    // Cleanup function to restore scroll when navigating away
     return () => {
       document.body.style.overflow = "auto";
     };
@@ -178,8 +200,15 @@ export default function InstitutionsGrid() {
         e.institution === inst.dbInstitution && 
         e.date === today
       );
+
+      // Sort by time
+      const sorted = filtered.sort((a, b) => {
+        const timeA = a.title.match(/^\[(\d{2}:\d{2})\]/)?.[1] || a.time || '99:99';
+        const timeB = b.title.match(/^\[(\d{2}:\d{2})\]/)?.[1] || b.time || '99:99';
+        return timeA.localeCompare(timeB);
+      });
       
-      setEvents(filtered);
+      setEvents(sorted);
     } catch (err) {
       console.error("Erreur chargement événements institution:", err);
     } finally {
@@ -221,10 +250,10 @@ export default function InstitutionsGrid() {
               animate={{ opacity: 1, scale: 1, y: 0 }}
               exit={{ opacity: 0, scale: 0.95, y: 20 }}
               transition={{ type: "spring", damping: 30, stiffness: 400 }}
-              className="relative w-full max-w-5xl bg-background rounded-[2.5rem] shadow-2xl border border-border overflow-hidden flex flex-col md:flex-row min-h-[600px]"
+              className="relative w-full max-w-5xl"
             >
-              {/* Boutons de Navigation (Flèches) */}
-              <div className="absolute inset-y-0 left-4 md:left-8 flex items-center z-50 pointer-events-none">
+              {/* Boutons de Navigation (Flèches - MOVED OUTSIDE overflow-hidden) */}
+              <div className="absolute inset-y-0 -left-12 md:-left-20 flex items-center z-50 pointer-events-none">
                 <button
                   onClick={(e) => { e.stopPropagation(); handlePrev(); }}
                   className="pointer-events-auto p-4 rounded-full bg-slate-900 text-white hover:bg-rose-500 transition-all shadow-2xl border border-white/10 group"
@@ -234,7 +263,7 @@ export default function InstitutionsGrid() {
                 </button>
               </div>
 
-              <div className="absolute inset-y-0 right-4 md:right-8 flex items-center z-50 pointer-events-none">
+              <div className="absolute inset-y-0 -right-12 md:-right-20 flex items-center z-50 pointer-events-none">
                 <button
                   onClick={(e) => { e.stopPropagation(); handleNext(); }}
                   className="pointer-events-auto p-4 rounded-full bg-slate-900 text-white hover:bg-rose-500 transition-all shadow-2xl border border-white/10 group"
@@ -243,6 +272,8 @@ export default function InstitutionsGrid() {
                   <ChevronRight className="w-6 h-6 group-hover:translate-x-1 transition-transform" />
                 </button>
               </div>
+
+              <div className="bg-background rounded-[2.5rem] shadow-2xl border border-border overflow-hidden flex flex-col md:flex-row min-h-[600px] relative">
 
               {/* Bouton Fermer */}
               <button
@@ -309,15 +340,19 @@ export default function InstitutionsGrid() {
                       events.map((event, i) => {
                         const timeMatch = event.title.match(/^\[(\d{2}:\d{2})\]/);
                         const displayTime = timeMatch ? timeMatch[1] : (event.time || 'JOUR');
-                        const displayTitle = event.title.replace(/^\[\d{2}:\d{2}\]\s*/, '');
+                        
+                        // Use short_title if available, otherwise clean the original title
+                        const displayTitle = event.short_title || cleanTitle(event.title);
+                        const displayDescription = cleanDescription(event.description);
 
                         return (
-                          <motion.div
+                          <motion.button
                             key={i}
                             initial={{ opacity: 0, x: -20 }}
                             animate={{ opacity: 1, x: 0 }}
                             transition={{ delay: 0.1 + i * 0.05 }}
-                            className="flex items-center gap-5 p-4 rounded-2xl bg-card border border-border/50 hover:border-blue-200 hover:shadow-md transition-all group"
+                            onClick={() => setSelectedEvent(event)}
+                            className="flex items-center gap-5 p-4 rounded-2xl bg-card border border-border/50 hover:border-blue-200 hover:shadow-md transition-all group text-left w-full"
                           >
                             <div className="flex-shrink-0 w-12 h-12 rounded-xl bg-blue-50 flex flex-col items-center justify-center text-blue-600 group-hover:bg-blue-600 group-hover:text-white transition-colors">
                                <span className="text-[10px] font-black leading-none mb-1">{displayTime}</span>
@@ -327,14 +362,14 @@ export default function InstitutionsGrid() {
                               <span className="text-slate-900 font-bold text-sm leading-tight block mb-1">
                                 {displayTitle}
                               </span>
-                              {event.description && (
+                              {displayDescription && (
                                 <span className="text-slate-500 text-[11px] line-clamp-1">
-                                  {event.description}
+                                  {displayDescription}
                                 </span>
                               )}
                             </div>
-                            <ChevronRight size={18} className="text-slate-300" />
-                          </motion.div>
+                            <ChevronRight size={18} className="text-slate-300 group-hover:text-blue-500 group-hover:translate-x-1 transition-all" />
+                          </motion.button>
                         );
                       })
                     ) : (
@@ -421,6 +456,71 @@ export default function InstitutionsGrid() {
                 )}
               </div>
             </motion.div>
+
+            {/* ── DETAIL OVERLAY (Click on event) ── */}
+            <AnimatePresence>
+              {selectedEvent && (
+                <motion.div 
+                  initial={{ opacity: 0 }}
+                  animate={{ opacity: 1 }}
+                  exit={{ opacity: 0 }}
+                  className="fixed inset-0 z-[110] flex items-center justify-center p-4 bg-slate-950/60 backdrop-blur-md"
+                  onClick={() => setSelectedEvent(null)}
+                >
+                  <motion.div
+                    initial={{ scale: 0.9, y: 20 }}
+                    animate={{ scale: 1, y: 0 }}
+                    exit={{ scale: 0.9, y: 20 }}
+                    onClick={(e) => e.stopPropagation()}
+                    className="bg-white w-full max-w-2xl rounded-[2rem] shadow-2xl overflow-hidden border border-slate-200"
+                  >
+                    <div className="p-8 md:p-12">
+                      <div className="flex items-center justify-between mb-8">
+                        <div className="flex items-center gap-3">
+                          <div className="w-10 h-10 bg-blue-100 text-blue-600 rounded-xl flex items-center justify-center">
+                            <Clock size={20} />
+                          </div>
+                          <div>
+                            <p className="text-[10px] font-black uppercase tracking-widest text-slate-400">Horaire prévu</p>
+                            <p className="text-slate-900 font-bold">
+                              {selectedEvent.title.match(/^\[(\d{2}:\d{2})\]/)?.[1] || selectedEvent.time || 'Non spécifié'}
+                            </p>
+                          </div>
+                        </div>
+                        <button 
+                          onClick={() => setSelectedEvent(null)}
+                          className="w-10 h-10 rounded-full bg-slate-100 flex items-center justify-center text-slate-500 hover:bg-rose-500 hover:text-white transition-all"
+                        >
+                          <X size={20} />
+                        </button>
+                      </div>
+
+                      <h4 className="text-2xl md:text-3xl font-bold text-slate-900 mb-6 leading-tight">
+                        {cleanTitle(selectedEvent.title)}
+                      </h4>
+
+                      <div className="h-px bg-slate-100 mb-8" />
+
+                      <div className="space-y-4 max-h-[40vh] overflow-y-auto pr-4 custom-scrollbar-blue">
+                        <p className="text-[10px] font-black uppercase tracking-[0.2em] text-blue-500 mb-2">Description complète</p>
+                        <div className="text-slate-600 text-lg leading-relaxed whitespace-pre-wrap">
+                          {cleanDescription(selectedEvent.description) || "Aucune description détaillée disponible."}
+                        </div>
+                      </div>
+
+                      <div className="mt-10 pt-8 border-t border-slate-100 flex justify-end">
+                        <button
+                          onClick={() => setSelectedEvent(null)}
+                          className="px-8 py-4 bg-slate-900 text-white rounded-2xl font-bold uppercase tracking-widest text-xs hover:bg-blue-600 transition-all shadow-xl shadow-slate-900/20"
+                        >
+                          Fermer
+                        </button>
+                      </div>
+                    </div>
+                  </motion.div>
+                </motion.div>
+              )}
+            </AnimatePresence>
           </div>
         )}
       </AnimatePresence>

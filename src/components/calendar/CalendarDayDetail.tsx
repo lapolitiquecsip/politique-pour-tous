@@ -36,7 +36,7 @@ function SubSection({ label, events, color }: { label: string, events: CalendarE
                 <div key={event.id} className="group/item">
                   <div className="flex justify-between items-start gap-4">
                     <h5 className="text-[11px] font-bold text-slate-200 leading-snug flex-1 group-hover/item:text-white transition-colors">
-                      {event.title}
+                      {event.displayTitle || event.title}
                     </h5>
                   </div>
                 </div>
@@ -144,11 +144,29 @@ export default function CalendarDayDetail({ selectedDate, events }: CalendarDayD
     );
   }
 
+  const cleanTitle = (title: string) => {
+    if (!title) return "";
+    return title
+      .replace(/^\[\d{2}:\d{2}\]\s*/, '')
+      .replace(/^-+\s*/, '')
+      .replace(/\s*,-+\s*/g, ' • ')
+      .trim();
+  };
+
   const dayEvents = events.filter(e => 
     e.date.getDate() === selectedDate.getDate() &&
     e.date.getMonth() === selectedDate.getMonth() &&
     e.date.getFullYear() === selectedDate.getFullYear()
-  );
+  ).sort((a, b) => {
+    // Sort by time [HH:MM] if present in title, then by time field
+    const timeA = a.title.match(/^\[(\d{2}:\d{2})\]/)?.[1] || a.time || '99:99';
+    const timeB = b.title.match(/^\[(\d{2}:\d{2})\]/)?.[1] || b.time || '99:99';
+    return timeA.localeCompare(timeB);
+  }).map(e => ({
+    ...e,
+    // Use short_title if available, otherwise cleaned title
+    displayTitle: e.short_title || cleanTitle(e.title)
+  }));
 
   const anEvents = dayEvents.filter(e => e.institution === "Assemblée nationale" || e.institution === "Assemblée");
   const senatEvents = dayEvents.filter(e => e.institution === "Sénat");

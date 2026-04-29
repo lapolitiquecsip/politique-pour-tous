@@ -27,7 +27,7 @@ const INSTITUTIONS: Institution[] = [
     dbInstitution: "AN",
     memberCount: 577,
     directoryUrl: "/deputes",
-    image: "https://savoirs.unistra.fr/fileadmin/upload/Savoirs/Societe/Assemblee_nationale.JPG",
+    image: "https://images.unsplash.com/photo-1590247813693-5541d1c609fd?q=80&w=2000&auto=format&fit=crop",
     summary: "L'hémicycle examine les textes de loi et contrôle le gouvernement.",
     color: "from-blue-600",
     details: [
@@ -43,7 +43,7 @@ const INSTITUTIONS: Institution[] = [
     dbInstitution: "Sénat",
     memberCount: 348,
     directoryUrl: "/senateurs",
-    image: "https://upload.wikimedia.org/wikipedia/commons/a/a2/S%C3%A9nat_fran%C3%A7ais_Luxembourg.jpg",
+    image: "https://images.unsplash.com/photo-1555992336-03a23c7b20ee?q=80&w=2000&auto=format&fit=crop",
     summary: "Le Palais du Luxembourg représente les collectivités territoriales.",
     color: "from-indigo-600",
     details: [
@@ -56,7 +56,7 @@ const INSTITUTIONS: Institution[] = [
     name: "Gouvernement",
     shortName: "Élysée",
     dbInstitution: "Élysée",
-    image: "https://upload.wikimedia.org/wikipedia/commons/d/db/Palais_de_l%27%C3%89lys%C3%A9e_2019.jpg",
+    image: "https://images.unsplash.com/photo-1563283537-8ec953796f60?q=80&w=2000&auto=format&fit=crop",
     summary: "L'exécutif dirige la politique de la nation depuis l'Élysée.",
     color: "from-red-600",
     details: [
@@ -273,7 +273,7 @@ export default function InstitutionsGrid() {
                 </button>
               </div>
 
-              <div className="bg-background rounded-[2.5rem] shadow-2xl border border-border overflow-hidden flex flex-col md:flex-row min-h-[600px] relative">
+              <div className="bg-background rounded-[2.5rem] shadow-2xl border border-border overflow-hidden flex flex-col md:flex-row h-full max-h-[85vh] relative">
 
               {/* Bouton Fermer */}
               <button
@@ -305,7 +305,7 @@ export default function InstitutionsGrid() {
               </div>
 
               {/* Partie Droite (Contenu Editorial) */}
-              <div className="flex-1 p-8 md:p-12 flex flex-col justify-center bg-background">
+              <div className="flex-1 p-8 md:p-12 flex flex-col justify-start bg-background overflow-y-auto custom-scrollbar-blue">
                 <div className="mb-10">
                   <div className="flex items-center gap-2 mb-6">
                     <span className="px-4 py-1.5 rounded-full text-[10px] font-black uppercase tracking-[0.2em] bg-blue-100 text-blue-700 border border-blue-200 inline-block">

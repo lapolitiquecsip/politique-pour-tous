@@ -6,6 +6,8 @@ import { motion, AnimatePresence } from "framer-motion";
 import { FileText, Calendar, ChevronRight, Search, Filter, UserCheck, X, Zap, ArrowRight, CheckCircle2, Lock } from "lucide-react";
 import Link from "next/link";
 
+import { useSearchParams } from "next/navigation";
+
 import { usePremium } from "@/lib/hooks/usePremium";
 
 export default function LawsGrid() {
@@ -15,6 +17,8 @@ export default function LawsGrid() {
   const [search, setSearch] = useState("");
   const [selectedLaw, setSelectedLaw] = useState<any>(null);
   const { isPremium } = usePremium();
+  const searchParams = useSearchParams();
+  const lawId = searchParams.get("id");
 
   useEffect(() => {
     async function load() {
@@ -25,6 +29,14 @@ export default function LawsGrid() {
         ]);
         setLaws(lawsData);
         setDeputies(deputiesData);
+
+        // Handle deep link
+        if (lawId) {
+          const law = lawsData.find((l: any) => l.id === lawId);
+          if (law) {
+            setSelectedLaw(law);
+          }
+        }
       } catch (err) {
         console.error("Error loading laws:", err);
       } finally {
@@ -32,7 +44,7 @@ export default function LawsGrid() {
       }
     }
     load();
-  }, []);
+  }, [lawId]);
 
   const findDeputySlug = (authorName: string) => {
     if (!authorName || authorName === 'Le Gouvernement') return null;

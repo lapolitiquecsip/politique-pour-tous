@@ -48,28 +48,28 @@ const DeputyStats: React.FC<DeputyStatsProps> = ({ deputy }) => {
               <BarChart3 className="w-5 h-5" />
             </div>
             <h3 className="text-4xl font-staatliches uppercase tracking-tight leading-none">
-              <span className="text-white">Performance</span> <span className="text-rose-400 italic">Parlementaire</span>
+              <span className="text-white">Performance</span> <span className="text-red-500 italic">Parlementaire</span>
             </h3>
           </div>
 
           <div className="grid grid-cols-1 gap-6">
             <div className="bg-white/5 backdrop-blur-md border border-white/10 p-6 rounded-[2.5rem] relative overflow-hidden group hover:bg-white/10 transition-all duration-500">
               <div className="flex justify-between items-end mb-4">
-                <p className="text-[10px] font-black text-rose-300 uppercase tracking-[0.2em]">Taux de Participation</p>
+                <p className="text-[10px] font-black text-red-300 uppercase tracking-[0.2em]">Taux de Participation</p>
                 <span className="text-3xl font-black text-white italic">{participation}%</span>
               </div>
               <div className="h-2 bg-black/40 rounded-full overflow-hidden border border-white/5">
                 <motion.div 
                   initial={{ width: 0 }}
                   animate={{ width: `${participation}%` }}
-                  className="h-full bg-gradient-to-r from-rose-500 to-rose-300 rounded-full shadow-[0_0_15px_rgba(244,63,94,0.3)]"
+                  className="h-full bg-gradient-to-r from-red-600 to-red-400 rounded-full shadow-[0_0_15px_rgba(220,38,38,0.3)]"
                 />
               </div>
             </div>
 
             <div className="bg-white/5 backdrop-blur-md border border-white/10 p-6 rounded-[2.5rem] relative overflow-hidden group hover:bg-white/10 transition-all duration-500">
               <div className="flex justify-between items-end mb-4">
-                <p className="text-[10px] font-black text-rose-300 uppercase tracking-[0.2em]">Loyauté au Groupe</p>
+                <p className="text-[10px] font-black text-red-300 uppercase tracking-[0.2em]">Loyauté au Groupe</p>
                 <span className="text-3xl font-black text-white italic">{loyalty}%</span>
               </div>
               <div className="h-2 bg-black/40 rounded-full overflow-hidden border border-white/5">
@@ -90,7 +90,7 @@ const DeputyStats: React.FC<DeputyStatsProps> = ({ deputy }) => {
               <Trophy className="w-5 h-5" />
             </div>
             <h3 className="text-4xl font-staatliches uppercase tracking-tight leading-none">
-              <span className="text-white">Résultats</span> <span className="text-rose-400 italic">Élections {electionYear}</span>
+              <span className="text-white">Résultats</span> <span className="text-red-500 italic">Élections {electionYear}</span>
             </h3>
           </div>
 
@@ -98,19 +98,19 @@ const DeputyStats: React.FC<DeputyStatsProps> = ({ deputy }) => {
             <div className="space-y-4">
               <div className="p-6 rounded-[2.5rem] bg-gradient-to-br from-white/10 to-transparent border border-white/10 backdrop-blur-md relative overflow-hidden group">
                 <div className="absolute top-0 right-0 p-3">
-                  <Medal className="w-8 h-8 text-rose-400/20 group-hover:text-rose-400/40 transition-colors" />
+                  <Medal className="w-8 h-8 text-red-500/20 group-hover:text-red-500/40 transition-colors" />
                 </div>
                 
                 <div className="flex items-center justify-between relative z-10">
                   <div>
-                    <p className="text-[9px] font-black text-rose-300 uppercase tracking-[0.2em] mb-2 flex items-center gap-2">
-                      <div className="w-1 h-1 rounded-full bg-rose-500 animate-pulse" />
+                    <p className="text-[9px] font-black text-red-300 uppercase tracking-[0.2em] mb-2 flex items-center gap-2">
+                      <div className="w-1 h-1 rounded-full bg-red-600 animate-pulse" />
                       Élu au {election.round === 1 ? '1er' : '2nd'} tour
                     </p>
                     <div className="flex items-baseline gap-3">
                       <h4 className="text-2xl font-bold text-white leading-tight">Performance Majoritaire</h4>
                       {election.candidates[0]?.party && (
-                        <span className="text-[10px] font-black px-2 py-0.5 rounded-lg bg-rose-500 text-white uppercase shadow-lg shadow-rose-900/40">
+                        <span className="text-[10px] font-black px-2 py-0.5 rounded-lg bg-red-600 text-white uppercase shadow-lg shadow-red-900/40">
                           {election.candidates[0].party}
                         </span>
                       )}
@@ -128,7 +128,7 @@ const DeputyStats: React.FC<DeputyStatsProps> = ({ deputy }) => {
                   {election.candidates.slice(1, 4).map((cand: any, i: number) => (
                     <div key={i} className="flex items-center justify-between group/cand">
                       <div className="flex items-center gap-3">
-                        <div className="w-1 h-8 rounded-full bg-white/5 group-hover/cand:bg-rose-500 transition-colors" />
+                        <div className="w-1 h-8 rounded-full bg-white/5 group-hover/cand:bg-red-600 transition-colors" />
                         <div className="flex flex-col">
                           <span className="text-white font-bold text-sm">{cand.name}</span>
                           <span className="text-[9px] font-black text-white/40 uppercase tracking-widest">{cand.party || 'IND'}</span>

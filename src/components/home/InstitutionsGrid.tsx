@@ -44,7 +44,7 @@ const INSTITUTIONS: Institution[] = [
     memberCount: 348,
     directoryUrl: "/senateurs",
     image: "https://upload.wikimedia.org/wikipedia/commons/a/a2/S%C3%A9nat_fran%C3%A7ais_Luxembourg.jpg",
-    summary: "Le Palais du Luxembourg représente les collectivités territoriales.",
+    summary: "",
     color: "from-indigo-600",
     details: [
       "348 sénateurs composent la chambre haute",
@@ -120,6 +120,7 @@ export default function InstitutionsGrid() {
   const [selectedInst, setSelectedInst] = useState<Institution | null>(null);
   const [selectedEvent, setSelectedEvent] = useState<any | null>(null);
   const [events, setEvents] = useState<any[]>([]);
+  const [dailySummary, setDailySummary] = useState<string | null>(null);
   const [loading, setLoading] = useState(false);
 
   const cleanTitle = (title: string) => {
@@ -197,14 +198,26 @@ export default function InstitutionsGrid() {
         e.date === today
       );
 
-      // Sort by time
-      const sorted = filtered.sort((a, b) => {
-        const timeA = a.title.match(/^\[(\d{2}:\d{2})\]/)?.[1] || a.time || '99:99';
-        const timeB = b.title.match(/^\[(\d{2}:\d{2})\]/)?.[1] || b.time || '99:99';
-        return timeA.localeCompare(timeB);
-      });
+      // Check for DailySummary
+      const dailySummaryEvent = filtered.find(e => e.category === 'DailySummary');
+      if (dailySummaryEvent) {
+        // We can't mutate selectedInst directly because it's from INSTITUTIONS array
+        // But we can store it in a local state if needed, or just use it in the render
+        // Actually, let's keep it simple: we have the events, we'll find it in the render or here.
+      }
+
+      // Sort by time, excluding the DailySummary from the cards list
+      const sorted = filtered
+        .filter(e => e.category !== 'DailySummary')
+        .sort((a, b) => {
+          const timeA = a.title.match(/^\[(\d{2}:\d{2})\]/)?.[1] || a.time || '99:99';
+          const timeB = b.title.match(/^\[(\d{2}:\d{2})\]/)?.[1] || b.time || '99:99';
+          return timeA.localeCompare(timeB);
+        });
       
       setEvents(sorted);
+      // Store the daily summary in a state to use it in the render
+      setDailySummary(dailySummaryEvent?.description || null);
     } catch (err) {
       console.error("Erreur chargement événements institution:", err);
     } finally {
@@ -312,7 +325,7 @@ export default function InstitutionsGrid() {
                   </div>
                   
                   <p className="text-slate-600 text-lg md:text-2xl leading-relaxed font-serif italic text-pretty">
-                    &ldquo;{selectedInst.summary}&rdquo;
+                    &ldquo;{dailySummary || selectedInst.summary}&rdquo;
                   </p>
                 </div>
 

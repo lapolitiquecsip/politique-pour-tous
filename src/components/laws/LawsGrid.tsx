@@ -259,69 +259,68 @@ export default function LawsGrid() {
                               </div>
                             </div>
                             
-                            {/* Premium Content with Highlighting and Formatting */}
+                            {/* Premium Content: Show only if premium, otherwise show simple gold link */}
                             <div className="relative">
-                              <div className={`space-y-8 transition-all duration-700 ${!isPremium ? 'blur-2xl opacity-20 select-none pointer-events-none' : ''}`}>
-                                <div className="prose prose-invert max-w-none">
-                                  <div className="text-amber-50/90 leading-relaxed text-lg whitespace-pre-wrap font-medium">
-                                    {(() => {
-                                      if (!selectedLaw.content) return null;
-                                      
-                                      // 1. Highlight numbers
-                                      let formatted = selectedLaw.content.replace(
-                                        /(\d+(?:[.,]\d+)?%?|\d+\s?€)/g, 
-                                        '<span class="bg-amber-400/30 text-amber-200 px-1 rounded font-black border-b-2 border-amber-400/50">$1</span>'
-                                      );
+                              {isPremium ? (
+                                <div className="space-y-8 animate-in fade-in duration-700">
+                                  <div className="prose prose-invert max-w-none">
+                                    <div className="text-amber-50/90 leading-relaxed text-lg whitespace-pre-wrap font-medium">
+                                      {(() => {
+                                        if (!selectedLaw.content) return null;
+                                        
+                                        // 1. Highlight numbers
+                                        let formatted = selectedLaw.content.replace(
+                                          /(\d+(?:[.,]\d+)?%?|\d+\s?€)/g, 
+                                          '<span class="bg-amber-400/30 text-amber-200 px-1 rounded font-black border-b-2 border-amber-400/50">$1</span>'
+                                        );
 
-                                      // 2. Style Headers
-                                      formatted = formatted.replace(
-                                        /(CONTEXTE\s?:|MESURES PROPOSÉES\s?:)/gi,
-                                        '<span class="block text-2xl font-black text-white mt-10 mb-4 font-staatliches tracking-wider uppercase bg-white/5 py-2 px-4 rounded-xl border-l-4 border-amber-400">$1</span>'
-                                      );
+                                        // 2. Style Headers
+                                        formatted = formatted.replace(
+                                          /(CONTEXTE\s?:|MESURES PROPOSÉES\s?:|MESURES PROPOSÉES|CONTEXTE)/gi,
+                                          '<span class="block text-2xl font-black text-white mt-10 mb-4 font-staatliches tracking-wider uppercase bg-white/5 py-2 px-4 rounded-xl border-l-4 border-amber-400">$1</span>'
+                                        );
 
-                                      // 3. Add spacing for list items (starting with - or • or numbering)
-                                      formatted = formatted.replace(
-                                        /(\n(?:\s+)?[-•\d]\s)/g,
-                                        '<br/>$1'
-                                      );
+                                        // 3. Add spacing for list items
+                                        formatted = formatted.replace(
+                                          /(\n(?:\s+)?[-•\d]\s)/g,
+                                          '<br/>$1'
+                                        );
 
-                                      return <div dangerouslySetInnerHTML={{ __html: formatted }} />;
-                                    })()}
+                                        return <div dangerouslySetInnerHTML={{ __html: formatted }} />;
+                                      })()}
+                                    </div>
+                                  </div>
+
+                                  <div className="pt-8 border-t border-white/10 flex flex-wrap gap-4">
+                                    <Link 
+                                      href={selectedLaw.source_urls?.[0] || "#"} 
+                                      target="_blank"
+                                      className="px-8 py-4 bg-gradient-to-r from-amber-200 via-amber-400 to-amber-500 text-slate-950 rounded-2xl font-black text-xs uppercase tracking-widest hover:scale-105 transition-all duration-300 flex items-center gap-2 shadow-xl shadow-amber-900/20"
+                                    >
+                                      Consulter le dossier officiel <ArrowRight size={16} />
+                                    </Link>
                                   </div>
                                 </div>
-
-                                <div className="pt-8 border-t border-white/10 flex flex-wrap gap-4">
-                                  <Link 
-                                    href={selectedLaw.source_urls?.[0] || "#"} 
-                                    target="_blank"
-                                    className="px-8 py-4 bg-gradient-to-r from-amber-200 via-amber-400 to-amber-500 text-slate-950 rounded-2xl font-black text-xs uppercase tracking-widest hover:scale-105 transition-all duration-300 flex items-center gap-2 shadow-xl shadow-amber-900/20"
-                                  >
-                                    Consulter le dossier officiel <ArrowRight size={16} />
-                                  </Link>
-                                </div>
-                              </div>
-
-                              {/* Lock Overlay */}
-                              {!isPremium && (
-                                <div className="absolute inset-0 z-20 flex flex-col items-center justify-center text-center p-8 rounded-[2rem] bg-slate-900/40 backdrop-blur-sm">
+                              ) : (
+                                <Link 
+                                  href="/premium"
+                                  className="group flex flex-col items-center justify-center p-12 rounded-[2rem] border-2 border-dashed border-amber-400/30 hover:border-amber-400 hover:bg-amber-400/5 transition-all duration-500 text-center"
+                                >
                                   <motion.div 
-                                    initial={{ scale: 0.8, opacity: 0 }}
-                                    animate={{ scale: 1, opacity: 1 }}
-                                    className="w-20 h-20 bg-gradient-to-br from-amber-200 to-amber-600 rounded-full flex items-center justify-center text-slate-950 mb-8 shadow-[0_0_50px_rgba(251,191,36,0.4)]"
+                                    whileHover={{ scale: 1.1 }}
+                                    className="flex flex-col items-center gap-4"
                                   >
-                                    <Lock size={32} />
+                                    <div className="w-12 h-12 bg-amber-400/10 rounded-full flex items-center justify-center text-amber-400 group-hover:bg-amber-400 group-hover:text-slate-950 transition-colors">
+                                      <Lock size={20} />
+                                    </div>
+                                    <span className="text-2xl font-black uppercase tracking-widest italic bg-gradient-to-r from-amber-200 via-amber-400 to-amber-600 bg-clip-text text-transparent group-hover:scale-105 transition-transform">
+                                      Analyse détaillée disponible
+                                    </span>
+                                    <div className="flex items-center gap-2 text-amber-400/60 text-[10px] font-bold uppercase tracking-[0.2em]">
+                                      Accès Membres Premium <ChevronRight size={12} />
+                                    </div>
                                   </motion.div>
-                                  <h5 className="text-3xl font-black mb-3 uppercase tracking-tight text-white italic">Accès Réservé</h5>
-                                  <p className="text-amber-100/70 text-base max-w-sm mb-10 font-bold leading-relaxed">
-                                    Débloquez l'analyse experte, le contexte politique et les mesures chiffrées avec notre offre Premium.
-                                  </p>
-                                  <Link 
-                                    href="/premium"
-                                    className="px-10 py-5 bg-white text-slate-950 rounded-2xl font-black text-xs uppercase tracking-widest hover:bg-amber-400 transition-all duration-300 shadow-2xl hover:scale-105"
-                                  >
-                                    Devenir Membre Premium
-                                  </Link>
-                                </div>
+                                </Link>
                               )}
                             </div>
                           </div>

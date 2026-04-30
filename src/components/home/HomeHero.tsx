@@ -102,23 +102,14 @@ export default function HomeHero() {
                 </svg>
               </span>
             </span>
-            <span className="italic uppercase flex items-center flex-wrap">
+            <span className="italic uppercase flex items-center flex-wrap text-red-500">
               <span className="mr-4">
-                <span className="text-red-600">c</span>
-                <span className="text-white">'est </span>
+                c'est 
               </span>
-              <span className="relative inline-block text-white">
+              <span className="relative inline-block">
                 simple.
-                {/* Multi-tone green underline */}
-                <div 
-                  className="absolute -bottom-1 left-0 w-full h-[6px] md:h-[8px] rounded-full"
-                  style={{ 
-                    background: 'linear-gradient(to right, #2E6F40, #CFFFDC, #68BA7F, #253D2C)',
-                    filter: 'drop-shadow(0 0 5px rgba(46, 111, 64, 0.4))'
-                  }}
-                />
               </span>
-              
+            </span>
               {/* Cluster of hand-drawn neon stars */}
               <div className="relative inline-block ml-2 align-middle">
                 {/* Initial Yellow Star */}

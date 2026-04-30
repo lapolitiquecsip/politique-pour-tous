@@ -235,96 +235,76 @@ export default function LawsGrid() {
                       </div>
                     </section>
 
-                    {/* Premium Section */}
+                    {/* Compact Premium Section */}
                     {selectedLaw.content && (
-                      <section className="relative group">
-                        <div className="relative p-8 md:p-10 rounded-[3rem] bg-slate-900 text-white overflow-hidden shadow-2xl border border-white/5">
-                          {/* Decorative Background Elements - GOLD Theme */}
-                          <div className="absolute top-0 right-0 w-64 h-64 bg-amber-500/10 rounded-full blur-[100px] -translate-y-1/2 translate-x-1/2" />
-                          <div className="absolute bottom-0 left-0 w-64 h-64 bg-amber-500/5 rounded-full blur-[100px] translate-y-1/2 -translate-x-1/2" />
-                          
-                          <div className="relative z-10">
-                            <div className="flex items-center justify-between mb-8">
-                              <div className="flex items-center gap-3">
+                      <section className="mt-8">
+                        {!isPremium ? (
+                          <div className="flex items-center justify-between p-6 rounded-3xl bg-slate-900 border border-white/5 shadow-xl">
+                            <div className="flex items-center gap-3">
+                              <div className="w-8 h-8 bg-amber-400 rounded-lg flex items-center justify-center text-slate-950">
+                                <Zap size={16} fill="currentColor" />
+                              </div>
+                              <span className="text-lg font-black uppercase tracking-tight text-white italic">Analyse détaillée</span>
+                            </div>
+                            <Link 
+                              href="/premium"
+                              className="px-4 py-2 bg-gradient-to-r from-amber-200 to-amber-500 text-slate-950 rounded-xl font-black text-[10px] uppercase tracking-widest hover:scale-105 transition-all shadow-lg"
+                            >
+                              Débloquer
+                            </Link>
+                          </div>
+                        ) : (
+                          <div className="relative p-8 md:p-10 rounded-[3rem] bg-slate-900 text-white overflow-hidden shadow-2xl border border-white/5">
+                            {/* Decorative Background Elements - GOLD Theme */}
+                            <div className="absolute top-0 right-0 w-64 h-64 bg-amber-500/10 rounded-full blur-[100px] -translate-y-1/2 translate-x-1/2" />
+                            
+                            <div className="relative z-10">
+                              <div className="flex items-center gap-3 mb-8">
                                 <div className="p-2.5 bg-gradient-to-br from-amber-200 via-amber-400 to-amber-600 rounded-2xl text-slate-950 shadow-[0_0_20px_rgba(251,191,36,0.3)]">
                                   <Zap size={20} fill="currentColor" />
                                 </div>
-                                <div>
-                                  <span className="block text-[10px] font-black uppercase tracking-[0.3em] text-amber-400 leading-none mb-1">Expertise Législative</span>
-                                  <h4 className="text-2xl font-black tracking-tight text-white italic">Analyse Premium</h4>
-                                </div>
+                                <h4 className="text-2xl font-black tracking-tight text-white italic">Analyse détaillée</h4>
                               </div>
-                              <div className="px-4 py-1.5 rounded-full bg-amber-400/10 border border-amber-400/20 text-[10px] font-bold uppercase tracking-widest text-amber-400">
-                                Exclusivité Abonnés
-                              </div>
-                            </div>
-                            
-                            {/* Premium Content: Show only if premium, otherwise show simple gold link */}
-                            <div className="relative">
-                              {isPremium ? (
-                                <div className="space-y-8 animate-in fade-in duration-700">
-                                  <div className="prose prose-invert max-w-none">
-                                    <div className="text-amber-50/90 leading-relaxed text-lg whitespace-pre-wrap font-medium">
-                                      {(() => {
-                                        if (!selectedLaw.content) return null;
-                                        
-                                        // 1. Highlight numbers
-                                        let formatted = selectedLaw.content.replace(
-                                          /(\d+(?:[.,]\d+)?%?|\d+\s?€)/g, 
-                                          '<span class="bg-amber-400/30 text-amber-200 px-1 rounded font-black border-b-2 border-amber-400/50">$1</span>'
-                                        );
+                              
+                              <div className="space-y-8 animate-in fade-in duration-700">
+                                <div className="prose prose-invert max-w-none">
+                                  <div className="text-amber-50/90 leading-relaxed text-lg whitespace-pre-wrap font-medium">
+                                    {(() => {
+                                      if (!selectedLaw.content) return null;
+                                      
+                                      let formatted = selectedLaw.content.replace(
+                                        /(\d+(?:[.,]\d+)?%?|\d+\s?€)/g, 
+                                        '<span class="bg-amber-400/30 text-amber-200 px-1 rounded font-black border-b-2 border-amber-400/50">$1</span>'
+                                      );
 
-                                        // 2. Style Headers
-                                        formatted = formatted.replace(
-                                          /(CONTEXTE\s?:|MESURES PROPOSÉES\s?:|MESURES PROPOSÉES|CONTEXTE)/gi,
-                                          '<span class="block text-2xl font-black text-white mt-10 mb-4 font-staatliches tracking-wider uppercase bg-white/5 py-2 px-4 rounded-xl border-l-4 border-amber-400">$1</span>'
-                                        );
+                                      formatted = formatted.replace(
+                                        /(CONTEXTE\s?:|MESURES PROPOSÉES\s?:|MESURES PROPOSÉES|CONTEXTE)/gi,
+                                        '<span class="block text-2xl font-black text-white mt-10 mb-4 font-staatliches tracking-wider uppercase bg-white/5 py-2 px-4 rounded-xl border-l-4 border-amber-400">$1</span>'
+                                      );
 
-                                        // 3. Add spacing for list items
-                                        formatted = formatted.replace(
-                                          /(\n(?:\s+)?[-•\d]\s)/g,
-                                          '<br/>$1'
-                                        );
+                                      formatted = formatted.replace(
+                                        /(\n(?:\s+)?[-•\d]\s)/g,
+                                        '<br/>$1'
+                                      );
 
-                                        return <div dangerouslySetInnerHTML={{ __html: formatted }} />;
-                                      })()}
-                                    </div>
-                                  </div>
-
-                                  <div className="pt-8 border-t border-white/10 flex flex-wrap gap-4">
-                                    <Link 
-                                      href={selectedLaw.source_urls?.[0] || "#"} 
-                                      target="_blank"
-                                      className="px-8 py-4 bg-gradient-to-r from-amber-200 via-amber-400 to-amber-500 text-slate-950 rounded-2xl font-black text-xs uppercase tracking-widest hover:scale-105 transition-all duration-300 flex items-center gap-2 shadow-xl shadow-amber-900/20"
-                                    >
-                                      Consulter le dossier officiel <ArrowRight size={16} />
-                                    </Link>
+                                      return <div dangerouslySetInnerHTML={{ __html: formatted }} />;
+                                    })()}
                                   </div>
                                 </div>
-                              ) : (
-                                <Link 
-                                  href="/premium"
-                                  className="group flex flex-col items-center justify-center p-12 rounded-[2rem] border-2 border-dashed border-amber-400/30 hover:border-amber-400 hover:bg-amber-400/5 transition-all duration-500 text-center"
-                                >
-                                  <motion.div 
-                                    whileHover={{ scale: 1.1 }}
-                                    className="flex flex-col items-center gap-4"
+
+                                <div className="pt-8 border-t border-white/10 flex flex-wrap gap-4">
+                                  <Link 
+                                    href={selectedLaw.source_urls?.[0] || "#"} 
+                                    target="_blank"
+                                    className="px-8 py-4 bg-gradient-to-r from-amber-200 via-amber-400 to-amber-500 text-slate-950 rounded-2xl font-black text-xs uppercase tracking-widest hover:scale-105 transition-all duration-300 flex items-center gap-2 shadow-xl shadow-amber-900/20"
                                   >
-                                    <div className="w-12 h-12 bg-amber-400/10 rounded-full flex items-center justify-center text-amber-400 group-hover:bg-amber-400 group-hover:text-slate-950 transition-colors">
-                                      <Lock size={20} />
-                                    </div>
-                                    <span className="text-2xl font-black uppercase tracking-widest italic bg-gradient-to-r from-amber-200 via-amber-400 to-amber-600 bg-clip-text text-transparent group-hover:scale-105 transition-transform">
-                                      Analyse détaillée disponible
-                                    </span>
-                                    <div className="flex items-center gap-2 text-amber-400/60 text-[10px] font-bold uppercase tracking-[0.2em]">
-                                      Accès Membres Premium <ChevronRight size={12} />
-                                    </div>
-                                  </motion.div>
-                                </Link>
-                              )}
+                                    Consulter le dossier officiel <ArrowRight size={16} />
+                                  </Link>
+                                </div>
+                              </div>
                             </div>
                           </div>
-                        </div>
+                        )}
                       </section>
                     )}
                   </div>

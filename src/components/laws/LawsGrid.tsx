@@ -215,16 +215,18 @@ export default function LawsGrid() {
                         <CheckCircle2 className="text-green-500" size={20} /> État d'avancement
                       </h3>
                       <div className="relative pl-8 space-y-8 before:absolute before:left-[11px] before:top-2 before:bottom-2 before:w-[2px] before:bg-slate-100">
-                        {selectedLaw.timeline ? (
-                          // If we have a timeline string from the database
+                        {selectedLaw.timeline && selectedLaw.timeline !== "Analyse du parcours législatif en cours..." ? (
                           <div className="relative">
-                            <div className="absolute -left-[31px] top-1 w-4 h-4 rounded-full bg-blue-500 ring-4 ring-blue-100" />
-                            <p className="text-slate-700 font-bold">{selectedLaw.timeline}</p>
+                            <div className="absolute -left-[31px] top-1 w-4 h-4 rounded-full bg-green-500 ring-4 ring-green-100 shadow-sm" />
+                            <div className="flex flex-col">
+                              <span className="text-[10px] font-black uppercase tracking-wider text-green-600 mb-1">Dernière étape franchie</span>
+                              <p className="text-slate-900 font-bold text-lg leading-tight">{selectedLaw.timeline}</p>
+                            </div>
                           </div>
                         ) : (
-                          <div className="relative opacity-60">
+                          <div className="relative">
                             <div className="absolute -left-[31px] top-1 w-4 h-4 rounded-full bg-slate-200" />
-                            <p className="text-slate-400 italic">Analyse du parcours législatif en cours...</p>
+                            <p className="text-slate-400 italic">Mise à jour en cours par nos services...</p>
                           </div>
                         )}
                       </div>
@@ -232,31 +234,65 @@ export default function LawsGrid() {
 
                     {/* Premium Section */}
                     {selectedLaw.content && (
-                      <section className="relative p-8 rounded-[2.5rem] bg-gradient-to-br from-slate-900 to-blue-900 text-white overflow-hidden shadow-xl">
-                        <Zap className="absolute top-8 right-8 text-yellow-400 opacity-20 w-24 h-24 rotate-12" />
-                        
-                        <div className="relative z-10">
-                          <div className="flex items-center gap-2 mb-6">
-                            <div className="p-2 bg-yellow-400 rounded-xl text-slate-900">
-                              <Zap size={16} fill="currentColor" />
-                            </div>
-                            <span className="text-sm font-black uppercase tracking-[0.2em] text-yellow-400">Analyse Premium</span>
-                          </div>
-
-                          <h4 className="text-xl font-bold mb-6">Résumé détaillé & Chiffres clés</h4>
+                      <section className="relative group">
+                        <div className="relative p-8 md:p-10 rounded-[3rem] bg-slate-900 text-white overflow-hidden shadow-2xl border border-white/5">
+                          {/* Decorative Background Elements */}
+                          <div className="absolute top-0 right-0 w-64 h-64 bg-blue-600/20 rounded-full blur-[100px] -translate-y-1/2 translate-x-1/2" />
+                          <div className="absolute bottom-0 left-0 w-64 h-64 bg-amber-500/10 rounded-full blur-[100px] translate-y-1/2 -translate-x-1/2" />
                           
-                          <div className="space-y-6 text-blue-50/90 leading-relaxed whitespace-pre-wrap">
-                            {selectedLaw.content}
-                          </div>
+                          <div className="relative z-10">
+                            <div className="flex items-center justify-between mb-8">
+                              <div className="flex items-center gap-3">
+                                <div className="p-2.5 bg-amber-400 rounded-2xl text-slate-950 shadow-[0_0_20px_rgba(251,191,36,0.3)]">
+                                  <Zap size={20} fill="currentColor" />
+                                </div>
+                                <div>
+                                  <span className="block text-[10px] font-black uppercase tracking-[0.3em] text-amber-400 leading-none mb-1">Expertise Législative</span>
+                                  <h4 className="text-2xl font-black tracking-tight text-white italic">Analyse Premium</h4>
+                                </div>
+                              </div>
+                              <div className="px-4 py-1.5 rounded-full bg-white/5 border border-white/10 text-[10px] font-bold uppercase tracking-widest text-white/60">
+                                Exclusivité Abonnés
+                              </div>
+                            </div>
+                            
+                            {/* Premium Content with Conditional Blur */}
+                            <div className="relative">
+                              {/* Simple mock check: if user is not premium (here we simulate by checking a local storage or just show for now) */}
+                              <div className="space-y-8">
+                                <div className="prose prose-invert max-w-none">
+                                  <div className="text-blue-50/90 leading-relaxed text-lg whitespace-pre-wrap font-medium">
+                                    {selectedLaw.content}
+                                  </div>
+                                </div>
 
-                          <div className="mt-10 pt-10 border-t border-white/10 flex flex-wrap gap-4">
-                            <Link 
-                              href={selectedLaw.source_urls?.[0] || "#"} 
-                              target="_blank"
-                              className="px-6 py-3 bg-white text-slate-900 rounded-full font-bold text-sm hover:bg-yellow-400 transition-colors flex items-center gap-2"
-                            >
-                              Consulter le dossier officiel <ArrowRight size={16} />
-                            </Link>
+                                <div className="pt-8 border-t border-white/10 flex flex-wrap gap-4">
+                                  <Link 
+                                    href={selectedLaw.source_urls?.[0] || "#"} 
+                                    target="_blank"
+                                    className="px-8 py-4 bg-white text-slate-950 rounded-2xl font-black text-xs uppercase tracking-widest hover:bg-amber-400 hover:scale-105 transition-all duration-300 flex items-center gap-2 shadow-xl"
+                                  >
+                                    Consulter le dossier officiel <ArrowRight size={16} />
+                                  </Link>
+                                </div>
+                              </div>
+
+                              {/* Lock Overlay (to be toggled by actual auth) */}
+                              {/* 
+                              <div className="absolute inset-0 z-20 backdrop-blur-xl bg-slate-900/40 flex flex-col items-center justify-center text-center p-8 rounded-[2rem]">
+                                <div className="w-16 h-16 bg-amber-400 rounded-full flex items-center justify-center text-slate-950 mb-6 shadow-2xl animate-bounce">
+                                  <Lock size={28} />
+                                </div>
+                                <h5 className="text-2xl font-black mb-2 uppercase tracking-tight">Accès Réservé</h5>
+                                <p className="text-white/60 text-sm max-w-xs mb-8 font-medium">
+                                  Débloquez l'analyse complète, le contexte politique et les mesures concrètes avec l'offre Premium.
+                                </p>
+                                <button className="px-8 py-4 bg-amber-400 text-slate-950 rounded-2xl font-black text-xs uppercase tracking-widest hover:bg-white transition-all shadow-xl">
+                                  Devenir Premium
+                                </button>
+                              </div>
+                              */}
+                            </div>
                           </div>
                         </div>
                       </section>

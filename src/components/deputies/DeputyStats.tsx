@@ -31,7 +31,9 @@ const DeputyStats: React.FC<DeputyStatsProps> = ({ deputy }) => {
     return 2024;
   };
 
-  const electionYear = getElectionYear()  return (
+  const electionYear = getElectionYear();
+
+  return (
     <div className="bg-[#4a0418] rounded-[3.5rem] p-8 md:p-12 shadow-2xl relative overflow-hidden border border-white/5">
       {/* Decorative Background Elements */}
       <div className="absolute top-0 right-0 w-96 h-96 bg-red-600/10 rounded-full blur-[100px] -mr-48 -mt-48" />

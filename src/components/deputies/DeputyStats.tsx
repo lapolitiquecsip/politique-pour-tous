@@ -31,113 +31,121 @@ const DeputyStats: React.FC<DeputyStatsProps> = ({ deputy }) => {
     return 2024;
   };
 
-  const electionYear = getElectionYear();
+  const electionYear = getElectionYear()  return (
+    <div className="bg-[#4a0418] rounded-[3.5rem] p-8 md:p-12 shadow-2xl relative overflow-hidden border border-white/5">
+      {/* Decorative Background Elements */}
+      <div className="absolute top-0 right-0 w-96 h-96 bg-red-600/10 rounded-full blur-[100px] -mr-48 -mt-48" />
+      <div className="absolute bottom-0 left-0 w-96 h-96 bg-red-900/20 rounded-full blur-[100px] -ml-48 -mb-48" />
 
-  return (
-    <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-      {/* 1. Key Performance Indicators */}
-      <motion.div 
-        whileHover={{ y: -4 }}
-        className="bg-white dark:bg-slate-900 rounded-[2.5rem] p-8 border border-slate-200 dark:border-slate-800 shadow-xl"
-      >
-        <div className="flex items-center gap-4 mb-8">
-          <div className="w-12 h-12 rounded-2xl bg-blue-500/10 flex items-center justify-center text-blue-600">
-            <BarChart3 className="w-6 h-6" />
-          </div>
-          <h3 className="text-xl font-bold text-slate-900 dark:text-white uppercase tracking-tight">Performance Parlementaire</h3>
-        </div>
-
+      <div className="relative z-10 grid grid-cols-1 md:grid-cols-2 gap-10">
+        
+        {/* 1. Key Performance Indicators */}
         <div className="space-y-8">
-          {/* Participation Rate */}
-          <div>
-            <div className="flex justify-between items-end mb-3">
-              <p className="text-sm font-bold text-slate-500 uppercase tracking-widest">Taux de Participation</p>
-              <span className="text-2xl font-black text-blue-600">{participation}%</span>
+          <div className="flex items-center gap-4">
+            <div className="w-10 h-10 rounded-xl bg-white/10 flex items-center justify-center text-white backdrop-blur-md">
+              <BarChart3 className="w-5 h-5" />
             </div>
-            <div className="h-4 bg-slate-100 dark:bg-slate-800 rounded-full overflow-hidden">
-              <motion.div 
-                initial={{ width: 0 }}
-                animate={{ width: `${participation}%` }}
-                className="h-full bg-blue-500 rounded-full shadow-[0_0_12px_rgba(59,130,246,0.5)]"
-              />
-            </div>
+            <h3 className="text-4xl font-staatliches uppercase tracking-tight leading-none">
+              <span className="text-white">Performance</span> <span className="text-rose-400 italic">Parlementaire</span>
+            </h3>
           </div>
 
-          {/* Group Loyalty */}
-          <div>
-            <div className="flex justify-between items-end mb-3">
-              <p className="text-sm font-bold text-slate-500 uppercase tracking-widest">Loyauté au Groupe</p>
-              <span className="text-2xl font-black text-emerald-600">{loyalty}%</span>
+          <div className="grid grid-cols-1 gap-6">
+            <div className="bg-white/5 backdrop-blur-md border border-white/10 p-6 rounded-[2.5rem] relative overflow-hidden group hover:bg-white/10 transition-all duration-500">
+              <div className="flex justify-between items-end mb-4">
+                <p className="text-[10px] font-black text-rose-300 uppercase tracking-[0.2em]">Taux de Participation</p>
+                <span className="text-3xl font-black text-white italic">{participation}%</span>
+              </div>
+              <div className="h-2 bg-black/40 rounded-full overflow-hidden border border-white/5">
+                <motion.div 
+                  initial={{ width: 0 }}
+                  animate={{ width: `${participation}%` }}
+                  className="h-full bg-gradient-to-r from-rose-500 to-rose-300 rounded-full shadow-[0_0_15px_rgba(244,63,94,0.3)]"
+                />
+              </div>
             </div>
-            <div className="h-4 bg-slate-100 dark:bg-slate-800 rounded-full overflow-hidden">
-              <motion.div 
-                initial={{ width: 0 }}
-                animate={{ width: `${loyalty}%` }}
-                className="h-full bg-emerald-500 rounded-full shadow-[0_0_12px_rgba(16,185,129,0.5)]"
-              />
+
+            <div className="bg-white/5 backdrop-blur-md border border-white/10 p-6 rounded-[2.5rem] relative overflow-hidden group hover:bg-white/10 transition-all duration-500">
+              <div className="flex justify-between items-end mb-4">
+                <p className="text-[10px] font-black text-rose-300 uppercase tracking-[0.2em]">Loyauté au Groupe</p>
+                <span className="text-3xl font-black text-white italic">{loyalty}%</span>
+              </div>
+              <div className="h-2 bg-black/40 rounded-full overflow-hidden border border-white/5">
+                <motion.div 
+                  initial={{ width: 0 }}
+                  animate={{ width: `${loyalty}%` }}
+                  className="h-full bg-gradient-to-r from-emerald-500 to-emerald-300 rounded-full shadow-[0_0_15px_rgba(16,185,129,0.3)]"
+                />
+              </div>
             </div>
           </div>
         </div>
-      </motion.div>
 
-      {/* 2. Election Results */}
-      <motion.div 
-        whileHover={{ y: -4 }}
-        className="bg-white dark:bg-slate-900 rounded-[2.5rem] p-8 border border-slate-200 dark:border-slate-800 shadow-xl"
-      >
-        <div className="flex items-center gap-4 mb-8">
-          <div className="w-12 h-12 rounded-2xl bg-amber-500/10 flex items-center justify-center text-amber-600">
-            <Trophy className="w-6 h-6" />
-          </div>
-          <h3 className="text-xl font-bold text-slate-900 dark:text-white uppercase tracking-tight">Résultats Élections {electionYear}</h3>
-        </div>
-
-        {election ? (
-          <div className="space-y-4">
-            <div className="flex items-center justify-between p-4 rounded-3xl bg-amber-500/5 border border-amber-500/10">
-               <div className="flex items-center gap-3">
-                 <Medal className="w-5 h-5 text-amber-500" />
-                 <div>
-                   <p className="text-[10px] font-black text-amber-600 uppercase tracking-widest">Élu au {election.round === 1 ? '1er' : '2nd'} tour</p>
-                   <div className="flex items-center gap-2">
-                     <p className="font-bold text-slate-900 dark:text-white">Performance Majoritaire</p>
-                     {election.candidates[0]?.party && (
-                       <span className="text-[9px] font-black px-1.5 py-0.5 rounded bg-amber-500/10 text-amber-600 uppercase">
-                         {election.candidates[0].party}
-                       </span>
-                     )}
-                   </div>
-                 </div>
-               </div>
-               <span className="text-xl font-black text-slate-900 dark:text-white">
-                 {election.candidates[0]?.percent}
-               </span>
+        {/* 2. Election Results */}
+        <div className="space-y-8">
+          <div className="flex items-center gap-4">
+            <div className="w-10 h-10 rounded-xl bg-white/10 flex items-center justify-center text-white backdrop-blur-md">
+              <Trophy className="w-5 h-5" />
             </div>
+            <h3 className="text-4xl font-staatliches uppercase tracking-tight leading-none">
+              <span className="text-white">Résultats</span> <span className="text-rose-400 italic">Élections {electionYear}</span>
+            </h3>
+          </div>
 
-            <div className="space-y-2 mt-4">
-               <p className="text-[10px] font-black text-slate-400 uppercase tracking-widest mb-3">Principaux Adversaires</p>
-               {election.candidates.slice(1, 4).map((cand: any, i: number) => (
-                 <div key={i} className="flex items-center justify-between text-sm py-2 border-b border-slate-50 dark:border-slate-800 last:border-0">
-                    <div className="flex flex-col">
-                      <span className="text-slate-900 dark:text-white font-bold">{cand.name}</span>
-                      {cand.party && (
-                        <span className="text-[9px] font-black px-1.5 py-0.5 rounded bg-slate-100 dark:bg-slate-800 text-slate-500 uppercase w-fit">
-                          {cand.party}
+          {election ? (
+            <div className="space-y-4">
+              <div className="p-6 rounded-[2.5rem] bg-gradient-to-br from-white/10 to-transparent border border-white/10 backdrop-blur-md relative overflow-hidden group">
+                <div className="absolute top-0 right-0 p-3">
+                  <Medal className="w-8 h-8 text-rose-400/20 group-hover:text-rose-400/40 transition-colors" />
+                </div>
+                
+                <div className="flex items-center justify-between relative z-10">
+                  <div>
+                    <p className="text-[9px] font-black text-rose-300 uppercase tracking-[0.2em] mb-2 flex items-center gap-2">
+                      <div className="w-1 h-1 rounded-full bg-rose-500 animate-pulse" />
+                      Élu au {election.round === 1 ? '1er' : '2nd'} tour
+                    </p>
+                    <div className="flex items-baseline gap-3">
+                      <h4 className="text-2xl font-bold text-white leading-tight">Performance Majoritaire</h4>
+                      {election.candidates[0]?.party && (
+                        <span className="text-[10px] font-black px-2 py-0.5 rounded-lg bg-rose-500 text-white uppercase shadow-lg shadow-rose-900/40">
+                          {election.candidates[0].party}
                         </span>
                       )}
                     </div>
-                    <span className="font-bold text-slate-400">{cand.percent}</span>
-                 </div>
-               ))}
+                  </div>
+                  <div className="text-right">
+                    <span className="text-4xl font-staatliches text-white italic leading-none">{election.candidates[0]?.percent}</span>
+                  </div>
+                </div>
+              </div>
+
+              <div className="bg-black/20 rounded-[2.5rem] p-6 border border-white/5">
+                <p className="text-[9px] font-black text-white/30 uppercase tracking-[0.3em] mb-4">Principaux Adversaires</p>
+                <div className="space-y-3">
+                  {election.candidates.slice(1, 4).map((cand: any, i: number) => (
+                    <div key={i} className="flex items-center justify-between group/cand">
+                      <div className="flex items-center gap-3">
+                        <div className="w-1 h-8 rounded-full bg-white/5 group-hover/cand:bg-rose-500 transition-colors" />
+                        <div className="flex flex-col">
+                          <span className="text-white font-bold text-sm">{cand.name}</span>
+                          <span className="text-[9px] font-black text-white/40 uppercase tracking-widest">{cand.party || 'IND'}</span>
+                        </div>
+                      </div>
+                      <span className="font-staatliches text-white/60 text-lg italic">{cand.percent}</span>
+                    </div>
+                  ))}
+                </div>
+              </div>
             </div>
-          </div>
-        ) : (
-          <div className="h-full flex flex-col items-center justify-center text-slate-400 opacity-50 py-10">
-            <Users className="w-10 h-10 mb-2" />
-            <p className="text-sm font-bold uppercase tracking-widest">Données indisponibles</p>
-          </div>
-        )}
-      </motion.div>
+          ) : (
+            <div className="h-48 flex flex-col items-center justify-center bg-black/20 rounded-[2.5rem] border border-dashed border-white/10 text-white/30">
+              <Users className="w-8 h-8 mb-2 opacity-20" />
+              <p className="text-[10px] font-black uppercase tracking-widest">Données indisponibles</p>
+            </div>
+          )}
+        </div>
+      </div>
     </div>
   );
 };

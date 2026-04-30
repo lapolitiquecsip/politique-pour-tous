@@ -109,7 +109,6 @@ export default function HomeHero() {
               <span className="relative inline-block">
                 simple.
               </span>
-            </span>
               {/* Cluster of hand-drawn neon stars */}
               <div className="relative inline-block ml-2 align-middle">
                 {/* Initial Yellow Star */}

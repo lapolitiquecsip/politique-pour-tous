@@ -20,6 +20,19 @@ const DeputyStats: React.FC<DeputyStatsProps> = ({ deputy }) => {
   const loyalty = deputy.group_loyalty || 0;
   const election = deputy.election_score;
 
+  // Extraire l'année d'élection de l'historique politique (Législature 17)
+  const getElectionYear = () => {
+    const assembleeEntry = deputy.political_history?.find(
+      (h: any) => h.type === 'ASSEMBLEE' && h.legislature === '17'
+    );
+    if (assembleeEntry && assembleeEntry.startDate) {
+      return new Date(assembleeEntry.startDate).getFullYear();
+    }
+    return 2024;
+  };
+
+  const electionYear = getElectionYear();
+
   return (
     <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
       {/* 1. Key Performance Indicators */}
@@ -76,7 +89,7 @@ const DeputyStats: React.FC<DeputyStatsProps> = ({ deputy }) => {
           <div className="w-12 h-12 rounded-2xl bg-amber-500/10 flex items-center justify-center text-amber-600">
             <Trophy className="w-6 h-6" />
           </div>
-          <h3 className="text-xl font-bold text-slate-900 dark:text-white uppercase tracking-tight">Résultats Élections 2024</h3>
+          <h3 className="text-xl font-bold text-slate-900 dark:text-white uppercase tracking-tight">Résultats Élections {electionYear}</h3>
         </div>
 
         {election ? (

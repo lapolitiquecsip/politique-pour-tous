@@ -109,12 +109,22 @@ export default function StatsPanel() {
           animate="animate"
           exit="exit"
           transition={{ duration: 0.5, ease: [0.4, 0, 0.2, 1] }}
-          className={`absolute inset-0 w-full h-full flex flex-col items-center justify-center p-8 md:p-12 text-center text-white ${slide.color} transition-colors duration-700`}
+          style={{ backgroundColor: slide.color?.startsWith('bg-') ? undefined : slide.color }}
+          className={`absolute inset-0 w-full h-full flex flex-col items-center justify-center p-8 md:p-12 text-center text-white ${slide.color?.startsWith('bg-') ? slide.color : ''} transition-colors duration-700`}
         >
+          {slide.type === 'intox' && (
+            <div className="absolute top-8 left-1/2 -translate-x-1/2 z-20">
+              <span className="bg-red-600 text-white px-4 py-1.5 rounded-full text-xs font-black uppercase tracking-[0.3em] shadow-lg flex items-center gap-2">
+                <ShieldAlert className="w-4 h-4" />
+                Intox de la semaine
+              </span>
+            </div>
+          )}
+
           {!slide.value && (
             <div className="absolute inset-0 flex items-center justify-center overflow-hidden pointer-events-none select-none">
-              <span className="text-[12rem] md:text-[20rem] font-staatliches text-white/[0.03] uppercase tracking-tighter leading-none transform -rotate-6">
-                {slide.type?.split(' ')[0]}
+              <span className="text-[12rem] md:text-[20rem] font-staatliches text-white/[0.05] uppercase tracking-tighter leading-none transform -rotate-6">
+                {slide.type === 'intox' ? 'INTOX' : (slide.category_label?.split(' ')[0] || 'INFO')}
               </span>
             </div>
           )}
@@ -136,8 +146,8 @@ export default function StatsPanel() {
             <>
               {/* Category tag and live badge removed */}
               
-              <h2 className="relative z-10 text-xl md:text-4xl font-bold max-w-3xl leading-[1.3] mb-10 tracking-tight text-white/90">
-                {slide.content}
+              <h2 className={`relative z-10 text-xl md:text-4xl font-bold max-w-3xl leading-[1.3] mb-10 tracking-tight ${slide.type === 'intox' ? 'text-red-100' : 'text-white/90'}`}>
+                {slide.type === 'intox' ? `« ${slide.content} »` : slide.content}
               </h2>
 
               {slide.debunk && (

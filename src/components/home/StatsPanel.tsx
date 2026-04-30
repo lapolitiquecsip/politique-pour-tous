@@ -116,9 +116,9 @@ export default function StatsPanel() {
           className={`absolute inset-0 w-full h-full flex flex-col items-center justify-center p-8 md:p-12 text-center text-white ${slide.color?.startsWith('bg-') ? slide.color : ''}`}
         >
           {slide.type === 'intox' && (
-            <div className="absolute top-8 left-1/2 -translate-x-1/2 z-20">
-              <span className="bg-red-600 text-white px-4 py-1.5 rounded-full text-xs font-black uppercase tracking-[0.3em] shadow-lg flex items-center gap-2">
-                <ShieldAlert className="w-4 h-4" />
+            <div className="absolute top-6 left-1/2 -translate-x-1/2 z-20">
+              <span className="bg-red-600 text-white px-4 py-1.5 rounded-full text-[10px] font-black uppercase tracking-[0.3em] shadow-xl flex items-center gap-2 whitespace-nowrap">
+                <ShieldAlert className="w-3 h-3" />
                 Intox de la semaine
               </span>
             </div>

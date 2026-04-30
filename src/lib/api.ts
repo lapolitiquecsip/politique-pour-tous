@@ -126,6 +126,16 @@ export const api = {
     if (error) { console.error(error); return null; }
     return data;
   },
+  
+  getLawsByAuthor: async (authorName: string) => {
+    const { data, error } = await supabase
+      .from('laws')
+      .select('*')
+      .ilike('author', `%${authorName}%`)
+      .order('created_at', { ascending: false });
+    if (error) { console.error(error); return []; }
+    return data || [];
+  },
 
   subscribeNewsletter: async (payload: { email: string, preferences: any, postal_code?: string, age?: string, csp?: string }) => {
     const { email, preferences, postal_code, age, csp } = payload;

@@ -3,82 +3,81 @@ import { useState, useEffect, useCallback, useRef } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { Zap, Info, ChevronLeft, ChevronRight, ShieldAlert, AlertCircle } from "lucide-react";
 
-const SLIDES = [
-  { 
-    id: 1,
-    value: "11", 
-    label: "groupes politiques : un record historique sous la Ve République", 
-    color: "bg-blue-600"
-  },
-  { 
-    id: 2,
-    value: "1000", 
-    label: "heures de débats cumulées durant la première session", 
-    color: "bg-rose-600"
-  },
-  { 
-    id: 3,
-    value: "47", 
-    label: "lois adoptées définitivement en un an malgré l'absence de majorité", 
-    color: "bg-slate-900"
-  },
-  { 
-    id: 4,
-    type: "DÉCISION",
-    content: "Le Bureau de l'Assemblée a voté le gel exceptionnel des pensions des anciens députés pour l'année 2026.", 
-    color: "bg-[#2d0a15]" // Dark Burgundy
-  },
-  { 
-    id: 5,
-    type: "HISTORIQUE",
-    content: "Yaël Braun-Pivet est la première femme de l'histoire à être réélue à la Présidence de l'Assemblée nationale.",
-    color: "bg-slate-950", 
-    isLive: true
-  }
-];
-
-import { CheckSquare, Landmark } from "lucide-react";
+import { supabase } from "@/lib/supabase";
 
 export default function StatsPanel() {
+  const [slides, setSlides] = useState<any[]>([]);
   const [index, setIndex] = useState(0);
   const [direction, setDirection] = useState(0);
   const [isPaused, setIsPaused] = useState(false);
   const timerRef = useRef<NodeJS.Timeout | null>(null);
 
+  const fetchStats = useCallback(async () => {
+    try {
+      const { data, error } = await supabase
+        .from('events')
+        .select('description')
+        .eq('category', 'WeeklyStats')
+        .order('date', { ascending: false })
+        .limit(1);
+
+      if (error) throw error;
+      if (data && data[0]) {
+        const parsedSlides = JSON.parse(data[0].description);
+        setSlides(parsedSlides);
+      }
+    } catch (err) {
+      console.error("Error fetching stats:", err);
+      // Fallback slides if fetch fails
+      setSlides([
+        { id: 1, value: "11", label: "groupes politiques : un record historique sous la Ve République", color: "bg-blue-600" },
+        { id: 2, value: "1000", label: "heures de débats cumulées durant la première session", color: "bg-rose-600" },
+        { id: 3, value: "47", label: "lois adoptées définitivement en un an malgré l'absence de majorité", color: "bg-slate-900" }
+      ]);
+    }
+  }, []);
+
+  useEffect(() => {
+    fetchStats();
+  }, [fetchStats]);
+
   const startTimer = useCallback(() => {
     if (timerRef.current) clearInterval(timerRef.current);
     timerRef.current = setInterval(() => {
-      if (!isPaused) {
+      if (!isPaused && slides.length > 0) {
         setDirection(1);
-        setIndex((prev) => (prev + 1) % SLIDES.length);
+        setIndex((prev) => (prev + 1) % slides.length);
       }
     }, 6000);
-  }, [isPaused]);
-
+  }, [isPaused, slides.length]);
   useEffect(() => {
     startTimer();
     return () => { if (timerRef.current) clearInterval(timerRef.current); };
   }, [startTimer]);
 
   const nextSlide = () => {
+    if (slides.length === 0) return;
     setDirection(1);
-    setIndex((prev) => (prev + 1) % SLIDES.length);
-    startTimer(); // Reset timer on manual click
+    setIndex((prev) => (prev + 1) % slides.length);
+    startTimer();
   };
 
   const prevSlide = () => {
+    if (slides.length === 0) return;
     setDirection(-1);
-    setIndex((prev) => (prev - 1 + SLIDES.length) % SLIDES.length);
-    startTimer(); // Reset timer on manual click
+    setIndex((prev) => (prev - 1 + slides.length) % slides.length);
+    startTimer();
   };
 
   const goToSlide = (i: number) => {
     setDirection(i > index ? 1 : -1);
     setIndex(i);
-    startTimer(); // Reset timer on manual click
+    startTimer();
   };
 
-  const slide = SLIDES[index];
+  const slide = slides[index];
+
+  if (!slide) return null;
 
   const variants = {
     initial: (dir: number) => ({
@@ -158,7 +157,7 @@ export default function StatsPanel() {
 
           {/* Dots indicators */}
           <div className="absolute bottom-6 flex gap-2">
-            {SLIDES.map((_, i) => (
+            {slides.map((_, i) => (
               <button 
                 key={i} 
                 onClick={() => goToSlide(i)}

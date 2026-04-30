@@ -256,11 +256,34 @@ export default function LawsGrid() {
                               </div>
                             </div>
                             
+                            {/* Premium Content with Highlighting and Formatting */}
                             <div className="relative">
                               <div className="space-y-8">
                                 <div className="prose prose-invert max-w-none">
                                   <div className="text-amber-50/90 leading-relaxed text-lg whitespace-pre-wrap font-medium">
-                                    {selectedLaw.content}
+                                    {(() => {
+                                      if (!selectedLaw.content) return null;
+                                      
+                                      // 1. Highlight numbers
+                                      let formatted = selectedLaw.content.replace(
+                                        /(\d+(?:[.,]\d+)?%?|\d+\s?€)/g, 
+                                        '<span class="bg-amber-400/30 text-amber-200 px-1 rounded font-black border-b-2 border-amber-400/50">$1</span>'
+                                      );
+
+                                      // 2. Style Headers
+                                      formatted = formatted.replace(
+                                        /(CONTEXTE\s?:|MESURES PROPOSÉES\s?:)/gi,
+                                        '<span class="block text-2xl font-black text-white mt-10 mb-4 font-staatliches tracking-wider uppercase bg-white/5 py-2 px-4 rounded-xl border-l-4 border-amber-400">$1</span>'
+                                      );
+
+                                      // 3. Add spacing for list items (starting with - or • or numbering)
+                                      formatted = formatted.replace(
+                                        /(\n(?:\s+)?[-•\d]\s)/g,
+                                        '<br/>$1'
+                                      );
+
+                                      return <div dangerouslySetInnerHTML={{ __html: formatted }} />;
+                                    })()}
                                   </div>
                                 </div>
 

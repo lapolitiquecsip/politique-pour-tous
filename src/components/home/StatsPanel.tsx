@@ -6,33 +6,32 @@ import { Zap, Info, ChevronLeft, ChevronRight, ShieldAlert, AlertCircle } from "
 const SLIDES = [
   { 
     id: 1,
-    value: "142", 
-    label: "amendements déposés cette semaine à l'Assemblée", 
+    value: "11", 
+    label: "groupes politiques : un record historique sous la Ve République", 
     color: "bg-blue-600"
   },
   { 
     id: 2,
-    value: "38", 
-    label: "questions au gouvernement posées par vos députés", 
+    value: "1000", 
+    label: "heures de débats cumulées durant la première session", 
     color: "bg-rose-600"
   },
   { 
     id: 3,
-    value: "12", 
-    label: "textes de loi adoptés définitivement ce mois-ci", 
+    value: "47", 
+    label: "lois adoptées définitivement en un an malgré l'absence de majorité", 
     color: "bg-slate-900"
   },
   { 
     id: 4,
-    type: "Le saviez-vous ?",
-    content: "La plus longue séance de l'Assemblée nationale a duré 25 heures lors du débat sur les retraites en 2023.", 
+    type: "DÉCISION",
+    content: "Le Bureau de l'Assemblée a voté le gel exceptionnel des pensions des anciens députés pour l'année 2026.", 
     color: "bg-[#2d0a15]" // Dark Burgundy
   },
   { 
     id: 5,
-    type: "Intox de la semaine",
-    content: "\"La France est le pays qui taxe le plus en Europe\"",
-    debunk: "Le Danemark et la Belgique ont un taux de prélèvement supérieur.", 
+    type: "HISTORIQUE",
+    content: "Yaël Braun-Pivet est la première femme de l'histoire à être réélue à la Présidence de l'Assemblée nationale.",
     color: "bg-slate-950", 
     isLive: true
   }

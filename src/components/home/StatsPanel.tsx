@@ -106,11 +106,14 @@ export default function StatsPanel() {
           custom={direction}
           variants={variants}
           initial="initial"
-          animate="animate"
+          animate={{ 
+            x: 0, 
+            opacity: 1,
+            backgroundColor: slide.color?.startsWith('#') ? slide.color : undefined
+          }}
           exit="exit"
           transition={{ duration: 0.5, ease: [0.4, 0, 0.2, 1] }}
-          style={{ backgroundColor: slide.color?.startsWith('bg-') ? undefined : slide.color }}
-          className={`absolute inset-0 w-full h-full flex flex-col items-center justify-center p-8 md:p-12 text-center text-white ${slide.color?.startsWith('bg-') ? slide.color : ''} transition-colors duration-700`}
+          className={`absolute inset-0 w-full h-full flex flex-col items-center justify-center p-8 md:p-12 text-center text-white ${slide.color?.startsWith('bg-') ? slide.color : ''}`}
         >
           {slide.type === 'intox' && (
             <div className="absolute top-8 left-1/2 -translate-x-1/2 z-20">

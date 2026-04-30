@@ -115,55 +115,51 @@ export default function StatsPanel() {
           transition={{ duration: 0.5, ease: [0.4, 0, 0.2, 1] }}
           className={`absolute inset-0 w-full h-full flex flex-col items-center justify-center p-8 md:p-12 text-center text-white ${slide.color?.startsWith('bg-') ? slide.color : ''}`}
         >
-          {slide.type === 'intox' && (
-            <div className="absolute top-6 left-1/2 -translate-x-1/2 z-20">
-              <span className="bg-red-600 text-white px-4 py-1.5 rounded-full text-[10px] font-black uppercase tracking-[0.3em] shadow-xl flex items-center gap-2 whitespace-nowrap">
-                <ShieldAlert className="w-3 h-3" />
-                Intox de la semaine
-              </span>
-            </div>
-          )}
-
-          {!slide.value && (
-            <div className="absolute inset-0 flex items-center justify-center overflow-hidden pointer-events-none select-none">
-              <span className="text-[12rem] md:text-[20rem] font-staatliches text-white/[0.05] uppercase tracking-tighter leading-none transform -rotate-6">
-                {slide.type === 'intox' ? 'INTOX' : (slide.category_label?.split(' ')[0] || 'INFO')}
-              </span>
-            </div>
-          )}
-
-          {slide.value ? (
-            <>
-              <motion.span 
-                initial={{ scale: 0.8, y: 10 }}
-                animate={{ scale: 1, y: 0 }}
-                className="relative z-10 text-8xl md:text-[9rem] font-staatliches mb-2 tracking-tighter leading-none"
-              >
-                {slide.value}
-              </motion.span>
-              <p className="relative z-10 text-sm md:text-xl font-bold max-w-xl leading-snug opacity-70 uppercase tracking-[0.2em]">
-                {slide.label}
-              </p>
-            </>
-          ) : (
-            <>
-              {/* Category tag and live badge removed */}
+          {slide.type === 'intox' ? (
+            <div className="relative z-10 flex flex-col items-center max-w-4xl w-full">
+              <h1 className="font-staatliches text-5xl md:text-7xl mb-6 tracking-tight uppercase leading-none">
+                <span className="text-white">INTOX</span>{' '}
+                <span className="text-red-500 italic">DE LA SEMAINE</span>
+              </h1>
               
-              <h2 className={`relative z-10 text-xl md:text-4xl font-bold max-w-3xl leading-[1.3] mb-10 tracking-tight ${slide.type === 'intox' ? 'text-red-100' : 'text-white/90'}`}>
-                {slide.type === 'intox' ? `« ${slide.content} »` : slide.content}
+              <h2 className="text-xl md:text-3xl font-bold leading-tight mb-10 text-white/90 italic">
+                « {slide.content} »
               </h2>
 
               {slide.debunk && (
-                <div className="relative z-10 bg-white/5 backdrop-blur-xl rounded-3xl p-6 md:p-8 border border-white/10 shadow-xl max-w-2xl">
-                  <div className="flex items-start gap-4">
-                    <span className="bg-blue-600 text-white px-3 py-1 rounded-lg text-[9px] uppercase tracking-[0.2em] font-black mt-1">
+                <div className="bg-white/10 backdrop-blur-md rounded-[2rem] p-6 md:p-8 border border-white/10 shadow-2xl w-full max-w-2xl transform hover:scale-[1.02] transition-transform duration-300">
+                  <div className="flex flex-col md:flex-row items-center md:items-start gap-4">
+                    <span className="bg-blue-600 text-white px-4 py-1 rounded-xl text-[10px] font-black uppercase tracking-[0.2em]">
                       RÉALITÉ
                     </span>
-                    <p className="text-base md:text-xl font-medium leading-relaxed text-white/80 italic">
-                      &ldquo;{slide.debunk}&rdquo;
+                    <p className="text-base md:text-xl font-medium leading-relaxed text-white/95">
+                      {slide.debunk}
                     </p>
                   </div>
                 </div>
+              )}
+            </div>
+          ) : (
+            <>
+              {slide.value ? (
+                <>
+                  <motion.span 
+                    initial={{ scale: 0.8, y: 10 }}
+                    animate={{ scale: 1, y: 0 }}
+                    className="relative z-10 text-8xl md:text-[9rem] font-staatliches mb-2 tracking-tighter leading-none"
+                  >
+                    {slide.value}
+                  </motion.span>
+                  <p className="relative z-10 text-sm md:text-xl font-bold max-w-xl leading-snug opacity-70 uppercase tracking-[0.2em]">
+                    {slide.label}
+                  </p>
+                </>
+              ) : (
+                <>
+                  <h2 className="relative z-10 text-xl md:text-4xl font-bold max-w-3xl leading-[1.3] mb-10 tracking-tight text-white/90">
+                    {slide.content}
+                  </h2>
+                </>
               )}
             </>
           )}

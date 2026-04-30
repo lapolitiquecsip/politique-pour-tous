@@ -236,14 +236,14 @@ export default function LawsGrid() {
                     {selectedLaw.content && (
                       <section className="relative group">
                         <div className="relative p-8 md:p-10 rounded-[3rem] bg-slate-900 text-white overflow-hidden shadow-2xl border border-white/5">
-                          {/* Decorative Background Elements */}
-                          <div className="absolute top-0 right-0 w-64 h-64 bg-blue-600/20 rounded-full blur-[100px] -translate-y-1/2 translate-x-1/2" />
-                          <div className="absolute bottom-0 left-0 w-64 h-64 bg-amber-500/10 rounded-full blur-[100px] translate-y-1/2 -translate-x-1/2" />
+                          {/* Decorative Background Elements - GOLD Theme */}
+                          <div className="absolute top-0 right-0 w-64 h-64 bg-amber-500/10 rounded-full blur-[100px] -translate-y-1/2 translate-x-1/2" />
+                          <div className="absolute bottom-0 left-0 w-64 h-64 bg-amber-500/5 rounded-full blur-[100px] translate-y-1/2 -translate-x-1/2" />
                           
                           <div className="relative z-10">
                             <div className="flex items-center justify-between mb-8">
                               <div className="flex items-center gap-3">
-                                <div className="p-2.5 bg-amber-400 rounded-2xl text-slate-950 shadow-[0_0_20px_rgba(251,191,36,0.3)]">
+                                <div className="p-2.5 bg-gradient-to-br from-amber-200 via-amber-400 to-amber-600 rounded-2xl text-slate-950 shadow-[0_0_20px_rgba(251,191,36,0.3)]">
                                   <Zap size={20} fill="currentColor" />
                                 </div>
                                 <div>
@@ -251,17 +251,15 @@ export default function LawsGrid() {
                                   <h4 className="text-2xl font-black tracking-tight text-white italic">Analyse Premium</h4>
                                 </div>
                               </div>
-                              <div className="px-4 py-1.5 rounded-full bg-white/5 border border-white/10 text-[10px] font-bold uppercase tracking-widest text-white/60">
+                              <div className="px-4 py-1.5 rounded-full bg-amber-400/10 border border-amber-400/20 text-[10px] font-bold uppercase tracking-widest text-amber-400">
                                 Exclusivité Abonnés
                               </div>
                             </div>
                             
-                            {/* Premium Content with Conditional Blur */}
                             <div className="relative">
-                              {/* Simple mock check: if user is not premium (here we simulate by checking a local storage or just show for now) */}
                               <div className="space-y-8">
                                 <div className="prose prose-invert max-w-none">
-                                  <div className="text-blue-50/90 leading-relaxed text-lg whitespace-pre-wrap font-medium">
+                                  <div className="text-amber-50/90 leading-relaxed text-lg whitespace-pre-wrap font-medium">
                                     {selectedLaw.content}
                                   </div>
                                 </div>
@@ -270,28 +268,12 @@ export default function LawsGrid() {
                                   <Link 
                                     href={selectedLaw.source_urls?.[0] || "#"} 
                                     target="_blank"
-                                    className="px-8 py-4 bg-white text-slate-950 rounded-2xl font-black text-xs uppercase tracking-widest hover:bg-amber-400 hover:scale-105 transition-all duration-300 flex items-center gap-2 shadow-xl"
+                                    className="px-8 py-4 bg-gradient-to-r from-amber-200 via-amber-400 to-amber-500 text-slate-950 rounded-2xl font-black text-xs uppercase tracking-widest hover:scale-105 transition-all duration-300 flex items-center gap-2 shadow-xl shadow-amber-900/20"
                                   >
                                     Consulter le dossier officiel <ArrowRight size={16} />
                                   </Link>
                                 </div>
                               </div>
-
-                              {/* Lock Overlay (to be toggled by actual auth) */}
-                              {/* 
-                              <div className="absolute inset-0 z-20 backdrop-blur-xl bg-slate-900/40 flex flex-col items-center justify-center text-center p-8 rounded-[2rem]">
-                                <div className="w-16 h-16 bg-amber-400 rounded-full flex items-center justify-center text-slate-950 mb-6 shadow-2xl animate-bounce">
-                                  <Lock size={28} />
-                                </div>
-                                <h5 className="text-2xl font-black mb-2 uppercase tracking-tight">Accès Réservé</h5>
-                                <p className="text-white/60 text-sm max-w-xs mb-8 font-medium">
-                                  Débloquez l'analyse complète, le contexte politique et les mesures concrètes avec l'offre Premium.
-                                </p>
-                                <button className="px-8 py-4 bg-amber-400 text-slate-950 rounded-2xl font-black text-xs uppercase tracking-widest hover:bg-white transition-all shadow-xl">
-                                  Devenir Premium
-                                </button>
-                              </div>
-                              */}
                             </div>
                           </div>
                         </div>
@@ -316,12 +298,12 @@ export default function LawsGrid() {
                       </div>
                     </div>
 
-                    <div className="p-6 bg-blue-50 rounded-3xl border border-blue-100">
-                      <h4 className="text-sm font-bold text-blue-900 mb-4 flex items-center gap-2">
-                         Besoin d'aide ?
-                      </h4>
-                      <p className="text-xs text-blue-700/80 leading-relaxed">
-                        Ce dossier est mis à jour quotidiennement par notre IA pour vous offrir une transparence totale sur le travail parlementaire.
+                    <div className="p-6 bg-slate-50 rounded-3xl border border-slate-100/50 flex items-start gap-4">
+                      <div className="w-8 h-8 rounded-full bg-green-100 text-green-600 flex items-center justify-center shrink-0">
+                        <CheckCircle2 size={16} />
+                      </div>
+                      <p className="text-[11px] text-slate-500 leading-relaxed font-medium">
+                        Ce dossier est <span className="text-slate-900 font-bold">mis à jour automatiquement</span> par notre intelligence artificielle pour garantir une transparence totale.
                       </p>
                     </div>
                   </div>

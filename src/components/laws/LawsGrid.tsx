@@ -3,8 +3,10 @@
 import { useState, useEffect } from "react";
 import { api } from "@/lib/api";
 import { motion, AnimatePresence } from "framer-motion";
-import { FileText, Calendar, ChevronRight, Search, Filter, UserCheck, X, Zap, ArrowRight, CheckCircle2 } from "lucide-react";
+import { FileText, Calendar, ChevronRight, Search, Filter, UserCheck, X, Zap, ArrowRight, CheckCircle2, Lock } from "lucide-react";
 import Link from "next/link";
+
+import { usePremium } from "@/lib/hooks/usePremium";
 
 export default function LawsGrid() {
   const [laws, setLaws] = useState<any[]>([]);
@@ -12,6 +14,7 @@ export default function LawsGrid() {
   const [loading, setLoading] = useState(true);
   const [search, setSearch] = useState("");
   const [selectedLaw, setSelectedLaw] = useState<any>(null);
+  const { isPremium } = usePremium();
 
   useEffect(() => {
     async function load() {
@@ -258,7 +261,7 @@ export default function LawsGrid() {
                             
                             {/* Premium Content with Highlighting and Formatting */}
                             <div className="relative">
-                              <div className="space-y-8">
+                              <div className={`space-y-8 transition-all duration-700 ${!isPremium ? 'blur-2xl opacity-20 select-none pointer-events-none' : ''}`}>
                                 <div className="prose prose-invert max-w-none">
                                   <div className="text-amber-50/90 leading-relaxed text-lg whitespace-pre-wrap font-medium">
                                     {(() => {
@@ -297,6 +300,29 @@ export default function LawsGrid() {
                                   </Link>
                                 </div>
                               </div>
+
+                              {/* Lock Overlay */}
+                              {!isPremium && (
+                                <div className="absolute inset-0 z-20 flex flex-col items-center justify-center text-center p-8 rounded-[2rem] bg-slate-900/40 backdrop-blur-sm">
+                                  <motion.div 
+                                    initial={{ scale: 0.8, opacity: 0 }}
+                                    animate={{ scale: 1, opacity: 1 }}
+                                    className="w-20 h-20 bg-gradient-to-br from-amber-200 to-amber-600 rounded-full flex items-center justify-center text-slate-950 mb-8 shadow-[0_0_50px_rgba(251,191,36,0.4)]"
+                                  >
+                                    <Lock size={32} />
+                                  </motion.div>
+                                  <h5 className="text-3xl font-black mb-3 uppercase tracking-tight text-white italic">Accès Réservé</h5>
+                                  <p className="text-amber-100/70 text-base max-w-sm mb-10 font-bold leading-relaxed">
+                                    Débloquez l'analyse experte, le contexte politique et les mesures chiffrées avec notre offre Premium.
+                                  </p>
+                                  <Link 
+                                    href="/premium"
+                                    className="px-10 py-5 bg-white text-slate-950 rounded-2xl font-black text-xs uppercase tracking-widest hover:bg-amber-400 transition-all duration-300 shadow-2xl hover:scale-105"
+                                  >
+                                    Devenir Membre Premium
+                                  </Link>
+                                </div>
+                              )}
                             </div>
                           </div>
                         </div>

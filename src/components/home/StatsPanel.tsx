@@ -109,7 +109,7 @@ export default function StatsPanel() {
           animate={{ 
             x: 0, 
             opacity: 1,
-            backgroundColor: slide.color?.startsWith('#') ? slide.color : undefined
+            backgroundColor: slide.color?.startsWith('#') ? slide.color : '#1e293b'
           }}
           exit="exit"
           transition={{ duration: 0.5, ease: [0.4, 0, 0.2, 1] }}

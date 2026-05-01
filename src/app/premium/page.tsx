@@ -249,10 +249,10 @@ export default function PremiumPage() {
             initial={{ opacity: 0, y: 40 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.8, delay: 0.15 }}
-            className="text-5xl md:text-7xl font-extrabold leading-tight mb-6"
+            className="text-6xl md:text-8xl font-staatliches uppercase tracking-tight leading-[0.9] mb-6"
           >
-            Passez à la vitesse supérieure avec{" "}
-            <span className="bg-gradient-to-r from-amber-200 via-amber-400 to-amber-200 bg-clip-text text-transparent">
+            <span className="text-white">Passez à la vitesse supérieure avec</span>{" "}
+            <span className="text-amber-400">
               Premium.
             </span>
           </motion.h1>

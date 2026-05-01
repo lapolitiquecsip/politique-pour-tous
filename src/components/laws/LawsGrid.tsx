@@ -256,7 +256,7 @@ export default function LawsGrid() {
                               <div className="w-8 h-8 bg-amber-400 rounded-lg flex items-center justify-center text-slate-950">
                                 <Zap size={16} fill="currentColor" />
                               </div>
-                              <span className="text-lg font-black uppercase tracking-tight text-white italic">Analyse détaillée</span>
+                              <span className="text-2xl font-staatliches tracking-wider uppercase text-white">Analyse détaillée</span>
                             </div>
                             <Link 
                               href="/premium"
@@ -275,7 +275,7 @@ export default function LawsGrid() {
                                 <div className="p-2.5 bg-gradient-to-br from-amber-200 via-amber-400 to-amber-600 rounded-2xl text-slate-950 shadow-[0_0_20px_rgba(251,191,36,0.3)]">
                                   <Zap size={20} fill="currentColor" />
                                 </div>
-                                <h4 className="text-2xl font-black tracking-tight text-white italic">Analyse détaillée</h4>
+                                <h4 className="text-3xl font-staatliches tracking-wider uppercase text-white">Analyse détaillée</h4>
                               </div>
                               
                               <div className="space-y-8 animate-in fade-in duration-700">

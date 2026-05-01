@@ -548,6 +548,44 @@ export default function DeputyDetailPage({ params }: { params: Promise<{ slug: s
               </div>
             )}
 
+            {/* Authored Laws Section (Moved up for visibility) */}
+            {authoredLaws.length > 0 && (
+              <div className="pt-4 mb-10">
+                <h2 className="text-4xl font-staatliches uppercase tracking-tight text-slate-900 dark:text-white mb-4">
+                  Initiatives <span className="text-amber-500">Législatives</span>
+                </h2>
+                <p className="text-slate-500 font-medium max-w-xl mb-8">
+                  Retrouvez les propositions de loi portées par cet élu.
+                </p>
+                
+                <div className="flex gap-6 overflow-x-auto pb-6 -mx-4 px-4 scrollbar-hide">
+                  {authoredLaws.map((law: any) => (
+                    <Link 
+                      key={law.id}
+                      href={`/lois?id=${law.id}`}
+                      className="min-w-[300px] md:min-w-[350px] bg-white dark:bg-slate-900 rounded-[2rem] p-8 border border-slate-200 dark:border-slate-800 shadow-xl hover:border-amber-400 hover:shadow-amber-400/5 transition-all group"
+                    >
+                      <div className="flex items-center gap-3 mb-6">
+                        <div className="w-10 h-10 rounded-xl bg-amber-400/10 text-amber-600 flex items-center justify-center group-hover:bg-amber-400 group-hover:text-slate-950 transition-colors">
+                          <FileText size={18} />
+                        </div>
+                        <span className="text-[10px] font-black uppercase tracking-widest text-slate-400">
+                          Proposition de loi
+                        </span>
+                      </div>
+                      <h3 className="text-xl font-bold text-slate-900 dark:text-white mb-4 line-clamp-3 group-hover:text-amber-600 transition-colors">
+                        {law.title}
+                      </h3>
+                      <div className="flex items-center gap-2">
+                        <div className={`w-2 h-2 rounded-full ${law.timeline?.includes('Adopté') ? 'bg-green-500' : 'bg-slate-300'}`} />
+                        <span className="text-xs font-bold text-slate-500">{law.timeline || "En cours d'examen"}</span>
+                      </div>
+                    </Link>
+                  ))}
+                </div>
+              </div>
+            )}
+
             {/* REORDERED: Positions sur les scrutins Section (moved here) */}
             <div className="pt-8">
               <h2 className="text-4xl font-staatliches uppercase tracking-tight text-slate-900 dark:text-white mb-4">
@@ -669,44 +707,6 @@ export default function DeputyDetailPage({ params }: { params: Promise<{ slug: s
 
             {/* Statistics & Performance Section */}
             <DeputyStats deputy={deputy} />
-
-            {/* Authored Laws Section */}
-            {authoredLaws.length > 0 && (
-              <div className="pt-8">
-                <h2 className="text-4xl font-staatliches uppercase tracking-tight text-slate-900 dark:text-white mb-4">
-                  Initiatives <span className="text-amber-500">Législatives</span>
-                </h2>
-                <p className="text-slate-500 font-medium max-w-xl mb-8">
-                  Retrouvez les propositions de loi portées par cet élu.
-                </p>
-                
-                <div className="flex gap-6 overflow-x-auto pb-6 -mx-4 px-4 scrollbar-hide">
-                  {authoredLaws.map((law: any) => (
-                    <Link 
-                      key={law.id}
-                      href={`/lois?id=${law.id}`}
-                      className="min-w-[300px] md:min-w-[350px] bg-white dark:bg-slate-900 rounded-[2rem] p-8 border border-slate-200 dark:border-slate-800 shadow-xl hover:border-amber-400 hover:shadow-amber-400/5 transition-all group"
-                    >
-                      <div className="flex items-center gap-3 mb-6">
-                        <div className="w-10 h-10 rounded-xl bg-amber-400/10 text-amber-600 flex items-center justify-center group-hover:bg-amber-400 group-hover:text-slate-950 transition-colors">
-                          <FileText size={18} />
-                        </div>
-                        <span className="text-[10px] font-black uppercase tracking-widest text-slate-400">
-                          Proposition de loi
-                        </span>
-                      </div>
-                      <h3 className="text-xl font-bold text-slate-900 dark:text-white mb-4 line-clamp-3 group-hover:text-amber-600 transition-colors">
-                        {law.title}
-                      </h3>
-                      <div className="flex items-center gap-2">
-                        <div className={`w-2 h-2 rounded-full ${law.timeline?.includes('Adopté') ? 'bg-green-500' : 'bg-slate-300'}`} />
-                        <span className="text-xs font-bold text-slate-500">{law.timeline || "En cours d'examen"}</span>
-                      </div>
-                    </Link>
-                  ))}
-                </div>
-              </div>
-            )}
 
             {/* Footer info */}
             <div className="p-8 rounded-[2rem] bg-slate-100 dark:bg-slate-800/30 border border-dashed border-slate-300 dark:border-slate-700 flex items-center gap-6">

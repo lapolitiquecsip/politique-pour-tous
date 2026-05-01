@@ -108,7 +108,7 @@ const DeputyStats: React.FC<DeputyStatsProps> = ({ deputy }) => {
                       Élu au {election.round === 1 ? '1er' : '2nd'} tour
                     </p>
                     <div className="flex items-baseline gap-3">
-                      <h4 className="text-2xl font-bold text-white leading-tight">Performance Majoritaire</h4>
+                      <h4 className="text-xl font-bold text-white leading-tight">Performance Majoritaire</h4>
                       {election.candidates[0]?.party && (
                         <span className="text-[10px] font-black px-2 py-0.5 rounded-lg bg-red-600 text-white uppercase shadow-lg shadow-red-900/40">
                           {election.candidates[0].party}
@@ -116,8 +116,8 @@ const DeputyStats: React.FC<DeputyStatsProps> = ({ deputy }) => {
                       )}
                     </div>
                   </div>
-                  <div className="text-right">
-                    <span className="text-4xl font-staatliches text-white italic leading-none">{election.candidates[0]?.percent}</span>
+                  <div className="text-right ml-4">
+                    <span className="text-3xl font-staatliches text-white italic leading-none">{election.candidates[0]?.percent}</span>
                   </div>
                 </div>
               </div>

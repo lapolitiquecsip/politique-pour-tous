@@ -128,11 +128,19 @@ export const api = {
   },
   
   getLawsByAuthor: async (authorName: string) => {
+    // Search for the name with various common prefixes
+    const searchTerms = [
+      `%${authorName}%`,
+      `%M. ${authorName}%`,
+      `%Mme ${authorName}%`
+    ];
+
     const { data, error } = await supabase
       .from('laws')
       .select('*')
-      .ilike('author', `%${authorName}%`)
+      .or(`author.ilike.${searchTerms[0]},author.ilike.${searchTerms[1]},author.ilike.${searchTerms[2]}`)
       .order('created_at', { ascending: false });
+
     if (error) { console.error(error); return []; }
     return data || [];
   },

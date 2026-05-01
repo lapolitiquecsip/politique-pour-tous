@@ -252,7 +252,7 @@ export default function PremiumPage() {
             className="text-6xl md:text-8xl font-staatliches uppercase tracking-tight leading-[0.9] mb-6"
           >
             <span className="text-white">Passez à la vitesse supérieure avec</span>{" "}
-            <span className="text-amber-400">
+            <span className="bg-gradient-to-b from-amber-200 via-amber-400 to-amber-600 bg-clip-text text-transparent drop-shadow-[0_0_15px_rgba(251,191,36,0.4)]">
               Premium.
             </span>
           </motion.h1>

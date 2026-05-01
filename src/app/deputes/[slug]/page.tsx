@@ -548,16 +548,16 @@ export default function DeputyDetailPage({ params }: { params: Promise<{ slug: s
               </div>
             )}
 
-            {/* Authored Laws Section (Moved up for visibility) */}
-            {authoredLaws.length > 0 && (
-              <div className="pt-4 mb-10">
-                <h2 className="text-4xl font-staatliches uppercase tracking-tight text-slate-900 dark:text-white mb-4">
-                  Initiatives <span className="text-amber-500">Législatives</span>
-                </h2>
-                <p className="text-slate-500 font-medium max-w-xl mb-8">
-                  Retrouvez les propositions de loi portées par cet élu.
-                </p>
-                
+            {/* Authored Laws Section (Always visible, shows empty state if needed) */}
+            <div className="pt-4 mb-10">
+              <h2 className="text-4xl font-staatliches uppercase tracking-tight text-slate-900 dark:text-white mb-4">
+                Initiatives <span className="text-amber-500">Législatives</span>
+              </h2>
+              <p className="text-slate-500 font-medium max-w-xl mb-8">
+                Retrouvez les propositions de loi portées par cet élu.
+              </p>
+              
+              {authoredLaws.length > 0 ? (
                 <div className="flex gap-6 overflow-x-auto pb-6 -mx-4 px-4 scrollbar-hide">
                   {authoredLaws.map((law: any) => (
                     <Link 
@@ -583,8 +583,15 @@ export default function DeputyDetailPage({ params }: { params: Promise<{ slug: s
                     </Link>
                   ))}
                 </div>
-              </div>
-            )}
+              ) : (
+                <div className="bg-slate-50 dark:bg-slate-800/50 rounded-[2rem] p-8 border border-dashed border-slate-200 dark:border-slate-700 text-center">
+                  <FileText className="w-8 h-8 text-slate-300 mx-auto mb-4" />
+                  <p className="text-slate-500 text-sm italic">
+                    Aucune proposition de loi n&apos;a été répertoriée pour ce député pour le moment.
+                  </p>
+                </div>
+              )}
+            </div>
 
             {/* REORDERED: Positions sur les scrutins Section (moved here) */}
             <div className="pt-8">

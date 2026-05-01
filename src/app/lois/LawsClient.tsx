@@ -79,12 +79,13 @@ function LawsClientContent() {
       const loadSpecificLaw = async () => {
         const law = await api.getLaw(lawId);
         if (law) {
-          setSelectedLaw(law);
-          // If the law is a proposal, switch to that tab for context
-          if (law.id.toString().startsWith('PA') || law.id.toString().length > 10) {
+          // If the law is a proposal, switch to that tab and let LawsGrid handle it
+          if (law.id.toString().startsWith('PA') || (typeof law.id === 'string' && law.id.length > 10)) {
              setActiveTab('proposals');
+             // Don't set selectedLaw here to avoid duplicate modals
           } else {
              setActiveTab('history');
+             setSelectedLaw(law);
           }
         }
       };

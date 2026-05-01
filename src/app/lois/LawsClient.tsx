@@ -16,7 +16,8 @@ import {
   Vote
 } from "lucide-react";
 import Link from "next/link";
-import { useRouter } from "next/navigation";
+import { useRouter, useSearchParams } from "next/navigation";
+import { Suspense } from "react";
 import { usePremium } from "@/lib/hooks/usePremium";
 import { getPremiumUrl } from "@/lib/utils";
 import DetailedLawDossier from "@/components/laws/DetailedLawDossier";
@@ -37,7 +38,16 @@ const CATEGORIES = [
 ];
 
 export default function LawsClient() {
+  return (
+    <Suspense fallback={<div>Loading...</div>}>
+      <LawsClientContent />
+    </Suspense>
+  );
+}
+
+function LawsClientContent() {
   const router = useRouter();
+  const searchParams = useSearchParams();
   const [activeTab, setActiveTab] = useState<'dossiers' | 'history' | 'proposals'>('dossiers');
   const [selectedCat, setSelectedCat] = useState<string | null>(null);
   const { isPremium, loading: pLoading, userId } = usePremium();
@@ -60,6 +70,26 @@ export default function LawsClient() {
     
     return () => clearInterval(interval);
   }, []);
+
+  // Handle direct link to a law
+  useEffect(() => {
+    const lawId = searchParams.get('id');
+    if (lawId) {
+      const loadSpecificLaw = async () => {
+        const law = await api.getLaw(lawId);
+        if (law) {
+          setSelectedLaw(law);
+          // If the law is a proposal, switch to that tab for context
+          if (law.id.toString().startsWith('PA') || law.id.toString().length > 10) {
+             setActiveTab('proposals');
+          } else {
+             setActiveTab('history');
+          }
+        }
+      };
+      loadSpecificLaw();
+    }
+  }, [searchParams]);
 
   const scrollToPremium = () => {
     const element = document.getElementById("premium-section");

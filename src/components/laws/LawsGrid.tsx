@@ -62,9 +62,17 @@ export default function LawsGrid() {
       (law.category && law.category.toLowerCase().includes(search.toLowerCase()))
     )
     .sort((a, b) => {
+      // 1. Prioritize dossier number extraction for strict chronological order by ID
+      const numA = parseInt(a.context?.match(/n°(\d+)/)?.[1] || "0");
+      const numB = parseInt(b.context?.match(/n°(\d+)/)?.[1] || "0");
+      
+      if (numA !== numB) return numB - numA;
+
+      // 2. Fallback to date from context
       const dateA = a.context?.match(/\[(\d{4}-\d{2}-\d{2})\]/)?.[1] || "0000-00-00";
       const dateB = b.context?.match(/\[(\d{4}-\d{2}-\d{2})\]/)?.[1] || "0000-00-00";
       if (dateA !== dateB) return dateB.localeCompare(dateA);
+      
       return new Date(b.created_at).getTime() - new Date(a.created_at).getTime();
     });
 

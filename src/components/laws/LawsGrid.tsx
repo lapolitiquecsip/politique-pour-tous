@@ -29,14 +29,6 @@ export default function LawsGrid() {
         ]);
         setLaws(lawsData);
         setDeputies(deputiesData);
-
-        // Handle deep link
-        if (lawId) {
-          const law = lawsData.find((l: any) => l.id === lawId);
-          if (law) {
-            setSelectedLaw(law);
-          }
-        }
       } catch (err) {
         console.error("Error loading laws:", err);
       } finally {
@@ -44,7 +36,7 @@ export default function LawsGrid() {
       }
     }
     load();
-  }, [lawId]);
+  }, []);
 
   const findDeputySlug = (authorName: string) => {
     if (!authorName || authorName === 'Le Gouvernement') return null;
@@ -178,189 +170,7 @@ export default function LawsGrid() {
         </div>
       )}
 
-      {/* MODAL OVERLAY */}
-      <AnimatePresence>
-        {selectedLaw && (
-          <div className="fixed inset-0 z-[100] flex items-center justify-center p-4 sm:p-6 md:p-10">
-            {/* Backdrop */}
-            <motion.div 
-              initial={{ opacity: 0 }}
-              animate={{ opacity: 1 }}
-              exit={{ opacity: 0 }}
-              onClick={() => setSelectedLaw(null)}
-              className="absolute inset-0 bg-slate-900/60 backdrop-blur-md"
-            />
-            
-            {/* Modal Content */}
-            <motion.div 
-              initial={{ opacity: 0, scale: 0.9, y: 20 }}
-              animate={{ opacity: 1, scale: 1, y: 0 }}
-              exit={{ opacity: 0, scale: 0.9, y: 20 }}
-              className="relative w-full max-w-4xl max-h-[90vh] bg-white rounded-[3rem] shadow-2xl overflow-hidden flex flex-col"
-            >
-              {/* Close Button */}
-              <button 
-                onClick={() => setSelectedLaw(null)}
-                className="absolute top-6 right-6 p-2 rounded-full bg-slate-100 text-slate-500 hover:bg-slate-200 hover:text-slate-900 transition-all z-10"
-              >
-                <X size={20} />
-              </button>
-
-              <div className="overflow-y-auto p-8 md:p-12">
-                <div className="flex items-center gap-2 mb-6">
-                  <span className="px-4 py-1.5 rounded-full bg-blue-100 text-blue-600 text-[10px] font-black uppercase tracking-widest">
-                    {selectedLaw.category || 'Législation'}
-                  </span>
-                  <span className="flex items-center gap-1 px-4 py-1.5 rounded-full bg-slate-100 text-slate-600 text-[10px] font-black uppercase tracking-widest">
-                    <Calendar size={12} /> {selectedLaw.context?.replace(/\[.*?\]\s*/, "") || "En cours"}
-                  </span>
-                </div>
-
-                <h2 className="text-3xl md:text-4xl font-black text-slate-900 mb-8 leading-tight">
-                  {selectedLaw.title}
-                </h2>
-
-                <div className="grid grid-cols-1 md:grid-cols-3 gap-12">
-                  <div className="md:col-span-2 space-y-10">
-                    {/* Summary Section */}
-                    <section>
-                      <h3 className="text-lg font-bold text-slate-900 mb-4 flex items-center gap-2">
-                        <FileText className="text-blue-500" size={20} /> Résumé de la loi
-                      </h3>
-                      <p className="text-slate-600 leading-relaxed text-lg italic bg-slate-50 p-6 rounded-3xl border border-slate-100">
-                        {selectedLaw.summary}
-                      </p>
-                    </section>
-
-                    {/* Timeline Section */}
-                    <section>
-                      <h3 className="text-lg font-bold text-slate-900 mb-6 flex items-center gap-2">
-                        <CheckCircle2 className="text-green-500" size={20} /> État d'avancement
-                      </h3>
-                      <div className="relative pl-8 space-y-8 before:absolute before:left-[11px] before:top-2 before:bottom-2 before:w-[2px] before:bg-slate-100">
-                        {selectedLaw.timeline && selectedLaw.timeline !== "Analyse du parcours législatif en cours..." ? (
-                          <div className="relative">
-                            <div className="absolute -left-[31px] top-1 w-4 h-4 rounded-full bg-green-500 ring-4 ring-green-100 shadow-sm" />
-                            <div className="flex flex-col">
-                              <span className="text-[10px] font-black uppercase tracking-wider text-green-600 mb-1">Dernière étape franchie</span>
-                              <p className="text-slate-900 font-bold text-lg leading-tight">{selectedLaw.timeline}</p>
-                            </div>
-                          </div>
-                        ) : (
-                          <div className="relative">
-                            <div className="absolute -left-[31px] top-1 w-4 h-4 rounded-full bg-slate-200" />
-                            <p className="text-slate-400 italic">Mise à jour en cours par nos services...</p>
-                          </div>
-                        )}
-                      </div>
-                    </section>
-
-                    {/* Compact Premium Section */}
-                    {selectedLaw.content && (
-                      <section className="mt-8">
-                        {!isPremium ? (
-                          <div className="flex items-center justify-between p-6 rounded-3xl bg-slate-900 border border-white/5 shadow-xl">
-                            <div className="flex items-center gap-3">
-                              <div className="w-8 h-8 bg-amber-400 rounded-lg flex items-center justify-center text-slate-950">
-                                <Zap size={16} fill="currentColor" />
-                              </div>
-                              <span className="text-2xl font-staatliches tracking-wider uppercase bg-gradient-to-b from-amber-200 via-amber-400 to-amber-600 bg-clip-text text-transparent">Analyse détaillée</span>
-                            </div>
-                            <Link 
-                              href="/premium"
-                              className="px-4 py-2 bg-gradient-to-r from-amber-200 to-amber-500 text-slate-950 rounded-xl font-black text-[10px] uppercase tracking-widest hover:scale-105 transition-all shadow-lg"
-                            >
-                              Débloquer
-                            </Link>
-                          </div>
-                        ) : (
-                          <div className="relative p-8 md:p-10 rounded-[3rem] bg-slate-900 text-white overflow-hidden shadow-2xl border border-white/5">
-                            {/* Decorative Background Elements - GOLD Theme */}
-                            <div className="absolute top-0 right-0 w-64 h-64 bg-amber-500/10 rounded-full blur-[100px] -translate-y-1/2 translate-x-1/2" />
-                            
-                            <div className="relative z-10">
-                              <div className="flex items-center gap-3 mb-8">
-                                <div className="p-2.5 bg-gradient-to-br from-amber-200 via-amber-400 to-amber-600 rounded-2xl text-slate-950 shadow-[0_0_20px_rgba(251,191,36,0.3)]">
-                                  <Zap size={20} fill="currentColor" />
-                                </div>
-                                <h4 className="text-3xl font-staatliches tracking-wider uppercase bg-gradient-to-b from-amber-200 via-amber-400 to-amber-600 bg-clip-text text-transparent">Analyse détaillée</h4>
-                              </div>
-                              
-                              <div className="space-y-8 animate-in fade-in duration-700">
-                                <div className="prose prose-invert max-w-none">
-                                  <div className="text-amber-50/90 leading-relaxed text-lg whitespace-pre-wrap font-medium">
-                                    {(() => {
-                                      if (!selectedLaw.content) return null;
-                                      
-                                      let formatted = selectedLaw.content.replace(
-                                        /(\d+(?:[.,]\d+)?%?|\d+\s?€)/g, 
-                                        '<span class="bg-amber-400/30 text-amber-200 px-1 rounded font-black border-b-2 border-amber-400/50">$1</span>'
-                                      );
-
-                                      formatted = formatted.replace(
-                                        /(CONTEXTE\s?:|MESURES PROPOSÉES\s?:|MESURES PROPOSÉES|CONTEXTE)/gi,
-                                        '<span class="block text-2xl font-black text-white mt-10 mb-4 font-staatliches tracking-wider uppercase bg-white/5 py-2 px-4 rounded-xl border-l-4 border-amber-400">$1</span>'
-                                      );
-
-                                      formatted = formatted.replace(
-                                        /(\n(?:\s+)?[-•\d]\s)/g,
-                                        '<br/>$1'
-                                      );
-
-                                      return <div dangerouslySetInnerHTML={{ __html: formatted }} />;
-                                    })()}
-                                  </div>
-                                </div>
-
-                                <div className="pt-8 border-t border-white/10 flex flex-wrap gap-4">
-                                  <Link 
-                                    href={selectedLaw.source_urls?.[0] || "#"} 
-                                    target="_blank"
-                                    className="px-8 py-4 bg-gradient-to-r from-amber-200 via-amber-400 to-amber-500 text-slate-950 rounded-2xl font-black text-xs uppercase tracking-widest hover:scale-105 transition-all duration-300 flex items-center gap-2 shadow-xl shadow-amber-900/20"
-                                  >
-                                    Consulter le dossier officiel <ArrowRight size={16} />
-                                  </Link>
-                                </div>
-                              </div>
-                            </div>
-                          </div>
-                        )}
-                      </section>
-                    )}
-                  </div>
-
-                  {/* Sidebar Info */}
-                  <div className="space-y-8">
-                    <div className="p-6 bg-slate-50 rounded-3xl border border-slate-100">
-                      <span className="text-[10px] font-black uppercase tracking-wider text-slate-400 block mb-4">
-                        Initiateur du texte
-                      </span>
-                      <div className="flex items-center gap-3">
-                        <div className="w-10 h-10 rounded-full bg-white border border-slate-200 flex items-center justify-center text-blue-600 shadow-sm">
-                          <UserCheck size={18} />
-                        </div>
-                        <div>
-                          <p className="text-sm font-bold text-slate-900">{selectedLaw.author || "Non spécifié"}</p>
-                          <p className="text-[10px] text-slate-500 uppercase tracking-tight">{selectedLaw.category}</p>
-                        </div>
-                      </div>
-                    </div>
-
-                    <div className="p-6 bg-slate-50 rounded-3xl border border-slate-100/50 flex items-start gap-4">
-                      <div className="w-8 h-8 rounded-full bg-green-100 text-green-600 flex items-center justify-center shrink-0">
-                        <CheckCircle2 size={16} />
-                      </div>
-                      <p className="text-[11px] text-slate-500 leading-relaxed font-medium">
-                        Ce dossier est <span className="text-slate-900 font-bold">mis à jour automatiquement</span> par notre intelligence artificielle pour garantir une transparence totale.
-                      </p>
-                    </div>
-                  </div>
-                </div>
-              </div>
-            </motion.div>
-          </div>
-        )}
-      </AnimatePresence>
+      )}
     </div>
   );
 }

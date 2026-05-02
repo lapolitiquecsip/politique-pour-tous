@@ -25,9 +25,9 @@ import DetailedLawDossier from "@/components/laws/DetailedLawDossier";
 import { FREE_LAWS } from "@/data/free-laws-dossiers";
 import { api } from "@/lib/api";
 import VoteHemicycle from "@/components/laws/VoteHemicycle";
-import LawDetailModal from "@/components/laws/LawDetailModal";
+import UniversalLawModal from "@/components/laws/UniversalLawModal";
 import LawsGrid from "@/components/laws/LawsGrid";
-import { FileText } from "lucide-react";
+import { FileText, GraduationCap, Leaf, TrendingUp, Shield, HeartPulse, Users } from "lucide-react";
 
 const CATEGORIES = [
   { id: "edu", label: "Éducation", icon: GraduationCap, color: "border-indigo-400", bgColor: "bg-indigo-50/80", iconBg: "bg-indigo-100", iconColor: "text-indigo-600", isFree: true },
@@ -79,13 +79,12 @@ function LawsClientContent() {
       const loadSpecificLaw = async () => {
         const law = await api.getLaw(lawId);
         if (law) {
-          // If the law is a proposal, switch to that tab and let LawsGrid handle it
+          setSelectedLaw(law);
+          // If the law is a proposal, switch to that tab for context
           if (law.id.toString().startsWith('PA') || (typeof law.id === 'string' && law.id.length > 10)) {
              setActiveTab('proposals');
-             // Don't set selectedLaw here to avoid duplicate modals
           } else {
              setActiveTab('history');
-             setSelectedLaw(law);
           }
         }
       };
@@ -102,17 +101,17 @@ function LawsClientContent() {
 
   return (
     <div className="container mx-auto max-w-6xl px-4 pb-24">
-      <LawDetailModal 
+      <UniversalLawModal 
         law={selectedLaw} 
         isOpen={!!selectedLaw} 
         onClose={() => setSelectedLaw(null)} 
         onNext={() => {
           const idx = dbLaws.findIndex(l => l.id === selectedLaw?.id);
-          if (idx < dbLaws.length - 1) setSelectedLaw(dbLaws[idx + 1]);
+          if (idx !== -1 && idx < dbLaws.length - 1) setSelectedLaw(dbLaws[idx + 1]);
         }}
         onPrevious={() => {
           const idx = dbLaws.findIndex(l => l.id === selectedLaw?.id);
-          if (idx > 0) setSelectedLaw(dbLaws[idx - 1]);
+          if (idx !== -1 && idx > 0) setSelectedLaw(dbLaws[idx - 1]);
         }}
       />
 

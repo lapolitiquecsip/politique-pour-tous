@@ -27,7 +27,7 @@ import { api } from "@/lib/api";
 import VoteHemicycle from "@/components/laws/VoteHemicycle";
 import UniversalLawModal from "@/components/laws/UniversalLawModal";
 import LawsGrid from "@/components/laws/LawsGrid";
-import { FileText, GraduationCap, Leaf, TrendingUp, Shield, HeartPulse, Users } from "lucide-react";
+import { FileText } from "lucide-react";
 
 const CATEGORIES = [
   { id: "edu", label: "Éducation", icon: GraduationCap, color: "border-indigo-400", bgColor: "bg-indigo-50/80", iconBg: "bg-indigo-100", iconColor: "text-indigo-600", isFree: true },

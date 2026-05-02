@@ -169,8 +169,6 @@ export default function LawsGrid() {
           <p className="text-slate-500">Essayez d'ajuster votre recherche.</p>
         </div>
       )}
-
-      )}
     </div>
   );
 }

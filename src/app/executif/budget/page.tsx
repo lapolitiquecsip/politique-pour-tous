@@ -80,19 +80,29 @@ export default function DetailedBudgetPage() {
             <div className="absolute inset-0 bg-gradient-to-br from-amber-200 via-amber-400 to-amber-600 rounded-[2.5rem] shadow-[0_20px_50px_rgba(251,191,36,0.4)] flex items-center justify-center transform hover:rotate-0 transition-transform duration-700">
               <div className="relative">
                 <Zap size={48} className="text-slate-950" fill="currentColor" />
-                <motion.div 
-                  initial={{ y: 5, opacity: 0 }}
-                  animate={{ y: 0, opacity: 1 }}
-                  transition={{ delay: 0.5 }}
-                  className="absolute -top-5 -right-5 bg-slate-950 text-amber-400 p-2 rounded-xl border border-amber-400/30 shadow-2xl flex items-center gap-1.5"
-                >
-                  <Crown size={12} fill="currentColor" />
-                  <span className="text-[8px] font-black uppercase tracking-widest">Premium</span>
-                </motion.div>
               </div>
             </div>
           </div>
-          <h1 className="text-4xl md:text-6xl font-staatliches text-white uppercase tracking-wider">Analyse Budgétaire Elite</h1>
+          <motion.h1 
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ 
+              opacity: 1, 
+              y: 0,
+              backgroundPosition: ["0% 50%", "200% 50%"],
+            }}
+            transition={{
+              backgroundPosition: {
+                duration: 3,
+                repeat: Infinity,
+                ease: "linear",
+              },
+              opacity: { duration: 0.5 },
+              y: { duration: 0.5 }
+            }}
+            className="text-4xl md:text-7xl font-staatliches uppercase tracking-wider bg-gradient-to-r from-amber-200 via-white to-amber-200 bg-[length:200%_auto] bg-clip-text text-transparent"
+          >
+            Analyse Budgétaire Elite
+          </motion.h1>
           <p className="text-slate-400 text-lg leading-relaxed">
             Accédez à l'analyse la plus précise du budget de l'État. 
             Découvrez où va chaque euro de vos impôts avec nos graphiques interactifs et nos décryptages d'experts.

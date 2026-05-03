@@ -52,7 +52,7 @@ const MINISTERS = [
     role: "Ministre des Armées",
     image: "https://upload.wikimedia.org/wikipedia/commons/thumb/8/8e/S%C3%A9bastien_Lecornu_2022.jpg/800px-S%C3%A9bastien_Lecornu_2022.jpg",
     ministry: "Hôtel de Brienne",
-    budget: "47.2 Md€",
+    budget: "66.48 Md€",
     priority: "LPM & Modernisation nucléaire"
   },
   {
@@ -60,18 +60,18 @@ const MINISTERS = [
     role: "Ministre de l'Intérieur",
     image: "https://upload.wikimedia.org/wikipedia/commons/thumb/6/67/Bruno_Retailleau_2024.jpg/800px-Bruno_Retailleau_2024.jpg",
     ministry: "Place Beauvau",
-    budget: "22.1 Md€",
+    budget: "33.06 Md€",
     priority: "Sécurité publique & Immigration"
   }
 ];
 
 const BUDGETS = [
-  { label: "Éducation Nationale", amount: 63.6, color: "bg-blue-500" },
-  { label: "Défense", amount: 47.2, color: "bg-red-500" },
-  { label: "Enseignement Supérieur", amount: 26.5, color: "bg-emerald-500" },
-  { label: "Intérieur", amount: 22.1, color: "bg-purple-500" },
-  { label: "Justice", amount: 10.1, color: "bg-amber-500" },
-  { label: "Solidarités", amount: 35.8, color: "bg-indigo-500" }
+  { label: "Éducation Nationale", amount: 89.62, color: "bg-blue-500" },
+  { label: "Défense", amount: 66.48, color: "bg-red-500" },
+  { label: "Enseignement Supérieur", amount: 31.63, color: "bg-emerald-500" },
+  { label: "Intérieur", amount: 33.06, color: "bg-purple-500" },
+  { label: "Justice", amount: 12.97, color: "bg-amber-500" },
+  { label: "Solidarités", amount: 31.28, color: "bg-indigo-500" }
 ];
 
 const DECREES = [
@@ -309,7 +309,7 @@ export default function ExecutifPage() {
                     <div className="h-2 bg-slate-100 rounded-full overflow-hidden">
                       <motion.div 
                         initial={{ width: 0 }}
-                        whileInView={{ width: `${(item.amount / 63.6) * 100}%` }}
+                        whileInView={{ width: `${(item.amount / 89.62) * 100}%` }}
                         transition={{ duration: 1.5, delay: idx * 0.1 }}
                         className={`h-full ${item.color} rounded-full`}
                       />

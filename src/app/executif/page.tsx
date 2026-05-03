@@ -415,6 +415,28 @@ export default function ExecutifPage() {
                 </div>
               </div>
 
+              {/* Hover Explanation Box - Moved to top */}
+              <div className="mb-8 min-h-[90px] flex items-center justify-center bg-slate-50 rounded-3xl p-4 border border-slate-100">
+                {hoveredBudget ? (
+                  <motion.div 
+                    initial={{ opacity: 0, scale: 0.95 }}
+                    animate={{ opacity: 1, scale: 1 }}
+                    className="w-full"
+                  >
+                    <p className="text-[9px] font-black text-blue-600 uppercase tracking-widest mb-1">Détails de la mission</p>
+                    <p className="text-[11px] text-slate-600 leading-relaxed italic font-medium">
+                      {hoveredBudget.desc}
+                    </p>
+                  </motion.div>
+                ) : (
+                  <div className="text-center">
+                    <p className="text-[9px] text-slate-400 font-bold uppercase tracking-widest animate-pulse">
+                      Survolez un budget pour <br /> voir son explication
+                    </p>
+                  </div>
+                )}
+              </div>
+
               <div className="relative">
                 <div className="space-y-6 max-h-[420px] overflow-y-auto pr-4 custom-scrollbar scroll-smooth">
                   {BUDGETS.map((item, idx) => (
@@ -446,26 +468,6 @@ export default function ExecutifPage() {
                    <span className="text-[8px] font-black uppercase text-slate-400">Scrollez pour voir plus</span>
                    <ChevronDown size={12} className="text-slate-400" />
                 </div>
-              </div>
-
-              {/* Hover Explanation Box */}
-              <div className="mt-8 min-h-[80px] flex items-center justify-center">
-                {hoveredBudget ? (
-                  <motion.div 
-                    initial={{ opacity: 0, y: 10 }}
-                    animate={{ opacity: 1, y: 0 }}
-                    className="p-4 bg-slate-900 rounded-2xl border border-white/10 w-full"
-                  >
-                    <p className="text-[9px] font-black text-amber-400 uppercase tracking-widest mb-1">Le saviez-vous ?</p>
-                    <p className="text-[11px] text-white leading-relaxed italic font-medium">
-                      {hoveredBudget.desc}
-                    </p>
-                  </motion.div>
-                ) : (
-                  <p className="text-[10px] text-slate-400 font-bold uppercase tracking-widest text-center animate-pulse">
-                    Survolez un budget pour <br /> voir son explication
-                  </p>
-                )}
               </div>
 
               <button className="w-full mt-8 py-4 bg-slate-50 border border-slate-100 rounded-2xl text-[10px] font-black uppercase tracking-widest text-slate-400 hover:bg-slate-100 transition-all flex items-center justify-center gap-2">

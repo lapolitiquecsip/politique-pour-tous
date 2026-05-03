@@ -289,8 +289,8 @@ export default function UniversalLawModal({ law, isOpen, onClose, onNext, onPrev
                                         );
 
                                         formatted = formatted.replace(
-                                          /(CONTEXTE\s?:|MESURES PROPOSÉES\s?:|MESURES PROPOSÉES|CONTEXTE)/gi,
-                                          '<span class="block text-2xl font-black text-white mt-12 mb-6 font-staatliches tracking-wider uppercase bg-white/5 py-3 px-6 rounded-2xl border-l-4 border-amber-400">$1</span>'
+                                          /(^|\n)(CONTEXTE\s?:|MESURES PROPOSÉES\s?:|MESURES PROPOSÉES|CONTEXTE)(\s|$)/gi,
+                                          '$1<span class="block text-2xl font-black text-white mt-12 mb-6 font-staatliches tracking-wider uppercase bg-white/5 py-3 px-6 rounded-2xl border-l-4 border-amber-400">$2</span>'
                                         );
 
                                         formatted = formatted.replace(

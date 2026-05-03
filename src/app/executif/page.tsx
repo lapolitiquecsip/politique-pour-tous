@@ -66,12 +66,26 @@ const MINISTERS = [
 ];
 
 const BUDGETS = [
+  { label: "Remboursements et dégrèvements", amount: 145.60, color: "bg-slate-400" },
   { label: "Éducation Nationale", amount: 89.62, color: "bg-blue-500" },
-  { label: "Défense", amount: 66.48, color: "bg-red-500" },
-  { label: "Enseignement Supérieur", amount: 31.63, color: "bg-emerald-500" },
-  { label: "Intérieur", amount: 33.06, color: "bg-purple-500" },
+  { label: "Pensions (CAS)", amount: 69.33, color: "bg-slate-500" },
+  { label: "Défense (Armées)", amount: 66.48, color: "bg-red-500" },
+  { label: "Charge de la dette", amount: 60.34, color: "bg-orange-500" },
+  { label: "Enseignement Supérieur & Recherche", amount: 31.63, color: "bg-emerald-500" },
+  { label: "Solidarité et Insertion", amount: 31.28, color: "bg-indigo-500" },
+  { label: "Sécurités (Police, Gendarmerie)", amount: 25.84, color: "bg-purple-500" },
+  { label: "Écologie et Mobilité", amount: 22.76, color: "bg-green-500" },
+  { label: "Cohésion des territoires", amount: 22.57, color: "bg-blue-400" },
+  { label: "Travail et emploi", amount: 20.82, color: "bg-cyan-500" },
   { label: "Justice", amount: 12.97, color: "bg-amber-500" },
-  { label: "Solidarités", amount: 31.28, color: "bg-indigo-500" }
+  { label: "Gestion des finances publiques", amount: 11.02, color: "bg-slate-300" },
+  { label: "Régimes sociaux et de retraite", amount: 6.07, color: "bg-rose-400" },
+  { label: "Agriculture et Alimentation", amount: 4.13, color: "bg-lime-600" },
+  { label: "Relations Collectivités", amount: 3.96, color: "bg-sky-400" },
+  { label: "Culture", amount: 3.74, color: "bg-pink-500" },
+  { label: "Aide au développement", amount: 3.57, color: "bg-yellow-600" },
+  { label: "Économie", amount: 3.51, color: "bg-indigo-400" },
+  { label: "Santé", amount: 1.89, color: "bg-red-400" }
 ];
 
 const DECREES = [
@@ -299,23 +313,31 @@ export default function ExecutifPage() {
                 </div>
               </div>
 
-              <div className="space-y-6">
-                {BUDGETS.map((item, idx) => (
-                  <div key={idx} className="space-y-2">
-                    <div className="flex justify-between items-end">
-                      <span className="text-[11px] font-bold text-slate-600">{item.label}</span>
-                      <span className="text-xs font-black text-slate-900">{item.amount} Md€</span>
+              <div className="relative">
+                <div className="space-y-6 max-h-[420px] overflow-y-auto pr-4 custom-scrollbar scroll-smooth">
+                  {BUDGETS.map((item, idx) => (
+                    <div key={idx} className="space-y-2">
+                      <div className="flex justify-between items-end">
+                        <span className="text-[11px] font-bold text-slate-600 leading-tight pr-4">{item.label}</span>
+                        <span className="text-xs font-black text-slate-900 whitespace-nowrap">{item.amount} Md€</span>
+                      </div>
+                      <div className="h-2 bg-slate-100 rounded-full overflow-hidden">
+                        <motion.div 
+                          initial={{ width: 0 }}
+                          whileInView={{ width: `${(item.amount / 145.60) * 100}%` }}
+                          transition={{ duration: 1.5, delay: 0.1 }}
+                          className={`h-full ${item.color} rounded-full`}
+                        />
+                      </div>
                     </div>
-                    <div className="h-2 bg-slate-100 rounded-full overflow-hidden">
-                      <motion.div 
-                        initial={{ width: 0 }}
-                        whileInView={{ width: `${(item.amount / 89.62) * 100}%` }}
-                        transition={{ duration: 1.5, delay: idx * 0.1 }}
-                        className={`h-full ${item.color} rounded-full`}
-                      />
-                    </div>
-                  </div>
-                ))}
+                  ))}
+                </div>
+                
+                {/* Scroll Indicator */}
+                <div className="absolute -bottom-4 left-1/2 -translate-x-1/2 flex flex-col items-center gap-1 opacity-50 animate-bounce pointer-events-none">
+                   <span className="text-[8px] font-black uppercase text-slate-400">Scrollez pour voir plus</span>
+                   <ChevronDown size={12} className="text-slate-400" />
+                </div>
               </div>
 
               <button className="w-full mt-8 py-4 bg-slate-50 border border-slate-100 rounded-2xl text-[10px] font-black uppercase tracking-widest text-slate-400 hover:bg-slate-100 transition-all flex items-center justify-center gap-2">

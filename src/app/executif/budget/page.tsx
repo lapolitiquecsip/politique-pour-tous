@@ -13,7 +13,8 @@ import {
   ArrowRight,
   Landmark,
   ShieldCheck,
-  Scale
+  Scale,
+  Crown
 } from "lucide-react";
 import Link from "next/link";
 import { usePremium } from "@/lib/hooks/usePremium";
@@ -74,8 +75,22 @@ export default function DetailedBudgetPage() {
     return (
       <main className="min-h-screen bg-slate-950 flex items-center justify-center p-4">
         <div className="max-w-xl w-full text-center space-y-8">
-          <div className="w-20 h-20 bg-amber-400 rounded-3xl flex items-center justify-center mx-auto shadow-[0_0_50px_rgba(251,191,36,0.3)] rotate-3">
-            <Zap size={40} className="text-slate-950" fill="currentColor" />
+          <div className="relative w-28 h-28 mx-auto mb-10">
+            <div className="absolute inset-0 bg-amber-400 rounded-[2.5rem] rotate-6 opacity-20 animate-pulse" />
+            <div className="absolute inset-0 bg-gradient-to-br from-amber-200 via-amber-400 to-amber-600 rounded-[2.5rem] shadow-[0_20px_50px_rgba(251,191,36,0.4)] flex items-center justify-center transform hover:rotate-0 transition-transform duration-700">
+              <div className="relative">
+                <Zap size={48} className="text-slate-950" fill="currentColor" />
+                <motion.div 
+                  initial={{ y: 5, opacity: 0 }}
+                  animate={{ y: 0, opacity: 1 }}
+                  transition={{ delay: 0.5 }}
+                  className="absolute -top-5 -right-5 bg-slate-950 text-amber-400 p-2 rounded-xl border border-amber-400/30 shadow-2xl flex items-center gap-1.5"
+                >
+                  <Crown size={12} fill="currentColor" />
+                  <span className="text-[8px] font-black uppercase tracking-widest">Premium</span>
+                </motion.div>
+              </div>
+            </div>
           </div>
           <h1 className="text-4xl md:text-6xl font-staatliches text-white uppercase tracking-wider">Analyse Budgétaire Elite</h1>
           <p className="text-slate-400 text-lg leading-relaxed">

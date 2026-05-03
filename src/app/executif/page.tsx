@@ -67,26 +67,126 @@ const MINISTERS = [
 ];
 
 const BUDGETS = [
-  { label: "Remboursements et dégrèvements", amount: 145.60, color: "bg-slate-400" },
-  { label: "Éducation Nationale", amount: 89.62, color: "bg-blue-500" },
-  { label: "Pensions (CAS)", amount: 69.33, color: "bg-slate-500" },
-  { label: "Défense (Armées)", amount: 66.48, color: "bg-red-500" },
-  { label: "Charge de la dette", amount: 60.34, color: "bg-orange-500" },
-  { label: "Intérieur (Sécurités & Admin)", amount: 33.06, color: "bg-purple-500" },
-  { label: "Enseignement Supérieur & Recherche", amount: 31.63, color: "bg-emerald-500" },
-  { label: "Solidarité et Insertion", amount: 31.28, color: "bg-indigo-500" },
-  { label: "Écologie et Mobilité", amount: 22.76, color: "bg-green-500" },
-  { label: "Cohésion des territoires", amount: 22.57, color: "bg-blue-400" },
-  { label: "Travail et emploi", amount: 20.82, color: "bg-cyan-500" },
-  { label: "Justice", amount: 12.97, color: "bg-amber-500" },
-  { label: "Gestion des finances publiques", amount: 11.02, color: "bg-slate-300" },
-  { label: "Régimes sociaux et de retraite", amount: 6.07, color: "bg-rose-400" },
-  { label: "Agriculture et Alimentation", amount: 4.13, color: "bg-lime-600" },
-  { label: "Relations Collectivités", amount: 3.96, color: "bg-sky-400" },
-  { label: "Culture", amount: 3.74, color: "bg-pink-500" },
-  { label: "Aide au développement", amount: 3.57, color: "bg-yellow-600" },
-  { label: "Économie", amount: 3.51, color: "bg-indigo-400" },
-  { label: "Santé", amount: 1.89, color: "bg-red-400" }
+  { 
+    label: "Remboursements et dégrèvements", 
+    amount: 145.60, 
+    color: "bg-slate-400",
+    desc: "Sommes que l'État rend aux contribuables (ex: trop-perçu d'impôts, crédits d'impôt ou aides à l'investissement)."
+  },
+  { 
+    label: "Éducation Nationale", 
+    amount: 89.62, 
+    color: "bg-blue-500",
+    desc: "Premier budget de l'État : salaires des enseignants, fonctionnement des écoles, collèges et lycées."
+  },
+  { 
+    label: "Pensions (CAS)", 
+    amount: 69.33, 
+    color: "bg-slate-500",
+    desc: "Financement des retraites des fonctionnaires de l'État (militaires, enseignants, agents publics)."
+  },
+  { 
+    label: "Défense (Armées)", 
+    amount: 66.48, 
+    color: "bg-red-500",
+    desc: "Équipement des forces armées, modernisation nucléaire et opérations militaires."
+  },
+  { 
+    label: "Charge de la dette", 
+    amount: 60.34, 
+    color: "bg-orange-500",
+    desc: "Paiement des intérêts sur l'argent que l'État a emprunté pour financer ses déficits passés."
+  },
+  { 
+    label: "Intérieur (Sécurités & Admin)", 
+    amount: 33.06, 
+    color: "bg-purple-500",
+    desc: "Financement de la Police, de la Gendarmerie, de la sécurité routière et de l'administration des territoires."
+  },
+  { 
+    label: "Enseignement Supérieur & Recherche", 
+    amount: 31.63, 
+    color: "bg-emerald-500",
+    desc: "Financement des universités, des grandes écoles et de la recherche scientifique française."
+  },
+  { 
+    label: "Solidarité et Insertion", 
+    amount: 31.28, 
+    color: "bg-indigo-500",
+    desc: "Aides aux plus démunis, aux personnes handicapées (AAH) et protection de l'enfance."
+  },
+  { 
+    label: "Écologie et Mobilité", 
+    amount: 22.76, 
+    color: "bg-green-500",
+    desc: "Transition écologique, protection de la biodiversité, routes et infrastructures ferroviaires."
+  },
+  { 
+    label: "Cohésion des territoires", 
+    amount: 22.57, 
+    color: "bg-blue-400",
+    desc: "Aides au logement (APL), rénovation urbaine et soutien aux zones rurales."
+  },
+  { 
+    label: "Travail et emploi", 
+    amount: 20.82, 
+    color: "bg-cyan-500",
+    desc: "Politiques de l'emploi, formation professionnelle et financement de l'apprentissage."
+  },
+  { 
+    label: "Justice", 
+    amount: 12.97, 
+    color: "bg-amber-500",
+    desc: "Fonctionnement des tribunaux, des prisons et de la protection judiciaire de la jeunesse."
+  },
+  { 
+    label: "Gestion des finances publiques", 
+    amount: 11.02, 
+    color: "bg-slate-300",
+    desc: "Coût des services qui collectent l'impôt (Bercy) et gèrent la dépense publique."
+  },
+  { 
+    label: "Régimes sociaux et de retraite", 
+    amount: 6.07, 
+    color: "bg-rose-400",
+    desc: "Soutien à certains régimes de retraite spécifiques (ex: marins, mineurs) et solidarité nationale."
+  },
+  { 
+    label: "Agriculture et Alimentation", 
+    amount: 4.13, 
+    color: "bg-lime-600",
+    desc: "Soutien aux agriculteurs, sécurité sanitaire des aliments et gestion des forêts."
+  },
+  { 
+    label: "Relations Collectivités", 
+    amount: 3.96, 
+    color: "bg-sky-400",
+    desc: "Dotations versées par l'État aux mairies, départements et régions."
+  },
+  { 
+    label: "Culture", 
+    amount: 3.74, 
+    color: "bg-pink-500",
+    desc: "Protection du patrimoine, soutien à la création artistique et médias publics."
+  },
+  { 
+    label: "Aide au développement", 
+    amount: 3.57, 
+    color: "bg-yellow-600",
+    desc: "Actions de solidarité internationale et aide aux pays en développement."
+  },
+  { 
+    label: "Économie", 
+    amount: 3.51, 
+    color: "bg-indigo-400",
+    desc: "Soutien aux entreprises, au commerce extérieur et régulation de la concurrence."
+  },
+  { 
+    label: "Santé", 
+    amount: 1.89, 
+    color: "bg-red-400",
+    desc: "Prévention, sécurité sanitaire et pilotage du système de santé."
+  }
 ];
 
 const DECREES = [
@@ -317,11 +417,20 @@ export default function ExecutifPage() {
               <div className="relative">
                 <div className="space-y-6 max-h-[420px] overflow-y-auto pr-4 custom-scrollbar scroll-smooth">
                   {BUDGETS.map((item, idx) => (
-                    <div key={idx} className="space-y-2">
+                    <div key={idx} className="group/item relative space-y-2">
                       <div className="flex justify-between items-end">
                         <span className="text-[11px] font-bold text-slate-600 leading-tight pr-4">{item.label}</span>
                         <span className="text-xs font-black text-slate-900 whitespace-nowrap">{item.amount} Md€</span>
                       </div>
+                      
+                      {/* Tooltip on Hover */}
+                      <div className="absolute left-0 -top-12 w-full opacity-0 group-hover/item:opacity-100 pointer-events-none transition-all duration-300 z-50">
+                        <div className="bg-slate-900 text-white text-[10px] p-3 rounded-xl shadow-2xl border border-white/10 leading-relaxed translate-y-2 group-hover/item:translate-y-0">
+                          {item.desc}
+                          <div className="absolute -bottom-1 left-4 w-2 h-2 bg-slate-900 rotate-45 border-r border-b border-white/10" />
+                        </div>
+                      </div>
+
                       <div className="h-2 bg-slate-100 rounded-full overflow-hidden">
                         <motion.div 
                           initial={{ width: 0 }}

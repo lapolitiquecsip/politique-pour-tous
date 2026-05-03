@@ -7,6 +7,7 @@ import {
   CircleDollarSign, 
   ScrollText, 
   ChevronRight,
+  ChevronDown,
   Landmark,
   Building2,
   TrendingUp,

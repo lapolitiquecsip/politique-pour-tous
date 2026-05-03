@@ -200,6 +200,7 @@ export default function ExecutifPage() {
   const [search, setSearch] = useState("");
   const [govtNews, setGovtNews] = useState<any[]>([]);
   const [loadingNews, setLoadingNews] = useState(true);
+  const [hoveredBudget, setHoveredBudget] = useState<any>(null);
 
   useEffect(() => {
     async function loadNews() {
@@ -417,20 +418,17 @@ export default function ExecutifPage() {
               <div className="relative">
                 <div className="space-y-6 max-h-[420px] overflow-y-auto pr-4 custom-scrollbar scroll-smooth">
                   {BUDGETS.map((item, idx) => (
-                    <div key={idx} className="group/item relative space-y-2">
+                    <div 
+                      key={idx} 
+                      className="group/item relative space-y-2 cursor-help"
+                      onMouseEnter={() => setHoveredBudget(item)}
+                      onMouseLeave={() => setHoveredBudget(null)}
+                    >
                       <div className="flex justify-between items-end">
                         <span className="text-[11px] font-bold text-slate-600 leading-tight pr-4">{item.label}</span>
                         <span className="text-xs font-black text-slate-900 whitespace-nowrap">{item.amount} Md€</span>
                       </div>
                       
-                      {/* Tooltip on Hover */}
-                      <div className="absolute left-0 -top-12 w-full opacity-0 group-hover/item:opacity-100 pointer-events-none transition-all duration-300 z-50">
-                        <div className="bg-slate-900 text-white text-[10px] p-3 rounded-xl shadow-2xl border border-white/10 leading-relaxed translate-y-2 group-hover/item:translate-y-0">
-                          {item.desc}
-                          <div className="absolute -bottom-1 left-4 w-2 h-2 bg-slate-900 rotate-45 border-r border-b border-white/10" />
-                        </div>
-                      </div>
-
                       <div className="h-2 bg-slate-100 rounded-full overflow-hidden">
                         <motion.div 
                           initial={{ width: 0 }}
@@ -448,6 +446,26 @@ export default function ExecutifPage() {
                    <span className="text-[8px] font-black uppercase text-slate-400">Scrollez pour voir plus</span>
                    <ChevronDown size={12} className="text-slate-400" />
                 </div>
+              </div>
+
+              {/* Hover Explanation Box */}
+              <div className="mt-8 min-h-[80px] flex items-center justify-center">
+                {hoveredBudget ? (
+                  <motion.div 
+                    initial={{ opacity: 0, y: 10 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    className="p-4 bg-slate-900 rounded-2xl border border-white/10 w-full"
+                  >
+                    <p className="text-[9px] font-black text-amber-400 uppercase tracking-widest mb-1">Le saviez-vous ?</p>
+                    <p className="text-[11px] text-white leading-relaxed italic font-medium">
+                      {hoveredBudget.desc}
+                    </p>
+                  </motion.div>
+                ) : (
+                  <p className="text-[10px] text-slate-400 font-bold uppercase tracking-widest text-center animate-pulse">
+                    Survolez un budget pour <br /> voir son explication
+                  </p>
+                )}
               </div>
 
               <button className="w-full mt-8 py-4 bg-slate-50 border border-slate-100 rounded-2xl text-[10px] font-black uppercase tracking-widest text-slate-400 hover:bg-slate-100 transition-all flex items-center justify-center gap-2">

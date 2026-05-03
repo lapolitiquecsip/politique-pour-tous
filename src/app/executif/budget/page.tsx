@@ -22,57 +22,73 @@ import { BUDGETS } from "../page";
 import { ArrowUpRight, ArrowDownRight, Minus } from "lucide-react";
 
 const COMPARISON_DATA = [
-  { label: "Éducation Nationale", val2025: 82.2, val2026: 89.62, trend: "up" },
-  { label: "Défense", val2025: 47.2, val2026: 66.48, trend: "up" },
-  { label: "Charge de la dette", val2025: 51.5, val2026: 60.34, trend: "up" },
-  { label: "Justice", val2025: 9.6, val2026: 12.97, trend: "up" },
-  { label: "Écologie & Mobilité", val2025: 20.1, val2026: 22.76, trend: "up" },
-  { label: "Agriculture", val2025: 5.8, val2026: 4.13, trend: "down" },
+  { label: "Enseignement scolaire", val2025: 65.62, val2026: 66.01, trend: "up" },
+  { label: "Recherche et ens. sup.", val2025: 31.55, val2026: 32.12, trend: "up" },
+  { label: "Défense", val2025: 50.45, val2026: 57.10, trend: "up" },
+  { label: "Engagements financiers (Dette)", val2025: 56.40, val2026: 59.34, trend: "up" },
+  { label: "Justice", val2025: 10.45, val2026: 11.20, trend: "up" },
+  { label: "Sécurités", val2025: 24.18, val2026: 24.85, trend: "up" },
+  { label: "Solidarité & Insertion", val2025: 30.68, val2026: 31.45, trend: "up" },
+  { label: "Écologie & Mobilité", val2025: 27.25, val2026: 27.80, trend: "up" },
+  { label: "Travail et emploi", val2025: 19.82, val2026: 19.10, trend: "down" },
+  { label: "Cohésion des territoires", val2025: 23.10, val2026: 22.45, trend: "down" },
+  { label: "Investir pour la France de 2030", val2025: 5.85, val2026: 6.20, trend: "up" },
+  { label: "Relations avec les coll. terr.", val2025: 4.38, val2026: 4.25, trend: "down" },
+  { label: "Agriculture & Alimentation", val2025: 4.52, val2026: 4.68, trend: "up" },
+  { label: "Action extérieure de l'État", val2025: 3.42, val2026: 3.55, trend: "up" },
+  { label: "Culture", val2025: 3.82, val2026: 3.95, trend: "up" },
+  { label: "Santé", val2025: 1.55, val2026: 1.62, trend: "up" },
+  { label: "Immigration & Intégration", val2025: 2.12, val2026: 2.30, trend: "up" },
+  { label: "Outre-mer", val2025: 2.85, val2026: 2.92, trend: "up" },
+  { label: "Anciens combattants", val2025: 1.95, val2026: 1.88, trend: "down" },
+  { label: "Économie", val2025: 3.58, val2026: 3.45, trend: "down" },
+  { label: "Sport & Vie associative", val2025: 1.25, val2026: 1.15, trend: "down" },
+  { label: "Aide publique au dév.", val2025: 4.35, val2026: 4.10, trend: "down" },
 ];
 
 const BUDGET_METRICS = [
-  { label: "Dépenses Totales", value: "540 Md€", sub: "Budget Général de l'État", icon: CircleDollarSign, color: "text-blue-600" },
-  { label: "Part du PIB", value: "55.8 %", sub: "Dépenses Publiques Totales", icon: Landmark, color: "text-red-600" },
-  { label: "Déficit Prévu", value: "3.4 %", sub: "Objectif de réduction", icon: TrendingDown, color: "text-amber-600" },
-  { label: "Dette Publique", value: "112 %", sub: "Rapport au PIB", icon: ShieldCheck, color: "text-slate-600" },
+  { label: "Dépenses Totales", value: "500.9 Md€", sub: "Budget Général de l'État", icon: CircleDollarSign, color: "text-blue-600" },
+  { label: "Part du PIB", value: "54.2 %", sub: "Dépenses Publiques Totales", icon: Landmark, color: "text-red-600" },
+  { label: "Déficit Prévu", value: "4.7 %", sub: "Objectif de réduction", icon: TrendingDown, color: "text-amber-600" },
+  { label: "Dette Publique", value: "114 %", sub: "Rapport au PIB", icon: ShieldCheck, color: "text-slate-600" },
 ];
 
 const RECETTES = [
-  { label: "TVA", amount: 115, desc: "Taxe sur la Valeur Ajoutée (Consommation)", color: "bg-blue-500" },
-  { label: "Impôt sur le revenu", amount: 98, desc: "Impôt direct sur les revenus des ménages", color: "bg-red-500" },
-  { label: "Impôt sur les sociétés", amount: 65, desc: "Impôt sur les bénéfices des entreprises", color: "bg-emerald-500" },
-  { label: "TICPE", amount: 30, desc: "Taxe sur les produits énergétiques (Carburants)", color: "bg-amber-500" },
-  { label: "Autres", amount: 232, desc: "Taxes diverses, amendes, dividendes de l'État", color: "bg-slate-300" },
+  { label: "TVA", amount: 112, desc: "Taxe sur la Valeur Ajoutée (Consommation)", color: "bg-blue-500" },
+  { label: "Impôt sur le revenu", amount: 95, desc: "Impôt direct sur les revenus des ménages", color: "bg-red-500" },
+  { label: "Impôt sur les sociétés", amount: 62, desc: "Impôt sur les bénéfices des entreprises", color: "bg-emerald-500" },
+  { label: "TICPE", amount: 28, desc: "Taxe sur les produits énergétiques (Carburants)", color: "bg-amber-500" },
+  { label: "Autres", amount: 203.9, desc: "Taxes diverses, amendes, dividendes de l'État", color: "bg-slate-300" },
 ];
 
 const MISSIONS_DETAILED = [
   {
-    title: "Charge de la dette",
-    amount: "60.34 Md€",
+    title: "Engagements financiers",
+    amount: "59.34 Md€",
     impact: "Critique",
-    desc: "C'est le coût de l'argent emprunté. Avec la hausse des taux, ce poste est devenu l'un des plus lourds du budget. L'État paie ici les intérêts de ses dettes passées sans pour autant rembourser le capital.",
+    desc: "C'est le coût de la charge de la dette. Avec la hausse des taux, ce poste est devenu l'un des plus lourds du budget. L'État paie ici les intérêts de ses dettes passées sans pour autant rembourser le capital.",
     color: "bg-orange-500"
   },
   {
-    title: "Éducation Nationale",
-    amount: "89.62 Md€",
+    title: "Enseignement scolaire",
+    amount: "66.01 Md€",
     impact: "Prioritaire",
-    desc: "Premier poste de dépense du budget général. Il couvre les salaires de plus d'un million d'agents et le fonctionnement de tout le système scolaire français.",
+    desc: "Premier poste de dépense du budget général. Il couvre les salaires de plus d'un million d'agents et le fonctionnement de tout le système scolaire français (premier et second degrés).",
     color: "bg-blue-600"
   },
   {
     title: "Défense",
-    amount: "66.48 Md€",
+    amount: "57.10 Md€",
     impact: "Régalien",
-    desc: "Le budget des armées est en forte croissance pour répondre aux enjeux géopolitiques mondiaux. Il finance la modernisation nucléaire et les nouveaux équipements militaires.",
+    desc: "Le budget des armées est en forte croissance conformément à la Loi de Programmation Militaire (LPM). Il finance la modernisation nucléaire et les nouveaux équipements.",
     color: "bg-red-600"
   },
   {
-    title: "Remboursements et dégrèvements",
-    amount: "145.6 Md€",
-    impact: "Mécanique",
-    desc: "Techniquement le plus gros bloc, mais c'est un flux de 'retour'. L'État rend ici de l'argent aux contribuables et entreprises (crédits d'impôt, trop-perçus de TVA).",
-    color: "bg-slate-400"
+    title: "Recherche et ens. sup.",
+    amount: "32.12 Md€",
+    impact: "Avenir",
+    desc: "Ce budget finance les universités, les organismes de recherche (CNRS, INSERM...) et les bourses étudiantes. Un pilier pour l'innovation et la compétitivité future.",
+    color: "bg-emerald-600"
   }
 ];
 
@@ -150,12 +166,12 @@ export default function DetailedBudgetPage() {
             <div className="flex items-center gap-4 bg-slate-950 text-white p-6 rounded-[2.5rem] shadow-2xl shadow-slate-900/20">
                <div className="text-right">
                   <p className="text-[10px] font-black text-slate-500 uppercase tracking-widest mb-1">Déficit Public</p>
-                  <p className="text-3xl font-black text-amber-400">3.4% <span className="text-sm text-white/50">PIB</span></p>
+                  <p className="text-3xl font-black text-amber-400">4.7% <span className="text-sm text-white/50">PIB</span></p>
                </div>
                <div className="w-px h-12 bg-white/10 mx-2" />
                <div className="text-right">
                   <p className="text-[10px] font-black text-slate-500 uppercase tracking-widest mb-1">Dépense Totale</p>
-                  <p className="text-3xl font-black text-white">540 <span className="text-sm text-white/50">Md€</span></p>
+                  <p className="text-3xl font-black text-white">500.9 <span className="text-sm text-white/50">Md€</span></p>
                </div>
             </div>
           </div>
@@ -232,8 +248,8 @@ export default function DetailedBudgetPage() {
                     <svg viewBox="0 0 100 100" className="w-full h-full -rotate-90">
                        {/* Calculate segments manually for a clean donut */}
                        {(() => {
-                         let currentOffset = 0;
-                         const total = 540;
+                          let currentOffset = 0;
+                          const total = 500.9;
                          return RECETTES.map((item, i) => {
                            const percentage = (item.amount / total) * 100;
                            const strokeDasharray = `${percentage} ${100 - percentage}`;
@@ -272,10 +288,10 @@ export default function DetailedBudgetPage() {
                     {/* CENTER LABEL */}
                     <div className="absolute inset-0 flex flex-col items-center justify-center text-center pointer-events-none">
                        <p className="text-[10px] font-black text-slate-400 uppercase tracking-widest mb-1">Total Fiscal</p>
-                       <div className="flex items-baseline gap-1">
-                          <span className="text-5xl font-black text-slate-900">540</span>
-                          <span className="text-xl font-bold text-slate-400">Md€</span>
-                       </div>
+                        <div className="flex items-baseline gap-1">
+                           <span className="text-5xl font-black text-slate-900">500.9</span>
+                           <span className="text-xl font-bold text-slate-400">Md€</span>
+                        </div>
                     </div>
                  </div>
                  

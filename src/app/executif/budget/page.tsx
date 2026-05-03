@@ -18,7 +18,17 @@ import {
 } from "lucide-react";
 import Link from "next/link";
 import { usePremium } from "@/lib/hooks/usePremium";
-import { BUDGETS } from "../page"; // We can export this from the other page if needed, or redefine.
+import { BUDGETS } from "../page";
+import { ArrowUpRight, ArrowDownRight, Minus } from "lucide-react";
+
+const COMPARISON_DATA = [
+  { label: "Éducation Nationale", val2025: 82.2, val2026: 89.62, trend: "up" },
+  { label: "Défense", val2025: 47.2, val2026: 66.48, trend: "up" },
+  { label: "Charge de la dette", val2025: 51.5, val2026: 60.34, trend: "up" },
+  { label: "Justice", val2025: 9.6, val2026: 12.97, trend: "up" },
+  { label: "Écologie & Mobilité", val2025: 20.1, val2026: 22.76, trend: "up" },
+  { label: "Agriculture", val2025: 5.8, val2026: 4.13, trend: "down" },
+];
 
 const BUDGET_METRICS = [
   { label: "Dépenses Totales", value: "540 Md€", sub: "Budget Général de l'État", icon: CircleDollarSign, color: "text-blue-600" },
@@ -335,24 +345,69 @@ export default function DetailedBudgetPage() {
         </section>
 
         {/* SUMMARY CTA */}
-        <section className="bg-slate-950 rounded-[3.5rem] p-12 md:p-20 text-center relative overflow-hidden shadow-2xl">
-           <div className="absolute top-0 left-0 w-full h-full opacity-10">
-              <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[800px] h-[800px] border border-white rounded-full animate-[spin_20s_linear_infinite]" />
-           </div>
+        <section className="bg-slate-950 rounded-[3.5rem] p-8 md:p-20 relative overflow-hidden shadow-2xl border border-white/5">
+           <div className="absolute top-0 right-0 w-[600px] h-[600px] bg-blue-600/10 rounded-full blur-[120px] -mr-96 -mt-96" />
            
-           <div className="relative z-10 max-w-3xl mx-auto space-y-8">
-              <h2 className="text-5xl md:text-7xl font-staatliches text-white uppercase tracking-tighter">
-                Comprendre pour <span className="text-blue-500">Agir</span>
-              </h2>
-              <p className="text-xl text-slate-400 font-medium italic leading-relaxed">
-                Le budget est l'acte politique le plus important de l'année. Il détermine nos capacités de défense, la qualité de nos écoles et la pérennité de notre modèle social.
-              </p>
-              <div className="pt-8 flex flex-wrap items-center justify-center gap-6">
+           <div className="relative z-10 space-y-12">
+              <div className="text-center max-w-3xl mx-auto space-y-4">
+                <h2 className="text-4xl md:text-6xl font-staatliches text-white uppercase tracking-tighter">
+                  Évolution <span className="text-blue-500">2025 → 2026</span>
+                </h2>
+                <p className="text-slate-400 font-medium italic">
+                  Comparez les priorités budgétaires d'une année sur l'autre pour identifier les grandes orientations politiques.
+                </p>
+              </div>
+
+              <div className="bg-white/5 rounded-[2.5rem] border border-white/10 backdrop-blur-md overflow-hidden">
+                 <div className="overflow-x-auto">
+                    <table className="w-full text-left border-collapse">
+                       <thead>
+                          <tr className="border-b border-white/10">
+                             <th className="px-8 py-6 text-[10px] font-black text-slate-500 uppercase tracking-widest">Mission de l'État</th>
+                             <th className="px-8 py-6 text-[10px] font-black text-slate-500 uppercase tracking-widest">Budget 2025</th>
+                             <th className="px-8 py-6 text-[10px] font-black text-slate-500 uppercase tracking-widest">Budget 2026</th>
+                             <th className="px-8 py-6 text-[10px] font-black text-slate-500 uppercase tracking-widest text-right">Évolution</th>
+                          </tr>
+                       </thead>
+                       <tbody className="divide-y divide-white/5">
+                          {COMPARISON_DATA.map((row, i) => {
+                            const diff = ((row.val2026 - row.val2025) / row.val2025) * 100;
+                            return (
+                              <motion.tr 
+                                key={i}
+                                initial={{ opacity: 0, y: 10 }}
+                                whileInView={{ opacity: 1, y: 0 }}
+                                transition={{ delay: i * 0.05 }}
+                                className="hover:bg-white/[0.02] transition-colors"
+                              >
+                                 <td className="px-8 py-5">
+                                    <span className="text-sm font-bold text-white">{row.label}</span>
+                                 </td>
+                                 <td className="px-8 py-5 text-slate-400 font-mono text-sm">{row.val2025} Md€</td>
+                                 <td className="px-8 py-5 text-white font-mono font-bold text-sm">{row.val2026} Md€</td>
+                                 <td className="px-8 py-5 text-right">
+                                    <div className={`inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-[10px] font-black uppercase ${
+                                      row.trend === 'up' ? 'bg-emerald-500/10 text-emerald-400' : 'bg-rose-500/10 text-rose-400'
+                                    }`}>
+                                       {row.trend === 'up' ? <ArrowUpRight size={12} /> : <ArrowDownRight size={12} />}
+                                       {diff > 0 ? '+' : ''}{diff.toFixed(1)}%
+                                    </div>
+                                 </td>
+                              </motion.tr>
+                            );
+                          })}
+                       </tbody>
+                    </table>
+                 </div>
+              </div>
+
+              <div className="pt-8 flex flex-col md:flex-row items-center justify-between gap-8 border-t border-white/10">
+                 <div className="text-left">
+                    <p className="text-[10px] font-black text-slate-500 uppercase tracking-widest mb-1">Source Officielle</p>
+                    <p className="text-xs text-slate-400 italic">Direction du Budget - Ministère de l'Économie et des Finances</p>
+                 </div>
                  <button className="px-10 py-5 bg-blue-600 text-white rounded-2xl font-black text-xs uppercase tracking-widest hover:bg-blue-700 transition-all shadow-xl shadow-blue-500/20">
-                   Télécharger le rapport complet (PDF)
-                 </button>
-                 <button className="px-10 py-5 bg-white/10 text-white rounded-2xl font-black text-xs uppercase tracking-widest hover:bg-white/20 transition-all border border-white/10">
-                   Comparer avec 2025
+                    Télécharger le rapport comparatif (PDF)
                  </button>
               </div>
            </div>

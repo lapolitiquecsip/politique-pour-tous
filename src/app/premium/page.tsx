@@ -26,7 +26,8 @@ import {
   LayoutDashboard,
   BellRing,
   Zap,
-  Users
+  Users,
+  Bookmark
 } from "lucide-react";
 import Link from "next/link";
 
@@ -136,6 +137,13 @@ const CONTENTS = [
     title: "Filtres Thématiques Avancés",
     desc: "Économie, Écologie, Santé... Ne recevez que ce qui compte vraiment pour vous grâce à nos filtres IA.",
     color: "from-amber-200 to-yellow-400",
+  },
+  {
+    icon: Bookmark,
+    title: "Bibliothèque de Lois Personnelle",
+    desc: "Enregistrez vos textes favoris et propositions de loi pour les consulter plus tard d'un simple clic sur votre profil.",
+    color: "from-orange-400 to-amber-600",
+    href: "/lois",
   },
 ];
 

@@ -48,7 +48,7 @@ const INSTITUTIONS: Institution[] = [
     color: "from-indigo-600",
     details: [
       "348 sénateurs composent la chambre haute",
-      "Navette parlementaire sur le projet de loi finances",
+      "Navette parlementaire sur le Budget",
     ],
   },
   {

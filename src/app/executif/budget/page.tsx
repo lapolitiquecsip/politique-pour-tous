@@ -129,8 +129,8 @@ export default function DetailedBudgetPage() {
               <div className="inline-flex items-center gap-2 px-3 py-1 bg-amber-100 text-amber-700 rounded-full text-[10px] font-black uppercase tracking-widest">
                 <Zap size={12} fill="currentColor" /> Analyse Premium Elite
               </div>
-              <h1 className="text-5xl md:text-7xl font-staatliches uppercase tracking-tighter leading-none text-slate-900">
-                La Loi de <span className="text-blue-600">Finances 2026</span>
+              <h1 className="text-5xl md:text-8xl font-staatliches uppercase tracking-tighter leading-none text-slate-900">
+                Budget <span className="text-blue-600">2026</span>
               </h1>
               <p className="text-xl text-slate-500 font-medium italic">
                 Décryptage intégral de la dépense publique et des ressources de l'État.
@@ -235,7 +235,7 @@ export default function DetailedBudgetPage() {
                  Zoom sur les <span className="text-red-600">Points de Vigilance</span>
               </h2>
               <p className="text-slate-500 font-medium italic">
-                Pourquoi certains budgets pèsent-ils plus lourd que d'autres ? Analyse des piliers de la Loi de Finances.
+                Pourquoi certains budgets pèsent-ils plus lourd que d'autres ? Analyse des piliers du Budget.
               </p>
            </div>
 

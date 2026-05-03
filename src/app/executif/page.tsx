@@ -67,7 +67,7 @@ const MINISTERS = [
   }
 ];
 
-const BUDGETS = [
+export const BUDGETS = [
   { 
     label: "Remboursements et dégrèvements", 
     amount: 145.60, 

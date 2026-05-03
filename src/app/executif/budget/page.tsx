@@ -118,7 +118,9 @@ export default function DetailedBudgetPage() {
   return (
     <main className="min-h-screen bg-slate-50 pb-24">
       {/* HEADER */}
-      <header className="bg-white border-b border-slate-200 pt-32 pb-12 px-4">
+      <header className="bg-white border-b border-slate-200 pt-32 pb-16 px-4 relative overflow-hidden">
+        <div className="absolute top-0 right-0 w-[500px] h-[500px] bg-blue-500/5 rounded-full blur-[100px] -mr-64 -mt-64" />
+        <div className="absolute bottom-0 left-0 w-full h-px bg-gradient-to-r from-transparent via-slate-200 to-transparent" />
         <div className="container mx-auto max-w-6xl">
           <Link href="/executif" className="inline-flex items-center gap-2 text-[10px] font-black uppercase tracking-widest text-slate-400 hover:text-blue-600 transition-colors mb-8">
             <ArrowLeft size={14} /> Retour à l'Exécutif
@@ -126,9 +128,7 @@ export default function DetailedBudgetPage() {
           
           <div className="flex flex-col md:flex-row md:items-end justify-between gap-8">
             <div className="space-y-4">
-              <div className="inline-flex items-center gap-2 px-3 py-1 bg-amber-100 text-amber-700 rounded-full text-[10px] font-black uppercase tracking-widest">
-                <Zap size={12} fill="currentColor" /> Analyse Premium Elite
-              </div>
+
               <h1 className="text-5xl md:text-8xl font-staatliches uppercase tracking-tighter leading-none text-slate-900">
                 Budget <span className="text-blue-600">2026</span>
               </h1>
@@ -178,51 +178,108 @@ export default function DetailedBudgetPage() {
         <section className="bg-white rounded-[3rem] border border-slate-200 p-8 md:p-16 overflow-hidden relative">
            <div className="absolute top-0 right-0 w-96 h-96 bg-blue-500/5 rounded-full blur-[100px] -mr-48 -mt-48" />
            
-           <div className="relative z-10 grid grid-cols-1 lg:grid-cols-2 gap-16 items-center">
-              <div className="space-y-8">
-                <div className="flex items-center gap-4">
-                   <div className="w-12 h-12 bg-blue-50 text-blue-600 rounded-2xl flex items-center justify-center shadow-sm">
-                      <PieChart size={24} />
-                   </div>
-                   <h2 className="text-4xl font-staatliches uppercase tracking-wider text-slate-900">
-                      Origine des <span className="text-blue-600">Recettes</span>
-                   </h2>
+           <div className="relative z-10 grid grid-cols-1 lg:grid-cols-12 gap-16 items-center">
+              <div className="lg:col-span-7 space-y-12">
+                <div className="space-y-4">
+                  <div className="flex items-center gap-4">
+                    <div className="w-12 h-12 bg-blue-50 text-blue-600 rounded-2xl flex items-center justify-center shadow-sm">
+                        <PieChart size={24} />
+                    </div>
+                    <h2 className="text-4xl font-staatliches uppercase tracking-wider text-slate-900">
+                        Origine des <span className="text-blue-600">Recettes</span>
+                    </h2>
+                  </div>
+                  <p className="text-lg text-slate-600 leading-relaxed font-medium italic max-w-2xl">
+                    Pour dépenser, l'État doit d'abord collecter. La TVA reste la source d'oxygène principale de la France, suivie par l'impôt sur le revenu.
+                  </p>
                 </div>
-                
-                <p className="text-lg text-slate-600 leading-relaxed font-medium italic">
-                  Pour dépenser, l'État doit d'abord collecter. La TVA reste la source d'oxygène principale de la France, suivie par l'impôt sur le revenu.
-                </p>
 
-                <div className="space-y-6">
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-x-12 gap-y-6">
                    {RECETTES.map((item, i) => (
-                     <div key={i} className="space-y-2">
-                        <div className="flex justify-between items-center">
-                           <div className="flex items-center gap-3">
-                              <div className={`w-3 h-3 rounded-full ${item.color}`} />
+                     <motion.div 
+                       key={i} 
+                       initial={{ opacity: 0, x: -20 }}
+                       whileInView={{ opacity: 1, x: 0 }}
+                       transition={{ delay: i * 0.1 }}
+                       className="group flex items-start gap-4 p-4 rounded-2xl hover:bg-slate-50 transition-colors"
+                     >
+                        <div className={`w-3 h-3 rounded-full mt-1.5 shrink-0 ${item.color.replace('bg-', 'bg-')}`} />
+                        <div className="space-y-1">
+                           <div className="flex justify-between items-baseline gap-4">
                               <span className="text-sm font-bold text-slate-900">{item.label}</span>
+                              <span className="text-sm font-black text-slate-900 whitespace-nowrap">{item.amount} Md€</span>
                            </div>
-                           <span className="text-sm font-black text-slate-900">{item.amount} Md€</span>
+                           <p className="text-[10px] text-slate-400 font-medium italic leading-tight">{item.desc}</p>
                         </div>
-                        <div className="h-2 bg-slate-100 rounded-full overflow-hidden">
-                           <motion.div 
-                             initial={{ width: 0 }}
-                             whileInView={{ width: `${(item.amount / 232) * 100}%` }}
-                             transition={{ duration: 1.5, delay: i * 0.1 }}
-                             className={`h-full ${item.color} rounded-full`}
-                           />
-                        </div>
-                        <p className="text-[10px] text-slate-400 font-medium italic pl-6">{item.desc}</p>
-                     </div>
+                     </motion.div>
                    ))}
                 </div>
               </div>
 
-              <div className="relative aspect-square max-w-md mx-auto">
-                 <div className="absolute inset-0 bg-gradient-to-br from-blue-600/10 to-transparent rounded-full animate-pulse" />
-                 <div className="absolute inset-8 border-[20px] border-slate-900 rounded-full flex flex-col items-center justify-center text-center p-8">
-                    <p className="text-[10px] font-black text-slate-500 uppercase tracking-widest mb-2">Total Fiscal Net</p>
-                    <p className="text-5xl font-black text-slate-900 mb-2">540</p>
-                    <p className="text-xl font-bold text-slate-400 uppercase">Milliards €</p>
+              <div className="lg:col-span-5 relative flex flex-col items-center justify-center">
+                 {/* DONUT CHART SVG */}
+                 <div className="relative w-72 h-72 md:w-80 md:h-80">
+                    <svg viewBox="0 0 100 100" className="w-full h-full -rotate-90">
+                       {/* Calculate segments manually for a clean donut */}
+                       {(() => {
+                         let currentOffset = 0;
+                         const total = 540;
+                         return RECETTES.map((item, i) => {
+                           const percentage = (item.amount / total) * 100;
+                           const strokeDasharray = `${percentage} ${100 - percentage}`;
+                           const strokeDashoffset = -currentOffset;
+                           currentOffset += percentage;
+                           
+                           const colorMap: {[key: string]: string} = {
+                             'bg-blue-500': '#3b82f6',
+                             'bg-red-500': '#ef4444',
+                             'bg-emerald-500': '#10b981',
+                             'bg-amber-500': '#f59e0b',
+                             'bg-slate-300': '#cbd5e1'
+                           };
+
+                           return (
+                             <motion.circle
+                               key={i}
+                               cx="50"
+                               cy="50"
+                               r="40"
+                               fill="transparent"
+                               stroke={colorMap[item.color] || '#334155'}
+                               strokeWidth="12"
+                               strokeDasharray={strokeDasharray}
+                               strokeDashoffset={100} // Start hidden
+                               animate={{ strokeDashoffset }}
+                               transition={{ duration: 1.5, delay: 0.5 + i * 0.1, ease: "circOut" }}
+                               strokeLinecap="round"
+                               pathLength="100"
+                             />
+                           );
+                         });
+                       })()}
+                    </svg>
+                    
+                    {/* CENTER LABEL */}
+                    <div className="absolute inset-0 flex flex-col items-center justify-center text-center pointer-events-none">
+                       <p className="text-[10px] font-black text-slate-400 uppercase tracking-widest mb-1">Total Fiscal</p>
+                       <div className="flex items-baseline gap-1">
+                          <span className="text-5xl font-black text-slate-900">540</span>
+                          <span className="text-xl font-bold text-slate-400">Md€</span>
+                       </div>
+                    </div>
+                 </div>
+                 
+                 {/* DECORATIVE ELEMENTS */}
+                 <div className="mt-8 flex items-center gap-6">
+                    <div className="flex items-center gap-2">
+                       <div className="w-2 h-2 rounded-full bg-blue-500" />
+                       <span className="text-[9px] font-black uppercase text-slate-400 tracking-tighter">Budget Général</span>
+                    </div>
+                    <div className="w-px h-3 bg-slate-200" />
+                    <div className="flex items-center gap-2">
+                       <div className="w-2 h-2 rounded-full bg-slate-300" />
+                       <span className="text-[9px] font-black uppercase text-slate-400 tracking-tighter">Fonds Spéciaux</span>
+                    </div>
                  </div>
               </div>
            </div>

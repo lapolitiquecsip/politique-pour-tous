@@ -75,14 +75,6 @@ export default function DetailedBudgetPage() {
     return (
       <main className="min-h-screen bg-slate-950 flex items-center justify-center p-4">
         <div className="max-w-xl w-full text-center space-y-8">
-          <div className="relative w-28 h-28 mx-auto mb-10">
-            <div className="absolute inset-0 bg-amber-400 rounded-[2.5rem] rotate-6 opacity-20 animate-pulse" />
-            <div className="absolute inset-0 bg-gradient-to-br from-amber-200 via-amber-400 to-amber-600 rounded-[2.5rem] shadow-[0_20px_50px_rgba(251,191,36,0.4)] flex items-center justify-center transform hover:rotate-0 transition-transform duration-700">
-              <div className="relative">
-                <Zap size={48} className="text-slate-950" fill="currentColor" />
-              </div>
-            </div>
-          </div>
           <motion.h1 
             initial={{ opacity: 0, y: 20 }}
             animate={{ 

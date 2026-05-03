@@ -50,11 +50,11 @@ const BUDGET_METRICS = [
 ];
 
 const RECETTES = [
-  { label: "TVA", amount: 112, desc: "Taxe sur la Valeur Ajoutée (Consommation)", color: "bg-blue-500" },
-  { label: "Impôt sur le revenu", amount: 95, desc: "Impôt direct sur les revenus des ménages", color: "bg-red-500" },
-  { label: "Impôt sur les sociétés", amount: 62, desc: "Impôt sur les bénéfices des entreprises", color: "bg-emerald-500" },
-  { label: "TICPE", amount: 28, desc: "Taxe sur les produits énergétiques (Carburants)", color: "bg-amber-500" },
-  { label: "Autres", amount: 203.9, desc: "Taxes diverses, amendes, dividendes de l'État", color: "bg-slate-300" },
+  { label: "TVA", amount: 188.4, desc: "Taxe sur la Valeur Ajoutée (Consommation)", color: "bg-blue-500" },
+  { label: "Impôt sur le revenu", amount: 130.2, desc: "Impôt direct sur les revenus des ménages", color: "bg-red-500" },
+  { label: "Impôt sur les sociétés", amount: 84.7, desc: "Impôt sur les bénéfices des entreprises", color: "bg-emerald-500" },
+  { label: "TICPE", amount: 30.5, desc: "Taxe sur les produits énergétiques (Carburants)", color: "bg-amber-500" },
+  { label: "Autres", amount: 22.2, desc: "Taxes diverses, amendes, dividendes de l'État", color: "bg-slate-300" },
 ];
 
 const MISSIONS_DETAILED = [
@@ -245,7 +245,7 @@ export default function DetailedBudgetPage() {
                        {/* Calculate segments manually for a clean donut */}
                        {(() => {
                           let currentOffset = 0;
-                          const total = 613.0;
+                          const total = 456.0;
                          return RECETTES.map((item, i) => {
                            const percentage = (item.amount / total) * 100;
                            const strokeDasharray = `${percentage} ${100 - percentage}`;
@@ -285,7 +285,7 @@ export default function DetailedBudgetPage() {
                     <div className="absolute inset-0 flex flex-col items-center justify-center text-center pointer-events-none">
                        <p className="text-[10px] font-black text-slate-400 uppercase tracking-widest mb-1">Total Fiscal</p>
                         <div className="flex items-baseline gap-1">
-                           <span className="text-5xl font-black text-slate-900">613.0</span>
+                           <span className="text-5xl font-black text-slate-900">456.0</span>
                            <span className="text-xl font-bold text-slate-400">Md€</span>
                         </div>
                     </div>

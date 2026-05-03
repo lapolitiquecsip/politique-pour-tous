@@ -1,12 +1,13 @@
 "use client";
 
 import { motion, AnimatePresence } from "framer-motion";
-import { X, CheckCircle2, UserCheck, Info, ExternalLink, ChevronLeft, ChevronRight, FileText, Zap, ArrowRight, Calendar } from "lucide-react";
-import { useEffect } from "react";
+import { X, CheckCircle2, UserCheck, Info, ExternalLink, ChevronLeft, ChevronRight, FileText, Zap, ArrowRight, Calendar, Bookmark, BookmarkCheck, Loader2 } from "lucide-react";
+import { useEffect, useState } from "react";
 import Link from "next/link";
 import HemicycleVisual from "./HemicycleVisual";
 import VoteHemicycle from "./VoteHemicycle";
 import { usePremium } from "@/lib/hooks/usePremium";
+import { api } from "@/lib/api";
 
 interface UniversalLawModalProps {
   law: any;
@@ -17,7 +18,22 @@ interface UniversalLawModalProps {
 }
 
 export default function UniversalLawModal({ law, isOpen, onClose, onNext, onPrevious }: UniversalLawModalProps) {
-  const { isPremium } = usePremium();
+  const { isPremium, userId } = usePremium();
+  const [isSaved, setIsSaved] = useState(false);
+  const [saving, setSaving] = useState(false);
+
+  useEffect(() => {
+    if (!isOpen || !law || !userId || !isPremium) return;
+    
+    const checkSaved = async () => {
+      const savedItems = await api.getUserSavedItems(userId);
+      const itemType = law.pour !== undefined ? 'scrutin' : 'law';
+      const found = savedItems.find((item: any) => item.item_id === law.id.toString() && item.item_type === itemType);
+      setIsSaved(!!found);
+    };
+    
+    checkSaved();
+  }, [isOpen, law, userId, isPremium]);
 
   useEffect(() => {
     if (!isOpen) return;
@@ -31,6 +47,26 @@ export default function UniversalLawModal({ law, isOpen, onClose, onNext, onPrev
     window.addEventListener("keydown", handleKeyDown);
     return () => window.removeEventListener("keydown", handleKeyDown);
   }, [isOpen, onNext, onPrevious, onClose]);
+
+  const handleToggleSave = async () => {
+    if (!userId || !law || !isPremium) return;
+    setSaving(true);
+    const itemType = law.pour !== undefined ? 'scrutin' : 'law';
+    
+    try {
+      if (isSaved) {
+        await api.unsaveItem(userId, law.id.toString(), itemType);
+        setIsSaved(false);
+      } else {
+        await api.saveItem(userId, law.id.toString(), itemType);
+        setIsSaved(true);
+      }
+    } catch (err) {
+      console.error("Erreur toggle save:", err);
+    } finally {
+      setSaving(false);
+    }
+  };
 
   if (!law) return null;
 
@@ -58,13 +94,38 @@ export default function UniversalLawModal({ law, isOpen, onClose, onNext, onPrev
             exit={{ opacity: 0, scale: 0.95, y: 20 }}
             className="relative w-full max-w-5xl bg-white rounded-[3rem] shadow-2xl overflow-hidden flex flex-col max-h-[90vh] z-[105]"
           >
-            {/* Close Button */}
-            <button 
-              onClick={onClose}
-              className="absolute top-6 right-6 p-2 rounded-full bg-slate-100 text-slate-500 hover:bg-slate-200 hover:text-slate-900 transition-all z-[110]"
-            >
-              <X size={20} />
-            </button>
+            {/* Top Buttons (Close & Save) */}
+            <div className="absolute top-6 right-6 flex items-center gap-3 z-[110]">
+              {isPremium && (
+                <button
+                  onClick={handleToggleSave}
+                  disabled={saving}
+                  className={`p-2.5 rounded-full transition-all flex items-center gap-2 group shadow-sm ${
+                    isSaved 
+                      ? "bg-amber-100 text-amber-600 hover:bg-amber-200" 
+                      : "bg-slate-100 text-slate-500 hover:bg-slate-200 hover:text-slate-900"
+                  }`}
+                  title={isSaved ? "Retirer des favoris" : "Enregistrer dans mes favoris"}
+                >
+                  {saving ? (
+                    <Loader2 size={18} className="animate-spin" />
+                  ) : isSaved ? (
+                    <BookmarkCheck size={18} className="fill-current" />
+                  ) : (
+                    <Bookmark size={18} />
+                  )}
+                  <span className="text-[10px] font-black uppercase tracking-widest hidden md:block">
+                    {isSaved ? "Enregistré" : "Enregistrer"}
+                  </span>
+                </button>
+              )}
+              <button 
+                onClick={onClose}
+                className="p-2.5 rounded-full bg-slate-100 text-slate-500 hover:bg-slate-200 hover:text-slate-900 transition-all shadow-sm"
+              >
+                <X size={20} />
+              </button>
+            </div>
 
             <div className="overflow-y-auto flex-1 custom-scrollbar">
               {isScrutin ? (

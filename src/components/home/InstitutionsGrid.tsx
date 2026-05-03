@@ -324,9 +324,11 @@ export default function InstitutionsGrid() {
                     <span className="text-red-500 font-bold text-[10px] uppercase tracking-widest">En Direct</span>
                   </div>
                   
-                  <p className="text-slate-600 text-sm md:text-base leading-relaxed font-medium italic text-pretty opacity-80">
-                    &ldquo;{dailySummary || selectedInst.summary}&rdquo;
-                  </p>
+                  {(dailySummary || selectedInst.summary) && (
+                    <p className="text-slate-600 text-sm md:text-base leading-relaxed font-medium italic text-pretty opacity-80">
+                      &ldquo;{dailySummary || selectedInst.summary}&rdquo;
+                    </p>
+                  )}
                 </div>
 
                 {/* Section "En Direct" - Style Dashboard Premium */}

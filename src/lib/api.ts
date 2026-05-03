@@ -59,6 +59,12 @@ export const api = {
     return data || [];
   },
 
+  getScrutin: async (id: string) => {
+    const { data, error } = await supabase.from('scrutins').select('*').eq('id', id).single();
+    if (error) { console.error(error); return null; }
+    return data;
+  },
+
   getCalendarEvents: async () => {
     // Dynamic range to ensure we get relevant events without hitting row limits
     const now = new Date();
@@ -279,5 +285,36 @@ export const api = {
     }
 
     return data || [];
+  },
+
+  getUserSavedItems: async (userId: string) => {
+    const { data, error } = await supabase
+      .from('user_saved_items')
+      .select('*')
+      .eq('user_id', userId)
+      .order('created_at', { ascending: false });
+    if (error) { console.error(error); return []; }
+    return data || [];
+  },
+
+  saveItem: async (userId: string, itemId: string, itemType: 'scrutin' | 'law') => {
+    const { data, error } = await supabase
+      .from('user_saved_items')
+      .upsert([{ user_id: userId, item_id: itemId, item_type: itemType }], { onConflict: 'user_id,item_id,item_type' })
+      .select()
+      .single();
+    if (error) { throw new Error(error.message); }
+    return data;
+  },
+
+  unsaveItem: async (userId: string, itemId: string, itemType: 'scrutin' | 'law') => {
+    const { error } = await supabase
+      .from('user_saved_items')
+      .delete()
+      .eq('user_id', userId)
+      .eq('item_id', itemId)
+      .eq('item_type', itemType);
+    if (error) { throw new Error(error.message); }
+    return true;
   }
 };

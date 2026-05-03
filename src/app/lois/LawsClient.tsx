@@ -77,12 +77,25 @@ function LawsClientContent() {
     const lawId = searchParams.get('id');
     if (lawId) {
       const loadSpecificLaw = async () => {
-        const law = await api.getLaw(lawId);
+        // Try to fetch as a proposal (law) first
+        let law = await api.getLaw(lawId);
+        
+        // If not found, try to fetch as a voted law (scrutin)
+        if (!law) {
+          law = await api.getScrutin(lawId);
+        }
+
         if (law) {
           setSelectedLaw(law);
           // If the law is a proposal, switch to that tab for context
-          if (law.id.toString().startsWith('PA') || (typeof law.id === 'string' && law.id.length > 10)) {
-             setActiveTab('proposals');
+          if (law.id.toString().startsWith('PA') || (typeof law.id === 'string' && law.id.length > 10) || law.title) {
+             // Proposals usually have 'title' instead of 'objet'
+             // And their IDs often start with PA (National Assembly)
+             if (law.objet) {
+               setActiveTab('history');
+             } else {
+               setActiveTab('proposals');
+             }
           } else {
              setActiveTab('history');
           }

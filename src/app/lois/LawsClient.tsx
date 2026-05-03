@@ -178,7 +178,7 @@ function LawsClientContent() {
               Consultez les textes déposés et en cours d&apos;examen au Parlement.
             </p>
           </div>
-          <LawsGrid />
+          <LawsGrid onSelectLaw={setSelectedLaw} />
         </div>
       )}
       {activeTab === 'dossiers' && (

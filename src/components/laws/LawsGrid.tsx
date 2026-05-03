@@ -10,12 +10,11 @@ import { useSearchParams } from "next/navigation";
 
 import { usePremium } from "@/lib/hooks/usePremium";
 
-export default function LawsGrid() {
+export default function LawsGrid({ onSelectLaw }: { onSelectLaw?: (law: any) => void }) {
   const [laws, setLaws] = useState<any[]>([]);
   const [deputies, setDeputies] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
   const [search, setSearch] = useState("");
-  const [selectedLaw, setSelectedLaw] = useState<any>(null);
   const { isPremium } = usePremium();
   const searchParams = useSearchParams();
   const lawId = searchParams.get("id");
@@ -153,7 +152,7 @@ export default function LawsGrid() {
                   <span>{law.context?.replace(/\[.*?\]\s*/, "") || "Dossier en cours"}</span>
                 </div>
                 <button 
-                  onClick={() => setSelectedLaw(law)}
+                  onClick={() => onSelectLaw ? onSelectLaw(law) : null}
                   className="flex items-center gap-2 text-xs font-black uppercase tracking-widest text-slate-900 hover:text-blue-600 transition-colors"
                 >
                   Détails du dossier <ChevronRight size={14} />

@@ -14,7 +14,8 @@ import {
   Search,
   ArrowRight,
   Newspaper,
-  CalendarDays
+  CalendarDays,
+  Zap
 } from "lucide-react";
 import Link from "next/link";
 import { useState, useEffect } from "react";
@@ -470,9 +471,12 @@ export default function ExecutifPage() {
                 </div>
               </div>
 
-              <button className="w-full mt-8 py-4 bg-slate-50 border border-slate-100 rounded-2xl text-[10px] font-black uppercase tracking-widest text-slate-400 hover:bg-slate-100 transition-all flex items-center justify-center gap-2">
-                Détails de la loi de finances <TrendingUp size={14} />
-              </button>
+              <Link 
+                href="/executif/budget"
+                className="w-full mt-8 py-4 bg-slate-900 text-white border border-slate-800 rounded-2xl text-[10px] font-black uppercase tracking-widest hover:bg-slate-800 transition-all flex items-center justify-center gap-2 group/btn shadow-xl shadow-slate-200/50"
+              >
+                Analyse Premium du Budget <Zap size={14} className="text-amber-400 group-hover:scale-125 transition-transform" fill="currentColor" />
+              </Link>
             </motion.div>
 
             {/* DECREES CARD - SIMPLE LIST */}

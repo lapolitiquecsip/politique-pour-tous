@@ -686,16 +686,8 @@ export default function DetailedBudgetPage() {
         </section>
 
         {/* DETAILED MISSIONS FOCUS */}
+        {/* DETAILED MISSIONS FOCUS */}
         <section className="space-y-10">
-            <div className="text-center max-w-2xl mx-auto space-y-4">
-               <h2 className="text-4xl font-staatliches uppercase tracking-wider text-slate-900">
-                  Zoom sur les <span className="text-red-600">Points de Vigilance</span>
-               </h2>
-               <p className="text-slate-500 font-medium italic">
-                 Analyse approfondie des piliers du Budget 2026. Cliquez sur "En savoir plus" pour les détails exclusifs.
-               </p>
-            </div>
-
             {/* BUDGET CONTEXT EXPLANATION - REDESIGNED */}
             <motion.div 
               initial={{ opacity: 0, y: 20 }}
@@ -717,10 +709,11 @@ export default function DetailedBudgetPage() {
                       <Info size={24} className="text-red-400" />
                     </div>
                   </div>
-                  <div className="space-y-6">
+                  <div className="space-y-8 flex-1">
                     <p className="text-xl text-slate-300 leading-relaxed font-light italic">
                       Pourquoi le budget augmente-t-il malgré les appels à la rigueur ? 
                     </p>
+                    
                     <div className="text-slate-400 leading-relaxed font-medium text-lg space-y-4">
                       <p>Cette apparente contradiction s'explique par trois facteurs majeurs :</p>
                       
@@ -756,6 +749,15 @@ export default function DetailedBudgetPage() {
                 </div>
               </div>
             </motion.div>
+
+            <div className="text-center max-w-2xl mx-auto space-y-4 pt-12">
+               <h2 className="text-4xl font-staatliches uppercase tracking-wider text-slate-900">
+                  Zoom sur les <span className="text-red-600">Points de Vigilance</span>
+               </h2>
+               <p className="text-slate-500 font-medium italic">
+                 Analyse approfondie des piliers du Budget 2026. Cliquez sur "En savoir plus" pour les détails exclusifs.
+               </p>
+            </div>
 
            <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
                {dynamicMissions.map((mission, i) => (

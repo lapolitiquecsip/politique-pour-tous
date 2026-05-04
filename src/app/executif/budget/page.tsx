@@ -749,8 +749,8 @@ export default function DetailedBudgetPage() {
                      {/* TOOLTIP */}
                      {hoveredYear !== null && (
                        <motion.div 
-                         initial={{ opacity: 0, scale: 0.9 }}
-                         animate={{ opacity: 1, scale: 1 }}
+                         initial={{ opacity: 0, y: 10 }}
+                         animate={{ opacity: 1, y: 0 }}
                          className="absolute top-0 right-0 bg-slate-900 text-white p-4 rounded-2xl shadow-2xl z-20 border border-white/10 pointer-events-none"
                        >
                           <p className="text-[10px] font-black text-amber-400 uppercase tracking-widest mb-1">
@@ -763,10 +763,10 @@ export default function DetailedBudgetPage() {
                        </motion.div>
                      )}
 
-                     <svg viewBox="0 0 500 100" className="w-full h-full preserve-3d" preserveAspectRatio="none">
+                     <svg viewBox="0 0 500 130" className="w-full h-full preserve-3d overflow-visible" preserveAspectRatio="none">
                         {/* Grid lines */}
-                        {[0, 25, 50, 75, 100].map((v) => (
-                           <line key={v} x1="0" y1={100-v} x2="500" y2={100-v} stroke="#f1f5f9" strokeWidth="0.5" />
+                        {[0, 30, 60, 90, 120].map((v) => (
+                           <line key={v} x1="0" y1={130-v} x2="500" y2={130-v} stroke="#f1f5f9" strokeWidth="0.5" />
                         ))}
                         
                         {/* Area Gradient */}
@@ -779,14 +779,14 @@ export default function DetailedBudgetPage() {
 
                         {/* The Path */}
                         <motion.path
-                           d={`M 0 100 ${DEBT_HISTORY.map((d, i) => `L ${(i / (DEBT_HISTORY.length - 1)) * 500} ${100 - d.value}`).join(' ')} L 500 100 Z`}
+                           d={`M 0 130 ${DEBT_HISTORY.map((d, i) => `L ${(i / (DEBT_HISTORY.length - 1)) * 500} ${130 - d.value}`).join(' ')} L 500 130 Z`}
                            fill="url(#debtGradient)"
                            initial={{ opacity: 0 }}
                            whileInView={{ opacity: 1 }}
                            transition={{ duration: 1 }}
                         />
                         <motion.path
-                           d={`M 0 ${100 - DEBT_HISTORY[0].value} ${DEBT_HISTORY.map((d, i) => `L ${(i / (DEBT_HISTORY.length - 1)) * 500} ${100 - d.value}`).join(' ')}`}
+                           d={`M 0 ${130 - DEBT_HISTORY[0].value} ${DEBT_HISTORY.map((d, i) => `L ${(i / (DEBT_HISTORY.length - 1)) * 500} ${130 - d.value}`).join(' ')}`}
                            fill="none"
                            stroke="#f59e0b"
                            strokeWidth="2"
@@ -800,10 +800,10 @@ export default function DetailedBudgetPage() {
                            const x = (DEBT_HISTORY.indexOf(d) / (DEBT_HISTORY.length - 1)) * 500;
                            return (
                              <g key={`highlight-${i}`}>
-                                <line x1={x} y1="0" x2={x} y2="100" stroke="#f59e0b" strokeWidth="0.5" strokeDasharray="2 2" opacity="0.5" />
+                                <line x1={x} y1="0" x2={x} y2="130" stroke="#f59e0b" strokeWidth="0.5" strokeDasharray="2 2" opacity="0.3" />
                                 <motion.circle
                                    cx={x}
-                                   cy={100 - d.value}
+                                   cy={130 - d.value}
                                    r="3"
                                    fill="#f59e0b"
                                    initial={{ scale: 0 }}
@@ -821,7 +821,7 @@ export default function DetailedBudgetPage() {
                               x={(i / (DEBT_HISTORY.length - 1)) * 500 - 10}
                               y="0"
                               width="20"
-                              height="100"
+                              height="130"
                               fill="transparent"
                               onMouseEnter={() => setHoveredYear(d.year)}
                               onMouseLeave={() => setHoveredYear(null)}
@@ -834,7 +834,7 @@ export default function DetailedBudgetPage() {
                            <motion.circle
                               key={i}
                               cx={(i / (DEBT_HISTORY.length - 1)) * 500}
-                              cy={100 - d.value}
+                              cy={130 - d.value}
                               r={hoveredYear === d.year ? "3" : "1.5"}
                               fill={hoveredYear === d.year ? "#f59e0b" : "white"}
                               stroke="#f59e0b"
@@ -846,7 +846,7 @@ export default function DetailedBudgetPage() {
                      
                      {/* Labels */}
                      <div className="flex justify-between mt-4">
-                        {DEBT_HISTORY.map((d, i) => (
+                        {DEBT_HISTORY.filter((_, i) => i % 2 === 0 || i === DEBT_HISTORY.length - 1).map((d, i) => (
                            <span key={i} className="text-[10px] font-bold text-slate-400">{d.year}</span>
                         ))}
                      </div>

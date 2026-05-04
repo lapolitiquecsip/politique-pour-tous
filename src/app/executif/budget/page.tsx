@@ -1013,6 +1013,7 @@ export default function DetailedBudgetPage() {
                            <span key={i} className="text-[10px] font-bold text-slate-400">{d.year}</span>
                         ))}
                      </div>
+                     <p className="text-[9px] font-black text-slate-400 uppercase tracking-widest pt-4 opacity-50">Source : INSEE / Agence France Trésor</p>
                   </div>
                </div>
 
@@ -1317,6 +1318,7 @@ export default function DetailedBudgetPage() {
                                       </div>
                                    ))}
                                 </div>
+                                <p className="text-[9px] font-black text-slate-300 uppercase tracking-widest pt-4 opacity-50">Source : data.economie.gouv.fr</p>
                              </div>
 
                              {/* Evolution Chart */}
@@ -1406,6 +1408,7 @@ export default function DetailedBudgetPage() {
                                       </svg>
                                    )}
                                 </div>
+                                <p className="text-[9px] font-black text-slate-500 uppercase tracking-widest pt-4 opacity-30 text-center">Source : Direction du Budget / PLF 2026</p>
                              </div>
                           </div>
 

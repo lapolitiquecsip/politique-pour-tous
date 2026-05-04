@@ -162,12 +162,14 @@ const GLOBAL_SPENDING_DATA = [
 ];
 
 const DEBT_HISTORY = [
-  { year: 1980, value: 21 },
-  { year: 1990, value: 36 },
-  { year: 2000, value: 59 },
-  { year: 2010, value: 85 },
-  { year: 2020, value: 115 },
-  { year: 2026, value: 114 },
+  { year: 1980, value: 21, event: "Début de l'endettement moderne" },
+  { year: 1981, value: 23, event: "Relance Mauroy / Nationalisations", highlight: true },
+  { year: 1990, value: 36, event: "Stabilisation relative" },
+  { year: 2000, value: 59, event: "Passage à l'Euro" },
+  { year: 2008, value: 68, event: "Crise des Subprimes", highlight: true },
+  { year: 2010, value: 85, event: "Crise de la zone Euro" },
+  { year: 2020, value: 115, event: "Pandémie COVID-19 (Quoi qu'il en coûte)", highlight: true },
+  { year: 2026, value: 114, event: "Objectif de réduction PLF 2026" },
 ];
 
 const LEGISLATIVE_STEPS = [
@@ -200,6 +202,7 @@ const LEGISLATIVE_STEPS = [
 export default function DetailedBudgetPage() {
   const { isPremium, loading } = usePremium();
   const [selectedMission, setSelectedMission] = useState<string | null>(null);
+  const [hoveredYear, setHoveredYear] = useState<number | null>(null);
 
   if (loading) return null;
 
@@ -543,41 +546,45 @@ export default function DetailedBudgetPage() {
                {BUDGET_GUIDE_STEPS.map((step, i) => (
                  <motion.div 
                    key={i}
-                   initial={{ opacity: 0, x: i % 2 === 0 ? -30 : 30 }}
+                   initial={{ opacity: 0, x: i % 2 === 0 ? -50 : 50 }}
                    whileInView={{ opacity: 1, x: 0 }}
-                   className="flex flex-col md:flex-row gap-8 items-center group"
+                   viewport={{ once: true, margin: "-100px" }}
+                   transition={{ duration: 0.8, delay: i * 0.1, ease: "easeOut" }}
+                   className="flex flex-col md:flex-row gap-8 items-center group relative"
                  >
-                    <div className={`w-20 h-20 rounded-3xl flex items-center justify-center shrink-0 shadow-lg transition-transform group-hover:scale-110 ${
+                    {/* Connection Line */}
+                    {i < BUDGET_GUIDE_STEPS.length - 1 && (
+                      <div className="absolute left-[40px] top-[80px] w-px h-[100px] bg-gradient-to-b from-blue-600 to-transparent hidden md:block opacity-20" />
+                    )}
+
+                    <div className={`w-20 h-20 rounded-[2rem] flex items-center justify-center shrink-0 shadow-2xl transition-all duration-500 group-hover:rotate-12 ${
                       i % 2 === 0 ? 'bg-slate-900 text-white' : 'bg-blue-600 text-white'
                     }`}>
                        <step.icon size={36} />
                     </div>
-                    <div className={`p-8 rounded-[2.5rem] bg-white border border-slate-100 shadow-xl shadow-slate-200/20 flex-1 relative overflow-hidden`}>
-                       <div className="absolute top-0 right-0 p-6 text-6xl font-black text-slate-50 opacity-[0.03] select-none">
-                          0{i + 1}
+                    
+                    <motion.div 
+                      whileHover={{ scale: 1.02 }}
+                      className={`p-10 rounded-[3rem] bg-white border border-slate-100 shadow-xl shadow-slate-200/20 flex-1 relative overflow-hidden`}
+                    >
+                       <div className="absolute top-0 right-0 p-8 text-8xl font-black text-slate-50 opacity-[0.05] select-none italic">
+                          {i + 1}
                        </div>
-                       <h4 className="text-[10px] font-black text-blue-600 uppercase tracking-[0.2em] mb-2">{step.title}</h4>
-                       <h3 className="text-2xl font-bold text-slate-900 mb-4">{step.subtitle}</h3>
-                       <p className="text-slate-600 leading-relaxed font-medium italic">
-                          {step.content}
-                       </p>
-                    </div>
+                       
+                       <div className="relative z-10 space-y-4">
+                          <div className="flex items-center gap-3">
+                             <div className="w-8 h-1 bg-blue-600 rounded-full" />
+                             <h4 className="text-[10px] font-black text-blue-600 uppercase tracking-[0.3em]">{step.title}</h4>
+                          </div>
+                          <h3 className="text-3xl font-bold text-slate-900 leading-tight">{step.subtitle}</h3>
+                          <p className="text-slate-600 leading-relaxed font-medium italic text-lg opacity-80">
+                             {step.content}
+                          </p>
+                       </div>
+                    </motion.div>
                  </motion.div>
                ))}
             </div>
-
-            <motion.div 
-              initial={{ opacity: 0 }}
-              whileInView={{ opacity: 1 }}
-              className="bg-slate-900 text-white p-12 rounded-[4rem] text-center max-w-4xl mx-auto mt-32 relative overflow-hidden"
-            >
-              <div className="absolute top-0 left-0 w-full h-full bg-gradient-to-br from-blue-600/20 to-transparent pointer-events-none" />
-              <Crown className="mx-auto text-amber-400 mb-6" size={48} />
-              <h3 className="text-3xl font-staatliches uppercase tracking-wider mb-4">Fin de l'analyse exclusive</h3>
-              <p className="text-slate-400 max-w-xl mx-auto font-medium">
-                Vous avez maintenant toutes les clés pour décrypter le Budget 2026. En tant que membre Premium, vous recevrez une alerte en temps réel lors du vote définitif au Parlement.
-              </p>
-            </motion.div>
          </section>
 
          {/* BEYOND THE STATE (HORS-BUDGET) */}
@@ -678,7 +685,24 @@ export default function DetailedBudgetPage() {
                      </div>
                   </div>
 
-                  <div className="h-64 w-full relative group">
+                  <div className="h-64 w-full relative group cursor-crosshair">
+                     {/* TOOLTIP */}
+                     {hoveredYear !== null && (
+                       <motion.div 
+                         initial={{ opacity: 0, scale: 0.9 }}
+                         animate={{ opacity: 1, scale: 1 }}
+                         className="absolute top-0 right-0 bg-slate-900 text-white p-4 rounded-2xl shadow-2xl z-20 border border-white/10 pointer-events-none"
+                       >
+                          <p className="text-[10px] font-black text-amber-400 uppercase tracking-widest mb-1">
+                             {DEBT_HISTORY.find(d => d.year === hoveredYear)?.year}
+                          </p>
+                          <p className="text-2xl font-black">{DEBT_HISTORY.find(d => d.year === hoveredYear)?.value}% <span className="text-xs text-white/50">PIB</span></p>
+                          <p className="text-[10px] text-slate-400 italic mt-2 max-w-[150px]">
+                             {DEBT_HISTORY.find(d => d.year === hoveredYear)?.event}
+                          </p>
+                       </motion.div>
+                     )}
+
                      <svg viewBox="0 0 500 100" className="w-full h-full preserve-3d" preserveAspectRatio="none">
                         {/* Grid lines */}
                         {[0, 25, 50, 75, 100].map((v) => (
@@ -711,19 +735,51 @@ export default function DetailedBudgetPage() {
                            transition={{ duration: 2, ease: "easeInOut" }}
                         />
 
+                        {/* Event Markers */}
+                        {DEBT_HISTORY.filter(d => d.highlight).map((d, i) => {
+                           const x = (DEBT_HISTORY.indexOf(d) / (DEBT_HISTORY.length - 1)) * 500;
+                           return (
+                             <g key={`highlight-${i}`}>
+                                <line x1={x} y1="0" x2={x} y2="100" stroke="#f59e0b" strokeWidth="0.5" strokeDasharray="2 2" opacity="0.5" />
+                                <motion.circle
+                                   cx={x}
+                                   cy={100 - d.value}
+                                   r="3"
+                                   fill="#f59e0b"
+                                   initial={{ scale: 0 }}
+                                   whileInView={{ scale: 1 }}
+                                   transition={{ delay: 2 }}
+                                />
+                             </g>
+                           )
+                        })}
+
+                        {/* Interactive Hit Areas */}
+                        {DEBT_HISTORY.map((d, i) => (
+                           <rect
+                              key={`hit-${i}`}
+                              x={(i / (DEBT_HISTORY.length - 1)) * 500 - 10}
+                              y="0"
+                              width="20"
+                              height="100"
+                              fill="transparent"
+                              onMouseEnter={() => setHoveredYear(d.year)}
+                              onMouseLeave={() => setHoveredYear(null)}
+                              className="cursor-pointer"
+                           />
+                        ))}
+
                         {/* Data Points */}
                         {DEBT_HISTORY.map((d, i) => (
                            <motion.circle
                               key={i}
                               cx={(i / (DEBT_HISTORY.length - 1)) * 500}
                               cy={100 - d.value}
-                              r="1.5"
-                              fill="white"
+                              r={hoveredYear === d.year ? "3" : "1.5"}
+                              fill={hoveredYear === d.year ? "#f59e0b" : "white"}
                               stroke="#f59e0b"
                               strokeWidth="0.5"
-                              initial={{ scale: 0 }}
-                              whileInView={{ scale: 1 }}
-                              transition={{ delay: 1 + i * 0.1 }}
+                              animate={{ scale: hoveredYear === d.year ? 1.5 : 1 }}
                            />
                         ))}
                      </svg>

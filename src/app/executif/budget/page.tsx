@@ -1,7 +1,7 @@
 "use client";
 
 import { useState, useEffect } from "react";
-import { motion, animate } from "framer-motion";
+import { motion, animate, AnimatePresence } from "framer-motion";
 import { 
   ArrowLeft, 
   CircleDollarSign, 
@@ -11,17 +11,21 @@ import {
   Info, 
   Zap, 
   ArrowRight,
+  ArrowUpRight,
+  ArrowDownRight,
   Landmark,
   ShieldCheck,
   Scale,
   Crown,
   Compass,
-  CheckCircle2
+  CheckCircle2,
+  X,
+  ChevronRight
 } from "lucide-react";
 import Link from "next/link";
 import { usePremium } from "@/lib/hooks/usePremium";
 import { BUDGETS } from "../page";
-import { ArrowUpRight, ArrowDownRight, Minus } from "lucide-react";
+import { Minus } from "lucide-react";
 
 const COMPARISON_DATA = [
   { label: "Remboursements et dégrèvements", val2025: 138.50, val2026: 145.60, trend: "up" },
@@ -61,40 +65,142 @@ const RECETTES = [
 
 const MISSIONS_DETAILED = [
   {
-    id: "remboursements",
+    id: "remboursements-et-degrevements",
     title: "Remboursements et dégrèvements",
     amount: "145.60 Md€",
     impact: "Mécanique",
     desc: "Ce poste correspond aux restitutions d'impôts et dégrèvements fiscaux. C'est techniquement le plus gros bloc budgétaire.",
-    details: "Sur ces 145,6 Md€, près de 100 Md€ sont consacrés à la gestion mécanique de la TVA (remboursements de crédits aux entreprises). Le reste finance des dispositifs comme le Crédit d'Impôt Recherche (CIR - env. 7 Md€), les dégrèvements de fiscalité locale compensés par l'État, et les remboursements de litiges. C'est un poste 'passif' : l'État rend ce qu'il a perçu en trop ou ce qu'il doit légalement.",
-    color: "bg-slate-400"
+    details: "Sur ces 145,6 Md€, près de 100 Md€ sont consacrés à la gestion mécanique de la TVA (remboursements de crédits aux entreprises). Le reste finance des dispositifs comme le Crédit d'Impôt Recherche (CIR - env. 7 Md€), les dégrèvements de fiscalité locale compensés par l'État, et les remboursements de litiges.",
+    color: "bg-slate-400",
+    breakdown: [
+      { label: "Remboursements TVA", value: 102.4 },
+      { label: "Crédit Impôt Recherche", value: 7.2 },
+      { label: "Dégrèvements Locaux", value: 18.5 },
+      { label: "Autres remboursements", value: 17.5 }
+    ],
+    evolution: [
+      { year: "2022", value: 128.4 },
+      { year: "2023", value: 132.1 },
+      { year: "2024", value: 135.8 },
+      { year: "2025", value: 138.5 },
+      { year: "2026", value: 145.6 }
+    ],
+    measures: [
+      "Gestion dynamique des crédits de TVA",
+      "Sanctuarisation du CIR pour l'innovation"
+    ],
+    split: { functioning: 98, investment: 2 }
   },
   {
-    id: "education",
+    id: "education-nationale",
     title: "Éducation Nationale",
     amount: "89.62 Md€",
     impact: "Prioritaire",
     desc: "Premier poste de dépense directe. Il couvre les salaires et le fonctionnement du système scolaire.",
-    details: "Le budget se répartit entre le 1er degré (env. 28 Md€) et le 2nd degré (env. 42 Md€). Plus de 90% des crédits sont absorbés par les rémunérations des 1,2 million d'agents. En 2026, l'accent est mis sur le 'Pacte enseignant', le financement des AESH (env. 4,5 Md€) pour le handicap, et la rénovation énergétique des bâtiments via le Fonds Vert.",
-    color: "bg-blue-600"
+    details: "Le budget se répartit entre le 1er degré et le 2nd degré. Plus de 90% des crédits sont absorbés par les rémunérations des 1,2 million d'agents. En 2026, l'accent est mis sur le recrutement et l'inclusion.",
+    color: "bg-blue-600",
+    breakdown: [
+      { label: "Enseignement 1er degré", value: 27.91 },
+      { label: "Enseignement 2nd degré", value: 40.01 },
+      { label: "Enseignement Privé", value: 8.87 },
+      { label: "Vie de l'élève", value: 8.08 },
+      { label: "Soutien & Pilotage", value: 3.05 }
+    ],
+    evolution: [
+      { year: "2022", value: 76.8 },
+      { year: "2023", value: 84.8 },
+      { year: "2024", value: 88.5 },
+      { year: "2025", value: 88.6 },
+      { year: "2026", value: 89.6 }
+    ],
+    measures: [
+      "Création de 5 440 postes d'enseignants",
+      "1 200 nouveaux postes AESH pour le handicap"
+    ],
+    split: { functioning: 95, investment: 5 }
   },
   {
-    id: "defense",
+    id: "defense-armees",
     title: "Défense (Armées)",
     amount: "66.48 Md€",
     impact: "Régalien",
     desc: "Budget en forte croissance pour répondre aux engagements de la Loi de Programmation Militaire (LPM).",
-    details: "En pleine LPM 2024-2030, 2026 finance l'équipement : 15 Md€ pour l'armement (Rafale F4, Frégates, Scorpion). La dissuasion nucléaire mobilise env. 6,5 Md€. Les crédits permettent aussi de reconstituer les stocks de munitions et de financer l'innovation (IA, spatial). Les dépenses de personnel restent stables à env. 14 Md€.",
-    color: "bg-red-600"
+    details: "En pleine LPM 2024-2030, 2026 finance l'équipement et la modernisation des forces dans un contexte de haute intensité.",
+    color: "bg-red-600",
+    breakdown: [
+      { label: "Équipement des forces", value: 33.20 },
+      { label: "Préparation & Emploi", value: 11.50 },
+      { label: "Soutien & RH", value: 7.90 },
+      { label: "Dissuasion nucléaire", value: 6.50 },
+      { label: "Innovation & Spatial", value: 7.38 }
+    ],
+    evolution: [
+      { year: "2022", value: 40.9 },
+      { year: "2023", value: 43.9 },
+      { year: "2024", value: 47.2 },
+      { year: "2025", value: 50.5 },
+      { year: "2026", value: 66.48 }
+    ],
+    measures: [
+      "Accélération du programme Scorpion",
+      "Livraison de nouveaux Rafale F4"
+    ],
+    split: { functioning: 40, investment: 60 }
   },
   {
-    id: "dette",
-    title: "Charge de la dette",
-    amount: "60.34 Md€",
-    impact: "Critique",
-    desc: "Intérêts payés sur la dette passée. Poste sous haute surveillance en raison de l'évolution des taux d'intérêt.",
-    details: "Ce poste est exclusivement dédié au paiement des intérêts des OAT (emprunts d'État). Il ne réduit pas le stock de dette (env. 3200 Md€). La hausse est due à la remontée des taux de la BCE : chaque milliard emprunté coûte désormais env. 3,5% contre 0% auparavant. L'État doit refinancer env. 280 Md€ de dette chaque année à ces nouveaux taux.",
-    color: "bg-orange-500"
+    id: "justice",
+    title: "Justice",
+    amount: "12.97 Md€",
+    impact: "Prioritaire",
+    desc: "Budget en hausse pour renforcer la chaîne pénale et améliorer les conditions de détention.",
+    details: "Focus sur le recrutement de magistrats et de greffiers, ainsi que sur la modernisation du parc pénitentiaire.",
+    color: "bg-emerald-600",
+    breakdown: [
+      { label: "Justice judiciaire", value: 4.76 },
+      { label: "Administration pénitentiaire", value: 5.55 },
+      { label: "Protection Jeunesse (PJJ)", value: 1.16 },
+      { label: "Aide juridictionnelle", value: 0.81 },
+      { label: "Pilotage & Support", value: 0.69 }
+    ],
+    evolution: [
+      { year: "2022", value: 10.7 },
+      { year: "2023", value: 11.5 },
+      { year: "2024", value: 12.2 },
+      { year: "2025", value: 12.7 },
+      { year: "2026", value: 12.97 }
+    ],
+    measures: [
+      "Création de 1 600 nouveaux emplois (ETP)",
+      "Restauration du droit de timbre pour l'aide juridique"
+    ],
+    split: { functioning: 75, investment: 25 }
+  },
+  {
+    id: "interieur-securites-&-admin",
+    title: "Intérieur (Sécurités)",
+    amount: "33.06 Md€",
+    impact: "Régalien",
+    desc: "Financement des forces de sécurité intérieure et de l'administration territoriale.",
+    details: "Mise en œuvre de la LOPMI pour moderniser les équipements et renforcer la présence sur le terrain.",
+    color: "bg-blue-800",
+    breakdown: [
+      { label: "Police nationale", value: 13.90 },
+      { label: "Gendarmerie nationale", value: 11.10 },
+      { label: "Sécurité civile", value: 1.05 },
+      { label: "Administration", value: 6.01 }
+    ],
+    evolution: [
+      { year: "2022", value: 20.8 },
+      { year: "2023", value: 21.9 },
+      { year: "2024", value: 23.2 },
+      { year: "2025", value: 24.4 },
+      { year: "2026", value: 25.0 }
+    ],
+    measures: [
+      "Transformation numérique des forces",
+      "Renouvellement des flottes de véhicules"
+    ],
+    split: { functioning: 85, investment: 15 }
   }
 ];
 
@@ -238,8 +344,10 @@ const LEGISLATIVE_STEPS = [
 
 export default function DetailedBudgetPage() {
   const { isPremium, loading } = usePremium();
-  const [selectedMission, setSelectedMission] = useState<string | null>(null);
+  const [selectedMissionId, setSelectedMissionId] = useState<string | null>(null);
   const [hoveredYear, setHoveredYear] = useState<number | null>(null);
+
+  const selectedMissionData = MISSIONS_DETAILED.find(m => m.id === selectedMissionId);
 
   // Counter component for animated numbers
   const Counter = ({ value, duration = 2 }: { value: number; duration?: number }) => {
@@ -545,37 +653,17 @@ export default function DetailedBudgetPage() {
                     {mission.desc}
                   </p>
 
-                  <motion.div
-                    initial={false}
-                    animate={{ 
-                      height: selectedMission === mission.id ? "auto" : 0,
-                      opacity: selectedMission === mission.id ? 1 : 0,
-                      marginTop: selectedMission === mission.id ? 24 : 0
-                    }}
-                    className="overflow-hidden"
-                  >
-                    <div className="p-6 bg-slate-50 rounded-2xl border border-slate-100">
-                       <p className="text-xs text-slate-600 font-bold uppercase tracking-widest mb-2 flex items-center gap-2">
-                          <Crown size={12} className="text-amber-500" /> Analyse Premium
-                       </p>
-                       <p className="text-sm text-slate-700 leading-relaxed font-medium">
-                          {mission.details}
-                       </p>
-                    </div>
-                  </motion.div>
 
                   <div className="mt-10 pt-8 border-t border-slate-50 flex items-center justify-between">
                      <button 
-                       onClick={() => setSelectedMission(selectedMission === mission.id ? null : mission.id)}
+                       onClick={() => setSelectedMissionId(mission.id)}
                        className="text-[10px] font-black text-slate-400 uppercase tracking-widest hover:text-blue-600 transition-colors"
                      >
-                        {selectedMission === mission.id ? "Réduire" : "En savoir plus"}
+                        Explorer en détail
                      </button>
                      <button 
-                       onClick={() => setSelectedMission(selectedMission === mission.id ? null : mission.id)}
-                       className={`w-10 h-10 rounded-full flex items-center justify-center transition-all ${
-                         selectedMission === mission.id ? 'bg-blue-600 text-white rotate-90' : 'bg-slate-50 group-hover:bg-slate-900 group-hover:text-white'
-                       }`}
+                       onClick={() => setSelectedMissionId(mission.id)}
+                       className="w-10 h-10 rounded-full flex items-center justify-center transition-all bg-slate-50 group-hover:bg-slate-900 group-hover:text-white shadow-sm"
                      >
                         <ArrowRight size={18} />
                      </button>
@@ -1036,10 +1124,16 @@ export default function DetailedBudgetPage() {
                                 initial={{ opacity: 0, y: 10 }}
                                 whileInView={{ opacity: 1, y: 0 }}
                                 transition={{ delay: i * 0.05 }}
-                                className="hover:bg-white/[0.02] transition-colors"
+                                className="hover:bg-white/[0.04] transition-colors cursor-pointer group"
+                               onClick={() => {
+                                 const missionId = row.label.toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g, "").replace(/\s+/g, '-');
+                                 if (MISSIONS_DETAILED.some(m => m.id === missionId)) {
+                                   setSelectedMissionId(missionId);
+                                 }
+                               }}
                               >
                                  <td className="px-8 py-5">
-                                    <span className="text-sm font-bold text-white">{row.label}</span>
+                                    <span className="text-sm font-bold text-white group-hover:text-blue-400 transition-colors">{row.label}</span>
                                  </td>
                                  <td className="px-8 py-5 text-slate-400 font-mono text-sm">{row.val2025} Md€</td>
                                  <td className="px-8 py-5 text-white font-mono font-bold text-sm">{row.val2026} Md€</td>
@@ -1070,6 +1164,160 @@ export default function DetailedBudgetPage() {
               </div>
            </div>
         </section>
+
+        {/* MISSION DRILL-DOWN SIDE PANEL */}
+        <AnimatePresence>
+           {selectedMissionId && selectedMissionData && (
+              <>
+                 {/* Backdrop */}
+                 <motion.div 
+                   initial={{ opacity: 0 }}
+                   animate={{ opacity: 1 }}
+                   exit={{ opacity: 0 }}
+                   onClick={() => setSelectedMissionId(null)}
+                   className="fixed inset-0 bg-slate-950/60 backdrop-blur-sm z-[100]"
+                 />
+                 
+                 {/* Panel */}
+                 <motion.div 
+                   initial={{ x: "100%" }}
+                   animate={{ x: 0 }}
+                   exit={{ x: "100%" }}
+                   transition={{ type: "spring", damping: 25, stiffness: 200 }}
+                   className="fixed right-0 top-0 bottom-0 w-full max-w-2xl bg-white shadow-2xl z-[110] overflow-y-auto"
+                 >
+                    <div className="p-8 md:p-12 space-y-12 flex flex-col min-h-full">
+                       {/* Header */}
+                       <div className="flex items-start justify-between">
+                          <div className="space-y-2">
+                             <div className={`inline-flex items-center gap-2 px-3 py-1 rounded-full text-[10px] font-black text-white uppercase tracking-widest ${selectedMissionData.color}`}>
+                                {selectedMissionData.impact}
+                             </div>
+                             <h2 className="text-4xl md:text-5xl font-staatliches text-slate-900 uppercase">
+                                {selectedMissionData.title}
+                             </h2>
+                             <p className="text-2xl font-mono font-bold text-slate-400">{selectedMissionData.amount}</p>
+                          </div>
+                          <button 
+                            onClick={() => setSelectedMissionId(null)}
+                            className="w-12 h-12 rounded-full bg-slate-50 flex items-center justify-center hover:bg-slate-100 transition-colors"
+                          >
+                             <X size={24} className="text-slate-900" />
+                          </button>
+                       </div>
+
+                       {/* Description */}
+                       <div className="space-y-4">
+                          <h3 className="text-xs font-black text-slate-400 uppercase tracking-widest">Contexte Budgétaire</h3>
+                          <p className="text-slate-600 leading-relaxed font-medium italic">
+                             {selectedMissionData.details}
+                          </p>
+                       </div>
+
+                       <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
+                          {/* Breakdown Chart */}
+                          <div className="bg-slate-50 rounded-[2rem] p-8 space-y-6">
+                             <h3 className="text-xs font-black text-slate-400 uppercase tracking-widest">Répartition Interne</h3>
+                             <div className="space-y-4">
+                                {selectedMissionData.breakdown?.map((item: any, i: number) => (
+                                   <div key={i} className="space-y-2">
+                                      <div className="flex justify-between text-xs font-bold text-slate-700">
+                                         <span>{item.label}</span>
+                                         <span>{item.value} Md€</span>
+                                      </div>
+                                      <div className="w-full h-1.5 bg-slate-200 rounded-full overflow-hidden">
+                                         <motion.div 
+                                           initial={{ width: 0 }}
+                                           animate={{ width: `${(item.value / parseFloat(selectedMissionData.amount)) * 100}%` }}
+                                           className={`h-full ${selectedMissionData.color}`}
+                                         />
+                                      </div>
+                                   </div>
+                                ))}
+                             </div>
+                          </div>
+
+                          {/* Evolution Chart */}
+                          <div className="bg-slate-900 rounded-[2rem] p-8 space-y-6 text-white">
+                             <h3 className="text-xs font-black text-slate-500 uppercase tracking-widest">Évolution 5 ans (Md€)</h3>
+                             <div className="h-32 flex items-end justify-between gap-2">
+                                {selectedMissionData.evolution?.map((d: any, i: number) => (
+                                   <div key={i} className="flex-1 flex flex-col items-center gap-2">
+                                      <motion.div 
+                                        initial={{ height: 0 }}
+                                        animate={{ height: `${(d.value / 150) * 100}%` }}
+                                        className="w-full bg-white/20 rounded-t-lg hover:bg-white/40 transition-colors cursor-pointer relative group"
+                                      >
+                                         <div className="absolute -top-6 left-1/2 -translate-x-1/2 text-[8px] font-bold opacity-0 group-hover:opacity-100 transition-opacity">
+                                            {d.value}
+                                         </div>
+                                      </motion.div>
+                                      <span className="text-[8px] font-bold text-slate-500">{d.year}</span>
+                                   </div>
+                                ))}
+                             </div>
+                          </div>
+                       </div>
+
+                       <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
+                          {/* Measures */}
+                          <div className="space-y-6">
+                             <h3 className="text-xs font-black text-slate-400 uppercase tracking-widest">Mesures Phares 2026</h3>
+                             <div className="space-y-4">
+                                {selectedMissionData.measures?.map((m: string, i: number) => (
+                                   <div key={i} className="flex items-start gap-4 p-4 bg-emerald-50 rounded-2xl border border-emerald-100">
+                                      <div className="w-6 h-6 rounded-full bg-emerald-500 text-white flex items-center justify-center shrink-0">
+                                         <CheckCircle2 size={14} />
+                                      </div>
+                                      <p className="text-xs font-bold text-emerald-900">{m}</p>
+                                   </div>
+                                ))}
+                             </div>
+                          </div>
+
+                          {/* Functioning vs Investment */}
+                          <div className="space-y-6">
+                             <h3 className="text-xs font-black text-slate-400 uppercase tracking-widest">Nature de la dépense</h3>
+                             <div className="p-8 border border-slate-100 rounded-[2rem] space-y-6">
+                                <div className="flex justify-between items-end">
+                                   <div className="space-y-1">
+                                      <p className="text-[10px] font-black text-slate-400 uppercase">Fonctionnement</p>
+                                      <p className="text-2xl font-staatliches text-slate-900">{selectedMissionData.split?.functioning}%</p>
+                                   </div>
+                                   <div className="space-y-1 text-right">
+                                      <p className="text-[10px] font-black text-slate-400 uppercase">Investissement</p>
+                                      <p className="text-2xl font-staatliches text-blue-600">{selectedMissionData.split?.investment}%</p>
+                                   </div>
+                                </div>
+                                <div className="w-full h-4 bg-slate-100 rounded-full overflow-hidden flex">
+                                   <motion.div 
+                                     initial={{ width: 0 }}
+                                     animate={{ width: `${selectedMissionData.split?.functioning}%` }}
+                                     className="h-full bg-slate-400"
+                                   />
+                                   <motion.div 
+                                     initial={{ width: 0 }}
+                                     animate={{ width: `${selectedMissionData.split?.investment}%` }}
+                                     className="h-full bg-blue-600"
+                                   />
+                                </div>
+                                <p className="text-[10px] text-slate-400 font-medium italic text-center">
+                                   La dépense de fonctionnement inclut majoritairement les salaires des agents publics.
+                                </p>
+                             </div>
+                          </div>
+                       </div>
+                       
+                       <div className="pt-8 mt-auto">
+                          <button className="w-full py-5 bg-slate-900 text-white rounded-2xl font-black text-xs uppercase tracking-widest hover:bg-slate-800 transition-all">
+                             Accéder au Rapport Complet PAP 2026
+                          </button>
+                       </div>
+                    </div>
+                 </motion.div>
+              </>
+           )}
+        </AnimatePresence>
 
       </div>
     </main>

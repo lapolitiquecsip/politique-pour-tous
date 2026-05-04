@@ -619,7 +619,9 @@ export default function DetailedBudgetPage() {
           // Merge with MISSIONS_DETAILED
           const mergedMissions = MISSIONS_DETAILED.map(m => {
              const apiMission = apiData.find(am => am.id === m.id);
-             if (apiMission) {
+             
+             // Check if API mission exists and has real non-zero values, else fallback to hardcoded
+             if (apiMission && apiMission.val2026 > 0) {
                 return {
                    ...m,
                    amount: `${apiMission.val2026.toFixed(2)} Md€`,
@@ -629,8 +631,10 @@ export default function DetailedBudgetPage() {
                       { year: "2026", value: apiMission.val2026.toFixed(2) }
                    ]
                 };
+             } else {
+                console.warn(`⚠️ Aucune donnée API valide pour: ${m.id}`);
+                return m;
              }
-             return m;
           });
           
           // Merge with COMPARISON_DATA

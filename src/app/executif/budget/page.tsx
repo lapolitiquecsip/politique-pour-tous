@@ -1169,6 +1169,21 @@ export default function DetailedBudgetPage() {
         <AnimatePresence>
            {selectedMissionId && selectedMissionData && (
               <>
+                 <style jsx global>{`
+                    .mission-panel::-webkit-scrollbar {
+                      width: 6px;
+                    }
+                    .mission-panel::-webkit-scrollbar-track {
+                      background: transparent;
+                    }
+                    .mission-panel::-webkit-scrollbar-thumb {
+                      background: #e2e8f0;
+                      border-radius: 10px;
+                    }
+                    .mission-panel::-webkit-scrollbar-thumb:hover {
+                      background: #cbd5e1;
+                    }
+                  `}</style>
                  {/* Backdrop */}
                  <motion.div 
                    initial={{ opacity: 0 }}
@@ -1184,19 +1199,19 @@ export default function DetailedBudgetPage() {
                    animate={{ x: 0 }}
                    exit={{ x: "100%" }}
                    transition={{ type: "spring", damping: 25, stiffness: 200 }}
-                   className="fixed right-0 top-0 bottom-0 w-full max-w-2xl bg-white shadow-2xl z-[110] overflow-y-auto"
+                   className="fixed right-0 top-0 bottom-0 w-full max-w-2xl bg-white shadow-2xl z-[110] overflow-y-auto mission-panel"
                  >
-                    <div className="p-8 md:p-12 space-y-12 flex flex-col min-h-full">
+                    <div className="p-8 md:p-12 pt-16 md:pt-20 space-y-12 flex flex-col min-h-full">
                        {/* Header */}
                        <div className="flex items-start justify-between">
                           <div className="space-y-2">
                              <div className={`inline-flex items-center gap-2 px-3 py-1 rounded-full text-[10px] font-black text-white uppercase tracking-widest ${selectedMissionData.color}`}>
                                 {selectedMissionData.impact}
                              </div>
-                             <h2 className="text-4xl md:text-5xl font-staatliches text-slate-900 uppercase">
+                             <h2 className="text-3xl md:text-4xl font-staatliches text-slate-900 uppercase leading-tight">
                                 {selectedMissionData.title}
                              </h2>
-                             <p className="text-2xl font-mono font-bold text-slate-400">{selectedMissionData.amount}</p>
+                             <p className="text-xl md:text-2xl font-mono font-bold text-slate-400">{selectedMissionData.amount}</p>
                           </div>
                           <button 
                             onClick={() => setSelectedMissionId(null)}

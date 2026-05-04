@@ -21,7 +21,10 @@ import {
   CheckCircle2,
   X,
   ChevronRight,
-  ChevronLeft
+  ChevronLeft,
+  Coins,
+  Activity,
+  Shield
 } from "lucide-react";
 import Link from "next/link";
 import { usePremium } from "@/lib/hooks/usePremium";
@@ -719,7 +722,21 @@ export default function DetailedBudgetPage() {
                       Pourquoi le budget augmente-t-il malgré les appels à la rigueur ? 
                     </p>
                     <p className="text-slate-400 leading-relaxed font-medium text-lg">
-                      Cette apparente contradiction s'explique par trois facteurs majeurs : l'inflation qui renchérit mécaniquement le coût des services publics, la hausse inévitable de la charge de la dette liée aux taux d'intérêt, et des engagements de long terme (comme la Loi de Programmation Militaire) qui sanctuarisent certaines dépenses régaliennes. Ainsi, même si l'État cherche à réduire son train de vie dans certains domaines, les postes "mécaniques" et de sécurité poussent mathématiquement le total vers le haut.
+                      Cette apparente contradiction s'explique par trois facteurs majeurs : 
+                      <span className="inline-flex items-center gap-1.5 text-emerald-400 font-black mx-1">
+                        <TrendingUp size={16} /> l'inflation
+                      </span> 
+                      qui renchérit mécaniquement le coût des 
+                      <span className="text-blue-400 font-black mx-1">services publics</span>, 
+                      la <span className="text-rose-400 font-black underline decoration-rose-500/40 underline-offset-8 mx-1">hausse inévitable</span> de la charge de la 
+                      <span className="inline-flex items-center gap-1.5 text-amber-400 font-black mx-1">
+                        <Coins size={16} /> dette
+                      </span> 
+                      liée aux taux d'intérêt, et des engagements de long terme (comme la 
+                      <span className="inline-flex items-center gap-1.5 text-indigo-400 font-black mx-1">
+                        <Shield size={16} /> Loi de Programmation Militaire
+                      </span>) 
+                      qui <span className="italic border-b border-slate-600 pb-0.5">sanctuarisent</span> certaines dépenses régaliennes. Ainsi, même si l'État cherche à réduire son train de vie dans certains domaines, les postes "mécaniques" et de sécurité poussent mathématiquement le total vers le haut.
                     </p>
                   </div>
                 </div>

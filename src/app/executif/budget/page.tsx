@@ -398,13 +398,13 @@ const MISSIONS_DETAILED = [
     title: "Aide au Développement",
     amount: "5.40 Md€",
     impact: "Action Extérieure",
-    desc: "Solidarité internationale et coopération avec les pays en développement.",
-    details: "Focus sur l'Afrique subsaharienne et les enjeux globaux (climat, santé, éducation).",
+    desc: "Solidarité internationale et coopération stratégique avec les pays en développement.",
+    details: "L'Aide Publique au Développement (APD) est le bras armé de l'influence française. Elle combine des dons (via le budget de l'État) et des prêts à taux préférentiels (via l'Agence Française de Développement - AFD). En 2026, l'effort se concentre sur la résilience climatique, l'éducation des filles et la santé mondiale, avec une priorité absolue accordée à 19 pays moins avancés (PMA) d'Afrique subsaharienne.",
     color: "bg-orange-500",
     breakdown: [
-      { label: "Dons bilatéraux", value: 2.80 },
-      { label: "Contributions multilatérales", value: 1.95 },
-      { label: "Traitement de la dette", value: 0.65 }
+      { label: "Dons bilatéraux (AFD)", value: 2.80 },
+      { label: "Fonds multilatéraux (ONU, UE)", value: 1.95 },
+      { label: "Traitement de la dette (Annulations)", value: 0.65 }
     ],
     evolution: [
       { year: "2022", value: 6.2 },
@@ -414,8 +414,20 @@ const MISSIONS_DETAILED = [
       { year: "2026", value: 5.40 }
     ],
     measures: [
-      { title: "Climat & Biodiversité", desc: "Augmentation de la part de l'aide dédiée aux projets d'adaptation climatique." },
-      { title: "Ciblage géographique", desc: "Priorité accordée aux 19 pays les moins avancés pour un impact maximal." }
+      { title: "Plan Climat & Biodiversité", desc: "Consécration de 30% des nouveaux engagements AFD aux projets d'adaptation au changement climatique." },
+      { title: "Focus Afrique Subsaharienne", desc: "Ciblage de 50% de l'effort financier total vers le continent africain pour stabiliser les zones de crise." }
+    ],
+    recipients: [
+      { id: "CI", name: "Côte d'Ivoire", amount: "340 M€", lat: 30, lon: 45 },
+      { id: "SN", name: "Sénégal", amount: "280 M€", lat: 25, lon: 42 },
+      { id: "MA", name: "Maroc", amount: "210 M€", lat: 35, lon: 25 },
+      { id: "VN", name: "Vietnam", amount: "160 M€", lat: 85, lon: 48 },
+      { id: "EG", name: "Égypte", amount: "140 M€", lat: 55, lon: 32 },
+      { id: "BJ", name: "Bénin", amount: "110 M€", lat: 48, lon: 46 },
+      { id: "CM", name: "Cameroun", amount: "95 M€", lat: 52, lon: 52 },
+      { id: "MG", name: "Madagascar", amount: "85 M€", lat: 62, lon: 78 },
+      { id: "ET", name: "Éthiopie", amount: "75 M€", lat: 58, lon: 48 },
+      { id: "KH", name: "Cambodge", amount: "65 M€", lat: 82, lon: 50 }
     ],
     split: { functioning: 98, investment: 2 }
   },
@@ -690,6 +702,8 @@ export default function DetailedBudgetPage() {
       window.removeEventListener('keydown', handleKeyDown);
     };
   }, [selectedMissionId, dynamicMissions]);
+
+  const [hoveredRecipient, setHoveredRecipient] = useState<any>(null);
 
   // Counter component for animated numbers
   const Counter = ({ value, duration = 2 }: { value: number; duration?: number }) => {
@@ -1615,6 +1629,85 @@ export default function DetailedBudgetPage() {
                                 {selectedMissionData.details}
                              </p>
                           </div>
+
+
+                           {/* INTERACTIVE MAP FOR APD */}
+                           {selectedMissionData.id === 'aide-publique-au-developpement' && (
+                             <div className="space-y-6">
+                                <div className="flex items-center justify-between">
+                                   <h3 className="text-xs font-black text-slate-400 uppercase tracking-widest">Cartographie des Destinataires 2026</h3>
+                                   <div className="flex items-center gap-2">
+                                      <div className="w-2 h-2 rounded-full bg-orange-500 animate-pulse" />
+                                      <span className="text-[10px] font-black text-orange-600 uppercase tracking-widest">Pays Prioritaires</span>
+                                   </div>
+                                </div>
+                                <div className="relative h-[300px] bg-slate-950 rounded-[3rem] border border-white/5 overflow-hidden shadow-2xl">
+                                   {/* Simplified World Background */}
+                                   <svg viewBox="0 0 1000 500" className="absolute inset-0 w-full h-full opacity-[0.03] scale-110">
+                                      <path fill="white" d="M150,100 L300,80 L350,150 L280,300 L180,280 Z" />
+                                      <path fill="white" d="M280,300 L350,320 L320,450 L250,420 Z" />
+                                      <path fill="white" d="M480,80 L550,70 L580,150 L500,160 Z" />
+                                      <path fill="white" d="M480,160 L580,150 L650,300 L580,450 L480,400 L440,250 Z" />
+                                      <path fill="white" d="M580,150 L850,80 L950,300 L780,400 L650,300 Z" />
+                                      <path fill="white" d="M850,400 L950,380 L970,480 L870,490 Z" />
+                                   </svg>
+
+                                   <div className="absolute inset-0 bg-[radial-gradient(#ffffff05_1px,transparent_1px)] [background-size:20px_20px]" />
+
+                                   <div className="absolute inset-0">
+                                      {selectedMissionData.recipients?.map((r: any, i: number) => (
+                                        <motion.div
+                                          key={i}
+                                          initial={{ scale: 0, opacity: 0 }}
+                                          animate={{ scale: 1, opacity: 1 }}
+                                          transition={{ delay: 0.5 + i * 0.05 }}
+                                          style={{ left: `${r.lat}%`, top: `${r.lon}%` }}
+                                          className="absolute -translate-x-1/2 -translate-y-1/2 group cursor-pointer"
+                                          onMouseEnter={() => setHoveredRecipient(r)}
+                                          onMouseLeave={() => setHoveredRecipient(null)}
+                                        >
+                                           <div className="relative">
+                                              <div className="w-4 h-4 bg-orange-500 rounded-full shadow-lg shadow-orange-900/50 group-hover:scale-150 transition-transform duration-300 ring-4 ring-white/10" />
+                                              <div className="absolute inset-0 bg-orange-500 rounded-full animate-ping opacity-20" />
+                                           </div>
+                                        </motion.div>
+                                      ))}
+                                   </div>
+
+                                   <AnimatePresence>
+                                      {hoveredRecipient && (
+                                        <motion.div
+                                          initial={{ opacity: 0, y: 10, scale: 0.95 }}
+                                          animate={{ opacity: 1, y: 0, scale: 1 }}
+                                          exit={{ opacity: 0, y: 10, scale: 0.95 }}
+                                          className="absolute bottom-8 left-8 right-8 bg-white/95 backdrop-blur-md p-6 rounded-[2rem] shadow-2xl border border-white/20 flex justify-between items-center z-50 pointer-events-none"
+                                        >
+                                           <div className="flex items-center gap-4">
+                                              <div className="w-12 h-12 rounded-2xl bg-orange-500 flex items-center justify-center text-white font-black text-lg shadow-lg">
+                                                 {hoveredRecipient.id}
+                                              </div>
+                                              <div>
+                                                 <p className="text-lg font-black text-slate-900 leading-tight">{hoveredRecipient.name}</p>
+                                                 <p className="text-[10px] text-slate-400 font-bold uppercase tracking-[0.2em] mt-1">Destinataire Stratégique</p>
+                                              </div>
+                                           </div>
+                                           <div className="text-right">
+                                              <div className="flex items-baseline gap-1 justify-end">
+                                                 <span className="text-3xl font-black text-slate-900">{hoveredRecipient.amount.split(' ')[0]}</span>
+                                                 <span className="text-sm font-bold text-slate-400">{hoveredRecipient.amount.split(' ')[1]}</span>
+                                              </div>
+                                              <p className="text-[10px] text-slate-400 font-bold uppercase tracking-widest">Dotation APD 2026</p>
+                                           </div>
+                                        </motion.div>
+                                      )}
+                                   </AnimatePresence>
+
+                                   <div className="absolute top-8 left-8">
+                                      <p className="text-[9px] font-black text-white/40 uppercase tracking-[0.3em]">Projection Géographique APD</p>
+                                   </div>
+                                </div>
+                             </div>
+                           )}
 
                           <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
                              {/* Breakdown Chart */}

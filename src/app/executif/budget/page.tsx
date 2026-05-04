@@ -346,8 +346,67 @@ export default function DetailedBudgetPage() {
   const { isPremium, loading } = usePremium();
   const [selectedMissionId, setSelectedMissionId] = useState<string | null>(null);
   const [hoveredYear, setHoveredYear] = useState<number | null>(null);
+  const [dynamicMissions, setDynamicMissions] = useState(MISSIONS_DETAILED);
+  const [dynamicComparison, setDynamicComparison] = useState(COMPARISON_DATA);
 
-  const selectedMissionData = MISSIONS_DETAILED.find(m => m.id === selectedMissionId);
+  // Dynamic Data Sync
+  useEffect(() => {
+    const fetchBudgetData = async () => {
+      try {
+        const response = await fetch('/api/budget/data');
+        const result = await response.json();
+        
+        if (result.success && result.data) {
+          const apiData = result.data as any[];
+          
+          // Merge with MISSIONS_DETAILED
+          const mergedMissions = MISSIONS_DETAILED.map(m => {
+             const apiMission = apiData.find(am => 
+                am.mission.toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g, "").replace(/\s+/g, '-') === m.id
+             );
+             if (apiMission) {
+                return {
+                   ...m,
+                   amount: `${apiMission.val2026} Md€`,
+                   measures: apiMission.programs ? apiMission.programs.map((p: any) => ({
+                      title: p.name,
+                      impact: "Prioritaire",
+                      desc: `Dotation PLF 2026 : ${p.amount}`
+                   })) : m.measures
+                };
+             }
+             return m;
+          });
+          
+          // Merge with COMPARISON_DATA
+          const mergedComparison = COMPARISON_DATA.map(c => {
+             const slug = c.label.toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g, "").replace(/\s+/g, '-');
+             const apiMission = apiData.find(am => 
+                am.mission.toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g, "").replace(/\s+/g, '-') === slug
+             );
+             if (apiMission) {
+                return {
+                   ...c,
+                   val2025: apiMission.val2025,
+                   val2026: apiMission.val2026,
+                   trend: apiMission.trend
+                };
+             }
+             return c;
+          });
+
+          setDynamicMissions(mergedMissions);
+          setDynamicComparison(mergedComparison);
+        }
+      } catch (err) {
+        console.error("Failed to fetch dynamic budget data, using static fallback", err);
+      }
+    };
+
+    fetchBudgetData();
+  }, []);
+
+  const selectedMissionData = dynamicMissions.find(m => m.id === selectedMissionId);
 
   useEffect(() => {
     if (selectedMissionId) {
@@ -638,7 +697,7 @@ export default function DetailedBudgetPage() {
             </motion.div>
 
            <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
-              {MISSIONS_DETAILED.map((mission, i) => (
+               {dynamicMissions.map((mission, i) => (
                 <motion.div
                   key={i}
                   whileHover={{ y: -5 }}
@@ -1127,7 +1186,7 @@ export default function DetailedBudgetPage() {
                           </tr>
                        </thead>
                        <tbody className="divide-y divide-white/5">
-                          {COMPARISON_DATA.map((row, i) => {
+                           {dynamicComparison.map((row, i) => {
                             const diff = ((row.val2026 - row.val2025) / row.val2025) * 100;
                             return (
                               <motion.tr 
@@ -1138,7 +1197,7 @@ export default function DetailedBudgetPage() {
                                 className="hover:bg-white/[0.04] transition-colors cursor-pointer group"
                                onClick={() => {
                                  const missionId = row.label.toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g, "").replace(/\s+/g, '-');
-                                 if (MISSIONS_DETAILED.some(m => m.id === missionId)) {
+                                  if (dynamicMissions.some(m => m.id === missionId)) {
                                    setSelectedMissionId(missionId);
                                  }
                                }}

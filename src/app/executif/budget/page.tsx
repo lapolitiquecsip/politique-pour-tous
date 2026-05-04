@@ -131,6 +131,36 @@ const BUDGET_GUIDE_STEPS = [
   }
 ];
 
+const GLOBAL_SPENDING_DATA = [
+  {
+    title: "Sécurité Sociale (ASSO)",
+    amount: "680 Md€",
+    source: "Cotisations & CSG",
+    desc: "C'est le plus gros budget de France, bien devant l'État. Il gère votre santé, vos allocations familiales et l'assurance chômage.",
+    details: "Contrairement au budget de l'État voté par le Parlement (PLF), la Sécu a son propre budget (LFSS). Son financement repose sur le travail (cotisations patronales et salariales) et la solidarité (CSG). En 2026, la priorité est le financement de la 'Cinquième branche' dédiée à la dépendance et au grand âge.",
+    icon: Scale,
+    color: "bg-blue-500"
+  },
+  {
+    title: "Retraites",
+    amount: "360 Md€",
+    source: "Système par répartition",
+    desc: "Inclus en partie dans la Sécu et l'État, c'est le pilier du modèle social français.",
+    details: "Le système français repose sur la solidarité entre générations. Les actifs paient pour les retraités. Le budget des retraites représente env. 14% du PIB. L'État intervient directement pour équilibrer les régimes spéciaux (SNCF, RATP) et pour ses propres fonctionnaires via une contribution employeur massive.",
+    icon: ShieldCheck,
+    color: "bg-rose-500"
+  },
+  {
+    title: "Collectivités (APUL)",
+    amount: "295 Md€",
+    source: "Taxe Foncière & Dotations",
+    desc: "Mairies, Départements et Régions. Elles assurent vos services de proximité et l'investissement local.",
+    details: "Les collectivités territoriales réalisent 70% de l'investissement public civil (routes, collèges, piscines). Elles sont soumises à une 'règle d'or' : interdiction d'emprunter pour payer leurs dépenses de fonctionnement. Leurs ressources dépendent de la taxe foncière et des dotations versées par l'État (DGF).",
+    icon: Landmark,
+    color: "bg-emerald-500"
+  }
+];
+
 export default function DetailedBudgetPage() {
   const { isPremium, loading } = usePremium();
   const [selectedMission, setSelectedMission] = useState<string | null>(null);
@@ -512,6 +542,79 @@ export default function DetailedBudgetPage() {
                 Vous avez maintenant toutes les clés pour décrypter le Budget 2026. En tant que membre Premium, vous recevrez une alerte en temps réel lors du vote définitif au Parlement.
               </p>
             </motion.div>
+         </section>
+
+         {/* BEYOND THE STATE (HORS-BUDGET) */}
+         <section className="py-24 space-y-16 bg-slate-900 rounded-[4rem] text-white overflow-hidden relative border border-white/5">
+            <div className="absolute top-0 right-0 w-[800px] h-[800px] bg-blue-600/5 rounded-full blur-[150px] -mr-96 -mt-96" />
+            <div className="absolute bottom-0 left-0 w-[600px] h-[600px] bg-rose-600/5 rounded-full blur-[120px] -ml-64 -mb-64" />
+            
+            <div className="relative z-10 px-8 md:px-16 space-y-16">
+               <div className="text-center max-w-3xl mx-auto space-y-6">
+                 <h2 className="text-5xl md:text-7xl font-staatliches uppercase tracking-wider">
+                   AU-DELÀ DE <span className="text-blue-500">L'ÉTAT</span>
+                 </h2>
+                 <p className="text-slate-400 text-lg font-medium italic">
+                   Les 613 Md€ de l'État ne représentent qu'une fraction de la dépense publique. Découvrez le "Hors-Budget" : Sécurité Sociale, Retraites et Collectivités.
+                 </p>
+               </div>
+
+               <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
+                  {GLOBAL_SPENDING_DATA.map((item, i) => (
+                    <motion.div 
+                      key={i}
+                      initial={{ opacity: 0, y: 20 }}
+                      whileInView={{ opacity: 1, y: 0 }}
+                      transition={{ delay: i * 0.1 }}
+                      className="bg-white/5 border border-white/10 rounded-[3rem] p-10 space-y-8 hover:bg-white/[0.08] transition-all group"
+                    >
+                       <div className={`w-16 h-16 rounded-2xl flex items-center justify-center ${item.color} shadow-lg shadow-black/20 group-hover:scale-110 transition-transform`}>
+                          <item.icon size={32} />
+                       </div>
+                       
+                       <div className="space-y-2">
+                          <h3 className="text-3xl font-staatliches tracking-wide">{item.title}</h3>
+                          <div className="flex items-baseline gap-2">
+                             <span className="text-4xl font-black text-white">{item.amount}</span>
+                             <span className="text-sm font-bold text-slate-500">par an</span>
+                          </div>
+                       </div>
+
+                       <div className="space-y-4">
+                          <div className="inline-block px-3 py-1 rounded-full bg-white/10 text-[10px] font-black uppercase tracking-widest text-slate-400">
+                             Source : {item.source}
+                          </div>
+                          <p className="text-slate-300 leading-relaxed font-medium italic">
+                             {item.desc}
+                          </p>
+                       </div>
+
+                       <div className="pt-6 border-t border-white/5">
+                          <div className="text-xs text-slate-400 leading-relaxed font-medium">
+                             <span className="text-blue-400 font-bold block mb-2 uppercase tracking-widest">Détail Premium :</span>
+                             {item.details}
+                          </div>
+                       </div>
+                    </motion.div>
+                  ))}
+               </div>
+
+               {/* GLOBAL TOTAL CALLOUT */}
+               <div className="max-w-4xl mx-auto bg-gradient-to-r from-blue-600/20 to-rose-600/20 p-1 rounded-[3rem]">
+                  <div className="bg-slate-950 rounded-[2.8rem] p-10 md:p-16 flex flex-col md:flex-row items-center justify-between gap-12 text-center md:text-left">
+                     <div className="space-y-4">
+                        <h4 className="text-sm font-black text-blue-400 uppercase tracking-[0.3em]">Total Dépense Publique</h4>
+                        <p className="text-6xl md:text-8xl font-staatliches leading-none">~1 600 <span className="text-2xl md:text-4xl opacity-40">Md€</span></p>
+                     </div>
+                     <div className="max-w-xs space-y-4">
+                        <div className="w-12 h-1 bg-blue-500" />
+                        <p className="text-slate-400 text-sm font-medium italic leading-relaxed">
+                           Soit environ **56% du PIB**. La France possède l'un des taux de redistribution les plus élevés au monde, couvrant l'intégralité du cycle de vie des citoyens.
+                        </p>
+                     </div>
+                  </div>
+               </div>
+            </div>
          </section>
 
          {/* SUMMARY CTA */}

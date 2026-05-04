@@ -349,6 +349,17 @@ export default function DetailedBudgetPage() {
 
   const selectedMissionData = MISSIONS_DETAILED.find(m => m.id === selectedMissionId);
 
+  useEffect(() => {
+    if (selectedMissionId) {
+      document.body.style.overflow = 'hidden';
+    } else {
+      document.body.style.overflow = 'unset';
+    }
+    return () => {
+      document.body.style.overflow = 'unset';
+    };
+  }, [selectedMissionId]);
+
   // Counter component for animated numbers
   const Counter = ({ value, duration = 2 }: { value: number; duration?: number }) => {
     const [count, setCount] = useState(0);
@@ -1190,7 +1201,7 @@ export default function DetailedBudgetPage() {
                    animate={{ opacity: 1 }}
                    exit={{ opacity: 0 }}
                    onClick={() => setSelectedMissionId(null)}
-                   className="fixed inset-0 bg-slate-950/60 backdrop-blur-sm z-[100]"
+                   className="fixed inset-0 bg-slate-950/90 backdrop-blur-xl z-[100]"
                  />
                  
                  {/* Panel */}
@@ -1199,7 +1210,7 @@ export default function DetailedBudgetPage() {
                    animate={{ x: 0 }}
                    exit={{ x: "100%" }}
                    transition={{ type: "spring", damping: 25, stiffness: 200 }}
-                   className="fixed right-0 top-0 bottom-0 w-full max-w-2xl bg-white shadow-2xl z-[110] overflow-y-auto mission-panel"
+                   className="fixed right-0 top-0 bottom-0 w-full max-w-2xl bg-white shadow-2xl z-[110] overflow-y-auto mission-panel border-l border-slate-100"
                  >
                     <div className="p-8 md:p-12 pt-16 md:pt-20 space-y-12 flex flex-col min-h-full">
                        {/* Header */}

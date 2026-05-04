@@ -603,36 +603,31 @@ export default function DetailedBudgetPage() {
   const [hoveredYear, setHoveredYear] = useState<number | null>(null);
   const [dynamicMissions, setDynamicMissions] = useState(MISSIONS_DETAILED);
   const [dynamicComparison, setDynamicComparison] = useState(COMPARISON_DATA);
+  const [lastUpdate, setLastUpdate] = useState<Date | null>(null);
 
   // Dynamic Data Sync
   useEffect(() => {
     const fetchBudgetData = async () => {
       try {
-        const response = await fetch('/api/budget/data');
+        const response = await fetch('/api/budget/missions');
         const result = await response.json();
         
         if (result.success && result.data) {
           const apiData = result.data as any[];
+          if (result.timestamp) setLastUpdate(new Date(result.timestamp));
           
           // Merge with MISSIONS_DETAILED
           const mergedMissions = MISSIONS_DETAILED.map(m => {
-             const apiMission = apiData.find(am => 
-                am.mission.toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g, "").replace(/\s+/g, '-') === m.id
-             );
+             const apiMission = apiData.find(am => am.id === m.id);
              if (apiMission) {
                 return {
                    ...m,
-                   amount: `${apiMission.val2026} Md€`,
+                   amount: `${apiMission.val2026.toFixed(2)} Md€`,
                    evolution: [
-                      { year: "2024", value: apiMission.val2024 || (parseFloat(m.amount) * 0.95) },
-                      { year: "2025", value: apiMission.val2025 },
-                      { year: "2026", value: apiMission.val2026 }
-                   ],
-                   measures: apiMission.programs ? apiMission.programs.map((p: any) => ({
-                      title: p.name,
-                      impact: "Prioritaire",
-                      desc: `Dotation PLF 2026 : ${p.amount}`
-                   })) : m.measures
+                      { year: "2024", value: apiMission.val2024.toFixed(2) },
+                      { year: "2025", value: apiMission.val2025.toFixed(2) },
+                      { year: "2026", value: apiMission.val2026.toFixed(2) }
+                   ]
                 };
              }
              return m;
@@ -640,13 +635,12 @@ export default function DetailedBudgetPage() {
           
           // Merge with COMPARISON_DATA
           const mergedComparison = COMPARISON_DATA.map(c => {
-             const slug = c.label.toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g, "").replace(/\s+/g, '-');
-             const apiMission = apiData.find(am => 
-                am.mission.toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g, "").replace(/\s+/g, '-') === slug
-             );
+             const slug = c.label.toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g, "").replace(/[^a-z0-9]+/g, '-').replace(/^-+|-+$/g, '');
+             const apiMission = apiData.find(am => am.id === slug);
              if (apiMission) {
                 return {
                    ...c,
+                   val2024: apiMission.val2024,
                    val2025: apiMission.val2025,
                    val2026: apiMission.val2026,
                    trend: apiMission.trend
@@ -785,6 +779,18 @@ export default function DetailedBudgetPage() {
               <h1 className="text-5xl md:text-8xl font-staatliches uppercase tracking-tighter leading-none text-slate-900">
                 Budget <span className="text-blue-600">2026</span>
               </h1>
+              
+              {lastUpdate && (
+                <div className="flex items-center gap-3 bg-green-50 border border-green-100 px-4 py-2 rounded-full w-fit">
+                  <div className="relative flex h-3 w-3">
+                    <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-green-400 opacity-75"></span>
+                    <span className="relative inline-flex rounded-full h-3 w-3 bg-green-500"></span>
+                  </div>
+                  <p className="text-xs font-bold text-green-700 uppercase tracking-widest">
+                    Données Officielles (MàJ {lastUpdate.toLocaleDateString('fr-FR')})
+                  </p>
+                </div>
+              )}
               <p className="text-xl text-slate-500 font-medium italic">
                 Décryptage intégral de la dépense publique et des ressources de l'État.
               </p>

@@ -173,22 +173,29 @@ const DEBT_HISTORY = [
   { year: 2015, value: 97.1, event: "Période de taux bas" },
   { year: 2020, value: 114.7, event: "Pandémie COVID-19", highlight: true },
   { year: 2023, value: 110.6, event: "Rebond post-covid" },
-  { year: 2024, value: 112.5, event: "Dérapage du déficit", highlight: true },
-  { year: 2025, value: 114.7, event: "Prévision PLF" },
-  { year: 2026, value: 114.9, event: "Objectif de stabilisation" },
+  { year: 2024, value: 112.6, event: "Dérapage du déficit (Official INSEE)", highlight: true },
+  { year: 2025, value: 115.6, event: "Dette Record fin 2025 (3 460 Md€)", highlight: true },
+  { year: 2026, value: 115.8, event: "Prévision de stabilisation PLF" },
 ];
 
 const DEBT_NEWS = [
   {
-    date: "Mars 2026",
-    title: "Chiffre Record",
-    content: "La dette publique française atteint officiellement 3 228,4 Md€ au dernier relevé de l'INSEE.",
+    date: "27 Mars 2026",
+    title: "Alerte INSEE : 3 460 Md€",
+    content: "La dette publique française a bondi à 115,6% du PIB fin 2025, atteignant un montant record de 3 460,5 milliards d'euros.",
+    type: "stats",
+    impact: "high"
+  },
+  {
+    date: "Avril 2026",
+    title: "Dérapage 2025",
+    content: "L'INSEE confirme un déficit public de 5,9% pour l'année 2025, contre 5,5% initialement espérés.",
     type: "stats",
     impact: "high"
   },
   {
     date: "Octobre 2025",
-    title: "Moody's : Alerte",
+    title: "Moody's : Perspective Négative",
     content: "L'agence Moody's maintient la note Aa2 mais confirme une perspective 'négative' pour la France.",
     type: "rating",
     impact: "medium"
@@ -198,13 +205,6 @@ const DEBT_NEWS = [
     title: "Dégradation S&P",
     content: "Standard & Poor's dégrade la note souveraine de la France de AA à AA-. Une première depuis 2013.",
     type: "rating",
-    impact: "high"
-  },
-  {
-    date: "Janvier 2026",
-    title: "Charge de la Dette",
-    content: "Les intérêts de la dette deviennent le premier poste budgétaire de l'État devant l'Éducation Nationale.",
-    type: "stats",
     impact: "high"
   }
 ];
@@ -727,7 +727,7 @@ export default function DetailedBudgetPage() {
                  ANALYSE DE LA <span className="text-amber-600">DETTE</span>
               </h2>
               <p className="text-slate-500 font-medium text-lg">
-                Comprendre qui détient nos 3 200 Md€ de dette et comment elle a évolué.
+                Comprendre qui détient nos 3 460 Md€ de dette et comment elle a évolué.
               </p>
             </div>
 
@@ -739,9 +739,9 @@ export default function DetailedBudgetPage() {
                         <h3 className="text-xl font-bold text-slate-900">Évolution de la Dette</h3>
                         <p className="text-xs text-slate-400 font-medium uppercase tracking-widest mt-1">En % du PIB (1980 - 2026)</p>
                      </div>
-                     <div className="flex items-center gap-2 px-4 py-2 bg-amber-50 rounded-xl border border-amber-100">
-                        <TrendingUp size={16} className="text-amber-600" />
-                        <span className="text-sm font-black text-amber-700">Objectif 2026 : 114%</span>
+                     <div className="flex items-center gap-2 px-4 py-2 bg-rose-50 rounded-xl border border-rose-100">
+                        <TrendingUp size={16} className="text-rose-600" />
+                        <span className="text-sm font-black text-rose-700">Dernier relevé : 115,6%</span>
                      </div>
                   </div>
 

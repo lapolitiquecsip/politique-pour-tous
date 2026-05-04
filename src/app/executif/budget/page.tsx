@@ -59,37 +59,46 @@ const RECETTES = [
 
 const MISSIONS_DETAILED = [
   {
+    id: "remboursements",
     title: "Remboursements et dégrèvements",
     amount: "145.60 Md€",
     impact: "Mécanique",
-    desc: "Ce poste correspond aux restitutions d'impôts et dégrèvements fiscaux. C'est techniquement le plus gros bloc budgétaire, bien qu'il s'agisse d'un flux de retour aux contribuables.",
+    desc: "Ce poste correspond aux restitutions d'impôts et dégrèvements fiscaux. C'est techniquement le plus gros bloc budgétaire.",
+    details: "Ce poste colossal finance principalement la restitution des trop-perçus de TVA aux entreprises, le Crédit d'Impôt Recherche (CIR) pour stimuler l'innovation, et les divers dégrèvements de fiscalité locale. C'est un flux de trésorerie indispensable à l'activité économique, bien qu'il ne constitue pas une dépense de fonctionnement direct de l'État.",
     color: "bg-slate-400"
   },
   {
+    id: "education",
     title: "Éducation Nationale",
     amount: "89.62 Md€",
     impact: "Prioritaire",
-    desc: "Premier poste de dépense directe. Il couvre les salaires et le fonctionnement du système scolaire. En hausse de +9% par rapport à 2025 selon le PLF 2026.",
+    desc: "Premier poste de dépense directe. Il couvre les salaires et le fonctionnement du système scolaire.",
+    details: "Les 89,62 Md€ sont massivement alloués à la masse salariale (plus de 70 Md€) pour les enseignants. Le reste finance les bourses scolaires, l'accompagnement des élèves en situation de handicap (AESH), et la modernisation numérique. L'augmentation de 2026 vise particulièrement la revalorisation des carrières.",
     color: "bg-blue-600"
   },
   {
+    id: "defense",
     title: "Défense (Armées)",
     amount: "66.48 Md€",
     impact: "Régalien",
     desc: "Budget en forte croissance pour répondre aux engagements de la Loi de Programmation Militaire (LPM).",
+    details: "Conformément à la LPM 2024-2030, ces crédits financent le renouvellement de la dissuasion nucléaire, l'acquisition de nouveaux Rafale, le développement du futur porte-avions (PANG) et le renforcement des capacités de cyber-défense face aux nouvelles menaces géopolitiques.",
     color: "bg-red-600"
   },
   {
+    id: "dette",
     title: "Charge de la dette",
     amount: "60.34 Md€",
     impact: "Critique",
     desc: "Intérêts payés sur la dette passée. Poste sous haute surveillance en raison de l'évolution des taux d'intérêt.",
+    details: "Ce budget est entièrement consacré au paiement des intérêts sur les emprunts passés. Il ne rembourse pas le capital, mais assure la crédibilité de la France sur les marchés. L'augmentation est due à l'effet 'boule de neige' des taux d'intérêt sur les nouveaux emprunts.",
     color: "bg-orange-500"
   }
 ];
 
 export default function DetailedBudgetPage() {
   const { isPremium, loading } = usePremium();
+  const [selectedMission, setSelectedMission] = useState<string | null>(null);
 
   if (loading) return null;
 
@@ -309,14 +318,34 @@ export default function DetailedBudgetPage() {
 
         {/* DETAILED MISSIONS FOCUS */}
         <section className="space-y-10">
-           <div className="text-center max-w-2xl mx-auto space-y-4">
-              <h2 className="text-4xl font-staatliches uppercase tracking-wider text-slate-900">
-                 Zoom sur les <span className="text-red-600">Points de Vigilance</span>
-              </h2>
-              <p className="text-slate-500 font-medium italic">
-                Pourquoi certains budgets pèsent-ils plus lourd que d'autres ? Analyse des piliers du Budget.
-              </p>
-           </div>
+            <div className="text-center max-w-2xl mx-auto space-y-4">
+               <h2 className="text-4xl font-staatliches uppercase tracking-wider text-slate-900">
+                  Zoom sur les <span className="text-red-600">Points de Vigilance</span>
+               </h2>
+               <p className="text-slate-500 font-medium italic">
+                 Analyse approfondie des piliers du Budget 2026. Cliquez sur "En savoir plus" pour les détails exclusifs.
+               </p>
+            </div>
+
+            {/* BUDGET CONTEXT EXPLANATION */}
+            <motion.div 
+              initial={{ opacity: 0, scale: 0.95 }}
+              whileInView={{ opacity: 1, scale: 1 }}
+              className="bg-blue-900 text-white p-10 rounded-[3rem] shadow-2xl relative overflow-hidden"
+            >
+              <div className="absolute top-0 right-0 w-64 h-64 bg-white/5 rounded-full -mr-32 -mt-32 blur-3xl" />
+              <div className="relative z-10 flex flex-col md:flex-row gap-8 items-center">
+                <div className="w-16 h-16 rounded-2xl bg-white/10 flex items-center justify-center shrink-0">
+                  <Info size={32} className="text-blue-300" />
+                </div>
+                <div className="space-y-4">
+                  <h3 className="text-2xl font-bold uppercase tracking-tight">Comprendre l'augmentation en période de rigueur</h3>
+                  <p className="text-blue-100/80 leading-relaxed font-medium italic italic">
+                    Pourquoi le budget augmente-t-il malgré les appels à la rigueur ? Cette apparente contradiction s'explique par trois facteurs majeurs : l'inflation qui renchérit mécaniquement le coût des services publics, la hausse inévitable de la charge de la dette liée aux taux d'intérêt, et des engagements de long terme (comme la Loi de Programmation Militaire) qui sanctuarisent certaines dépenses régaliennes. Ainsi, même si l'État cherche à réduire son train de vie dans certains domaines, les postes "mécaniques" et de sécurité poussent mathématiquement le total vers le haut.
+                  </p>
+                </div>
+              </div>
+            </motion.div>
 
            <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
               {MISSIONS_DETAILED.map((mission, i) => (
@@ -345,11 +374,40 @@ export default function DetailedBudgetPage() {
                     {mission.desc}
                   </p>
 
+                  <motion.div
+                    initial={false}
+                    animate={{ 
+                      height: selectedMission === mission.id ? "auto" : 0,
+                      opacity: selectedMission === mission.id ? 1 : 0,
+                      marginTop: selectedMission === mission.id ? 24 : 0
+                    }}
+                    className="overflow-hidden"
+                  >
+                    <div className="p-6 bg-slate-50 rounded-2xl border border-slate-100">
+                       <p className="text-xs text-slate-600 font-bold uppercase tracking-widest mb-2 flex items-center gap-2">
+                          <Crown size={12} className="text-amber-500" /> Analyse Premium
+                       </p>
+                       <p className="text-sm text-slate-700 leading-relaxed font-medium">
+                          {mission.details}
+                       </p>
+                    </div>
+                  </motion.div>
+
                   <div className="mt-10 pt-8 border-t border-slate-50 flex items-center justify-between">
-                     <span className="text-[10px] font-black text-slate-400 uppercase tracking-widest">En savoir plus</span>
-                     <div className="w-10 h-10 rounded-full bg-slate-50 flex items-center justify-center group-hover:bg-slate-900 group-hover:text-white transition-all">
+                     <button 
+                       onClick={() => setSelectedMission(selectedMission === mission.id ? null : mission.id)}
+                       className="text-[10px] font-black text-slate-400 uppercase tracking-widest hover:text-blue-600 transition-colors"
+                     >
+                        {selectedMission === mission.id ? "Réduire" : "En savoir plus"}
+                     </button>
+                     <button 
+                       onClick={() => setSelectedMission(selectedMission === mission.id ? null : mission.id)}
+                       className={`w-10 h-10 rounded-full flex items-center justify-center transition-all ${
+                         selectedMission === mission.id ? 'bg-blue-600 text-white rotate-90' : 'bg-slate-50 group-hover:bg-slate-900 group-hover:text-white'
+                       }`}
+                     >
                         <ArrowRight size={18} />
-                     </div>
+                     </button>
                   </div>
                 </motion.div>
               ))}

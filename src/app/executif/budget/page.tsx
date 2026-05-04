@@ -161,6 +161,42 @@ const GLOBAL_SPENDING_DATA = [
   }
 ];
 
+const DEBT_HISTORY = [
+  { year: 1980, value: 21 },
+  { year: 1990, value: 36 },
+  { year: 2000, value: 59 },
+  { year: 2010, value: 85 },
+  { year: 2020, value: 115 },
+  { year: 2026, value: 114 },
+];
+
+const LEGISLATIVE_STEPS = [
+  { 
+    label: "Présentation", 
+    date: "Fin Septembre", 
+    desc: "Le Gouvernement présente le PLF en Conseil des Ministres et le dépose à l'Assemblée.",
+    status: "Terminé"
+  },
+  { 
+    label: "Assemblée Nationale", 
+    date: "Octobre", 
+    desc: "Examen en commission puis en séance publique. Vote de la partie 'Recettes' puis 'Dépenses'.",
+    status: "En cours"
+  },
+  { 
+    label: "Sénat", 
+    date: "Novembre", 
+    desc: "Le Sénat dispose de 20 jours pour examiner le texte. Souvent, des modifications majeures sont apportées.",
+    status: "À venir"
+  },
+  { 
+    label: "Version Finale", 
+    date: "Décembre", 
+    desc: "Commission Mixte Paritaire (CMP) pour accorder les deux chambres. Vote définitif avant Noël.",
+    status: "À venir"
+  },
+];
+
 export default function DetailedBudgetPage() {
   const { isPremium, loading } = usePremium();
   const [selectedMission, setSelectedMission] = useState<string | null>(null);
@@ -613,6 +649,213 @@ export default function DetailedBudgetPage() {
                         </p>
                      </div>
                   </div>
+               </div>
+            </div>
+         </section>
+
+         {/* DEBT ANALYTICS */}
+         <section className="py-24 space-y-16">
+            <div className="text-center max-w-3xl mx-auto space-y-4">
+              <h2 className="text-5xl font-staatliches uppercase tracking-wider text-slate-900">
+                 ANALYSE DE LA <span className="text-amber-600">DETTE</span>
+              </h2>
+              <p className="text-slate-500 font-medium text-lg">
+                Comprendre qui détient nos 3 200 Md€ de dette et comment elle a évolué.
+              </p>
+            </div>
+
+            <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 items-start">
+               {/* HISTORICAL CHART */}
+               <div className="lg:col-span-8 bg-white p-10 rounded-[3rem] border border-slate-200 shadow-xl relative overflow-hidden">
+                  <div className="flex justify-between items-center mb-12">
+                     <div>
+                        <h3 className="text-xl font-bold text-slate-900">Évolution de la Dette</h3>
+                        <p className="text-xs text-slate-400 font-medium uppercase tracking-widest mt-1">En % du PIB (1980 - 2026)</p>
+                     </div>
+                     <div className="flex items-center gap-2 px-4 py-2 bg-amber-50 rounded-xl border border-amber-100">
+                        <TrendingUp size={16} className="text-amber-600" />
+                        <span className="text-sm font-black text-amber-700">Objectif 2026 : 114%</span>
+                     </div>
+                  </div>
+
+                  <div className="h-64 w-full relative group">
+                     <svg viewBox="0 0 500 100" className="w-full h-full preserve-3d" preserveAspectRatio="none">
+                        {/* Grid lines */}
+                        {[0, 25, 50, 75, 100].map((v) => (
+                           <line key={v} x1="0" y1={100-v} x2="500" y2={100-v} stroke="#f1f5f9" strokeWidth="0.5" />
+                        ))}
+                        
+                        {/* Area Gradient */}
+                        <defs>
+                           <linearGradient id="debtGradient" x1="0" y1="0" x2="0" y2="1">
+                              <stop offset="0%" stopColor="#f59e0b" stopOpacity="0.2" />
+                              <stop offset="100%" stopColor="#f59e0b" stopOpacity="0" />
+                           </linearGradient>
+                        </defs>
+
+                        {/* The Path */}
+                        <motion.path
+                           d={`M 0 100 ${DEBT_HISTORY.map((d, i) => `L ${(i / (DEBT_HISTORY.length - 1)) * 500} ${100 - d.value}`).join(' ')} L 500 100 Z`}
+                           fill="url(#debtGradient)"
+                           initial={{ opacity: 0 }}
+                           whileInView={{ opacity: 1 }}
+                           transition={{ duration: 1 }}
+                        />
+                        <motion.path
+                           d={`M 0 ${100 - DEBT_HISTORY[0].value} ${DEBT_HISTORY.map((d, i) => `L ${(i / (DEBT_HISTORY.length - 1)) * 500} ${100 - d.value}`).join(' ')}`}
+                           fill="none"
+                           stroke="#f59e0b"
+                           strokeWidth="2"
+                           initial={{ pathLength: 0 }}
+                           whileInView={{ pathLength: 1 }}
+                           transition={{ duration: 2, ease: "easeInOut" }}
+                        />
+
+                        {/* Data Points */}
+                        {DEBT_HISTORY.map((d, i) => (
+                           <motion.circle
+                              key={i}
+                              cx={(i / (DEBT_HISTORY.length - 1)) * 500}
+                              cy={100 - d.value}
+                              r="1.5"
+                              fill="white"
+                              stroke="#f59e0b"
+                              strokeWidth="0.5"
+                              initial={{ scale: 0 }}
+                              whileInView={{ scale: 1 }}
+                              transition={{ delay: 1 + i * 0.1 }}
+                           />
+                        ))}
+                     </svg>
+                     
+                     {/* Labels */}
+                     <div className="flex justify-between mt-4">
+                        {DEBT_HISTORY.map((d, i) => (
+                           <span key={i} className="text-[10px] font-bold text-slate-400">{d.year}</span>
+                        ))}
+                     </div>
+                  </div>
+               </div>
+
+               {/* DEBT STATS */}
+               <div className="lg:col-span-4 space-y-6">
+                  <div className="bg-slate-900 text-white p-8 rounded-[2.5rem] shadow-xl relative overflow-hidden">
+                     <div className="absolute top-0 right-0 p-4 opacity-10">
+                        <Scale size={80} />
+                     </div>
+                     <h4 className="text-xs font-black text-amber-400 uppercase tracking-widest mb-6">Profil des Détenteurs</h4>
+                     <div className="space-y-6">
+                        <div className="space-y-2">
+                           <div className="flex justify-between text-sm font-bold">
+                              <span>Résidents (Français)</span>
+                              <span>~55%</span>
+                           </div>
+                           <div className="w-full h-2 bg-white/10 rounded-full overflow-hidden">
+                              <motion.div initial={{ width: 0 }} whileInView={{ width: "55%" }} className="h-full bg-amber-500" />
+                           </div>
+                        </div>
+                        <div className="space-y-2">
+                           <div className="flex justify-between text-sm font-bold">
+                              <span>Non-Résidents</span>
+                              <span>~45%</span>
+                           </div>
+                           <div className="w-full h-2 bg-white/10 rounded-full overflow-hidden">
+                              <motion.div initial={{ width: 0 }} whileInView={{ width: "45%" }} className="h-full bg-white/30" />
+                           </div>
+                        </div>
+                     </div>
+                     <p className="mt-8 text-[10px] text-slate-400 font-medium italic">
+                        La France dépend de la confiance des investisseurs internationaux pour refinancer ses échéances.
+                     </p>
+                  </div>
+
+                  <div className="bg-white p-8 rounded-[2.5rem] border border-slate-200 shadow-lg">
+                     <h4 className="text-xs font-black text-slate-400 uppercase tracking-widest mb-4">Indicateurs Clés</h4>
+                     <div className="space-y-4">
+                        <div className="flex justify-between items-center">
+                           <span className="text-sm font-medium text-slate-600">Maturité moyenne</span>
+                           <span className="text-sm font-black text-slate-900">8 ans & 2 mois</span>
+                        </div>
+                        <div className="w-full h-px bg-slate-100" />
+                        <div className="flex justify-between items-center">
+                           <span className="text-sm font-medium text-slate-600">Taux moyen (Stock)</span>
+                           <span className="text-sm font-black text-slate-900">1.8%</span>
+                        </div>
+                        <div className="w-full h-px bg-slate-100" />
+                        <div className="flex justify-between items-center">
+                           <span className="text-sm font-medium text-slate-600">Taux actuel (Refi)</span>
+                           <span className="text-sm font-black text-rose-600">~3.4%</span>
+                        </div>
+                     </div>
+                  </div>
+               </div>
+            </div>
+         </section>
+
+         {/* LEGISLATIVE CYCLE TIMELINE */}
+         <section className="py-24 space-y-16 border-t border-slate-100">
+            <div className="text-center max-w-3xl mx-auto space-y-4">
+              <h2 className="text-5xl font-staatliches uppercase tracking-wider text-slate-900">
+                 CALENDRIER <span className="text-blue-600">LÉGISLATIF</span>
+              </h2>
+              <p className="text-slate-500 font-medium text-lg">
+                 Le marathon budgétaire du PLF 2026 : de la conception au vote final.
+              </p>
+            </div>
+
+            <div className="max-w-5xl mx-auto relative px-4">
+               {/* Vertical Line */}
+               <div className="absolute left-1/2 top-0 bottom-0 w-px bg-slate-200 hidden md:block" />
+               
+               <div className="space-y-12 relative">
+                  {LEGISLATIVE_STEPS.map((step, i) => (
+                    <motion.div 
+                      key={i}
+                      initial={{ opacity: 0, y: 20 }}
+                      whileInView={{ opacity: 1, y: 0 }}
+                      transition={{ delay: i * 0.1 }}
+                      className={`flex flex-col md:flex-row items-center gap-8 ${i % 2 === 0 ? 'md:flex-row' : 'md:flex-row-reverse'}`}
+                    >
+                       <div className="flex-1 text-center md:text-right w-full">
+                          {i % 2 === 0 && (
+                            <div className="space-y-2">
+                               <span className="text-[10px] font-black text-blue-600 uppercase tracking-widest">{step.date}</span>
+                               <h3 className="text-xl font-bold text-slate-900">{step.label}</h3>
+                               <p className="text-sm text-slate-500 font-medium italic">{step.desc}</p>
+                            </div>
+                          )}
+                       </div>
+
+                       <div className="relative z-10 w-12 h-12 rounded-full bg-white border-4 border-slate-100 flex items-center justify-center shadow-lg">
+                          <div className={`w-3 h-3 rounded-full ${
+                            step.status === 'Terminé' ? 'bg-emerald-500' : 
+                            step.status === 'En cours' ? 'bg-blue-500 animate-pulse' : 'bg-slate-300'
+                          }`} />
+                       </div>
+
+                       <div className="flex-1 text-center md:text-left w-full">
+                          {i % 2 !== 0 && (
+                             <div className="space-y-2">
+                                <span className="text-[10px] font-black text-blue-600 uppercase tracking-widest">{step.date}</span>
+                                <h3 className="text-xl font-bold text-slate-900">{step.label}</h3>
+                                <p className="text-sm text-slate-500 font-medium italic">{step.desc}</p>
+                             </div>
+                          )}
+                       </div>
+                    </motion.div>
+                  ))}
+               </div>
+            </div>
+
+            <div className="max-w-3xl mx-auto bg-blue-50 border border-blue-100 p-8 rounded-[2.5rem] flex items-start gap-6">
+               <div className="w-12 h-12 rounded-2xl bg-blue-600 text-white flex items-center justify-center shrink-0">
+                  <Zap size={24} />
+               </div>
+               <div className="space-y-2">
+                  <h4 className="font-bold text-blue-900">Le rôle critique du 49.3</h4>
+                  <p className="text-sm text-blue-800/80 leading-relaxed font-medium italic">
+                    Pour le PLF 2026, l'absence de majorité absolue rend probable l'usage de l'article 49.3 de la Constitution. Il permet l'adoption du texte sans vote, sauf si une motion de censure est votée par la majorité des députés.
+                  </p>
                </div>
             </div>
          </section>

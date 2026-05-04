@@ -14,7 +14,9 @@ import {
   Landmark,
   ShieldCheck,
   Scale,
-  Crown
+  Crown,
+  Compass,
+  CheckCircle2
 } from "lucide-react";
 import Link from "next/link";
 import { usePremium } from "@/lib/hooks/usePremium";
@@ -64,7 +66,7 @@ const MISSIONS_DETAILED = [
     amount: "145.60 Md€",
     impact: "Mécanique",
     desc: "Ce poste correspond aux restitutions d'impôts et dégrèvements fiscaux. C'est techniquement le plus gros bloc budgétaire.",
-    details: "Ce poste colossal finance principalement la restitution des trop-perçus de TVA aux entreprises, le Crédit d'Impôt Recherche (CIR) pour stimuler l'innovation, et les divers dégrèvements de fiscalité locale. C'est un flux de trésorerie indispensable à l'activité économique, bien qu'il ne constitue pas une dépense de fonctionnement direct de l'État.",
+    details: "Sur ces 145,6 Md€, près de 100 Md€ sont consacrés à la gestion mécanique de la TVA (remboursements de crédits aux entreprises). Le reste finance des dispositifs comme le Crédit d'Impôt Recherche (CIR - env. 7 Md€), les dégrèvements de fiscalité locale compensés par l'État, et les remboursements de litiges. C'est un poste 'passif' : l'État rend ce qu'il a perçu en trop ou ce qu'il doit légalement.",
     color: "bg-slate-400"
   },
   {
@@ -73,7 +75,7 @@ const MISSIONS_DETAILED = [
     amount: "89.62 Md€",
     impact: "Prioritaire",
     desc: "Premier poste de dépense directe. Il couvre les salaires et le fonctionnement du système scolaire.",
-    details: "Les 89,62 Md€ sont massivement alloués à la masse salariale (plus de 70 Md€) pour les enseignants. Le reste finance les bourses scolaires, l'accompagnement des élèves en situation de handicap (AESH), et la modernisation numérique. L'augmentation de 2026 vise particulièrement la revalorisation des carrières.",
+    details: "Le budget se répartit entre le 1er degré (env. 28 Md€) et le 2nd degré (env. 42 Md€). Plus de 90% des crédits sont absorbés par les rémunérations des 1,2 million d'agents. En 2026, l'accent est mis sur le 'Pacte enseignant', le financement des AESH (env. 4,5 Md€) pour le handicap, et la rénovation énergétique des bâtiments via le Fonds Vert.",
     color: "bg-blue-600"
   },
   {
@@ -82,7 +84,7 @@ const MISSIONS_DETAILED = [
     amount: "66.48 Md€",
     impact: "Régalien",
     desc: "Budget en forte croissance pour répondre aux engagements de la Loi de Programmation Militaire (LPM).",
-    details: "Conformément à la LPM 2024-2030, ces crédits financent le renouvellement de la dissuasion nucléaire, l'acquisition de nouveaux Rafale, le développement du futur porte-avions (PANG) et le renforcement des capacités de cyber-défense face aux nouvelles menaces géopolitiques.",
+    details: "En pleine LPM 2024-2030, 2026 finance l'équipement : 15 Md€ pour l'armement (Rafale F4, Frégates, Scorpion). La dissuasion nucléaire mobilise env. 6,5 Md€. Les crédits permettent aussi de reconstituer les stocks de munitions et de financer l'innovation (IA, spatial). Les dépenses de personnel restent stables à env. 14 Md€.",
     color: "bg-red-600"
   },
   {
@@ -91,8 +93,41 @@ const MISSIONS_DETAILED = [
     amount: "60.34 Md€",
     impact: "Critique",
     desc: "Intérêts payés sur la dette passée. Poste sous haute surveillance en raison de l'évolution des taux d'intérêt.",
-    details: "Ce budget est entièrement consacré au paiement des intérêts sur les emprunts passés. Il ne rembourse pas le capital, mais assure la crédibilité de la France sur les marchés. L'augmentation est due à l'effet 'boule de neige' des taux d'intérêt sur les nouveaux emprunts.",
+    details: "Ce poste est exclusivement dédié au paiement des intérêts des OAT (emprunts d'État). Il ne réduit pas le stock de dette (env. 3200 Md€). La hausse est due à la remontée des taux de la BCE : chaque milliard emprunté coûte désormais env. 3,5% contre 0% auparavant. L'État doit refinancer env. 280 Md€ de dette chaque année à ces nouveaux taux.",
     color: "bg-orange-500"
+  }
+];
+
+const BUDGET_GUIDE_STEPS = [
+  {
+    title: "L'Origine",
+    subtitle: "D'où vient l'argent ?",
+    content: "L'État français ne 'produit' pas d'argent. 95% de ses ressources proviennent de la fiscalité. La TVA est la reine des impôts (env. 40% des recettes), suivie de l'Impôt sur le Revenu et de l'Impôt sur les Sociétés. Le reste provient de revenus patrimoniaux (dividendes) ou d'amendes.",
+    icon: Landmark
+  },
+  {
+    title: "La Promesse",
+    subtitle: "AE vs CP : Le jargon décrypté",
+    content: "Une Autorisation d'Engagement (AE) est une promesse de payer sur plusieurs années (ex: commander un sous-marin). Un Crédit de Paiement (CP) est l'argent réellement décaissé cette année. C'est pourquoi le total des AE est souvent plus élevé que celui des CP.",
+    icon: ShieldCheck
+  },
+  {
+    title: "Le Choix",
+    subtitle: "Les 32 Missions de l'État",
+    content: "L'argent est découpé en 'Missions' (Défense, Justice, Éducation...). Chaque mission est pilotée par un ministre. À l'intérieur, on trouve des 'Programmes' précis. Ce découpage permet au Parlement de voter sur des objectifs politiques plutôt que sur de simples lignes comptables.",
+    icon: Compass
+  },
+  {
+    title: "Le Déséquilibre",
+    subtitle: "Le Déficit et la Dette",
+    content: "Depuis 1974, la France dépense plus qu'elle ne gagne. Ce trou annuel est le 'Déficit'. Pour le combler, l'État emprunte sur les marchés financiers. L'accumulation de ces déficits forme la 'Dette'. Aujourd'hui, la simple charge des intérêts est devenue l'un des premiers budgets du pays.",
+    icon: TrendingDown
+  },
+  {
+    title: "Le Verdict",
+    subtitle: "Le vote du budget",
+    content: "Rien ne se dépense sans l'accord du Parlement. Chaque automne, députés et sénateurs examinent le PLF (Projet de Loi de Finances). C'est le moment de vérité politique où les priorités sont débattues, souvent conclu par l'usage de l'article 49.3.",
+    icon: CheckCircle2
   }
 ];
 
@@ -427,7 +462,59 @@ export default function DetailedBudgetPage() {
            </div>
         </section>
 
-        {/* SUMMARY CTA */}
+         {/* STEP-BY-STEP BUDGETARY GUIDE */}
+         <section className="py-24 space-y-20 border-t border-slate-100">
+            <div className="text-center max-w-3xl mx-auto space-y-4">
+              <h2 className="text-5xl font-staatliches uppercase tracking-wider text-slate-900">
+                 GUIDE <span className="text-blue-600 italic">PAS À PAS</span> DU BUDGET
+              </h2>
+              <p className="text-slate-500 font-medium text-lg">
+                Comprendre la mécanique complexe des finances publiques en 5 étapes clés.
+              </p>
+            </div>
+
+            <div className="max-w-4xl mx-auto space-y-12">
+               {BUDGET_GUIDE_STEPS.map((step, i) => (
+                 <motion.div 
+                   key={i}
+                   initial={{ opacity: 0, x: i % 2 === 0 ? -30 : 30 }}
+                   whileInView={{ opacity: 1, x: 0 }}
+                   className="flex flex-col md:flex-row gap-8 items-center group"
+                 >
+                    <div className={`w-20 h-20 rounded-3xl flex items-center justify-center shrink-0 shadow-lg transition-transform group-hover:scale-110 ${
+                      i % 2 === 0 ? 'bg-slate-900 text-white' : 'bg-blue-600 text-white'
+                    }`}>
+                       <step.icon size={36} />
+                    </div>
+                    <div className={`p-8 rounded-[2.5rem] bg-white border border-slate-100 shadow-xl shadow-slate-200/20 flex-1 relative overflow-hidden`}>
+                       <div className="absolute top-0 right-0 p-6 text-6xl font-black text-slate-50 opacity-[0.03] select-none">
+                          0{i + 1}
+                       </div>
+                       <h4 className="text-[10px] font-black text-blue-600 uppercase tracking-[0.2em] mb-2">{step.title}</h4>
+                       <h3 className="text-2xl font-bold text-slate-900 mb-4">{step.subtitle}</h3>
+                       <p className="text-slate-600 leading-relaxed font-medium italic">
+                          {step.content}
+                       </p>
+                    </div>
+                 </motion.div>
+               ))}
+            </div>
+
+            <motion.div 
+              initial={{ opacity: 0 }}
+              whileInView={{ opacity: 1 }}
+              className="bg-slate-900 text-white p-12 rounded-[4rem] text-center max-w-4xl mx-auto mt-32 relative overflow-hidden"
+            >
+              <div className="absolute top-0 left-0 w-full h-full bg-gradient-to-br from-blue-600/20 to-transparent pointer-events-none" />
+              <Crown className="mx-auto text-amber-400 mb-6" size={48} />
+              <h3 className="text-3xl font-staatliches uppercase tracking-wider mb-4">Fin de l'analyse exclusive</h3>
+              <p className="text-slate-400 max-w-xl mx-auto font-medium">
+                Vous avez maintenant toutes les clés pour décrypter le Budget 2026. En tant que membre Premium, vous recevrez une alerte en temps réel lors du vote définitif au Parlement.
+              </p>
+            </motion.div>
+         </section>
+
+         {/* SUMMARY CTA */}
         <section className="bg-slate-950 rounded-[3.5rem] p-8 md:p-20 relative overflow-hidden shadow-2xl border border-white/5">
            <div className="absolute top-0 right-0 w-[600px] h-[600px] bg-blue-600/10 rounded-full blur-[120px] -mr-96 -mt-96" />
            

@@ -90,8 +90,8 @@ const MISSIONS_DETAILED = [
       { year: "2026", value: 145.6 }
     ],
     measures: [
-      "Gestion dynamique des crédits de TVA",
-      "Sanctuarisation du CIR pour l'innovation"
+      { title: "Gestion dynamique des crédits de TVA", desc: "Optimisation des flux de trésorerie pour accélérer les remboursements aux entreprises exportatrices." },
+      { title: "Sanctuarisation du CIR pour l'innovation", desc: "Maintien du Crédit d'Impôt Recherche à 7,2 Md€ pour préserver la compétitivité technologique française." }
     ],
     split: { functioning: 98, investment: 2 }
   },
@@ -118,8 +118,8 @@ const MISSIONS_DETAILED = [
       { year: "2026", value: 89.6 }
     ],
     measures: [
-      "Création de 5 440 postes d'enseignants",
-      "1 200 nouveaux postes AESH pour le handicap"
+      { title: "Création de 1 600 nouveaux emplois (ETP)", desc: "Focus sur l'accompagnement des élèves en situation de handicap (AESH) et le renforcement des équipes de remplacement." },
+      { title: "Modernisation des établissements", desc: "Plan d'investissement pour la rénovation thermique des écoles et l'équipement numérique des classes." }
     ],
     split: { functioning: 95, investment: 5 }
   },
@@ -146,8 +146,8 @@ const MISSIONS_DETAILED = [
       { year: "2026", value: 66.48 }
     ],
     measures: [
-      "Accélération du programme Scorpion",
-      "Livraison de nouveaux Rafale F4"
+      { title: "Accélération du programme Scorpion", desc: "Livraison de 250 blindés Griffon et 40 Jaguar. Intégration du combat collaboratif info-centré." },
+      { title: "Livraison de nouveaux Rafale F4", desc: "Réception de 12 chasseurs au standard F4.2 avec connectivité améliorée et nouveaux senseurs." }
     ],
     split: { functioning: 40, investment: 60 }
   },
@@ -1481,14 +1481,21 @@ export default function DetailedBudgetPage() {
                              <div className="space-y-6">
                                 <h3 className="text-xs font-black text-slate-400 uppercase tracking-widest">Mesures Phares 2026</h3>
                                 <div className="space-y-4">
-                                   {selectedMissionData.measures?.map((m: any, i: number) => (
-                                      <div key={i} className="flex items-start gap-4 p-4 bg-emerald-50 rounded-2xl border border-emerald-100">
-                                         <div className="w-6 h-6 rounded-full bg-emerald-500 text-white flex items-center justify-center shrink-0">
-                                            <CheckCircle2 size={14} />
-                                         </div>
-                                         <p className="text-xs font-bold text-emerald-900">{typeof m === 'string' ? m : m.title}</p>
-                                      </div>
-                                   ))}
+                                    {selectedMissionData.measures?.map((m: any, i: number) => (
+                                       <div key={i} className="flex items-start gap-4 p-4 bg-emerald-50 rounded-2xl border border-emerald-100">
+                                          <div className="w-6 h-6 rounded-full bg-emerald-500 text-white flex items-center justify-center shrink-0">
+                                             <CheckCircle2 size={14} />
+                                          </div>
+                                          <div className="space-y-1">
+                                             <p className="text-xs font-bold text-emerald-900">{typeof m === 'string' ? m : m.title}</p>
+                                             {typeof m !== 'string' && m.desc && (
+                                                <p className="text-[10px] text-emerald-800/70 font-medium italic leading-relaxed">
+                                                   {m.desc}
+                                                </p>
+                                             )}
+                                          </div>
+                                       </div>
+                                    ))}
                                 </div>
                              </div>
 

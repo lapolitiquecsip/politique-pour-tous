@@ -47,9 +47,12 @@ const COMPARISON_DATA = [
   { label: "Travail et emploi", val2025: 22.40, val2026: 21.80, trend: "down" },
   { label: "Cohésion des territoires", val2025: 23.50, val2026: 22.90, trend: "down" },
   { label: "Aide publique au développement", val2025: 6.20, val2026: 5.80, trend: "down" },
-  { label: "Culture", val2025: 4.20, val2026: 4.35, trend: "up" },
-  { label: "Outre-mer", val2025: 2.85, val2026: 2.91, trend: "up" },
-  { label: "Santé", val2025: 1.80, val2026: 1.95, trend: "up" },
+  { label: "Culture", val2025: 4.45, val2026: 4.55, trend: "up" },
+  { label: "Agriculture", val2025: 6.10, val2026: 6.45, trend: "up" },
+  { label: "Écologie", val2025: 27.90, val2026: 28.45, trend: "up" },
+  { label: "Travail", val2025: 21.50, val2026: 21.10, trend: "down" },
+  { label: "Solidarité", val2025: 30.50, val2026: 31.80, trend: "up" },
+  { label: "Enseignement Sup.", val2025: 31.50, val2026: 32.12, trend: "up" },
 ];
 
 const BUDGET_METRICS = [
@@ -205,6 +208,247 @@ const MISSIONS_DETAILED = [
       { title: "Renouvellement des flottes de véhicules", desc: "Achat de 3 500 véhicules propres (électriques/hybrides) et modernisation du parc lourd." }
     ],
     split: { functioning: 85, investment: 15 }
+  },
+  {
+    id: "enseignement-superieur-et-recherche",
+    title: "Enseignement Supérieur & Recherche",
+    amount: "32.12 Md€",
+    impact: "Prioritaire",
+    desc: "Financement de l'université, de la recherche publique et de la vie étudiante.",
+    details: "Mise en œuvre de la Loi de Programmation de la Recherche (LPR). Focus sur l'attractivité des carrières scientifiques et la réussite étudiante.",
+    color: "bg-indigo-600",
+    breakdown: [
+      { label: "Recherche pluridisciplinaire", value: 14.20 },
+      { label: "Formations supérieures", value: 13.85 },
+      { label: "Vie étudiante", value: 3.10 },
+      { label: "Pilotage & Support", value: 0.97 }
+    ],
+    evolution: [
+      { year: "2022", value: 25.5 },
+      { year: "2023", value: 27.2 },
+      { year: "2024", value: 29.8 },
+      { year: "2025", value: 31.5 },
+      { year: "2026", value: 32.12 }
+    ],
+    measures: [
+      { title: "Hausse des budgets de recherche (ANR)", desc: "Augmentation des dotations de l'Agence Nationale de la Recherche pour financer les projets d'excellence." },
+      { title: "Modernisation des CROUS", desc: "Plan d'investissement pour la rénovation des résidences universitaires et le ticket resto à 1€." }
+    ],
+    split: { functioning: 80, investment: 20 }
+  },
+  {
+    id: "ecologie-developpement-et-mobilite-durables",
+    title: "Écologie & Mobilités",
+    amount: "28.45 Md€",
+    impact: "Prioritaire",
+    desc: "Moteur de la planification écologique : rénovation thermique, biodiversité et transports.",
+    details: "Le budget finance MaPrimeRénov', le développement du ferroviaire et la protection des espaces naturels.",
+    color: "bg-emerald-500",
+    breakdown: [
+      { label: "Infrastructures de transport", value: 10.50 },
+      { label: "Énergie & Climat", value: 8.20 },
+      { label: "Biodiversité & Eau", value: 3.40 },
+      { label: "Prévention des risques", value: 2.10 },
+      { label: "Soutien aux collectivités", value: 4.25 }
+    ],
+    evolution: [
+      { year: "2022", value: 20.1 },
+      { year: "2023", value: 22.5 },
+      { year: "2024", value: 25.8 },
+      { year: "2025", value: 27.9 },
+      { year: "2026", value: 28.45 }
+    ],
+    measures: [
+      { title: "Renforcement de MaPrimeRénov'", desc: "Ciblage sur les rénovations globales pour maximiser l'efficacité énergétique des logements." },
+      { title: "Plan Ferroviaire 2030", desc: "Investissements massifs dans la régénération du réseau ferré et les RER métropolitains." }
+    ],
+    split: { functioning: 30, investment: 70 }
+  },
+  {
+    id: "solidarite-insertion-et-egalite-des-chances",
+    title: "Solidarité & Insertion",
+    amount: "31.80 Md€",
+    impact: "Prioritaire",
+    desc: "Gestion des minima sociaux et des dispositifs d'inclusion sociale.",
+    details: "Finance la Prime d'Activité, l'Allocation aux Adultes Handicapés (AAH) et la protection de l'enfance.",
+    color: "bg-rose-500",
+    breakdown: [
+      { label: "Inclusion sociale & Insertion", value: 15.20 },
+      { label: "Handicap & Dépendance", value: 12.40 },
+      { label: "Égalité Femmes/Hommes", value: 0.85 },
+      { label: "Soutien & Pilotage", value: 3.35 }
+    ],
+    evolution: [
+      { year: "2022", value: 24.5 },
+      { year: "2023", value: 26.8 },
+      { year: "2024", value: 29.2 },
+      { year: "2025", value: 30.5 },
+      { year: "2026", value: 31.80 }
+    ],
+    measures: [
+      { title: "Solidarité à la source", desc: "Automatisation du versement des aides pour lutter contre le non-recours." },
+      { title: "Déconjugalisation de l'AAH", desc: "Mise en œuvre intégrale du calcul individuel de l'aide pour les personnes handicapées." }
+    ],
+    split: { functioning: 95, investment: 5 }
+  },
+  {
+    id: "travail-et-emploi",
+    title: "Travail & Emploi",
+    amount: "21.10 Md€",
+    impact: "Économique",
+    desc: "Politiques actives de l'emploi, formation professionnelle et apprentissage.",
+    details: "Le budget s'adapte à la baisse du chômage avec un recentrage sur les publics les plus éloignés de l'emploi.",
+    color: "bg-cyan-600",
+    breakdown: [
+      { label: "Apprentissage", value: 8.50 },
+      { label: "Accompagnement chômeurs", value: 6.20 },
+      { label: "Formation professionnelle", value: 4.10 },
+      { label: "Amélioration du travail", value: 2.30 }
+    ],
+    evolution: [
+      { year: "2022", value: 25.1 },
+      { year: "2023", value: 23.5 },
+      { year: "2024", value: 22.1 },
+      { year: "2025", value: 21.5 },
+      { year: "2026", value: 21.10 }
+    ],
+    measures: [
+      { title: "Réforme de France Travail", desc: "Mutualisation des moyens entre acteurs de l'emploi pour un accompagnement personnalisé." },
+      { title: "Ajustement des aides à l'apprentissage", desc: "Ciblage des primes sur les niveaux inférieurs au bac+3 pour optimiser l'insertion." }
+    ],
+    split: { functioning: 90, investment: 10 }
+  },
+  {
+    id: "cohesion-des-territoires",
+    title: "Cohésion des Territoires",
+    amount: "18.45 Md€",
+    impact: "Prioritaire",
+    desc: "Politique du logement, urbanisme et aménagement du territoire.",
+    details: "Finance principalement les APL et les aides à la construction de logements sociaux.",
+    color: "bg-amber-700",
+    breakdown: [
+      { label: "Aide au logement (APL)", value: 14.80 },
+      { label: "Urbanisme & Aménagement", value: 2.10 },
+      { label: "Politique de la ville", value: 1.55 }
+    ],
+    evolution: [
+      { year: "2022", value: 16.5 },
+      { year: "2023", value: 17.2 },
+      { year: "2024", value: 17.9 },
+      { year: "2025", value: 18.2 },
+      { year: "2026", value: 18.45 }
+    ],
+    measures: [
+      { title: "Soutien au logement social", desc: "Pérennisation du taux réduit de TVA et aides directes à la construction en zones tendues." },
+      { title: "Action Cœur de Ville", desc: "Extension du programme de revitalisation des centres-villes des villes moyennes." }
+    ],
+    split: { functioning: 85, investment: 15 }
+  },
+  {
+    id: "agriculture-alimentation-foret-et-affaires-rurales",
+    title: "Agriculture & Forêt",
+    amount: "6.45 Md€",
+    impact: "Stratégique",
+    desc: "Souveraineté alimentaire, transition agroécologique et gestion des crises.",
+    details: "Budget en hausse pour accompagner le renouvellement des générations et l'adaptation au climat.",
+    color: "bg-green-700",
+    breakdown: [
+      { label: "Compétitivité & Filières", value: 3.10 },
+      { label: "Transition écologique", value: 1.85 },
+      { label: "Forêt & Territoires", value: 0.95 },
+      { label: "Sécurité sanitaire", value: 0.55 }
+    ],
+    evolution: [
+      { year: "2022", value: 4.8 },
+      { year: "2023", value: 5.2 },
+      { year: "2024", value: 5.8 },
+      { year: "2025", value: 6.1 },
+      { year: "2026", value: 6.45 }
+    ],
+    measures: [
+      { title: "Pacte pour le renouvellement", desc: "Aides à l'installation des jeunes agriculteurs pour assurer la relève démographique." },
+      { title: "Fonds de transition écologique", desc: "Aide à l'investissement pour des pratiques agricoles moins dépendantes des intrants." }
+    ],
+    split: { functioning: 60, investment: 40 }
+  },
+  {
+    id: "culture",
+    title: "Culture",
+    amount: "4.55 Md€",
+    impact: "Prioritaire",
+    desc: "Patrimoine, création artistique et transmission des savoirs.",
+    details: "Maintien d'un effort soutenu pour la vitalité culturelle et l'accès universel aux arts.",
+    color: "bg-pink-600",
+    breakdown: [
+      { label: "Patrimoines", value: 1.25 },
+      { label: "Création artistique", value: 1.10 },
+      { label: "Transmission & Médias", value: 1.80 },
+      { label: "Pilotage & Support", value: 0.40 }
+    ],
+    evolution: [
+      { year: "2022", value: 3.8 },
+      { year: "2023", value: 4.1 },
+      { year: "2024", value: 4.3 },
+      { year: "2025", value: 4.45 },
+      { year: "2026", value: 4.55 }
+    ],
+    measures: [
+      { title: "Pass Culture Universel", desc: "Consolidation du dispositif pour tous les jeunes de 15 à 18 ans." },
+      { title: "Plan Cathédrales", desc: "Poursuite du plan exceptionnel de restauration et de mise en sécurité des édifices." }
+    ],
+    split: { functioning: 70, investment: 30 }
+  },
+  {
+    id: "aide-publique-au-developpement",
+    title: "Aide au Développement",
+    amount: "5.40 Md€",
+    impact: "Action Extérieure",
+    desc: "Solidarité internationale et coopération avec les pays en développement.",
+    details: "Focus sur l'Afrique subsaharienne et les enjeux globaux (climat, santé, éducation).",
+    color: "bg-orange-500",
+    breakdown: [
+      { label: "Dons bilatéraux", value: 2.80 },
+      { label: "Contributions multilatérales", value: 1.95 },
+      { label: "Traitement de la dette", value: 0.65 }
+    ],
+    evolution: [
+      { year: "2022", value: 6.2 },
+      { year: "2023", value: 6.5 },
+      { year: "2024", value: 5.9 },
+      { year: "2025", value: 5.6 },
+      { year: "2026", value: 5.40 }
+    ],
+    measures: [
+      { title: "Climat & Biodiversité", desc: "Augmentation de la part de l'aide dédiée aux projets d'adaptation climatique." },
+      { title: "Ciblage géographique", desc: "Priorité accordée aux 19 pays les moins avancés pour un impact maximal." }
+    ],
+    split: { functioning: 98, investment: 2 }
+  },
+  {
+    id: "immigration-asile-et-integration",
+    title: "Immigration & Asile",
+    amount: "2.85 Md€",
+    impact: "Régalien",
+    desc: "Gestion des flux migratoires, droit d'asile et intégration républicaine.",
+    details: "Modernisation des centres d'accueil et accélération du traitement des dossiers.",
+    color: "bg-slate-700",
+    breakdown: [
+      { label: "Garantie droit d'asile", value: 1.75 },
+      { label: "Intégration & Accès", value: 0.85 },
+      { label: "Lutte immigration irrégulière", value: 0.25 }
+    ],
+    evolution: [
+      { year: "2022", value: 1.9 },
+      { year: "2023", value: 2.1 },
+      { year: "2024", value: 2.4 },
+      { year: "2025", value: 2.6 },
+      { year: "2026", value: 2.85 }
+    ],
+    measures: [
+      { title: "Numérisation des titres", desc: "Généralisation de la demande en ligne pour désengorger les préfectures." },
+      { title: "Accélération OFPRA", desc: "Recrutement d'officiers de protection pour ramener le délai de réponse à 6 mois." }
+    ],
+    split: { functioning: 95, investment: 5 }
   }
 ];
 

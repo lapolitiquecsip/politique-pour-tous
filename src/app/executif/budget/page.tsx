@@ -174,8 +174,8 @@ const MISSIONS_DETAILED = [
       { year: "2026", value: 12.97 }
     ],
     measures: [
-      "Création de 1 600 nouveaux emplois (ETP)",
-      "Restauration du droit de timbre pour l'aide juridique"
+      { title: "Création de 1 600 nouveaux emplois (ETP)", desc: "Recrutement massif de magistrats, greffiers et conseillers d'insertion pour réduire les délais de traitement judiciaire." },
+      { title: "Restauration du droit de timbre pour l'aide juridique", desc: "Contribution forfaitaire pour financer l'accès au droit et compenser la hausse des coûts de l'aide juridictionnelle." }
     ],
     split: { functioning: 75, investment: 25 }
   },
@@ -201,8 +201,8 @@ const MISSIONS_DETAILED = [
       { year: "2026", value: 25.0 }
     ],
     measures: [
-      "Transformation numérique des forces",
-      "Renouvellement des flottes de véhicules"
+      { title: "Transformation numérique des forces", desc: "Déploiement de tablettes NEO, caméras-piétons et modernisation des systèmes de communication cryptés (RRF)." },
+      { title: "Renouvellement des flottes de véhicules", desc: "Achat de 3 500 véhicules propres (électriques/hybrides) et modernisation du parc lourd." }
     ],
     split: { functioning: 85, investment: 15 }
   }
@@ -721,23 +721,37 @@ export default function DetailedBudgetPage() {
                     <p className="text-xl text-slate-300 leading-relaxed font-light italic">
                       Pourquoi le budget augmente-t-il malgré les appels à la rigueur ? 
                     </p>
-                    <p className="text-slate-400 leading-relaxed font-medium text-lg">
-                      Cette apparente contradiction s'explique par trois facteurs majeurs : 
-                      <span className="inline-flex items-center gap-1.5 text-emerald-400 font-black mx-1">
-                        <TrendingUp size={16} /> l'inflation
-                      </span> 
-                      qui renchérit mécaniquement le coût des 
-                      <span className="text-blue-400 font-black mx-1">services publics</span>, 
-                      la <span className="text-rose-400 font-black underline decoration-rose-500/40 underline-offset-8 mx-1">hausse inévitable</span> de la charge de la 
-                      <span className="inline-flex items-center gap-1.5 text-amber-400 font-black mx-1">
-                        <Coins size={16} /> dette
-                      </span> 
-                      liée aux taux d'intérêt, et des engagements de long terme (comme la 
-                      <span className="inline-flex items-center gap-1.5 text-indigo-400 font-black mx-1">
-                        <Shield size={16} /> Loi de Programmation Militaire
-                      </span>) 
-                      qui <span className="italic border-b border-slate-600 pb-0.5">sanctuarisent</span> certaines dépenses régaliennes. Ainsi, même si l'État cherche à réduire son train de vie dans certains domaines, les postes "mécaniques" et de sécurité poussent mathématiquement le total vers le haut.
-                    </p>
+                    <div className="text-slate-400 leading-relaxed font-medium text-lg space-y-4">
+                      <p>Cette apparente contradiction s'explique par trois facteurs majeurs :</p>
+                      
+                      <p className="pl-6 border-l-2 border-emerald-500/20">
+                        1. <span className="inline-flex items-center gap-1.5 text-emerald-400 font-black mx-1">
+                          <TrendingUp size={16} /> l'inflation
+                        </span> 
+                        qui renchérit mécaniquement le coût des 
+                        <span className="text-blue-400 font-black mx-1">services publics</span>,
+                      </p>
+
+                      <p className="pl-6 border-l-2 border-amber-500/20">
+                        2. la <span className="text-rose-400 font-black underline decoration-rose-500/40 underline-offset-8 mx-1">hausse inévitable</span> de la charge de la 
+                        <span className="inline-flex items-center gap-1.5 text-amber-400 font-black mx-1">
+                          <Coins size={16} /> dette
+                        </span> 
+                        liée aux taux d'intérêt,
+                      </p>
+
+                      <p className="pl-6 border-l-2 border-indigo-500/20">
+                        3. et des engagements de long terme (comme la 
+                        <span className="inline-flex items-center gap-1.5 text-indigo-400 font-black mx-1">
+                          <Shield size={16} /> Loi de Programmation Militaire
+                        </span>) 
+                        qui <span className="italic border-b border-slate-600 pb-0.5">sanctuarisent</span> certaines dépenses régaliennes.
+                      </p>
+
+                      <p className="pt-4 text-slate-500 text-base">
+                        Ainsi, même si l'État cherche à réduire son train de vie dans certains domaines, les postes "mécaniques" et de sécurité poussent mathématiquement le total vers le haut.
+                      </p>
+                    </div>
                   </div>
                 </div>
               </div>

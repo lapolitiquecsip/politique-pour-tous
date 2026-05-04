@@ -1201,7 +1201,8 @@ export default function DetailedBudgetPage() {
                    animate={{ opacity: 1 }}
                    exit={{ opacity: 0 }}
                    onClick={() => setSelectedMissionId(null)}
-                   className="fixed inset-0 bg-slate-950/98 backdrop-blur-3xl z-[100]"
+                   className="fixed inset-0 bg-slate-900/40 backdrop-blur-md z-[100]"
+                   style={{ backdropFilter: 'blur(12px)', WebkitBackdropFilter: 'blur(12px)' }}
                  />
                  
                  {/* Modal Container */}

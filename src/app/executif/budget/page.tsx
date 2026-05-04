@@ -559,48 +559,50 @@ export default function DetailedBudgetPage() {
               </p>
             </div>
 
-            <div className="max-w-4xl mx-auto space-y-12">
-               {BUDGET_GUIDE_STEPS.map((step, i) => (
-                 <motion.div 
-                   key={i}
-                   initial={{ opacity: 0, x: i % 2 === 0 ? -50 : 50 }}
-                   whileInView={{ opacity: 1, x: 0 }}
-                   viewport={{ once: true, margin: "-100px" }}
-                   transition={{ duration: 0.8, delay: i * 0.1, ease: "easeOut" }}
-                   className="flex flex-col md:flex-row gap-8 items-center group relative"
-                 >
-                    {/* Connection Line */}
-                    {i < BUDGET_GUIDE_STEPS.length - 1 && (
-                      <div className="absolute left-[40px] top-[80px] w-px h-[100px] bg-gradient-to-b from-blue-600 to-transparent hidden md:block opacity-20" />
-                    )}
-
-                    <div className={`w-20 h-20 rounded-[2rem] flex items-center justify-center shrink-0 shadow-2xl transition-all duration-500 group-hover:rotate-12 ${
-                      i % 2 === 0 ? 'bg-slate-900 text-white' : 'bg-blue-600 text-white'
-                    }`}>
-                       <step.icon size={36} />
-                    </div>
-                    
+            <div className="relative">
+               <div className="flex gap-6 overflow-x-auto pb-12 snap-x snap-mandatory hide-scrollbar px-4 -mx-4">
+                  {BUDGET_GUIDE_STEPS.map((step, i) => (
                     <motion.div 
-                      whileHover={{ scale: 1.02 }}
-                      className={`p-10 rounded-[3rem] bg-white border border-slate-100 shadow-xl shadow-slate-200/20 flex-1 relative overflow-hidden`}
+                      key={i}
+                      initial={{ opacity: 0, scale: 0.95 }}
+                      whileInView={{ opacity: 1, scale: 1 }}
+                      viewport={{ once: true }}
+                      transition={{ duration: 0.5, delay: i * 0.1 }}
+                      className="min-w-[300px] md:min-w-[400px] snap-center bg-white border border-slate-100 rounded-[2.5rem] p-8 shadow-xl shadow-slate-200/20 group relative overflow-hidden flex flex-col justify-between"
                     >
-                       <div className="absolute top-0 right-0 p-8 text-8xl font-black text-slate-50 opacity-[0.05] select-none italic">
+                       <div className="absolute top-0 right-0 p-6 text-6xl font-black text-slate-50 opacity-[0.05] select-none italic">
                           {i + 1}
                        </div>
-                       
-                       <div className="relative z-10 space-y-4">
-                          <div className="flex items-center gap-3">
-                             <div className="w-8 h-1 bg-blue-600 rounded-full" />
-                             <h4 className="text-[10px] font-black text-blue-600 uppercase tracking-[0.3em]">{step.title}</h4>
+
+                       <div className="space-y-6">
+                          <div className={`w-14 h-14 rounded-2xl flex items-center justify-center shadow-lg transition-transform group-hover:scale-110 ${
+                            i % 2 === 0 ? 'bg-slate-900 text-white' : 'bg-blue-600 text-white'
+                          }`}>
+                             <step.icon size={28} />
                           </div>
-                          <h3 className="text-3xl font-bold text-slate-900 leading-tight">{step.subtitle}</h3>
-                          <p className="text-slate-600 leading-relaxed font-medium italic text-lg opacity-80">
+
+                          <div className="space-y-2">
+                             <div className="flex items-center gap-2">
+                                <div className="w-4 h-0.5 bg-blue-600 rounded-full" />
+                                <h4 className="text-[9px] font-black text-blue-600 uppercase tracking-[0.2em]">{step.title}</h4>
+                             </div>
+                             <h3 className="text-xl font-bold text-slate-900 leading-tight">{step.subtitle}</h3>
+                          </div>
+
+                          <p className="text-slate-600 leading-relaxed text-sm font-medium italic opacity-80">
                              {step.content}
                           </p>
                        </div>
                     </motion.div>
-                 </motion.div>
-               ))}
+                  ))}
+               </div>
+               
+               {/* SCROLL INDICATOR */}
+               <div className="flex justify-center gap-2 mt-4">
+                  {BUDGET_GUIDE_STEPS.map((_, i) => (
+                    <div key={i} className="w-2 h-2 rounded-full bg-slate-200" />
+                  ))}
+               </div>
             </div>
          </section>
 

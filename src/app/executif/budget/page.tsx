@@ -327,22 +327,35 @@ export default function DetailedBudgetPage() {
                </p>
             </div>
 
-            {/* BUDGET CONTEXT EXPLANATION */}
+            {/* BUDGET CONTEXT EXPLANATION - REDESIGNED */}
             <motion.div 
-              initial={{ opacity: 0, scale: 0.95 }}
-              whileInView={{ opacity: 1, scale: 1 }}
-              className="bg-blue-900 text-white p-10 rounded-[3rem] shadow-2xl relative overflow-hidden"
+              initial={{ opacity: 0, y: 20 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              className="bg-[#1a0105] text-white p-12 rounded-[3.5rem] shadow-2xl relative overflow-hidden border border-white/5"
             >
-              <div className="absolute top-0 right-0 w-64 h-64 bg-white/5 rounded-full -mr-32 -mt-32 blur-3xl" />
-              <div className="relative z-10 flex flex-col md:flex-row gap-8 items-center">
-                <div className="w-16 h-16 rounded-2xl bg-white/10 flex items-center justify-center shrink-0">
-                  <Info size={32} className="text-blue-300" />
-                </div>
-                <div className="space-y-4">
-                  <h3 className="text-2xl font-bold uppercase tracking-tight">Comprendre l'augmentation en période de rigueur</h3>
-                  <p className="text-blue-100/80 leading-relaxed font-medium italic italic">
-                    Pourquoi le budget augmente-t-il malgré les appels à la rigueur ? Cette apparente contradiction s'explique par trois facteurs majeurs : l'inflation qui renchérit mécaniquement le coût des services publics, la hausse inévitable de la charge de la dette liée aux taux d'intérêt, et des engagements de long terme (comme la Loi de Programmation Militaire) qui sanctuarisent certaines dépenses régaliennes. Ainsi, même si l'État cherche à réduire son train de vie dans certains domaines, les postes "mécaniques" et de sécurité poussent mathématiquement le total vers le haut.
-                  </p>
+              {/* Decorative elements */}
+              <div className="absolute top-0 right-0 w-[500px] h-[500px] bg-red-900/10 rounded-full -mr-64 -mt-64 blur-[100px]" />
+              <div className="absolute bottom-0 left-0 w-96 h-96 bg-blue-900/5 rounded-full -ml-48 -mb-48 blur-[100px]" />
+              
+              <div className="relative z-10 space-y-8">
+                <h3 className="text-5xl md:text-6xl font-staatliches leading-none tracking-tight">
+                  COMPRENDRE <span className="text-red-500 italic opacity-80">L'AUGMENTATION</span>
+                </h3>
+                
+                <div className="flex flex-col md:flex-row gap-8 items-start">
+                  <div className="shrink-0 pt-1">
+                    <div className="w-12 h-12 rounded-xl bg-white/5 flex items-center justify-center border border-white/10">
+                      <Info size={24} className="text-red-400" />
+                    </div>
+                  </div>
+                  <div className="space-y-6">
+                    <p className="text-xl text-slate-300 leading-relaxed font-light italic">
+                      Pourquoi le budget augmente-t-il malgré les appels à la rigueur ? 
+                    </p>
+                    <p className="text-slate-400 leading-relaxed font-medium text-lg">
+                      Cette apparente contradiction s'explique par trois facteurs majeurs : l'inflation qui renchérit mécaniquement le coût des services publics, la hausse inévitable de la charge de la dette liée aux taux d'intérêt, et des engagements de long terme (comme la Loi de Programmation Militaire) qui sanctuarisent certaines dépenses régaliennes. Ainsi, même si l'État cherche à réduire son train de vie dans certains domaines, les postes "mécaniques" et de sécurité poussent mathématiquement le total vers le haut.
+                    </p>
+                  </div>
                 </div>
               </div>
             </motion.div>

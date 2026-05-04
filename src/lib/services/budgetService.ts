@@ -51,10 +51,10 @@ export function transformBudgetData(records: any[]) {
       .replace(/[^a-z0-9]+/g, '-')      // Remplace espaces par -
       .replace(/^-+|-+$/g, '');          // Enlève - au début/fin
 
-    // ✅ Récupère les VRAIES valeurs pour chaque année
-    const amount2024 = parseFloat(record.execution_2024 || record.cp_2024 || '0');
-    const amount2025 = parseFloat(record.lfi_2025 || record.cp_2025 || '0');
-    const amount2026 = parseFloat(record.plf_2026 || record.cp_2026 || '0');
+    // ✅ Récupère les VRAIES valeurs pour chaque année avec les noms exacts de l'API
+    const amount2024 = parseFloat(record.execution_2024_cp || record.execution_2024 || record.cp_2024 || '0');
+    const amount2025 = parseFloat(record.lfi_2025_cp_ou_prevision_2025_si_depense_fiscale || record.lfi_2025 || record.cp_2025 || '0');
+    const amount2026 = parseFloat(record.plf_2026_cp_ou_prevision_2026_si_depense_fiscale || record.plf_2026 || record.cp_2026 || '0');
 
     // Agrège par mission
     if (missionsMap.has(slug)) {
@@ -81,6 +81,13 @@ export function transformBudgetData(records: any[]) {
   }));
 
   console.log(`[Budget Transform] ✅ Transformed into ${missions.length} missions`);
+  
+  // LOGS DE VÉRIFICATION DEMANDÉS
+  console.log('[Budget Transform] Échantillon des premières missions :');
+  missions.slice(0, 5).forEach(m => {
+    console.log(`${m.mission}: ${m.val2026.toFixed(2)} Md€ (2026)`);
+  });
+
   return missions;
 }
 

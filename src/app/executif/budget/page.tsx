@@ -162,14 +162,51 @@ const GLOBAL_SPENDING_DATA = [
 ];
 
 const DEBT_HISTORY = [
-  { year: 1980, value: 21, event: "Début de l'endettement moderne" },
-  { year: 1981, value: 23, event: "Relance Mauroy / Nationalisations", highlight: true },
-  { year: 1990, value: 36, event: "Stabilisation relative" },
-  { year: 2000, value: 59, event: "Passage à l'Euro" },
-  { year: 2008, value: 68, event: "Crise des Subprimes", highlight: true },
-  { year: 2010, value: 85, event: "Crise de la zone Euro" },
-  { year: 2020, value: 115, event: "Pandémie COVID-19 (Quoi qu'il en coûte)", highlight: true },
-  { year: 2026, value: 114, event: "Objectif de réduction PLF 2026" },
+  { year: 1980, value: 20.8, event: "Début de l'endettement moderne" },
+  { year: 1985, value: 30.7, event: "Relance et investissements" },
+  { year: 1990, value: 35.8, event: "Stabilisation pré-Maastricht" },
+  { year: 1995, value: 55.3, event: "Crise monétaire et sociale" },
+  { year: 2000, value: 58.9, event: "Passage à l'Euro" },
+  { year: 2005, value: 67.2, event: "Rapport Pébereau sur la dette" },
+  { year: 2008, value: 68.8, event: "Crise des Subprimes", highlight: true },
+  { year: 2010, value: 85.3, event: "Plans de sauvetage bancaire" },
+  { year: 2015, value: 97.1, event: "Période de taux bas" },
+  { year: 2020, value: 114.7, event: "Pandémie COVID-19", highlight: true },
+  { year: 2023, value: 110.6, event: "Rebond post-covid" },
+  { year: 2024, value: 112.5, event: "Dérapage du déficit", highlight: true },
+  { year: 2025, value: 114.7, event: "Prévision PLF" },
+  { year: 2026, value: 114.9, event: "Objectif de stabilisation" },
+];
+
+const DEBT_NEWS = [
+  {
+    date: "Mars 2026",
+    title: "Chiffre Record",
+    content: "La dette publique française atteint officiellement 3 228,4 Md€ au dernier relevé de l'INSEE.",
+    type: "stats",
+    impact: "high"
+  },
+  {
+    date: "Octobre 2025",
+    title: "Moody's : Alerte",
+    content: "L'agence Moody's maintient la note Aa2 mais confirme une perspective 'négative' pour la France.",
+    type: "rating",
+    impact: "medium"
+  },
+  {
+    date: "Mai 2024",
+    title: "Dégradation S&P",
+    content: "Standard & Poor's dégrade la note souveraine de la France de AA à AA-. Une première depuis 2013.",
+    type: "rating",
+    impact: "high"
+  },
+  {
+    date: "Janvier 2026",
+    title: "Charge de la Dette",
+    content: "Les intérêts de la dette deviennent le premier poste budgétaire de l'État devant l'Éducation Nationale.",
+    type: "stats",
+    impact: "high"
+  }
 ];
 
 const LEGISLATIVE_STEPS = [
@@ -816,8 +853,34 @@ export default function DetailedBudgetPage() {
                   </div>
                </div>
 
-               {/* DEBT STATS */}
+               {/* DEBT STATS & NEWS */}
                <div className="lg:col-span-4 space-y-6">
+                  {/* NEWS FEED */}
+                  <div className="bg-slate-50 border border-slate-200 rounded-[2.5rem] p-8 space-y-6">
+                     <div className="flex items-center justify-between">
+                        <h4 className="text-sm font-black text-slate-900 uppercase tracking-widest">Dernières Actualités</h4>
+                        <div className="flex items-center gap-1.5 px-2 py-1 bg-blue-100 rounded-full">
+                           <div className="w-1.5 h-1.5 rounded-full bg-blue-600 animate-pulse" />
+                           <span className="text-[8px] font-black text-blue-700 uppercase">Live INSEE</span>
+                        </div>
+                     </div>
+                     
+                     <div className="space-y-4 max-h-[400px] overflow-y-auto pr-2 custom-scrollbar">
+                        {DEBT_NEWS.map((news, i) => (
+                           <div key={i} className="p-4 bg-white rounded-2xl border border-slate-100 shadow-sm space-y-2 group hover:border-blue-200 transition-colors">
+                              <div className="flex justify-between items-start">
+                                 <span className="text-[10px] font-bold text-slate-400">{news.date}</span>
+                                 <div className={`w-2 h-2 rounded-full ${news.impact === 'high' ? 'bg-rose-500' : 'bg-amber-500'}`} />
+                              </div>
+                              <h5 className="text-sm font-bold text-slate-900 group-hover:text-blue-600 transition-colors">{news.title}</h5>
+                              <p className="text-[11px] text-slate-500 leading-relaxed font-medium italic">
+                                 {news.content}
+                              </p>
+                           </div>
+                        ))}
+                     </div>
+                  </div>
+
                   <div className="bg-slate-900 text-white p-8 rounded-[2.5rem] shadow-xl relative overflow-hidden">
                      <div className="absolute top-0 right-0 p-4 opacity-10">
                         <Scale size={80} />

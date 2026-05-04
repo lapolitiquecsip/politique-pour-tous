@@ -1227,18 +1227,8 @@ export default function DetailedBudgetPage() {
                     </table>
                  </div>
               </div>
-
-              <div className="pt-8 flex flex-col md:flex-row items-center justify-between gap-8 border-t border-white/10">
-                 <div className="text-left">
-                    <p className="text-[10px] font-black text-slate-500 uppercase tracking-widest mb-1">Source Officielle</p>
-                    <p className="text-xs text-slate-400 italic">Direction du Budget - Ministère de l'Économie et des Finances</p>
-                 </div>
-                 <button className="px-10 py-5 bg-blue-600 text-white rounded-2xl font-black text-xs uppercase tracking-widest hover:bg-blue-700 transition-all shadow-xl shadow-blue-500/20">
-                    Télécharger le rapport comparatif (PDF)
-                 </button>
-              </div>
            </div>
-        </section>
+         </section>
 
         {/* MISSION DRILL-DOWN SIDE PANEL */}
         <AnimatePresence>
@@ -1258,7 +1248,7 @@ export default function DetailedBudgetPage() {
                     .mission-panel::-webkit-scrollbar-thumb:hover {
                       background: #cbd5e1;
                     }
-                  `}</style>
+                 `}</style>
                  {/* Backdrop */}
                  <motion.div 
                    initial={{ opacity: 0 }}
@@ -1279,204 +1269,206 @@ export default function DetailedBudgetPage() {
                       className="w-full max-w-5xl max-h-full bg-white shadow-2xl rounded-[3rem] overflow-y-auto mission-panel border border-slate-100 pointer-events-auto relative"
                     >
                        <div className="p-8 md:p-12 pt-16 md:pt-20 space-y-12 flex flex-col min-h-full">
-                       {/* Header */}
-                       <div className="flex items-start justify-between">
-                          <div className="space-y-2">
-                             <div className={`inline-flex items-center gap-2 px-3 py-1 rounded-full text-[10px] font-black text-white uppercase tracking-widest ${selectedMissionData.color}`}>
-                                {selectedMissionData.impact}
-                             </div>
-                             <h2 className="text-3xl md:text-4xl font-staatliches text-slate-900 uppercase leading-tight">
-                                {selectedMissionData.title}
-                             </h2>
-                             <p className="text-xl md:text-2xl font-mono font-bold text-slate-400">{selectedMissionData.amount}</p>
-                          </div>
-                          <button 
-                            onClick={() => setSelectedMissionId(null)}
-                            className="w-12 h-12 rounded-full bg-slate-50 flex items-center justify-center hover:bg-slate-100 transition-colors"
-                          >
-                             <X size={24} className="text-slate-900" />
-                          </button>
-                       </div>
-
-                       {/* Description */}
-                       <div className="space-y-4">
-                          <h3 className="text-xs font-black text-slate-400 uppercase tracking-widest">Contexte Budgétaire</h3>
-                          <p className="text-slate-600 leading-relaxed font-medium italic">
-                             {selectedMissionData.details}
-                          </p>
-                       </div>
-
-                       <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
-                          {/* Breakdown Chart */}
-                          <div className="bg-slate-50 rounded-[2rem] p-8 space-y-6">
-                             <h3 className="text-xs font-black text-slate-400 uppercase tracking-widest">Répartition Interne</h3>
-                             <div className="space-y-4">
-                                {selectedMissionData.breakdown?.map((item: any, i: number) => (
-                                   <div key={i} className="space-y-2">
-                                      <div className="flex justify-between text-xs font-bold text-slate-700">
-                                         <span>{item.label}</span>
-                                         <span>{item.value} Md€</span>
-                                      </div>
-                                      <div className="w-full h-1.5 bg-slate-200 rounded-full overflow-hidden">
-                                         <motion.div 
-                                           initial={{ width: 0 }}
-                                           animate={{ width: `${(item.value / parseFloat(selectedMissionData.amount)) * 100}%` }}
-                                           className={`h-full ${selectedMissionData.color}`}
-                                         />
-                                      </div>
-                                   </div>
-                                ))}
-                             </div>
-                           {/* Evolution Chart */}
-                           <div className="bg-slate-900 rounded-[2rem] p-8 space-y-6 text-white relative overflow-hidden group">
-                              <h3 className="text-xs font-black text-slate-500 uppercase tracking-widest">Évolution PLF (Md€)</h3>
-                              
-                              <div className="h-40 w-full relative mt-4">
-                                 {selectedMissionData.evolution && (
-                                    <svg viewBox="0 0 400 150" className="w-full h-full overflow-visible">
-                                       <defs>
-                                          <linearGradient id={`grad-${selectedMissionId}`} x1="0" y1="0" x2="0" y2="1">
-                                             <stop offset="0%" stopColor="white" stopOpacity="0.2" />
-                                             <stop offset="100%" stopColor="white" stopOpacity="0" />
-                                          </linearGradient>
-                                       </defs>
-                                       
-                                       {/* Helper lines */}
-                                       <line x1="0" y1="120" x2="400" y2="120" stroke="rgba(255,255,255,0.1)" strokeWidth="1" strokeDasharray="4 4" />
-                                       
-                                       {/* Path */}
-                                       {(() => {
-                                          const points = selectedMissionData.evolution;
-                                          const values = points.map((p: any) => p.value);
-                                          const max = Math.max(...values) * 1.2;
-                                          const min = Math.min(...values) * 0.8;
-                                          const range = max - min;
-                                          
-                                          const getX = (i: number) => (i / (points.length - 1)) * 400;
-                                          const getY = (v: number) => 120 - ((v - min) / range) * 100;
-                                          
-                                          const d = `M ${getX(0)} ${getY(points[0].value)} ` + 
-                                                   points.slice(1).map((p: any, i: number) => `L ${getX(i+1)} ${getY(p.value)}`).join(' ');
-                                          
-                                          const areaD = `${d} L 400 120 L 0 120 Z`;
-                                          
-                                          return (
-                                             <>
-                                                <motion.path 
-                                                  initial={{ opacity: 0 }}
-                                                  animate={{ opacity: 1 }}
-                                                  d={areaD}
-                                                  fill={`url(#grad-${selectedMissionId})`}
-                                                  transition={{ duration: 1 }}
-                                                />
-                                                <motion.path 
-                                                  initial={{ pathLength: 0 }}
-                                                  animate={{ pathLength: 1 }}
-                                                  d={d}
-                                                  fill="none"
-                                                  stroke="white"
-                                                  strokeWidth="3"
-                                                  strokeLinecap="round"
-                                                  transition={{ duration: 1.5 }}
-                                                />
-                                                {points.map((p: any, i: number) => (
-                                                   <g key={i}>
-                                                      <motion.circle 
-                                                        initial={{ scale: 0 }}
-                                                        animate={{ scale: 1 }}
-                                                        cx={getX(i)}
-                                                        cy={getY(p.value)}
-                                                        fill="white"
-                                                        r="4"
-                                                        transition={{ delay: 0.5 + (i * 0.2) }}
-                                                      />
-                                                      <text 
-                                                        x={getX(i)} 
-                                                        y={getY(p.value) - 15} 
-                                                        textAnchor="middle" 
-                                                        className="text-[10px] font-black fill-white"
-                                                      >
-                                                         {p.value}
-                                                      </text>
-                                                      <text 
-                                                        x={getX(i)} 
-                                                        y="140" 
-                                                        textAnchor="middle" 
-                                                        className="text-[10px] font-bold fill-slate-500 uppercase tracking-widest"
-                                                      >
-                                                         {p.year}
-                                                      </text>
-                                                   </g>
-                                                ))}
-                                             </>
-                                          );
-                                       })()}
-                                    </svg>
-                                 )}
-                              </div>
-                           </div>
-                        </div>
-
-                       <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
-                          {/* Measures */}
-                          <div className="space-y-6">
-                             <h3 className="text-xs font-black text-slate-400 uppercase tracking-widest">Mesures Phares 2026</h3>
-                             <div className="space-y-4">
-                                {selectedMissionData.measures?.map((m: string, i: number) => (
-                                   <div key={i} className="flex items-start gap-4 p-4 bg-emerald-50 rounded-2xl border border-emerald-100">
-                                      <div className="w-6 h-6 rounded-full bg-emerald-500 text-white flex items-center justify-center shrink-0">
-                                         <CheckCircle2 size={14} />
-                                      </div>
-                                      <p className="text-xs font-bold text-emerald-900">{m}</p>
-                                   </div>
-                                ))}
-                             </div>
-                          </div>
-
-                          {/* Functioning vs Investment */}
-                          <div className="space-y-6">
-                             <h3 className="text-xs font-black text-slate-400 uppercase tracking-widest">Nature de la dépense</h3>
-                             <div className="p-8 border border-slate-100 rounded-[2rem] space-y-6">
-                                <div className="flex justify-between items-end">
-                                   <div className="space-y-1">
-                                      <p className="text-[10px] font-black text-slate-400 uppercase">Fonctionnement</p>
-                                      <p className="text-2xl font-staatliches text-slate-900">{selectedMissionData.split?.functioning}%</p>
-                                   </div>
-                                   <div className="space-y-1 text-right">
-                                      <p className="text-[10px] font-black text-slate-400 uppercase">Investissement</p>
-                                      <p className="text-2xl font-staatliches text-blue-600">{selectedMissionData.split?.investment}%</p>
-                                   </div>
+                          {/* Header */}
+                          <div className="flex items-start justify-between">
+                             <div className="space-y-2">
+                                <div className={`inline-flex items-center gap-2 px-3 py-1 rounded-full text-[10px] font-black text-white uppercase tracking-widest ${selectedMissionData.color}`}>
+                                   {selectedMissionData.impact}
                                 </div>
-                                <div className="w-full h-4 bg-slate-100 rounded-full overflow-hidden flex">
-                                   <motion.div 
-                                     initial={{ width: 0 }}
-                                     animate={{ width: `${selectedMissionData.split?.functioning}%` }}
-                                     className="h-full bg-slate-400"
-                                   />
-                                   <motion.div 
-                                     initial={{ width: 0 }}
-                                     animate={{ width: `${selectedMissionData.split?.investment}%` }}
-                                     className="h-full bg-blue-600"
-                                   />
+                                <h2 className="text-3xl md:text-4xl font-staatliches text-slate-900 uppercase leading-tight">
+                                   {selectedMissionData.title}
+                                </h2>
+                                <p className="text-xl md:text-2xl font-mono font-bold text-slate-400">{selectedMissionData.amount}</p>
+                             </div>
+                             <button 
+                               onClick={() => setSelectedMissionId(null)}
+                               className="w-12 h-12 rounded-full bg-slate-50 flex items-center justify-center hover:bg-slate-100 transition-colors"
+                             >
+                                <X size={24} className="text-slate-900" />
+                             </button>
+                          </div>
+
+                          {/* Description */}
+                          <div className="space-y-4">
+                             <h3 className="text-xs font-black text-slate-400 uppercase tracking-widest">Contexte Budgétaire</h3>
+                             <p className="text-slate-600 leading-relaxed font-medium italic">
+                                {selectedMissionData.details}
+                             </p>
+                          </div>
+
+                          <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
+                             {/* Breakdown Chart */}
+                             <div className="bg-slate-50 rounded-[2rem] p-8 space-y-6">
+                                <h3 className="text-xs font-black text-slate-400 uppercase tracking-widest">Répartition Interne</h3>
+                                <div className="space-y-4">
+                                   {selectedMissionData.breakdown?.map((item: any, i: number) => (
+                                      <div key={i} className="space-y-2">
+                                         <div className="flex justify-between text-xs font-bold text-slate-700">
+                                            <span>{item.label}</span>
+                                            <span>{item.value} Md€</span>
+                                         </div>
+                                         <div className="w-full h-1.5 bg-slate-200 rounded-full overflow-hidden">
+                                            <motion.div 
+                                              initial={{ width: 0 }}
+                                              animate={{ width: `${(item.value / parseFloat(selectedMissionData.amount)) * 100}%` }}
+                                              className={`h-full ${selectedMissionData.color}`}
+                                            />
+                                         </div>
+                                      </div>
+                                   ))}
                                 </div>
-                                <p className="text-[10px] text-slate-400 font-medium italic text-center">
-                                   La dépense de fonctionnement inclut majoritairement les salaires des agents publics.
-                                </p>
+                             </div>
+
+                             {/* Evolution Chart */}
+                             <div className="bg-slate-900 rounded-[2rem] p-8 space-y-6 text-white relative overflow-hidden group">
+                                <h3 className="text-xs font-black text-slate-500 uppercase tracking-widest">Évolution PLF (Md€)</h3>
+                                
+                                <div className="h-40 w-full relative mt-4">
+                                   {selectedMissionData.evolution && (
+                                      <svg viewBox="0 0 400 150" className="w-full h-full overflow-visible">
+                                         <defs>
+                                            <linearGradient id={`grad-${selectedMissionId}`} x1="0" y1="0" x2="0" y2="1">
+                                               <stop offset="0%" stopColor="white" stopOpacity="0.2" />
+                                               <stop offset="100%" stopColor="white" stopOpacity="0" />
+                                            </linearGradient>
+                                         </defs>
+                                         
+                                         {/* Helper lines */}
+                                         <line x1="0" y1="120" x2="400" y2="120" stroke="rgba(255,255,255,0.1)" strokeWidth="1" strokeDasharray="4 4" />
+                                         
+                                         {/* Path */}
+                                         {(() => {
+                                            const points = selectedMissionData.evolution;
+                                            const values = points.map((p: any) => p.value);
+                                            const max = Math.max(...values) * 1.2;
+                                            const min = Math.min(...values) * 0.8;
+                                            const range = max - min;
+                                            
+                                            const getX = (i: number) => (i / (points.length - 1)) * 400;
+                                            const getY = (v: number) => 120 - ((v - min) / range) * 100;
+                                            
+                                            const d = `M ${getX(0)} ${getY(points[0].value)} ` + 
+                                                     points.slice(1).map((p: any, i: number) => `L ${getX(i+1)} ${getY(p.value)}`).join(' ');
+                                            
+                                            const areaD = `${d} L 400 120 L 0 120 Z`;
+                                            
+                                            return (
+                                               <>
+                                                  <motion.path 
+                                                    initial={{ opacity: 0 }}
+                                                    animate={{ opacity: 1 }}
+                                                    d={areaD}
+                                                    fill={`url(#grad-${selectedMissionId})`}
+                                                    transition={{ duration: 1 }}
+                                                  />
+                                                  <motion.path 
+                                                    initial={{ pathLength: 0 }}
+                                                    animate={{ pathLength: 1 }}
+                                                    d={d}
+                                                    fill="none"
+                                                    stroke="white"
+                                                    strokeWidth="3"
+                                                    strokeLinecap="round"
+                                                    transition={{ duration: 1.5 }}
+                                                  />
+                                                  {points.map((p: any, i: number) => (
+                                                     <g key={i}>
+                                                        <motion.circle 
+                                                          initial={{ scale: 0 }}
+                                                          animate={{ scale: 1 }}
+                                                          cx={getX(i)}
+                                                          cy={getY(p.value)}
+                                                          fill="white"
+                                                          r="4"
+                                                          transition={{ delay: 0.5 + (i * 0.2) }}
+                                                        />
+                                                        <text 
+                                                          x={getX(i)} 
+                                                          y={getY(p.value) - 15} 
+                                                          textAnchor="middle" 
+                                                          className="text-[10px] font-black fill-white"
+                                                        >
+                                                           {p.value}
+                                                        </text>
+                                                        <text 
+                                                          x={getX(i)} 
+                                                          y="140" 
+                                                          textAnchor="middle" 
+                                                          className="text-[10px] font-bold fill-slate-500 uppercase tracking-widest"
+                                                        >
+                                                           {p.year}
+                                                        </text>
+                                                     </g>
+                                                  ))}
+                                               </>
+                                            );
+                                         })()}
+                                      </svg>
+                                   )}
+                                </div>
                              </div>
                           </div>
+
+                          <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
+                             {/* Measures */}
+                             <div className="space-y-6">
+                                <h3 className="text-xs font-black text-slate-400 uppercase tracking-widest">Mesures Phares 2026</h3>
+                                <div className="space-y-4">
+                                   {selectedMissionData.measures?.map((m: any, i: number) => (
+                                      <div key={i} className="flex items-start gap-4 p-4 bg-emerald-50 rounded-2xl border border-emerald-100">
+                                         <div className="w-6 h-6 rounded-full bg-emerald-500 text-white flex items-center justify-center shrink-0">
+                                            <CheckCircle2 size={14} />
+                                         </div>
+                                         <p className="text-xs font-bold text-emerald-900">{typeof m === 'string' ? m : m.title}</p>
+                                      </div>
+                                   ))}
+                                </div>
+                             </div>
+
+                             {/* Functioning vs Investment */}
+                             <div className="space-y-6">
+                                <h3 className="text-xs font-black text-slate-400 uppercase tracking-widest">Nature de la dépense</h3>
+                                <div className="p-8 border border-slate-100 rounded-[2rem] space-y-6">
+                                   <div className="flex justify-between items-end">
+                                      <div className="space-y-1">
+                                         <p className="text-[10px] font-black text-slate-400 uppercase">Fonctionnement</p>
+                                         <p className="text-2xl font-staatliches text-slate-900">{selectedMissionData.split?.functioning}%</p>
+                                      </div>
+                                      <div className="space-y-1 text-right">
+                                         <p className="text-[10px] font-black text-slate-400 uppercase">Investissement</p>
+                                         <p className="text-2xl font-staatliches text-blue-600">{selectedMissionData.split?.investment}%</p>
+                                      </div>
+                                   </div>
+                                   <div className="w-full h-4 bg-slate-100 rounded-full overflow-hidden flex">
+                                      <motion.div 
+                                        initial={{ width: 0 }}
+                                        animate={{ width: `${selectedMissionData.split?.functioning}%` }}
+                                        className="h-full bg-slate-400"
+                                      />
+                                      <motion.div 
+                                        initial={{ width: 0 }}
+                                        animate={{ width: `${selectedMissionData.split?.investment}%` }}
+                                        className="h-full bg-blue-600"
+                                      />
+                                   </div>
+                                   <p className="text-[10px] text-slate-400 font-medium italic text-center">
+                                      La dépense de fonctionnement inclut majoritairement les salaires des agents publics.
+                                   </p>
+                                </div>
+                             </div>
+                          </div>
+                          
+                          <div className="pt-8 mt-auto">
+                             <button className="w-full py-5 bg-slate-900 text-white rounded-2xl font-black text-xs uppercase tracking-widest hover:bg-slate-800 transition-all">
+                                Accéder au Rapport Complet PAP 2026
+                             </button>
+                          </div>
                        </div>
-                       
-                       <div className="pt-8 mt-auto">
-                          <button className="w-full py-5 bg-slate-900 text-white rounded-2xl font-black text-xs uppercase tracking-widest hover:bg-slate-800 transition-all">
-                             Accéder au Rapport Complet PAP 2026
-                          </button>
-                       </div>
-                    </div>
-                 </motion.div>
-              </div>
-           </>
-        )}
-     </AnimatePresence>
+                    </motion.div>
+                 </div>
+              </>
+           )}
+        </AnimatePresence>
 
       </div>
     </main>

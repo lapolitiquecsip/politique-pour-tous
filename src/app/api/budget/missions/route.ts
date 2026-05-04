@@ -44,8 +44,8 @@ export async function POST() {
     // Force le rafraîchissement en supprimant le cache
     const { createClient } = await import('@supabase/supabase-js');
     const supabase = createClient(
-      process.env.NEXT_PUBLIC_SUPABASE_URL || '',
-      process.env.SUPABASE_SERVICE_ROLE_KEY || ''
+      process.env.NEXT_PUBLIC_SUPABASE_URL || 'https://placeholder.supabase.co',
+      process.env.SUPABASE_SERVICE_ROLE_KEY || 'placeholder_key_to_prevent_build_error'
     );
     
     await supabase

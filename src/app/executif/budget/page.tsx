@@ -20,7 +20,8 @@ import {
   Compass,
   CheckCircle2,
   X,
-  ChevronRight
+  ChevronRight,
+  ChevronLeft
 } from "lucide-react";
 import Link from "next/link";
 import { usePremium } from "@/lib/hooks/usePremium";
@@ -413,16 +414,40 @@ export default function DetailedBudgetPage() {
 
   const selectedMissionData = dynamicMissions.find(m => m.id === selectedMissionId);
 
+  const navigateMission = (direction: 'next' | 'prev') => {
+    const currentIndex = dynamicMissions.findIndex(m => m.id === selectedMissionId);
+    if (currentIndex === -1) return;
+    
+    let nextIndex;
+    if (direction === 'next') {
+      nextIndex = (currentIndex + 1) % dynamicMissions.length;
+    } else {
+      nextIndex = (currentIndex - 1 + dynamicMissions.length) % dynamicMissions.length;
+    }
+    
+    setSelectedMissionId(dynamicMissions[nextIndex].id);
+  };
+
   useEffect(() => {
+    const handleKeyDown = (e: KeyboardEvent) => {
+      if (selectedMissionId) {
+        if (e.key === 'ArrowRight') navigateMission('next');
+        if (e.key === 'ArrowLeft') navigateMission('prev');
+        if (e.key === 'Escape') setSelectedMissionId(null);
+      }
+    };
+
     if (selectedMissionId) {
       document.body.style.overflow = 'hidden';
+      window.addEventListener('keydown', handleKeyDown);
     } else {
       document.body.style.overflow = 'unset';
     }
     return () => {
       document.body.style.overflow = 'unset';
+      window.removeEventListener('keydown', handleKeyDown);
     };
-  }, [selectedMissionId]);
+  }, [selectedMissionId, dynamicMissions]);
 
   // Counter component for animated numbers
   const Counter = ({ value, duration = 2 }: { value: number; duration?: number }) => {
@@ -1259,6 +1284,28 @@ export default function DetailedBudgetPage() {
                    className="fixed inset-0 bg-slate-900/40 backdrop-blur-md z-[100]"
                    style={{ backdropFilter: 'blur(12px)', WebkitBackdropFilter: 'blur(12px)' }}
                  />
+
+                 {/* Navigation Arrows */}
+                 <div className="fixed left-2 md:left-8 top-1/2 -translate-y-1/2 z-[120] pointer-events-auto hidden md:block">
+                    <motion.button 
+                      initial={{ opacity: 0, x: -20 }}
+                      animate={{ opacity: 1, x: 0 }}
+                      onClick={() => navigateMission('prev')}
+                      className="w-16 h-16 rounded-full bg-white shadow-2xl text-slate-900 flex items-center justify-center hover:bg-slate-50 transition-all border border-slate-100"
+                    >
+                       <ChevronLeft size={32} />
+                    </motion.button>
+                 </div>
+                 <div className="fixed right-2 md:right-8 top-1/2 -translate-y-1/2 z-[120] pointer-events-auto hidden md:block">
+                    <motion.button 
+                      initial={{ opacity: 0, x: 20 }}
+                      animate={{ opacity: 1, x: 0 }}
+                      onClick={() => navigateMission('next')}
+                      className="w-16 h-16 rounded-full bg-white shadow-2xl text-slate-900 flex items-center justify-center hover:bg-slate-50 transition-all border border-slate-100"
+                    >
+                       <ChevronRight size={32} />
+                    </motion.button>
+                 </div>
                  
                  {/* Modal Container */}
                  <div className="fixed inset-0 z-[110] flex items-center justify-center p-4 md:p-12 pointer-events-none">

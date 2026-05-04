@@ -368,6 +368,11 @@ export default function DetailedBudgetPage() {
                 return {
                    ...m,
                    amount: `${apiMission.val2026} Md€`,
+                   evolution: [
+                      { year: "2024", value: apiMission.val2024 || (parseFloat(m.amount) * 0.95) },
+                      { year: "2025", value: apiMission.val2025 },
+                      { year: "2026", value: apiMission.val2026 }
+                   ],
                    measures: apiMission.programs ? apiMission.programs.map((p: any) => ({
                       title: p.name,
                       impact: "Prioritaire",
@@ -1322,29 +1327,95 @@ export default function DetailedBudgetPage() {
                                    </div>
                                 ))}
                              </div>
-                          </div>
-
-                          {/* Evolution Chart */}
-                          <div className="bg-slate-900 rounded-[2rem] p-8 space-y-6 text-white">
-                             <h3 className="text-xs font-black text-slate-500 uppercase tracking-widest">Évolution 5 ans (Md€)</h3>
-                             <div className="h-32 flex items-end justify-between gap-2">
-                                {selectedMissionData.evolution?.map((d: any, i: number) => (
-                                   <div key={i} className="flex-1 flex flex-col items-center gap-2">
-                                      <motion.div 
-                                        initial={{ height: 0 }}
-                                        animate={{ height: `${(d.value / 150) * 100}%` }}
-                                        className="w-full bg-white/20 rounded-t-lg hover:bg-white/40 transition-colors cursor-pointer relative group"
-                                      >
-                                         <div className="absolute -top-6 left-1/2 -translate-x-1/2 text-[8px] font-bold opacity-0 group-hover:opacity-100 transition-opacity">
-                                            {d.value}
-                                         </div>
-                                      </motion.div>
-                                      <span className="text-[8px] font-bold text-slate-500">{d.year}</span>
-                                   </div>
-                                ))}
-                             </div>
-                          </div>
-                       </div>
+                           {/* Evolution Chart */}
+                           <div className="bg-slate-900 rounded-[2rem] p-8 space-y-6 text-white relative overflow-hidden group">
+                              <h3 className="text-xs font-black text-slate-500 uppercase tracking-widest">Évolution PLF (Md€)</h3>
+                              
+                              <div className="h-40 w-full relative mt-4">
+                                 {selectedMissionData.evolution && (
+                                    <svg viewBox="0 0 400 150" className="w-full h-full overflow-visible">
+                                       <defs>
+                                          <linearGradient id={`grad-${selectedMissionId}`} x1="0" y1="0" x2="0" y2="1">
+                                             <stop offset="0%" stopColor="white" stopOpacity="0.2" />
+                                             <stop offset="100%" stopColor="white" stopOpacity="0" />
+                                          </linearGradient>
+                                       </defs>
+                                       
+                                       {/* Helper lines */}
+                                       <line x1="0" y1="120" x2="400" y2="120" stroke="rgba(255,255,255,0.1)" strokeWidth="1" strokeDasharray="4 4" />
+                                       
+                                       {/* Path */}
+                                       {(() => {
+                                          const points = selectedMissionData.evolution;
+                                          const values = points.map((p: any) => p.value);
+                                          const max = Math.max(...values) * 1.2;
+                                          const min = Math.min(...values) * 0.8;
+                                          const range = max - min;
+                                          
+                                          const getX = (i: number) => (i / (points.length - 1)) * 400;
+                                          const getY = (v: number) => 120 - ((v - min) / range) * 100;
+                                          
+                                          const d = `M ${getX(0)} ${getY(points[0].value)} ` + 
+                                                   points.slice(1).map((p: any, i: number) => `L ${getX(i+1)} ${getY(p.value)}`).join(' ');
+                                          
+                                          const areaD = `${d} L 400 120 L 0 120 Z`;
+                                          
+                                          return (
+                                             <>
+                                                <motion.path 
+                                                  initial={{ opacity: 0 }}
+                                                  animate={{ opacity: 1 }}
+                                                  d={areaD}
+                                                  fill={`url(#grad-${selectedMissionId})`}
+                                                  transition={{ duration: 1 }}
+                                                />
+                                                <motion.path 
+                                                  initial={{ pathLength: 0 }}
+                                                  animate={{ pathLength: 1 }}
+                                                  d={d}
+                                                  fill="none"
+                                                  stroke="white"
+                                                  strokeWidth="3"
+                                                  strokeLinecap="round"
+                                                  transition={{ duration: 1.5 }}
+                                                />
+                                                {points.map((p: any, i: number) => (
+                                                   <g key={i}>
+                                                      <motion.circle 
+                                                        initial={{ scale: 0 }}
+                                                        animate={{ scale: 1 }}
+                                                        cx={getX(i)}
+                                                        cy={getY(p.value)}
+                                                        fill="white"
+                                                        r="4"
+                                                        transition={{ delay: 0.5 + (i * 0.2) }}
+                                                      />
+                                                      <text 
+                                                        x={getX(i)} 
+                                                        y={getY(p.value) - 15} 
+                                                        textAnchor="middle" 
+                                                        className="text-[10px] font-black fill-white"
+                                                      >
+                                                         {p.value}
+                                                      </text>
+                                                      <text 
+                                                        x={getX(i)} 
+                                                        y="140" 
+                                                        textAnchor="middle" 
+                                                        className="text-[10px] font-bold fill-slate-500 uppercase tracking-widest"
+                                                      >
+                                                         {p.year}
+                                                      </text>
+                                                   </g>
+                                                ))}
+                                             </>
+                                          );
+                                       })()}
+                                    </svg>
+                                 )}
+                              </div>
+                           </div>
+                        </div>
 
                        <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
                           {/* Measures */}

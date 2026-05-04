@@ -1,7 +1,7 @@
 "use client";
 
-import { useState } from "react";
-import { motion } from "framer-motion";
+import { useState, useEffect } from "react";
+import { motion, animate } from "framer-motion";
 import { 
   ArrowLeft, 
   CircleDollarSign, 
@@ -203,6 +203,23 @@ export default function DetailedBudgetPage() {
   const { isPremium, loading } = usePremium();
   const [selectedMission, setSelectedMission] = useState<string | null>(null);
   const [hoveredYear, setHoveredYear] = useState<number | null>(null);
+
+  // Counter component for animated numbers
+  const Counter = ({ value, duration = 2 }: { value: number; duration?: number }) => {
+    const [count, setCount] = useState(0);
+    const nodeRef = useState<HTMLSpanElement | null>(null)[0];
+
+    useEffect(() => {
+      const controls = animate(0, value, {
+        duration,
+        onUpdate: (latest) => setCount(Math.round(latest)),
+        ease: "easeOut"
+      });
+      return () => controls.stop();
+    }, [value, duration]);
+
+    return <span>{count}</span>;
+  };
 
   if (loading) return null;
 
@@ -647,12 +664,16 @@ export default function DetailedBudgetPage() {
                   <div className="bg-slate-950 rounded-[2.8rem] p-10 md:p-16 flex flex-col md:flex-row items-center justify-between gap-12 text-center md:text-left">
                      <div className="space-y-4">
                         <h4 className="text-sm font-black text-blue-400 uppercase tracking-[0.3em]">Total Dépense Publique</h4>
-                        <p className="text-6xl md:text-8xl font-staatliches leading-none">~1 600 <span className="text-2xl md:text-4xl opacity-40">Md€</span></p>
+                        <p className="text-6xl md:text-8xl font-staatliches leading-none flex items-baseline gap-2 justify-center md:justify-start">
+                           <span className="opacity-40">~</span>
+                           <Counter value={1600} />
+                           <span className="text-2xl md:text-4xl opacity-40">Md€</span>
+                        </p>
                      </div>
                      <div className="max-w-xs space-y-4">
                         <div className="w-12 h-1 bg-blue-500" />
                         <p className="text-slate-400 text-sm font-medium italic leading-relaxed">
-                           Soit environ **56% du PIB**. La France possède l'un des taux de redistribution les plus élevés au monde, couvrant l'intégralité du cycle de vie des citoyens.
+                           Soit environ 56% du PIB. La France possède l'un des taux de redistribution les plus élevés au monde, couvrant l'intégralité du cycle de vie des citoyens.
                         </p>
                      </div>
                   </div>

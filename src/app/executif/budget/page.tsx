@@ -1201,18 +1201,19 @@ export default function DetailedBudgetPage() {
                    animate={{ opacity: 1 }}
                    exit={{ opacity: 0 }}
                    onClick={() => setSelectedMissionId(null)}
-                   className="fixed inset-0 bg-slate-950/90 backdrop-blur-xl z-[100]"
+                   className="fixed inset-0 bg-slate-950/98 backdrop-blur-3xl z-[100]"
                  />
                  
-                 {/* Panel */}
-                 <motion.div 
-                   initial={{ x: "100%" }}
-                   animate={{ x: 0 }}
-                   exit={{ x: "100%" }}
-                   transition={{ type: "spring", damping: 25, stiffness: 200 }}
-                   className="fixed right-0 top-0 bottom-0 w-full max-w-2xl bg-white shadow-2xl z-[110] overflow-y-auto mission-panel border-l border-slate-100"
-                 >
-                    <div className="p-8 md:p-12 pt-16 md:pt-20 space-y-12 flex flex-col min-h-full">
+                 {/* Modal Container */}
+                 <div className="fixed inset-0 z-[110] flex items-center justify-center p-4 md:p-12 pointer-events-none">
+                    <motion.div 
+                      initial={{ scale: 0.9, opacity: 0, y: 20 }}
+                      animate={{ scale: 1, opacity: 1, y: 0 }}
+                      exit={{ scale: 0.9, opacity: 0, y: 20 }}
+                      transition={{ type: "spring", damping: 25, stiffness: 300 }}
+                      className="w-full max-w-5xl max-h-full bg-white shadow-2xl rounded-[3rem] overflow-y-auto mission-panel border border-slate-100 pointer-events-auto relative"
+                    >
+                       <div className="p-8 md:p-12 pt-16 md:pt-20 space-y-12 flex flex-col min-h-full">
                        {/* Header */}
                        <div className="flex items-start justify-between">
                           <div className="space-y-2">
@@ -1341,9 +1342,10 @@ export default function DetailedBudgetPage() {
                        </div>
                     </div>
                  </motion.div>
-              </>
-           )}
-        </AnimatePresence>
+              </div>
+           </>
+        )}
+     </AnimatePresence>
 
       </div>
     </main>

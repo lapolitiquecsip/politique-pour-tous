@@ -5,14 +5,17 @@ import FeedItemCard from '@/components/home/FeedItemCard';
 import { Building2, Users, CircleDollarSign, ArrowLeft, ShieldAlert, BookOpen, Briefcase, ChevronRight } from 'lucide-react';
 import Link from 'next/link';
 
-export default async function MinistryPage({ params }: { params: { slug: string } }) {
+export default async function MinistryPage({ params }: { params: Promise<{ slug: string }> }) {
+  // Await the params to get the slug
+  const { slug } = await params;
+
   // 1. Fetch Government Data
   const government = await fetchGovernmentComposition();
   
   // 2. Find the correct ministry using slug comparison
   const ministryData = government.find(m => {
     const minSlug = m.ministryName.toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g, "").replace(/[^a-z0-9]+/g, '-').replace(/(^-|-$)/g, '');
-    return minSlug === params.slug;
+    return minSlug === slug;
   });
 
   if (!ministryData) {

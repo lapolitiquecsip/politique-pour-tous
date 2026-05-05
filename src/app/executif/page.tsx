@@ -203,6 +203,8 @@ export default function ExecutifPage() {
   const [loadingNews, setLoadingNews] = useState(true);
   const [hoveredBudget, setHoveredBudget] = useState<any>(null);
 
+  const [dynamicMinisters, setDynamicMinisters] = useState<any[]>(MINISTERS);
+
   useEffect(() => {
     async function loadNews() {
       const news = await api.getContent(4, "gouvernement");
@@ -212,7 +214,44 @@ export default function ExecutifPage() {
     loadNews();
   }, []);
 
-  const filteredMinisters = MINISTERS.filter(m => 
+  useEffect(() => {
+    async function loadGov() {
+      try {
+        const res = await fetch('/api/government');
+        const json = await res.json();
+        if (json.success && json.data) {
+           const mapped = json.data.map((apiMin: any) => {
+              const hardcoded = MINISTERS.find(m => m.name.toLowerCase() === apiMin.ministerName.toLowerCase());
+              // Si c'est le 1er ministre, on gère spécifiquement (dans l'XML, c'est parfois pas listé comme ministère classique)
+              return {
+                 name: apiMin.ministerName,
+                 role: apiMin.role,
+                 ministry: apiMin.ministryName,
+                 image: hardcoded ? hardcoded.image : "https://upload.wikimedia.org/wikipedia/commons/thumb/b/b5/Portrait_placeholder.png/800px-Portrait_placeholder.png", // Placeholder si pas d'image connue
+                 budget: "Détails via Analyse Premium", // Valeur dynamique complexe à obtenir
+                 priority: "Mission gouvernementale"
+              }
+           });
+           
+           // Trier pour mettre le Premier ministre en premier
+           const sorted = mapped.sort((a: any, b: any) => {
+             if (a.role.toLowerCase().includes('premier ministre')) return -1;
+             if (b.role.toLowerCase().includes('premier ministre')) return 1;
+             return 0;
+           });
+
+           if (sorted.length > 0) {
+             setDynamicMinisters(sorted);
+           }
+        }
+      } catch(e) {
+        console.error("Failed to load government", e);
+      }
+    }
+    loadGov();
+  }, []);
+
+  const filteredMinisters = dynamicMinisters.filter(m => 
     m.name.toLowerCase().includes(search.toLowerCase()) || 
     m.ministry.toLowerCase().includes(search.toLowerCase()) ||
     m.role.toLowerCase().includes(search.toLowerCase())

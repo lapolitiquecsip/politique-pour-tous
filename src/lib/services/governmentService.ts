@@ -97,15 +97,12 @@ export async function fetchGovernmentComposition(): Promise<Minister[]> {
       
       if (nomMinistere && nomMinistre && fonction) {
         const missionId = matchMinistryToMissionId(nomMinistere);
-        if (missionId) {
-          // On ne garde que s'il y a un match avec nos missions (pour ne pas polluer)
-          ministerList.push({
-            missionId,
-            ministryName: nomMinistere,
-            ministerName: nomMinistre,
-            role: fonction
-          });
-        }
+        ministerList.push({
+          missionId: missionId || 'unassigned',
+          ministryName: nomMinistere,
+          ministerName: nomMinistre,
+          role: fonction
+        });
       }
     };
 

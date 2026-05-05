@@ -93,7 +93,7 @@ export default async function MinistryPage({ params }: { params: { slug: string 
             <div className="md:w-1/3 flex flex-col items-center text-center space-y-4">
               <div className="w-48 h-48 rounded-full border-4 border-slate-50 overflow-hidden shadow-lg bg-slate-100">
                 <img 
-                  src={"https://upload.wikimedia.org/wikipedia/commons/thumb/b/b5/Portrait_placeholder.png/800px-Portrait_placeholder.png"} 
+                  src={bioData?.image || `https://ui-avatars.com/api/?name=${encodeURIComponent(ministryData.ministerName)}&background=0D8ABC&color=fff&size=512`} 
                   alt={ministryData.ministerName}
                   className="w-full h-full object-cover"
                 />

@@ -22,6 +22,7 @@ import { useState, useEffect } from "react";
 import { api } from "@/lib/api";
 import FeedItemCard from "@/components/home/FeedItemCard";
 import GlossaryText from "@/components/ui/GlossaryText";
+import ministersBios from "@/lib/data/ministersBios.json";
 
 // Mock Data for the demonstration
 const MINISTERS = [
@@ -221,14 +222,19 @@ export default function ExecutifPage() {
         const json = await res.json();
         if (json.success && json.data) {
            const mapped = json.data.map((apiMin: any) => {
+              const bioMatch = (ministersBios as any[]).find(b => b.name.toLowerCase() === apiMin.ministerName.toLowerCase());
               const hardcoded = MINISTERS.find(m => m.name.toLowerCase() === apiMin.ministerName.toLowerCase());
-              // Si c'est le 1er ministre, on gère spécifiquement (dans l'XML, c'est parfois pas listé comme ministère classique)
+              
+              let finalImage = `https://ui-avatars.com/api/?name=${encodeURIComponent(apiMin.ministerName)}&background=0D8ABC&color=fff&size=256`;
+              if (bioMatch && bioMatch.image) finalImage = bioMatch.image;
+              else if (hardcoded && hardcoded.image) finalImage = hardcoded.image;
+
               return {
                  name: apiMin.ministerName,
                  role: apiMin.role,
                  ministry: apiMin.ministryName,
-                 image: hardcoded ? hardcoded.image : "https://upload.wikimedia.org/wikipedia/commons/thumb/b/b5/Portrait_placeholder.png/800px-Portrait_placeholder.png", // Placeholder si pas d'image connue
-                 budget: "Détails via Analyse Premium", // Valeur dynamique complexe à obtenir
+                 image: finalImage,
+                 budget: "Détails via Analyse Premium",
                  priority: "Mission gouvernementale"
               }
            });

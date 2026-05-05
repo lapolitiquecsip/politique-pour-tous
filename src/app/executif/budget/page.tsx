@@ -602,8 +602,8 @@ export default function DetailedBudgetPage() {
   const { isPremium, loading } = usePremium();
   const [selectedMissionId, setSelectedMissionId] = useState<string | null>(null);
   const [hoveredYear, setHoveredYear] = useState<number | null>(null);
-  const [dynamicMissions, setDynamicMissions] = useState(MISSIONS_DETAILED);
-  const [dynamicComparison, setDynamicComparison] = useState(COMPARISON_DATA);
+  const [dynamicMissions, setDynamicMissions] = useState<any[]>(MISSIONS_DETAILED);
+  const [dynamicComparison, setDynamicComparison] = useState<any[]>(COMPARISON_DATA);
   const [lastUpdate, setLastUpdate] = useState<Date | null>(null);
 
   // Dynamic Data Sync

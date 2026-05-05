@@ -13,7 +13,8 @@ export default function MinisterImage({ src, fallbackSrc, alt, className }: Mini
   // Wikipedia image proxy to avoid Referer/CORS issues
   const getProxiedUrl = (url: string) => {
     if (url.includes('upload.wikimedia.org')) {
-      return `https://images.weserv.nl/?url=${encodeURIComponent(url.replace('https://', ''))}&w=800&h=800&fit=cover&output=webp`;
+      // ✅ Encode l'URL COMPLÈTE (garde https://)
+      return `https://images.weserv.nl/?url=${encodeURIComponent(url)}&w=800&h=800&fit=cover&output=webp`;
     }
     return url;
   };

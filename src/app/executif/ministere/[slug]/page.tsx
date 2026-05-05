@@ -12,6 +12,7 @@ const normalizeName = (name: string) => {
     .normalize("NFD")
     .replace(/[\u0300-\u036f]/g, "") // Remove accents
     .replace(/^(m\.|mme\.|m\s|mme\s)/, "") // Remove M. or Mme
+    .replace(/\s+/g, " ") // Collapse multiple spaces
     .trim();
 };
 

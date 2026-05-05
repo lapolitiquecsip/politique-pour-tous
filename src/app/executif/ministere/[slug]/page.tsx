@@ -4,6 +4,16 @@ import { api } from '@/lib/api';
 import FeedItemCard from '@/components/home/FeedItemCard';
 import { Building2, Users, CircleDollarSign, ArrowLeft, ShieldAlert, BookOpen, Briefcase, ChevronRight } from 'lucide-react';
 import Link from 'next/link';
+import MinisterImage from '@/components/executif/MinisterImage';
+
+const normalizeName = (name: string) => {
+  return name
+    .toLowerCase()
+    .normalize("NFD")
+    .replace(/[\u0300-\u036f]/g, "") // Remove accents
+    .replace(/^(m\.|mme\.|m\s|mme\s)/, "") // Remove M. or Mme
+    .trim();
+};
 
 export default async function MinistryPage({ params }: { params: Promise<{ slug: string }> }) {
   // Await the params to get the slug
@@ -31,7 +41,8 @@ export default async function MinistryPage({ params }: { params: Promise<{ slug:
 
   // 3. Find the Bio
   const bios = Array.isArray(ministersBios) ? ministersBios : (ministersBios as any).default || [];
-  const bioData = bios.find((b: any) => b.name.toLowerCase() === ministryData.ministerName.toLowerCase());
+  const apiNameNorm = normalizeName(ministryData.ministerName);
+  const bioData = bios.find((b: any) => normalizeName(b.name) === apiNameNorm);
   
   // 4. Fetch News specifically for this ministry (fallback to 'gouvernement')
   const news = await api.getContent(10, "gouvernement");
@@ -100,8 +111,9 @@ export default async function MinistryPage({ params }: { params: Promise<{ slug:
             {/* Left: Avatar & Identity */}
             <div className="md:w-1/3 flex flex-col items-center text-center space-y-4">
               <div className="w-48 h-48 rounded-full border-4 border-slate-50 overflow-hidden shadow-lg bg-slate-100">
-                <img 
+                <MinisterImage 
                   src={bioData?.image || `https://ui-avatars.com/api/?name=${encodeURIComponent(ministryData.ministerName)}&background=0D8ABC&color=fff&size=512`} 
+                  fallbackSrc={`https://ui-avatars.com/api/?name=${encodeURIComponent(ministryData.ministerName)}&background=0D8ABC&color=fff&size=512`}
                   alt={ministryData.ministerName}
                   className="w-full h-full object-cover"
                 />

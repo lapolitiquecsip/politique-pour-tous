@@ -23,6 +23,16 @@ import { api } from "@/lib/api";
 import FeedItemCard from "@/components/home/FeedItemCard";
 import GlossaryText from "@/components/ui/GlossaryText";
 import ministersBios from "@/lib/data/ministersBios.json";
+import MinisterImage from "@/components/executif/MinisterImage";
+
+const normalizeName = (name: string) => {
+  return name
+    .toLowerCase()
+    .normalize("NFD")
+    .replace(/[\u0300-\u036f]/g, "") // Remove accents
+    .replace(/^(m\.|mme\.|m\s|mme\s)/, "") // Remove M. or Mme
+    .trim();
+};
 
 // Mock Data for the demonstration
 const MINISTERS = [
@@ -222,10 +232,11 @@ export default function ExecutifPage() {
         const json = await res.json();
         if (json.success && json.data) {
            const mapped = json.data.map((apiMin: any) => {
-              const bioMatch = (ministersBios as any[]).find(b => b.name.toLowerCase() === apiMin.ministerName.toLowerCase());
-              const hardcoded = MINISTERS.find(m => m.name.toLowerCase() === apiMin.ministerName.toLowerCase());
+              const apiNameNorm = normalizeName(apiMin.ministerName);
+              const bioMatch = (ministersBios as any[]).find(b => normalizeName(b.name) === apiNameNorm);
+              const hardcoded = MINISTERS.find(m => m.name && normalizeName(m.name) === apiNameNorm);
               
-              let finalImage = `https://ui-avatars.com/api/?name=${encodeURIComponent(apiMin.ministerName)}&background=0D8ABC&color=fff&size=256`;
+              let finalImage = `https://ui-avatars.com/api/?name=${encodeURIComponent(apiMin.ministerName)}&background=0D8ABC&color=fff&size=512`;
               if (bioMatch && bioMatch.image) finalImage = bioMatch.image;
               else if (hardcoded && hardcoded.image) finalImage = hardcoded.image;
 
@@ -340,8 +351,9 @@ export default function ExecutifPage() {
                       className="group bg-white rounded-[2.5rem] border border-slate-200 overflow-hidden hover:shadow-2xl transition-all duration-500 flex flex-col"
                     >
                       <div className="relative h-48 overflow-hidden shrink-0">
-                        <img 
+                        <MinisterImage 
                           src={minister.image} 
+                          fallbackSrc={`https://ui-avatars.com/api/?name=${encodeURIComponent(minister.name)}&background=0D8ABC&color=fff&size=512`}
                           alt={minister.name}
                           className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-700"
                         />

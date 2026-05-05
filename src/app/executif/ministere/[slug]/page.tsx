@@ -30,16 +30,21 @@ export default async function MinistryPage({ params }: { params: Promise<{ slug:
   }
 
   // 3. Find the Bio
-  const bioData = ministersBios.find(b => b.name.toLowerCase() === ministryData.ministerName.toLowerCase());
+  const bios = Array.isArray(ministersBios) ? ministersBios : (ministersBios as any).default || [];
+  const bioData = bios.find((b: any) => b.name.toLowerCase() === ministryData.ministerName.toLowerCase());
   
   // 4. Fetch News specifically for this ministry (fallback to 'gouvernement')
-  const news = await api.getContent(4, "gouvernement");
-  // Simple filter based on minister name or ministry name (in real life, we'd use better tags)
-  const filteredNews = news.filter(n => 
-    n.title.toLowerCase().includes(ministryData.ministerName.toLowerCase().split(' ')[1] || '') ||
-    n.title.toLowerCase().includes('ministre') ||
-    n.title.toLowerCase().includes('gouvernement')
-  ).slice(0, 4);
+  const news = await api.getContent(10, "gouvernement");
+  // Simple filter based on minister name or ministry name
+  const filteredNews = (news || []).filter(n => {
+    if (!n || !n.title) return false;
+    const title = n.title.toLowerCase();
+    const ministerLastName = ministryData.ministerName.toLowerCase().split(' ').pop() || '';
+    
+    return title.includes(ministerLastName) ||
+           title.includes('ministre') ||
+           title.includes('gouvernement');
+  }).slice(0, 4);
 
   return (
     <main className="min-h-screen bg-slate-50 pb-20">

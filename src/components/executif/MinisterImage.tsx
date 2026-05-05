@@ -12,6 +12,7 @@ interface MinisterImageProps {
 export default function MinisterImage({ src, fallbackSrc, alt, className }: MinisterImageProps) {
   // Wikipedia image proxy to avoid Referer/CORS issues
   const getProxiedUrl = (url: string) => {
+    if (url.startsWith('/')) return url;
     if (url.includes('upload.wikimedia.org')) {
       // ✅ Encode l'URL COMPLÈTE (garde https://)
       return `https://images.weserv.nl/?url=${encodeURIComponent(url)}&w=800&h=800&fit=cover&output=webp`;

@@ -11,7 +11,7 @@
     ],
     "employeesCount": 270000,
     "budget": 66.48,
-    "image": "https://upload.wikimedia.org/wikipedia/commons/thumb/8/8e/S%C3%A9bastien_Lecornu_2022.jpg/800px-S%C3%A9bastien_Lecornu_2022.jpg"
+    "image": "/images/ministres/sebastien-lecornu.jpg"
   },
   {
     "name": "Laurent NUNEZ",
@@ -19,7 +19,7 @@
     "judicialAffairs": [],
     "employeesCount": 295000,
     "budget": 33.06,
-    "image": "https://upload.wikimedia.org/wikipedia/commons/thumb/c/cb/Laurent_Nunez_en_2017_%28cropped%29.jpg/800px-Laurent_Nunez_en_2017_%28cropped%29.jpg"
+    "image": "/images/ministres/laurent-nunez.jpg"
   },
   {
     "name": "Catherine VAUTRIN",
@@ -33,7 +33,7 @@
     ],
     "employeesCount": 20000,
     "budget": 31.28,
-    "image": "https://upload.wikimedia.org/wikipedia/commons/thumb/7/7b/Catherine_Vautrin_2024.jpg/800px-Catherine_Vautrin_2024.jpg"
+    "image": "/images/ministres/catherine-vautrin.jpg"
   },
   {
     "name": "Michel BARNIER",
@@ -41,7 +41,7 @@
     "judicialAffairs": [],
     "employeesCount": 4500,
     "budget": 4.2,
-    "image": "https://upload.wikimedia.org/wikipedia/commons/thumb/c/c2/Michel_Barnier_2024.jpg/800px-Michel_Barnier_2024.jpg"
+    "image": "/images/ministres/michel-barnier.jpg"
   },
   {
     "name": "Antoine ARMAND",
@@ -49,7 +49,7 @@
     "judicialAffairs": [],
     "employeesCount": 130000,
     "budget": 15.8,
-    "image": "https://upload.wikimedia.org/wikipedia/commons/thumb/2/2f/Antoine_Armand_2024.jpg/800px-Antoine_Armand_2024.jpg"
+    "image": "/images/ministres/antoine-armand.jpg"
   },
   {
     "name": "Jean-Noël BARROT",
@@ -57,86 +57,86 @@
     "judicialAffairs": [],
     "employeesCount": 13000,
     "budget": 3.5,
-    "image": "https://upload.wikimedia.org/wikipedia/commons/thumb/1/1d/Jean-No%C3%ABl_Barrot_2024.jpg/800px-Jean-No%C3%ABl_Barrot_2024.jpg"
+    "image": "/images/ministres/jean-noel-barrot.jpg"
   },
   {
     "name": "Jean-Pierre FARANDOU",
-    "image": "https://upload.wikimedia.org/wikipedia/commons/c/cd/Jean-Pierre_Farandou_2019.jpg",
+    "image": "/images/ministres/jean-pierre-farandou.jpg",
     "biography": "Jean-Pierre Farandou est un pur produit du service public ferroviaire, ayant effectué l’intégralité de sa carrière au sein de la SNCF avant de rejoindre le gouvernement. Diplômé de l’École des Mines de Paris, il a dirigé Keolis puis le groupe SNCF.\n\n<strong>Parcours privé :</strong> Aucune expérience en entreprise privée hors du groupe public SNCF.\n\n<strong>Parcours public :</strong> Président de la SNCF (2019-2024), il rejoint le gouvernement pour porter les réformes du travail et des solidarités."
   },
   {
     "name": "Monique BARBUT",
-    "image": "https://upload.wikimedia.org/wikipedia/commons/1/1c/Monique_Barbut_2015.jpg",
+    "image": "/images/ministres/monique-barbut.jpg",
     "biography": "Monique Barbut est une experte internationale des questions environnementales et de développement durable.\n\n<strong>Parcours privé :</strong> Elle a travaillé pour l’Agence Française de Développement (AFD) et a dirigé le Fonds pour l’Environnement Mondial (FEM).\n\n<strong>Parcours public :</strong> Ancienne secrétaire exécutive de la Convention des Nations unies sur la lutte contre la désertification (UNCCD)."
   },
   {
     "name": "Gérald DARMANIN",
-    "image": "https://upload.wikimedia.org/wikipedia/commons/1/1a/G%C3%A9rald_Darmanin_2022.jpg",
+    "image": "/images/ministres/gerald-darmanin.jpg",
     "biography": "Gérald Darmanin est un homme politique de premier plan, ayant occupé plusieurs postes régaliens.\n\n<strong>Parcours privé :</strong> Très court passage dans le conseil avant de s’engager totalement en politique.\n\n<strong>Parcours public :</strong> Ministre de l’Action et des Comptes publics (2017-2020), Ministre de l’Intérieur (2020-2024), puis Garde des Sceaux."
   },
   {
     "name": "Roland LESCURE",
-    "image": "https://upload.wikimedia.org/wikipedia/commons/thumb/b/b5/Roland_Lescure_2022.jpg/800px-Roland_Lescure_2022.jpg",
+    "image": "/images/ministres/roland-lescure.jpg",
     "biography": "Roland Lescure possède une solide expérience dans la finance internationale.\n\n<strong>Parcours privé :</strong> Premier vice-président de la Caisse de dépôt et placement du Québec (CDPQ), l’un des plus grands fonds de pension au monde.\n\n<strong>Parcours public :</strong> Député des Français de l’étranger, Ministre délégué chargé de l’Industrie."
   },
   {
     "name": "Annie GENEVARD",
-    "image": "https://upload.wikimedia.org/wikipedia/commons/thumb/c/c5/Annie_Genevard_2017.jpg/800px-Annie_Genevard_2017.jpg",
+    "image": "/images/ministres/annie-genevard.jpg",
     "biography": "Annie Genevard est une figure de la droite républicaine, très implantée dans le Doubs.\n\n<strong>Parcours privé :</strong> Professeure de lettres classiques.\n\n<strong>Parcours public :</strong> Maire de Morteau, Députée, Vice-présidente de l’Assemblée nationale."
   },
   {
     "name": "Naïma MOUTCHOU",
-    "image": "https://upload.wikimedia.org/wikipedia/commons/thumb/c/cb/Portrait_placeholder.png/800px-Portrait_placeholder.png",
+    "image": "/images/ministres/naima-moutchou.jpg",
     "biography": "Naïma Moutchou est une avocate engagée en politique depuis 2017.\n\n<strong>Parcours privé :</strong> Avocate au barreau de Paris, spécialisée en droit des affaires et droit de la presse.\n\n<strong>Parcours public :</strong> Députée du Val-d’Oise, Vice-présidente de l’Assemblée nationale."
   },
   {
     "name": "Serge PAPIN",
-    "image": "https://upload.wikimedia.org/wikipedia/commons/thumb/3/30/Serge_Papin_2016.jpg/800px-Serge_Papin_2016.jpg",
+    "image": "/images/ministres/serge-papin.jpg",
     "biography": "Serge Papin est une figure majeure de la grande distribution française, ayant dirigé le groupement Système U pendant plus de 13 ans.\n\n<strong>Parcours privé :</strong> Ancien PDG de Système U (2005-2018), il a été un pionnier de la distribution responsable et du soutien aux producteurs locaux. Après son départ de Système U, il a exercé des activités de conseil et a été missionné par le gouvernement sur les relations commerciales agricoles (Loi EGAlim).\n\n<strong>Parcours public :</strong> Nommé au gouvernement pour apporter son expertise sur les questions de souveraineté alimentaire et de commerce."
   },
   {
     "name": "Edouard GEFFRAY",
-    "image": "https://upload.wikimedia.org/wikipedia/commons/e/eb/Portrait_Geffrey.jpg",
+    "image": "/images/ministres/edouard-geffray.jpg",
     "biography": "Haut fonctionnaire français, il a été une figure centrale de l'Éducation nationale pendant plusieurs années.\n\n<strong>Parcours public :</strong> Directeur général de l'enseignement scolaire (DGESCO) de 2019 à 2024, il a piloté les réformes majeures du système éducatif. Maître des requêtes au Conseil d'État, il a également servi dans plusieurs cabinets ministériels avant d'être nommé au gouvernement."
   },
   {
     "name": "Stéphanie RIST",
-    "image": "https://upload.wikimedia.org/wikipedia/commons/e/e0/Stéphanie_Rist_02.jpg",
+    "image": "/images/ministres/stephanie-rist.jpg",
     "biography": "Médecin de profession, Stéphanie Rist s'est imposée comme une experte incontournable des questions de santé au Parlement.\n\n<strong>Parcours privé :</strong> Médecin rhumatologue de carrière, elle a exercé au CHU d'Orléans avant de s'engager en politique.\n\n<strong>Parcours public :</strong> Députée Renaissance du Loiret depuis 2017, elle a été rapporteure de lois santé cruciales et présidente de la commission des affaires sociales, travaillant sur l'accès aux soins et la modernisation de l'hôpital."
   },
   {
     "name": "Catherine PÉGARD",
-    "image": "https://upload.wikimedia.org/wikipedia/commons/e/e0/Catherine_P%C3%A9gard_-_courtesy_call_Catherine_P%C3%A9gard_French_Minister_of_Culture_Gakuji_Ito_Commissioner_for_Cultural_Affairs_20260402_3_%28cropped%29.jpg",
+    "image": "/images/ministres/catherine-pegard.jpg",
     "biography": "Ancienne journaliste de renom, Catherine Pégard a mené une carrière d'influence entre médias, politique et culture.\n\n<strong>Parcours privé :</strong> Journaliste politique emblématique au journal Le Point, elle a couvert pendant des décennies les coulisses du pouvoir.\n\n<strong>Parcours public :</strong> Conseillère de Nicolas Sarkozy à l'Élysée, elle a présidé l'Établissement public du château de Versailles de 2011 à 2024, menant des chantiers de restauration d'envergure."
   },
   {
     "name": "Françoise GATEL",
-    "image": "https://upload.wikimedia.org/wikipedia/commons/e/e0/Fran%C3%A7oise_Gatel_2025_%28cropped%29.jpg",
+    "image": "/images/ministres/francoise-gatel.jpg",
     "biography": "Françoise Gatel est une élue reconnue pour sa maîtrise des enjeux territoriaux et de la décentralisation.\n\n<strong>Parcours public :</strong> Sénatrice d'Ille-et-Vilaine depuis 2014 et présidente de la délégation aux collectivités territoriales, elle a porté de nombreux textes sur la vie locale. Ancienne maire et présidente d'intercommunalité, elle apporte au gouvernement une expertise précieuse sur la proximité."
   },
   {
     "name": "David AMIEL",
-    "image": "https://upload.wikimedia.org/wikipedia/commons/thumb/c/c5/David-amiel_%28cropped%29.jpg/800px-David-amiel_%28cropped%29.jpg",
+    "image": "/images/ministres/david-amiel.jpg",
     "biography": "Économiste de formation, David Amiel fait partie de la garde rapprochée du président Emmanuel Macron depuis ses débuts.\n\n<strong>Parcours public :</strong> Député de Paris depuis 2022, il a été conseiller économique à l'Élysée où il a théorisé une grande partie des réformes du quinquennat. Il est un acteur clé des débats sur le travail et la justice sociale au sein de la majorité."
   },
   {
     "name": "Philippe BAPTISTE",
-    "image": "https://upload.wikimedia.org/wikipedia/commons/thumb/c/c1/Philippe_Baptiste_2021.jpg/800px-Philippe_Baptiste_2021.jpg",
+    "image": "/images/ministres/philippe-baptiste.jpg",
     "biography": "Scientifique de haut niveau, Philippe Baptiste dirige l'un des fleurons de la technologie française.\n\n<strong>Parcours privé :</strong> Chercheur en informatique et chercheur associé au MIT, il a également occupé des fonctions de direction dans le secteur de la recherche privée.\n\n<strong>Parcours public :</strong> Président du Centre National d'Études Spatiales (CNES) depuis 2021, il a auparavant été conseiller au ministère de l'Enseignement supérieur et de la Recherche."
   },
   {
     "name": "Marina FERRARI",
-    "image": "https://upload.wikimedia.org/wikipedia/commons/4/4b/20240221_Marina_Ferrari_Portrait_PhotoGezelinGree_131_%28cropped%29.jpg",
+    "image": "/images/ministres/marina-ferrari.jpg",
     "biography": "Marina Ferrari incarne le renouveau politique sur les thématiques du numérique et de l'innovation.\n\n<strong>Parcours privé :</strong> Elle a travaillé dans le secteur des services informatiques avant son engagement électif.\n\n<strong>Parcours public :</strong> Députée de la Savoie et Secrétaire d'État au Numérique, elle travaille sur la régulation de l'IA, la souveraineté technologique et l'inclusion numérique au sein du gouvernement."
   },
   {
     "name": "Philippe TABAROT",
-    "image": "https://upload.wikimedia.org/wikipedia/commons/e/e0/Philippe_Tabarot_-_2025_%28cropped%29.jpg",
+    "image": "/images/ministres/philippe-tabarot.jpg",
     "biography": "Philippe Tabarot est un parlementaire spécialisé dans les questions de mobilité et d'aménagement du territoire.\n\n<strong>Parcours public :</strong> Sénateur des Alpes-Maritimes, il s'est distingué par ses rapports sur le transport ferroviaire et la transition écologique des transports. Son expérience locale en tant que vice-président de région en fait un expert écouté sur les infrastructures."
   },
   {
     "name": "Vincent JEANBRUN",
-    "image": "https://upload.wikimedia.org/wikipedia/commons/e/e0/20241008-P1120704_Jeanbrun_Vincent_Wikipedia.jpg",
+    "image": "/images/ministres/vincent-jeanbrun.jpg",
     "biography": "Vincent Jeanbrun est un élu qui a fait de la défense de l'autorité républicaine son combat principal.\n\n<strong>Parcours public :</strong> Maire de L'Haÿ-les-Roses et député du Val-de-Marne, il a acquis une stature nationale par sa gestion des crises urbaines et sa promotion de la sécurité de proximité. Il est une voix forte de la droite au sein des institutions nationales."
   }
 ]

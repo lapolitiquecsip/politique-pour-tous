@@ -89,11 +89,20 @@ export async function fetchGovernmentComposition(): Promise<Minister[]> {
     // 5. Parcourir les ministères et extraire les ministres
     const processMinistere = (min: any) => {
       if (!min) return;
-      const nomMinistere = min.Nom;
+      
+      const extractText = (val: any) => {
+        if (!val) return "";
+        if (typeof val === 'string') return val;
+        if (typeof val === 'object' && val['#text']) return val['#text'];
+        return String(val);
+      };
+
+      const nomMinistere = extractText(min.Nom);
+      
       // Le signataire peut être directement sous le ministère ou sous "Ministre"
       const details = min.Ministre || min;
-      const nomMinistre = details.Signataire;
-      const fonction = details.Fonction;
+      const nomMinistre = extractText(details.Signataire);
+      const fonction = extractText(details.Fonction);
       
       if (nomMinistere && nomMinistre && fonction) {
         const missionId = matchMinistryToMissionId(nomMinistere);

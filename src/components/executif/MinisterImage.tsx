@@ -10,22 +10,31 @@ interface MinisterImageProps {
 }
 
 export default function MinisterImage({ src, fallbackSrc, alt, className }: MinisterImageProps) {
-  const [imgSrc, setImgSrc] = useState(src);
+  // Wikipedia image proxy to avoid Referer/CORS issues
+  const getProxiedUrl = (url: string) => {
+    if (url.includes('upload.wikimedia.org')) {
+      return `https://images.weserv.nl/?url=${encodeURIComponent(url.replace('https://', ''))}&w=800&h=800&fit=cover&output=webp`;
+    }
+    return url;
+  };
+
+  const [imgSrc, setImgSrc] = useState(getProxiedUrl(src));
   const [errorCount, setErrorCount] = useState(0);
 
-  // Reset error state if src changes
+  // Reset if src changes
   useEffect(() => {
-    setImgSrc(src);
+    setImgSrc(getProxiedUrl(src));
     setErrorCount(0);
   }, [src]);
 
   const handleError = () => {
     if (errorCount === 0) {
-      setImgSrc(fallbackSrc);
+      // Try fallback (proxied if it's a URL)
+      setImgSrc(getProxiedUrl(fallbackSrc));
       setErrorCount(1);
     } else if (errorCount === 1) {
-      // If even fallback fails, use a dead-simple placeholder
-      setImgSrc(`https://ui-avatars.com/api/?name=${encodeURIComponent(alt)}&background=random&color=fff&size=512`);
+      // Last resort: UI Avatar with premium look
+      setImgSrc(`https://ui-avatars.com/api/?name=${encodeURIComponent(alt)}&background=0D8ABC&color=fff&size=512&bold=true`);
       setErrorCount(2);
     }
   };
@@ -36,7 +45,8 @@ export default function MinisterImage({ src, fallbackSrc, alt, className }: Mini
       alt={alt}
       className={className}
       onError={handleError}
+      referrerPolicy="no-referrer"
+      loading="lazy"
     />
   );
 }
-

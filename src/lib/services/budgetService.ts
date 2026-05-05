@@ -14,17 +14,35 @@ const CACHE_TTL_HOURS = 24;
 export async function fetchBudgetFromGov() {
   try {
     console.log('[Budget API] Fetching from data.economie.gouv.fr...');
-    const response = await fetch(GOV_API_URL);
-    
-    if (!response.ok) {
-      throw new Error(`API call failed: ${response.status} ${response.statusText}`);
+    let allRecords: any[] = [];
+    let offset = 0;
+    const limit = 100;
+    let hasMore = true;
+
+    while (hasMore) {
+      const url = `https://data.economie.gouv.fr/api/explore/v2.1/catalog/datasets/plf-2026-budget-vert/records?limit=${limit}&offset=${offset}`;
+      const response = await fetch(url);
+      
+      if (!response.ok) {
+        throw new Error(`API call failed: ${response.status} ${response.statusText}`);
+      }
+      
+      const data = await response.json();
+      const records = data.results || [];
+      
+      if (records.length > 0) {
+        allRecords = allRecords.concat(records);
+        offset += limit;
+      } else {
+        hasMore = false; // Plus de résultats
+      }
+      
+      // Sécurité anti-boucle infinie (au cas où l'API est bloquée)
+      if (offset > 15000) hasMore = false;
     }
     
-    const data = await response.json();
-    const recordCount = data.results?.length || 0;
-    console.log(`[Budget API] ✅ Fetched ${recordCount} records`);
-    
-    return data.results || [];
+    console.log(`[Budget API] ✅ Fetched ${allRecords.length} total records`);
+    return allRecords;
   } catch (error) {
     console.error('[Budget API] ❌ Error fetching from gov API:', error);
     throw error;

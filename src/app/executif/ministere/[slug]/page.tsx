@@ -148,7 +148,7 @@ export default async function MinistryPage({ params }: { params: Promise<{ slug:
 
            {bioData?.judicialAffairs && bioData.judicialAffairs.length > 0 ? (
              <div className="space-y-4">
-               {bioData.judicialAffairs.map((affair, idx) => (
+               {bioData.judicialAffairs.map((affair: any, idx: number) => (
                  <div key={idx} className="p-6 rounded-2xl border border-red-100 bg-red-50/30 space-y-2">
                    <div className="flex items-center justify-between gap-4">
                      <h4 className="font-bold text-slate-900 text-lg">{affair.title}</h4>

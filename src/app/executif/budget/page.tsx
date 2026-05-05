@@ -24,7 +24,8 @@ import {
   ChevronLeft,
   Coins,
   Activity,
-  Shield
+  Shield,
+  User
 } from "lucide-react";
 import Link from "next/link";
 import { usePremium } from "@/lib/hooks/usePremium";
@@ -607,23 +608,33 @@ export default function DetailedBudgetPage() {
 
   // Dynamic Data Sync
   useEffect(() => {
-    const fetchBudgetData = async () => {
+    const fetchData = async () => {
       try {
-        const response = await fetch('/api/budget/missions');
-        const result = await response.json();
+        const [budgetResponse, govResponse] = await Promise.all([
+          fetch('/api/budget/missions'),
+          fetch('/api/government').catch(() => null)
+        ]);
+
+        const budgetResult = await budgetResponse.json();
+        const govResult = govResponse ? await govResponse.json().catch(() => null) : null;
         
-        if (result.success && result.data) {
-          const apiData = result.data as any[];
-          if (result.timestamp) setLastUpdate(new Date(result.timestamp));
+        if (budgetResult.success && budgetResult.data) {
+          const apiData = budgetResult.data as any[];
+          const govData = (govResult && govResult.success) ? govResult.data as any[] : [];
+          
+          if (budgetResult.timestamp) setLastUpdate(new Date(budgetResult.timestamp));
           
           // Merge with MISSIONS_DETAILED
           const mergedMissions = MISSIONS_DETAILED.map(m => {
              const apiMission = apiData.find(am => am.id === m.id);
+             const apiGov = govData.find(ag => ag.missionId === m.id);
              
-             // Check if API mission exists and has real non-zero values, else fallback to hardcoded
+             let updatedMission = { ...m } as any;
+
+             // Merge Budget Data
              if (apiMission && apiMission.val2026 > 0) {
-                return {
-                   ...m,
+                updatedMission = {
+                   ...updatedMission,
                    amount: `${apiMission.val2026.toFixed(2)} Md€`,
                    evolution: [
                       { year: "2024", value: apiMission.val2024.toFixed(2) },
@@ -633,8 +644,18 @@ export default function DetailedBudgetPage() {
                 };
              } else {
                 console.warn(`⚠️ Aucune donnée API valide pour: ${m.id}`);
-                return m;
              }
+
+             // Merge Government Data
+             if (apiGov) {
+                updatedMission.minister = {
+                   name: apiGov.ministerName,
+                   role: apiGov.role,
+                   ministry: apiGov.ministryName
+                };
+             }
+
+             return updatedMission;
           });
           
           // Merge with COMPARISON_DATA
@@ -661,7 +682,7 @@ export default function DetailedBudgetPage() {
       }
     };
 
-    fetchBudgetData();
+    fetchData();
   }, []);
 
   const selectedMissionData = dynamicMissions.find(m => m.id === selectedMissionId);
@@ -1045,12 +1066,24 @@ export default function DetailedBudgetPage() {
                     {mission.title}
                   </h3>
                   
-                  <p className="text-slate-500 leading-relaxed text-sm font-medium italic">
+                  <p className="text-slate-500 leading-relaxed text-sm font-medium italic mb-6">
                     {mission.desc}
                   </p>
 
+                  {mission.minister && (
+                    <div className="mt-auto mb-6 p-4 rounded-2xl bg-slate-50 border border-slate-100 flex items-center gap-4 transition-colors hover:bg-blue-50/50 hover:border-blue-100">
+                      <div className="w-10 h-10 shrink-0 bg-white border border-slate-200 rounded-full flex items-center justify-center shadow-sm">
+                        <User size={18} className="text-slate-400" />
+                      </div>
+                      <div className="overflow-hidden">
+                        <p className="text-[10px] font-black uppercase tracking-widest text-slate-400 mb-0.5">Porté par</p>
+                        <p className="text-sm font-bold text-slate-900 truncate" title={mission.minister.name}>{mission.minister.name}</p>
+                        <p className="text-xs font-medium text-slate-500 italic truncate" title={mission.minister.role}>{mission.minister.role}</p>
+                      </div>
+                    </div>
+                  )}
 
-                  <div className="mt-10 pt-8 border-t border-slate-50 flex items-center justify-between">
+                  <div className="mt-auto pt-8 border-t border-slate-50 flex items-center justify-between">
                      <button 
                        onClick={() => setSelectedMissionId(mission.id)}
                        className="text-[10px] font-black text-slate-400 uppercase tracking-widest hover:text-blue-600 transition-colors"

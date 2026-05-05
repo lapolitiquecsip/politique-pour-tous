@@ -320,61 +320,67 @@ export default function ExecutifPage() {
               </div>
 
               <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                {filteredMinisters.map((minister, idx) => (
-                  <motion.div
-                    key={idx}
-                    initial={{ opacity: 0, y: 20 }}
-                    whileInView={{ opacity: 1, y: 0 }}
-                    viewport={{ once: true }}
-                    className="group bg-white rounded-[2.5rem] border border-slate-200 overflow-hidden hover:shadow-2xl transition-all duration-500"
-                  >
-                    <div className="relative h-48 overflow-hidden">
-                      <img 
-                        src={minister.image} 
-                        alt={minister.name}
-                        className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-700"
-                      />
-                      <div className="absolute inset-0 bg-gradient-to-t from-slate-950/80 to-transparent" />
-                      <div className="absolute bottom-4 left-6">
-                        <p className="text-blue-400 font-black text-[9px] uppercase tracking-widest mb-1">Ministère</p>
-                        <h4 className="text-white font-bold text-sm leading-tight">{minister.ministry}</h4>
-                      </div>
-                    </div>
+                {filteredMinisters.map((minister, idx) => {
+                  const slug = minister.ministry 
+                    ? minister.ministry.toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g, "").replace(/[^a-z0-9]+/g, '-').replace(/(^-|-$)/g, '')
+                    : 'ministere-inconnu';
 
-                    <div className="p-6 space-y-4">
-                      <div>
-                        <h3 className="text-xl font-bold text-slate-900 group-hover:text-blue-600 transition-colors leading-tight mb-1">
-                          {minister.name}
-                        </h3>
-                        <p className="text-[11px] font-medium text-slate-500 italic line-clamp-2 leading-relaxed">
-                          {minister.role}
-                        </p>
-                      </div>
-
-                      <div className="grid grid-cols-2 gap-4 py-4 border-y border-slate-50">
-                        <div className="space-y-1">
-                          <span className="text-[9px] font-black uppercase text-slate-400 tracking-widest flex items-center gap-1">
-                            <CircleDollarSign size={10} /> Budget
-                          </span>
-                          <p className="text-sm font-black text-slate-900">{minister.budget}</p>
-                        </div>
-                        <div className="space-y-1">
-                          <span className="text-[9px] font-black uppercase text-slate-400 tracking-widest flex items-center gap-1">
-                            <TrendingUp size={10} /> Priorité
-                          </span>
-                          <p className="text-[10px] font-bold text-slate-700 leading-tight line-clamp-2">{minister.priority}</p>
+                  return (
+                    <motion.div
+                      key={idx}
+                      initial={{ opacity: 0, y: 20 }}
+                      whileInView={{ opacity: 1, y: 0 }}
+                      viewport={{ once: true }}
+                      className="group bg-white rounded-[2.5rem] border border-slate-200 overflow-hidden hover:shadow-2xl transition-all duration-500 flex flex-col"
+                    >
+                      <div className="relative h-48 overflow-hidden shrink-0">
+                        <img 
+                          src={minister.image} 
+                          alt={minister.name}
+                          className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-700"
+                        />
+                        <div className="absolute inset-0 bg-gradient-to-t from-slate-950/80 to-transparent" />
+                        <div className="absolute bottom-4 left-6">
+                          <p className="text-blue-400 font-black text-[9px] uppercase tracking-widest mb-1">Ministre</p>
+                          <h4 className="text-white font-bold text-sm leading-tight">{minister.name}</h4>
                         </div>
                       </div>
 
-                      <button className="w-full flex items-center justify-between group/btn text-slate-900 hover:text-blue-600 transition-colors pt-2">
-                        <span className="text-[10px] font-black uppercase tracking-widest">Voir l'action détaillée</span>
-                        <div className="w-8 h-8 rounded-full bg-slate-50 flex items-center justify-center group-hover/btn:bg-blue-600 group-hover/btn:text-white transition-all">
-                          <ChevronRight size={16} />
+                      <div className="p-6 flex flex-col flex-grow">
+                        <div className="mb-4">
+                          <h3 className="text-xl font-bold text-slate-900 group-hover:text-blue-600 transition-colors leading-tight mb-1 capitalize">
+                            {minister.ministry}
+                          </h3>
+                          <p className="text-[11px] font-medium text-slate-500 italic line-clamp-2 leading-relaxed">
+                            {minister.role}
+                          </p>
                         </div>
-                      </button>
-                    </div>
-                  </motion.div>
-                ))}
+
+                        <div className="grid grid-cols-2 gap-4 py-4 border-y border-slate-50 mt-auto mb-4">
+                          <div className="space-y-1">
+                            <span className="text-[9px] font-black uppercase text-slate-400 tracking-widest flex items-center gap-1">
+                              <CircleDollarSign size={10} /> Budget
+                            </span>
+                            <p className="text-sm font-black text-slate-900">{minister.budget}</p>
+                          </div>
+                          <div className="space-y-1">
+                            <span className="text-[9px] font-black uppercase text-slate-400 tracking-widest flex items-center gap-1">
+                              <TrendingUp size={10} /> Priorité
+                            </span>
+                            <p className="text-[10px] font-bold text-slate-700 leading-tight line-clamp-2">{minister.priority}</p>
+                          </div>
+                        </div>
+
+                        <Link href={`/executif/ministere/${slug}`} className="w-full flex items-center justify-between group/btn text-slate-900 hover:text-blue-600 transition-colors pt-2">
+                          <span className="text-[10px] font-black uppercase tracking-widest">Voir le ministère en détail</span>
+                          <div className="w-8 h-8 rounded-full bg-slate-50 flex items-center justify-center group-hover/btn:bg-blue-600 group-hover/btn:text-white transition-all">
+                            <ChevronRight size={16} />
+                          </div>
+                        </Link>
+                      </div>
+                    </motion.div>
+                  );
+                })}
               </div>
             </section>
 

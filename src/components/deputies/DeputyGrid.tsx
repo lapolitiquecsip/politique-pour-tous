@@ -2,7 +2,7 @@
 
 import { useState, memo } from "react";
 import DeputyCard, { Deputy } from "./DeputyCard";
-import { Plus, ArrowDown } from "lucide-react";
+import { Plus, ArrowDown, Users } from "lucide-react";
 
 interface DeputyGridProps {
   deputies: Deputy[];

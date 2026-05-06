@@ -18,18 +18,27 @@ if (!SUPABASE_URL || !SUPABASE_KEY) {
 const supabase = createClient(SUPABASE_URL, SUPABASE_KEY);
 
 async function downloadImage(url) {
+  // Wikipedia Special:FilePath support
+  // This URL automatically redirects to the direct image file
+  let targetUrl = url;
+  if (url.includes('Special:FilePath')) {
+    const filename = url.split('/').pop();
+    targetUrl = `https://commons.wikimedia.org/wiki/Special:FilePath/${filename}`;
+  }
+
   // Use weserv.nl proxy to bypass Wikipedia blocking
-  // Some proxies prefer the URL without the protocol
-  const targetUrl = url.replace('https://', '').replace('http://', '');
-  const proxiedUrl = `https://images.weserv.nl/?url=${encodeURIComponent(targetUrl)}&w=1000&output=jpg`;
+  // We decode first to avoid double encoding issues
+  const decodedUrl = decodeURI(targetUrl);
+  const proxiedUrl = `https://images.weserv.nl/?url=${encodeURIComponent(decodedUrl)}&w=1000&output=jpg`;
   
-  console.log(`\n📥 Téléchargement : ${url}`);
+  console.log(`\n📥 Téléchargement : ${decodedUrl}`);
   try {
     const response = await axios({
       url: proxiedUrl,
       method: 'GET',
       responseType: 'arraybuffer',
-      timeout: 15000
+      timeout: 20000,
+      maxRedirects: 5
     });
     return Buffer.from(response.data);
   } catch (error) {

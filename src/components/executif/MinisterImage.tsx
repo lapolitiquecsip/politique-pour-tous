@@ -10,29 +10,19 @@ interface MinisterImageProps {
 }
 
 export default function MinisterImage({ src, fallbackSrc, alt, className }: MinisterImageProps) {
-  // Wikipedia image proxy to avoid Referer/CORS issues
-  const getProxiedUrl = (url: string) => {
-    if (url.startsWith('/')) return url;
-    if (url.includes('upload.wikimedia.org')) {
-      // ✅ Encode l'URL COMPLÈTE (garde https://)
-      return `https://images.weserv.nl/?url=${encodeURIComponent(url)}&w=800&h=800&fit=cover&output=webp`;
-    }
-    return url;
-  };
-
-  const [imgSrc, setImgSrc] = useState(getProxiedUrl(src));
+  const [imgSrc, setImgSrc] = useState(src);
   const [errorCount, setErrorCount] = useState(0);
 
   // Reset if src changes
   useEffect(() => {
-    setImgSrc(getProxiedUrl(src));
+    setImgSrc(src);
     setErrorCount(0);
   }, [src]);
 
   const handleError = () => {
     if (errorCount === 0) {
-      // Try fallback (proxied if it's a URL)
-      setImgSrc(getProxiedUrl(fallbackSrc));
+      // Try fallback
+      setImgSrc(fallbackSrc);
       setErrorCount(1);
     } else if (errorCount === 1) {
       // Last resort: UI Avatar with premium look
@@ -47,7 +37,6 @@ export default function MinisterImage({ src, fallbackSrc, alt, className }: Mini
       alt={alt}
       className={className}
       onError={handleError}
-      referrerPolicy="no-referrer"
       loading="lazy"
     />
   );

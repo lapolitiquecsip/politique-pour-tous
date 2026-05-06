@@ -1,0 +1,14 @@
+{
+  "name": "politique-image-scraper",
+  "version": "1.0.0",
+  "description": "Scrapes minister images from Wikipedia and uploads them to Supabase Storage",
+  "main": "scrape-and-upload-images.js",
+  "scripts": {
+    "scrape": "node scrape-and-upload-images.js"
+  },
+  "dependencies": {
+    "@supabase/supabase-js": "^2.39.0",
+    "axios": "^1.6.2",
+    "dotenv": "^16.3.1"
+  }
+}

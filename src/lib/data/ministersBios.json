@@ -20,7 +20,8 @@
     "judicialAffairs": [],
     "employeesCount": 295000,
     "budget": 33.06,
-    "image": "https://commons.wikimedia.org/wiki/Special:FilePath/Laurent_Nuñez.jpg"
+    "image": "https://rsudvwqgjesswmssqcvi.supabase.co/storage/v1/object/public/ministres-photos/laurent-nunez.jpg",
+    "imageSource": "supabase"
   },
   {
     "name": "Catherine VAUTRIN",
@@ -34,7 +35,8 @@
     ],
     "employeesCount": 20000,
     "budget": 31.28,
-    "image": "https://commons.wikimedia.org/wiki/Special:FilePath/Portrait_Catherine_Vautrin_2024.jpg"
+    "image": "https://rsudvwqgjesswmssqcvi.supabase.co/storage/v1/object/public/ministres-photos/catherine-vautrin.jpg",
+    "imageSource": "supabase"
   },
   {
     "name": "Michel BARNIER",
@@ -135,8 +137,9 @@
   },
   {
     "name": "Philippe BAPTISTE",
-    "image": "https://commons.wikimedia.org/wiki/Special:FilePath/Philippe_Baptiste_-_Paris_Open_Source_Summit_01.png",
-    "biography": "Scientifique de haut niveau, Philippe Baptiste dirige l'un des fleurons de la technologie française.\n\n<strong>Parcours privé :</strong> Chercheur en informatique et chercheur associé au MIT, il a également occupé des fonctions de direction dans le secteur de la recherche privée.\n\n<strong>Parcours public :</strong> Président du Centre National d'Études Spatiales (CNES) depuis 2021, il a auparavant été conseiller au ministère de l'Enseignement supérieur et de la Recherche."
+    "image": "https://rsudvwqgjesswmssqcvi.supabase.co/storage/v1/object/public/ministres-photos/philippe-baptiste.jpg",
+    "biography": "Scientifique de haut niveau, Philippe Baptiste dirige l'un des fleurons de la technologie française.\n\n<strong>Parcours privé :</strong> Chercheur en informatique et chercheur associé au MIT, il a également occupé des fonctions de direction dans le secteur de la recherche privée.\n\n<strong>Parcours public :</strong> Président du Centre National d'Études Spatiales (CNES) depuis 2021, il a auparavant été conseiller au ministère de l'Enseignement supérieur et de la Recherche.",
+    "imageSource": "supabase"
   },
   {
     "name": "Marina FERRARI",

@@ -44,7 +44,8 @@
     "judicialAffairs": [],
     "employeesCount": 4500,
     "budget": 4.2,
-    "image": "https://commons.wikimedia.org/wiki/Special:FilePath/Michel_Barnier_2024.jpg"
+    "image": "https://rsudvwqgjesswmssqcvi.supabase.co/storage/v1/object/public/ministres-photos/michel-barnier.jpg",
+    "imageSource": "supabase"
   },
   {
     "name": "Antoine ARMAND",
@@ -96,8 +97,9 @@
   },
   {
     "name": "Naïma MOUTCHOU",
-    "image": "https://commons.wikimedia.org/wiki/Special:FilePath/Naïma_Moutchou.jpg",
-    "biography": "Naïma Moutchou est une avocate engagée en politique depuis 2017.\n\n<strong>Parcours privé :</strong> Avocate au barreau de Paris, spécialisée en droit des affaires et droit de la presse.\n\n<strong>Parcours public :</strong> Députée du Val-d’Oise, Vice-présidente de l’Assemblée nationale."
+    "image": "https://images.weserv.nl/?url=www.assemblee-nationale.fr/dyn/static/tribun/17/photos/carre/720908.jpg&w=1000",
+    "biography": "Naïma Moutchou est une avocate engagée en politique depuis 2017.\n\n<strong>Parcours privé :</strong> Avocate au barreau de Paris, spécialisée en droit des affaires et droit de la presse.\n\n<strong>Parcours public :</strong> Députée du Val-d’Oise, Vice-présidente de l’Assemblée nationale.",
+    "imageSource": "supabase"
   },
   {
     "name": "Serge PAPIN",

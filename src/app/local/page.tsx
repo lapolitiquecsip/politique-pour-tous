@@ -1,106 +1,175 @@
 "use client";
 
-import { motion } from "framer-motion";
+import { motion, AnimatePresence } from "framer-motion";
 import { 
-  MapPin, 
-  Users, 
-  Building2, 
-  TrendingUp, 
-  Search,
-  ArrowRight,
-  Vote,
-  History,
-  Building,
-  ChevronRight,
-  Map,
-  Layers,
-  LayoutGrid,
-  Lock
+  MapPin, Users, Building2, TrendingUp, Search, ArrowRight, Vote,
+  History, Building, ChevronRight, Map, Layers, LayoutGrid, Lock, Loader2
 } from "lucide-react";
 import Link from "next/link";
 import { useState } from "react";
 import GlossaryText from "@/components/ui/GlossaryText";
 import { usePremium } from "@/lib/hooks/usePremium";
 import { getPremiumUrl } from "@/lib/utils";
+import { useCommuneSearch } from "@/lib/hooks/useCommuneSearch";
+import type { CommuneResult } from "@/lib/hooks/useCommuneSearch";
+import CommuneDetailPanel from "@/components/local/CommuneDetailPanel";
 
-// Mock Data for Local Politics
-const CITIES = [
-  {
-    name: "Paris",
-    mayor: "Anne Hidalgo",
-    party: "PS",
-    budget: "10.5 Md€",
-    lastElection: "2020",
-    score: "48.5%",
-    image: "https://upload.wikimedia.org/wikipedia/commons/thumb/4/4b/La_Tour_Eiffel_vue_du_trocad%C3%A9ro.jpg/800px-La_Tour_Eiffel_vue_du_trocad%C3%A9ro.jpg"
-  },
-  {
-    name: "Marseille",
-    mayor: "Benoît Payan",
-    party: "DVG",
-    budget: "1.6 Md€",
-    lastElection: "2020",
-    score: "53.5%",
-    image: "https://upload.wikimedia.org/wikipedia/commons/thumb/d/d3/Marseille_Vieux_Port.jpg/800px-Marseille_Vieux_Port.jpg"
-  },
-  {
-    name: "Lyon",
-    mayor: "Grégory Doucet",
-    party: "EELV",
-    budget: "0.8 Md€",
-    lastElection: "2020",
-    score: "52.4%",
-    image: "https://upload.wikimedia.org/wikipedia/commons/thumb/c/c1/Lyon_-_Place_Bellecour.jpg/800px-Lyon_-_Place_Bellecour.jpg"
-  },
-  {
-    name: "Toulouse",
-    mayor: "Jean-Luc Moudenc",
-    party: "LR",
-    budget: "0.9 Md€",
-    lastElection: "2020",
-    score: "51.9%",
-    image: "https://upload.wikimedia.org/wikipedia/commons/thumb/b/b3/Capitole_de_Toulouse.jpg/800px-Capitole_de_Toulouse.jpg"
-  },
-  {
-    name: "Nice",
-    mayor: "Christian Estrosi",
-    party: "Horizons",
-    budget: "0.7 Md€",
-    lastElection: "2020",
-    score: "59.3%",
-    image: "https://upload.wikimedia.org/wikipedia/commons/thumb/2/22/Promenade_des_Anglais_Nice.jpg/800px-Promenade_des_Anglais_Nice.jpg"
-  }
+// Featured cities shown by default
+const FEATURED_CITIES = [
+  { name: "Paris", code: "75056", mayor: "Emmanuel Grégoire", party: "PS", population: "2.1M", image: "https://upload.wikimedia.org/wikipedia/commons/thumb/4/4b/La_Tour_Eiffel_vue_du_trocad%C3%A9ro.jpg/800px-La_Tour_Eiffel_vue_du_trocad%C3%A9ro.jpg" },
+  { name: "Marseille", code: "13055", mayor: "Benoît Payan", party: "DVG", population: "870K", image: "https://upload.wikimedia.org/wikipedia/commons/thumb/d/d3/Marseille_Vieux_Port.jpg/800px-Marseille_Vieux_Port.jpg" },
+  { name: "Lyon", code: "69123", mayor: "Grégory Doucet", party: "EELV", population: "522K", image: "https://upload.wikimedia.org/wikipedia/commons/thumb/c/c1/Lyon_-_Place_Bellecour.jpg/800px-Lyon_-_Place_Bellecour.jpg" },
+  { name: "Toulouse", code: "31555", mayor: "Jean-Luc Moudenc", party: "LR", population: "498K", image: "https://upload.wikimedia.org/wikipedia/commons/thumb/b/b3/Capitole_de_Toulouse.jpg/800px-Capitole_de_Toulouse.jpg" },
+  { name: "Nice", code: "06088", mayor: "Eric Ciotti", party: "Horizons", population: "342K", image: "https://upload.wikimedia.org/wikipedia/commons/thumb/2/22/Promenade_des_Anglais_Nice.jpg/800px-Promenade_des_Anglais_Nice.jpg" },
+  { name: "Nantes", code: "44109", mayor: "Johanna Rolland", party: "PS", population: "320K", image: "https://images.unsplash.com/photo-1584466977773-e625c37cdd50?auto=format&fit=crop&q=80&w=800" },
 ];
 
 const REGIONS = [
   { name: "Île-de-France", president: "Valérie Pécresse", party: "LR", budget: "5.0 Md€", population: "12.3M", image: "https://images.unsplash.com/photo-1502602898657-3e91760cbb34?auto=format&fit=crop&q=80&w=800" },
   { name: "Auvergne-Rhône-Alpes", president: "Laurent Wauquiez", party: "LR", budget: "3.6 Md€", population: "8.1M", image: "https://images.unsplash.com/photo-1549144511-f099e773c147?auto=format&fit=crop&q=80&w=800" },
-  { name: "Hauts-de-France", president: "Xavier Bertrand", party: "LR", budget: "3.4 Md€", population: "6.0M", image: "https://images.unsplash.com/photo-1595863266931-1509a259c40a?auto=format&fit=crop&q=80&w=800" }
+  { name: "Hauts-de-France", president: "Xavier Bertrand", party: "LR", budget: "3.4 Md€", population: "6.0M", image: "https://images.unsplash.com/photo-1595863266931-1509a259c40a?auto=format&fit=crop&q=80&w=800" },
+  { name: "Nouvelle-Aquitaine", president: "Alain Rousset", party: "PS", budget: "3.2 Md€", population: "6.0M", image: "https://images.unsplash.com/photo-1517404212328-40a61576d1ff?auto=format&fit=crop&q=80&w=800" },
+  { name: "Occitanie", president: "Carole Delga", party: "PS", budget: "3.1 Md€", population: "5.9M", image: "https://images.unsplash.com/photo-1600028068383-ea11a7a101f3?auto=format&fit=crop&q=80&w=800" },
+  { name: "Grand Est", president: "Franck Leroy", party: "LR", budget: "2.9 Md€", population: "5.6M", image: "https://images.unsplash.com/photo-1592995604992-cf50ecd7bbf2?auto=format&fit=crop&q=80&w=800" },
+  { name: "Provence-Alpes-Côte d'Azur", president: "Renaud Muselier", party: "LR", budget: "2.8 Md€", population: "5.1M", image: "https://images.unsplash.com/photo-1563606734-706798032742?auto=format&fit=crop&q=80&w=800" },
+  { name: "Pays de la Loire", president: "Christelle Morançais", party: "LR", budget: "1.9 Md€", population: "3.8M", image: "https://images.unsplash.com/photo-1584466977773-e625c37cdd50?auto=format&fit=crop&q=80&w=800" },
+  { name: "Normandie", president: "Hervé Morin", party: "LC", budget: "1.8 Md€", population: "3.3M", image: "https://images.unsplash.com/photo-1576016770956-debb63d92058?auto=format&fit=crop&q=80&w=800" },
+  { name: "Bretagne", president: "Loïg Chesnais-Girard", party: "PS", budget: "1.6 Md€", population: "3.4M", image: "https://images.unsplash.com/photo-1560717799-5090c511b684?auto=format&fit=crop&q=80&w=800" },
+  { name: "Bourgogne-Franche-Comté", president: "Marie-Guite Dufay", party: "PS", budget: "1.4 Md€", population: "2.8M", image: "https://images.unsplash.com/photo-1600028068383-ea11a7a101f3?auto=format&fit=crop&q=80&w=800" },
+  { name: "Centre-Val de Loire", president: "François Bonneau", party: "PS", budget: "1.3 Md€", population: "2.6M", image: "https://images.unsplash.com/photo-1555854877-bab0e564b8d5?auto=format&fit=crop&q=80&w=800" },
+  { name: "Corse", president: "Gilles Simeoni", party: "Femu a Corsica", budget: "0.6 Md€", population: "0.3M", image: "https://images.unsplash.com/photo-1568283096533-078a24b4eba4?auto=format&fit=crop&q=80&w=800" },
+  { name: "Guadeloupe", president: "Ary Chalus", party: "GUSR", budget: "0.8 Md€", population: "0.4M", image: "https://images.unsplash.com/photo-1580237072617-771c3ecc4a24?auto=format&fit=crop&q=80&w=800" },
+  { name: "Martinique", president: "Serge Letchimy", party: "PPM", budget: "0.9 Md€", population: "0.4M", image: "https://images.unsplash.com/photo-1580237072617-771c3ecc4a24?auto=format&fit=crop&q=80&w=800" },
+  { name: "Guyane", president: "Gabriel Serville", party: "DVG", budget: "0.4 Md€", population: "0.3M", image: "https://images.unsplash.com/photo-1580237072617-771c3ecc4a24?auto=format&fit=crop&q=80&w=800" },
+  { name: "La Réunion", president: "Huguette Bello", party: "PLR", budget: "1.0 Md€", population: "0.9M", image: "https://images.unsplash.com/photo-1580237072617-771c3ecc4a24?auto=format&fit=crop&q=80&w=800" },
+  { name: "Mayotte", president: "Ben Issa Ousseni", party: "LR", budget: "0.3 Md€", population: "0.3M", image: "https://images.unsplash.com/photo-1580237072617-771c3ecc4a24?auto=format&fit=crop&q=80&w=800" },
 ];
 
 const DEPARTMENTS = [
-  { name: "Nord", president: "Christian Poiret", party: "DVD", budget: "3.5 Md€", population: "2.6M", image: "https://images.unsplash.com/photo-1595113316349-9fa4ee24f884?auto=format&fit=crop&q=80&w=800" },
-  { name: "Bouches-du-Rhône", president: "Martine Vassal", party: "DVD", budget: "2.8 Md€", population: "2.0M", image: "https://images.unsplash.com/photo-1563606734-706798032742?auto=format&fit=crop&q=80&w=800" },
-  { name: "Gironde", president: "Jean-Luc Gleyze", party: "PS", budget: "2.1 Md€", population: "1.6M", image: "https://images.unsplash.com/photo-1517404212328-40a61576d1ff?auto=format&fit=crop&q=80&w=800" }
+  { "name": "Ain (01)", "president": "Jean Deguerry", "party": "LR", "budget": "760 M€", "population": "663K" },
+  { "name": "Aisne (02)", "president": "Nicolas Fricoteaux", "party": "UDI", "budget": "610 M€", "population": "527K" },
+  { "name": "Allier (03)", "president": "Claude Riboulet", "party": "UDI", "budget": "385 M€", "population": "335K" },
+  { "name": "Alpes-de-Haute-Provence (04)", "president": "Eliane Barreille", "party": "LR", "budget": "190 M€", "population": "165K" },
+  { "name": "Hautes-Alpes (05)", "president": "Jean-Marie Bernard", "party": "LR", "budget": "165 M€", "population": "141K" },
+  { "name": "Alpes-Maritimes (06)", "president": "Charles-Ange Ginesy", "party": "LR", "budget": "1.25 Md€", "population": "1.1M" },
+  { "name": "Ardèche (07)", "president": "Olivier Amrane", "party": "LR", "budget": "380 M€", "population": "331K" },
+  { "name": "Ardennes (08)", "president": "Noël Bourgeois", "party": "LR", "budget": "310 M€", "population": "269K" },
+  { "name": "Ariège (09)", "president": "Christine Téqui", "party": "PS", "budget": "180 M€", "population": "155K" },
+  { "name": "Aube (10)", "president": "Philippe Pichery", "party": "DVD", "budget": "360 M€", "population": "312K" },
+  { "name": "Aude (11)", "president": "Hélène Sandragné", "party": "PS", "budget": "430 M€", "population": "376K" },
+  { "name": "Aveyron (12)", "president": "Arnaud Viala", "party": "LR", "budget": "320 M€", "population": "280K" },
+  { "name": "Bouches-du-Rhône (13)", "president": "Martine Vassal", "party": "DVD", "budget": "2.85 Md€", "population": "2.0M" },
+  { "name": "Calvados (14)", "president": "Jean-Léonce Dupont", "party": "LC", "budget": "810 M€", "population": "701K" },
+  { "name": "Cantal (15)", "president": "Bruno Faure", "party": "LR", "budget": "170 M€", "population": "144K" },
+  { "name": "Charente (16)", "president": "Philippe Bouty", "party": "DVG", "budget": "405 M€", "population": "351K" },
+  { "name": "Charente-Maritime (17)", "president": "Sylvie Marcilly", "party": "DVD", "budget": "760 M€", "population": "661K" },
+  { "name": "Cher (18)", "president": "Jacques Fleury", "party": "LR", "budget": "345 M€", "population": "300K" },
+  { "name": "Corrèze (19)", "president": "Pascal Coste", "party": "LR", "budget": "275 M€", "population": "240K" },
+  { "name": "Corse-du-Sud (2A)", "president": "Pierre-Jean Luciani", "party": "DVD", "budget": "190 M€", "population": "163K" },
+  { "name": "Haute-Corse (2B)", "president": "François Orlandi", "party": "PRG", "budget": "215 M€", "population": "185K" },
+  { "name": "Côte-d'Or (21)", "president": "François Sauvadet", "party": "UDI", "budget": "620 M€", "population": "536K" },
+  { "name": "Côtes-d'Armor (22)", "president": "Christian Coail", "party": "PS", "budget": "700 M€", "population": "606K" },
+  { "name": "Creuse (23)", "president": "Valérie Simonet", "party": "LR", "budget": "135 M€", "population": "116K" },
+  { "name": "Dordogne (24)", "president": "Germinal Peiro", "party": "PS", "budget": "475 M€", "population": "413K" },
+  { "name": "Doubs (25)", "president": "Christine Bouquin", "party": "DVD", "budget": "630 M€", "population": "547K" },
+  { "name": "Drôme (26)", "president": "Marie-Pierre Mouton", "party": "LR", "budget": "600 M€", "population": "519K" },
+  { "name": "Eure (27)", "president": "Alexandre Rassaërt", "party": "DVD", "budget": "690 M€", "population": "599K" },
+  { "name": "Eure-et-Loir (28)", "president": "Christophe Le Dorven", "party": "LR", "budget": "500 M€", "population": "431K" },
+  { "name": "Finistère (29)", "president": "Maël de Calan", "party": "DVD", "budget": "1.06 Md€", "population": "922K" },
+  { "name": "Gard (30)", "president": "Françoise Laurent-Perrigot", "party": "PS", "budget": "870 M€", "population": "757K" },
+  { "name": "Haute-Garonne (31)", "president": "Sébastien Vincini", "party": "PS", "budget": "1.65 Md€", "population": "1.4M" },
+  { "name": "Gers (32)", "president": "Philippe Dupouy", "party": "PS", "budget": "225 M€", "population": "192K" },
+  { "name": "Gironde (33)", "president": "Jean-Luc Gleyze", "party": "PS", "budget": "1.95 Md€", "population": "1.7M" },
+  { "name": "Hérault (34)", "president": "Kléber Mesquida", "party": "PS", "budget": "1.40 Md€", "population": "1.2M" },
+  { "name": "Ille-et-Vilaine (35)", "president": "Jean-Luc Chenut", "party": "PS", "budget": "1.30 Md€", "population": "1.1M" },
+  { "name": "Indre (36)", "president": "Marc Fleuret", "party": "LR", "budget": "250 M€", "population": "217K" },
+  { "name": "Indre-et-Loire (37)", "president": "Jean-Gérard Paumier", "party": "LR", "budget": "710 M€", "population": "612K" },
+  { "name": "Isère (38)", "president": "Jean-Pierre Barbier", "party": "LR", "budget": "1.50 Md€", "population": "1.3M" },
+  { "name": "Jura (39)", "president": "Clément Pernot", "party": "LR", "budget": "300 M€", "population": "259K" },
+  { "name": "Landes (40)", "president": "Xavier Fortinon", "party": "PS", "budget": "490 M€", "population": "422K" },
+  { "name": "Loir-et-Cher (41)", "president": "Philippe Gouet", "party": "UDI", "budget": "380 M€", "population": "329K" },
+  { "name": "Loire (42)", "president": "Georges Ziegler", "party": "LR", "budget": "890 M€", "population": "769K" },
+  { "name": "Haute-Loire (43)", "president": "Marie-Agnès Petit", "party": "LR", "budget": "265 M€", "population": "228K" },
+  { "name": "Loire-Atlantique (44)", "president": "Michel Ménard", "party": "PS", "budget": "1.70 Md€", "population": "1.5M" },
+  { "name": "Loiret (45)", "president": "Marc Gaudet", "party": "UDI", "budget": "790 M€", "population": "684K" },
+  { "name": "Lot (46)", "president": "Serge Rigal", "party": "DVG", "budget": "205 M€", "population": "174K" },
+  { "name": "Lot-et-Garonne (47)", "president": "Sophie Borderie", "party": "PS", "budget": "385 M€", "population": "331K" },
+  { "name": "Lozère (48)", "president": "Sophie Pantel", "party": "PS", "budget": "110 M€", "population": "77K" },
+  { "name": "Maine-et-Loire (49)", "president": "Florence Dabin", "party": "DVD", "budget": "955 M€", "population": "825K" },
+  { "name": "Manche (50)", "president": "Jean Morin", "party": "DVD", "budget": "575 M€", "population": "496K" },
+  { "name": "Marne (51)", "president": "Christian Bruyen", "party": "DVD", "budget": "655 M€", "population": "565K" },
+  { "name": "Haute-Marne (52)", "president": "Nicolas Lacroix", "party": "LR", "budget": "200 M€", "population": "171K" },
+  { "name": "Mayenne (53)", "president": "Olivier Richefou", "party": "UDI", "budget": "355 M€", "population": "306K" },
+  { "name": "Meurthe-et-Moselle (54)", "president": "Chaynesse Khirouni", "party": "PS", "budget": "850 M€", "population": "732K" },
+  { "name": "Meuse (55)", "president": "Jérôme Dumont", "party": "DVD", "budget": "215 M€", "population": "182K" },
+  { "name": "Morbihan (56)", "president": "David Lappartient", "party": "DVD", "budget": "890 M€", "population": "769K" },
+  { "name": "Moselle (57)", "president": "Patrick Weiten", "party": "UDI", "budget": "1.20 Md€", "population": "1.0M" },
+  { "name": "Nièvre (58)", "president": "Fabien Bazin", "party": "PS", "budget": "235 M€", "population": "202K" },
+  { "name": "Nord (59)", "president": "Christian Poiret", "party": "DVD", "budget": "3.55 Md€", "population": "2.6M" },
+  { "name": "Oise (60)", "president": "Nadège Lefebvre", "party": "LR", "budget": "960 M€", "population": "830K" },
+  { "name": "Orne (61)", "president": "Christophe de Balorre", "party": "LR", "budget": "320 M€", "population": "277K" },
+  { "name": "Pas-de-Calais (62)", "president": "Jean-Claude Leroy", "party": "PS", "budget": "1.75 Md€", "population": "1.5M" },
+  { "name": "Puy-de-Dôme (63)", "president": "Lionel Chauvin", "party": "LR", "budget": "765 M€", "population": "662K" },
+  { "name": "Pyrénées-Atlantiques (64)", "president": "Jean-Jacques Lasserre", "party": "MoDem", "budget": "800 M€", "population": "693K" },
+  { "name": "Hautes-Pyrénées (65)", "president": "Michel Pélieu", "party": "PRG", "budget": "270 M€", "population": "231K" },
+  { "name": "Pyrénées-Orientales (66)", "president": "Hermeline Malherbe", "party": "PS", "budget": "565 M€", "population": "487K" },
+  { "name": "Bas-Rhin (67)", "president": "Frédéric Bierry", "party": "LR", "budget": "1.35 Md€", "population": "1.2M" },
+  { "name": "Haut-Rhin (68)", "president": "Frédéric Bierry", "party": "LR", "budget": "890 M€", "population": "767K" },
+  { "name": "Rhône (69)", "president": "Christophe Guilloteau", "party": "LR", "budget": "545 M€", "population": "468K" },
+  { "name": "Métropole de Lyon (69M)", "president": "Bruno Bernard", "party": "EELV", "budget": "3.90 Md€", "population": "1.4M" },
+  { "name": "Haute-Saône (70)", "president": "Yves Krattinger", "party": "PS", "budget": "270 M€", "population": "234K" },
+  { "name": "Saône-et-Loire (71)", "president": "André Accary", "party": "DVD", "budget": "635 M€", "population": "549K" },
+  { "name": "Sarthe (72)", "president": "Dominique Le Mèner", "party": "DVD", "budget": "655 M€", "population": "566K" },
+  { "name": "Savoie (73)", "president": "Hervé Gaymard", "party": "LR", "budget": "515 M€", "population": "442K" },
+  { "name": "Haute-Savoie (74)", "president": "Martial Saddier", "party": "LR", "budget": "980 M€", "population": "841K" },
+  { "name": "Paris (75)", "president": "Anne Hidalgo", "party": "PS", "budget": "10.5 Md€", "population": "2.1M" },
+  { "name": "Seine-Maritime (76)", "president": "Bertrand Bellanger", "party": "DVD", "budget": "1.45 Md€", "population": "1.3M" },
+  { "name": "Seine-et-Marne (77)", "president": "Jean-François Parigi", "party": "LR", "budget": "1.65 Md€", "population": "1.4M" },
+  { "name": "Yvelines (78)", "president": "Pierre Bédier", "party": "LR", "budget": "1.70 Md€", "population": "1.5M" },
+  { "name": "Deux-Sèvres (79)", "president": "Coralie Dénoues", "party": "DVD", "budget": "435 M€", "population": "375K" },
+  { "name": "Somme (80)", "president": "Stéphane Haussoulier", "party": "DVD", "budget": "655 M€", "population": "566K" },
+  { "name": "Tarn (81)", "president": "Christophe Ramond", "party": "PS", "budget": "455 M€", "population": "394K" },
+  { "name": "Tarn-et-Garonne (82)", "president": "Michel Weill", "party": "PRG", "budget": "305 M€", "population": "263K" },
+  { "name": "Var (83)", "president": "Jean-Louis Masson", "party": "LR", "budget": "1.25 Md€", "population": "1.1M" },
+  { "name": "Vaucluse (84)", "president": "Dominique Santoni", "party": "PS", "budget": "655 M€", "population": "565K" },
+  { "name": "Vendée (85)", "president": "Alain Leboeuf", "party": "LR", "budget": "800 M€", "population": "694K" },
+  { "name": "Vienne (86)", "president": "Alain Pichon", "party": "DVD", "budget": "510 M€", "population": "439K" },
+  { "name": "Haute-Vienne (87)", "president": "Jean-Claude Leblois", "party": "PS", "budget": "430 M€", "population": "372K" },
+  { "name": "Vosges (88)", "president": "François Vannson", "party": "DVD", "budget": "415 M€", "population": "361K" },
+  { "name": "Yonne (89)", "president": "Patrick Gendraud", "party": "LR", "budget": "385 M€", "population": "333K" },
+  { "name": "Territoire de Belfort (90)", "president": "Florian Bouquet", "party": "LR", "budget": "165 M€", "population": "140K" },
+  { "name": "Essonne (91)", "president": "François Durovray", "party": "LR", "budget": "1.50 Md€", "population": "1.3M" },
+  { "name": "Hauts-de-Seine (92)", "president": "Georges Siffredi", "party": "LR", "budget": "2.20 Md€", "population": "1.6M" },
+  { "name": "Seine-Saint-Denis (93)", "president": "Stéphane Troussel", "party": "PS", "budget": "2.10 Md€", "population": "1.7M" },
+  { "name": "Val-de-Marne (94)", "president": "Olivier Capitanio", "party": "LR", "budget": "1.80 Md€", "population": "1.4M" },
+  { "name": "Val-d'Oise (95)", "president": "Marie-Christine Cavecchi", "party": "LR", "budget": "1.45 Md€", "population": "1.3M" },
+  { "name": "Guadeloupe (971)", "president": "Guy Losbar", "party": "GUSR", "budget": "650 M€", "population": "384K" },
+  { "name": "Martinique (972)", "president": "Serge Letchimy", "party": "PPM", "budget": "600 M€", "population": "353K" },
+  { "name": "Guyane (973)", "president": "Gabriel Serville", "party": "PeP-G", "budget": "550 M€", "population": "287K" },
+  { "name": "La Réunion (974)", "president": "Cyrille Melchior", "party": "DVD", "budget": "1.30 Md€", "population": "871K" },
+  { "name": "Mayotte (976)", "president": "Ben Issa Ousseni", "party": "LR", "budget": "450 M€", "population": "289K" }
 ];
 
 export default function LocalPoliticsPage() {
   const { userId, isPremium, loading: pLoading } = usePremium();
   const [activeTab, setActiveTab] = useState<"region" | "departement" | "commune">("commune");
   const [search, setSearch] = useState("");
+  const communeSearch = useCommuneSearch();
+  const [selectedCommune, setSelectedCommune] = useState<CommuneResult | null>(null);
+  const [showDropdown, setShowDropdown] = useState(false);
 
   const filteredItems = (() => {
     const s = search.toLowerCase();
-    if (activeTab === "commune") {
-      return CITIES.filter(c => c.name.toLowerCase().includes(s) || c.mayor.toLowerCase().includes(s));
-    } else if (activeTab === "region") {
+    if (activeTab === "region") {
       return REGIONS.filter(r => r.name.toLowerCase().includes(s) || r.president.toLowerCase().includes(s));
-    } else {
+    } else if (activeTab === "departement") {
       return DEPARTMENTS.filter(d => d.name.toLowerCase().includes(s) || d.president.toLowerCase().includes(s));
     }
+    return []; // communes handled separately
   })();
 
   return (
+    <>
     <main className="min-h-screen bg-slate-50 pb-20">
       {/* 1. HERO SECTION (POSTER IMPACT STYLE) */}
       <section className="relative pt-32 pb-24 px-4 overflow-hidden bg-white">
@@ -183,83 +252,216 @@ export default function LocalPoliticsPage() {
             <div className="flex flex-col md:flex-row gap-6 items-center justify-between">
               <div className="relative w-full md:max-w-md">
                 <Search className="absolute left-4 top-1/2 -translate-y-1/2 text-slate-400" size={18} />
+                {activeTab === 'commune' && communeSearch.loading && (
+                  <Loader2 className="absolute right-4 top-1/2 -translate-y-1/2 text-rose-400 animate-spin" size={18} />
+                )}
                 <input 
                   type="text"
                   placeholder={
-                    activeTab === 'commune' ? "Rechercher une ville, un maire..." : 
+                    activeTab === 'commune' ? "Rechercher parmi 35 000 communes..." : 
                     activeTab === 'departement' ? "Rechercher un département, un président..." :
                     "Rechercher une région, un président..."
                   }
-                  value={search}
-                  onChange={(e) => setSearch(e.target.value)}
+                  value={activeTab === 'commune' ? communeSearch.query : search}
+                  onChange={(e) => {
+                    if (activeTab === 'commune') {
+                      communeSearch.setQuery(e.target.value);
+                      communeSearch.ensureMayorsLoaded();
+                      setShowDropdown(true);
+                    } else {
+                      setSearch(e.target.value);
+                    }
+                  }}
+                  onFocus={() => {
+                    if (activeTab === 'commune') {
+                      communeSearch.ensureMayorsLoaded();
+                      setShowDropdown(true);
+                    }
+                  }}
+                  onBlur={() => setTimeout(() => setShowDropdown(false), 200)}
                   className="w-full pl-12 pr-4 py-4 rounded-2xl bg-white border border-slate-200 focus:ring-2 focus:ring-rose-500 outline-none transition-all shadow-sm font-medium text-slate-900"
                 />
+
+                {/* Autocomplete Dropdown */}
+                <AnimatePresence>
+                  {activeTab === 'commune' && showDropdown && communeSearch.results.length > 0 && (
+                    <motion.div
+                      initial={{ opacity: 0, y: -8 }}
+                      animate={{ opacity: 1, y: 0 }}
+                      exit={{ opacity: 0, y: -8 }}
+                      className="absolute top-full mt-2 left-0 right-0 bg-white rounded-2xl border border-slate-200 shadow-2xl shadow-slate-200/60 overflow-hidden z-40 max-h-[400px] overflow-y-auto"
+                    >
+                      {communeSearch.results.map((commune, i) => {
+                        const mayor = communeSearch.getMayor(commune.code);
+                        return (
+                          <button
+                            key={commune.code}
+                            onMouseDown={(e) => {
+                              e.preventDefault();
+                              setSelectedCommune(commune);
+                              setShowDropdown(false);
+                              communeSearch.setQuery(commune.nom);
+                            }}
+                            className="w-full px-5 py-3.5 flex items-center gap-4 hover:bg-rose-50 transition-colors text-left border-b border-slate-50 last:border-0"
+                          >
+                            <div className="w-9 h-9 rounded-xl bg-gradient-to-br from-rose-100 to-fuchsia-100 flex items-center justify-center text-rose-600 flex-shrink-0">
+                              <MapPin size={16} />
+                            </div>
+                            <div className="flex-1 min-w-0">
+                              <div className="flex items-center gap-2">
+                                <span className="font-bold text-slate-900 truncate">{commune.nom}</span>
+                                <span className="text-[10px] text-slate-400 font-medium">{commune.codesPostaux?.[0]}</span>
+                              </div>
+                              <div className="flex items-center gap-2 text-[11px] text-slate-500">
+                                <span>{commune.departement?.nom}</span>
+                                {mayor && (
+                                  <>
+                                    <span className="text-slate-300">·</span>
+                                    <span className="font-semibold text-slate-700">{mayor.n}</span>
+                                    {mayor.p && <span className="px-1.5 py-0.5 bg-rose-100 text-rose-600 rounded text-[9px] font-bold">{mayor.p}</span>}
+                                  </>
+                                )}
+                              </div>
+                            </div>
+                            <div className="text-right flex-shrink-0">
+                              <span className="text-[10px] font-bold text-slate-400">{commune.population?.toLocaleString('fr-FR')} hab.</span>
+                            </div>
+                          </button>
+                        );
+                      })}
+                    </motion.div>
+                  )}
+                </AnimatePresence>
+
+                {/* Counter badge */}
+                {activeTab === 'commune' && (
+                  <div className="mt-3 flex items-center gap-2">
+                    <span className="text-[10px] font-black uppercase tracking-widest text-slate-400">
+                      {communeSearch.mayorsDb ? '34 637 communes disponibles' : communeSearch.mayorsLoading ? 'Chargement de la base...' : 'Tapez pour rechercher'}
+                    </span>
+                    {communeSearch.mayorsDb && <span className="w-1.5 h-1.5 rounded-full bg-emerald-500" />}
+                  </div>
+                )}
               </div>
             </div>
 
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
-              {filteredItems.map((item: any, idx: number) => (
-                <motion.div
-                  key={`${activeTab}-${idx}`}
-                  initial={{ opacity: 0, y: 20 }}
-                  animate={{ opacity: 1, y: 0 }}
-                  viewport={{ once: true }}
-                  transition={{ delay: idx * 0.1 }}
-                  className="group bg-white rounded-[2.5rem] border border-slate-200 overflow-hidden hover:shadow-2xl transition-all duration-500"
-                >
-                  <div className="relative h-48 overflow-hidden">
-                    <img 
-                      src={item.image} 
-                      alt={item.name}
-                      className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-700"
-                    />
-                    <div className="absolute inset-0 bg-gradient-to-t from-slate-950/80 to-transparent" />
-                    <div className="absolute bottom-4 left-6">
-                      <p className="text-rose-400 font-black text-[9px] uppercase tracking-widest mb-1">
-                        {activeTab === 'region' ? 'Région' : activeTab === 'departement' ? 'Département' : 'Commune'}
-                      </p>
-                      <h4 className="text-white font-bold text-xl leading-tight">{item.name}</h4>
+            {/* COMMUNE TAB: Featured cities + search results */}
+            {activeTab === 'commune' && (
+              <>
+                {!communeSearch.query && (
+                  <div className="space-y-4">
+                    <p className="text-[10px] font-black uppercase tracking-widest text-slate-400">Grandes villes</p>
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
+                      {FEATURED_CITIES.map((city, idx) => (
+                        <motion.button
+                          key={city.code}
+                          initial={{ opacity: 0, y: 20 }}
+                          animate={{ opacity: 1, y: 0 }}
+                          transition={{ delay: idx * 0.08 }}
+                          onClick={async () => {
+                            await communeSearch.ensureMayorsLoaded();
+                            const res = await fetch(`https://geo.api.gouv.fr/communes/${city.code}?fields=nom,code,codesPostaux,population,departement,region`);
+                            const data = await res.json();
+                            setSelectedCommune(data);
+                          }}
+                          className="group bg-white rounded-[2.5rem] border border-slate-200 overflow-hidden hover:shadow-2xl transition-all duration-500 text-left"
+                        >
+                          <div className="relative h-48 overflow-hidden">
+                            <img src={city.image} alt={city.name} className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-700" />
+                            <div className="absolute inset-0 bg-gradient-to-t from-slate-950/80 to-transparent" />
+                            <div className="absolute bottom-4 left-6">
+                              <p className="text-rose-400 font-black text-[9px] uppercase tracking-widest mb-1">Commune</p>
+                              <h4 className="text-white font-bold text-xl leading-tight">{city.name}</h4>
+                            </div>
+                          </div>
+                          <div className="p-8 space-y-6">
+                            <div>
+                              <div className="flex items-center justify-between mb-2">
+                                <span className="text-[10px] font-black uppercase text-slate-400 tracking-widest">Maire</span>
+                                <span className="px-2 py-0.5 bg-rose-50 text-rose-600 text-[10px] font-bold rounded-full">{city.party}</span>
+                              </div>
+                              <h3 className="text-2xl font-bold text-slate-900 group-hover:text-rose-600 transition-colors leading-tight">{city.mayor}</h3>
+                            </div>
+                            <div className="grid grid-cols-2 gap-6 py-6 border-y border-slate-50">
+                              <div className="space-y-1">
+                                <span className="text-[9px] font-black uppercase text-slate-400 tracking-widest flex items-center gap-1"><Users size={10} /> Population</span>
+                                <p className="text-sm font-black text-slate-900">{city.population}</p>
+                              </div>
+                              <div className="space-y-1">
+                                <span className="text-[9px] font-black uppercase text-slate-400 tracking-widest flex items-center gap-1"><Building2 size={10} /> Mandat</span>
+                                <p className="text-sm font-black text-slate-900">2026</p>
+                              </div>
+                            </div>
+                            <div className="w-full flex items-center justify-between group/btn text-slate-900 hover:text-rose-600 transition-colors pt-2">
+                              <span className="text-[10px] font-black uppercase tracking-widest">Voir les détails</span>
+                              <div className="w-10 h-10 rounded-full bg-slate-50 flex items-center justify-center group-hover/btn:bg-rose-600 group-hover/btn:text-white transition-all"><ChevronRight size={18} /></div>
+                            </div>
+                          </div>
+                        </motion.button>
+                      ))}
                     </div>
                   </div>
+                )}
+              </>
+            )}
 
-                  <div className="p-8 space-y-6">
-                    <div>
-                      <div className="flex items-center justify-between mb-2">
-                        <span className="text-[10px] font-black uppercase text-slate-400 tracking-widest">
-                          {activeTab === 'region' || activeTab === 'departement' ? 'Président(e)' : 'Maire'}
-                        </span>
-                        <span className="px-2 py-0.5 bg-rose-50 text-rose-600 text-[10px] font-bold rounded-full">{item.party}</span>
+            {/* REGION / DEPARTMENT TAB: Card grid */}
+            {activeTab !== 'commune' && (
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
+                {filteredItems.map((item: any, idx: number) => (
+                  <motion.div
+                    key={`${activeTab}-${idx}`}
+                    initial={{ opacity: 0, y: 20 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    viewport={{ once: true }}
+                    transition={{ delay: idx * 0.06 }}
+                    className="group bg-white rounded-[2.5rem] border border-slate-200 overflow-hidden hover:shadow-2xl transition-all duration-500"
+                  >
+                    {item.image && (
+                      <div className="relative h-48 overflow-hidden">
+                        <img src={item.image} alt={item.name} className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-700" />
+                        <div className="absolute inset-0 bg-gradient-to-t from-slate-950/80 to-transparent" />
+                        <div className="absolute bottom-4 left-6">
+                          <p className="text-rose-400 font-black text-[9px] uppercase tracking-widest mb-1">{activeTab === 'region' ? 'Région' : 'Département'}</p>
+                          <h4 className="text-white font-bold text-xl leading-tight">{item.name}</h4>
+                        </div>
                       </div>
-                      <h3 className="text-2xl font-bold text-slate-900 group-hover:text-rose-600 transition-colors leading-tight">
-                        {item.president || item.mayor}
-                      </h3>
+                    )}
+                    {!item.image && (
+                      <div className="relative h-28 bg-gradient-to-br from-rose-600 to-fuchsia-600 flex items-end p-6">
+                        <div>
+                          <p className="text-rose-200 font-black text-[9px] uppercase tracking-widest mb-1">{activeTab === 'region' ? 'Région' : 'Département'}</p>
+                          <h4 className="text-white font-bold text-xl leading-tight">{item.name}</h4>
+                        </div>
+                      </div>
+                    )}
+                    <div className="p-8 space-y-6">
+                      <div>
+                        <div className="flex items-center justify-between mb-2">
+                          <span className="text-[10px] font-black uppercase text-slate-400 tracking-widest">Président(e)</span>
+                          <span className="px-2 py-0.5 bg-rose-50 text-rose-600 text-[10px] font-bold rounded-full">{item.party}</span>
+                        </div>
+                        <h3 className="text-2xl font-bold text-slate-900 group-hover:text-rose-600 transition-colors leading-tight">{item.president}</h3>
+                      </div>
+                      <div className="grid grid-cols-2 gap-6 py-6 border-y border-slate-50">
+                        <div className="space-y-1">
+                          <span className="text-[9px] font-black uppercase text-slate-400 tracking-widest flex items-center gap-1"><TrendingUp size={10} /> Budget</span>
+                          <p className="text-sm font-black text-slate-900">{item.budget}</p>
+                        </div>
+                        <div className="space-y-1">
+                          <span className="text-[9px] font-black uppercase text-slate-400 tracking-widest flex items-center gap-1"><Users size={10} /> Population</span>
+                          <p className="text-sm font-black text-slate-900">{item.population || "N/A"}</p>
+                        </div>
+                      </div>
+                      <button className="w-full flex items-center justify-between group/btn text-slate-900 hover:text-rose-600 transition-colors pt-2">
+                        <span className="text-[10px] font-black uppercase tracking-widest">Voir les compétences</span>
+                        <div className="w-10 h-10 rounded-full bg-slate-50 flex items-center justify-center group-hover/btn:bg-rose-600 group-hover/btn:text-white transition-all"><ChevronRight size={18} /></div>
+                      </button>
                     </div>
-
-                    <div className="grid grid-cols-2 gap-6 py-6 border-y border-slate-50">
-                      <div className="space-y-1">
-                        <span className="text-[9px] font-black uppercase text-slate-400 tracking-widest flex items-center gap-1">
-                          <TrendingUp size={10} /> Budget
-                        </span>
-                        <p className="text-sm font-black text-slate-900">{item.budget}</p>
-                      </div>
-                      <div className="space-y-1">
-                        <span className="text-[9px] font-black uppercase text-slate-400 tracking-widest flex items-center gap-1">
-                          <Users size={10} /> Population
-                        </span>
-                        <p className="text-sm font-black text-slate-900">{item.population || "N/A"}</p>
-                      </div>
-                    </div>
-
-                    <button className="w-full flex items-center justify-between group/btn text-slate-900 hover:text-rose-600 transition-colors pt-2">
-                      <span className="text-[10px] font-black uppercase tracking-widest">Voir les compétences</span>
-                      <div className="w-10 h-10 rounded-full bg-slate-50 flex items-center justify-center group-hover/btn:bg-rose-600 group-hover/btn:text-white transition-all">
-                        <ChevronRight size={18} />
-                      </div>
-                    </button>
-                  </div>
-                </motion.div>
-              ))}
-            </div>
+                  </motion.div>
+                ))}
+              </div>
+            )}
 
             {/* SECTION: ÉLECTIONS */}
             <section className="bg-rose-950 rounded-[3rem] p-10 md:p-16 text-white relative overflow-hidden">
@@ -452,5 +654,13 @@ export default function LocalPoliticsPage() {
         </div>
       </div>
     </main>
+
+      {/* COMMUNE DETAIL PANEL */}
+      <CommuneDetailPanel
+        commune={selectedCommune}
+        mayor={selectedCommune ? communeSearch.getMayor(selectedCommune.code) : null}
+        onClose={() => setSelectedCommune(null)}
+      />
+    </>
   );
 }

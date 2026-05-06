@@ -26,11 +26,13 @@ import ministersBios from "@/lib/data/ministersBios.json";
 import MinisterImage from "@/components/executif/MinisterImage";
 
 const normalizeName = (name: string) => {
+  if (!name) return "";
   return name
     .toLowerCase()
     .normalize("NFD")
     .replace(/[\u0300-\u036f]/g, "") // Remove accents
     .replace(/^(m\.|mme\.|m\s|mme\s)/, "") // Remove M. or Mme
+    .replace(/[^a-z0-9\s]/g, "") // Remove non-alphanumeric chars (like hyphens or special quotes)
     .replace(/\s+/g, " ") // Collapse multiple spaces
     .trim();
 };
@@ -234,12 +236,20 @@ export default function ExecutifPage() {
         if (json.success && json.data) {
            const mapped = json.data.map((apiMin: any) => {
               const apiNameNorm = normalizeName(apiMin.ministerName);
-              const bioMatch = (ministersBios as any[]).find(b => normalizeName(b.name) === apiNameNorm);
+              const bioMatch = (ministersBios as any[]).find(b => 
+                normalizeName(b.name) === apiNameNorm || 
+                (b.name.toLowerCase().includes('moutchou') && apiMin.ministerName.toLowerCase().includes('moutchou'))
+              );
               const hardcoded = MINISTERS.find(m => m.name && normalizeName(m.name) === apiNameNorm);
               
               let finalImage = `https://ui-avatars.com/api/?name=${encodeURIComponent(apiMin.ministerName)}&background=0D8ABC&color=fff&size=512`;
-              if (bioMatch && bioMatch.image) finalImage = bioMatch.image;
-              else if (hardcoded && hardcoded.image) finalImage = hardcoded.image;
+              if (apiMin.ministerName.toLowerCase().includes('moutchou')) {
+                finalImage = 'https://images.weserv.nl/?url=www.assemblee-nationale.fr/dyn/static/tribun/17/photos/carre/720908.jpg&w=1000';
+              } else if (bioMatch && bioMatch.image) {
+                finalImage = bioMatch.image;
+              } else if (hardcoded && hardcoded.image) {
+                finalImage = hardcoded.image;
+              }
 
               return {
                  name: apiMin.ministerName,

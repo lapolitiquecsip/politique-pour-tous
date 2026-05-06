@@ -7,11 +7,13 @@ import Link from 'next/link';
 import MinisterImage from '@/components/executif/MinisterImage';
 
 const normalizeName = (name: string) => {
+  if (!name) return "";
   return name
     .toLowerCase()
     .normalize("NFD")
     .replace(/[\u0300-\u036f]/g, "") // Remove accents
     .replace(/^(m\.|mme\.|m\s|mme\s)/, "") // Remove M. or Mme
+    .replace(/[^a-z0-9\s]/g, "") // Remove non-alphanumeric chars
     .replace(/\s+/g, " ") // Collapse multiple spaces
     .trim();
 };
@@ -43,7 +45,10 @@ export default async function MinistryPage({ params }: { params: Promise<{ slug:
   // 3. Find the Bio
   const bios = Array.isArray(ministersBios) ? ministersBios : (ministersBios as any).default || [];
   const apiNameNorm = normalizeName(ministryData.ministerName);
-  const bioData = bios.find((b: any) => normalizeName(b.name) === apiNameNorm);
+  const bioData = bios.find((b: any) => 
+    normalizeName(b.name) === apiNameNorm || 
+    (b.name.toLowerCase().includes('moutchou') && ministryData.ministerName.toLowerCase().includes('moutchou'))
+  );
   
   // 4. Fetch News specifically for this ministry (fallback to 'gouvernement')
   const news = await api.getContent(10, "gouvernement");
@@ -113,7 +118,9 @@ export default async function MinistryPage({ params }: { params: Promise<{ slug:
             <div className="md:w-1/3 flex flex-col items-center text-center space-y-4">
               <div className="w-48 h-48 rounded-full border-4 border-slate-50 overflow-hidden shadow-lg bg-slate-100">
                 <MinisterImage 
-                  src={bioData?.image || `https://ui-avatars.com/api/?name=${encodeURIComponent(ministryData.ministerName)}&background=0D8ABC&color=fff&size=512`} 
+                  src={ministryData.ministerName.toLowerCase().includes('moutchou') 
+                    ? 'https://images.weserv.nl/?url=www.assemblee-nationale.fr/dyn/static/tribun/17/photos/carre/720908.jpg&w=1000' 
+                    : (bioData?.image || `https://ui-avatars.com/api/?name=${encodeURIComponent(ministryData.ministerName)}&background=0D8ABC&color=fff&size=512`)} 
                   fallbackSrc={`https://ui-avatars.com/api/?name=${encodeURIComponent(ministryData.ministerName)}&background=0D8ABC&color=fff&size=512`}
                   alt={ministryData.ministerName}
                   className="w-full h-full object-cover"

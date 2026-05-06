@@ -10,7 +10,7 @@ import DeputyCard from "@/components/deputies/DeputyCard";
 import { generateSlug } from "@/lib/slug-generator";
 import { getDepartmentName } from "@/lib/department-mapping";
 import { motion, AnimatePresence } from "framer-motion";
-import { Map, List, Users, Landmark, ChevronRight, Loader2 } from "lucide-react";
+import { Map, List, Users, Landmark, ChevronRight, Loader2, MapPin, X } from "lucide-react";
 
 export default function DeputyClient({ initialDeputies }: { initialDeputies: Deputy[] }) {
   const router = useRouter();
@@ -22,7 +22,7 @@ export default function DeputyClient({ initialDeputies }: { initialDeputies: Dep
 
   const filteredDeputies = useMemo(() => {
     return deputiesList.filter((deputy) => {
-      const q = searchQuery.toLowerCase();
+      const q = searchQuery.toLowerCase().trim();
       const fullName = `${deputy.firstName} ${deputy.lastName}`.toLowerCase();
 
       const matchesSearch =
@@ -92,8 +92,55 @@ export default function DeputyClient({ initialDeputies }: { initialDeputies: Dep
           )}
         </div>
 
-        <div className="w-full max-w-md">
+        <div className="w-full max-w-md flex flex-col gap-2">
           <DeputySearch searchQuery={searchQuery} setSearchQuery={setSearchQuery} />
+          
+          {/* Indicateur de filtres actifs */}
+          <AnimatePresence>
+            {(selectedDepartment || searchQuery) && (
+              <motion.div 
+                initial={{ opacity: 0, y: -10 }}
+                animate={{ opacity: 1, y: 0 }}
+                exit={{ opacity: 0, y: -10 }}
+                className="flex flex-wrap items-center gap-2"
+              >
+                {selectedDepartment && (
+                  <span className="inline-flex items-center gap-1.5 px-3 py-1 bg-blue-500/10 text-blue-600 rounded-full text-xs font-bold border border-blue-500/20">
+                    <MapPin className="w-3 h-3" />
+                    {getDepartmentName(selectedDepartment)}
+                    <button 
+                      onClick={() => handleDepartmentSelect(null)}
+                      className="hover:text-blue-800 transition-colors"
+                    >
+                      <X className="w-3 h-3" />
+                    </button>
+                  </span>
+                )}
+                {searchQuery && (
+                  <span className="inline-flex items-center gap-1.5 px-3 py-1 bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-400 rounded-full text-xs font-bold border border-border">
+                    Recherche: {searchQuery}
+                    <button 
+                      onClick={() => setSearchQuery("")}
+                      className="hover:text-slate-900 dark:hover:text-white transition-colors"
+                    >
+                      <X className="w-3 h-3" />
+                    </button>
+                  </span>
+                )}
+                {(selectedDepartment || searchQuery) && (
+                  <button 
+                    onClick={() => {
+                      setSelectedDepartment(null);
+                      setSearchQuery("");
+                    }}
+                    className="text-[10px] font-black uppercase tracking-widest text-slate-400 hover:text-red-500 transition-colors ml-2"
+                  >
+                    Effacer tout
+                  </button>
+                )}
+              </motion.div>
+            )}
+          </AnimatePresence>
         </div>
       </div>
 

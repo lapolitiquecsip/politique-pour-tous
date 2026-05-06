@@ -90,7 +90,7 @@ async function main() {
 
   for (const minister of ministers) {
     // On ne traite que si c'est une URL externe (Wikipédia) ou si on veut forcer l'update
-    if (minister.image && (minister.image.includes('wikimedia.org') || minister.image.includes('wikipedia.org'))) {
+    if (minister.image && (minister.image.includes('wikimedia.org') || minister.image.includes('wikipedia.org') || minister.image.includes('assemblee-nationale.fr'))) {
       const filename = `${slugify(minister.name)}.jpg`;
       const buffer = await downloadImage(minister.image);
 

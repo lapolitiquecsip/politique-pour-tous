@@ -43,7 +43,8 @@ export const api = {
       .from('petitions')
       .select('*')
       .eq('institution', 'AN')
-      .order('signatures', { ascending: false });
+      .order('signatures', { ascending: false })
+      .limit(50);
     if (error) { console.error(error); return []; }
     return data || [];
   },
@@ -68,16 +69,16 @@ export const api = {
   getCalendarEvents: async () => {
     // Dynamic range to ensure we get relevant events without hitting row limits
     const now = new Date();
-    const oneMonthAgo = new Date(now.getFullYear(), now.getMonth() - 1, 1).toISOString().split('T')[0];
-    const threeMonthsAhead = new Date(now.getFullYear(), now.getMonth() + 3, 1).toISOString().split('T')[0];
+    const oneWeekAgo = new Date(now.getTime() - 7 * 24 * 60 * 60 * 1000).toISOString().split('T')[0];
+    const twoMonthsAhead = new Date(now.getFullYear(), now.getMonth() + 2, 1).toISOString().split('T')[0];
 
     const { data, error } = await supabase
       .from('events')
       .select('*')
-      .gte('date', oneMonthAgo)
-      .lte('date', threeMonthsAhead)
+      .gte('date', oneWeekAgo)
+      .lte('date', twoMonthsAhead)
       .order('date', { ascending: true })
-      .limit(5000);
+      .limit(300);
     
     if (error) { console.error(error); return []; }
     return data || [];

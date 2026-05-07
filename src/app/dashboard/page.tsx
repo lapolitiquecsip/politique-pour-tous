@@ -380,7 +380,7 @@ export default function DashboardPage() {
                       ))
                     )}
                   </motion.div>
-                ) : (
+                ) : activeTab === "saved" ? (
                   <motion.div 
                     key="saved"
                     initial={{ opacity: 0, y: 10 }}
@@ -475,7 +475,7 @@ export default function DashboardPage() {
                       ))
                     )}
                   </motion.div>
-                )}
+                ) : null}
               </AnimatePresence>
             )}
           </div>

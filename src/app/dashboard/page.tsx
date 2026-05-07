@@ -22,7 +22,10 @@ import {
   ArrowRight,
   Bookmark,
   FileText,
-  Search
+  Search,
+  Clock,
+  Globe,
+  Layers
 } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
 import { api } from "@/lib/api";
@@ -35,7 +38,7 @@ export default function DashboardPage() {
   const [userVotes, setUserVotes] = useState<any[]>([]);
   const [followedDeputies, setFollowedDeputies] = useState<any[]>([]);
   const [savedItems, setSavedItems] = useState<any[]>([]);
-  const [activeTab, setActiveTab] = useState<"votes" | "deputies" | "saved">("votes");
+  const [activeTab, setActiveTab] = useState<"votes" | "deputies" | "saved" | "geos">("votes");
   const [isPending, startTransition] = useTransition();
 
   useEffect(() => {
@@ -87,6 +90,9 @@ export default function DashboardPage() {
 
     loadDashboardData();
   }, [userId, authLoading]);
+
+  const savedLaws = savedItems.filter(item => ['scrutin', 'law'].includes(item.item_type));
+  const savedGeos = savedItems.filter(item => ['commune', 'region', 'department'].includes(item.item_type));
 
   if (authLoading) {
     return (
@@ -166,16 +172,28 @@ export default function DashboardPage() {
                   <p className="text-[10px] uppercase font-bold text-slate-500 tracking-widest">Suivis</p>
                </button>
                {isPremium && (
-                 <button 
-                   onClick={() => startTransition(() => {
-                     setActiveTab("saved");
-                     window.scrollTo({ top: 400, behavior: 'smooth' });
-                   })}
-                   className={`bg-slate-900/50 backdrop-blur-md border p-4 rounded-3xl text-center min-w-[120px] transition-all hover:scale-105 active:scale-95 ${activeTab === 'saved' ? 'border-amber-500/50 ring-2 ring-amber-500/20' : 'border-slate-800'}`}
-                 >
-                    <p className="text-2xl font-black text-amber-500">{savedItems.length}</p>
-                    <p className="text-[10px] uppercase font-bold text-slate-500 tracking-widest">Favoris</p>
-                 </button>
+                 <>
+                   <button 
+                     onClick={() => startTransition(() => {
+                       setActiveTab("saved");
+                       window.scrollTo({ top: 400, behavior: 'smooth' });
+                     })}
+                     className={`bg-slate-900/50 backdrop-blur-md border p-4 rounded-3xl text-center min-w-[120px] transition-all hover:scale-105 active:scale-95 ${activeTab === 'saved' ? 'border-amber-500/50 ring-2 ring-amber-500/20' : 'border-slate-800'}`}
+                   >
+                      <p className="text-2xl font-black text-amber-500">{savedLaws.length}</p>
+                      <p className="text-[10px] uppercase font-bold text-slate-500 tracking-widest">Lois</p>
+                   </button>
+                   <button 
+                     onClick={() => startTransition(() => {
+                       setActiveTab("geos");
+                       window.scrollTo({ top: 400, behavior: 'smooth' });
+                     })}
+                     className={`bg-slate-900/50 backdrop-blur-md border p-4 rounded-3xl text-center min-w-[120px] transition-all hover:scale-105 active:scale-95 ${activeTab === 'geos' ? 'border-rose-500/50 ring-2 ring-rose-500/20' : 'border-slate-800'}`}
+                   >
+                      <p className="text-2xl font-black text-rose-500">{savedGeos.length}</p>
+                      <p className="text-[10px] uppercase font-bold text-slate-500 tracking-widest">Territoires</p>
+                   </button>
+                 </>
                )}
             </div>
           </div>
@@ -208,16 +226,28 @@ export default function DashboardPage() {
               {activeTab === "deputies" && <div className="absolute bottom-0 w-32 h-1 bg-slate-900 rounded-full" />}
             </button>
             {isPremium && (
-              <button 
-                onClick={() => startTransition(() => setActiveTab("saved"))}
-                className={`flex-1 py-6 font-bold text-sm uppercase tracking-widest flex items-center justify-center gap-3 transition-all ${
-                  activeTab === "saved" ? "text-slate-900 bg-white" : "text-slate-400 bg-slate-50 hover:bg-slate-100"
-                }`}
-              >
-                <Bookmark size={18} className={isPending && activeTab !== "saved" ? "opacity-30" : ""} />
-                Mes Lois Favorites
-                {activeTab === "saved" && <div className="absolute bottom-0 w-32 h-1 bg-slate-900 rounded-full" />}
-              </button>
+              <>
+                <button 
+                  onClick={() => startTransition(() => setActiveTab("saved"))}
+                  className={`flex-1 py-6 font-bold text-sm uppercase tracking-widest flex items-center justify-center gap-3 transition-all ${
+                    activeTab === "saved" ? "text-slate-900 bg-white" : "text-slate-400 bg-slate-50 hover:bg-slate-100"
+                  }`}
+                >
+                  <Bookmark size={18} className={isPending && activeTab !== "saved" ? "opacity-30" : ""} />
+                  Lois Favorites
+                  {activeTab === "saved" && <div className="absolute bottom-0 w-32 h-1 bg-slate-900 rounded-full" />}
+                </button>
+                <button 
+                  onClick={() => startTransition(() => setActiveTab("geos"))}
+                  className={`flex-1 py-6 font-bold text-sm uppercase tracking-widest flex items-center justify-center gap-3 transition-all ${
+                    activeTab === "geos" ? "text-slate-900 bg-white" : "text-slate-400 bg-slate-50 hover:bg-slate-100"
+                  }`}
+                >
+                  <MapPin size={18} className={isPending && activeTab !== "geos" ? "opacity-30" : ""} />
+                  Territoires
+                  {activeTab === "geos" && <div className="absolute bottom-0 w-32 h-1 bg-slate-900 rounded-full" />}
+                </button>
+              </>
             )}
           </div>
 
@@ -358,32 +388,27 @@ export default function DashboardPage() {
                     exit={{ opacity: 0, y: -10 }}
                     className="grid grid-cols-1 md:grid-cols-2 gap-6"
                   >
-                    {savedItems.length === 0 ? (
+                    {savedLaws.length === 0 ? (
                       <div className="col-span-full text-center py-20 bg-slate-50 rounded-[2.5rem] border border-dashed border-slate-200">
                         <Bookmark className="mx-auto mb-4 text-slate-300" size={48} />
-                        <h3 className="text-xl font-bold mb-2">Aucun texte enregistré</h3>
+                        <h3 className="text-xl font-bold mb-2">Aucune loi enregistrée</h3>
                         <p className="text-slate-500 mb-8 max-w-sm mx-auto">Enregistrez vos lois et propositions favorites pour les retrouver ici.</p>
                         <Link href="/lois" className="text-slate-950 font-black uppercase text-xs tracking-widest hover:underline">Explorer les lois &rarr;</Link>
                       </div>
                     ) : (
-                      savedItems.map((item) => (
-                        <Link key={item.id} href={['commune', 'department', 'region'].includes(item.item_type) ? "/local" : `/lois?id=${item.item_id}`}>
+                      savedLaws.map((item) => (
+                        <Link key={item.id} href={`/lois?id=${item.item_id}`}>
                           <div className="group flex flex-col p-8 rounded-[2.5rem] border border-slate-100 hover:border-amber-400 hover:shadow-2xl transition-all duration-500 h-full bg-white relative overflow-hidden">
                             <div className="absolute top-0 right-0 w-32 h-32 bg-amber-500/5 rounded-full -mr-16 -mt-16 group-hover:bg-amber-500/10 transition-colors" />
                             
                             <div className="flex items-center justify-between mb-6">
                               <span className={`px-3 py-1 rounded-full text-[10px] font-black uppercase tracking-widest ${
-                                item.item_type === 'scrutin' ? 'bg-blue-100 text-blue-600' : 
-                                item.item_type === 'law' ? 'bg-purple-100 text-purple-600' :
-                                'bg-rose-100 text-rose-600'
+                                item.item_type === 'scrutin' ? 'bg-blue-100 text-blue-600' : 'bg-purple-100 text-purple-600'
                               }`}>
-                                {item.item_type === 'scrutin' ? 'Loi Votée' : 
-                                 item.item_type === 'law' ? 'Proposition' :
-                                 item.item_type === 'commune' ? 'Commune' :
-                                 item.item_type === 'region' ? 'Région' : 'Département'}
+                                {item.item_type === 'scrutin' ? 'Loi Votée' : 'Proposition'}
                               </span>
                               <div className="p-2 bg-amber-50 text-amber-500 rounded-lg group-hover:bg-amber-500 group-hover:text-white transition-all">
-                                {['commune', 'department', 'region'].includes(item.item_type) ? <MapPin size={14} /> : <Bookmark size={14} className="fill-current" />}
+                                <Bookmark size={14} className="fill-current" />
                               </div>
                             </div>
                             
@@ -393,19 +418,57 @@ export default function DashboardPage() {
                             
                             <div className="mt-auto flex items-center justify-between pt-6 border-t border-slate-50">
                                <div className="flex items-center gap-2 text-slate-400 text-[10px] font-bold uppercase">
-                                  {['commune', 'department', 'region'].includes(item.item_type) ? (
-                                    <>
-                                      <MapPin size={12} />
-                                      {item.item_type === 'commune' ? `${item.data?.population?.toLocaleString()} hab.` : 'Territoire Suivi'}
-                                    </>
-                                  ) : (
-                                    <>
-                                      <Calendar size={12} />
-                                      {new Date(item.data?.date_scrutin || item.data?.created_at).toLocaleDateString('fr-FR', { day: 'numeric', month: 'short', year: 'numeric' })}
-                                    </>
-                                  )}
+                                  <Calendar size={12} />
+                                  {new Date(item.data?.date_scrutin || item.data?.created_at).toLocaleDateString('fr-FR', { day: 'numeric', month: 'short', year: 'numeric' })}
                                </div>
                                <ChevronRight size={18} className="text-slate-300 group-hover:text-amber-500 transition-colors" />
+                            </div>
+                          </div>
+                        </Link>
+                      ))
+                    )}
+                  </motion.div>
+                ) : activeTab === "geos" ? (
+                  <motion.div 
+                    key="geos"
+                    initial={{ opacity: 0, y: 10 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    exit={{ opacity: 0, y: -10 }}
+                    className="grid grid-cols-1 md:grid-cols-2 gap-6"
+                  >
+                    {savedGeos.length === 0 ? (
+                      <div className="col-span-full text-center py-20 bg-slate-50 rounded-[2.5rem] border border-dashed border-slate-200">
+                        <MapPin className="mx-auto mb-4 text-slate-300" size={48} />
+                        <h3 className="text-xl font-bold mb-2">Aucun territoire suivi</h3>
+                        <p className="text-slate-500 mb-8 max-w-sm mx-auto">Suivez vos communes, départements ou régions pour les retrouver ici.</p>
+                        <Link href="/local" className="text-slate-950 font-black uppercase text-xs tracking-widest hover:underline">Découvrir les territoires &rarr;</Link>
+                      </div>
+                    ) : (
+                      savedGeos.map((item) => (
+                        <Link key={item.id} href="/local">
+                          <div className="group flex flex-col p-8 rounded-[2.5rem] border border-slate-100 hover:border-rose-400 hover:shadow-2xl transition-all duration-500 h-full bg-white relative overflow-hidden">
+                            <div className="absolute top-0 right-0 w-32 h-32 bg-rose-500/5 rounded-full -mr-16 -mt-16 group-hover:bg-rose-500/10 transition-colors" />
+                            
+                            <div className="flex items-center justify-between mb-6">
+                              <span className="px-3 py-1 rounded-full text-[10px] font-black uppercase tracking-widest bg-rose-100 text-rose-600">
+                                {item.item_type === 'commune' ? 'Commune' :
+                                 item.item_type === 'region' ? 'Région' : 'Département'}
+                              </span>
+                              <div className="p-2 bg-rose-50 text-rose-500 rounded-lg group-hover:bg-rose-500 group-hover:text-white transition-all">
+                                <Star size={14} className="fill-current" />
+                              </div>
+                            </div>
+                            
+                            <h4 className="text-xl font-bold text-slate-900 group-hover:text-rose-600 transition-colors line-clamp-3 mb-4 italic">
+                              {item.data?.title}
+                            </h4>
+                            
+                            <div className="mt-auto flex items-center justify-between pt-6 border-t border-slate-50">
+                               <div className="flex items-center gap-2 text-slate-400 text-[10px] font-bold uppercase">
+                                  <MapPin size={12} />
+                                  {item.item_type === 'commune' ? `${item.data?.population?.toLocaleString()} hab.` : 'Territoire Suivi'}
+                               </div>
+                               <ChevronRight size={18} className="text-slate-300 group-hover:text-rose-500 transition-colors" />
                             </div>
                           </div>
                         </Link>

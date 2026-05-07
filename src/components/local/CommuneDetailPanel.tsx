@@ -1,9 +1,11 @@
 "use client";
 
 import { motion, AnimatePresence } from "framer-motion";
-import { X, Users, MapPin, Calendar, Award, Building2, TrendingUp, UserMinus } from "lucide-react";
+import { X, Users, MapPin, Calendar, Award, Building2, TrendingUp, UserMinus, Star, Loader2 } from "lucide-react";
 import type { CommuneResult, MayorData, ElectionResult } from "@/lib/hooks/useCommuneSearch";
 import { useState, useEffect } from "react";
+import { usePremium } from "@/lib/hooks/usePremium";
+import { api } from "@/lib/api";
 
 const PARTY_COLORS: Record<string, string> = {
   PS: "bg-rose-500",
@@ -85,8 +87,40 @@ export default function CommuneDetailPanel({
   mayor,
   onClose,
 }: CommuneDetailPanelProps) {
+  const { userId, isPremium } = usePremium();
   const [electionData, setElectionData] = useState<ElectionResult | null>(null);
   const [loading, setLoading] = useState(false);
+  const [isSaved, setIsSaved] = useState(false);
+  const [loadingSave, setLoadingSave] = useState(false);
+
+  useEffect(() => {
+    if (!commune || !userId || !isPremium) return;
+
+    const checkSaved = async () => {
+      const saved = await api.getUserSavedItems(userId);
+      setIsSaved(saved.some((item: any) => item.item_id === commune.code && item.item_type === 'commune'));
+    };
+    checkSaved();
+  }, [commune, userId, isPremium]);
+
+  const handleToggleSave = async () => {
+    if (!userId || !isPremium || !commune) return;
+    
+    setLoadingSave(true);
+    try {
+      if (isSaved) {
+        await api.unsaveItem(userId, commune.code, 'commune');
+        setIsSaved(false);
+      } else {
+        await api.saveItem(userId, commune.code, 'commune');
+        setIsSaved(true);
+      }
+    } catch (err) {
+      console.error("Error toggling favorite:", err);
+    } finally {
+      setLoadingSave(false);
+    }
+  };
 
   useEffect(() => {
     if (!commune) {
@@ -139,12 +173,31 @@ export default function CommuneDetailPanel({
             >
               {/* Header */}
               <div className="relative bg-gradient-to-br from-rose-600 via-fuchsia-600 to-rose-700 p-8 pb-12 shrink-0">
-                <button
-                  onClick={onClose}
-                  className="absolute top-6 right-6 w-10 h-10 rounded-full bg-white/20 backdrop-blur-md flex items-center justify-center text-white hover:bg-white/30 transition-colors"
-                >
-                  <X size={20} />
-                </button>
+                <div className="absolute top-6 right-6 flex gap-2">
+                  {isPremium && (
+                    <button
+                      onClick={handleToggleSave}
+                      disabled={loadingSave}
+                      className={`w-10 h-10 rounded-full backdrop-blur-md flex items-center justify-center transition-all ${
+                        isSaved 
+                          ? "bg-amber-400 text-slate-900 shadow-lg shadow-amber-400/20" 
+                          : "bg-white/20 text-white hover:bg-white/30"
+                      }`}
+                    >
+                      {loadingSave ? (
+                        <Loader2 size={18} className="animate-spin" />
+                      ) : (
+                        <Star size={18} className={isSaved ? "fill-current" : ""} />
+                      )}
+                    </button>
+                  )}
+                  <button
+                    onClick={onClose}
+                    className="w-10 h-10 rounded-full bg-white/20 backdrop-blur-md flex items-center justify-center text-white hover:bg-white/30 transition-colors"
+                  >
+                    <X size={20} />
+                  </button>
+                </div>
 
                 <div className="space-y-4">
                   <div className="flex items-center gap-2">

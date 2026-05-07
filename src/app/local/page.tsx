@@ -3,12 +3,13 @@
 import { motion, AnimatePresence } from "framer-motion";
 import { 
   MapPin, Users, Building2, TrendingUp, Search, ArrowRight, Vote,
-  History, Building, ChevronRight, Map, Layers, LayoutGrid, Lock, Loader2
+  History, Building, ChevronRight, Map, Layers, LayoutGrid, Lock, Loader2, Star
 } from "lucide-react";
 import Link from "next/link";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import GlossaryText from "@/components/ui/GlossaryText";
 import { usePremium } from "@/lib/hooks/usePremium";
+import { api } from "@/lib/api";
 import { getPremiumUrl } from "@/lib/utils";
 import { useCommuneSearch } from "@/lib/hooks/useCommuneSearch";
 import type { CommuneResult } from "@/lib/hooks/useCommuneSearch";
@@ -157,6 +158,33 @@ export default function LocalPoliticsPage() {
   const communeSearch = useCommuneSearch();
   const [selectedCommune, setSelectedCommune] = useState<CommuneResult | null>(null);
   const [showDropdown, setShowDropdown] = useState(false);
+  const [savedItems, setSavedItems] = useState<any[]>([]);
+  const [loadingSave, setLoadingSave] = useState<string | null>(null);
+
+  useEffect(() => {
+    if (userId && isPremium) {
+      api.getUserSavedItems(userId).then(setSavedItems);
+    }
+  }, [userId, isPremium]);
+
+  const toggleFavorite = async (itemId: string, itemType: 'region' | 'department') => {
+    if (!userId || !isPremium) return;
+    setLoadingSave(itemId);
+    try {
+      const isSaved = savedItems.some(i => i.item_id === itemId && i.item_type === itemType);
+      if (isSaved) {
+        await api.unsaveItem(userId, itemId, itemType);
+        setSavedItems(prev => prev.filter(i => !(i.item_id === itemId && i.item_type === itemType)));
+      } else {
+        await api.saveItem(userId, itemId, itemType);
+        setSavedItems(prev => [...prev, { item_id: itemId, item_type: itemType }]);
+      }
+    } catch (err) {
+      console.error("Error toggling favorite:", err);
+    } finally {
+      setLoadingSave(null);
+    }
+  };
 
   const filteredItems = (() => {
     const s = search.toLowerCase();
@@ -421,6 +449,30 @@ export default function LocalPoliticsPage() {
                       <div className="relative h-48 overflow-hidden">
                         <img src={item.image} alt={item.name} className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-700" />
                         <div className="absolute inset-0 bg-gradient-to-t from-slate-950/80 to-transparent" />
+                        
+                        <div className="absolute top-4 right-4 flex gap-2">
+                          {isPremium && (
+                            <button
+                              onClick={(e) => {
+                                e.stopPropagation();
+                                toggleFavorite(item.name, activeTab === 'region' ? 'region' : 'department');
+                              }}
+                              disabled={loadingSave === item.name}
+                              className={`w-8 h-8 rounded-full backdrop-blur-md flex items-center justify-center transition-all ${
+                                savedItems.some(i => i.item_id === item.name && i.item_type === (activeTab === 'region' ? 'region' : 'department'))
+                                  ? "bg-amber-400 text-slate-900" 
+                                  : "bg-white/20 text-white hover:bg-white/30"
+                              }`}
+                            >
+                              {loadingSave === item.name ? (
+                                <Loader2 size={14} className="animate-spin" />
+                              ) : (
+                                <Star size={14} className={savedItems.some(i => i.item_id === item.name && i.item_type === (activeTab === 'region' ? 'region' : 'department')) ? "fill-current" : ""} />
+                              )}
+                            </button>
+                          )}
+                        </div>
+
                         <div className="absolute bottom-4 left-6">
                           <p className="text-rose-400 font-black text-[9px] uppercase tracking-widest mb-1">{activeTab === 'region' ? 'Région' : 'Département'}</p>
                           <h4 className="text-white font-bold text-xl leading-tight">{item.name}</h4>
@@ -429,6 +481,28 @@ export default function LocalPoliticsPage() {
                     )}
                     {!item.image && (
                       <div className="relative h-28 bg-gradient-to-br from-rose-600 to-fuchsia-600 flex items-end p-6">
+                        <div className="absolute top-4 right-4 flex gap-2">
+                          {isPremium && (
+                            <button
+                              onClick={(e) => {
+                                e.stopPropagation();
+                                toggleFavorite(item.name, activeTab === 'region' ? 'region' : 'department');
+                              }}
+                              disabled={loadingSave === item.name}
+                              className={`w-8 h-8 rounded-full backdrop-blur-md flex items-center justify-center transition-all ${
+                                savedItems.some(i => i.item_id === item.name && i.item_type === (activeTab === 'region' ? 'region' : 'department'))
+                                  ? "bg-amber-400 text-slate-900" 
+                                  : "bg-white/20 text-white hover:bg-white/30"
+                              }`}
+                            >
+                              {loadingSave === item.name ? (
+                                <Loader2 size={14} className="animate-spin" />
+                              ) : (
+                                <Star size={14} className={savedItems.some(i => i.item_id === item.name && i.item_type === (activeTab === 'region' ? 'region' : 'department')) ? "fill-current" : ""} />
+                              )}
+                            </button>
+                          )}
+                        </div>
                         <div>
                           <p className="text-rose-200 font-black text-[9px] uppercase tracking-widest mb-1">{activeTab === 'region' ? 'Région' : 'Département'}</p>
                           <h4 className="text-white font-bold text-xl leading-tight">{item.name}</h4>

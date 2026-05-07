@@ -297,7 +297,7 @@ export const api = {
     return data || [];
   },
 
-  saveItem: async (userId: string, itemId: string, itemType: 'scrutin' | 'law') => {
+  saveItem: async (userId: string, itemId: string, itemType: 'scrutin' | 'law' | 'commune' | 'department' | 'region') => {
     const { data, error } = await supabase
       .from('user_saved_items')
       .upsert([{ user_id: userId, item_id: itemId, item_type: itemType }], { onConflict: 'user_id,item_id,item_type' })
@@ -307,7 +307,7 @@ export const api = {
     return data;
   },
 
-  unsaveItem: async (userId: string, itemId: string, itemType: 'scrutin' | 'law') => {
+  unsaveItem: async (userId: string, itemId: string, itemType: 'scrutin' | 'law' | 'commune' | 'department' | 'region') => {
     const { error } = await supabase
       .from('user_saved_items')
       .delete()
@@ -317,4 +317,5 @@ export const api = {
     if (error) { throw new Error(error.message); }
     return true;
   }
+
 };

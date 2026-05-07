@@ -54,12 +54,24 @@ export default function DashboardPage() {
         if (isPremium && saved.length > 0) {
           // Fetch full data for saved items
           const fullSavedItems = await Promise.all(saved.map(async (item: any) => {
-            if (item.item_type === 'scrutin') {
-              const data = await api.getScrutin(item.item_id);
-              return { ...item, data };
-            } else {
-              const data = await api.getLaw(item.item_id);
-              return { ...item, data };
+            try {
+              if (item.item_type === 'scrutin') {
+                const data = await api.getScrutin(item.item_id);
+                return { ...item, data };
+              } else if (item.item_type === 'law') {
+                const data = await api.getLaw(item.item_id);
+                return { ...item, data };
+              } else if (item.item_type === 'commune') {
+                const res = await fetch(`https://geo.api.gouv.fr/communes/${item.item_id}?fields=nom,code,codesPostaux,population`);
+                const data = await res.json();
+                return { ...item, data: { ...data, title: data.nom } };
+              } else {
+                // region or department
+                return { ...item, data: { title: item.item_id } };
+              }
+            } catch (e) {
+              console.error(`Error loading item ${item.item_id}:`, e);
+              return null;
             }
           }));
           setSavedItems(fullSavedItems.filter(item => item.data));
@@ -355,18 +367,23 @@ export default function DashboardPage() {
                       </div>
                     ) : (
                       savedItems.map((item) => (
-                        <Link key={item.id} href={`/lois?id=${item.item_id}`}>
+                        <Link key={item.id} href={['commune', 'department', 'region'].includes(item.item_type) ? "/local" : `/lois?id=${item.item_id}`}>
                           <div className="group flex flex-col p-8 rounded-[2.5rem] border border-slate-100 hover:border-amber-400 hover:shadow-2xl transition-all duration-500 h-full bg-white relative overflow-hidden">
                             <div className="absolute top-0 right-0 w-32 h-32 bg-amber-500/5 rounded-full -mr-16 -mt-16 group-hover:bg-amber-500/10 transition-colors" />
                             
                             <div className="flex items-center justify-between mb-6">
                               <span className={`px-3 py-1 rounded-full text-[10px] font-black uppercase tracking-widest ${
-                                item.item_type === 'scrutin' ? 'bg-blue-100 text-blue-600' : 'bg-purple-100 text-purple-600'
+                                item.item_type === 'scrutin' ? 'bg-blue-100 text-blue-600' : 
+                                item.item_type === 'law' ? 'bg-purple-100 text-purple-600' :
+                                'bg-rose-100 text-rose-600'
                               }`}>
-                                {item.item_type === 'scrutin' ? 'Loi Votée' : 'Proposition'}
+                                {item.item_type === 'scrutin' ? 'Loi Votée' : 
+                                 item.item_type === 'law' ? 'Proposition' :
+                                 item.item_type === 'commune' ? 'Commune' :
+                                 item.item_type === 'region' ? 'Région' : 'Département'}
                               </span>
                               <div className="p-2 bg-amber-50 text-amber-500 rounded-lg group-hover:bg-amber-500 group-hover:text-white transition-all">
-                                <Bookmark size={14} className="fill-current" />
+                                {['commune', 'department', 'region'].includes(item.item_type) ? <MapPin size={14} /> : <Bookmark size={14} className="fill-current" />}
                               </div>
                             </div>
                             
@@ -376,8 +393,17 @@ export default function DashboardPage() {
                             
                             <div className="mt-auto flex items-center justify-between pt-6 border-t border-slate-50">
                                <div className="flex items-center gap-2 text-slate-400 text-[10px] font-bold uppercase">
-                                  <Calendar size={12} />
-                                  {new Date(item.data?.date_scrutin || item.data?.created_at).toLocaleDateString('fr-FR', { day: 'numeric', month: 'short', year: 'numeric' })}
+                                  {['commune', 'department', 'region'].includes(item.item_type) ? (
+                                    <>
+                                      <MapPin size={12} />
+                                      {item.item_type === 'commune' ? `${item.data?.population?.toLocaleString()} hab.` : 'Territoire Suivi'}
+                                    </>
+                                  ) : (
+                                    <>
+                                      <Calendar size={12} />
+                                      {new Date(item.data?.date_scrutin || item.data?.created_at).toLocaleDateString('fr-FR', { day: 'numeric', month: 'short', year: 'numeric' })}
+                                    </>
+                                  )}
                                </div>
                                <ChevronRight size={18} className="text-slate-300 group-hover:text-amber-500 transition-colors" />
                             </div>

@@ -75,8 +75,8 @@ export default function DeputyDetailPage({ params }: { params: Promise<{ slug: s
 
   // Helper to extract law info and group them
   const extractLawInfo = (objet: string) => {
-    // 1. Check for global vote
-    const globalMatch = objet.match(/l'ensemble d[ue]\s+(?:projet|proposition) de loi\s+(?:relatif à|visant à|autorisant|relative à)?\s*(.*?)(?:\s*\(|$)/i);
+    // 1. Check for global vote (Handles "Loi complète :" or "l'ensemble du...")
+    const globalMatch = objet.match(/(?:Loi complète\s*:\s*|l'ensemble d[ue]\s+)(?:projet|proposition) de loi\s+(?:relatif à|visant à|autorisant|relative à)?\s*(.*?)(?:\s*\(|$)/i);
     if (globalMatch) {
       let title = globalMatch[1].trim();
       title = title.replace(/\s*\(.*?\)\s*$/, "").replace(/\s*$/, "");
@@ -93,13 +93,14 @@ export default function DeputyDetailPage({ params }: { params: Promise<{ slug: s
       return { title: title.charAt(0).toUpperCase() + title.slice(1), isGlobal: false, isArticle: true, article: articleMatch[1].trim() };
     }
 
-    // 3. Fallback for "le projet de loi ..." without "l'ensemble"
-    const genericMatch = objet.match(/(?:projet|proposition) de loi\s+(?:relatif à|visant à|autorisant|relative à)?\s*(.*?)(?:\s*\(|$)/i);
+    // 3. Fallback for "le projet de loi ..." or "Motion de Rejet :"
+    const genericMatch = objet.match(/(?:Motion de Rejet\s*:\s*|(?:projet|proposition) de loi)\s+(?:relatif à|visant à|autorisant|relative à)?\s*(.*?)(?:\s*\(|$)/i);
     if (genericMatch) {
       let title = genericMatch[1].trim();
       title = title.replace(/\s*\(.*?\)\s*$/, "").replace(/\s*$/, "");
       return { title: title.charAt(0).toUpperCase() + title.slice(1), isGlobal: true, isArticle: false };
     }
+
 
     return { title: objet, isGlobal: false, isArticle: false };
   };

@@ -115,8 +115,9 @@ export default function CommuneDetailPanel({
         await api.saveItem(userId, commune.code, 'commune');
         setIsSaved(true);
       }
-    } catch (err) {
+    } catch (err: any) {
       console.error("Error toggling favorite:", err);
+      alert(`Erreur : Impossible de sauvegarder ce territoire. Cela est probablement dû à une contrainte de base de données non mise à jour. Veuillez appliquer la migration SQL.`);
     } finally {
       setLoadingSave(false);
     }

@@ -75,14 +75,16 @@ export default function DashboardPage() {
             } catch (e) {
               console.error(`Error loading item ${item.item_id}:`, e);
               return null;
+              return { ...item, data: { title: item.item_id, failed: true } };
             }
           }));
-          setSavedItems(fullSavedItems.filter(item => item.data));
+          setSavedItems(fullSavedItems.map(item => item || { ...item, data: { title: item.item_id } }));
         } else {
           setSavedItems([]);
         }
-      } catch (err) {
-        console.error("Erreur chargement dashboard:", err);
+      } catch (err: any) {
+        console.error("Error toggling favorite:", err);
+        alert(`Erreur lors de la sauvegarde : ${err.message || "Vérifiez que les migrations de base de données ont été appliquées."}`);
       } finally {
         setLoading(false);
       }

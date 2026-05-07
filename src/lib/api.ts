@@ -123,7 +123,7 @@ export const api = {
   },
 
   getLaws: async () => {
-    const { data, error } = await supabase.from('laws').select('*').order('created_at', { ascending: false });
+    const { data, error } = await supabase.from('laws').select('*').order('created_at', { ascending: false }).limit(100);
     if (error) { console.error(error); return []; }
     return data || [];
   },

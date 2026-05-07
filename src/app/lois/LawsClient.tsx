@@ -67,7 +67,7 @@ function LawsClientContent() {
     const interval = setInterval(async () => {
       const data = await api.getVotedLaws(60);
       setDbLaws(data);
-    }, 30000);
+    }, 300000); // 5 minutes polling
     
     return () => clearInterval(interval);
   }, []);

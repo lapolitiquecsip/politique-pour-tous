@@ -104,7 +104,17 @@ export default function CommuneDetailPanel({
   }, [commune, userId, isPremium]);
 
   const handleToggleSave = async () => {
-    if (!userId || !isPremium || !commune) return;
+    if (!userId) {
+      alert("Veuillez vous connecter pour enregistrer vos favoris.");
+      return;
+    }
+
+    if (!isPremium) {
+      alert("Cette fonctionnalité est réservée aux membres PREMIUM. Passez à l'offre Elite pour suivre vos territoires !");
+      return;
+    }
+
+    if (!commune) return;
     
     setLoadingSave(true);
     try {
@@ -175,23 +185,21 @@ export default function CommuneDetailPanel({
               {/* Header */}
               <div className="relative bg-gradient-to-br from-rose-600 via-fuchsia-600 to-rose-700 p-8 pb-12 shrink-0">
                 <div className="absolute top-6 right-6 flex gap-2">
-                  {isPremium && (
-                    <button
-                      onClick={handleToggleSave}
-                      disabled={loadingSave}
-                      className={`w-10 h-10 rounded-full backdrop-blur-md flex items-center justify-center transition-all ${
-                        isSaved 
-                          ? "bg-amber-400 text-slate-900 shadow-lg shadow-amber-400/20" 
-                          : "bg-white/20 text-white hover:bg-white/30"
-                      }`}
-                    >
-                      {loadingSave ? (
-                        <Loader2 size={18} className="animate-spin" />
-                      ) : (
-                        <Star size={18} className={isSaved ? "fill-current" : ""} />
-                      )}
-                    </button>
-                  )}
+                  <button
+                    onClick={handleToggleSave}
+                    disabled={loadingSave}
+                    className={`w-10 h-10 rounded-full backdrop-blur-md flex items-center justify-center transition-all ${
+                      isSaved 
+                        ? "bg-amber-400 text-slate-900 shadow-lg shadow-amber-400/20" 
+                        : "bg-white/20 text-white hover:bg-white/30"
+                    } ${!isPremium ? "opacity-70" : ""}`}
+                  >
+                    {loadingSave ? (
+                      <Loader2 size={18} className="animate-spin" />
+                    ) : (
+                      <Star size={18} className={isSaved ? "fill-current" : ""} />
+                    )}
+                  </button>
                   <button
                     onClick={onClose}
                     className="w-10 h-10 rounded-full bg-white/20 backdrop-blur-md flex items-center justify-center text-white hover:bg-white/30 transition-colors"

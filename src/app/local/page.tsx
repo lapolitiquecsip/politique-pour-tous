@@ -167,19 +167,30 @@ export default function LocalPoliticsPage() {
     }
   }, [userId, isPremium]);
 
-  const toggleFavorite = async (itemId: string, itemType: 'region' | 'department') => {
-    if (!userId || !isPremium) return;
-    setLoadingSave(itemId);
+  const toggleFavorite = async (id: string, type: 'region' | 'department') => {
+    if (!userId) {
+      alert("Veuillez vous connecter pour enregistrer vos favoris.");
+      return;
+    }
+
+    if (!isPremium) {
+      alert("Cette fonctionnalité est réservée aux membres PREMIUM. Passez à l'offre Elite pour suivre vos territoires !");
+      return;
+    }
+
+    setLoadingSave(id);
     try {
-      const isSaved = savedItems.some(i => i.item_id === itemId && i.item_type === itemType);
-      if (isSaved) {
-        await api.unsaveItem(userId, itemId, itemType);
-        setSavedItems(prev => prev.filter(i => !(i.item_id === itemId && i.item_type === itemType)));
+      const isCurrentlySaved = savedItems.some(i => i.item_id === id && i.item_type === type);
+      if (isCurrentlySaved) {
+        await api.unsaveItem(userId, id, type);
       } else {
-        await api.saveItem(userId, itemId, itemType);
-        setSavedItems(prev => [...prev, { item_id: itemId, item_type: itemType }]);
+        await api.saveItem(userId, id, type);
       }
-    } catch (err) {
+      
+      // Refresh saved items list
+      const updated = await api.getUserSavedItems(userId);
+      setSavedItems(updated);
+    } catch (err: any) {
       console.error("Error toggling favorite:", err);
     } finally {
       setLoadingSave(null);

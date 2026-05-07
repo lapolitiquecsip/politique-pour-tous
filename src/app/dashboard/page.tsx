@@ -447,7 +447,7 @@ export default function DashboardPage() {
                       </div>
                     ) : (
                       savedGeos.map((item) => (
-                        <Link key={item.id} href="/local">
+                        <Link key={item.id} href={`/local?code=${item.item_id}&type=${item.item_type}`}>
                           <div className="group flex flex-col p-8 rounded-[2.5rem] border border-slate-100 hover:border-rose-400 hover:shadow-2xl transition-all duration-500 h-full bg-white relative overflow-hidden">
                             <div className="absolute top-0 right-0 w-32 h-32 bg-rose-500/5 rounded-full -mr-16 -mt-16 group-hover:bg-rose-500/10 transition-colors" />
                             

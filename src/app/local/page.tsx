@@ -5,8 +5,9 @@ import {
   MapPin, Users, Building2, TrendingUp, Search, ArrowRight, Vote,
   History, Building, ChevronRight, Map, Layers, LayoutGrid, Lock, Loader2, Star
 } from "lucide-react";
+import { useSearchParams } from "next/navigation";
+import { useState, useEffect, Suspense } from "react";
 import Link from "next/link";
-import { useState, useEffect } from "react";
 import GlossaryText from "@/components/ui/GlossaryText";
 import { usePremium } from "@/lib/hooks/usePremium";
 import { api } from "@/lib/api";
@@ -152,7 +153,16 @@ const DEPARTMENTS = [
 ];
 
 export default function LocalPoliticsPage() {
+  return (
+    <Suspense fallback={<div className="min-h-screen bg-slate-50 flex items-center justify-center"><Loader2 className="animate-spin text-rose-600" size={40} /></div>}>
+      <LocalPoliticsContent />
+    </Suspense>
+  );
+}
+
+function LocalPoliticsContent() {
   const { userId, isPremium, loading: pLoading } = usePremium();
+  const searchParams = useSearchParams();
   const [activeTab, setActiveTab] = useState<"region" | "departement" | "commune">("commune");
   const [search, setSearch] = useState("");
   const communeSearch = useCommuneSearch();
@@ -166,6 +176,36 @@ export default function LocalPoliticsPage() {
       api.getUserSavedItems(userId).then(setSavedItems);
     }
   }, [userId, isPremium]);
+
+  useEffect(() => {
+    const code = searchParams.get('code');
+    const type = searchParams.get('type');
+    
+    if (code && type) {
+      if (type === 'commune') {
+        setActiveTab('commune');
+        // Fetch commune data and open panel
+        const fetchCommune = async () => {
+           try {
+             const res = await fetch(`https://geo.api.gouv.fr/communes/${code}?fields=nom,code,codesPostaux,population,departement,region`);
+             const data = await res.json();
+             if (data && data.code) {
+               setSelectedCommune(data);
+             }
+           } catch (e) {
+             console.error("Error fetching linked commune:", e);
+           }
+        };
+        fetchCommune();
+      } else if (type === 'region') {
+        setActiveTab('region');
+        setSearch(code); // Filter by region name
+      } else if (type === 'department') {
+        setActiveTab('departement');
+        setSearch(code); // Filter by department name
+      }
+    }
+  }, [searchParams]);
 
   const toggleFavorite = async (id: string, type: 'region' | 'department') => {
     if (!userId) {

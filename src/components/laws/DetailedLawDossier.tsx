@@ -91,7 +91,8 @@ export default function DetailedLawDossier({ law }: DetailedLawDossierProps) {
 
   return (
     <div 
-      className={`relative bg-card border border-border rounded-[2rem] overflow-hidden shadow-sm hover:shadow-md transition-all mb-4 transform-gpu ${isOpen ? 'ring-2 ring-primary/10' : ''}`}
+      id={law.id}
+      className={`group bg-white rounded-[2.5rem] border-4 border-slate-900 shadow-[8px_8px_0px_0px_rgba(0,0,0,0.05)] overflow-hidden transition-all duration-500 relative transform-gpu ${isOpen ? 'ring-4 ring-slate-900/5 shadow-[12px_12px_0px_0px_rgba(0,0,0,0.1)]' : ''}`}
     >
       {/* Background Image Layer (Immersive) */}
       {law.backgroundImage && (
@@ -114,16 +115,16 @@ export default function DetailedLawDossier({ law }: DetailedLawDossierProps) {
             setIsOpen(!isOpen);
           });
         }}
-        className="relative z-10 w-full text-left p-6 md:p-8 flex items-center justify-between gap-4 hover:bg-muted/10 transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/20 transform-gpu"
+        className="relative z-10 w-full text-left p-6 md:p-8 flex items-center justify-between gap-4 hover:bg-muted/10 transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/20 transform-gpu group/header"
       >
-        <div className="flex flex-col md:flex-row md:items-center gap-4">
-          <div className={`w-fit px-3 py-1 rounded-full text-[10px] font-black uppercase tracking-widest border ${badgeColor}`}>
+        <div className="flex flex-col md:flex-row md:items-center gap-6">
+          <div className={`w-fit px-4 py-1.5 rounded-xl text-[10px] font-black uppercase tracking-widest border-2 shadow-[2px_2px_0px_0px_rgba(0,0,0,1)] -rotate-1 ${badgeColor} bg-white text-slate-900 border-slate-900`}>
             {law.category}
           </div>
-          <h3 className="text-xl md:text-2xl font-extrabold text-foreground tracking-tight italic">
+          <h3 className="text-xl md:text-2xl font-black text-slate-900 tracking-tight leading-tight group-hover/header:text-blue-600 transition-colors">
             {law.title}
           </h3>
-          <div className="px-2 py-0.5 bg-amber-100 text-amber-600 text-[9px] font-black uppercase rounded border border-amber-200 tracking-tighter shrink-0">
+          <div className="px-3 py-1 bg-amber-400 text-slate-900 text-[9px] font-black uppercase rounded-lg border-2 border-slate-900 shadow-[2px_2px_0px_0px_rgba(0,0,0,1)] tracking-tighter shrink-0 rotate-1">
             Accès Premium Offert
           </div>
         </div>
@@ -131,7 +132,7 @@ export default function DetailedLawDossier({ law }: DetailedLawDossierProps) {
         <motion.div 
           animate={{ rotate: isOpen ? 180 : 0 }}
           transition={{ duration: 0.15, ease: "easeOut" }}
-          className="p-2 rounded-full transform-gpu bg-muted/50 text-foreground"
+          className="p-3 rounded-2xl transform-gpu bg-slate-100 border-2 border-slate-900 shadow-[3px_3px_0px_0px_rgba(0,0,0,1)] text-slate-900 group-hover/header:bg-white transition-colors"
         >
           <ChevronDown className={`w-6 h-6 ${isPending ? 'opacity-30' : ''}`} />
         </motion.div>

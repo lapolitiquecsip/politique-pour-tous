@@ -94,11 +94,11 @@ export default function DetailedLawDossier({ law }: DetailedLawDossierProps) {
   return (
     <div 
       id={law.id}
-      className={`group bg-white border-4 border-slate-900 shadow-[12px_12px_0px_0px_rgba(0,0,0,0.1)] transition-all duration-500 relative transform-gpu flex flex-col ${isOpen ? 'col-span-full z-20 rounded-[3rem]' : 'rounded-[2rem] hover:-translate-y-2 hover:rotate-1'}`}
+      className={`group bg-white border-4 border-slate-900 shadow-[12px_12px_0px_0px_rgba(0,0,0,0.1)] transition-all duration-500 relative transform-gpu flex flex-col ${isOpen ? 'col-span-full z-20 rounded-[3rem] p-4' : 'rounded-[2rem] hover:-translate-y-2 hover:rotate-1'}`}
       style={{ minHeight: isOpen ? 'auto' : '380px' }}
     >
       {/* Paper Texture Overlay */}
-      <div className="absolute inset-0 pointer-events-none opacity-[0.03] mix-blend-multiply bg-[url('https://www.transparenttextures.com/patterns/paper-fibers.png')] z-10" />
+      <div className="absolute inset-0 pointer-events-none opacity-[0.03] mix-blend-multiply bg-[url('https://www.transparenttextures.com/patterns/paper-fibers.png')] z-10 rounded-[inherit]" />
       
       {/* 1. HEADER (SHEET STYLE) */}
       <button 
@@ -107,7 +107,7 @@ export default function DetailedLawDossier({ law }: DetailedLawDossierProps) {
             setIsOpen(!isOpen);
           });
         }}
-        className={`relative z-10 w-full text-left p-8 md:p-10 flex flex-col h-full transition-colors focus-visible:outline-none group/header ${isOpen ? 'border-b-4 border-dashed border-slate-200 pb-12' : 'justify-between'}`}
+        className={`relative z-10 w-full text-left flex flex-col transition-all focus-visible:outline-none group/header ${isOpen ? 'p-8 md:p-12 pb-8' : 'p-8 md:p-10 h-full justify-between'}`}
       >
         <div className="space-y-6">
           <div className="flex justify-between items-start w-full">
@@ -122,7 +122,7 @@ export default function DetailedLawDossier({ law }: DetailedLawDossierProps) {
           </div>
 
           <div className="space-y-4">
-            <h3 className={`font-black text-slate-900 tracking-tight leading-[1.1] transition-all ${isOpen ? 'text-4xl md:text-6xl max-w-4xl' : 'text-2xl md:text-3xl'}`}>
+            <h3 className={`font-black text-slate-900 tracking-tight leading-[1.1] transition-all ${isOpen ? 'text-3xl md:text-5xl max-w-4xl' : 'text-2xl md:text-3xl'}`}>
               {law.title}
             </h3>
             
@@ -146,9 +146,9 @@ export default function DetailedLawDossier({ law }: DetailedLawDossierProps) {
         )}
 
         {isOpen && (
-          <div className="absolute top-10 right-10">
-            <div className="p-4 rounded-full bg-slate-900 text-white shadow-xl hover:scale-110 transition-transform">
-              <ChevronDown className="w-8 h-8 rotate-180" />
+          <div className="absolute top-8 right-8">
+            <div className="p-4 rounded-full bg-slate-900 text-white shadow-xl hover:scale-110 transition-transform flex items-center justify-center">
+              <ChevronDown className="w-6 h-6 rotate-180" />
             </div>
           </div>
         )}
@@ -167,7 +167,7 @@ export default function DetailedLawDossier({ law }: DetailedLawDossierProps) {
         }}
         className="overflow-hidden transform-gpu will-change-[height,opacity]"
       >
-        <div className="relative z-10 px-8 pb-12 pt-4 border-t border-border/50">
+        <div className="relative z-10 px-8 pb-12 pt-0">
           <div className="flex items-center gap-2 text-sm font-semibold text-slate-600 bg-slate-100/80 px-4 py-1.5 rounded-full capitalize w-fit mb-8">
             <span className={`w-2 h-2 rounded-full ${law.status === 'application' ? 'bg-green-500' : 'bg-amber-500'} animate-pulse`} />
             {law.statusLabel}

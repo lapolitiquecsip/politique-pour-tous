@@ -54,6 +54,33 @@ export default function DashboardPage() {
         setUserVotes(votes);
         setFollowedDeputies(follows);
         
+        // Enrich votes with law/scrutin titles in the background if not already present
+        const enrichVotes = async () => {
+          const fullVotes = await Promise.all(votes.map(async (v: any) => {
+            if (v.laws || v.scrutins) return v; // Already has relation info
+            
+            // 1. Check in FREE_LAWS
+            const free = FREE_LAWS.find(l => l.id === v.law_id);
+            if (free) return { ...v, laws: free };
+            
+            // 2. Try fetching from laws table
+            try {
+              let lawData = await api.getLaw(v.law_id);
+              if (lawData) return { ...v, laws: lawData };
+              
+              // 3. Try fetching from scrutins table
+              const scrutinData = await api.getScrutin(v.law_id);
+              if (scrutinData) return { ...v, scrutins: scrutinData };
+              
+              return v;
+            } catch (e) {
+              return v;
+            }
+          }));
+          setUserVotes(fullVotes);
+        };
+        enrichVotes();
+        
         // Render raw saved items immediately so counts are correct and fast
         setSavedItems(saved.map((item: any) => ({ ...item, data: { title: `Chargement... (${item.item_id})` } })));
         setLoading(false); // Stop main loading state here
@@ -285,7 +312,7 @@ export default function DashboardPage() {
                       </div>
                     ) : (
                       userVotes.map((v) => {
-                        const lawInfo = v.laws || FREE_LAWS.find(l => l.id === v.law_id);
+                        const lawInfo = v.laws || v.scrutins || FREE_LAWS.find(l => l.id === v.law_id);
                         const voteConfig = {
                           "POUR": { color: "bg-emerald-100 text-emerald-700", icon: CheckCircle2 },
                           "CONTRE": { color: "bg-red-100 text-red-700", icon: XCircle },
@@ -308,7 +335,7 @@ export default function DashboardPage() {
                                 </div>
                               </div>
                               <h3 className="text-lg font-bold text-slate-900 truncate italic">
-                                {lawInfo?.title || `Loi #${v.law_id}`}
+                                {lawInfo?.title || lawInfo?.objet || `Loi #${v.law_id}`}
                               </h3>
                             </div>
                             <div className={`px-4 py-2 rounded-full text-[10px] font-black uppercase tracking-widest flex items-center gap-2 ${voteConfig.color}`}>

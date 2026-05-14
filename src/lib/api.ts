@@ -225,13 +225,25 @@ export const api = {
   // --- USER ACTIVITY (VOte & Follow) ---
   
   getUserVotes: async (userId: string) => {
-    const { data, error } = await supabase
-      .from('user_votes')
-      .select('*')
-      .eq('user_id', userId)
-      .order('created_at', { ascending: false });
-    if (error) { console.error(error); return []; }
-    return data || [];
+    try {
+      const { data, error } = await supabase
+        .from('user_votes')
+        .select('*, laws(*), scrutins(*)')
+        .eq('user_id', userId)
+        .order('created_at', { ascending: false });
+      
+      if (error) throw error;
+      return data || [];
+    } catch (e) {
+      console.warn("Retrying getUserVotes without relations...");
+      const { data, error } = await supabase
+        .from('user_votes')
+        .select('*')
+        .eq('user_id', userId)
+        .order('created_at', { ascending: false });
+      if (error) { console.error(error); return []; }
+      return data || [];
+    }
   },
 
   saveUserVote: async (userId: string, lawId: string, vote: string) => {

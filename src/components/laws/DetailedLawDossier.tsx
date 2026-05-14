@@ -197,13 +197,29 @@ export default function DetailedLawDossier({ law }: DetailedLawDossierProps) {
                     {law.voteData.group_results && (
                       <div className="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-5 gap-3">
                         {law.voteData.group_results.map((group: any, i: number) => {
+                          const GROUP_NAMES: Record<string, string> = {
+                            'PO845401': 'LFI-NFP',
+                            'PO845407': 'GDR (Gauche)',
+                            'PO845413': 'Socialistes',
+                            'PO845419': 'Écologistes',
+                            'PO845425': 'LIOT',
+                            'PO845439': 'Ensemble (Renaissance)',
+                            'PO845454': 'MoDem',
+                            'PO845470': 'Horizons',
+                            'PO845485': 'Droite Républicaine',
+                            'PO845514': 'RN',
+                            'PO872880': 'UDR (Ciotti)',
+                            'PO840056': 'Non-inscrits'
+                          };
+                          
+                          const groupName = GROUP_NAMES[group.group_id] || group.group_id;
                           const isPour = group.pour > group.contre && group.pour > group.abstention;
                           const isContre = group.contre > group.pour && group.contre > group.abstention;
                           const groupColor = isPour ? 'border-green-500/30 bg-green-500/10 text-green-400' : isContre ? 'border-red-500/30 bg-red-500/10 text-red-400' : 'border-slate-500/30 bg-slate-500/10 text-slate-400';
                           
                           return (
                             <div key={i} className={`p-3 rounded-xl border ${groupColor} flex flex-col justify-between`}>
-                              <span className="text-xs font-bold truncate mb-2" title={group.group_id}>{group.group_id}</span>
+                              <span className="text-[10px] font-black uppercase truncate mb-2" title={groupName}>{groupName}</span>
                               <div className="flex justify-between text-[10px] font-medium opacity-80">
                                 <span>P: {group.pour}</span>
                                 <span>C: {group.contre}</span>

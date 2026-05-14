@@ -64,7 +64,10 @@ export function useCommuneSearch() {
         boost: "population",
         limit: "20",
       });
-      const res = await fetch(`https://geo.api.gouv.fr/communes?${params}`);
+      const controller = new AbortController();
+      const timeoutId = setTimeout(() => controller.abort(), 5000);
+      const res = await fetch(`https://geo.api.gouv.fr/communes?${params}`, { signal: controller.signal });
+      clearTimeout(timeoutId);
       const data: CommuneResult[] = await res.json();
       setResults(data);
     } catch (e) {

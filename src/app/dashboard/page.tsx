@@ -65,9 +65,17 @@ export default function DashboardPage() {
                 const data = await api.getLaw(item.item_id);
                 return { ...item, data };
               } else if (item.item_type === 'commune') {
-                const res = await fetch(`https://geo.api.gouv.fr/communes/${item.item_id}?fields=nom,code,codesPostaux,population`);
-                const data = await res.json();
-                return { ...item, data: { ...data, title: data.nom } };
+                try {
+                  const controller = new AbortController();
+                  const timeoutId = setTimeout(() => controller.abort(), 3000);
+                  const res = await fetch(`https://geo.api.gouv.fr/communes/${item.item_id}?fields=nom,code,codesPostaux,population`, { signal: controller.signal });
+                  clearTimeout(timeoutId);
+                  const data = await res.json();
+                  return { ...item, data: { ...data, title: data.nom || `Commune ${item.item_id}` } };
+                } catch (e) {
+                  console.warn(`Fallback for commune ${item.item_id}: API failed`);
+                  return { ...item, data: { title: `Commune ${item.item_id}` } };
+                }
               } else {
                 // region or department
                 return { ...item, data: { title: item.item_id } };

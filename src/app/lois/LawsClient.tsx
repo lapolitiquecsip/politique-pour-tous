@@ -329,6 +329,20 @@ function LawsClientContent() {
 
               const catObj = CATEGORIES.find(c => c.label === law.category);
               const color = catObj ? catObj.color.replace('border-', '').replace('-400', '') : 'slate';
+              
+              let voteData = null;
+              if (law.context?.startsWith('dossier_premium:')) {
+                const scrutinId = law.context.split(':')[1];
+                const originalScrutin = dbLaws.find(s => s.id === scrutinId);
+                if (originalScrutin && (originalScrutin.pour + originalScrutin.contre + originalScrutin.abstention > 0)) {
+                  voteData = {
+                    pour: originalScrutin.pour,
+                    contre: originalScrutin.contre,
+                    abstention: originalScrutin.abstention,
+                    group_results: originalScrutin.group_results
+                  };
+                }
+              }
 
               const formattedLaw = {
                 id: law.id,
@@ -338,6 +352,7 @@ function LawsClientContent() {
                 impacts,
                 calendar,
                 premiumPoints,
+                voteData,
                 status: 'vote',
                 statusLabel: 'Loi Adoptée',
                 color: color,

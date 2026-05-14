@@ -167,6 +167,55 @@ export default function DetailedLawDossier({ law }: DetailedLawDossierProps) {
               transition={{ duration: 0.3 }}
             >
               <div className="grid grid-cols-1 lg:grid-cols-2 gap-12">
+                {/* Voting Results (if available) */}
+                {law.voteData && (
+                  <div className="col-span-1 lg:col-span-2 bg-slate-900 rounded-[2.5rem] p-8 md:p-10 text-white relative overflow-hidden shadow-xl border border-slate-800">
+                    <div className="absolute top-0 right-0 w-1/2 h-full bg-gradient-to-l from-blue-500/10 to-transparent pointer-events-none" />
+                    
+                    <h4 className="text-xl font-bold flex items-center gap-2 text-white uppercase tracking-wider mb-8">
+                      <Vote className="w-6 h-6 text-blue-400" />
+                      Résultats du vote à l'Assemblée
+                    </h4>
+                    
+                    <div className="flex flex-wrap gap-8 items-center mb-10">
+                      <div className="flex flex-col">
+                        <span className="text-4xl font-black text-green-400 font-staatliches">{law.voteData.pour}</span>
+                        <span className="text-[10px] font-bold uppercase tracking-widest text-slate-400">Pour</span>
+                      </div>
+                      <div className="h-10 w-px bg-slate-700" />
+                      <div className="flex flex-col">
+                        <span className="text-4xl font-black text-red-400 font-staatliches">{law.voteData.contre}</span>
+                        <span className="text-[10px] font-bold uppercase tracking-widest text-slate-400">Contre</span>
+                      </div>
+                      <div className="h-10 w-px bg-slate-700" />
+                      <div className="flex flex-col">
+                        <span className="text-4xl font-black text-slate-400 font-staatliches">{law.voteData.abstention}</span>
+                        <span className="text-[10px] font-bold uppercase tracking-widest text-slate-500">Abstention</span>
+                      </div>
+                    </div>
+                    
+                    {law.voteData.group_results && (
+                      <div className="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-5 gap-3">
+                        {law.voteData.group_results.map((group: any, i: number) => {
+                          const isPour = group.pour > group.contre && group.pour > group.abstention;
+                          const isContre = group.contre > group.pour && group.contre > group.abstention;
+                          const groupColor = isPour ? 'border-green-500/30 bg-green-500/10 text-green-400' : isContre ? 'border-red-500/30 bg-red-500/10 text-red-400' : 'border-slate-500/30 bg-slate-500/10 text-slate-400';
+                          
+                          return (
+                            <div key={i} className={`p-3 rounded-xl border ${groupColor} flex flex-col justify-between`}>
+                              <span className="text-xs font-bold truncate mb-2" title={group.group_id}>{group.group_id}</span>
+                              <div className="flex justify-between text-[10px] font-medium opacity-80">
+                                <span>P: {group.pour}</span>
+                                <span>C: {group.contre}</span>
+                              </div>
+                            </div>
+                          );
+                        })}
+                      </div>
+                    )}
+                  </div>
+                )}
+
                 {/* Impacts */}
                 <div className="space-y-6">
                   <h4 className="text-lg font-bold flex items-center gap-2 text-slate-900 uppercase tracking-wider mb-6">

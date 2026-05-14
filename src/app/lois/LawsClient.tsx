@@ -14,7 +14,8 @@ import {
   BookOpen,
   CheckCircle2,
   Calendar as CalendarIcon,
-  Vote
+  Vote,
+  X
 } from "lucide-react";
 import Link from "next/link";
 import { useRouter, useSearchParams } from "next/navigation";

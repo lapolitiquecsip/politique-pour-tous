@@ -15,7 +15,10 @@ import {
   CheckCircle2,
   Calendar as CalendarIcon,
   Vote,
-  X
+  X,
+  ChevronRight,
+  Search,
+  FileText
 } from "lucide-react";
 import Link from "next/link";
 import { useRouter, useSearchParams } from "next/navigation";
@@ -56,6 +59,7 @@ function LawsClientContent() {
   const [dbLaws, setDbLaws] = useState<any[]>([]);
   const [loadingLaws, setLoadingLaws] = useState(true);
   const [selectedLaw, setSelectedLaw] = useState<any | null>(null);
+  const [searchQuery, setSearchQuery] = useState("");
 
   const [premiumDossiers, setPremiumDossiers] = useState<any[]>([]);
   const [loadingDossiers, setLoadingDossiers] = useState(false);
@@ -312,64 +316,110 @@ function LawsClientContent() {
           </p>
         </div>
 
+        <div className="relative max-w-xl mb-12">
+          <div className="absolute inset-0 bg-slate-900 rounded-2xl translate-x-2 translate-y-2 z-0" />
+          <div className="relative z-10 flex items-center bg-white border-4 border-slate-900 rounded-2xl overflow-hidden px-6 py-4 focus-within:ring-4 focus-within:ring-blue-500/20 transition-all">
+            <Search className="w-6 h-6 text-slate-400 mr-4" />
+            <input 
+              type="text"
+              placeholder="Rechercher une loi, un mot-clé (ex: Retraite, Santé...)"
+              value={searchQuery}
+              onChange={(e) => setSearchQuery(e.target.value)}
+              className="w-full bg-transparent border-none focus:ring-0 text-slate-900 font-bold placeholder:text-slate-300 placeholder:italic"
+            />
+            {searchQuery && (
+              <button 
+                onClick={() => setSearchQuery("")}
+                className="p-1 hover:bg-slate-100 rounded-full transition-colors"
+              >
+                <X size={18} className="text-slate-400" />
+              </button>
+            )}
+          </div>
+        </div>
+
         <div className="grid grid-cols-1 md:grid-cols-2 gap-10">
           {loadingDossiers ? (
-             <div className="text-center py-20 bg-slate-50 rounded-[3rem] border border-dashed border-slate-300">
+             <div className="text-center py-20 bg-slate-50 rounded-[3rem] border border-dashed border-slate-300 col-span-full">
                 <div className="w-12 h-12 rounded-full border-2 border-slate-200 border-t-blue-500 animate-spin mx-auto mb-4" />
                 <p className="text-slate-400 font-bold uppercase tracking-widest text-sm">Chargement des dossiers...</p>
              </div>
-          ) : premiumDossiers.length > 0 ? (
-            premiumDossiers.map((law) => {
-              let impacts = [];
-              let calendar = [];
-              let premiumPoints = [];
-              try { impacts = typeof law.impact === 'string' ? JSON.parse(law.impact) : (law.impact || []); } catch(e){}
-              try { calendar = typeof law.timeline === 'string' ? JSON.parse(law.timeline) : (law.timeline || []); } catch(e){}
-              try { premiumPoints = typeof law.content === 'string' ? JSON.parse(law.content) : (law.content || []); } catch(e){}
+          ) : (premiumDossiers.length > 0 || FREE_LAWS.length > 0) ? (
+            (() => {
+              const allLaws = premiumDossiers.length > 0 ? premiumDossiers : FREE_LAWS;
+              const filteredLaws = allLaws.filter(law => {
+                const searchLower = searchQuery.toLowerCase();
+                return (
+                  law.title.toLowerCase().includes(searchLower) || 
+                  (law.summary && law.summary.toLowerCase().includes(searchLower)) ||
+                  law.category.toLowerCase().includes(searchLower)
+                );
+              });
 
-              const catObj = CATEGORIES.find(c => c.label === law.category);
-              const color = catObj ? catObj.color.replace('border-', '').replace('-400', '') : 'slate';
-              
-              let voteData = null;
-              if (law.context?.startsWith('dossier_premium:')) {
-                const scrutinId = law.context.split(':')[1];
-                const originalScrutin = dbLaws.find(s => s.id === scrutinId);
-                if (originalScrutin && (originalScrutin.pour + originalScrutin.contre + originalScrutin.abstention > 0)) {
-                  voteData = {
-                    pour: originalScrutin.pour,
-                    contre: originalScrutin.contre,
-                    abstention: originalScrutin.abstention,
-                    group_results: originalScrutin.group_results
-                  };
-                }
+              if (filteredLaws.length === 0) {
+                return (
+                  <div className="text-center py-20 bg-slate-50 rounded-[3rem] border border-dashed border-slate-300 col-span-full">
+                    <Search className="w-12 h-12 text-slate-300 mx-auto mb-4" />
+                    <p className="text-slate-400 font-bold uppercase tracking-widest text-sm">Aucun dossier trouvé pour "{searchQuery}"</p>
+                  </div>
+                );
               }
 
-              const formattedLaw = {
-                id: law.id,
-                title: law.title,
-                category: law.category,
-                summary: law.summary,
-                impacts,
-                calendar,
-                premiumPoints,
-                voteData,
-                status: 'vote',
-                statusLabel: 'Loi Adoptée',
-                color: color,
-                backgroundImage: law.background_image
-              };
-              return <DetailedLawDossier key={formattedLaw.id} law={formattedLaw as any} />
-            })
+              return filteredLaws.map((law) => {
+                let impacts = [];
+                let calendar = [];
+                let premiumPoints = [];
+                
+                // Si c'est un dossier Premium de la DB
+                if (law.impact || law.timeline || law.content) {
+                  try { impacts = typeof law.impact === 'string' ? JSON.parse(law.impact) : (law.impact || []); } catch(e){}
+                  try { calendar = typeof law.timeline === 'string' ? JSON.parse(law.timeline) : (law.timeline || []); } catch(e){}
+                  try { premiumPoints = typeof law.content === 'string' ? JSON.parse(law.content) : (law.content || []); } catch(e){}
+
+                  const catObj = CATEGORIES.find(c => c.label === law.category);
+                  const color = catObj ? catObj.color.replace('border-', '').replace('-400', '') : 'slate';
+                  
+                  let voteData = null;
+                  if (law.context?.startsWith('dossier_premium:')) {
+                    const scrutinId = law.context.split(':')[1];
+                    const originalScrutin = dbLaws.find(s => s.id === scrutinId);
+                    if (originalScrutin && (originalScrutin.pour + originalScrutin.contre + originalScrutin.abstention > 0)) {
+                      voteData = {
+                        pour: originalScrutin.pour,
+                        contre: originalScrutin.contre,
+                        abstention: originalScrutin.abstention,
+                        group_results: originalScrutin.group_results
+                      };
+                    }
+                  }
+
+                  const formattedLaw = {
+                    id: law.id,
+                    title: law.title,
+                    category: law.category,
+                    summary: law.summary,
+                    impacts,
+                    calendar,
+                    premiumPoints,
+                    voteData,
+                    status: 'vote',
+                    statusLabel: 'Loi Adoptée',
+                    color: color,
+                    backgroundImage: law.background_image
+                  };
+                  return <DetailedLawDossier key={formattedLaw.id} law={formattedLaw as any} />
+                }
+                
+                // Si c'est un dossier gratuit statique
+                return <DetailedLawDossier key={law.id} law={law} />
+              });
+            })()
           ) : selectedCat ? (
-            <div className="text-center py-20 bg-slate-50 rounded-[3rem] border border-dashed border-slate-300">
+            <div className="text-center py-20 bg-slate-50 rounded-[3rem] border border-dashed border-slate-300 col-span-full">
                <FileText className="w-12 h-12 text-slate-300 mx-auto mb-4" />
                <p className="text-slate-400 font-bold uppercase tracking-widest text-sm">Les dossiers pour cette catégorie sont en cours de création par l&apos;IA</p>
             </div>
-          ) : (
-            FREE_LAWS.map((law) => (
-              <DetailedLawDossier key={law.id} law={law} />
-            ))
-          )}
+          ) : null}
         </div>
       </div>
 

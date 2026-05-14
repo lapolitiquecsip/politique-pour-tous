@@ -54,8 +54,12 @@ export default function DashboardPage() {
         setUserVotes(votes);
         setFollowedDeputies(follows);
         
+        // Render raw saved items immediately so counts are correct and fast
+        setSavedItems(saved.map((item: any) => ({ ...item, data: { title: `Chargement... (${item.item_id})` } })));
+        setLoading(false); // Stop main loading state here
+        
         if (isPremium && saved.length > 0) {
-          // Fetch full data for saved items
+          // Fetch full data for saved items in the background
           const fullSavedItems = await Promise.all(saved.map(async (item: any) => {
             try {
               if (item.item_type === 'scrutin') {
@@ -73,7 +77,6 @@ export default function DashboardPage() {
                   const data = await res.json();
                   return { ...item, data: { ...data, title: data.nom || `Commune ${item.item_id}` } };
                 } catch (e) {
-                  console.warn(`Fallback for commune ${item.item_id}: API failed`);
                   return { ...item, data: { title: `Commune ${item.item_id}` } };
                 }
               } else {
@@ -86,13 +89,10 @@ export default function DashboardPage() {
             }
           }));
           setSavedItems(fullSavedItems.filter(Boolean));
-        } else {
-          setSavedItems([]);
         }
       } catch (err: any) {
         console.error("Error toggling favorite:", err);
         alert(`Erreur lors de la sauvegarde : ${err.message || "Vérifiez que les migrations de base de données ont été appliquées."}`);
-      } finally {
         setLoading(false);
       }
     };

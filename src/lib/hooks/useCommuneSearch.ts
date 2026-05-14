@@ -59,17 +59,33 @@ export function useCommuneSearch() {
     setLoading(true);
     try {
       const params = new URLSearchParams({
-        nom: q,
-        fields: "nom,code,codesPostaux,population,departement,region",
-        boost: "population",
+        q,
+        type: "municipality",
         limit: "20",
       });
       const controller = new AbortController();
       const timeoutId = setTimeout(() => controller.abort(), 5000);
-      const res = await fetch(`https://geo.api.gouv.fr/communes?${params}`, { signal: controller.signal });
+      const res = await fetch(`https://api-adresse.data.gouv.fr/search/?${params}`, { signal: controller.signal });
       clearTimeout(timeoutId);
-      const data: CommuneResult[] = await res.json();
-      setResults(data);
+      const data = await res.json();
+      
+      if (data && data.features) {
+        const mappedResults: CommuneResult[] = data.features.map((f: any) => {
+          const p = f.properties;
+          const contextParts = p.context ? p.context.split(', ') : [];
+          return {
+            nom: p.name,
+            code: p.citycode,
+            codesPostaux: p.postcode ? [p.postcode] : [],
+            population: p.population || 0,
+            departement: { code: contextParts[0] || p.depcode || "", nom: contextParts[1] || "" },
+            region: { code: "", nom: contextParts[2] || "" }
+          };
+        });
+        setResults(mappedResults);
+      } else {
+        setResults([]);
+      }
     } catch (e) {
       console.error("Search error:", e);
       setResults([]);

@@ -135,8 +135,20 @@ export default function DetailedLawDossier({ law }: DetailedLawDossierProps) {
         >
           <div className="space-y-6">
             <div className="flex justify-between items-start w-full">
-              <div className={`w-fit px-4 py-1.5 rounded-xl text-[10px] font-black uppercase tracking-widest border-2 shadow-[2px_2px_0px_0px_rgba(0,0,0,1)] -rotate-3 ${badgeColor} bg-white text-slate-900 border-slate-900`}>
-                {law.category}
+              <div className="flex gap-2 items-center">
+                <div className={`w-fit px-4 py-1.5 rounded-xl text-[10px] font-black uppercase tracking-widest border-2 shadow-[2px_2px_0px_0px_rgba(0,0,0,1)] -rotate-3 ${badgeColor} bg-white text-slate-900 border-slate-900`}>
+                  {law.category}
+                </div>
+                {/* Vintage Year Stamp */}
+                {(() => {
+                  const lastYear = law.calendar.length > 0 ? law.calendar[law.calendar.length - 1].date.match(/\d{4}/)?.[0] : null;
+                  if (!lastYear) return null;
+                  return (
+                    <div className="px-3 py-1 border-2 border-red-600/30 text-red-600/40 text-[11px] font-black rounded-lg rotate-12 -mt-1 select-none pointer-events-none uppercase tracking-tighter">
+                      Vote {lastYear}
+                    </div>
+                  );
+                })()}
               </div>
               {!isOpen && (
                 <div className="p-3 rounded-2xl bg-slate-100 border-2 border-slate-900 shadow-[3px_3px_0px_0px_rgba(0,0,0,1)] text-slate-900 group-hover/header:bg-blue-500 group-hover/header:text-white transition-all -rotate-2">

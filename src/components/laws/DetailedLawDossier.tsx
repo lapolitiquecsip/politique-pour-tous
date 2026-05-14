@@ -167,68 +167,117 @@ export default function DetailedLawDossier({ law }: DetailedLawDossierProps) {
               transition={{ duration: 0.3 }}
             >
               <div className="grid grid-cols-1 lg:grid-cols-2 gap-12">
-                {/* Voting Results (if available) */}
+                {/* Voting Results (Educational Style) */}
                 {law.voteData && (
-                  <div className="col-span-1 lg:col-span-2 bg-slate-900 rounded-[2.5rem] p-8 md:p-10 text-white relative overflow-hidden shadow-xl border border-slate-800">
-                    <div className="absolute top-0 right-0 w-1/2 h-full bg-gradient-to-l from-blue-500/10 to-transparent pointer-events-none" />
+                  <div className="col-span-1 lg:col-span-2 bg-amber-50 rounded-[3rem] p-10 md:p-14 text-slate-900 relative overflow-hidden shadow-[12px_12px_0px_0px_rgba(0,0,0,0.05)] border-4 border-slate-900">
+                    <div className="absolute top-0 right-0 w-32 h-32 opacity-10 pointer-events-none">
+                      <svg viewBox="0 0 100 100" className="w-full h-full fill-slate-900">
+                        <path d="M10,10 Q50,0 90,10 Q100,50 90,90 Q50,100 10,90 Q0,50 10,10" fill="none" stroke="currentColor" strokeWidth="2" />
+                      </svg>
+                    </div>
                     
-                    <h4 className="text-xl font-bold flex items-center gap-2 text-white uppercase tracking-wider mb-8">
-                      <Vote className="w-6 h-6 text-blue-400" />
-                      Résultats du vote à l'Assemblée
-                    </h4>
-                    
-                    <div className="flex flex-wrap gap-8 items-center mb-10">
-                      <div className="flex flex-col">
-                        <span className="text-4xl font-black text-green-400 font-staatliches">{law.voteData.pour}</span>
-                        <span className="text-[10px] font-bold uppercase tracking-widest text-slate-400">Pour</span>
+                    <div className="flex flex-col md:flex-row md:items-end justify-between gap-8 mb-12">
+                      <div>
+                        <h4 className="text-4xl font-staatliches uppercase tracking-tight text-slate-900 mb-2 flex items-center gap-3">
+                          <div className="p-2 bg-blue-500 rounded-xl rotate-3 shadow-lg">
+                            <Vote className="w-8 h-8 text-white" />
+                          </div>
+                          Le verdict de l'Assemblée
+                        </h4>
+                        <p className="text-slate-500 font-bold italic text-lg">Comment vos députés ont tranché ce texte</p>
                       </div>
-                      <div className="h-10 w-px bg-slate-700" />
-                      <div className="flex flex-col">
-                        <span className="text-4xl font-black text-red-400 font-staatliches">{law.voteData.contre}</span>
-                        <span className="text-[10px] font-bold uppercase tracking-widest text-slate-400">Contre</span>
-                      </div>
-                      <div className="h-10 w-px bg-slate-700" />
-                      <div className="flex flex-col">
-                        <span className="text-4xl font-black text-slate-400 font-staatliches">{law.voteData.abstention}</span>
-                        <span className="text-[10px] font-bold uppercase tracking-widest text-slate-500">Abstention</span>
+                      
+                      <div className="flex gap-4">
+                        <div className="px-6 py-3 bg-green-400 border-4 border-slate-900 rounded-2xl -rotate-2 shadow-[4px_4px_0px_0px_rgba(0,0,0,1)]">
+                          <span className="text-3xl font-black font-staatliches block leading-none">{law.voteData.pour}</span>
+                          <span className="text-[10px] font-bold uppercase tracking-widest text-slate-900">Adopté avec</span>
+                        </div>
                       </div>
                     </div>
                     
-                    {law.voteData.group_results && (
-                      <div className="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-5 gap-3">
-                        {law.voteData.group_results.map((group: any, i: number) => {
-                          const GROUP_NAMES: Record<string, string> = {
-                            'PO845401': 'LFI-NFP',
-                            'PO845407': 'GDR (Gauche)',
-                            'PO845413': 'Socialistes',
-                            'PO845419': 'Écologistes',
-                            'PO845425': 'LIOT',
-                            'PO845439': 'Ensemble (Renaissance)',
-                            'PO845454': 'MoDem',
-                            'PO845470': 'Horizons',
-                            'PO845485': 'Droite Républicaine',
-                            'PO845514': 'RN',
-                            'PO872880': 'UDR (Ciotti)',
-                            'PO840056': 'Non-inscrits'
-                          };
-                          
-                          const groupName = GROUP_NAMES[group.group_id] || group.group_id;
-                          const isPour = group.pour > group.contre && group.pour > group.abstention;
-                          const isContre = group.contre > group.pour && group.contre > group.abstention;
-                          const groupColor = isPour ? 'border-green-500/30 bg-green-500/10 text-green-400' : isContre ? 'border-red-500/30 bg-red-500/10 text-red-400' : 'border-slate-500/30 bg-slate-500/10 text-slate-400';
-                          
-                          return (
-                            <div key={i} className={`p-3 rounded-xl border ${groupColor} flex flex-col justify-between`}>
-                              <span className="text-[10px] font-black uppercase truncate mb-2" title={groupName}>{groupName}</span>
-                              <div className="flex justify-between text-[10px] font-medium opacity-80">
-                                <span>P: {group.pour}</span>
-                                <span>C: {group.contre}</span>
-                              </div>
-                            </div>
-                          );
-                        })}
+                    <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-12">
+                      <div className="bg-white p-6 rounded-3xl border-4 border-slate-900 shadow-[6px_6px_0px_0px_rgba(0,0,0,0.1)] flex flex-col items-center text-center group hover:-translate-y-1 transition-transform">
+                        <div className="w-12 h-12 bg-green-100 rounded-full flex items-center justify-center mb-3 border-2 border-green-500">
+                          <CheckCircle2 className="w-6 h-6 text-green-600" />
+                        </div>
+                        <span className="text-4xl font-black text-green-600 font-staatliches">{law.voteData.pour}</span>
+                        <span className="text-xs font-bold uppercase tracking-widest text-slate-400">Pour la loi</span>
                       </div>
-                    )}
+                      
+                      <div className="bg-white p-6 rounded-3xl border-4 border-slate-900 shadow-[6px_6px_0px_0px_rgba(0,0,0,0.1)] flex flex-col items-center text-center group hover:-translate-y-1 transition-transform">
+                        <div className="w-12 h-12 bg-red-100 rounded-full flex items-center justify-center mb-3 border-2 border-red-500">
+                          <XCircle className="w-6 h-6 text-red-600" />
+                        </div>
+                        <span className="text-4xl font-black text-red-600 font-staatliches">{law.voteData.contre}</span>
+                        <span className="text-xs font-bold uppercase tracking-widest text-slate-400">Contre la loi</span>
+                      </div>
+
+                      <div className="bg-white p-6 rounded-3xl border-4 border-slate-900 shadow-[6px_6px_0px_0px_rgba(0,0,0,0.1)] flex flex-col items-center text-center group hover:-translate-y-1 transition-transform">
+                        <div className="w-12 h-12 bg-slate-100 rounded-full flex items-center justify-center mb-3 border-2 border-slate-400">
+                          <MinusCircle className="w-6 h-6 text-slate-500" />
+                        </div>
+                        <span className="text-4xl font-black text-slate-500 font-staatliches">{law.voteData.abstention}</span>
+                        <span className="text-xs font-bold uppercase tracking-widest text-slate-400">Abstentions</span>
+                      </div>
+                    </div>
+                    
+                    <div className="relative">
+                      <div className="absolute -left-4 -top-4 w-full h-full bg-blue-500/5 rounded-[2rem] -rotate-1 pointer-events-none" />
+                      <h5 className="text-sm font-black uppercase tracking-[0.2em] text-slate-400 mb-6 flex items-center gap-2">
+                        <span className="w-8 h-1 bg-blue-500 rounded-full" />
+                        Positions par groupe politique
+                      </h5>
+                      
+                      {law.voteData.group_results && (
+                        <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4 relative z-10">
+                          {law.voteData.group_results.map((group: any, i: number) => {
+                            const GROUP_NAMES: Record<string, string> = {
+                              'PO845401': 'LFI-NFP',
+                              'PO845407': 'GDR (Gauche)',
+                              'PO845413': 'Socialistes',
+                              'PO845419': 'Écologistes',
+                              'PO845425': 'LIOT',
+                              'PO845439': 'Ensemble (Renaissance)',
+                              'PO845454': 'MoDem',
+                              'PO845470': 'Horizons',
+                              'PO845485': 'Droite Républicaine',
+                              'PO845514': 'RN',
+                              'PO872880': 'UDR (Ciotti)',
+                              'PO840056': 'Non-inscrits'
+                            };
+                            
+                            const groupName = GROUP_NAMES[group.group_id] || group.group_id;
+                            const isPour = group.pour > group.contre && group.pour > group.abstention;
+                            const isContre = group.contre > group.pour && group.contre > group.abstention;
+                            
+                            const groupStyle = isPour 
+                              ? 'bg-green-100 border-green-500 text-green-700' 
+                              : isContre 
+                                ? 'bg-red-100 border-red-500 text-red-700' 
+                                : 'bg-slate-100 border-slate-400 text-slate-600';
+                            
+                            return (
+                              <div 
+                                key={i} 
+                                className={`p-4 rounded-2xl border-2 ${groupStyle} flex flex-col justify-between shadow-[4px_4px_0px_0px_rgba(0,0,0,0.05)] hover:shadow-none hover:translate-x-1 hover:translate-y-1 transition-all`}
+                              >
+                                <span className="text-[11px] font-black uppercase leading-tight mb-3" title={groupName}>{groupName}</span>
+                                <div className="flex justify-between items-end">
+                                  <div className="flex flex-col">
+                                    <span className="text-[8px] font-bold uppercase opacity-60">Pour</span>
+                                    <span className="text-lg font-black font-staatliches">{group.pour}</span>
+                                  </div>
+                                  <div className="flex flex-col items-end">
+                                    <span className="text-[8px] font-bold uppercase opacity-60">Contre</span>
+                                    <span className="text-lg font-black font-staatliches">{group.contre}</span>
+                                  </div>
+                                </div>
+                              </div>
+                            );
+                          })}
+                        </div>
+                      )}
+                    </div>
                   </div>
                 )}
 

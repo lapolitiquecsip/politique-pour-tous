@@ -140,7 +140,7 @@ export const api = {
     let query = supabase
       .from('laws')
       .select('*')
-      .eq('context', 'dossier_premium')
+      .ilike('context', 'dossier_premium%')
       .order('date_adopted', { ascending: false });
       
     if (categoryFilter) {

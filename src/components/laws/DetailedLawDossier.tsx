@@ -94,65 +94,89 @@ export default function DetailedLawDossier({ law }: DetailedLawDossierProps) {
   return (
     <div 
       id={law.id}
-      className={`group bg-white border-4 border-slate-900 shadow-[12px_12px_0px_0px_rgba(0,0,0,0.1)] transition-all duration-500 relative transform-gpu flex flex-col ${isOpen ? 'col-span-full z-20 rounded-[3rem] p-4' : 'rounded-[2rem] hover:-translate-y-2 hover:rotate-1'}`}
-      style={{ minHeight: isOpen ? 'auto' : '380px' }}
+      className={`relative transition-all duration-500 ${isOpen ? 'col-span-full z-20' : 'hover:-translate-y-2'}`}
     >
-      {/* Paper Texture Overlay */}
-      <div className="absolute inset-0 pointer-events-none opacity-[0.03] mix-blend-multiply bg-[url('https://www.transparenttextures.com/patterns/paper-fibers.png')] z-10 rounded-[inherit]" />
-      
-      {/* 1. HEADER (SHEET STYLE) */}
-      <button 
-        onClick={() => {
-          startTransition(() => {
-            setIsOpen(!isOpen);
-          });
+      {/* 1. THE STACK (BACKGROUND SHEETS) */}
+      {!isOpen && (
+        <>
+          <div className="absolute inset-0 bg-white border-2 border-slate-900 rounded-[2rem] rotate-2 translate-x-1 translate-y-1 z-0 shadow-sm" />
+          <div className="absolute inset-0 bg-white border-2 border-slate-900 rounded-[2rem] -rotate-1 -translate-x-1 z-1 shadow-sm" />
+        </>
+      )}
+
+      {/* 2. THE MAIN SHEET */}
+      <div 
+        className={`relative z-10 bg-white border-4 border-slate-900 shadow-[12px_12px_0px_0px_rgba(0,0,0,0.1)] transition-all duration-500 flex flex-col ${isOpen ? 'rounded-[3rem] p-4' : 'rounded-[2rem] min-h-[420px]'}`}
+        style={{ 
+          backgroundImage: !isOpen ? 'repeating-linear-gradient(transparent, transparent 31px, #f1f5f9 31px, #f1f5f9 32px)' : 'none',
+          backgroundSize: '100% 32px',
+          backgroundPosition: '0 40px'
         }}
-        className={`relative z-10 w-full text-left flex flex-col transition-all focus-visible:outline-none group/header ${isOpen ? 'p-8 md:p-12 pb-8' : 'p-8 md:p-10 h-full justify-between'}`}
       >
-        <div className="space-y-6">
-          <div className="flex justify-between items-start w-full">
-            <div className={`w-fit px-4 py-1.5 rounded-xl text-[10px] font-black uppercase tracking-widest border-2 shadow-[2px_2px_0px_0px_rgba(0,0,0,1)] -rotate-2 ${badgeColor} bg-white text-slate-900 border-slate-900`}>
-              {law.category}
-            </div>
-            {!isOpen && (
-              <div className="p-3 rounded-2xl bg-slate-100 border-2 border-slate-900 shadow-[3px_3px_0px_0px_rgba(0,0,0,1)] text-slate-900 group-hover/header:bg-blue-500 group-hover/header:text-white transition-all">
-                <ChevronDown className="w-5 h-5" />
-              </div>
-            )}
-          </div>
-
-          <div className="space-y-4">
-            <h3 className={`font-black text-slate-900 tracking-tight leading-[1.1] transition-all ${isOpen ? 'text-3xl md:text-5xl max-w-4xl' : 'text-2xl md:text-3xl'}`}>
-              {law.title}
-            </h3>
-            
-            <div className="flex flex-wrap gap-3 items-center">
-              <div className="px-3 py-1 bg-amber-400 text-slate-900 text-[9px] font-black uppercase rounded-lg border-2 border-slate-900 shadow-[2px_2px_0px_0px_rgba(0,0,0,1)] tracking-tighter rotate-1">
-                Accès Premium Offert
-              </div>
-              <div className="flex items-center gap-1.5 text-[10px] font-bold text-slate-400 uppercase tracking-widest">
-                <FileText className="w-3 h-3" />
-                Dossier Complet
-              </div>
-            </div>
-          </div>
-        </div>
-
+        {/* Paper Texture Overlay */}
+        <div className="absolute inset-0 pointer-events-none opacity-[0.03] mix-blend-multiply bg-[url('https://www.transparenttextures.com/patterns/paper-fibers.png')] z-10 rounded-[inherit]" />
+        
+        {/* Folded Corner Effect (Bottom Left) */}
         {!isOpen && (
-          <div className="mt-8 pt-6 border-t-2 border-dashed border-slate-100 flex items-center justify-between">
-             <p className="text-slate-500 font-bold italic text-sm">Cliquer pour déplier la fiche</p>
-             <Sparkles className="w-5 h-5 text-amber-500 animate-pulse" />
+          <div className="absolute bottom-0 left-0 w-16 h-16 pointer-events-none z-20">
+            <div className="absolute bottom-0 left-0 w-full h-full bg-white border-t-4 border-r-4 border-slate-900 rounded-tr-xl -rotate-1 shadow-[-4px_4px_0px_0px_rgba(255,255,255,1)]" />
+            <div className="absolute bottom-0 left-0 w-[calc(100%-4px)] h-[calc(100%-4px)] bg-slate-50 border-t-2 border-r-2 border-slate-200 rounded-tr-lg" />
           </div>
         )}
 
-        {isOpen && (
-          <div className="absolute top-8 right-8">
-            <div className="p-4 rounded-full bg-slate-900 text-white shadow-xl hover:scale-110 transition-transform flex items-center justify-center">
-              <ChevronDown className="w-6 h-6 rotate-180" />
+        {/* 3. HEADER (SHEET STYLE) */}
+        <button 
+          onClick={() => {
+            startTransition(() => {
+              setIsOpen(!isOpen);
+            });
+          }}
+          className={`relative z-10 w-full text-left flex flex-col transition-all focus-visible:outline-none group/header ${isOpen ? 'p-8 md:p-12 pb-8' : 'p-8 md:p-10 h-full justify-between'}`}
+        >
+          <div className="space-y-6">
+            <div className="flex justify-between items-start w-full">
+              <div className={`w-fit px-4 py-1.5 rounded-xl text-[10px] font-black uppercase tracking-widest border-2 shadow-[2px_2px_0px_0px_rgba(0,0,0,1)] -rotate-3 ${badgeColor} bg-white text-slate-900 border-slate-900`}>
+                {law.category}
+              </div>
+              {!isOpen && (
+                <div className="p-3 rounded-2xl bg-slate-100 border-2 border-slate-900 shadow-[3px_3px_0px_0px_rgba(0,0,0,1)] text-slate-900 group-hover/header:bg-blue-500 group-hover/header:text-white transition-all -rotate-2">
+                  <ChevronDown className="w-5 h-5" />
+                </div>
+              )}
+            </div>
+
+            <div className="space-y-4">
+              <h3 className={`font-black text-slate-900 tracking-tight leading-[1.1] transition-all ${isOpen ? 'text-3xl md:text-5xl max-w-4xl' : 'text-2xl md:text-3xl'}`}>
+                {law.title}
+              </h3>
+              
+              <div className="flex flex-wrap gap-3 items-center">
+                <div className="px-3 py-1 bg-amber-400 text-slate-900 text-[9px] font-black uppercase rounded-lg border-2 border-slate-900 shadow-[2px_2px_0px_0px_rgba(0,0,0,1)] tracking-tighter rotate-1">
+                  Accès Premium Offert
+                </div>
+                <div className="flex items-center gap-1.5 text-[10px] font-bold text-slate-400 uppercase tracking-widest">
+                  <FileText className="w-3 h-3" />
+                  Dossier Complet
+                </div>
+              </div>
             </div>
           </div>
-        )}
-      </button>
+
+          {!isOpen && (
+            <div className="mt-8 pt-6 border-t-2 border-dashed border-slate-100 flex items-center justify-between">
+               <p className="text-slate-500 font-bold italic text-sm">Cliquer pour déplier la fiche</p>
+               <Sparkles className="w-5 h-5 text-amber-500 animate-pulse" />
+            </div>
+          )}
+
+          {isOpen && (
+            <div className="absolute top-8 right-8">
+              <div className="p-4 rounded-full bg-slate-900 text-white shadow-xl hover:scale-110 transition-transform flex items-center justify-center">
+                <ChevronDown className="w-6 h-6 rotate-180" />
+              </div>
+            </div>
+          )}
+        </button>
 
       {/* 2. CONTENU DÉPLIABLE (ACCORDÉON OPTIMISÉ POUR L'INP) */}
       <motion.div

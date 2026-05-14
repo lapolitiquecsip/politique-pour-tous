@@ -6,63 +6,40 @@ import LawsClient from "./LawsClient";
 
 export default function LawsPage() {
   return (
-    <div className="min-h-screen bg-background">
-      {/* Hero Section (Compact 50vh style) */}
-      <div className="relative pt-24 pb-16 md:pt-32 md:pb-24 bg-slate-950 overflow-hidden group">
-        {/* Institutional Decorative Background */}
-        <div className="absolute top-0 inset-x-0 h-px bg-gradient-to-r from-transparent via-blue-500/50 to-transparent z-20" />
-        
-        {/* Hémicycle Filigree (Visual Element) */}
-        <div className="absolute inset-0 z-0 opacity-[0.06] select-none pointer-events-none flex items-center justify-center overflow-hidden">
-          <img 
-            src="/hemicycle_line_art.png" 
-            alt="" 
-            className="w-full h-full object-cover md:object-contain scale-110 blur-[0.5px]" 
-          />
-          {/* Radial mask to focus text */}
-          <div className="absolute inset-0 bg-[radial-gradient(circle_at_center,transparent_20%,#020617_80%)]" />
+    <div className="min-h-screen bg-white">
+      {/* Hero Section (Premium White Style) */}
+      <div className="relative pt-24 pb-16 md:pt-40 md:pb-32 bg-white overflow-hidden">
+        {/* Background Large Text (Faded) */}
+        <div className="absolute inset-0 z-0 pointer-events-none flex flex-col justify-center items-center overflow-hidden select-none">
+          <h2 className="text-[15rem] md:text-[25rem] font-black text-slate-50/80 leading-none uppercase tracking-tighter -rotate-6">
+            LÉGISLATION
+          </h2>
+          <h2 className="text-[15rem] md:text-[25rem] font-black text-slate-50/80 leading-none uppercase tracking-tighter rotate-3 -mt-20 md:-mt-40">
+            PARLEMENT
+          </h2>
         </div>
 
-        {/* Subtle Grain Texture Overlay */}
-        <div className="absolute inset-0 z-10 opacity-[0.03] pointer-events-none bg-[url('https://www.transparenttextures.com/patterns/felt.png')]" />
-
-        <div className="absolute -top-40 -right-40 w-96 h-96 bg-red-600/10 rounded-full blur-[120px] z-10" />
-        <div className="absolute top-40 -left-40 w-96 h-96 bg-blue-600/15 rounded-full blur-[120px] z-10" />
-        
-        <div className="container mx-auto max-w-6xl text-center relative z-20 px-4">
+        <div className="container mx-auto max-w-6xl text-center relative z-10 px-4">
           <motion.div 
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.8 }}
             className="flex flex-col items-center"
           >
-            <h1 className="text-6xl md:text-[7rem] font-staatliches uppercase tracking-tight leading-none mb-6 flex flex-wrap justify-center gap-x-6">
-              <span className="text-white">Tout sur les</span>
-              <span className="relative italic bg-gradient-to-r from-blue-500 via-white to-red-500 bg-clip-text text-transparent pr-8">
-                Lois
-                {/* Hand-drawn red underline SVG */}
-                <svg
-                  viewBox="0 0 200 20"
-                  fill="none"
-                  stroke="#dc2626"
-                  strokeWidth="4"
-                  strokeLinecap="round"
-                  className="absolute -bottom-2 left-0 w-full h-4 opacity-80"
-                >
-                  <path d="M5,10 Q50,15 100,10 T195,10" />
-                </svg>
-              </span>
+            {/* Action Badge */}
+            <div className="flex items-center gap-3 mb-10 px-6 py-2 bg-slate-50 border border-slate-100 rounded-full shadow-sm">
+              <div className="w-2.5 h-2.5 bg-red-600 rounded-full animate-pulse" />
+              <span className="text-[10px] font-black uppercase tracking-[0.2em] text-red-600">Action Législative</span>
+            </div>
+
+            <h1 className="text-6xl md:text-[8rem] font-black uppercase tracking-tight leading-none mb-10">
+              <span className="text-slate-900 block md:inline">Tout sur les </span>
+              <span className="italic text-red-600 block md:inline">Lois</span>
             </h1>
             
-            <p className="text-xl md:text-2xl text-white/80 max-w-2xl mx-auto leading-relaxed font-bold italic tracking-tight drop-shadow-md">
-              Comprendre les lois qui changent votre quotidien.
+            <p className="text-lg md:text-2xl text-slate-500 max-w-3xl mx-auto leading-relaxed font-medium italic tracking-tight">
+              Découvrez les lois qui façonnent la France, des grands débats de l'Assemblée aux décrets qui changent concrètement votre quotidien.
             </p>
-
-            <div className="mt-10 flex items-center gap-2 text-blue-400/60 font-black text-[10px] uppercase tracking-[0.3em] animate-pulse">
-              <div className="w-8 h-px bg-blue-500/30" />
-              Expertise Légis
-              <div className="w-8 h-px bg-blue-500/30" />
-            </div>
           </motion.div>
         </div>
       </div>

@@ -75,10 +75,9 @@ export default function DashboardPage() {
             } catch (e) {
               console.error(`Error loading item ${item.item_id}:`, e);
               return null;
-              return { ...item, data: { title: item.item_id, failed: true } };
             }
           }));
-          setSavedItems(fullSavedItems.map(item => item || { ...item, data: { title: item.item_id } }));
+          setSavedItems(fullSavedItems.filter(Boolean));
         } else {
           setSavedItems([]);
         }

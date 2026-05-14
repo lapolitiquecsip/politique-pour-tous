@@ -230,16 +230,10 @@ function LawsClientContent() {
             
             const handleCategoryClick = () => {
               if (cat.isFree || isPremium) {
-                if (cat.id === "edu") {
-                  router.push("/lois/education");
-                } else if (cat.id === "env") {
-                  router.push("/lois/environnement");
+                if (isActive) {
+                  setSelectedCat(null);
                 } else {
-                  if (isActive) {
-                    setSelectedCat(null);
-                  } else {
-                    setSelectedCat(cat.id);
-                  }
+                  setSelectedCat(cat.id);
                 }
               } else {
                 scrollToPremium();

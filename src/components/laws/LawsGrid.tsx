@@ -23,7 +23,7 @@ export default function LawsGrid({ onSelectLaw, categoryFilter }: { onSelectLaw?
     async function load() {
       try {
         const [lawsData, deputiesData] = await Promise.all([
-          api.getLaws(),
+          api.getProposals(),
           api.getDeputies()
         ]);
         setLaws(lawsData);

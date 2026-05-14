@@ -57,6 +57,9 @@ function LawsClientContent() {
   const [loadingLaws, setLoadingLaws] = useState(true);
   const [selectedLaw, setSelectedLaw] = useState<any | null>(null);
 
+  const [premiumDossiers, setPremiumDossiers] = useState<any[]>([]);
+  const [loadingDossiers, setLoadingDossiers] = useState(false);
+
   useEffect(() => {
     const loadLaws = async () => {
       const data = await api.getVotedLaws(60);
@@ -72,6 +75,19 @@ function LawsClientContent() {
     
     return () => clearInterval(interval);
   }, []);
+
+  useEffect(() => {
+    const loadDossiers = async () => {
+      setLoadingDossiers(true);
+      const catLabel = selectedCat ? CATEGORIES.find(c => c.id === selectedCat)?.label : null;
+      const data = await api.getPremiumDossiers(catLabel);
+      setPremiumDossiers(data);
+      setLoadingDossiers(false);
+    };
+    if (activeTab === 'dossiers') {
+      loadDossiers();
+    }
+  }, [activeTab, selectedCat]);
 
   // Handle direct link to a law
   useEffect(() => {
@@ -220,8 +236,6 @@ function LawsClientContent() {
                     setSelectedCat(null);
                   } else {
                     setSelectedCat(cat.id);
-                    // Automatically switch to history tab to show the filtered results
-                    setActiveTab('history');
                   }
                 }
               } else {
@@ -275,23 +289,72 @@ function LawsClientContent() {
       </div>
 
 
-      {/* 3. DOSSIERS GRATUITS (POSTER STYLE REBORN) */}
+      {/* 3. DOSSIERS GRATUITS ET PREMIUM */}
       <div className="space-y-4 mb-32">
         <div className="relative mb-16 text-center md:text-left">
-          <h2 className="text-5xl md:text-7xl font-staatliches uppercase tracking-tighter leading-none">
-            <span className="text-slate-900 opacity-10 absolute -top-8 left-0 select-none hidden md:block">PREVIEW</span>
-            L&apos;essentiel en <span className="bg-gradient-to-r from-blue-600 via-red-600 to-blue-600 bg-clip-text text-transparent">libre accès</span>
-          </h2>
+          <div className="flex items-center gap-4 justify-center md:justify-start">
+            <h2 className="text-5xl md:text-7xl font-staatliches uppercase tracking-tighter leading-none">
+              <span className="text-slate-900 opacity-10 absolute -top-8 left-0 select-none hidden md:block">DOSSIERS</span>
+              {selectedCat ? CATEGORIES.find(c => c.id === selectedCat)?.label : "L'essentiel en libre accès"}
+            </h2>
+            {selectedCat && (
+              <button 
+                onClick={() => setSelectedCat(null)}
+                className="px-4 py-2 bg-slate-100 text-slate-600 rounded-full font-bold text-xs uppercase tracking-widest hover:bg-slate-200 transition-colors flex items-center gap-2"
+              >
+                <X size={14} /> Réinitialiser
+              </button>
+            )}
+          </div>
           <div className="h-1.5 w-24 bg-gradient-to-r from-blue-600 to-red-600 mt-4 rounded-full mx-auto md:mx-0" />
           <p className="text-lg font-bold italic text-slate-500 mt-6 max-w-2xl font-staatliches">
-            Voici une prévisualisation de nos dossiers Premium : une analyse complète pour chaque grande loi.
+            {selectedCat ? "Explorez nos dossiers détaillés sur les lois votées dans cette catégorie." : "Voici une prévisualisation de nos dossiers Premium : une analyse complète pour chaque grande loi."}
           </p>
         </div>
 
         <div className="space-y-12">
-          {FREE_LAWS.map((law) => (
-            <DetailedLawDossier key={law.id} law={law} />
-          ))}
+          {loadingDossiers ? (
+             <div className="text-center py-20 bg-slate-50 rounded-[3rem] border border-dashed border-slate-300">
+                <div className="w-12 h-12 rounded-full border-2 border-slate-200 border-t-blue-500 animate-spin mx-auto mb-4" />
+                <p className="text-slate-400 font-bold uppercase tracking-widest text-sm">Chargement des dossiers...</p>
+             </div>
+          ) : premiumDossiers.length > 0 ? (
+            premiumDossiers.map((law) => {
+              let impacts = [];
+              let calendar = [];
+              let premiumPoints = [];
+              try { impacts = typeof law.impact === 'string' ? JSON.parse(law.impact) : (law.impact || []); } catch(e){}
+              try { calendar = typeof law.timeline === 'string' ? JSON.parse(law.timeline) : (law.timeline || []); } catch(e){}
+              try { premiumPoints = typeof law.content === 'string' ? JSON.parse(law.content) : (law.content || []); } catch(e){}
+
+              const catObj = CATEGORIES.find(c => c.label === law.category);
+              const color = catObj ? catObj.color.replace('border-', '').replace('-400', '') : 'slate';
+
+              const formattedLaw = {
+                id: law.id,
+                title: law.title,
+                category: law.category,
+                summary: law.summary,
+                impacts,
+                calendar,
+                premiumPoints,
+                status: 'vote',
+                statusLabel: 'Loi Adoptée',
+                color: color,
+                backgroundImage: law.background_image
+              };
+              return <DetailedLawDossier key={formattedLaw.id} law={formattedLaw as any} />
+            })
+          ) : selectedCat ? (
+            <div className="text-center py-20 bg-slate-50 rounded-[3rem] border border-dashed border-slate-300">
+               <FileText className="w-12 h-12 text-slate-300 mx-auto mb-4" />
+               <p className="text-slate-400 font-bold uppercase tracking-widest text-sm">Les dossiers pour cette catégorie sont en cours de création par l&apos;IA</p>
+            </div>
+          ) : (
+            FREE_LAWS.map((law) => (
+              <DetailedLawDossier key={law.id} law={law} />
+            ))
+          )}
         </div>
       </div>
 

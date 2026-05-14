@@ -122,8 +122,33 @@ export const api = {
     return data || [];
   },
 
-  getLaws: async () => {
-    const { data, error } = await supabase.from('laws').select('*').order('created_at', { ascending: false }).limit(100);
+  getProposals: async () => {
+    // Les propositions en cours n'ont généralement pas de date d'adoption ni de contexte 'dossier_premium'
+    const { data, error } = await supabase
+      .from('laws')
+      .select('*')
+      .is('date_adopted', null)
+      .neq('context', 'dossier_premium')
+      .order('created_at', { ascending: false })
+      .limit(100);
+    if (error) { console.error(error); return []; }
+    return data || [];
+  },
+
+  getPremiumDossiers: async (categoryFilter?: string | null) => {
+    // Les dossiers premium sont des lois adoptées (avec date_adopted et context='dossier_premium')
+    let query = supabase
+      .from('laws')
+      .select('*')
+      .eq('context', 'dossier_premium')
+      .order('date_adopted', { ascending: false });
+      
+    if (categoryFilter) {
+      // Support for exact match or 'includes' match if category string contains multiple
+      query = query.or(`category.eq.${categoryFilter},category.ilike.%${categoryFilter}%`);
+    }
+
+    const { data, error } = await query.limit(50);
     if (error) { console.error(error); return []; }
     return data || [];
   },

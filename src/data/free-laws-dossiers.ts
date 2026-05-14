@@ -10,6 +10,18 @@ export interface LawDossier {
   statusLabel: string;
   color: string;
   backgroundImage?: string;
+  voteData?: {
+    pour: number;
+    contre: number;
+    abstention: number;
+    group_results?: {
+      group_id: string;
+      pour: number;
+      contre: number;
+      abstention: number;
+      total: number;
+    }[];
+  } | null;
 }
 
 export const FREE_LAWS: LawDossier[] = [

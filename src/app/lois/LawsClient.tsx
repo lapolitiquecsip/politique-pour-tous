@@ -169,16 +169,26 @@ function LawsClientContent() {
       {activeTab === 'proposals' && (
         <div className="mt-12 mb-32">
           <div className="relative mb-16 text-center md:text-left">
-            <h2 className="text-5xl md:text-7xl font-staatliches uppercase tracking-tighter leading-none">
-              <span className="text-slate-900 opacity-10 absolute -top-8 left-0 select-none hidden md:block">EN COURS</span>
-              Propositions & <span className="bg-gradient-to-r from-blue-600 via-red-600 to-blue-600 bg-clip-text text-transparent">Projets de loi</span>
-            </h2>
+            <div className="flex items-center gap-4 justify-center md:justify-start">
+              <h2 className="text-5xl md:text-7xl font-staatliches uppercase tracking-tighter leading-none">
+                <span className="text-slate-900 opacity-10 absolute -top-8 left-0 select-none hidden md:block">EN COURS</span>
+                Propositions & <span className="bg-gradient-to-r from-blue-600 via-red-600 to-blue-600 bg-clip-text text-transparent">Projets de loi</span>
+              </h2>
+              {selectedCat && (
+                <button 
+                  onClick={() => setSelectedCat(null)}
+                  className="px-4 py-2 bg-slate-100 text-slate-600 rounded-full font-bold text-xs uppercase tracking-widest hover:bg-slate-200 transition-colors flex items-center gap-2"
+                >
+                  <X size={14} /> {CATEGORIES.find(c => c.id === selectedCat)?.label || selectedCat}
+                </button>
+              )}
+            </div>
             <div className="h-1.5 w-24 bg-blue-600 mt-4 rounded-full mx-auto md:mx-0" />
             <p className="text-lg font-bold italic text-slate-500 mt-6 max-w-2xl font-staatliches">
               Consultez les textes déposés et en cours d&apos;examen au Parlement.
             </p>
           </div>
-          <LawsGrid onSelectLaw={setSelectedLaw} />
+          <LawsGrid onSelectLaw={setSelectedLaw} categoryFilter={CATEGORIES.find(c => c.id === selectedCat)?.label} />
         </div>
       )}
       {activeTab === 'dossiers' && (
@@ -205,7 +215,13 @@ function LawsClientContent() {
                 } else if (cat.id === "env") {
                   router.push("/lois/environnement");
                 } else {
-                  setSelectedCat(cat.id);
+                  if (isActive) {
+                    setSelectedCat(null);
+                  } else {
+                    setSelectedCat(cat.id);
+                    // Automatically switch to history tab to show the filtered results
+                    setActiveTab('history');
+                  }
                 }
               } else {
                 scrollToPremium();
@@ -314,8 +330,16 @@ function LawsClientContent() {
       {activeTab === 'history' && (
         <div className="space-y-12 mb-32">
           <div className="relative mb-16 text-center md:text-left">
-            <div className="flex items-center gap-3 mb-4 justify-center md:justify-start">
+            <div className="flex items-center gap-4 mb-4 justify-center md:justify-start">
                <span className="px-3 py-1 bg-blue-100 text-blue-600 text-[10px] font-black uppercase tracking-widest rounded-full">XVIIe Législature</span>
+               {selectedCat && (
+                 <button 
+                   onClick={() => setSelectedCat(null)}
+                   className="px-4 py-2 bg-slate-100 text-slate-600 rounded-full font-bold text-xs uppercase tracking-widest hover:bg-slate-200 transition-colors flex items-center gap-2"
+                 >
+                   <X size={14} /> {CATEGORIES.find(c => c.id === selectedCat)?.label || selectedCat}
+                 </button>
+               )}
             </div>
             <h2 className="text-5xl md:text-7xl font-staatliches uppercase tracking-tighter leading-none">
               Historique des <span className="bg-gradient-to-r from-slate-900 to-slate-500 bg-clip-text text-transparent">lois</span>
@@ -327,7 +351,13 @@ function LawsClientContent() {
           </div>
 
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
-            {dbLaws.map((law, idx) => {
+            {dbLaws
+              .filter(law => {
+                if (!selectedCat) return true;
+                const catLabel = CATEGORIES.find(c => c.id === selectedCat)?.label;
+                return law.category === catLabel || (law.category && law.category.includes(catLabel));
+              })
+              .map((law, idx) => {
               const hasVotes = (law.pour + law.contre + law.abstention) > 0;
               
               return (
@@ -386,10 +416,14 @@ function LawsClientContent() {
             })}
           </div>
           
-          {dbLaws.length === 0 && !loadingLaws && (
+          {dbLaws.filter(law => {
+             if (!selectedCat) return true;
+             const catLabel = CATEGORIES.find(c => c.id === selectedCat)?.label;
+             return law.category === catLabel || (law.category && law.category.includes(catLabel));
+          }).length === 0 && !loadingLaws && (
             <div className="text-center py-20 bg-slate-50 rounded-[3rem] border border-dashed border-slate-300">
                <Vote className="w-12 h-12 text-slate-300 mx-auto mb-4" />
-               <p className="text-slate-400 font-bold uppercase tracking-widest text-sm">Aucun vote enregistré pour le moment</p>
+               <p className="text-slate-400 font-bold uppercase tracking-widest text-sm">Aucun vote trouvé pour cette catégorie</p>
             </div>
           )}
         </div>

@@ -10,7 +10,7 @@ import { useSearchParams } from "next/navigation";
 
 import { usePremium } from "@/lib/hooks/usePremium";
 
-export default function LawsGrid({ onSelectLaw }: { onSelectLaw?: (law: any) => void }) {
+export default function LawsGrid({ onSelectLaw, categoryFilter }: { onSelectLaw?: (law: any) => void, categoryFilter?: string | null }) {
   const [laws, setLaws] = useState<any[]>([]);
   const [deputies, setDeputies] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
@@ -48,10 +48,12 @@ export default function LawsGrid({ onSelectLaw }: { onSelectLaw?: (law: any) => 
   };
 
   const filteredLaws = laws
-    .filter(law => 
-      law.title.toLowerCase().includes(search.toLowerCase()) ||
-      (law.category && law.category.toLowerCase().includes(search.toLowerCase()))
-    )
+    .filter(law => {
+      const matchesSearch = law.title.toLowerCase().includes(search.toLowerCase()) ||
+                           (law.category && law.category.toLowerCase().includes(search.toLowerCase()));
+      const matchesCategory = categoryFilter ? law.category === categoryFilter || law.category?.includes(categoryFilter) : true;
+      return matchesSearch && matchesCategory;
+    })
     .sort((a, b) => {
       // 1. Prioritize dossier number extraction for strict chronological order by ID
       const numA = parseInt(a.context?.match(/n°(\d+)/)?.[1] || "0");

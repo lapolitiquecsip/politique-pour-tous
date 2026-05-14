@@ -160,13 +160,78 @@ export default function UniversalLawModal({ law, isOpen, onClose, onNext, onPrev
                       {law.summary && (
                          <section className="pt-8">
                             <h3 className="text-lg font-bold text-slate-900 mb-4 flex items-center gap-2">
-                              <Info className="text-blue-500" size={20} /> Analyse du scrutin
+                              <Info className="text-blue-500" size={20} /> Résumé du scrutin
                             </h3>
                             <p className="text-slate-600 leading-relaxed bg-slate-50 p-6 rounded-3xl border border-slate-100 italic">
                               {law.summary}
                             </p>
                          </section>
                       )}
+
+                      {law.why_it_matters && (() => {
+                        const parts = law.why_it_matters.split('|||DETAILED|||');
+                        const whyItMatters = parts[0];
+                        const detailedSummary = parts[1];
+                        return (
+                          <>
+                            {whyItMatters && (
+                              <section className="pt-4">
+                                <h3 className="text-lg font-bold text-slate-900 mb-4 flex items-center gap-2">
+                                  <FileText className="text-blue-500" size={20} /> Pourquoi c'est important ?
+                                </h3>
+                                <p className="text-slate-600 leading-relaxed bg-blue-50/50 p-6 rounded-3xl border border-blue-100 italic">
+                                  {whyItMatters}
+                                </p>
+                              </section>
+                            )}
+                            
+                            {detailedSummary && (
+                              <section className="mt-8">
+                                {!isPremium ? (
+                                  <div className="flex items-center justify-between p-8 rounded-[2.5rem] bg-slate-950 border border-white/5 shadow-2xl">
+                                    <div className="flex items-center gap-4">
+                                      <div className="w-12 h-12 bg-amber-400 rounded-2xl flex items-center justify-center text-slate-950 shadow-[0_0_20px_rgba(251,191,36,0.3)]">
+                                        <Zap size={24} fill="currentColor" />
+                                      </div>
+                                      <div>
+                                        <span className="text-2xl font-staatliches tracking-wider uppercase bg-gradient-to-b from-amber-200 via-amber-400 to-amber-600 bg-clip-text text-transparent block">Analyse détaillée</span>
+                                        <span className="text-[10px] font-black uppercase text-amber-500/60 tracking-widest">Réservé aux membres Premium</span>
+                                      </div>
+                                    </div>
+                                    <Link 
+                                      href="/premium"
+                                      className="px-6 py-3 bg-gradient-to-r from-amber-200 to-amber-500 text-slate-950 rounded-2xl font-black text-xs uppercase tracking-widest hover:scale-105 transition-all shadow-xl"
+                                    >
+                                      Débloquer
+                                    </Link>
+                                  </div>
+                                ) : (
+                                  <div className="relative p-8 md:p-12 rounded-[3rem] bg-slate-950 text-white overflow-hidden shadow-2xl border border-white/5">
+                                    <div className="absolute top-0 right-0 w-64 h-64 bg-amber-500/10 rounded-full blur-[100px] -translate-y-1/2 translate-x-1/2" />
+                                    
+                                    <div className="relative z-10">
+                                      <div className="flex items-center gap-3 mb-10">
+                                        <div className="p-3 bg-gradient-to-br from-amber-200 via-amber-400 to-amber-600 rounded-2xl text-slate-950 shadow-[0_0_20px_rgba(251,191,36,0.3)]">
+                                          <Zap size={24} fill="currentColor" />
+                                        </div>
+                                        <h4 className="text-4xl font-staatliches tracking-wider uppercase bg-gradient-to-b from-amber-200 via-amber-400 to-amber-600 bg-clip-text text-transparent">Analyse détaillée</h4>
+                                      </div>
+                                      
+                                      <div className="space-y-8">
+                                        <div className="prose prose-invert max-w-none">
+                                          <div className="text-amber-50/90 leading-relaxed text-lg whitespace-pre-wrap font-medium">
+                                            {detailedSummary}
+                                          </div>
+                                        </div>
+                                      </div>
+                                    </div>
+                                  </div>
+                                )}
+                              </section>
+                            )}
+                          </>
+                        );
+                      })()}
                     </div>
 
                     <div className="lg:col-span-5 space-y-8">

@@ -312,7 +312,7 @@ function LawsClientContent() {
           </p>
         </div>
 
-        <div className="space-y-12">
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-10">
           {loadingDossiers ? (
              <div className="text-center py-20 bg-slate-50 rounded-[3rem] border border-dashed border-slate-300">
                 <div className="w-12 h-12 rounded-full border-2 border-slate-200 border-t-blue-500 animate-spin mx-auto mb-4" />

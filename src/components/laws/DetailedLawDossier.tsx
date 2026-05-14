@@ -9,7 +9,8 @@ import {
   Star,
   XCircle,
   MinusCircle,
-  Vote
+  Vote,
+  FileText
 } from "lucide-react";
 import { type LawDossier } from "@/data/free-laws-dossiers";
 import { usePremium } from "@/lib/hooks/usePremium";
@@ -93,50 +94,64 @@ export default function DetailedLawDossier({ law }: DetailedLawDossierProps) {
   return (
     <div 
       id={law.id}
-      className={`group bg-white rounded-[2.5rem] border-4 border-slate-900 shadow-[8px_8px_0px_0px_rgba(0,0,0,0.05)] overflow-hidden transition-all duration-500 relative transform-gpu ${isOpen ? 'ring-4 ring-slate-900/5 shadow-[12px_12px_0px_0px_rgba(0,0,0,0.1)]' : ''}`}
+      className={`group bg-white border-4 border-slate-900 shadow-[12px_12px_0px_0px_rgba(0,0,0,0.1)] transition-all duration-500 relative transform-gpu flex flex-col ${isOpen ? 'col-span-full z-20 rounded-[3rem]' : 'rounded-[2rem] hover:-translate-y-2 hover:rotate-1'}`}
+      style={{ minHeight: isOpen ? 'auto' : '380px' }}
     >
-      {/* Background Image Layer (Immersive) */}
-      {law.backgroundImage && (
-        <div className="absolute inset-0 z-0 pointer-events-none overflow-hidden rounded-[2rem]">
-          <img 
-            src={law.backgroundImage} 
-            alt="" 
-            decoding="async"
-            className="w-full h-full object-cover opacity-[0.28] scale-105 transition-transform duration-[2s] group-hover:scale-110 saturate-[1.1] transform-gpu backface-visibility-hidden will-change-transform" 
-          />
-          <div className="absolute inset-0 bg-gradient-to-br from-card/30 via-transparent to-card/50" />
-          <div className="absolute inset-0 bg-gradient-to-b from-card/10 via-transparent to-card/30" />
-        </div>
-      )}
-
-      {/* 1. HEADER (TOUJOURS VISIBLE) */}
+      {/* Paper Texture Overlay */}
+      <div className="absolute inset-0 pointer-events-none opacity-[0.03] mix-blend-multiply bg-[url('https://www.transparenttextures.com/patterns/paper-fibers.png')] z-10" />
+      
+      {/* 1. HEADER (SHEET STYLE) */}
       <button 
         onClick={() => {
           startTransition(() => {
             setIsOpen(!isOpen);
           });
         }}
-        className="relative z-10 w-full text-left p-6 md:p-8 flex items-center justify-between gap-4 hover:bg-muted/10 transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/20 transform-gpu group/header"
+        className={`relative z-10 w-full text-left p-8 md:p-10 flex flex-col h-full transition-colors focus-visible:outline-none group/header ${isOpen ? 'border-b-4 border-dashed border-slate-200 pb-12' : 'justify-between'}`}
       >
-        <div className="flex flex-col md:flex-row md:items-center gap-6">
-          <div className={`w-fit px-4 py-1.5 rounded-xl text-[10px] font-black uppercase tracking-widest border-2 shadow-[2px_2px_0px_0px_rgba(0,0,0,1)] -rotate-1 ${badgeColor} bg-white text-slate-900 border-slate-900`}>
-            {law.category}
+        <div className="space-y-6">
+          <div className="flex justify-between items-start w-full">
+            <div className={`w-fit px-4 py-1.5 rounded-xl text-[10px] font-black uppercase tracking-widest border-2 shadow-[2px_2px_0px_0px_rgba(0,0,0,1)] -rotate-2 ${badgeColor} bg-white text-slate-900 border-slate-900`}>
+              {law.category}
+            </div>
+            {!isOpen && (
+              <div className="p-3 rounded-2xl bg-slate-100 border-2 border-slate-900 shadow-[3px_3px_0px_0px_rgba(0,0,0,1)] text-slate-900 group-hover/header:bg-blue-500 group-hover/header:text-white transition-all">
+                <ChevronDown className="w-5 h-5" />
+              </div>
+            )}
           </div>
-          <h3 className="text-xl md:text-2xl font-black text-slate-900 tracking-tight leading-tight group-hover/header:text-blue-600 transition-colors">
-            {law.title}
-          </h3>
-          <div className="px-3 py-1 bg-amber-400 text-slate-900 text-[9px] font-black uppercase rounded-lg border-2 border-slate-900 shadow-[2px_2px_0px_0px_rgba(0,0,0,1)] tracking-tighter shrink-0 rotate-1">
-            Accès Premium Offert
+
+          <div className="space-y-4">
+            <h3 className={`font-black text-slate-900 tracking-tight leading-[1.1] transition-all ${isOpen ? 'text-4xl md:text-6xl max-w-4xl' : 'text-2xl md:text-3xl'}`}>
+              {law.title}
+            </h3>
+            
+            <div className="flex flex-wrap gap-3 items-center">
+              <div className="px-3 py-1 bg-amber-400 text-slate-900 text-[9px] font-black uppercase rounded-lg border-2 border-slate-900 shadow-[2px_2px_0px_0px_rgba(0,0,0,1)] tracking-tighter rotate-1">
+                Accès Premium Offert
+              </div>
+              <div className="flex items-center gap-1.5 text-[10px] font-bold text-slate-400 uppercase tracking-widest">
+                <FileText className="w-3 h-3" />
+                Dossier Complet
+              </div>
+            </div>
           </div>
         </div>
-        
-        <motion.div 
-          animate={{ rotate: isOpen ? 180 : 0 }}
-          transition={{ duration: 0.15, ease: "easeOut" }}
-          className="p-3 rounded-2xl transform-gpu bg-slate-100 border-2 border-slate-900 shadow-[3px_3px_0px_0px_rgba(0,0,0,1)] text-slate-900 group-hover/header:bg-white transition-colors"
-        >
-          <ChevronDown className={`w-6 h-6 ${isPending ? 'opacity-30' : ''}`} />
-        </motion.div>
+
+        {!isOpen && (
+          <div className="mt-8 pt-6 border-t-2 border-dashed border-slate-100 flex items-center justify-between">
+             <p className="text-slate-500 font-bold italic text-sm">Cliquer pour déplier la fiche</p>
+             <Sparkles className="w-5 h-5 text-amber-500 animate-pulse" />
+          </div>
+        )}
+
+        {isOpen && (
+          <div className="absolute top-10 right-10">
+            <div className="p-4 rounded-full bg-slate-900 text-white shadow-xl hover:scale-110 transition-transform">
+              <ChevronDown className="w-8 h-8 rotate-180" />
+            </div>
+          </div>
+        )}
       </button>
 
       {/* 2. CONTENU DÉPLIABLE (ACCORDÉON OPTIMISÉ POUR L'INP) */}

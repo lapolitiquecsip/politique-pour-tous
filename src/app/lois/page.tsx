@@ -9,6 +9,10 @@ export default function LawsPage() {
     <div className="min-h-screen bg-white">
       {/* Hero Section (Premium White Style) */}
       <div className="relative pt-24 pb-16 md:pt-40 md:pb-32 bg-white overflow-hidden">
+        {/* Background Glowing Blobs (More Red) */}
+        <div className="absolute top-0 right-0 w-[500px] h-[500px] bg-red-600/5 rounded-full blur-[120px] -mr-64 -mt-64 z-0" />
+        <div className="absolute bottom-0 left-0 w-[600px] h-[600px] bg-red-500/5 rounded-full blur-[150px] -ml-80 -mb-80 z-0" />
+        
         {/* Background Large Text (Faded) */}
         <div className="absolute inset-0 z-0 pointer-events-none flex flex-col justify-center items-center overflow-hidden select-none">
           <h2 className="text-[15rem] md:text-[25rem] font-black text-slate-50/80 leading-none uppercase tracking-tighter -rotate-6">
@@ -32,7 +36,7 @@ export default function LawsPage() {
               <span className="text-[10px] font-black uppercase tracking-[0.2em] text-red-600">Action Législative</span>
             </div>
 
-            <h1 className="text-6xl md:text-[8rem] font-black uppercase tracking-tight leading-none mb-10">
+            <h1 className="text-6xl md:text-[8.5rem] font-staatliches uppercase tracking-tight leading-none mb-10">
               <span className="text-slate-900 block md:inline">Tout sur les </span>
               <span className="italic text-red-600 block md:inline">Lois</span>
             </h1>

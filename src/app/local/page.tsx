@@ -15,141 +15,16 @@ import { getPremiumUrl } from "@/lib/utils";
 import { useCommuneSearch } from "@/lib/hooks/useCommuneSearch";
 import type { CommuneResult } from "@/lib/hooks/useCommuneSearch";
 import CommuneDetailPanel from "@/components/local/CommuneDetailPanel";
+import { REGIONS, DEPARTMENTS } from "@/lib/data/territories";
 
 // Featured cities shown by default
 const FEATURED_CITIES = [
-  { name: "Paris", code: "75056", mayor: "Emmanuel Grégoire", party: "PS", population: "2.1M", image: "https://upload.wikimedia.org/wikipedia/commons/thumb/4/4b/La_Tour_Eiffel_vue_du_trocad%C3%A9ro.jpg/800px-La_Tour_Eiffel_vue_du_trocad%C3%A9ro.jpg" },
-  { name: "Marseille", code: "13055", mayor: "Benoît Payan", party: "DVG", population: "870K", image: "https://upload.wikimedia.org/wikipedia/commons/thumb/d/d3/Marseille_Vieux_Port.jpg/800px-Marseille_Vieux_Port.jpg" },
-  { name: "Lyon", code: "69123", mayor: "Grégory Doucet", party: "EELV", population: "522K", image: "https://upload.wikimedia.org/wikipedia/commons/thumb/c/c1/Lyon_-_Place_Bellecour.jpg/800px-Lyon_-_Place_Bellecour.jpg" },
-  { name: "Toulouse", code: "31555", mayor: "Jean-Luc Moudenc", party: "LR", population: "498K", image: "https://upload.wikimedia.org/wikipedia/commons/thumb/b/b3/Capitole_de_Toulouse.jpg/800px-Capitole_de_Toulouse.jpg" },
-  { name: "Nice", code: "06088", mayor: "Eric Ciotti", party: "Horizons", population: "342K", image: "https://upload.wikimedia.org/wikipedia/commons/thumb/2/22/Promenade_des_Anglais_Nice.jpg/800px-Promenade_des_Anglais_Nice.jpg" },
-  { name: "Nantes", code: "44109", mayor: "Johanna Rolland", party: "PS", population: "320K", image: "https://images.unsplash.com/photo-1584466977773-e625c37cdd50?auto=format&fit=crop&q=80&w=800" },
-];
-
-const REGIONS = [
-  { name: "Île-de-France", president: "Valérie Pécresse", party: "LR", budget: "5.3 Md€", population: "12.4M", image: "/images/regions/ile_de_france.png" },
-  { name: "Auvergne-Rhône-Alpes", president: "Fabrice Pannekoucke", party: "LR", budget: "4.1 Md€", population: "8.2M", image: "/images/regions/auvergne_rhone_alpes.png" },
-  { name: "Hauts-de-France", president: "Xavier Bertrand", party: "LR", budget: "3.8 Md€", population: "6.0M", image: "/images/regions/hauts_de_france.png" },
-  { name: "Nouvelle-Aquitaine", president: "Alain Rousset", party: "PS", budget: "3.6 Md€", population: "6.1M", image: "/images/regions/nouvelle_aquitaine.png" },
-  { name: "Occitanie", president: "Carole Delga", party: "PS", budget: "3.55 Md€", population: "6.1M", image: "/images/regions/occitanie.png" },
-  { name: "Grand Est", president: "Franck Leroy", party: "LR", budget: "4.49 Md€", population: "5.6M", image: "/images/regions/grand_est.png" },
-  { name: "Provence-Alpes-Côte d'Azur", president: "Renaud Muselier", party: "LR", budget: "3.2 Md€", population: "5.2M", image: "/images/regions/paca.png" },
-  { name: "Pays de la Loire", president: "Christelle Morançais", party: "LR", budget: "2.3 Md€", population: "3.9M", image: "/images/regions/pays_de_la_loire.png" },
-  { name: "Normandie", president: "Hervé Morin", party: "LC", budget: "2.2 Md€", population: "3.3M", image: "/images/regions/normandie.png" },
-  { name: "Bretagne", president: "Loïg Chesnais-Girard", party: "PS", budget: "1.93 Md€", population: "3.4M", image: "/images/regions/bretagne.png" },
-  { name: "Bourgogne-Franche-Comté", president: "Marie-Guite Dufay", party: "PS", budget: "1.7 Md€", population: "2.8M", image: "/images/regions/bourgogne_franche_comte.png" },
-  { name: "Centre-Val de Loire", president: "François Bonneau", party: "PS", budget: "1.6 Md€", population: "2.6M", image: "/images/regions/centre_val_de_loire.png" },
-  { name: "Corse", president: "Gilles Simeoni", party: "Femu a Corsica", budget: "0.9 Md€", population: "0.35M", image: "/images/regions/corse.png" },
-  { name: "Guadeloupe", president: "Ary Chalus", party: "GUSR", budget: "0.9 Md€", population: "0.38M", image: "/images/regions/guadeloupe.png" },
-  { name: "Martinique", president: "Serge Letchimy", party: "PPM", budget: "1.1 Md€", population: "0.35M", image: "/images/regions/martinique.png" },
-  { name: "Guyane", president: "Gabriel Serville", party: "DVG", budget: "0.8 Md€", population: "0.31M", image: "/images/regions/guyane.png" },
-  { name: "La Réunion", president: "Huguette Bello", party: "PLR", budget: "1.2 Md€", population: "0.88M", image: "/images/regions/la_reunion.png" },
-  { name: "Mayotte", president: "Ben Issa Ousseni", party: "LR", budget: "0.5 Md€", population: "0.32M", image: "https://images.unsplash.com/photo-1590523277543-a94d2e4eb00b?auto=format&fit=crop&q=80&w=800" },
-];
-
-const DEPARTMENTS = [
-  { "name": "Ain (01)", "president": "Jean Deguerry", "party": "LR", "budget": "760 M€", "population": "663K" },
-  { "name": "Aisne (02)", "president": "Nicolas Fricoteaux", "party": "UDI", "budget": "610 M€", "population": "527K" },
-  { "name": "Allier (03)", "president": "Claude Riboulet", "party": "UDI", "budget": "385 M€", "population": "335K" },
-  { "name": "Alpes-de-Haute-Provence (04)", "president": "Eliane Barreille", "party": "LR", "budget": "190 M€", "population": "165K" },
-  { "name": "Hautes-Alpes (05)", "president": "Jean-Marie Bernard", "party": "LR", "budget": "165 M€", "population": "141K" },
-  { "name": "Alpes-Maritimes (06)", "president": "Charles-Ange Ginesy", "party": "LR", "budget": "1.25 Md€", "population": "1.1M" },
-  { "name": "Ardèche (07)", "president": "Olivier Amrane", "party": "LR", "budget": "380 M€", "population": "331K" },
-  { "name": "Ardennes (08)", "president": "Noël Bourgeois", "party": "LR", "budget": "310 M€", "population": "269K" },
-  { "name": "Ariège (09)", "president": "Christine Téqui", "party": "PS", "budget": "180 M€", "population": "155K" },
-  { "name": "Aube (10)", "president": "Philippe Pichery", "party": "DVD", "budget": "360 M€", "population": "312K" },
-  { "name": "Aude (11)", "president": "Hélène Sandragné", "party": "PS", "budget": "430 M€", "population": "376K" },
-  { "name": "Aveyron (12)", "president": "Arnaud Viala", "party": "LR", "budget": "320 M€", "population": "280K" },
-  { "name": "Bouches-du-Rhône (13)", "president": "Martine Vassal", "party": "DVD", "budget": "2.85 Md€", "population": "2.0M" },
-  { "name": "Calvados (14)", "president": "Jean-Léonce Dupont", "party": "LC", "budget": "810 M€", "population": "701K" },
-  { "name": "Cantal (15)", "president": "Bruno Faure", "party": "LR", "budget": "170 M€", "population": "144K" },
-  { "name": "Charente (16)", "president": "Philippe Bouty", "party": "DVG", "budget": "405 M€", "population": "351K" },
-  { "name": "Charente-Maritime (17)", "president": "Sylvie Marcilly", "party": "DVD", "budget": "760 M€", "population": "661K" },
-  { "name": "Cher (18)", "president": "Jacques Fleury", "party": "LR", "budget": "345 M€", "population": "300K" },
-  { "name": "Corrèze (19)", "president": "Pascal Coste", "party": "LR", "budget": "275 M€", "population": "240K" },
-  { "name": "Corse-du-Sud (2A)", "president": "Pierre-Jean Luciani", "party": "DVD", "budget": "190 M€", "population": "163K" },
-  { "name": "Haute-Corse (2B)", "president": "François Orlandi", "party": "PRG", "budget": "215 M€", "population": "185K" },
-  { "name": "Côte-d'Or (21)", "president": "François Sauvadet", "party": "UDI", "budget": "620 M€", "population": "536K" },
-  { "name": "Côtes-d'Armor (22)", "president": "Christian Coail", "party": "PS", "budget": "700 M€", "population": "606K" },
-  { "name": "Creuse (23)", "president": "Valérie Simonet", "party": "LR", "budget": "135 M€", "population": "116K" },
-  { "name": "Dordogne (24)", "president": "Germinal Peiro", "party": "PS", "budget": "475 M€", "population": "413K" },
-  { "name": "Doubs (25)", "president": "Christine Bouquin", "party": "DVD", "budget": "630 M€", "population": "547K" },
-  { "name": "Drôme (26)", "president": "Marie-Pierre Mouton", "party": "LR", "budget": "600 M€", "population": "519K" },
-  { "name": "Eure (27)", "president": "Alexandre Rassaërt", "party": "DVD", "budget": "690 M€", "population": "599K" },
-  { "name": "Eure-et-Loir (28)", "president": "Christophe Le Dorven", "party": "LR", "budget": "500 M€", "population": "431K" },
-  { "name": "Finistère (29)", "president": "Maël de Calan", "party": "DVD", "budget": "1.06 Md€", "population": "922K" },
-  { "name": "Gard (30)", "president": "Françoise Laurent-Perrigot", "party": "PS", "budget": "870 M€", "population": "757K" },
-  { "name": "Haute-Garonne (31)", "president": "Sébastien Vincini", "party": "PS", "budget": "1.65 Md€", "population": "1.4M" },
-  { "name": "Gers (32)", "president": "Philippe Dupouy", "party": "PS", "budget": "225 M€", "population": "192K" },
-  { "name": "Gironde (33)", "president": "Jean-Luc Gleyze", "party": "PS", "budget": "1.95 Md€", "population": "1.7M" },
-  { "name": "Hérault (34)", "president": "Kléber Mesquida", "party": "PS", "budget": "1.40 Md€", "population": "1.2M" },
-  { "name": "Ille-et-Vilaine (35)", "president": "Jean-Luc Chenut", "party": "PS", "budget": "1.30 Md€", "population": "1.1M" },
-  { "name": "Indre (36)", "president": "Marc Fleuret", "party": "LR", "budget": "250 M€", "population": "217K" },
-  { "name": "Indre-et-Loire (37)", "president": "Jean-Gérard Paumier", "party": "LR", "budget": "710 M€", "population": "612K" },
-  { "name": "Isère (38)", "president": "Jean-Pierre Barbier", "party": "LR", "budget": "1.50 Md€", "population": "1.3M" },
-  { "name": "Jura (39)", "president": "Clément Pernot", "party": "LR", "budget": "300 M€", "population": "259K" },
-  { "name": "Landes (40)", "president": "Xavier Fortinon", "party": "PS", "budget": "490 M€", "population": "422K" },
-  { "name": "Loir-et-Cher (41)", "president": "Philippe Gouet", "party": "UDI", "budget": "380 M€", "population": "329K" },
-  { "name": "Loire (42)", "president": "Georges Ziegler", "party": "LR", "budget": "890 M€", "population": "769K" },
-  { "name": "Haute-Loire (43)", "president": "Marie-Agnès Petit", "party": "LR", "budget": "265 M€", "population": "228K" },
-  { "name": "Loire-Atlantique (44)", "president": "Michel Ménard", "party": "PS", "budget": "1.70 Md€", "population": "1.5M" },
-  { "name": "Loiret (45)", "president": "Marc Gaudet", "party": "UDI", "budget": "790 M€", "population": "684K" },
-  { "name": "Lot (46)", "president": "Serge Rigal", "party": "DVG", "budget": "205 M€", "population": "174K" },
-  { "name": "Lot-et-Garonne (47)", "president": "Sophie Borderie", "party": "PS", "budget": "385 M€", "population": "331K" },
-  { "name": "Lozère (48)", "president": "Sophie Pantel", "party": "PS", "budget": "110 M€", "population": "77K" },
-  { "name": "Maine-et-Loire (49)", "president": "Florence Dabin", "party": "DVD", "budget": "955 M€", "population": "825K" },
-  { "name": "Manche (50)", "president": "Jean Morin", "party": "DVD", "budget": "575 M€", "population": "496K" },
-  { "name": "Marne (51)", "president": "Christian Bruyen", "party": "DVD", "budget": "655 M€", "population": "565K" },
-  { "name": "Haute-Marne (52)", "president": "Nicolas Lacroix", "party": "LR", "budget": "200 M€", "population": "171K" },
-  { "name": "Mayenne (53)", "president": "Olivier Richefou", "party": "UDI", "budget": "355 M€", "population": "306K" },
-  { "name": "Meurthe-et-Moselle (54)", "president": "Chaynesse Khirouni", "party": "PS", "budget": "850 M€", "population": "732K" },
-  { "name": "Meuse (55)", "president": "Jérôme Dumont", "party": "DVD", "budget": "215 M€", "population": "182K" },
-  { "name": "Morbihan (56)", "president": "David Lappartient", "party": "DVD", "budget": "890 M€", "population": "769K" },
-  { "name": "Moselle (57)", "president": "Patrick Weiten", "party": "UDI", "budget": "1.20 Md€", "population": "1.0M" },
-  { "name": "Nièvre (58)", "president": "Fabien Bazin", "party": "PS", "budget": "235 M€", "population": "202K" },
-  { "name": "Nord (59)", "president": "Christian Poiret", "party": "DVD", "budget": "3.55 Md€", "population": "2.6M" },
-  { "name": "Oise (60)", "president": "Nadège Lefebvre", "party": "LR", "budget": "960 M€", "population": "830K" },
-  { "name": "Orne (61)", "president": "Christophe de Balorre", "party": "LR", "budget": "320 M€", "population": "277K" },
-  { "name": "Pas-de-Calais (62)", "president": "Jean-Claude Leroy", "party": "PS", "budget": "1.75 Md€", "population": "1.5M" },
-  { "name": "Puy-de-Dôme (63)", "president": "Lionel Chauvin", "party": "LR", "budget": "765 M€", "population": "662K" },
-  { "name": "Pyrénées-Atlantiques (64)", "president": "Jean-Jacques Lasserre", "party": "MoDem", "budget": "800 M€", "population": "693K" },
-  { "name": "Hautes-Pyrénées (65)", "president": "Michel Pélieu", "party": "PRG", "budget": "270 M€", "population": "231K" },
-  { "name": "Pyrénées-Orientales (66)", "president": "Hermeline Malherbe", "party": "PS", "budget": "565 M€", "population": "487K" },
-  { "name": "Bas-Rhin (67)", "president": "Frédéric Bierry", "party": "LR", "budget": "1.35 Md€", "population": "1.2M" },
-  { "name": "Haut-Rhin (68)", "president": "Frédéric Bierry", "party": "LR", "budget": "890 M€", "population": "767K" },
-  { "name": "Rhône (69)", "president": "Christophe Guilloteau", "party": "LR", "budget": "545 M€", "population": "468K" },
-  { "name": "Métropole de Lyon (69M)", "president": "Bruno Bernard", "party": "EELV", "budget": "3.90 Md€", "population": "1.4M" },
-  { "name": "Haute-Saône (70)", "president": "Yves Krattinger", "party": "PS", "budget": "270 M€", "population": "234K" },
-  { "name": "Saône-et-Loire (71)", "president": "André Accary", "party": "DVD", "budget": "635 M€", "population": "549K" },
-  { "name": "Sarthe (72)", "president": "Dominique Le Mèner", "party": "DVD", "budget": "655 M€", "population": "566K" },
-  { "name": "Savoie (73)", "president": "Hervé Gaymard", "party": "LR", "budget": "515 M€", "population": "442K" },
-  { "name": "Haute-Savoie (74)", "president": "Martial Saddier", "party": "LR", "budget": "980 M€", "population": "841K" },
-  { "name": "Paris (75)", "president": "Anne Hidalgo", "party": "PS", "budget": "10.5 Md€", "population": "2.1M" },
-  { "name": "Seine-Maritime (76)", "president": "Bertrand Bellanger", "party": "DVD", "budget": "1.45 Md€", "population": "1.3M" },
-  { "name": "Seine-et-Marne (77)", "president": "Jean-François Parigi", "party": "LR", "budget": "1.65 Md€", "population": "1.4M" },
-  { "name": "Yvelines (78)", "president": "Pierre Bédier", "party": "LR", "budget": "1.70 Md€", "population": "1.5M" },
-  { "name": "Deux-Sèvres (79)", "president": "Coralie Dénoues", "party": "DVD", "budget": "435 M€", "population": "375K" },
-  { "name": "Somme (80)", "president": "Stéphane Haussoulier", "party": "DVD", "budget": "655 M€", "population": "566K" },
-  { "name": "Tarn (81)", "president": "Christophe Ramond", "party": "PS", "budget": "455 M€", "population": "394K" },
-  { "name": "Tarn-et-Garonne (82)", "president": "Michel Weill", "party": "PRG", "budget": "305 M€", "population": "263K" },
-  { "name": "Var (83)", "president": "Jean-Louis Masson", "party": "LR", "budget": "1.25 Md€", "population": "1.1M" },
-  { "name": "Vaucluse (84)", "president": "Dominique Santoni", "party": "PS", "budget": "655 M€", "population": "565K" },
-  { "name": "Vendée (85)", "president": "Alain Leboeuf", "party": "LR", "budget": "800 M€", "population": "694K" },
-  { "name": "Vienne (86)", "president": "Alain Pichon", "party": "DVD", "budget": "510 M€", "population": "439K" },
-  { "name": "Haute-Vienne (87)", "president": "Jean-Claude Leblois", "party": "PS", "budget": "430 M€", "population": "372K" },
-  { "name": "Vosges (88)", "president": "François Vannson", "party": "DVD", "budget": "415 M€", "population": "361K" },
-  { "name": "Yonne (89)", "president": "Patrick Gendraud", "party": "LR", "budget": "385 M€", "population": "333K" },
-  { "name": "Territoire de Belfort (90)", "president": "Florian Bouquet", "party": "LR", "budget": "165 M€", "population": "140K" },
-  { "name": "Essonne (91)", "president": "François Durovray", "party": "LR", "budget": "1.50 Md€", "population": "1.3M" },
-  { "name": "Hauts-de-Seine (92)", "president": "Georges Siffredi", "party": "LR", "budget": "2.20 Md€", "population": "1.6M" },
-  { "name": "Seine-Saint-Denis (93)", "president": "Stéphane Troussel", "party": "PS", "budget": "2.10 Md€", "population": "1.7M" },
-  { "name": "Val-de-Marne (94)", "president": "Olivier Capitanio", "party": "LR", "budget": "1.80 Md€", "population": "1.4M" },
-  { "name": "Val-d'Oise (95)", "president": "Marie-Christine Cavecchi", "party": "LR", "budget": "1.45 Md€", "population": "1.3M" },
-  { "name": "Guadeloupe (971)", "president": "Guy Losbar", "party": "GUSR", "budget": "650 M€", "population": "384K" },
-  { "name": "Martinique (972)", "president": "Serge Letchimy", "party": "PPM", "budget": "600 M€", "population": "353K" },
-  { "name": "Guyane (973)", "president": "Gabriel Serville", "party": "PeP-G", "budget": "550 M€", "population": "287K" },
-  { "name": "La Réunion (974)", "president": "Cyrille Melchior", "party": "DVD", "budget": "1.30 Md€", "population": "871K" },
-  { "name": "Mayotte (976)", "president": "Ben Issa Ousseni", "party": "LR", "budget": "450 M€", "population": "289K" }
+  { name: "Paris", code: "75056", mayor: "Emmanuel Grégoire", party: "PS", population: "2.1M", image: "https://upload.wikimedia.org/wikipedia/commons/thumb/4/4b/La_Tour_Eiffel_vue_du_trocad%C3%A9ro.jpg/800px-La_Tour_Eiffel_vue_du_trocad%C3%A9ro.jpg", safety: 60, education: 90, health: 95, employment: 88 },
+  { name: "Marseille", code: "13055", mayor: "Benoît Payan", party: "DVG", population: "870K", image: "https://upload.wikimedia.org/wikipedia/commons/thumb/d/d3/Marseille_Vieux_Port.jpg/800px-Marseille_Vieux_Port.jpg", safety: 55, education: 78, health: 85, employment: 75 },
+  { name: "Lyon", code: "69123", mayor: "Grégory Doucet", party: "EELV", population: "522K", image: "https://upload.wikimedia.org/wikipedia/commons/thumb/c/c1/Lyon_-_Place_Bellecour.jpg/800px-Lyon_-_Place_Bellecour.jpg", safety: 72, education: 85, health: 88, employment: 84 },
+  { name: "Toulouse", code: "31555", mayor: "Jean-Luc Moudenc", party: "LR", population: "498K", image: "https://upload.wikimedia.org/wikipedia/commons/thumb/b/b3/Capitole_de_Toulouse.jpg/800px-Capitole_de_Toulouse.jpg", safety: 75, education: 82, health: 80, employment: 78 },
+  { name: "Nice", code: "06088", mayor: "Eric Ciotti", party: "Horizons", population: "342K", image: "https://upload.wikimedia.org/wikipedia/commons/thumb/2/22/Promenade_des_Anglais_Nice.jpg/800px-Promenade_des_Anglais_Nice.jpg", safety: 68, education: 75, health: 82, employment: 72 },
+  { name: "Nantes", code: "44109", mayor: "Johanna Rolland", party: "PS", population: "320K", image: "https://images.unsplash.com/photo-1584466977773-e625c37cdd50?auto=format&fit=crop&q=80&w=800", safety: 70, education: 84, health: 82, employment: 85 },
 ];
 
 export default function LocalPoliticsPage() {
@@ -683,27 +558,35 @@ function LocalPoliticsContent() {
               href={isPremium ? "/local/comparateur/app" : "/local/comparateur"}
               className="relative group block overflow-hidden bg-white p-8 rounded-[2.5rem] border border-slate-200 shadow-xl shadow-slate-200/20 transition-all hover:scale-[1.02] active:scale-[0.98]"
             >
+              <div className="absolute top-0 right-0 p-8 opacity-[0.03] group-hover:opacity-[0.07] transition-opacity">
+                 <Map size={120} />
+              </div>
+
               <div className="flex items-center justify-between mb-8">
                 <div className="flex items-center gap-2">
-                  <h3 className="text-xl font-bold text-slate-900">Comparateur Territorial</h3>
-                  {isPremium && <span className="px-2 py-0.5 bg-amber-100 text-amber-600 text-[8px] font-black uppercase rounded-full">Premium Unlocked</span>}
+                  <h3 className="text-xl font-bold text-slate-900">Le Comparateur</h3>
+                  {isPremium && <span className="px-2 py-0.5 bg-amber-100 text-amber-600 text-[8px] font-black uppercase rounded-full">Elite</span>}
                 </div>
-                <div className="w-8 h-8 rounded-full bg-amber-100 flex items-center justify-center text-amber-600">
-                  <Map size={16} />
+                <div className="w-10 h-10 rounded-2xl bg-amber-400 text-slate-900 flex items-center justify-center shadow-lg shadow-amber-200">
+                  <Map size={20} />
                 </div>
               </div>
               
               <div className={`space-y-4 transition-all duration-700 ${!isPremium ? 'opacity-40 blur-[5px] pointer-events-none' : 'opacity-100'}`}>
                 <div className="p-4 bg-slate-50 rounded-2xl border border-slate-100 flex items-center justify-between">
-                  <span className="text-sm font-bold text-slate-400">{isPremium ? "Sélectionner une ville..." : "Région A..."}</span>
-                  <ChevronRight size={14} className="text-slate-300" />
+                  <div className="flex items-center gap-3">
+                    <div className="w-6 h-6 rounded-lg bg-white border border-slate-200 flex items-center justify-center text-[10px] font-black">A</div>
+                    <span className="text-sm font-bold text-slate-400">Territoire A...</span>
+                  </div>
                 </div>
-                <div className="flex justify-center">
-                  <div className="w-10 h-10 rounded-full bg-amber-500 flex items-center justify-center text-white font-black text-xs shadow-lg shadow-amber-500/40">VS</div>
+                <div className="flex justify-center -my-2 relative z-10">
+                  <div className="w-8 h-8 rounded-full bg-white border-2 border-amber-400 flex items-center justify-center text-amber-500 font-black text-[10px] shadow-lg">VS</div>
                 </div>
                 <div className="p-4 bg-slate-50 rounded-2xl border border-slate-100 flex items-center justify-between">
-                  <span className="text-sm font-bold text-slate-400">{isPremium ? "Comparer avec..." : "Région B..."}</span>
-                  <ChevronRight size={14} className="text-slate-300" />
+                  <div className="flex items-center gap-3">
+                    <div className="w-6 h-6 rounded-lg bg-white border border-slate-200 flex items-center justify-center text-[10px] font-black">B</div>
+                    <span className="text-sm font-bold text-slate-400">Territoire B...</span>
+                  </div>
                 </div>
               </div>
 

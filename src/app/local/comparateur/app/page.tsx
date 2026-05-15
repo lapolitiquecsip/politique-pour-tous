@@ -8,7 +8,7 @@ import {
 } from "lucide-react";
 import Link from "next/link";
 import { useCommuneSearch } from "@/lib/hooks/useCommuneSearch";
-// Data is now fetched from the backend API
+import { REGIONS, DEPARTMENTS } from "@/lib/data/territories";
 
 interface SelectedTerritory {
   id: string;
@@ -24,26 +24,16 @@ export default function ComparateurApp() {
   const searchA = useCommuneSearch();
   const searchB = useCommuneSearch();
   const API_URL = process.env.NEXT_PUBLIC_API_URL || "http://localhost:3001";
-  const [localList, setLocalList] = useState<{regions: any[], departments: any[]}>({ regions: [], departments: [] });
-
-  useEffect(() => {
-    fetch(`${API_URL}/api/comparateur/list`)
-      .then(res => res.json())
-      .then(data => {
-        if (data && data.regions) setLocalList(data);
-      })
-      .catch(err => console.error("Error fetching comparateur list:", err));
-  }, [API_URL]);
 
   const [activeSearch, setActiveSearch] = useState<'A' | 'B' | null>(null);
 
-  // Local results for regions and departments (now from backend list)
+  // Local results for regions and departments
   const getLocalResults = (query: string) => {
     if (query.length < 2) return { regions: [], depts: [] };
     const q = query.toLowerCase();
     return {
-      regions: localList.regions.filter(r => r.name.toLowerCase().includes(q)),
-      depts: localList.departments.filter(d => d.name.toLowerCase().includes(q))
+      regions: REGIONS.filter(r => r.name.toLowerCase().includes(q)),
+      depts: DEPARTMENTS.filter(d => d.name.toLowerCase().includes(q))
     };
   };
 

@@ -417,10 +417,10 @@ export default function ComparateurApp() {
                     <div key={catIdx} className="space-y-8">
                       <h4 className="text-xl font-bold border-b border-white/10 pb-4 text-white/80">{category.title}</h4>
                       <div className="space-y-8">
-                        {category.metrics.map((metric, mIdx) => {
+                        {(category.metrics as any[]).map((metric, mIdx) => {
                           const getVal = (data: any, path: string) => {
                             if (!data) return null;
-                            return path.split('.').reduce((obj, key) => (obj && obj[key] !== 'undefined') ? obj[key] : null, data);
+                            return path.split('.').reduce((obj, key) => (obj && typeof obj[key] !== 'undefined') ? obj[key] : null, data);
                           };
                           
                           const valA = getVal(sideA?.data, metric.key);

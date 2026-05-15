@@ -15,8 +15,7 @@ import { getPremiumUrl } from "@/lib/utils";
 import { useCommuneSearch } from "@/lib/hooks/useCommuneSearch";
 import type { CommuneResult } from "@/lib/hooks/useCommuneSearch";
 import CommuneDetailPanel from "@/components/local/CommuneDetailPanel";
-import { REGIONS, DEPARTMENTS } from "@/lib/data/territories";
-
+// Using data from backend now
 // Featured cities shown by default
 const FEATURED_CITIES = [
   { name: "Paris", code: "75056", mayor: "Emmanuel Grégoire", party: "PS", population: "2.1M", image: "https://upload.wikimedia.org/wikipedia/commons/thumb/4/4b/La_Tour_Eiffel_vue_du_trocad%C3%A9ro.jpg/800px-La_Tour_Eiffel_vue_du_trocad%C3%A9ro.jpg", safety: 60, education: 90, health: 95, employment: 88 },
@@ -112,12 +111,24 @@ function LocalPoliticsContent() {
     }
   };
 
+  const [territoriesData, setTerritoriesData] = useState<{regions: any[], departments: any[]}>({ regions: [], departments: [] });
+  const API_URL = process.env.NEXT_PUBLIC_API_URL || "http://localhost:3001";
+
+  useEffect(() => {
+    fetch(`${API_URL}/api/comparateur/list`)
+      .then(res => res.json())
+      .then(data => {
+        if (data && data.regions) setTerritoriesData(data);
+      })
+      .catch(err => console.error("Error fetching list:", err));
+  }, [API_URL]);
+
   const filteredItems = (() => {
     const s = search.toLowerCase();
     if (activeTab === "region") {
-      return REGIONS.filter(r => r.name.toLowerCase().includes(s) || r.president.toLowerCase().includes(s));
+      return territoriesData.regions.filter(r => r.name.toLowerCase().includes(s) || (r.president && r.president.toLowerCase().includes(s)));
     } else if (activeTab === "departement") {
-      return DEPARTMENTS.filter(d => d.name.toLowerCase().includes(s) || d.president.toLowerCase().includes(s));
+      return territoriesData.departments.filter(d => d.name.toLowerCase().includes(s) || (d.president && d.president.toLowerCase().includes(s)));
     }
     return []; // communes handled separately
   })();

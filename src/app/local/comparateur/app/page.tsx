@@ -23,53 +23,66 @@ export default function ComparateurApp() {
   
   const searchA = useCommuneSearch();
   const searchB = useCommuneSearch();
-  
+  const API_URL = process.env.NEXT_PUBLIC_API_URL || "http://localhost:3001";
+  const [localList, setLocalList] = useState<{regions: any[], departments: any[]}>({ regions: [], departments: [] });
+
+  useEffect(() => {
+    fetch(`${API_URL}/api/comparateur/list`)
+      .then(res => res.json())
+      .then(data => {
+        if (data && data.regions) setLocalList(data);
+      })
+      .catch(err => console.error("Error fetching comparateur list:", err));
+  }, [API_URL]);
+
   const [activeSearch, setActiveSearch] = useState<'A' | 'B' | null>(null);
 
-  // Local results for regions and departments
+  // Local results for regions and departments (now from backend list)
   const getLocalResults = (query: string) => {
     if (query.length < 2) return { regions: [], depts: [] };
     const q = query.toLowerCase();
     return {
-      regions: REGIONS.filter(r => r.name.toLowerCase().includes(q)),
-      depts: DEPARTMENTS.filter(d => d.name.toLowerCase().includes(q))
+      regions: localList.regions.filter(r => r.name.toLowerCase().includes(q)),
+      depts: localList.departments.filter(d => d.name.toLowerCase().includes(q))
     };
   };
 
   const resultsA = getLocalResults(searchA.query);
   const resultsB = getLocalResults(searchB.query);
 
-  const handleSelect = (side: 'A' | 'B', item: any, type: 'commune' | 'department' | 'region') => {
+  const handleSelect = async (side: 'A' | 'B', item: any, type: 'commune' | 'department' | 'region') => {
     const search = side === 'A' ? searchA : searchB;
-    const selected: SelectedTerritory = {
-      id: item.code || item.id || item.name,
-      name: item.nom || item.name,
-      type,
-      data: { ...item }
-    };
-    
-    // Enrich with mayor if commune
-    if (type === 'commune') {
-      const mayor = search.getMayor(item.code);
-      if (mayor) selected.data.mayor = mayor.n;
-    }
+    const codeInsee = item.code || item.id || item.name;
+    const itemName = item.nom || item.name;
 
-    // Enrich with fake scores for communes if not present
-    if (!selected.data.safety) {
-      selected.data.safety = 40 + Math.floor(Math.random() * 50);
-      selected.data.education = 40 + Math.floor(Math.random() * 50);
-      selected.data.health = 40 + Math.floor(Math.random() * 50);
-      selected.data.employment = 40 + Math.floor(Math.random() * 50);
-    }
+    try {
+      const res = await fetch(`${API_URL}/api/comparateur/${codeInsee}?name=${encodeURIComponent(itemName)}`);
+      const details = await res.json();
 
-    if (side === 'A') {
-      setSideA(selected);
-      searchA.setQuery("");
-    } else {
-      setSideB(selected);
-      searchB.setQuery("");
+      const selected: SelectedTerritory = {
+        id: codeInsee,
+        name: itemName,
+        type,
+        data: details
+      };
+      
+      // Enrich with mayor if commune
+      if (type === 'commune') {
+        const mayor = search.getMayor(codeInsee);
+        if (mayor && !selected.data.politique.elu) selected.data.politique.elu = mayor.n;
+      }
+
+      if (side === 'A') {
+        setSideA(selected);
+        searchA.setQuery("");
+      } else {
+        setSideB(selected);
+        searchB.setQuery("");
+      }
+      setActiveSearch(null);
+    } catch (err) {
+      console.error("Failed to fetch territory details", err);
     }
-    setActiveSearch(null);
   };
 
   const MetricBar = ({ label, icon: Icon, valA, valB, color }: any) => {
@@ -330,40 +343,204 @@ export default function ComparateurApp() {
             <div className="relative z-10">
               <h3 className="text-2xl font-staatliches uppercase tracking-wide mb-16 text-center">Indicateurs de Performance Comparative</h3>
               
-              <div className="max-w-4xl mx-auto space-y-12">
-                <MetricBar 
-                  label="Sécurité & Tranquillité" 
-                  icon={ShieldCheck} 
-                  valA={sideA?.data.safety} 
-                  valB={sideB?.data.safety} 
-                  color="text-blue-400" 
-                />
-                <MetricBar 
-                  label="Éducation & Jeunesse" 
-                  icon={TrendingUp} 
-                  valA={sideA?.data.education} 
-                  valB={sideB?.data.education} 
-                  color="text-amber-400" 
-                />
-                <MetricBar 
-                  label="Offre de Soins & Santé" 
-                  icon={HeartPulse} 
-                  valA={sideA?.data.health} 
-                  valB={sideB?.data.health} 
-                  color="text-rose-400" 
-                />
-                <MetricBar 
-                  label="Dynamisme & Emploi" 
-                  icon={Zap} 
-                  valA={sideA?.data.employment} 
-                  valB={sideB?.data.employment} 
-                  color="text-emerald-400" 
-                />
-              </div>
-
-              {!sideA && !sideB && (
+              {!sideA && !sideB ? (
                 <div className="mt-12 text-center text-white/20 font-bold italic uppercase tracking-widest text-xs">
                   Sélectionnez deux territoires pour activer la comparaison
+                </div>
+              ) : (
+                <div className="max-w-4xl mx-auto space-y-24">
+                  {[
+                    {
+                      title: "Démographie",
+                      metrics: [
+                        { key: "demographie.populationTotal", label: "Population Totale", color: "text-blue-400", format: (v: any) => v ? v.toLocaleString('fr-FR') : 'NC', max: 13000000 },
+                        { key: "demographie.densite", label: "Densité (hab/km²)", color: "text-blue-400", format: (v: any) => v ? v.toLocaleString('fr-FR') : 'NC', max: 21000 },
+                        { key: "demographie.moins25ans", label: "Moins de 25 ans (%)", color: "text-blue-400", format: (v: any) => v ? `${v}%` : 'NC', max: 100 },
+                        { key: "demographie.plus65ans", label: "Plus de 65 ans (%)", color: "text-blue-400", format: (v: any) => v ? `${v}%` : 'NC', max: 100 },
+                      ]
+                    },
+                    {
+                      title: "Économie & Emploi",
+                      metrics: [
+                        { key: "economie.chomage", label: "Taux de chômage (%)", color: "text-emerald-400", format: (v: any) => v ? `${v}%` : 'NC', max: 25, inverse: true },
+                        { key: "economie.revenuMedian", label: "Revenu médian mensuel", color: "text-emerald-400", format: (v: any) => v ? `${v} €` : 'NC', max: 4000 },
+                        { key: "economie.pauvrete", label: "Taux de pauvreté (%)", color: "text-emerald-400", format: (v: any) => v ? `${v}%` : 'NC', max: 30, inverse: true },
+                      ]
+                    },
+                    {
+                      title: "Éducation",
+                      metrics: [
+                        { key: "education.bac", label: "Taux de réussite au bac (%)", color: "text-amber-400", format: (v: any) => v ? `${v}%` : 'NC', max: 100 },
+                        { key: "education.diplomesSup", label: "Diplômés du supérieur (%)", color: "text-amber-400", format: (v: any) => v ? `${v}%` : 'NC', max: 100 },
+                        { key: "education.decrochage", label: "Décrochage scolaire (%)", color: "text-amber-400", format: (v: any) => v ? `${v}%` : 'NC', max: 20, inverse: true },
+                      ]
+                    },
+                    {
+                      title: "Santé",
+                      metrics: [
+                        { key: "sante.medecins10k", label: "Médecins pour 10k hab.", color: "text-rose-400", format: (v: any) => v ? v : 'NC', max: 100 },
+                        { key: "sante.esperanceVie", label: "Espérance de vie (ans)", color: "text-rose-400", format: (v: any) => v ? v : 'NC', max: 90 },
+                        { key: "sante.scoreAPL", label: "Accessibilité Potentielle Localisée", color: "text-rose-400", format: (v: any) => v ? v : 'NC', max: 100 },
+                      ]
+                    },
+                    {
+                      title: "Sécurité",
+                      metrics: [
+                        { key: "securite.atteintesPersonnes", label: "Atteintes personnes / 1000", color: "text-indigo-400", format: (v: any) => v ? v : 'NC', max: 50, inverse: true },
+                        { key: "securite.atteintesBiens", label: "Atteintes biens / 1000", color: "text-indigo-400", format: (v: any) => v ? v : 'NC', max: 100, inverse: true },
+                      ]
+                    },
+                    {
+                      title: "Logement",
+                      metrics: [
+                        { key: "logement.prixM2", label: "Prix moyen au m²", color: "text-orange-400", format: (v: any) => v ? `${v.toLocaleString('fr-FR')} €` : 'NC', max: 15000, inverse: true },
+                        { key: "logement.logementsSociaux", label: "Logements sociaux (%)", color: "text-orange-400", format: (v: any) => v ? `${v}%` : 'NC', max: 100 },
+                        { key: "logement.proprietaires", label: "Propriétaires (%)", color: "text-orange-400", format: (v: any) => v ? `${v}%` : 'NC', max: 100 },
+                      ]
+                    },
+                    {
+                      title: "Finances Locales",
+                      metrics: [
+                        { key: "finances.budgetHabitant", label: "Budget par habitant", color: "text-teal-400", format: (v: any) => v ? `${v} €` : 'NC', max: 5000 },
+                        { key: "finances.endettement", label: "Taux d'endettement (%)", color: "text-teal-400", format: (v: any) => v ? `${v}%` : 'NC', max: 150, inverse: true },
+                        { key: "finances.investissement", label: "Part investissement (%)", color: "text-teal-400", format: (v: any) => v ? `${v}%` : 'NC', max: 100 },
+                      ]
+                    },
+                    {
+                      title: "Environnement",
+                      metrics: [
+                        { key: "environnement.qualiteAir", label: "Indice qualité air (0-100)", color: "text-cyan-400", format: (v: any) => v ? v : 'NC', max: 100 },
+                        { key: "environnement.surfaceNaturelle", label: "Surface naturelle (%)", color: "text-cyan-400", format: (v: any) => v ? `${v}%` : 'NC', max: 100 },
+                      ]
+                    }
+                  ].map((category, catIdx) => (
+                    <div key={catIdx} className="space-y-8">
+                      <h4 className="text-xl font-bold border-b border-white/10 pb-4 text-white/80">{category.title}</h4>
+                      <div className="space-y-8">
+                        {category.metrics.map((metric, mIdx) => {
+                          const getVal = (data: any, path: string) => {
+                            if (!data) return null;
+                            return path.split('.').reduce((obj, key) => (obj && obj[key] !== 'undefined') ? obj[key] : null, data);
+                          };
+                          
+                          const valA = getVal(sideA?.data, metric.key);
+                          const valB = getVal(sideB?.data, metric.key);
+                          
+                          // Determine winner (A, B, or none)
+                          let winner = null;
+                          if (valA !== null && valB !== null) {
+                            if (valA > valB) winner = metric.inverse ? 'B' : 'A';
+                            else if (valB > valA) winner = metric.inverse ? 'A' : 'B';
+                          }
+
+                          const renderBar = (val: any, max: number, isRight: boolean) => {
+                            if (val === null) return null;
+                            const percent = Math.min((val / max) * 100, 100);
+                            return (
+                              <motion.div 
+                                initial={{ width: 0 }}
+                                animate={{ width: `${percent}%` }}
+                                className={`h-full ${isRight ? 'rounded-r-full bg-gradient-to-r' : 'rounded-l-full bg-gradient-to-l'} ${metric.color.replace('text-', 'from-').replace('400', '500')} to-transparent opacity-80`}
+                              />
+                            );
+                          };
+
+                          return (
+                            <div key={mIdx} className="space-y-2">
+                              <div className="flex items-center justify-between text-xs">
+                                <div className={`flex-1 text-right font-bold ${winner === 'A' ? 'text-amber-400' : 'text-white/60'}`}>
+                                  {metric.format(valA)}
+                                </div>
+                                <div className={`flex-[2] text-center font-black uppercase tracking-widest text-white/40 ${metric.color}`}>
+                                  {metric.label}
+                                </div>
+                                <div className={`flex-1 text-left font-bold ${winner === 'B' ? 'text-amber-400' : 'text-white/60'}`}>
+                                  {metric.format(valB)}
+                                </div>
+                              </div>
+                              <div className="relative h-2 bg-white/5 rounded-full overflow-hidden flex">
+                                <div className="absolute inset-0 flex items-center justify-center opacity-10">
+                                  <div className="w-px h-full bg-white/20" />
+                                </div>
+                                <div className="flex-1 flex justify-end pr-[1px]">
+                                  {renderBar(valA, metric.max, false)}
+                                </div>
+                                <div className="flex-1 pl-[1px]">
+                                  {renderBar(valB, metric.max, true)}
+                                </div>
+                              </div>
+                            </div>
+                          );
+                        })}
+                      </div>
+                    </div>
+                  ))}
+                  
+                  {/* Politique (Text only) */}
+                  <div className="space-y-8">
+                    <h4 className="text-xl font-bold border-b border-white/10 pb-4 text-white/80">Politique</h4>
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
+                      {/* Side A */}
+                      <div className="bg-white/5 rounded-2xl p-6 border border-white/10 space-y-4">
+                        <div className="text-center font-bold text-amber-500 mb-6 flex flex-col items-center gap-2">
+                          <span>{sideA?.name || "Territoire A"}</span>
+                          {sideA?.data.isEstimated && (
+                            <span className="px-2 py-1 bg-amber-500/20 text-amber-300 text-[9px] uppercase tracking-widest rounded-full border border-amber-500/30">
+                              Données estimées
+                            </span>
+                          )}
+                        </div>
+                        {sideA?.data.politique ? (
+                          <>
+                            <div>
+                              <div className="text-[10px] uppercase text-white/40 mb-1">Présidentielle 2022 (T1)</div>
+                              <div className="text-sm">{sideA.data.politique.pres2022T1}</div>
+                            </div>
+                            <div>
+                              <div className="text-[10px] uppercase text-white/40 mb-1">Présidentielle 2022 (T2)</div>
+                              <div className="text-sm">{sideA.data.politique.pres2022T2}</div>
+                            </div>
+                            <div>
+                              <div className="text-[10px] uppercase text-white/40 mb-1">Élu en place</div>
+                              <div className="text-sm">{sideA.data.politique.elu} {sideA.data.politique.eluDepuis && `(depuis ${sideA.data.politique.eluDepuis})`}</div>
+                            </div>
+                          </>
+                        ) : (
+                          <div className="text-center text-white/20 italic text-sm py-4">Données non disponibles</div>
+                        )}
+                      </div>
+                      
+                      {/* Side B */}
+                      <div className="bg-white/5 rounded-2xl p-6 border border-white/10 space-y-4">
+                        <div className="text-center font-bold text-amber-500 mb-6 flex flex-col items-center gap-2">
+                          <span>{sideB?.name || "Territoire B"}</span>
+                          {sideB?.data.isEstimated && (
+                            <span className="px-2 py-1 bg-amber-500/20 text-amber-300 text-[9px] uppercase tracking-widest rounded-full border border-amber-500/30">
+                              Données estimées
+                            </span>
+                          )}
+                        </div>
+                        {sideB?.data.politique ? (
+                          <>
+                            <div>
+                              <div className="text-[10px] uppercase text-white/40 mb-1">Présidentielle 2022 (T1)</div>
+                              <div className="text-sm">{sideB.data.politique.pres2022T1}</div>
+                            </div>
+                            <div>
+                              <div className="text-[10px] uppercase text-white/40 mb-1">Présidentielle 2022 (T2)</div>
+                              <div className="text-sm">{sideB.data.politique.pres2022T2}</div>
+                            </div>
+                            <div>
+                              <div className="text-[10px] uppercase text-white/40 mb-1">Élu en place</div>
+                              <div className="text-sm">{sideB.data.politique.elu} {sideB.data.politique.eluDepuis && `(depuis ${sideB.data.politique.eluDepuis})`}</div>
+                            </div>
+                          </>
+                        ) : (
+                          <div className="text-center text-white/20 italic text-sm py-4">Données non disponibles</div>
+                        )}
+                      </div>
+                    </div>
+                  </div>
                 </div>
               )}
             </div>

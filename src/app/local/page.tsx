@@ -504,9 +504,9 @@ function LocalPoliticsContent() {
     </main>
     
     <CommuneDetailPanel 
-      isOpen={!!selectedCommune} 
-      onClose={() => setSelectedCommune(null)} 
       commune={selectedCommune}
+      mayor={selectedCommune ? communeSearch.getMayor(selectedCommune.code) : null}
+      onClose={() => setSelectedCommune(null)} 
     />
     </>
   );

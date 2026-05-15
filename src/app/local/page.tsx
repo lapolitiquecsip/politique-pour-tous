@@ -15,6 +15,7 @@ import { getPremiumUrl } from "@/lib/utils";
 import { useCommuneSearch } from "@/lib/hooks/useCommuneSearch";
 import type { CommuneResult } from "@/lib/hooks/useCommuneSearch";
 import CommuneDetailPanel from "@/components/local/CommuneDetailPanel";
+import TerritoryDetailPanel from "@/components/local/TerritoryDetailPanel";
 import { REGIONS, DEPARTMENTS } from "@/lib/data/territories";
 
 // Featured cities shown by default
@@ -50,7 +51,11 @@ function LocalPoliticsContent() {
     if (userId && isPremium) {
       api.getUserSavedItems(userId).then(setSavedItems);
     }
-  }, [userId, isPremium]);
+    // Pre-load mayors DB to avoid "Données non disponibles" on direct clicks
+    communeSearch.ensureMayorsLoaded();
+  }, [userId, isPremium, communeSearch]);
+
+  const [selectedTerritory, setSelectedTerritory] = useState<any | null>(null);
 
   useEffect(() => {
     const code = searchParams.get('code');
@@ -260,7 +265,7 @@ function LocalPoliticsContent() {
                         <h3 className="text-2xl font-staatliches uppercase tracking-wide">Villes à la Une</h3>
                         <div className="flex items-center gap-2 text-rose-600 font-black text-[10px] uppercase tracking-widest">
                           <span className="w-2 h-2 rounded-full bg-rose-600" />
-                          Mise à jour 2024
+                          Mise à jour 2026
                         </div>
                       </div>
                       <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
@@ -335,7 +340,8 @@ function LocalPoliticsContent() {
                       animate={{ opacity: 1, y: 0 }}
                       viewport={{ once: true }}
                       transition={{ delay: idx * 0.06 }}
-                      className="group bg-white rounded-[2.5rem] border border-slate-200 overflow-hidden hover:shadow-2xl transition-all duration-500"
+                      onClick={() => setSelectedTerritory({ ...item, type: activeTab === 'region' ? 'region' : 'department' })}
+                      className="group bg-white rounded-[2.5rem] border border-slate-200 overflow-hidden hover:shadow-2xl transition-all duration-500 cursor-pointer"
                     >
                       {item.image && (
                         <div className="relative h-48 overflow-hidden">
@@ -420,13 +426,16 @@ function LocalPoliticsContent() {
                             <p className="font-bold text-slate-900">{item.party}</p>
                           </div>
                         </div>
-                        <Link 
-                          href={activeTab === 'region' ? `/local/comparateur?id=${item.id}&type=region` : `/local/comparateur?id=${item.id}&type=department`}
+                        <button 
+                          onClick={(e) => {
+                            e.stopPropagation();
+                            setSelectedTerritory({ ...item, type: activeTab === 'region' ? 'region' : 'department' });
+                          }}
                           className="w-full py-4 px-6 bg-slate-900 text-white rounded-2xl font-staatliches uppercase tracking-wide flex items-center justify-center gap-3 hover:bg-rose-600 transition-all hover:scale-[1.02] active:scale-[0.98]"
                         >
                           Analyser les performances
                           <ArrowRight size={18} />
-                        </Link>
+                        </button>
                       </div>
                     </motion.div>
                   ))}
@@ -507,6 +516,11 @@ function LocalPoliticsContent() {
       commune={selectedCommune}
       mayor={selectedCommune ? communeSearch.getMayor(selectedCommune.code) : null}
       onClose={() => setSelectedCommune(null)} 
+    />
+
+    <TerritoryDetailPanel 
+      territory={selectedTerritory}
+      onClose={() => setSelectedTerritory(null)}
     />
     </>
   );

@@ -8,7 +8,7 @@ import {
 } from "lucide-react";
 import Link from "next/link";
 import { useCommuneSearch } from "@/lib/hooks/useCommuneSearch";
-import { REGIONS, DEPARTMENTS } from "@/lib/data/territories";
+// Data is now fetched from the backend API
 
 interface SelectedTerritory {
   id: string;

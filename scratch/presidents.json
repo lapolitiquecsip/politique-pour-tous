@@ -1,624 +1,751 @@
-export const REGIONS = [
-  { id: "11", name: "Île-de-France", president: "Valérie Pécresse", party: "LR", image: "/images/regions/ile_de_france.png", budget2026: "5.4 Md€" },
-  { id: "84", name: "Auvergne-Rhône-Alpes", president: "Fabrice Pannekoucke", party: "LR", image: "/images/regions/auvergne_rhone_alpes.png", budget2026: "4.2 Md€" },
-  { id: "32", name: "Hauts-de-France", president: "Xavier Bertrand", party: "LR", image: "/images/regions/hauts_de_france.png", budget2026: "5.2 Md€" },
-  { id: "75", name: "Nouvelle-Aquitaine", president: "Alain Rousset", party: "PS", image: "/images/regions/nouvelle_aquitaine.png", budget2026: "3.8 Md€" },
-  { id: "76", name: "Occitanie", president: "Carole Delga", party: "PS", image: "/images/regions/occitanie.png", budget2026: "3.54 Md€" },
-  { id: "44", name: "Grand Est", president: "Franck Leroy", party: "LR", image: "/images/regions/grand_est.png", budget2026: "3.6 Md€" },
-  { id: "93", name: "Provence-Alpes-Côte d'Azur", president: "Renaud Muselier", party: "LR", image: "/images/regions/paca.png", budget2026: "3.1 Md€" },
-  { id: "52", name: "Pays de la Loire", president: "Christelle Morançais", party: "LR", image: "/images/regions/pays_de_la_loire.png", budget2026: "2.3 Md€" },
-  { id: "28", name: "Normandie", president: "Hervé Morin", party: "LC", image: "/images/regions/normandie.png", budget2026: "2.1 Md€" },
-  { id: "53", name: "Bretagne", president: "Loïg Chesnais-Girard", party: "PS", image: "/images/regions/bretagne.png", budget2026: "1.9 Md€" },
-  { id: "27", name: "Bourgogne-Franche-Comté", president: "Marie-Guite Dufay", party: "PS", image: "/images/regions/bourgogne_franche_comte.png", budget2026: "1.8 Md€" },
-  { id: "24", name: "Centre-Val de Loire", president: "François Bonneau", party: "PS", image: "/images/regions/centre_val_de_loire.png", budget2026: "1.91 Md€" },
-  { id: "94", name: "Corse", president: "Gilles Simeoni", party: "Femu a Corsica", image: "/images/regions/corse.png", budget2026: "1.2 Md€" }
-];
-
-export const DEPARTMENTS = [
+[
   {
     "id": "01",
     "name": "Ain",
+    "type": "department",
     "president": "Jean DEGUERRY",
     "party": "N/A"
   },
   {
     "id": "02",
     "name": "Aisne",
+    "type": "department",
     "president": "Nicolas FRICOTEAUX",
     "party": "N/A"
   },
   {
     "id": "03",
     "name": "Allier",
+    "type": "department",
     "president": "Claude RIBOULET",
     "party": "N/A"
   },
   {
     "id": "04",
-    "name": "Alpes-de-Haute-Provence",
+    "name": "Alpes-De-Haute-Provence",
+    "type": "department",
     "president": "Eliane BARREILLE",
     "party": "N/A"
   },
   {
     "id": "05",
     "name": "Hautes-Alpes",
+    "type": "department",
     "president": "Jean-Marie BERNARD",
     "party": "N/A"
   },
   {
     "id": "06",
     "name": "Alpes-Maritimes",
+    "type": "department",
     "president": "Charles Ange GINESY",
     "party": "N/A"
   },
   {
     "id": "07",
     "name": "Ardèche",
+    "type": "department",
     "president": "Olivier AMRANE",
     "party": "N/A"
   },
   {
     "id": "08",
     "name": "Ardennes",
+    "type": "department",
     "president": "Noël BOURGEOIS",
     "party": "N/A"
   },
   {
     "id": "09",
     "name": "Ariège",
+    "type": "department",
     "president": "Christine TEQUI",
     "party": "N/A"
   },
   {
     "id": "10",
     "name": "Aube",
+    "type": "department",
     "president": "Philippe DALLEMAGNE",
     "party": "N/A"
   },
   {
     "id": "11",
     "name": "Aude",
+    "type": "department",
     "president": "Hélène SANDRAGNÉ",
     "party": "N/A"
   },
   {
     "id": "12",
     "name": "Aveyron",
+    "type": "department",
     "president": "Arnaud VIALA",
     "party": "N/A"
   },
   {
     "id": "13",
-    "name": "Bouches-du-Rhône",
+    "name": "Bouches-Du-Rhône",
+    "type": "department",
     "president": "Martine VASSAL",
     "party": "N/A"
   },
   {
     "id": "14",
     "name": "Calvados",
+    "type": "department",
     "president": "Jean-Léonce DUPONT",
     "party": "N/A"
   },
   {
     "id": "15",
     "name": "Cantal",
+    "type": "department",
     "president": "Bruno FAURE",
-    "party": "N/A"
-  },
-  {
-    "id": "16",
-    "name": "Charente",
-    "president": "Président du Conseil",
     "party": "N/A"
   },
   {
     "id": "17",
     "name": "Charente-Maritime",
+    "type": "department",
     "president": "Sylvie MARCILLY",
     "party": "N/A"
   },
   {
     "id": "18",
     "name": "Cher",
+    "type": "department",
     "president": "Jacques FLEURY",
     "party": "N/A"
   },
   {
     "id": "19",
     "name": "Corrèze",
+    "type": "department",
     "president": "Pascal COSTE",
     "party": "N/A"
   },
   {
     "id": "21",
-    "name": "Côte-d'Or",
+    "name": "Côte-D'Or",
+    "type": "department",
     "president": "François SAUVADET",
     "party": "N/A"
   },
   {
     "id": "22",
-    "name": "Côtes-d'Armor",
+    "name": "Côtes-D'Armor",
+    "type": "department",
     "president": "Christian COAIL",
     "party": "N/A"
   },
   {
     "id": "23",
     "name": "Creuse",
+    "type": "department",
     "president": "Valérie SIMONET",
     "party": "N/A"
   },
   {
     "id": "24",
     "name": "Dordogne",
+    "type": "department",
     "president": "Germinal PEIRO",
     "party": "N/A"
   },
   {
     "id": "25",
     "name": "Doubs",
+    "type": "department",
     "president": "Christine BOUQUIN",
-    "party": "N/A"
-  },
-  {
-    "id": "26",
-    "name": "Drôme",
-    "president": "Président du Conseil",
     "party": "N/A"
   },
   {
     "id": "27",
     "name": "Eure",
+    "type": "department",
     "president": "Alexandre RASSAËRT",
     "party": "N/A"
   },
   {
     "id": "28",
-    "name": "Eure-et-Loir",
+    "name": "Eure-Et-Loir",
+    "type": "department",
     "president": "Christophe LE DORVEN",
     "party": "N/A"
   },
   {
     "id": "29",
     "name": "Finistère",
+    "type": "department",
     "president": "Maël DE CALAN",
-    "party": "N/A"
-  },
-  {
-    "id": "2A",
-    "name": "Corse-du-Sud",
-    "president": "Président du Conseil",
-    "party": "N/A"
-  },
-  {
-    "id": "2B",
-    "name": "Haute-Corse",
-    "president": "Président du Conseil",
     "party": "N/A"
   },
   {
     "id": "30",
     "name": "Gard",
+    "type": "department",
     "president": "Françoise LAURENT-PERRIGOT",
     "party": "N/A"
   },
   {
     "id": "31",
     "name": "Haute-Garonne",
+    "type": "department",
     "president": "Sebastien VINCINI",
     "party": "N/A"
   },
   {
     "id": "32",
     "name": "Gers",
+    "type": "department",
     "president": "Philippe DUPOUY",
     "party": "N/A"
   },
   {
     "id": "33",
     "name": "Gironde",
+    "type": "department",
     "president": "Jean-Luc GLEYZE",
     "party": "N/A"
   },
   {
     "id": "34",
     "name": "Hérault",
+    "type": "department",
     "president": "Kléber MESQUIDA",
     "party": "N/A"
   },
   {
     "id": "35",
-    "name": "Ille-et-Vilaine",
+    "name": "Ille-Et-Vilaine",
+    "type": "department",
     "president": "Jean-Luc CHENUT",
     "party": "N/A"
   },
   {
     "id": "36",
     "name": "Indre",
+    "type": "department",
     "president": "Marc FLEURET",
     "party": "N/A"
   },
   {
     "id": "37",
-    "name": "Indre-et-Loire",
+    "name": "Indre-Et-Loire",
+    "type": "department",
     "president": "Nadège ARNAULT",
     "party": "N/A"
   },
   {
     "id": "38",
     "name": "Isère",
+    "type": "department",
     "president": "Jean-Pierre BARBIER",
     "party": "N/A"
   },
   {
     "id": "39",
     "name": "Jura",
+    "type": "department",
     "president": "Gérôme FASSENET",
     "party": "N/A"
   },
   {
     "id": "40",
     "name": "Landes",
+    "type": "department",
     "president": "Xavier FORTINON",
     "party": "N/A"
   },
   {
     "id": "41",
-    "name": "Loir-et-Cher",
+    "name": "Loir-Et-Cher",
+    "type": "department",
     "president": "Philippe GOUET",
     "party": "N/A"
   },
   {
     "id": "42",
     "name": "Loire",
+    "type": "department",
     "president": "Georges ZIEGLER",
     "party": "N/A"
   },
   {
     "id": "43",
     "name": "Haute-Loire",
+    "type": "department",
     "president": "Marie-Agnès PETIT",
     "party": "N/A"
   },
   {
     "id": "44",
     "name": "Loire-Atlantique",
+    "type": "department",
     "president": "Michel MENARD",
     "party": "N/A"
   },
   {
     "id": "45",
     "name": "Loiret",
+    "type": "department",
     "president": "Marc GAUDET",
     "party": "N/A"
   },
   {
     "id": "46",
     "name": "Lot",
+    "type": "department",
     "president": "Serge RIGAL",
     "party": "N/A"
   },
   {
     "id": "47",
-    "name": "Lot-et-Garonne",
+    "name": "Lot-Et-Garonne",
+    "type": "department",
     "president": "Sophie BORDERIE",
     "party": "N/A"
   },
   {
     "id": "48",
     "name": "Lozère",
+    "type": "department",
     "president": "Laurent SUAU",
     "party": "N/A"
   },
   {
     "id": "49",
-    "name": "Maine-et-Loire",
+    "name": "Maine-Et-Loire",
+    "type": "department",
     "president": "Florence DABIN",
     "party": "N/A"
   },
   {
     "id": "50",
     "name": "Manche",
+    "type": "department",
     "president": "Jean MORIN",
     "party": "N/A"
   },
   {
     "id": "51",
     "name": "Marne",
+    "type": "department",
     "president": "Jean-Marc ROZE",
     "party": "N/A"
   },
   {
     "id": "52",
     "name": "Haute-Marne",
+    "type": "department",
     "president": "Nicolas LACROIX",
     "party": "N/A"
   },
   {
     "id": "53",
     "name": "Mayenne",
+    "type": "department",
     "president": "Olivier RICHEFOU",
     "party": "N/A"
   },
   {
     "id": "54",
-    "name": "Meurthe-et-Moselle",
+    "name": "Meurthe-Et-Moselle",
+    "type": "department",
     "president": "Chaynesse KHIROUNI",
     "party": "N/A"
   },
   {
     "id": "55",
     "name": "Meuse",
+    "type": "department",
     "president": "Jérôme DUMONT",
     "party": "N/A"
   },
   {
     "id": "56",
     "name": "Morbihan",
+    "type": "department",
     "president": "David LAPPARTIENT",
     "party": "N/A"
   },
   {
     "id": "57",
     "name": "Moselle",
+    "type": "department",
     "president": "Patrick WEITEN",
     "party": "N/A"
   },
   {
     "id": "58",
     "name": "Nièvre",
+    "type": "department",
     "president": "Fabien BAZIN",
     "party": "N/A"
   },
   {
     "id": "59",
     "name": "Nord",
+    "type": "department",
     "president": "Christian POIRET",
     "party": "N/A"
   },
   {
     "id": "60",
     "name": "Oise",
+    "type": "department",
     "president": "Nadège LEFEBVRE",
     "party": "N/A"
   },
   {
     "id": "61",
     "name": "Orne",
+    "type": "department",
     "president": "Christophe DE BALORRE",
     "party": "N/A"
   },
   {
     "id": "62",
-    "name": "Pas-de-Calais",
+    "name": "Pas-De-Calais",
+    "type": "department",
     "president": "Jean-Claude LEROY",
     "party": "N/A"
   },
   {
     "id": "63",
-    "name": "Puy-de-Dôme",
+    "name": "Puy-De-Dôme",
+    "type": "department",
     "president": "Lionel CHAUVIN",
     "party": "N/A"
   },
   {
     "id": "64",
     "name": "Pyrénées-Atlantiques",
+    "type": "department",
     "president": "Jean-Jacques LASSERRE",
     "party": "N/A"
   },
   {
     "id": "65",
     "name": "Hautes-Pyrénées",
+    "type": "department",
     "president": "Michel PÉLIEU",
     "party": "N/A"
   },
   {
     "id": "66",
     "name": "Pyrénées-Orientales",
+    "type": "department",
     "president": "Hermeline MALHERBE",
-    "party": "N/A"
-  },
-  {
-    "id": "67",
-    "name": "Bas-Rhin",
-    "president": "Président du Conseil",
-    "party": "N/A"
-  },
-  {
-    "id": "68",
-    "name": "Haut-Rhin",
-    "president": "Président du Conseil",
     "party": "N/A"
   },
   {
     "id": "69",
     "name": "Rhône",
+    "type": "department",
     "president": "Christophe GUILLOTEAU",
+    "party": "N/A"
+  },
+  {
+    "id": "6AE",
+    "name": "Collectivité Européenne d'Alsace",
+    "type": "department",
+    "president": "Frédéric BIERRY",
     "party": "N/A"
   },
   {
     "id": "70",
     "name": "Haute-Saône",
+    "type": "department",
     "president": "Laurent SEGUIN",
     "party": "N/A"
   },
   {
     "id": "71",
-    "name": "Saône-et-Loire",
+    "name": "Saône-Et-Loire",
+    "type": "department",
     "president": "André ACCARY",
     "party": "N/A"
   },
   {
     "id": "72",
     "name": "Sarthe",
+    "type": "department",
     "president": "Dominique LE MENER",
     "party": "N/A"
   },
   {
     "id": "73",
     "name": "Savoie",
+    "type": "department",
     "president": "Hervé GAYMARD",
     "party": "N/A"
   },
   {
     "id": "74",
     "name": "Haute-Savoie",
+    "type": "department",
     "president": "Martial SADDIER",
-    "party": "N/A"
-  },
-  {
-    "id": "75",
-    "name": "Paris",
-    "president": "Président du Conseil",
     "party": "N/A"
   },
   {
     "id": "76",
     "name": "Seine-Maritime",
+    "type": "department",
     "president": "Bertrand BELLANGER",
     "party": "N/A"
   },
   {
     "id": "77",
-    "name": "Seine-et-Marne",
+    "name": "Seine-Et-Marne",
+    "type": "department",
     "president": "Jean-François PARIGI",
     "party": "N/A"
   },
   {
     "id": "78",
     "name": "Yvelines",
+    "type": "department",
     "president": "Pierre BEDIER",
     "party": "N/A"
   },
   {
     "id": "79",
     "name": "Deux-Sèvres",
+    "type": "department",
     "president": "Coralie DENOUES",
     "party": "N/A"
   },
   {
     "id": "80",
     "name": "Somme",
+    "type": "department",
     "president": "Christelle HIVER",
     "party": "N/A"
   },
   {
     "id": "81",
     "name": "Tarn",
+    "type": "department",
     "president": "Christophe RAMOND",
     "party": "N/A"
   },
   {
     "id": "82",
-    "name": "Tarn-et-Garonne",
+    "name": "Tarn-Et-Garonne",
+    "type": "department",
     "president": "Michel WEILL",
     "party": "N/A"
   },
   {
     "id": "83",
     "name": "Var",
+    "type": "department",
     "president": "Jean-Louis MASSON",
     "party": "N/A"
   },
   {
     "id": "84",
     "name": "Vaucluse",
+    "type": "department",
     "president": "Dominique SANTONI",
     "party": "N/A"
   },
   {
     "id": "85",
     "name": "Vendée",
+    "type": "department",
     "president": "Alain LEBOEUF",
     "party": "N/A"
   },
   {
     "id": "86",
     "name": "Vienne",
+    "type": "department",
     "president": "Alain PICHON",
     "party": "N/A"
   },
   {
     "id": "87",
     "name": "Haute-Vienne",
+    "type": "department",
     "president": "Jean-Claude LEBLOIS",
     "party": "N/A"
   },
   {
     "id": "88",
     "name": "Vosges",
+    "type": "department",
     "president": "François VANNSON",
     "party": "N/A"
   },
   {
     "id": "89",
     "name": "Yonne",
+    "type": "department",
     "president": "Grégory DORTE",
     "party": "N/A"
   },
   {
     "id": "90",
-    "name": "Territoire de Belfort",
+    "name": "Territoire De Belfort",
+    "type": "department",
     "president": "Florian BOUQUET",
     "party": "N/A"
   },
   {
     "id": "91",
     "name": "Essonne",
+    "type": "department",
     "president": "François DUROVRAY",
     "party": "N/A"
   },
   {
     "id": "92",
-    "name": "Hauts-de-Seine",
+    "name": "Hauts-De-Seine",
+    "type": "department",
     "president": "Georges SIFFREDI",
     "party": "N/A"
   },
   {
     "id": "93",
     "name": "Seine-Saint-Denis",
+    "type": "department",
     "president": "Stéphane TROUSSEL",
     "party": "N/A"
   },
   {
     "id": "94",
-    "name": "Val-de-Marne",
+    "name": "Val-De-Marne",
+    "type": "department",
     "president": "Olivier CAPITANIO",
     "party": "N/A"
   },
   {
     "id": "95",
-    "name": "Val-d'Oise",
+    "name": "Val-D'Oise",
+    "type": "department",
     "president": "Marie-Christine CAVECCHI",
     "party": "N/A"
   },
   {
     "id": "971",
     "name": "Guadeloupe",
+    "type": "department",
     "president": "Guy LOSBAR",
-    "party": "N/A"
-  },
-  {
-    "id": "972",
-    "name": "Martinique",
-    "president": "Président du Conseil",
-    "party": "N/A"
-  },
-  {
-    "id": "973",
-    "name": "Guyane",
-    "president": "Président du Conseil",
     "party": "N/A"
   },
   {
     "id": "974",
     "name": "La Réunion",
+    "type": "department",
     "president": "Cyrille MELCHIOR",
     "party": "N/A"
   },
   {
     "id": "976",
     "name": "Mayotte",
+    "type": "department",
     "president": "Ben Issa OUSSENI",
     "party": "N/A"
+  },
+  {
+    "id": "01",
+    "name": "Guadeloupe",
+    "type": "region",
+    "president": "Ary CHALUS",
+    "party": "N/A"
+  },
+  {
+    "id": "04",
+    "name": "La Réunion",
+    "type": "region",
+    "president": "Huguette BELLO",
+    "party": "N/A"
+  },
+  {
+    "id": "11",
+    "name": "Île-De-France",
+    "type": "region",
+    "president": "Valérie PÉCRESSE",
+    "party": "N/A"
+  },
+  {
+    "id": "24",
+    "name": "Centre-Val De Loire",
+    "type": "region",
+    "president": "François BONNEAU",
+    "party": "N/A"
+  },
+  {
+    "id": "27",
+    "name": "Bourgogne-Franche-Comté",
+    "type": "region",
+    "president": "Jérôme DURAIN",
+    "party": "N/A"
+  },
+  {
+    "id": "28",
+    "name": "Normandie",
+    "type": "region",
+    "president": "Hervé MORIN",
+    "party": "N/A"
+  },
+  {
+    "id": "32",
+    "name": "Hauts-De-France",
+    "type": "region",
+    "president": "Xavier BERTRAND",
+    "party": "N/A"
+  },
+  {
+    "id": "44",
+    "name": "Grand Est",
+    "type": "region",
+    "president": "Franck LEROY",
+    "party": "N/A"
+  },
+  {
+    "id": "52",
+    "name": "Pays De La Loire",
+    "type": "region",
+    "president": "Christelle MORANÇAIS",
+    "party": "N/A"
+  },
+  {
+    "id": "53",
+    "name": "Bretagne",
+    "type": "region",
+    "president": "Loïg CHESNAIS-GIRARD",
+    "party": "N/A"
+  },
+  {
+    "id": "75",
+    "name": "Nouvelle-Aquitaine",
+    "type": "region",
+    "president": "Alain ROUSSET",
+    "party": "N/A"
+  },
+  {
+    "id": "76",
+    "name": "Occitanie",
+    "type": "region",
+    "president": "Carole DELGA",
+    "party": "N/A"
+  },
+  {
+    "id": "84",
+    "name": "Auvergne-Rhône-Alpes",
+    "type": "region",
+    "president": "Fabrice PANNEKOUCKE",
+    "party": "N/A"
+  },
+  {
+    "id": "93",
+    "name": "Provence-Alpes-Cote D'Azur",
+    "type": "region",
+    "president": "Renaud MUSELIER",
+    "party": "N/A"
   }
-];
+]

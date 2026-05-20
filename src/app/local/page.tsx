@@ -3,7 +3,7 @@
 import { motion, AnimatePresence } from "framer-motion";
 import { 
   MapPin, Users, Building2, TrendingUp, Search, ArrowRight, Vote,
-  History, Building, ChevronRight, Map, Layers, LayoutGrid, Lock, Loader2, Star
+  History, Building, ChevronRight, Map, Layers, LayoutGrid, Lock, Loader2, Star, Coins
 } from "lucide-react";
 import { useSearchParams } from "next/navigation";
 import { useState, useEffect, Suspense } from "react";
@@ -46,11 +46,15 @@ function LocalPoliticsContent() {
   const [showDropdown, setShowDropdown] = useState(false);
   const [savedItems, setSavedItems] = useState<any[]>([]);
   const [loadingSave, setLoadingSave] = useState<string | null>(null);
+  const [dynamicTerritories, setDynamicTerritories] = useState<any[]>([]);
 
   useEffect(() => {
     if (userId && isPremium) {
       api.getUserSavedItems(userId).then(setSavedItems);
     }
+    api.getTerritories().then(data => {
+      if (data && data.length > 0) setDynamicTerritories(data);
+    });
     // Pre-load mayors DB to avoid "Données non disponibles" on direct clicks
     communeSearch.ensureMayorsLoaded();
   }, [userId, isPremium, communeSearch]);
@@ -120,9 +124,17 @@ function LocalPoliticsContent() {
   const filteredItems = (() => {
     const s = search.toLowerCase();
     if (activeTab === "region") {
-      return REGIONS.filter(r => r.name.toLowerCase().includes(s) || (r.president && r.president.toLowerCase().includes(s)));
+      const base = REGIONS.map(r => {
+        const dyn = dynamicTerritories.find(d => d.id === r.id && d.type === 'region');
+        return dyn ? { ...r, ...dyn } : r;
+      });
+      return base.filter(r => r.name.toLowerCase().includes(s) || (r.president && r.president.toLowerCase().includes(s)));
     } else if (activeTab === "departement") {
-      return DEPARTMENTS.filter(d => d.name.toLowerCase().includes(s) || (d.president && d.president.toLowerCase().includes(s)));
+      const base = DEPARTMENTS.map(d => {
+        const dyn = dynamicTerritories.find(dt => dt.id === d.id && dt.type === 'department');
+        return dyn ? { ...d, ...dyn } : d;
+      });
+      return base.filter(d => d.name.toLowerCase().includes(s) || (d.president && d.president.toLowerCase().includes(s)));
     }
     return []; // communes handled separately
   })();
@@ -373,7 +385,7 @@ function LocalPoliticsContent() {
 
                           <div className="absolute bottom-4 left-6">
                             <p className="text-rose-400 font-black text-[9px] uppercase tracking-widest mb-1">{activeTab === 'region' ? 'Région' : 'Département'}</p>
-                            <h4 className="text-white font-bold text-xl leading-tight">{item.name}</h4>
+                            <h4 className="text-white font-bold text-xl leading-tight">{item.name} {activeTab === 'departement' && `(${item.id})`}</h4>
                           </div>
                         </div>
                       )}
@@ -403,7 +415,7 @@ function LocalPoliticsContent() {
                           </div>
                           <div>
                             <p className="text-rose-200 font-black text-[9px] uppercase tracking-widest mb-1">{activeTab === 'region' ? 'Région' : 'Département'}</p>
-                            <h4 className="text-white font-bold text-xl leading-tight">{item.name}</h4>
+                            <h4 className="text-white font-bold text-xl leading-tight">{item.name} {activeTab === 'departement' && `(${item.id})`}</h4>
                           </div>
                         </div>
                       )}
@@ -426,6 +438,17 @@ function LocalPoliticsContent() {
                             <p className="font-bold text-slate-900">{item.party}</p>
                           </div>
                         </div>
+                        {item.budget2026 && (
+                          <div className="flex items-center gap-4">
+                            <div className="w-12 h-12 rounded-2xl bg-slate-50 flex items-center justify-center text-rose-600">
+                              <Coins size={20} />
+                            </div>
+                            <div>
+                              <p className="text-[10px] font-black uppercase tracking-widest text-slate-400">Budget 2026</p>
+                              <p className="font-bold text-slate-900">{item.budget2026}</p>
+                            </div>
+                          </div>
+                        )}
                         <button 
                           onClick={(e) => {
                             e.stopPropagation();
@@ -456,15 +479,22 @@ function LocalPoliticsContent() {
                  </div>
                  
                  <div className="space-y-4">
+                    <div className="bg-white/5 p-5 rounded-2xl border border-white/10 opacity-60">
+                      <p className="text-slate-400 font-black text-[9px] uppercase tracking-widest mb-1 flex items-center gap-2">
+                        <span className="w-1 h-1 rounded-full bg-slate-400" /> Mars 2026
+                      </p>
+                      <p className="font-bold text-lg mb-1 line-through opacity-50">Élections Municipales</p>
+                      <p className="text-xs text-white/40 italic">Scrutin terminé • Nouveaux maires installés.</p>
+                    </div>
                     <div className="bg-white/5 p-5 rounded-2xl border border-white/10">
-                      <p className="text-rose-400 font-black text-[9px] uppercase tracking-widest mb-1">Mars 2026</p>
-                      <p className="font-bold text-lg mb-1">Élections Municipales</p>
-                      <p className="text-sm text-white/60">Renouvellement de tous les maires de France.</p>
+                      <p className="text-rose-400 font-black text-[9px] uppercase tracking-widest mb-1">Mai - Juin 2026</p>
+                      <p className="font-bold text-lg mb-1">Installation des EPCI</p>
+                      <p className="text-sm text-white/60">Élection des présidents de communautés de communes et métropoles.</p>
                     </div>
                     <div className="bg-white/5 p-5 rounded-2xl border border-white/10 opacity-50">
                       <p className="text-slate-400 font-black text-[9px] uppercase tracking-widest mb-1">Mars 2028</p>
-                      <p className="font-bold text-lg mb-1">Élections Régionales</p>
-                      <p className="text-sm text-white/60">Renouvellement des conseils régionaux.</p>
+                      <p className="font-bold text-lg mb-1">Régionales & Départementales</p>
+                      <p className="text-sm text-white/60">Renouvellement des conseils régionaux et départementaux.</p>
                     </div>
                  </div>
                </div>

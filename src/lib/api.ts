@@ -109,6 +109,19 @@ export const api = {
     if (error) { console.error(error); return []; }
     return data || [];
   },
+  
+  getTerritories: async (type?: 'region' | 'department') => {
+    let query = supabase.from('territories').select('*').order('name');
+    if (type) {
+      query = query.eq('type', type);
+    }
+    const { data, error } = await query;
+    if (error) {
+      console.warn("Territories table not found or empty, falling back to local data.");
+      return [];
+    }
+    return data || [];
+  },
 
   getPolitician: async (id: string) => {
     const { data, error } = await supabase.from('politicians').select('*').eq('id', id).single();

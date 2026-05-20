@@ -127,6 +127,14 @@ export default function TerritoryDetailPanel({ territory, onClose }: TerritoryDe
   }, [territory, API_URL]);
 
   useEffect(() => {
+    const handleEsc = (e: KeyboardEvent) => {
+      if (e.key === 'Escape') onClose();
+    };
+    window.addEventListener('keydown', handleEsc);
+    return () => window.removeEventListener('keydown', handleEsc);
+  }, [onClose]);
+
+  useEffect(() => {
     if (!territory || !userId || !isPremium) return;
 
     const checkSaved = async () => {
@@ -156,8 +164,6 @@ export default function TerritoryDetailPanel({ territory, onClose }: TerritoryDe
     }
   };
 
-  if (!territory) return null;
-
   return (
     <AnimatePresence>
       {territory && (
@@ -180,13 +186,14 @@ export default function TerritoryDetailPanel({ territory, onClose }: TerritoryDe
             >
               {/* Header */}
               <div className="relative bg-slate-900 p-8 pb-12 shrink-0 overflow-hidden">
-                <div className="absolute top-0 right-0 w-64 h-64 bg-rose-600/20 blur-3xl rounded-full" />
+                <div className="absolute top-0 right-0 w-64 h-64 bg-rose-600/20 blur-3xl rounded-full pointer-events-none" />
                 
-                <div className="absolute top-6 right-6 flex gap-2">
+                <div className="absolute top-6 right-6 flex gap-2 z-[60]">
                   <button
+                    data-testid="panel-favorite-btn"
                     onClick={handleToggleSave}
                     disabled={loadingSave}
-                    className={`w-10 h-10 rounded-full backdrop-blur-md flex items-center justify-center transition-all ${
+                    className={`w-10 h-10 rounded-full backdrop-blur-md flex items-center justify-center transition-all cursor-pointer ${
                       isSaved 
                         ? "bg-amber-400 text-slate-900 shadow-lg shadow-amber-400/20" 
                         : "bg-white/10 text-white hover:bg-white/20"
@@ -195,8 +202,12 @@ export default function TerritoryDetailPanel({ territory, onClose }: TerritoryDe
                     {loadingSave ? <Loader2 size={18} className="animate-spin" /> : <Star size={18} className={isSaved ? "fill-current" : ""} />}
                   </button>
                   <button
-                    onClick={onClose}
-                    className="w-10 h-10 rounded-full bg-white/10 backdrop-blur-md flex items-center justify-center text-white hover:bg-white/20 transition-colors"
+                    data-testid="panel-close-btn"
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      onClose();
+                    }}
+                    className="w-10 h-10 rounded-full bg-white/10 backdrop-blur-md flex items-center justify-center text-white hover:bg-white/20 transition-all cursor-pointer z-[70]"
                   >
                     <X size={20} />
                   </button>

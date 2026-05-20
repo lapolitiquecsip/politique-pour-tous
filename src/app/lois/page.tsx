@@ -46,7 +46,7 @@ export default function LawsPage() {
 
             <h1 className="text-6xl md:text-[8.5rem] font-staatliches uppercase tracking-tight leading-none mb-10">
               <span className="text-slate-900 block md:inline">Tout sur les </span>
-              <span className="italic bg-gradient-to-br from-red-600 via-red-500 to-rose-400 bg-clip-text text-transparent block md:inline">Lois</span>
+              <span className="italic bg-gradient-to-br from-red-600 via-red-500 to-rose-400 bg-clip-text text-transparent block md:inline pr-4">Lois</span>
             </h1>
             
             <p className="text-lg md:text-2xl text-slate-500 max-w-3xl mx-auto leading-relaxed font-medium italic tracking-tight">

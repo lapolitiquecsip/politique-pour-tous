@@ -17,6 +17,7 @@ import type { CommuneResult } from "@/lib/hooks/useCommuneSearch";
 import CommuneDetailPanel from "@/components/local/CommuneDetailPanel";
 import TerritoryDetailPanel from "@/components/local/TerritoryDetailPanel";
 import { REGIONS, DEPARTMENTS } from "@/lib/data/territories";
+import { StaggerTestimonials } from "@/components/ui/stagger-testimonials";
 
 // Featured cities shown by default
 const FEATURED_CITIES = [
@@ -344,124 +345,12 @@ function LocalPoliticsContent() {
 
               {/* REGION / DEPARTMENT TAB: Card grid */}
               {activeTab !== 'commune' && (
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
-                  {filteredItems.map((item: any, idx: number) => (
-                    <motion.div
-                      key={`${activeTab}-${item.id || idx}`}
-                      initial={{ opacity: 0, y: 20 }}
-                      animate={{ opacity: 1, y: 0 }}
-                      viewport={{ once: true }}
-                      transition={{ delay: idx * 0.06 }}
-                      onClick={() => setSelectedTerritory({ ...item, type: activeTab === 'region' ? 'region' : 'department' })}
-                      className="group bg-white rounded-[2.5rem] border border-slate-200 overflow-hidden hover:shadow-2xl transition-all duration-500 cursor-pointer"
-                    >
-                      {item.image && (
-                        <div className="relative h-48 overflow-hidden">
-                          <img src={item.image} alt={item.name} className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-700" />
-                          <div className="absolute inset-0 bg-gradient-to-t from-slate-950/80 to-transparent" />
-                          
-                          <div className="absolute top-4 right-4 flex gap-2">
-                            {isPremium && (
-                              <button
-                                onClick={(e) => {
-                                  e.stopPropagation();
-                                  toggleFavorite(item.name, activeTab === 'region' ? 'region' : 'department');
-                                }}
-                                disabled={loadingSave === item.name}
-                                className={`w-8 h-8 rounded-full backdrop-blur-md flex items-center justify-center transition-all ${
-                                  savedItems.some(i => i.item_id === item.name && i.item_type === (activeTab === 'region' ? 'region' : 'department'))
-                                    ? "bg-amber-400 text-slate-900" 
-                                    : "bg-white/20 text-white hover:bg-white/30"
-                                }`}
-                              >
-                                {loadingSave === item.name ? (
-                                  <Loader2 size={14} className="animate-spin" />
-                                ) : (
-                                  <Star size={14} className={savedItems.some(i => i.item_id === item.name && i.item_type === (activeTab === 'region' ? 'region' : 'department')) ? "fill-current" : ""} />
-                                )}
-                              </button>
-                            )}
-                          </div>
-
-                          <div className="absolute bottom-4 left-6">
-                            <p className="text-rose-400 font-black text-[9px] uppercase tracking-widest mb-1">{activeTab === 'region' ? 'Région' : 'Département'}</p>
-                            <h4 className="text-white font-bold text-xl leading-tight">{item.name} {activeTab === 'departement' && `(${item.id})`}</h4>
-                          </div>
-                        </div>
-                      )}
-                      {!item.image && (
-                        <div className="relative h-28 bg-gradient-to-br from-rose-600 to-fuchsia-600 flex items-end p-6">
-                          <div className="absolute top-4 right-4 flex gap-2">
-                            {isPremium && (
-                              <button
-                                onClick={(e) => {
-                                  e.stopPropagation();
-                                  toggleFavorite(item.name, activeTab === 'region' ? 'region' : 'department');
-                                }}
-                                disabled={loadingSave === item.name}
-                                className={`w-8 h-8 rounded-full backdrop-blur-md flex items-center justify-center transition-all ${
-                                  savedItems.some(i => i.item_id === item.name && i.item_type === (activeTab === 'region' ? 'region' : 'department'))
-                                    ? "bg-amber-400 text-slate-900" 
-                                    : "bg-white/20 text-white hover:bg-white/30"
-                                }`}
-                              >
-                                {loadingSave === item.name ? (
-                                  <Loader2 size={14} className="animate-spin" />
-                                ) : (
-                                  <Star size={14} className={savedItems.some(i => i.item_id === item.name && i.item_type === (activeTab === 'region' ? 'region' : 'department')) ? "fill-current" : ""} />
-                                )}
-                              </button>
-                            )}
-                          </div>
-                          <div>
-                            <p className="text-rose-200 font-black text-[9px] uppercase tracking-widest mb-1">{activeTab === 'region' ? 'Région' : 'Département'}</p>
-                            <h4 className="text-white font-bold text-xl leading-tight">{item.name} {activeTab === 'departement' && `(${item.id})`}</h4>
-                          </div>
-                        </div>
-                      )}
-                      <div className="p-8 space-y-6">
-                        <div className="flex items-center gap-4">
-                          <div className="w-12 h-12 rounded-2xl bg-slate-50 flex items-center justify-center text-rose-600">
-                            <Users size={20} />
-                          </div>
-                          <div>
-                            <p className="text-[10px] font-black uppercase tracking-widest text-slate-400">Président</p>
-                            <p className="font-bold text-slate-900">{item.president}</p>
-                          </div>
-                        </div>
-                        <div className="flex items-center gap-4">
-                          <div className="w-12 h-12 rounded-2xl bg-slate-50 flex items-center justify-center text-rose-600">
-                            <Building2 size={20} />
-                          </div>
-                          <div>
-                            <p className="text-[10px] font-black uppercase tracking-widest text-slate-400">Parti Majoritaire</p>
-                            <p className="font-bold text-slate-900">{item.party}</p>
-                          </div>
-                        </div>
-                        {item.budget2026 && (
-                          <div className="flex items-center gap-4">
-                            <div className="w-12 h-12 rounded-2xl bg-slate-50 flex items-center justify-center text-rose-600">
-                              <Coins size={20} />
-                            </div>
-                            <div>
-                              <p className="text-[10px] font-black uppercase tracking-widest text-slate-400">Budget 2026</p>
-                              <p className="font-bold text-slate-900">{item.budget2026}</p>
-                            </div>
-                          </div>
-                        )}
-                        <button 
-                          onClick={(e) => {
-                            e.stopPropagation();
-                            setSelectedTerritory({ ...item, type: activeTab === 'region' ? 'region' : 'department' });
-                          }}
-                          className="w-full py-4 px-6 bg-slate-900 text-white rounded-2xl font-staatliches uppercase tracking-wide flex items-center justify-center gap-3 hover:bg-rose-600 transition-all hover:scale-[1.02] active:scale-[0.98]"
-                        >
-                          Analyser les performances
-                          <ArrowRight size={18} />
-                        </button>
-                      </div>
-                    </motion.div>
-                  ))}
+                <div className="w-full py-4">
+                  <StaggerTestimonials 
+                    items={filteredItems.map((item: any) => ({...item, type: activeTab === 'region' ? 'region' : 'department'}))} 
+                    onSelect={(t) => setSelectedTerritory(t)} 
+                    isPremium={isPremium}
+                  />
                 </div>
               )}
             </div>

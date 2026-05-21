@@ -14,23 +14,12 @@ async function run() {
   const metroGeojson = { type: 'FeatureCollection', features: metroFeatures };
 
   console.log('Generating SVG paths...');
-  // Fit size to 250x250 pixels
-  const projection = d3.geoMercator().fitSize([250, 250], metroGeojson);
-  const pathGen = d3.geoPath().projection(projection);
-  
   const paths = {};
   for (const feature of geojson.features) {
-    // Project each feature individually, but using the metropolitan projection scale
-    // Note: Outre-mer will be off-screen or weird, but the user only asked for main regions mostly.
-    // If it's an Outre-mer, we can fit it to its own 250x250 box so it displays nicely!
-    if (parseInt(feature.properties.code) >= 95 || feature.properties.code === '01' || feature.properties.code === '02' || feature.properties.code === '03' || feature.properties.code === '04' || feature.properties.code === '06') {
-       // Outre-mer regions (Guadeloupe, Martinique, Guyane, La Réunion, Mayotte)
-       const localProj = d3.geoMercator().fitSize([250, 250], feature);
-       const localPathGen = d3.geoPath().projection(localProj);
-       paths[feature.properties.code] = localPathGen(feature);
-    } else {
-       paths[feature.properties.code] = pathGen(feature);
-    }
+    // Fit every single region to fill the 250x250 box perfectly
+    const localProj = d3.geoMercator().fitSize([250, 250], feature);
+    const localPathGen = d3.geoPath().projection(localProj);
+    paths[feature.properties.code] = localPathGen(feature);
   }
   
   const fileContent = `// Automatically generated SVG paths for French regions

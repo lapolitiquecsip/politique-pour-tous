@@ -82,18 +82,21 @@ const TestimonialCard: React.FC<TestimonialCardProps> = ({
         
         {/* SVG Map Rendering */}
         {regionPaths[item.id] && (
-          <svg 
-            viewBox="0 0 250 250" 
-            className="w-full h-full opacity-60 mix-blend-multiply text-slate-300 drop-shadow-md p-4 absolute right-[-20px] top-[-10px]"
-            preserveAspectRatio="xMidYMid meet"
-          >
-            <path 
-              d={regionPaths[item.id]} 
-              fill="currentColor" 
-              stroke="white" 
-              strokeWidth="1.5" 
-            />
-          </svg>
+          <div className="absolute inset-0 flex items-center justify-center p-4">
+            <svg 
+              viewBox="0 0 250 250" 
+              className="w-full h-full opacity-90 drop-shadow-2xl"
+              preserveAspectRatio="xMidYMid meet"
+            >
+              <path 
+                d={regionPaths[item.id]} 
+                fill="rgba(255,255,255,0.2)" 
+                stroke="white" 
+                strokeWidth="2" 
+                strokeLinejoin="round"
+              />
+            </svg>
+          </div>
         )}
 
         {/* Fallback image if somehow no SVG found and there's an image */}

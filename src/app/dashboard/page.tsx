@@ -167,112 +167,27 @@ export default function DashboardPage() {
         </div>
         <div className="absolute top-0 right-0 w-1/3 h-full bg-gradient-to-l from-amber-500/5 to-transparent pointer-events-none" />
         <div className="container mx-auto max-w-6xl relative z-10">
-          <div className="flex flex-col md:flex-row items-center gap-8 justify-between">
-            <div className="flex flex-col sm:flex-row items-center sm:items-start gap-6 text-center sm:text-left">
-               <div className={`w-20 h-20 rounded-full border-2 p-1 flex items-center justify-center transition-all duration-300 ${isPremium ? 'border-amber-400/80 bg-gradient-to-br from-amber-500/20 to-yellow-600/20 shadow-[0_0_15px_rgba(251,191,36,0.2)] text-amber-300' : 'border-slate-700 bg-slate-900 text-slate-400'}`}>
-                  <User size={40} />
-               </div>
-               <div className="flex flex-col items-center sm:items-start">
-                  <div className={`inline-flex items-center gap-2 px-3.5 py-1 text-[10px] font-black uppercase rounded-full mb-3 tracking-widest ${isPremium ? 'bg-amber-400/10 backdrop-blur-md border border-amber-400/30 text-amber-400 shadow-[0_0_10px_rgba(251,191,36,0.05)]' : 'bg-slate-800/80 backdrop-blur-sm border border-slate-700/50 text-slate-400'}`}>
-                    {isPremium && <Star size={12} className="fill-current" />}
-                    {isPremium ? "Membre Elite" : "Compte Citoyen"}
-                  </div>
-                  <h1 className="text-5xl md:text-7xl font-staatliches uppercase tracking-tight leading-none text-white">
-                    Mon Espace{" "}
-                    <span className={isPremium 
-                      ? "bg-gradient-to-b from-amber-200 via-amber-400 to-amber-600 bg-clip-text text-transparent drop-shadow-[0_0_15px_rgba(251,191,36,0.35)] font-normal" 
-                      : "bg-gradient-to-r from-blue-400 via-red-400 to-blue-500 bg-clip-text text-transparent font-normal"
-                    }>
-                      Personnel
-                    </span>
-                  </h1>
-                  <p className="text-slate-400 text-sm mt-3 font-medium">Gérez votre activité citoyenne et vos députés favoris.</p>
-                  <div className={`h-[1px] w-32 mt-6 rounded-full ${isPremium ? 'bg-gradient-to-r from-amber-400/55 to-transparent' : 'bg-gradient-to-r from-blue-500/55 to-transparent'}`} />
-               </div>
-            </div>
-
-            <div className="flex flex-wrap gap-4 justify-center">
-               <button 
-                 onClick={() => startTransition(() => {
-                   setActiveTab("votes");
-                   window.scrollTo({ top: 400, behavior: 'smooth' });
-                 })}
-                 className={`bg-slate-900/40 backdrop-blur-lg border p-5 rounded-[2rem] text-center min-w-[130px] transition-all duration-300 hover:scale-105 active:scale-95 group ${
-                   activeTab === 'votes' 
-                     ? isPremium 
-                       ? 'border-amber-400/40 bg-slate-900/80 shadow-[0_0_20px_rgba(251,191,36,0.08)] ring-1 ring-amber-400/20' 
-                       : 'border-blue-500/40 bg-slate-900/80 shadow-[0_0_20px_rgba(59,130,246,0.08)] ring-1 ring-blue-500/20'
-                     : 'border-slate-800/80 hover:border-slate-700/80 hover:bg-slate-900/60'
-                 }`}
-               >
-                  <p className={`text-3xl font-bold tracking-tight transition-colors ${
-                    activeTab === 'votes' 
-                      ? isPremium 
-                        ? 'text-amber-300 drop-shadow-[0_0_8px_rgba(251,191,36,0.3)]' 
-                        : 'text-blue-400 drop-shadow-[0_0_8px_rgba(59,130,246,0.3)]' 
-                      : 'text-white/90 group-hover:text-white'
-                  }`}>{userVotes.length}</p>
-                  <p className="text-[10px] uppercase font-bold text-slate-500 tracking-[0.15em] mt-1.5 block group-hover:text-slate-400 transition-colors">Votes</p>
-               </button>
-               <button 
-                 onClick={() => startTransition(() => {
-                   setActiveTab("deputies");
-                   window.scrollTo({ top: 400, behavior: 'smooth' });
-                 })}
-                 className={`bg-slate-900/40 backdrop-blur-lg border p-5 rounded-[2rem] text-center min-w-[130px] transition-all duration-300 hover:scale-105 active:scale-95 group ${
-                   activeTab === 'deputies' 
-                     ? isPremium 
-                       ? 'border-amber-400/40 bg-slate-900/80 shadow-[0_0_20px_rgba(251,191,36,0.08)] ring-1 ring-amber-400/20' 
-                       : 'border-blue-500/40 bg-slate-900/80 shadow-[0_0_20px_rgba(59,130,246,0.08)] ring-1 ring-blue-500/20'
-                     : 'border-slate-800/80 hover:border-slate-700/80 hover:bg-slate-900/60'
-                 }`}
-               >
-                  <p className={`text-3xl font-bold tracking-tight transition-colors ${
-                    activeTab === 'deputies' 
-                      ? isPremium 
-                        ? 'text-amber-300 drop-shadow-[0_0_8px_rgba(251,191,36,0.3)]' 
-                        : 'text-blue-400 drop-shadow-[0_0_8px_rgba(59,130,246,0.3)]' 
-                      : 'text-white/90 group-hover:text-white'
-                  }`}>{followedDeputies.length}</p>
-                  <p className="text-[10px] uppercase font-bold text-slate-500 tracking-[0.15em] mt-1.5 block group-hover:text-slate-400 transition-colors">Suivis</p>
-               </button>
-               {isPremium && (
-                 <>
-                    <button 
-                      onClick={() => startTransition(() => {
-                        setActiveTab("saved");
-                        window.scrollTo({ top: 400, behavior: 'smooth' });
-                      })}
-                      className={`bg-slate-900/40 backdrop-blur-lg border p-5 rounded-[2rem] text-center min-w-[130px] transition-all duration-300 hover:scale-105 active:scale-95 group ${
-                        activeTab === 'saved' 
-                          ? 'border-amber-400/40 bg-slate-900/80 shadow-[0_0_20px_rgba(251,191,36,0.08)] ring-1 ring-amber-400/20' 
-                          : 'border-slate-800/80 hover:border-slate-700/80 hover:bg-slate-900/60'
-                      }`}
-                    >
-                       <p className={`text-3xl font-bold tracking-tight transition-colors ${
-                         activeTab === 'saved' ? 'text-amber-300 drop-shadow-[0_0_8px_rgba(251,191,36,0.3)]' : 'text-white/90 group-hover:text-white'
-                       }`}>{savedLaws.length}</p>
-                       <p className="text-[10px] uppercase font-bold text-slate-500 tracking-[0.15em] mt-1.5 block group-hover:text-slate-400 transition-colors">Lois</p>
-                    </button>
-                    <button 
-                      onClick={() => startTransition(() => {
-                        setActiveTab("geos");
-                        window.scrollTo({ top: 400, behavior: 'smooth' });
-                      })}
-                      className={`bg-slate-900/40 backdrop-blur-lg border p-5 rounded-[2rem] text-center min-w-[130px] transition-all duration-300 hover:scale-105 active:scale-95 group ${
-                        activeTab === 'geos' 
-                          ? 'border-rose-500/40 bg-slate-900/80 shadow-[0_0_20px_rgba(244,63,94,0.08)] ring-1 ring-rose-500/20' 
-                          : 'border-slate-800/80 hover:border-slate-700/80 hover:bg-slate-900/60'
-                      }`}
-                    >
-                       <p className={`text-3xl font-bold tracking-tight transition-colors ${
-                         activeTab === 'geos' ? 'text-rose-400 drop-shadow-[0_0_8px_rgba(244,63,94,0.3)]' : 'text-white/90 group-hover:text-white'
-                       }`}>{savedGeos.length}</p>
-                       <p className="text-[10px] uppercase font-bold text-slate-500 tracking-[0.15em] mt-1.5 block group-hover:text-slate-400 transition-colors">Territoires</p>
-                    </button>
-                 </>
-               )}
-            </div>
+          <div className="flex flex-col sm:flex-row items-center sm:items-start gap-6 text-center sm:text-left">
+             <div className={`w-20 h-20 rounded-full border-2 p-1 flex items-center justify-center transition-all duration-300 ${isPremium ? 'border-amber-400/80 bg-gradient-to-br from-amber-500/20 to-yellow-600/20 shadow-[0_0_15px_rgba(251,191,36,0.2)] text-amber-300' : 'border-slate-700 bg-slate-900 text-slate-400'}`}>
+                <User size={40} />
+             </div>
+             <div className="flex flex-col items-center sm:items-start">
+                <div className={`inline-flex items-center gap-2 px-3.5 py-1 text-[10px] font-black uppercase rounded-full mb-3 tracking-widest ${isPremium ? 'bg-amber-400/10 backdrop-blur-md border border-amber-400/30 text-amber-400 shadow-[0_0_10px_rgba(251,191,36,0.05)]' : 'bg-slate-800/80 backdrop-blur-sm border border-slate-700/50 text-slate-400'}`}>
+                  {isPremium && <Star size={12} className="fill-current" />}
+                  {isPremium ? "Membre Elite" : "Compte Citoyen"}
+                </div>
+                <h1 className="text-5xl md:text-7xl font-staatliches uppercase tracking-tight leading-none text-white">
+                  Mon Espace{" "}
+                  <span className={isPremium 
+                    ? "bg-gradient-to-b from-amber-200 via-amber-400 to-amber-600 bg-clip-text text-transparent drop-shadow-[0_0_15px_rgba(251,191,36,0.35)] font-normal" 
+                    : "bg-gradient-to-r from-blue-400 via-red-400 to-blue-500 bg-clip-text text-transparent font-normal"
+                  }>
+                    Personnel
+                  </span>
+                </h1>
+                <p className="text-slate-400 text-sm mt-3 font-medium">Gérez votre activité citoyenne et vos députés favoris.</p>
+                <div className={`h-[1px] w-32 mt-6 rounded-full ${isPremium ? 'bg-gradient-to-r from-amber-400/55 to-transparent' : 'bg-gradient-to-r from-blue-500/55 to-transparent'}`} />
+             </div>
           </div>
         </div>
       </section>

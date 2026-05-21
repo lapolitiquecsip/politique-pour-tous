@@ -143,28 +143,39 @@ export const StaggerTestimonials: React.FC<{ items: Territory[], onSelect: (t: T
   const [territoriesList, setTerritoriesList] = useState<Territory[]>([]);
 
   useEffect(() => {
-    // Add tempIds to make them unique for animation
     if (items && items.length > 0) {
-      setTerritoriesList(items.map((it, i) => ({ ...it, tempId: i })));
+      setTerritoriesList(prev => {
+        // Only reset if the list really changed (e.g., search filter or tab change)
+        if (prev.length === 0 || prev.length !== items.length) {
+          return items.map((it, i) => ({ ...it, tempId: i }));
+        }
+        // Also check if the content completely changed
+        const currentIds = prev.map(p => p.id).sort().join(',');
+        const newIds = items.map(i => i.id).sort().join(',');
+        if (currentIds !== newIds) {
+          return items.map((it, i) => ({ ...it, tempId: i }));
+        }
+        return prev; // Keep current order/animation state
+      });
     }
   }, [items]);
 
   const handleMove = (steps: number) => {
-    const newList = [...territoriesList];
-    if (steps > 0) {
-      for (let i = steps; i > 0; i--) {
-        const item = newList.shift();
-        if (!item) return;
-        newList.push({ ...item, tempId: Math.random() });
+    setTerritoriesList(prev => {
+      const newList = [...prev];
+      if (steps > 0) {
+        for (let i = steps; i > 0; i--) {
+          const item = newList.shift();
+          if (item) newList.push(item);
+        }
+      } else {
+        for (let i = steps; i < 0; i++) {
+          const item = newList.pop();
+          if (item) newList.unshift(item);
+        }
       }
-    } else {
-      for (let i = steps; i < 0; i++) {
-        const item = newList.pop();
-        if (!item) return;
-        newList.unshift({ ...item, tempId: Math.random() });
-      }
-    }
-    setTerritoriesList(newList);
+      return newList;
+    });
   };
 
   useEffect(() => {

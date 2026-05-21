@@ -3,6 +3,7 @@
 import React, { useState, useEffect } from 'react';
 import { ChevronLeft, ChevronRight, Users, Building2, Coins, ArrowRight, Star, Loader2 } from 'lucide-react';
 import { cn } from '@/lib/utils';
+import { regionPaths } from '@/lib/data/regionPaths';
 
 const SQRT_5000 = Math.sqrt(5000);
 
@@ -75,13 +76,32 @@ const TestimonialCard: React.FC<TestimonialCardProps> = ({
         }}
       />
       
-      {/* Top Banner with Image */}
-      <div className="relative h-40 shrink-0 w-full bg-slate-100">
-        {item.image ? (
-          <img src={item.image} alt={item.name} className="w-full h-full object-cover" />
-        ) : (
-          <div className="w-full h-full bg-gradient-to-br from-rose-600 to-fuchsia-600" />
+      {/* Top Banner with Image or SVG Map */}
+      <div className="relative h-40 shrink-0 w-full bg-slate-100 flex items-center justify-center overflow-hidden">
+        <div className="absolute inset-0 bg-gradient-to-br from-slate-100 to-slate-200" />
+        
+        {/* SVG Map Rendering */}
+        {regionPaths[item.id] && (
+          <svg 
+            viewBox="0 0 250 250" 
+            className="w-full h-full opacity-60 mix-blend-multiply text-slate-300 drop-shadow-md p-4 absolute right-[-20px] top-[-10px]"
+            preserveAspectRatio="xMidYMid meet"
+          >
+            <path 
+              d={regionPaths[item.id]} 
+              fill="currentColor" 
+              stroke="white" 
+              strokeWidth="1.5" 
+            />
+          </svg>
         )}
+
+        {/* Fallback image if somehow no SVG found and there's an image */}
+        {!regionPaths[item.id] && item.image && (
+          <img src={item.image} alt={item.name} className="w-full h-full object-cover" />
+        )}
+        
+        {/* Gradient overlay to ensure text is readable */}
         <div className="absolute inset-0 bg-gradient-to-t from-slate-900/90 via-slate-900/40 to-transparent" />
         
         <div className="absolute bottom-4 left-6 pr-6">

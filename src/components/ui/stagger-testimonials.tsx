@@ -7,6 +7,17 @@ import { regionPaths } from '@/lib/data/regionPaths';
 
 const SQRT_5000 = Math.sqrt(5000);
 
+const cardColors = [
+  { text: 'text-pink-500', bg: 'bg-pink-500', lightBg: 'bg-pink-50' },
+  { text: 'text-emerald-500', bg: 'bg-emerald-500', lightBg: 'bg-emerald-50' },
+  { text: 'text-blue-500', bg: 'bg-blue-500', lightBg: 'bg-blue-50' },
+  { text: 'text-purple-500', bg: 'bg-purple-500', lightBg: 'bg-purple-50' },
+  { text: 'text-amber-500', bg: 'bg-amber-500', lightBg: 'bg-amber-50' },
+  { text: 'text-rose-500', bg: 'bg-rose-500', lightBg: 'bg-rose-50' },
+  { text: 'text-indigo-500', bg: 'bg-indigo-500', lightBg: 'bg-indigo-50' },
+  { text: 'text-cyan-500', bg: 'bg-cyan-500', lightBg: 'bg-cyan-50' },
+];
+
 interface Territory {
   id: string;
   name: string;
@@ -36,6 +47,9 @@ const TestimonialCard: React.FC<TestimonialCardProps> = ({
   onSelect
 }) => {
   const isCenter = position === 0;
+  // Pick a consistent vibrant color for this territory based on its ID
+  const colorIndex = (item.id.charCodeAt(0) + (item.id.charCodeAt(item.id.length - 1) || 0)) % cardColors.length;
+  const theme = cardColors[colorIndex];
 
   return (
     <div
@@ -77,20 +91,19 @@ const TestimonialCard: React.FC<TestimonialCardProps> = ({
       />
       
       {/* Top Banner with Image or SVG Map */}
-      <div className="relative h-40 shrink-0 w-full bg-slate-100 flex items-center justify-center overflow-hidden">
-        <div className="absolute inset-0 bg-gradient-to-br from-slate-100 to-slate-200" />
+      <div className="relative h-40 shrink-0 w-full bg-white flex items-center justify-center overflow-hidden border-b border-slate-100">
         
         {/* SVG Map Rendering */}
         {regionPaths[item.id] && (
           <div className="absolute inset-0 flex items-center justify-center p-4">
             <svg 
               viewBox="0 0 250 250" 
-              className="w-full h-full opacity-90 drop-shadow-2xl"
+              className={cn("w-full h-full drop-shadow-sm opacity-90", theme.text)}
               preserveAspectRatio="xMidYMid meet"
             >
               <path 
                 d={regionPaths[item.id]} 
-                fill="rgba(255,255,255,0.2)" 
+                fill="currentColor" 
                 stroke="white" 
                 strokeWidth="2" 
                 strokeLinejoin="round"
@@ -104,14 +117,11 @@ const TestimonialCard: React.FC<TestimonialCardProps> = ({
           <img src={item.image} alt={item.name} className="w-full h-full object-cover" />
         )}
         
-        {/* Gradient overlay to ensure text is readable */}
-        <div className="absolute inset-0 bg-gradient-to-t from-slate-900/90 via-slate-900/40 to-transparent" />
-        
         <div className="absolute bottom-4 left-6 pr-6">
-          <p className="text-rose-400 font-black text-[10px] uppercase tracking-widest mb-1">
+          <p className={cn("font-black text-[10px] uppercase tracking-widest mb-1", theme.text)}>
             {item.type === 'region' ? 'Région' : 'Département'}
           </p>
-          <h4 className="text-white font-bold text-xl leading-tight line-clamp-2">{item.name}</h4>
+          <h4 className="text-slate-900 font-bold text-xl leading-tight line-clamp-2">{item.name}</h4>
         </div>
       </div>
 
@@ -119,7 +129,7 @@ const TestimonialCard: React.FC<TestimonialCardProps> = ({
       <div className="p-6 flex-1 flex flex-col justify-between bg-white relative z-10">
         <div className="space-y-4">
           <div className="flex items-center gap-3">
-            <div className="w-10 h-10 rounded-xl bg-slate-50 flex items-center justify-center text-rose-600 shrink-0">
+            <div className={cn("w-10 h-10 rounded-xl flex items-center justify-center shrink-0", theme.lightBg, theme.text)}>
               <Users size={16} />
             </div>
             <div className="min-w-0">
@@ -128,7 +138,7 @@ const TestimonialCard: React.FC<TestimonialCardProps> = ({
             </div>
           </div>
           <div className="flex items-center gap-3">
-            <div className="w-10 h-10 rounded-xl bg-slate-50 flex items-center justify-center text-rose-600 shrink-0">
+            <div className={cn("w-10 h-10 rounded-xl flex items-center justify-center shrink-0", theme.lightBg, theme.text)}>
               <Building2 size={16} />
             </div>
             <div className="min-w-0">
@@ -138,7 +148,7 @@ const TestimonialCard: React.FC<TestimonialCardProps> = ({
           </div>
           {item.budget2026 && (
             <div className="flex items-center gap-3">
-              <div className="w-10 h-10 rounded-xl bg-slate-50 flex items-center justify-center text-rose-600 shrink-0">
+              <div className={cn("w-10 h-10 rounded-xl flex items-center justify-center shrink-0", theme.lightBg, theme.text)}>
                 <Coins size={16} />
               </div>
               <div className="min-w-0">
@@ -151,7 +161,7 @@ const TestimonialCard: React.FC<TestimonialCardProps> = ({
 
         {isCenter && (
           <div className="mt-4 pt-4 border-t border-slate-100">
-            <span className="w-full flex items-center justify-center gap-2 text-rose-600 font-bold text-xs uppercase tracking-widest group-hover:text-rose-700">
+            <span className={cn("w-full flex items-center justify-center gap-2 font-bold text-xs uppercase tracking-widest transition-colors", theme.text, `hover:opacity-80`)}>
               Analyser <ArrowRight size={14} />
             </span>
           </div>

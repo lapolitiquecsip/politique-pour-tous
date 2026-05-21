@@ -52,7 +52,9 @@ export default function StatsPanel() {
           id: slide.id || index + 1,
           title,
           description,
-          image: fallbackImages[index % fallbackImages.length]
+          color: slide.color || ["bg-emerald-600", "bg-blue-600", "bg-rose-600", "bg-amber-600"][index % 4],
+          value: slide.value,
+          label: slide.label
         };
       });
 
@@ -61,9 +63,9 @@ export default function StatsPanel() {
       console.error("Error fetching stats:", err);
       // Fallback
       setCards([
-        { id: 1, title: "Le Saviez-Vous ?", description: "11 groupes politiques : un record historique sous la Ve République", image: fallbackImages[0] },
-        { id: 2, title: "Le Saviez-Vous ?", description: "1000 heures de débats cumulées durant la première session", image: fallbackImages[1] },
-        { id: 3, title: "Le Saviez-Vous ?", description: "47% des textes du Sénat votés à l'unanimité depuis juin 2022", image: fallbackImages[2] }
+        { id: 1, title: "Le Saviez-Vous ?", description: "11 groupes politiques : un record historique sous la Ve République", value: "11", label: "groupes politiques : un record historique sous la Ve République", color: "bg-blue-600" },
+        { id: 2, title: "Le Saviez-Vous ?", description: "1000 heures de débats cumulées durant la première session", value: "1000", label: "heures de débats cumulées durant la première session", color: "bg-rose-600" },
+        { id: 3, title: "Le Saviez-Vous ?", description: "47% des textes du Sénat votés à l'unanimité depuis juin 2022", value: "47%", label: "des textes du Sénat votés à l'unanimité depuis juin 2022", color: "bg-emerald-600" }
       ]);
     }
   }, []);

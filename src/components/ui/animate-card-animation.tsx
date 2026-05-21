@@ -8,7 +8,10 @@ export interface CardData {
   id: number;
   title: string;
   description: string;
-  image: string;
+  image?: string;
+  color?: string;
+  value?: string;
+  label?: string;
 }
 
 const positionStyles = [
@@ -29,25 +32,44 @@ const enterAnimation = {
 }
 
 function CardContent({ data }: { data: CardData }) {
+  const bgColor = data.color || "bg-emerald-600";
+  const isIntox = data.title === "Intox de la semaine";
+
   return (
-    <div className="flex h-full w-full flex-col gap-4">
-      <div className="-outline-offset-1 flex h-[200px] w-full items-center justify-center overflow-hidden rounded-xl outline outline-black/10 dark:outline-white/10 relative bg-slate-100">
-        <img
-          src={data.image || "/placeholder.svg"}
-          alt={data.title}
-          className="h-full w-full select-none object-cover"
-        />
-        <div className="absolute inset-0 bg-gradient-to-t from-black/40 to-transparent pointer-events-none" />
-      </div>
-      <div className="flex w-full items-center justify-between gap-2 px-3 pb-6">
-        <div className="flex min-w-0 flex-1 flex-col">
-          <span className="truncate font-bold text-slate-900 uppercase tracking-widest text-xs mb-1">{data.title}</span>
-          <span className="text-slate-600 line-clamp-2 text-sm leading-snug font-medium">{data.description}</span>
-        </div>
-        <button className="flex h-10 shrink-0 cursor-pointer select-none items-center gap-1.5 rounded-full bg-slate-900 pl-4 pr-3 text-sm font-bold text-white hover:bg-slate-800 transition-colors">
-          Lire
-          <ArrowRight size={16} strokeWidth={2.5} />
-        </button>
+    <div className={`flex h-full w-full flex-col justify-center items-center text-center p-6 rounded-[1rem] ${bgColor} text-white shadow-inner relative overflow-hidden`}>
+      {/* Decorative subtle ambient glows */}
+      <div className="absolute top-0 right-0 w-48 h-48 bg-white/10 rounded-full blur-3xl -mr-10 -mt-10 pointer-events-none" />
+      <div className="absolute bottom-0 left-0 w-48 h-48 bg-black/10 rounded-full blur-2xl -ml-10 -mb-10 pointer-events-none" />
+
+      <div className="relative z-10 w-full flex flex-col items-center justify-center">
+        {data.value ? (
+          <>
+            <span className="text-[5rem] sm:text-[7rem] font-staatliches mb-2 tracking-tighter leading-none drop-shadow-md text-white">
+              {data.value}
+            </span>
+            <span className="text-sm sm:text-base font-bold max-w-sm leading-snug opacity-90 uppercase tracking-[0.2em] drop-shadow-sm text-balance">
+              {data.label || data.description}
+            </span>
+          </>
+        ) : isIntox ? (
+          <>
+            <h1 className="font-staatliches text-4xl sm:text-5xl mb-4 tracking-tight uppercase leading-none text-red-200">
+              INTOX
+            </h1>
+            <span className="text-base sm:text-lg font-bold max-w-sm leading-relaxed drop-shadow-sm italic text-balance text-white/95">
+              {data.description}
+            </span>
+          </>
+        ) : (
+          <>
+            <span className="bg-white/20 text-white px-4 py-1.5 rounded-full text-[10px] font-black uppercase tracking-[0.2em] mb-6 backdrop-blur-sm">
+              {data.title}
+            </span>
+            <span className="text-xl sm:text-2xl font-bold max-w-md leading-relaxed drop-shadow-sm text-balance text-white/95">
+              {data.description}
+            </span>
+          </>
+        )}
       </div>
     </div>
   )

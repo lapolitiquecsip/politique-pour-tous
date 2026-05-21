@@ -159,34 +159,45 @@ export default function DashboardPage() {
   return (
     <div className="min-h-screen bg-slate-50 pb-20">
       {/* 1. Dashboard Header */}
-      <section className="bg-gradient-to-br from-slate-950 via-slate-900 to-amber-950/40 text-white pt-24 pb-32 px-4 relative overflow-hidden">
-        {/* Animated premium background glows */}
-        <div className="absolute inset-0 opacity-30 pointer-events-none">
-          <div className="absolute top-12 left-[10%] w-72 h-72 bg-amber-500/10 rounded-full blur-[100px] animate-pulse" />
-          <div className="absolute bottom-5 right-[15%] w-60 h-60 bg-yellow-600/15 rounded-full blur-[80px]" />
-        </div>
-        <div className="absolute top-0 right-0 w-1/3 h-full bg-gradient-to-l from-amber-500/5 to-transparent pointer-events-none" />
+      <section className="bg-white text-slate-900 pt-24 pb-32 px-4 relative overflow-hidden border-b border-slate-200/80">
+        {/* Soft Yellow Glow */}
+        <div
+          className="absolute inset-0 z-0 pointer-events-none"
+          style={{
+            backgroundImage: `radial-gradient(circle at center, #FFF991 0%, transparent 70%)`,
+            opacity: 0.6,
+            mixBlendMode: "multiply",
+          }}
+        />
+        {/* Sunrise Glow */}
+        <div 
+          className="absolute inset-0 z-0 pointer-events-none" 
+          style={{
+            backgroundImage: `radial-gradient(circle at center, #eab308, transparent)`,
+            opacity: 0.2,
+          }} 
+        />
         <div className="container mx-auto max-w-6xl relative z-10">
           <div className="flex flex-col sm:flex-row items-center sm:items-start gap-6 text-center sm:text-left">
-             <div className={`w-20 h-20 rounded-full border-2 p-1 flex items-center justify-center transition-all duration-300 ${isPremium ? 'border-amber-400/80 bg-gradient-to-br from-amber-500/20 to-yellow-600/20 shadow-[0_0_15px_rgba(251,191,36,0.2)] text-amber-300' : 'border-slate-700 bg-slate-900 text-slate-400'}`}>
+             <div className={`w-20 h-20 rounded-full border-2 p-1 flex items-center justify-center transition-all duration-300 ${isPremium ? 'border-amber-500 bg-gradient-to-br from-amber-500/10 to-yellow-600/10 shadow-[0_0_15px_rgba(251,191,36,0.15)] text-amber-600' : 'border-slate-200 bg-slate-50 text-slate-500'}`}>
                 <User size={40} />
              </div>
              <div className="flex flex-col items-center sm:items-start">
-                <div className={`inline-flex items-center gap-2 px-3.5 py-1 text-[10px] font-black uppercase rounded-full mb-3 tracking-widest ${isPremium ? 'bg-amber-400/10 backdrop-blur-md border border-amber-400/30 text-amber-400 shadow-[0_0_10px_rgba(251,191,36,0.05)]' : 'bg-slate-800/80 backdrop-blur-sm border border-slate-700/50 text-slate-400'}`}>
+                <div className={`inline-flex items-center gap-2 px-3.5 py-1 text-[10px] font-black uppercase rounded-full mb-3 tracking-widest ${isPremium ? 'bg-amber-100 border border-amber-300 text-amber-800 shadow-[0_0_10px_rgba(251,191,36,0.05)]' : 'bg-slate-100 border border-slate-200 text-slate-600'}`}>
                   {isPremium && <Star size={12} className="fill-current" />}
                   {isPremium ? "Membre Elite" : "Compte Citoyen"}
                 </div>
-                <h1 className="text-5xl md:text-7xl font-staatliches uppercase tracking-tight leading-none text-white">
+                <h1 className="text-5xl md:text-7xl font-staatliches uppercase tracking-tight leading-none text-slate-900">
                   Mon Espace{" "}
                   <span className={isPremium 
-                    ? "bg-gradient-to-b from-amber-200 via-amber-400 to-amber-600 bg-clip-text text-transparent drop-shadow-[0_0_15px_rgba(251,191,36,0.35)] font-normal" 
-                    : "bg-gradient-to-r from-blue-400 via-red-400 to-blue-500 bg-clip-text text-transparent font-normal"
+                    ? "bg-gradient-to-b from-amber-500 via-amber-600 to-yellow-700 bg-clip-text text-transparent drop-shadow-sm font-normal" 
+                    : "bg-gradient-to-r from-blue-600 via-red-500 to-blue-700 bg-clip-text text-transparent font-normal"
                   }>
                     Personnel
                   </span>
                 </h1>
-                <p className="text-slate-400 text-sm mt-3 font-medium">Gérez votre activité citoyenne et vos députés favoris.</p>
-                <div className={`h-[1px] w-32 mt-6 rounded-full ${isPremium ? 'bg-gradient-to-r from-amber-400/55 to-transparent' : 'bg-gradient-to-r from-blue-500/55 to-transparent'}`} />
+                <p className="text-slate-500 text-sm mt-3 font-medium">Gérez votre activité citoyenne et vos députés favoris.</p>
+                <div className={`h-[1px] w-32 mt-6 rounded-full ${isPremium ? 'bg-gradient-to-r from-amber-500/40 to-transparent' : 'bg-gradient-to-r from-blue-500/40 to-transparent'}`} />
              </div>
           </div>
         </div>

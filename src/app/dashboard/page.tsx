@@ -177,11 +177,11 @@ export default function DashboardPage() {
                     {isPremium && <Star size={12} className="fill-current" />}
                     {isPremium ? "Membre Elite" : "Compte Citoyen"}
                   </div>
-                  <h1 className="text-4xl md:text-5xl font-playfair tracking-wide leading-none text-white">
+                  <h1 className="text-5xl md:text-7xl font-staatliches uppercase tracking-tight leading-none text-white">
                     Mon Espace{" "}
                     <span className={isPremium 
-                      ? "font-serif italic font-semibold bg-gradient-to-b from-amber-200 via-amber-400 to-amber-600 bg-clip-text text-transparent drop-shadow-[0_0_10px_rgba(251,191,36,0.25)]" 
-                      : "bg-gradient-to-r from-blue-400 via-red-400 to-blue-500 bg-clip-text text-transparent font-bold"
+                      ? "bg-gradient-to-b from-amber-200 via-amber-400 to-amber-600 bg-clip-text text-transparent drop-shadow-[0_0_15px_rgba(251,191,36,0.35)] font-normal" 
+                      : "bg-gradient-to-r from-blue-400 via-red-400 to-blue-500 bg-clip-text text-transparent font-normal"
                     }>
                       Personnel
                     </span>

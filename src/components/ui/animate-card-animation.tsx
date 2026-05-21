@@ -31,8 +31,17 @@ const enterAnimation = {
   scale: 0.9,
 }
 
+const VIVID_COLORS = [
+  "bg-pink-500",    // rose
+  "bg-emerald-500", // vert
+  "bg-blue-500",    // bleu
+  "bg-purple-600",  // violet
+  "bg-red-500"      // rouge
+];
+
 function CardContent({ data }: { data: CardData }) {
-  const bgColor = data.color || "bg-emerald-600";
+  const colorIndex = Math.max(0, (data.id || 1) - 1) % VIVID_COLORS.length;
+  const bgColor = VIVID_COLORS[colorIndex];
   const isIntox = data.title === "Intox de la semaine";
 
   return (

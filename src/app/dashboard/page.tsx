@@ -134,7 +134,7 @@ export default function DashboardPage() {
     return (
       <div className="min-h-screen bg-slate-950 flex flex-col items-center justify-center p-4">
         <Loader2 size={40} className="animate-spin text-amber-500 mb-4" />
-        <p className="text-white font-staatliches uppercase tracking-[0.2em]">Authentification en cours...</p>
+        <p className="text-white font-bold uppercase tracking-[0.15em] text-sm">Authentification en cours...</p>
       </div>
     );
   }
@@ -145,7 +145,7 @@ export default function DashboardPage() {
         <div className="w-20 h-20 bg-slate-100 rounded-full flex items-center justify-center text-slate-400 mb-6">
           <User size={40} />
         </div>
-        <h1 className="text-3xl font-staatliches uppercase mb-4">Connexion Requise</h1>
+        <h1 className="text-3xl font-bold uppercase mb-4">Connexion Requise</h1>
         <p className="text-slate-500 max-w-md mb-8">
           Veuillez vous connecter pour accéder à votre espace personnel et suivre votre activité citoyenne.
         </p>
@@ -159,76 +159,117 @@ export default function DashboardPage() {
   return (
     <div className="min-h-screen bg-slate-50 pb-20">
       {/* 1. Dashboard Header */}
-      <section className="bg-slate-950 text-white pt-24 pb-32 px-4 relative overflow-hidden">
-        <div className="absolute top-0 right-0 w-1/3 h-full bg-gradient-to-l from-amber-500/10 to-transparent pointer-none" />
+      <section className="bg-gradient-to-br from-slate-950 via-slate-900 to-amber-950/40 text-white pt-24 pb-32 px-4 relative overflow-hidden">
+        {/* Animated premium background glows */}
+        <div className="absolute inset-0 opacity-30 pointer-events-none">
+          <div className="absolute top-12 left-[10%] w-72 h-72 bg-amber-500/10 rounded-full blur-[100px] animate-pulse" />
+          <div className="absolute bottom-5 right-[15%] w-60 h-60 bg-yellow-600/15 rounded-full blur-[80px]" />
+        </div>
+        <div className="absolute top-0 right-0 w-1/3 h-full bg-gradient-to-l from-amber-500/5 to-transparent pointer-events-none" />
         <div className="container mx-auto max-w-6xl relative z-10">
           <div className="flex flex-col md:flex-row items-center gap-8 justify-between">
-            <div className="flex items-center gap-6">
-               <div className={`w-20 h-20 rounded-full bg-slate-800 border-2 p-1 flex items-center justify-center ${isPremium ? 'border-amber-400 text-amber-400' : 'border-slate-600 text-slate-400'}`}>
+            <div className="flex flex-col sm:flex-row items-center sm:items-start gap-6 text-center sm:text-left">
+               <div className={`w-20 h-20 rounded-full border-2 p-1 flex items-center justify-center transition-all duration-300 ${isPremium ? 'border-amber-400/80 bg-gradient-to-br from-amber-500/20 to-yellow-600/20 shadow-[0_0_15px_rgba(251,191,36,0.2)] text-amber-300' : 'border-slate-700 bg-slate-900 text-slate-400'}`}>
                   <User size={40} />
                </div>
-               <div>
-                  <div className={`inline-flex items-center gap-2 px-3 py-1 text-[10px] font-black uppercase rounded-full mb-2 ${isPremium ? 'bg-amber-400 text-slate-950' : 'bg-slate-800 text-slate-400'}`}>
+               <div className="flex flex-col items-center sm:items-start">
+                  <div className={`inline-flex items-center gap-2 px-3.5 py-1 text-[10px] font-black uppercase rounded-full mb-3 tracking-widest ${isPremium ? 'bg-amber-400/10 backdrop-blur-md border border-amber-400/30 text-amber-400 shadow-[0_0_10px_rgba(251,191,36,0.05)]' : 'bg-slate-800/80 backdrop-blur-sm border border-slate-700/50 text-slate-400'}`}>
                     {isPremium && <Star size={12} className="fill-current" />}
                     {isPremium ? "Membre Elite" : "Compte Citoyen"}
                   </div>
-                  <h1 className="text-4xl md:text-6xl font-staatliches uppercase tracking-tight italic leading-none">
+                  <h1 className="text-4xl md:text-5xl font-playfair tracking-wide leading-none text-white">
                     Mon Espace{" "}
                     <span className={isPremium 
-                      ? "text-amber-500" 
-                      : "bg-gradient-to-r from-blue-400 via-red-400 to-blue-500 bg-clip-text text-transparent"
+                      ? "font-serif italic font-semibold bg-gradient-to-b from-amber-200 via-amber-400 to-amber-600 bg-clip-text text-transparent drop-shadow-[0_0_10px_rgba(251,191,36,0.25)]" 
+                      : "bg-gradient-to-r from-blue-400 via-red-400 to-blue-500 bg-clip-text text-transparent font-bold"
                     }>
                       Personnel
                     </span>
                   </h1>
-                  <p className="text-slate-400 text-sm mt-2">Gérez votre activité citoyenne et vos députés favoris.</p>
-                  <div className={`h-1.5 w-24 mt-6 rounded-full ${isPremium ? 'bg-amber-500' : 'bg-gradient-to-r from-blue-600 to-red-600'}`} />
+                  <p className="text-slate-400 text-sm mt-3 font-medium">Gérez votre activité citoyenne et vos députés favoris.</p>
+                  <div className={`h-[1px] w-32 mt-6 rounded-full ${isPremium ? 'bg-gradient-to-r from-amber-400/55 to-transparent' : 'bg-gradient-to-r from-blue-500/55 to-transparent'}`} />
                </div>
             </div>
 
-            <div className="flex gap-4">
+            <div className="flex flex-wrap gap-4 justify-center">
                <button 
                  onClick={() => startTransition(() => {
                    setActiveTab("votes");
                    window.scrollTo({ top: 400, behavior: 'smooth' });
                  })}
-                 className={`bg-slate-900/50 backdrop-blur-md border p-4 rounded-3xl text-center min-w-[120px] transition-all hover:scale-105 active:scale-95 ${activeTab === 'votes' ? 'border-amber-500/50 ring-2 ring-amber-500/20' : 'border-slate-800'}`}
+                 className={`bg-slate-900/40 backdrop-blur-lg border p-5 rounded-[2rem] text-center min-w-[130px] transition-all duration-300 hover:scale-105 active:scale-95 group ${
+                   activeTab === 'votes' 
+                     ? isPremium 
+                       ? 'border-amber-400/40 bg-slate-900/80 shadow-[0_0_20px_rgba(251,191,36,0.08)] ring-1 ring-amber-400/20' 
+                       : 'border-blue-500/40 bg-slate-900/80 shadow-[0_0_20px_rgba(59,130,246,0.08)] ring-1 ring-blue-500/20'
+                     : 'border-slate-800/80 hover:border-slate-700/80 hover:bg-slate-900/60'
+                 }`}
                >
-                  <p className="text-2xl font-black text-white">{userVotes.length}</p>
-                  <p className="text-[10px] uppercase font-bold text-slate-500 tracking-widest">Votes</p>
+                  <p className={`text-3xl font-bold tracking-tight transition-colors ${
+                    activeTab === 'votes' 
+                      ? isPremium 
+                        ? 'text-amber-300 drop-shadow-[0_0_8px_rgba(251,191,36,0.3)]' 
+                        : 'text-blue-400 drop-shadow-[0_0_8px_rgba(59,130,246,0.3)]' 
+                      : 'text-white/90 group-hover:text-white'
+                  }`}>{userVotes.length}</p>
+                  <p className="text-[10px] uppercase font-bold text-slate-500 tracking-[0.15em] mt-1.5 block group-hover:text-slate-400 transition-colors">Votes</p>
                </button>
                <button 
                  onClick={() => startTransition(() => {
                    setActiveTab("deputies");
                    window.scrollTo({ top: 400, behavior: 'smooth' });
                  })}
-                 className={`bg-slate-900/50 backdrop-blur-md border p-4 rounded-3xl text-center min-w-[120px] transition-all hover:scale-105 active:scale-95 ${activeTab === 'deputies' ? 'border-amber-500/50 ring-2 ring-amber-500/20' : 'border-slate-800'}`}
+                 className={`bg-slate-900/40 backdrop-blur-lg border p-5 rounded-[2rem] text-center min-w-[130px] transition-all duration-300 hover:scale-105 active:scale-95 group ${
+                   activeTab === 'deputies' 
+                     ? isPremium 
+                       ? 'border-amber-400/40 bg-slate-900/80 shadow-[0_0_20px_rgba(251,191,36,0.08)] ring-1 ring-amber-400/20' 
+                       : 'border-blue-500/40 bg-slate-900/80 shadow-[0_0_20px_rgba(59,130,246,0.08)] ring-1 ring-blue-500/20'
+                     : 'border-slate-800/80 hover:border-slate-700/80 hover:bg-slate-900/60'
+                 }`}
                >
-                  <p className="text-2xl font-black text-amber-400">{followedDeputies.length}</p>
-                  <p className="text-[10px] uppercase font-bold text-slate-500 tracking-widest">Suivis</p>
+                  <p className={`text-3xl font-bold tracking-tight transition-colors ${
+                    activeTab === 'deputies' 
+                      ? isPremium 
+                        ? 'text-amber-300 drop-shadow-[0_0_8px_rgba(251,191,36,0.3)]' 
+                        : 'text-blue-400 drop-shadow-[0_0_8px_rgba(59,130,246,0.3)]' 
+                      : 'text-white/90 group-hover:text-white'
+                  }`}>{followedDeputies.length}</p>
+                  <p className="text-[10px] uppercase font-bold text-slate-500 tracking-[0.15em] mt-1.5 block group-hover:text-slate-400 transition-colors">Suivis</p>
                </button>
                {isPremium && (
                  <>
-                   <button 
-                     onClick={() => startTransition(() => {
-                       setActiveTab("saved");
-                       window.scrollTo({ top: 400, behavior: 'smooth' });
-                     })}
-                     className={`bg-slate-900/50 backdrop-blur-md border p-4 rounded-3xl text-center min-w-[120px] transition-all hover:scale-105 active:scale-95 ${activeTab === 'saved' ? 'border-amber-500/50 ring-2 ring-amber-500/20' : 'border-slate-800'}`}
-                   >
-                      <p className="text-2xl font-black text-amber-500">{savedLaws.length}</p>
-                      <p className="text-[10px] uppercase font-bold text-slate-500 tracking-widest">Lois</p>
-                   </button>
-                   <button 
-                     onClick={() => startTransition(() => {
-                       setActiveTab("geos");
-                       window.scrollTo({ top: 400, behavior: 'smooth' });
-                     })}
-                     className={`bg-slate-900/50 backdrop-blur-md border p-4 rounded-3xl text-center min-w-[120px] transition-all hover:scale-105 active:scale-95 ${activeTab === 'geos' ? 'border-rose-500/50 ring-2 ring-rose-500/20' : 'border-slate-800'}`}
-                   >
-                      <p className="text-2xl font-black text-rose-500">{savedGeos.length}</p>
-                      <p className="text-[10px] uppercase font-bold text-slate-500 tracking-widest">Territoires</p>
-                   </button>
+                    <button 
+                      onClick={() => startTransition(() => {
+                        setActiveTab("saved");
+                        window.scrollTo({ top: 400, behavior: 'smooth' });
+                      })}
+                      className={`bg-slate-900/40 backdrop-blur-lg border p-5 rounded-[2rem] text-center min-w-[130px] transition-all duration-300 hover:scale-105 active:scale-95 group ${
+                        activeTab === 'saved' 
+                          ? 'border-amber-400/40 bg-slate-900/80 shadow-[0_0_20px_rgba(251,191,36,0.08)] ring-1 ring-amber-400/20' 
+                          : 'border-slate-800/80 hover:border-slate-700/80 hover:bg-slate-900/60'
+                      }`}
+                    >
+                       <p className={`text-3xl font-bold tracking-tight transition-colors ${
+                         activeTab === 'saved' ? 'text-amber-300 drop-shadow-[0_0_8px_rgba(251,191,36,0.3)]' : 'text-white/90 group-hover:text-white'
+                       }`}>{savedLaws.length}</p>
+                       <p className="text-[10px] uppercase font-bold text-slate-500 tracking-[0.15em] mt-1.5 block group-hover:text-slate-400 transition-colors">Lois</p>
+                    </button>
+                    <button 
+                      onClick={() => startTransition(() => {
+                        setActiveTab("geos");
+                        window.scrollTo({ top: 400, behavior: 'smooth' });
+                      })}
+                      className={`bg-slate-900/40 backdrop-blur-lg border p-5 rounded-[2rem] text-center min-w-[130px] transition-all duration-300 hover:scale-105 active:scale-95 group ${
+                        activeTab === 'geos' 
+                          ? 'border-rose-500/40 bg-slate-900/80 shadow-[0_0_20px_rgba(244,63,94,0.08)] ring-1 ring-rose-500/20' 
+                          : 'border-slate-800/80 hover:border-slate-700/80 hover:bg-slate-900/60'
+                      }`}
+                    >
+                       <p className={`text-3xl font-bold tracking-tight transition-colors ${
+                         activeTab === 'geos' ? 'text-rose-400 drop-shadow-[0_0_8px_rgba(244,63,94,0.3)]' : 'text-white/90 group-hover:text-white'
+                       }`}>{savedGeos.length}</p>
+                       <p className="text-[10px] uppercase font-bold text-slate-500 tracking-[0.15em] mt-1.5 block group-hover:text-slate-400 transition-colors">Territoires</p>
+                    </button>
                  </>
                )}
             </div>
@@ -243,45 +284,45 @@ export default function DashboardPage() {
           <div className="flex border-b border-slate-100">
             <button 
               onClick={() => startTransition(() => setActiveTab("votes"))}
-              className={`flex-1 py-6 font-bold text-sm uppercase tracking-widest flex items-center justify-center gap-3 transition-all ${
+              className={`relative flex-1 py-6 font-bold text-sm uppercase tracking-widest flex items-center justify-center gap-3 transition-all ${
                 activeTab === "votes" ? "text-slate-900 bg-white" : "text-slate-400 bg-slate-50 hover:bg-slate-100"
               }`}
             >
               <Vote size={18} className={isPending && activeTab !== "votes" ? "opacity-30" : ""} />
               Mon Historique de Vote
-              {activeTab === "votes" && <div className="absolute bottom-0 w-32 h-1 bg-slate-900 rounded-full" />}
+              {activeTab === "votes" && <div className={`absolute bottom-0 w-32 h-1 rounded-full ${isPremium ? 'bg-amber-500' : 'bg-slate-900'}`} />}
             </button>
             <button 
               onClick={() => startTransition(() => setActiveTab("deputies"))}
-              className={`flex-1 py-6 font-bold text-sm uppercase tracking-widest flex items-center justify-center gap-3 transition-all ${
+              className={`relative flex-1 py-6 font-bold text-sm uppercase tracking-widest flex items-center justify-center gap-3 transition-all ${
                 activeTab === "deputies" ? "text-slate-900 bg-white" : "text-slate-400 bg-slate-50 hover:bg-slate-100"
               }`}
             >
               <Users size={18} className={isPending && activeTab !== "deputies" ? "opacity-30" : ""} />
               Mes Députés Suivis
-              {activeTab === "deputies" && <div className="absolute bottom-0 w-32 h-1 bg-slate-900 rounded-full" />}
+              {activeTab === "deputies" && <div className={`absolute bottom-0 w-32 h-1 rounded-full ${isPremium ? 'bg-amber-500' : 'bg-slate-900'}`} />}
             </button>
             {isPremium && (
               <>
                 <button 
                   onClick={() => startTransition(() => setActiveTab("saved"))}
-                  className={`flex-1 py-6 font-bold text-sm uppercase tracking-widest flex items-center justify-center gap-3 transition-all ${
+                  className={`relative flex-1 py-6 font-bold text-sm uppercase tracking-widest flex items-center justify-center gap-3 transition-all ${
                     activeTab === "saved" ? "text-slate-900 bg-white" : "text-slate-400 bg-slate-50 hover:bg-slate-100"
                   }`}
                 >
                   <Bookmark size={18} className={isPending && activeTab !== "saved" ? "opacity-30" : ""} />
                   Lois Favorites
-                  {activeTab === "saved" && <div className="absolute bottom-0 w-32 h-1 bg-slate-900 rounded-full" />}
+                  {activeTab === "saved" && <div className="absolute bottom-0 w-32 h-1 bg-amber-500 rounded-full" />}
                 </button>
                 <button 
                   onClick={() => startTransition(() => setActiveTab("geos"))}
-                  className={`flex-1 py-6 font-bold text-sm uppercase tracking-widest flex items-center justify-center gap-3 transition-all ${
+                  className={`relative flex-1 py-6 font-bold text-sm uppercase tracking-widest flex items-center justify-center gap-3 transition-all ${
                     activeTab === "geos" ? "text-slate-900 bg-white" : "text-slate-400 bg-slate-50 hover:bg-slate-100"
                   }`}
                 >
                   <MapPin size={18} className={isPending && activeTab !== "geos" ? "opacity-30" : ""} />
                   Territoires
-                  {activeTab === "geos" && <div className="absolute bottom-0 w-32 h-1 bg-slate-900 rounded-full" />}
+                  {activeTab === "geos" && <div className="absolute bottom-0 w-32 h-1 bg-rose-500 rounded-full" />}
                 </button>
               </>
             )}
@@ -366,7 +407,7 @@ export default function DashboardPage() {
                         <div className="w-16 h-16 bg-amber-100 rounded-full flex items-center justify-center text-amber-600 mx-auto mb-6">
                             <Star size={32} className="fill-current" />
                         </div>
-                        <h3 className="text-2xl font-staatliches uppercase mb-2">Suivi Député Réservé Elite</h3>
+                        <h3 className="text-2xl font-bold uppercase mb-2">Suivi Député Réservé Elite</h3>
                         <p className="text-slate-500 mb-8 max-w-sm mx-auto">
                           Suivez vos députés favoris et recevez leurs derniers votes directement ici en passant Premium.
                         </p>

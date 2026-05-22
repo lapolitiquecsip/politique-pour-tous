@@ -25,16 +25,10 @@ export default function HomeHero() {
                 initial={{ x: -50, opacity: 0 }}
                 animate={{ x: 0, opacity: 1 }}
                 transition={{ duration: 0.8, type: "spring" }}
-                className="text-[clamp(3.5rem,10vw,120px)] leading-[0.85] tracking-tight m-0 p-0 uppercase"
+                className="text-[clamp(3.5rem,10vw,120px)] text-slate-900 leading-[0.85] tracking-tight m-0 p-0 uppercase"
                 style={{ fontFamily: '"Staatliches", "Arial Black", Impact, sans-serif' }}
               >
-                <MarkerHighlight 
-                  highlight="La politique," 
-                  markerColor="#f43f5e" 
-                  baseColor="#0f172a" 
-                  highlightedTextColor="#ffffff" 
-                  delay={0.2} 
-                />
+                La politique,
               </motion.h1>
             </div>
             
@@ -44,16 +38,10 @@ export default function HomeHero() {
                 initial={{ scale: 0.8, opacity: 0 }}
                 animate={{ scale: 1, opacity: 1 }}
                 transition={{ duration: 0.8, delay: 0.1, type: "spring" }}
-                className="text-[clamp(4rem,12vw,150px)] leading-[0.85] tracking-tight m-0 p-0 uppercase"
+                className="text-[clamp(4rem,12vw,150px)] text-slate-900 leading-[0.85] tracking-tight m-0 p-0 uppercase"
                 style={{ fontFamily: '"Staatliches", "Arial Black", Impact, sans-serif' }}
               >
-                <MarkerHighlight 
-                  highlight="c'est" 
-                  markerColor="#10b981" 
-                  baseColor="#0f172a" 
-                  highlightedTextColor="#ffffff" 
-                  delay={0.4} 
-                />
+                c'est
               </motion.h1>
             </div>
             

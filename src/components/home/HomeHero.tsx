@@ -3,7 +3,6 @@
 import { motion } from "framer-motion";
 import { Landmark } from "lucide-react";
 import GlossaryText from "@/components/ui/GlossaryText";
-import { Gravity, MatterBody } from "@/components/ui/gravity";
 
 export default function HomeHero() {
   return (
@@ -35,100 +34,41 @@ export default function HomeHero() {
           transition={{ duration: 0.8 }}
           className="flex flex-col items-center"
         >
-          {/* The physics gravity simulation */}
-          <div className="w-full h-[400px] md:h-[500px] relative mt-8 mb-12">
-            <Gravity returnToOriginal gravity={{ x: 0, y: 0 }} className="absolute inset-0 z-30">
-              
-              {/* Main Title Block */}
-              <MatterBody
-                matterBodyOptions={{ friction: 0.5, restitution: 0.2 }}
-                x="50%"
-                y="45%"
-                angle={-2}
-              >
-                <div className="text-4xl sm:text-6xl md:text-8xl font-staatliches uppercase tracking-tight bg-white text-slate-900 rounded-full hover:cursor-grab active:cursor-grabbing px-10 py-6 drop-shadow-[0_15px_30px_rgba(255,255,255,0.2)] border-4 border-slate-200">
-                  La politique, c'est simple
-                </div>
-              </MatterBody>
+          {/* Static, playful layout replacing the gravity engine */}
+          <div className="flex flex-col items-center justify-center w-full mt-8 mb-16 px-4 relative z-30">
+            {/* Main Title Block */}
+            <motion.div
+              initial={{ y: 20, opacity: 0, scale: 0.9 }}
+              animate={{ y: 0, opacity: 1, scale: 1 }}
+              transition={{ type: "spring", stiffness: 300, damping: 25 }}
+              className="text-4xl sm:text-6xl md:text-8xl font-staatliches uppercase tracking-tight bg-white text-slate-900 rounded-full px-8 md:px-12 py-4 md:py-6 drop-shadow-[0_15px_30px_rgba(255,255,255,0.2)] border-4 border-slate-200 z-30 mb-10 text-center"
+            >
+              La politique, c'est simple
+            </motion.div>
 
-              {/* Other words */}
-              <MatterBody
-                matterBodyOptions={{ friction: 0.5, restitution: 0.2 }}
-                x="15%"
-                y="15%"
-                angle={-12}
-              >
-                <div className="text-2xl sm:text-3xl md:text-5xl font-staatliches uppercase tracking-tight bg-rose-500 text-white rounded-[2rem] hover:cursor-grab active:cursor-grabbing px-8 py-4 drop-shadow-xl border-2 border-rose-400">
-                  Démocratie
-                </div>
-              </MatterBody>
-              
-              <MatterBody
-                matterBodyOptions={{ friction: 0.5, restitution: 0.2 }}
-                x="85%"
-                y="20%"
-                angle={8}
-              >
-                <div className="text-2xl sm:text-3xl md:text-5xl font-staatliches uppercase tracking-tight bg-blue-500 text-white rounded-[2rem] hover:cursor-grab active:cursor-grabbing px-8 py-4 drop-shadow-xl border-2 border-blue-400">
-                  Assemblée
-                </div>
-              </MatterBody>
-
-              <MatterBody
-                matterBodyOptions={{ friction: 0.5, restitution: 0.2 }}
-                x="15%"
-                y="80%"
-                angle={15}
-              >
-                <div className="text-2xl sm:text-3xl md:text-5xl font-staatliches uppercase tracking-tight bg-emerald-500 text-white rounded-[2rem] hover:cursor-grab active:cursor-grabbing px-8 py-4 drop-shadow-xl border-2 border-emerald-400">
-                  Citoyen
-                </div>
-              </MatterBody>
-
-              <MatterBody
-                matterBodyOptions={{ friction: 0.5, restitution: 0.2 }}
-                x="85%"
-                y="75%"
-                angle={-10}
-              >
-                <div className="text-2xl sm:text-3xl md:text-5xl font-staatliches uppercase tracking-tight bg-amber-500 text-white rounded-[2rem] hover:cursor-grab active:cursor-grabbing px-8 py-4 drop-shadow-xl border-2 border-amber-400">
-                  Vote
-                </div>
-              </MatterBody>
-
-              <MatterBody
-                matterBodyOptions={{ friction: 0.5, restitution: 0.2 }}
-                x="35%"
-                y="85%"
-                angle={-5}
-              >
-                <div className="text-2xl sm:text-3xl md:text-5xl font-staatliches uppercase tracking-tight bg-purple-500 text-white rounded-[2rem] hover:cursor-grab active:cursor-grabbing px-8 py-4 drop-shadow-xl border-2 border-purple-400">
-                  République
-                </div>
-              </MatterBody>
-              
-              <MatterBody
-                matterBodyOptions={{ friction: 0.5, restitution: 0.2 }}
-                x="65%"
-                y="85%"
-                angle={6}
-              >
-                <div className="text-2xl sm:text-3xl md:text-5xl font-staatliches uppercase tracking-tight bg-indigo-500 text-white rounded-[2rem] hover:cursor-grab active:cursor-grabbing px-8 py-4 drop-shadow-xl border-2 border-indigo-400">
-                  Sénat
-                </div>
-              </MatterBody>
-              
-              <MatterBody
-                matterBodyOptions={{ friction: 0.5, restitution: 0.2 }}
-                x="50%"
-                y="10%"
-                angle={0}
-              >
-                <div className="text-2xl sm:text-3xl md:text-5xl font-staatliches uppercase tracking-tight bg-cyan-500 text-white rounded-[2rem] hover:cursor-grab active:cursor-grabbing px-8 py-4 drop-shadow-xl border-2 border-cyan-400">
-                  Loi
-                </div>
-              </MatterBody>
-            </Gravity>
+            {/* Colorful scattered words using flex-wrap */}
+            <div className="flex flex-wrap justify-center items-center gap-4 md:gap-6 max-w-5xl">
+              {[
+                { text: "Démocratie", color: "bg-rose-500 border-rose-400", rotate: "-rotate-2" },
+                { text: "Assemblée", color: "bg-blue-500 border-blue-400", rotate: "rotate-3" },
+                { text: "Citoyen", color: "bg-emerald-500 border-emerald-400", rotate: "-rotate-3" },
+                { text: "Vote", color: "bg-amber-500 border-amber-400", rotate: "rotate-6" },
+                { text: "République", color: "bg-purple-500 border-purple-400", rotate: "-rotate-6" },
+                { text: "Sénat", color: "bg-indigo-500 border-indigo-400", rotate: "rotate-2" },
+                { text: "Loi", color: "bg-cyan-500 border-cyan-400", rotate: "-rotate-2" },
+              ].map((word, i) => (
+                <motion.div
+                  key={word.text}
+                  initial={{ scale: 0, opacity: 0, y: 20 }}
+                  animate={{ scale: 1, opacity: 1, y: 0 }}
+                  transition={{ delay: 0.3 + i * 0.1, type: "spring", stiffness: 300, damping: 20 }}
+                  whileHover={{ scale: 1.05, rotate: 0 }}
+                  className={`text-xl sm:text-2xl md:text-4xl font-staatliches uppercase tracking-tight text-white rounded-full px-6 md:px-8 py-3 md:py-4 drop-shadow-xl border-2 ${word.color} ${word.rotate} cursor-default`}
+                >
+                  {word.text}
+                </motion.div>
+              ))}
+            </div>
           </div>
 
           <p className="text-xl md:text-2xl text-white/80 max-w-2xl mx-auto leading-relaxed font-bold italic tracking-tight drop-shadow-md z-40 relative">

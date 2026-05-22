@@ -52,6 +52,7 @@ export default function HomeHero() {
               <MarkerHighlight 
                 highlight="simple." 
                 markerColor="#3b82f6" 
+                colorList={["#3b82f6", "#f43f5e", "#10b981", "#f59e0b", "#8b5cf6"]}
                 baseColor="#0f172a" 
                 highlightedTextColor="#ffffff" 
                 delay={0.4} 

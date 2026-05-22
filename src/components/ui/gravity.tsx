@@ -310,8 +310,8 @@ const Gravity = forwardRef<GravityRef, GravityProps>(
 
       const mouse = Mouse.create(render.current.canvas)
       // FIX: Prevent Matter.js from stealing mouse scroll
-      mouse.element.removeEventListener("mousewheel", mouse.mousewheel);
-      mouse.element.removeEventListener("DOMMouseScroll", mouse.mousewheel);
+      mouse.element.removeEventListener("mousewheel", (mouse as any).mousewheel);
+      mouse.element.removeEventListener("DOMMouseScroll", (mouse as any).mousewheel);
       
       mouseConstraint.current = MouseConstraint.create(engine.current, {
         mouse: mouse,

@@ -32,7 +32,14 @@ export function MarkerHighlight({
         <motion.span
           initial={{ scaleX: 0 }}
           animate={{ scaleX: 1 }}
-          transition={{ duration: 0.5, delay, ease: [0.22, 1, 0.36, 1] }}
+          transition={{ 
+            duration: 0.6, 
+            delay, 
+            ease: "easeInOut",
+            repeat: Infinity,
+            repeatType: "reverse",
+            repeatDelay: 1.5
+          }}
           style={{
             position: "absolute",
             inset: "0 -0.05em",
@@ -47,7 +54,13 @@ export function MarkerHighlight({
         <motion.span
           initial={{ color: baseColor }}
           animate={{ color: highlightedTextColor }}
-          transition={{ duration: 0.2, delay: delay + 0.2 }}
+          transition={{ 
+            duration: 0.3, 
+            delay: delay + 0.2,
+            repeat: Infinity,
+            repeatType: "reverse",
+            repeatDelay: 1.8
+          }}
           className="relative z-10"
         >
           {highlight}

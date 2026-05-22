@@ -43,7 +43,8 @@ export default function HomeHero() {
               <MatterBody
                 matterBodyOptions={{ friction: 0.5, restitution: 0.2 }}
                 x="50%"
-                y="20%"
+                y="45%"
+                angle={-2}
               >
                 <div className="text-4xl sm:text-6xl md:text-8xl font-staatliches uppercase tracking-tight bg-white text-slate-900 rounded-full hover:cursor-grab active:cursor-grabbing px-10 py-6 drop-shadow-[0_15px_30px_rgba(255,255,255,0.2)] border-4 border-slate-200">
                   La politique, c'est simple
@@ -53,9 +54,9 @@ export default function HomeHero() {
               {/* Other words */}
               <MatterBody
                 matterBodyOptions={{ friction: 0.5, restitution: 0.2 }}
-                x="25%"
-                y="5%"
-                angle={-10}
+                x="15%"
+                y="15%"
+                angle={-12}
               >
                 <div className="text-2xl sm:text-3xl md:text-5xl font-staatliches uppercase tracking-tight bg-rose-500 text-white rounded-[2rem] hover:cursor-grab active:cursor-grabbing px-8 py-4 drop-shadow-xl border-2 border-rose-400">
                   Démocratie
@@ -64,9 +65,9 @@ export default function HomeHero() {
               
               <MatterBody
                 matterBodyOptions={{ friction: 0.5, restitution: 0.2 }}
-                x="75%"
-                y="15%"
-                angle={10}
+                x="85%"
+                y="20%"
+                angle={8}
               >
                 <div className="text-2xl sm:text-3xl md:text-5xl font-staatliches uppercase tracking-tight bg-blue-500 text-white rounded-[2rem] hover:cursor-grab active:cursor-grabbing px-8 py-4 drop-shadow-xl border-2 border-blue-400">
                   Assemblée
@@ -76,8 +77,8 @@ export default function HomeHero() {
               <MatterBody
                 matterBodyOptions={{ friction: 0.5, restitution: 0.2 }}
                 x="15%"
-                y="30%"
-                angle={-15}
+                y="80%"
+                angle={15}
               >
                 <div className="text-2xl sm:text-3xl md:text-5xl font-staatliches uppercase tracking-tight bg-emerald-500 text-white rounded-[2rem] hover:cursor-grab active:cursor-grabbing px-8 py-4 drop-shadow-xl border-2 border-emerald-400">
                   Citoyen
@@ -87,8 +88,8 @@ export default function HomeHero() {
               <MatterBody
                 matterBodyOptions={{ friction: 0.5, restitution: 0.2 }}
                 x="85%"
-                y="30%"
-                angle={15}
+                y="75%"
+                angle={-10}
               >
                 <div className="text-2xl sm:text-3xl md:text-5xl font-staatliches uppercase tracking-tight bg-amber-500 text-white rounded-[2rem] hover:cursor-grab active:cursor-grabbing px-8 py-4 drop-shadow-xl border-2 border-amber-400">
                   Vote
@@ -97,8 +98,8 @@ export default function HomeHero() {
 
               <MatterBody
                 matterBodyOptions={{ friction: 0.5, restitution: 0.2 }}
-                x="40%"
-                y="5%"
+                x="35%"
+                y="85%"
                 angle={-5}
               >
                 <div className="text-2xl sm:text-3xl md:text-5xl font-staatliches uppercase tracking-tight bg-purple-500 text-white rounded-[2rem] hover:cursor-grab active:cursor-grabbing px-8 py-4 drop-shadow-xl border-2 border-purple-400">
@@ -109,8 +110,8 @@ export default function HomeHero() {
               <MatterBody
                 matterBodyOptions={{ friction: 0.5, restitution: 0.2 }}
                 x="65%"
-                y="5%"
-                angle={12}
+                y="85%"
+                angle={6}
               >
                 <div className="text-2xl sm:text-3xl md:text-5xl font-staatliches uppercase tracking-tight bg-indigo-500 text-white rounded-[2rem] hover:cursor-grab active:cursor-grabbing px-8 py-4 drop-shadow-xl border-2 border-indigo-400">
                   Sénat
@@ -121,7 +122,7 @@ export default function HomeHero() {
                 matterBodyOptions={{ friction: 0.5, restitution: 0.2 }}
                 x="50%"
                 y="10%"
-                angle={-8}
+                angle={0}
               >
                 <div className="text-2xl sm:text-3xl md:text-5xl font-staatliches uppercase tracking-tight bg-cyan-500 text-white rounded-[2rem] hover:cursor-grab active:cursor-grabbing px-8 py-4 drop-shadow-xl border-2 border-cyan-400">
                   Loi

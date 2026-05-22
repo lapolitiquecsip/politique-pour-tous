@@ -265,8 +265,8 @@ const Gravity = forwardRef<GravityRef, GravityProps>(
               pointA: { x: body.position.x, y: body.position.y },
               bodyB: body,
               pointB: { x: 0, y: 0 },
-              stiffness: 0.02,
-              damping: 0.05,
+              stiffness: 0.002,
+              damping: 0.1,
               render: { visible: debug }
             });
             World.add(engine.current.world, [constraint]);

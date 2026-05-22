@@ -216,7 +216,7 @@ const Gravity = forwardRef<GravityRef, GravityProps>(
         if (props.bodyType === "circle") {
           const radius = Math.max(width, height) / 2
           body = Bodies.circle(x, y, radius, {
-            ...props.matterBodyOptions,
+            ...(props.matterBodyOptions as any),
             angle: angle,
             render: {
               fillStyle: debug ? "#888888" : "#00000000",
@@ -235,7 +235,7 @@ const Gravity = forwardRef<GravityRef, GravityProps>(
           })
 
           body = Bodies.fromVertices(x, y, vertexSets, {
-            ...props.matterBodyOptions,
+            ...(props.matterBodyOptions as any),
             angle: angle,
             render: {
               fillStyle: debug ? "#888888" : "#00000000",
@@ -245,7 +245,7 @@ const Gravity = forwardRef<GravityRef, GravityProps>(
           })
         } else {
           body = Bodies.rectangle(x, y, width, height, {
-            ...props.matterBodyOptions,
+            ...(props.matterBodyOptions as any),
             angle: angle,
             render: {
               fillStyle: debug ? "#888888" : "#00000000",

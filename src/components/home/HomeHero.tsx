@@ -20,75 +20,124 @@ export default function HomeHero() {
         {/* Radial mask to focus text */}
         <div className="absolute inset-0 bg-[radial-gradient(circle_at_center,transparent_20%,#020617_80%)]" />
       </div>
-
+    <div className="relative min-h-[80vh] flex flex-col items-center justify-center pt-16 pb-20 overflow-hidden w-full bg-slate-950">
+      {/* Background Grid */}
+      <div className="absolute inset-0 bg-[linear-gradient(to_right,#ffffff0a_1px,transparent_1px),linear-gradient(to_bottom,#ffffff0a_1px,transparent_1px)] bg-[size:4rem_4rem] pointer-events-none z-0"></div>
+      
       {/* Subtle Grain Texture Overlay */}
       <div className="absolute inset-0 z-10 opacity-[0.03] pointer-events-none bg-[url('https://www.transparenttextures.com/patterns/felt.png')]" />
 
-      <div className="absolute -top-40 -right-40 w-96 h-96 bg-amber-500/10 rounded-full blur-[80px] z-10" style={{ willChange: "filter" }} />
-      <div className="absolute top-40 -left-10 w-96 h-96 bg-blue-500/10 rounded-full blur-[80px] z-10" style={{ willChange: "filter" }} />
-      
-      <div className="container mx-auto max-w-6xl text-center relative z-20 px-4">
-        <motion.div 
-          initial={{ opacity: 0, y: 20 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.8 }}
-          className="flex flex-col items-center"
-        >
-          {/* Static, playful layout replacing the gravity engine */}
-          <div className="flex flex-col items-center justify-center w-full mt-8 mb-16 px-4 relative z-30">
-            {/* Main Title Block */}
-            <motion.div
-              initial={{ y: 20, opacity: 0, scale: 0.9 }}
-              animate={{ y: 0, opacity: 1, scale: 1 }}
-              transition={{ type: "spring", stiffness: 300, damping: 25 }}
-              className="text-4xl sm:text-6xl md:text-8xl font-staatliches uppercase tracking-tight bg-white text-slate-900 rounded-full px-8 md:px-12 py-4 md:py-6 drop-shadow-[0_15px_30px_rgba(255,255,255,0.2)] border-4 border-slate-200 z-30 mb-10 text-center"
-            >
-              La politique, c'est simple
-            </motion.div>
-
-            {/* Colorful scattered words using flex-wrap */}
-            <div className="flex flex-wrap justify-center items-center gap-4 md:gap-6 max-w-5xl">
-              {[
-                { text: "Démocratie", color: "bg-rose-500 border-rose-400", rotate: "-rotate-2" },
-                { text: "Assemblée", color: "bg-blue-500 border-blue-400", rotate: "rotate-3" },
-                { text: "Citoyen", color: "bg-emerald-500 border-emerald-400", rotate: "-rotate-3" },
-                { text: "Vote", color: "bg-amber-500 border-amber-400", rotate: "rotate-6" },
-                { text: "République", color: "bg-purple-500 border-purple-400", rotate: "-rotate-6" },
-                { text: "Sénat", color: "bg-indigo-500 border-indigo-400", rotate: "rotate-2" },
-                { text: "Loi", color: "bg-cyan-500 border-cyan-400", rotate: "-rotate-2" },
-              ].map((word, i) => (
-                <motion.div
-                  key={word.text}
-                  initial={{ scale: 0, opacity: 0, y: 20 }}
-                  animate={{ scale: 1, opacity: 1, y: 0 }}
-                  transition={{ delay: 0.3 + i * 0.1, type: "spring", stiffness: 300, damping: 20 }}
-                  whileHover={{ scale: 1.05, rotate: 0 }}
-                  className={`text-xl sm:text-2xl md:text-4xl font-staatliches uppercase tracking-tight text-white rounded-full px-6 md:px-8 py-3 md:py-4 drop-shadow-xl border-2 ${word.color} ${word.rotate} cursor-default`}
-                >
-                  {word.text}
-                </motion.div>
-              ))}
+      <main className="flex-1 relative z-10 w-full max-w-[1440px] mx-auto flex flex-col items-center justify-center mt-12 md:mt-24">
+        
+        {/* Massive Typography Container */}
+        <div className="relative w-full max-w-6xl mx-auto flex flex-col items-center justify-center text-center z-10 mt-4 mb-16 px-4">
+          
+          {/* Text Stack */}
+          <div className="w-full flex flex-col items-center relative z-10 space-y-1 md:space-y-2">
+            
+            {/* LA POLITIQUE */}
+            <div className="w-full flex justify-start pl-[2%] md:pl-[10%] relative z-30">
+              <motion.h1 
+                initial={{ x: -50, opacity: 0 }}
+                animate={{ x: 0, opacity: 1 }}
+                transition={{ duration: 0.8, type: "spring" }}
+                className="text-[clamp(3rem,9vw,120px)] font-black leading-[0.85] tracking-tighter text-[#f43f5e] m-0 p-0 uppercase"
+                style={{ 
+                  fontFamily: '"Staatliches", "Arial Black", Impact, sans-serif',
+                  textShadow: '1px 1px 0 #ffffff, 2px 2px 0 #ffffff, 3px 3px 0 #ffffff, 4px 4px 0 #ffffff, 5px 5px 0 #ffffff, 6px 6px 0 #ffffff, 7px 7px 0 #ffffff, 8px 8px 0 #ffffff'
+                }}
+              >
+                La politique,
+              </motion.h1>
             </div>
+            
+            {/* C'EST */}
+            <div className="w-full flex justify-center relative z-20">
+              <motion.h1 
+                initial={{ scale: 0.8, opacity: 0 }}
+                animate={{ scale: 1, opacity: 1 }}
+                transition={{ duration: 0.8, delay: 0.1, type: "spring" }}
+                className="text-[clamp(3.5rem,11vw,150px)] font-black leading-[0.85] tracking-tighter text-[#10b981] m-0 p-0 uppercase"
+                style={{ 
+                  fontFamily: '"Staatliches", "Arial Black", Impact, sans-serif',
+                  textShadow: '1px 1px 0 #ffffff, 2px 2px 0 #ffffff, 3px 3px 0 #ffffff, 4px 4px 0 #ffffff, 5px 5px 0 #ffffff, 6px 6px 0 #ffffff, 7px 7px 0 #ffffff, 8px 8px 0 #ffffff'
+                }}
+              >
+                c'est
+              </motion.h1>
+            </div>
+            
+            {/* SIMPLE */}
+            <div className="w-full flex justify-end pr-[2%] md:pr-[10%] relative z-10">
+              <motion.h1 
+                initial={{ x: 50, opacity: 0 }}
+                animate={{ x: 0, opacity: 1 }}
+                transition={{ duration: 0.8, delay: 0.2, type: "spring" }}
+                className="text-[clamp(4rem,13vw,180px)] font-black leading-[0.85] tracking-tighter text-[#3b82f6] m-0 p-0 uppercase"
+                style={{ 
+                  fontFamily: '"Staatliches", "Arial Black", Impact, sans-serif',
+                  textShadow: '1px 1px 0 #ffffff, 2px 2px 0 #ffffff, 3px 3px 0 #ffffff, 4px 4px 0 #ffffff, 5px 5px 0 #ffffff, 6px 6px 0 #ffffff, 7px 7px 0 #ffffff, 8px 8px 0 #ffffff'
+                }}
+              >
+                simple.
+              </motion.h1>
+            </div>
+
           </div>
 
-          <p className="text-xl md:text-2xl text-white/80 max-w-2xl mx-auto leading-relaxed font-bold italic tracking-tight drop-shadow-md z-40 relative">
+          {/* Absolute Overlays (Floating Bubbles) */}
+          <div className="absolute inset-0 w-full h-full pointer-events-none">
+            
+            {/* Bubble 1 */}
+            <motion.div 
+              animate={{ y: [0, -15, 0] }}
+              transition={{ duration: 5, repeat: Infinity, ease: "easeInOut" }}
+              className="absolute top-[5%] right-[5%] md:right-[15%] z-40 pointer-events-auto hidden sm:block"
+            >
+              <div className="bg-[#a855f7] text-white font-staatliches text-2xl md:text-4xl px-6 py-2 rounded-full border-2 border-white/50 rotate-[12deg] shadow-2xl hover:scale-105 transition-transform cursor-default">
+                RÉPUBLIQUE
+              </div>
+            </motion.div>
+
+            {/* Bubble 2 */}
+            <motion.div 
+              animate={{ y: [0, -20, 0] }}
+              transition={{ duration: 6, repeat: Infinity, ease: "easeInOut", delay: 1 }}
+              className="absolute bottom-[25%] left-[2%] md:left-[10%] z-40 pointer-events-auto hidden sm:block"
+            >
+              <div className="bg-[#f59e0b] text-white font-staatliches text-2xl md:text-4xl px-6 py-2 rounded-full border-2 border-white/50 rotate-[-10deg] shadow-2xl hover:scale-105 transition-transform cursor-default">
+                VOTE
+              </div>
+            </motion.div>
+            
+            {/* Bubble 3 */}
+            <motion.div 
+              animate={{ y: [0, -10, 0] }}
+              transition={{ duration: 4, repeat: Infinity, ease: "easeInOut", delay: 2 }}
+              className="absolute bottom-[5%] right-[10%] md:right-[20%] z-40 pointer-events-auto hidden sm:block"
+            >
+              <div className="bg-[#06b6d4] text-white font-staatliches text-xl md:text-3xl px-6 py-2 rounded-full border-2 border-white/50 rotate-[5deg] shadow-2xl hover:scale-105 transition-transform cursor-default">
+                ASSEMBLÉE
+              </div>
+            </motion.div>
+
+          </div>
+        </div>
+
+        <motion.p 
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.8, delay: 0.5 }}
+          className="text-xl md:text-2xl text-white/80 max-w-2xl mx-auto leading-relaxed font-bold italic tracking-tight drop-shadow-md z-40 relative text-center px-4 mt-8"
+        >
             <GlossaryText>
               Comprendre la politique française n'a jamais été aussi accessible.
             </GlossaryText>
-          </p>
+            <br />
+            Explorez les lois, suivez vos élus et décryptez le budget de l'État en toute simplicité.
+        </motion.p>
 
-          <div className="mt-10 flex items-center gap-2 text-white/40 font-black text-[10px] uppercase tracking-[0.3em]">
-            <div className="w-8 h-px bg-blue-500" />
-            <div className="w-8 h-px bg-rose-500" />
-            <div className="w-8 h-px bg-amber-500" />
-            <Landmark className="w-3 h-3 text-white" />
-            Plateforme Citoyenne
-            <div className="w-8 h-px bg-amber-500" />
-            <div className="w-8 h-px bg-rose-500" />
-            <div className="w-8 h-px bg-blue-500" />
-          </div>
-        </motion.div>
-      </div>
+      </main>
     </div>
   );
 }

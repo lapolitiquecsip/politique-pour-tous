@@ -6,20 +6,6 @@ import GlossaryText from "@/components/ui/GlossaryText";
 
 export default function HomeHero() {
   return (
-    <div className="relative pt-24 pb-16 md:pt-32 md:pb-24 bg-slate-950 overflow-hidden group min-h-[50vh] flex items-center">
-      {/* Institutional Decorative Background */}
-      <div className="absolute top-0 inset-x-0 h-px bg-gradient-to-r from-blue-500 via-rose-500 to-amber-500 z-20" />
-      
-      {/* Hémicycle Filigree (Visual Element) */}
-      <div className="absolute inset-0 z-0 opacity-[0.06] select-none pointer-events-none flex items-center justify-center overflow-hidden">
-        <img 
-          src="/hemicycle_line_art.png" 
-          alt="" 
-          className="w-full h-full object-cover md:object-contain scale-110 blur-[0.5px]" 
-        />
-        {/* Radial mask to focus text */}
-        <div className="absolute inset-0 bg-[radial-gradient(circle_at_center,transparent_20%,#020617_80%)]" />
-      </div>
     <div className="relative min-h-[80vh] flex flex-col items-center justify-center pt-16 pb-20 overflow-hidden w-full bg-slate-950">
       {/* Background Grid */}
       <div className="absolute inset-0 bg-[linear-gradient(to_right,#ffffff0a_1px,transparent_1px),linear-gradient(to_bottom,#ffffff0a_1px,transparent_1px)] bg-[size:4rem_4rem] pointer-events-none z-0"></div>

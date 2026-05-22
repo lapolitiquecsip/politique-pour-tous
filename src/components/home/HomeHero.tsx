@@ -3,6 +3,7 @@
 import { motion } from "framer-motion";
 import { Landmark } from "lucide-react";
 import GlossaryText from "@/components/ui/GlossaryText";
+import { Gravity, MatterBody } from "@/components/ui/gravity";
 
 export default function HomeHero() {
   return (
@@ -34,110 +35,102 @@ export default function HomeHero() {
           transition={{ duration: 0.8 }}
           className="flex flex-col items-center"
         >
-          <h1 className="text-6xl md:text-8xl font-staatliches uppercase tracking-tight leading-none mb-6 flex flex-col items-start">
-            <span className="block text-white drop-shadow-[0_0_30px_rgba(255,255,255,0.2)]">
-              La{" "}
-              <span className="relative inline-block px-4 py-2">
-                {/* Loudspeaker Waves Effect */}
-                <div className="absolute inset-0 flex items-center justify-center pointer-events-none">
-                  {[1, 2, 3].map((i) => (
-                    <motion.div
-                      key={i}
-                      initial={{ scale: 1, opacity: 0 }}
-                      animate={{ 
-                        scale: [1, 2.5], 
-                        opacity: [0.4, 0] 
-                      }}
-                      transition={{ 
-                        duration: 3, 
-                        repeat: Infinity, 
-                        delay: i * 0.8,
-                        ease: "easeOut" 
-                      }}
-                      className="absolute w-full h-full border-2 border-blue-400/20 rounded-full"
-                    />
-                  ))}
+          {/* The physics gravity simulation */}
+          <div className="w-full h-[400px] md:h-[500px] relative mt-8 mb-12">
+            <Gravity gravity={{ x: 0, y: 1 }} className="absolute inset-0 z-30">
+              
+              {/* Main Title Block */}
+              <MatterBody
+                matterBodyOptions={{ friction: 0.5, restitution: 0.2 }}
+                x="50%"
+                y="20%"
+              >
+                <div className="text-4xl sm:text-6xl md:text-8xl font-staatliches uppercase tracking-tight bg-white text-slate-900 rounded-full hover:cursor-grab active:cursor-grabbing px-10 py-6 drop-shadow-[0_15px_30px_rgba(255,255,255,0.2)] border-4 border-slate-200">
+                  La politique, c'est simple
                 </div>
-                <span className="inline-flex">
-                  {(() => {
-                    const colors = ["#90D5FF", "#57B9FF", "#77B1D4", "#a5c9e1"]; // Replaced dark #517891 with a slightly lighter #a5c9e1 for better visibility
-                    return "politique,".split("").map((char, i) => (
-                      <motion.span
-                        key={i}
-                        initial={{ y: 20, opacity: 0, scale: 0.8 }}
-                        animate={{ y: 0, opacity: 1, scale: 1 }}
-                        style={{ color: colors[i % colors.length] }}
-                        transition={{ 
-                          delay: 0.5 + i * 0.05, 
-                          type: "spring",
-                          stiffness: 300,
-                          damping: 15
-                        }}
-                      >
-                        {char}
-                      </motion.span>
-                    ));
-                  })()}
-                </span>
-                {/* Hand-drawn rough circle SVG */}
-                <svg
-                  viewBox="0 0 300 100"
-                  fill="none"
-                  stroke="currentColor"
-                  strokeWidth="3.5"
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                  className="absolute inset-0 w-full h-full text-rose-500/60 drop-shadow-[0_0_10px_rgba(244,63,94,0.4)] pointer-events-none -rotate-2 -translate-y-1 scale-125"
-                >
-                  <path 
-                    d="M15,50 C15,20 80,8 150,8 C220,8 285,20 285,50 C285,80 220,92 150,92 C80,92 15,80 15,50 Z" 
-                    className="animate-[dash_2s_ease-out_forwards]"
-                    style={{ strokeDasharray: 1000, strokeDashoffset: 1000 }}
-                  />
-                  <style>{`
-                    @keyframes dash {
-                      to { strokeDashoffset: 0; }
-                    }
-                  `}</style>
-                </svg>
-              </span>
-            </span>
-            <span className="italic uppercase flex items-center flex-wrap text-red-500">
-              <span className="mr-4">
-                c'est 
-              </span>
-              <span className="relative inline-block">
-                simple.
-              </span>
-              {/* Cluster of hand-drawn neon stars */}
-              <div className="relative inline-block ml-2 align-middle">
-                {/* Initial Yellow Star */}
-                <motion.div
-                  initial={{ scale: 0, rotate: -20 }}
-                  animate={{ scale: 1, rotate: 12 }}
-                  transition={{ delay: 1, type: "spring", stiffness: 200 }}
-                >
-                  <svg 
-                    viewBox="0 0 24 24" 
-                    fill="none" 
-                    stroke="#4ade80" 
-                    strokeWidth="3.5" 
-                    strokeLinecap="round" 
-                    strokeLinejoin="round" 
-                    className="w-10 h-10 md:w-14 md:h-14 drop-shadow-[0_0_15px_rgba(74,222,128,0.8)]"
-                  >
-                    <polyline points="20 6 9 17 4 12" />
-                  </svg>
-                </motion.div>
+              </MatterBody>
 
+              {/* Other words */}
+              <MatterBody
+                matterBodyOptions={{ friction: 0.5, restitution: 0.4 }}
+                x="25%"
+                y="5%"
+                angle={-10}
+              >
+                <div className="text-2xl sm:text-3xl md:text-5xl font-staatliches uppercase tracking-tight bg-rose-500 text-white rounded-[2rem] hover:cursor-grab active:cursor-grabbing px-8 py-4 drop-shadow-xl border-2 border-rose-400">
+                  Démocratie
+                </div>
+              </MatterBody>
+              
+              <MatterBody
+                matterBodyOptions={{ friction: 0.5, restitution: 0.4 }}
+                x="75%"
+                y="15%"
+                angle={10}
+              >
+                <div className="text-2xl sm:text-3xl md:text-5xl font-staatliches uppercase tracking-tight bg-blue-500 text-white rounded-[2rem] hover:cursor-grab active:cursor-grabbing px-8 py-4 drop-shadow-xl border-2 border-blue-400">
+                  Assemblée
+                </div>
+              </MatterBody>
 
+              <MatterBody
+                matterBodyOptions={{ friction: 0.5, restitution: 0.4 }}
+                x="15%"
+                y="30%"
+                angle={-15}
+              >
+                <div className="text-2xl sm:text-3xl md:text-5xl font-staatliches uppercase tracking-tight bg-emerald-500 text-white rounded-[2rem] hover:cursor-grab active:cursor-grabbing px-8 py-4 drop-shadow-xl border-2 border-emerald-400">
+                  Citoyen
+                </div>
+              </MatterBody>
 
+              <MatterBody
+                matterBodyOptions={{ friction: 0.5, restitution: 0.4 }}
+                x="85%"
+                y="30%"
+                angle={15}
+              >
+                <div className="text-2xl sm:text-3xl md:text-5xl font-staatliches uppercase tracking-tight bg-amber-500 text-white rounded-[2rem] hover:cursor-grab active:cursor-grabbing px-8 py-4 drop-shadow-xl border-2 border-amber-400">
+                  Vote
+                </div>
+              </MatterBody>
 
-              </div>
-            </span>
-          </h1>
-          
-          <p className="text-xl md:text-2xl text-white/80 max-w-2xl mx-auto leading-relaxed font-bold italic tracking-tight drop-shadow-md">
+              <MatterBody
+                matterBodyOptions={{ friction: 0.5, restitution: 0.4 }}
+                x="40%"
+                y="5%"
+                angle={-5}
+              >
+                <div className="text-2xl sm:text-3xl md:text-5xl font-staatliches uppercase tracking-tight bg-purple-500 text-white rounded-[2rem] hover:cursor-grab active:cursor-grabbing px-8 py-4 drop-shadow-xl border-2 border-purple-400">
+                  République
+                </div>
+              </MatterBody>
+              
+              <MatterBody
+                matterBodyOptions={{ friction: 0.5, restitution: 0.4 }}
+                x="65%"
+                y="5%"
+                angle={12}
+              >
+                <div className="text-2xl sm:text-3xl md:text-5xl font-staatliches uppercase tracking-tight bg-indigo-500 text-white rounded-[2rem] hover:cursor-grab active:cursor-grabbing px-8 py-4 drop-shadow-xl border-2 border-indigo-400">
+                  Sénat
+                </div>
+              </MatterBody>
+              
+              <MatterBody
+                matterBodyOptions={{ friction: 0.5, restitution: 0.4 }}
+                x="50%"
+                y="10%"
+                angle={-8}
+              >
+                <div className="text-2xl sm:text-3xl md:text-5xl font-staatliches uppercase tracking-tight bg-cyan-500 text-white rounded-[2rem] hover:cursor-grab active:cursor-grabbing px-8 py-4 drop-shadow-xl border-2 border-cyan-400">
+                  Loi
+                </div>
+              </MatterBody>
+            </Gravity>
+          </div>
+
+          <p className="text-xl md:text-2xl text-white/80 max-w-2xl mx-auto leading-relaxed font-bold italic tracking-tight drop-shadow-md z-40 relative">
             <GlossaryText>
               Comprendre la politique française n'a jamais été aussi accessible.
             </GlossaryText>

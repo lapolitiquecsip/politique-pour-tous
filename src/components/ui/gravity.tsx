@@ -85,12 +85,14 @@ type GravityProps = {
   addTopWall?: boolean
   autoStart?: boolean
   className?: string
+  returnToOriginal?: boolean
 }
 
 type PhysicsBody = {
   element: HTMLElement
   body: Matter.Body
   props: MatterBodyProps
+  constraint?: Matter.Constraint
 }
 
 type MatterBodyProps = {
@@ -183,6 +185,7 @@ const Gravity = forwardRef<GravityRef, GravityProps>(
       addTopWall = true,
       autoStart = true,
       className,
+      returnToOriginal = false,
       ...props
     },
     ref
@@ -256,18 +259,34 @@ const Gravity = forwardRef<GravityRef, GravityProps>(
         }
 
         if (body) {
+          let constraint: Matter.Constraint | undefined;
+          if (returnToOriginal) {
+            constraint = Matter.Constraint.create({
+              pointA: { x: body.position.x, y: body.position.y },
+              bodyB: body,
+              pointB: { x: 0, y: 0 },
+              stiffness: 0.02,
+              damping: 0.05,
+              render: { visible: debug }
+            });
+            World.add(engine.current.world, [constraint]);
+          }
+
           World.add(engine.current.world, [body])
-          bodiesMap.current.set(id, { element, body, props })
+          bodiesMap.current.set(id, { element, body, props, constraint })
         }
       },
-      [debug]
+      [debug, returnToOriginal]
     )
 
     // Unregister Matter.js body from the physics world
     const unregisterElement = useCallback((id: string) => {
-      const body = bodiesMap.current.get(id)
-      if (body) {
-        World.remove(engine.current.world, body.body)
+      const bodyData = bodiesMap.current.get(id)
+      if (bodyData) {
+        World.remove(engine.current.world, bodyData.body)
+        if (bodyData.constraint) {
+          World.remove(engine.current.world, bodyData.constraint)
+        }
         bodiesMap.current.delete(id)
       }
     }, [])
@@ -410,6 +429,19 @@ const Gravity = forwardRef<GravityRef, GravityProps>(
         })
       }
 
+      if (returnToOriginal) {
+        Events.on(engine.current, "beforeUpdate", () => {
+          bodiesMap.current.forEach(({ body, props }) => {
+            if (!body.isStatic) {
+              const targetAngle = (props.angle || 0) * (Math.PI / 180);
+              const angleDiff = targetAngle - body.angle;
+              body.torque = angleDiff * 0.005 * body.inertia;
+              Matter.Body.setAngularVelocity(body, body.angularVelocity * 0.9);
+            }
+          })
+        })
+      }
+
       World.add(engine.current.world, [mouseConstraint.current, ...walls])
 
       render.current.mouse = mouse
@@ -496,7 +528,7 @@ const Gravity = forwardRef<GravityRef, GravityProps>(
 
     const reset = useCallback(() => {
       stopEngine()
-      bodiesMap.current.forEach(({ element, body, props }) => {
+      bodiesMap.current.forEach(({ element, body, props, constraint }) => {
         body.angle = props.angle || 0
 
         const x = calculatePosition(
@@ -511,10 +543,13 @@ const Gravity = forwardRef<GravityRef, GravityProps>(
         )
         body.position.x = x
         body.position.y = y
+        if (constraint) {
+          constraint.pointA = { x, y }
+        }
       })
       updateElements()
       handleResize()
-    }, [])
+    }, [canvasSize, handleResize])
 
     useImperativeHandle(
       ref,

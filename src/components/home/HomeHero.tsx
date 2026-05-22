@@ -41,7 +41,7 @@ export default function HomeHero() {
               
               {/* Main Title Block */}
               <MatterBody
-                matterBodyOptions={{ friction: 0.5, restitution: 0.2 }}
+                matterBodyOptions={{ friction: 0.8, frictionAir: 0.02, restitution: 0.05, density: 0.2 }}
                 x="50%"
                 y="20%"
               >
@@ -52,7 +52,7 @@ export default function HomeHero() {
 
               {/* Other words */}
               <MatterBody
-                matterBodyOptions={{ friction: 0.5, restitution: 0.4 }}
+                matterBodyOptions={{ friction: 0.8, frictionAir: 0.05, restitution: 0.05, density: 0.1 }}
                 x="25%"
                 y="5%"
                 angle={-10}
@@ -63,7 +63,7 @@ export default function HomeHero() {
               </MatterBody>
               
               <MatterBody
-                matterBodyOptions={{ friction: 0.5, restitution: 0.4 }}
+                matterBodyOptions={{ friction: 0.8, frictionAir: 0.05, restitution: 0.05, density: 0.1 }}
                 x="75%"
                 y="15%"
                 angle={10}
@@ -74,7 +74,7 @@ export default function HomeHero() {
               </MatterBody>
 
               <MatterBody
-                matterBodyOptions={{ friction: 0.5, restitution: 0.4 }}
+                matterBodyOptions={{ friction: 0.8, frictionAir: 0.05, restitution: 0.05, density: 0.1 }}
                 x="15%"
                 y="30%"
                 angle={-15}
@@ -85,7 +85,7 @@ export default function HomeHero() {
               </MatterBody>
 
               <MatterBody
-                matterBodyOptions={{ friction: 0.5, restitution: 0.4 }}
+                matterBodyOptions={{ friction: 0.8, frictionAir: 0.05, restitution: 0.05, density: 0.1 }}
                 x="85%"
                 y="30%"
                 angle={15}
@@ -96,7 +96,7 @@ export default function HomeHero() {
               </MatterBody>
 
               <MatterBody
-                matterBodyOptions={{ friction: 0.5, restitution: 0.4 }}
+                matterBodyOptions={{ friction: 0.8, frictionAir: 0.05, restitution: 0.05, density: 0.1 }}
                 x="40%"
                 y="5%"
                 angle={-5}
@@ -107,7 +107,7 @@ export default function HomeHero() {
               </MatterBody>
               
               <MatterBody
-                matterBodyOptions={{ friction: 0.5, restitution: 0.4 }}
+                matterBodyOptions={{ friction: 0.8, frictionAir: 0.05, restitution: 0.05, density: 0.1 }}
                 x="65%"
                 y="5%"
                 angle={12}
@@ -118,7 +118,7 @@ export default function HomeHero() {
               </MatterBody>
               
               <MatterBody
-                matterBodyOptions={{ friction: 0.5, restitution: 0.4 }}
+                matterBodyOptions={{ friction: 0.8, frictionAir: 0.05, restitution: 0.05, density: 0.1 }}
                 x="50%"
                 y="10%"
                 angle={-8}

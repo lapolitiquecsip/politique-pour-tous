@@ -205,6 +205,21 @@ export const AwardBadge = ({
 
   const isOriginalType = typeof type !== "undefined";
 
+  // Force button to say "PREMIUM" in uppercase, while preserving dynamic system texts
+  let displayText = "PREMIUM";
+  if (titleText) {
+    const upperTitle = titleText.toUpperCase();
+    if (
+      upperTitle.includes("REDIRECT") ||
+      upperTitle.includes("CHARGEMENT") ||
+      upperTitle.includes("DISPONIBLE") ||
+      upperTitle.includes("SÉLECTIONNÉE") ||
+      upperTitle.includes("SELECTIONNEE")
+    ) {
+      displayText = upperTitle;
+    }
+  }
+
   return (
     <a
       ref={ref}
@@ -360,17 +375,26 @@ export const AwardBadge = ({
                 <stop offset="100%" stopColor="#d97706" />
               </linearGradient>
             </defs>
-            <rect width="260" height="54" rx="16" fill="#090d16" />
-            <rect x="2" y="2" width="256" height="50" rx="14" fill="transparent" stroke="url(#goldGradient)" strokeWidth="1.5" />
-            <text fontFamily="system-ui, -apple-system, sans-serif" fontSize="7.5" fontWeight="900" fill="#f59e0b" letterSpacing="1.5" x="54" y="20">
-              {subtitleText.toUpperCase()}
+            {/* Background filled with Gold Gradient */}
+            <rect width="260" height="54" rx="16" fill="url(#goldGradient)" />
+            
+            {/* Subtle inner white border */}
+            <rect x="2" y="2" width="256" height="50" rx="14" fill="transparent" stroke="#ffffff" strokeWidth="1.5" strokeOpacity="0.35" />
+            
+            {/* Centered White PREMIUM Text */}
+            <text
+              fontFamily="system-ui, -apple-system, sans-serif"
+              fontSize="14.5"
+              fontWeight="900"
+              fill="#ffffff"
+              letterSpacing="2.5"
+              x="50%"
+              y="50%"
+              textAnchor="middle"
+              dominantBaseline="central"
+            >
+              {displayText}
             </text>
-            <text fontFamily="Impact, Staatliches, sans-serif" fontSize="12.5" fontWeight="bold" fill="#ffffff" letterSpacing="0.5" x="53" y="37">
-              {titleText.toUpperCase()}
-            </text>
-            <g transform="translate(10, 9)">
-              <path fill="url(#goldGradient)" d="M18 3l4.635 9.39L33 13.905l-7.5 7.305 1.77 10.32L18 26.655l-9.27 4.875 1.77-10.32L3 13.905l10.365-1.515L18 3z" />
-            </g>
             <g style={{ mixBlendMode: "overlay" }} mask="url(#badgeMask)">
               <g style={{
                 transform: `rotate(${firstOverlayPosition}deg)`,

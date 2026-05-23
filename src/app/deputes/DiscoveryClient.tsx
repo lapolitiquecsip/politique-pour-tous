@@ -27,11 +27,11 @@ export default function DiscoveryClient({ initialDeputies }: { initialDeputies: 
       {/* 1. GLOBAL POSTER HEADER */}
       <div className="mb-16">
         <div className="relative mb-8 text-center">
-          <h1 className="text-5xl md:text-7xl font-staatliches uppercase tracking-tighter leading-none relative z-10">
+          <h1 className="text-5xl md:text-7xl font-staatliches uppercase tracking-tighter leading-none relative z-10 text-black">
             <span className="text-slate-900 opacity-[0.08] absolute -top-10 left-1/2 -translate-x-1/2 select-none hidden md:block whitespace-nowrap">
               RÉPUBLIQUE • ÉLUS
             </span>
-            Que votent <span className="bg-gradient-to-r from-blue-600 via-red-600 to-blue-600 bg-clip-text text-transparent">vos élus ?</span>
+            Que votent vos <span className="bg-gradient-to-r from-[#00209f] via-[#c8c8c8] to-[#e1000f] bg-clip-text text-transparent">élus</span> ?
           </h1>
           <div className="h-1.5 w-32 bg-gradient-to-r from-blue-600 to-red-600 mt-6 rounded-full mx-auto" />
           

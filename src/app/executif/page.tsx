@@ -24,6 +24,7 @@ import FeedItemCard from "@/components/home/FeedItemCard";
 import GlossaryText from "@/components/ui/GlossaryText";
 import ministersBios from "@/lib/data/ministersBios.json";
 import MinisterImage from "@/components/executif/MinisterImage";
+import { AwardBadge } from "@/components/ui/award-badge";
 
 const normalizeName = (name: string) => {
   if (!name) return "";
@@ -545,12 +546,12 @@ export default function ExecutifPage() {
                 </div>
               </div>
 
-              <Link 
-                href="/executif/budget"
-                className="w-full mt-8 py-4 bg-gradient-to-r from-amber-200 via-amber-400 to-amber-500 text-slate-950 rounded-2xl text-[10px] font-black uppercase tracking-widest hover:scale-[1.02] transition-all flex items-center justify-center gap-2 group/btn shadow-xl shadow-amber-500/20"
-              >
-                Analyse Premium du Budget <Zap size={14} className="text-slate-950 group-hover:scale-125 transition-transform" fill="currentColor" />
-              </Link>
+              <div className="flex justify-center mt-8 w-full">
+                <AwardBadge 
+                  link="/executif/budget"
+                  className="w-full"
+                />
+              </div>
             </motion.div>
 
             {/* DECREES CARD - SIMPLE LIST */}

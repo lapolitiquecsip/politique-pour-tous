@@ -205,8 +205,8 @@ export const AwardBadge = ({
 
   const isOriginalType = typeof type !== "undefined";
 
-  // Force button to say "PREMIUM" in uppercase, while preserving dynamic system texts
-  let displayText = "PREMIUM";
+  // Force button to say "DEVENIR PREMIUM" in uppercase, while preserving dynamic system texts
+  let displayText = "DEVENIR PREMIUM";
   if (titleText) {
     const upperTitle = titleText.toUpperCase();
     if (

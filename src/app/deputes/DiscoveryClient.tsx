@@ -31,7 +31,7 @@ export default function DiscoveryClient({ initialDeputies }: { initialDeputies: 
             <span className="text-slate-900 opacity-[0.08] absolute -top-10 left-1/2 -translate-x-1/2 select-none hidden md:block whitespace-nowrap">
               RÉPUBLIQUE • ÉLUS
             </span>
-            Que votent vos <span className="bg-gradient-to-r from-[#00209f] via-[#c8c8c8] to-[#e1000f] bg-clip-text text-transparent">élus</span> ?
+            Que votent vos <span className="inline-flex items-center bg-slate-950 px-4 pt-1.5 pb-0.5 md:pt-3 md:pb-1 rounded-xl md:rounded-2xl shadow-sm mx-1"><span className="bg-gradient-to-r from-blue-500 via-white to-red-500 bg-clip-text text-transparent">élus</span></span> ?
           </h1>
           <div className="h-1.5 w-32 bg-gradient-to-r from-blue-600 to-red-600 mt-6 rounded-full mx-auto" />
           

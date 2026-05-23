@@ -5,6 +5,7 @@ import { X, ChevronRight, ChevronLeft, Landmark, CalendarDays, Clock } from "luc
 
 import Link from "next/link";
 import { api } from "@/lib/api";
+import { Marquee } from "@/components/ui/marquee";
 
 interface Institution {
   id: string;
@@ -76,11 +77,11 @@ const InstitutionCard = memo(({ inst, index, onClick }: { inst: Institution, ind
       transition={{ delay: index * 0.1 }}
       onClick={onClick}
       style={{ willChange: "transform, opacity", transform: "translateZ(0)" }}
-      className="group relative h-[450px] rounded-[2rem] overflow-hidden shadow-sm hover:shadow-2xl transition-all duration-500 cursor-pointer text-left w-full border border-border/50"
+      className={`group relative h-[450px] rounded-[2rem] overflow-hidden shadow-sm hover:shadow-2xl ${inst.id === 'assemblee' ? 'hover:shadow-red-500/50' : inst.id === 'senat' ? 'hover:shadow-blue-500/50' : 'hover:shadow-purple-500/50'} transition-all duration-500 cursor-pointer text-left w-full border border-border/50`}
     >
-      {/* Image de fond avec zoom au survol */}
+      {/* Image de fond avec zoom coloré au survol */}
       <div 
-        className="absolute inset-0 bg-cover bg-center transition-transform duration-1000 group-hover:scale-105"
+        className="absolute inset-0 bg-cover bg-center transition-all duration-1000 group-hover:scale-110 group-hover:saturate-[1.5]"
         style={{ backgroundImage: `url(${inst.image})`, opacity: 0.9 }}
       />
       
@@ -227,16 +228,23 @@ export default function InstitutionsGrid() {
 
   return (
     <div className="w-full">
-      {/* ── GRILLE PRINCIPALE ── */}
-      <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
-        {INSTITUTIONS.map((inst, index) => (
-          <InstitutionCard 
-            key={inst.id} 
-            inst={inst} 
-            index={index} 
-            onClick={() => setSelectedInst(inst)} 
-          />
-        ))}
+      {/* ── MARQUEE DES INSTITUTIONS ── */}
+      <div className="relative w-full overflow-hidden">
+        {/* Gradients de fondu sur les côtés */}
+        <div className="pointer-events-none absolute top-0 left-0 z-10 h-full w-16 bg-gradient-to-r from-background to-transparent" />
+        <div className="pointer-events-none absolute top-0 right-0 z-10 h-full w-16 bg-gradient-to-l from-background to-transparent" />
+
+        <Marquee className="[--gap:1.5rem]" pauseOnHover>
+          {INSTITUTIONS.map((inst, index) => (
+            <div key={inst.id} className="w-[300px] shrink-0 sm:w-[380px]">
+              <InstitutionCard 
+                inst={inst} 
+                index={index} 
+                onClick={() => setSelectedInst(inst)} 
+              />
+            </div>
+          ))}
+        </Marquee>
       </div>
 
       {/* ── MODALE DE DÉTAIL (REDESIGN PREMIUM) ── */}

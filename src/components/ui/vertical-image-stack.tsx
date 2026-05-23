@@ -43,9 +43,8 @@ export function VerticalImageStack({
   renderCard,
   height = "h-[650px]",
 }: VerticalImageStackProps) {
-  // Use a high base value so scrolling backwards doesn't easily go below 0
-  const BASE_INDEX = items.length * 1000
-  const [currentIndex, setCurrentIndex] = useState(BASE_INDEX)
+  // Start indexing at 0
+  const [currentIndex, setCurrentIndex] = useState(0)
   const lastNavigationTime = useRef(0)
   const navigationCooldown = 400 // ms between navigations
   const containerRef = useRef<HTMLDivElement>(null)
@@ -58,7 +57,7 @@ export function VerticalImageStack({
     if (newDirection <= 0) return
     
     lastNavigationTime.current = now
-    setCurrentIndex((prev) => prev + newDirection)
+    setCurrentIndex((prev) => Math.max(0, prev + newDirection))
   }, [])
 
   const handleDragEnd = (_: MouseEvent | TouchEvent | PointerEvent, info: PanInfo) => {
@@ -159,8 +158,14 @@ export function VerticalImageStack({
           const style = getCardStyle(rel)
           const isCurrent = rel === 0
           const absoluteIndex = currentIndex + rel
-          const itemIndex = ((absoluteIndex % items.length) + items.length) % items.length
+          
+          // Masquer les cartes situées "avant" la toute première carte de départ
+          if (absoluteIndex < 0) return null;
+
+          const itemIndex = absoluteIndex % items.length
           const item = items[itemIndex]
+
+          if (!item) return null;
 
           return (
             <motion.div
@@ -256,7 +261,7 @@ export function VerticalImageStack({
         <div className="flex flex-col items-center bg-white/80 backdrop-blur-md px-4 py-3 rounded-2xl shadow-sm border border-slate-100">
           <span className="text-[9px] font-black uppercase tracking-widest text-slate-400 mb-0.5">ACTU</span>
           <span className="text-3xl font-black text-slate-800 tabular-nums">
-            {String(currentIndex - BASE_INDEX + 1).padStart(2, "0")}
+            {String(currentIndex + 1).padStart(2, "0")}
           </span>
         </div>
       </div>

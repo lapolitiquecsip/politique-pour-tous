@@ -30,7 +30,7 @@ export default function Home() {
   useEffect(() => {
     async function load() {
       try {
-        const data = await api.getContent(6);
+        const data = await api.getContent(100);
         setLatestContent(data || []);
       } catch (err) {
         console.error("Error loading home content:", err);

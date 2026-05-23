@@ -108,6 +108,7 @@ export function VerticalImageStack({
     if (inst === "assemblée") return "blue"
     if (inst === "sénat") return "purple"
     if (inst === "gouvernement") return "red"
+    if (inst === "média") return "amber"
     
     // Sneakers fallback
     const fallbackColors = ["blue", "purple", "amber", "red", "emerald"]

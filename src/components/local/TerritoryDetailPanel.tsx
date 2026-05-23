@@ -6,6 +6,7 @@ import { useState, useEffect } from "react";
 import { usePremium } from "@/lib/hooks/usePremium";
 import { api } from "@/lib/api";
 import Link from "next/link";
+import { AwardBadge } from "@/components/ui/award-badge";
 
 interface TerritoryDetailPanelProps {
   territory: { id: string, name: string, type: 'region' | 'department' } | null;
@@ -295,9 +296,14 @@ export default function TerritoryDetailPanel({ territory, onClose }: TerritoryDe
                           <ArrowRight size={24} />
                         </Link>
                       ) : (
-                        <div className="p-8 rounded-[2rem] bg-amber-50 border border-amber-100 text-center space-y-4">
+                        <div className="p-8 rounded-[2rem] bg-amber-50 border border-amber-100 text-center space-y-4 flex flex-col items-center">
                           <p className="font-bold text-amber-900 uppercase tracking-widest text-xs">Fonctionnalité Premium</p>
-                          <p className="text-sm text-amber-800">Passez à l'offre <strong>Elite</strong> pour comparer les performances de ce territoire avec n'importe quel autre en France.</p>
+                          <p className="text-sm text-amber-800 mb-2">Passez à l'offre <strong>Elite</strong> pour comparer les performances de ce territoire avec n'importe quel autre en France.</p>
+                          <AwardBadge 
+                            titleText="Découvrir l'offre Elite"
+                            subtitleText="Fonctionnalité Premium"
+                            link="/premium"
+                          />
                         </div>
                       )}
                     </div>

@@ -30,6 +30,7 @@ import {
   Bookmark
 } from "lucide-react";
 import Link from "next/link";
+import { AwardBadge } from "@/components/ui/award-badge";
 
 /* ── Animated Counter ── */
 function AnimatedCounter({ target, suffix = "" }: { target: number; suffix?: string }) {
@@ -392,13 +393,18 @@ export default function PremiumPage() {
                     </div>
                   </div>
 
-                  <div className={`w-full py-4 rounded-2xl font-bold text-center transition-all ${
-                    isComingSoon 
-                      ? 'bg-slate-200 text-slate-500'
-                      : isSelected ? 'bg-slate-900 text-white' : 'bg-slate-100 text-slate-400'
-                  }`}>
-                    {isComingSoon ? 'Bientôt disponible' : isSelected ? 'Offre sélectionnée' : 'Choisir ce plan'}
-                  </div>
+                  <AwardBadge 
+                    titleText={isComingSoon ? 'Bientôt disponible' : isSelected ? 'Offre sélectionnée' : 'Choisir ce plan'}
+                    subtitleText={plan.name}
+                    link="#"
+                    onClick={() => {
+                      if (!isComingSoon) {
+                        setSelectedPlan(planId as any);
+                        document.getElementById('final-form')?.scrollIntoView({ behavior: 'smooth' });
+                      }
+                    }}
+                    className="w-full"
+                  />
                 </div>
               );
             })}
@@ -671,26 +677,20 @@ export default function PremiumPage() {
                     </div>
 
                     {/* Submit Button Gold - Styled like the screenshot */}
-                    <button
-                      type="submit"
-                      disabled={loading}
-                      className="w-full flex flex-row items-center justify-between px-8 py-5 rounded-3xl text-xl font-bold text-slate-900 bg-amber-400 hover:bg-amber-500 transition-all shadow-xl shadow-amber-200 group disabled:opacity-70"
-                    >
-                      {loading ? (
-                        <Loader2 className="w-6 h-6 animate-spin mx-auto text-slate-900" />
-                      ) : (
-                        <>
-                          <div className="flex items-center gap-3">
-                            <Star className="w-6 h-6 fill-current" />
-                            Devenir Premium
-                          </div>
-                          <div className="flex items-center gap-2 bg-slate-900/10 px-4 py-2 rounded-2xl">
-                            <span>3€</span>
-                            <span className="text-xs opacity-60">/mois</span>
-                          </div>
-                        </>
-                      )}
-                    </button>
+                    <div className="flex justify-center w-full">
+                      <AwardBadge 
+                        titleText={loading ? "Redirection..." : "Devenir Premium"}
+                        subtitleText={`Abonnement ${plans[selectedPlan].name}`}
+                        onClick={(e) => {
+                          e.preventDefault();
+                          const form = e.currentTarget.closest('form');
+                          if (form) {
+                            form.requestSubmit();
+                          }
+                        }}
+                        className="w-full"
+                      />
+                    </div>
 
                     <p className="text-center text-[10px] text-slate-400 font-bold uppercase tracking-widest mt-4">
                       Sécurisé par Stripe • Résiliable à tout moment

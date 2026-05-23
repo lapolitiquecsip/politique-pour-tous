@@ -29,6 +29,7 @@ import {
 } from "lucide-react";
 import Link from "next/link";
 import { usePremium } from "@/lib/hooks/usePremium";
+import { AwardBadge } from "@/components/ui/award-badge";
 import { BUDGETS } from "../page";
 import { Minus } from "lucide-react";
 
@@ -771,12 +772,13 @@ export default function DetailedBudgetPage() {
             Accédez à l'analyse la plus précise du budget de l'État. 
             Découvrez où va chaque euro de vos impôts avec nos graphiques interactifs et nos décryptages d'experts.
           </p>
-          <Link 
-            href="/premium"
-            className="inline-block px-12 py-5 bg-gradient-to-r from-amber-200 to-amber-500 text-slate-950 rounded-[2rem] font-black text-xs uppercase tracking-widest hover:scale-105 transition-all shadow-2xl shadow-amber-900/40"
-          >
-            Débloquer l'accès Premium
-          </Link>
+          <div className="flex justify-center">
+            <AwardBadge 
+              titleText="Analyse Premium Budget ⚡"
+              subtitleText="Débloquer l'accès"
+              link="/premium"
+            />
+          </div>
           <div className="pt-8">
             <Link href="/executif" className="text-slate-500 hover:text-white transition-colors text-xs font-bold uppercase tracking-widest flex items-center justify-center gap-2">
               <ArrowLeft size={14} /> Retour à la page Exécutif

@@ -18,6 +18,7 @@ import CommuneDetailPanel from "@/components/local/CommuneDetailPanel";
 import TerritoryDetailPanel from "@/components/local/TerritoryDetailPanel";
 import { REGIONS, DEPARTMENTS } from "@/lib/data/territories";
 import { StaggerTestimonials } from "@/components/ui/stagger-testimonials";
+import { AwardBadge } from "@/components/ui/award-badge";
 
 // Featured cities shown by default
 const FEATURED_CITIES = [
@@ -418,12 +419,12 @@ function LocalPoliticsContent() {
                   <h3 className="text-2xl font-staatliches uppercase tracking-wide leading-tight">Accès Premium</h3>
                   <p className="text-sm font-medium opacity-90">Débloquez l'analyse comparative détaillée des budgets et de la sécurité de votre commune.</p>
                 </div>
-                <Link 
-                  href={getPremiumUrl()}
-                  className="w-full py-4 bg-slate-900 text-white rounded-2xl font-staatliches uppercase tracking-wide flex items-center justify-center gap-2 hover:bg-slate-800 transition-colors"
-                >
-                  Découvrir l'offre Elite
-                </Link>
+                <AwardBadge 
+                  titleText="Découvrir l'offre Elite"
+                  subtitleText="Accès Premium"
+                  link={getPremiumUrl()}
+                  className="w-full"
+                />
               </div>
             )}
           </div>

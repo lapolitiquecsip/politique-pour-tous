@@ -8,6 +8,7 @@ import HemicycleVisual from "./HemicycleVisual";
 import VoteHemicycle from "./VoteHemicycle";
 import { usePremium } from "@/lib/hooks/usePremium";
 import { api } from "@/lib/api";
+import { AwardBadge } from "@/components/ui/award-badge";
 
 interface UniversalLawModalProps {
   law: any;
@@ -188,7 +189,7 @@ export default function UniversalLawModal({ law, isOpen, onClose, onNext, onPrev
                             {detailedSummary && (
                               <section className="mt-8">
                                 {!isPremium ? (
-                                  <div className="flex items-center justify-between p-8 rounded-[2.5rem] bg-slate-950 border border-white/5 shadow-2xl">
+                                  <div className="flex flex-col sm:flex-row items-center justify-between gap-6 p-8 rounded-[2.5rem] bg-slate-950 border border-white/5 shadow-2xl">
                                     <div className="flex items-center gap-4">
                                       <div className="w-12 h-12 bg-amber-400 rounded-2xl flex items-center justify-center text-slate-950 shadow-[0_0_20px_rgba(251,191,36,0.3)]">
                                         <Zap size={24} fill="currentColor" />
@@ -198,12 +199,12 @@ export default function UniversalLawModal({ law, isOpen, onClose, onNext, onPrev
                                         <span className="text-[10px] font-black uppercase text-amber-500/60 tracking-widest">Réservé aux membres Premium</span>
                                       </div>
                                     </div>
-                                    <Link 
-                                      href="/premium"
-                                      className="px-6 py-3 bg-gradient-to-r from-amber-200 to-amber-500 text-slate-950 rounded-2xl font-black text-xs uppercase tracking-widest hover:scale-105 transition-all shadow-xl"
-                                    >
-                                      Débloquer
-                                    </Link>
+                                    <AwardBadge 
+                                      titleText="Débloquer"
+                                      subtitleText="Accès Premium"
+                                      link="/premium"
+                                      className="shrink-0"
+                                    />
                                   </div>
                                 ) : (
                                   <div className="relative p-8 md:p-12 rounded-[3rem] bg-slate-950 text-white overflow-hidden shadow-2xl border border-white/5">
@@ -315,7 +316,7 @@ export default function UniversalLawModal({ law, isOpen, onClose, onNext, onPrev
                       {law.content && (
                         <section className="mt-8">
                           {!isPremium ? (
-                            <div className="flex items-center justify-between p-8 rounded-[2.5rem] bg-slate-950 border border-white/5 shadow-2xl">
+                            <div className="flex flex-col sm:flex-row items-center justify-between gap-6 p-8 rounded-[2.5rem] bg-slate-950 border border-white/5 shadow-2xl">
                               <div className="flex items-center gap-4">
                                 <div className="w-12 h-12 bg-amber-400 rounded-2xl flex items-center justify-center text-slate-950 shadow-[0_0_20px_rgba(251,191,36,0.3)]">
                                   <Zap size={24} fill="currentColor" />
@@ -325,12 +326,12 @@ export default function UniversalLawModal({ law, isOpen, onClose, onNext, onPrev
                                   <span className="text-[10px] font-black uppercase text-amber-500/60 tracking-widest">Réservé aux membres Premium</span>
                                 </div>
                               </div>
-                              <Link 
-                                href="/premium"
-                                className="px-6 py-3 bg-gradient-to-r from-amber-200 to-amber-500 text-slate-950 rounded-2xl font-black text-xs uppercase tracking-widest hover:scale-105 transition-all shadow-xl"
-                              >
-                                Débloquer
-                              </Link>
+                              <AwardBadge 
+                                titleText="Débloquer"
+                                subtitleText="Accès Premium"
+                                link="/premium"
+                                className="shrink-0"
+                              />
                             </div>
                           ) : (
                             <div className="relative p-8 md:p-12 rounded-[3rem] bg-slate-950 text-white overflow-hidden shadow-2xl border border-white/5">

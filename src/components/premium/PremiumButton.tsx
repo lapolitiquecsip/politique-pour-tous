@@ -5,6 +5,7 @@ import { supabase } from "@/lib/supabase";
 import { Star, RefreshCw as Loader2, X, AlertCircle, ArrowRight } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
 import Link from "next/link";
+import { AwardBadge } from "@/components/ui/award-badge";
 import { usePathname } from "next/navigation";
 import { usePremium } from "@/lib/hooks/usePremium";
 import { STRIPE_LINKS } from "@/lib/constants";
@@ -103,48 +104,11 @@ export default function PremiumButton() {
               <X className="w-3 h-3" />
             </button>
 
-            {/* Bouton principal */}
-            <button
+            <AwardBadge 
+              titleText={loading ? "Redirection..." : "Devenir Premium"}
+              subtitleText="Abonnement Citoyen"
               onClick={handlePremiumClick}
-              disabled={loading}
-              className="
-                relative overflow-hidden
-                flex items-center gap-3 px-6 py-4
-                bg-gradient-to-r from-amber-500 via-yellow-500 to-amber-500
-                hover:from-amber-400 hover:via-yellow-400 hover:to-amber-400
-                text-slate-900 font-bold text-[15px]
-                rounded-2xl shadow-[0_8px_30px_rgba(245,158,11,0.4)]
-                hover:shadow-[0_8px_40px_rgba(245,158,11,0.6)]
-                hover:-translate-y-1 active:translate-y-0
-                transition-all duration-300
-                disabled:opacity-70 disabled:cursor-wait
-                group/btn
-              "
-            >
-              {/* Effet de brillance animé */}
-              <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/30 to-transparent -translate-x-full group-hover/btn:translate-x-full transition-transform duration-700 ease-in-out" />
-
-              {loading ? (
-                <Loader2 className="w-5 h-5 animate-spin" />
-              ) : (
-                <Star className="w-5 h-5 drop-shadow-sm" />
-              )}
-
-              <span className="relative">
-                {loading ? "Redirection..." : "Devenir Premium"}
-              </span>
-
-              {!loading && (
-                <span className="relative flex items-center gap-1 bg-slate-900/20 px-2.5 py-1 rounded-lg text-xs font-extrabold">
-                  3€
-                  <span className="text-[10px] font-medium opacity-80">/mois</span>
-                </span>
-              )}
-
-              {!loading && (
-                <Star className="w-4 h-4 opacity-60 animate-pulse" />
-              )}
-            </button>
+            />
           </div>
         </motion.div>
       </div>

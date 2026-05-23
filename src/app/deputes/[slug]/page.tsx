@@ -33,6 +33,7 @@ import {
 import { motion, AnimatePresence } from "framer-motion";
 import { api } from "@/lib/api";
 import { usePremium } from "@/lib/hooks/usePremium";
+import { AwardBadge } from "@/components/ui/award-badge";
 import { getFullPartyName } from "@/lib/party-utils";
 import VoteDetailsModal from "@/components/deputies/VoteDetailsModal";
 import LegalStatusModal from "@/components/deputies/LegalStatusModal";
@@ -448,12 +449,14 @@ export default function DeputyDetailPage({ params }: { params: Promise<{ slug: s
                    </button>
                  )}
 
-                 {!isPremium && (
-                   <Link href="/premium" className="w-full py-4 rounded-2xl bg-amber-400 text-slate-900 font-bold text-sm flex items-center justify-center gap-2 hover:bg-amber-300 transition-colors group/premium">
-                      <Star size={16} className="fill-current group-hover:rotate-12 transition-transform" />
-                      Suivre (Premium)
-                   </Link>
-                 )}
+                  {!isPremium && (
+                    <AwardBadge 
+                      titleText="Suivre (Premium)"
+                      subtitleText="Abonnement Citoyen"
+                      link="/premium"
+                      className="w-full"
+                    />
+                  )}
                </div>
             </div>
           </motion.div>

@@ -53,17 +53,19 @@ export function VerticalImageStack({
   const navigate = useCallback((newDirection: number) => {
     const now = Date.now()
     if (now - lastNavigationTime.current < navigationCooldown) return
+    
+    // Empêcher le retour en arrière (vers le haut / index négatifs)
+    if (newDirection <= 0) return
+    
     lastNavigationTime.current = now
-
     setCurrentIndex((prev) => prev + newDirection)
   }, [])
 
   const handleDragEnd = (_: MouseEvent | TouchEvent | PointerEvent, info: PanInfo) => {
     const threshold = 50
+    // Glisser vers le haut (info.offset.y négatif) fait défiler vers l'article suivant (en avant)
     if (info.offset.y < -threshold) {
       navigate(1)
-    } else if (info.offset.y > threshold) {
-      navigate(-1)
     }
   }
 
@@ -72,9 +74,13 @@ export function VerticalImageStack({
     if (!el) return
 
     const handleWheel = (e: WheelEvent) => {
-      if (Math.abs(e.deltaY) > 15) {
-        e.preventDefault()
-        navigate(e.deltaY > 0 ? 1 : -1)
+      // Défiler vers le bas (e.deltaY > 0) fait avancer la pile.
+      // Défiler vers le haut (e.deltaY < 0) n'est pas intercepté pour permettre le défilement naturel de la page vers le haut.
+      if (e.deltaY > 0) {
+        if (Math.abs(e.deltaY) > 15) {
+          e.preventDefault()
+          navigate(1)
+        }
       }
     }
 
@@ -224,10 +230,11 @@ export function VerticalImageStack({
       >
         <div className="flex flex-col items-center gap-1.5 text-slate-400">
           <motion.div
-            animate={{ y: [0, -4, 0] }}
+            animate={{ y: [0, 4, 0] }}
             transition={{ repeat: Number.POSITIVE_INFINITY, duration: 1.5, ease: "easeInOut" }}
             className="flex flex-col items-center"
           >
+            <span className="text-[9px] font-black tracking-widest uppercase mb-1">Défiler pour voir la suite</span>
             <svg
               width="18"
               height="18"
@@ -237,20 +244,6 @@ export function VerticalImageStack({
               strokeWidth="2"
               strokeLinecap="round"
               strokeLinejoin="round"
-            >
-              <path d="M18 15l-6-6-6 6" />
-            </svg>
-            <span className="text-[9px] font-black tracking-widest uppercase mt-1">Glisser ou défiler</span>
-            <svg
-              width="18"
-              height="18"
-              viewBox="0 0 24 24"
-              fill="none"
-              stroke="currentColor"
-              strokeWidth="2"
-              strokeLinecap="round"
-              strokeLinejoin="round"
-              className="mt-1"
             >
               <path d="M6 9l6 6 6-6" />
             </svg>

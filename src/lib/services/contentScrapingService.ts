@@ -3,13 +3,8 @@ import { XMLParser } from 'fast-xml-parser';
 import Anthropic from '@anthropic-ai/sdk';
 
 // --- Configuration ---
-const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL || 'https://placeholder.supabase.co';
-const supabaseKey = process.env.SUPABASE_SERVICE_ROLE_KEY || 'placeholder-key';
-const supabase = createClient(supabaseUrl, supabaseKey);
+// On instanciera Supabase et Anthropic à l'intérieur des fonctions pour s'assurer que les variables d'environnement sont chargées.
 
-const anthropic = new Anthropic({
-  apiKey: process.env.ANTHROPIC_API_KEY || '',
-});
 
 // --- Sources RSS officielles & vérifiées ---
 const RSS_SOURCES = [
@@ -182,6 +177,10 @@ async function fetchRSSFeed(url: string): Promise<string | null> {
 async function processWithClaude(articles: RawArticle[]): Promise<ProcessedArticle[]> {
   if (articles.length === 0) return [];
 
+  const anthropic = new Anthropic({
+    apiKey: process.env.ANTHROPIC_API_KEY || '',
+  });
+
   // Traiter par lots de 15 pour éviter de surcharger le contexte
   const BATCH_SIZE = 15;
   const results: ProcessedArticle[] = [];
@@ -298,6 +297,16 @@ function normalizeDate(dateStr: string): string {
 async function upsertArticles(articles: ProcessedArticle[]): Promise<{ inserted: number; errors: number }> {
   let inserted = 0;
   let errors = 0;
+
+  const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL;
+  const supabaseKey = process.env.SUPABASE_SERVICE_ROLE_KEY;
+
+  if (!supabaseUrl || !supabaseKey) {
+    console.error("[Scraper] Erreur: Variables d'environnement Supabase manquantes");
+    return { inserted: 0, errors: articles.length };
+  }
+
+  const supabase = createClient(supabaseUrl, supabaseKey);
 
   for (const article of articles) {
     try {

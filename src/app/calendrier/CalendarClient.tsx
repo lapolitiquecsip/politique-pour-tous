@@ -56,7 +56,7 @@ export default function CalendarClient({ initialEvents }: { initialEvents: Calen
                 DIRECT • AGENDA
               </span>
               <span className="text-black">Calendrier</span>
-              <span className="bg-emerald-400 text-slate-950 px-4 pt-1.5 pb-0.5 md:pt-3 md:pb-1 rounded-xl md:rounded-2xl shadow-sm">simplifié</span>
+              <span className="bg-emerald-500 text-white px-4 pt-1.5 pb-0.5 md:pt-3 md:pb-1 rounded-xl md:rounded-2xl shadow-sm">simplifié</span>
             </h1>
             <div className="h-1.5 w-32 bg-gradient-to-r from-blue-600 to-red-600 mt-6 rounded-full" />
           </div>

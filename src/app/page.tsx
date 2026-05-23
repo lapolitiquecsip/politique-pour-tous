@@ -93,8 +93,9 @@ export default function Home() {
                   <span className="relative inline-flex rounded-full h-4 w-4 md:h-6 md:w-6 bg-red-600 shadow-[0_0_15px_rgba(220,38,38,0.5)]"></span>
                 </span>
                 
-                <h2 className="text-5xl md:text-7xl font-staatliches uppercase tracking-tighter leading-none inline">
-                  Récemment <span className="bg-gradient-to-r from-sky-400 via-rose-500 to-sky-400 bg-clip-text text-transparent">en politique</span>
+                <h2 className="text-5xl md:text-7xl font-staatliches uppercase tracking-tighter leading-none inline-flex items-center gap-2 md:gap-3 flex-wrap">
+                  <span className="text-black">Récemment en</span>
+                  <span className="bg-yellow-300 text-black px-4 pt-1.5 pb-0.5 md:pt-3 md:pb-1 rounded-xl md:rounded-2xl shadow-sm">politique</span>
                 </h2>
               </div>
             </div>

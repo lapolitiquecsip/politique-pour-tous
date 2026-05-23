@@ -51,11 +51,12 @@ export default function CalendarClient({ initialEvents }: { initialEvents: Calen
           </div>
           
           <div className="relative">
-            <h1 className="text-5xl md:text-7xl font-staatliches uppercase tracking-tighter leading-none relative z-10">
+            <h1 className="text-5xl md:text-7xl font-staatliches uppercase tracking-tighter leading-none relative z-10 inline-flex items-center gap-2 md:gap-3 flex-wrap">
               <span className="text-slate-900 opacity-[0.08] absolute -top-8 left-0 select-none hidden md:block whitespace-nowrap">
                 DIRECT • AGENDA
               </span>
-              Calendrier <span className="bg-gradient-to-r from-blue-600 via-red-600 to-blue-600 bg-clip-text text-transparent">simplifié</span>
+              <span className="text-black">Calendrier</span>
+              <span className="bg-emerald-400 text-slate-950 px-4 pt-1.5 pb-0.5 md:pt-3 md:pb-1 rounded-xl md:rounded-2xl shadow-sm">simplifié</span>
             </h1>
             <div className="h-1.5 w-32 bg-gradient-to-r from-blue-600 to-red-600 mt-6 rounded-full" />
           </div>

@@ -21,7 +21,7 @@ import HomeHero from "@/components/home/HomeHero";
 import FaqSection from "@/components/home/FaqSection";
 import NewsletterBanner from "@/components/home/NewsletterBanner";
 import PetitionsSection from "@/components/home/PetitionsSection";
-import { ScrollTiltedGrid } from "@/components/ui/scroll-tilted-grid";
+import { VerticalImageStack } from "@/components/ui/vertical-image-stack";
 
 export default function Home() {
   const [latestContent, setLatestContent] = useState<any[]>([]);
@@ -119,11 +119,21 @@ export default function Home() {
               </p>
             </div>
           ) : (
-            <ScrollTiltedGrid maxTilt={10} maxBlur={3} rounded="2rem" gap={8}>
-              {latestContent.map((item: any) => (
-                <FeedItemCard key={item.id} item={item} />
-              ))}
-            </ScrollTiltedGrid>
+            <VerticalImageStack
+              items={latestContent}
+              height="h-[600px]"
+              renderCard={(item, isCurrent) => (
+                <div 
+                  className={`h-[420px] w-[280px] rounded-3xl overflow-hidden transition-all duration-300 ${
+                    isCurrent 
+                      ? "shadow-2xl shadow-slate-900/15 ring-1 ring-slate-900/5 scale-100" 
+                      : "shadow-md ring-1 ring-slate-900/5 opacity-80 scale-95"
+                  }`}
+                >
+                  <FeedItemCard item={item} />
+                </div>
+              )}
+            />
           )}
         </div>
       </section>

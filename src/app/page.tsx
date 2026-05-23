@@ -61,7 +61,7 @@ export default function Home() {
                 </span>
                 
                 <h2 className="text-5xl md:text-7xl font-staatliches uppercase tracking-tighter leading-none inline">
-                  Institutions <span className="bg-gradient-to-r from-sky-400 via-rose-500 to-sky-400 bg-clip-text text-transparent">au quotidien</span>
+                  <span className="bg-gradient-to-r from-sky-400 via-rose-500 to-sky-400 bg-clip-text text-transparent">Aujourd'hui</span>
                 </h2>
               </div>
             </div>

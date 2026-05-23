@@ -194,52 +194,104 @@ export default function DashboardPage() {
           
           {/* Tabs Navigation */}
           <div className="flex border-b border-slate-100">
-            <button 
+            <motion.button 
+              whileTap={{ scale: 0.98 }}
               onClick={() => startTransition(() => setActiveTab("votes"))}
               className={`relative flex-1 py-6 font-bold text-xs md:text-sm uppercase tracking-widest flex items-center justify-center gap-3 transition-all duration-300 ${
                 activeTab === "votes" 
-                  ? "text-white bg-blue-600 shadow-lg shadow-blue-500/30 z-20 scale-[1.03]" 
+                  ? "text-white bg-blue-600 shadow-xl shadow-blue-500/30 z-20 scale-[1.02]" 
                   : "text-white/80 bg-blue-500/80 hover:bg-blue-500 hover:text-white z-10"
               }`}
             >
-              <Vote size={18} className={isPending && activeTab !== "votes" ? "opacity-30" : ""} />
-              Mon Historique de Vote
-            </button>
-            <button 
+              <motion.span 
+                animate={{ scale: activeTab === "votes" ? 1.05 : 1 }}
+                className="flex items-center gap-3"
+              >
+                <Vote size={18} className={isPending && activeTab !== "votes" ? "opacity-30" : ""} />
+                Mon Historique de Vote
+              </motion.span>
+              {activeTab === "votes" && (
+                <motion.div 
+                  layoutId="activeTabIndicator" 
+                  className="absolute bottom-0 left-0 right-0 h-1.5 bg-white shadow-[0_-2px_10px_rgba(255,255,255,0.6)]"
+                  transition={{ type: "spring", stiffness: 380, damping: 30 }}
+                />
+              )}
+            </motion.button>
+            <motion.button 
+              whileTap={{ scale: 0.98 }}
               onClick={() => startTransition(() => setActiveTab("deputies"))}
               className={`relative flex-1 py-6 font-bold text-xs md:text-sm uppercase tracking-widest flex items-center justify-center gap-3 transition-all duration-300 ${
                 activeTab === "deputies" 
-                  ? "text-white bg-emerald-600 shadow-lg shadow-emerald-500/30 z-20 scale-[1.03]" 
+                  ? "text-white bg-emerald-600 shadow-xl shadow-emerald-500/30 z-20 scale-[1.02]" 
                   : "text-white/80 bg-emerald-500/80 hover:bg-emerald-500 hover:text-white z-10"
               }`}
             >
-              <Users size={18} className={isPending && activeTab !== "deputies" ? "opacity-30" : ""} />
-              Mes Députés Suivis
-            </button>
+              <motion.span 
+                animate={{ scale: activeTab === "deputies" ? 1.05 : 1 }}
+                className="flex items-center gap-3"
+              >
+                <Users size={18} className={isPending && activeTab !== "deputies" ? "opacity-30" : ""} />
+                Mes Députés Suivis
+              </motion.span>
+              {activeTab === "deputies" && (
+                <motion.div 
+                  layoutId="activeTabIndicator" 
+                  className="absolute bottom-0 left-0 right-0 h-1.5 bg-white shadow-[0_-2px_10px_rgba(255,255,255,0.6)]"
+                  transition={{ type: "spring", stiffness: 380, damping: 30 }}
+                />
+              )}
+            </motion.button>
             {isPremium && (
               <>
-                <button 
+                <motion.button 
+                  whileTap={{ scale: 0.98 }}
                   onClick={() => startTransition(() => setActiveTab("saved"))}
                   className={`relative flex-1 py-6 font-bold text-xs md:text-sm uppercase tracking-widest flex items-center justify-center gap-3 transition-all duration-300 ${
                     activeTab === "saved" 
-                      ? "text-white bg-amber-500 shadow-lg shadow-amber-500/30 z-20 scale-[1.03]" 
+                      ? "text-white bg-amber-500 shadow-xl shadow-amber-500/30 z-20 scale-[1.02]" 
                       : "text-white/80 bg-amber-400/80 hover:bg-amber-400 hover:text-white z-10"
                   }`}
                 >
-                  <Bookmark size={18} className={isPending && activeTab !== "saved" ? "opacity-30" : ""} />
-                  Lois Favorites
-                </button>
-                <button 
+                  <motion.span 
+                    animate={{ scale: activeTab === "saved" ? 1.05 : 1 }}
+                    className="flex items-center gap-3"
+                  >
+                    <Bookmark size={18} className={isPending && activeTab !== "saved" ? "opacity-30" : ""} />
+                    Lois Favorites
+                  </motion.span>
+                  {activeTab === "saved" && (
+                    <motion.div 
+                      layoutId="activeTabIndicator" 
+                      className="absolute bottom-0 left-0 right-0 h-1.5 bg-white shadow-[0_-2px_10px_rgba(255,255,255,0.6)]"
+                      transition={{ type: "spring", stiffness: 380, damping: 30 }}
+                    />
+                  )}
+                </motion.button>
+                <motion.button 
+                  whileTap={{ scale: 0.98 }}
                   onClick={() => startTransition(() => setActiveTab("geos"))}
                   className={`relative flex-1 py-6 font-bold text-xs md:text-sm uppercase tracking-widest flex items-center justify-center gap-3 transition-all duration-300 ${
                     activeTab === "geos" 
-                      ? "text-white bg-pink-600 shadow-lg shadow-pink-500/30 z-20 scale-[1.03]" 
+                      ? "text-white bg-pink-600 shadow-xl shadow-pink-500/30 z-20 scale-[1.02]" 
                       : "text-white/80 bg-pink-500/80 hover:bg-pink-500 hover:text-white z-10"
                   }`}
                 >
-                  <MapPin size={18} className={isPending && activeTab !== "geos" ? "opacity-30" : ""} />
-                  Territoires
-                </button>
+                  <motion.span 
+                    animate={{ scale: activeTab === "geos" ? 1.05 : 1 }}
+                    className="flex items-center gap-3"
+                  >
+                    <MapPin size={18} className={isPending && activeTab !== "geos" ? "opacity-30" : ""} />
+                    Territoires
+                  </motion.span>
+                  {activeTab === "geos" && (
+                    <motion.div 
+                      layoutId="activeTabIndicator" 
+                      className="absolute bottom-0 left-0 right-0 h-1.5 bg-white shadow-[0_-2px_10px_rgba(255,255,255,0.6)]"
+                      transition={{ type: "spring", stiffness: 380, damping: 30 }}
+                    />
+                  )}
+                </motion.button>
               </>
             )}
           </div>

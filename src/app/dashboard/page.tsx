@@ -198,8 +198,8 @@ export default function DashboardPage() {
               onClick={() => startTransition(() => setActiveTab("votes"))}
               className={`relative flex-1 py-6 font-bold text-xs md:text-sm uppercase tracking-widest flex items-center justify-center gap-3 transition-all duration-300 ${
                 activeTab === "votes" 
-                  ? "text-white bg-blue-600 shadow-lg shadow-blue-500/20 z-10" 
-                  : "text-slate-500 bg-slate-50 hover:bg-slate-100 hover:text-slate-800"
+                  ? "text-white bg-blue-600 shadow-lg shadow-blue-500/30 z-20 scale-[1.03]" 
+                  : "text-white/80 bg-blue-500/80 hover:bg-blue-500 hover:text-white z-10"
               }`}
             >
               <Vote size={18} className={isPending && activeTab !== "votes" ? "opacity-30" : ""} />
@@ -209,8 +209,8 @@ export default function DashboardPage() {
               onClick={() => startTransition(() => setActiveTab("deputies"))}
               className={`relative flex-1 py-6 font-bold text-xs md:text-sm uppercase tracking-widest flex items-center justify-center gap-3 transition-all duration-300 ${
                 activeTab === "deputies" 
-                  ? "text-white bg-emerald-600 shadow-lg shadow-emerald-500/20 z-10" 
-                  : "text-slate-500 bg-slate-50 hover:bg-slate-100 hover:text-slate-800"
+                  ? "text-white bg-emerald-600 shadow-lg shadow-emerald-500/30 z-20 scale-[1.03]" 
+                  : "text-white/80 bg-emerald-500/80 hover:bg-emerald-500 hover:text-white z-10"
               }`}
             >
               <Users size={18} className={isPending && activeTab !== "deputies" ? "opacity-30" : ""} />
@@ -222,8 +222,8 @@ export default function DashboardPage() {
                   onClick={() => startTransition(() => setActiveTab("saved"))}
                   className={`relative flex-1 py-6 font-bold text-xs md:text-sm uppercase tracking-widest flex items-center justify-center gap-3 transition-all duration-300 ${
                     activeTab === "saved" 
-                      ? "text-white bg-amber-500 shadow-lg shadow-amber-500/20 z-10" 
-                      : "text-slate-500 bg-slate-50 hover:bg-slate-100 hover:text-slate-800"
+                      ? "text-white bg-amber-500 shadow-lg shadow-amber-500/30 z-20 scale-[1.03]" 
+                      : "text-white/80 bg-amber-400/80 hover:bg-amber-400 hover:text-white z-10"
                   }`}
                 >
                   <Bookmark size={18} className={isPending && activeTab !== "saved" ? "opacity-30" : ""} />
@@ -233,8 +233,8 @@ export default function DashboardPage() {
                   onClick={() => startTransition(() => setActiveTab("geos"))}
                   className={`relative flex-1 py-6 font-bold text-xs md:text-sm uppercase tracking-widest flex items-center justify-center gap-3 transition-all duration-300 ${
                     activeTab === "geos" 
-                      ? "text-white bg-pink-600 shadow-lg shadow-pink-500/20 z-10" 
-                      : "text-slate-500 bg-slate-50 hover:bg-slate-100 hover:text-slate-800"
+                      ? "text-white bg-pink-600 shadow-lg shadow-pink-500/30 z-20 scale-[1.03]" 
+                      : "text-white/80 bg-pink-500/80 hover:bg-pink-500 hover:text-white z-10"
                   }`}
                 >
                   <MapPin size={18} className={isPending && activeTab !== "geos" ? "opacity-30" : ""} />

@@ -44,7 +44,7 @@ const INSTITUTIONS: Institution[] = [
     dbInstitution: "Sénat",
     memberCount: 348,
     directoryUrl: "/senateurs",
-    image: "https://upload.wikimedia.org/wikipedia/commons/a/a2/S%C3%A9nat_fran%C3%A7ais_Luxembourg.jpg",
+    image: "/images/senat_luxembourg_premium.png",
     summary: "",
     color: "from-indigo-600",
     details: [

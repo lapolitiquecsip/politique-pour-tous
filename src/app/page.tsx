@@ -21,6 +21,7 @@ import HomeHero from "@/components/home/HomeHero";
 import FaqSection from "@/components/home/FaqSection";
 import NewsletterBanner from "@/components/home/NewsletterBanner";
 import PetitionsSection from "@/components/home/PetitionsSection";
+import { ScrollTiltedGrid } from "@/components/ui/scroll-tilted-grid";
 
 export default function Home() {
   const [latestContent, setLatestContent] = useState<any[]>([]);
@@ -118,11 +119,11 @@ export default function Home() {
               </p>
             </div>
           ) : (
-            <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-6">
+            <ScrollTiltedGrid maxTilt={10} maxBlur={3} rounded="2rem" gap={8}>
               {latestContent.map((item: any) => (
                 <FeedItemCard key={item.id} item={item} />
               ))}
-            </div>
+            </ScrollTiltedGrid>
           )}
         </div>
       </section>

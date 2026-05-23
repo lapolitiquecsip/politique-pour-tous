@@ -172,7 +172,7 @@ async function fetchRSSFeed(url: string): Promise<string | null> {
 }
 
 /**
- * Utilise Claude pour simplifier les titres et créer des résumés flash
+ * Utilise Claude pour regrouper les sujets, croiser les sources et créer des synthèses
  */
 async function processWithClaude(articles: RawArticle[]): Promise<ProcessedArticle[]> {
   if (articles.length === 0) return [];
@@ -181,101 +181,70 @@ async function processWithClaude(articles: RawArticle[]): Promise<ProcessedArtic
     apiKey: process.env.ANTHROPIC_API_KEY || '',
   });
 
-  // Traiter par lots de 15 pour éviter de surcharger le contexte
-  const BATCH_SIZE = 15;
-  const results: ProcessedArticle[] = [];
+  // Envoyer tous les articles pour avoir une vue d'ensemble et faire la synthèse
+  const articlesForPrompt = articles.map((a, idx) => 
+    `[ARTICLE ${idx + 1}]\nTitre original: ${a.title}\nDescription: ${a.description?.substring(0, 500) || 'Aucune description'}\nSource: ${a.source_name}\nInstitution: ${a.institution}\nURL: ${a.link}\nDate: ${a.pubDate || 'Inconnue'}`
+  ).join('\n\n');
 
-  for (let i = 0; i < articles.length; i += BATCH_SIZE) {
-    const batch = articles.slice(i, i + BATCH_SIZE);
+  try {
+    const response = await anthropic.messages.create({
+      model: 'claude-sonnet-4-20250514',
+      max_tokens: 4000,
+      messages: [
+        {
+          role: 'user',
+          content: `Tu es un journaliste politique français expert chargé de faire la synthèse de l'actualité. 
+Voici une liste d'articles récents issus de différentes sources (médias, assemblée, sénat).
 
-    const articlesForPrompt = batch.map((a, idx) => 
-      `[ARTICLE ${idx + 1}]\nTitre original: ${a.title}\nDescription: ${a.description?.substring(0, 500) || 'Aucune description'}\nSource: ${a.source_name}\nInstitution: ${a.institution}`
-    ).join('\n\n');
-
-    try {
-      const response = await anthropic.messages.create({
-        model: 'claude-sonnet-4-20250514',
-        max_tokens: 4000,
-        messages: [
-          {
-            role: 'user',
-            content: `Tu es un journaliste politique français expert. Pour chaque article ci-dessous, génère :
-1. Un **titre simplifié** (max 80 caractères) : clair, accrocheur, compréhensible par un citoyen non-expert. Utilise un langage simple et direct.
-2. Un **résumé flash** (max 200 caractères) : l'essentiel en une ou deux phrases percutantes. Doit donner envie de lire la source.
+TA MISSION :
+1. Analyse tous ces articles et regroupe ceux qui parlent du **même sujet**.
+2. Pour chaque grand sujet politique abordé (sélectionne les plus pertinents, maximum 15 sujets), croise les sources : fais la synthèse de ce que disent les différents journaux/institutions.
+3. Crée un résumé neutre et croisé.
 
 IMPORTANT :
-- Reste factuel et neutre politiquement
-- N'invente RIEN, base-toi uniquement sur le titre et la description fournis
-- Si la description est vide ou incompréhensible, base-toi uniquement sur le titre
+- Reste factuel, neutre politiquement, n'invente rien. Ne prends pas parti.
+- Croise les sources : si Le Figaro et France Info parlent du même sujet, synthétise les deux visions dans ton résumé.
+- L'institution doit être 'média' si c'est majoritairement tiré de la presse, ou 'assemblée' / 'sénat' si cela concerne uniquement un texte officiel. Si tu mélanges des sources, mets 'média'.
 
 Réponds UNIQUEMENT en JSON, sous cette forme exacte (un tableau) :
 [
-  { "index": 1, "titre_simplifie": "...", "resume_flash": "..." },
-  { "index": 2, "titre_simplifie": "...", "resume_flash": "..." }
+  {
+    "titre_simplifie": "Le titre clair du sujet (max 80 caractères)",
+    "resume_flash": "Ta synthèse croisée du sujet en une ou deux phrases percutantes (max 200 caractères)",
+    "source_name": "Noms des sources utilisées (ex: 'Le Figaro, France Info')",
+    "source_url": "L'URL de la source principale (ou la première utilisée)",
+    "institution": "média",
+    "date_publication": "La date la plus récente parmi les articles du groupe (format ISO)"
+  }
 ]
 
 Voici les articles :
 
 ${articlesForPrompt}`
-          }
-        ],
-      });
-
-      // Extract JSON from Claude's response
-      const responseText = response.content[0].type === 'text' ? response.content[0].text : '';
-      
-      // Find JSON array in the response
-      const jsonMatch = responseText.match(/\[[\s\S]*\]/);
-      if (!jsonMatch) {
-        console.warn(`[Scraper/Claude] Impossible de parser la réponse JSON pour le lot ${i / BATCH_SIZE + 1}`);
-        // Fallback: utiliser les titres/descriptions originaux
-        for (const article of batch) {
-          results.push({
-            institution: article.institution,
-            titre_simplifie: article.title.substring(0, 80),
-            resume_flash: article.description?.substring(0, 200) || article.title,
-            date_publication: normalizeDate(article.pubDate),
-            source_url: article.link,
-            source_name: article.source_name,
-          });
         }
-        continue;
-      }
+      ],
+    });
 
-      const parsed = JSON.parse(jsonMatch[0]) as Array<{ index: number; titre_simplifie: string; resume_flash: string }>;
-
-      for (const item of parsed) {
-        const originalArticle = batch[item.index - 1];
-        if (!originalArticle) continue;
-
-        results.push({
-          institution: originalArticle.institution,
-          titre_simplifie: item.titre_simplifie || originalArticle.title.substring(0, 80),
-          resume_flash: item.resume_flash || originalArticle.description?.substring(0, 200) || originalArticle.title,
-          date_publication: normalizeDate(originalArticle.pubDate),
-          source_url: originalArticle.link,
-          source_name: originalArticle.source_name,
-        });
-      }
-
-      console.log(`[Scraper/Claude] ✅ Lot ${i / BATCH_SIZE + 1} traité : ${parsed.length} articles`);
-    } catch (err: any) {
-      console.error(`[Scraper/Claude] ❌ Erreur Claude pour le lot ${i / BATCH_SIZE + 1}:`, err.message);
-      // Fallback: utiliser les données brutes
-      for (const article of batch) {
-        results.push({
-          institution: article.institution,
-          titre_simplifie: article.title.substring(0, 80),
-          resume_flash: article.description?.substring(0, 200) || article.title,
-          date_publication: normalizeDate(article.pubDate),
-          source_url: article.link,
-          source_name: article.source_name,
-        });
-      }
+    const responseText = response.content[0].type === 'text' ? response.content[0].text : '';
+    const jsonMatch = responseText.match(/\[[\s\S]*\]/);
+    if (!jsonMatch) {
+      console.warn(`[Scraper/Claude] Impossible de parser la réponse JSON de synthèse.`);
+      return [];
     }
-  }
 
-  return results;
+    const parsed = JSON.parse(jsonMatch[0]) as ProcessedArticle[];
+    
+    // S'assurer que les dates sont bien au format ISO
+    for (const item of parsed) {
+      item.date_publication = normalizeDate(item.date_publication);
+    }
+
+    console.log(`[Scraper/Claude] ✅ Synthèse croisée terminée : ${parsed.length} sujets uniques identifiés.`);
+    return parsed;
+  } catch (err: any) {
+    console.error(`[Scraper/Claude] ❌ Erreur Claude lors de la synthèse:`, err.message);
+    return [];
+  }
 }
 
 /**

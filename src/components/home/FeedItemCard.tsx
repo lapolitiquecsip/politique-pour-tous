@@ -10,10 +10,10 @@ interface ContentItem {
   source_url?: string;
 }
 
-const institutionConfig: Record<string, { color: string; label: string }> = {
-  assemblée: { color: "bg-blue-600", label: "Assemblée" },
-  sénat: { color: "bg-purple-800", label: "Sénat" },
-  gouvernement: { color: "bg-red-600", label: "Gouvernement" },
+const institutionConfig: Record<string, { color: string; label: string; border: string }> = {
+  assemblée: { color: "bg-blue-600", label: "Assemblée", border: "border-t-blue-600" },
+  sénat: { color: "bg-purple-800", label: "Sénat", border: "border-t-purple-800" },
+  gouvernement: { color: "bg-red-600", label: "Gouvernement", border: "border-t-red-600" },
 };
 
 function getRelativeDate(dateString: string) {
@@ -39,7 +39,7 @@ export default function FeedItemCard({ item }: { item: ContentItem }) {
   const relativeDate = getRelativeDate(item.date_publication);
 
   return (
-    <div className="bg-card border border-border rounded-2xl p-6 shadow-sm hover:shadow-md transition-shadow h-full flex flex-col">
+    <div className={`bg-card border border-border rounded-3xl p-6 shadow-sm hover:shadow-md transition-all duration-300 h-full flex flex-col border-t-4 ${config.border}`}>
       <div className="flex items-center justify-between mb-3">
         <span
           className={`px-3 py-1 text-xs font-semibold rounded-full text-white ${config.color}`}

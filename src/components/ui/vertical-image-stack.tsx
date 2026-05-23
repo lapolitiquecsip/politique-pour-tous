@@ -43,7 +43,9 @@ export function VerticalImageStack({
   renderCard,
   height = "h-[650px]",
 }: VerticalImageStackProps) {
-  const [currentIndex, setCurrentIndex] = useState(0)
+  // Use a high base value so scrolling backwards doesn't easily go below 0
+  const BASE_INDEX = items.length * 1000
+  const [currentIndex, setCurrentIndex] = useState(BASE_INDEX)
   const lastNavigationTime = useRef(0)
   const navigationCooldown = 400 // ms between navigations
   const containerRef = useRef<HTMLDivElement>(null)
@@ -53,13 +55,8 @@ export function VerticalImageStack({
     if (now - lastNavigationTime.current < navigationCooldown) return
     lastNavigationTime.current = now
 
-    setCurrentIndex((prev) => {
-      if (newDirection > 0) {
-        return prev === items.length - 1 ? 0 : prev + 1
-      }
-      return prev === 0 ? items.length - 1 : prev - 1
-    })
-  }, [items.length])
+    setCurrentIndex((prev) => prev + newDirection)
+  }, [])
 
   const handleDragEnd = (_: MouseEvent | TouchEvent | PointerEvent, info: PanInfo) => {
     const threshold = 50
@@ -76,29 +73,16 @@ export function VerticalImageStack({
 
     const handleWheel = (e: WheelEvent) => {
       if (Math.abs(e.deltaY) > 15) {
-        const isScrollingDown = e.deltaY > 0
-        const isAtEnd = currentIndex === items.length - 1
-        const isAtStart = currentIndex === 0
-
-        // Hijack scroll only if actively sliding between cards.
-        // Once start or end is reached, allow regular page scrolling.
-        if ((isScrollingDown && !isAtEnd) || (!isScrollingDown && !isAtStart)) {
-          e.preventDefault()
-          navigate(isScrollingDown ? 1 : -1)
-        }
+        e.preventDefault()
+        navigate(e.deltaY > 0 ? 1 : -1)
       }
     }
 
     el.addEventListener("wheel", handleWheel, { passive: false })
     return () => el.removeEventListener("wheel", handleWheel)
-  }, [navigate, currentIndex, items.length])
+  }, [navigate])
 
-  const getCardStyle = (index: number) => {
-    const total = items.length
-    let diff = index - currentIndex
-    if (diff > total / 2) diff -= total
-    if (diff < -total / 2) diff += total
-
+  const getCardStyle = (diff: number) => {
     if (diff === 0) {
       return { y: 0, scale: 1, opacity: 1, zIndex: 5, rotateX: 0 }
     } else if (diff === -1) {
@@ -114,34 +98,66 @@ export function VerticalImageStack({
     }
   }
 
-  const isVisible = (index: number) => {
-    const total = items.length
-    let diff = index - currentIndex
-    if (diff > total / 2) diff -= total
-    if (diff < -total / 2) diff += total
-    return Math.abs(diff) <= 2
+  // Get active item (handles infinite wrap around)
+  const activeItem = items[currentIndex % items.length]
+
+  // Determine active theme color based on institution
+  const getThemeColor = () => {
+    if (!activeItem) return "blue"
+    const inst = activeItem.institution?.toLowerCase()
+    if (inst === "assemblée") return "blue"
+    if (inst === "sénat") return "purple"
+    if (inst === "gouvernement") return "red"
+    
+    // Sneakers fallback
+    const fallbackColors = ["blue", "purple", "amber", "red", "emerald"]
+    const itemId = activeItem.id || 0
+    return fallbackColors[itemId % fallbackColors.length] || "blue"
   }
+
+  const theme = getThemeColor()
+
+  const bgColors = {
+    blue: "bg-blue-50/30 border-blue-100/50",
+    purple: "bg-purple-50/30 border-purple-100/50",
+    red: "bg-rose-50/30 border-rose-100/50",
+    amber: "bg-amber-50/30 border-amber-100/50",
+    emerald: "bg-emerald-50/30 border-emerald-100/50",
+  }[theme] || "bg-slate-50/20 border-slate-100/55"
+
+  const glowColors = {
+    blue: "bg-blue-500/10",
+    purple: "bg-purple-500/10",
+    red: "bg-red-500/10",
+    amber: "bg-amber-500/10",
+    emerald: "bg-emerald-500/10",
+  }[theme] || "bg-slate-900/[0.01]"
+
+  // Relative positions window in DOM (centered around current index)
+  const relativePositions = [-2, -1, 0, 1, 2]
 
   return (
     <div 
       ref={containerRef}
-      className={`relative flex ${height} w-full items-center justify-center overflow-hidden bg-transparent rounded-[3rem] border border-slate-100/55 shadow-inner bg-slate-50/20`}
+      className={`relative flex ${height} w-full items-center justify-center overflow-hidden transition-all duration-500 rounded-[3rem] border shadow-inner ${bgColors}`}
     >
-      {/* Subtle ambient glow */}
+      {/* Dynamic ambient glow behind the deck */}
       <div className="pointer-events-none absolute inset-0">
-        <div className="absolute left-1/2 top-1/2 h-[500px] w-[500px] -translate-x-1/2 -translate-y-1/2 rounded-full bg-slate-900/[0.01] blur-3xl" />
+        <div className={`absolute left-1/2 top-1/2 h-[550px] w-[550px] -translate-x-1/2 -translate-y-1/2 rounded-full blur-3xl transition-all duration-500 ${glowColors}`} />
       </div>
 
       {/* Card Stack */}
       <div className="relative flex h-[480px] w-[340px] items-center justify-center" style={{ perspective: "1200px" }}>
-        {items.map((item, index) => {
-          if (!isVisible(index)) return null
-          const style = getCardStyle(index)
-          const isCurrent = index === currentIndex
+        {relativePositions.map((rel) => {
+          const style = getCardStyle(rel)
+          const isCurrent = rel === 0
+          const absoluteIndex = currentIndex + rel
+          const itemIndex = ((absoluteIndex % items.length) + items.length) % items.length
+          const item = items[itemIndex]
 
           return (
             <motion.div
-              key={item.id || index}
+              key={absoluteIndex}
               className="absolute cursor-grab active:cursor-grabbing w-[280px]"
               animate={{
                 y: style.y,
@@ -198,24 +214,6 @@ export function VerticalImageStack({
         })}
       </div>
 
-      {/* Navigation dots */}
-      <div className="absolute right-8 top-1/2 flex -translate-y-1/2 flex-col gap-2">
-        {items.map((_, index) => (
-          <button
-            key={index}
-            onClick={() => {
-              if (index !== currentIndex) {
-                setCurrentIndex(index)
-              }
-            }}
-            className={`h-2 w-2 rounded-full transition-all duration-300 ${
-              index === currentIndex ? "h-6 bg-slate-800" : "bg-slate-400/40 hover:bg-slate-500"
-            }`}
-            aria-label={`Go to item ${index + 1}`}
-          />
-        ))}
-      </div>
-
       {/* Instruction hint */}
       <motion.div
         className="absolute bottom-6 left-1/2 -translate-x-1/2"
@@ -259,14 +257,13 @@ export function VerticalImageStack({
         </div>
       </motion.div>
 
-      {/* Counter */}
-      <div className="absolute left-8 top-1/2 -translate-y-1/2">
-        <div className="flex flex-col items-center">
-          <span className="text-4xl font-extralight text-slate-800 tabular-nums">
-            {String(currentIndex + 1).padStart(2, "0")}
+      {/* Infinite count counter (No limit denominator shown) */}
+      <div className="absolute left-8 top-1/2 -translate-y-1/2 select-none pointer-events-none">
+        <div className="flex flex-col items-center bg-white/80 backdrop-blur-md px-4 py-3 rounded-2xl shadow-sm border border-slate-100">
+          <span className="text-[9px] font-black uppercase tracking-widest text-slate-400 mb-0.5">ACTU</span>
+          <span className="text-3xl font-black text-slate-800 tabular-nums">
+            {String(currentIndex - BASE_INDEX + 1).padStart(2, "0")}
           </span>
-          <div className="my-2 h-px w-8 bg-slate-300" />
-          <span className="text-xs text-slate-400 tabular-nums">{String(items.length).padStart(2, "0")}</span>
         </div>
       </div>
     </div>

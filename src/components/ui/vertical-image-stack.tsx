@@ -53,18 +53,16 @@ export function VerticalImageStack({
     const now = Date.now()
     if (now - lastNavigationTime.current < navigationCooldown) return
     
-    // Empêcher le retour en arrière (vers le haut / index négatifs)
-    if (newDirection <= 0) return
-    
     lastNavigationTime.current = now
-    setCurrentIndex((prev) => Math.max(0, prev + newDirection))
-  }, [])
+    setCurrentIndex((prev) => Math.max(0, Math.min(items.length - 1, prev + newDirection)))
+  }, [items.length])
 
   const handleDragEnd = (_: MouseEvent | TouchEvent | PointerEvent, info: PanInfo) => {
     const threshold = 50
-    // Glisser vers le haut (info.offset.y négatif) fait défiler vers l'article suivant (en avant)
     if (info.offset.y < -threshold) {
-      navigate(1)
+      navigate(1) // Glisser vers le haut = carte suivante (plus ancienne)
+    } else if (info.offset.y > threshold) {
+      navigate(-1) // Glisser vers le bas = carte précédente (plus récente)
     }
   }
 
@@ -73,19 +71,23 @@ export function VerticalImageStack({
     if (!el) return
 
     const handleWheel = (e: WheelEvent) => {
-      // Défiler vers le bas (e.deltaY > 0) fait avancer la pile.
-      // Défiler vers le haut (e.deltaY < 0) n'est pas intercepté pour permettre le défilement naturel de la page vers le haut.
-      if (e.deltaY > 0) {
-        if (Math.abs(e.deltaY) > 15) {
+      if (Math.abs(e.deltaY) > 15) {
+        const direction = e.deltaY > 0 ? 1 : -1
+        
+        // N'intercepter le scroll que si on peut effectivement naviguer dans la pile
+        if (
+          (direction === 1 && currentIndex < items.length - 1) ||
+          (direction === -1 && currentIndex > 0)
+        ) {
           e.preventDefault()
-          navigate(1)
+          navigate(direction)
         }
       }
     }
 
     el.addEventListener("wheel", handleWheel, { passive: false })
     return () => el.removeEventListener("wheel", handleWheel)
-  }, [navigate])
+  }, [navigate, currentIndex, items.length])
 
   const getCardStyle = (diff: number) => {
     if (diff === 0) {
@@ -159,11 +161,10 @@ export function VerticalImageStack({
           const isCurrent = rel === 0
           const absoluteIndex = currentIndex + rel
           
-          // Masquer les cartes situées "avant" la toute première carte de départ
-          if (absoluteIndex < 0) return null;
+          // Ne pas afficher de cartes hors des limites réelles de la liste
+          if (absoluteIndex < 0 || absoluteIndex >= items.length) return null;
 
-          const itemIndex = absoluteIndex % items.length
-          const item = items[itemIndex]
+          const item = items[absoluteIndex]
 
           if (!item) return null;
 
@@ -235,11 +236,10 @@ export function VerticalImageStack({
       >
         <div className="flex flex-col items-center gap-1.5 text-slate-400">
           <motion.div
-            animate={{ y: [0, 4, 0] }}
+            animate={{ y: [0, -4, 0] }}
             transition={{ repeat: Number.POSITIVE_INFINITY, duration: 1.5, ease: "easeInOut" }}
             className="flex flex-col items-center"
           >
-            <span className="text-[9px] font-black tracking-widest uppercase mb-1">Défiler pour voir la suite</span>
             <svg
               width="18"
               height="18"
@@ -249,6 +249,20 @@ export function VerticalImageStack({
               strokeWidth="2"
               strokeLinecap="round"
               strokeLinejoin="round"
+            >
+              <path d="M18 15l-6-6-6 6" />
+            </svg>
+            <span className="text-[9px] font-black tracking-widest uppercase mt-1">Glisser ou défiler</span>
+            <svg
+              width="18"
+              height="18"
+              viewBox="0 0 24 24"
+              fill="none"
+              stroke="currentColor"
+              strokeWidth="2"
+              strokeLinecap="round"
+              strokeLinejoin="round"
+              className="mt-1"
             >
               <path d="M6 9l6 6 6-6" />
             </svg>

@@ -196,45 +196,49 @@ export default function DashboardPage() {
           <div className="flex border-b border-slate-100">
             <button 
               onClick={() => startTransition(() => setActiveTab("votes"))}
-              className={`relative flex-1 py-6 font-bold text-sm uppercase tracking-widest flex items-center justify-center gap-3 transition-all ${
-                activeTab === "votes" ? "text-slate-900 bg-white" : "text-slate-400 bg-slate-50 hover:bg-slate-100"
+              className={`relative flex-1 py-6 font-bold text-xs md:text-sm uppercase tracking-widest flex items-center justify-center gap-3 transition-all duration-300 ${
+                activeTab === "votes" 
+                  ? "text-white bg-blue-600 shadow-lg shadow-blue-500/20 z-10" 
+                  : "text-slate-500 bg-slate-50 hover:bg-slate-100 hover:text-slate-800"
               }`}
             >
               <Vote size={18} className={isPending && activeTab !== "votes" ? "opacity-30" : ""} />
               Mon Historique de Vote
-              {activeTab === "votes" && <div className={`absolute bottom-0 w-32 h-1 rounded-full ${isPremium ? 'bg-amber-500' : 'bg-slate-900'}`} />}
             </button>
             <button 
               onClick={() => startTransition(() => setActiveTab("deputies"))}
-              className={`relative flex-1 py-6 font-bold text-sm uppercase tracking-widest flex items-center justify-center gap-3 transition-all ${
-                activeTab === "deputies" ? "text-slate-900 bg-white" : "text-slate-400 bg-slate-50 hover:bg-slate-100"
+              className={`relative flex-1 py-6 font-bold text-xs md:text-sm uppercase tracking-widest flex items-center justify-center gap-3 transition-all duration-300 ${
+                activeTab === "deputies" 
+                  ? "text-white bg-emerald-600 shadow-lg shadow-emerald-500/20 z-10" 
+                  : "text-slate-500 bg-slate-50 hover:bg-slate-100 hover:text-slate-800"
               }`}
             >
               <Users size={18} className={isPending && activeTab !== "deputies" ? "opacity-30" : ""} />
               Mes Députés Suivis
-              {activeTab === "deputies" && <div className={`absolute bottom-0 w-32 h-1 rounded-full ${isPremium ? 'bg-amber-500' : 'bg-slate-900'}`} />}
             </button>
             {isPremium && (
               <>
                 <button 
                   onClick={() => startTransition(() => setActiveTab("saved"))}
-                  className={`relative flex-1 py-6 font-bold text-sm uppercase tracking-widest flex items-center justify-center gap-3 transition-all ${
-                    activeTab === "saved" ? "text-slate-900 bg-white" : "text-slate-400 bg-slate-50 hover:bg-slate-100"
+                  className={`relative flex-1 py-6 font-bold text-xs md:text-sm uppercase tracking-widest flex items-center justify-center gap-3 transition-all duration-300 ${
+                    activeTab === "saved" 
+                      ? "text-white bg-amber-500 shadow-lg shadow-amber-500/20 z-10" 
+                      : "text-slate-500 bg-slate-50 hover:bg-slate-100 hover:text-slate-800"
                   }`}
                 >
                   <Bookmark size={18} className={isPending && activeTab !== "saved" ? "opacity-30" : ""} />
                   Lois Favorites
-                  {activeTab === "saved" && <div className="absolute bottom-0 w-32 h-1 bg-amber-500 rounded-full" />}
                 </button>
                 <button 
                   onClick={() => startTransition(() => setActiveTab("geos"))}
-                  className={`relative flex-1 py-6 font-bold text-sm uppercase tracking-widest flex items-center justify-center gap-3 transition-all ${
-                    activeTab === "geos" ? "text-slate-900 bg-white" : "text-slate-400 bg-slate-50 hover:bg-slate-100"
+                  className={`relative flex-1 py-6 font-bold text-xs md:text-sm uppercase tracking-widest flex items-center justify-center gap-3 transition-all duration-300 ${
+                    activeTab === "geos" 
+                      ? "text-white bg-pink-600 shadow-lg shadow-pink-500/20 z-10" 
+                      : "text-slate-500 bg-slate-50 hover:bg-slate-100 hover:text-slate-800"
                   }`}
                 >
                   <MapPin size={18} className={isPending && activeTab !== "geos" ? "opacity-30" : ""} />
                   Territoires
-                  {activeTab === "geos" && <div className="absolute bottom-0 w-32 h-1 bg-rose-500 rounded-full" />}
                 </button>
               </>
             )}

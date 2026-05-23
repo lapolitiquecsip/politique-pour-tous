@@ -60,8 +60,8 @@ export default function Home() {
                   <span className="relative inline-flex rounded-full h-4 w-4 md:h-6 md:w-6 bg-red-600 shadow-[0_0_15px_rgba(220,38,38,0.5)]"></span>
                 </span>
                 
-                <h2 className="text-5xl md:text-7xl font-staatliches uppercase tracking-tighter leading-none inline">
-                  <span className="bg-gradient-to-r from-sky-400 via-rose-500 to-sky-400 bg-clip-text text-transparent">Aujourd'hui</span>
+                <h2 className="text-5xl md:text-7xl font-staatliches uppercase tracking-tighter leading-none inline-flex items-center">
+                  <span className="bg-rose-500 text-white px-6 pt-2 pb-1 md:pt-4 md:pb-2 rounded-2xl md:rounded-3xl shadow-lg">AUJOURD'HUI</span>
                 </h2>
               </div>
             </div>

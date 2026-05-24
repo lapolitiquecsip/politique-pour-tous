@@ -14,6 +14,16 @@ const RSS_SOURCES = [
     source_name: 'Google News (Agrégateur)',
   },
   {
+    url: 'https://www.lemonde.fr/politique/rss_full.xml',
+    institution: 'média',
+    source_name: 'Le Monde',
+  },
+  {
+    url: 'https://www.challenges.fr/rss.xml',
+    institution: 'média',
+    source_name: 'Challenges',
+  },
+  {
     url: 'https://www.assemblee-nationale.fr/rss/communiques-de-presse.xml',
     institution: 'assemblée',
     source_name: 'Assemblée Nationale',
@@ -189,26 +199,34 @@ async function processWithClaude(articles: RawArticle[]): Promise<ProcessedArtic
         {
           role: 'user',
           content: `Tu es un rédacteur en chef d'un média politique français strictement factuel.
-Voici une large liste d'articles récents (issus de Google News qui agrège toute la presse, ainsi que de l'Assemblée et du Sénat).
+Voici une large liste d'articles récents (issus de Google News, Le Monde, Challenges, l'Assemblée et le Sénat).
 
 TA MISSION ABSOLUE :
 1. Regroupe les articles par sujet politique.
-2. ÉLIMINE IMPITOYABLEMENT tous les articles d'opinion, les éditoriaux, les polémiques stériles ou les "petites phrases" sans impact. 
-3. SELECTIONNE UNIQUEMENT les faits majeurs à HAUTE VALEUR AJOUTÉE (nouvelles lois, décisions économiques, chiffres clés de la semaine, enquêtes officielles, annonces gouvernementales concrètes). Maximum 8 sujets.
+2. ÉLIMINE IMPITOYABLEMENT :
+   - Tous les articles d'opinion, éditoriaux ou tribunes.
+   - Les "portraits", "biographies" ou résumés de carrière (ex: "En 8 ans, Gabriel Attal a enchaîné les postes..."). CELA N'APPORTE AUCUNE VALEUR.
+   - Les polémiques stériles ou les "petites phrases".
+3. SELECTIONNE UNIQUEMENT les faits majeurs à HAUTE VALEUR AJOUTÉE :
+   - Nouvelles lois, projets de lois et votes
+   - Décisions économiques et annonces gouvernementales concrètes
+   - Chiffres clés officiels de la semaine (déficit, chômage, budget)
+   - Résultats d'enquêtes officielles (justice, déontologie, etc.)
+   Maximum 8 sujets. Si tu n'as rien de concret et de chiffré, ne crée pas de sujet.
 4. Pour chaque sujet sélectionné, TU DOIS FAIRE UNE SYNTHÈSE de CE QUE DISENT PLUSIEURS JOURNAUX (au moins 2 si possible). 
 5. Si un chiffre important ou une donnée factuelle est disponible, tu dois l'inclure.
 
 IMPORTANT :
 - Aucun parti pris, aucune opinion. 100% FACTUEL.
 - L'institution doit être 'média' si ça vient de la presse, ou 'assemblée' / 'sénat'.
-- Dans "source_name", liste les VRAIS journaux mentionnés dans les textes (ex: "Le Monde, Les Echos, Mediapart"). Déduis-les de la description ou du titre si possible.
+- Dans "source_name", liste les VRAIS journaux mentionnés dans les textes (ex: "Le Monde, Challenges, Mediapart"). Déduis-les de la description ou du titre si possible.
 
 Réponds UNIQUEMENT en JSON, sous cette forme (un tableau) :
 [
   {
     "titre_simplifie": "Titre ultra-factuel (max 80 car, ex: 'Le déficit public atteint 5.5% en 2025')",
-    "resume_flash": "Synthèse très dense avec valeur ajoutée (chiffres, faits concrets). Interdit de faire des phrases creuses. (max 200 car)",
-    "source_name": "Liste des journaux croisés (ex: 'Le Monde, Les Echos, Libération')",
+    "resume_flash": "Synthèse très dense avec valeur ajoutée (chiffres, faits concrets). Interdit de faire des biographies ou phrases creuses. (max 200 car)",
+    "source_name": "Liste des journaux croisés (ex: 'Le Monde, Challenges, Libération')",
     "source_url": "L'URL de la source la plus pertinente",
     "institution": "média",
     "date_publication": "La date (format ISO)"

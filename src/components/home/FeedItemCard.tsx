@@ -8,6 +8,7 @@ function getDomainFromName(name: string) {
   if (cleanName.includes('monde')) return 'lemonde.fr';
   if (cleanName.includes('libération') || cleanName.includes('liberation')) return 'liberation.fr';
   if (cleanName.includes('echos')) return 'lesechos.fr';
+  if (cleanName.includes('challenges')) return 'challenges.fr';
   if (cleanName.includes('france info') || cleanName.includes('france tv')) return 'francetvinfo.fr';
   if (cleanName.includes('france 24')) return 'france24.com';
   if (cleanName.includes('bfm')) return 'bfmtv.com';

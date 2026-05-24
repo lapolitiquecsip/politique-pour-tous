@@ -215,7 +215,8 @@ TA MISSION ABSOLUE :
    - Résultats d'enquêtes officielles (justice, déontologie, etc.)
    Maximum 8 sujets. Si tu n'as rien de concret et de chiffré, ne crée pas de sujet.
 4. OBLIGATION DE DIVERSITÉ ET DE SOURCES :
-   - Pour chaque sujet, TU DOIS OBLIGATOIREMENT croiser au moins 2 sources différentes (ex: Le Monde ET Challenges). Il y a trop de "Le Figaro", diversifie tes sources !
+   - Pour chaque sujet, TU DOIS OBLIGATOIREMENT croiser au moins 2 sources DIFFÉRENTES (ex: Le Monde ET Challenges). Si tu n'as qu'une seule source, NE CREE PAS LE SUJET. Il y a trop de "Le Figaro" et "France Info", donne la priorité absolue à "Le Monde", "Challenges", "Mediapart".
+   - BANNISSEMENT TOTAL : N'utilise JAMAIS CNews comme source.
    - Dans le "resume_flash", TU DOIS RÉDIGER TA PROPRE FICHE EXPLICATIVE (max 250 car) en précisant EXPLICITEMENT dans le texte tes sources (ex: "Selon Le Monde et Challenges, le gouvernement a décidé de...").
 5. Si un chiffre important ou une donnée factuelle est disponible, tu dois l'inclure.
 

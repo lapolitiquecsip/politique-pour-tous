@@ -466,22 +466,51 @@ function LocalPoliticsContent() {
                </div>
             </div>
 
-            {/* "Le Saviez-vous" Card */}
-            <div className="bg-white rounded-[2.5rem] border border-slate-200 p-8 space-y-6">
-              <div className="w-10 h-10 rounded-2xl bg-rose-50 flex items-center justify-center text-rose-600">
-                <History size={20} />
-              </div>
-              <div className="space-y-4">
-                <h3 className="text-2xl font-bold text-slate-900 leading-tight">Le Saviez-vous ?</h3>
-                <p className="text-slate-500 italic leading-relaxed">
-                  Les maires sont élus par le conseil municipal, qui est lui-même élu au suffrage universel direct.
-                </p>
-                <div className="pt-4 border-t border-slate-50">
-                  <p className="text-[10px] font-black uppercase tracking-widest text-slate-400 mb-4">Astuce</p>
-                  <p className="text-xs text-slate-500 leading-relaxed">
-                    Passez votre souris sur les mots soulignés pour voir leur définition.
-                  </p>
+            {/* Mayors by Party Panel */}
+            <div className="bg-white rounded-[2.5rem] border border-slate-200 p-8 space-y-8">
+              <div className="flex items-center justify-between">
+                <div className="space-y-1">
+                  <h3 className="text-2xl font-staatliches uppercase tracking-wide">Maires par Étiquette</h3>
+                  <p className="text-[10px] font-black uppercase tracking-widest text-slate-400">France entière • Post-2026</p>
                 </div>
+                <div className="w-12 h-12 rounded-2xl bg-slate-50 flex items-center justify-center text-slate-900 border border-slate-100 shadow-sm">
+                  <Building size={22} />
+                </div>
+              </div>
+              
+              <div className="space-y-5">
+                {[
+                  { party: "Sans Étiquette", count: 23412, color: "bg-slate-400", total: 34965 },
+                  { party: "Divers Droite", count: 4850, color: "bg-indigo-900", total: 34965 },
+                  { party: "Divers Gauche", count: 3200, color: "bg-fuchsia-600", total: 34965 },
+                  { party: "Les Républicains", count: 1250, color: "bg-blue-600", total: 34965 },
+                  { party: "Parti Socialiste", count: 850, color: "bg-rose-600", total: 34965 },
+                  { party: "RN", count: 280, color: "bg-sky-900", total: 34965 },
+                ].map((stat, idx) => (
+                  <div key={idx} className="space-y-2 group">
+                    <div className="flex items-center justify-between text-sm font-bold text-slate-900">
+                      <span className="flex items-center gap-2">
+                        <span className={`w-2 h-2 rounded-full ${stat.color} shadow-sm shadow-${stat.color.replace('bg-', '')}/30`} />
+                        {stat.party}
+                      </span>
+                      <span>{stat.count.toLocaleString('fr-FR')}</span>
+                    </div>
+                    <div className="h-2.5 w-full bg-slate-50 rounded-full overflow-hidden">
+                      <motion.div 
+                        initial={{ width: 0 }}
+                        animate={{ width: `${(stat.count / stat.total) * 100}%` }}
+                        transition={{ duration: 1, delay: 0.2 + (idx * 0.1) }}
+                        className={`h-full ${stat.color} rounded-full`}
+                      />
+                    </div>
+                  </div>
+                ))}
+              </div>
+
+              <div className="pt-4 border-t border-slate-50">
+                <p className="text-xs text-slate-500 italic text-center">
+                  La majorité des communes rurales de moins de 3500 habitants sont gérées par des maires sans étiquette partisane déclarée.
+                </p>
               </div>
             </div>
             

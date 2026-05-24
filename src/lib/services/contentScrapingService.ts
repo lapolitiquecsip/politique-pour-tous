@@ -204,30 +204,33 @@ Voici une large liste d'articles récents (issus de Google News, Le Monde, Chall
 TA MISSION ABSOLUE :
 1. Regroupe les articles par sujet politique.
 2. ÉLIMINE IMPITOYABLEMENT :
+   - TOUTE ACTUALITÉ INTERNATIONALE ou étrangère (ex: élections américaines, démissions aux USA, etc.). TU NE GARDES QUE LA POLITIQUE STRICTEMENT FRANÇAISE.
    - Tous les articles d'opinion, éditoriaux ou tribunes.
    - Les "portraits", "biographies" ou résumés de carrière (ex: "En 8 ans, Gabriel Attal a enchaîné les postes..."). CELA N'APPORTE AUCUNE VALEUR.
    - Les polémiques stériles ou les "petites phrases".
-3. SELECTIONNE UNIQUEMENT les faits majeurs à HAUTE VALEUR AJOUTÉE :
+3. SELECTIONNE UNIQUEMENT les faits majeurs à HAUTE VALEUR AJOUTÉE sur la politique française :
    - Nouvelles lois, projets de lois et votes
    - Décisions économiques et annonces gouvernementales concrètes
    - Chiffres clés officiels de la semaine (déficit, chômage, budget)
    - Résultats d'enquêtes officielles (justice, déontologie, etc.)
    Maximum 8 sujets. Si tu n'as rien de concret et de chiffré, ne crée pas de sujet.
-4. Pour chaque sujet sélectionné, TU DOIS FAIRE UNE SYNTHÈSE de CE QUE DISENT PLUSIEURS JOURNAUX (au moins 2 si possible). 
+4. OBLIGATION DE DIVERSITÉ ET DE SOURCES :
+   - Pour chaque sujet, TU DOIS OBLIGATOIREMENT croiser au moins 2 sources différentes (ex: Le Monde ET Challenges). Il y a trop de "Le Figaro", diversifie tes sources !
+   - Dans le "resume_flash", TU DOIS RÉDIGER TA PROPRE FICHE EXPLICATIVE (max 250 car) en précisant EXPLICITEMENT dans le texte tes sources (ex: "Selon Le Monde et Challenges, le gouvernement a décidé de...").
 5. Si un chiffre important ou une donnée factuelle est disponible, tu dois l'inclure.
 
 IMPORTANT :
 - Aucun parti pris, aucune opinion. 100% FACTUEL.
 - L'institution doit être 'média' si ça vient de la presse, ou 'assemblée' / 'sénat'.
-- Dans "source_name", liste les VRAIS journaux mentionnés dans les textes (ex: "Le Monde, Challenges, Mediapart"). Déduis-les de la description ou du titre si possible.
+- Dans "source_name", liste les VRAIS journaux mentionnés dans les textes séparés par des virgules (ex: "Le Monde, Challenges, Mediapart").
 
 Réponds UNIQUEMENT en JSON, sous cette forme (un tableau) :
 [
   {
     "titre_simplifie": "Titre ultra-factuel (max 80 car, ex: 'Le déficit public atteint 5.5% en 2025')",
-    "resume_flash": "Synthèse très dense avec valeur ajoutée (chiffres, faits concrets). Interdit de faire des biographies ou phrases creuses. (max 200 car)",
+    "resume_flash": "Fiche explicative rédigée par tes soins, incluant tes sources (ex: 'D'après Le Monde et Les Echos...'). Valeur ajoutée maximale, chiffres concrets. (max 250 car)",
     "source_name": "Liste des journaux croisés (ex: 'Le Monde, Challenges, Libération')",
-    "source_url": "L'URL de la source la plus pertinente",
+    "source_url": "L'URL de la source la plus pertinente (NE JAMAIS LAISSER VIDE SI POSSIBLE)",
     "institution": "média",
     "date_publication": "La date (format ISO)"
   }

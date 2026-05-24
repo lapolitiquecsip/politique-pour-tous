@@ -86,7 +86,7 @@ export const api = {
 
   getContent: async (limit = 10, institution?: string) => {
     try {
-      let query = supabase.from('content').select('*').limit(limit).order('created_at', { ascending: false });
+      let query = supabase.from('content').select('*').limit(limit).order('date_publication', { ascending: false }).order('created_at', { ascending: false });
       
       if (institution) {
         query = query.eq('institution', institution);

@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { supabase } from "@/lib/supabase";
 import { Star, RefreshCw as Loader2, X, AlertCircle, ArrowRight } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
@@ -17,6 +17,50 @@ export default function PremiumButton() {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [dismissed, setDismissed] = useState(false);
+  const [hasOtherPremium, setHasOtherPremium] = useState(false);
+
+  useEffect(() => {
+    const checkPremiumElements = () => {
+      // Find all anchors, buttons, or divs that mention premium or elite,
+      // excluding our floating button container
+      const elements = Array.from(document.querySelectorAll('a, button, [class*="premium"], [class*="Premium"], [class*="teaser"]'));
+      
+      const found = elements.some((el) => {
+        // Exclude our own floating button container
+        if (el.closest('.floating-premium-container')) {
+          return false;
+        }
+        
+        const text = (el.textContent || '').toLowerCase();
+        const href = el.getAttribute('href') || '';
+        
+        // Incitations to premium
+        return href.includes('/premium') || 
+               text.includes('devenir premium') || 
+               text.includes('passer au premium') || 
+               text.includes('découvrir l\'offre elite') ||
+               text.includes('devenir premium elite') ||
+               text.includes('membres premium') ||
+               text.includes('accès premium') ||
+               text.includes('débloquer le sénat');
+      });
+      
+      setHasOtherPremium(found);
+    };
+
+    // Run check initially
+    checkPremiumElements();
+
+    // Create a MutationObserver to listen for DOM additions/toggles/navigation changes
+    const observer = new MutationObserver(checkPremiumElements);
+    observer.observe(document.body, {
+      childList: true,
+      subtree: true,
+      attributes: true
+    });
+
+    return () => observer.disconnect();
+  }, [pathname]);
 
   const handlePremiumClick = async () => {
     if (!userId) {
@@ -35,12 +79,13 @@ export default function PremiumButton() {
   // 2. Sur la page /premium ou une page de loi
   // 3. Masqué manuellement
   // 4. Chargement du statut en cours
-  if (isPremium || statusLoading || dismissed || pathname === "/premium" || pathname.startsWith("/lois/")) return null;
+  // 5. Un autre bouton premium est déjà visible sur la page
+  if (isPremium || statusLoading || dismissed || hasOtherPremium || pathname === "/premium" || pathname.startsWith("/lois/")) return null;
 
   return (
     <>
-      {/* Bouton flottant fixe — visible sur toutes les pages */}
-      <div className="fixed bottom-6 right-6 z-50 flex flex-col items-end gap-3">
+      {/* Bouton flottant fixe — masqué sur téléphone mobile (sm:flex) et conteneur identifié pour l'observateur */}
+      <div className="fixed bottom-6 right-6 z-50 hidden sm:flex flex-col items-end gap-3 floating-premium-container">
         {/* Message d'erreur */}
         <AnimatePresence>
           {error === "auth_required" && (

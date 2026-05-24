@@ -20,6 +20,61 @@ import { REGIONS, DEPARTMENTS } from "@/lib/data/territories";
 import { StaggerTestimonials } from "@/components/ui/stagger-testimonials";
 import { AwardBadge } from "@/components/ui/award-badge";
 
+const getPartyTheme = (party: string) => {
+  switch (party) {
+    case "PS":
+      return {
+        badge: "bg-rose-600 text-white shadow-rose-600/30",
+        text: "text-rose-400",
+        hoverBg: "group-hover/btn:bg-rose-600",
+        hoverText: "group-hover:text-rose-600"
+      };
+    case "EELV":
+      return {
+        badge: "bg-emerald-600 text-white shadow-emerald-600/30",
+        text: "text-emerald-400",
+        hoverBg: "group-hover/btn:bg-emerald-600",
+        hoverText: "group-hover:text-emerald-600"
+      };
+    case "LR":
+      return {
+        badge: "bg-blue-600 text-white shadow-blue-600/30",
+        text: "text-blue-400",
+        hoverBg: "group-hover/btn:bg-blue-600",
+        hoverText: "group-hover:text-blue-600"
+      };
+    case "Horizons":
+      return {
+        badge: "bg-cyan-600 text-white shadow-cyan-600/30",
+        text: "text-cyan-400",
+        hoverBg: "group-hover/btn:bg-cyan-600",
+        hoverText: "group-hover:text-cyan-600"
+      };
+    case "MoDem":
+      return {
+        badge: "bg-orange-500 text-white shadow-orange-500/30",
+        text: "text-orange-400",
+        hoverBg: "group-hover/btn:bg-orange-500",
+        hoverText: "group-hover:text-orange-500"
+      };
+    case "DVD":
+      return {
+        badge: "bg-indigo-900 text-white shadow-indigo-900/30",
+        text: "text-indigo-400",
+        hoverBg: "group-hover/btn:bg-indigo-900",
+        hoverText: "group-hover:text-indigo-900"
+      };
+    case "DVG":
+    default:
+      return {
+        badge: "bg-fuchsia-600 text-white shadow-fuchsia-600/30",
+        text: "text-fuchsia-400",
+        hoverBg: "group-hover/btn:bg-fuchsia-600",
+        hoverText: "group-hover:text-fuchsia-600"
+      };
+  }
+};
+
 // Featured cities shown by default (Top 20)
 const FEATURED_CITIES = [
   { name: "Paris", code: "75056", mayor: "Anne Hidalgo", party: "PS", population: "2.1M", image: "/cities/paris_bg_1779624272735.png", safety: 60, education: 90, health: 95, employment: 88 },
@@ -297,53 +352,58 @@ function LocalPoliticsContent() {
                         </div>
                       </div>
                       <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                        {FEATURED_CITIES.map((city, idx) => (
-                          <motion.button
-                            key={city.code}
-                            initial={{ opacity: 0, y: 20 }}
-                            animate={{ opacity: 1, y: 0 }}
-                            transition={{ delay: idx * 0.1 }}
-                            onClick={() => {
-                              // Simulate selecting a commune from search
-                              setSelectedCommune({
-                                nom: city.name,
-                                code: city.code,
-                                population: parseInt(city.population.replace('M', '000000').replace('K', '000')),
-                                codesPostaux: [],
-                                departement: { nom: "" },
-                                region: { nom: "" }
-                              } as any);
-                            }}
-                            className="group relative bg-white rounded-[2.5rem] border border-slate-200 overflow-hidden hover:shadow-2xl transition-all duration-500 text-left"
-                          >
-                            <div className="h-40 overflow-hidden relative">
-                              <img src={city.image} alt={city.name} className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-700" />
-                              <div className="absolute inset-0 bg-gradient-to-t from-slate-900/90 via-slate-900/20 to-transparent" />
-                              <div className="absolute bottom-4 left-6 z-10 flex flex-col items-start gap-2">
-                                <span className="bg-rose-500 text-white px-5 pt-2 pb-1 rounded-2xl shadow-lg font-staatliches uppercase tracking-wider text-2xl inline-block transform -rotate-2 hover:rotate-0 transition-transform">
-                                  {city.name}
-                                </span>
-                                <p className="text-rose-300 font-black text-[9px] uppercase tracking-widest bg-slate-900/60 backdrop-blur-md px-3 py-1 rounded-full border border-white/10">{city.mayor}</p>
-                              </div>
-                            </div>
-                            <div className="p-6">
-                              <div className="grid grid-cols-2 gap-6 py-6 border-y border-slate-50">
-                                <div className="space-y-1">
-                                  <span className="text-[9px] font-black uppercase text-slate-400 tracking-widest flex items-center gap-1"><Users size={10} /> Population</span>
-                                  <p className="text-sm font-black text-slate-900">{city.population}</p>
-                                </div>
-                                <div className="space-y-1">
-                                  <span className="text-[9px] font-black uppercase text-slate-400 tracking-widest flex items-center gap-1"><Building2 size={10} /> Mandat</span>
-                                  <p className="text-sm font-black text-slate-900">2026</p>
+                        {FEATURED_CITIES.map((city, idx) => {
+                          const theme = getPartyTheme(city.party);
+                          return (
+                            <motion.button
+                              key={city.code}
+                              initial={{ opacity: 0, y: 20 }}
+                              animate={{ opacity: 1, y: 0 }}
+                              transition={{ delay: idx * 0.1 }}
+                              onClick={() => {
+                                // Simulate selecting a commune from search
+                                setSelectedCommune({
+                                  nom: city.name,
+                                  code: city.code,
+                                  population: parseInt(city.population.replace('M', '000000').replace('K', '000')),
+                                  codesPostaux: [],
+                                  departement: { nom: "" },
+                                  region: { nom: "" }
+                                } as any);
+                              }}
+                              className="group relative bg-white rounded-[2.5rem] border border-slate-200 overflow-hidden hover:shadow-2xl transition-all duration-500 text-left"
+                            >
+                              <div className="h-40 overflow-hidden relative">
+                                <img src={city.image} alt={city.name} className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-700" />
+                                <div className="absolute inset-0 bg-gradient-to-t from-slate-900/90 via-slate-900/20 to-transparent" />
+                                <div className="absolute bottom-4 left-6 z-10 flex flex-col items-start gap-2">
+                                  <span className={`${theme.badge} px-5 pt-2 pb-1 rounded-2xl shadow-lg font-staatliches uppercase tracking-wider text-2xl inline-block transform -rotate-2 hover:rotate-0 transition-transform`}>
+                                    {city.name}
+                                  </span>
+                                  <p className="text-white font-black text-[9px] uppercase tracking-widest bg-slate-900/60 backdrop-blur-md px-3 py-1 rounded-full border border-white/10">
+                                    {city.mayor} <span className="opacity-60">•</span> <span className={theme.text}>{city.party}</span>
+                                  </p>
                                 </div>
                               </div>
-                              <div className="w-full flex items-center justify-between group/btn text-slate-900 hover:text-rose-600 transition-colors pt-2">
-                                <span className="text-[10px] font-black uppercase tracking-widest">Voir les détails</span>
-                                <div className="w-10 h-10 rounded-full bg-slate-50 flex items-center justify-center group-hover/btn:bg-rose-600 group-hover/btn:text-white transition-all"><ChevronRight size={18} /></div>
+                              <div className="p-6">
+                                <div className="grid grid-cols-2 gap-6 py-6 border-y border-slate-50">
+                                  <div className="space-y-1">
+                                    <span className="text-[9px] font-black uppercase text-slate-400 tracking-widest flex items-center gap-1"><Users size={10} /> Population</span>
+                                    <p className="text-sm font-black text-slate-900">{city.population}</p>
+                                  </div>
+                                  <div className="space-y-1">
+                                    <span className="text-[9px] font-black uppercase text-slate-400 tracking-widest flex items-center gap-1"><Building2 size={10} /> Mandat</span>
+                                    <p className="text-sm font-black text-slate-900">2026</p>
+                                  </div>
+                                </div>
+                                <div className={`w-full flex items-center justify-between group/btn text-slate-900 ${theme.hoverText} transition-colors pt-2`}>
+                                  <span className="text-[10px] font-black uppercase tracking-widest">Voir les détails</span>
+                                  <div className={`w-10 h-10 rounded-full bg-slate-50 flex items-center justify-center ${theme.hoverBg} group-hover/btn:text-white transition-all`}><ChevronRight size={18} /></div>
+                                </div>
                               </div>
-                            </div>
-                          </motion.button>
-                        ))}
+                            </motion.button>
+                          );
+                        })}
                       </div>
                     </div>
                   ) : (

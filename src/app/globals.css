@@ -98,6 +98,14 @@
       transform: translateY(calc(-100% - var(--gap)));
     }
   }
+
+  @keyframes skeleton-loading {
+    0% { background-position: 200% 0; }
+    100% { background-position: -200% 0; }
+  }
+
+  --animate-skeleton-loading: skeleton-loading 8s infinite ease-in-out;
+  --background-image-skeleton-gradient: linear-gradient(270deg, var(--accents-1, #fafafa), var(--accents-2, #eaeaea), var(--accents-2, #eaeaea), var(--accents-1, #fafafa));
 }
 
 @layer base {

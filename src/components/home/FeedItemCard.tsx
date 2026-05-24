@@ -1,5 +1,39 @@
 import Link from "next/link";
 import GlossaryText from "@/components/ui/GlossaryText";
+import { AvatarGroup } from "@/components/ui/avatar";
+
+function getDomainFromName(name: string) {
+  const cleanName = name.trim().toLowerCase();
+  if (cleanName.includes('figaro')) return 'lefigaro.fr';
+  if (cleanName.includes('monde')) return 'lemonde.fr';
+  if (cleanName.includes('libération') || cleanName.includes('liberation')) return 'liberation.fr';
+  if (cleanName.includes('echos')) return 'lesechos.fr';
+  if (cleanName.includes('france info') || cleanName.includes('france tv')) return 'francetvinfo.fr';
+  if (cleanName.includes('france 24')) return 'france24.com';
+  if (cleanName.includes('bfm')) return 'bfmtv.com';
+  if (cleanName.includes('mediapart')) return 'mediapart.fr';
+  if (cleanName.includes('parisien')) return 'leparisien.fr';
+  if (cleanName.includes('20 minutes')) return '20minutes.fr';
+  if (cleanName.includes('point')) return 'lepoint.fr';
+  if (cleanName.includes('match')) return 'parismatch.com';
+  if (cleanName.includes('yahoo')) return 'yahoo.com';
+  if (cleanName.includes('sud ouest')) return 'sudouest.fr';
+  if (cleanName.includes('tribune')) return 'latribune.fr';
+  if (cleanName.includes('élysée') || cleanName.includes('elysee')) return 'elysee.fr';
+  if (cleanName.includes('sénat') || cleanName.includes('senat')) return 'senat.fr';
+  if (cleanName.includes('assemblée')) return 'assemblee-nationale.fr';
+  
+  // Fallback heuristic: lowercase, remove spaces, add .fr
+  return cleanName.replace(/\s+/g, '') + '.fr';
+}
+
+function getAvatarMembers(sourceString: string) {
+  const sources = sourceString.split(',').map(s => s.trim()).filter(Boolean);
+  return sources.map(source => ({
+    username: source,
+    src: `https://www.google.com/s2/favicons?domain=${getDomainFromName(source)}&sz=64`
+  }));
+}
 
 interface ContentItem {
   id: string;
@@ -61,20 +95,24 @@ export default function FeedItemCard({ item }: { item: ContentItem }) {
 
       <div className="mt-auto pt-3 border-t border-border/50">
         {item.source_url ? (
-          <a
-            href={item.source_url}
-            target="_blank"
-            rel="noopener noreferrer"
-            className="text-xs font-semibold text-muted-foreground hover:text-primary transition-colors inline-flex items-center gap-1.5"
-          >
-            <svg className="w-3.5 h-3.5 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
-            </svg>
-            <span className="truncate">Source : {item.source_name || 'Source officielle'}</span>
-            <svg className="w-3 h-3 flex-shrink-0 opacity-50" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14" />
-            </svg>
-          </a>
+          <div className="flex items-center justify-between">
+            <a
+              href={item.source_url}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="text-xs font-semibold text-muted-foreground hover:text-primary transition-colors flex items-center gap-2 group"
+            >
+              <div className="flex items-center">
+                <AvatarGroup members={getAvatarMembers(item.source_name || "Source officielle")} size={22} limit={4} />
+              </div>
+              <span className="truncate flex-1 max-w-[120px] group-hover:underline">
+                {item.source_name ? item.source_name.split(',')[0] + (item.source_name.includes(',') ? '...' : '') : 'Source'}
+              </span>
+              <svg className="w-3 h-3 flex-shrink-0 opacity-50 group-hover:opacity-100 transition-opacity" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14" />
+              </svg>
+            </a>
+          </div>
         ) : (
           <span className="text-xs text-muted-foreground/50 inline-flex items-center gap-1.5">
             <svg className="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">

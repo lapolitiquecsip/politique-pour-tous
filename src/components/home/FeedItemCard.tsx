@@ -76,7 +76,7 @@ export default function FeedItemCard({ item }: { item: ContentItem }) {
   const relativeDate = getRelativeDate(item.date_publication);
 
   return (
-    <div className={`bg-gradient-to-b from-white to-slate-50/60 border border-slate-100 rounded-3xl p-6 shadow-sm hover:shadow-xl transition-all duration-300 h-full flex flex-col border-t-[5px] ${config.border} relative overflow-hidden group`}>
+    <div className={`bg-gradient-to-b from-white to-slate-50 border border-slate-100 rounded-3xl p-6 shadow-sm hover:shadow-xl transition-all duration-300 h-full flex flex-col border-t-[5px] ${config.border} relative overflow-hidden group`}>
       {/* Dynamic luxury gradient highlight */}
       <div className="absolute inset-0 bg-gradient-to-tr from-transparent via-slate-500/[0.02] to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500 pointer-events-none" />
       

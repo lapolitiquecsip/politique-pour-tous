@@ -79,8 +79,9 @@ export default function PremiumButton() {
   // 2. Sur la page /premium ou une page de loi
   // 3. Masqué manuellement
   // 4. Chargement du statut en cours
-  // 5. Un autre bouton premium est déjà visible sur la page
-  if (isPremium || statusLoading || dismissed || hasOtherPremium || pathname === "/premium" || pathname.startsWith("/lois/")) return null;
+  // 5. Un autre bouton premium est déjà visible sur la page (sauf sur la page d'accueil '/')
+  const shouldHideDueToOtherPremium = hasOtherPremium && pathname !== "/";
+  if (isPremium || statusLoading || dismissed || shouldHideDueToOtherPremium || pathname === "/premium" || pathname.startsWith("/lois/")) return null;
 
   return (
     <>

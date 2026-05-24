@@ -9,6 +9,11 @@ import Anthropic from '@anthropic-ai/sdk';
 // --- Sources RSS officielles & vérifiées ---
 const RSS_SOURCES = [
   {
+    url: 'https://news.google.com/news/rss/headlines/section/topic/POLITICS?hl=fr&gl=FR&ceid=FR:fr',
+    institution: 'média',
+    source_name: 'Google News (Agrégateur)',
+  },
+  {
     url: 'https://www.assemblee-nationale.fr/rss/communiques-de-presse.xml',
     institution: 'assemblée',
     source_name: 'Assemblée Nationale',
@@ -22,16 +27,6 @@ const RSS_SOURCES = [
     url: 'https://www.senat.fr/rss/textes.rss',
     institution: 'sénat',
     source_name: 'Sénat — Textes de loi',
-  },
-  {
-    url: 'https://www.francetvinfo.fr/politique.rss',
-    institution: 'média',
-    source_name: 'France Info',
-  },
-  {
-    url: 'https://www.lefigaro.fr/rss/figaro_politique.xml',
-    institution: 'média',
-    source_name: 'Le Figaro',
   },
 ];
 
@@ -193,32 +188,34 @@ async function processWithClaude(articles: RawArticle[]): Promise<ProcessedArtic
       messages: [
         {
           role: 'user',
-          content: `Tu es un journaliste politique français expert chargé de faire la synthèse de l'actualité. 
-Voici une liste d'articles récents issus de différentes sources (médias, assemblée, sénat).
+          content: `Tu es un rédacteur en chef d'un média politique français strictement factuel.
+Voici une large liste d'articles récents (issus de Google News qui agrège toute la presse, ainsi que de l'Assemblée et du Sénat).
 
-TA MISSION :
-1. Analyse tous ces articles et regroupe ceux qui parlent du **même sujet**.
-2. Pour chaque grand sujet politique abordé (sélectionne les plus pertinents, maximum 15 sujets), croise les sources : fais la synthèse de ce que disent les différents journaux/institutions.
-3. Crée un résumé neutre et croisé.
+TA MISSION ABSOLUE :
+1. Regroupe les articles par sujet politique.
+2. ÉLIMINE IMPITOYABLEMENT tous les articles d'opinion, les éditoriaux, les polémiques stériles ou les "petites phrases" sans impact. 
+3. SELECTIONNE UNIQUEMENT les faits majeurs à HAUTE VALEUR AJOUTÉE (nouvelles lois, décisions économiques, chiffres clés de la semaine, enquêtes officielles, annonces gouvernementales concrètes). Maximum 8 sujets.
+4. Pour chaque sujet sélectionné, TU DOIS FAIRE UNE SYNTHÈSE de CE QUE DISENT PLUSIEURS JOURNAUX (au moins 2 si possible). 
+5. Si un chiffre important ou une donnée factuelle est disponible, tu dois l'inclure.
 
 IMPORTANT :
-- Reste factuel, neutre politiquement, n'invente rien. Ne prends pas parti.
-- Croise les sources : si Le Figaro et France Info parlent du même sujet, synthétise les deux visions dans ton résumé.
-- L'institution doit être 'média' si c'est majoritairement tiré de la presse, ou 'assemblée' / 'sénat' si cela concerne uniquement un texte officiel. Si tu mélanges des sources, mets 'média'.
+- Aucun parti pris, aucune opinion. 100% FACTUEL.
+- L'institution doit être 'média' si ça vient de la presse, ou 'assemblée' / 'sénat'.
+- Dans "source_name", liste les VRAIS journaux mentionnés dans les textes (ex: "Le Monde, Les Echos, Mediapart"). Déduis-les de la description ou du titre si possible.
 
-Réponds UNIQUEMENT en JSON, sous cette forme exacte (un tableau) :
+Réponds UNIQUEMENT en JSON, sous cette forme (un tableau) :
 [
   {
-    "titre_simplifie": "Le titre clair du sujet (max 80 caractères)",
-    "resume_flash": "Ta synthèse croisée du sujet en une ou deux phrases percutantes (max 200 caractères)",
-    "source_name": "Noms des sources utilisées (ex: 'Le Figaro, France Info')",
-    "source_url": "L'URL de la source principale (ou la première utilisée)",
+    "titre_simplifie": "Titre ultra-factuel (max 80 car, ex: 'Le déficit public atteint 5.5% en 2025')",
+    "resume_flash": "Synthèse très dense avec valeur ajoutée (chiffres, faits concrets). Interdit de faire des phrases creuses. (max 200 car)",
+    "source_name": "Liste des journaux croisés (ex: 'Le Monde, Les Echos, Libération')",
+    "source_url": "L'URL de la source la plus pertinente",
     "institution": "média",
-    "date_publication": "La date la plus récente parmi les articles du groupe (format ISO)"
+    "date_publication": "La date (format ISO)"
   }
 ]
 
-Voici les articles :
+Voici l'agrégation web :
 
 ${articlesForPrompt}`
         }

@@ -85,7 +85,7 @@ export default function PremiumButton() {
   return (
     <>
       {/* Bouton flottant fixe — masqué sur téléphone mobile (sm:flex) et conteneur identifié pour l'observateur */}
-      <div className="fixed bottom-6 right-6 z-50 hidden sm:flex flex-col items-end gap-3 floating-premium-container">
+      <div className="fixed bottom-6 right-6 z-50 flex flex-col items-end gap-3 floating-premium-container">
         {/* Message d'erreur */}
         <AnimatePresence>
           {error === "auth_required" && (

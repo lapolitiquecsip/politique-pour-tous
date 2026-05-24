@@ -134,17 +134,22 @@ export default function SenatorClient() {
             </h2>
           </div>
 
-          <div className="grid grid-cols-1 sm:grid-cols-2 gap-x-4 gap-y-16 mt-12">
+          <div className={`grid grid-cols-1 sm:grid-cols-2 gap-x-4 gap-y-16 mt-12 ${!isPremium ? "max-h-[600px] overflow-hidden" : ""}`}>
             {loading ? (
               Array(6).fill(0).map((_, i) => (
                 <div key={i} className="h-48 bg-slate-100 animate-pulse rounded-2xl" />
               ))
             ) : (
               filteredSenators.map(s => (
-                <SenatorCard key={s.id} senator={s} isBlurred={false} />
+                <SenatorCard key={s.id} senator={s} isBlurred={!isPremium} />
               ))
             )}
-          </div>        </div>
+          </div>
+
+          {!isPremium && filteredSenators.length > 4 && (
+             <div className="absolute bottom-0 left-0 w-full h-64 bg-gradient-to-t from-white via-white/90 to-transparent pointer-events-none flex items-end justify-center pb-8 p-4 text-center">
+             </div>
+          )}        </div>
       </div>
     </div>
   );

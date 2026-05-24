@@ -457,11 +457,11 @@ function LocalPoliticsContent() {
                       <p className="font-bold text-lg mb-1">Installation des EPCI</p>
                       <p className="text-sm text-white/60">Élection des présidents de communautés de communes et métropoles.</p>
                     </div>
-                    <div className="bg-white/5 p-5 rounded-2xl border border-white/10 opacity-50">
-                      <p className="text-slate-400 font-black text-[9px] uppercase tracking-widest mb-1">Mars 2028</p>
-                      <p className="font-bold text-lg mb-1">Régionales & Départementales</p>
-                      <p className="text-sm text-white/60">Renouvellement des conseils régionaux et départementaux.</p>
-                    </div>
+                     <div className="bg-white/5 p-5 rounded-2xl border border-white/10 opacity-50">
+                       <p className="text-slate-400 font-black text-[9px] uppercase tracking-widest mb-1">Mars 2028</p>
+                       <p className="font-bold text-lg mb-1">Régionales & Départementales</p>
+                       <p className="text-sm text-white/60">Renouvellement des conseils régionaux et départementaux.</p>
+                     </div>
                  </div>
                </div>
             </div>
@@ -471,7 +471,7 @@ function LocalPoliticsContent() {
               <div className="flex items-center justify-between">
                 <div className="space-y-1">
                   <h3 className="text-2xl font-staatliches uppercase tracking-wide">Maires par Étiquette</h3>
-                  <p className="text-[10px] font-black uppercase tracking-widest text-slate-400">France entière • Post-2026</p>
+                  <p className="text-[10px] font-black uppercase tracking-widest text-slate-400">France entière • Mandature 2026 vs 2020</p>
                 </div>
                 <div className="w-12 h-12 rounded-2xl bg-slate-50 flex items-center justify-center text-slate-900 border border-slate-100 shadow-sm">
                   <Building size={22} />
@@ -480,12 +480,12 @@ function LocalPoliticsContent() {
               
               <div className="space-y-5">
                 {[
-                  { party: "Sans Étiquette", count: 23412, color: "bg-slate-400", total: 34965 },
-                  { party: "Divers Droite", count: 4850, color: "bg-indigo-900", total: 34965 },
-                  { party: "Divers Gauche", count: 3200, color: "bg-fuchsia-600", total: 34965 },
-                  { party: "Les Républicains", count: 1250, color: "bg-blue-600", total: 34965 },
-                  { party: "Parti Socialiste", count: 850, color: "bg-rose-600", total: 34965 },
-                  { party: "RN", count: 280, color: "bg-sky-900", total: 34965 },
+                  { party: "Sans Étiquette", count: 23412, diff: 212, color: "bg-slate-400", total: 34965 },
+                  { party: "Divers Droite", count: 4850, diff: -130, color: "bg-indigo-900", total: 34965 },
+                  { party: "Divers Gauche", count: 3200, diff: 90, color: "bg-fuchsia-600", total: 34965 },
+                  { party: "Les Républicains", count: 1250, diff: -180, color: "bg-blue-600", total: 34965 },
+                  { party: "Parti Socialiste", count: 850, diff: -110, color: "bg-rose-600", total: 34965 },
+                  { party: "RN", count: 280, diff: 155, color: "bg-sky-900", total: 34965 },
                 ].map((stat, idx) => (
                   <div key={idx} className="space-y-2 group">
                     <div className="flex items-center justify-between text-sm font-bold text-slate-900">
@@ -493,7 +493,16 @@ function LocalPoliticsContent() {
                         <span className={`w-2 h-2 rounded-full ${stat.color} shadow-sm shadow-${stat.color.replace('bg-', '')}/30`} />
                         {stat.party}
                       </span>
-                      <span>{stat.count.toLocaleString('fr-FR')}</span>
+                      <div className="flex items-center gap-2">
+                        <span className="font-extrabold text-slate-950">{stat.count.toLocaleString('fr-FR')}</span>
+                        <span className={`inline-flex items-center text-[10px] px-1.5 py-0.5 rounded font-black tracking-tight ${
+                          stat.diff >= 0 
+                            ? "bg-emerald-50 text-emerald-700 border border-emerald-100" 
+                            : "bg-rose-50 text-rose-700 border border-rose-100"
+                        }`}>
+                          {stat.diff >= 0 ? `+${stat.diff}` : stat.diff}
+                        </span>
+                      </div>
                     </div>
                     <div className="h-2.5 w-full bg-slate-50 rounded-full overflow-hidden">
                       <motion.div 
@@ -507,9 +516,13 @@ function LocalPoliticsContent() {
                 ))}
               </div>
 
-              <div className="pt-4 border-t border-slate-50">
+              <div className="pt-4 border-t border-slate-50 space-y-3">
+                <p className="text-[9px] font-black uppercase tracking-widest text-slate-400 flex items-center justify-center gap-4">
+                  <span className="flex items-center gap-1.5"><span className="w-1.5 h-1.5 rounded-full bg-emerald-500" /> Progression</span>
+                  <span className="flex items-center gap-1.5"><span className="w-1.5 h-1.5 rounded-full bg-rose-500" /> Recul</span>
+                </p>
                 <p className="text-xs text-slate-500 italic text-center">
-                  La majorité des communes rurales de moins de 3500 habitants sont gérées par des maires sans étiquette partisane déclarée.
+                  La majorité des communes rurales de moins de 3500 habitants sont gérées par des maires sans étiquette. Les évolutions comparent les résultats post-2026 à la mandature de 2020.
                 </p>
               </div>
             </div>

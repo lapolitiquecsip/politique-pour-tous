@@ -427,15 +427,7 @@ export function VerticalImageStack({
         </motion.button>
       </div>
 
-      {/* Infinite count counter (No limit denominator shown) */}
-      <div className="absolute left-8 top-1/2 -translate-y-1/2 select-none pointer-events-none hidden md:block">
-        <div className="flex flex-col items-center bg-white/90 backdrop-blur-md px-4 py-3 rounded-2xl shadow-md border border-slate-100/50">
-          <span className="text-[9px] font-black uppercase tracking-widest text-slate-400 mb-0.5">ACTU</span>
-          <span className="text-3xl font-black text-slate-800 tabular-nums">
-            {String(currentIndex + 1).padStart(2, "0")}
-          </span>
-        </div>
-      </div>
+
 
       {/* Combo Counter & Dopamine Streak meter */}
       <div className="absolute right-8 top-1/2 -translate-y-1/2 select-none hidden md:block w-36">

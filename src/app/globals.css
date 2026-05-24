@@ -221,4 +221,27 @@
   .scrollbar-hide::-webkit-scrollbar {
     display: none;
   }
+
+  /* Collectible Card Dopamine Shimmer */
+  .shimmer-effect {
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.45), transparent);
+    transform: translateX(-100%);
+    pointer-events: none;
+    z-index: 20;
+  }
+  
+  .group:hover .shimmer-effect {
+    animation: hover-shimmer 1.2s cubic-bezier(0.25, 1, 0.5, 1);
+  }
+
+  @keyframes hover-shimmer {
+    0% {
+      transform: translateX(-100%);
+    }
+    100% {
+      transform: translateX(100%);
+    }
+  }
 }

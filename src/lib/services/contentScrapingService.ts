@@ -8,35 +8,118 @@ import Anthropic from '@anthropic-ai/sdk';
 
 // --- Sources RSS officielles & vérifiées ---
 const RSS_SOURCES = [
+  // === TIER 1 — SOURCES OFFICIELLES (autoritaires, peuvent être seules) ===
+  // { // ❌ [FAIL] 500 Internal Server Error (besoin solution avancée pour le MVP, on laisse commenté)
+  //   url: 'https://www.insee.fr/fr/information/rss/4632381',
+  //   institution: 'donnée_officielle',
+  //   source_name: 'INSEE',
+  //   tier: 1,
+  // },
   {
-    url: 'https://news.google.com/news/rss/headlines/section/topic/POLITICS?hl=fr&gl=FR&ceid=FR:fr',
-    institution: 'média',
-    source_name: 'Google News (Agrégateur)',
+    url: 'https://www.vie-publique.fr/actualites-feeds.xml', // ✅ URL corrigée
+    institution: 'donnée_officielle',
+    source_name: 'Vie-publique.fr',
+    tier: 1,
   },
   {
-    url: 'https://www.lemonde.fr/politique/rss_full.xml',
-    institution: 'média',
-    source_name: 'Le Monde',
+    url: 'https://www.economie.gouv.fr/rss/toutesactualites', // ✅ Remplace gouvernement.fr
+    institution: 'gouvernement',
+    source_name: 'Ministère de l\'Économie',
+    tier: 1,
   },
+  // { // ❌ [FAIL] 404 Not Found (besoin solution avancée pour le MVP, on laisse commenté)
+  //   url: 'https://www.ccomptes.fr/fr/rss.xml',
+  //   institution: 'donnée_officielle',
+  //   source_name: 'Cour des comptes',
+  //   tier: 1,
+  // },
   {
-    url: 'https://www.challenges.fr/rss.xml',
-    institution: 'média',
-    source_name: 'Challenges',
-  },
-  {
-    url: 'https://www.assemblee-nationale.fr/rss/communiques-de-presse.xml',
+    url: 'https://www.assemblee-nationale.fr/dyn/rss/communiques-de-presse.xml', // ✅ Corrigé (chemin /dyn/)
     institution: 'assemblée',
     source_name: 'Assemblée Nationale',
+    tier: 1,
+  },
+  {
+    url: 'http://www2.assemblee-nationale.fr/feeds/detail/documents-parlementaires', // ✅ Nouveau et valide
+    institution: 'assemblée',
+    source_name: 'Assemblée Nationale (documents)',
+    tier: 1,
   },
   {
     url: 'https://www.senat.fr/rss/presse.rss',
     institution: 'sénat',
     source_name: 'Sénat — Presse',
+    tier: 1,
   },
   {
     url: 'https://www.senat.fr/rss/textes.rss',
     institution: 'sénat',
     source_name: 'Sénat — Textes de loi',
+    tier: 1,
+  },
+  {
+    url: 'https://www.elysee.fr/feed', // ✅ URL corrigée
+    institution: 'gouvernement',
+    source_name: 'Élysée',
+    tier: 1,
+  },
+
+  // === TIER 2 — PRESSE DE RÉFÉRENCE ===
+  {
+    url: 'https://www.lemonde.fr/politique/rss_full.xml',
+    institution: 'média',
+    source_name: 'Le Monde',
+    tier: 2,
+  },
+  // { // ❌ [FAIL] 404 Not Found
+  //   url: 'https://www.lesechos.fr/rss/politique.xml',
+  //   institution: 'média',
+  //   source_name: 'Les Echos',
+  //   tier: 2,
+  // },
+  {
+    url: 'https://www.mediapart.fr/articles/feed',
+    institution: 'média',
+    source_name: 'Mediapart',
+    tier: 2,
+  },
+  {
+    url: 'https://www.liberation.fr/arc/outboundfeeds/rss-all/category/politique/',
+    institution: 'média',
+    source_name: 'Libération',
+    tier: 2,
+  },
+  {
+    url: 'https://www.la-croix.com/RSS/UNIVERS_WFRA',
+    institution: 'média',
+    source_name: 'La Croix',
+    tier: 2,
+  },
+  {
+    url: 'https://www.challenges.fr/rss.xml',
+    institution: 'média',
+    source_name: 'Challenges',
+    tier: 2,
+  },
+  {
+    url: 'https://www.alternatives-economiques.fr/rss.xml',
+    institution: 'média',
+    source_name: 'Alternatives Économiques',
+    tier: 2,
+  },
+
+  // === TIER 3 — APPOINT (jamais seuls dans une carte) ===
+  {
+    url: 'https://www.francetvinfo.fr/politique.rss',
+    institution: 'média',
+    source_name: 'France Info',
+    tier: 3,
+  },
+  {
+    url: 'https://www.publicsenat.fr/feed/rss', // ✅ URL corrigée
+    institution: 'média',
+    source_name: 'Public Sénat',
+    tier: 3,
   },
 ];
 
@@ -48,6 +131,7 @@ interface RawArticle {
   pubDate: string;
   institution: string;
   source_name: string;
+  tier: number;
 }
 
 interface ProcessedArticle {
@@ -84,7 +168,7 @@ function cleanHtml(text: string): string {
 /**
  * Parse un flux RSS/Atom et extrait les articles
  */
-function parseRSSFeed(xml: string, institution: string, source_name: string): RawArticle[] {
+function parseRSSFeed(xml: string, institution: string, source_name: string, tier: number): RawArticle[] {
   const parser = new XMLParser({
     ignoreAttributes: false,
     parseTagValue: true,
@@ -115,8 +199,8 @@ function parseRSSFeed(xml: string, institution: string, source_name: string): Ra
       items = [items];
     }
 
-    const sevenDaysAgo = new Date();
-    sevenDaysAgo.setDate(sevenDaysAgo.getDate() - 7);
+    const limitDate = new Date();
+    limitDate.setDate(limitDate.getDate() - 60);
 
     return items
       .map((item: any) => {
@@ -127,14 +211,14 @@ function parseRSSFeed(xml: string, institution: string, source_name: string): Ra
         const link = typeof item.link === 'string' ? item.link : item.link?.['@_href'] || item.guid || '';
         const pubDate = item.pubDate || item.published || item['dc:date'] || item.updated || '';
 
-        return { title, description, link, pubDate, institution, source_name };
+        return { title, description, link, pubDate, institution, source_name, tier };
       })
       .filter((a: RawArticle) => {
-        // Filtrer les articles trop vieux (> 7 jours)
+        // Filtrer les articles trop vieux (> 60 jours)
         if (!a.pubDate) return true; // Garder si pas de date
         try {
           const d = new Date(a.pubDate);
-          return d >= sevenDaysAgo;
+          return d >= limitDate;
         } catch {
           return true;
         }
@@ -177,7 +261,7 @@ async function fetchRSSFeed(url: string): Promise<string | null> {
 }
 
 /**
- * Utilise Claude pour regrouper les sujets, croiser les sources et créer des synthèses
+ * Utilise Claude pour regrouper les sujets, croiser les sources et créer des synthèses en traitant par lots (chunks)
  */
 async function processWithClaude(articles: RawArticle[]): Promise<ProcessedArticle[]> {
   if (articles.length === 0) return [];
@@ -186,84 +270,140 @@ async function processWithClaude(articles: RawArticle[]): Promise<ProcessedArtic
     apiKey: process.env.ANTHROPIC_API_KEY || '',
   });
 
-  // Envoyer tous les articles pour avoir une vue d'ensemble et faire la synthèse
-  const articlesForPrompt = articles.map((a, idx) => 
-    `[ARTICLE ${idx + 1}]\nTitre original: ${a.title}\nDescription: ${a.description?.substring(0, 500) || 'Aucune description'}\nSource: ${a.source_name}\nInstitution: ${a.institution}\nURL: ${a.link}\nDate: ${a.pubDate || 'Inconnue'}`
-  ).join('\n\n');
-
-  try {
-    const response = await anthropic.messages.create({
-      model: 'claude-sonnet-4-20250514',
-      max_tokens: 4000,
-      messages: [
-        {
-          role: 'user',
-          content: `Tu es un rédacteur en chef d'un média politique français strictement factuel.
-Voici une large liste d'articles récents (issus de Google News, Le Monde, Challenges, l'Assemblée et le Sénat).
-
-TA MISSION ABSOLUE :
-1. Regroupe les articles par sujet politique.
-2. ÉLIMINE IMPITOYABLEMENT :
-   - TOUTE ACTUALITÉ INTERNATIONALE ou étrangère (ex: élections américaines, démissions aux USA, etc.). TU NE GARDES QUE LA POLITIQUE STRICTEMENT FRANÇAISE.
-   - Tous les articles d'opinion, éditoriaux ou tribunes.
-   - Les "portraits", "biographies" ou résumés de carrière (ex: "En 8 ans, Gabriel Attal a enchaîné les postes..."). CELA N'APPORTE AUCUNE VALEUR.
-   - Les polémiques stériles ou les "petites phrases".
-3. SELECTIONNE UNIQUEMENT les faits majeurs à HAUTE VALEUR AJOUTÉE sur la politique française :
-   - Nouvelles lois, projets de lois et votes
-   - Décisions économiques et annonces gouvernementales concrètes
-   - Chiffres clés officiels de la semaine (déficit, chômage, budget)
-   - Résultats d'enquêtes officielles (justice, déontologie, etc.)
-   Maximum 8 sujets. Si tu n'as rien de concret et de chiffré, ne crée pas de sujet.
-4. OBLIGATION DE DIVERSITÉ ET DE SOURCES :
-   - Pour chaque sujet, TU DOIS OBLIGATOIREMENT croiser au moins 2 sources DIFFÉRENTES (ex: Le Monde ET Challenges). Si tu n'as qu'une seule source, NE CREE PAS LE SUJET. Il y a trop de "Le Figaro" et "France Info", donne la priorité absolue à "Le Monde", "Challenges", "Mediapart".
-   - BANNISSEMENT TOTAL : N'utilise JAMAIS CNews comme source.
-   - Dans le "resume_flash", TU DOIS RÉDIGER TA PROPRE FICHE EXPLICATIVE (max 250 car) en précisant EXPLICITEMENT dans le texte tes sources (ex: "Selon Le Monde et Challenges, le gouvernement a décidé de...").
-5. Si un chiffre important ou une donnée factuelle est disponible, tu dois l'inclure.
-
-IMPORTANT :
-- Aucun parti pris, aucune opinion. 100% FACTUEL.
-- L'institution doit être 'média' si ça vient de la presse, ou 'assemblée' / 'sénat'.
-- Dans "source_name", liste les VRAIS journaux mentionnés dans les textes séparés par des virgules (ex: "Le Monde, Challenges, Mediapart").
-
-Réponds UNIQUEMENT en JSON, sous cette forme (un tableau) :
-[
-  {
-    "titre_simplifie": "Titre ultra-factuel (max 80 car, ex: 'Le déficit public atteint 5.5% en 2025')",
-    "resume_flash": "Fiche explicative rédigée par tes soins, incluant tes sources (ex: 'D'après Le Monde et Les Echos...'). Valeur ajoutée maximale, chiffres concrets. (max 250 car)",
-    "source_name": "Liste des journaux croisés (ex: 'Le Monde, Challenges, Libération')",
-    "source_url": "L'URL de la source la plus pertinente (NE JAMAIS LAISSER VIDE SI POSSIBLE)",
-    "institution": "média",
-    "date_publication": "La date (format ISO)"
+  const allProcessed: ProcessedArticle[] = [];
+  const chunkSize = 40; // Traiter par lots de 40 articles pour éviter de saturer Claude et garantir un gros volume de fiches
+  
+  const chunks: RawArticle[][] = [];
+  for (let i = 0; i < articles.length; i += chunkSize) {
+    chunks.push(articles.slice(i, i + chunkSize));
   }
-]
+  
+  console.log(`[Scraper/Claude] 🤖 Séparation en ${chunks.length} lots pour maximiser le nombre de fiches...`);
 
-Voici l'agrégation web :
+  for (let batchIndex = 0; batchIndex < chunks.length; batchIndex++) {
+    const chunk = chunks[batchIndex];
+    console.log(`[Scraper/Claude] Traitement du lot ${batchIndex + 1}/${chunks.length} (${chunk.length} articles)...`);
+
+    const articlesForPrompt = chunk.map((a, i) => `
+[Article ${i + 1}]
+Source : ${a.source_name} (Tier ${a.tier}, ${a.institution})
+Date : ${a.pubDate}
+Titre : ${a.title}
+Extrait : ${a.description?.slice(0, 400) || ''}
+URL : ${a.link}
+`).join('\n---\n');
+
+    try {
+      const response = await anthropic.messages.create({
+        model: 'claude-sonnet-4-20250514',
+        max_tokens: 4000,
+        temperature: 0.2,
+        messages: [
+          {
+            role: 'user',
+            content: `Tu es rédacteur en chef d'un fil d'actualité politique française strictement factuel.
+Ton seul rôle est de SÉLECTIONNER, pas d'écrire des commentaires.
+
+============================================
+RÈGLES DE REJET ABSOLU (refuse de créer une fiche si UNE SEULE s'applique)
+============================================
+
+REJET #1 — OPINION / JUGEMENT DE VALEUR
+Si le titre OU le résumé contiendrait : "doit", "devrait", "il faut", "il est temps de",
+"un défi majeur", "un enjeu crucial", "le grand retour de", "doit verdir", "doit accélérer"
+→ REJET. Tu ne crées PAS la fiche.
+Tu ne reformules pas pour contourner. Si le sujet de fond est "X devrait faire Y", c'est REJET.
+
+REJET #2 — ABSENCE DE FAIT DUR
+Chaque fiche DOIT contenir au moins UN de ces éléments dans le résumé :
+- un chiffre précis (%, €, voix, sièges, milliards, points, etc.)
+- un acte institutionnel daté (loi déposée, décret signé, vote, nomination, démission,
+  condamnation, saisine, rapport publié, amendement, ordonnance, décision juridictionnelle)
+Si tu n'as ni chiffre ni acte → REJET.
+
+REJET #3 — INTERNATIONAL
+Toute actualité étrangère, géopolitique, élection américaine, démission internationale → REJET.
+
+REJET #4 — PORTRAIT / RÉTROSPECTIVE
+"En 8 ans, X a enchaîné…", "le parcours de Y", biographies, bilans de carrière → REJET.
+
+REJET #5 — PETITE PHRASE / CLASH
+Polémiques entre politiques, "clash", "tacle", "tweet polémique", désaccord verbal sans
+décision concrète → REJET.
+
+============================================
+RÈGLES DE SOURCES
+============================================
+
+SOURCES BANNIES (n'apparaissent JAMAIS dans source_name) :
+CNews, Valeurs Actuelles, Causeur, Frontières, Sud Radio.
+Si une info n'existe QUE dans ces médias → REJET du sujet.
+
+DIVERSITÉ DES SOURCES :
+- Minimum 2 sources DIFFÉRENTES par fiche.
+- EXCEPTION : si la source est officielle (INSEE, Vie-publique, gouvernement.fr, Ministère de l'Économie, economie.gouv.fr,
+  Cour des comptes, Assemblée Nationale, Sénat, Élysée, Légifrance, Conseil constitutionnel,
+  Conseil d'État, Banque de France), elle peut être seule — c'est une source autoritaire.
+- Si tu n'as qu'une seule source non officielle → REJET.
+
+HIÉRARCHIE DES SOURCES (cite-les en priorité dans cet ordre) :
+- Tier 1 (officielles) : INSEE, Vie-publique.fr, gouvernement.fr, Cour des comptes, Ministère de l'Économie,
+  Assemblée Nationale, Sénat, Élysée, Légifrance, Banque de France.
+- Tier 2 (presse de référence) : Le Monde, Les Echos, Mediapart, Libération, La Croix,
+  Challenges, Alternatives Économiques, AFP, Contexte.
+- Tier 3 (presse mainstream) : Le Figaro, Le Parisien, France Info, France Inter, Public Sénat.
+Quand un sujet est couvert par un Tier 1, tu DOIS l'inclure dans source_name.
+
+============================================
+CONTRAT DE RÉDACTION
+============================================
+
+Pour chaque fiche retenue, produis EXACTEMENT ces champs en JSON :
+
+- titre_simplifie (≤ 80 caractères)
+- resume_flash (≤ 250 caractères)
+  STRUCTURE OBLIGATOIRE : "Selon [Source1] et [Source2], [QUI] a [QUOI] le [QUAND], avec [CHIFFRE ou ACTE]."
+- source_name : liste des médias réellement croisés, séparés par des virgules.
+- source_url : URL la plus autoritaire disponible.
+- institution : "média" | "assemblée" | "sénat" | "gouvernement" | "donnée_officielle".
+- date_publication : ISO 8601.
+
+============================================
+QUANTITÉ - TRÈS IMPORTANT
+============================================
+
+EXTRAIS ABSOLUMENT TOUTES LES FICHES POSSIBLES qui respectent les filtres. 
+Il n'y a PAS de limite maximale. Ne fais aucun remplissage avec des infos futiles, mais NE RATE AUCUN fait validé.
+Génère autant de fiches que possible à partir de ce lot d'articles.
+
+Réponds UNIQUEMENT par un tableau JSON valide, sans texte autour.
+
+Voici le lot d'articles :
 
 ${articlesForPrompt}`
+          }
+        ],
+      });
+
+      const responseText = response.content[0].type === 'text' ? response.content[0].text : '';
+      const jsonMatch = responseText.match(/\[[\s\S]*\]/);
+      if (jsonMatch) {
+        const parsed = JSON.parse(jsonMatch[0]) as ProcessedArticle[];
+        for (const item of parsed) {
+          item.date_publication = normalizeDate(item.date_publication);
+          allProcessed.push(item);
         }
-      ],
-    });
-
-    const responseText = response.content[0].type === 'text' ? response.content[0].text : '';
-    const jsonMatch = responseText.match(/\[[\s\S]*\]/);
-    if (!jsonMatch) {
-      console.warn(`[Scraper/Claude] Impossible de parser la réponse JSON de synthèse.`);
-      return [];
+        console.log(`[Scraper/Claude] Lot ${batchIndex + 1} : ${parsed.length} fiches extraites.`);
+      } else {
+        console.warn(`[Scraper/Claude] Lot ${batchIndex + 1} : Impossible de parser la réponse JSON.`);
+      }
+    } catch (err: any) {
+      console.error(`[Scraper/Claude] ❌ Erreur Claude sur le lot ${batchIndex + 1}:`, err.message);
     }
-
-    const parsed = JSON.parse(jsonMatch[0]) as ProcessedArticle[];
-    
-    // S'assurer que les dates sont bien au format ISO
-    for (const item of parsed) {
-      item.date_publication = normalizeDate(item.date_publication);
-    }
-
-    console.log(`[Scraper/Claude] ✅ Synthèse croisée terminée : ${parsed.length} sujets uniques identifiés.`);
-    return parsed;
-  } catch (err: any) {
-    console.error(`[Scraper/Claude] ❌ Erreur Claude lors de la synthèse:`, err.message);
-    return [];
   }
+
+  console.log(`[Scraper/Claude] ✅ Synthèse croisée terminée : ${allProcessed.length} sujets identifiés au total.`);
+  return allProcessed;
 }
 
 /**
@@ -310,10 +450,18 @@ async function upsertArticles(articles: ProcessedArticle[]): Promise<{ inserted:
         continue;
       }
 
+      // Normalisation de l'institution pour respecter le check constraint de la BDD (uniquement: média, assemblée, sénat, gouvernement)
+      let mappedInstitution = article.institution;
+      if (mappedInstitution === 'donnée_officielle') {
+        mappedInstitution = 'gouvernement';
+      } else if (!['média', 'assemblée', 'sénat', 'gouvernement'].includes(mappedInstitution)) {
+        mappedInstitution = 'gouvernement'; // fallback de sécurité
+      }
+
       const { error } = await supabase
         .from('content')
         .insert({
-          institution: article.institution,
+          institution: mappedInstitution,
           titre_simplifie: article.titre_simplifie,
           resume_flash: article.resume_flash,
           date_publication: article.date_publication,
@@ -336,6 +484,92 @@ async function upsertArticles(articles: ProcessedArticle[]): Promise<{ inserted:
   }
 
   return { inserted, errors };
+}
+
+// === Filtre 1 : sources bannies ===
+const BANNED_SOURCE_PATTERNS = [
+  /cnews/i,
+  /valeurs.?actuelles/i,
+  /causeur/i,
+  /\bfrontières\b/i,
+  /sud.?radio/i,
+];
+
+// === Filtre 2 : marqueurs d'opinion / éditorial ===
+const OPINION_RED_FLAGS = [
+  /\bdoit\s+(verdir|s['']adapter|changer|repenser|accélérer|repartir|réinventer)/i,
+  /\bdevrait\b/i,
+  /\bdevraient\b/i,
+  /\bil\s+faut\b/i,
+  /\bil\s+est\s+temps\b/i,
+  /\bun\s+défi\s+majeur\b/i,
+  /\benjeu\s+(crucial|majeur)\b/i,
+  /\ble\s+grand\s+retour\b/i,
+  /\b(portrait|biographie)\b/i,
+];
+
+// === Filtre 3 : présence d'un fait dur ===
+const HARD_FACT_NUMBER = /\d+([.,]\d+)?\s*(%|€|milliards?|millions?|points?|voix|sièges?|jours?|mois|ans)/i;
+const HARD_FACT_ACT = /\b(loi|projet de loi|décret|arrêté|vote|adopté|rejeté|nomination|démission|condamné|condamnation|saisine|rapport|décision|amendement|motion|ordonnance)\b/i;
+
+const OFFICIAL_SOURCES = [
+  'insee', 'vie-publique', 'gouvernement.fr', 'cour des comptes',
+  'assemblée nationale', 'sénat', 'élysée', 'légifrance',
+  'conseil constitutionnel', 'conseil d\'état', 'banque de france',
+  'économie', 'economie.gouv.fr', 'ministère de l\'économie',
+];
+
+function isOfficialSource(name: string): boolean {
+  const lower = name.toLowerCase();
+  return OFFICIAL_SOURCES.some(o => lower.includes(o));
+}
+
+interface ValidationResult {
+  valid: boolean;
+  reason?: string;
+  cleanedCard?: ProcessedArticle;
+}
+
+function validateCard(card: ProcessedArticle): ValidationResult {
+  // 1. Nettoyer les sources bannies de la liste
+  const rawSources = card.source_name.split(',').map(s => s.trim()).filter(Boolean);
+  const cleanedSources = rawSources.filter(
+    s => !BANNED_SOURCE_PATTERNS.some(p => p.test(s))
+  );
+  
+  if (cleanedSources.length === 0) {
+    return { valid: false, reason: 'Toutes les sources sont bannies' };
+  }
+
+  // 2. Exigence multi-sources (sauf source officielle Tier 1)
+  const hasOfficial = cleanedSources.some(isOfficialSource);
+  if (cleanedSources.length < 2 && !hasOfficial) {
+    return { valid: false, reason: `Source unique non officielle : ${cleanedSources[0]}` };
+  }
+
+  // 3. Détection d'opinion
+  const text = `${card.titre_simplifie} ${card.resume_flash}`.toLowerCase();
+  const opinionMatch = OPINION_RED_FLAGS.find(re => re.test(text));
+  if (opinionMatch) {
+    return { valid: false, reason: `Opinion détectée : ${opinionMatch.source}` };
+  }
+
+  // 4. Exigence d'au moins un fait dur (chiffre ou acte institutionnel)
+  const hasNumber = HARD_FACT_NUMBER.test(card.resume_flash);
+  const hasAct = HARD_FACT_ACT.test(card.resume_flash);
+  if (!hasNumber && !hasAct) {
+    return { valid: false, reason: 'Aucun chiffre ni acte institutionnel concret' };
+  }
+
+  // 5. Titre suffisamment factuel
+  if (card.titre_simplifie.length < 25) {
+    return { valid: false, reason: 'Titre trop court / non descriptif' };
+  }
+
+  return {
+    valid: true,
+    cleanedCard: { ...card, source_name: cleanedSources.join(', ') },
+  };
 }
 
 // --- MAIN EXPORT ---
@@ -365,7 +599,7 @@ export async function scrapeAndUpdateContent(): Promise<{
       details.push(`⚠️ ${source.source_name}: flux indisponible`);
       return [];
     }
-    const articles = parseRSSFeed(xml, source.institution, source.source_name);
+    const articles = parseRSSFeed(xml, source.institution, source.source_name, source.tier);
     details.push(`✅ ${source.source_name}: ${articles.length} articles trouvés`);
     return articles;
   });
@@ -401,11 +635,29 @@ export async function scrapeAndUpdateContent(): Promise<{
   // 3. Traitement par Claude (simplification des titres + résumés flash)
   console.log(`[Scraper] 🤖 Envoi de ${uniqueArticles.length} articles à Claude pour traitement...`);
   const processedArticles = await processWithClaude(uniqueArticles);
-  details.push(`🤖 Claude a traité ${processedArticles.length} articles`);
+  details.push(`🤖 Claude a généré ${processedArticles.length} cartes`);
+
+  // --- FILTRAGE ET VALIDATION ---
+  const validCards: ProcessedArticle[] = [];
+  let rejectedCount = 0;
+  for (const card of processedArticles) {
+    const result = validateCard(card);
+    if (result.valid && result.cleanedCard) {
+      validCards.push(result.cleanedCard);
+    } else {
+      console.warn(`[REJET] "${card.titre_simplifie}" — ${result.reason}`);
+      details.push(`❌ Rejet : "${card.titre_simplifie}" (${result.reason})`);
+      rejectedCount++;
+    }
+  }
+  
+  if (rejectedCount > 0) {
+    console.log(`[Scraper/Validation] 🛡️ ${rejectedCount} cartes rejetées par les filtres stricts.`);
+  }
 
   // 4. Insertion dans Supabase
-  console.log(`[Scraper] 💾 Insertion de ${processedArticles.length} articles dans Supabase...`);
-  const { inserted, errors } = await upsertArticles(processedArticles);
+  console.log(`[Scraper] 💾 Insertion de ${validCards.length} articles validés dans Supabase...`);
+  const { inserted, errors } = await upsertArticles(validCards);
   details.push(`💾 ${inserted} nouveaux articles insérés, ${errors} erreurs`);
 
   console.log(`[Scraper] ✅ Terminé ! ${inserted} nouveaux articles, ${errors} erreurs`);

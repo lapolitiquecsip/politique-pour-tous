@@ -220,6 +220,34 @@ export const AwardBadge = ({
     }
   }
 
+  const isSelectionnee = displayText.includes("SÉLECTIONNÉE") || displayText.includes("SELECTIONNEE");
+
+  const getOverlayColor = (index: number) => {
+    if (isSelectionnee) {
+      const greenColors = [
+        "hsl(142, 76%, 45%)", // Green
+        "hsl(160, 84%, 39%)", // Emerald
+        "hsl(120, 80%, 45%)", // Lime
+        "hsl(180, 75%, 45%)", // Cyan
+        "hsl(150, 70%, 40%)", // Mint
+        "hsl(130, 60%, 50%)", // Soft green
+        "hsl(170, 40%, 40%)", // Teal
+      ];
+      return greenColors[index % greenColors.length];
+    } else {
+      const goldColors = [
+        "hsl(358, 100%, 62%)",
+        "hsl(30, 100%, 50%)",
+        "hsl(60, 100%, 50%)",
+        "hsl(96, 100%, 50%)",
+        "hsl(233, 85%, 47%)",
+        "hsl(271, 85%, 47%)",
+        "hsl(300, 20%, 35%)",
+      ];
+      return goldColors[index % goldColors.length];
+    }
+  };
+
   return (
     <a
       ref={ref}
@@ -274,7 +302,7 @@ export const AwardBadge = ({
                 animation: disableOverlayAnimation ? "none" : "overlayAnimation1 5s infinite",
                 willChange: "transform"
               }}>
-                <polygon points="0,0 260,54 260,0 0,54" fill="hsl(358, 100%, 62%)" filter="url(#blur1)" opacity="0.5" />
+                <polygon points="0,0 260,54 260,0 0,54" fill={getOverlayColor(0)} filter="url(#blur1)" opacity="0.5" />
               </g>
               <g style={{
                 transform: `rotate(${firstOverlayPosition + 10}deg)`,
@@ -283,7 +311,7 @@ export const AwardBadge = ({
                 animation: disableOverlayAnimation ? "none" : "overlayAnimation2 5s infinite",
                 willChange: "transform"
               }}>
-                <polygon points="0,0 260,54 260,0 0,54" fill="hsl(30, 100%, 50%)" filter="url(#blur1)" opacity="0.5" />
+                <polygon points="0,0 260,54 260,0 0,54" fill={getOverlayColor(1)} filter="url(#blur1)" opacity="0.5" />
               </g>
               <g style={{
                 transform: `rotate(${firstOverlayPosition + 20}deg)`,
@@ -292,7 +320,7 @@ export const AwardBadge = ({
                 animation: disableOverlayAnimation ? "none" : "overlayAnimation3 5s infinite",
                 willChange: "transform"
               }}>
-                <polygon points="0,0 260,54 260,0 0,54" fill="hsl(60, 100%, 50%)" filter="url(#blur1)" opacity="0.5" />
+                <polygon points="0,0 260,54 260,0 0,54" fill={getOverlayColor(2)} filter="url(#blur1)" opacity="0.5" />
               </g>
               <g style={{
                 transform: `rotate(${firstOverlayPosition + 30}deg)`,
@@ -301,7 +329,7 @@ export const AwardBadge = ({
                 animation: disableOverlayAnimation ? "none" : "overlayAnimation4 5s infinite",
                 willChange: "transform"
               }}>
-                <polygon points="0,0 260,54 260,0 0,54" fill="hsl(96, 100%, 50%)" filter="url(#blur1)" opacity="0.5" />
+                <polygon points="0,0 260,54 260,0 0,54" fill={getOverlayColor(3)} filter="url(#blur1)" opacity="0.5" />
               </g>
               <g style={{
                 transform: `rotate(${firstOverlayPosition + 40}deg)`,
@@ -310,7 +338,7 @@ export const AwardBadge = ({
                 animation: disableOverlayAnimation ? "none" : "overlayAnimation5 5s infinite",
                 willChange: "transform"
               }}>
-                <polygon points="0,0 260,54 260,0 0,54" fill="hsl(233, 85%, 47%)" filter="url(#blur1)" opacity="0.5" />
+                <polygon points="0,0 260,54 260,0 0,54" fill={getOverlayColor(4)} filter="url(#blur1)" opacity="0.5" />
               </g>
               <g style={{
                 transform: `rotate(${firstOverlayPosition + 50}deg)`,
@@ -319,7 +347,7 @@ export const AwardBadge = ({
                 animation: disableOverlayAnimation ? "none" : "overlayAnimation6 5s infinite",
                 willChange: "transform"
               }}>
-                <polygon points="0,0 260,54 260,0 0,54" fill="hsl(271, 85%, 47%)" filter="url(#blur1)" opacity="0.5" />
+                <polygon points="0,0 260,54 260,0 0,54" fill={getOverlayColor(5)} filter="url(#blur1)" opacity="0.5" />
               </g>
               <g style={{
                 transform: `rotate(${firstOverlayPosition + 60}deg)`,
@@ -328,7 +356,7 @@ export const AwardBadge = ({
                 animation: disableOverlayAnimation ? "none" : "overlayAnimation7 5s infinite",
                 willChange: "transform"
               }}>
-                <polygon points="0,0 260,54 260,0 0,54" fill="hsl(300, 20%, 35%)" filter="url(#blur1)" opacity="0.5" />
+                <polygon points="0,0 260,54 260,0 0,54" fill={getOverlayColor(6)} filter="url(#blur1)" opacity="0.5" />
               </g>
               <g style={{
                 transform: `rotate(${firstOverlayPosition + 70}deg)`,
@@ -374,9 +402,14 @@ export const AwardBadge = ({
                 <stop offset="50%" stopColor="#f59e0b" />
                 <stop offset="100%" stopColor="#d97706" />
               </linearGradient>
+              <linearGradient id="greenGradient" x1="0%" y1="0%" x2="100%" y2="100%">
+                <stop offset="0%" stopColor="#22c55e" />
+                <stop offset="50%" stopColor="#16a34a" />
+                <stop offset="100%" stopColor="#15803d" />
+              </linearGradient>
             </defs>
-            {/* Background filled with Gold Gradient */}
-            <rect width="260" height="54" rx="16" fill="url(#goldGradient)" />
+            {/* Background filled with Gold or Green Gradient */}
+            <rect width="260" height="54" rx="16" fill={isSelectionnee ? "url(#greenGradient)" : "url(#goldGradient)"} />
             
             {/* Subtle inner white border */}
             <rect x="2" y="2" width="256" height="50" rx="14" fill="transparent" stroke="#ffffff" strokeWidth="1.5" strokeOpacity="0.35" />
@@ -403,7 +436,7 @@ export const AwardBadge = ({
                 animation: disableOverlayAnimation ? "none" : "overlayAnimation1 5s infinite",
                 willChange: "transform"
               }}>
-                <polygon points="0,0 260,54 260,0 0,54" fill="hsl(358, 100%, 62%)" filter="url(#blur1)" opacity="0.4" />
+                <polygon points="0,0 260,54 260,0 0,54" fill={getOverlayColor(0)} filter="url(#blur1)" opacity="0.4" />
               </g>
               <g style={{
                 transform: `rotate(${firstOverlayPosition + 10}deg)`,
@@ -412,7 +445,7 @@ export const AwardBadge = ({
                 animation: disableOverlayAnimation ? "none" : "overlayAnimation2 5s infinite",
                 willChange: "transform"
               }}>
-                <polygon points="0,0 260,54 260,0 0,54" fill="hsl(30, 100%, 50%)" filter="url(#blur1)" opacity="0.4" />
+                <polygon points="0,0 260,54 260,0 0,54" fill={getOverlayColor(1)} filter="url(#blur1)" opacity="0.4" />
               </g>
               <g style={{
                 transform: `rotate(${firstOverlayPosition + 20}deg)`,
@@ -421,7 +454,7 @@ export const AwardBadge = ({
                 animation: disableOverlayAnimation ? "none" : "overlayAnimation3 5s infinite",
                 willChange: "transform"
               }}>
-                <polygon points="0,0 260,54 260,0 0,54" fill="hsl(60, 100%, 50%)" filter="url(#blur1)" opacity="0.4" />
+                <polygon points="0,0 260,54 260,0 0,54" fill={getOverlayColor(2)} filter="url(#blur1)" opacity="0.4" />
               </g>
               <g style={{
                 transform: `rotate(${firstOverlayPosition + 30}deg)`,
@@ -430,7 +463,7 @@ export const AwardBadge = ({
                 animation: disableOverlayAnimation ? "none" : "overlayAnimation4 5s infinite",
                 willChange: "transform"
               }}>
-                <polygon points="0,0 260,54 260,0 0,54" fill="hsl(96, 100%, 50%)" filter="url(#blur1)" opacity="0.4" />
+                <polygon points="0,0 260,54 260,0 0,54" fill={getOverlayColor(3)} filter="url(#blur1)" opacity="0.4" />
               </g>
               <g style={{
                 transform: `rotate(${firstOverlayPosition + 40}deg)`,
@@ -439,7 +472,7 @@ export const AwardBadge = ({
                 animation: disableOverlayAnimation ? "none" : "overlayAnimation5 5s infinite",
                 willChange: "transform"
               }}>
-                <polygon points="0,0 260,54 260,0 0,54" fill="hsl(233, 85%, 47%)" filter="url(#blur1)" opacity="0.4" />
+                <polygon points="0,0 260,54 260,0 0,54" fill={getOverlayColor(4)} filter="url(#blur1)" opacity="0.4" />
               </g>
               <g style={{
                 transform: `rotate(${firstOverlayPosition + 50}deg)`,
@@ -448,7 +481,7 @@ export const AwardBadge = ({
                 animation: disableOverlayAnimation ? "none" : "overlayAnimation6 5s infinite",
                 willChange: "transform"
               }}>
-                <polygon points="0,0 260,54 260,0 0,54" fill="hsl(271, 85%, 47%)" filter="url(#blur1)" opacity="0.4" />
+                <polygon points="0,0 260,54 260,0 0,54" fill={getOverlayColor(5)} filter="url(#blur1)" opacity="0.4" />
               </g>
               <g style={{
                 transform: `rotate(${firstOverlayPosition + 60}deg)`,
@@ -457,7 +490,7 @@ export const AwardBadge = ({
                 animation: disableOverlayAnimation ? "none" : "overlayAnimation7 5s infinite",
                 willChange: "transform"
               }}>
-                <polygon points="0,0 260,54 260,0 0,54" fill="hsl(300, 20%, 35%)" filter="url(#blur1)" opacity="0.4" />
+                <polygon points="0,0 260,54 260,0 0,54" fill={getOverlayColor(6)} filter="url(#blur1)" opacity="0.4" />
               </g>
               <g style={{
                 transform: `rotate(${firstOverlayPosition + 90}deg)`,

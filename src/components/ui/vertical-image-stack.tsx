@@ -230,20 +230,20 @@ export function VerticalImageStack({
   }
 
   const bgColors = {
-    blue: "bg-blue-50/30 border-blue-100/50",
-    purple: "bg-purple-50/30 border-purple-100/50",
-    red: "bg-rose-50/30 border-rose-100/50",
-    amber: "bg-amber-50/30 border-amber-100/50",
-    emerald: "bg-emerald-50/30 border-emerald-100/50",
-  }[theme] || "bg-slate-50/20 border-slate-100/55"
+    blue: "bg-blue-50/10 dark:bg-blue-950/20 border-blue-100/20 dark:border-blue-900/30",
+    purple: "bg-purple-50/10 dark:bg-purple-950/20 border-purple-100/20 dark:border-purple-900/30",
+    red: "bg-rose-50/10 dark:bg-rose-950/20 border-rose-100/20 dark:border-rose-900/30",
+    amber: "bg-amber-50/10 dark:bg-amber-950/20 border-amber-100/20 dark:border-amber-900/30",
+    emerald: "bg-emerald-50/10 dark:bg-emerald-950/20 border-emerald-100/20 dark:border-emerald-900/30",
+  }[theme] || "bg-slate-50/10 dark:bg-slate-950/20 border-slate-100/20 dark:border-slate-900/30"
 
   const glowColors = {
-    blue: "bg-blue-500/10",
-    purple: "bg-purple-500/10",
-    red: "bg-red-500/10",
-    amber: "bg-amber-500/10",
-    emerald: "bg-emerald-500/10",
-  }[theme] || "bg-slate-900/[0.01]"
+    blue: "bg-blue-500/10 dark:bg-blue-500/15",
+    purple: "bg-purple-500/10 dark:bg-purple-500/15",
+    red: "bg-red-500/10 dark:bg-red-500/15",
+    amber: "bg-amber-500/10 dark:bg-amber-500/15",
+    emerald: "bg-emerald-500/10 dark:bg-emerald-500/15",
+  }[theme] || "bg-slate-900/[0.01] dark:bg-slate-100/[0.02]"
 
   const relativePositions = [-2, -1, 0, 1, 2]
 
@@ -395,13 +395,13 @@ export function VerticalImageStack({
       </div>
 
       {/* Instruction hint / Tinder-style Controls merged */}
-      <div className="absolute bottom-6 left-1/2 -translate-x-1/2 z-30 flex items-center gap-6 select-none bg-white/80 backdrop-blur-md px-5 py-2.5 rounded-full border border-slate-100 shadow-md">
+      <div className="absolute bottom-6 left-1/2 -translate-x-1/2 z-30 flex items-center gap-6 select-none bg-white/80 dark:bg-slate-900/80 backdrop-blur-md px-5 py-2.5 rounded-full border border-slate-100 dark:border-slate-800 shadow-md">
         <motion.button
           whileHover={{ scale: 1.15 }}
           whileTap={{ scale: 0.9 }}
           onClick={() => navigate(-1)}
           disabled={currentIndex === 0}
-          className={`w-9 h-9 flex items-center justify-center rounded-full bg-slate-50 border border-slate-100 text-slate-500 hover:text-slate-800 disabled:opacity-30 disabled:cursor-not-allowed transition-all shadow-sm`}
+          className={`w-9 h-9 flex items-center justify-center rounded-full bg-slate-50 dark:bg-slate-800 border border-slate-100 dark:border-slate-700 text-slate-500 dark:text-slate-400 hover:text-slate-800 dark:hover:text-slate-200 disabled:opacity-30 disabled:cursor-not-allowed transition-all shadow-sm`}
           title="Précédent"
         >
           <svg className="w-5 h-5 stroke-[2.5]" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -409,7 +409,7 @@ export function VerticalImageStack({
           </svg>
         </motion.button>
 
-        <span className="text-[10px] font-black tracking-widest uppercase text-slate-400 select-none">
+        <span className="text-[10px] font-black tracking-widest uppercase text-slate-400 dark:text-slate-500 select-none">
           GLISSER / DÉFILER
         </span>
 
@@ -418,7 +418,7 @@ export function VerticalImageStack({
           whileTap={{ scale: 0.9 }}
           onClick={() => navigate(1)}
           disabled={currentIndex === items.length - 1}
-          className={`w-9 h-9 flex items-center justify-center rounded-full bg-slate-50 border border-slate-100 text-slate-500 hover:text-slate-800 disabled:opacity-30 disabled:cursor-not-allowed transition-all shadow-sm`}
+          className={`w-9 h-9 flex items-center justify-center rounded-full bg-slate-50 dark:bg-slate-800 border border-slate-100 dark:border-slate-700 text-slate-500 dark:text-slate-400 hover:text-slate-800 dark:hover:text-slate-200 disabled:opacity-30 disabled:cursor-not-allowed transition-all shadow-sm`}
           title="Suivant"
         >
           <svg className="w-5 h-5 stroke-[2.5]" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -434,15 +434,15 @@ export function VerticalImageStack({
         <motion.div 
           animate={combo > 0 ? { scale: [1, 1.08, 1], rotate: [0, 2, -2, 0] } : {}}
           transition={{ type: "spring", stiffness: 300, damping: 15 }}
-          className="flex flex-col items-center bg-white/90 backdrop-blur-md px-3 py-3 rounded-2xl shadow-md border border-slate-100/50 text-center"
+          className="flex flex-col items-center bg-white/90 dark:bg-slate-900/90 backdrop-blur-md px-3 py-3 rounded-2xl shadow-md border border-slate-100/50 dark:border-slate-800/50 text-center"
         >
           <span className="text-[9px] font-black uppercase tracking-widest text-amber-500 mb-1 flex items-center gap-1">
             COMBO {combo > 0 ? "🔥" : "💤"}
           </span>
-          <span className="text-3xl font-black text-slate-800 tabular-nums mb-1 leading-none">
+          <span className="text-3xl font-black text-slate-800 dark:text-slate-100 tabular-nums mb-1 leading-none">
             {combo}
           </span>
-          <span className="text-[9px] font-bold text-slate-400 uppercase tracking-tight leading-tight">
+          <span className="text-[9px] font-bold text-slate-400 dark:text-slate-500 uppercase tracking-tight leading-tight">
             {getStreakMessage(combo)}
           </span>
         </motion.div>

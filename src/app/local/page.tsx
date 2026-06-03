@@ -234,7 +234,7 @@ function LocalPoliticsContent() {
               <span className="text-xs font-black uppercase tracking-widest text-rose-600">Action Locale</span>
             </div>
 
-            <h1 className="text-6xl md:text-8xl font-staatliches uppercase tracking-tight leading-tight mb-8 py-4">
+            <h1 className="text-6xl md:text-8xl font-staatliches uppercase tracking-tight leading-tight mb-8 py-4 text-black">
               La Politique <span className="inline-block bg-gradient-to-r from-rose-600 via-fuchsia-600 to-rose-600 bg-clip-text text-transparent italic pl-2 pr-12">Locale</span>
             </h1>
             

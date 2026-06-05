@@ -21,6 +21,22 @@ interface DetailedLawDossierProps {
   law: LawDossier;
 }
 
+const getLawMeta = (id: string) => {
+  switch (id) {
+    case "climat-resilience":
+      return { ref: "CLIM-2021-V4", origin: "Gouvernement (Projet)" };
+    case "plein-emploi":
+      return { ref: "EMPL-2023-R2", origin: "Gouvernement (Projet)" };
+    case "loi-militaire":
+      return { ref: "DEFB-2023-P5", origin: "Gouvernement (Projet)" };
+    case "loi-immigration":
+      return { ref: "IMMI-2024-Z9", origin: "Gouvernement (Projet)" };
+    default:
+      const cleanId = id.replace(/[^a-zA-Z]/g, "").substring(0, 4).toUpperCase();
+      return { ref: `${cleanId || "LOI"}-2026-X1`, origin: "Projet de loi" };
+  }
+};
+
 export default function DetailedLawDossier({ law }: DetailedLawDossierProps) {
   const [isOpen, setIsOpen] = useState(false);
   const [isVoteOpen, setIsVoteOpen] = useState(false);
@@ -172,6 +188,85 @@ export default function DetailedLawDossier({ law }: DetailedLawDossierProps) {
               </div>
             </div>
           </div>
+
+          {!isOpen && (
+            <div className="w-full flex-grow flex flex-col justify-center space-y-4 py-3">
+              {/* Element 1: Metadata stamp / typewriter style */}
+              {(() => {
+                const meta = getLawMeta(law.id);
+                return (
+                  <div className="flex items-center justify-between text-[8px] md:text-[9px] uppercase tracking-wider font-mono opacity-80 text-white bg-black/10 px-2.5 py-1.5 rounded-lg border border-white/10 select-none">
+                    <span className="font-bold">Réf: {meta.ref}</span>
+                    <span className="w-1 h-1 rounded-full bg-white/30" />
+                    <span>{meta.origin}</span>
+                  </div>
+                );
+              })()}
+
+              {/* Element 2: Mini legislative progress timeline */}
+              {(() => {
+                const steps = [
+                  { label: "Dépôt", active: false, done: true },
+                  { label: "Débats", active: law.status === 'debat', done: law.status === 'vote' || law.status === 'application' },
+                  { label: "Vote", active: law.status === 'vote', done: law.status === 'application' },
+                  { label: "Application", active: law.status === 'application', done: law.status === 'application' },
+                ];
+                
+                return (
+                  <div className="w-full py-1">
+                    <div className="relative flex items-center justify-between px-1.5">
+                      <div className="absolute left-0 right-0 top-1.5 h-[2px] bg-white/20 z-0" />
+                      {steps.map((step, idx) => {
+                        let dotBg = "bg-white/30";
+                        let ring = "";
+                        if (step.active) {
+                          dotBg = "bg-amber-400";
+                          ring = "ring-[3px] ring-amber-400/40 scale-110";
+                        } else if (step.done) {
+                          dotBg = "bg-white";
+                        }
+                        
+                        return (
+                          <div key={idx} className="relative z-10 flex flex-col items-center">
+                            <div className={`w-2.5 h-2.5 rounded-full transition-all duration-300 ${dotBg} ${ring}`} />
+                            <span className={`text-[7px] md:text-[8px] font-black uppercase tracking-wider mt-1.5 select-none ${
+                              step.active 
+                                ? "text-amber-300 font-extrabold" 
+                                : step.done 
+                                  ? "text-white" 
+                                  : "text-white/40"
+                            }`}>
+                              {step.label}
+                            </span>
+                          </div>
+                        );
+                      })}
+                    </div>
+                  </div>
+                );
+              })()}
+
+              {/* Element 3: Vote bar if voteData is available */}
+              {law.voteData && (() => {
+                const total = law.voteData.pour + law.voteData.contre + law.voteData.abstention;
+                const pctPour = total > 0 ? Math.round((law.voteData.pour / total) * 100) : 0;
+                const pctContre = total > 0 ? Math.round((law.voteData.contre / total) * 100) : 0;
+                return (
+                  <div className="space-y-1.5 bg-white/5 border border-white/10 rounded-xl p-2.5 select-none">
+                    <div className="flex justify-between items-center text-[8px] md:text-[9px] font-black uppercase tracking-wider text-white">
+                      <span>🗳️ Vote Assemblée</span>
+                      <span className="text-emerald-400">{pctPour}% POUR</span>
+                    </div>
+                    <div className="h-1.5 bg-white/10 rounded-full overflow-hidden flex">
+                      <div className="h-full bg-emerald-400" style={{ width: `${pctPour}%` }} />
+                      <div className="h-full bg-red-400" style={{ width: `${pctContre}%` }} />
+                      <div className="h-full bg-white/20" style={{ width: `${100 - pctPour - pctContre}%` }} />
+                    </div>
+                  </div>
+                );
+              })()}
+            </div>
+          )}
 
           {!isOpen && (
             <div className="mt-6 pt-4 border-t border-white/20 w-full flex items-center justify-between">

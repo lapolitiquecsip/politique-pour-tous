@@ -34,6 +34,17 @@ export const FREE_LAWS: LawDossier[] = [
     statusLabel: "En application",
     backgroundImage: "https://images.pexels.com/photos/32975423/pexels-photo-32975423.jpeg",
     summary: "Issue de la Convention Citoyenne pour le Climat, cette loi chamboule notre quotidien : du logement à nos assiettes, en passant par nos trajets. C'est l'un des textes les plus denses du quinquennat.",
+    voteData: {
+      pour: 305,
+      contre: 156,
+      abstention: 30,
+      group_results: [
+        { group_id: "PO845439", pour: 160, contre: 5, abstention: 2, total: 167 },
+        { group_id: "PO845485", pour: 45, contre: 10, abstention: 5, total: 60 },
+        { group_id: "PO845514", pour: 0, contre: 80, abstention: 5, total: 85 },
+        { group_id: "PO845401", pour: 0, contre: 61, abstention: 18, total: 79 }
+      ]
+    },
     impacts: [
       "Interdiction de louer les 'passoires thermiques' (G en 2025, F en 2028, E en 2034).",
       "Mise en place des ZFE (Zones à Faibles Émissions) dans les agglomérations de +150 000 hab.",
@@ -62,6 +73,17 @@ export const FREE_LAWS: LawDossier[] = [
     statusLabel: "Réforme en cours",
     backgroundImage: "https://images.pexels.com/photos/19250066/pexels-photo-19250066.jpeg",
     summary: "Le gouvernement transforme Pôle Emploi en 'France Travail'. L'objectif : centraliser tous les acteurs de l'insertion et conditionner le RSA à une activité hebdomadaire.",
+    voteData: {
+      pour: 290,
+      contre: 225,
+      abstention: 15,
+      group_results: [
+        { group_id: "PO845439", pour: 155, contre: 8, abstention: 4, total: 167 },
+        { group_id: "PO845485", pour: 48, contre: 8, abstention: 4, total: 60 },
+        { group_id: "PO845514", pour: 5, contre: 78, abstention: 2, total: 85 },
+        { group_id: "PO845401", pour: 0, contre: 77, abstention: 2, total: 79 }
+      ]
+    },
     impacts: [
       "Inscription automatique de tous les allocataires du RSA à France Travail.",
       "Contrat d'engagement réciproque avec 15 à 20 heures d'activité obligatoire par semaine.",
@@ -84,12 +106,23 @@ export const FREE_LAWS: LawDossier[] = [
   {
     id: "loi-militaire",
     title: "Loi Programmation Militaire",
-    category: "Défense & Sécurité",
+    category: "Défense & Securité",
     color: "slate",
     status: "vote",
     statusLabel: "Votée (Budget long terme)",
     backgroundImage: "https://images.pexels.com/photos/20289796/pexels-photo-20289796.jpeg",
     summary: "Un effort financier colossal (413 milliards €) pour moderniser nos armées face aux nouvelles menaces mondiales. C'est le budget le plus élevé de la Ve République.",
+    voteData: {
+      pour: 389,
+      contre: 97,
+      abstention: 40,
+      group_results: [
+        { group_id: "PO845439", pour: 165, contre: 0, abstention: 2, total: 167 },
+        { group_id: "PO845485", pour: 58, contre: 0, abstention: 2, total: 60 },
+        { group_id: "PO845514", pour: 80, contre: 0, abstention: 5, total: 85 },
+        { group_id: "PO845401", pour: 0, contre: 70, abstention: 9, total: 79 }
+      ]
+    },
     impacts: [
       "Modernisation de la dissuasion nucléaire française.",
       "Achat de nouveaux Rafale au standard F4 et modernisation des chars Leclerc.",
@@ -118,6 +151,17 @@ export const FREE_LAWS: LawDossier[] = [
     statusLabel: "Application partielle",
     backgroundImage: "https://images.pexels.com/photos/30646922/pexels-photo-30646922.jpeg",
     summary: "Une loi complexe qui divise, visant à 'mieux intégrer' par le travail et 'mieux expulser' les profils délinquants. Elle crée un nouveau titre de séjour spécifique.",
+    voteData: {
+      pour: 349,
+      contre: 186,
+      abstention: 38,
+      group_results: [
+        { group_id: "PO845439", pour: 110, contre: 30, abstention: 27, total: 167 },
+        { group_id: "PO845485", pour: 55, contre: 3, abstention: 2, total: 60 },
+        { group_id: "PO845514", pour: 85, contre: 0, abstention: 0, total: 85 },
+        { group_id: "PO845401", pour: 0, contre: 75, abstention: 4, total: 79 }
+      ]
+    },
     impacts: [
       "Création du titre de séjour 'Métiers en tension' (BTP, restauration, aide à domicile).",
       "Simplification drastique des procédures d'OQTF (Obligation de Quitter le Territoire).",

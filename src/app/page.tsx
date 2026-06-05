@@ -51,7 +51,7 @@ export default function Home() {
         <div className="container mx-auto max-w-6xl">
           <div className="relative mb-16 text-center">
             <div className="relative z-10 flex flex-col md:flex-row items-center justify-center gap-4 md:gap-6">
-              <span className="text-slate-900 opacity-[0.08] absolute -top-10 left-1/2 -translate-x-1/2 select-none hidden md:block whitespace-nowrap text-8xl font-staatliches tracking-widest">
+              <span className="text-slate-900 dark:text-slate-100 opacity-[0.08] absolute -top-10 left-1/2 -translate-x-1/2 select-none hidden md:block whitespace-nowrap text-8xl font-staatliches tracking-widest">
                 RÉPUBLIQUE • SYSTÈME
               </span>
               
@@ -84,7 +84,7 @@ export default function Home() {
         <div className="container mx-auto max-w-6xl">
           <div className="relative mb-16 text-center md:text-left">
             <div className="relative z-10 flex flex-col md:flex-row items-center gap-4 md:gap-6">
-              <span className="text-slate-900 opacity-[0.08] absolute -top-10 left-0 select-none hidden md:block whitespace-nowrap text-8xl font-staatliches tracking-widest">
+              <span className="text-slate-900 dark:text-slate-100 opacity-[0.08] absolute -top-10 left-0 select-none hidden md:block whitespace-nowrap text-8xl font-staatliches tracking-widest">
                 ACTUALITÉ • DIRECT
               </span>
               

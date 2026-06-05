@@ -21,9 +21,18 @@ interface DetailedLawDossierProps {
   law: LawDossier;
 }
 
+const getHashIndex = (id: string, max: number) => {
+  let hash = 0;
+  for (let i = 0; i < id.length; i++) {
+    hash = id.charCodeAt(i) + ((hash << 5) - hash);
+  }
+  return Math.abs(hash) % max;
+};
+
 const getLawBackgroundImage = (law: LawDossier) => {
   const title = law.title.toLowerCase();
   const category = law.category.toLowerCase();
+  const id = law.id;
 
   // 1. SPECIFIC KEYWORD MATCHES (ACROSS ALL CATEGORIES)
   
@@ -34,42 +43,75 @@ const getLawBackgroundImage = (law: LawDossier) => {
   
   // Terrorisme / Rétention / Sécurité Nationale
   if (title.includes("terroris") || title.includes("rétention") || title.includes("antiterroris")) {
-    return "https://images.unsplash.com/photo-1557597774-9d273605dfa9?auto=format&fit=crop&w=600&q=80"; // Security/surveillance theme
+    const images = [
+      "https://images.unsplash.com/photo-1557597774-9d273605dfa9?auto=format&fit=crop&w=600&q=80", // Caméra de surveillance
+      "https://images.unsplash.com/photo-1509198397868-475647b2a1e5?auto=format&fit=crop&w=600&q=80", // Voiture de patrouille
+      "https://images.unsplash.com/photo-1485827404703-89b55fcc595e?auto=format&fit=crop&w=600&q=80"  // Salle de contrôle technologique
+    ];
+    return images[getHashIndex(id, images.length)];
   }
   
   // Prison / Pénitentiaire / Detention / Justice
   if (title.includes("prison") || title.includes("pénitentiaire") || title.includes("détenu") || title.includes("peine") || title.includes("loi-cadre")) {
-    return "https://images.unsplash.com/photo-1589829545856-d10d557cf95f?auto=format&fit=crop&w=600&q=80"; // Scales of justice / law court
+    const images = [
+      "https://images.unsplash.com/photo-1589829545856-d10d557cf95f?auto=format&fit=crop&w=600&q=80", // Balance de la justice
+      "https://images.unsplash.com/photo-1450133064473-71024230f91b?auto=format&fit=crop&w=600&q=80"  // Gavel tribunal
+    ];
+    return images[getHashIndex(id, images.length)];
   }
 
   // Militaire / Armée / Défense
   if (title.includes("milit") || title.includes("armé") || title.includes("défense") || title.includes("guerre")) {
-    return "https://images.unsplash.com/photo-1508614589041-895b88991e3e?auto=format&fit=crop&w=600&q=80"; // Military/defence silhouette
+    const images = [
+      "https://images.unsplash.com/photo-1508614589041-895b88991e3e?auto=format&fit=crop&w=600&q=80", // Jets militaires silhouette
+      "https://images.unsplash.com/photo-1601584115197-04ecc0da31d7?auto=format&fit=crop&w=600&q=80"  // Bouclier cyber/défense
+    ];
+    return images[getHashIndex(id, images.length)];
   }
 
   // Fraude / Fisc / Taxes / Impôt
   if (title.includes("fraude") || title.includes("fisc") || title.includes("tax") || title.includes("impôt") || title.includes("économ")) {
-    return "https://images.unsplash.com/photo-1554224155-8d04cb21cd6c?auto=format&fit=crop&w=600&q=80"; // Tax/documents theme
+    const images = [
+      "https://images.unsplash.com/photo-1554224155-8d04cb21cd6c?auto=format&fit=crop&w=600&q=80", // Dossiers d'impôts / calculatrice
+      "https://images.unsplash.com/photo-1526304640581-d334cdbbf45e?auto=format&fit=crop&w=600&q=80"  // Pièces de monnaie
+    ];
+    return images[getHashIndex(id, images.length)];
   }
 
   // Emploi / Travail / Chômage
   if (title.includes("emploi") || title.includes("travail") || title.includes("chôm") || title.includes("salair")) {
-    return "https://images.unsplash.com/photo-1521737604893-d14cc237f11d?auto=format&fit=crop&w=600&q=80"; // Collaborating team
+    const images = [
+      "https://images.unsplash.com/photo-1521737604893-d14cc237f11d?auto=format&fit=crop&w=600&q=80", // Équipe de travail
+      "https://images.unsplash.com/photo-1517048676732-d65bc937f952?auto=format&fit=crop&w=600&q=80"  // Réunion d'atelier
+    ];
+    return images[getHashIndex(id, images.length)];
   }
 
   // Immigration / Frontières / Asile
   if (title.includes("immigra") || title.includes("fronti") || title.includes("asile") || title.includes("étranger")) {
-    return "https://images.unsplash.com/photo-1488646953014-85cb44e25828?auto=format&fit=crop&w=600&q=80"; // Globe/passport theme
+    const images = [
+      "https://images.unsplash.com/photo-1488646953014-85cb44e25828?auto=format&fit=crop&w=600&q=80", // Globe et passeport
+      "https://images.unsplash.com/photo-1573164713988-8665fc963095?auto=format&fit=crop&w=600&q=80"  // Carte mondiale interactive
+    ];
+    return images[getHashIndex(id, images.length)];
   }
 
   // Cancer / Laboratoire / Recherche médicale
   if (title.includes("cancer") || title.includes("thérapeut") || title.includes("recher") || title.includes("patholog")) {
-    return "https://images.unsplash.com/photo-1532187863486-abf9d39d66e8?auto=format&fit=crop&w=600&q=80"; // Lab microscope
+    const images = [
+      "https://images.unsplash.com/photo-1532187863486-abf9d39d66e8?auto=format&fit=crop&w=600&q=80", // Microscope labo
+      "https://images.unsplash.com/photo-1516549655169-df83a0774514?auto=format&fit=crop&w=600&q=80"  // Hélice d'ADN
+    ];
+    return images[getHashIndex(id, images.length)];
   }
 
   // Climat / Énergie / Transition écologique
   if (title.includes("climat") || title.includes("carbone") || title.includes("énerg") || title.includes("renouvel") || title.includes("résili")) {
-    return "https://images.unsplash.com/photo-1508514177221-188b1cf16e9d?auto=format&fit=crop&w=600&q=80"; // Solar panels/clean energy
+    const images = [
+      "https://images.unsplash.com/photo-1508514177221-188b1cf16e9d?auto=format&fit=crop&w=600&q=80", // Panneaux solaires
+      "https://images.unsplash.com/photo-1532601224476-15c79f2f7a51?auto=format&fit=crop&w=600&q=80"  // Éolienne
+    ];
+    return images[getHashIndex(id, images.length)];
   }
 
   // 2. LAW-SPECIFIC HARDCODED BACKGROUNDS (IF ALREADY DEFINED)
@@ -77,24 +119,96 @@ const getLawBackgroundImage = (law: LawDossier) => {
     return law.backgroundImage;
   }
 
-  // 3. CATEGORY FALLBACKS (IF NO KEYWORD MATCHED)
+  // 3. CATEGORY FALLBACKS (IF NO KEYWORD MATCHED) - 10 IMAGES PER CATEGORY
   if (category.includes("éduc") || category.includes("educ")) {
-    return "https://images.unsplash.com/photo-1497633762265-9d179a990aa6?auto=format&fit=crop&w=600&q=80"; // Books/Library
+    const list = [
+      "https://images.unsplash.com/photo-1497633762265-9d179a990aa6?auto=format&fit=crop&w=600&q=80", // Bibliothèque
+      "https://images.unsplash.com/photo-1503676260728-1c00da094a0b?auto=format&fit=crop&w=600&q=80", // Tableau noir
+      "https://images.unsplash.com/photo-1427504494785-3a9ca7044f45?auto=format&fit=crop&w=600&q=80", // Étudiants campus
+      "https://images.unsplash.com/photo-1509062522246-3755977927d7?auto=format&fit=crop&w=600&q=80", // Professeur écrivant
+      "https://images.unsplash.com/photo-1516321318423-f06f85e504b3?auto=format&fit=crop&w=600&q=80", // Apprentissage tablette
+      "https://images.unsplash.com/photo-1524995997946-a1c2e315a42f?auto=format&fit=crop&w=600&q=80", // Étagères livres
+      "https://images.unsplash.com/photo-1546410531-bb4caa6b424d?auto=format&fit=crop&w=600&q=80", // Cahier pupitre
+      "https://images.unsplash.com/photo-1434030216411-0b793f4b4173?auto=format&fit=crop&w=600&q=80", // Étude examen
+      "https://images.unsplash.com/photo-1516979187457-637abb4f9353?auto=format&fit=crop&w=600&q=80", // Pile de vieux livres
+      "https://images.unsplash.com/photo-1456513080510-7bf3a84b82f8?auto=format&fit=crop&w=600&q=80"  // Bureau lampe lecture
+    ];
+    return list[getHashIndex(id, list.length)];
   }
   if (category.includes("écol") || category.includes("envir") || category.includes("climat")) {
-    return "https://images.unsplash.com/photo-1501854140801-50d01698950b?auto=format&fit=crop&w=600&q=80"; // Green forest
+    const list = [
+      "https://images.unsplash.com/photo-1501854140801-50d01698950b?auto=format&fit=crop&w=600&q=80", // Collines vertes
+      "https://images.unsplash.com/photo-1508514177221-188b1cf16e9d?auto=format&fit=crop&w=600&q=80", // Panneaux solaires
+      "https://images.unsplash.com/photo-1473448912268-2022ce9509d8?auto=format&fit=crop&w=600&q=80", // Forêt rayon soleil
+      "https://images.unsplash.com/photo-1466692476868-aef1dfb1e735?auto=format&fit=crop&w=600&q=80", // Feuillage vert
+      "https://images.unsplash.com/photo-1470071459604-3b5ec3a7fe05?auto=format&fit=crop&w=600&q=80", // Brume montagne
+      "https://images.unsplash.com/photo-1518531933037-91b2f5f229cc?auto=format&fit=crop&w=600&q=80", // Gouttes rosée
+      "https://images.unsplash.com/photo-1532601224476-15c79f2f7a51?auto=format&fit=crop&w=600&q=80", // Parc éolien
+      "https://images.unsplash.com/photo-1542601906990-b4d3fb778b09?auto=format&fit=crop&w=600&q=80", // Jeune pousse terre
+      "https://images.unsplash.com/photo-1441974231531-c6227db76b6e?auto=format&fit=crop&w=600&q=80", // Chemin de forêt
+      "https://images.unsplash.com/photo-1500485035595-cbe6f645feb1?auto=format&fit=crop&w=600&q=80"  // Source d'eau claire
+    ];
+    return list[getHashIndex(id, list.length)];
   }
   if (category.includes("écon") || category.includes("finance")) {
-    return "https://images.unsplash.com/photo-1460925895917-afdab827c52f?auto=format&fit=crop&w=600&q=80"; // Financial graphs
+    const list = [
+      "https://images.unsplash.com/photo-1460925895917-afdab827c52f?auto=format&fit=crop&w=600&q=80", // Graphiques
+      "https://images.unsplash.com/photo-1554224155-8d04cb21cd6c?auto=format&fit=crop&w=600&q=80", // Fiscalité / calculatrice
+      "https://images.unsplash.com/photo-1526304640581-d334cdbbf45e?auto=format&fit=crop&w=600&q=80", // Monnaies stack
+      "https://images.unsplash.com/photo-1590283603385-17ffb3a7f29f?auto=format&fit=crop&w=600&q=80", // Indices boursiers
+      "https://images.unsplash.com/photo-1544377193-33dcf4d68fb5?auto=format&fit=crop&w=600&q=80", // Immeuble de bureaux
+      "https://images.unsplash.com/photo-1486406146926-c627a92ad1ab?auto=format&fit=crop&w=600&q=80", // Gratte-ciel
+      "https://images.unsplash.com/photo-1579621970563-ebec7560ff3e?auto=format&fit=crop&w=600&q=80", // Monnaie pousse plante
+      "https://images.unsplash.com/photo-1559526324-4b87b5e36e44?auto=format&fit=crop&w=600&q=80", // Terminal de paiement
+      "https://images.unsplash.com/photo-1454165804606-c3d57bc86b40?auto=format&fit=crop&w=600&q=80", // Analyse de dossiers
+      "https://images.unsplash.com/photo-1611974789855-9c2a0a7236a3?auto=format&fit=crop&w=600&q=80"  // Courbes trading
+    ];
+    return list[getHashIndex(id, list.length)];
   }
   if (category.includes("sécu") || category.includes("défense") || category.includes("milit") || category.includes("justi")) {
-    return "https://images.unsplash.com/photo-1589829545856-d10d557cf95f?auto=format&fit=crop&w=600&q=80"; // Scales of justice
+    const list = [
+      "https://images.unsplash.com/photo-1589829545856-d10d557cf95f?auto=format&fit=crop&w=600&q=80", // Balance justice
+      "https://images.unsplash.com/photo-1557597774-9d273605dfa9?auto=format&fit=crop&w=600&q=80", // Caméra surveillance
+      "https://images.unsplash.com/photo-1508614589041-895b88991e3e?auto=format&fit=crop&w=600&q=80", // Jets militaires
+      "https://images.unsplash.com/photo-1563986768609-322da13575f3?auto=format&fit=crop&w=600&q=80", // Cadenas cyber
+      "https://images.unsplash.com/photo-1450133064473-71024230f91b?auto=format&fit=crop&w=600&q=80", // Gavel juge
+      "https://images.unsplash.com/photo-1507679799987-c73779587ccf?auto=format&fit=crop&w=600&q=80", // Poignée de main accord
+      "https://images.unsplash.com/photo-1509198397868-475647b2a1e5?auto=format&fit=crop&w=600&q=80", // Phares voiture patrouille
+      "https://images.unsplash.com/photo-1485827404703-89b55fcc595e?auto=format&fit=crop&w=600&q=80", // Salle de surveillance
+      "https://images.unsplash.com/photo-1601584115197-04ecc0da31d7?auto=format&fit=crop&w=600&q=80", // Shield protection
+      "https://images.unsplash.com/photo-1501700490688-61614f85e495?auto=format&fit=crop&w=600&q=80"  // Gyrophare nuit
+    ];
+    return list[getHashIndex(id, list.length)];
   }
   if (category.includes("santé") || category.includes("medic")) {
-    return "https://images.unsplash.com/photo-1505751172876-fa1923c5c528?auto=format&fit=crop&w=600&q=80"; // Stethoscope
+    const list = [
+      "https://images.unsplash.com/photo-1505751172876-fa1923c5c528?auto=format&fit=crop&w=600&q=80", // Stéthoscope
+      "https://images.unsplash.com/photo-1532187863486-abf9d39d66e8?auto=format&fit=crop&w=600&q=80", // Microscope labo
+      "https://images.unsplash.com/photo-1584515979956-d9f6e5d09982?auto=format&fit=crop&w=600&q=80", // Équipe de soins
+      "https://images.unsplash.com/photo-1576091160550-2173dba999ef?auto=format&fit=crop&w=600&q=80", // Diagnostic ipad
+      "https://images.unsplash.com/photo-1530026405186-ed1ea0dc7a63?auto=format&fit=crop&w=600&q=80", // Chirurgiens bloc
+      "https://images.unsplash.com/photo-1579684389782-64d84b5e901a?auto=format&fit=crop&w=600&q=80", // Couloir hôpital
+      "https://images.unsplash.com/photo-1506126613408-eca07ce68773?auto=format&fit=crop&w=600&q=80", // Gélules médicaments
+      "https://images.unsplash.com/photo-1516549655169-df83a0774514?auto=format&fit=crop&w=600&q=80", // ADN représentation
+      "https://images.unsplash.com/photo-1551076805-e1869033e561?auto=format&fit=crop&w=600&q=80", // Tubes à essai
+      "https://images.unsplash.com/photo-1629909613654-28e377c37b09?auto=format&fit=crop&w=600&q=80"  // Collaboration médecins
+    ];
+    return list[getHashIndex(id, list.length)];
   }
   if (category.includes("social") || category.includes("société")) {
-    return "https://images.unsplash.com/photo-1582213782179-e0d53f98f2ca?auto=format&fit=crop&w=600&q=80"; // Hands/Community
+    const list = [
+      "https://images.unsplash.com/photo-1582213782179-e0d53f98f2ca?auto=format&fit=crop&w=600&q=80", // Mains jointes
+      "https://images.unsplash.com/photo-1488646953014-85cb44e25828?auto=format&fit=crop&w=600&q=80", // Passeport
+      "https://images.unsplash.com/photo-1464692806184-76a307a67e2c?auto=format&fit=crop&w=600&q=80", // Silhouettes humaines
+      "https://images.unsplash.com/photo-1517048676732-d65bc937f952?auto=format&fit=crop&w=600&q=80", // Atelier collectif
+      "https://images.unsplash.com/photo-1509099836639-18ba1795216d?auto=format&fit=crop&w=600&q=80", // Entraide enfants
+      "https://images.unsplash.com/photo-1531206715517-5c0ba140e2b8?auto=format&fit=crop&w=600&q=80", // Groupe diversité rires
+      "https://images.unsplash.com/photo-1454165804606-c3d57bc86b40?auto=format&fit=crop&w=600&q=80", // Discussion publique
+      "https://images.unsplash.com/photo-1544027993-37dbfe43562a?auto=format&fit=crop&w=600&q=80", // Distribution bénévole
+      "https://images.unsplash.com/photo-1529156069898-49953e39b3ac?auto=format&fit=crop&w=600&q=80", // Amis accolades
+      "https://images.unsplash.com/photo-1573164713988-8665fc963095?auto=format&fit=crop&w=600&q=80"  // Conférence réseau
+    ];
+    return list[getHashIndex(id, list.length)];
   }
 
   return "https://images.unsplash.com/photo-1451187580459-43490279c0fa?auto=format&fit=crop&w=600&q=80";

@@ -116,13 +116,7 @@ export default function DetailedLawDossier({ law }: DetailedLawDossierProps) {
         {/* Paper Texture Overlay */}
         <div className="absolute inset-0 pointer-events-none opacity-[0.03] mix-blend-multiply bg-[url('https://www.transparenttextures.com/patterns/paper-fibers.png')] z-10 rounded-[inherit]" />
         
-        {/* Folded Corner Effect (Bottom Left) */}
-        {!isOpen && (
-          <div className="absolute bottom-0 left-0 w-16 h-16 pointer-events-none z-20">
-            <div className="absolute bottom-0 left-0 w-full h-full bg-white border-t-4 border-r-4 border-slate-900 rounded-tr-xl -rotate-1 shadow-[-4px_4px_0px_0px_rgba(255,255,255,1)]" />
-            <div className="absolute bottom-0 left-0 w-[calc(100%-4px)] h-[calc(100%-4px)] bg-slate-50 border-t-2 border-r-2 border-slate-200 rounded-tr-lg" />
-          </div>
-        )}
+        {/* Folded Corner Effect Removed */}
 
         {/* 3. HEADER (SHEET STYLE) */}
         <button 

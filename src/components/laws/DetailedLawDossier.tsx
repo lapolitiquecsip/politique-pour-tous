@@ -21,6 +21,38 @@ interface DetailedLawDossierProps {
   law: LawDossier;
 }
 
+const getLawBackgroundImage = (law: LawDossier) => {
+  if (law.backgroundImage) {
+    return law.backgroundImage;
+  }
+  
+  if (law.title.toLowerCase().includes("restitution") || law.title.toLowerCase().includes("spoliés")) {
+    return "/restitution-culturelle.png";
+  }
+
+  const category = law.category.toLowerCase();
+  if (category.includes("éduc") || category.includes("educ")) {
+    return "https://images.unsplash.com/photo-1497633762265-9d179a990aa6?auto=format&fit=crop&w=600&q=80";
+  }
+  if (category.includes("écol") || category.includes("envir") || category.includes("climat")) {
+    return "https://images.unsplash.com/photo-1501854140801-50d01698950b?auto=format&fit=crop&w=600&q=80";
+  }
+  if (category.includes("écon") || category.includes("finance")) {
+    return "https://images.unsplash.com/photo-1460925895917-afdab827c52f?auto=format&fit=crop&w=600&q=80";
+  }
+  if (category.includes("sécu") || category.includes("défense") || category.includes("milit")) {
+    return "https://images.unsplash.com/photo-1589829545856-d10d557cf95f?auto=format&fit=crop&w=600&q=80";
+  }
+  if (category.includes("santé") || category.includes("medic")) {
+    return "https://images.unsplash.com/photo-1505751172876-fa1923c5c528?auto=format&fit=crop&w=600&q=80";
+  }
+  if (category.includes("social") || category.includes("société")) {
+    return "https://images.unsplash.com/photo-1582213782179-e0d53f98f2ca?auto=format&fit=crop&w=600&q=80";
+  }
+
+  return "https://images.unsplash.com/photo-1451187580459-43490279c0fa?auto=format&fit=crop&w=600&q=80";
+};
+
 export default function DetailedLawDossier({ law }: DetailedLawDossierProps) {
   const [isOpen, setIsOpen] = useState(false);
   const [isVoteOpen, setIsVoteOpen] = useState(false);
@@ -118,6 +150,21 @@ export default function DetailedLawDossier({ law }: DetailedLawDossierProps) {
       <div 
         className={`relative z-10 shadow-xl transition-all duration-500 flex flex-col overflow-hidden ${cardTheme} ${isOpen ? 'rounded-[2rem]' : 'rounded-[1.5rem]'}`}
       >
+        {/* Background Image with Overlay Blend */}
+        {(() => {
+          const bgUrl = getLawBackgroundImage(law);
+          return bgUrl ? (
+            <div className="absolute inset-0 z-0 pointer-events-none overflow-hidden select-none opacity-[0.22] mix-blend-overlay">
+              <img 
+                src={bgUrl} 
+                alt="" 
+                className="w-full h-full object-cover filter brightness-90 contrast-110"
+              />
+              <div className="absolute inset-0 bg-gradient-to-t from-black/30 via-transparent to-black/10" />
+            </div>
+          ) : null;
+        })()}
+
         {/* 3. HEADER */}
         <button 
           onClick={() => {

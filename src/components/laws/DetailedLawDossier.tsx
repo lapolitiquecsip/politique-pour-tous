@@ -21,22 +21,6 @@ interface DetailedLawDossierProps {
   law: LawDossier;
 }
 
-const getLawMeta = (id: string) => {
-  switch (id) {
-    case "climat-resilience":
-      return { ref: "CLIM-2021-V4", origin: "Gouvernement (Projet)" };
-    case "plein-emploi":
-      return { ref: "EMPL-2023-R2", origin: "Gouvernement (Projet)" };
-    case "loi-militaire":
-      return { ref: "DEFB-2023-P5", origin: "Gouvernement (Projet)" };
-    case "loi-immigration":
-      return { ref: "IMMI-2024-Z9", origin: "Gouvernement (Projet)" };
-    default:
-      const cleanId = id.replace(/[^a-zA-Z]/g, "").substring(0, 4).toUpperCase();
-      return { ref: `${cleanId || "LOI"}-2026-X1`, origin: "Projet de loi" };
-  }
-};
-
 export default function DetailedLawDossier({ law }: DetailedLawDossierProps) {
   const [isOpen, setIsOpen] = useState(false);
   const [isVoteOpen, setIsVoteOpen] = useState(false);
@@ -176,33 +160,11 @@ export default function DetailedLawDossier({ law }: DetailedLawDossierProps) {
               <h3 className={`font-staatliches uppercase tracking-wider block leading-none w-full break-words drop-shadow-sm transition-all ${isOpen ? 'text-3xl md:text-4xl' : 'text-xl md:text-2xl'}`}>
                 {law.title}.
               </h3>
-              
-              <div className="flex flex-wrap gap-2 items-center pt-2">
-                <div className="px-3 py-1 bg-white/20 text-white text-[9px] md:text-[10px] font-black uppercase rounded-full tracking-widest backdrop-blur-sm">
-                  Accès Premium Offert
-                </div>
-                <div className="flex items-center gap-1.5 text-[9px] md:text-[10px] font-bold text-white/70 uppercase tracking-widest">
-                  <FileText className="w-3 h-3" />
-                  Dossier Complet
-                </div>
-              </div>
             </div>
           </div>
 
           {!isOpen && (
             <div className="w-full flex-grow flex flex-col justify-center space-y-4 py-3">
-              {/* Element 1: Metadata stamp / typewriter style */}
-              {(() => {
-                const meta = getLawMeta(law.id);
-                return (
-                  <div className="flex items-center justify-between text-[8px] md:text-[9px] uppercase tracking-wider font-mono opacity-80 text-white bg-black/10 px-2.5 py-1.5 rounded-lg border border-white/10 select-none">
-                    <span className="font-bold">Réf: {meta.ref}</span>
-                    <span className="w-1 h-1 rounded-full bg-white/30" />
-                    <span>{meta.origin}</span>
-                  </div>
-                );
-              })()}
-
               {/* Element 2: Mini legislative progress timeline */}
               {(() => {
                 const steps = [

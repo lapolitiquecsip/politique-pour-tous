@@ -119,7 +119,7 @@ export default function DetailedLawDossier({ law }: DetailedLawDossierProps) {
               setIsOpen(!isOpen);
             });
           }}
-          className={`relative z-10 w-full text-left flex flex-col transition-all focus-visible:outline-none group/header ${isOpen ? 'p-5 md:p-6 pb-5' : 'p-5 md:p-6 h-full justify-between min-h-[140px]'}`}
+          className={`relative z-10 w-full text-left flex flex-col transition-all focus-visible:outline-none group/header ${isOpen ? 'p-5 md:p-6 pb-5' : 'p-5 md:p-6 h-full justify-between aspect-[3/4] sm:aspect-[1/1.3] min-h-[300px]'}`}
         >
           <div className="space-y-4 md:space-y-6 w-full">
             <div className="flex justify-between items-start w-full">
@@ -151,7 +151,7 @@ export default function DetailedLawDossier({ law }: DetailedLawDossierProps) {
             </div>
 
             <div className="space-y-3 pt-2 w-full">
-              <h3 className={`font-staatliches uppercase tracking-wider block leading-none w-full break-words drop-shadow-sm transition-all ${isOpen ? 'text-3xl md:text-4xl' : 'text-2xl md:text-3xl'}`}>
+              <h3 className={`font-staatliches uppercase tracking-wider block leading-none w-full break-words drop-shadow-sm transition-all ${isOpen ? 'text-3xl md:text-4xl' : 'text-xl md:text-2xl'}`}>
                 {law.title}.
               </h3>
               

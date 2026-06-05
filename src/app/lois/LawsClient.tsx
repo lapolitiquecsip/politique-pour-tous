@@ -261,7 +261,7 @@ function LawsClientContent() {
                 </div>
 
                 <div className="text-center w-full flex justify-center mt-2">
-                  <span className="text-5xl sm:text-6xl md:text-7xl lg:text-[5rem] xl:text-[5.5rem] font-staatliches uppercase tracking-wider block leading-none w-full truncate drop-shadow-sm">
+                  <span className="text-4xl sm:text-5xl md:text-5xl lg:text-5xl xl:text-6xl font-staatliches uppercase tracking-wider block leading-none w-full break-words drop-shadow-sm">
                     {cat.label}.
                   </span>
                 </div>

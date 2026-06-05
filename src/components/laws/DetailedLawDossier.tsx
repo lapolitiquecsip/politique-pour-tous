@@ -252,15 +252,15 @@ export default function DetailedLawDossier({ law }: DetailedLawDossierProps) {
                 const pctPour = total > 0 ? Math.round((law.voteData.pour / total) * 100) : 0;
                 const pctContre = total > 0 ? Math.round((law.voteData.contre / total) * 100) : 0;
                 return (
-                  <div className="space-y-1.5 bg-white/5 border border-white/10 rounded-xl p-2.5 select-none">
-                    <div className="flex justify-between items-center text-[8px] md:text-[9px] font-black uppercase tracking-wider text-white">
-                      <span>🗳️ Vote Assemblée</span>
-                      <span className="text-emerald-400">{pctPour}% POUR</span>
+                  <div className="space-y-1.5 bg-white rounded-xl p-2.5 shadow-[0_2px_8px_rgba(0,0,0,0.08)] select-none">
+                    <div className="flex justify-between items-center text-[8px] md:text-[9px] font-black uppercase tracking-wider text-slate-800">
+                      <span className="opacity-75">🗳️ Vote Assemblée</span>
+                      <span className="text-emerald-600 font-extrabold">{pctPour}% POUR</span>
                     </div>
-                    <div className="h-1.5 bg-white/10 rounded-full overflow-hidden flex">
-                      <div className="h-full bg-emerald-400" style={{ width: `${pctPour}%` }} />
-                      <div className="h-full bg-red-400" style={{ width: `${pctContre}%` }} />
-                      <div className="h-full bg-white/20" style={{ width: `${100 - pctPour - pctContre}%` }} />
+                    <div className="h-1.5 bg-slate-100 rounded-full overflow-hidden flex">
+                      <div className="h-full bg-emerald-500" style={{ width: `${pctPour}%` }} />
+                      <div className="h-full bg-red-500" style={{ width: `${pctContre}%` }} />
+                      <div className="h-full bg-slate-300" style={{ width: `${100 - pctPour - pctContre}%` }} />
                     </div>
                   </div>
                 );
@@ -271,7 +271,6 @@ export default function DetailedLawDossier({ law }: DetailedLawDossierProps) {
           {!isOpen && (
             <div className="mt-6 pt-4 border-t border-white/20 w-full flex items-center justify-between">
                <p className="text-white/60 font-bold italic text-xs">Cliquer pour déplier la fiche</p>
-               <Sparkles className="w-4 h-4 text-white/60" />
             </div>
           )}
 

@@ -49,6 +49,17 @@ export const api = {
     return data || [];
   },
 
+  getRecentPetitions: async () => {
+    const { data, error } = await supabase
+      .from('petitions')
+      .select('*')
+      .eq('institution', 'AN')
+      .order('created_at', { ascending: false })
+      .limit(20);
+    if (error) { console.error(error); return []; }
+    return data || [];
+  },
+
   getVotedLaws: async (limit = 20) => {
     const { data, error } = await supabase
       .from('scrutins')

@@ -29,7 +29,11 @@ interface Petition {
 
 // Sub-component for individual petition cards
 function PetitionCard({ petition, idx }: { petition: Petition, idx: number }) {
-  const realPercentage = Math.round((petition.signatures / petition.threshold) * 100);
+  let dynamicThreshold = petition.threshold || 100000;
+  if (petition.signatures >= 100000 && dynamicThreshold === 100000) {
+    dynamicThreshold = 500000;
+  }
+  const realPercentage = Math.round((petition.signatures / dynamicThreshold) * 100);
   const cappedPercentage = Math.min(realPercentage, 100);
 
   return (
@@ -61,7 +65,7 @@ function PetitionCard({ petition, idx }: { petition: Petition, idx: number }) {
               <Users size={14} className="text-slate-400" />
               <span>{petition.signatures.toLocaleString()} Votants</span>
             </div>
-            <span className="text-blue-600 dark:text-blue-400">{realPercentage}% du palier</span>
+            <span className="text-blue-600 dark:text-blue-400">{cappedPercentage}% du palier</span>
           </div>
 
           <div className="h-2 bg-slate-100 dark:bg-slate-800 rounded-full overflow-hidden">
@@ -95,6 +99,7 @@ export default function PetitionsSection() {
   useEffect(() => {
     const load = async () => {
       const data = await api.getPetitions();
+      const recentData = await api.getRecentPetitions();
       if (data && data.length > 0) {
         // 1. Get Top 3 most voted
         const popular = [...data]
@@ -104,9 +109,8 @@ export default function PetitionsSection() {
         const popularIds = new Set(popular.map(p => p.id));
         
         // 2. Get Top 3 most recent (not already in popular)
-        const recent = [...data]
+        const recent = (recentData || [])
           .filter(p => !popularIds.has(p.id))
-          .sort((a, b) => new Date(b.created_at).getTime() - new Date(a.created_at).getTime())
           .slice(0, 3);
 
         setPetitions([...popular, ...recent]);

@@ -109,24 +109,29 @@ export default function DetailedLawDossier({ law }: DetailedLawDossierProps) {
               setIsOpen(!isOpen);
             });
           }}
-          className={`relative z-10 w-full text-left flex flex-col transition-all focus-visible:outline-none group/header ${isOpen ? 'p-6 md:p-8 pb-6' : 'p-6 md:p-8 h-full justify-between min-h-[240px]'}`}
+          className={`relative z-10 w-full text-left flex flex-col transition-all focus-visible:outline-none group/header ${isOpen ? 'p-6 md:p-8 pb-6' : 'p-6 md:p-8 h-full justify-between min-h-[180px]'}`}
         >
-          <div className="space-y-6 w-full">
+          <div className="space-y-4 md:space-y-6 w-full">
             <div className="flex justify-between items-start w-full">
-              <div className="flex gap-2 items-center">
-                <div className="px-3 py-1 rounded-full text-[10px] md:text-[11px] font-black uppercase tracking-widest bg-white/20 text-white backdrop-blur-md">
-                  {law.category}
+              <div className="flex gap-2 flex-wrap items-center">
+                <div className="px-3 py-1 rounded-full text-[10px] md:text-[11px] font-black uppercase tracking-widest bg-white/20 text-white backdrop-blur-md flex items-center gap-1.5">
+                  <span className="opacity-70">LOI</span>
+                  <span className="opacity-50">•</span>
+                  <span>{law.category}</span>
                 </div>
-                {/* Vintage Year Stamp */}
                 {(() => {
-                  const lastYear = law.calendar.length > 0 ? law.calendar[law.calendar.length - 1].date.match(/\d{4}/)?.[0] : null;
-                  if (!lastYear) return null;
+                  const dateInfo = law.calendar.length > 0 ? law.calendar[law.calendar.length - 1].date : null;
+                  if (!dateInfo) return null;
                   return (
-                    <div className="px-3 py-1 bg-white/10 text-white/80 text-[10px] md:text-[11px] font-black rounded-full uppercase tracking-widest backdrop-blur-sm">
-                      Vote {lastYear}
+                    <div className="px-3 py-1 bg-white/10 text-white/90 text-[10px] md:text-[11px] font-black rounded-full uppercase tracking-widest backdrop-blur-sm">
+                      {dateInfo}
                     </div>
                   );
                 })()}
+                <div className="px-3 py-1 bg-white/10 text-white/90 text-[10px] md:text-[11px] font-black rounded-full uppercase tracking-widest backdrop-blur-sm flex items-center gap-1.5">
+                  <span className={`w-1.5 h-1.5 rounded-full ${law.status === 'application' ? 'bg-green-400' : 'bg-amber-400'}`} />
+                  {law.statusLabel}
+                </div>
               </div>
               {!isOpen && (
                 <div className="p-2 md:p-2.5 rounded-xl bg-white/10 text-white backdrop-blur-sm group-hover/header:bg-white/20 transition-all">
@@ -136,7 +141,7 @@ export default function DetailedLawDossier({ law }: DetailedLawDossierProps) {
             </div>
 
             <div className="space-y-4 pt-2 w-full">
-              <h3 className={`font-staatliches uppercase tracking-wider block leading-none w-full break-words drop-shadow-sm transition-all ${isOpen ? 'text-3xl md:text-5xl' : 'text-4xl md:text-6xl'}`}>
+              <h3 className={`font-staatliches uppercase tracking-wider block leading-none w-full break-words drop-shadow-sm transition-all ${isOpen ? 'text-3xl md:text-4xl' : 'text-3xl md:text-5xl'}`}>
                 {law.title}.
               </h3>
               
@@ -182,10 +187,6 @@ export default function DetailedLawDossier({ law }: DetailedLawDossierProps) {
         className="overflow-hidden transform-gpu will-change-[height,opacity]"
       >
         <div className="relative z-10 px-6 md:px-8 pb-8 pt-8 bg-white text-slate-800 rounded-[1.5rem] mx-2 mb-2 shadow-inner">
-          <div className="flex items-center gap-2 text-xs font-semibold text-slate-600 bg-slate-100/80 px-3 py-1 rounded-full capitalize w-fit mb-6">
-            <span className={`w-2 h-2 rounded-full ${law.status === 'application' ? 'bg-green-500' : 'bg-amber-500'} animate-pulse`} />
-            {law.statusLabel}
-          </div>
 
           <div className="text-base md:text-lg text-slate-800 font-medium leading-relaxed mb-8 max-w-4xl">
             {wrapWithGlossary(law.summary)}

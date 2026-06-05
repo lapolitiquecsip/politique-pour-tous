@@ -34,7 +34,7 @@ import LawsGrid from "@/components/laws/LawsGrid";
 
 const CATEGORIES = [
   { id: "edu", label: "Éducation", bgColor: "bg-indigo-500", hoverColor: "hover:bg-indigo-400", color: "indigo", isFree: true },
-  { id: "env", label: "Environnement", bgColor: "bg-emerald-500", hoverColor: "hover:bg-emerald-400", color: "emerald" },
+  { id: "env", label: "Écologie", matchCategory: "Environnement", bgColor: "bg-emerald-500", hoverColor: "hover:bg-emerald-400", color: "emerald" },
   { id: "eco", label: "Économie", bgColor: "bg-blue-500", hoverColor: "hover:bg-blue-400", color: "blue" },
   { id: "sec", label: "Sécurité", bgColor: "bg-slate-800", hoverColor: "hover:bg-slate-700", color: "slate" },
   { id: "health", label: "Santé", bgColor: "bg-rose-500", hoverColor: "hover:bg-rose-400", color: "rose" },
@@ -82,7 +82,7 @@ function LawsClientContent() {
   useEffect(() => {
     const loadDossiers = async () => {
       setLoadingDossiers(true);
-      const catLabel = selectedCat ? CATEGORIES.find(c => c.id === selectedCat)?.label : null;
+      const catLabel = selectedCat ? (CATEGORIES.find(c => c.id === selectedCat)?.matchCategory || CATEGORIES.find(c => c.id === selectedCat)?.label) : null;
       const data = await api.getPremiumDossiers(catLabel);
       setPremiumDossiers(data);
       setLoadingDossiers(false);
@@ -357,7 +357,7 @@ function LawsClientContent() {
                   try { calendar = typeof law.timeline === 'string' ? JSON.parse(law.timeline) : (law.timeline || []); } catch(e){}
                   try { premiumPoints = typeof law.content === 'string' ? JSON.parse(law.content) : (law.content || []); } catch(e){}
 
-                  const catObj = CATEGORIES.find(c => c.label === law.category);
+                  const catObj = CATEGORIES.find(c => c.label === law.category || c.matchCategory === law.category);
                   const color = catObj ? catObj.color : 'slate';
                   
                   let voteData = null;
@@ -464,8 +464,10 @@ function LawsClientContent() {
             {dbLaws
               .filter(law => {
                 if (!selectedCat) return true;
-                const catLabel = CATEGORIES.find(c => c.id === selectedCat)?.label;
-                return law.category === catLabel || (law.category && law.category.includes(catLabel));
+                const cat = CATEGORIES.find(c => c.id === selectedCat);
+                const catLabel = cat?.label;
+                const matchCat = cat?.matchCategory;
+                return law.category === catLabel || law.category === matchCat || (law.category && (law.category.includes(catLabel) || (matchCat && law.category.includes(matchCat))));
               })
               .map((law, idx) => {
               const hasVotes = (law.pour + law.contre + law.abstention) > 0;
@@ -528,8 +530,10 @@ function LawsClientContent() {
           
           {dbLaws.filter(law => {
              if (!selectedCat) return true;
-             const catLabel = CATEGORIES.find(c => c.id === selectedCat)?.label;
-             return law.category === catLabel || (law.category && law.category.includes(catLabel));
+             const cat = CATEGORIES.find(c => c.id === selectedCat);
+             const catLabel = cat?.label;
+             const matchCat = cat?.matchCategory;
+             return law.category === catLabel || law.category === matchCat || (law.category && (law.category.includes(catLabel) || (matchCat && law.category.includes(matchCat))));
           }).length === 0 && !loadingLaws && (
             <div className="text-center py-20 bg-slate-50 rounded-[3rem] border border-dashed border-slate-300">
                <Vote className="w-12 h-12 text-slate-300 mx-auto mb-4" />

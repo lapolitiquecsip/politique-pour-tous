@@ -33,12 +33,12 @@ import UniversalLawModal from "@/components/laws/UniversalLawModal";
 import LawsGrid from "@/components/laws/LawsGrid";
 
 const CATEGORIES = [
-  { id: "edu", label: "Éducation", bgColor: "bg-indigo-500", hoverColor: "hover:bg-indigo-400", isFree: true },
-  { id: "env", label: "Environnement", bgColor: "bg-emerald-500", hoverColor: "hover:bg-emerald-400" },
-  { id: "eco", label: "Économie", bgColor: "bg-blue-500", hoverColor: "hover:bg-blue-400" },
-  { id: "sec", label: "Sécurité", bgColor: "bg-slate-800", hoverColor: "hover:bg-slate-700" },
-  { id: "health", label: "Santé", bgColor: "bg-rose-500", hoverColor: "hover:bg-rose-400" },
-  { id: "social", label: "Social", bgColor: "bg-orange-500", hoverColor: "hover:bg-orange-400" },
+  { id: "edu", label: "Éducation", bgColor: "bg-indigo-500", hoverColor: "hover:bg-indigo-400", color: "indigo", isFree: true },
+  { id: "env", label: "Environnement", bgColor: "bg-emerald-500", hoverColor: "hover:bg-emerald-400", color: "emerald" },
+  { id: "eco", label: "Économie", bgColor: "bg-blue-500", hoverColor: "hover:bg-blue-400", color: "blue" },
+  { id: "sec", label: "Sécurité", bgColor: "bg-slate-800", hoverColor: "hover:bg-slate-700", color: "slate" },
+  { id: "health", label: "Santé", bgColor: "bg-rose-500", hoverColor: "hover:bg-rose-400", color: "rose" },
+  { id: "social", label: "Social", bgColor: "bg-orange-500", hoverColor: "hover:bg-orange-400", color: "orange" },
 ];
 
 export default function LawsClient() {
@@ -356,7 +356,7 @@ function LawsClientContent() {
                   try { premiumPoints = typeof law.content === 'string' ? JSON.parse(law.content) : (law.content || []); } catch(e){}
 
                   const catObj = CATEGORIES.find(c => c.label === law.category);
-                  const color = catObj ? catObj.color.replace('border-', '').replace('-400', '') : 'slate';
+                  const color = catObj ? catObj.color : 'slate';
                   
                   let voteData = null;
                   if (law.context?.startsWith('dossier_premium:')) {

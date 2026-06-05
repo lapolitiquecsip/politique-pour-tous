@@ -190,7 +190,7 @@ function LawsClientContent() {
         <div className="mt-12 mb-32">
           <div className="relative mb-16 text-center md:text-left">
             <div className="flex items-center gap-4 justify-center md:justify-start">
-              <h2 className="text-5xl md:text-7xl font-staatliches uppercase tracking-tighter leading-none">
+              <h2 className="text-5xl md:text-7xl font-staatliches uppercase tracking-tighter leading-none text-slate-900">
                 <span className="text-slate-900 opacity-10 absolute -top-8 left-0 select-none hidden md:block">EN COURS</span>
                 Propositions & <span className="bg-gradient-to-r from-blue-600 via-red-600 to-blue-600 bg-clip-text text-transparent">Projets de loi</span>
               </h2>
@@ -216,7 +216,7 @@ function LawsClientContent() {
           {/* 1. FILTRES THÉMATIQUES (ULTRA COMPACT BENTO STYLE) */}
       <div className="mb-24">
         <div className="relative mb-10 text-center md:text-left">
-          <h3 className="text-5xl md:text-7xl font-staatliches uppercase tracking-tighter leading-none">
+          <h3 className="text-5xl md:text-7xl font-staatliches uppercase tracking-tighter leading-none text-slate-900">
             <span className="text-slate-900 opacity-5 absolute -top-8 left-0 select-none hidden md:block">COLLECTIONS</span>
             Explorez par <span className="bg-gradient-to-r from-blue-600 via-red-600 to-blue-600 bg-clip-text text-transparent">thématique</span>
           </h3>
@@ -290,7 +290,7 @@ function LawsClientContent() {
       <div className="space-y-4 mb-32">
         <div className="relative mb-16 text-center md:text-left">
           <div className="flex items-center gap-4 justify-center md:justify-start">
-            <h2 className="text-5xl md:text-7xl font-staatliches uppercase tracking-tighter leading-none">
+            <h2 className="text-5xl md:text-7xl font-staatliches uppercase tracking-tighter leading-none text-slate-900">
               <span className="text-slate-900 opacity-10 absolute -top-8 left-0 select-none hidden md:block">DOSSIERS</span>
               {selectedCat ? CATEGORIES.find(c => c.id === selectedCat)?.label : "L'essentiel en libre accès"}
             </h2>
@@ -463,7 +463,7 @@ function LawsClientContent() {
                  </button>
                )}
             </div>
-            <h2 className="text-5xl md:text-7xl font-staatliches uppercase tracking-tighter leading-none">
+            <h2 className="text-5xl md:text-7xl font-staatliches uppercase tracking-tighter leading-none text-slate-900">
               Historique des <span className="bg-gradient-to-r from-slate-900 to-slate-500 bg-clip-text text-transparent">lois</span>
             </h2>
             <div className="h-1.5 w-24 bg-slate-950 mt-4 rounded-full mx-auto md:mx-0" />

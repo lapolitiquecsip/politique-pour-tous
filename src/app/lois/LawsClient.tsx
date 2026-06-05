@@ -33,12 +33,12 @@ import UniversalLawModal from "@/components/laws/UniversalLawModal";
 import LawsGrid from "@/components/laws/LawsGrid";
 
 const CATEGORIES = [
-  { id: "edu", label: "Éducation", icon: GraduationCap, color: "border-indigo-400", bgColor: "bg-indigo-50/80", iconBg: "bg-indigo-100", iconColor: "text-indigo-600", isFree: true },
-  { id: "env", label: "Environnement", icon: Leaf, color: "border-emerald-400", bgColor: "bg-emerald-50/80", iconBg: "bg-emerald-100", iconColor: "text-emerald-600" },
-  { id: "eco", label: "Économie", icon: TrendingUp, color: "border-blue-400", bgColor: "bg-blue-50/80", iconBg: "bg-blue-100", iconColor: "text-blue-600" },
-  { id: "sec", label: "Sécurité", icon: Shield, color: "border-slate-400", bgColor: "bg-slate-100/80", iconBg: "bg-slate-200", iconColor: "text-slate-600" },
-  { id: "health", label: "Santé", icon: HeartPulse, color: "border-rose-400", bgColor: "bg-rose-50/80", iconBg: "bg-rose-100", iconColor: "text-rose-600" },
-  { id: "social", label: "Social", icon: Users, color: "border-orange-400", bgColor: "bg-orange-50/80", iconBg: "bg-orange-100", iconColor: "text-orange-600" },
+  { id: "edu", label: "Éducation", bgColor: "bg-indigo-500", hoverColor: "hover:bg-indigo-400", isFree: true },
+  { id: "env", label: "Environnement", bgColor: "bg-emerald-500", hoverColor: "hover:bg-emerald-400" },
+  { id: "eco", label: "Économie", bgColor: "bg-blue-500", hoverColor: "hover:bg-blue-400" },
+  { id: "sec", label: "Sécurité", bgColor: "bg-slate-800", hoverColor: "hover:bg-slate-700" },
+  { id: "health", label: "Santé", bgColor: "bg-rose-500", hoverColor: "hover:bg-rose-400" },
+  { id: "social", label: "Social", bgColor: "bg-orange-500", hoverColor: "hover:bg-orange-400" },
 ];
 
 export default function LawsClient() {
@@ -225,7 +225,6 @@ function LawsClientContent() {
 
         <div className="grid grid-cols-2 lg:grid-cols-3 gap-4 md:gap-6">
           {CATEGORIES.map((cat) => {
-            const Icon = cat.icon;
             const isActive = selectedCat === cat.id;
             
             const handleCategoryClick = () => {
@@ -244,40 +243,27 @@ function LawsClientContent() {
               <button
                 key={cat.id}
                 onClick={handleCategoryClick}
-                className={`group relative flex flex-col items-start gap-3 p-4 md:p-5 rounded-[1rem] border transition-all duration-500 shadow-sm overflow-hidden ${
+                className={`group relative flex items-center justify-center p-6 md:p-8 rounded-[1.5rem] transition-all duration-300 shadow-xl overflow-hidden ${
                   isActive 
-                    ? "ring-4 ring-blue-500/10 border-blue-500 bg-slate-950 text-white shadow-2xl scale-[1.02] border-t-4" 
-                    : `hover:shadow-lg hover:-translate-y-1 border-slate-200 ${cat.bgColor} border-t-4`
-                } ${cat.color}`}
+                    ? `ring-4 ring-offset-4 ring-slate-900 ${cat.bgColor} text-white scale-[1.02]` 
+                    : `hover:shadow-2xl hover:-translate-y-2 ${cat.bgColor} ${cat.hoverColor} text-white/90 hover:text-white`
+                }`}
               >
-                {/* Background Pattern for Active state */}
-                {isActive && (
-                  <div className="absolute inset-0 opacity-5 pointer-events-none bg-[url('https://www.transparenttextures.com/patterns/felt.png')]" />
-                )}
-
-                <div className="flex items-center justify-between w-full mb-1">
-                  <div className={`p-2 md:p-2.5 rounded-lg ${isActive ? 'bg-white/10' : cat.iconBg} transition-all duration-500 group-hover:scale-110`}>
-                    <Icon className={`w-5 h-5 md:w-6 md:h-6 ${isActive ? 'text-white' : cat.iconColor}`} />
-                  </div>
-                  
-                  <div>
-                    {(!cat.isFree && !isPremium) ? (
-                      <Lock className={`w-3.5 h-3.5 shrink-0 ${isActive ? 'text-white/40' : 'text-slate-400'}`} />
-                    ) : (
-                      <span className={`text-[9px] px-1.5 py-0.5 rounded uppercase tracking-widest font-black border ${isActive ? 'bg-white/20 border-white/30 text-white' : (cat.isFree ? 'bg-white/50 border-indigo-100 text-indigo-600' : 'bg-amber-50 border-amber-200 text-amber-600')}`}>
-                        {cat.isFree ? 'Libre' : 'Premium'}
-                      </span>
-                    )}
-                  </div>
+                {/* Premium/Libre Badge (kept small and discreet) */}
+                <div className="absolute top-3 right-3 md:top-4 md:right-4">
+                  {(!cat.isFree && !isPremium) ? (
+                    <Lock className="w-4 h-4 md:w-5 md:h-5 text-white/50" />
+                  ) : (
+                    <span className="text-[9px] md:text-[11px] px-2 py-0.5 md:px-3 md:py-1 rounded-full uppercase tracking-widest font-black bg-white/20 text-white backdrop-blur-md">
+                      {cat.isFree ? 'Libre' : 'Premium'}
+                    </span>
+                  )}
                 </div>
-                
-                <div className="text-left">
-                  <span className={`text-xl md:text-2xl font-staatliches uppercase tracking-wide block leading-none ${isActive ? 'text-white' : 'text-slate-900 group-hover:text-blue-600 transition-colors'}`}>
-                    {cat.label}
+
+                <div className="text-center w-full flex justify-center mt-2">
+                  <span className="text-5xl sm:text-6xl md:text-7xl lg:text-[5rem] xl:text-[5.5rem] font-staatliches uppercase tracking-wider block leading-none w-full truncate drop-shadow-sm">
+                    {cat.label}.
                   </span>
-                  <p className={`text-[8px] md:text-[10px] font-bold uppercase tracking-[0.2em] mt-1 transition-opacity duration-300 ${isActive ? 'text-white/40' : 'text-slate-400'}`}>
-                    Dossiers
-                  </p>
                 </div>
               </button>
             );

@@ -1,1 +1,1 @@
-import { fetchGovernmentComposition } from './src/lib/services/governmentService.ts'; fetchGovernmentComposition().then(console.log).catch(console.error);
+import { fetchGovernmentComposition } from './src/lib/services/governmentService'; fetchGovernmentComposition().then(console.log).catch(console.error);

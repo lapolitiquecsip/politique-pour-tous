@@ -2,7 +2,6 @@
 
 import { useState, useEffect } from "react"
 import { motion, AnimatePresence } from "framer-motion"
-import { ArrowRight } from "lucide-react"
 
 export interface CardData {
   id: number;
@@ -12,6 +11,8 @@ export interface CardData {
   color?: string;
   value?: string;
   label?: string;
+  intoxContent?: string;
+  intoxDebunk?: string;
 }
 
 const positionStyles = [
@@ -50,7 +51,7 @@ function CardContent({ data }: { data: CardData }) {
       <div className="absolute top-0 right-0 w-48 h-48 bg-white/10 rounded-full blur-3xl -mr-10 -mt-10 pointer-events-none" />
       <div className="absolute bottom-0 left-0 w-48 h-48 bg-black/10 rounded-full blur-2xl -ml-10 -mb-10 pointer-events-none" />
 
-      <div className="relative z-10 w-full flex flex-col items-center justify-center">
+      <div className="relative z-10 w-full h-full flex flex-col items-center justify-center">
         {data.value ? (
           <>
             <span className="text-[5rem] sm:text-[7rem] font-staatliches mb-2 tracking-tighter leading-none drop-shadow-md text-white">
@@ -60,16 +61,108 @@ function CardContent({ data }: { data: CardData }) {
               {data.label || data.description}
             </span>
           </>
-        ) : isIntox ? (
-          <>
-            <h1 className="font-staatliches text-4xl sm:text-5xl mb-4 tracking-tight uppercase leading-none text-red-200">
-              INTOX
-            </h1>
-            <span className="text-base sm:text-lg font-bold max-w-sm leading-relaxed drop-shadow-sm italic text-balance text-white/95">
-              {data.description}
-            </span>
-          </>
-        ) : (
+        ) : isIntox ? (() => {
+          let content = data.intoxContent;
+          let debunk = data.intoxDebunk;
+
+          if (!content || !debunk) {
+            const match = data.description.match(/^«\s*([\s\S]*?)\s*»\s*(?:\n|(?:\s*-\s*))?Réalité\s*:\s*([\s\S]*)$/i);
+            if (match) {
+              content = match[1];
+              debunk = match[2];
+            } else {
+              const parts = data.description.split(/Réalité\s*:/i);
+              if (parts.length > 1) {
+                content = parts[0].replace(/^«\s*/, '').replace(/\s*»$/, '').trim();
+                debunk = parts[1].trim();
+              } else {
+                content = data.description;
+                debunk = "";
+              }
+            }
+          }
+
+          let verdict = "";
+          let debunkText = debunk;
+
+          if (debunkText) {
+            const verdictMatch = debunkText.match(/^(faux|vrai|nuancé|exact|inexact|vrai\s+mais|faux\s+mais|partiellement\s+vrai|partiellement\s+faux)(\.|\s|:|,)/i);
+            if (verdictMatch) {
+              verdict = verdictMatch[1];
+              verdict = verdict.charAt(0).toUpperCase() + verdict.slice(1).toLowerCase();
+              const skipLength = verdictMatch[0].length;
+              debunkText = debunkText.substring(skipLength).trim();
+              debunkText = debunkText.replace(/^[.\s:-]+/, '').trim();
+            }
+          }
+
+          const isFaux = verdict.toLowerCase().includes('faux') || verdict.toLowerCase().includes('inexact');
+          const isVrai = verdict.toLowerCase().includes('vrai') || verdict.toLowerCase().includes('exact');
+
+          return (
+            <div className="flex flex-col items-center justify-between w-full h-full py-1">
+              {/* Header */}
+              <div className="flex items-center gap-1.5 mb-2 sm:mb-3">
+                <span className="bg-white/20 text-white/90 border border-white/10 px-2 py-0.5 rounded text-[10px] font-black uppercase tracking-wider">
+                  Fact-Checking
+                </span>
+                <h1 className="font-staatliches text-2xl sm:text-3xl tracking-wide uppercase leading-none text-white">
+                  INTOX
+                </h1>
+              </div>
+
+              {/* Rumeur Box */}
+              <div className="bg-black/25 border border-white/5 rounded-xl px-4 py-2.5 text-left w-full mb-3 relative max-w-sm flex-1 flex flex-col justify-center">
+                <span className="absolute -top-2 left-3 bg-rose-600 text-[8px] font-black uppercase px-1.5 py-0.5 rounded tracking-widest text-white shadow-sm border border-rose-400">
+                  LA RUMEUR
+                </span>
+                <p className="text-white/90 italic font-medium leading-snug text-xs sm:text-sm line-clamp-3">
+                  « {content} »
+                </p>
+              </div>
+
+              {/* Réalité Box */}
+              <div className={`bg-white text-slate-900 rounded-xl p-3 text-left w-full max-w-sm shadow-xl border-l-4 ${
+                isFaux 
+                  ? 'border-rose-500' 
+                  : isVrai 
+                    ? 'border-emerald-500' 
+                    : 'border-amber-500'
+              } flex flex-col justify-center`}>
+                <div className="flex items-center justify-between mb-1.5">
+                  <span className="text-[10px] font-extrabold uppercase tracking-wider bg-emerald-100 text-emerald-800 px-2 py-0.5 rounded">
+                    RÉALITÉ
+                  </span>
+                  
+                  {verdict && (
+                    <span className={`text-[10px] font-black uppercase px-2 py-0.5 rounded flex items-center gap-1 ${
+                      isFaux 
+                        ? 'bg-rose-100 text-rose-800' 
+                        : isVrai 
+                          ? 'bg-emerald-100 text-emerald-800' 
+                          : 'bg-amber-100 text-amber-800'
+                    }`}>
+                      {isFaux && (
+                        <svg className="w-3 h-3 text-rose-600" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={3}>
+                          <path strokeLinecap="round" strokeLinejoin="round" d="M6 18L18 6M6 6l12 12" />
+                        </svg>
+                      )}
+                      {isVrai && (
+                        <svg className="w-3 h-3 text-emerald-600" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={3}>
+                          <path strokeLinecap="round" strokeLinejoin="round" d="M5 13l4 4L19 7" />
+                        </svg>
+                      )}
+                      {verdict}
+                    </span>
+                  )}
+                </div>
+                <p className="text-xs sm:text-xs text-slate-700 leading-normal font-medium line-clamp-4">
+                  {debunkText}
+                </p>
+              </div>
+            </div>
+          );
+        })() : (
           <>
             <span className="bg-white/20 text-white px-4 py-1.5 rounded-full text-[10px] font-black uppercase tracking-[0.2em] mb-6 backdrop-blur-sm">
               {data.title}
@@ -144,6 +237,7 @@ export default function AnimatedCardStack({ items = [] }: { items: CardData[] })
     setCards(initialCards);
     setNextId(4);
     setDataIndex(3 % safeItems.length);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [items]);
 
   const handleAnimate = () => {

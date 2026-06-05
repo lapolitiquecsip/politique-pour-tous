@@ -3,13 +3,15 @@ import { useState, useEffect, useCallback } from "react";
 import { supabase } from "@/lib/supabase";
 import AnimatedCardStack, { CardData } from "@/components/ui/animate-card-animation";
 
-// Unsplash stock images for the cards
-const fallbackImages = [
-  "https://images.unsplash.com/photo-1549221530-5800fb7383a1?q=80&w=800&auto=format&fit=crop", // Paris Gov / Building
-  "https://images.unsplash.com/photo-1502602898657-3e91760cbb34?q=80&w=800&auto=format&fit=crop", // Eiffel
-  "https://images.unsplash.com/photo-1522093537031-3ee9eb53c0ce?q=80&w=800&auto=format&fit=crop", // People/Gov meeting
-  "https://images.unsplash.com/photo-1541604193435-22287d32c2c2?q=80&w=800&auto=format&fit=crop"  // Justice/Law
-];
+interface RawSlide {
+  id?: number;
+  type?: string;
+  value?: string;
+  label?: string;
+  content?: string;
+  debunk?: string;
+  color?: string;
+}
 
 export default function StatsPanel() {
   const [cards, setCards] = useState<CardData[]>([]);
@@ -36,16 +38,16 @@ export default function StatsPanel() {
         ];
       }
 
-      const formattedCards: CardData[] = rawSlides.map((slide: any, index: number) => {
+      const formattedCards: CardData[] = rawSlides.map((slide: RawSlide, index: number) => {
         let title = "Statistique";
         let description = "";
 
         if (slide.type === 'intox') {
           title = "Intox de la semaine";
-          description = `« ${slide.content} »\nRéalité : ${slide.debunk}`;
+          description = `« ${slide.content || ""} »\nRéalité : ${slide.debunk || ""}`;
         } else {
           title = "Le Saviez-Vous ?";
-          description = slide.value ? `${slide.value} ${slide.label}` : slide.content;
+          description = slide.value ? `${slide.value} ${slide.label || ""}` : (slide.content || "");
         }
 
         return {
@@ -54,7 +56,9 @@ export default function StatsPanel() {
           description,
           color: slide.color || ["bg-emerald-600", "bg-blue-600", "bg-rose-600", "bg-amber-600"][index % 4],
           value: slide.value,
-          label: slide.label
+          label: slide.label,
+          intoxContent: slide.type === 'intox' ? slide.content : undefined,
+          intoxDebunk: slide.type === 'intox' ? slide.debunk : undefined
         };
       });
 

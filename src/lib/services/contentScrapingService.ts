@@ -200,7 +200,7 @@ function parseRSSFeed(xml: string, institution: string, source_name: string, tie
     }
 
     const limitDate = new Date();
-    limitDate.setDate(limitDate.getDate() - 60);
+    limitDate.setDate(limitDate.getDate() - 3); // 3 jours au lieu de 60 pour rester très léger et rapide
 
     return items
       .map((item: any) => {
@@ -632,9 +632,40 @@ export async function scrapeAndUpdateContent(): Promise<{
   const uniqueArticles = Array.from(uniqueByUrl.values());
   details.push(`📊 ${uniqueArticles.length} articles uniques (après déduplication URL)`);
 
-  // 3. Traitement par Claude (simplification des titres + résumés flash)
-  console.log(`[Scraper] 🤖 Envoi de ${uniqueArticles.length} articles à Claude pour traitement...`);
-  const processedArticles = await processWithClaude(uniqueArticles);
+  // 3. Filtrer les articles déjà existants dans la base de données (économie majeure de tokens Claude)
+  const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL;
+  const supabaseKey = process.env.SUPABASE_SERVICE_ROLE_KEY;
+  let articlesToProcess = uniqueArticles;
+
+  if (supabaseUrl && supabaseKey && uniqueArticles.length > 0) {
+    try {
+      const supabaseClient = createClient(supabaseUrl, supabaseKey);
+      const urlsToCheck = uniqueArticles.map(a => a.link);
+      
+      const existingUrls = new Set<string>();
+      const batchSize = 100;
+      for (let i = 0; i < urlsToCheck.length; i += batchSize) {
+        const batch = urlsToCheck.slice(i, i + batchSize);
+        const { data, error } = await supabaseClient
+          .from('content')
+          .select('source_url')
+          .in('source_url', batch);
+          
+        if (!error && data) {
+          data.forEach(row => existingUrls.add(row.source_url));
+        }
+      }
+      
+      articlesToProcess = uniqueArticles.filter(a => !existingUrls.has(a.link));
+      details.push(`🎯 ${articlesToProcess.length} nouveaux articles à envoyer à Claude (après filtrage base de données)`);
+    } catch (dbErr: any) {
+      console.warn(`[Scraper] Erreur lors du pré-filtrage DB :`, dbErr.message);
+    }
+  }
+
+  // 4. Traitement par Claude (simplification des titres + résumés flash)
+  console.log(`[Scraper] 🤖 Envoi de ${articlesToProcess.length} articles à Claude pour traitement...`);
+  const processedArticles = await processWithClaude(articlesToProcess);
   details.push(`🤖 Claude a généré ${processedArticles.length} cartes`);
 
   // --- FILTRAGE ET VALIDATION ---

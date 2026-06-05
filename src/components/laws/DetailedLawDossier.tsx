@@ -96,8 +96,18 @@ export default function DetailedLawDossier({ law }: DetailedLawDossierProps) {
   return (
     <div 
       id={law.id}
-      className={`relative transition-all duration-500 ${isOpen ? 'col-span-full z-20' : 'hover:-translate-y-2'}`}
+      className={`relative transition-all duration-500 group ${isOpen ? 'col-span-full z-20' : 'hover:-translate-y-2'}`}
     >
+      {/* 1. THE UNDERLYING SHEETS */}
+      {!isOpen && (
+        <>
+          {/* Bottom Sheet */}
+          <div className="absolute inset-0 bg-slate-200 dark:bg-slate-800 rounded-[1.5rem] transition-all duration-500 origin-bottom-right rotate-2 translate-y-1 group-hover:rotate-[5deg] group-hover:translate-x-3 group-hover:translate-y-2 border border-slate-300/50 dark:border-slate-700/50 shadow-sm" />
+          {/* Middle Sheet */}
+          <div className="absolute inset-0 bg-slate-100 dark:bg-slate-900 rounded-[1.5rem] transition-all duration-500 origin-bottom-left -rotate-1 translate-y-0.5 group-hover:-rotate-[3deg] group-hover:-translate-x-2 group-hover:translate-y-1 border border-slate-200/50 dark:border-slate-800/50 shadow-sm" />
+        </>
+      )}
+
       {/* 2. THE MAIN SHEET */}
       <div 
         className={`relative z-10 shadow-xl transition-all duration-500 flex flex-col overflow-hidden ${cardTheme} ${isOpen ? 'rounded-[2rem]' : 'rounded-[1.5rem]'}`}
@@ -109,7 +119,7 @@ export default function DetailedLawDossier({ law }: DetailedLawDossierProps) {
               setIsOpen(!isOpen);
             });
           }}
-          className={`relative z-10 w-full text-left flex flex-col transition-all focus-visible:outline-none group/header ${isOpen ? 'p-6 md:p-8 pb-6' : 'p-6 md:p-8 h-full justify-between min-h-[180px]'}`}
+          className={`relative z-10 w-full text-left flex flex-col transition-all focus-visible:outline-none group/header ${isOpen ? 'p-5 md:p-6 pb-5' : 'p-5 md:p-6 h-full justify-between min-h-[140px]'}`}
         >
           <div className="space-y-4 md:space-y-6 w-full">
             <div className="flex justify-between items-start w-full">
@@ -140,8 +150,8 @@ export default function DetailedLawDossier({ law }: DetailedLawDossierProps) {
               )}
             </div>
 
-            <div className="space-y-4 pt-2 w-full">
-              <h3 className={`font-staatliches uppercase tracking-wider block leading-none w-full break-words drop-shadow-sm transition-all ${isOpen ? 'text-3xl md:text-4xl' : 'text-3xl md:text-5xl'}`}>
+            <div className="space-y-3 pt-2 w-full">
+              <h3 className={`font-staatliches uppercase tracking-wider block leading-none w-full break-words drop-shadow-sm transition-all ${isOpen ? 'text-3xl md:text-4xl' : 'text-2xl md:text-3xl'}`}>
                 {law.title}.
               </h3>
               
@@ -158,7 +168,7 @@ export default function DetailedLawDossier({ law }: DetailedLawDossierProps) {
           </div>
 
           {!isOpen && (
-            <div className="mt-8 pt-4 border-t border-white/20 w-full flex items-center justify-between">
+            <div className="mt-6 pt-4 border-t border-white/20 w-full flex items-center justify-between">
                <p className="text-white/60 font-bold italic text-xs">Cliquer pour déplier la fiche</p>
                <Sparkles className="w-4 h-4 text-white/60" />
             </div>

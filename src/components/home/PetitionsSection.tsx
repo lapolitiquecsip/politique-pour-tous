@@ -28,7 +28,10 @@ interface Petition {
 // Data is now fetched from Supabase
 
 // Sub-component for individual petition cards
-function PetitionCard({ petition, percentage, idx }: { petition: Petition, percentage: number, idx: number }) {
+function PetitionCard({ petition, idx }: { petition: Petition, idx: number }) {
+  const realPercentage = Math.round((petition.signatures / petition.threshold) * 100);
+  const cappedPercentage = Math.min(realPercentage, 100);
+
   return (
     <motion.div
       initial={{ opacity: 0, y: 20 }}
@@ -58,13 +61,13 @@ function PetitionCard({ petition, percentage, idx }: { petition: Petition, perce
               <Users size={14} className="text-slate-400" />
               <span>{petition.signatures.toLocaleString()} Votants</span>
             </div>
-            <span className="text-blue-600 dark:text-blue-400">{percentage}% du palier</span>
+            <span className="text-blue-600 dark:text-blue-400">{realPercentage}% du palier</span>
           </div>
 
           <div className="h-2 bg-slate-100 dark:bg-slate-800 rounded-full overflow-hidden">
             <motion.div 
               initial={{ width: 0 }}
-              whileInView={{ width: `${percentage}%` }}
+              whileInView={{ width: `${cappedPercentage}%` }}
               transition={{ duration: 1.5, ease: "circOut" }}
               className="h-full bg-gradient-to-r from-blue-600 to-indigo-600"
             />
@@ -189,9 +192,8 @@ export default function PetitionsSection() {
               </div>
               <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
                 {petitions.slice(0, 3).map((petition, idx) => {
-                  const percentage = Math.min(Math.round((petition.signatures / petition.threshold) * 100), 100);
                   return (
-                    <PetitionCard key={petition.id} petition={petition} percentage={percentage} idx={idx} />
+                    <PetitionCard key={petition.id} petition={petition} idx={idx} />
                   );
                 })}
               </div>
@@ -208,9 +210,8 @@ export default function PetitionsSection() {
               </div>
               <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
                 {petitions.slice(3, 6).map((petition, idx) => {
-                  const percentage = Math.min(Math.round((petition.signatures / petition.threshold) * 100), 100);
                   return (
-                    <PetitionCard key={petition.id} petition={petition} percentage={percentage} idx={idx + 3} />
+                    <PetitionCard key={petition.id} petition={petition} idx={idx + 3} />
                   );
                 })}
               </div>

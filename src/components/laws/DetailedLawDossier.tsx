@@ -22,32 +22,79 @@ interface DetailedLawDossierProps {
 }
 
 const getLawBackgroundImage = (law: LawDossier) => {
+  const title = law.title.toLowerCase();
+  const category = law.category.toLowerCase();
+
+  // 1. SPECIFIC KEYWORD MATCHES (ACROSS ALL CATEGORIES)
+  
+  // Restitution de biens culturels
+  if (title.includes("restitution") || title.includes("spoliés") || title.includes("culturel")) {
+    return "/restitution-culturelle.png";
+  }
+  
+  // Terrorisme / Rétention / Sécurité Nationale
+  if (title.includes("terroris") || title.includes("rétention") || title.includes("antiterroris")) {
+    return "https://images.unsplash.com/photo-1557597774-9d273605dfa9?auto=format&fit=crop&w=600&q=80"; // Security/surveillance theme
+  }
+  
+  // Prison / Pénitentiaire / Detention / Justice
+  if (title.includes("prison") || title.includes("pénitentiaire") || title.includes("détenu") || title.includes("peine") || title.includes("loi-cadre")) {
+    return "https://images.unsplash.com/photo-1589829545856-d10d557cf95f?auto=format&fit=crop&w=600&q=80"; // Scales of justice / law court
+  }
+
+  // Militaire / Armée / Défense
+  if (title.includes("milit") || title.includes("armé") || title.includes("défense") || title.includes("guerre")) {
+    return "https://images.unsplash.com/photo-1508614589041-895b88991e3e?auto=format&fit=crop&w=600&q=80"; // Military/defence silhouette
+  }
+
+  // Fraude / Fisc / Taxes / Impôt
+  if (title.includes("fraude") || title.includes("fisc") || title.includes("tax") || title.includes("impôt") || title.includes("économ")) {
+    return "https://images.unsplash.com/photo-1554224155-8d04cb21cd6c?auto=format&fit=crop&w=600&q=80"; // Tax/documents theme
+  }
+
+  // Emploi / Travail / Chômage
+  if (title.includes("emploi") || title.includes("travail") || title.includes("chôm") || title.includes("salair")) {
+    return "https://images.unsplash.com/photo-1521737604893-d14cc237f11d?auto=format&fit=crop&w=600&q=80"; // Collaborating team
+  }
+
+  // Immigration / Frontières / Asile
+  if (title.includes("immigra") || title.includes("fronti") || title.includes("asile") || title.includes("étranger")) {
+    return "https://images.unsplash.com/photo-1488646953014-85cb44e25828?auto=format&fit=crop&w=600&q=80"; // Globe/passport theme
+  }
+
+  // Cancer / Laboratoire / Recherche médicale
+  if (title.includes("cancer") || title.includes("thérapeut") || title.includes("recher") || title.includes("patholog")) {
+    return "https://images.unsplash.com/photo-1532187863486-abf9d39d66e8?auto=format&fit=crop&w=600&q=80"; // Lab microscope
+  }
+
+  // Climat / Énergie / Transition écologique
+  if (title.includes("climat") || title.includes("carbone") || title.includes("énerg") || title.includes("renouvel") || title.includes("résili")) {
+    return "https://images.unsplash.com/photo-1508514177221-188b1cf16e9d?auto=format&fit=crop&w=600&q=80"; // Solar panels/clean energy
+  }
+
+  // 2. LAW-SPECIFIC HARDCODED BACKGROUNDS (IF ALREADY DEFINED)
   if (law.backgroundImage) {
     return law.backgroundImage;
   }
-  
-  if (law.title.toLowerCase().includes("restitution") || law.title.toLowerCase().includes("spoliés")) {
-    return "/restitution-culturelle.png";
-  }
 
-  const category = law.category.toLowerCase();
+  // 3. CATEGORY FALLBACKS (IF NO KEYWORD MATCHED)
   if (category.includes("éduc") || category.includes("educ")) {
-    return "https://images.unsplash.com/photo-1497633762265-9d179a990aa6?auto=format&fit=crop&w=600&q=80";
+    return "https://images.unsplash.com/photo-1497633762265-9d179a990aa6?auto=format&fit=crop&w=600&q=80"; // Books/Library
   }
   if (category.includes("écol") || category.includes("envir") || category.includes("climat")) {
-    return "https://images.unsplash.com/photo-1501854140801-50d01698950b?auto=format&fit=crop&w=600&q=80";
+    return "https://images.unsplash.com/photo-1501854140801-50d01698950b?auto=format&fit=crop&w=600&q=80"; // Green forest
   }
   if (category.includes("écon") || category.includes("finance")) {
-    return "https://images.unsplash.com/photo-1460925895917-afdab827c52f?auto=format&fit=crop&w=600&q=80";
+    return "https://images.unsplash.com/photo-1460925895917-afdab827c52f?auto=format&fit=crop&w=600&q=80"; // Financial graphs
   }
-  if (category.includes("sécu") || category.includes("défense") || category.includes("milit")) {
-    return "https://images.unsplash.com/photo-1589829545856-d10d557cf95f?auto=format&fit=crop&w=600&q=80";
+  if (category.includes("sécu") || category.includes("défense") || category.includes("milit") || category.includes("justi")) {
+    return "https://images.unsplash.com/photo-1589829545856-d10d557cf95f?auto=format&fit=crop&w=600&q=80"; // Scales of justice
   }
   if (category.includes("santé") || category.includes("medic")) {
-    return "https://images.unsplash.com/photo-1505751172876-fa1923c5c528?auto=format&fit=crop&w=600&q=80";
+    return "https://images.unsplash.com/photo-1505751172876-fa1923c5c528?auto=format&fit=crop&w=600&q=80"; // Stethoscope
   }
   if (category.includes("social") || category.includes("société")) {
-    return "https://images.unsplash.com/photo-1582213782179-e0d53f98f2ca?auto=format&fit=crop&w=600&q=80";
+    return "https://images.unsplash.com/photo-1582213782179-e0d53f98f2ca?auto=format&fit=crop&w=600&q=80"; // Hands/Community
   }
 
   return "https://images.unsplash.com/photo-1451187580459-43490279c0fa?auto=format&fit=crop&w=600&q=80";

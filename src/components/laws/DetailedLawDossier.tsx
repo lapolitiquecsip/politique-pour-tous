@@ -102,9 +102,15 @@ export default function DetailedLawDossier({ law }: DetailedLawDossierProps) {
       {!isOpen && (
         <>
           {/* Bottom Sheet */}
-          <div className="absolute inset-0 bg-slate-200 dark:bg-slate-800 rounded-[1.5rem] transition-all duration-500 origin-bottom-right rotate-2 translate-y-1 group-hover:rotate-[5deg] group-hover:translate-x-3 group-hover:translate-y-2 border border-slate-300/50 dark:border-slate-700/50 shadow-sm" />
+          <div 
+            className="absolute inset-0 bg-[#f8fafc] rounded-[1.5rem] transition-all duration-500 origin-bottom-right rotate-2 translate-y-1 group-hover:rotate-[5deg] group-hover:translate-x-3 group-hover:translate-y-2 border border-slate-200 shadow-[2px_2px_8px_rgba(0,0,0,0.05)]"
+            style={{ backgroundImage: 'repeating-linear-gradient(transparent, transparent 27px, #cbd5e1 27px, #cbd5e1 28px)', backgroundPosition: '0 14px' }}
+          />
           {/* Middle Sheet */}
-          <div className="absolute inset-0 bg-slate-100 dark:bg-slate-900 rounded-[1.5rem] transition-all duration-500 origin-bottom-left -rotate-1 translate-y-0.5 group-hover:-rotate-[3deg] group-hover:-translate-x-2 group-hover:translate-y-1 border border-slate-200/50 dark:border-slate-800/50 shadow-sm" />
+          <div 
+            className="absolute inset-0 bg-white rounded-[1.5rem] transition-all duration-500 origin-bottom-left -rotate-1 translate-y-0.5 group-hover:-rotate-[3deg] group-hover:-translate-x-2 group-hover:translate-y-1 border border-slate-200 shadow-[2px_2px_8px_rgba(0,0,0,0.05)]"
+            style={{ backgroundImage: 'repeating-linear-gradient(transparent, transparent 27px, #cbd5e1 27px, #cbd5e1 28px)', backgroundPosition: '0 14px' }}
+          />
         </>
       )}
 

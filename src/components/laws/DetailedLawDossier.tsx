@@ -51,8 +51,18 @@ const getLawBackgroundImage = (law: LawDossier) => {
     return images[getHashIndex(id, images.length)];
   }
   
-  // Prison / Pénitentiaire / Detention / Justice
-  if (title.includes("prison") || title.includes("pénitentiaire") || title.includes("détenu") || title.includes("peine") || title.includes("loi-cadre")) {
+  // Prison / Pénitentiaire / Rétention / Cellule / Détention (Barreaux de prison)
+  if (title.includes("prison") || title.includes("pénitentiaire") || title.includes("détenu") || title.includes("cellule") || title.includes("détention") || title.includes("rétention")) {
+    const images = [
+      "https://images.unsplash.com/photo-1589829785536-4149fa34a5e0?auto=format&fit=crop&w=600&q=80", // Barreaux cellule
+      "https://images.unsplash.com/photo-1581333100576-b73bbe79c955?auto=format&fit=crop&w=600&q=80", // Gros plan barreaux de prison
+      "https://images.unsplash.com/photo-1543087903-1ac2ec7aa8c5?auto=format&fit=crop&w=600&q=80"  // Cellule / couloir
+    ];
+    return images[getHashIndex(id, images.length)];
+  }
+  
+  // Justice / Tribunal / Peines / Sanctions
+  if (title.includes("peine") || title.includes("loi-cadre") || title.includes("sanc") || title.includes("amend")) {
     const images = [
       "https://images.unsplash.com/photo-1589829545856-d10d557cf95f?auto=format&fit=crop&w=600&q=80", // Balance de la justice
       "https://images.unsplash.com/photo-1450133064473-71024230f91b?auto=format&fit=crop&w=600&q=80"  // Gavel tribunal

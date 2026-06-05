@@ -82,55 +82,39 @@ export default function DetailedLawDossier({ law }: DetailedLawDossierProps) {
     }
   };
 
-  const colorMap: Record<string, string> = {
-    emerald: "border-emerald-200 bg-emerald-50 text-emerald-700",
-    blue: "border-blue-200 bg-blue-50 text-blue-700",
-    slate: "border-slate-200 bg-slate-50 text-slate-700",
-    red: "border-red-200 bg-red-50 text-red-700",
+  const bgMap: Record<string, string> = {
+    indigo: "bg-indigo-500 hover:bg-indigo-400 text-white",
+    emerald: "bg-emerald-500 hover:bg-emerald-400 text-white",
+    blue: "bg-blue-500 hover:bg-blue-400 text-white",
+    slate: "bg-slate-800 hover:bg-slate-700 text-white",
+    rose: "bg-rose-500 hover:bg-rose-400 text-white",
+    orange: "bg-orange-500 hover:bg-orange-400 text-white",
   };
 
-  const badgeColor = colorMap[law.color] || "border-gray-200 bg-gray-50 text-gray-700";
+  const cardTheme = bgMap[law.color] || "bg-slate-800 hover:bg-slate-700 text-white";
 
   return (
     <div 
       id={law.id}
       className={`relative transition-all duration-500 ${isOpen ? 'col-span-full z-20' : 'hover:-translate-y-2'}`}
     >
-      {/* 1. THE STACK (BACKGROUND SHEETS) */}
-      {!isOpen && (
-        <>
-          <div className="absolute inset-0 bg-white border-2 border-slate-900 rounded-[2rem] rotate-2 translate-x-1 translate-y-1 z-0 shadow-sm" />
-          <div className="absolute inset-0 bg-white border-2 border-slate-900 rounded-[2rem] -rotate-1 -translate-x-1 z-1 shadow-sm" />
-        </>
-      )}
-
       {/* 2. THE MAIN SHEET */}
       <div 
-        className={`relative z-10 bg-white border-2 border-slate-900 shadow-[8px_8px_0px_0px_rgba(0,0,0,0.1)] transition-all duration-500 flex flex-col ${isOpen ? 'rounded-[2rem] p-2' : 'rounded-[1.5rem] min-h-[260px]'}`}
-        style={{ 
-          backgroundImage: !isOpen ? 'repeating-linear-gradient(transparent, transparent 31px, #f1f5f9 31px, #f1f5f9 32px)' : 'none',
-          backgroundSize: '100% 32px',
-          backgroundPosition: '0 40px'
-        }}
+        className={`relative z-10 shadow-xl transition-all duration-500 flex flex-col overflow-hidden ${cardTheme} ${isOpen ? 'rounded-[2rem]' : 'rounded-[1.5rem]'}`}
       >
-        {/* Paper Texture Overlay */}
-        <div className="absolute inset-0 pointer-events-none opacity-[0.03] mix-blend-multiply bg-[url('https://www.transparenttextures.com/patterns/paper-fibers.png')] z-10 rounded-[inherit]" />
-        
-        {/* Folded Corner Effect Removed */}
-
-        {/* 3. HEADER (SHEET STYLE) */}
+        {/* 3. HEADER */}
         <button 
           onClick={() => {
             startTransition(() => {
               setIsOpen(!isOpen);
             });
           }}
-          className={`relative z-10 w-full text-left flex flex-col transition-all focus-visible:outline-none group/header ${isOpen ? 'p-5 md:p-6 pb-4' : 'p-5 md:p-6 h-full justify-between'}`}
+          className={`relative z-10 w-full text-left flex flex-col transition-all focus-visible:outline-none group/header ${isOpen ? 'p-6 md:p-8 pb-6' : 'p-6 md:p-8 h-full justify-between min-h-[240px]'}`}
         >
-          <div className="space-y-6">
+          <div className="space-y-6 w-full">
             <div className="flex justify-between items-start w-full">
               <div className="flex gap-2 items-center">
-                <div className={`w-fit px-4 py-1.5 rounded-xl text-[10px] font-black uppercase tracking-widest border-2 shadow-[2px_2px_0px_0px_rgba(0,0,0,1)] -rotate-3 ${badgeColor} bg-white text-slate-900 border-slate-900`}>
+                <div className="px-3 py-1 rounded-full text-[10px] md:text-[11px] font-black uppercase tracking-widest bg-white/20 text-white backdrop-blur-md">
                   {law.category}
                 </div>
                 {/* Vintage Year Stamp */}
@@ -138,29 +122,29 @@ export default function DetailedLawDossier({ law }: DetailedLawDossierProps) {
                   const lastYear = law.calendar.length > 0 ? law.calendar[law.calendar.length - 1].date.match(/\d{4}/)?.[0] : null;
                   if (!lastYear) return null;
                   return (
-                    <div className="px-3 py-1 border-2 border-red-600/30 text-red-600/40 text-[11px] font-black rounded-lg rotate-12 -mt-1 select-none pointer-events-none uppercase tracking-tighter">
+                    <div className="px-3 py-1 bg-white/10 text-white/80 text-[10px] md:text-[11px] font-black rounded-full uppercase tracking-widest backdrop-blur-sm">
                       Vote {lastYear}
                     </div>
                   );
                 })()}
               </div>
               {!isOpen && (
-                <div className="p-3 rounded-2xl bg-slate-100 border-2 border-slate-900 shadow-[3px_3px_0px_0px_rgba(0,0,0,1)] text-slate-900 group-hover/header:bg-blue-500 group-hover/header:text-white transition-all -rotate-2">
+                <div className="p-2 md:p-2.5 rounded-xl bg-white/10 text-white backdrop-blur-sm group-hover/header:bg-white/20 transition-all">
                   <ChevronDown className="w-5 h-5" />
                 </div>
               )}
             </div>
 
-            <div className="space-y-4">
-              <h3 className={`font-black text-slate-900 tracking-tight leading-[1.2] transition-all ${isOpen ? 'text-2xl md:text-3xl max-w-4xl' : 'text-xl md:text-2xl'}`}>
-                {law.title}
+            <div className="space-y-4 pt-2 w-full">
+              <h3 className={`font-staatliches uppercase tracking-wider block leading-none w-full break-words drop-shadow-sm transition-all ${isOpen ? 'text-3xl md:text-5xl' : 'text-4xl md:text-6xl'}`}>
+                {law.title}.
               </h3>
               
-              <div className="flex flex-wrap gap-3 items-center">
-                <div className="px-3 py-1 bg-amber-400 text-slate-900 text-[9px] font-black uppercase rounded-lg border-2 border-slate-900 shadow-[2px_2px_0px_0px_rgba(0,0,0,1)] tracking-tighter rotate-1">
+              <div className="flex flex-wrap gap-2 items-center pt-2">
+                <div className="px-3 py-1 bg-white/20 text-white text-[9px] md:text-[10px] font-black uppercase rounded-full tracking-widest backdrop-blur-sm">
                   Accès Premium Offert
                 </div>
-                <div className="flex items-center gap-1.5 text-[10px] font-bold text-slate-400 uppercase tracking-widest">
+                <div className="flex items-center gap-1.5 text-[9px] md:text-[10px] font-bold text-white/70 uppercase tracking-widest">
                   <FileText className="w-3 h-3" />
                   Dossier Complet
                 </div>
@@ -169,15 +153,15 @@ export default function DetailedLawDossier({ law }: DetailedLawDossierProps) {
           </div>
 
           {!isOpen && (
-            <div className="mt-6 pt-4 border-t-2 border-dashed border-slate-100 flex items-center justify-between">
-               <p className="text-slate-500 font-bold italic text-xs">Cliquer pour déplier la fiche</p>
-               <Sparkles className="w-4 h-4 text-amber-500 animate-pulse" />
+            <div className="mt-8 pt-4 border-t border-white/20 w-full flex items-center justify-between">
+               <p className="text-white/60 font-bold italic text-xs">Cliquer pour déplier la fiche</p>
+               <Sparkles className="w-4 h-4 text-white/60" />
             </div>
           )}
 
           {isOpen && (
-            <div className="absolute top-8 right-8">
-              <div className="p-4 rounded-full bg-slate-900 text-white shadow-xl hover:scale-110 transition-transform flex items-center justify-center">
+            <div className="absolute top-6 right-6 md:top-8 md:right-8">
+              <div className="p-3 rounded-full bg-white/10 text-white hover:bg-white/20 backdrop-blur-sm transition-all flex items-center justify-center">
                 <ChevronDown className="w-6 h-6 rotate-180" />
               </div>
             </div>
@@ -197,7 +181,7 @@ export default function DetailedLawDossier({ law }: DetailedLawDossierProps) {
         }}
         className="overflow-hidden transform-gpu will-change-[height,opacity]"
       >
-        <div className="relative z-10 px-5 md:px-6 pb-8 pt-0">
+        <div className="relative z-10 px-6 md:px-8 pb-8 pt-8 bg-white text-slate-800 rounded-[1.5rem] mx-2 mb-2 shadow-inner">
           <div className="flex items-center gap-2 text-xs font-semibold text-slate-600 bg-slate-100/80 px-3 py-1 rounded-full capitalize w-fit mb-6">
             <span className={`w-2 h-2 rounded-full ${law.status === 'application' ? 'bg-green-500' : 'bg-amber-500'} animate-pulse`} />
             {law.statusLabel}

@@ -251,13 +251,15 @@ function LawsClientContent() {
               >
                 {/* Premium/Libre Badge (kept small and discreet) */}
                 <div className="absolute top-3 right-3 md:top-4 md:right-4">
-                  {(!cat.isFree && !isPremium) ? (
-                    <Lock className="w-4 h-4 md:w-5 md:h-5 text-white/50" />
-                  ) : (
+                  {cat.isFree ? (
                     <span className="text-[9px] md:text-[11px] px-2 py-0.5 md:px-3 md:py-1 rounded-full uppercase tracking-widest font-black bg-white/20 text-white backdrop-blur-md">
-                      {cat.isFree ? 'Libre' : 'Premium'}
+                      Libre
                     </span>
-                  )}
+                  ) : !isPremium ? (
+                    <div className="p-1.5 rounded-full bg-white/10 backdrop-blur-md">
+                      <Lock className="w-3.5 h-3.5 md:w-4 md:h-4 text-white/70" />
+                    </div>
+                  ) : null}
                 </div>
 
                 <div className="text-center w-full flex justify-center mt-2">

@@ -279,8 +279,8 @@ function LawsClientContent() {
         <div className="relative mb-16 text-center md:text-left">
           <div className="flex items-center gap-4 justify-center md:justify-start">
             <h2 className="text-5xl md:text-7xl font-staatliches uppercase tracking-tighter leading-none text-slate-900">
-              <span className="text-slate-900 opacity-10 absolute -top-8 left-0 select-none hidden md:block">DOSSIERS</span>
-              {selectedCat ? CATEGORIES.find(c => c.id === selectedCat)?.label : "L'essentiel en libre accès"}
+              <span className="text-slate-900 opacity-10 absolute -top-8 left-0 select-none hidden md:block">DIRECT</span>
+              {selectedCat ? `Dernières lois votées : ${CATEGORIES.find(c => c.id === selectedCat)?.label}` : "Dernières lois votées en temps réel"}
             </h2>
             {selectedCat && (
               <button 
@@ -293,7 +293,7 @@ function LawsClientContent() {
           </div>
           <div className="h-1.5 w-24 bg-gradient-to-r from-blue-600 to-red-600 mt-4 rounded-full mx-auto md:mx-0" />
           <p className="text-lg font-bold italic text-slate-500 mt-6 max-w-2xl font-staatliches">
-            {selectedCat ? "Explorez nos dossiers détaillés sur les lois votées dans cette catégorie." : "Voici une prévisualisation de nos dossiers Premium : une analyse complète pour chaque grande loi."}
+            {selectedCat ? "Suivez en direct l'impact et le verdict du Parlement pour cette catégorie de lois." : "Suivez en direct le verdict du Parlement : décryptage instantané des derniers textes de loi adoptés."}
           </p>
         </div>
 

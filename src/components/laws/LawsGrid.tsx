@@ -129,10 +129,14 @@ export default function LawsGrid({ onSelectLaw, categoryFilter }: { onSelectLaw?
                       <div className={`w-8 h-8 rounded-full shadow-sm flex items-center justify-center border overflow-hidden transition-colors ${deputy ? 'bg-white text-blue-600 border-blue-100 group-hover:bg-blue-600 group-hover:text-white' : 'bg-white text-slate-400 border-slate-100'}`}>
                         {deputy ? (
                           <img 
-                            src={deputy.an_id ? `https://www.assemblee-nationale.fr/dyn/static/tribun/17/photos/carre/${deputy.an_id.replace('PA', '')}.jpg` : deputy.photo_url} 
+                            src={deputy.photo_url || (deputy.an_id ? `https://www.assemblee-nationale.fr/dyn/static/tribun/17/photos/carre/${deputy.an_id.replace('PA', '')}.jpg` : '')} 
                             alt={law.author} 
-                            className="w-full h-full object-cover bg-slate-100" 
-                            onError={(e) => { (e.target as HTMLImageElement).src = deputy.photo_url; }}
+                            className="w-full h-full object-cover bg-white" 
+                            onError={(e) => { 
+                              if (deputy.an_id && !(e.target as HTMLImageElement).src.includes('assemblee-nationale')) {
+                                (e.target as HTMLImageElement).src = `https://www.assemblee-nationale.fr/dyn/static/tribun/17/photos/carre/${deputy.an_id.replace('PA', '')}.jpg`;
+                              }
+                            }}
                           />
                         ) : (
                           <UserCheck size={14} />

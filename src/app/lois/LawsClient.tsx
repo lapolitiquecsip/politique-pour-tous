@@ -317,13 +317,24 @@ function LawsClientContent() {
              </div>
           ) : (premiumDossiers.length > 0 || FREE_LAWS.length > 0) ? (
             (() => {
-              const allLaws = premiumDossiers.length > 0 ? premiumDossiers : FREE_LAWS;
-              const filteredLaws = allLaws.filter(law => {
+              const allPremiumDossiers = premiumDossiers.length > 0 ? premiumDossiers : FREE_LAWS;
+              const premiumScrutinIds = allPremiumDossiers.map(p => p.context?.split(':')[1] || p.id).filter(Boolean);
+              const filteredDbLaws = dbLaws.filter(law => !premiumScrutinIds.includes(law.id));
+
+              const combinedList = [
+                ...allPremiumDossiers.map(law => ({ ...law, sortDate: new Date(law.date_adopted || law.created_at || 0).getTime(), itemType: 'premium' })),
+                ...(isPremium ? filteredDbLaws.map(law => ({ ...law, sortDate: new Date(law.date_scrutin || 0).getTime(), itemType: 'history' })) : [])
+              ].sort((a, b) => b.sortDate - a.sortDate);
+
+              const filteredLaws = combinedList.filter(law => {
                 const searchLower = searchQuery.toLowerCase();
+                const title = law.title || law.objet || '';
+                const category = law.category || '';
+                const summary = law.summary || '';
                 return (
-                  law.title.toLowerCase().includes(searchLower) || 
-                  (law.summary && law.summary.toLowerCase().includes(searchLower)) ||
-                  law.category.toLowerCase().includes(searchLower)
+                  title.toLowerCase().includes(searchLower) || 
+                  summary.toLowerCase().includes(searchLower) ||
+                  category.toLowerCase().includes(searchLower)
                 );
               });
 
@@ -336,67 +347,132 @@ function LawsClientContent() {
                 );
               }
 
-              return filteredLaws.map((law) => {
-                let impacts = [];
-                let calendar = [];
-                let premiumPoints = [];
-                
-                // Si c'est un dossier Premium de la DB
-                if (law.impact || law.timeline || law.content) {
-                  try { impacts = typeof law.impact === 'string' ? JSON.parse(law.impact) : (law.impact || []); } catch(e){}
-                  try { calendar = typeof law.timeline === 'string' ? JSON.parse(law.timeline) : (law.timeline || []); } catch(e){}
-                  try { premiumPoints = typeof law.content === 'string' ? JSON.parse(law.content) : (law.content || []); } catch(e){}
-
-                  const catObj = CATEGORIES.find(c => c.label === law.category || c.matchCategory === law.category);
-                  const color = catObj ? catObj.color : 'slate';
+              return filteredLaws.map((law: any, idx: number) => {
+                if (law.itemType === 'premium') {
+                  let impacts = [];
+                  let calendar = [];
+                  let premiumPoints = [];
                   
-                  let voteData = null;
-                  if (law.scrutin_data) {
-                    voteData = {
-                      pour: law.scrutin_data.pour,
-                      contre: law.scrutin_data.contre,
-                      abstention: law.scrutin_data.abstention,
-                      group_results: law.scrutin_data.group_results
-                    };
-                  } else if (law.context?.startsWith('dossier_premium:')) {
-                    const scrutinId = law.context.split(':')[1];
-                    const originalScrutin = dbLaws.find(s => s.id === scrutinId);
-                    if (originalScrutin && (originalScrutin.pour + originalScrutin.contre + originalScrutin.abstention > 0)) {
+                  if (law.impact || law.timeline || law.content) {
+                    try { impacts = typeof law.impact === 'string' ? JSON.parse(law.impact) : (law.impact || []); } catch(e){}
+                    try { calendar = typeof law.timeline === 'string' ? JSON.parse(law.timeline) : (law.timeline || []); } catch(e){}
+                    try { premiumPoints = typeof law.content === 'string' ? JSON.parse(law.content) : (law.content || []); } catch(e){}
+
+                    const catObj = CATEGORIES.find(c => c.label === law.category || c.matchCategory === law.category);
+                    const color = catObj ? catObj.color : 'slate';
+                    
+                    let voteData = null;
+                    if (law.scrutin_data) {
                       voteData = {
-                        pour: originalScrutin.pour,
-                        contre: originalScrutin.contre,
-                        abstention: originalScrutin.abstention,
-                        group_results: originalScrutin.group_results
+                        pour: law.scrutin_data.pour,
+                        contre: law.scrutin_data.contre,
+                        abstention: law.scrutin_data.abstention,
+                        group_results: law.scrutin_data.group_results
                       };
+                    } else if (law.context?.startsWith('dossier_premium:')) {
+                      const scrutinId = law.context.split(':')[1];
+                      const originalScrutin = dbLaws.find(s => s.id === scrutinId);
+                      if (originalScrutin && (originalScrutin.pour + originalScrutin.contre + originalScrutin.abstention > 0)) {
+                        voteData = {
+                          pour: originalScrutin.pour,
+                          contre: originalScrutin.contre,
+                          abstention: originalScrutin.abstention,
+                          group_results: originalScrutin.group_results
+                        };
+                      }
                     }
-                  }
 
-                  let computedStatus = 'vote';
-                  let statusLabel = 'Loi Adoptée';
-                  if (law.context?.endsWith(':application')) {
-                    computedStatus = 'application';
-                    statusLabel = 'En application';
-                  }
+                    let computedStatus = 'vote';
+                    let statusLabel = 'Loi Adoptée';
+                    
+                    if (law.context?.startsWith('dossier_premium:')) {
+                      const scrutinId = law.context.split(':')[1];
+                      const originalScrutin = dbLaws.find(s => s.id === scrutinId);
+                      if (originalScrutin?.status_detail === 'En application') {
+                        computedStatus = 'application';
+                        statusLabel = 'En application';
+                      }
+                    }
 
-                  const formattedLaw = {
-                    id: law.id,
-                    title: law.title,
-                    category: law.category,
-                    summary: law.summary,
-                    impacts,
-                    calendar,
-                    premiumPoints,
-                    voteData,
-                    status: computedStatus,
-                    statusLabel: statusLabel,
-                    color: color,
-                    backgroundImage: law.background_image
-                  };
-                  return <DetailedLawDossier key={formattedLaw.id} law={formattedLaw as any} />
+                    if (law.context?.endsWith(':application')) {
+                      computedStatus = 'application';
+                      statusLabel = 'En application';
+                    }
+
+                    const formattedLaw = {
+                      id: law.id,
+                      title: law.title,
+                      category: law.category,
+                      summary: law.summary,
+                      impacts,
+                      calendar,
+                      premiumPoints,
+                      voteData,
+                      status: computedStatus,
+                      statusLabel: statusLabel,
+                      color: color,
+                      backgroundImage: law.background_image
+                    };
+                    return <DetailedLawDossier key={`premium-${formattedLaw.id}`} law={formattedLaw as any} />
+                  }
+                  return <DetailedLawDossier key={`premium-static-${law.id}`} law={law} />
+                } else {
+                  // History card
+                  const hasVotes = (law.pour + law.contre + law.abstention) > 0;
+                  return (
+                    <motion.div
+                      key={`history-${law.id}`}
+                      initial={{ opacity: 0, y: 20 }}
+                      whileInView={{ opacity: 1, y: 0 }}
+                      transition={{ delay: idx * 0.05 }}
+                      onClick={() => setSelectedLaw(law)}
+                      className="bg-white rounded-[2.5rem] border border-slate-200 overflow-hidden hover:shadow-2xl transition-all duration-500 flex flex-col md:flex-row cursor-pointer group"
+                    >
+                      <div className="p-8 flex-1 flex flex-col justify-between">
+                        <div>
+                          <div className="flex justify-between items-start mb-6">
+                            <span className="px-3 py-1 bg-slate-100 text-slate-600 text-[10px] font-black uppercase tracking-widest rounded-full group-hover:bg-blue-600 group-hover:text-white transition-colors">
+                              {law.category}
+                            </span>
+                            <div className="flex items-center gap-2 text-slate-400">
+                              <CalendarIcon size={14} />
+                              <span className="text-[10px] font-bold uppercase tracking-wider">
+                                {new Date(law.date_scrutin).toLocaleDateString('fr-FR', { day: 'numeric', month: 'short', year: 'numeric' })}
+                              </span>
+                            </div>
+                          </div>
+                          <h3 className="text-xl font-bold mb-4 italic leading-tight line-clamp-3 group-hover:text-blue-600 transition-colors">
+                            {law.objet}
+                          </h3>
+                          <div className="flex items-center gap-3 mt-4">
+                            <span className={`px-2 py-0.5 rounded-lg text-[9px] font-black uppercase tracking-widest border ${
+                              law.resultat?.includes('adopté') 
+                                ? 'bg-emerald-50 border-emerald-100 text-emerald-600' 
+                                : 'bg-red-50 border-red-100 text-red-600'
+                            }`}>
+                              {law.resultat}
+                            </span>
+                          </div>
+                        </div>
+                      </div>
+
+                      <div className="w-full md:w-56 bg-slate-50/50 p-8 flex flex-col items-center justify-center border-t md:border-t-0 md:border-l border-slate-100">
+                        {hasVotes ? (
+                          <VoteHemicycle 
+                            pour={law.pour || 0} 
+                            contre={law.contre || 0} 
+                            abstention={law.abstention || 0} 
+                          />
+                        ) : (
+                          <div className="text-center space-y-2">
+                             <div className="w-12 h-12 rounded-full border-2 border-slate-200 border-t-blue-500 animate-spin mx-auto" />
+                             <p className="text-[8px] font-black text-slate-400 uppercase tracking-widest">Calcul des votes...</p>
+                          </div>
+                        )}
+                      </div>
+                    </motion.div>
+                  );
                 }
-                
-                // Si c'est un dossier gratuit statique
-                return <DetailedLawDossier key={law.id} law={law} />
               });
             })()
           ) : selectedCat ? (

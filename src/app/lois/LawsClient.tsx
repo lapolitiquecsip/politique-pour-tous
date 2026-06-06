@@ -59,25 +59,30 @@ function LawsClientContent() {
   const [loadingLaws, setLoadingLaws] = useState(true);
   const [selectedLaw, setSelectedLaw] = useState<any | null>(null);
   const [searchQuery, setSearchQuery] = useState("");
+  const [currentPage, setCurrentPage] = useState(1);
 
   const [premiumDossiers, setPremiumDossiers] = useState<any[]>([]);
   const [loadingDossiers, setLoadingDossiers] = useState(false);
 
   useEffect(() => {
     const loadLaws = async () => {
-      const data = await api.getVotedLaws(60);
+      const data = await api.getVotedLaws(1000);
       setDbLaws(data);
       setLoadingLaws(false);
     };
     loadLaws();
     
     const interval = setInterval(async () => {
-      const data = await api.getVotedLaws(60);
+      const data = await api.getVotedLaws(1000);
       setDbLaws(data);
     }, 300000); // 5 minutes polling
     
     return () => clearInterval(interval);
   }, []);
+
+  useEffect(() => {
+    setCurrentPage(1);
+  }, [activeTab, selectedCat, searchQuery]);
 
   useEffect(() => {
     const loadDossiers = async () => {
@@ -347,7 +352,13 @@ function LawsClientContent() {
                 );
               }
 
-              return filteredLaws.map((law: any, idx: number) => {
+              const PAGE_SIZE = 60;
+              const totalPages = Math.ceil(filteredLaws.length / PAGE_SIZE);
+              const paginatedLaws = filteredLaws.slice((currentPage - 1) * PAGE_SIZE, currentPage * PAGE_SIZE);
+
+              return (
+                <>
+                  {paginatedLaws.map((law: any, idx: number) => {
                 if (law.itemType === 'premium') {
                   let impacts = [];
                   let calendar = [];
@@ -473,7 +484,71 @@ function LawsClientContent() {
                     </motion.div>
                   );
                 }
-              });
+              })}
+                  
+              {totalPages > 1 && (
+                <div className="col-span-full flex flex-col items-center justify-center mt-12 space-y-4">
+                  <div className="flex items-center gap-2">
+                    <button 
+                      onClick={() => {
+                        setCurrentPage(p => Math.max(1, p - 1));
+                        window.scrollTo({ top: 400, behavior: 'smooth' });
+                      }}
+                      disabled={currentPage === 1}
+                      className="px-4 py-2 rounded-xl border border-slate-200 bg-white text-slate-700 font-bold disabled:opacity-50 disabled:cursor-not-allowed hover:bg-slate-50 transition-colors"
+                    >
+                      Précédent
+                    </button>
+                    
+                    <div className="flex items-center gap-1 hidden md:flex">
+                      {Array.from({ length: totalPages }, (_, i) => i + 1).map(page => {
+                        if (
+                          page === 1 || 
+                          page === totalPages || 
+                          (page >= currentPage - 1 && page <= currentPage + 1)
+                        ) {
+                          return (
+                            <button
+                              key={page}
+                              onClick={() => {
+                                setCurrentPage(page);
+                                window.scrollTo({ top: 400, behavior: 'smooth' });
+                              }}
+                              className={`w-10 h-10 rounded-xl font-bold transition-colors ${
+                                currentPage === page 
+                                  ? 'bg-blue-600 text-white border-blue-600' 
+                                  : 'bg-white text-slate-700 border border-slate-200 hover:bg-slate-50'
+                              }`}
+                            >
+                              {page}
+                            </button>
+                          );
+                        } else if (
+                          page === currentPage - 2 || 
+                          page === currentPage + 2
+                        ) {
+                          return <span key={page} className="text-slate-400 px-1">...</span>;
+                        }
+                        return null;
+                      })}
+                    </div>
+
+                    <button 
+                      onClick={() => {
+                        setCurrentPage(p => Math.min(totalPages, p + 1));
+                        window.scrollTo({ top: 400, behavior: 'smooth' });
+                      }}
+                      disabled={currentPage === totalPages}
+                      className="px-4 py-2 rounded-xl border border-slate-200 bg-white text-slate-700 font-bold disabled:opacity-50 disabled:cursor-not-allowed hover:bg-slate-50 transition-colors"
+                    >
+                      Suivant
+                    </button>
+                  </div>
+                  <p className="text-slate-400 text-sm font-medium">Page {currentPage} sur {totalPages}</p>
+                </div>
+              )}
+            </>
+          );
             })()
           ) : selectedCat ? (
             <div className="text-center py-20 bg-slate-50 rounded-[3rem] border border-dashed border-slate-300 col-span-full">

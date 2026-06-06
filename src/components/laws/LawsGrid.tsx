@@ -37,14 +37,14 @@ export default function LawsGrid({ onSelectLaw, categoryFilter }: { onSelectLaw?
     load();
   }, []);
 
-  const findDeputySlug = (authorName: string) => {
+  const findDeputy = (authorName: string) => {
     if (!authorName || authorName === 'Le Gouvernement') return null;
     const cleanName = authorName.replace(/^(M\.|Mme\.|Monsieur|Madame)\s+/, "").trim().toLowerCase();
     const deputy = deputies.find(d => {
       const fullName = `${d.first_name} ${d.last_name}`.toLowerCase();
       return fullName.includes(cleanName) || cleanName.includes(fullName);
     });
-    return deputy ? deputy.slug : null;
+    return deputy || null;
   };
 
   const filteredLaws = laws
@@ -123,25 +123,29 @@ export default function LawsGrid({ onSelectLaw, categoryFilter }: { onSelectLaw?
                 </p>
 
                 {law.author && (() => {
-                  const slug = findDeputySlug(law.author);
+                  const deputy = findDeputy(law.author);
                   const content = (
-                    <div className={`flex items-center gap-3 mb-6 p-3 rounded-2xl border transition-all duration-300 ${slug ? 'bg-blue-50/50 border-blue-100 hover:bg-blue-50 hover:border-blue-200 cursor-pointer' : 'bg-slate-50 border-slate-100/50'}`}>
-                      <div className={`w-8 h-8 rounded-full shadow-sm flex items-center justify-center border transition-colors ${slug ? 'bg-white text-blue-600 border-blue-100 group-hover:bg-blue-600 group-hover:text-white' : 'bg-white text-slate-400 border-slate-100'}`}>
-                        <UserCheck size={14} />
+                    <div className={`flex items-center gap-3 mb-6 p-3 rounded-2xl border transition-all duration-300 ${deputy ? 'bg-blue-50/50 border-blue-100 hover:bg-blue-50 hover:border-blue-200 cursor-pointer' : 'bg-slate-50 border-slate-100/50'}`}>
+                      <div className={`w-8 h-8 rounded-full shadow-sm flex items-center justify-center border overflow-hidden transition-colors ${deputy ? 'bg-white text-blue-600 border-blue-100 group-hover:bg-blue-600 group-hover:text-white' : 'bg-white text-slate-400 border-slate-100'}`}>
+                        {deputy?.photo_url ? (
+                          <img src={deputy.photo_url} alt={law.author} className="w-full h-full object-cover" />
+                        ) : (
+                          <UserCheck size={14} />
+                        )}
                       </div>
                       <div className="flex flex-col">
                         <span className="text-[10px] font-black uppercase tracking-wider text-slate-400 leading-none mb-1">
                           {law.category === 'Projet de loi' ? 'Initiative' : 'Déposé par'}
                         </span>
-                        <span className={`text-xs font-bold leading-none ${slug ? 'text-blue-700' : 'text-slate-700'}`}>
+                        <span className={`text-xs font-bold leading-none ${deputy ? 'text-blue-700' : 'text-slate-700'}`}>
                           {law.author}
                         </span>
                       </div>
                     </div>
                   );
 
-                  return slug ? (
-                    <Link href={`/deputes/${slug}`} className="block">
+                  return deputy ? (
+                    <Link href={`/deputes/${deputy.slug}`} className="block">
                       {content}
                     </Link>
                   ) : content;

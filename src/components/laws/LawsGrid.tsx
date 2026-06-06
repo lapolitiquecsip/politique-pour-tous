@@ -127,8 +127,13 @@ export default function LawsGrid({ onSelectLaw, categoryFilter }: { onSelectLaw?
                   const content = (
                     <div className={`flex items-center gap-3 mb-6 p-3 rounded-2xl border transition-all duration-300 ${deputy ? 'bg-blue-50/50 border-blue-100 hover:bg-blue-50 hover:border-blue-200 cursor-pointer' : 'bg-slate-50 border-slate-100/50'}`}>
                       <div className={`w-8 h-8 rounded-full shadow-sm flex items-center justify-center border overflow-hidden transition-colors ${deputy ? 'bg-white text-blue-600 border-blue-100 group-hover:bg-blue-600 group-hover:text-white' : 'bg-white text-slate-400 border-slate-100'}`}>
-                        {deputy?.photo_url ? (
-                          <img src={deputy.photo_url} alt={law.author} className="w-full h-full object-cover" />
+                        {deputy ? (
+                          <img 
+                            src={deputy.an_id ? `https://www.assemblee-nationale.fr/dyn/static/tribun/17/photos/carre/${deputy.an_id.replace('PA', '')}.jpg` : deputy.photo_url} 
+                            alt={law.author} 
+                            className="w-full h-full object-cover bg-slate-100" 
+                            onError={(e) => { (e.target as HTMLImageElement).src = deputy.photo_url; }}
+                          />
                         ) : (
                           <UserCheck size={14} />
                         )}

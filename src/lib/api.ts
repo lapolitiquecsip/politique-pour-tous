@@ -172,9 +172,36 @@ export const api = {
       query = query.or(`category.eq.${categoryFilter},category.ilike.%${categoryFilter}%`);
     }
 
-    const { data, error } = await query.limit(50);
+    const { data: laws, error } = await query.limit(50);
     if (error) { console.error(error); return []; }
-    return data || [];
+    if (!laws) return [];
+    
+    // Enrich with actual vote counts from scrutins table
+    const scrutinIds = laws
+      .map(l => l.context?.startsWith('dossier_premium:') ? l.context.split(':')[1] : null)
+      .filter(Boolean);
+      
+    if (scrutinIds.length > 0) {
+      const { data: scrutins, error: sError } = await supabase
+        .from('scrutins')
+        .select('id, pour, contre, abstention, group_results')
+        .in('id', scrutinIds);
+        
+      if (!sError && scrutins) {
+        return laws.map(law => {
+          if (law.context?.startsWith('dossier_premium:')) {
+            const sid = law.context.split(':')[1];
+            const s = scrutins.find((x: any) => x.id === sid);
+            if (s) {
+              law.scrutin_data = s;
+            }
+          }
+          return law;
+        });
+      }
+    }
+
+    return laws;
   },
 
   getLaw: async (id: string) => {

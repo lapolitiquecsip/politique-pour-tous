@@ -428,61 +428,52 @@ function LawsClientContent() {
                   }
                   return <DetailedLawDossier key={`premium-static-${law.id}`} law={law} />
                 } else {
-                  // History card
-                  const hasVotes = (law.pour + law.contre + law.abstention) > 0;
-                  return (
-                    <motion.div
-                      key={`history-${law.id}`}
-                      initial={{ opacity: 0, y: 20 }}
-                      whileInView={{ opacity: 1, y: 0 }}
-                      transition={{ delay: idx * 0.05 }}
-                      onClick={() => setSelectedLaw(law)}
-                      className="bg-white rounded-[2.5rem] border border-slate-200 overflow-hidden hover:shadow-2xl transition-all duration-500 flex flex-col md:flex-row cursor-pointer group"
-                    >
-                      <div className="p-8 flex-1 flex flex-col justify-between">
-                        <div>
-                          <div className="flex justify-between items-start mb-6">
-                            <span className="px-3 py-1 bg-slate-100 text-slate-600 text-[10px] font-black uppercase tracking-widest rounded-full group-hover:bg-blue-600 group-hover:text-white transition-colors">
-                              {law.category}
-                            </span>
-                            <div className="flex items-center gap-2 text-slate-400">
-                              <CalendarIcon size={14} />
-                              <span className="text-[10px] font-bold uppercase tracking-wider">
-                                {new Date(law.date_scrutin).toLocaleDateString('fr-FR', { day: 'numeric', month: 'short', year: 'numeric' })}
-                              </span>
-                            </div>
-                          </div>
-                          <h3 className="text-xl font-bold mb-4 italic leading-tight line-clamp-3 group-hover:text-blue-600 transition-colors">
-                            {law.objet}
-                          </h3>
-                          <div className="flex items-center gap-3 mt-4">
-                            <span className={`px-2 py-0.5 rounded-lg text-[9px] font-black uppercase tracking-widest border ${
-                              law.resultat?.includes('adopté') 
-                                ? 'bg-emerald-50 border-emerald-100 text-emerald-600' 
-                                : 'bg-red-50 border-red-100 text-red-600'
-                            }`}>
-                              {law.resultat}
-                            </span>
-                          </div>
-                        </div>
-                      </div>
+                  // History card formatted as DetailedLawDossier
+                  const catObj = CATEGORIES.find(c => c.label === law.category || c.matchCategory === law.category);
+                  const color = catObj ? catObj.color : 'slate';
 
-                      <div className="w-full md:w-56 bg-slate-50/50 p-8 flex flex-col items-center justify-center border-t md:border-t-0 md:border-l border-slate-100">
-                        {hasVotes ? (
-                          <VoteHemicycle 
-                            pour={law.pour || 0} 
-                            contre={law.contre || 0} 
-                            abstention={law.abstention || 0} 
-                          />
-                        ) : (
-                          <div className="text-center space-y-2">
-                             <div className="w-12 h-12 rounded-full border-2 border-slate-200 border-t-blue-500 animate-spin mx-auto" />
-                             <p className="text-[8px] font-black text-slate-400 uppercase tracking-widest">Calcul des votes...</p>
-                          </div>
-                        )}
-                      </div>
-                    </motion.div>
-                  );
+                  const impacts = [];
+                  if (law.impact_detail) impacts.push(law.impact_detail);
+                  else if (law.why_it_matters) impacts.push(law.why_it_matters);
+                  else impacts.push(law.summary || "Détails approfondis non disponibles pour ce texte.");
+                  
+                  const calendar = [
+                    {
+                      date: new Date(law.date_scrutin).toLocaleDateString('fr-FR', { day: 'numeric', month: 'short', year: 'numeric' }),
+                      event: law.resultat || "Loi Adoptée"
+                    }
+                  ];
+
+                  const premiumPoints = [
+                    "Ce texte a été soumis au vote de l'Assemblée nationale.",
+                    "L'historique complet des débats est disponible sur les sources officielles."
+                  ];
+
+                  const voteData = (law.pour + law.contre + law.abstention) > 0 ? {
+                    pour: law.pour || 0,
+                    contre: law.contre || 0,
+                    abstention: law.abstention || 0,
+                    group_results: law.group_results || []
+                  } : null;
+
+                  const computedStatus = law.status_detail === 'En application' ? 'application' : 'vote';
+                  const statusLabel = law.status_detail === 'En application' ? 'En application' : 'Loi Adoptée';
+
+                  const formattedLaw = {
+                    id: law.id,
+                    title: law.title || law.objet || "Projet ou proposition de loi",
+                    category: law.category || "Institution",
+                    summary: law.summary || law.objet,
+                    impacts,
+                    calendar,
+                    premiumPoints,
+                    voteData,
+                    status: computedStatus,
+                    statusLabel,
+                    color
+                  };
+
+                  return <DetailedLawDossier key={`history-${law.id}`} law={formattedLaw as any} />;
                 }
               })}
                   

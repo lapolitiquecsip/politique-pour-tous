@@ -371,6 +371,13 @@ function LawsClientContent() {
                     }
                   }
 
+                  let computedStatus = 'vote';
+                  let statusLabel = 'Loi Adoptée';
+                  if (law.context?.endsWith(':application')) {
+                    computedStatus = 'application';
+                    statusLabel = 'En application';
+                  }
+
                   const formattedLaw = {
                     id: law.id,
                     title: law.title,
@@ -380,8 +387,8 @@ function LawsClientContent() {
                     calendar,
                     premiumPoints,
                     voteData,
-                    status: 'vote',
-                    statusLabel: 'Loi Adoptée',
+                    status: computedStatus,
+                    statusLabel: statusLabel,
                     color: color,
                     backgroundImage: law.background_image
                   };

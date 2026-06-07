@@ -309,7 +309,7 @@ export default function ExecutifPage() {
               <span className="text-xs font-black uppercase tracking-widest text-red-600">Pouvoir Exécutif</span>
             </div>
 
-            <h1 className="text-6xl md:text-8xl font-staatliches uppercase tracking-tighter leading-none mb-8">
+            <h1 className="text-6xl md:text-8xl font-staatliches uppercase tracking-tighter leading-none mb-8 text-slate-900">
               Le <span className="bg-gradient-to-r from-blue-600 via-red-600 to-blue-600 bg-clip-text text-transparent">Gouvernement</span>
             </h1>
             

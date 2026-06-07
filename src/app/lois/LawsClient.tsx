@@ -370,7 +370,7 @@ function LawsClientContent() {
                     try { premiumPoints = typeof law.content === 'string' ? JSON.parse(law.content) : (law.content || []); } catch(e){}
 
                     const catObj = CATEGORIES.find(c => c.label === law.category || c.matchCategory === law.category);
-                    const color = catObj ? catObj.color : 'slate';
+                    const color = catObj ? catObj.color : ((law.category || '').toLowerCase().includes('institution') ? 'violet' : 'slate');
                     
                     let voteData = null;
                     if (law.scrutin_data) {
@@ -430,7 +430,7 @@ function LawsClientContent() {
                 } else {
                   // History card formatted as DetailedLawDossier
                   const catObj = CATEGORIES.find(c => c.label === law.category || c.matchCategory === law.category);
-                  const color = catObj ? catObj.color : 'slate';
+                  const color = catObj ? catObj.color : ((law.category || '').toLowerCase().includes('institution') ? 'violet' : 'slate');
 
                   const impacts = [];
                   if (law.impact_detail) impacts.push(law.impact_detail);

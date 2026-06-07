@@ -148,6 +148,7 @@ export default function DetailedLawDossier({ law }: DetailedLawDossierProps) {
     slate: "bg-slate-800 hover:bg-slate-700 text-white",
     rose: "bg-rose-500 hover:bg-rose-400 text-white",
     orange: "bg-orange-500 hover:bg-orange-400 text-white",
+    violet: "bg-violet-700 hover:bg-violet-600 text-white",
   };
 
   const cardTheme = bgMap[law.color] || "bg-slate-800 hover:bg-slate-700 text-white";

@@ -10,6 +10,14 @@
     {
       "path": "/api/cron/update-content",
       "schedule": "0 4 * * *"
+    },
+    {
+      "path": "/api/cron/update-laws",
+      "schedule": "0 */2 * * *"
+    },
+    {
+      "path": "/api/cron/update-budget-api",
+      "schedule": "0 3 * * 1"
     }
   ]
 }

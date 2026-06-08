@@ -2,6 +2,7 @@ import { NextResponse } from 'next/server';
 import { createClient } from '@supabase/supabase-js';
 import * as cheerio from 'cheerio';
 import Anthropic from '@anthropic-ai/sdk';
+import { sendCronAlert } from '@/lib/cron-alert';
 
 // Vercel Cron : appelée toutes les 2h — "0 */2 * * *"
 // Scrape l'Assemblée Nationale pour les projets et propositions de loi,
@@ -52,7 +53,7 @@ Réponds UNIQUEMENT avec le JSON.`;
 
   try {
     const response = await anthropic.messages.create({
-      model: 'claude-sonnet-4-5-20250929',
+      model: 'claude-sonnet-4-6',
       max_tokens: 1500,
       messages: [{ role: 'user', content: prompt }],
     });
@@ -86,6 +87,7 @@ export async function GET(request: Request) {
 
   const supabase = createClient(supabaseUrl, supabaseKey);
 
+  try {
   console.log('[Cron/Laws] 🕐 Démarrage du scraping Assemblée Nationale...');
 
   const allBills: any[] = [];
@@ -227,4 +229,9 @@ export async function GET(request: Request) {
     updated,
     skipped,
   });
+  } catch (error: any) {
+    console.error('[Cron/Laws] ❌ Erreur critique:', error);
+    await sendCronAlert('update-laws', error);
+    return NextResponse.json({ error: 'Erreur critique', details: error.message }, { status: 500 });
+  }
 }

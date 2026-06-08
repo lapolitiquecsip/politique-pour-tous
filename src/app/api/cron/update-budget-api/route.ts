@@ -1,6 +1,7 @@
 import { NextResponse } from 'next/server';
 import { supabase } from '@/lib/supabase';
 import https from 'https';
+import { sendCronAlert } from '@/lib/cron-alert';
 
 const AGGREGATED_API_URL = 'https://data.economie.gouv.fr/api/explore/v2.1/catalog/datasets/plf-2026-budget-vert/records?group_by=mission,programme&select=sum(plf_2026_cp_ou_prevision_2026_si_depense_fiscale)%20as%20val2026,sum(lfi_2025_cp_ou_prevision_2025_si_depense_fiscale)%20as%20val2025,sum(execution_2024_cp)%20as%20val2024&limit=500';
 
@@ -91,6 +92,7 @@ export async function GET(request: Request) {
     });
 
   } catch (error: any) {
+    await sendCronAlert('update-budget-api', error);
     return NextResponse.json({ success: false, error: error.message }, { status: 500 });
   }
 }

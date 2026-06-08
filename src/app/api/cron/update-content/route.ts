@@ -1,5 +1,6 @@
 import { NextResponse } from 'next/server';
 import { scrapeAndUpdateContent } from '@/lib/services/contentScrapingService';
+import { sendCronAlert } from '@/lib/cron-alert';
 
 // Vercel Cron : Cette route est appelée chaque jour à 6h (heure de Paris)
 // Configuré dans vercel.json : "0 4 * * *" (4h UTC = 6h Paris)
@@ -32,6 +33,7 @@ export async function GET(request: Request) {
     });
   } catch (error: any) {
     console.error('[Cron/Content] ❌ Erreur critique:', error);
+    await sendCronAlert('update-content', error);
     return NextResponse.json(
       { error: 'Erreur lors du scraping', details: error.message },
       { status: 500 }

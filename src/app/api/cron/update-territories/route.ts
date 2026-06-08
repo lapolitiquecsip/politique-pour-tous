@@ -1,5 +1,6 @@
 import { NextResponse } from 'next/server';
 import { syncTerritoryPresidents } from '@/lib/services/territoryService';
+import { sendCronAlert } from '@/lib/cron-alert';
 
 // Vercel Cron : Cette route est appelée périodiquement
 // Pour l'activer sur Vercel, ajouter dans vercel.json :
@@ -19,6 +20,7 @@ export async function GET(request: Request) {
   if (result.success) {
     return NextResponse.json({ message: 'Synchronisation réussie' });
   } else {
+    await sendCronAlert('update-territories', result.error ?? 'Erreur inconnue');
     return NextResponse.json({ error: 'Erreur lors de la synchronisation', details: result.error }, { status: 500 });
   }
 }

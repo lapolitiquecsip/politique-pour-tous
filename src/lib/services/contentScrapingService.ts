@@ -200,7 +200,7 @@ function parseRSSFeed(xml: string, institution: string, source_name: string, tie
     }
 
     const limitDate = new Date();
-    limitDate.setDate(limitDate.getDate() - 3); // 3 jours au lieu de 60 pour rester très léger et rapide
+    limitDate.setDate(limitDate.getDate() - 7); // 7 jours pour absorber les pannes courtes sans perdre d'articles
 
     return items
       .map((item: any) => {
@@ -295,9 +295,10 @@ URL : ${a.link}
 
     try {
       const response = await anthropic.messages.create({
-        model: 'claude-sonnet-4-20250514',
+        model: 'claude-sonnet-4-6',
         max_tokens: 4000,
         temperature: 0.2,
+        output_config: { effort: 'medium' },
         messages: [
           {
             role: 'user',

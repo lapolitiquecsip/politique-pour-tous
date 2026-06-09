@@ -27,6 +27,13 @@ export async function GET(request: Request) {
 
     console.log('[Cron/Content] ✅ Résultat:', JSON.stringify(result, null, 2));
 
+    if (result.totalInserted === 0 && (result.totalFetched ?? 0) > 0) {
+      await sendCronAlert(
+        'update-content',
+        `0 articles insérés malgré ${result.totalFetched} articles RSS récupérés. Détails : ${result.details?.join(' | ')}`
+      );
+    }
+
     return NextResponse.json({
       message: 'Scraping terminé',
       ...result,

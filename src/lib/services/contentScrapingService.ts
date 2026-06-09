@@ -71,12 +71,7 @@ const RSS_SOURCES = [
     source_name: 'Le Monde',
     tier: 2,
   },
-  // { // ❌ [FAIL] 404 Not Found
-  //   url: 'https://www.lesechos.fr/rss/politique.xml',
-  //   institution: 'média',
-  //   source_name: 'Les Echos',
-  //   tier: 2,
-  // },
+
   {
     url: 'https://www.mediapart.fr/articles/feed',
     institution: 'média',

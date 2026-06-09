@@ -290,7 +290,7 @@ URL : ${a.link}
 
     try {
       const response = await anthropic.messages.create({
-        model: 'claude-3-5-sonnet-latest',
+        model: 'claude-sonnet-4-6',
         max_tokens: 4000,
         temperature: 0.2,
         output_config: { effort: 'medium' },

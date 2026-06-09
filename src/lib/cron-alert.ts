@@ -1,8 +1,7 @@
 import { Resend } from 'resend';
 
-const resend = new Resend(process.env.RESEND_API_KEY);
-
 export async function sendCronAlert(cronName: string, error: unknown) {
+  const resend = new Resend(process.env.RESEND_API_KEY);
   const message = error instanceof Error ? error.message : String(error);
   const stack = error instanceof Error && error.stack ? `<pre style="font-size:12px;background:#f4f4f4;padding:8px">${error.stack}</pre>` : '';
   try {

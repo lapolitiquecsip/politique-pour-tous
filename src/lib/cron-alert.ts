@@ -8,7 +8,7 @@ export async function sendCronAlert(cronName: string, error: unknown) {
   try {
     await resend.emails.send({
       from: 'Cron LaPolitique <cron@lapolitique.fr>',
-      to: 'mathurin.ache@free.fr',
+      to: 'hippolytebelyaev74@gmail.com',
       subject: `[ALERTE CRON] ${cronName} a échoué`,
       html: `
         <h2>Le cron <strong>${cronName}</strong> a échoué</h2>

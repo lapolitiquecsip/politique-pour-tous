@@ -5,7 +5,7 @@ import { sendCronAlert } from '@/lib/cron-alert';
 // Vercel Cron : Cette route est appelée chaque jour à 6h (heure de Paris)
 // Configuré dans vercel.json : "0 4 * * *" (4h UTC = 6h Paris)
 
-export const maxDuration = 120; // 2 minutes max (les flux RSS + Claude peuvent prendre du temps)
+export const maxDuration = 60; // 60s max for Vercel Hobby plan
 
 export async function GET(request: Request) {
   // Vérification du jeton de sécurité

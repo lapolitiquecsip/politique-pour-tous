@@ -658,6 +658,13 @@ export async function scrapeAndUpdateContent(): Promise<{
     }
   }
 
+  // LIMIT TO 60 ARTICLES PER RUN TO PREVENT VERCEL HOBBY TIMEOUTS
+  if (articlesToProcess.length > 60) {
+    console.log(`[Scraper] ⚠️ Trop d'articles (${articlesToProcess.length}), limitation à 60 pour éviter le timeout Vercel.`);
+    articlesToProcess = articlesToProcess.slice(0, 60);
+    details.push(`⚠️ Limité à 60 articles pour ce passage (les autres seront traités au prochain passage)`);
+  }
+
   // 4. Traitement par Claude (simplification des titres + résumés flash)
   console.log(`[Scraper] 🤖 Envoi de ${articlesToProcess.length} articles à Claude pour traitement...`);
   const processedArticles = await processWithClaude(articlesToProcess);

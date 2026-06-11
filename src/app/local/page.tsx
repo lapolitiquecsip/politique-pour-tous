@@ -302,7 +302,7 @@ function LocalPoliticsContent() {
                     setShowDropdown(true);
                   }
                 }}
-                className="w-full bg-white border-2 border-slate-100 rounded-3xl py-7 pl-20 pr-10 text-xl font-medium focus:outline-none focus:border-rose-600/30 focus:bg-rose-50/10 transition-all shadow-xl shadow-slate-200/20"
+                className="w-full bg-white border-2 border-slate-100 rounded-3xl py-7 pl-20 pr-10 text-xl font-medium text-slate-900 focus:outline-none focus:border-rose-600/30 focus:bg-rose-50/10 transition-all shadow-xl shadow-slate-200/20"
               />
               
               {/* Commune Dropdown */}

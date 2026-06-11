@@ -1,4 +1,4 @@
-import { scrapeAndStoreAgenda } from './src/lib/services/agendaScrapingService.ts';
+import { scrapeAndStoreAgenda } from './src/lib/services/agendaScrapingService';
 
 async function test() {
   console.log("Testing Agenda Scraper...");

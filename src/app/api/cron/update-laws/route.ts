@@ -124,7 +124,7 @@ export async function GET(request: Request) {
         }
 
         const dateMatch = dateTextRaw.match(/(\d{1,2})\s+([a-zéû]+)\s+(\d{4})/i);
-        let publishedAt = 0;
+        let publishedAt = 99999999 - allBills.length; // Ensure new items without a date stay at the top
         let dateIso = '1900-01-01';
 
         if (dateMatch) {
@@ -136,8 +136,10 @@ export async function GET(request: Request) {
         }
 
         if (title && id) {
+          const link = $(el).find('h3 a').attr('href') || $(el).find('a').first().attr('href');
           const legis = id.match(/L(\d+)/)?.[1] || '17';
-          const fullDossierLink = `https://www.assemblee-nationale.fr/dyn/${legis}/dossiers_legislatifs/${id}`;
+          const fullDossierLink = link ? (link.startsWith('http') ? link : `https://www.assemblee-nationale.fr${link}`) : `https://www.assemblee-nationale.fr/dyn/${legis}/dossiers/${id}`;
+          
           allBills.push({
             title: title.replace(/&amp;#13;/g, ' ').replace(/\s+/g, ' '),
             summary: subtitle || `${source.category} mis à jour le ${dateTextRaw || 'récemment'}.`,
@@ -174,7 +176,10 @@ export async function GET(request: Request) {
     const needsAnalysis =
       !existing ||
       !existing.content ||
-      existing.timeline === 'Analyse du parcours législatif en cours...';
+      existing.content.length < 100 ||
+      existing.content.includes("Détails du dossier disponibles sur le site") ||
+      existing.timeline === 'Analyse du parcours législatif en cours...' ||
+      existing.timeline === null;
 
     if (!needsAnalysis) {
       skipped++;

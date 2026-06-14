@@ -3,7 +3,7 @@ import { scrapeAndStoreAgenda } from '@/lib/services/agendaScrapingService';
 import { sendCronAlert } from '@/lib/cron-alert';
 
 // Vercel Cron : appelée tous les jours à 3h00 — "0 3 * * *"
-export const maxDuration = 60; // Limite à 60s pour Vercel Hobby
+export const maxDuration = 300; // Limite à 300s pour Vercel Pro
 
 export async function GET(req: Request) {
   // Vérification de sécurité CRON Vercel (sauf en dev)

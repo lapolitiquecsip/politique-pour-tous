@@ -195,7 +195,7 @@ function parseRSSFeed(xml: string, institution: string, source_name: string, tie
     }
 
     const limitDate = new Date();
-    limitDate.setDate(limitDate.getDate() - 7); // 7 jours pour absorber les pannes courtes sans perdre d'articles
+    limitDate.setDate(limitDate.getDate() - 30); // 30 jours pour récupérer les actus manquantes
 
     return items
       .map((item: any) => {
@@ -658,11 +658,11 @@ export async function scrapeAndUpdateContent(): Promise<{
     }
   }
 
-  // LIMIT TO 60 ARTICLES PER RUN TO PREVENT VERCEL HOBBY TIMEOUTS
-  if (articlesToProcess.length > 60) {
-    console.log(`[Scraper] ⚠️ Trop d'articles (${articlesToProcess.length}), limitation à 60 pour éviter le timeout Vercel.`);
-    articlesToProcess = articlesToProcess.slice(0, 60);
-    details.push(`⚠️ Limité à 60 articles pour ce passage (les autres seront traités au prochain passage)`);
+  // LIMIT TO 300 ARTICLES PER RUN FOR VERCEL PRO
+  if (articlesToProcess.length > 300) {
+    console.log(`[Scraper] ⚠️ Trop d'articles (${articlesToProcess.length}), limitation à 300 pour éviter le timeout Vercel.`);
+    articlesToProcess = articlesToProcess.slice(0, 300);
+    details.push(`⚠️ Limité à 300 articles pour ce passage (les autres seront traités au prochain passage)`);
   }
 
   // 4. Traitement par Claude (simplification des titres + résumés flash)

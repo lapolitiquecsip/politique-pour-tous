@@ -8,7 +8,7 @@ import { sendCronAlert } from '@/lib/cron-alert';
 // Scrape l'Assemblée Nationale pour les projets et propositions de loi,
 // génère une analyse via Claude, et insère dans la table `laws`.
 
-export const maxDuration = 60;
+export const maxDuration = 300;
 
 const SOURCES = [
   { url: 'https://www2.assemblee-nationale.fr/documents/liste?type=projets-loi', category: 'Projet de loi' },
@@ -157,8 +157,8 @@ export async function GET(request: Request) {
   // Traiter les plus récents en premier
   allBills.sort((a, b) => b.publishedAt - a.publishedAt);
 
-  // Limiter à 5 analyses par run pour tenir dans les 60s Vercel Hobby
-  const MAX_ANALYSES = 5;
+  // Limiter à 30 analyses par run pour tenir dans les 300s Vercel Pro
+  const MAX_ANALYSES = 30;
   let processedCount = 0;
   let inserted = 0;
   let updated = 0;

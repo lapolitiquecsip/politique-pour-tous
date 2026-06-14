@@ -11,7 +11,8 @@ import Link from "next/link";
 import GlossaryText from "@/components/ui/GlossaryText";
 import { usePremium } from "@/lib/hooks/usePremium";
 import { api } from "@/lib/api";
-import { getPremiumUrl } from "@/lib/utils";
+import { getPremiumUrl, cn } from "@/lib/utils";
+import { departmentPaths } from "@/lib/data/departmentPaths";
 import { useCommuneSearch } from "@/lib/hooks/useCommuneSearch";
 import type { CommuneResult } from "@/lib/hooks/useCommuneSearch";
 import CommuneDetailPanel from "@/components/local/CommuneDetailPanel";
@@ -57,6 +58,29 @@ const getPartyTheme = (party: string) => {
         hoverBg: "group-hover/btn:bg-orange-500",
         hoverText: "group-hover:text-orange-500"
       };
+    case "UDI":
+      return {
+        badge: "bg-amber-500 text-white shadow-amber-500/30",
+        text: "text-amber-500",
+        hoverBg: "group-hover/btn:bg-amber-500",
+        hoverText: "group-hover:text-amber-500"
+      };
+    case "PRG":
+      return {
+        badge: "bg-fuchsia-600 text-white shadow-fuchsia-600/30",
+        text: "text-fuchsia-500",
+        hoverBg: "group-hover/btn:bg-fuchsia-600",
+        hoverText: "group-hover:text-fuchsia-600"
+      };
+    case "Renaissance":
+    case "RE":
+    case "LREM":
+      return {
+        badge: "bg-sky-600 text-white shadow-sky-600/30",
+        text: "text-sky-500",
+        hoverBg: "group-hover/btn:bg-sky-600",
+        hoverText: "group-hover:text-sky-600"
+      };
     case "DVD":
       return {
         badge: "bg-indigo-900 text-white shadow-indigo-900/30",
@@ -73,6 +97,126 @@ const getPartyTheme = (party: string) => {
         hoverText: "group-hover:text-fuchsia-600"
       };
   }
+};
+
+const cardColors = [
+  { text: 'text-pink-500', bg: 'bg-pink-500', lightBg: 'bg-pink-50' },
+  { text: 'text-emerald-500', bg: 'bg-emerald-500', lightBg: 'bg-emerald-50' },
+  { text: 'text-blue-500', bg: 'bg-blue-500', lightBg: 'bg-blue-50' },
+  { text: 'text-purple-500', bg: 'bg-purple-500', lightBg: 'bg-purple-50' },
+  { text: 'text-amber-500', bg: 'bg-amber-500', lightBg: 'bg-amber-50' },
+  { text: 'text-rose-500', bg: 'bg-rose-500', lightBg: 'bg-rose-50' },
+  { text: 'text-indigo-500', bg: 'bg-indigo-500', lightBg: 'bg-indigo-50' },
+  { text: 'text-cyan-500', bg: 'bg-cyan-500', lightBg: 'bg-cyan-50' },
+];
+
+const DepartmentGridCard: React.FC<{
+  item: any;
+  onSelect: (item: any) => void;
+  isPremium?: boolean;
+}> = ({ item, onSelect, isPremium }) => {
+  const colorIndex = (item.id.charCodeAt(0) + (item.id.charCodeAt(item.id.length - 1) || 0)) % cardColors.length;
+  const theme = cardColors[colorIndex];
+  
+  // Resolve party theme or fall back to standard color index theme
+  const partyTheme = getPartyTheme(item.party);
+  const cardTheme = partyTheme.text !== "text-fuchsia-400" ? partyTheme : {
+    badge: `bg-${theme.text.split('-')[1]}-600 text-white shadow-${theme.text.split('-')[1]}-600/30`,
+    text: theme.text,
+    hoverBg: `group-hover/btn:${theme.bg}`,
+    hoverText: `group-hover:${theme.text}`
+  };
+
+  const pathData = departmentPaths[item.id];
+
+  return (
+    <motion.div
+      initial={{ opacity: 0, y: 15 }}
+      animate={{ opacity: 1, y: 0 }}
+      whileHover={{ y: -6, transition: { duration: 0.2 } }}
+      onClick={() => onSelect(item)}
+      className="cursor-pointer border border-slate-200/80 bg-white rounded-3xl overflow-hidden flex flex-col hover:border-slate-300 hover:shadow-xl transition-all duration-300 shadow-sm"
+    >
+      {/* Top Banner: Colored background and two columns */}
+      <div className={cn("relative h-36 shrink-0 w-full flex items-center justify-between overflow-hidden border-b border-slate-100 px-6", theme.lightBg)}>
+        {/* Subtle background graphic */}
+        <div className="absolute inset-0 bg-[radial-gradient(circle_at_30%_20%,rgba(255,255,255,0.4),transparent_70%)]" />
+        
+        {/* Left column: Text */}
+        <div className="relative z-10 max-w-[65%] space-y-1">
+          <span className={cn("text-[9px] font-black uppercase tracking-widest px-2.5 py-0.5 rounded-full bg-white border inline-block shadow-sm", theme.text)}>
+            N° {item.id}
+          </span>
+          <p className="text-slate-400 font-bold text-[8px] uppercase tracking-widest mt-1">Département</p>
+          <h4 className="text-slate-900 font-extrabold text-lg leading-tight line-clamp-2">{item.name}</h4>
+        </div>
+
+        {/* Right column: Geographic Shape */}
+        <div className="relative w-20 h-20 shrink-0 flex items-center justify-center rounded-2xl bg-white/90 border border-slate-100/80 shadow-md overflow-hidden p-2 transition-transform hover:scale-105">
+          {pathData ? (
+            <svg 
+              viewBox={pathData.viewBox} 
+              className={cn("w-full h-full drop-shadow-sm opacity-90", theme.text)}
+              preserveAspectRatio="xMidYMid meet"
+            >
+              <path 
+                d={pathData.d} 
+                fill="currentColor" 
+                stroke="white" 
+                strokeWidth="1.5" 
+                strokeLinejoin="round"
+              />
+            </svg>
+          ) : (
+            <MapPin size={28} className={theme.text} />
+          )}
+        </div>
+      </div>
+
+      {/* Body Content */}
+      <div className="p-6 flex-1 flex flex-col justify-between space-y-5 bg-white">
+        <div className="space-y-3">
+          {/* President row */}
+          <div className="flex items-center gap-3">
+            <div className={cn("w-9 h-9 rounded-xl flex items-center justify-center shrink-0 bg-slate-50 border border-slate-100 text-slate-500")}>
+              <Users size={14} />
+            </div>
+            <div className="min-w-0">
+              <p className="text-[8px] font-black uppercase tracking-widest text-slate-400">Président</p>
+              <p className="font-bold text-slate-800 text-xs truncate">{item.president}</p>
+            </div>
+          </div>
+          
+          {/* Party row */}
+          <div className="flex items-center gap-3">
+            <div className={cn("w-9 h-9 rounded-xl flex items-center justify-center shrink-0 bg-slate-50 border border-slate-100 text-slate-500")}>
+              <Building2 size={14} />
+            </div>
+            <div className="min-w-0">
+              <p className="text-[8px] font-black uppercase tracking-widest text-slate-400">Parti Majoritaire</p>
+              <span className={cn("inline-block font-black text-[9px] px-2 py-0.5 rounded-full mt-0.5 border border-slate-100 shadow-sm bg-slate-50 text-slate-700", 
+                item.party !== "N/A" && "font-black"
+              )}>
+                {item.party}
+              </span>
+            </div>
+          </div>
+        </div>
+
+        {/* Action Button */}
+        <div className="pt-3 border-t border-slate-50 flex items-center justify-between group/btn">
+          <span className={cn("text-[9px] font-black uppercase tracking-widest transition-colors duration-200", cardTheme.text)}>
+            Analyser
+          </span>
+          <div className={cn("w-8 h-8 rounded-full bg-slate-50 flex items-center justify-center text-slate-400 transition-all duration-300", 
+            "group-hover/btn:bg-rose-600 group-hover/btn:text-white group-hover/btn:scale-110 shadow-sm"
+          )}>
+            <ChevronRight size={14} />
+          </div>
+        </div>
+      </div>
+    </motion.div>
+  );
 };
 
 // Featured cities shown by default (Top 20)
@@ -112,6 +256,11 @@ function LocalPoliticsContent() {
   const searchParams = useSearchParams();
   const [activeTab, setActiveTab] = useState<"region" | "departement" | "commune">("commune");
   const [search, setSearch] = useState("");
+  const [visibleCount, setVisibleCount] = useState(12);
+  
+  useEffect(() => {
+    setVisibleCount(12);
+  }, [search, activeTab]);
   const communeSearch = useCommuneSearch();
   const [selectedCommune, setSelectedCommune] = useState<CommuneResult | null>(null);
   const [showDropdown, setShowDropdown] = useState(false);
@@ -420,14 +569,51 @@ function LocalPoliticsContent() {
                 </>
               )}
 
-              {/* REGION / DEPARTMENT TAB: Card grid */}
-              {activeTab !== 'commune' && (
+              {/* REGION TAB: Carousel */}
+              {activeTab === 'region' && (
                 <div className="w-full py-4">
                   <StaggerTestimonials 
-                    items={filteredItems.map((item: any) => ({...item, type: activeTab === 'region' ? 'region' : 'department'}))} 
+                    items={filteredItems.map((item: any) => ({...item, type: 'region'}))} 
                     onSelect={(t) => setSelectedTerritory(t)} 
                     isPremium={isPremium}
                   />
+                </div>
+              )}
+
+              {/* DEPARTMENT TAB: Grid and Pagination */}
+              {activeTab === 'departement' && (
+                <div className="w-full py-4 space-y-8">
+                  {filteredItems.length === 0 ? (
+                    <div className="text-center py-20 bg-white border border-slate-200/60 rounded-[2.5rem] shadow-sm">
+                      <p className="text-slate-400 font-bold text-sm">Aucun département ne correspond à votre recherche.</p>
+                    </div>
+                  ) : (
+                    <>
+                      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+                        {filteredItems.slice(0, visibleCount).map((item: any) => (
+                          <DepartmentGridCard
+                            key={item.id}
+                            item={item}
+                            onSelect={(t) => setSelectedTerritory(t)}
+                            isPremium={isPremium}
+                          />
+                        ))}
+                      </div>
+                      
+                      {filteredItems.length > visibleCount && (
+                        <div className="flex justify-center pt-4">
+                          <button
+                            onClick={() => setVisibleCount(prev => prev + 12)}
+                            className={cn(
+                              "px-8 py-3.5 bg-white border-2 border-slate-200 text-slate-700 font-bold text-xs uppercase tracking-widest rounded-full shadow-md hover:border-rose-600 hover:text-rose-600 transition-all active:scale-95 duration-200 cursor-pointer"
+                            )}
+                          >
+                            Charger plus de départements
+                          </button>
+                        </div>
+                      )}
+                    </>
+                  )}
                 </div>
               )}
             </div>

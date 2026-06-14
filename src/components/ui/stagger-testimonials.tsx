@@ -1,9 +1,10 @@
 "use client"
 
 import React, { useState, useEffect } from 'react';
-import { ChevronLeft, ChevronRight, Users, Building2, Coins, ArrowRight, Star, Loader2 } from 'lucide-react';
+import { ChevronLeft, ChevronRight, Users, Building2, Coins, ArrowRight, Star, Loader2, MapPin } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { regionPaths } from '@/lib/data/regionPaths';
+import { departmentPaths } from '@/lib/data/departmentPaths';
 
 const SQRT_5000 = Math.sqrt(5000);
 
@@ -91,11 +92,21 @@ const TestimonialCard: React.FC<TestimonialCardProps> = ({
       />
       
       {/* Top Banner with Image or SVG Map */}
-      <div className="relative h-40 shrink-0 w-full bg-white flex items-center justify-center overflow-hidden border-b border-slate-100">
+      <div className={cn("relative h-40 shrink-0 w-full flex items-center justify-between overflow-hidden border-b border-slate-100 px-6", theme.lightBg)}>
+        {/* Subtle background glow */}
+        <div className="absolute inset-0 bg-[radial-gradient(circle_at_20%_20%,rgba(255,255,255,0.4),transparent_70%)]" />
         
-        {/* SVG Map Rendering */}
-        {regionPaths[item.id] && (
-          <div className="absolute inset-0 flex items-center justify-center p-4">
+        {/* Left Side: Text Details */}
+        <div className="relative z-10 max-w-[60%]">
+          <p className={cn("font-black text-[9px] uppercase tracking-widest mb-1.5", theme.text)}>
+            {item.type === 'region' ? 'Région' : 'Département'}
+          </p>
+          <h4 className="text-slate-900 font-extrabold text-xl leading-tight line-clamp-2">{item.name}</h4>
+        </div>
+
+        {/* Right Side: Map illustration container */}
+        <div className="relative w-24 h-24 shrink-0 flex items-center justify-center rounded-2xl bg-white/95 border border-slate-100/80 shadow-md p-2 transition-transform hover:scale-105 z-10">
+          {item.type === 'region' && regionPaths[item.id] && (
             <svg 
               viewBox="0 0 250 250" 
               className={cn("w-full h-full drop-shadow-sm opacity-90", theme.text)}
@@ -105,23 +116,37 @@ const TestimonialCard: React.FC<TestimonialCardProps> = ({
                 d={regionPaths[item.id]} 
                 fill="currentColor" 
                 stroke="white" 
-                strokeWidth="2" 
+                strokeWidth="2.5" 
                 strokeLinejoin="round"
               />
             </svg>
-          </div>
-        )}
+          )}
 
-        {/* Fallback image if somehow no SVG found and there's an image */}
-        {!regionPaths[item.id] && item.image && (
-          <img src={item.image} alt={item.name} className="w-full h-full object-cover" />
-        )}
-        
-        <div className="absolute bottom-4 left-6 pr-6">
-          <p className={cn("font-black text-[10px] uppercase tracking-widest mb-1", theme.text)}>
-            {item.type === 'region' ? 'Région' : 'Département'}
-          </p>
-          <h4 className="text-slate-900 font-bold text-xl leading-tight line-clamp-2">{item.name}</h4>
+          {item.type === 'department' && departmentPaths[item.id] && (
+            <svg 
+              viewBox={departmentPaths[item.id].viewBox} 
+              className={cn("w-full h-full drop-shadow-sm opacity-90", theme.text)}
+              preserveAspectRatio="xMidYMid meet"
+            >
+              <path 
+                d={departmentPaths[item.id].d} 
+                fill="currentColor" 
+                stroke="white" 
+                strokeWidth="1.5" 
+                strokeLinejoin="round"
+              />
+            </svg>
+          )}
+
+          {/* Fallback image or icon if no path data found */}
+          {((item.type === 'region' && !regionPaths[item.id]) || 
+            (item.type === 'department' && !departmentPaths[item.id])) && (
+            item.image ? (
+              <img src={item.image} alt={item.name} className="w-full h-full object-cover rounded-xl" />
+            ) : (
+              <MapPin size={32} className={theme.text} />
+            )
+          )}
         </div>
       </div>
 

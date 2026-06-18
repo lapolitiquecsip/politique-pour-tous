@@ -227,3 +227,21 @@ export default async function MinistryPage({ params }: { params: Promise<{ slug:
     </main>
   );
 }
+
+export async function generateStaticParams() {
+  try {
+    const government = await fetchGovernmentComposition();
+    return government.map((m) => {
+      const slug = m.ministryName
+        .toLowerCase()
+        .normalize("NFD")
+        .replace(/[\u0300-\u036f]/g, "")
+        .replace(/[^a-z0-9]+/g, '-')
+        .replace(/(^-|-$)/g, '');
+      return { slug };
+    });
+  } catch (error) {
+    console.error("Error generating static params for ministries:", error);
+    return [];
+  }
+}

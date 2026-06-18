@@ -30,3 +30,13 @@ export default async function SenatorDetailPage({ params }: { params: Promise<{ 
 
   return <SenatorClient senator={senator} />;
 }
+
+export async function generateStaticParams() {
+  try {
+    const senators = await api.getSenators();
+    return senators.map((s: any) => ({ slug: s.slug }));
+  } catch (error) {
+    console.error("Error generating static params for senators:", error);
+    return [];
+  }
+}

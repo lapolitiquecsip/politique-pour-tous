@@ -22,7 +22,7 @@ const positionStyles = [
 ]
 
 const exitAnimation = {
-  y: 340,
+  y: 450,
   scale: 1,
   zIndex: 10,
 }
@@ -46,7 +46,7 @@ function CardContent({ data }: { data: CardData }) {
   const isIntox = data.title === "Intox de la semaine";
 
   return (
-    <div className={`flex h-full w-full flex-col justify-center items-center text-center p-4 sm:p-6 rounded-[1rem] ${bgColor} text-white shadow-inner relative overflow-hidden`}>
+    <div className={`flex h-full w-full flex-col justify-center items-center text-center p-4 sm:p-6 rounded-[1.625rem] ${bgColor} text-white shadow-inner relative overflow-hidden`}>
       {/* Decorative subtle ambient glows */}
       <div className="absolute top-0 right-0 w-48 h-48 bg-white/10 rounded-full blur-3xl -mr-10 -mt-10 pointer-events-none" />
       <div className="absolute bottom-0 left-0 w-48 h-48 bg-black/10 rounded-full blur-2xl -ml-10 -mb-10 pointer-events-none" />
@@ -57,10 +57,12 @@ function CardContent({ data }: { data: CardData }) {
             <span className="text-[4rem] sm:text-[5.5rem] font-staatliches mb-1 tracking-tighter leading-none drop-shadow-md text-white">
               {data.value}
             </span>
-            <span className={`font-bold max-w-sm leading-snug opacity-90 uppercase tracking-[0.15em] drop-shadow-sm text-balance ${
-              (data.label || data.description || "").length > 80
-                ? 'text-[10px] sm:text-xs'
-                : 'text-xs sm:text-sm'
+            <span className={`font-bold max-w-sm leading-snug opacity-90 drop-shadow-sm text-balance ${
+              (data.label || data.description || "").length > 120
+                ? 'text-xs sm:text-sm tracking-normal normal-case'
+                : (data.label || data.description || "").length > 80
+                  ? 'text-[10px] sm:text-xs tracking-wider uppercase'
+                  : 'text-xs sm:text-sm tracking-[0.15em] uppercase'
             }`}>
               {data.label || data.description}
             </span>
@@ -171,12 +173,14 @@ function CardContent({ data }: { data: CardData }) {
             <span className="bg-white/20 text-white px-4 py-1 rounded-full text-[9px] font-black uppercase tracking-[0.2em] mb-4 backdrop-blur-sm">
               {data.title}
             </span>
-            <span className={`font-bold max-w-md leading-relaxed drop-shadow-sm text-balance text-white/95 ${
-              data.description.length > 150 
-                ? 'text-xs sm:text-sm' 
-                : data.description.length > 80 
-                  ? 'text-sm sm:text-base' 
-                  : 'text-base sm:text-lg'
+            <span className={`font-bold max-w-md drop-shadow-sm text-balance text-white/95 ${
+              data.description.length > 240
+                ? 'text-[11px] sm:text-xs leading-snug'
+                : data.description.length > 150 
+                  ? 'text-xs sm:text-sm leading-normal' 
+                  : data.description.length > 80 
+                    ? 'text-sm sm:text-base leading-relaxed' 
+                    : 'text-base sm:text-lg leading-relaxed'
             }`}>
               {data.description}
             </span>
@@ -217,9 +221,9 @@ function AnimatedCard({
         zIndex,
         left: "50%",
         x: "-50%",
-        bottom: 0,
+        bottom: 24,
       }}
-      className="absolute flex h-[330px] w-[324px] items-center justify-center overflow-hidden rounded-t-[1.5rem] border-x border-t border-slate-200 bg-white p-1.5 shadow-2xl will-change-transform sm:w-[512px]"
+      className="absolute flex h-[360px] w-[324px] items-center justify-center overflow-hidden rounded-[2rem] border border-slate-200 bg-white p-1.5 shadow-2xl will-change-transform sm:w-[512px]"
     >
       <CardContent data={card} />
     </motion.div>
@@ -267,7 +271,7 @@ export default function AnimatedCardStack({ items = [] }: { items: CardData[] })
 
   return (
     <div className="flex w-full flex-col items-center justify-center pt-2 pb-6">
-      <div className="relative h-[400px] w-full overflow-hidden sm:w-[644px]">
+      <div className="relative h-[450px] w-full overflow-hidden sm:w-[644px]">
         <AnimatePresence initial={false}>
           {cards.slice(0, 3).map((card, index) => (
             <AnimatedCard key={card.id} card={card} index={index} isAnimating={isAnimating} />

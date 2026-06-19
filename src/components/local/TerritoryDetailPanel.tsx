@@ -273,10 +273,19 @@ export default function TerritoryDetailPanel({ territory, onClose }: TerritoryDe
                       {territory.name}
                     </h2>
                     
-                    <div className="flex items-center gap-4 text-white/60">
-                      <div className="flex items-center gap-2">
-                        <Building2 size={14} />
-                        <span className="text-sm font-bold">{data?.president || territory.name}</span>
+                    <div className="flex items-center gap-4 text-white/70">
+                      <div className="flex items-center gap-3">
+                        <div className="w-8 h-8 rounded-lg bg-white/10 flex items-center justify-center text-white/80 shrink-0">
+                          <Building2 size={16} />
+                        </div>
+                        <div className="flex flex-col">
+                          <span className="text-[9px] font-black uppercase tracking-widest text-white/40">
+                            {territory.type === 'region' ? 'Président du Conseil Régional' : 'Président du Conseil Départemental'}
+                          </span>
+                          <span className="text-sm font-bold text-white">
+                            {data?.president || (data === null && loading ? "Chargement..." : territory.name)}
+                          </span>
+                        </div>
                       </div>
                     </div>
                   </div>

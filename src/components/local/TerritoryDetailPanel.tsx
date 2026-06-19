@@ -256,7 +256,7 @@ export default function TerritoryDetailPanel({ territory, onClose }: TerritoryDe
                   </button>
                 </div>
 
-                <div className="relative z-10 flex flex-col sm:flex-row sm:items-center justify-between gap-6 mr-16">
+                <div className="relative z-10 flex flex-col sm:flex-row sm:items-center justify-start gap-8 md:gap-12 mr-16">
                   <div className="space-y-4">
                     <div className="flex items-center gap-2">
                       <span className="text-[10px] font-black uppercase tracking-widest text-rose-400">
@@ -283,72 +283,89 @@ export default function TerritoryDetailPanel({ territory, onClose }: TerritoryDe
 
                   {/* France map (only for departments) */}
                   {(territory.type === 'department' || !territory.type) && departmentPaths[territory.id] && (
-                    <motion.div
-                      initial={{ opacity: 0, scale: 0.8, y: 15 }}
-                      animate={{ opacity: 1, scale: 1, y: 0 }}
-                      transition={{ type: "spring", damping: 15, stiffness: 150, delay: 0.15 }}
-                      className="relative w-28 h-28 md:w-32 md:h-32 shrink-0 bg-slate-950/45 rounded-3xl border border-slate-800/80 p-2 flex items-center justify-center shadow-inner overflow-hidden"
-                    >
-                      <svg
-                        viewBox="10 10 690 580"
-                        className="w-full h-full"
-                        preserveAspectRatio="xMidYMid meet"
-                      >
-                        {/* Base departments map */}
-                        {Object.entries(departmentPaths).map(([code, pathData]) => {
-                          const isCurrent = code === territory.id;
-                          return (
-                            <path
-                              key={code}
-                              d={pathData.d}
-                              fill={isCurrent ? "#f43f5e" : "#334155"}
-                              stroke={isCurrent ? "#ffffff" : "#475569"}
-                              strokeOpacity={isCurrent ? "1" : "0.4"}
-                              strokeWidth={isCurrent ? "1.5" : "0.5"}
-                              className={isCurrent ? "drop-shadow-lg" : "opacity-80"}
-                            />
-                          );
-                        })}
+                    (() => {
+                      const colors = [
+                        '#ec4899', // pink
+                        '#10b981', // emerald
+                        '#3b82f6', // blue
+                        '#a855f7', // purple
+                        '#f59e0b', // amber
+                        '#f43f5e', // rose
+                        '#6366f1', // indigo
+                        '#06b6d4'  // cyan
+                      ];
+                      const colorIndex = (territory.id.charCodeAt(0) + (territory.id.charCodeAt(territory.id.length - 1) || 0)) % colors.length;
+                      const activeColor = colors[colorIndex];
 
-                        {/* Pulsing Pin Locator */}
-                        {(() => {
-                          const activePath = departmentPaths[territory.id];
-                          if (!activePath) return null;
-                          const parts = activePath.viewBox.trim().split(/\s+/).map(Number);
-                          if (parts.length !== 4 || parts.some(isNaN)) return null;
-                          const [x, y, w, h] = parts;
-                          const centerX = x + w / 2;
-                          const centerY = y + h / 2;
+                      return (
+                        <motion.div
+                          initial={{ opacity: 0, scale: 0.7, rotate: -3 }}
+                          animate={{ opacity: 1, scale: 1, rotate: 0 }}
+                          transition={{ type: "spring", damping: 12, stiffness: 100, delay: 0.15 }}
+                          className="relative w-36 h-36 md:w-44 md:h-44 shrink-0 flex items-center justify-center overflow-visible"
+                        >
+                          <svg
+                            viewBox="10 10 690 580"
+                            className="w-full h-full"
+                            preserveAspectRatio="xMidYMid meet"
+                          >
+                            {/* Base departments map */}
+                            {Object.entries(departmentPaths).map(([code, pathData]) => {
+                              const isCurrent = code === territory.id;
+                              return (
+                                <path
+                                  key={code}
+                                  d={pathData.d}
+                                  fill={isCurrent ? activeColor : "#1e293b"}
+                                  stroke={isCurrent ? "#ffffff" : "#475569"}
+                                  strokeOpacity={isCurrent ? "1" : "0.4"}
+                                  strokeWidth={isCurrent ? "1.5" : "0.5"}
+                                  className={isCurrent ? "drop-shadow-[0_4px_12px_rgba(0,0,0,0.5)]" : "opacity-80"}
+                                />
+                              );
+                            })}
 
-                          return (
-                            <g>
-                              <motion.circle
-                                cx={centerX}
-                                cy={centerY}
-                                r="22"
-                                fill="#f43f5e"
-                                initial={{ opacity: 0.6, scale: 0.2 }}
-                                animate={{ opacity: 0, scale: 1 }}
-                                transition={{
-                                  repeat: Infinity,
-                                  duration: 1.8,
-                                  ease: "easeOut"
-                                }}
-                              />
-                              <circle
-                                cx={centerX}
-                                cy={centerY}
-                                r="4.5"
-                                fill="#ffffff"
-                                stroke="#f43f5e"
-                                strokeWidth="2.5"
-                                className="drop-shadow"
-                              />
-                            </g>
-                          );
-                        })()}
-                      </svg>
-                    </motion.div>
+                            {/* Pulsing Pin Locator */}
+                            {(() => {
+                              const activePath = departmentPaths[territory.id];
+                              if (!activePath) return null;
+                              const parts = activePath.viewBox.trim().split(/\s+/).map(Number);
+                              if (parts.length !== 4 || parts.some(isNaN)) return null;
+                              const [x, y, w, h] = parts;
+                              const centerX = x + w / 2;
+                              const centerY = y + h / 2;
+
+                              return (
+                                <g>
+                                  <motion.circle
+                                    cx={centerX}
+                                    cy={centerY}
+                                    r="22"
+                                    fill={activeColor}
+                                    initial={{ opacity: 0.6, scale: 0.2 }}
+                                    animate={{ opacity: 0, scale: 1 }}
+                                    transition={{
+                                      repeat: Infinity,
+                                      duration: 1.8,
+                                      ease: "easeOut"
+                                    }}
+                                  />
+                                  <circle
+                                    cx={centerX}
+                                    cy={centerY}
+                                    r="4.5"
+                                    fill="#ffffff"
+                                    stroke={activeColor}
+                                    strokeWidth="2.5"
+                                    className="drop-shadow"
+                                  />
+                                </g>
+                              );
+                            })()}
+                          </svg>
+                        </motion.div>
+                      );
+                    })()
                   )}
                 </div>
               </div>

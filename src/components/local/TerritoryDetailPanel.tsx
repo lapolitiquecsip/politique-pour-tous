@@ -307,6 +307,13 @@ export default function TerritoryDetailPanel({ territory, onClose }: TerritoryDe
                         </div>
                       )}
                     </div>
+
+                    {/* Sources (if available) */}
+                    {data?.sources && (
+                      <div className="text-center text-[10px] text-slate-400/80 italic pt-6 border-t border-slate-100 mt-6">
+                        Source(s) de données : {data.sources}
+                      </div>
+                    )}
                   </>
                 )}
               </div>

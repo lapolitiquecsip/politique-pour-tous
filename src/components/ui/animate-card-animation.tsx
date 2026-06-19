@@ -46,7 +46,7 @@ function CardContent({ data }: { data: CardData }) {
   const isIntox = data.title === "Intox de la semaine";
 
   return (
-    <div className={`flex h-full w-full flex-col justify-center items-center text-center p-6 rounded-[1rem] ${bgColor} text-white shadow-inner relative overflow-hidden`}>
+    <div className={`flex h-full w-full flex-col justify-center items-center text-center p-4 sm:p-6 rounded-[1rem] ${bgColor} text-white shadow-inner relative overflow-hidden`}>
       {/* Decorative subtle ambient glows */}
       <div className="absolute top-0 right-0 w-48 h-48 bg-white/10 rounded-full blur-3xl -mr-10 -mt-10 pointer-events-none" />
       <div className="absolute bottom-0 left-0 w-48 h-48 bg-black/10 rounded-full blur-2xl -ml-10 -mb-10 pointer-events-none" />
@@ -54,10 +54,14 @@ function CardContent({ data }: { data: CardData }) {
       <div className="relative z-10 w-full h-full flex flex-col items-center justify-center">
         {data.value ? (
           <>
-            <span className="text-[5rem] sm:text-[7rem] font-staatliches mb-2 tracking-tighter leading-none drop-shadow-md text-white">
+            <span className="text-[4rem] sm:text-[5.5rem] font-staatliches mb-1 tracking-tighter leading-none drop-shadow-md text-white">
               {data.value}
             </span>
-            <span className="text-sm sm:text-base font-bold max-w-sm leading-snug opacity-90 uppercase tracking-[0.2em] drop-shadow-sm text-balance">
+            <span className={`font-bold max-w-sm leading-snug opacity-90 uppercase tracking-[0.15em] drop-shadow-sm text-balance ${
+              (data.label || data.description || "").length > 80
+                ? 'text-[10px] sm:text-xs'
+                : 'text-xs sm:text-sm'
+            }`}>
               {data.label || data.description}
             </span>
           </>
@@ -164,10 +168,16 @@ function CardContent({ data }: { data: CardData }) {
           );
         })() : (
           <>
-            <span className="bg-white/20 text-white px-4 py-1.5 rounded-full text-[10px] font-black uppercase tracking-[0.2em] mb-6 backdrop-blur-sm">
+            <span className="bg-white/20 text-white px-4 py-1 rounded-full text-[9px] font-black uppercase tracking-[0.2em] mb-4 backdrop-blur-sm">
               {data.title}
             </span>
-            <span className="text-xl sm:text-2xl font-bold max-w-md leading-relaxed drop-shadow-sm text-balance text-white/95">
+            <span className={`font-bold max-w-md leading-relaxed drop-shadow-sm text-balance text-white/95 ${
+              data.description.length > 150 
+                ? 'text-xs sm:text-sm' 
+                : data.description.length > 80 
+                  ? 'text-sm sm:text-base' 
+                  : 'text-base sm:text-lg'
+            }`}>
               {data.description}
             </span>
           </>
@@ -209,7 +219,7 @@ function AnimatedCard({
         x: "-50%",
         bottom: 0,
       }}
-      className="absolute flex h-[310px] w-[324px] items-center justify-center overflow-hidden rounded-t-[1.5rem] border-x border-t border-slate-200 bg-white p-1.5 shadow-2xl will-change-transform sm:w-[512px]"
+      className="absolute flex h-[330px] w-[324px] items-center justify-center overflow-hidden rounded-t-[1.5rem] border-x border-t border-slate-200 bg-white p-1.5 shadow-2xl will-change-transform sm:w-[512px]"
     >
       <CardContent data={card} />
     </motion.div>

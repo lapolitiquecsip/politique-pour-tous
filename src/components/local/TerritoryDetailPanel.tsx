@@ -19,11 +19,11 @@ const CATEGORIES = [
     title: 'Démographie', 
     icon: Users,
     metrics: [
-      { key: 'demographie.populationTotal', label: 'Population totale', format: (v: any) => v?.toLocaleString() + ' hab.' },
-      { key: 'demographie.densite', label: 'Densité', format: (v: any) => v + ' hab/km²' },
-      { key: 'demographie.evolution10ans', label: 'Évol. 10 ans', format: (v: any) => v },
-      { key: 'demographie.moins25ans', label: '% -25 ans', format: (v: any) => v + '%' },
-      { key: 'demographie.plus65ans', label: '% +65 ans', format: (v: any) => v + '%' },
+      { key: 'demographie.populationTotal', label: 'Population totale', format: (v: any) => v?.toLocaleString() + ' hab.', help: "Nombre total d'habitants résidents (recensement Insee 2021)." },
+      { key: 'demographie.densite', label: 'Densité', format: (v: any) => v + ' hab/km²', help: "Nombre moyen d'habitants par kilomètre carré." },
+      { key: 'demographie.evolution10ans', label: 'Évol. 10 ans', format: (v: any) => v, help: "Variation en pourcentage de la population sur les 10 dernières années." },
+      { key: 'demographie.moins25ans', label: '% -25 ans', format: (v: any) => v + '%', help: "Part de la population de moins de 25 ans." },
+      { key: 'demographie.plus65ans', label: '% +65 ans', format: (v: any) => v + '%', help: "Part de la population de 65 ans et plus." },
     ]
   },
   { 
@@ -31,9 +31,9 @@ const CATEGORIES = [
     title: 'Économie & Emploi', 
     icon: Briefcase,
     metrics: [
-      { key: 'economie.chomage', label: 'Taux de chômage', format: (v: any) => v + '%', inverse: true },
-      { key: 'economie.revenuMedian', label: 'Revenu médian', format: (v: any) => v + ' €/mois' },
-      { key: 'economie.pauvrete', label: 'Taux de pauvreté', format: (v: any) => v + '%', inverse: true },
+      { key: 'economie.chomage', label: 'Taux de chômage', format: (v: any) => v + '%', inverse: true, help: "Part des actifs sans emploi (Insee 2023)." },
+      { key: 'economie.revenuMedian', label: 'Revenu médian', format: (v: any) => v + ' €/mois', help: "Revenu mensuel séparant la population en deux parts égales." },
+      { key: 'economie.pauvrete', label: 'Taux de pauvreté', format: (v: any) => v + '%', inverse: true, help: "Vivant avec moins de 60% du revenu médian national (≈ 1150 €/mois)." },
     ]
   },
   {
@@ -41,9 +41,9 @@ const CATEGORIES = [
     title: 'Éducation',
     icon: GraduationCap,
     metrics: [
-      { key: 'education.bac', label: 'Réussite au Bac', format: (v: any) => v + '%' },
-      { key: 'education.diplomesSup', label: '% Diplômés Sup.', format: (v: any) => v + '%' },
-      { key: 'education.decrochage', label: 'Décrochage', format: (v: any) => v + '%', inverse: true },
+      { key: 'education.bac', label: 'Réussite au Bac', format: (v: any) => v + '%', help: "Taux de réussite global aux examens du baccalauréat (session 2023)." },
+      { key: 'education.diplomesSup', label: '% Diplômés Sup.', format: (v: any) => v + '%', help: "Part de la population de 15 ans ou plus ayant un diplôme supérieur." },
+      { key: 'education.decrochage', label: 'Décrochage', format: (v: any) => v + '%', inverse: true, help: "Part des 15-24 ans sortis du système scolaire sans aucun diplôme." },
     ]
   },
   {
@@ -51,9 +51,9 @@ const CATEGORIES = [
     title: 'Santé',
     icon: Heart,
     metrics: [
-      { key: 'sante.medecins10k', label: 'Médecins / 10k hab.', format: (v: any) => v },
-      { key: 'sante.scoreAPL', label: 'Accessibilité Santé', format: (v: any) => v + '/100' },
-      { key: 'sante.esperanceVie', label: 'Espérance de vie', format: (v: any) => v + ' ans' },
+      { key: 'sante.medecins10k', label: 'Médecins / 10k hab.', format: (v: any) => v, help: "Nombre de médecins généralistes et spécialistes pour 10 000 hab." },
+      { key: 'sante.scoreAPL', label: 'Accessibilité Santé', format: (v: any) => v + '/100', help: "Indicateur d'accès aux soins basé sur la densité et le temps de trajet." },
+      { key: 'sante.esperanceVie', label: 'Espérance de vie', format: (v: any) => v + ' ans', help: "Durée de vie moyenne estimée à la naissance." },
     ]
   },
   {
@@ -61,8 +61,8 @@ const CATEGORIES = [
     title: 'Sécurité',
     icon: Shield,
     metrics: [
-      { key: 'securite.atteintesPersonnes', label: 'Violences / 1k hab.', format: (v: any) => v, inverse: true },
-      { key: 'securite.atteintesBiens', label: 'Vols / 1k hab.', format: (v: any) => v, inverse: true },
+      { key: 'securite.atteintesPersonnes', label: 'Violences / 1k hab.', format: (v: any) => v, inverse: true, help: "Crimes/délits contre les personnes enregistrés pour 1000 hab. (2023)." },
+      { key: 'securite.atteintesBiens', label: 'Vols / 1k hab.', format: (v: any) => v, inverse: true, help: "Vols et cambriolages enregistrés pour 1000 hab. (2023)." },
     ]
   },
   {
@@ -70,9 +70,9 @@ const CATEGORIES = [
     title: 'Logement',
     icon: Home,
     metrics: [
-      { key: 'logement.prixM2', label: 'Prix moyen m²', format: (v: any) => v + ' €' },
-      { key: 'logement.logementsSociaux', label: '% Logements sociaux', format: (v: any) => v + '%' },
-      { key: 'logement.proprietaires', label: '% Propriétaires', format: (v: any) => v + '%' },
+      { key: 'logement.prixM2', label: 'Prix moyen m²', format: (v: any) => v + ' €', help: "Prix de vente moyen du m² tous logements confondus (Insee 2023)." },
+      { key: 'logement.logementsSociaux', label: '% Logements sociaux', format: (v: any) => v + '%', help: "Part des logements sociaux parmi les résidences principales." },
+      { key: 'logement.proprietaires', label: '% Propriétaires', format: (v: any) => v + '%', help: "Part des ménages propriétaires de leur résidence principale." },
     ]
   },
   {
@@ -80,9 +80,9 @@ const CATEGORIES = [
     title: 'Finances',
     icon: Landmark,
     metrics: [
-      { key: 'finances.budgetHabitant', label: 'Budget / hab.', format: (v: any) => v + ' €' },
-      { key: 'finances.endettement', label: 'Endettement', format: (v: any) => v + '%', inverse: true },
-      { key: 'finances.investissement', label: '% Investissement', format: (v: any) => v + '%' },
+      { key: 'finances.budgetHabitant', label: 'Budget / hab.', format: (v: any) => v + ' €', help: "Dépenses réelles de fonctionnement et d'investissement par hab." },
+      { key: 'finances.endettement', label: 'Endettement', format: (v: any) => v + '%', inverse: true, help: "Encours de la dette totale rapporté aux recettes de fonctionnement." },
+      { key: 'finances.investissement', label: '% Investissement', format: (v: any) => v + '%', help: "Part du budget consacrée au développement à long terme du territoire." },
     ]
   },
   {
@@ -90,8 +90,9 @@ const CATEGORIES = [
     title: 'Environnement',
     icon: TreePine,
     metrics: [
-      { key: 'environnement.qualiteAir', label: 'Qualité Air', format: (v: any) => v + '/100' },
-      { key: 'environnement.surfaceNaturelle', label: '% Espaces verts', format: (v: any) => v + '%' },
+      { key: 'environnement.qualiteAir', label: 'Qualité Air', format: (v: any) => v + '/100', help: "Note moyenne sur les concentrations d'ozone, NO₂ et microparticules." },
+      { key: 'environnement.surfaceNaturelle', label: '% Espaces verts', format: (v: any) => v + '%', help: "Part du territoire occupé par des forêts ou espaces naturels protégés." },
+      { key: 'environnement.risques', label: 'Exposition aux risques', format: (v: any) => v, help: "Niveau d'exposition aux risques naturels majeurs (crues, feux, séismes)." },
     ]
   }
 ];
@@ -271,6 +272,11 @@ export default function TerritoryDetailPanel({ territory, onClose }: TerritoryDe
                                   <span>{metric.label}</span>
                                   <span className="text-slate-900">{val !== null ? metric.format(val) : 'N/A'}</span>
                                 </div>
+                                {metric.help && (
+                                  <div className="text-[10px] text-slate-400 font-medium normal-case leading-relaxed -mt-1">
+                                    {metric.help}
+                                  </div>
+                                )}
                                 <div className="h-2 w-full bg-slate-200 rounded-full overflow-hidden">
                                   <motion.div
                                     initial={{ width: 0 }}

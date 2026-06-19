@@ -3,7 +3,7 @@
 import { motion, AnimatePresence } from "framer-motion";
 import { 
   MapPin, Users, Building2, TrendingUp, Search, ArrowRight, Vote,
-  History, Building, ChevronRight, Map, Layers, LayoutGrid, Lock, Loader2, Star, Coins
+  History, Building, ChevronRight, Map, Layers, LayoutGrid, Lock, Loader2, Star, Coins, Scale
 } from "lucide-react";
 import { useSearchParams } from "next/navigation";
 import { useState, useEffect, Suspense } from "react";
@@ -718,13 +718,79 @@ function LocalPoliticsContent() {
             {/* Premium Teaser (if not premium) */}
             {!isPremium && (
               <div className="bg-gradient-to-br from-amber-400 to-orange-500 rounded-[2.5rem] p-8 text-slate-900 space-y-6 shadow-xl shadow-orange-200">
-                <div className="w-12 h-12 rounded-2xl bg-white/30 flex items-center justify-center">
-                  <Lock size={24} />
+                <div className="flex items-center justify-between">
+                  <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-white/25 border border-white/30 text-[9px] font-black uppercase tracking-widest text-slate-900 shadow-sm">
+                    <Coins size={12} className="text-slate-900 fill-slate-900/10" />
+                    Option Premium
+                  </div>
+                  <div className="w-8 h-8 rounded-full bg-white/20 flex items-center justify-center border border-white/10">
+                    <Lock size={14} className="text-slate-900" />
+                  </div>
                 </div>
+
                 <div className="space-y-2">
-                  <h3 className="text-2xl font-staatliches uppercase tracking-wide leading-tight">Accès Premium</h3>
-                  <p className="text-sm font-medium opacity-90">Débloquez l'analyse comparative détaillée des budgets et de la sécurité de votre commune.</p>
+                  <h3 className="text-3xl font-staatliches uppercase tracking-wide leading-none">Comparateur de départements</h3>
+                  <p className="text-xs font-semibold opacity-95 leading-relaxed">
+                    Comparez instantanément les indicateurs financiers, la sécurité locale, la fiscalité et les performances de tous les territoires.
+                  </p>
                 </div>
+
+                {/* Comparator Preview Mockup */}
+                <div className="bg-white/15 backdrop-blur-md border border-white/20 rounded-3xl p-5 relative overflow-hidden shadow-inner my-2">
+                  {/* Department headers */}
+                  <div className="grid grid-cols-7 items-center gap-1 text-center mb-4">
+                    <div className="col-span-3 bg-white/30 rounded-2xl p-2.5 flex flex-col items-center border border-white/10 shadow-sm">
+                      <span className="text-[10px] font-black uppercase tracking-wider text-slate-900">Rhône</span>
+                      <span className="text-[9px] font-bold text-slate-700 mt-0.5">N° 69</span>
+                    </div>
+                    <div className="col-span-1 flex justify-center">
+                      <span className="w-7 h-7 rounded-full bg-slate-900 text-white font-black text-[10px] flex items-center justify-center shadow-md border border-white/15">VS</span>
+                    </div>
+                    <div className="col-span-3 bg-white/30 rounded-2xl p-2.5 flex flex-col items-center border border-white/10 shadow-sm">
+                      <span className="text-[10px] font-black uppercase tracking-wider text-slate-900">Gironde</span>
+                      <span className="text-[9px] font-bold text-slate-700 mt-0.5">N° 33</span>
+                    </div>
+                  </div>
+
+                  {/* Comparative Metrics (Locked & Blurred) */}
+                  <div className="space-y-3.5 relative">
+                    {/* Metric 1 */}
+                    <div className="grid grid-cols-7 items-center text-xs font-bold text-slate-900 border-b border-white/10 pb-2">
+                      <div className="col-span-2 text-left font-black text-emerald-800">8.2 / 10</div>
+                      <div className="col-span-3 text-center text-[8px] uppercase tracking-widest text-slate-700 font-extrabold flex items-center justify-center gap-1">
+                        <Scale size={10} className="opacity-60" /> Sécurité
+                      </div>
+                      <div className="col-span-2 text-right font-black text-amber-800">6.5 / 10</div>
+                    </div>
+                    
+                    {/* Metric 2 */}
+                    <div className="grid grid-cols-7 items-center text-xs font-bold text-slate-900 border-b border-white/10 pb-2">
+                      <div className="col-span-2 text-left font-black text-slate-800">1 240 €</div>
+                      <div className="col-span-3 text-center text-[8px] uppercase tracking-widest text-slate-700 font-extrabold">
+                        Budget / Hab.
+                      </div>
+                      <div className="col-span-2 text-right font-black text-slate-800">980 €</div>
+                    </div>
+
+                    {/* Metric 3 */}
+                    <div className="grid grid-cols-7 items-center text-xs font-bold text-slate-900">
+                      <div className="col-span-2 text-left font-black text-emerald-800">Basse</div>
+                      <div className="col-span-3 text-center text-[8px] uppercase tracking-widest text-slate-700 font-extrabold">
+                        Fiscalité
+                      </div>
+                      <div className="col-span-2 text-right font-black text-rose-800">Élevée</div>
+                    </div>
+
+                    {/* Lock Overlay */}
+                    <div className="absolute -inset-2 bg-white/5 backdrop-blur-[3.5px] rounded-2xl flex items-center justify-center border border-white/10 shadow-sm">
+                      <div className="bg-slate-900/90 text-white px-4 py-2 rounded-full flex items-center gap-2 shadow-lg border border-white/10">
+                        <Lock size={12} className="text-amber-400 fill-amber-400" />
+                        <span className="text-[9px] font-black uppercase tracking-wider">Débloquer le comparateur</span>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+
                 <AwardBadge 
                   titleText="Découvrir l'offre Elite"
                   subtitleText="Accès Premium"

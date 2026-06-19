@@ -310,10 +310,10 @@ export default function TerritoryDetailPanel({ territory, onClose }: TerritoryDe
                             preserveAspectRatio="xMidYMid meet"
                           >
                             {/* Base departments map */}
-                            {Object.entries(departmentPaths).map(([code, pathData]) => {
+                            {Object.entries(departmentPaths).map(([code, pathData], idx) => {
                               const isCurrent = code === territory.id;
                               return (
-                                <path
+                                <motion.path
                                   key={code}
                                   d={pathData.d}
                                   fill={isCurrent ? activeColor : "#ffffff"}
@@ -321,12 +321,21 @@ export default function TerritoryDetailPanel({ territory, onClose }: TerritoryDe
                                   stroke={isCurrent ? "#ffffff" : "#475569"}
                                   strokeOpacity={isCurrent ? 1 : 0.35}
                                   strokeWidth={isCurrent ? "1.5" : "0.5"}
-                                  className={isCurrent ? "drop-shadow-[0_4px_12px_rgba(0,0,0,0.5)]" : ""}
+                                  className={isCurrent ? "drop-shadow-[0_4px_12px_rgba(0,0,0,0.5)] z-10" : ""}
+                                  initial={{ opacity: 0, scale: 0.9 }}
+                                  animate={{ opacity: 1, scale: 1 }}
+                                  transition={{
+                                    delay: idx * 0.002, // Stagger ripple popping effect
+                                    duration: 0.3,
+                                    type: "spring",
+                                    stiffness: 120,
+                                    damping: 12
+                                  }}
                                 />
                               );
                             })}
 
-                            {/* Pulsing Pin Locator */}
+                            {/* Pulsing Pin and Path locator */}
                             {(() => {
                               const activePath = departmentPaths[territory.id];
                               if (!activePath) return null;
@@ -338,19 +347,38 @@ export default function TerritoryDetailPanel({ territory, onClose }: TerritoryDe
 
                               return (
                                 <g>
+                                  {/* Pulsing path shape wave */}
+                                  <motion.path
+                                    d={activePath.d}
+                                    fill={activeColor}
+                                    style={{ originX: centerX, originY: centerY }}
+                                    initial={{ opacity: 0.6, scale: 1 }}
+                                    animate={{ opacity: 0, scale: 1.25 }}
+                                    transition={{
+                                      repeat: Infinity,
+                                      duration: 2.0,
+                                      ease: "easeOut"
+                                    }}
+                                    className="pointer-events-none"
+                                  />
+
+                                  {/* Pulsing circle wave */}
                                   <motion.circle
                                     cx={centerX}
                                     cy={centerY}
                                     r="22"
                                     fill={activeColor}
-                                    initial={{ opacity: 0.6, scale: 0.2 }}
+                                    initial={{ opacity: 0.5, scale: 0.2 }}
                                     animate={{ opacity: 0, scale: 1 }}
                                     transition={{
                                       repeat: Infinity,
-                                      duration: 1.8,
-                                      ease: "easeOut"
+                                      duration: 2.0,
+                                      ease: "easeOut",
+                                      delay: 0.2
                                     }}
                                   />
+                                  
+                                  {/* Static inner dot */}
                                   <circle
                                     cx={centerX}
                                     cy={centerY}

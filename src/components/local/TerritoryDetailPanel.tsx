@@ -282,7 +282,7 @@ export default function TerritoryDetailPanel({ territory, onClose }: TerritoryDe
                   </div>
 
                   {/* France map (only for departments) */}
-                  {territory.type === 'department' && departmentPaths[territory.id] && (
+                  {(territory.type === 'department' || !territory.type) && departmentPaths[territory.id] && (
                     <motion.div
                       initial={{ opacity: 0, scale: 0.8, y: 15 }}
                       animate={{ opacity: 1, scale: 1, y: 0 }}

@@ -424,7 +424,7 @@ function LocalPoliticsContent() {
     } else if (activeTab === "departement") {
       const base = DEPARTMENTS.map(d => {
         const dyn = dynamicTerritories.find(dt => dt.id === d.id && dt.type === 'department');
-        return dyn ? { ...d, ...dyn } : d;
+        return dyn ? { ...d, ...dyn, type: 'department' as const } : { ...d, type: 'department' as const };
       });
       return base.filter(d => d.name.toLowerCase().includes(s) || (d.president && d.president.toLowerCase().includes(s)));
     }

@@ -316,9 +316,10 @@ export default function TerritoryDetailPanel({ territory, onClose }: TerritoryDe
                                 <path
                                   key={code}
                                   d={pathData.d}
-                                  fill={isCurrent ? activeColor : "#1e293b"}
-                                  stroke={isCurrent ? "#ffffff" : "#475569"}
-                                  strokeOpacity={isCurrent ? "1" : "0.4"}
+                                  fill={isCurrent ? activeColor : "#ffffff"}
+                                  fillOpacity={isCurrent ? 1 : 0.12}
+                                  stroke={isCurrent ? "#ffffff" : "#ffffff"}
+                                  strokeOpacity={isCurrent ? 1 : 0.20}
                                   strokeWidth={isCurrent ? "1.5" : "0.5"}
                                   className={isCurrent ? "drop-shadow-[0_4px_12px_rgba(0,0,0,0.5)]" : "opacity-80"}
                                 />

@@ -18,6 +18,11 @@ const CATEGORIES = [
     id: 'demographie', 
     title: 'Démographie', 
     icon: Users,
+    bgClass: 'bg-blue-50/40',
+    borderClass: 'border-blue-100/50',
+    iconClass: 'bg-blue-100 text-blue-900',
+    textClass: 'text-blue-800',
+    progressClass: 'bg-blue-600',
     metrics: [
       { key: 'demographie.populationTotal', label: 'Population totale', format: (v: any) => v?.toLocaleString() + ' hab.', help: "Nombre total d'habitants résidents (recensement Insee 2021)." },
       { key: 'demographie.densite', label: 'Densité', format: (v: any) => v + ' hab/km²', help: "Nombre moyen d'habitants par kilomètre carré." },
@@ -30,6 +35,11 @@ const CATEGORIES = [
     id: 'economie', 
     title: 'Économie & Emploi', 
     icon: Briefcase,
+    bgClass: 'bg-emerald-50/40',
+    borderClass: 'border-emerald-100/50',
+    iconClass: 'bg-emerald-100 text-emerald-900',
+    textClass: 'text-emerald-800',
+    progressClass: 'bg-emerald-600',
     metrics: [
       { key: 'economie.chomage', label: 'Taux de chômage', format: (v: any) => v + '%', inverse: true, help: "Part des actifs sans emploi (Insee 2023)." },
       { key: 'economie.revenuMedian', label: 'Revenu médian', format: (v: any) => v + ' €/mois', help: "Revenu mensuel séparant la population en deux parts égales." },
@@ -40,6 +50,11 @@ const CATEGORIES = [
     id: 'education',
     title: 'Éducation',
     icon: GraduationCap,
+    bgClass: 'bg-indigo-50/40',
+    borderClass: 'border-indigo-100/50',
+    iconClass: 'bg-indigo-100 text-indigo-900',
+    textClass: 'text-indigo-800',
+    progressClass: 'bg-indigo-600',
     metrics: [
       { key: 'education.bac', label: 'Réussite au Bac', format: (v: any) => v + '%', help: "Taux de réussite global aux examens du baccalauréat (session 2023)." },
       { key: 'education.diplomesSup', label: '% Diplômés Sup.', format: (v: any) => v + '%', help: "Part de la population de 15 ans ou plus ayant un diplôme supérieur." },
@@ -50,6 +65,11 @@ const CATEGORIES = [
     id: 'sante',
     title: 'Santé',
     icon: Heart,
+    bgClass: 'bg-rose-50/40',
+    borderClass: 'border-rose-100/50',
+    iconClass: 'bg-rose-100 text-rose-900',
+    textClass: 'text-rose-800',
+    progressClass: 'bg-rose-600',
     metrics: [
       { key: 'sante.medecins10k', label: 'Médecins / 10k hab.', format: (v: any) => v, help: "Nombre de médecins généralistes et spécialistes pour 10 000 hab." },
       { key: 'sante.scoreAPL', label: 'Accessibilité Santé', format: (v: any) => v + '/100', help: "Indicateur d'accès aux soins basé sur la densité et le temps de trajet." },
@@ -60,6 +80,11 @@ const CATEGORIES = [
     id: 'securite',
     title: 'Sécurité',
     icon: Shield,
+    bgClass: 'bg-amber-50/40',
+    borderClass: 'border-amber-100/50',
+    iconClass: 'bg-amber-100 text-amber-900',
+    textClass: 'text-amber-800',
+    progressClass: 'bg-amber-600',
     metrics: [
       { key: 'securite.atteintesPersonnes', label: 'Violences / 1k hab.', format: (v: any) => v, inverse: true, help: "Crimes/délits contre les personnes enregistrés pour 1000 hab. (2023)." },
       { key: 'securite.atteintesBiens', label: 'Vols / 1k hab.', format: (v: any) => v, inverse: true, help: "Vols et cambriolages enregistrés pour 1000 hab. (2023)." },
@@ -69,9 +94,14 @@ const CATEGORIES = [
     id: 'logement',
     title: 'Logement',
     icon: Home,
+    bgClass: 'bg-cyan-50/40',
+    borderClass: 'border-cyan-100/50',
+    iconClass: 'bg-cyan-100 text-cyan-900',
+    textClass: 'text-cyan-800',
+    progressClass: 'bg-cyan-600',
     metrics: [
       { key: 'logement.prixM2', label: 'Prix moyen m²', format: (v: any) => v + ' €', help: "Prix de vente moyen du m² tous logements confondus (Insee 2023)." },
-      { key: 'logement.logementsSociaux', label: '% Logements sociaux', format: (v: any) => v + '%', help: "Part des logements sociaux parmi les résidences principales." },
+      { key: 'logement.logementsSociaux', label: '% Logements sociaux', format: (v: any) => v + '%' , help: "Part des logements sociaux parmi les résidences principales." },
       { key: 'logement.proprietaires', label: '% Propriétaires', format: (v: any) => v + '%', help: "Part des ménages propriétaires de leur résidence principale." },
     ]
   },
@@ -79,6 +109,11 @@ const CATEGORIES = [
     id: 'finances',
     title: 'Finances',
     icon: Landmark,
+    bgClass: 'bg-pink-50/40',
+    borderClass: 'border-pink-100/50',
+    iconClass: 'bg-pink-100 text-pink-900',
+    textClass: 'text-pink-800',
+    progressClass: 'bg-pink-600',
     metrics: [
       { key: 'finances.budgetHabitant', label: 'Budget / hab.', format: (v: any) => v + ' €', help: "Dépenses réelles de fonctionnement et d'investissement par hab." },
       { key: 'finances.endettement', label: 'Endettement', format: (v: any) => v + '%', inverse: true, help: "Encours de la dette totale rapporté aux recettes de fonctionnement." },
@@ -89,6 +124,11 @@ const CATEGORIES = [
     id: 'environnement',
     title: 'Environnement',
     icon: TreePine,
+    bgClass: 'bg-purple-50/40',
+    borderClass: 'border-purple-100/50',
+    iconClass: 'bg-purple-100 text-purple-900',
+    textClass: 'text-purple-800',
+    progressClass: 'bg-purple-600',
     metrics: [
       { key: 'environnement.qualiteAir', label: 'Qualité Air', format: (v: any) => v + '/100', help: "Note moyenne sur les concentrations d'ozone, NO₂ et microparticules." },
       { key: 'environnement.surfaceNaturelle', label: '% Espaces verts', format: (v: any) => v + '%', help: "Part du territoire occupé par des forêts ou espaces naturels protégés." },
@@ -252,13 +292,13 @@ export default function TerritoryDetailPanel({ territory, onClose }: TerritoryDe
                     {CATEGORIES.map((cat, catIdx) => (
                       <div key={catIdx} className="space-y-6">
                         <div className="flex items-center gap-3">
-                          <div className="w-10 h-10 rounded-2xl bg-slate-100 flex items-center justify-center text-slate-900">
+                          <div className={`w-10 h-10 rounded-2xl flex items-center justify-center ${cat.iconClass}`}>
                             <cat.icon size={20} />
                           </div>
-                          <h3 className="text-xl font-staatliches uppercase tracking-wide text-slate-900">{cat.title}</h3>
+                          <h3 className={`text-xl font-staatliches uppercase tracking-wide ${cat.textClass}`}>{cat.title}</h3>
                         </div>
 
-                        <div className="grid grid-cols-1 md:grid-cols-2 gap-x-12 gap-y-6 bg-slate-50 rounded-[2rem] p-8 border border-slate-100">
+                        <div className={`grid grid-cols-1 md:grid-cols-2 gap-x-12 gap-y-6 rounded-[2rem] p-8 border ${cat.bgClass} ${cat.borderClass}`}>
                           {cat.metrics.map((metric, mIdx) => {
                             const getVal = (data: any, path: string) => {
                               if (!data) return null;
@@ -270,18 +310,18 @@ export default function TerritoryDetailPanel({ territory, onClose }: TerritoryDe
                               <div key={mIdx} className="space-y-2">
                                 <div className="flex justify-between text-[10px] font-black uppercase tracking-widest text-slate-400">
                                   <span>{metric.label}</span>
-                                  <span className="text-slate-900">{val !== null ? metric.format(val) : 'N/A'}</span>
+                                  <span className="text-slate-900 font-bold">{val !== null ? metric.format(val) : 'N/A'}</span>
                                 </div>
                                 {metric.help && (
                                   <div className="text-[10px] text-slate-400 font-medium normal-case leading-relaxed -mt-1">
                                     {metric.help}
                                   </div>
                                 )}
-                                <div className="h-2 w-full bg-slate-200 rounded-full overflow-hidden">
+                                <div className="h-2 w-full bg-slate-200/60 rounded-full overflow-hidden">
                                   <motion.div
                                     initial={{ width: 0 }}
                                     animate={{ width: val ? (typeof val === 'number' ? Math.min(val, 100) : 50) + '%' : '0%' }}
-                                    className={`h-full bg-slate-900`}
+                                    className={`h-full ${cat.progressClass}`}
                                   />
                                 </div>
                               </div>

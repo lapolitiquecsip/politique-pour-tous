@@ -514,7 +514,13 @@ function LocalPoliticsContent() {
               </div>
               <input
                 type="text"
-                placeholder={activeTab === 'commune' ? "Rechercher une ville, un code postal..." : "Rechercher une région, un président..."}
+                placeholder={
+                  activeTab === 'commune' 
+                    ? "Rechercher une ville, un code postal..." 
+                    : activeTab === 'departement' 
+                    ? "Rechercher un département, un président..." 
+                    : "Rechercher une région, un président..."
+                }
                 value={search}
                 onChange={(e) => {
                   setSearch(e.target.value);

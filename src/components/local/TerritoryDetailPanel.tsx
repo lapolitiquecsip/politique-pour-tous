@@ -319,8 +319,8 @@ export default function TerritoryDetailPanel({ territory, onClose }: TerritoryDe
                                   fill={isCurrent ? activeColor : "#ffffff"}
                                   fillOpacity={isCurrent ? 1 : 0.90}
                                   stroke={isCurrent ? "#ffffff" : "#475569"}
-                                  strokeOpacity={isCurrent ? 1 : 0.35}
-                                  strokeWidth={isCurrent ? "1.5" : "0.5"}
+                                  strokeOpacity={isCurrent ? 1 : 0.45}
+                                  strokeWidth={isCurrent ? "2.5" : "1.6"}
                                   strokeLinecap="round"
                                   strokeLinejoin="round"
                                   className={isCurrent ? "drop-shadow-[0_4px_12px_rgba(0,0,0,0.5)] z-10" : ""}
@@ -355,7 +355,7 @@ export default function TerritoryDetailPanel({ territory, onClose }: TerritoryDe
                                     d={activePath.d}
                                     fill={activeColor}
                                     stroke={activeColor}
-                                    strokeWidth="1"
+                                    strokeWidth="2"
                                     strokeLinecap="round"
                                     strokeLinejoin="round"
                                     style={{ originX: 0.5, originY: 0.5 }}

@@ -321,15 +321,18 @@ export default function TerritoryDetailPanel({ territory, onClose }: TerritoryDe
                                   stroke={isCurrent ? "#ffffff" : "#475569"}
                                   strokeOpacity={isCurrent ? 1 : 0.35}
                                   strokeWidth={isCurrent ? "1.5" : "0.5"}
+                                  strokeLinecap="round"
+                                  strokeLinejoin="round"
                                   className={isCurrent ? "drop-shadow-[0_4px_12px_rgba(0,0,0,0.5)] z-10" : ""}
-                                  initial={{ opacity: 0, scale: 0.9 }}
-                                  animate={{ opacity: 1, scale: 1 }}
+                                  style={{ originX: 0.5, originY: 0.5 }}
+                                  initial={{ opacity: 0, y: -35, scale: 0.4, rotate: -15 }}
+                                  animate={{ opacity: 1, y: 0, scale: 1, rotate: 0 }}
                                   transition={{
-                                    delay: idx * 0.002, // Stagger ripple popping effect
-                                    duration: 0.3,
+                                    delay: idx * 0.003, // Highly visible stagger ripple
+                                    duration: 0.45,
                                     type: "spring",
-                                    stiffness: 120,
-                                    damping: 12
+                                    stiffness: 140,
+                                    damping: 10 // Playful bouncy physics
                                   }}
                                 />
                               );
@@ -351,7 +354,11 @@ export default function TerritoryDetailPanel({ territory, onClose }: TerritoryDe
                                   <motion.path
                                     d={activePath.d}
                                     fill={activeColor}
-                                    style={{ originX: centerX, originY: centerY }}
+                                    stroke={activeColor}
+                                    strokeWidth="1"
+                                    strokeLinecap="round"
+                                    strokeLinejoin="round"
+                                    style={{ originX: 0.5, originY: 0.5 }}
                                     initial={{ opacity: 0.6, scale: 1 }}
                                     animate={{ opacity: 0, scale: 1.25 }}
                                     transition={{

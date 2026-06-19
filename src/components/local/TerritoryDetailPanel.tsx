@@ -7,6 +7,7 @@ import { usePremium } from "@/lib/hooks/usePremium";
 import { api } from "@/lib/api";
 import Link from "next/link";
 import { AwardBadge } from "@/components/ui/award-badge";
+import { departmentPaths } from "@/lib/data/departmentPaths";
 
 interface TerritoryDetailPanelProps {
   territory: { id: string, name: string, type: 'region' | 'department' } | null;
@@ -255,28 +256,100 @@ export default function TerritoryDetailPanel({ territory, onClose }: TerritoryDe
                   </button>
                 </div>
 
-                <div className="relative z-10 space-y-4">
-                  <div className="flex items-center gap-2">
-                    <span className="text-[10px] font-black uppercase tracking-widest text-rose-400">
-                      {territory.type === 'region' ? 'Échelon Régional' : 'Échelon Départemental'}
-                    </span>
-                    {data?.isEstimated && (
-                      <span className="px-2 py-0.5 bg-amber-500/20 text-amber-300 text-[8px] uppercase tracking-widest rounded-full border border-amber-500/30">
-                        Données estimées
-                      </span>
-                    )}
-                  </div>
-
-                  <h2 className="text-5xl font-staatliches uppercase tracking-tight text-white leading-none">
-                    {territory.name}
-                  </h2>
-                  
-                  <div className="flex items-center gap-4 text-white/60">
+                <div className="relative z-10 flex flex-col sm:flex-row sm:items-center justify-between gap-6 mr-16">
+                  <div className="space-y-4">
                     <div className="flex items-center gap-2">
-                      <Building2 size={14} />
-                      <span className="text-sm font-bold">{data?.president || territory.name}</span>
+                      <span className="text-[10px] font-black uppercase tracking-widest text-rose-400">
+                        {territory.type === 'region' ? 'Échelon Régional' : 'Échelon Départemental'}
+                      </span>
+                      {data?.isEstimated && (
+                        <span className="px-2 py-0.5 bg-amber-500/20 text-amber-300 text-[8px] uppercase tracking-widest rounded-full border border-amber-500/30">
+                          Données estimées
+                        </span>
+                      )}
+                    </div>
+
+                    <h2 className="text-5xl font-staatliches uppercase tracking-tight text-white leading-none">
+                      {territory.name}
+                    </h2>
+                    
+                    <div className="flex items-center gap-4 text-white/60">
+                      <div className="flex items-center gap-2">
+                        <Building2 size={14} />
+                        <span className="text-sm font-bold">{data?.president || territory.name}</span>
+                      </div>
                     </div>
                   </div>
+
+                  {/* France map (only for departments) */}
+                  {territory.type === 'department' && departmentPaths[territory.id] && (
+                    <motion.div
+                      initial={{ opacity: 0, scale: 0.8, y: 15 }}
+                      animate={{ opacity: 1, scale: 1, y: 0 }}
+                      transition={{ type: "spring", damping: 15, stiffness: 150, delay: 0.15 }}
+                      className="relative w-28 h-28 md:w-32 md:h-32 shrink-0 bg-slate-950/45 rounded-3xl border border-slate-800/80 p-2 flex items-center justify-center shadow-inner overflow-hidden"
+                    >
+                      <svg
+                        viewBox="10 10 690 580"
+                        className="w-full h-full"
+                        preserveAspectRatio="xMidYMid meet"
+                      >
+                        {/* Base departments map */}
+                        {Object.entries(departmentPaths).map(([code, pathData]) => {
+                          const isCurrent = code === territory.id;
+                          return (
+                            <path
+                              key={code}
+                              d={pathData.d}
+                              fill={isCurrent ? "#f43f5e" : "#334155"}
+                              stroke={isCurrent ? "#ffffff" : "#475569"}
+                              strokeOpacity={isCurrent ? "1" : "0.4"}
+                              strokeWidth={isCurrent ? "1.5" : "0.5"}
+                              className={isCurrent ? "drop-shadow-lg" : "opacity-80"}
+                            />
+                          );
+                        })}
+
+                        {/* Pulsing Pin Locator */}
+                        {(() => {
+                          const activePath = departmentPaths[territory.id];
+                          if (!activePath) return null;
+                          const parts = activePath.viewBox.trim().split(/\s+/).map(Number);
+                          if (parts.length !== 4 || parts.some(isNaN)) return null;
+                          const [x, y, w, h] = parts;
+                          const centerX = x + w / 2;
+                          const centerY = y + h / 2;
+
+                          return (
+                            <g>
+                              <motion.circle
+                                cx={centerX}
+                                cy={centerY}
+                                r="22"
+                                fill="#f43f5e"
+                                initial={{ opacity: 0.6, scale: 0.2 }}
+                                animate={{ opacity: 0, scale: 1 }}
+                                transition={{
+                                  repeat: Infinity,
+                                  duration: 1.8,
+                                  ease: "easeOut"
+                                }}
+                              />
+                              <circle
+                                cx={centerX}
+                                cy={centerY}
+                                r="4.5"
+                                fill="#ffffff"
+                                stroke="#f43f5e"
+                                strokeWidth="2.5"
+                                className="drop-shadow"
+                              />
+                            </g>
+                          );
+                        })()}
+                      </svg>
+                    </motion.div>
+                  )}
                 </div>
               </div>
 

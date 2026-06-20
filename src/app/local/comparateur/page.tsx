@@ -14,7 +14,8 @@ export default function ComparateurConcept() {
 
   useEffect(() => {
     if (!loading && isPremium) {
-      router.replace("/local/comparateur/app");
+      const params = new URLSearchParams(window.location.search);
+      router.replace(`/local/comparateur/app?${params.toString()}`);
     }
   }, [isPremium, loading, router]);
 

@@ -798,102 +798,111 @@ function LocalPoliticsContent() {
               const config = teaserConfigs[activeTab] || teaserConfigs.commune;
               return (
                 <div className="bg-gradient-to-br from-amber-400 to-orange-500 rounded-[2.5rem] p-8 text-slate-900 space-y-6 shadow-xl shadow-orange-200">
-                  <div className="flex items-center justify-between">
-                    <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-white/25 border border-white/30 text-[9px] font-black uppercase tracking-widest text-slate-900 shadow-sm">
-                      <Coins size={12} className="text-slate-900 fill-slate-900/10" />
-                      {isPremium ? "Outil Premium Actif" : "Option Premium"}
+                  {pLoading ? (
+                    <div className="flex flex-col items-center justify-center py-12 gap-4">
+                      <Loader2 className="animate-spin text-slate-900" size={32} />
+                      <p className="text-xs font-bold text-slate-900/60 uppercase tracking-wider">Vérification de l'accès...</p>
                     </div>
-                    <div className="w-8 h-8 rounded-full bg-white/20 flex items-center justify-center border border-white/10">
-                      {isPremium ? (
-                        <ShieldCheck size={14} className="text-slate-900" />
-                      ) : (
-                        <Lock size={14} className="text-slate-900" />
-                      )}
-                    </div>
-                  </div>
-
-                  <div className="space-y-2">
-                    <h3 className="text-3xl font-staatliches uppercase tracking-wide leading-none">{config.title}</h3>
-                    <p className="text-xs font-semibold opacity-95 leading-relaxed">
-                      {isPremium 
-                        ? "Utilisez notre outil d'analyse comparative en temps réel pour comparer les budgets et indicateurs de performance."
-                        : config.description}
-                    </p>
-                  </div>
-
-                  {/* Comparator Preview Mockup */}
-                  <div className="bg-white/15 backdrop-blur-md border border-white/20 rounded-3xl p-5 relative overflow-hidden shadow-inner my-2">
-                    {/* Entity headers */}
-                    <div className="grid grid-cols-7 items-center gap-1 text-center mb-4">
-                      <div className="col-span-3 bg-white/30 rounded-2xl p-2.5 flex flex-col items-center border border-white/10 shadow-sm min-w-0">
-                        <span className="text-[10px] font-black uppercase tracking-wider text-slate-900 truncate max-w-full">{config.entityA}</span>
-                        <span className="text-[9px] font-bold text-slate-700 mt-0.5 truncate max-w-full">{config.subA}</span>
-                      </div>
-                      <div className="col-span-1 flex justify-center">
-                        <span className="w-7 h-7 rounded-full bg-slate-900 text-white font-black text-[10px] flex items-center justify-center shadow-md border border-white/15">VS</span>
-                      </div>
-                      <div className="col-span-3 bg-white/30 rounded-2xl p-2.5 flex flex-col items-center border border-white/10 shadow-sm min-w-0">
-                        <span className="text-[10px] font-black uppercase tracking-wider text-slate-900 truncate max-w-full">{config.entityB}</span>
-                        <span className="text-[9px] font-bold text-slate-700 mt-0.5 truncate max-w-full">{config.subB}</span>
-                      </div>
-                    </div>
-
-                    {/* Comparative Metrics (Locked & Blurred only if not premium) */}
-                    <div className="space-y-3.5 relative">
-                      {/* Metric 1 */}
-                      <div className="grid grid-cols-7 items-center text-xs font-bold text-slate-900 border-b border-white/10 pb-2">
-                        <div className={cn("col-span-2 text-left font-black", config.metric1ColorA)}>{config.metric1ValA}</div>
-                        <div className="col-span-3 text-center text-[8px] uppercase tracking-widest text-slate-700 font-extrabold flex items-center justify-center gap-1">
-                          <Scale size={10} className="opacity-60" /> {config.metric1Label}
+                  ) : (
+                    <>
+                      <div className="flex items-center justify-between">
+                        <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-white/25 border border-white/30 text-[9px] font-black uppercase tracking-widest text-slate-900 shadow-sm">
+                          <Coins size={12} className="text-slate-900 fill-slate-900/10" />
+                          {isPremium ? "Outil Premium Actif" : "Option Premium"}
                         </div>
-                        <div className={cn("col-span-2 text-right font-black", config.metric1ColorB)}>{config.metric1ValB}</div>
-                      </div>
-                      
-                      {/* Metric 2 */}
-                      <div className="grid grid-cols-7 items-center text-xs font-bold text-slate-900 border-b border-white/10 pb-2">
-                        <div className={cn("col-span-2 text-left font-black", config.metric2ColorA)}>{config.metric2ValA}</div>
-                        <div className="col-span-3 text-center text-[8px] uppercase tracking-widest text-slate-700 font-extrabold">
-                          {config.metric2Label}
+                        <div className="w-8 h-8 rounded-full bg-white/20 flex items-center justify-center border border-white/10">
+                          {isPremium ? (
+                            <ShieldCheck size={14} className="text-slate-900" />
+                          ) : (
+                            <Lock size={14} className="text-slate-900" />
+                          )}
                         </div>
-                        <div className={cn("col-span-2 text-right font-black", config.metric2ColorB)}>{config.metric2ValB}</div>
                       </div>
 
-                      {/* Metric 3 */}
-                      <div className="grid grid-cols-7 items-center text-xs font-bold text-slate-900">
-                        <div className={cn("col-span-2 text-left font-black", config.metric3ColorA)}>{config.metric3ValA}</div>
-                        <div className="col-span-3 text-center text-[8px] uppercase tracking-widest text-slate-700 font-extrabold">
-                          {config.metric3Label}
-                        </div>
-                        <div className={cn("col-span-2 text-right font-black", config.metric3ColorB)}>{config.metric3ValB}</div>
+                      <div className="space-y-2">
+                        <h3 className="text-3xl font-staatliches uppercase tracking-wide leading-none">{config.title}</h3>
+                        <p className="text-xs font-semibold opacity-95 leading-relaxed">
+                          {isPremium 
+                            ? "Utilisez notre outil d'analyse comparative en temps réel pour comparer les budgets et indicateurs de performance."
+                            : config.description}
+                        </p>
                       </div>
 
-                      {/* Lock Overlay */}
-                      {!isPremium && (
-                        <div className="absolute -inset-2 bg-white/5 backdrop-blur-[3.5px] rounded-2xl flex items-center justify-center border border-white/10 shadow-sm">
-                          <div className="bg-slate-900/90 text-white px-4 py-2 rounded-full flex items-center gap-2 shadow-lg border border-white/10">
-                            <Lock size={12} className="text-amber-400 fill-amber-400" />
-                            <span className="text-[9px] font-black uppercase tracking-wider">Débloquer le comparateur</span>
+                      {/* Comparator Preview Mockup */}
+                      <div className="bg-white/15 backdrop-blur-md border border-white/20 rounded-3xl p-5 relative overflow-hidden shadow-inner my-2">
+                        {/* Entity headers */}
+                        <div className="grid grid-cols-7 items-center gap-1 text-center mb-4">
+                          <div className="col-span-3 bg-white/30 rounded-2xl p-2.5 flex flex-col items-center border border-white/10 shadow-sm min-w-0">
+                            <span className="text-[10px] font-black uppercase tracking-wider text-slate-900 truncate max-w-full">{config.entityA}</span>
+                            <span className="text-[9px] font-bold text-slate-700 mt-0.5 truncate max-w-full">{config.subA}</span>
+                          </div>
+                          <div className="col-span-1 flex justify-center">
+                            <span className="w-7 h-7 rounded-full bg-slate-900 text-white font-black text-[10px] flex items-center justify-center shadow-md border border-white/15">VS</span>
+                          </div>
+                          <div className="col-span-3 bg-white/30 rounded-2xl p-2.5 flex flex-col items-center border border-white/10 shadow-sm min-w-0">
+                            <span className="text-[10px] font-black uppercase tracking-wider text-slate-900 truncate max-w-full">{config.entityB}</span>
+                            <span className="text-[9px] font-bold text-slate-700 mt-0.5 truncate max-w-full">{config.subB}</span>
                           </div>
                         </div>
-                      )}
-                    </div>
-                  </div>
 
-                  {isPremium ? (
-                    <Link 
-                      href="/local/comparateur/app"
-                      className="w-full py-4 bg-slate-900 hover:bg-slate-800 text-white rounded-2xl font-staatliches uppercase tracking-wider text-sm flex items-center justify-center gap-2 transition-colors shadow-lg active:scale-[0.98] duration-150"
-                    >
-                      <span>Lancer le comparateur</span>
-                      <ArrowRight size={16} />
-                    </Link>
-                  ) : (
-                    <AwardBadge 
-                      titleText="Découvrir l'offre Elite"
-                      subtitleText="Accès Premium"
-                      link={getPremiumUrl()}
-                      className="w-full"
-                    />
+                        {/* Comparative Metrics (Locked & Blurred only if not premium) */}
+                        <div className="space-y-3.5 relative">
+                          {/* Metric 1 */}
+                          <div className="grid grid-cols-7 items-center text-xs font-bold text-slate-900 border-b border-white/10 pb-2">
+                            <div className={cn("col-span-2 text-left font-black", config.metric1ColorA)}>{config.metric1ValA}</div>
+                            <div className="col-span-3 text-center text-[8px] uppercase tracking-widest text-slate-700 font-extrabold flex items-center justify-center gap-1">
+                              <Scale size={10} className="opacity-60" /> {config.metric1Label}
+                            </div>
+                            <div className={cn("col-span-2 text-right font-black", config.metric1ColorB)}>{config.metric1ValB}</div>
+                          </div>
+                          
+                          {/* Metric 2 */}
+                          <div className="grid grid-cols-7 items-center text-xs font-bold text-slate-900 border-b border-white/10 pb-2">
+                            <div className={cn("col-span-2 text-left font-black", config.metric2ColorA)}>{config.metric2ValA}</div>
+                            <div className="col-span-3 text-center text-[8px] uppercase tracking-widest text-slate-700 font-extrabold">
+                              {config.metric2Label}
+                            </div>
+                            <div className={cn("col-span-2 text-right font-black", config.metric2ColorB)}>{config.metric2ValB}</div>
+                          </div>
+
+                          {/* Metric 3 */}
+                          <div className="grid grid-cols-7 items-center text-xs font-bold text-slate-900">
+                            <div className={cn("col-span-2 text-left font-black", config.metric3ColorA)}>{config.metric3ValA}</div>
+                            <div className="col-span-3 text-center text-[8px] uppercase tracking-widest text-slate-700 font-extrabold">
+                              {config.metric3Label}
+                            </div>
+                            <div className={cn("col-span-2 text-right font-black", config.metric3ColorB)}>{config.metric3ValB}</div>
+                          </div>
+
+                          {/* Lock Overlay */}
+                          {!isPremium && (
+                            <div className="absolute -inset-2 bg-white/5 backdrop-blur-[3.5px] rounded-2xl flex items-center justify-center border border-white/10 shadow-sm">
+                              <div className="bg-slate-900/90 text-white px-4 py-2 rounded-full flex items-center gap-2 shadow-lg border border-white/10">
+                                <Lock size={12} className="text-amber-400 fill-amber-400" />
+                                <span className="text-[9px] font-black uppercase tracking-wider">Débloquer le comparateur</span>
+                              </div>
+                            </div>
+                          )}
+                        </div>
+                      </div>
+
+                      {isPremium ? (
+                        <Link 
+                          href={`/local/comparateur/app?type=${activeTab === 'departement' ? 'department' : activeTab}`}
+                          className="w-full py-4 bg-slate-900 hover:bg-slate-800 text-white rounded-2xl font-staatliches uppercase tracking-wider text-sm flex items-center justify-center gap-2 transition-colors shadow-lg active:scale-[0.98] duration-150"
+                        >
+                          <span>Lancer le comparateur</span>
+                          <ArrowRight size={16} />
+                        </Link>
+                      ) : (
+                        <AwardBadge 
+                          titleText="Découvrir l'offre Elite"
+                          subtitleText="Accès Premium"
+                          link={getPremiumUrl()}
+                          className="w-full"
+                        />
+                      )}
+                    </>
                   )}
                 </div>
               );

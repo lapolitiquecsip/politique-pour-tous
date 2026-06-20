@@ -1,13 +1,15 @@
 "use client";
 
-import { useState, useEffect, useRef } from "react";
+import { useState, useEffect, useRef, Suspense } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { 
   Map, ChevronLeft, Search, TrendingUp, ShieldCheck, HeartPulse, 
-  Zap, MapPin, Building2, Users, ArrowRight, Star, X
+  Zap, MapPin, Building2, Users, ArrowRight, Star, X, Loader2
 } from "lucide-react";
 import Link from "next/link";
+import { useSearchParams, useRouter } from "next/navigation";
 import { useCommuneSearch } from "@/lib/hooks/useCommuneSearch";
+import { usePremium } from "@/lib/hooks/usePremium";
 import { REGIONS, DEPARTMENTS } from "@/lib/data/territories";
 
 interface SelectedTerritory {
@@ -17,7 +19,12 @@ interface SelectedTerritory {
   data: any;
 }
 
-export default function ComparateurApp() {
+function ComparateurContent() {
+  const { userId, isPremium, loading } = usePremium();
+  const router = useRouter();
+  const searchParams = useSearchParams();
+  const allowedType = searchParams.get('type'); // 'region' | 'department' | 'commune'
+
   const [sideA, setSideA] = useState<SelectedTerritory | null>(null);
   const [sideB, setSideB] = useState<SelectedTerritory | null>(null);
   
@@ -27,13 +34,19 @@ export default function ComparateurApp() {
 
   const [activeSearch, setActiveSearch] = useState<'A' | 'B' | null>(null);
 
+  useEffect(() => {
+    if (!loading && !isPremium) {
+      router.replace("/local/comparateur");
+    }
+  }, [isPremium, loading, router]);
+
   // Local results for regions and departments
   const getLocalResults = (query: string) => {
     if (query.length < 2) return { regions: [], depts: [] };
     const q = query.toLowerCase();
     return {
-      regions: REGIONS.filter(r => r.name.toLowerCase().includes(q)),
-      depts: DEPARTMENTS.filter(d => d.name.toLowerCase().includes(q))
+      regions: (!allowedType || allowedType === 'region') ? REGIONS.filter(r => r.name.toLowerCase().includes(q)) : [],
+      depts: (!allowedType || allowedType === 'department') ? DEPARTMENTS.filter(d => d.name.toLowerCase().includes(q)) : []
     };
   };
 
@@ -74,6 +87,48 @@ export default function ComparateurApp() {
       console.error("Failed to fetch territory details", err);
     }
   };
+
+  useEffect(() => {
+    if (loading || !isPremium) return;
+    const preselectedId = searchParams.get('id') || searchParams.get('code');
+    const preselectedType = searchParams.get('type') as 'region' | 'department' | 'commune' | null;
+    
+    if (preselectedId && preselectedType) {
+      if (preselectedType === 'region') {
+        const item = REGIONS.find(r => r.id === preselectedId || r.name === preselectedId);
+        if (item) {
+          handleSelect('A', item, 'region');
+        }
+      } else if (preselectedType === 'department') {
+        const item = DEPARTMENTS.find(d => d.id === preselectedId || d.name === preselectedId);
+        if (item) {
+          handleSelect('A', item, 'department');
+        }
+      } else if (preselectedType === 'commune') {
+        const fetchCommune = async () => {
+          try {
+            const res = await fetch(`https://geo.api.gouv.fr/communes/${preselectedId}?fields=nom,code,codesPostaux,population,departement,region`);
+            const data = await res.json();
+            if (data && data.code) {
+              handleSelect('A', data, 'commune');
+            }
+          } catch (e) {
+            console.error("Error pre-loading commune:", e);
+          }
+        };
+        fetchCommune();
+      }
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [searchParams, loading, isPremium]);
+
+  if (loading || !isPremium) {
+    return (
+      <div className="min-h-screen bg-slate-50 flex items-center justify-center">
+        <Loader2 className="animate-spin text-amber-500" size={40} />
+      </div>
+    );
+  }
 
   const MetricBar = ({ label, icon: Icon, valA, valB, color }: any) => {
     const max = 100;
@@ -180,7 +235,7 @@ export default function ComparateurApp() {
                          </button>
                        ))}
                        {/* Communes */}
-                       {searchA.results.map(c => (
+                       {(!allowedType || allowedType === 'commune') && searchA.results.map(c => (
                          <button key={c.code} onClick={() => handleSelect('A', c, 'commune')} className="w-full px-8 py-4 flex items-center justify-between hover:bg-slate-50 transition-colors border-b border-slate-50 text-left">
                            <div>
                              <p className="font-bold text-slate-900">{c.nom}</p>
@@ -272,7 +327,7 @@ export default function ComparateurApp() {
                            <ArrowRight size={16} className="text-slate-300" />
                          </button>
                        ))}
-                       {searchB.results.map(c => (
+                       {(!allowedType || allowedType === 'commune') && searchB.results.map(c => (
                          <button key={c.code} onClick={() => handleSelect('B', c, 'commune')} className="w-full px-8 py-4 flex items-center justify-between hover:bg-slate-50 transition-colors border-b border-slate-50 text-left">
                            <div>
                              <p className="font-bold text-slate-900">{c.nom}</p>
@@ -538,6 +593,18 @@ export default function ComparateurApp() {
         </div>
       </div>
     </main>
+  );
+}
+
+export default function ComparateurApp() {
+  return (
+    <Suspense fallback={
+      <div className="min-h-screen bg-slate-50 flex items-center justify-center">
+        <Loader2 className="animate-spin text-amber-500" size={40} />
+      </div>
+    }>
+      <ComparateurContent />
+    </Suspense>
   );
 }
 

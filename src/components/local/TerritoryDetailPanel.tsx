@@ -470,7 +470,7 @@ export default function TerritoryDetailPanel({ territory, onClose }: TerritoryDe
                     <div className="pt-8">
                       {isPremium ? (
                         <Link 
-                          href={`/local/comparateur?id=${territory.id}&type=${territory.type}`}
+                          href={`/local/comparateur/app?id=${territory.id}&type=${territory.type === 'region' ? 'region' : 'department'}`}
                           className="w-full py-6 bg-gradient-to-r from-rose-600 to-fuchsia-600 text-white rounded-3xl font-staatliches uppercase tracking-widest text-xl flex items-center justify-center gap-3 hover:scale-[1.02] active:scale-[0.98] transition-all shadow-xl shadow-rose-600/20"
                         >
                           Comparer avec un autre territoire

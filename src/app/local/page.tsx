@@ -3,7 +3,7 @@
 import { motion, AnimatePresence } from "framer-motion";
 import { 
   MapPin, Users, Building2, TrendingUp, Search, ArrowRight, Vote,
-  History, Building, ChevronRight, Map, Layers, LayoutGrid, Lock, Loader2, Star, Coins, Scale
+  History, Building, ChevronRight, Map, Layers, LayoutGrid, Lock, Loader2, Star, Coins, Scale, ShieldCheck
 } from "lucide-react";
 import { useSearchParams } from "next/navigation";
 import { useState, useEffect, Suspense } from "react";
@@ -793,25 +793,31 @@ function LocalPoliticsContent() {
               </div>
             )}
             
-            {/* Premium Teaser (if not premium) */}
-            {!isPremium && (() => {
+            {/* Premium Teaser / Comparator Access */}
+            {(() => {
               const config = teaserConfigs[activeTab] || teaserConfigs.commune;
               return (
                 <div className="bg-gradient-to-br from-amber-400 to-orange-500 rounded-[2.5rem] p-8 text-slate-900 space-y-6 shadow-xl shadow-orange-200">
                   <div className="flex items-center justify-between">
                     <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-white/25 border border-white/30 text-[9px] font-black uppercase tracking-widest text-slate-900 shadow-sm">
                       <Coins size={12} className="text-slate-900 fill-slate-900/10" />
-                      Option Premium
+                      {isPremium ? "Outil Premium Actif" : "Option Premium"}
                     </div>
                     <div className="w-8 h-8 rounded-full bg-white/20 flex items-center justify-center border border-white/10">
-                      <Lock size={14} className="text-slate-900" />
+                      {isPremium ? (
+                        <ShieldCheck size={14} className="text-slate-900" />
+                      ) : (
+                        <Lock size={14} className="text-slate-900" />
+                      )}
                     </div>
                   </div>
 
                   <div className="space-y-2">
                     <h3 className="text-3xl font-staatliches uppercase tracking-wide leading-none">{config.title}</h3>
                     <p className="text-xs font-semibold opacity-95 leading-relaxed">
-                      {config.description}
+                      {isPremium 
+                        ? "Utilisez notre outil d'analyse comparative en temps réel pour comparer les budgets et indicateurs de performance."
+                        : config.description}
                     </p>
                   </div>
 
@@ -832,7 +838,7 @@ function LocalPoliticsContent() {
                       </div>
                     </div>
 
-                    {/* Comparative Metrics (Locked & Blurred) */}
+                    {/* Comparative Metrics (Locked & Blurred only if not premium) */}
                     <div className="space-y-3.5 relative">
                       {/* Metric 1 */}
                       <div className="grid grid-cols-7 items-center text-xs font-bold text-slate-900 border-b border-white/10 pb-2">
@@ -862,21 +868,33 @@ function LocalPoliticsContent() {
                       </div>
 
                       {/* Lock Overlay */}
-                      <div className="absolute -inset-2 bg-white/5 backdrop-blur-[3.5px] rounded-2xl flex items-center justify-center border border-white/10 shadow-sm">
-                        <div className="bg-slate-900/90 text-white px-4 py-2 rounded-full flex items-center gap-2 shadow-lg border border-white/10">
-                          <Lock size={12} className="text-amber-400 fill-amber-400" />
-                          <span className="text-[9px] font-black uppercase tracking-wider">Débloquer le comparateur</span>
+                      {!isPremium && (
+                        <div className="absolute -inset-2 bg-white/5 backdrop-blur-[3.5px] rounded-2xl flex items-center justify-center border border-white/10 shadow-sm">
+                          <div className="bg-slate-900/90 text-white px-4 py-2 rounded-full flex items-center gap-2 shadow-lg border border-white/10">
+                            <Lock size={12} className="text-amber-400 fill-amber-400" />
+                            <span className="text-[9px] font-black uppercase tracking-wider">Débloquer le comparateur</span>
+                          </div>
                         </div>
-                      </div>
+                      )}
                     </div>
                   </div>
 
-                  <AwardBadge 
-                    titleText="Découvrir l'offre Elite"
-                    subtitleText="Accès Premium"
-                    link={getPremiumUrl()}
-                    className="w-full"
-                  />
+                  {isPremium ? (
+                    <Link 
+                      href="/local/comparateur/app"
+                      className="w-full py-4 bg-slate-900 hover:bg-slate-800 text-white rounded-2xl font-staatliches uppercase tracking-wider text-sm flex items-center justify-center gap-2 transition-colors shadow-lg active:scale-[0.98] duration-150"
+                    >
+                      <span>Lancer le comparateur</span>
+                      <ArrowRight size={16} />
+                    </Link>
+                  ) : (
+                    <AwardBadge 
+                      titleText="Découvrir l'offre Elite"
+                      subtitleText="Accès Premium"
+                      link={getPremiumUrl()}
+                      className="w-full"
+                    />
+                  )}
                 </div>
               );
             })()}

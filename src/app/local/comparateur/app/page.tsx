@@ -272,11 +272,11 @@ function ComparateurContent() {
                   <div className="grid grid-cols-2 gap-4">
                     <div className="bg-white p-4 rounded-2xl border border-slate-100">
                       <p className="text-[10px] font-black text-slate-400 uppercase mb-1">Population</p>
-                      <p className="text-lg font-bold text-slate-900">{sideA.data.population?.toLocaleString() || sideA.data.population || 'NC'}</p>
+                      <p className="text-lg font-bold text-slate-900">{(sideA.data.demographie?.populationTotal || sideA.data.population)?.toLocaleString() || 'NC'}</p>
                     </div>
                     <div className="bg-white p-4 rounded-2xl border border-slate-100">
                       <p className="text-[10px] font-black text-slate-400 uppercase mb-1">Responsable</p>
-                      <p className="text-lg font-bold text-slate-900 truncate">{sideA.data.president || sideA.data.mayor || 'NC'}</p>
+                      <p className="text-lg font-bold text-slate-900 truncate">{sideA.data.president || sideA.data.politique?.elu || sideA.data.mayor || 'NC'}</p>
                     </div>
                   </div>
                 </motion.div>
@@ -364,11 +364,11 @@ function ComparateurContent() {
                   <div className="grid grid-cols-2 gap-4">
                     <div className="bg-white p-4 rounded-2xl border border-slate-100">
                       <p className="text-[10px] font-black text-slate-400 uppercase mb-1">Population</p>
-                      <p className="text-lg font-bold text-slate-900">{sideB.data.population?.toLocaleString() || sideB.data.population || 'NC'}</p>
+                      <p className="text-lg font-bold text-slate-900">{(sideB.data.demographie?.populationTotal || sideB.data.population)?.toLocaleString() || 'NC'}</p>
                     </div>
                     <div className="bg-white p-4 rounded-2xl border border-slate-100">
                       <p className="text-[10px] font-black text-slate-400 uppercase mb-1">Responsable</p>
-                      <p className="text-lg font-bold text-slate-900 truncate">{sideB.data.president || sideB.data.mayor || 'NC'}</p>
+                      <p className="text-lg font-bold text-slate-900 truncate">{sideB.data.president || sideB.data.politique?.elu || sideB.data.mayor || 'NC'}</p>
                     </div>
                   </div>
                 </motion.div>

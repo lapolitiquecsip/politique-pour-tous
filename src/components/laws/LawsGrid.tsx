@@ -1,0 +1,188 @@
+"use client";
+
+import { useState, useEffect } from "react";
+import { api } from "@/lib/api";
+import { motion, AnimatePresence } from "framer-motion";
+import { FileText, Calendar, ChevronRight, Search, Filter, UserCheck, X, Zap, ArrowRight, CheckCircle2, Lock } from "lucide-react";
+import Link from "next/link";
+
+import { useSearchParams } from "next/navigation";
+
+import { usePremium } from "@/lib/hooks/usePremium";
+
+export default function LawsGrid({ onSelectLaw, categoryFilter }: { onSelectLaw?: (law: any) => void, categoryFilter?: string | null }) {
+  const [laws, setLaws] = useState<any[]>([]);
+  const [deputies, setDeputies] = useState<any[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [search, setSearch] = useState("");
+  const { isPremium } = usePremium();
+  const searchParams = useSearchParams();
+  const lawId = searchParams.get("id");
+
+  useEffect(() => {
+    async function load() {
+      try {
+        const [lawsData, deputiesData] = await Promise.all([
+          api.getProposals(),
+          api.getDeputies()
+        ]);
+        setLaws(lawsData);
+        setDeputies(deputiesData);
+      } catch (err) {
+        console.error("Error loading laws:", err);
+      } finally {
+        setLoading(false);
+      }
+    }
+    load();
+  }, []);
+
+  const findDeputy = (authorName: string) => {
+    if (!authorName || authorName === 'Le Gouvernement') return null;
+    const cleanName = authorName.replace(/^(M\.|Mme\.|Monsieur|Madame)\s+/, "").trim().toLowerCase();
+    const deputy = deputies.find(d => {
+      const fullName = `${d.first_name} ${d.last_name}`.toLowerCase();
+      return fullName.includes(cleanName) || cleanName.includes(fullName);
+    });
+    return deputy || null;
+  };
+
+  const filteredLaws = laws
+    .filter(law => {
+      const matchesSearch = law.title.toLowerCase().includes(search.toLowerCase()) ||
+                           (law.category && law.category.toLowerCase().includes(search.toLowerCase()));
+      const matchesCategory = categoryFilter ? law.category === categoryFilter || law.category?.includes(categoryFilter) : true;
+      return matchesSearch && matchesCategory;
+    })
+    .sort((a, b) => {
+      // 1. Prioritize dossier number extraction for strict chronological order by ID
+      const numA = parseInt(a.context?.match(/n°(\d+)/)?.[1] || "0");
+      const numB = parseInt(b.context?.match(/n°(\d+)/)?.[1] || "0");
+      
+      if (numA !== numB) return numB - numA;
+
+      // 2. Fallback to date from context
+      const dateA = a.context?.match(/\[(\d{4}-\d{2}-\d{2})\]/)?.[1] || "0000-00-00";
+      const dateB = b.context?.match(/\[(\d{4}-\d{2}-\d{2})\]/)?.[1] || "0000-00-00";
+      if (dateA !== dateB) return dateB.localeCompare(dateA);
+      
+      return new Date(b.created_at).getTime() - new Date(a.created_at).getTime();
+    });
+
+  return (
+    <div className="space-y-8">
+      {/* Search Bar */}
+      <div className="relative max-w-2xl mx-auto">
+        <Search className="absolute left-6 top-1/2 -translate-y-1/2 text-slate-400 w-5 h-5" />
+        <input
+          type="text"
+          placeholder="Rechercher un projet ou une proposition de loi..."
+          value={search}
+          onChange={(e) => setSearch(e.target.value)}
+          className="w-full pl-14 pr-8 py-5 rounded-[2rem] bg-white border border-slate-200 shadow-sm focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all outline-none text-slate-900 font-medium"
+        />
+      </div>
+
+      {loading ? (
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+          {[1, 2, 3, 4].map(i => (
+            <div key={i} className="h-48 bg-slate-100 animate-pulse rounded-[2rem]" />
+          ))}
+        </div>
+      ) : filteredLaws.length > 0 ? (
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+          {filteredLaws.map((law, index) => (
+            <motion.div
+              key={law.id}
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ delay: index * 0.05 }}
+              className="group bg-white p-8 rounded-[2.5rem] border border-slate-200 shadow-sm hover:shadow-xl transition-all duration-500 flex flex-col justify-between"
+            >
+              <div>
+                <div className="flex items-center justify-between mb-6">
+                  <div className="flex items-center gap-2">
+                    <span className="px-3 py-1 rounded-full bg-blue-100 text-blue-600 text-[10px] font-black uppercase tracking-widest">
+                      {law.category || 'Législation'}
+                    </span>
+                    {law.date_adopted && (
+                      <span className="px-3 py-1 rounded-full bg-green-100 text-green-600 text-[10px] font-black uppercase tracking-widest">
+                        Adopté
+                      </span>
+                    )}
+                  </div>
+                  <FileText className="text-slate-300 w-6 h-6 group-hover:text-blue-500 transition-colors" />
+                </div>
+                
+                <h3 className="text-xl font-bold text-slate-900 mb-4 leading-tight group-hover:text-blue-600 transition-colors line-clamp-3">
+                  {law.title}
+                </h3>
+                
+                <p className="text-slate-500 text-sm leading-relaxed mb-6 line-clamp-2">
+                  {law.summary}
+                </p>
+
+                {law.author && (() => {
+                  const deputy = findDeputy(law.author);
+                  const content = (
+                    <div className={`flex items-center gap-3 mb-6 p-3 rounded-2xl border transition-all duration-300 ${deputy ? 'bg-blue-50/50 border-blue-100 hover:bg-blue-50 hover:border-blue-200 cursor-pointer' : 'bg-slate-50 border-slate-100/50'}`}>
+                      <div className={`w-8 h-8 rounded-full shadow-sm flex items-center justify-center border overflow-hidden transition-colors ${deputy ? 'bg-white text-blue-600 border-blue-100 group-hover:bg-blue-600 group-hover:text-white' : 'bg-white text-slate-400 border-slate-100'}`}>
+                        {deputy ? (
+                          <img 
+                            src={deputy.photo_url || (deputy.an_id ? `https://www.assemblee-nationale.fr/dyn/static/tribun/17/photos/carre/${deputy.an_id.replace('PA', '')}.jpg` : '')} 
+                            alt={law.author} 
+                            className="w-full h-full object-cover bg-white" 
+                            onError={(e) => { 
+                              if (deputy.an_id && !(e.target as HTMLImageElement).src.includes('assemblee-nationale')) {
+                                (e.target as HTMLImageElement).src = `https://www.assemblee-nationale.fr/dyn/static/tribun/17/photos/carre/${deputy.an_id.replace('PA', '')}.jpg`;
+                              }
+                            }}
+                          />
+                        ) : (
+                          <UserCheck size={14} />
+                        )}
+                      </div>
+                      <div className="flex flex-col">
+                        <span className="text-[10px] font-black uppercase tracking-wider text-slate-400 leading-none mb-1">
+                          {law.category === 'Projet de loi' ? 'Initiative' : 'Déposé par'}
+                        </span>
+                        <span className={`text-xs font-bold leading-none ${deputy ? 'text-blue-700' : 'text-slate-700'}`}>
+                          {law.author}
+                        </span>
+                      </div>
+                    </div>
+                  );
+
+                  return deputy ? (
+                    <Link href={`/deputes/${deputy.slug}`} className="block">
+                      {content}
+                    </Link>
+                  ) : content;
+                })()}
+              </div>
+
+              <div className="flex items-center justify-between pt-6 border-t border-slate-100">
+                <div className="flex items-center gap-2 text-slate-400 text-xs">
+                  <Calendar size={14} />
+                  <span>{law.context?.replace(/\[.*?\]\s*/, "") || "Dossier en cours"}</span>
+                </div>
+                <button 
+                  onClick={() => onSelectLaw ? onSelectLaw(law) : null}
+                  className="flex items-center gap-2 text-xs font-black uppercase tracking-widest text-slate-900 hover:text-blue-600 transition-colors"
+                >
+                  Détails du dossier <ChevronRight size={14} />
+                </button>
+              </div>
+            </motion.div>
+          ))}
+        </div>
+      ) : (
+        <div className="text-center py-20 bg-slate-50 rounded-[3rem] border-2 border-dashed border-slate-200">
+          <FileText className="mx-auto text-slate-300 w-16 h-16 mb-4" />
+          <h3 className="text-xl font-bold text-slate-900">Aucun dossier trouvé</h3>
+          <p className="text-slate-500">Essayez d'ajuster votre recherche.</p>
+        </div>
+      )}
+    </div>
+  );
+}

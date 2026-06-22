@@ -1,0 +1,1 @@
+import { fetchGovernmentComposition } from './src/lib/services/governmentService'; fetchGovernmentComposition().then(console.log).catch(console.error);

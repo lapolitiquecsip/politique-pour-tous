@@ -1,0 +1,27 @@
+{
+  "framework": "nextjs",
+  "buildCommand": "npm run build",
+  "installCommand": "npm install",
+  "crons": [
+    {
+      "path": "/api/cron/update-territories",
+      "schedule": "0 2 * * 1"
+    },
+    {
+      "path": "/api/cron/update-content",
+      "schedule": "0 4 * * *"
+    },
+    {
+      "path": "/api/cron/update-laws",
+      "schedule": "0 5 * * *"
+    },
+    {
+      "path": "/api/cron/update-budget-api",
+      "schedule": "0 3 * * 1"
+    },
+    {
+      "path": "/api/cron/update-agenda",
+      "schedule": "0 3 * * *"
+    }
+  ]
+}

@@ -265,7 +265,7 @@ function ComparateurContent() {
                     <div>
                       <h3 className="text-2xl font-black text-slate-900 leading-tight">{sideA.name}</h3>
                       <p className="text-[10px] font-black uppercase tracking-[0.2em] text-slate-400">
-                        {sideA.type === 'commune' ? sideA.data.departement?.nom : sideA.type === 'region' ? 'France' : 'Région'}
+                        {sideA.type === 'commune' ? sideA.data.departement?.nom || 'Commune' : sideA.type === 'region' ? 'Région' : 'Département'}
                       </p>
                     </div>
                   </div>
@@ -357,7 +357,7 @@ function ComparateurContent() {
                     <div>
                       <h3 className="text-2xl font-black text-slate-900 leading-tight">{sideB.name}</h3>
                       <p className="text-[10px] font-black uppercase tracking-[0.2em] text-slate-400">
-                        {sideB.type === 'commune' ? sideB.data.departement?.nom : sideB.type === 'region' ? 'France' : 'Région'}
+                        {sideB.type === 'commune' ? sideB.data.departement?.nom || 'Commune' : sideB.type === 'region' ? 'Région' : 'Département'}
                       </p>
                     </div>
                   </div>

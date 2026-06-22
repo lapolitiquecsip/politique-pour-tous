@@ -592,7 +592,11 @@ function LocalPoliticsContent() {
                                 setSelectedCommune({
                                   nom: city.name,
                                   code: city.code,
-                                  population: parseInt(city.population.replace('M', '000000').replace('K', '000')),
+                                  population: city.population.endsWith('M') 
+                                    ? Math.round(parseFloat(city.population) * 1000000) 
+                                    : city.population.endsWith('K') 
+                                    ? Math.round(parseFloat(city.population) * 1000) 
+                                    : parseInt(city.population),
                                   codesPostaux: [],
                                   departement: { nom: "" },
                                   region: { nom: "" }

@@ -1,11 +1,12 @@
 "use client";
 
 import { motion, AnimatePresence } from "framer-motion";
-import { X, Users, MapPin, Calendar, Award, Building2, TrendingUp, UserMinus, Star, Loader2, Briefcase, GraduationCap, Heart, Shield, Home, Landmark, Coins, TreePine } from "lucide-react";
+import { X, Users, MapPin, Calendar, Award, Building2, TrendingUp, UserMinus, Star, Loader2, Briefcase, GraduationCap, Heart, Shield, Home, Landmark, Coins, TreePine, Lock } from "lucide-react";
 import type { CommuneResult, MayorData, ElectionResult } from "@/lib/hooks/useCommuneSearch";
 import { useState, useEffect } from "react";
 import { usePremium } from "@/lib/hooks/usePremium";
 import { api } from "@/lib/api";
+import { useRouter } from "next/navigation";
 
 const PARTY_COLORS: Record<string, string> = {
   PS: "bg-rose-500",
@@ -338,12 +339,23 @@ export default function CommuneDetailPanel({
   onClose,
 }: CommuneDetailPanelProps) {
   const { userId, isPremium } = usePremium();
+  const router = useRouter();
   const [electionData, setElectionData] = useState<ElectionResult | null>(null);
   const [loading, setLoading] = useState(false);
   const [isSaved, setIsSaved] = useState(false);
   const [loadingSave, setLoadingSave] = useState(false);
   const [communeData, setCommuneData] = useState<any | null>(null);
   const [loadingDetails, setLoadingDetails] = useState(false);
+
+  const handleOpenBudget = () => {
+    if (!commune) return;
+    if (!isPremium) {
+      alert("Cette fonctionnalité est réservée aux abonnés PREMIUM. Veuillez passer à l'offre Elite pour accéder aux budgets expliqués des communes de France.");
+      router.push("/premium");
+    } else {
+      router.push(`/local/budget?code=${commune.code}`);
+    }
+  };
 
   useEffect(() => {
     if (!commune) {
@@ -510,6 +522,14 @@ export default function CommuneDetailPanel({
                       <Users size={12} />
                       {formatPopulation(commune.population)}
                     </span>
+                    <button
+                      onClick={handleOpenBudget}
+                      className="px-4 py-1.5 bg-amber-400 hover:bg-amber-300 text-slate-950 text-xs font-extrabold uppercase tracking-wider rounded-full shadow-lg hover:shadow-xl transition-all flex items-center gap-1.5 border border-amber-300/30 active:scale-95"
+                    >
+                      <Coins size={12} />
+                      <span>Budget 2026</span>
+                      {!isPremium && <Lock size={10} className="text-slate-900/80" />}
+                    </button>
                   </div>
                 </div>
               </div>

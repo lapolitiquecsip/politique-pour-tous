@@ -245,8 +245,15 @@ function ComparateurContent() {
                     >
                        {/* Regions */}
                        {resultsA.regions.map(r => (
-                         <button key={r.id} onClick={() => handleSelect('A', r, 'region')} className="w-full px-8 py-4 flex items-center justify-between hover:bg-slate-50 transition-colors border-b border-slate-50 text-left">
-                           <div>
+                         <button key={r.id} onClick={() => handleSelect('A', r, 'region')} className="w-full px-8 py-4 flex items-center gap-4 hover:bg-slate-50 transition-colors border-b border-slate-50 text-left">
+                           <div className="w-10 h-10 rounded-lg overflow-hidden shrink-0 bg-slate-100 flex items-center justify-center">
+                             {r.image ? (
+                               <img src={r.image} alt={r.name} className="w-full h-full object-cover" />
+                             ) : (
+                               <Map size={20} className="text-slate-400" />
+                             )}
+                           </div>
+                           <div className="flex-1">
                              <p className="font-bold text-slate-900">{r.name}</p>
                              <p className="text-[10px] font-black uppercase text-amber-500 tracking-widest">Région</p>
                            </div>
@@ -255,8 +262,11 @@ function ComparateurContent() {
                        ))}
                        {/* Departments */}
                        {resultsA.depts.map(d => (
-                         <button key={d.name} onClick={() => handleSelect('A', d, 'department')} className="w-full px-8 py-4 flex items-center justify-between hover:bg-slate-50 transition-colors border-b border-slate-50 text-left">
-                           <div>
+                         <button key={d.name} onClick={() => handleSelect('A', d, 'department')} className="w-full px-8 py-4 flex items-center gap-4 hover:bg-slate-50 transition-colors border-b border-slate-50 text-left">
+                           <div className="w-10 h-10 rounded-lg overflow-hidden shrink-0 bg-slate-100 flex items-center justify-center text-blue-500">
+                             <Building2 size={20} />
+                           </div>
+                           <div className="flex-1">
                              <p className="font-bold text-slate-900">{d.name}</p>
                              <p className="text-[10px] font-black uppercase text-blue-500 tracking-widest">Département</p>
                            </div>
@@ -265,8 +275,11 @@ function ComparateurContent() {
                        ))}
                        {/* Communes */}
                        {(!allowedType || allowedType === 'commune') && searchA.results.map(c => (
-                         <button key={c.code} onClick={() => handleSelect('A', c, 'commune')} className="w-full px-8 py-4 flex items-center justify-between hover:bg-slate-50 transition-colors border-b border-slate-50 text-left">
-                           <div>
+                         <button key={c.code} onClick={() => handleSelect('A', c, 'commune')} className="w-full px-8 py-4 flex items-center gap-4 hover:bg-slate-50 transition-colors border-b border-slate-50 text-left">
+                           <div className="w-10 h-10 rounded-lg overflow-hidden shrink-0 bg-slate-100 flex items-center justify-center text-slate-400">
+                             <MapPin size={20} />
+                           </div>
+                           <div className="flex-1">
                              <p className="font-bold text-slate-900">{c.nom}</p>
                              <p className="text-[10px] font-black uppercase text-slate-400 tracking-widest">{c.departement.nom} ({c.departement.code})</p>
                            </div>
@@ -289,10 +302,12 @@ function ComparateurContent() {
                   </button>
                   <div className="flex items-center gap-6 mb-8">
                     <div className="w-16 h-16 rounded-2xl bg-white shadow-lg flex items-center justify-center text-slate-400 overflow-hidden shrink-0">
-                      {sideA.type === 'region' && sideA.data.image ? (
-                        <img src={sideA.data.image} alt={sideA.name} className="w-full h-full object-cover" />
-                      ) : sideA.type === 'region' ? (
-                        <Map size={32} />
+                      {sideA.type === 'region' ? (
+                        <img 
+                          src={sideA.data.image || REGIONS.find(r => r.id === sideA.id || r.name === sideA.name)?.image || "/images/regions/ile_de_france.png"} 
+                          alt={sideA.name} 
+                          className="w-full h-full object-cover" 
+                        />
                       ) : sideA.type === 'department' ? (
                         <Building2 size={32} />
                       ) : (
@@ -347,8 +362,15 @@ function ComparateurContent() {
                       className="absolute top-full left-0 right-0 mt-4 bg-white rounded-[2rem] shadow-2xl border border-slate-100 overflow-hidden z-50 max-h-[400px] overflow-y-auto"
                     >
                        {resultsB.regions.map(r => (
-                         <button key={r.id} onClick={() => handleSelect('B', r, 'region')} className="w-full px-8 py-4 flex items-center justify-between hover:bg-slate-50 transition-colors border-b border-slate-50 text-left">
-                           <div>
+                         <button key={r.id} onClick={() => handleSelect('B', r, 'region')} className="w-full px-8 py-4 flex items-center gap-4 hover:bg-slate-50 transition-colors border-b border-slate-50 text-left">
+                           <div className="w-10 h-10 rounded-lg overflow-hidden shrink-0 bg-slate-100 flex items-center justify-center">
+                             {r.image ? (
+                               <img src={r.image} alt={r.name} className="w-full h-full object-cover" />
+                             ) : (
+                               <Map size={20} className="text-slate-400" />
+                             )}
+                           </div>
+                           <div className="flex-1">
                              <p className="font-bold text-slate-900">{r.name}</p>
                              <p className="text-[10px] font-black uppercase text-amber-500 tracking-widest">Région</p>
                            </div>
@@ -356,8 +378,11 @@ function ComparateurContent() {
                          </button>
                        ))}
                        {resultsB.depts.map(d => (
-                         <button key={d.name} onClick={() => handleSelect('B', d, 'department')} className="w-full px-8 py-4 flex items-center justify-between hover:bg-slate-50 transition-colors border-b border-slate-50 text-left">
-                           <div>
+                         <button key={d.name} onClick={() => handleSelect('B', d, 'department')} className="w-full px-8 py-4 flex items-center gap-4 hover:bg-slate-50 transition-colors border-b border-slate-50 text-left">
+                           <div className="w-10 h-10 rounded-lg overflow-hidden shrink-0 bg-slate-100 flex items-center justify-center text-blue-500">
+                             <Building2 size={20} />
+                           </div>
+                           <div className="flex-1">
                              <p className="font-bold text-slate-900">{d.name}</p>
                              <p className="text-[10px] font-black uppercase text-blue-500 tracking-widest">Département</p>
                            </div>
@@ -365,8 +390,11 @@ function ComparateurContent() {
                          </button>
                        ))}
                        {(!allowedType || allowedType === 'commune') && searchB.results.map(c => (
-                         <button key={c.code} onClick={() => handleSelect('B', c, 'commune')} className="w-full px-8 py-4 flex items-center justify-between hover:bg-slate-50 transition-colors border-b border-slate-50 text-left">
-                           <div>
+                         <button key={c.code} onClick={() => handleSelect('B', c, 'commune')} className="w-full px-8 py-4 flex items-center gap-4 hover:bg-slate-50 transition-colors border-b border-slate-50 text-left">
+                           <div className="w-10 h-10 rounded-lg overflow-hidden shrink-0 bg-slate-100 flex items-center justify-center text-slate-400">
+                             <MapPin size={20} />
+                           </div>
+                           <div className="flex-1">
                              <p className="font-bold text-slate-900">{c.nom}</p>
                              <p className="text-[10px] font-black uppercase text-slate-400 tracking-widest">{c.departement.nom} ({c.departement.code})</p>
                            </div>
@@ -389,10 +417,12 @@ function ComparateurContent() {
                   </button>
                   <div className="flex items-center gap-6 mb-8">
                     <div className="w-16 h-16 rounded-2xl bg-white shadow-lg flex items-center justify-center text-slate-400 overflow-hidden shrink-0">
-                      {sideB.type === 'region' && sideB.data.image ? (
-                        <img src={sideB.data.image} alt={sideB.name} className="w-full h-full object-cover" />
-                      ) : sideB.type === 'region' ? (
-                        <Map size={32} />
+                      {sideB.type === 'region' ? (
+                        <img 
+                          src={sideB.data.image || REGIONS.find(r => r.id === sideB.id || r.name === sideB.name)?.image || "/images/regions/ile_de_france.png"} 
+                          alt={sideB.name} 
+                          className="w-full h-full object-cover" 
+                        />
                       ) : sideB.type === 'department' ? (
                         <Building2 size={32} />
                       ) : (

@@ -215,6 +215,116 @@ const COMMUNE_CATEGORIES = [
   }
 ];
 
+const NATIONAL_AVERAGES: Record<string, { value: any; label: string; format: (v: any) => string }> = {
+  'demographie.populationTotal': { value: 1950, label: 'Moyenne des communes', format: (v: any) => v?.toLocaleString() + ' hab.' },
+  'demographie.densite': { value: 120, label: 'Moyenne nationale', format: (v: any) => v + ' hab/km²' },
+  'demographie.evolution10ans': { value: 4.0, label: 'Moyenne nationale', format: (v: any) => '+' + v + '%' },
+  'demographie.moins25ans': { value: 29.5, label: 'Moyenne nationale', format: (v: any) => v + '%' },
+  'demographie.plus65ans': { value: 21.0, label: 'Moyenne nationale', format: (v: any) => v + '%' },
+  'economie.chomage': { value: 8.1, label: 'Moyenne nationale', format: (v: any) => v + '%' },
+  'economie.revenuMedian': { value: 1923, label: 'Moyenne nationale', format: (v: any) => v + ' €/mois' },
+  'economie.pauvrete': { value: 14.5, label: 'Moyenne nationale', format: (v: any) => v + '%' },
+  'logement.prixM2': { value: 2931, label: 'Moyenne nationale', format: (v: any) => v?.toLocaleString() + ' €' },
+  'logement.logementsSociaux': { value: 15.9, label: 'Moyenne nationale', format: (v: any) => v + '%' },
+  'logement.proprietaires': { value: 57.4, label: 'Moyenne nationale', format: (v: any) => v + '%' },
+  'finances.budgetHabitant': { value: 1550, label: 'Moyenne nationale', format: (v: any) => v?.toLocaleString() + ' €' },
+  'finances.endettement': { value: 73.6, label: 'Moyenne nationale', format: (v: any) => v + '%' },
+  'finances.investissement': { value: 27.0, label: 'Moyenne nationale', format: (v: any) => v + '%' },
+  'fiscalite.tauxTF': { value: 40.07, label: 'Moyenne nationale', format: (v: any) => v + '%' },
+  'fiscalite.tauxTH': { value: 16.73, label: 'Moyenne nationale', format: (v: any) => v + '%' },
+  'securite.atteintesPersonnes': { value: 7.0, label: 'Moyenne nationale', format: (v: any) => v },
+  'securite.atteintesBiens': { value: 25.0, label: 'Moyenne nationale', format: (v: any) => v },
+  'sante.medecins10k': { value: 35.8, label: 'Moyenne nationale', format: (v: any) => v },
+  'sante.scoreAPL': { value: 60, label: 'Moyenne nationale', format: (v: any) => v + '/100' },
+  'sante.esperanceVie': { value: 83.1, label: 'Moyenne nationale', format: (v: any) => v + ' ans' },
+  'education.bac': { value: 91.8, label: 'Moyenne nationale', format: (v: any) => v + '%' },
+  'education.diplomesSup': { value: 33.2, label: 'Moyenne nationale', format: (v: any) => v + '%' },
+  'education.decrochage': { value: 7.6, label: 'Moyenne nationale', format: (v: any) => v + '%' },
+  'environnement.qualiteAir': { value: 70, label: 'Moyenne nationale', format: (v: any) => v + '/100' },
+  'environnement.surfaceNaturelle': { value: 48.0, label: 'Moyenne nationale', format: (v: any) => v + '%' },
+  'environnement.risques': { value: 'modéré', label: 'Moyenne nationale', format: (v: any) => v }
+};
+
+const NEUTRAL_COMPARISON_KEYS = [
+  'demographie.populationTotal',
+  'demographie.densite',
+  'demographie.evolution10ans',
+  'demographie.moins25ans',
+  'demographie.plus65ans',
+  'logement.prixM2',
+  'logement.logementsSociaux',
+  'logement.proprietaires',
+  'finances.budgetHabitant'
+];
+
+const renderComparison = (val: any, metricKey: string, inverse?: boolean) => {
+  const nat = NATIONAL_AVERAGES[metricKey];
+  if (!nat || val === null || val === undefined) return null;
+
+  // Normalize val to number if it's a string percentage/float
+  let numericVal = val;
+  if (typeof val === 'string') {
+    if (val.includes('%') || val.includes('+') || val.includes('-')) {
+      const cleaned = val.replace('%', '').trim();
+      const parsed = parseFloat(cleaned);
+      if (!isNaN(parsed)) {
+        numericVal = parsed;
+      }
+    }
+  }
+
+  const isNeutral = NEUTRAL_COMPARISON_KEYS.includes(metricKey);
+
+  if (typeof numericVal === 'number' && typeof nat.value === 'number') {
+    const diff = numericVal - nat.value;
+    const absDiff = Math.abs(diff);
+    
+    // Favorable direction: inverse means lower is better, otherwise higher is better.
+    const isBetter = inverse ? diff < 0 : diff > 0;
+    const isSame = absDiff < 0.01;
+    
+    // Format diff text
+    const sign = diff > 0 ? '+' : '';
+    let diffStr = '';
+
+    if (metricKey.includes('Median') || metricKey.includes('budgetHabitant') || metricKey.includes('prixM2')) {
+      diffStr = `${sign}${Math.round(diff).toLocaleString('fr-FR')} €`;
+    } else if (metricKey.includes('TF') || metricKey.includes('TH') || metricKey.includes('chomage') || metricKey.includes('pauvrete') || metricKey.includes('evolution') || metricKey.includes('ans') || metricKey.includes('Sociaux') || metricKey.includes('proprietaires') || metricKey.includes('investissement') || metricKey.includes('bac') || metricKey.includes('diplomesSup') || metricKey.includes('decrochage') || metricKey.includes('Air') || metricKey.includes('surfaceNaturelle') || metricKey.includes('endettement')) {
+      diffStr = `${sign}${diff.toFixed(1).replace('.0', '')}%`;
+    } else if (metricKey.includes('medecins10k') || metricKey.includes('atteintes') || metricKey.includes('scoreAPL') || metricKey.includes('esperanceVie')) {
+      const unit = metricKey.includes('esperanceVie') ? ' ans' : metricKey.includes('scoreAPL') ? '/100' : '';
+      diffStr = `${sign}${diff.toFixed(1).replace('.0', '')}${unit}`;
+    } else {
+      diffStr = `${sign}${diff.toFixed(1).replace('.0', '')}`;
+    }
+
+    return (
+      <div className="flex justify-between items-center text-[9px] mt-1 font-medium leading-none">
+        <span className="text-slate-400">Moy. nationale : <span className="font-bold text-slate-500">{nat.format(nat.value)}</span></span>
+        {isSame ? (
+          <span className="text-slate-500 font-semibold">Identique à la moyenne</span>
+        ) : isNeutral ? (
+          <span className="text-slate-500 font-semibold">Écart : {diffStr}</span>
+        ) : (
+          <span className={`${isBetter ? 'text-emerald-600' : 'text-rose-600'} font-semibold flex items-center gap-0.5`}>
+            {isBetter ? 'Plus favorable' : 'Moins favorable'} ({diffStr})
+          </span>
+        )}
+      </div>
+    );
+  } else if (typeof val === 'string' && typeof nat.value === 'string') {
+    const isSame = val.toLowerCase() === nat.value.toLowerCase();
+    return (
+      <div className="flex justify-between items-center text-[9px] mt-1 font-medium leading-none">
+        <span className="text-slate-400">Moy. nationale : <span className="font-bold text-slate-500">{nat.value}</span></span>
+        <span className="text-slate-500 font-semibold">{isSame ? 'Identique' : `Ville : ${val}`}</span>
+      </div>
+    );
+  }
+
+  return null;
+};
+
 interface CommuneDetailPanelProps {
   commune: CommuneResult | null;
   mayor: MayorData | null;
@@ -586,6 +696,7 @@ export default function CommuneDetailPanel({
                                     className={`h-full ${cat.progressClass}`}
                                   />
                                 </div>
+                                {renderComparison(val, metric.key, (metric as any).inverse)}
                               </div>
                             );
                           })}

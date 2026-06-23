@@ -414,19 +414,26 @@ function LocalPoliticsContent() {
   };
 
   const filteredItems = (() => {
-    const s = search.toLowerCase();
+    const s = search.normalize("NFD").replace(/[\u0300-\u036f]/g, "").toLowerCase();
+    
+    const filterFn = (name: string, president?: string) => {
+      const normName = name.normalize("NFD").replace(/[\u0300-\u036f]/g, "").toLowerCase();
+      const normPres = president ? president.normalize("NFD").replace(/[\u0300-\u036f]/g, "").toLowerCase() : "";
+      return normName.includes(s) || normPres.includes(s);
+    };
+
     if (activeTab === "region") {
       const base = REGIONS.map(r => {
         const dyn = dynamicTerritories.find(d => d.id === r.id && d.type === 'region');
         return dyn ? { ...r, ...dyn } : r;
       });
-      return base.filter(r => r.name.toLowerCase().includes(s) || (r.president && r.president.toLowerCase().includes(s)));
+      return base.filter(r => filterFn(r.name, r.president));
     } else if (activeTab === "departement") {
       const base = DEPARTMENTS.map(d => {
         const dyn = dynamicTerritories.find(dt => dt.id === d.id && dt.type === 'department');
         return dyn ? { ...d, ...dyn, type: 'department' as const } : { ...d, type: 'department' as const };
       });
-      return base.filter(d => d.name.toLowerCase().includes(s) || (d.president && d.president.toLowerCase().includes(s)));
+      return base.filter(d => filterFn(d.name, d.president));
     }
     return []; // communes handled separately
   })();

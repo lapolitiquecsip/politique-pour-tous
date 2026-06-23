@@ -33,6 +33,21 @@ function ComparateurContent() {
   const API_URL = process.env.NEXT_PUBLIC_API_URL || "http://localhost:3001";
 
   const [activeSearch, setActiveSearch] = useState<'A' | 'B' | null>(null);
+  const containerRefA = useRef<HTMLDivElement>(null);
+  const containerRefB = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    const handleClickOutside = (event: MouseEvent) => {
+      if (
+        containerRefA.current && !containerRefA.current.contains(event.target as Node) &&
+        containerRefB.current && !containerRefB.current.contains(event.target as Node)
+      ) {
+        setActiveSearch(null);
+      }
+    };
+    document.addEventListener("mousedown", handleClickOutside);
+    return () => document.removeEventListener("mousedown", handleClickOutside);
+  }, []);
 
   useEffect(() => {
     if (!loading && !isPremium) {
@@ -40,13 +55,23 @@ function ComparateurContent() {
     }
   }, [isPremium, loading, router]);
 
-  // Local results for regions and departments
+  // Local results for regions and departments with accent insensitivity
   const getLocalResults = (query: string) => {
-    if (query.length < 2) return { regions: [], depts: [] };
-    const q = query.toLowerCase();
+    const q = query.normalize("NFD").replace(/[\u0300-\u036f]/g, "").toLowerCase();
+    
+    if (query.length < 2) {
+      return {
+        regions: (!allowedType || allowedType === 'region') ? REGIONS : [],
+        depts: (!allowedType || allowedType === 'department') ? DEPARTMENTS : []
+      };
+    }
+    
+    const filterFn = (name: string) => 
+      name.normalize("NFD").replace(/[\u0300-\u036f]/g, "").toLowerCase().includes(q);
+
     return {
-      regions: (!allowedType || allowedType === 'region') ? REGIONS.filter(r => r.name.toLowerCase().includes(q)) : [],
-      depts: (!allowedType || allowedType === 'department') ? DEPARTMENTS.filter(d => d.name.toLowerCase().includes(q)) : []
+      regions: (!allowedType || allowedType === 'region') ? REGIONS.filter(r => filterFn(r.name)) : [],
+      depts: (!allowedType || allowedType === 'department') ? DEPARTMENTS.filter(d => filterFn(d.name)) : []
     };
   };
 
@@ -169,6 +194,9 @@ function ComparateurContent() {
       </div>
     );
   };
+  
+  const showDropdownA = activeSearch === 'A' && (resultsA.regions.length > 0 || resultsA.depts.length > 0 || searchA.results.length > 0);
+  const showDropdownB = activeSearch === 'B' && (resultsB.regions.length > 0 || resultsB.depts.length > 0 || searchB.results.length > 0);
 
   return (
     <main className="min-h-screen bg-slate-50 pb-20">
@@ -196,7 +224,7 @@ function ComparateurContent() {
 
             {/* Entity A */}
             <div className="space-y-8 relative z-10">
-              <div className="relative">
+              <div ref={containerRefA} className="relative">
                 <Search className="absolute left-6 top-1/2 -translate-y-1/2 text-slate-400" size={20} />
                 <input 
                   type="text" 
@@ -208,7 +236,7 @@ function ComparateurContent() {
                 />
                 
                 <AnimatePresence>
-                  {activeSearch === 'A' && (searchA.query.length >= 2) && (
+                  {showDropdownA && (
                     <motion.div 
                       initial={{ opacity: 0, y: 10 }}
                       animate={{ opacity: 1, y: 0 }}
@@ -291,7 +319,7 @@ function ComparateurContent() {
 
             {/* Entity B */}
             <div className="space-y-8 relative z-10">
-              <div className="relative">
+              <div ref={containerRefB} className="relative">
                 <Search className="absolute left-6 top-1/2 -translate-y-1/2 text-slate-400" size={20} />
                 <input 
                   type="text" 
@@ -303,7 +331,7 @@ function ComparateurContent() {
                 />
                 
                 <AnimatePresence>
-                  {activeSearch === 'B' && (searchB.query.length >= 2) && (
+                  {showDropdownB && (
                     <motion.div 
                       initial={{ opacity: 0, y: 10 }}
                       animate={{ opacity: 1, y: 0 }}

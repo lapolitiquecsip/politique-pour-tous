@@ -1,11 +1,12 @@
 "use client";
 
 import { motion, AnimatePresence } from "framer-motion";
-import { X, Users, MapPin, Calendar, Award, Building2, TrendingUp, UserMinus, Star, Loader2 } from "lucide-react";
+import { X, Users, MapPin, Calendar, Award, Building2, TrendingUp, UserMinus, Star, Loader2, Briefcase, GraduationCap, Heart, Shield, Home, Landmark, Coins, TreePine, Lock } from "lucide-react";
 import type { CommuneResult, MayorData, ElectionResult } from "@/lib/hooks/useCommuneSearch";
 import { useState, useEffect } from "react";
 import { usePremium } from "@/lib/hooks/usePremium";
 import { api } from "@/lib/api";
+import { useRouter } from "next/navigation";
 
 const PARTY_COLORS: Record<string, string> = {
   PS: "bg-rose-500",
@@ -76,6 +77,256 @@ function formatDate(d: string): string {
   }
 }
 
+
+const COMMUNE_CATEGORIES = [
+  { 
+    id: 'demographie', 
+    title: 'Démographie', 
+    icon: Users,
+    bgClass: 'bg-blue-50/40',
+    borderClass: 'border-blue-100/50',
+    iconClass: 'bg-blue-100 text-blue-900',
+    textClass: 'text-blue-800',
+    progressClass: 'bg-blue-600',
+    metrics: [
+      { key: 'demographie.populationTotal', label: 'Population totale', format: (v: any) => v?.toLocaleString() + ' hab.', help: "Nombre total d'habitants résidents." },
+      { key: 'demographie.densite', label: 'Densité', format: (v: any) => v + ' hab/km²', help: "Nombre moyen d'habitants par kilomètre carré." },
+      { key: 'demographie.evolution10ans', label: 'Évol. 10 ans', format: (v: any) => v, help: "Variation de la population sur les 10 dernières années." },
+      { key: 'demographie.moins25ans', label: '% -25 ans', format: (v: any) => v + '%', help: "Part de la population de moins de 25 ans." },
+      { key: 'demographie.plus65ans', label: '% +65 ans', format: (v: any) => v + '%', help: "Part de la population de 65 ans et plus." },
+    ]
+  },
+  { 
+    id: 'economie', 
+    title: 'Économie & Emploi', 
+    icon: Briefcase,
+    bgClass: 'bg-emerald-50/40',
+    borderClass: 'border-emerald-100/50',
+    iconClass: 'bg-emerald-100 text-emerald-900',
+    textClass: 'text-emerald-800',
+    progressClass: 'bg-emerald-600',
+    metrics: [
+      { key: 'economie.chomage', label: 'Taux de chômage', format: (v: any) => v + '%', inverse: true, help: "Taux de chômage localisé." },
+      { key: 'economie.revenuMedian', label: 'Revenu médian', format: (v: any) => v + ' €/mois', help: "Revenu mensuel médian séparant la population en deux." },
+      { key: 'economie.pauvrete', label: 'Taux de pauvreté', format: (v: any) => v + '%', inverse: true, help: "Part de la population vivant sous le seuil de pauvreté." },
+    ]
+  },
+  {
+    id: 'logement',
+    title: 'Logement',
+    icon: Home,
+    bgClass: 'bg-cyan-50/40',
+    borderClass: 'border-cyan-100/50',
+    iconClass: 'bg-cyan-100 text-cyan-900',
+    textClass: 'text-cyan-800',
+    progressClass: 'bg-cyan-600',
+    metrics: [
+      { key: 'logement.prixM2', label: 'Prix moyen m²', format: (v: any) => v?.toLocaleString() + ' €', help: "Prix de vente moyen estimé du m²." },
+      { key: 'logement.logementsSociaux', label: '% Logements sociaux', format: (v: any) => v + '%', help: "Part des logements sociaux parmi les résidences principales." },
+      { key: 'logement.proprietaires', label: '% Propriétaires', format: (v: any) => v + '%', help: "Part des ménages propriétaires." },
+    ]
+  },
+  {
+    id: 'finances',
+    title: 'Finances Municipales',
+    icon: Landmark,
+    bgClass: 'bg-pink-50/40',
+    borderClass: 'border-pink-100/50',
+    iconClass: 'bg-pink-100 text-pink-900',
+    textClass: 'text-pink-800',
+    progressClass: 'bg-pink-600',
+    metrics: [
+      { key: 'finances.budgetHabitant', label: 'Budget / hab.', format: (v: any) => v?.toLocaleString() + ' €', help: "Dépenses réelles de fonctionnement municipal par habitant." },
+      { key: 'finances.endettement', label: 'Endettement', format: (v: any) => v + '%', inverse: true, help: "Encours de la dette totale rapporté aux recettes de fonctionnement." },
+      { key: 'finances.investissement', label: '% Investissement', format: (v: any) => v + '%', help: "Part du budget consacrée à l'investissement." },
+    ]
+  },
+  {
+    id: 'fiscalite',
+    title: 'Fiscalité Locale',
+    icon: Coins,
+    bgClass: 'bg-amber-50/40',
+    borderClass: 'border-amber-100/50',
+    iconClass: 'bg-amber-100 text-amber-900',
+    textClass: 'text-amber-800',
+    progressClass: 'bg-amber-600',
+    metrics: [
+      { key: 'fiscalite.tauxTF', label: 'Taux Taxe Foncière', format: (v: any) => v + '%', inverse: true, help: "Taux communal de la taxe foncière sur les propriétés bâties (2023/2024)." },
+      { key: 'fiscalite.tauxTH', label: 'Taux Taxe Habitation', format: (v: any) => v + '%', inverse: true, help: "Taux communal de la taxe d'habitation sur les résidences secondaires (2023/2024)." },
+    ]
+  },
+  {
+    id: 'securite',
+    title: 'Sécurité',
+    icon: Shield,
+    bgClass: 'bg-purple-50/40',
+    borderClass: 'border-purple-100/50',
+    iconClass: 'bg-purple-100 text-purple-900',
+    textClass: 'text-purple-800',
+    progressClass: 'bg-purple-600',
+    metrics: [
+      { key: 'securite.atteintesPersonnes', label: 'Violences / 1k hab.', format: (v: any) => v, inverse: true, help: "Violences physiques enregistrées pour 1000 hab." },
+      { key: 'securite.atteintesBiens', label: 'Vols / 1k hab.', format: (v: any) => v, inverse: true, help: "Vols et dégradations pour 1000 hab." },
+    ]
+  },
+  {
+    id: 'sante',
+    title: 'Santé',
+    icon: Heart,
+    bgClass: 'bg-rose-50/40',
+    borderClass: 'border-rose-100/50',
+    iconClass: 'bg-rose-100 text-rose-900',
+    textClass: 'text-rose-800',
+    progressClass: 'bg-rose-600',
+    metrics: [
+      { key: 'sante.medecins10k', label: 'Médecins / 10k hab.', format: (v: any) => v, help: "Nombre de médecins pour 10 000 habitants." },
+      { key: 'sante.scoreAPL', label: 'Accessibilité Santé', format: (v: any) => v + '/100', help: "Indicateur d'accès aux soins APL (Ministère de la Santé)." },
+      { key: 'sante.esperanceVie', label: 'Espérance de vie', format: (v: any) => v + ' ans', help: "Espérance de vie moyenne dans la commune." },
+    ]
+  },
+  {
+    id: 'education',
+    title: 'Éducation',
+    icon: GraduationCap,
+    bgClass: 'bg-indigo-50/40',
+    borderClass: 'border-indigo-100/50',
+    iconClass: 'bg-indigo-100 text-indigo-900',
+    textClass: 'text-indigo-800',
+    progressClass: 'bg-indigo-600',
+    metrics: [
+      { key: 'education.bac', label: 'Réussite au Bac', format: (v: any) => v + '%', help: "Taux de réussite au baccalauréat moyen des lycées de la ville." },
+      { key: 'education.diplomesSup', label: '% Diplômés Sup.', format: (v: any) => v + '%', help: "Part de la population diplômée du supérieur." },
+      { key: 'education.decrochage', label: 'Décrochage', format: (v: any) => v + '%', inverse: true, help: "Part de décrochage scolaire estimée." },
+    ]
+  },
+  {
+    id: 'environnement',
+    title: 'Environnement',
+    icon: TreePine,
+    bgClass: 'bg-purple-50/40',
+    borderClass: 'border-purple-100/50',
+    iconClass: 'bg-purple-100 text-purple-900',
+    textClass: 'text-purple-800',
+    progressClass: 'bg-purple-600',
+    metrics: [
+      { key: 'environnement.qualiteAir', label: 'Qualité Air', format: (v: any) => v + '/100', help: "Note moyenne sur les concentrations de polluants." },
+      { key: 'environnement.surfaceNaturelle', label: '% Espaces verts', format: (v: any) => v + '%', help: "Part du territoire occupé par des espaces verts, parcs ou forêts." },
+      { key: 'environnement.risques', label: 'Exposition aux risques', format: (v: any) => v, help: "Exposition aux risques naturels majeurs." },
+    ]
+  }
+];
+
+const NATIONAL_AVERAGES: Record<string, { value: any; label: string; format: (v: any) => string }> = {
+  'demographie.populationTotal': { value: 1950, label: 'Moyenne des communes', format: (v: any) => v?.toLocaleString() + ' hab.' },
+  'demographie.densite': { value: 120, label: 'Moyenne nationale', format: (v: any) => v + ' hab/km²' },
+  'demographie.evolution10ans': { value: 4.0, label: 'Moyenne nationale', format: (v: any) => '+' + v + '%' },
+  'demographie.moins25ans': { value: 29.5, label: 'Moyenne nationale', format: (v: any) => v + '%' },
+  'demographie.plus65ans': { value: 21.0, label: 'Moyenne nationale', format: (v: any) => v + '%' },
+  'economie.chomage': { value: 8.1, label: 'Moyenne nationale', format: (v: any) => v + '%' },
+  'economie.revenuMedian': { value: 1923, label: 'Moyenne nationale', format: (v: any) => v + ' €/mois' },
+  'economie.pauvrete': { value: 14.5, label: 'Moyenne nationale', format: (v: any) => v + '%' },
+  'logement.prixM2': { value: 2931, label: 'Moyenne nationale', format: (v: any) => v?.toLocaleString() + ' €' },
+  'logement.logementsSociaux': { value: 15.9, label: 'Moyenne nationale', format: (v: any) => v + '%' },
+  'logement.proprietaires': { value: 57.4, label: 'Moyenne nationale', format: (v: any) => v + '%' },
+  'finances.budgetHabitant': { value: 1550, label: 'Moyenne nationale', format: (v: any) => v?.toLocaleString() + ' €' },
+  'finances.endettement': { value: 73.6, label: 'Moyenne nationale', format: (v: any) => v + '%' },
+  'finances.investissement': { value: 27.0, label: 'Moyenne nationale', format: (v: any) => v + '%' },
+  'fiscalite.tauxTF': { value: 40.07, label: 'Moyenne nationale', format: (v: any) => v + '%' },
+  'fiscalite.tauxTH': { value: 16.73, label: 'Moyenne nationale', format: (v: any) => v + '%' },
+  'securite.atteintesPersonnes': { value: 7.0, label: 'Moyenne nationale', format: (v: any) => v },
+  'securite.atteintesBiens': { value: 25.0, label: 'Moyenne nationale', format: (v: any) => v },
+  'sante.medecins10k': { value: 35.8, label: 'Moyenne nationale', format: (v: any) => v },
+  'sante.scoreAPL': { value: 60, label: 'Moyenne nationale', format: (v: any) => v + '/100' },
+  'sante.esperanceVie': { value: 83.1, label: 'Moyenne nationale', format: (v: any) => v + ' ans' },
+  'education.bac': { value: 91.8, label: 'Moyenne nationale', format: (v: any) => v + '%' },
+  'education.diplomesSup': { value: 33.2, label: 'Moyenne nationale', format: (v: any) => v + '%' },
+  'education.decrochage': { value: 7.6, label: 'Moyenne nationale', format: (v: any) => v + '%' },
+  'environnement.qualiteAir': { value: 70, label: 'Moyenne nationale', format: (v: any) => v + '/100' },
+  'environnement.surfaceNaturelle': { value: 48.0, label: 'Moyenne nationale', format: (v: any) => v + '%' },
+  'environnement.risques': { value: 'modéré', label: 'Moyenne nationale', format: (v: any) => v }
+};
+
+const NEUTRAL_COMPARISON_KEYS = [
+  'demographie.populationTotal',
+  'demographie.densite',
+  'demographie.evolution10ans',
+  'demographie.moins25ans',
+  'demographie.plus65ans',
+  'logement.prixM2',
+  'logement.logementsSociaux',
+  'logement.proprietaires',
+  'finances.budgetHabitant'
+];
+
+const renderComparison = (val: any, metricKey: string, inverse?: boolean) => {
+  if (metricKey === 'demographie.populationTotal') return null;
+  const nat = NATIONAL_AVERAGES[metricKey];
+  if (!nat || val === null || val === undefined) return null;
+
+  // Normalize val to number if it's a string percentage/float
+  let numericVal = val;
+  if (typeof val === 'string') {
+    if (val.includes('%') || val.includes('+') || val.includes('-')) {
+      const cleaned = val.replace('%', '').trim();
+      const parsed = parseFloat(cleaned);
+      if (!isNaN(parsed)) {
+        numericVal = parsed;
+      }
+    }
+  }
+
+  const isNeutral = NEUTRAL_COMPARISON_KEYS.includes(metricKey);
+
+  if (typeof numericVal === 'number' && typeof nat.value === 'number') {
+    const diff = numericVal - nat.value;
+    const absDiff = Math.abs(diff);
+    
+    // Favorable direction: inverse means lower is better, otherwise higher is better.
+    const isBetter = inverse ? diff < 0 : diff > 0;
+    const isSame = absDiff < 0.01;
+    
+    // Format diff text
+    const sign = diff > 0 ? '+' : '';
+    let diffStr = '';
+
+    if (metricKey.includes('Median') || metricKey.includes('budgetHabitant') || metricKey.includes('prixM2')) {
+      diffStr = `${sign}${Math.round(diff).toLocaleString('fr-FR')} €`;
+    } else if (metricKey.includes('TF') || metricKey.includes('TH') || metricKey.includes('chomage') || metricKey.includes('pauvrete') || metricKey.includes('evolution') || metricKey.includes('ans') || metricKey.includes('Sociaux') || metricKey.includes('proprietaires') || metricKey.includes('investissement') || metricKey.includes('bac') || metricKey.includes('diplomesSup') || metricKey.includes('decrochage') || metricKey.includes('Air') || metricKey.includes('surfaceNaturelle') || metricKey.includes('endettement')) {
+      diffStr = `${sign}${diff.toFixed(1).replace('.0', '')}%`;
+    } else if (metricKey.includes('medecins10k') || metricKey.includes('atteintes') || metricKey.includes('scoreAPL') || metricKey.includes('esperanceVie')) {
+      const unit = metricKey.includes('esperanceVie') ? ' ans' : metricKey.includes('scoreAPL') ? '/100' : '';
+      diffStr = `${sign}${diff.toFixed(1).replace('.0', '')}${unit}`;
+    } else {
+      diffStr = `${sign}${diff.toFixed(1).replace('.0', '')}`;
+    }
+
+    return (
+      <div className="flex justify-between items-center text-[9px] mt-1 font-medium leading-none">
+        <span className="text-slate-400">Moy. nationale : <span className="font-bold text-slate-500">{nat.format(nat.value)}</span></span>
+        {isSame ? (
+          <span className="text-slate-500 font-semibold">Identique à la moyenne</span>
+        ) : isNeutral ? (
+          <span className="text-slate-500 font-semibold">Écart : {diffStr}</span>
+        ) : (
+          <span className={`${isBetter ? 'text-emerald-600' : 'text-rose-600'} font-semibold flex items-center gap-0.5`}>
+            {isBetter ? 'Plus favorable' : 'Moins favorable'} ({diffStr})
+          </span>
+        )}
+      </div>
+    );
+  } else if (typeof val === 'string' && typeof nat.value === 'string') {
+    const isSame = val.toLowerCase() === nat.value.toLowerCase();
+    return (
+      <div className="flex justify-between items-center text-[9px] mt-1 font-medium leading-none">
+        <span className="text-slate-400">Moy. nationale : <span className="font-bold text-slate-500">{nat.value}</span></span>
+        <span className="text-slate-500 font-semibold">{isSame ? 'Identique' : `Ville : ${val}`}</span>
+      </div>
+    );
+  }
+
+  return null;
+};
+
 interface CommuneDetailPanelProps {
   commune: CommuneResult | null;
   mayor: MayorData | null;
@@ -88,10 +339,46 @@ export default function CommuneDetailPanel({
   onClose,
 }: CommuneDetailPanelProps) {
   const { userId, isPremium } = usePremium();
+  const router = useRouter();
   const [electionData, setElectionData] = useState<ElectionResult | null>(null);
   const [loading, setLoading] = useState(false);
   const [isSaved, setIsSaved] = useState(false);
   const [loadingSave, setLoadingSave] = useState(false);
+  const [communeData, setCommuneData] = useState<any | null>(null);
+  const [loadingDetails, setLoadingDetails] = useState(false);
+
+  const handleOpenBudget = () => {
+    if (!commune) return;
+    if (!isPremium) {
+      alert("Cette fonctionnalité est réservée aux abonnés PREMIUM. Veuillez passer à l'offre Elite pour accéder aux budgets expliqués des communes de France.");
+      router.push("/premium");
+    } else {
+      router.push(`/local/budget?code=${commune.code}`);
+    }
+  };
+
+  useEffect(() => {
+    if (!commune) {
+      setCommuneData(null);
+      return;
+    }
+
+    const fetchDetails = async () => {
+      setLoadingDetails(true);
+      try {
+        const API_URL = process.env.NEXT_PUBLIC_API_URL || "http://localhost:3001";
+        const res = await fetch(`${API_URL}/api/comparateur/${commune.code}?name=${encodeURIComponent(commune.nom)}`);
+        const json = await res.json();
+        setCommuneData(json);
+      } catch (e) {
+        console.error("Failed to fetch commune details:", e);
+      } finally {
+        setLoadingDetails(false);
+      }
+    };
+
+    fetchDetails();
+  }, [commune]);
 
   useEffect(() => {
     if (!commune || !userId || !isPremium) return;
@@ -214,6 +501,11 @@ export default function CommuneDetailPanel({
                     <span className="text-[10px] font-black uppercase tracking-widest text-rose-200">
                       {commune.departement?.nom} · {commune.region?.nom}
                     </span>
+                    {communeData && !communeData.isEstimated && (
+                      <span className="px-2 py-0.5 bg-emerald-500/20 text-emerald-300 text-[8px] uppercase tracking-widest rounded-full border border-emerald-500/30 font-bold ml-2">
+                        Données officielles
+                      </span>
+                    )}
                   </div>
 
                   <h2 className="text-4xl font-staatliches uppercase tracking-tight text-white leading-none">
@@ -230,6 +522,14 @@ export default function CommuneDetailPanel({
                       <Users size={12} />
                       {formatPopulation(commune.population)}
                     </span>
+                    <button
+                      onClick={handleOpenBudget}
+                      className="px-4 py-1.5 bg-amber-400 hover:bg-amber-300 text-slate-950 text-xs font-extrabold uppercase tracking-wider rounded-full shadow-lg hover:shadow-xl transition-all flex items-center gap-1.5 border border-amber-300/30 active:scale-95"
+                    >
+                      <Coins size={12} />
+                      <span>Budget 2026</span>
+                      {!isPremium && <Lock size={10} className="text-slate-900/80" />}
+                    </button>
                   </div>
                 </div>
               </div>
@@ -368,48 +668,116 @@ export default function CommuneDetailPanel({
                   )}
                 </motion.div>
 
-                {/* Quick Stats */}
-                <motion.div
-                  initial={{ opacity: 0, y: 20 }}
-                  animate={{ opacity: 1, y: 0 }}
-                  transition={{ delay: 0.35 }}
-                  className="grid grid-cols-2 gap-4"
-                >
-                  <div className="p-5 rounded-3xl bg-white border border-slate-200 shadow-lg shadow-slate-200/30 text-center space-y-2">
-                    <p className="text-[9px] font-black uppercase tracking-widest text-slate-400">
-                      Population
-                    </p>
-                    <p className="text-2xl font-black text-slate-900">
-                      {commune.population?.toLocaleString("fr-FR") || "N/A"}
-                    </p>
+                {/* Real indicators or coming soon */}
+                {loadingDetails ? (
+                  <div className="flex flex-col items-center justify-center py-12 gap-3">
+                    <Loader2 className="animate-spin text-rose-600" size={24} />
+                    <p className="text-slate-400 text-xs font-bold uppercase tracking-wider">Chargement des indicateurs...</p>
                   </div>
-                  <div className="p-5 rounded-3xl bg-white border border-slate-200 shadow-lg shadow-slate-200/30 text-center space-y-2">
-                    <p className="text-[9px] font-black uppercase tracking-widest text-slate-400">
-                      Code INSEE
-                    </p>
-                    <p className="text-2xl font-black text-slate-900">
-                      {commune.code}
-                    </p>
-                  </div>
-                </motion.div>
+                ) : communeData && !communeData.isEstimated ? (
+                  <>
+                    {COMMUNE_CATEGORIES.map((cat, catIdx) => (
+                      <motion.div 
+                        key={catIdx} 
+                        initial={{ opacity: 0, y: 20 }}
+                        animate={{ opacity: 1, y: 0 }}
+                        transition={{ delay: 0.1 + catIdx * 0.05 }}
+                        className="space-y-4 pt-2"
+                      >
+                        <div className="flex items-center gap-3">
+                          <div className={`w-10 h-10 rounded-2xl flex items-center justify-center ${cat.iconClass}`}>
+                            <cat.icon size={20} />
+                          </div>
+                          <h3 className={`text-xl font-staatliches uppercase tracking-wide ${cat.textClass}`}>{cat.title}</h3>
+                        </div>
 
-                {/* More info coming soon */}
-                <motion.div
-                  initial={{ opacity: 0, y: 20 }}
-                  animate={{ opacity: 1, y: 0 }}
-                  transition={{ delay: 0.45 }}
-                  className="p-6 rounded-3xl bg-gradient-to-br from-slate-900 to-slate-800 text-white text-center space-y-3"
-                >
-                  <p className="text-[9px] font-black uppercase tracking-widest text-slate-400">
-                    Bientôt disponible
-                  </p>
-                  <p className="text-lg font-bold">
-                    Budget municipal, fiscalité locale, projets en cours…
-                  </p>
-                  <p className="text-xs text-slate-400 font-medium">
-                    Ces données seront intégrées prochainement.
-                  </p>
-                </motion.div>
+                        <div className={`grid grid-cols-1 md:grid-cols-2 gap-x-12 gap-y-6 rounded-[2rem] p-8 border ${cat.bgClass} ${cat.borderClass} bg-white`}>
+                          {cat.metrics.map((metric, mIdx) => {
+                            const getVal = (data: any, path: string) => {
+                              if (!data) return null;
+                              return path.split('.').reduce((obj, key) => (obj && typeof obj[key] !== 'undefined') ? obj[key] : null, data);
+                            };
+                            const val = getVal(communeData, metric.key);
+                            
+                            return (
+                              <div key={mIdx} className="space-y-2">
+                                <div className="flex justify-between text-[10px] font-black uppercase tracking-widest text-slate-400">
+                                  <span>{metric.label}</span>
+                                  <span className="text-slate-900 font-bold">{val !== null ? metric.format(val) : 'N/A'}</span>
+                                </div>
+                                {metric.help && (
+                                  <div className="text-[10px] text-slate-400 font-medium normal-case leading-relaxed -mt-1">
+                                    {metric.help}
+                                  </div>
+                                )}
+                                <div className="h-2 w-full bg-slate-200/60 rounded-full overflow-hidden">
+                                  <motion.div
+                                    initial={{ width: 0 }}
+                                    animate={{ width: val ? (typeof val === 'number' ? Math.min(val, 100) : 50) + '%' : '0%' }}
+                                    className={`h-full ${cat.progressClass}`}
+                                  />
+                                </div>
+                                {renderComparison(val, metric.key, (metric as any).inverse)}
+                              </div>
+                            );
+                          })}
+                        </div>
+                      </motion.div>
+                    ))}
+
+                    {/* Sources */}
+                    {communeData.sources && (
+                      <div className="text-center text-[10px] text-slate-400/80 italic pt-6 border-t border-slate-100 mt-6">
+                        Source(s) de données : {communeData.sources}
+                      </div>
+                    )}
+                  </>
+                ) : (
+                  <>
+                    {/* Quick Stats */}
+                    <motion.div
+                      initial={{ opacity: 0, y: 20 }}
+                      animate={{ opacity: 1, y: 0 }}
+                      transition={{ delay: 0.35 }}
+                      className="grid grid-cols-2 gap-4"
+                    >
+                      <div className="p-5 rounded-3xl bg-white border border-slate-200 shadow-lg shadow-slate-200/30 text-center space-y-2">
+                        <p className="text-[9px] font-black uppercase tracking-widest text-slate-400">
+                          Population
+                        </p>
+                        <p className="text-2xl font-black text-slate-900">
+                          {commune.population?.toLocaleString("fr-FR") || "N/A"}
+                        </p>
+                      </div>
+                      <div className="p-5 rounded-3xl bg-white border border-slate-200 shadow-lg shadow-slate-200/30 text-center space-y-2">
+                        <p className="text-[9px] font-black uppercase tracking-widest text-slate-400">
+                          Code INSEE
+                        </p>
+                        <p className="text-2xl font-black text-slate-900">
+                          {commune.code}
+                        </p>
+                      </div>
+                    </motion.div>
+
+                    {/* More info coming soon */}
+                    <motion.div
+                      initial={{ opacity: 0, y: 20 }}
+                      animate={{ opacity: 1, y: 0 }}
+                      transition={{ delay: 0.45 }}
+                      className="p-6 rounded-3xl bg-gradient-to-br from-slate-900 to-slate-800 text-white text-center space-y-3"
+                    >
+                      <p className="text-[9px] font-black uppercase tracking-widest text-slate-400">
+                        Bientôt disponible
+                      </p>
+                      <p className="text-lg font-bold">
+                        Budget municipal, fiscalité locale, projets en cours…
+                      </p>
+                      <p className="text-xs text-slate-400 font-medium">
+                        Ces données seront intégrées prochainement.
+                      </p>
+                    </motion.div>
+                  </>
+                )}
               </div>
             </motion.div>
           </div>

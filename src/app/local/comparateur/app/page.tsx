@@ -11,6 +11,8 @@ import { useSearchParams, useRouter } from "next/navigation";
 import { useCommuneSearch } from "@/lib/hooks/useCommuneSearch";
 import { usePremium } from "@/lib/hooks/usePremium";
 import { REGIONS, DEPARTMENTS } from "@/lib/data/territories";
+import { regionPaths } from "@/lib/data/regionPaths";
+import { departmentPaths } from "@/lib/data/departmentPaths";
 
 interface SelectedTerritory {
   id: string;
@@ -246,9 +248,21 @@ function ComparateurContent() {
                        {/* Regions */}
                        {resultsA.regions.map(r => (
                          <button key={r.id} onClick={() => handleSelect('A', r, 'region')} className="w-full px-8 py-4 flex items-center gap-4 hover:bg-slate-50 transition-colors border-b border-slate-50 text-left">
-                           <div className="w-10 h-10 rounded-lg overflow-hidden shrink-0 bg-slate-100 flex items-center justify-center">
-                             {r.image ? (
-                               <img src={r.image} alt={r.name} className="w-full h-full object-cover" />
+                           <div className="w-10 h-10 rounded-lg overflow-hidden shrink-0 bg-slate-50 border border-slate-100 flex items-center justify-center p-1">
+                             {regionPaths[r.id] ? (
+                               <svg 
+                                 viewBox="0 0 250 250" 
+                                 className="w-full h-full text-blue-500"
+                                 preserveAspectRatio="xMidYMid meet"
+                               >
+                                 <path 
+                                   d={regionPaths[r.id]} 
+                                   fill="currentColor" 
+                                   stroke="white" 
+                                   strokeWidth="3" 
+                                   strokeLinejoin="round"
+                                 />
+                               </svg>
                              ) : (
                                <Map size={20} className="text-slate-400" />
                              )}
@@ -263,8 +277,24 @@ function ComparateurContent() {
                        {/* Departments */}
                        {resultsA.depts.map(d => (
                          <button key={d.name} onClick={() => handleSelect('A', d, 'department')} className="w-full px-8 py-4 flex items-center gap-4 hover:bg-slate-50 transition-colors border-b border-slate-50 text-left">
-                           <div className="w-10 h-10 rounded-lg overflow-hidden shrink-0 bg-slate-100 flex items-center justify-center text-blue-500">
-                             <Building2 size={20} />
+                           <div className="w-10 h-10 rounded-lg overflow-hidden shrink-0 bg-slate-50 border border-slate-100 flex items-center justify-center p-1">
+                             {departmentPaths[d.id] ? (
+                               <svg 
+                                 viewBox={departmentPaths[d.id].viewBox} 
+                                 className="w-full h-full text-blue-500"
+                                 preserveAspectRatio="xMidYMid meet"
+                               >
+                                 <path 
+                                   d={departmentPaths[d.id].d} 
+                                   fill="currentColor" 
+                                   stroke="white" 
+                                   strokeWidth="2" 
+                                   strokeLinejoin="round"
+                                 />
+                               </svg>
+                             ) : (
+                               <Building2 size={20} className="text-blue-500" />
+                             )}
                            </div>
                            <div className="flex-1">
                              <p className="font-bold text-slate-900">{d.name}</p>
@@ -301,13 +331,37 @@ function ComparateurContent() {
                     <X size={16} />
                   </button>
                   <div className="flex items-center gap-6 mb-8">
-                    <div className="w-16 h-16 rounded-2xl bg-white shadow-lg flex items-center justify-center text-slate-400 overflow-hidden shrink-0">
-                      {sideA.type === 'region' ? (
-                        <img 
-                          src={sideA.data.image || REGIONS.find(r => r.id === sideA.id || r.name === sideA.name)?.image || "/images/regions/ile_de_france.png"} 
-                          alt={sideA.name} 
-                          className="w-full h-full object-cover" 
-                        />
+                    <div className="w-16 h-16 rounded-2xl bg-white shadow-lg flex items-center justify-center text-slate-400 overflow-hidden shrink-0 p-2">
+                      {sideA.type === 'region' && regionPaths[sideA.id] ? (
+                        <svg 
+                          viewBox="0 0 250 250" 
+                          className="w-full h-full text-blue-500 drop-shadow-sm opacity-90"
+                          preserveAspectRatio="xMidYMid meet"
+                        >
+                          <path 
+                            d={regionPaths[sideA.id]} 
+                            fill="currentColor" 
+                            stroke="white" 
+                            strokeWidth="2.5" 
+                            strokeLinejoin="round"
+                          />
+                        </svg>
+                      ) : sideA.type === 'department' && departmentPaths[sideA.id] ? (
+                        <svg 
+                          viewBox={departmentPaths[sideA.id].viewBox} 
+                          className="w-full h-full text-blue-500 drop-shadow-sm opacity-90"
+                          preserveAspectRatio="xMidYMid meet"
+                        >
+                          <path 
+                            d={departmentPaths[sideA.id].d} 
+                            fill="currentColor" 
+                            stroke="white" 
+                            strokeWidth="2" 
+                            strokeLinejoin="round"
+                          />
+                        </svg>
+                      ) : sideA.type === 'region' ? (
+                        <Map size={32} />
                       ) : sideA.type === 'department' ? (
                         <Building2 size={32} />
                       ) : (
@@ -363,9 +417,21 @@ function ComparateurContent() {
                     >
                        {resultsB.regions.map(r => (
                          <button key={r.id} onClick={() => handleSelect('B', r, 'region')} className="w-full px-8 py-4 flex items-center gap-4 hover:bg-slate-50 transition-colors border-b border-slate-50 text-left">
-                           <div className="w-10 h-10 rounded-lg overflow-hidden shrink-0 bg-slate-100 flex items-center justify-center">
-                             {r.image ? (
-                               <img src={r.image} alt={r.name} className="w-full h-full object-cover" />
+                           <div className="w-10 h-10 rounded-lg overflow-hidden shrink-0 bg-slate-50 border border-slate-100 flex items-center justify-center p-1">
+                             {regionPaths[r.id] ? (
+                               <svg 
+                                 viewBox="0 0 250 250" 
+                                 className="w-full h-full text-blue-500"
+                                 preserveAspectRatio="xMidYMid meet"
+                               >
+                                 <path 
+                                   d={regionPaths[r.id]} 
+                                   fill="currentColor" 
+                                   stroke="white" 
+                                   strokeWidth="3" 
+                                   strokeLinejoin="round"
+                                 />
+                               </svg>
                              ) : (
                                <Map size={20} className="text-slate-400" />
                              )}
@@ -377,10 +443,27 @@ function ComparateurContent() {
                            <ArrowRight size={16} className="text-slate-300" />
                          </button>
                        ))}
+                       {/* Departments */}
                        {resultsB.depts.map(d => (
                          <button key={d.name} onClick={() => handleSelect('B', d, 'department')} className="w-full px-8 py-4 flex items-center gap-4 hover:bg-slate-50 transition-colors border-b border-slate-50 text-left">
-                           <div className="w-10 h-10 rounded-lg overflow-hidden shrink-0 bg-slate-100 flex items-center justify-center text-blue-500">
-                             <Building2 size={20} />
+                           <div className="w-10 h-10 rounded-lg overflow-hidden shrink-0 bg-slate-50 border border-slate-100 flex items-center justify-center p-1">
+                             {departmentPaths[d.id] ? (
+                               <svg 
+                                 viewBox={departmentPaths[d.id].viewBox} 
+                                 className="w-full h-full text-blue-500"
+                                 preserveAspectRatio="xMidYMid meet"
+                               >
+                                 <path 
+                                   d={departmentPaths[d.id].d} 
+                                   fill="currentColor" 
+                                   stroke="white" 
+                                   strokeWidth="2" 
+                                   strokeLinejoin="round"
+                                 />
+                               </svg>
+                             ) : (
+                               <Building2 size={20} className="text-blue-500" />
+                             )}
                            </div>
                            <div className="flex-1">
                              <p className="font-bold text-slate-900">{d.name}</p>
@@ -416,13 +499,37 @@ function ComparateurContent() {
                     <X size={16} />
                   </button>
                   <div className="flex items-center gap-6 mb-8">
-                    <div className="w-16 h-16 rounded-2xl bg-white shadow-lg flex items-center justify-center text-slate-400 overflow-hidden shrink-0">
-                      {sideB.type === 'region' ? (
-                        <img 
-                          src={sideB.data.image || REGIONS.find(r => r.id === sideB.id || r.name === sideB.name)?.image || "/images/regions/ile_de_france.png"} 
-                          alt={sideB.name} 
-                          className="w-full h-full object-cover" 
-                        />
+                    <div className="w-16 h-16 rounded-2xl bg-white shadow-lg flex items-center justify-center text-slate-400 overflow-hidden shrink-0 p-2">
+                      {sideB.type === 'region' && regionPaths[sideB.id] ? (
+                        <svg 
+                          viewBox="0 0 250 250" 
+                          className="w-full h-full text-blue-500 drop-shadow-sm opacity-90"
+                          preserveAspectRatio="xMidYMid meet"
+                        >
+                          <path 
+                            d={regionPaths[sideB.id]} 
+                            fill="currentColor" 
+                            stroke="white" 
+                            strokeWidth="2.5" 
+                            strokeLinejoin="round"
+                          />
+                        </svg>
+                      ) : sideB.type === 'department' && departmentPaths[sideB.id] ? (
+                        <svg 
+                          viewBox={departmentPaths[sideB.id].viewBox} 
+                          className="w-full h-full text-blue-500 drop-shadow-sm opacity-90"
+                          preserveAspectRatio="xMidYMid meet"
+                        >
+                          <path 
+                            d={departmentPaths[sideB.id].d} 
+                            fill="currentColor" 
+                            stroke="white" 
+                            strokeWidth="2" 
+                            strokeLinejoin="round"
+                          />
+                        </svg>
+                      ) : sideB.type === 'region' ? (
+                        <Map size={32} />
                       ) : sideB.type === 'department' ? (
                         <Building2 size={32} />
                       ) : (

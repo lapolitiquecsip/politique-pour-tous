@@ -59,7 +59,8 @@ function ComparateurContent() {
     const itemName = item.nom || item.name;
 
     try {
-      const res = await fetch(`${API_URL}/api/comparateur/${codeInsee}?name=${encodeURIComponent(itemName)}`);
+      const populationParam = (item.population !== undefined && item.population !== null) ? `&population=${item.population}` : "";
+      const res = await fetch(`${API_URL}/api/comparateur/${codeInsee}?name=${encodeURIComponent(itemName)}${populationParam}`);
       const details = await res.json();
 
       const selected: SelectedTerritory = {

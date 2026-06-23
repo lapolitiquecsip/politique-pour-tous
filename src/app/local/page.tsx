@@ -238,9 +238,9 @@ const FEATURED_CITIES = [
   { name: "Le Havre", code: "76351", mayor: "Édouard Philippe", party: "Horizons", population: "165K", image: "/cities/le_havre_bg_1779624488137.png", safety: 65, education: 76, health: 82, employment: 74 },
   { name: "Grenoble", code: "38185", mayor: "Laurence Ruffin", party: "EELV", population: "158K", image: "/cities/grenoble_bg_1779624501302.png", safety: 58, education: 86, health: 85, employment: 80 },
   { name: "Dijon", code: "21231", mayor: "Nathalie Koenders", party: "PS", population: "158K", image: "/cities/dijon_bg_1779624520804.png", safety: 78, education: 85, health: 87, employment: 82 },
-  { name: "Angers", code: "49007", mayor: "Christophe Béchu", party: "Horizons", population: "155K", image: "https://images.unsplash.com/photo-1559828556-3a7a9bdc99b7?auto=format&fit=crop&q=80&w=800", safety: 82, education: 88, health: 89, employment: 85 },
-  { name: "Nîmes", code: "30189", mayor: "Vincent Bouget", party: "DVG", population: "148K", image: "https://images.unsplash.com/photo-1590089415225-401ed6f9b8ce?auto=format&fit=crop&q=80&w=800", safety: 61, education: 73, health: 80, employment: 70 },
-  { name: "Villeurbanne", code: "69266", mayor: "Cédric Van Styvendael", party: "PS", population: "154K", image: "https://images.unsplash.com/photo-1506751470038-d52362479020?auto=format&fit=crop&q=80&w=800", safety: 68, education: 82, health: 84, employment: 79 },
+  { name: "Angers", code: "49007", mayor: "Christophe Béchu", party: "Horizons", population: "155K", image: "/cities/angers_bg.png", safety: 82, education: 88, health: 89, employment: 85 },
+  { name: "Nîmes", code: "30189", mayor: "Vincent Bouget", party: "DVG", population: "148K", image: "/cities/nimes_bg.png", safety: 61, education: 73, health: 80, employment: 70 },
+  { name: "Villeurbanne", code: "69266", mayor: "Cédric Van Styvendael", party: "PS", population: "154K", image: "/cities/villeurbanne_bg.png", safety: 68, education: 82, health: 84, employment: 79 },
 ];
 
 const teaserConfigs = {
@@ -599,7 +599,11 @@ function LocalPoliticsContent() {
                                 setSelectedCommune({
                                   nom: city.name,
                                   code: city.code,
-                                  population: parseInt(city.population.replace('M', '000000').replace('K', '000')),
+                                  population: city.population.endsWith('M') 
+                                    ? Math.round(parseFloat(city.population) * 1000000) 
+                                    : city.population.endsWith('K') 
+                                    ? Math.round(parseFloat(city.population) * 1000) 
+                                    : parseInt(city.population),
                                   codesPostaux: [],
                                   departement: { nom: "" },
                                   region: { nom: "" }

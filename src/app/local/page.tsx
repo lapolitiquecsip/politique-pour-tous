@@ -743,48 +743,55 @@ function LocalPoliticsContent() {
 
             {/* Mayors by Party Panel */}
             {activeTab === 'commune' && (
-              <div className="bg-white rounded-[2.5rem] border border-slate-200 p-8 space-y-8">
+              <div className="bg-white dark:bg-slate-900 rounded-[2.5rem] border border-slate-200 dark:border-slate-800 p-8 space-y-8">
                 <div className="flex items-center justify-between">
                   <div className="space-y-1">
-                    <h3 className="text-2xl font-staatliches uppercase tracking-wide">Maires par Étiquette</h3>
-                    <p className="text-[10px] font-black uppercase tracking-widest text-slate-400">France entière • Mandature 2026 vs 2020</p>
+                    <h3 className="text-2xl font-staatliches uppercase tracking-wide text-slate-900 dark:text-white">Maires par Étiquette</h3>
+                    <p className="text-[10px] font-black uppercase tracking-widest text-slate-400 dark:text-slate-500">France entière • Mandature 2026 vs 2020</p>
                   </div>
-                  <div className="w-12 h-12 rounded-2xl bg-slate-50 flex items-center justify-center text-slate-900 border border-slate-100 shadow-sm">
+                  <div className="w-12 h-12 rounded-2xl bg-slate-50 dark:bg-slate-800 flex items-center justify-center text-slate-900 dark:text-slate-100 border border-slate-100 dark:border-slate-800 shadow-sm">
                     <Building size={22} />
                   </div>
                 </div>
                 
-                <div className="space-y-5">
+                <div className="space-y-5 max-h-[500px] overflow-y-auto pr-2 custom-scrollbar">
                   {[
-                    { party: "Sans Étiquette", count: 23412, diff: 212, color: "bg-slate-400", total: 34965 },
+                    { party: "Sans Étiquette", count: 22856, diff: -161, color: "bg-slate-400", total: 34965 },
                     { party: "Divers Droite", count: 4850, diff: -130, color: "bg-indigo-900", total: 34965 },
                     { party: "Divers Gauche", count: 3200, diff: 90, color: "bg-fuchsia-600", total: 34965 },
                     { party: "Les Républicains", count: 1250, diff: -180, color: "bg-blue-600", total: 34965 },
                     { party: "Parti Socialiste", count: 850, diff: -110, color: "bg-rose-600", total: 34965 },
+                    { party: "Parti Communiste", count: 580, diff: -40, color: "bg-red-700", total: 34965 },
+                    { party: "Horizons", count: 350, diff: 350, color: "bg-cyan-600", total: 34965 },
+                    { party: "Renaissance", count: 310, diff: 130, color: "bg-sky-600", total: 34965 },
                     { party: "RN", count: 280, diff: 155, color: "bg-sky-900", total: 34965 },
+                    { party: "UDI", count: 210, diff: -60, color: "bg-amber-500", total: 34965 },
+                    { party: "MoDem", count: 140, diff: -25, color: "bg-orange-500", total: 34965 },
+                    { party: "Les Écologistes", count: 120, diff: -25, color: "bg-emerald-600", total: 34965 },
+                    { party: "LFI", count: 9, diff: 6, color: "bg-red-900", total: 34965 },
                   ].map((stat, idx) => (
                     <div key={idx} className="space-y-2 group">
-                      <div className="flex items-center justify-between text-sm font-bold text-slate-900">
+                      <div className="flex items-center justify-between text-sm font-bold text-slate-900 dark:text-slate-200">
                         <span className="flex items-center gap-2">
-                          <span className={`w-2 h-2 rounded-full ${stat.color} shadow-sm shadow-${stat.color.replace('bg-', '')}/30`} />
+                          <span className={`w-2 h-2 rounded-full ${stat.color} shadow-sm`} />
                           {stat.party}
                         </span>
                         <div className="flex items-center gap-2">
-                          <span className="font-extrabold text-slate-950">{stat.count.toLocaleString('fr-FR')}</span>
+                          <span className="font-extrabold text-slate-950 dark:text-white">{stat.count.toLocaleString('fr-FR')}</span>
                           <span className={`inline-flex items-center text-[10px] px-1.5 py-0.5 rounded font-black tracking-tight ${
                             stat.diff >= 0 
-                              ? "bg-emerald-50 text-emerald-700 border border-emerald-100" 
-                              : "bg-rose-50 text-rose-700 border border-rose-100"
+                              ? "bg-emerald-50 dark:bg-emerald-950/30 text-emerald-700 dark:text-emerald-400 border border-emerald-100 dark:border-emerald-900/30" 
+                              : "bg-rose-50 dark:bg-rose-950/30 text-rose-700 dark:text-rose-400 border border-rose-100 dark:border-rose-900/30"
                           }`}>
                             {stat.diff >= 0 ? `+${stat.diff}` : stat.diff}
                           </span>
                         </div>
                       </div>
-                      <div className="h-2.5 w-full bg-slate-50 rounded-full overflow-hidden">
+                      <div className="h-2.5 w-full bg-slate-50 dark:bg-slate-800/80 rounded-full overflow-hidden">
                         <motion.div 
                           initial={{ width: 0 }}
                           animate={{ width: `${(stat.count / stat.total) * 100}%` }}
-                          transition={{ duration: 1, delay: 0.2 + (idx * 0.1) }}
+                          transition={{ duration: 1, delay: 0.2 + (idx * 0.05) }}
                           className={`h-full ${stat.color} rounded-full`}
                         />
                       </div>
@@ -792,12 +799,12 @@ function LocalPoliticsContent() {
                   ))}
                 </div>
 
-                <div className="pt-4 border-t border-slate-50 space-y-3">
-                  <p className="text-[9px] font-black uppercase tracking-widest text-slate-400 flex items-center justify-center gap-4">
+                <div className="pt-4 border-t border-slate-50 dark:border-slate-800/80 space-y-3">
+                  <p className="text-[9px] font-black uppercase tracking-widest text-slate-400 dark:text-slate-500 flex items-center justify-center gap-4">
                     <span className="flex items-center gap-1.5"><span className="w-1.5 h-1.5 rounded-full bg-emerald-500" /> Progression</span>
                     <span className="flex items-center gap-1.5"><span className="w-1.5 h-1.5 rounded-full bg-rose-500" /> Recul</span>
                   </p>
-                  <p className="text-xs text-slate-500 italic text-center">
+                  <p className="text-xs text-slate-500 dark:text-slate-400 italic text-center">
                     La majorité des communes rurales de moins de 3500 habitants sont gérées par des maires sans étiquette. Les évolutions comparent les résultats post-2026 à la mandature de 2020.
                   </p>
                 </div>

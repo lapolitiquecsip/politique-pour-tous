@@ -258,6 +258,7 @@ const NEUTRAL_COMPARISON_KEYS = [
 ];
 
 const renderComparison = (val: any, metricKey: string, inverse?: boolean) => {
+  if (metricKey === 'demographie.populationTotal') return null;
   const nat = NATIONAL_AVERAGES[metricKey];
   if (!nat || val === null || val === undefined) return null;
 

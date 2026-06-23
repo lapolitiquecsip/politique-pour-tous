@@ -5,7 +5,8 @@ import { useState, useEffect, Suspense } from "react";
 import { motion } from "framer-motion";
 import { 
   ArrowLeft, Coins, Landmark, Users, TrendingUp, ShieldCheck, 
-  HelpCircle, Sparkles, Building, PieChart, ShieldAlert, Lock, Loader2, ArrowRight, Wallet, Percent, HeartHandshake, TreePine, Home
+  HelpCircle, Sparkles, Building, PieChart, ShieldAlert, Lock, Loader2, ArrowRight, Wallet, Percent, HeartHandshake, TreePine, Home,
+  Wrench, Calendar
 } from "lucide-react";
 import { usePremium } from "@/lib/hooks/usePremium";
 
@@ -415,6 +416,115 @@ function LocalBudgetContent() {
             </div>
           </div>
         </div>
+
+        {/* Grands chantiers section */}
+        {communeData?.grandsTravaux && communeData.grandsTravaux.length > 0 && (
+          <div className="space-y-6 pt-4">
+            <div className="flex items-center gap-3">
+              <div className="w-10 h-10 rounded-2xl bg-amber-100 flex items-center justify-center text-amber-750 shadow-sm">
+                <Wrench size={20} className="text-amber-700" />
+              </div>
+              <h2 className="text-3xl font-staatliches uppercase tracking-wide text-slate-900">
+                🏗️ Grands Chantiers & Investissements 2026
+              </h2>
+            </div>
+            
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+              {communeData.grandsTravaux.map((proj: any, idx: number) => (
+                <motion.div
+                  key={idx}
+                  initial={{ opacity: 0, y: 15 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  transition={{ delay: idx * 0.1 }}
+                  className="bg-white border border-slate-200/85 rounded-[2rem] p-6 shadow-sm flex flex-col justify-between hover:shadow-md hover:border-slate-300 transition-all group"
+                >
+                  <div className="space-y-3">
+                    <div className="flex justify-between items-start">
+                      <span className={`px-2.5 py-1 text-[9px] font-black uppercase tracking-wider rounded-full border ${
+                        proj.status === "Finalisation" 
+                          ? "bg-emerald-50 text-emerald-700 border-emerald-250" 
+                          : proj.status === "En cours" 
+                          ? "bg-blue-50 text-blue-700 border-blue-250" 
+                          : "bg-amber-50 text-amber-700 border-amber-250"
+                      }`}>
+                        {proj.status}
+                      </span>
+                    </div>
+                    <h3 className="font-staatliches text-xl text-slate-800 uppercase tracking-wide group-hover:text-rose-600 transition-colors">
+                      {proj.title}
+                    </h3>
+                    <p className="text-xs text-slate-500 leading-relaxed">
+                      {proj.desc}
+                    </p>
+                  </div>
+                  
+                  <div className="mt-6 pt-4 border-t border-slate-100 flex justify-between items-center">
+                    <span className="text-[10px] font-bold text-slate-400 uppercase tracking-wider">
+                      Budget alloué / estimé
+                    </span>
+                    <span className="font-staatliches text-2xl text-rose-600">
+                      {proj.cost}
+                    </span>
+                  </div>
+                </motion.div>
+              ))}
+            </div>
+          </div>
+        )}
+
+        {/* Événements section */}
+        {communeData?.evenements && communeData.evenements.length > 0 && (
+          <div className="space-y-6 pt-4">
+            <div className="flex items-center gap-3">
+              <div className="w-10 h-10 rounded-2xl bg-fuchsia-100 flex items-center justify-center text-fuchsia-750 shadow-sm">
+                <Calendar size={20} className="text-fuchsia-700" />
+              </div>
+              <h2 className="text-3xl font-staatliches uppercase tracking-wide text-slate-900">
+                📅 Événements Majeurs & Animation Locale 2026
+              </h2>
+            </div>
+            
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
+              {communeData.evenements.map((evt: any, idx: number) => {
+                const catColors: Record<string, string> = {
+                  Tradition: "bg-orange-50 text-orange-700 border-orange-200",
+                  Musique: "bg-violet-50 text-violet-700 border-violet-200",
+                  Sport: "bg-emerald-50 text-emerald-700 border-emerald-200",
+                  Culture: "bg-fuchsia-50 text-fuchsia-700 border-fuchsia-200",
+                  Festivités: "bg-sky-50 text-sky-700 border-sky-200"
+                };
+                const colClass = catColors[evt.category] || "bg-slate-50 text-slate-700 border-slate-200";
+                
+                return (
+                  <motion.div
+                    key={idx}
+                    initial={{ opacity: 0, y: 15 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    transition={{ delay: idx * 0.1 }}
+                    className="bg-white border border-slate-200/85 rounded-3xl p-5 shadow-sm hover:scale-[1.02] hover:border-slate-300 transition-all flex flex-col justify-between"
+                  >
+                    <div className="space-y-3">
+                      <div className="flex justify-between items-center gap-2">
+                        <span className="text-[10px] font-black text-rose-600 uppercase tracking-widest">
+                          {evt.date}
+                        </span>
+                        <span className={`px-2 py-0.5 text-[8px] font-bold uppercase tracking-wider rounded-full border ${colClass}`}>
+                          {evt.category}
+                        </span>
+                      </div>
+                      <h3 className="font-extrabold text-sm text-slate-800">
+                        {evt.title}
+                      </h3>
+                      <p className="text-[11px] text-slate-400 leading-normal">
+                        {evt.desc}
+                      </p>
+                    </div>
+                  </motion.div>
+                );
+              })}
+            </div>
+          </div>
+        )}
       </div>
     </main>
   );

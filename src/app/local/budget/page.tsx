@@ -10,6 +10,24 @@ import {
 } from "lucide-react";
 import { usePremium } from "@/lib/hooks/usePremium";
 
+const MONTH_ORDER: Record<string, number> = {
+  "janvier": 1, "février": 2, "mars": 3, "avril": 4, "mai": 5, "juin": 6,
+  "juillet": 7, "août": 8, "septembre": 9, "octobre": 10, "novembre": 11, "décembre": 12
+};
+
+const getMonthValue = (dateStr: string): number => {
+  if (!dateStr) return 99;
+  const normalized = dateStr.toLowerCase();
+  
+  // Find first matching month in the string
+  for (const [month, value] of Object.entries(MONTH_ORDER)) {
+    if (normalized.includes(month)) {
+      return value;
+    }
+  }
+  return 99;
+};
+
 export default function LocalBudgetPage() {
   return (
     <Suspense fallback={<div className="min-h-screen bg-slate-50 flex items-center justify-center"><Loader2 className="animate-spin text-rose-600" size={40} /></div>}>
@@ -421,12 +439,17 @@ function LocalBudgetContent() {
         {communeData?.grandsTravaux && communeData.grandsTravaux.length > 0 && (
           <div className="space-y-6 pt-4">
             <div className="flex items-center gap-3">
-              <div className="w-10 h-10 rounded-2xl bg-amber-100 flex items-center justify-center text-amber-750 shadow-sm">
+              <div className="w-10 h-10 rounded-2xl bg-amber-100 flex items-center justify-center text-amber-750 shadow-sm shrink-0">
                 <Wrench size={20} className="text-amber-700" />
               </div>
-              <h2 className="text-3xl font-staatliches uppercase tracking-wide text-slate-900">
-                🏗️ Grands Chantiers & Investissements 2026
-              </h2>
+              <div>
+                <h2 className="text-3xl font-staatliches uppercase tracking-wide text-slate-900 leading-none">
+                  🏗️ Grands Chantiers & Investissements 2026
+                </h2>
+                <p className="text-[9px] text-slate-400 font-bold uppercase tracking-wider italic mt-1">
+                  Sources : Rapports budgétaires municipaux et comptes-rendus officiels du conseil municipal 2026
+                </p>
+              </div>
             </div>
             
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
@@ -473,19 +496,29 @@ function LocalBudgetContent() {
         )}
 
         {/* Événements section */}
-        {communeData?.evenements && communeData.evenements.length > 0 && (
-          <div className="space-y-6 pt-4">
-            <div className="flex items-center gap-3">
-              <div className="w-10 h-10 rounded-2xl bg-fuchsia-100 flex items-center justify-center text-fuchsia-750 shadow-sm">
-                <Calendar size={20} className="text-fuchsia-700" />
+        {communeData?.evenements && communeData.evenements.length > 0 && (() => {
+          const sortedEvents = [...communeData.evenements].sort((a: any, b: any) => {
+            return getMonthValue(a.date) - getMonthValue(b.date);
+          });
+          
+          return (
+            <div className="space-y-6 pt-4">
+              <div className="flex items-center gap-3">
+                <div className="w-10 h-10 rounded-2xl bg-fuchsia-100 flex items-center justify-center text-fuchsia-750 shadow-sm shrink-0">
+                  <Calendar size={20} className="text-fuchsia-700" />
+                </div>
+                <div>
+                  <h2 className="text-3xl font-staatliches uppercase tracking-wide text-slate-900 leading-none">
+                    📅 Événements Majeurs & Animation Locale 2026
+                  </h2>
+                  <p className="text-[9px] text-slate-400 font-bold uppercase tracking-wider italic mt-1">
+                    Sources : Agendas culturels officiels de la commune et offices de tourisme locaux 2026
+                  </p>
+                </div>
               </div>
-              <h2 className="text-3xl font-staatliches uppercase tracking-wide text-slate-900">
-                📅 Événements Majeurs & Animation Locale 2026
-              </h2>
-            </div>
-            
-            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
-              {communeData.evenements.map((evt: any, idx: number) => {
+              
+              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
+                {sortedEvents.map((evt: any, idx: number) => {
                 const catColors: Record<string, string> = {
                   Tradition: "bg-orange-50 text-orange-700 border-orange-200",
                   Musique: "bg-violet-50 text-violet-700 border-violet-200",
@@ -522,9 +555,10 @@ function LocalBudgetContent() {
                   </motion.div>
                 );
               })}
+              </div>
             </div>
-          </div>
-        )}
+          );
+        })()}
       </div>
     </main>
   );

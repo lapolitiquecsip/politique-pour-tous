@@ -675,13 +675,13 @@ function ComparateurContent() {
                           return (
                             <div key={mIdx} className="space-y-2">
                               <div className="flex items-center justify-between text-xs">
-                                <div className={`flex-1 text-right font-extrabold text-sm ${winner === 'A' ? 'text-rose-600' : 'text-slate-400'}`}>
+                                <div className={`flex-1 text-right font-extrabold text-sm ${winner === 'A' ? 'text-emerald-600' : 'text-slate-400'}`}>
                                   {metric.format(valA)}
                                 </div>
                                 <div className={`flex-[2] text-center font-black uppercase text-[10px] tracking-widest text-slate-500 ${metric.color}`}>
                                   {metric.label}
                                 </div>
-                                <div className={`flex-1 text-left font-extrabold text-sm ${winner === 'B' ? 'text-fuchsia-600' : 'text-slate-400'}`}>
+                                <div className={`flex-1 text-left font-extrabold text-sm ${winner === 'B' ? 'text-emerald-600' : 'text-slate-400'}`}>
                                   {metric.format(valB)}
                                 </div>
                               </div>

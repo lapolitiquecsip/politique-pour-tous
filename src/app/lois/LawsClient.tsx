@@ -422,7 +422,8 @@ function LawsClientContent() {
                       status: computedStatus,
                       statusLabel: statusLabel,
                       color: color,
-                      backgroundImage: law.background_image
+                      backgroundImage: law.background_image,
+                      date_adopted: law.date_adopted
                     };
                     return <DetailedLawDossier key={`premium-${formattedLaw.id}`} law={formattedLaw as any} />
                   }
@@ -470,7 +471,8 @@ function LawsClientContent() {
                     voteData,
                     status: computedStatus,
                     statusLabel,
-                    color
+                    color,
+                    date_adopted: law.date_adopted || law.date_scrutin
                   };
 
                   return <DetailedLawDossier key={`history-${law.id}`} law={formattedLaw as any} />;

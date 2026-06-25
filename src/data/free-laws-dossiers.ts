@@ -10,6 +10,7 @@ export interface LawDossier {
   statusLabel: string;
   color: string;
   backgroundImage?: string;
+  date_adopted?: string;
   voteData?: {
     pour: number;
     contre: number;

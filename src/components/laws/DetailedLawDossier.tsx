@@ -211,7 +211,19 @@ export default function DetailedLawDossier({ law }: DetailedLawDossierProps) {
                   <span>{law.category}</span>
                 </div>
                 {(() => {
-                  const dateInfo = law.calendar.length > 0 ? law.calendar[law.calendar.length - 1].date : null;
+                  let dateInfo = null;
+                  if (law.date_adopted) {
+                    const d = new Date(law.date_adopted);
+                    if (!isNaN(d.getTime())) {
+                      const formatted = d.toLocaleDateString("fr-FR", { month: 'short', year: 'numeric' });
+                      dateInfo = formatted.endsWith('.') ? formatted.slice(0, -1) : formatted;
+                    }
+                  }
+                  
+                  if (!dateInfo) {
+                    dateInfo = law.calendar.length > 0 ? law.calendar[law.calendar.length - 1].date : null;
+                  }
+                  
                   if (!dateInfo) return null;
                   return (
                     <div className="px-3 py-1 bg-white/10 text-white/90 text-[10px] md:text-[11px] font-black rounded-full uppercase tracking-widest backdrop-blur-sm">

@@ -69,10 +69,10 @@ export default function Header() {
             <div className="w-9 h-9 bg-red-600 rounded-xl flex items-center justify-center text-white shadow-lg shadow-red-600/20 group-hover:scale-110 transition-transform">
               <Landmark size={20} />
             </div>
-            <span className="font-staatliches text-2xl tracking-wider uppercase leading-none pt-1">
-              <span className="text-slate-900">La politique</span>{" "}
-            <span className="italic bg-gradient-to-r from-sky-400 via-rose-500 to-sky-400 bg-clip-text text-transparent">
-                c simple
+            <span className="font-sans font-black text-[15px] sm:text-[16px] tracking-tight uppercase leading-none pt-0.5 flex items-center gap-1">
+              <span className="text-slate-900">La politique, c'est</span>
+              <span className="bg-[#0bb274] text-white px-1.5 py-1 rounded-[5px] font-black text-[13px] sm:text-[14px] leading-none">
+                Simple.
               </span>
             </span>
           </Link>

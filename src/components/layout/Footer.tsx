@@ -16,8 +16,11 @@ export default function Footer() {
               <div className="w-10 h-10 rounded-xl bg-red-600 flex items-center justify-center shadow-lg shadow-red-600/20 group-hover:scale-110 transition-transform">
                 <Landmark className="w-6 h-6 text-white" />
               </div>
-              <span className="text-xl font-staatliches tracking-wider uppercase leading-none">
-                <span className="text-white">La politique</span> <span className="bg-gradient-to-r from-blue-400 via-purple-400 to-red-400 bg-clip-text text-transparent">c simple</span>
+              <span className="font-sans font-black text-[15px] sm:text-[16px] tracking-tight uppercase leading-none pt-0.5 flex items-center gap-1">
+                <span className="text-white">La politique, c'est</span>
+                <span className="bg-[#0bb274] text-white px-1.5 py-1 rounded-[5px] font-black text-[13px] sm:text-[14px] leading-none">
+                  Simple.
+                </span>
               </span>
             </Link>
             <p className="text-slate-400 text-sm leading-relaxed max-w-xs">

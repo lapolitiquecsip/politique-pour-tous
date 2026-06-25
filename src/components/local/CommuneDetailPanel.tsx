@@ -139,6 +139,8 @@ const COMMUNE_CATEGORIES = [
       { key: 'finances.budgetHabitant', label: 'Budget / hab.', format: (v: any) => v?.toLocaleString() + ' €', help: "Dépenses réelles de fonctionnement municipal par habitant." },
       { key: 'finances.endettement', label: 'Endettement', format: (v: any) => v + '%', inverse: true, help: "Encours de la dette totale rapporté aux recettes de fonctionnement." },
       { key: 'finances.investissement', label: '% Investissement', format: (v: any) => v + '%', help: "Part du budget consacrée à l'investissement." },
+      { key: 'dotations.dgf', label: 'Dotation DGF', format: (v: any) => v !== null && v !== undefined ? v.toLocaleString('fr-FR') + ' €' : 'Non disponible', help: "Dotation Globale de Fonctionnement versée par l'État." },
+      { key: 'dotations.forfaitaire', label: 'Dotation Forfaitaire', format: (v: any) => v !== null && v !== undefined ? v.toLocaleString('fr-FR') + ' €' : 'Non disponible', help: "Part forfaitaire principale de la DGF." }
     ]
   },
   {
@@ -346,6 +348,7 @@ export default function CommuneDetailPanel({
   const [loadingSave, setLoadingSave] = useState(false);
   const [communeData, setCommuneData] = useState<any | null>(null);
   const [loadingDetails, setLoadingDetails] = useState(false);
+  const [showAllElus, setShowAllElus] = useState(false);
 
   const handleOpenBudget = () => {
     if (!commune) return;
@@ -527,7 +530,7 @@ export default function CommuneDetailPanel({
                       className="px-4 py-1.5 bg-amber-400 hover:bg-amber-300 text-slate-950 text-xs font-extrabold uppercase tracking-wider rounded-full shadow-lg hover:shadow-xl transition-all flex items-center gap-1.5 border border-amber-300/30 active:scale-95"
                     >
                       <Coins size={12} />
-                      <span>Budget 2026</span>
+                      <span>Budget Municipal</span>
                       {!isPremium && <Lock size={10} className="text-slate-900/80" />}
                     </button>
                   </div>
@@ -536,7 +539,7 @@ export default function CommuneDetailPanel({
 
               {/* Content (Scrollable) */}
               <div className="p-8 space-y-8 -mt-4 overflow-y-auto custom-scrollbar">
-                {/* Mayor Card */}
+                {/* Mayor & Council Card */}
                 <motion.div
                   initial={{ opacity: 0, y: 20 }}
                   animate={{ opacity: 1, y: 0 }}
@@ -549,15 +552,17 @@ export default function CommuneDetailPanel({
                     </div>
                     <div>
                       <p className="text-[9px] font-black uppercase tracking-widest text-slate-400">
-                        {mayor?.s === "F" ? "Maire" : "Maire"}
+                        Mairie & Élus Municipaux (Source : RNE)
                       </p>
                       <h3 className="text-xl font-bold text-slate-900">
-                        {mayor ? mayor.n : "Données non disponibles"}
+                        {communeData?.rne?.maire 
+                          ? `${communeData.rne.maire.prenom} ${communeData.rne.maire.nom}` 
+                          : mayor ? mayor.n : "Données non disponibles"}
                       </h3>
                     </div>
                   </div>
 
-                  {mayor && (
+                  {(communeData?.rne?.maire || mayor) && (
                     <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                       {/* Party */}
                       <div className="p-4 rounded-2xl bg-slate-50 space-y-2">
@@ -567,7 +572,7 @@ export default function CommuneDetailPanel({
                         <div className="flex items-center gap-2">
                           <div className={`w-3 h-3 rounded-full ${partyColor}`} />
                           <span className="text-sm font-bold text-slate-900">
-                            {mayor.p || "Non renseigné"}
+                            {communeData?.party || mayor?.p || "Non renseigné"}
                           </span>
                         </div>
                       </div>
@@ -578,9 +583,57 @@ export default function CommuneDetailPanel({
                           <Calendar size={10} /> Mandat depuis
                         </p>
                         <span className="text-sm font-bold text-slate-900">
-                          {formatDate(mayor.d)}
+                          {communeData?.rne?.maire?.dateDebutMandat 
+                            ? formatDate(communeData.rne.maire.dateDebutMandat) 
+                            : mayor ? formatDate(mayor.d) : "Non disponible"}
                         </span>
                       </div>
+                    </div>
+                  )}
+
+                  {communeData?.rne && (
+                    <div className="pt-4 border-t border-slate-100 space-y-4">
+                      {communeData.rne.adjoints && communeData.rne.adjoints.length > 0 && (
+                        <div className="space-y-2">
+                          <p className="text-[9px] font-black uppercase tracking-widest text-slate-400">Adjoints au Maire</p>
+                          <div className="grid grid-cols-1 md:grid-cols-2 gap-2">
+                            {communeData.rne.adjoints.slice(0, 8).map((adj: any, idx: number) => (
+                              <div key={idx} className="p-3 rounded-xl bg-slate-50 border border-slate-100 flex flex-col justify-center">
+                                <span className="text-xs font-bold text-slate-900">{adj.prenom} {adj.nom}</span>
+                                <span className="text-[9px] text-slate-400 italic mt-0.5">{adj.fonction}</span>
+                              </div>
+                            ))}
+                          </div>
+                        </div>
+                      )}
+                      
+                      {communeData.rne.conseillers && communeData.rne.conseillers.length > 0 && (
+                        <div className="space-y-2">
+                          <div className="flex justify-between items-center">
+                            <p className="text-[9px] font-black uppercase tracking-widest text-slate-400">Conseillers Municipaux ({communeData.rne.conseillers.length})</p>
+                            <button 
+                              onClick={() => setShowAllElus(!showAllElus)}
+                              className="text-[10px] font-bold text-rose-600 hover:text-rose-500 transition-colors"
+                            >
+                              {showAllElus ? "Masquer la liste" : "Afficher la liste"}
+                            </button>
+                          </div>
+                          
+                          {showAllElus && (
+                            <motion.div 
+                              initial={{ opacity: 0, height: 0 }}
+                              animate={{ opacity: 1, height: "auto" }}
+                              className="grid grid-cols-1 md:grid-cols-2 gap-2 max-h-48 overflow-y-auto pr-1 custom-scrollbar pt-1"
+                            >
+                              {communeData.rne.conseillers.map((cons: any, idx: number) => (
+                                <div key={idx} className="p-2.5 rounded-xl bg-slate-50/50 border border-slate-100/50 flex items-center justify-between">
+                                  <span className="text-xs font-semibold text-slate-700">{cons.prenom} {cons.nom}</span>
+                                </div>
+                              ))}
+                            </motion.div>
+                          )}
+                        </div>
+                      )}
                     </div>
                   )}
                 </motion.div>
@@ -602,14 +655,14 @@ export default function CommuneDetailPanel({
                           Résultats Municipales
                         </p>
                         <h3 className="text-lg font-bold text-slate-900">
-                          Mars 2026
+                          Mars 2020
                         </h3>
                       </div>
                     </div>
                     {electionData?.m_score && (
                       <div className="text-right">
                         <p className="text-[9px] font-black uppercase tracking-widest text-slate-400">
-                          Score du maire
+                          Score de la liste
                         </p>
                         <p className="text-3xl font-black text-rose-600 leading-none mt-1">
                           {electionData.m_score.toFixed(2)}%
@@ -674,7 +727,7 @@ export default function CommuneDetailPanel({
                     <Loader2 className="animate-spin text-rose-600" size={24} />
                     <p className="text-slate-400 text-xs font-bold uppercase tracking-wider">Chargement des indicateurs...</p>
                   </div>
-                ) : communeData && !communeData.isEstimated ? (
+                ) : communeData ? (
                   <>
                     {COMMUNE_CATEGORIES.map((cat, catIdx) => (
                       <motion.div 
@@ -703,21 +756,27 @@ export default function CommuneDetailPanel({
                               <div key={mIdx} className="space-y-2">
                                 <div className="flex justify-between text-[10px] font-black uppercase tracking-widest text-slate-400">
                                   <span>{metric.label}</span>
-                                  <span className="text-slate-900 font-bold">{val !== null ? metric.format(val) : 'N/A'}</span>
+                                  <span className="text-slate-900 font-bold">
+                                    {val !== null && val !== undefined ? metric.format(val) : 'Non disponible'}
+                                  </span>
                                 </div>
                                 {metric.help && (
                                   <div className="text-[10px] text-slate-400 font-medium normal-case leading-relaxed -mt-1">
                                     {metric.help}
                                   </div>
                                 )}
-                                <div className="h-2 w-full bg-slate-200/60 rounded-full overflow-hidden">
-                                  <motion.div
-                                    initial={{ width: 0 }}
-                                    animate={{ width: val ? (typeof val === 'number' ? Math.min(val, 100) : 50) + '%' : '0%' }}
-                                    className={`h-full ${cat.progressClass}`}
-                                  />
-                                </div>
-                                {renderComparison(val, metric.key, (metric as any).inverse)}
+                                {val !== null && val !== undefined && (
+                                  <>
+                                    <div className="h-2 w-full bg-slate-200/60 rounded-full overflow-hidden">
+                                      <motion.div
+                                        initial={{ width: 0 }}
+                                        animate={{ width: typeof val === 'number' ? Math.min(Math.max(val, 0), 100) + '%' : '50%' }}
+                                        className={`h-full ${cat.progressClass}`}
+                                      />
+                                    </div>
+                                    {renderComparison(val, metric.key, (metric as any).inverse)}
+                                  </>
+                                )}
                               </div>
                             );
                           })}

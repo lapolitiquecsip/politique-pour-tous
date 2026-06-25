@@ -582,7 +582,7 @@ function LocalPoliticsContent() {
                         <h3 className="text-2xl font-staatliches uppercase tracking-wide">Villes à la Une</h3>
                         <div className="flex items-center gap-2 text-rose-600 font-black text-[10px] uppercase tracking-widest">
                           <span className="w-2 h-2 rounded-full bg-rose-600" />
-                          Mise à jour 2026
+                          Données officielles
                         </div>
                       </div>
                       <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
@@ -631,7 +631,7 @@ function LocalPoliticsContent() {
                                   </div>
                                   <div className="space-y-1">
                                     <span className="text-[9px] font-black uppercase text-slate-400 tracking-widest flex items-center gap-1"><Building2 size={10} /> Mandat</span>
-                                    <p className="text-sm font-black text-slate-900">2026</p>
+                                    <p className="text-sm font-black text-slate-900">Depuis 2020</p>
                                   </div>
                                 </div>
                                 <div className={`w-full flex items-center justify-between group/btn text-slate-900 ${theme.hoverText} transition-colors pt-2`}>

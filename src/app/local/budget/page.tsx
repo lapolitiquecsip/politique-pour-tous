@@ -100,7 +100,7 @@ function LocalBudgetContent() {
             </span>
             <h2 className="text-3xl font-staatliches uppercase tracking-wide">Budget Communal Bloqué</h2>
             <p className="text-sm text-slate-400 leading-relaxed">
-              L'analyse interactive et la décomposition détaillée des dépenses réelles de la mandature 2026 sont réservées aux abonnés Premium.
+              L'analyse interactive et la décomposition détaillée des dépenses réelles (exercice 2024, source DGFiP) sont réservées aux abonnés Premium.
             </p>
           </div>
 
@@ -254,7 +254,7 @@ function LocalBudgetContent() {
             
             <div className="space-y-2">
               <p className="text-rose-200 font-bold text-xs uppercase tracking-widest">
-                Analyse budgétaire mandature 2026
+                Derniers comptes officiels — exercice 2024 (source DGFiP)
               </p>
               <h1 className="text-4xl md:text-6xl font-staatliches uppercase tracking-tight leading-none">
                 Budget de {commune?.nom}
@@ -324,11 +324,11 @@ function LocalBudgetContent() {
                   <p className="text-xs text-slate-400">
                     {activeSection === "fonctionnement" 
                       ? "Dépenses quotidiennes obligatoires pour faire tourner l'administration locale." 
-                      : "Dépenses consacrées aux futurs projets structurants de la mandature 2026."}
+                      : "Dépenses de la commune affectées aux opérations d'équipement et de remboursement de dette."}
                   </p>
                 </div>
                 <div className="text-right shrink-0">
-                  <p className="text-xs font-black uppercase text-slate-400 tracking-widest">Enveloppe 2026</p>
+                  <p className="text-xs font-black uppercase text-slate-400 tracking-widest">Montant réel (2024)</p>
                   <p className="text-2xl font-black text-rose-600">{(activeAmount / 1000000).toFixed(1)} M€</p>
                 </div>
               </div>
@@ -393,7 +393,7 @@ function LocalBudgetContent() {
                     <span>{investRate}%</span>
                   </div>
                   <p className="text-[10px] text-slate-400 leading-normal">
-                    La moyenne nationale est de **27%**. Cette ville consacre {investRate}% de ses dépenses totales aux nouveaux chantiers 2026.
+                    La moyenne nationale est de **27%**. Cette ville consacre {investRate}% de ses dépenses totales à l'investissement (exercice 2024).
                   </p>
                 </div>
 
@@ -412,14 +412,14 @@ function LocalBudgetContent() {
             {/* Explanatory notes */}
             <div className="bg-slate-900 text-white rounded-[2.5rem] p-8 space-y-5 relative overflow-hidden">
               <div className="absolute top-0 right-0 w-24 h-24 bg-amber-400/10 blur-2xl rounded-full" />
-              <h3 className="text-2xl font-staatliches uppercase tracking-wide">Comment fonctionne le vote ?</h3>
+              <h3 className="text-2xl font-staatliches uppercase tracking-wide">Comprendre ces chiffres</h3>
               <p className="text-[11px] text-slate-300 leading-relaxed">
-                Le budget primitif (BP) 2026 a été débattu puis voté par le conseil municipal réinstallé suite aux élections municipales de mars 2026. Il traduit en chiffres son programme politique pour la première année de la mandature.
+                Le compte administratif retrace l'ensemble des recettes perçues et des dépenses réalisées par la commune sur un exercice budgétaire clos. Il permet de mesurer l'exécution réelle du budget de la commune.
               </p>
               <div className="h-px bg-white/10 w-full" />
               <div className="flex items-center gap-2 text-[10px] font-black text-amber-300 uppercase tracking-widest">
                 <Sparkles size={12} />
-                Mandature municipale 2026-2032
+                Comptes administratifs consolidés
               </div>
             </div>
             
@@ -436,22 +436,22 @@ function LocalBudgetContent() {
         </div>
 
         {/* Grands chantiers section */}
-        {communeData?.grandsTravaux && communeData.grandsTravaux.length > 0 && (
-          <div className="space-y-6 pt-4">
-            <div className="flex items-center gap-3">
-              <div className="w-10 h-10 rounded-2xl bg-amber-100 flex items-center justify-center text-amber-750 shadow-sm shrink-0">
-                <Wrench size={20} className="text-amber-700" />
-              </div>
-              <div>
-                <h2 className="text-3xl font-staatliches uppercase tracking-wide text-slate-900 leading-none">
-                  🏗️ Grands Chantiers & Investissements 2026
-                </h2>
-                <p className="text-[9px] text-slate-400 font-bold uppercase tracking-wider italic mt-1">
-                  Sources : Rapports budgétaires municipaux et comptes-rendus officiels du conseil municipal 2026
-                </p>
-              </div>
+        <div className="space-y-6 pt-4">
+          <div className="flex items-center gap-3">
+            <div className="w-10 h-10 rounded-2xl bg-amber-100 flex items-center justify-center text-amber-750 shadow-sm shrink-0">
+              <Wrench size={20} className="text-amber-700" />
             </div>
-            
+            <div>
+              <h2 className="text-3xl font-staatliches uppercase tracking-wide text-slate-900 leading-none">
+                🏗️ Grands Chantiers & Investissements
+              </h2>
+              <p className="text-[9px] text-slate-400 font-bold uppercase tracking-wider italic mt-1">
+                Sources : Rapports budgétaires municipaux et comptes-rendus officiels
+              </p>
+            </div>
+          </div>
+          
+          {communeData?.grandsTravaux && communeData.grandsTravaux.length > 0 ? (
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
               {communeData.grandsTravaux.map((proj: any, idx: number) => (
                 <motion.div
@@ -492,73 +492,81 @@ function LocalBudgetContent() {
                 </motion.div>
               ))}
             </div>
-          </div>
-        )}
+          ) : (
+            <div className="bg-white border border-dashed border-slate-350 rounded-[2rem] p-12 text-center text-slate-400 shadow-sm">
+              <p className="text-sm font-bold">Aucun projet renseigné — contribuez !</p>
+            </div>
+          )}
+        </div>
 
         {/* Événements section */}
-        {communeData?.evenements && communeData.evenements.length > 0 && (() => {
-          const sortedEvents = [...communeData.evenements].sort((a: any, b: any) => {
-            return getMonthValue(a.date) - getMonthValue(b.date);
-          });
+        <div className="space-y-6 pt-4">
+          <div className="flex items-center gap-3">
+            <div className="w-10 h-10 rounded-2xl bg-fuchsia-100 flex items-center justify-center text-fuchsia-750 shadow-sm shrink-0">
+              <Calendar size={20} className="text-fuchsia-700" />
+            </div>
+            <div>
+              <h2 className="text-3xl font-staatliches uppercase tracking-wide text-slate-900 leading-none">
+                📅 Événements Majeurs & Animation Locale
+              </h2>
+              <p className="text-[9px] text-slate-400 font-bold uppercase tracking-wider italic mt-1">
+                Sources : Agendas culturels officiels et offices de tourisme
+              </p>
+            </div>
+          </div>
           
-          return (
-            <div className="space-y-6 pt-4">
-              <div className="flex items-center gap-3">
-                <div className="w-10 h-10 rounded-2xl bg-fuchsia-100 flex items-center justify-center text-fuchsia-750 shadow-sm shrink-0">
-                  <Calendar size={20} className="text-fuchsia-700" />
-                </div>
-                <div>
-                  <h2 className="text-3xl font-staatliches uppercase tracking-wide text-slate-900 leading-none">
-                    📅 Événements Majeurs & Animation Locale 2026
-                  </h2>
-                  <p className="text-[9px] text-slate-400 font-bold uppercase tracking-wider italic mt-1">
-                    Sources : Agendas culturels officiels de la commune et offices de tourisme locaux 2026
-                  </p>
-                </div>
-              </div>
-              
+          {communeData?.evenements && communeData.evenements.length > 0 ? (() => {
+            const sortedEvents = [...communeData.evenements].sort((a: any, b: any) => {
+              return getMonthValue(a.date) - getMonthValue(b.date);
+            });
+            
+            return (
               <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
                 {sortedEvents.map((evt: any, idx: number) => {
-                const catColors: Record<string, string> = {
-                  Tradition: "bg-orange-50 text-orange-700 border-orange-200",
-                  Musique: "bg-violet-50 text-violet-700 border-violet-200",
-                  Sport: "bg-emerald-50 text-emerald-700 border-emerald-200",
-                  Culture: "bg-fuchsia-50 text-fuchsia-700 border-fuchsia-200",
-                  Festivités: "bg-sky-50 text-sky-700 border-sky-200"
-                };
-                const colClass = catColors[evt.category] || "bg-slate-50 text-slate-700 border-slate-200";
-                
-                return (
-                  <motion.div
-                    key={idx}
-                    initial={{ opacity: 0, y: 15 }}
-                    animate={{ opacity: 1, y: 0 }}
-                    transition={{ delay: idx * 0.1 }}
-                    className="bg-white border border-slate-200/85 rounded-3xl p-5 shadow-sm hover:scale-[1.02] hover:border-slate-300 transition-all flex flex-col justify-between"
-                  >
-                    <div className="space-y-3">
-                      <div className="flex justify-between items-center gap-2">
-                        <span className="text-[10px] font-black text-rose-600 uppercase tracking-widest">
-                          {evt.date}
-                        </span>
-                        <span className={`px-2 py-0.5 text-[8px] font-bold uppercase tracking-wider rounded-full border ${colClass}`}>
-                          {evt.category}
-                        </span>
+                  const catColors: Record<string, string> = {
+                    Tradition: "bg-orange-50 text-orange-700 border-orange-200",
+                    Musique: "bg-violet-50 text-violet-750 border-violet-200",
+                    Sport: "bg-emerald-50 text-emerald-700 border-emerald-200",
+                    Culture: "bg-fuchsia-50 text-fuchsia-700 border-fuchsia-200",
+                    Festivités: "bg-sky-50 text-sky-700 border-sky-200"
+                  };
+                  const colClass = catColors[evt.category] || "bg-slate-50 text-slate-700 border-slate-200";
+                  
+                  return (
+                    <motion.div
+                      key={idx}
+                      initial={{ opacity: 0, y: 15 }}
+                      animate={{ opacity: 1, y: 0 }}
+                      transition={{ delay: idx * 0.1 }}
+                      className="bg-white border border-slate-200/85 rounded-3xl p-5 shadow-sm hover:scale-[1.02] hover:border-slate-300 transition-all flex flex-col justify-between"
+                    >
+                      <div className="space-y-3">
+                        <div className="flex justify-between items-center gap-2">
+                          <span className="text-[10px] font-black text-rose-600 uppercase tracking-widest">
+                            {evt.date}
+                          </span>
+                          <span className={`px-2 py-0.5 text-[8px] font-bold uppercase tracking-wider rounded-full border ${colClass}`}>
+                            {evt.category}
+                          </span>
+                        </div>
+                        <h3 className="font-extrabold text-sm text-slate-800">
+                          {evt.title}
+                        </h3>
+                        <p className="text-[11px] text-slate-400 leading-normal">
+                          {evt.desc}
+                        </p>
                       </div>
-                      <h3 className="font-extrabold text-sm text-slate-800">
-                        {evt.title}
-                      </h3>
-                      <p className="text-[11px] text-slate-400 leading-normal">
-                        {evt.desc}
-                      </p>
-                    </div>
-                  </motion.div>
-                );
-              })}
+                    </motion.div>
+                  );
+                })}
               </div>
+            );
+          })() : (
+            <div className="bg-white border border-dashed border-slate-350 rounded-[2rem] p-12 text-center text-slate-400 shadow-sm">
+              <p className="text-sm font-bold">Aucun événement renseigné — contribuez !</p>
             </div>
-          );
-        })()}
+          )}
+        </div>
       </div>
     </main>
   );

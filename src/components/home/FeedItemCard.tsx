@@ -51,7 +51,10 @@ const institutionConfig: Record<string, { color: string; label: string; border: 
   sénat: { color: "bg-purple-800", label: "Sénat", border: "border-t-purple-800" },
   gouvernement: { color: "bg-red-600", label: "Gouvernement", border: "border-t-red-600" },
   média: { color: "bg-amber-600", label: "Média", border: "border-t-amber-600" },
+  cese: { color: "bg-emerald-700", label: "CESE", border: "border-t-emerald-700" },
+  "vie-publique": { color: "bg-indigo-600", label: "Vie Publique", border: "border-t-indigo-600" },
 };
+
 
 function getRelativeDate(dateString: string) {
   try {

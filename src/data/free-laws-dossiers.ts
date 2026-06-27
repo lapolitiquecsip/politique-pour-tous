@@ -11,6 +11,9 @@ export interface LawDossier {
   color: string;
   backgroundImage?: string;
   date_adopted?: string;
+  promulgation_date?: string;
+  amendments?: { title: string; result: "Adopté" | "Rejeté"; description: string }[];
+  premium_analysis?: { title: string; content: string; metrics?: string[] }[];
   voteData?: {
     pour: number;
     contre: number;
@@ -63,6 +66,24 @@ export const FREE_LAWS: LawDossier[] = [
       { date: "Août 2021", event: "Promulgation de la loi" },
       { date: "Janv 2023", event: "Interdiction location G les plus énergivores" },
       { date: "Janv 2025", event: "Interdiction location TOUT le niveau G" }
+    ],
+    promulgation_date: "24 Août 2021",
+    amendments: [
+      { title: "Interdiction des vols intérieurs courts", result: "Adopté", description: "Suppression des lignes aériennes intérieures lorsqu'une alternative en train de moins de 2h30 existe." },
+      { title: "Menu végétarien dans les cantines", result: "Adopté", description: "Expérimentation d'un menu végétarien quotidien dans les restaurations collectives volontaires." },
+      { title: "Taxe sur les engrais azotés", result: "Rejeté", description: "Le gouvernement a préféré une trajectoire de réduction volontaire plutôt qu'une taxe punitive immédiate." }
+    ],
+    premium_analysis: [
+      {
+        title: "Impact Direct : L'Immobilier bouleversé",
+        content: "La loi Climat et Résilience impose un calendrier strict pour les propriétaires bailleurs. Les passoires thermiques (DPE G et F) seront progressivement interdites à la location. Cela va créer un choc sur l'offre locative dans les grandes métropoles.",
+        metrics: ["2.5 millions de logements concernés", "-15% de rentabilité estimée avant travaux"]
+      },
+      {
+        title: "Mobilité : La fin du 'tout voiture'",
+        content: "Avec l'obligation de mettre en place des ZFE (Zones à Faibles Émissions) dans les agglomérations de plus de 150 000 habitants, les véhicules Crit'Air 3, 4 et 5 seront exclus. C'est une refonte totale de l'accès aux centres-villes.",
+        metrics: ["43 métropoles concernées", "Aide à la conversion augmentée de 1000€"]
+      }
     ]
   },
   {

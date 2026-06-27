@@ -66,15 +66,18 @@ export default function Header() {
           
           {/* Logo */}
           <Link href="/" className="flex items-center gap-2 group">
-            <div className="w-9 h-9 bg-red-600 rounded-xl flex items-center justify-center text-white shadow-lg shadow-red-600/20 group-hover:scale-110 transition-transform">
+            <div className="w-9 h-9 bg-gradient-to-br from-rose-500 to-fuchsia-600 rounded-xl flex items-center justify-center text-white shadow-lg shadow-fuchsia-500/30 group-hover:scale-110 transition-transform">
               <Landmark size={20} />
             </div>
-            <span className="font-sans font-black text-[15px] sm:text-[16px] tracking-tight uppercase leading-none pt-0.5 flex items-center gap-1">
-              <span className="text-slate-900">La politique, c'est</span>
-              <span className="bg-[#0bb274] text-white px-1.5 py-1 rounded-[5px] font-black text-[13px] sm:text-[14px] leading-none">
-                Simple.
+            <div className="flex flex-col justify-center">
+              <span className="text-slate-900 font-sans font-black text-[15px] sm:text-[16px] tracking-tight uppercase leading-none">La politique,</span>
+              <span className="font-sans font-black tracking-tight uppercase leading-none pt-0.5 flex items-center gap-1">
+                <span className="text-slate-900 text-[13px] sm:text-[14px]">c'est</span>
+                <span className="bg-[#0bb274] text-white px-1.5 py-0.5 rounded-[4px] text-[11px] sm:text-[12px] leading-none">
+                  Simple.
+                </span>
               </span>
-            </span>
+            </div>
           </Link>
 
           {/* Desktop Nav */}

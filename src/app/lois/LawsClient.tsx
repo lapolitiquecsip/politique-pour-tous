@@ -340,7 +340,7 @@ function LawsClientContent() {
 
               const combinedList = [
                 ...allPremiumDossiers.map(law => ({ ...law, sortDate: new Date(law.date_adopted || law.created_at || 0).getTime(), itemType: 'premium' })),
-                ...(isPremium ? filteredDbLaws.map(law => ({ ...law, sortDate: new Date(law.date_scrutin || 0).getTime(), itemType: 'history' })) : [])
+                ...filteredDbLaws.map(law => ({ ...law, sortDate: new Date(law.date_scrutin || 0).getTime(), itemType: 'history' }))
               ].sort((a, b) => b.sortDate - a.sortDate);
 
               const promulgatedLaws = combinedList.filter(law => {
@@ -348,7 +348,7 @@ function LawsClientContent() {
                 if (law.itemType === 'premium') {
                   const scrutinId = law.context?.split(':')[1];
                   const originalScrutin = dbLaws.find(s => s.id === scrutinId);
-                  isPromulgated = originalScrutin?.status_detail === 'En application' || law.context?.endsWith(':application');
+                  isPromulgated = originalScrutin?.status_detail === 'En application' || law.context?.endsWith(':application') || law.status === 'application';
                 } else {
                   isPromulgated = law.status_detail === 'En application';
                 }

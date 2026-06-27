@@ -9,41 +9,60 @@
 
 require('dotenv').config({ path: '../.env.local' });
 const { createClient } = require('@supabase/supabase-js');
-// const axios = require('axios'); // Utile pour Légifrance ou DILA API
-// const Anthropic = require('@anthropic-ai/sdk'); // Pour générer l'analyse détaillée
+// const axios = require('axios'); 
+// const OpenAI = require('openai'); // OpenAI client works for DeepSeek API
 
 const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL;
-const supabaseKey = process.env.SUPABASE_SERVICE_ROLE_KEY; // Nécessite la clé secrète en backend
-// const supabase = createClient(supabaseUrl, supabaseKey); // Décommenter en prod
+const supabaseKey = process.env.SUPABASE_SERVICE_ROLE_KEY; 
+
+// Initialisation de DeepSeek via le client OpenAI standard (compatible)
+/*
+const deepseek = new OpenAI({
+  baseURL: 'https://api.deepseek.com',
+  apiKey: process.env.DEEPSEEK_API_KEY
+});
+*/
 
 async function main() {
   console.log("=== Lancement de l'automatisation des Lois Promulguées ===");
 
   try {
-    // 1. [MOCK] Récupération des dernières lois depuis une source publique (DILA, data.gouv, etc.)
-    // En production, il faudra utiliser un appel API authentifié vers Légifrance PISTE ou OpenData.
     const fetchedLaws = [
       {
         id: "loi-pouvoir-achat-2026",
         title: "Loi pour le pouvoir d'achat",
         category: "Économie",
         promulgation_date: new Date().toLocaleDateString('fr-FR', { day: 'numeric', month: 'long', year: 'numeric' }),
-        raw_text: "Texte complet de la loi..." // Utilisé pour nourrir l'IA
+        raw_text: "Texte complet de la loi..." 
       }
     ];
 
     console.log(`${fetchedLaws.length} nouvelle(s) loi(s) trouvée(s).`);
 
     for (const law of fetchedLaws) {
-      // 2. [MOCK] Génération du contenu IA (Résumé + Analyse Premium + Amendements)
-      console.log(`Génération IA pour la loi: ${law.title}`);
+      console.log(`Génération IA (DeepSeek) pour la loi: ${law.title}`);
       
-      /* Exemple de prompt IA:
-      const prompt = `Génère un résumé grand public, une liste de 3 amendements adoptés, et une analyse détaillée en 2 sections pour les abonnés premium à partir de cette loi : ${law.raw_text}`;
-      const iaResponse = await anthropic.messages.create({...});
+      /* Appel à l'API DeepSeek :
+      const systemPrompt = `Tu es un expert juridique et politique français. Ton rôle est de vulgariser les lois promulguées. 
+      Pour chaque loi qu'on te donne, tu dois fournir un JSON contenant : 
+      1. 'summary': un résumé général, clair et accessible pour tous les citoyens.
+      2. 'impacts': liste des 3 impacts principaux.
+      3. 'amendments': liste des amendements majeurs avec leur statut et description.
+      4. 'premium_analysis': une analyse très poussée et précise réservée aux membres premium, avec des objectifs chiffrés, des KPI, les impacts directs sur le portefeuille, et l'explication des amendements cachés.
+      Ne réponds qu'avec le JSON.`;
+
+      const response = await deepseek.chat.completions.create({
+        model: "deepseek-chat",
+        messages: [
+          { role: "system", content: systemPrompt },
+          { role: "user", content: `Voici le texte de loi : ${law.raw_text}` }
+        ],
+        response_format: { type: "json_object" }
+      });
+      const generatedData = JSON.parse(response.choices[0].message.content);
       */
       
-      // Données générées simulées
+      // Données générées simulées (Mock)
       const generatedData = {
         summary: "Mesures exceptionnelles pour plafonner les prix de l'énergie et aider les ménages.",
         impacts: ["Plafonnement des prix de l'électricité", "Prime exceptionnelle de rentrée"],

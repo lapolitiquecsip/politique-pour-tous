@@ -52,7 +52,7 @@ export default function LawsClient() {
 function LawsClientContent() {
   const router = useRouter();
   const searchParams = useSearchParams();
-  const [activeTab, setActiveTab] = useState<'dossiers' | 'history' | 'proposals'>('dossiers');
+  const [activeTab, setActiveTab] = useState<'promulgated' | 'votes' | 'proposals'>('promulgated');
   const [selectedCat, setSelectedCat] = useState<string | null>(null);
   const { isPremium, loading: pLoading, userId } = usePremium();
   const [dbLaws, setDbLaws] = useState<any[]>([]);
@@ -92,7 +92,7 @@ function LawsClientContent() {
       setPremiumDossiers(data);
       setLoadingDossiers(false);
     };
-    if (activeTab === 'dossiers') {
+    if (activeTab === 'promulgated' || activeTab === 'votes') {
       loadDossiers();
     }
   }, [activeTab, selectedCat]);
@@ -117,12 +117,12 @@ function LawsClientContent() {
              // Proposals usually have 'title' instead of 'objet'
              // And their IDs often start with PA (National Assembly)
              if (law.objet) {
-               setActiveTab('dossiers');
+               setActiveTab('promulgated');
              } else {
                setActiveTab('proposals');
              }
           } else {
-             setActiveTab('dossiers');
+             setActiveTab('promulgated');
           }
         }
       };
@@ -157,15 +157,27 @@ function LawsClientContent() {
       <div className="sticky top-0 z-[50] bg-white/90 backdrop-blur-md py-6 mb-12 border-b border-slate-100 -mx-4 px-4 shadow-sm">
         <div className="flex flex-wrap items-center justify-center gap-4">
           <button
-            onClick={() => setActiveTab('dossiers')}
+            onClick={() => setActiveTab('promulgated')}
             className={`px-8 py-3 rounded-full font-black uppercase tracking-widest text-xs transition-all duration-300 flex items-center gap-3 ${
-              activeTab === 'dossiers' 
+              activeTab === 'promulgated' 
                 ? 'bg-slate-950 text-white shadow-2xl shadow-slate-950/20 scale-105' 
                 : 'bg-white text-slate-400 hover:text-slate-600 border border-slate-100 hover:border-slate-300'
             }`}
           >
             <BookOpen size={18} />
-            Dossiers Premium
+            Lois promulguées
+          </button>
+
+          <button
+            onClick={() => setActiveTab('votes')}
+            className={`px-8 py-3 rounded-full font-black uppercase tracking-widest text-xs transition-all duration-300 flex items-center gap-3 ${
+              activeTab === 'votes' 
+                ? 'bg-slate-950 text-white shadow-2xl shadow-slate-950/20 scale-105' 
+                : 'bg-white text-slate-400 hover:text-slate-600 border border-slate-100 hover:border-slate-300'
+            }`}
+          >
+            <Vote size={18} />
+            Derniers votes de loi
           </button>
 
           <button
@@ -206,7 +218,7 @@ function LawsClientContent() {
           <LawsGrid onSelectLaw={setSelectedLaw} categoryFilter={CATEGORIES.find(c => c.id === selectedCat)?.label} />
         </div>
       )}
-      {activeTab === 'dossiers' && (
+      {activeTab === 'promulgated' && (
         <>
           {/* 1. FILTRES THÉMATIQUES (ULTRA COMPACT BENTO STYLE) */}
       <div className="mb-24">
@@ -274,8 +286,8 @@ function LawsClientContent() {
         <div className="relative mb-16 text-center md:text-left">
           <div className="flex items-center gap-4 justify-center md:justify-start">
             <h2 className="text-5xl md:text-7xl font-staatliches uppercase tracking-tighter leading-none text-slate-900">
-              <span className="text-slate-900 opacity-10 absolute -top-8 left-0 select-none hidden md:block">DIRECT</span>
-              {selectedCat ? `Dernières lois votées : ${CATEGORIES.find(c => c.id === selectedCat)?.label}` : "Dernières lois votées en temps réel"}
+              <span className="text-slate-900 opacity-10 absolute -top-8 left-0 select-none hidden md:block">OFFICIEL</span>
+              {selectedCat ? `Lois promulguées : ${CATEGORIES.find(c => c.id === selectedCat)?.label}` : "Lois promulguées au Journal Officiel"}
             </h2>
             {selectedCat && (
               <button 
@@ -288,7 +300,7 @@ function LawsClientContent() {
           </div>
           <div className="h-1.5 w-24 bg-gradient-to-r from-blue-600 to-red-600 mt-4 rounded-full mx-auto md:mx-0" />
           <p className="text-lg font-bold italic text-slate-500 mt-6 max-w-2xl font-staatliches">
-            {selectedCat ? "Suivez en direct l'impact et le verdict du Parlement pour cette catégorie de lois." : "Suivez en direct le verdict du Parlement : décryptage instantané des derniers textes de loi adoptés."}
+            {selectedCat ? "Consultez les lois de cette catégorie officiellement actives en France." : "Toutes les lois définitivement adoptées et promulguées, officiellement actives en France."}
           </p>
         </div>
 
@@ -331,7 +343,19 @@ function LawsClientContent() {
                 ...(isPremium ? filteredDbLaws.map(law => ({ ...law, sortDate: new Date(law.date_scrutin || 0).getTime(), itemType: 'history' })) : [])
               ].sort((a, b) => b.sortDate - a.sortDate);
 
-              const filteredLaws = combinedList.filter(law => {
+              const promulgatedLaws = combinedList.filter(law => {
+                let isPromulgated = false;
+                if (law.itemType === 'premium') {
+                  const scrutinId = law.context?.split(':')[1];
+                  const originalScrutin = dbLaws.find(s => s.id === scrutinId);
+                  isPromulgated = originalScrutin?.status_detail === 'En application' || law.context?.endsWith(':application');
+                } else {
+                  isPromulgated = law.status_detail === 'En application';
+                }
+                return isPromulgated;
+              });
+
+              const filteredLaws = promulgatedLaws.filter(law => {
                 const searchLower = searchQuery.toLowerCase();
                 const title = law.title || law.objet || '';
                 const category = law.category || '';
@@ -579,6 +603,211 @@ function LawsClientContent() {
                 <ArrowRight className="w-6 h-6" />
               </Link>
             </div>
+          </div>
+        </div>
+      )}
+      {activeTab === 'votes' && (
+        <div className="mt-12 mb-32">
+          <div className="relative mb-16 text-center md:text-left">
+            <div className="flex items-center gap-4 justify-center md:justify-start">
+              <h2 className="text-5xl md:text-7xl font-staatliches uppercase tracking-tighter leading-none text-slate-900">
+                <span className="text-slate-900 opacity-10 absolute -top-8 left-0 select-none hidden md:block">VOTES</span>
+                Derniers <span className="bg-gradient-to-r from-blue-600 via-red-600 to-blue-600 bg-clip-text text-transparent">Votes de loi</span>
+              </h2>
+              {selectedCat && (
+                <button 
+                  onClick={() => setSelectedCat(null)}
+                  className="px-4 py-2 bg-slate-100 text-slate-600 rounded-full font-bold text-xs uppercase tracking-widest hover:bg-slate-200 transition-colors flex items-center gap-2"
+                >
+                  <X size={14} /> {CATEGORIES.find(c => c.id === selectedCat)?.label || selectedCat}
+                </button>
+              )}
+            </div>
+            <div className="h-1.5 w-24 bg-blue-600 mt-4 rounded-full mx-auto md:mx-0" />
+            <p className="text-lg font-bold italic text-slate-500 mt-6 max-w-2xl font-staatliches">
+              Suivez en temps réel tous les votes de lois à l'Assemblée nationale et au Sénat.
+            </p>
+          </div>
+
+          <div className="relative max-w-xl mb-12 mx-auto md:mx-0">
+            <div className="absolute inset-0 bg-slate-900 rounded-2xl translate-x-2 translate-y-2 z-0" />
+            <div className="relative z-10 flex items-center bg-white border-4 border-slate-900 rounded-2xl overflow-hidden px-6 py-4 focus-within:ring-4 focus-within:ring-blue-500/20 transition-all">
+              <Search className="w-6 h-6 text-slate-400 mr-4" />
+              <input 
+                type="text"
+                placeholder="Rechercher un vote (ex: Retraite, Santé...)"
+                value={searchQuery}
+                onChange={(e) => setSearchQuery(e.target.value)}
+                className="w-full bg-transparent border-none focus:ring-0 text-slate-900 font-bold placeholder:text-slate-300 placeholder:italic"
+              />
+              {searchQuery && (
+                <button 
+                  onClick={() => setSearchQuery("")}
+                  className="p-1 hover:bg-slate-100 rounded-full transition-colors"
+                >
+                  <X size={18} className="text-slate-400" />
+                </button>
+              )}
+            </div>
+          </div>
+
+          <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-8 md:gap-10">
+            {loadingLaws ? (
+               <div className="text-center py-20 bg-slate-50 rounded-[3rem] border border-dashed border-slate-300 col-span-full">
+                  <div className="w-12 h-12 rounded-full border-2 border-slate-200 border-t-blue-500 animate-spin mx-auto mb-4" />
+                  <p className="text-slate-400 font-bold uppercase tracking-widest text-sm">Chargement des votes...</p>
+               </div>
+            ) : (
+              (() => {
+                const votesList = dbLaws.filter(law => {
+                  if (selectedCat) {
+                    const catLabel = CATEGORIES.find(c => c.id === selectedCat)?.label;
+                    if (law.category !== catLabel && law.category !== CATEGORIES.find(c => c.id === selectedCat)?.matchCategory) return false;
+                  }
+                  return true;
+                });
+
+                const filteredVotes = votesList.filter(law => {
+                  const searchLower = searchQuery.toLowerCase();
+                  const title = law.objet || law.title || '';
+                  const category = law.category || '';
+                  const summary = law.summary || '';
+                  return (
+                    title.toLowerCase().includes(searchLower) || 
+                    summary.toLowerCase().includes(searchLower) ||
+                    category.toLowerCase().includes(searchLower)
+                  );
+                });
+
+                if (filteredVotes.length === 0) {
+                  return (
+                    <div className="text-center py-20 bg-slate-50 rounded-[3rem] border border-dashed border-slate-300 col-span-full">
+                      <Search className="w-12 h-12 text-slate-300 mx-auto mb-4" />
+                      <p className="text-slate-400 font-bold uppercase tracking-widest text-sm">Aucun vote trouvé pour "{searchQuery}"</p>
+                    </div>
+                  );
+                }
+
+                const PAGE_SIZE = 60;
+                const totalPages = Math.ceil(filteredVotes.length / PAGE_SIZE);
+                const paginatedVotes = filteredVotes.slice((currentPage - 1) * PAGE_SIZE, currentPage * PAGE_SIZE);
+
+                return (
+                  <>
+                    {paginatedVotes.map((law: any) => {
+                      const catObj = CATEGORIES.find(c => c.label === law.category || c.matchCategory === law.category);
+                      const color = catObj ? catObj.color : ((law.category || '').toLowerCase().includes('institution') ? 'violet' : 'slate');
+
+                      const impacts = [];
+                      if (law.impact_detail) impacts.push(law.impact_detail);
+                      else if (law.why_it_matters) impacts.push(law.why_it_matters);
+                      else impacts.push(law.summary || "Détails approfondis non disponibles pour ce vote.");
+                      
+                      const calendar = [
+                        {
+                          date: new Date(law.date_scrutin).toLocaleDateString('fr-FR', { day: 'numeric', month: 'short', year: 'numeric' }),
+                          event: law.resultat || "Vote"
+                        }
+                      ];
+
+                      const premiumPoints = [
+                        "Ce texte a été soumis au vote du Parlement.",
+                        "L'historique complet des débats est disponible sur les sources officielles."
+                      ];
+
+                      const voteData = (law.pour + law.contre + law.abstention) > 0 ? {
+                        pour: law.pour || 0,
+                        contre: law.contre || 0,
+                        abstention: law.abstention || 0,
+                        group_results: law.group_results || []
+                      } : null;
+
+                      const computedStatus = law.status_detail === 'En application' ? 'application' : 'vote';
+                      const statusLabel = law.status_detail === 'En application' ? 'En application' : 'Loi Adoptée';
+
+                      const formattedLaw = {
+                        id: law.id,
+                        title: law.objet || law.title || "Projet ou proposition de loi",
+                        category: law.category || "Institution",
+                        summary: law.summary || law.objet,
+                        impacts,
+                        calendar,
+                        premiumPoints,
+                        voteData,
+                        status: computedStatus,
+                        statusLabel,
+                        color,
+                        date_adopted: law.date_scrutin
+                      };
+
+                      return <DetailedLawDossier key={`vote-${law.id}`} law={formattedLaw as any} />;
+                    })}
+                    
+                    {totalPages > 1 && (
+                      <div className="col-span-full flex flex-col items-center justify-center mt-12 space-y-4">
+                        <div className="flex items-center gap-2">
+                          <button 
+                            onClick={() => {
+                              setCurrentPage(p => Math.max(1, p - 1));
+                              window.scrollTo({ top: 400, behavior: 'smooth' });
+                            }}
+                            disabled={currentPage === 1}
+                            className="px-4 py-2 rounded-xl border border-slate-200 bg-white text-slate-700 font-bold disabled:opacity-50 disabled:cursor-not-allowed hover:bg-slate-50 transition-colors"
+                          >
+                            Précédent
+                          </button>
+                          
+                          <div className="flex items-center gap-1 hidden md:flex">
+                            {Array.from({ length: totalPages }, (_, i) => i + 1).map(page => {
+                              if (
+                                page === 1 || 
+                                page === totalPages || 
+                                (page >= currentPage - 1 && page <= currentPage + 1)
+                              ) {
+                                return (
+                                  <button
+                                    key={page}
+                                    onClick={() => {
+                                      setCurrentPage(page);
+                                      window.scrollTo({ top: 400, behavior: 'smooth' });
+                                    }}
+                                    className={`w-10 h-10 rounded-xl font-bold transition-colors ${
+                                      currentPage === page 
+                                        ? 'bg-blue-600 text-white border-blue-600' 
+                                        : 'bg-white text-slate-700 border border-slate-200 hover:bg-slate-50'
+                                    }`}
+                                  >
+                                    {page}
+                                  </button>
+                                );
+                              } else if (
+                                page === currentPage - 2 || 
+                                page === currentPage + 2
+                              ) {
+                                return <span key={page} className="text-slate-400 px-1">...</span>;
+                              }
+                              return null;
+                            })}
+                          </div>
+
+                          <button 
+                            onClick={() => {
+                              setCurrentPage(p => Math.min(totalPages, p + 1));
+                              window.scrollTo({ top: 400, behavior: 'smooth' });
+                            }}
+                            disabled={currentPage === totalPages}
+                            className="px-4 py-2 rounded-xl border border-slate-200 bg-white text-slate-700 font-bold disabled:opacity-50 disabled:cursor-not-allowed hover:bg-slate-50 transition-colors"
+                          >
+                            Suivant
+                          </button>
+                        </div>
+                        <p className="text-slate-400 text-sm font-medium">Page {currentPage} sur {totalPages}</p>
+                      </div>
+                    )}
+                  </>
+                );
+              })()
+            )}
           </div>
         </div>
       )}

@@ -606,6 +606,8 @@ function LawsClientContent() {
           </div>
         </div>
       )}
+      </>
+      )}
       {activeTab === 'votes' && (
         <div className="mt-12 mb-32">
           <div className="relative mb-16 text-center md:text-left">
@@ -810,8 +812,6 @@ function LawsClientContent() {
             )}
           </div>
         </div>
-      )}
-        </>
       )}
 
 

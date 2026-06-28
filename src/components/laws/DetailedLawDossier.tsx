@@ -11,7 +11,8 @@ import {
   MinusCircle,
   Vote,
   FileText,
-  UserCheck
+  UserCheck,
+  Zap
 } from "lucide-react";
 import { type LawDossier } from "@/data/free-laws-dossiers";
 import { usePremium } from "@/lib/hooks/usePremium";

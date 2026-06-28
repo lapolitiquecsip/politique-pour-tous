@@ -574,9 +574,6 @@ export default function DetailedLawDossier({ law }: DetailedLawDossierProps) {
                         </div>
                       ))}
                     </div>
-                  </div>
-
-                  </div>
                 </div>
               </div>
 

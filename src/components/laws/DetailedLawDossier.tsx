@@ -557,7 +557,6 @@ export default function DetailedLawDossier({ law }: DetailedLawDossierProps) {
                     ))}
                   </div>
                 </div>
-              </div>
 
               {/* Timeline & Analysis */}
               <div className="space-y-8">

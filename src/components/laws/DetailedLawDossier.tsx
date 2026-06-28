@@ -349,8 +349,66 @@ export default function DetailedLawDossier({ law }: DetailedLawDossierProps) {
       >
         <div className="relative z-10 px-6 md:px-8 pb-8 pt-8 bg-white text-slate-800 rounded-[1.5rem] mx-2 mb-2 shadow-inner">
 
-          <div className="text-base md:text-lg text-slate-800 font-medium leading-relaxed mb-8 max-w-4xl">
-            {wrapWithGlossary(law.summary)}
+          <div className="grid grid-cols-1 lg:grid-cols-[2fr_1fr] gap-8 mb-12">
+            {/* Left column */}
+            <div className="space-y-8 flex flex-col justify-center">
+              {/* Résumé de la loi */}
+              <div>
+                <h4 className="text-base font-bold flex items-center gap-2 text-slate-900 mb-4">
+                  <FileText className="w-5 h-5 text-blue-600" />
+                  Résumé de la loi
+                </h4>
+                <div className="p-6 bg-slate-50 text-slate-700 text-base italic leading-relaxed rounded-2xl border border-slate-100">
+                  {wrapWithGlossary(law.summary)}
+                </div>
+              </div>
+
+              {/* État d'avancement */}
+              <div>
+                <h4 className="text-base font-bold flex items-center gap-2 text-slate-900 mb-4">
+                  <CheckCircle2 className="w-5 h-5 text-green-500" />
+                  État d'avancement
+                </h4>
+                <div className="flex items-center gap-3">
+                  <span className="relative flex h-3 w-3">
+                    <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-slate-400 opacity-75"></span>
+                    <span className="relative inline-flex rounded-full h-3 w-3 bg-slate-300"></span>
+                  </span>
+                  <span className="text-slate-400 italic text-sm">{law.timeline || "Mise à jour en cours par nos services..."}</span>
+                </div>
+              </div>
+            </div>
+
+            {/* Right column */}
+            <div className="space-y-6">
+              {/* Initiateur du texte */}
+              <div className="bg-slate-50 rounded-[2rem] p-6 border border-slate-100 flex flex-col justify-center min-h-[120px]">
+                <span className="text-[10px] font-black uppercase tracking-widest text-slate-400 mb-4">INITIATEUR DU TEXTE</span>
+                <div className="flex items-center gap-4">
+                  <div className="w-12 h-12 bg-white rounded-2xl flex items-center justify-center shadow-sm border border-slate-100 shrink-0">
+                    <UserCheck className="w-6 h-6 text-blue-500" />
+                  </div>
+                  <div className="flex flex-col">
+                    <span className="font-bold text-slate-900 text-lg leading-tight">
+                      {law.author && law.author !== 'Non spécifié' ? law.author : 'Non spécifié'}
+                    </span>
+                    <span className="text-[10px] font-bold text-slate-500 uppercase tracking-wider leading-tight mt-1">
+                      {law.category}
+                    </span>
+                  </div>
+                </div>
+              </div>
+
+              {/* AI Auto Update Box */}
+              <div className="bg-slate-950 rounded-[2rem] p-6 flex items-center gap-4 min-h-[120px]">
+                <div className="w-12 h-12 bg-blue-600 rounded-2xl flex items-center justify-center shrink-0 shadow-[0_0_15px_rgba(37,99,235,0.4)]">
+                  <CheckCircle2 className="w-6 h-6 text-white" />
+                </div>
+                <p className="text-slate-300 text-sm leading-snug">
+                  Ce dossier est <span className="text-white font-bold underline decoration-blue-500 decoration-2 underline-offset-2">mis à jour automatiquement</span> par notre intelligence artificielle.
+                </p>
+              </div>
+            </div>
           </div>
 
           {showHeavyContent && (
@@ -518,25 +576,47 @@ export default function DetailedLawDossier({ law }: DetailedLawDossierProps) {
                     </div>
                   </div>
 
-                  {/* Deep Analysis */}
-                  <div className="p-5 bg-blue-50/50 border border-blue-100 rounded-2xl relative overflow-hidden group shadow-sm">
-                    <div className="flex items-center justify-between gap-4 mb-4">
-                      <h4 className="text-slate-900 font-bold text-xs uppercase tracking-wider flex items-center gap-2">
-                        <Sparkles className="w-4 h-4 text-amber-500" />
-                        Analyse approfondie de la rédaction
-                      </h4>
-                    </div>
-                    <ul className="space-y-3">
-                      {law.premiumPoints.map((point, idx) => (
-                        <li key={idx} className="flex items-start gap-2 text-sm text-slate-700 font-medium">
-                          <ArrowRight className="w-4 h-4 text-amber-500/60 shrink-0 mt-0.5" />
-                          {point}
-                        </li>
-                      ))}
-                    </ul>
                   </div>
                 </div>
               </div>
+
+              {/* Analyse Détaillée Premium Block */}
+              {isPremium ? (
+                <div className="mt-12 p-8 bg-gradient-to-br from-amber-50 to-orange-50 border border-amber-200 rounded-[2rem] shadow-sm">
+                  <h4 className="text-slate-900 font-bold text-lg uppercase tracking-wider flex items-center gap-2 mb-6">
+                    <Zap className="w-6 h-6 text-amber-500" fill="currentColor" />
+                    Analyse Détaillée
+                  </h4>
+                  <div className="prose prose-slate max-w-none text-slate-800 space-y-4 whitespace-pre-wrap">
+                    {law.content || law.premiumPoints?.join('\n')}
+                  </div>
+                </div>
+              ) : (
+                <div className="mt-12 relative overflow-hidden bg-[#0A0A10] rounded-[2rem] p-8 md:p-12 border border-slate-800 shadow-2xl flex flex-col md:flex-row items-center justify-between gap-8 group">
+                  <div className="absolute inset-0 bg-gradient-to-r from-amber-500/10 via-transparent to-transparent pointer-events-none" />
+                  <div className="relative z-10 flex items-center gap-6 md:gap-8">
+                    <div className="w-16 h-16 md:w-20 md:h-20 bg-amber-500 rounded-2xl md:rounded-3xl flex items-center justify-center shrink-0 shadow-[0_0_30px_rgba(245,158,11,0.3)]">
+                      <Zap className="w-8 h-8 md:w-10 md:h-10 text-[#0A0A10]" fill="currentColor" />
+                    </div>
+                    <div className="flex flex-col">
+                      <span className="text-amber-500 font-staatliches uppercase text-xl md:text-2xl tracking-widest leading-none mb-1">ANALYSE</span>
+                      <span className="text-white font-staatliches uppercase text-3xl md:text-4xl tracking-widest leading-none mb-3">DÉTAILLÉE</span>
+                      <span className="text-amber-500/70 text-[10px] md:text-xs font-black uppercase tracking-[0.2em]">RÉSERVÉ AUX MEMBRES PREMIUM</span>
+                    </div>
+                  </div>
+                  
+                  <button 
+                    onClick={() => {
+                      const el = document.getElementById('premium-section');
+                      if (el) el.scrollIntoView({ behavior: 'smooth' });
+                      else window.location.href = '/premium';
+                    }}
+                    className="relative z-10 w-full md:w-auto px-8 py-4 bg-gradient-to-r from-amber-500 via-yellow-400 to-amber-500 text-amber-950 font-black uppercase tracking-widest rounded-full hover:scale-105 transition-transform shadow-[0_0_20px_rgba(245,158,11,0.4)] whitespace-nowrap overflow-hidden group-hover:shadow-[0_0_30px_rgba(245,158,11,0.6)]"
+                  >
+                    <span className="relative z-10">DEVENIR PREMIUM</span>
+                  </button>
+                </div>
+              )}
 
               {/* 3. MODULE DE VOTE CITOYEN */}
               {userId && (

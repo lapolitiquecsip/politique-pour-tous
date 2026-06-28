@@ -10,7 +10,8 @@ import {
   XCircle,
   MinusCircle,
   Vote,
-  FileText
+  FileText,
+  UserCheck
 } from "lucide-react";
 import { type LawDossier } from "@/data/free-laws-dossiers";
 import { usePremium } from "@/lib/hooks/usePremium";

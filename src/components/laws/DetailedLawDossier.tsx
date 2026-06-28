@@ -557,27 +557,29 @@ export default function DetailedLawDossier({ law }: DetailedLawDossierProps) {
                     ))}
                   </div>
                 </div>
-
-                {/* Timeline & Analysis */}
-                <div className="space-y-8">
-                  <div>
-                    <h4 className="text-base font-bold flex items-center gap-2 text-slate-900 uppercase tracking-wider mb-4">
-                      <Calendar className="w-4 h-4 text-primary" />
-                      Calendrier législatif
-                    </h4>
-                    <div className="space-y-5 pl-5 border-l-2 border-slate-200 ml-2">
-                      {law.calendar.map((item, idx) => (
-                        <div key={idx} className="relative">
-                          <div className="absolute -left-[27px] top-1.5 w-3 h-3 rounded-full bg-card border-2 border-primary" />
-                          <p className="text-[10px] font-bold uppercase text-primary tracking-widest mb-1">{item.date}</p>
-                          <p className="text-sm text-slate-800 font-semibold">{item.event}</p>
-                        </div>
-                      ))}
-                    </div>
-                </div>
               </div>
 
-              {/* Analyse Détaillée Premium Block */}
+              {/* Timeline & Analysis */}
+              <div className="space-y-8">
+                <div>
+                  <h4 className="text-base font-bold flex items-center gap-2 text-slate-900 uppercase tracking-wider mb-4">
+                    <Calendar className="w-4 h-4 text-primary" />
+                    Calendrier législatif
+                  </h4>
+                  <div className="space-y-5 pl-5 border-l-2 border-slate-200 ml-2">
+                    {law.calendar.map((item, idx) => (
+                      <div key={idx} className="relative">
+                        <div className="absolute -left-[27px] top-1.5 w-3 h-3 rounded-full bg-card border-2 border-primary" />
+                        <p className="text-[10px] font-bold uppercase text-primary tracking-widest mb-1">{item.date}</p>
+                        <p className="text-sm text-slate-800 font-semibold">{item.event}</p>
+                      </div>
+                    ))}
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            {/* Analyse Détaillée Premium Block */}
               {isPremium ? (
                 <div className="mt-12 p-8 bg-gradient-to-br from-amber-50 to-orange-50 border border-amber-200 rounded-[2rem] shadow-sm">
                   <h4 className="text-slate-900 font-bold text-lg uppercase tracking-wider flex items-center gap-2 mb-6">

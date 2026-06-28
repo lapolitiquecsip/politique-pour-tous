@@ -82,7 +82,7 @@ const InstitutionCard = memo(({ inst, index, onClick }: { inst: Institution, ind
       {/* Image de fond avec zoom coloré au survol */}
       <div 
         className="absolute inset-0 bg-cover bg-center transition-all duration-1000 group-hover:scale-110 group-hover:saturate-[1.5]"
-        style={{ backgroundImage: `url(${inst.image})`, opacity: 0.9 }}
+        style={{ backgroundImage: `url(${inst.image.startsWith('/') ? `${process.env.NEXT_PUBLIC_BASE_PATH || ''}${inst.image}` : inst.image})`, opacity: 0.9 }}
       />
       
       {/* Overlay dégradé - PRÉSERVÉ & AMÉLIORÉ */}
@@ -304,7 +304,7 @@ export default function InstitutionsGrid() {
               <div className="w-full md:w-2/5 relative min-h-[300px] md:min-h-full overflow-hidden">
                 <div 
                   className="absolute inset-0 bg-cover bg-center"
-                  style={{ backgroundImage: `url(${selectedInst.image})` }}
+                  style={{ backgroundImage: `url(${selectedInst.image.startsWith('/') ? `${process.env.NEXT_PUBLIC_BASE_PATH || ''}${selectedInst.image}` : selectedInst.image})` }}
                 />
                 {/* Image Fade - PRÉSERVÉ */}
                 <div className="absolute inset-0 bg-gradient-to-t from-slate-950 via-slate-900/40 to-transparent md:bg-gradient-to-r md:from-transparent md:to-background/10" />

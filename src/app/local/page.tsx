@@ -612,7 +612,7 @@ function LocalPoliticsContent() {
                               className="group relative bg-white rounded-[2.5rem] border border-slate-200 overflow-hidden hover:shadow-2xl transition-all duration-500 text-left"
                             >
                               <div className="h-40 overflow-hidden relative">
-                                <img src={city.image} alt={city.name} className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-700" />
+                                <img src={city.image.startsWith('/') ? `${process.env.NEXT_PUBLIC_BASE_PATH || ''}${city.image}` : city.image} alt={city.name} className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-700" />
                                 <div className="absolute inset-0 bg-gradient-to-t from-slate-900/90 via-slate-900/20 to-transparent" />
                                 <div className="absolute bottom-4 left-6 z-10 flex flex-col items-start gap-2">
                                   <span className={`${theme.badge} px-5 pt-2 pb-1 rounded-2xl shadow-lg font-staatliches uppercase tracking-wider text-2xl inline-block transform -rotate-2 hover:rotate-0 transition-transform`}>

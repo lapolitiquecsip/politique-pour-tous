@@ -181,10 +181,12 @@ export default function DetailedLawDossier({ law }: DetailedLawDossierProps) {
         {/* Background Image with Overlay Blend */}
         {(() => {
           const bgUrl = getLawBackgroundImage(law);
-          return bgUrl ? (
+          const basePath = process.env.NEXT_PUBLIC_BASE_PATH || '';
+          const finalUrl = bgUrl.startsWith('/') ? `${basePath}${bgUrl}` : bgUrl;
+          return finalUrl ? (
             <div className="absolute inset-0 z-0 pointer-events-none overflow-hidden select-none opacity-[0.22] mix-blend-overlay">
               <img 
-                src={bgUrl} 
+                src={finalUrl} 
                 alt="" 
                 className="w-full h-full object-cover filter brightness-90 contrast-110"
               />

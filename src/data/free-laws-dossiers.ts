@@ -12,6 +12,8 @@ export interface LawDossier {
   backgroundImage?: string;
   date_adopted?: string;
   promulgation_date?: string;
+  timeline?: string;
+  author?: string;
   amendments?: { title: string; result: "Adopté" | "Rejeté"; description: string }[];
   premium_analysis?: { title: string; content: string; metrics?: string[] }[];
   voteData?: {

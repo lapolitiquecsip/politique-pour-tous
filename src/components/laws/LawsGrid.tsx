@@ -62,16 +62,25 @@ export default function LawsGrid({ onSelectLaw, categoryFilter }: { onSelectLaw?
       return matchesSearch && matchesCategory;
     })
     .sort((a, b) => {
-      // 1. Prioritize dossier number extraction for strict chronological order by ID
-      const numA = parseInt(a.context?.match(/n°(\d+)/)?.[1] || "0");
-      const numB = parseInt(b.context?.match(/n°(\d+)/)?.[1] || "0");
+      // Extract sequential number from dossier ID (e.g. DLR5L17N50375 -> 50375)
+      const getDossierNum = (law: any) => {
+        const url = law.source_urls?.[0] || "";
+        const matchUrl = url.match(/DLR5L\d+N(\d+)/);
+        if (matchUrl) return parseInt(matchUrl[1], 10);
+        
+        const matchSummary = law.summary?.match(/DLR5L\d+N(\d+)/);
+        if (matchSummary) return parseInt(matchSummary[1], 10);
+
+        const matchAny = url.match(/(\d+)$/);
+        if (matchAny) return parseInt(matchAny[1], 10);
+        
+        return 0;
+      };
+
+      const numA = getDossierNum(a);
+      const numB = getDossierNum(b);
       
       if (numA !== numB) return numB - numA;
-
-      // 2. Fallback to date from context
-      const dateA = a.context?.match(/\[(\d{4}-\d{2}-\d{2})\]/)?.[1] || "0000-00-00";
-      const dateB = b.context?.match(/\[(\d{4}-\d{2}-\d{2})\]/)?.[1] || "0000-00-00";
-      if (dateA !== dateB) return dateB.localeCompare(dateA);
       
       return new Date(b.created_at).getTime() - new Date(a.created_at).getTime();
     });

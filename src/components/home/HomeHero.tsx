@@ -68,10 +68,10 @@ export default function HomeHero() {
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.8, delay: 0.5 }}
-          className="text-lg md:text-xl text-slate-700 max-w-2xl mx-auto leading-relaxed font-bold italic tracking-tight z-40 relative text-center px-4"
+          className="text-sm md:text-base text-slate-600 max-w-2xl mx-auto leading-relaxed font-medium tracking-tight z-40 relative text-center px-4"
         >
             <GlossaryText>
-              Comprendre la politique française n'a jamais été aussi accessible.
+              Décryptez la politique française simplement et sans jargon. Suivez en direct les votes de vos députés et sénateurs, accédez aux résumés clairs des projets de loi en cours d'examen, et vérifiez la réalisation des promesses de l'exécutif.
             </GlossaryText>
         </motion.div>
 

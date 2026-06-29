@@ -154,7 +154,7 @@ export const api = {
       .is('date_adopted', null)
       .neq('context', 'dossier_premium')
       .order('created_at', { ascending: false })
-      .limit(2000);
+      .limit(5000);
     if (error) { console.error(error); return []; }
     return data || [];
   },

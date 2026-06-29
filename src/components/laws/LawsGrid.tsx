@@ -62,7 +62,18 @@ export default function LawsGrid({ onSelectLaw, categoryFilter }: { onSelectLaw?
       return matchesSearch && matchesCategory;
     })
     .sort((a, b) => {
-      // Extract sequential number from dossier ID (e.g. DLR5L17N50375 -> 50375)
+      // 1. Try to extract date from context "[YYYY-MM-DD] Dossier..."
+      const getPubDate = (law: any) => {
+        const match = law.context?.match(/^\[(\d{4}-\d{2}-\d{2})\]/);
+        if (match) return new Date(match[1]).getTime();
+        return 0;
+      };
+
+      const dateA = getPubDate(a);
+      const dateB = getPubDate(b);
+      if (dateA !== dateB) return dateB - dateA;
+
+      // 2. Fallback to dossier sequential number
       const getDossierNum = (law: any) => {
         const url = law.source_urls?.[0] || "";
         const matchUrl = url.match(/DLR5L\d+N(\d+)/);
@@ -82,7 +93,7 @@ export default function LawsGrid({ onSelectLaw, categoryFilter }: { onSelectLaw?
       
       if (numA !== numB) return numB - numA;
       
-      return new Date(b.created_at).getTime() - new Date(a.created_at).getTime();
+      return new Date(b.created_at || 0).getTime() - new Date(a.created_at || 0).getTime();
     });
 
   const totalPages = Math.ceil(filteredLaws.length / itemsPerPage);
@@ -147,7 +158,7 @@ export default function LawsGrid({ onSelectLaw, categoryFilter }: { onSelectLaw?
                       <div className={`w-10 h-10 rounded-full flex items-center justify-center shrink-0 overflow-hidden ${deputy ? 'bg-blue-100 text-blue-600' : 'bg-slate-200 text-slate-500'}`}>
                         {deputy ? (
                           <img 
-                            src={deputy.image_url} 
+                            src={deputy.photo_url || deputy.image_url} 
                             alt={`${deputy.first_name} ${deputy.last_name}`}
                             className="w-full h-full object-cover"
                             onError={(e) => {

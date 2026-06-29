@@ -65,7 +65,11 @@ export default function Header() {
         <div className="flex justify-between items-center h-16">
           
           {/* Logo */}
-          <Link href="/" className="flex items-center gap-2 group">
+          <Link 
+            href="/" 
+            className="flex items-center gap-2 group"
+            onClick={() => setIsMenuOpen(false)}
+          >
             <div className="w-9 h-9 bg-gradient-to-br from-rose-500 to-fuchsia-600 rounded-xl flex items-center justify-center text-white shadow-lg shadow-fuchsia-500/30 group-hover:scale-110 transition-transform">
               <Landmark size={20} />
             </div>

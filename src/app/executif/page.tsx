@@ -488,7 +488,7 @@ export default function ExecutifPage() {
                           src={minister.image} 
                           fallbackSrc={`https://ui-avatars.com/api/?name=${encodeURIComponent(minister.name)}&background=0D8ABC&color=fff&size=512`}
                           alt={minister.name}
-                          className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-700"
+                          className="w-full h-full object-cover object-top group-hover:scale-105 transition-transform duration-700"
                         />
                         <div className="absolute inset-0 bg-gradient-to-t from-slate-950/80 to-transparent" />
                         <div className="absolute bottom-4 left-6">

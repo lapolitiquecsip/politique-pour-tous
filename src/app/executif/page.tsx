@@ -83,7 +83,7 @@ const MINISTERS = [
   {
     name: "Gérald Darmanin",
     role: "Garde des Sceaux, Ministre de la Justice",
-    image: "https://rsudvwqgjesswmssqcvi.supabase.co/storage/v1/object/public/ministres-photos/gerald-darmanin.jpg",
+    image: "https://upload.wikimedia.org/wikipedia/commons/c/ca/French_Justice_Minister_G%C3%A9rald_Darmanin_in_2025_%28cropped_2%29.jpg",
     ministry: "Place Vendôme",
     budget: "12.97 Md€",
     priority: "Réforme pénitentiaire & Modernisation de la Justice"

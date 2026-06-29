@@ -432,7 +432,8 @@ export default function CommuneDetailPanel({
     const fetchElection = async () => {
       setLoading(true);
       try {
-        const res = await fetch("/data/election_results.json");
+        const basePath = process.env.NEXT_PUBLIC_BASE_PATH || "";
+        const res = await fetch(`${basePath}/data/election_results.json`);
         const allData = await res.json();
         setElectionData(allData[commune.code] || null);
       } catch (e) {
@@ -655,7 +656,7 @@ export default function CommuneDetailPanel({
                           Résultats Municipales
                         </p>
                         <h3 className="text-lg font-bold text-slate-900">
-                          Mars 2020
+                          Mars 2026
                         </h3>
                       </div>
                     </div>

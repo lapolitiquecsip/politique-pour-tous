@@ -40,7 +40,8 @@ export function useCommuneSearch() {
     if (mayorsDb || mayorsLoading) return;
     setMayorsLoading(true);
     try {
-      const res = await fetch("/data/mayors.json");
+      const basePath = process.env.NEXT_PUBLIC_BASE_PATH || "";
+      const res = await fetch(`${basePath}/data/mayors.json`);
       const data = await res.json();
       setMayorsDb(data);
     } catch (e) {

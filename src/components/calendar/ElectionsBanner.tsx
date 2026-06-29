@@ -48,10 +48,10 @@ export default function ElectionsBanner() {
     <div className="mb-12">
       <div className="flex items-center justify-between mb-6">
         <div>
-          <h2 className="text-2xl font-staatliches uppercase tracking-wider text-slate-800 flex items-center gap-2">
+          <h2 className="text-2xl font-staatliches uppercase tracking-wider text-slate-800 dark:text-slate-200 flex items-center gap-2">
             <Calendar className="w-6 h-6 text-blue-600" /> Prochaines Échéances Électorales
           </h2>
-          <p className="text-sm text-slate-500 font-medium italic mt-1">
+          <p className="text-sm text-slate-500 dark:text-slate-400 font-medium italic mt-1">
             Restez informé sur les moments clés de la démocratie française.
           </p>
         </div>
@@ -71,7 +71,7 @@ export default function ElectionsBanner() {
               onClick={() => setSelectedElection(election)}
               className="relative group cursor-pointer"
             >
-              <div className="h-full p-6 bg-white rounded-3xl border border-slate-200 shadow-sm hover:shadow-xl transition-all overflow-hidden">
+              <div className="h-full p-6 bg-white dark:bg-slate-900 rounded-3xl border border-slate-200 dark:border-slate-800 shadow-sm hover:shadow-xl transition-all overflow-hidden">
                 {/* Background Accent */}
                 <div className={`absolute top-0 right-0 w-24 h-24 -mr-8 -mt-8 rounded-full opacity-[0.05] group-hover:scale-150 transition-transform duration-500 ${colors.accent}`} />
                 
@@ -80,15 +80,15 @@ export default function ElectionsBanner() {
                     <Icon size={24} />
                   </div>
                   
-                  <span className="text-[10px] font-black uppercase tracking-[0.2em] text-slate-400 mb-1 block">
+                  <span className="text-[10px] font-black uppercase tracking-[0.2em] text-slate-400 dark:text-slate-500 mb-1 block">
                     {election.type}
                   </span>
                   
-                  <h3 className="text-lg font-staatliches uppercase leading-none mb-2 text-slate-900">
+                  <h3 className="text-lg font-staatliches uppercase leading-none mb-2 text-slate-900 dark:text-white">
                     {election.date}
                   </h3>
                   
-                  <p className="text-xs text-slate-500 line-clamp-2 mb-4 leading-relaxed">
+                  <p className="text-xs text-slate-500 dark:text-slate-400 line-clamp-2 mb-4 leading-relaxed">
                     {wrapWithGlossary(election.description)}
                   </p>
                   

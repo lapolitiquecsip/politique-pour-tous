@@ -7,9 +7,10 @@ interface MinisterImageProps {
   fallbackSrc: string;
   alt: string;
   className?: string;
+  style?: React.CSSProperties;
 }
 
-export default function MinisterImage({ src, fallbackSrc, alt, className }: MinisterImageProps) {
+export default function MinisterImage({ src, fallbackSrc, alt, className, style }: MinisterImageProps) {
   const [imgSrc, setImgSrc] = useState(src);
   const [errorCount, setErrorCount] = useState(0);
 
@@ -36,6 +37,7 @@ export default function MinisterImage({ src, fallbackSrc, alt, className }: Mini
       src={imgSrc}
       alt={alt}
       className={className}
+      style={style}
       onError={handleError}
       loading="lazy"
     />

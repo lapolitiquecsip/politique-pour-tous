@@ -123,7 +123,8 @@ export default async function MinistryPage({ params }: { params: Promise<{ slug:
                     : (bioData?.image || `https://ui-avatars.com/api/?name=${encodeURIComponent(ministryData.ministerName)}&background=0D8ABC&color=fff&size=512`)} 
                   fallbackSrc={`https://ui-avatars.com/api/?name=${encodeURIComponent(ministryData.ministerName)}&background=0D8ABC&color=fff&size=512`}
                   alt={ministryData.ministerName}
-                  className="w-full h-full object-cover object-top"
+                  className="w-full h-full object-cover"
+                  style={{ objectPosition: (bioData as any)?.objectPosition || 'center 15%' }}
                 />
               </div>
               <div>

@@ -157,7 +157,7 @@ function LawsClientContent() {
       <div className="sticky top-0 z-[50] bg-white/90 backdrop-blur-md py-6 mb-12 border-b border-slate-100 -mx-4 px-4 shadow-sm">
         <div className="flex flex-wrap items-center justify-center gap-4">
           <button
-            onClick={() => setActiveTab('promulgated')}
+            onClick={() => { setActiveTab('promulgated'); setSelectedCat(null); setSearchQuery(""); }}
             className={`px-8 py-3 rounded-full font-black uppercase tracking-widest text-xs transition-all duration-300 flex items-center gap-3 ${
               activeTab === 'promulgated' 
                 ? 'bg-slate-950 text-white shadow-2xl shadow-slate-950/20 scale-105' 
@@ -169,7 +169,7 @@ function LawsClientContent() {
           </button>
 
           <button
-            onClick={() => setActiveTab('votes')}
+            onClick={() => { setActiveTab('votes'); setSelectedCat(null); setSearchQuery(""); }}
             className={`px-8 py-3 rounded-full font-black uppercase tracking-widest text-xs transition-all duration-300 flex items-center gap-3 ${
               activeTab === 'votes' 
                 ? 'bg-slate-950 text-white shadow-2xl shadow-slate-950/20 scale-105' 
@@ -181,7 +181,7 @@ function LawsClientContent() {
           </button>
 
           <button
-            onClick={() => setActiveTab('proposals')}
+            onClick={() => { setActiveTab('proposals'); setSelectedCat(null); setSearchQuery(""); }}
             className={`px-8 py-3 rounded-full font-black uppercase tracking-widest text-xs transition-all duration-300 flex items-center gap-3 ${
               activeTab === 'proposals' 
                 ? 'bg-slate-950 text-white shadow-2xl shadow-slate-950/20 scale-105' 

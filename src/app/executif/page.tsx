@@ -41,44 +41,44 @@ const normalizeName = (name: string) => {
 // Mock Data for the demonstration
 const MINISTERS = [
   {
-    name: "Michel Barnier",
+    name: "Sébastien Lecornu",
     role: "Premier Ministre",
-    image: "https://rsudvwqgjesswmssqcvi.supabase.co/storage/v1/object/public/ministres-photos/michel-barnier.jpg",
+    image: "https://rsudvwqgjesswmssqcvi.supabase.co/storage/v1/object/public/ministres-photos/sebastien-lecornu.jpg",
     ministry: "Hôtel de Matignon",
     budget: "4.2 Md€",
-    priority: "Réforme de l'État & Équilibre budgétaire"
+    priority: "Planification écologique & Équilibre budgétaire"
   },
   {
-    name: "Antoine Armand",
-    role: "Ministre de l'Économie, des Finances et de l'Industrie",
-    image: "https://rsudvwqgjesswmssqcvi.supabase.co/storage/v1/object/public/ministres-photos/antoine-armand.jpg",
-    ministry: "Bercy",
-    budget: "15.8 Md€",
-    priority: "Attractivité & Désendettement"
-  },
-  {
-    name: "Jean-Noël Barrot",
-    role: "Ministre de l'Europe et des Affaires étrangères",
-    image: "https://rsudvwqgjesswmssqcvi.supabase.co/storage/v1/object/public/ministres-photos/jean-noel-barrot.jpg",
-    ministry: "Quai d'Orsay",
-    budget: "3.5 Md€",
-    priority: "Diplomatie & Souveraineté Européenne"
-  },
-  {
-    name: "Sébastien Lecornu",
-    role: "Ministre des Armées et des Anciens combattants",
-    image: "https://rsudvwqgjesswmssqcvi.supabase.co/storage/v1/object/public/ministres-photos/sebastien-lecornu.jpg",
-    ministry: "Hôtel de Brienne",
-    budget: "66.48 Md€",
-    priority: "LPM & Modernisation nucléaire"
-  },
-  {
-    name: "Bruno Retailleau",
+    name: "Laurent Nuñez",
     role: "Ministre de l'Intérieur",
-    image: "https://upload.wikimedia.org/wikipedia/commons/thumb/6/67/Bruno_Retailleau_2024.jpg/800px-Bruno_Retailleau_2024.jpg",
+    image: "https://rsudvwqgjesswmssqcvi.supabase.co/storage/v1/object/public/ministres-photos/laurent-nunez.jpg",
     ministry: "Place Beauvau",
     budget: "33.06 Md€",
     priority: "Sécurité publique & Immigration"
+  },
+  {
+    name: "Catherine Vautrin",
+    role: "Ministre des Armées et des Anciens combattants",
+    image: "https://rsudvwqgjesswmssqcvi.supabase.co/storage/v1/object/public/ministres-photos/catherine-vautrin.jpg",
+    ministry: "Hôtel de Brienne",
+    budget: "66.48 Md€",
+    priority: "LPM & Modernisation militaire"
+  },
+  {
+    name: "Jean-Pierre Farandou",
+    role: "Ministre du Travail et des Solidarités",
+    image: "https://rsudvwqgjesswmssqcvi.supabase.co/storage/v1/object/public/ministres-photos/jean-pierre-farandou.jpg",
+    ministry: "Rue de Grenelle",
+    budget: "31.28 Md€",
+    priority: "Emploi & Cohésion sociale"
+  },
+  {
+    name: "Monique Barbut",
+    role: "Ministre de la Transition écologique, de la Biodiversité et des Négociations internationales sur le climat et la nature",
+    image: "https://rsudvwqgjesswmssqcvi.supabase.co/storage/v1/object/public/ministres-photos/monique-barbut.jpg",
+    ministry: "Hôtel de Roquelaure",
+    budget: "22.76 Md€",
+    priority: "Préservation de la biodiversité & Transition écologique"
   },
   {
     name: "Gérald Darmanin",
@@ -86,95 +86,119 @@ const MINISTERS = [
     image: "https://rsudvwqgjesswmssqcvi.supabase.co/storage/v1/object/public/ministres-photos/gerald-darmanin.jpg",
     ministry: "Place Vendôme",
     budget: "12.97 Md€",
-    priority: "Justice de proximité & Modernisation des prisons"
+    priority: "Réforme pénitentiaire & Modernisation de la Justice"
   },
   {
-    name: "Catherine Vautrin",
-    role: "Ministre du Partenariat avec les territoires et de la Décentralisation",
-    image: "https://rsudvwqgjesswmssqcvi.supabase.co/storage/v1/object/public/ministres-photos/catherine-vautrin.jpg",
+    name: "Roland Lescure",
+    role: "Ministre de l'Économie, des Finances et de la Souveraineté industrielle, énergétique et numérique",
+    image: "https://rsudvwqgjesswmssqcvi.supabase.co/storage/v1/object/public/ministres-photos/roland-lescure.jpg",
+    ministry: "Bercy",
+    budget: "15.8 Md€",
+    priority: "Attractivité & Souveraineté industrielle"
+  },
+  {
+    name: "Serge Papin",
+    role: "Ministre des Petites et moyennes entreprises, du Commerce, de l'Artisanat, du Tourisme et du Pouvoir d'achat",
+    image: "https://rsudvwqgjesswmssqcvi.supabase.co/storage/v1/object/public/ministres-photos/serge-papin.jpg",
+    ministry: "Bercy (PME)",
+    budget: "3.51 Md€",
+    priority: "Commerce de proximité & Pouvoir d'achat"
+  },
+  {
+    name: "Annie Genevard",
+    role: "Ministre de l'Agriculture, de l'Agro-alimentaire et de la Souveraineté alimentaire",
+    image: "https://rsudvwqgjesswmssqcvi.supabase.co/storage/v1/object/public/ministres-photos/annie-genevard.jpg",
+    ministry: "Rue de Varenne",
+    budget: "4.13 Md€",
+    priority: "Souveraineté alimentaire & Soutien agricole"
+  },
+  {
+    name: "Édouard Geffray",
+    role: "Ministre de l'Éducation nationale",
+    image: "https://rsudvwqgjesswmssqcvi.supabase.co/storage/v1/object/public/ministres-photos/edouard-geffray.jpg",
+    ministry: "Rue de Grenelle (Éducation)",
+    budget: "89.62 Md€",
+    priority: "Soutien aux enseignants & Fondamentaux"
+  },
+  {
+    name: "Jean-Noël Barrot",
+    role: "Ministre de l'Europe et des Affaires étrangères",
+    image: "https://rsudvwqgjesswmssqcvi.supabase.co/storage/v1/object/public/ministres-photos/jean-noel-barrot.jpg",
+    ministry: "Quai d'Orsay",
+    budget: "3.57 Md€",
+    priority: "Diplomatie & Affaires européennes"
+  },
+  {
+    name: "Stéphanie Rist",
+    role: "Ministre de la Santé, des Familles, de l'Autonomie et des Personnes handicapées",
+    image: "https://rsudvwqgjesswmssqcvi.supabase.co/storage/v1/object/public/ministres-photos/stephanie-rist.jpg",
+    ministry: "Avenue de Ségur",
+    budget: "1.89 Md€",
+    priority: "Accès aux soins & Hôpital public"
+  },
+  {
+    name: "Catherine Pégard",
+    role: "Ministre de la Culture",
+    image: "https://rsudvwqgjesswmssqcvi.supabase.co/storage/v1/object/public/ministres-photos/catherine-pegard.jpg",
+    ministry: "Rue de Valois",
+    budget: "3.74 Md€",
+    priority: "Pass Culture & Patrimoine"
+  },
+  {
+    name: "Naïma Moutchou",
+    role: "Ministre des Outre-mer",
+    image: "https://images.weserv.nl/?url=www.assemblee-nationale.fr/dyn/static/tribun/17/photos/carre/720908.jpg&w=1000",
+    ministry: "Rue Oudinot",
+    budget: "2.5 Md€",
+    priority: "Continuité territoriale & Développement économique"
+  },
+  {
+    name: "Françoise Gatel",
+    role: "Ministre de l'Aménagement du territoire et de la Décentralisation",
+    image: "https://rsudvwqgjesswmssqcvi.supabase.co/storage/v1/object/public/ministres-photos/francoise-gatel.jpg",
     ministry: "Hôtel de Castries",
     budget: "3.96 Md€",
     priority: "Décentralisation & Soutien aux collectivités"
   },
   {
-    name: "Anne Genetet",
-    role: "Ministre de l'Éducation nationale",
-    image: "https://upload.wikimedia.org/wikipedia/commons/thumb/f/f6/Anne_Genetet_2022.jpg/800px-Anne_Genetet_2022.jpg",
-    ministry: "Rue de Grenelle",
-    budget: "89.62 Md€",
-    priority: "Soutien aux enseignants & Fondamentaux"
+    name: "David Amiel",
+    role: "Ministre de l'Action et des Comptes publics",
+    image: "https://rsudvwqgjesswmssqcvi.supabase.co/storage/v1/object/public/ministres-photos/david-amiel.jpg",
+    ministry: "Bercy (Comptes publics)",
+    budget: "11.02 Md€",
+    priority: "Réduction du déficit public & Maîtrise des dépenses"
   },
   {
-    name: "Rachida Dati",
-    role: "Ministre de la Culture",
-    image: "https://upload.wikimedia.org/wikipedia/commons/thumb/d/d4/Rachida_Dati_2024.jpg/800px-Rachida_Dati_2024.jpg",
-    ministry: "Rue de Valois",
-    budget: "3.74 Md€",
-    priority: "Accès à la culture & Patrimoine historique"
-  },
-  {
-    name: "Agnès Pannier-Runacher",
-    role: "Ministre de la Transition écologique, de l'Énergie, du Climat et de la Prévention des risques",
-    image: "https://upload.wikimedia.org/wikipedia/commons/thumb/9/91/Agn%C3%A8s_Pannier-Runacher_2022.jpg/800px-Agn%C3%A8s_Pannier-Runacher_2022.jpg",
-    ministry: "Hôtel de Roquelaure",
-    budget: "22.76 Md€",
-    priority: "Décarbonation & Transition énergétique"
-  },
-  {
-    name: "Geneviève Darrieussecq",
-    role: "Ministre de la Santé et de l'Accès aux soins",
-    image: "https://upload.wikimedia.org/wikipedia/commons/thumb/b/b2/Genevi%C3%A8ve_Darrieussecq_2020.jpg/800px-Genevi%C3%A8ve_Darrieussecq_2020.jpg",
-    ministry: "Avenue de Ségur",
-    budget: "1.89 Md€",
-    priority: "Déserts médicaux & Hôpital public"
-  },
-  {
-    name: "Astrid Panosyan-Bouvet",
-    role: "Ministre du Travail et de l'Emploi",
-    image: "https://upload.wikimedia.org/wikipedia/commons/thumb/e/e0/Astrid_Panosyan_2022.jpg/800px-Astrid_Panosyan_2022.jpg",
-    ministry: "Rue de Grenelle (Travail)",
-    budget: "20.82 Md€",
-    priority: "Emploi des seniors & Apprentissage"
-  },
-  {
-    name: "Valérie Létard",
-    role: "Ministre du Logement et de la Rénovation urbaine",
-    image: "https://upload.wikimedia.org/wikipedia/commons/thumb/6/6f/Val%C3%A9rie_L%C3%A9tard_2018.jpg/800px-Val%C3%A9rie_L%C3%A9tard_2018.jpg",
-    ministry: "Rue de Varenne",
-    budget: "22.57 Md€",
-    priority: "Construction de logements & Rénovation énergétique"
-  },
-  {
-    name: "Annie Genevard",
-    role: "Ministre de l'Agriculture, de la Souveraineté alimentaire et de la Forêt",
-    image: "https://rsudvwqgjesswmssqcvi.supabase.co/storage/v1/object/public/ministres-photos/annie-genevard.jpg",
-    ministry: "Rue de Varenne (Agriculture)",
-    budget: "4.13 Md€",
-    priority: "Souveraineté alimentaire & Soutien aux revenus agricoles"
-  },
-  {
-    name: "Patrick Hetzel",
-    role: "Ministre de l'Enseignement supérieur et de la Recherche",
-    image: "https://upload.wikimedia.org/wikipedia/commons/thumb/3/30/Patrick_Hetzel_2017.jpg/800px-Patrick_Hetzel_2017.jpg",
+    name: "Philippe Baptiste",
+    role: "Ministre de l'Enseignement supérieur, de la Recherche et de l'Espace",
+    image: "https://rsudvwqgjesswmssqcvi.supabase.co/storage/v1/object/public/ministres-photos/philippe-baptiste.jpg",
     ministry: "Rue Descartes",
     budget: "31.63 Md€",
-    priority: "Recherche scientifique & Financement des universités"
+    priority: "Recherche scientifique & Souveraineté spatiale"
   },
   {
-    name: "Guillaume Kasbarian",
-    role: "Ministre de la Fonction publique, de la Simplification et de la Transformation de l'action publique",
-    image: "https://upload.wikimedia.org/wikipedia/commons/thumb/1/1a/Guillaume_Kasbarian_2022.jpg/800px-Guillaume_Kasbarian_2022.jpg",
-    ministry: "Rue de Grenelle (Fonction Publique)",
-    budget: "11.02 Md€",
-    priority: "Simplification administrative & Modernisation de la fonction publique"
-  },
-  {
-    name: "Gil Avérous",
+    name: "Marina Ferrari",
     role: "Ministre des Sports, de la Jeunesse et de la Vie associative",
-    image: "https://upload.wikimedia.org/wikipedia/commons/thumb/8/87/Gil_Av%C3%A9rous_2024.jpg/800px-Gil_Av%C3%A9rous_2024.jpg",
+    image: "https://rsudvwqgjesswmssqcvi.supabase.co/storage/v1/object/public/ministres-photos/marina-ferrari.jpg",
     ministry: "Avenue de France",
     budget: "1.5 Md€",
-    priority: "Héritage des JO & Sport pour tous"
+    priority: "Sport amateur & Mobilisation jeunesse"
+  },
+  {
+    name: "Philippe Tabarot",
+    role: "Ministre des Transports",
+    image: "https://rsudvwqgjesswmssqcvi.supabase.co/storage/v1/object/public/ministres-photos/philippe-tabarot.jpg",
+    ministry: "Hôtel de Roquelaure (Transports)",
+    budget: "10.5 Md€",
+    priority: "Régulation du rail & Décarbonation"
+  },
+  {
+    name: "Vincent Jeanbrun",
+    role: "Ministre de la Ville et du Logement",
+    image: "https://rsudvwqgjesswmssqcvi.supabase.co/storage/v1/object/public/ministres-photos/vincent-jeanbrun.jpg",
+    ministry: "Rue de Varenne (Logement)",
+    budget: "22.57 Md€",
+    priority: "Construction de logements & Rénovation urbaine"
   }
 ];
 

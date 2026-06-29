@@ -49,7 +49,7 @@ const faqData: FaqItem[] = [
   {
     id: 5,
     question: "Qui êtes-vous ?",
-    answer: "Nous sommes Hippolyte et Teva, deux étudiants de 19 ans. Nous avons créé ce site car nous étions frustrés par le manque de transparence politique et le déclin de notre démocratie.",
+    answer: "Je suis Hippolyte, un étudiant de 19 ans. J'ai créé ce site car j'étais frustré par le manque de transparence politique et le déclin de notre démocratie.",
     color: "red",
     position: { top: "70%", left: "60%" },
     delay: 1.5,

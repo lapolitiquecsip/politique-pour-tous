@@ -816,21 +816,43 @@ function LawsClientContent() {
 
 
       {isPremium && (
-        <div className="mt-20 p-8 rounded-[3rem] bg-gradient-to-br from-amber-50 to-orange-50 border border-amber-200 flex flex-col md:flex-row items-center gap-8 shadow-xl">
-          <div className="w-20 h-20 rounded-full bg-amber-400 flex items-center justify-center text-slate-900 shadow-lg shadow-amber-200/50 flex-shrink-0">
-            <Sparkles className="w-10 h-10" />
+        <motion.div
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.6, ease: [0.16, 1, 0.3, 1] }}
+          className="mt-20 p-8 rounded-[2.5rem] bg-gradient-to-br from-slate-900 via-slate-950 to-slate-900 border border-amber-500/20 flex flex-col md:flex-row items-center gap-8 shadow-[0_20px_50px_rgba(245,158,11,0.15)] relative overflow-hidden group"
+        >
+          {/* Glowing background details */}
+          <div className="absolute -top-24 -left-24 w-48 h-48 bg-amber-500/10 rounded-full blur-3xl group-hover:scale-150 transition-transform duration-1000" />
+          <div className="absolute -bottom-24 -right-24 w-48 h-48 bg-orange-500/10 rounded-full blur-3xl group-hover:scale-150 transition-transform duration-1000" />
+
+          {/* Sparkles Icon with Golden Glow */}
+          <div className="relative flex-shrink-0">
+            <div className="absolute inset-0 bg-gradient-to-tr from-amber-400 to-orange-500 rounded-full blur-md opacity-40 animate-pulse" />
+            <div className="relative w-16 h-16 rounded-full bg-gradient-to-tr from-amber-400 via-yellow-300 to-orange-500 flex items-center justify-center text-slate-950 shadow-xl">
+              <Sparkles className="w-8 h-8 animate-pulse" />
+            </div>
           </div>
-          <div className="flex-1 text-center md:text-left">
-            <h3 className="text-2xl md:text-3xl font-black text-slate-900 mb-2">Accès Premium Actif</h3>
-            <p className="text-slate-600">
-              Bienvenue ! En tant que membre Premium, vous avez accès à l&apos;intégralité des dossiers législatifs et aux analyses thématiques.
+
+          {/* Text Content */}
+          <div className="flex-1 text-center md:text-left relative z-10">
+            <h3 className="text-2xl md:text-3xl font-staatliches uppercase tracking-wider bg-gradient-to-r from-amber-200 via-yellow-400 to-orange-350 bg-clip-text text-transparent mb-1.5">
+              Accès Premium Actif
+            </h3>
+            <p className="text-slate-300 text-sm md:text-base leading-relaxed font-medium">
+              Bienvenue dans l&apos;espace privilégié ! En tant que membre <span className="text-amber-400 font-bold">Premium</span>, vous bénéficiez d&apos;un accès illimité à l&apos;intégralité des dossiers législatifs et à nos analyses comparatives poussées.
             </p>
           </div>
-          <div className="flex items-center gap-2 px-6 py-3 bg-white rounded-2xl border border-amber-200 text-amber-600 font-bold text-sm">
-            <CheckCircle2 className="w-5 h-5" />
-            Membre Élite
+
+          {/* Elite Badge */}
+          <div className="relative z-10 flex-shrink-0">
+            <div className="absolute inset-0 bg-amber-500/10 rounded-2xl blur-sm" />
+            <div className="relative flex items-center gap-2 px-5 py-3 bg-slate-950/80 backdrop-blur-md rounded-2xl border border-amber-500/30 text-amber-300 font-staatliches uppercase tracking-wider text-sm shadow-inner">
+              <CheckCircle2 className="w-5 h-5 text-amber-400" />
+              Membre Élite
+            </div>
           </div>
-        </div>
+        </motion.div>
       )}
     </div>
   );

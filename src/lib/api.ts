@@ -1,4 +1,5 @@
 import { supabase } from "./supabase";
+import type { LegislativeCategory, LegislativeDossierDetail, LegislativeListItem } from "./legislative";
 
 /**
  * API Client — FULL SUPABASE MIGRATION (SERVERLESS)
@@ -144,6 +145,38 @@ export const api = {
     const { data, error } = await supabase.from('promises').select('*').eq('politician_id', id).order('created_at', { ascending: false });
     if (error) { console.error(error); return []; }
     return data || [];
+  },
+
+  getPromulgatedLaws: async (filters: { category?: LegislativeCategory | null; search?: string; cursorDate?: string; cursorId?: string; limit?: number } = {}) => {
+    const { data, error } = await supabase.rpc('public_promulgated_laws', {
+      p_category: filters.category || null,
+      p_search: filters.search?.trim() || null,
+      p_cursor_date: filters.cursorDate || null,
+      p_cursor_id: filters.cursorId || null,
+      p_limit: filters.limit || 20,
+    });
+    if (error) throw error;
+    return (data || []) as LegislativeListItem[];
+  },
+
+  getLegislativeDossiers: async (filters: { status?: string; chamber?: string; category?: LegislativeCategory | null; search?: string; cursorDate?: string; cursorId?: string; limit?: number } = {}) => {
+    const { data, error } = await supabase.rpc('public_legislative_dossiers', {
+      p_status: filters.status || null,
+      p_chamber: filters.chamber || null,
+      p_category: filters.category || null,
+      p_search: filters.search?.trim() || null,
+      p_cursor_date: filters.cursorDate || null,
+      p_cursor_id: filters.cursorId || null,
+      p_limit: filters.limit || 20,
+    });
+    if (error) throw error;
+    return (data || []) as LegislativeListItem[];
+  },
+
+  getLegislativeDossier: async (id: string) => {
+    const { data, error } = await supabase.rpc('public_legislative_dossier', { p_id: id });
+    if (error) throw error;
+    return data as LegislativeDossierDetail | null;
   },
 
   getProposals: async () => {

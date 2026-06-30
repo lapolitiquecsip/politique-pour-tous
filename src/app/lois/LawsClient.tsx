@@ -1,859 +1,132 @@
 "use client";
-import { useState, useEffect } from "react";
-import { motion } from "framer-motion";
-import { 
-  Leaf, 
-  Shield, 
-  TrendingUp, 
-  HeartPulse, 
-  Users, 
-  GraduationCap,
-  Lock,
-  Sparkles,
-  ArrowRight,
-  BookOpen,
-  CheckCircle2,
-  Calendar as CalendarIcon,
-  Vote,
-  X,
-  ChevronRight,
-  Search,
-  FileText
-} from "lucide-react";
-import Link from "next/link";
+
+import { useCallback, useEffect, useRef, useState } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
-import { Suspense } from "react";
-import { usePremium } from "@/lib/hooks/usePremium";
-import { getPremiumUrl } from "@/lib/utils";
-import DetailedLawDossier from "@/components/laws/DetailedLawDossier";
-import { FREE_LAWS } from "@/data/free-laws-dossiers";
+import { CalendarDays, ExternalLink, FileText, Loader2, Search, Scale, X } from "lucide-react";
 import { api } from "@/lib/api";
-import VoteHemicycle from "@/components/laws/VoteHemicycle";
-import UniversalLawModal from "@/components/laws/UniversalLawModal";
-import LawsGrid from "@/components/laws/LawsGrid";
+import {
+  LEGISLATIVE_CATEGORIES,
+  categoryLabel,
+  type LegislativeCategory,
+  type LegislativeDossierDetail,
+  type LegislativeListItem,
+} from "@/lib/legislative";
 
-const CATEGORIES = [
-  { id: "edu", label: "Éducation", bgColor: "bg-indigo-500", hoverColor: "hover:bg-indigo-400", color: "indigo", isFree: true },
-  { id: "env", label: "Écologie", matchCategory: "Environnement", bgColor: "bg-emerald-500", hoverColor: "hover:bg-emerald-400", color: "emerald" },
-  { id: "eco", label: "Économie", bgColor: "bg-blue-500", hoverColor: "hover:bg-blue-400", color: "blue" },
-  { id: "sec", label: "Sécurité", bgColor: "bg-slate-800", hoverColor: "hover:bg-slate-700", color: "slate" },
-  { id: "health", label: "Santé", bgColor: "bg-rose-500", hoverColor: "hover:bg-rose-400", color: "rose" },
-  { id: "social", label: "Social", bgColor: "bg-orange-500", hoverColor: "hover:bg-orange-400", color: "orange" },
-];
+type Tab = "promulgated" | "ongoing";
 
-export default function LawsClient() {
+function formatDate(value?: string | null) {
+  if (!value) return "Date indisponible";
+  return new Intl.DateTimeFormat("fr-FR", { dateStyle: "long" }).format(new Date(value));
+}
+
+function DossierModal({ detail, loading, onClose }: { detail: LegislativeDossierDetail | null; loading: boolean; onClose: () => void }) {
+  if (!detail && !loading) return null;
   return (
-    <Suspense fallback={<div>Loading...</div>}>
-      <LawsClientContent />
-    </Suspense>
+    <div className="fixed inset-0 z-50 bg-slate-950/70 p-4 md:p-10 overflow-y-auto" role="dialog" aria-modal="true">
+      <div className="mx-auto max-w-5xl rounded-[2rem] bg-white shadow-2xl">
+        <div className="sticky top-0 z-10 flex justify-end rounded-t-[2rem] bg-white/95 p-4 backdrop-blur">
+          <button onClick={onClose} className="rounded-full bg-slate-100 p-3" aria-label="Fermer"><X /></button>
+        </div>
+        {loading ? <div className="flex min-h-80 items-center justify-center"><Loader2 className="animate-spin text-red-600" /></div> : detail && (
+          <article className="px-6 pb-12 md:px-12">
+            <div className="mb-3 text-xs font-black uppercase tracking-[0.2em] text-red-600">{categoryLabel(detail.dossier.category)}</div>
+            <h2 className="text-4xl font-staatliches uppercase leading-none text-slate-950 md:text-6xl">{detail.dossier.title}</h2>
+            <div className="mt-5 flex flex-wrap gap-2 text-sm font-bold text-slate-600">
+              <span className="rounded-full bg-slate-100 px-4 py-2">{detail.dossier.status_label}</span>
+              <span className="rounded-full bg-slate-100 px-4 py-2">Initiateur : {detail.dossier.author_name || "Non renseigné par la source"}</span>
+              <span className="rounded-full bg-slate-100 px-4 py-2">Mise à jour : {formatDate(detail.dossier.source_updated_at)}</span>
+            </div>
+
+            <section className="mt-10"><h3 className="text-2xl font-staatliches uppercase">Résumé</h3><p className="mt-3 leading-7 text-slate-700">{detail.summary?.summary || "Analyse indisponible."}</p></section>
+            {detail.premium_analysis && <section className="mt-10 rounded-3xl bg-amber-50 p-6"><h3 className="text-2xl font-staatliches uppercase text-amber-900">Analyse premium</h3><p className="mt-3 whitespace-pre-line leading-7 text-amber-950">{detail.premium_analysis.summary}</p></section>}
+            <section className="mt-10">
+              <h3 className="text-2xl font-staatliches uppercase">Navette parlementaire</h3>
+              <ol className="mt-4 border-l-2 border-red-200 pl-6">
+                {detail.steps.map(step => <li key={step.official_id} className="relative mb-6"><span className="absolute -left-[31px] top-1 h-3 w-3 rounded-full bg-red-600" /><p className="font-black">{step.step_label}</p><p className="text-sm text-slate-500">{step.chamber} · {formatDate(step.occurred_at)}</p></li>)}
+                {!detail.steps.length && <li className="text-slate-500">Aucune étape publiée.</li>}
+              </ol>
+            </section>
+            <section className="mt-10"><h3 className="text-2xl font-staatliches uppercase">Amendements</h3><div className="mt-4 grid gap-3">{detail.amendments.map(amendment => <div key={amendment.official_id} className="rounded-2xl border p-5"><div className="flex justify-between gap-4"><strong>Amendement {amendment.number}</strong><span>{amendment.outcome_label || "En attente"}</span></div><p className="mt-2 text-sm text-slate-600">{amendment.subject || amendment.body || "Contenu disponible à la source."}</p></div>)}{!detail.amendments.length && <p className="text-slate-500">Aucun amendement rattaché.</p>}</div></section>
+            <section className="mt-10"><h3 className="text-2xl font-staatliches uppercase">Scrutins</h3><div className="mt-4 grid gap-3">{detail.scrutins.map(scrutin => <div key={scrutin.official_id} className="rounded-2xl bg-slate-950 p-5 text-white"><strong>{scrutin.title}</strong><p className="mt-2 text-sm text-slate-300">Pour {scrutin.for_count} · Contre {scrutin.against_count} · Abstentions {scrutin.abstain_count}</p>{scrutin.group_results?.length > 0 && <div className="mt-4 grid gap-2 sm:grid-cols-2">{scrutin.group_results.map(group => <div key={group.group_code} className="rounded-xl bg-white/10 p-3 text-xs"><strong>{group.group_name || group.group_code}</strong><p className="mt-1 text-slate-300">Pour {group.for_count} · Contre {group.against_count} · Abst. {group.abstain_count}</p></div>)}</div>}<details className="mt-4 text-sm"><summary className="cursor-pointer font-bold text-red-300">Votes nominatifs ({scrutin.votes?.length || 0})</summary><div className="mt-3 max-h-52 overflow-y-auto rounded-xl bg-white/5 p-3">{scrutin.votes?.map(vote => <p key={vote.voter_official_id} className="border-b border-white/10 py-1"><span className="font-bold">{vote.voter_name}</span> — {vote.position}</p>)}</div></details></div>)}{!detail.scrutins.length && <p className="text-slate-500">Aucun scrutin rattaché.</p>}</div></section>
+            <section className="mt-10"><h3 className="text-2xl font-staatliches uppercase">Sources officielles</h3><div className="mt-3 flex flex-col gap-2">{[...(detail.dossier.source_urls || []), ...(detail.promulgation?.source_url ? [detail.promulgation.source_url] : [])].map((url: string) => <a key={url} href={url} target="_blank" rel="noreferrer" className="inline-flex items-center gap-2 text-blue-700 hover:underline"><ExternalLink size={15} />{url}</a>)}</div></section>
+          </article>
+        )}
+      </div>
+    </div>
   );
 }
 
-function LawsClientContent() {
+export default function LawsClient() {
   const router = useRouter();
-  const searchParams = useSearchParams();
-  const [activeTab, setActiveTab] = useState<'promulgated' | 'votes' | 'proposals'>('promulgated');
-  const [selectedCat, setSelectedCat] = useState<string | null>(null);
-  const { isPremium, loading: pLoading, userId } = usePremium();
-  const [dbLaws, setDbLaws] = useState<any[]>([]);
-  const [loadingLaws, setLoadingLaws] = useState(true);
-  const [selectedLaw, setSelectedLaw] = useState<any | null>(null);
-  const [searchQuery, setSearchQuery] = useState("");
-  const [currentPage, setCurrentPage] = useState(1);
+  const params = useSearchParams();
+  const [tab, setTab] = useState<Tab>("promulgated");
+  const [category, setCategory] = useState<LegislativeCategory | null>(null);
+  const [search, setSearch] = useState("");
+  const [items, setItems] = useState<LegislativeListItem[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
+  const [hasMore, setHasMore] = useState(false);
+  const [detail, setDetail] = useState<LegislativeDossierDetail | null>(null);
+  const [detailLoading, setDetailLoading] = useState(false);
+  const hydratedFromUrl = useRef(false);
 
-  const [premiumDossiers, setPremiumDossiers] = useState<any[]>([]);
-  const [loadingDossiers, setLoadingDossiers] = useState(false);
+  const load = useCallback(async () => {
+    setLoading(true); setError(null);
+    try {
+      const rows = tab === "promulgated" ? await api.getPromulgatedLaws({ category, search, limit: 40 }) : await api.getLegislativeDossiers({ category, search, limit: 40 });
+      setItems(rows); setHasMore(rows.length === 40);
+    } catch (cause) {
+      console.error(cause); setError("Les données législatives sont momentanément indisponibles.");
+    } finally { setLoading(false); }
+  }, [tab, category, search]);
 
-  useEffect(() => {
-    const loadLaws = async () => {
-      const data = await api.getVotedLaws(1000);
-      setDbLaws(data);
-      setLoadingLaws(false);
-    };
-    loadLaws();
-    
-    const interval = setInterval(async () => {
-      const data = await api.getVotedLaws(1000);
-      setDbLaws(data);
-    }, 300000); // 5 minutes polling
-    
-    return () => clearInterval(interval);
-  }, []);
+  useEffect(() => { const timer = window.setTimeout(load, 250); return () => window.clearTimeout(timer); }, [load]);
 
-  useEffect(() => {
-    setCurrentPage(1);
-  }, [activeTab, selectedCat, searchQuery]);
+  const openDossier = useCallback(async (id: string) => {
+    setDetailLoading(true); setDetail(null); router.replace(`/lois/?dossier=${id}`, { scroll: false });
+    try { setDetail(await api.getLegislativeDossier(id)); } finally { setDetailLoading(false); }
+  }, [router]);
 
   useEffect(() => {
-    const loadDossiers = async () => {
-      setLoadingDossiers(true);
-      const catLabel = selectedCat ? (CATEGORIES.find(c => c.id === selectedCat)?.matchCategory || CATEGORIES.find(c => c.id === selectedCat)?.label) : null;
-      const data = await api.getPremiumDossiers(catLabel);
-      setPremiumDossiers(data);
-      setLoadingDossiers(false);
-    };
-    if (activeTab === 'promulgated' || activeTab === 'votes') {
-      loadDossiers();
-    }
-  }, [activeTab, selectedCat]);
+    if (hydratedFromUrl.current) return;
+    hydratedFromUrl.current = true;
+    const id = params.get("dossier");
+    if (id) void openDossier(id);
+  }, [openDossier, params]);
 
-  // Handle direct link to a law
-  useEffect(() => {
-    const lawId = searchParams.get('id');
-    if (lawId) {
-      const loadSpecificLaw = async () => {
-        // Try to fetch as a proposal (law) first
-        let law = await api.getLaw(lawId);
-        
-        // If not found, try to fetch as a voted law (scrutin)
-        if (!law) {
-          law = await api.getScrutin(lawId);
-        }
+  const closeDossier = () => { setDetail(null); setDetailLoading(false); router.replace("/lois/", { scroll: false }); };
 
-        if (law) {
-          setSelectedLaw(law);
-          // If the law is a proposal, switch to that tab for context
-          if (law.id.toString().startsWith('PA') || (typeof law.id === 'string' && law.id.length > 10) || law.title) {
-             // Proposals usually have 'title' instead of 'objet'
-             // And their IDs often start with PA (National Assembly)
-             if (law.objet) {
-               setActiveTab('promulgated');
-             } else {
-               setActiveTab('proposals');
-             }
-          } else {
-             setActiveTab('promulgated');
-          }
-        }
-      };
-      loadSpecificLaw();
-    }
-  }, [searchParams]);
-
-  const scrollToPremium = () => {
-    const element = document.getElementById("premium-section");
-    if (element) {
-      element.scrollIntoView({ behavior: "smooth" });
-    }
+  const loadMore = async () => {
+    const last = items.at(-1); if (!last) return;
+    setLoading(true);
+    try {
+      const rows = tab === "promulgated"
+        ? await api.getPromulgatedLaws({ category, search, cursorDate: last.promulgated_at || undefined, cursorId: last.jorf_id || undefined, limit: 40 })
+        : await api.getLegislativeDossiers({ category, search, cursorDate: last.cursor_date || undefined, cursorId: last.official_id, limit: 40 });
+      setItems(current => [...current, ...rows]); setHasMore(rows.length === 40);
+    } finally { setLoading(false); }
   };
 
   return (
-    <div className="container mx-auto max-w-6xl px-4 pb-24">
-      <UniversalLawModal 
-        law={selectedLaw} 
-        isOpen={!!selectedLaw} 
-        onClose={() => setSelectedLaw(null)} 
-        onNext={() => {
-          const idx = dbLaws.findIndex(l => l.id === selectedLaw?.id);
-          if (idx !== -1 && idx < dbLaws.length - 1) setSelectedLaw(dbLaws[idx + 1]);
-        }}
-        onPrevious={() => {
-          const idx = dbLaws.findIndex(l => l.id === selectedLaw?.id);
-          if (idx !== -1 && idx > 0) setSelectedLaw(dbLaws[idx - 1]);
-        }}
-      />
-
-      {/* TABS NAVIGATION (STUCK AT TOP ON SCROLL) */}
-      <div className="sticky top-0 z-[50] bg-white/90 backdrop-blur-md py-6 mb-12 border-b border-slate-100 -mx-4 px-4 shadow-sm">
-        <div className="flex flex-wrap items-center justify-center gap-4">
-          <button
-            onClick={() => { setActiveTab('promulgated'); setSelectedCat(null); setSearchQuery(""); }}
-            className={`px-8 py-3 rounded-full font-black uppercase tracking-widest text-xs transition-all duration-300 flex items-center gap-3 ${
-              activeTab === 'promulgated' 
-                ? 'bg-slate-950 text-white shadow-2xl shadow-slate-950/20 scale-105' 
-                : 'bg-white text-slate-400 hover:text-slate-600 border border-slate-100 hover:border-slate-300'
-            }`}
-          >
-            <BookOpen size={18} />
-            Lois promulguées
-          </button>
-
-          <button
-            onClick={() => { setActiveTab('votes'); setSelectedCat(null); setSearchQuery(""); }}
-            className={`px-8 py-3 rounded-full font-black uppercase tracking-widest text-xs transition-all duration-300 flex items-center gap-3 ${
-              activeTab === 'votes' 
-                ? 'bg-slate-950 text-white shadow-2xl shadow-slate-950/20 scale-105' 
-                : 'bg-white text-slate-400 hover:text-slate-600 border border-slate-100 hover:border-slate-300'
-            }`}
-          >
-            <Vote size={18} />
-            Derniers votes de loi
-          </button>
-
-          <button
-            onClick={() => { setActiveTab('proposals'); setSelectedCat(null); setSearchQuery(""); }}
-            className={`px-8 py-3 rounded-full font-black uppercase tracking-widest text-xs transition-all duration-300 flex items-center gap-3 ${
-              activeTab === 'proposals' 
-                ? 'bg-slate-950 text-white shadow-2xl shadow-slate-950/20 scale-105' 
-                : 'bg-white text-slate-400 hover:text-slate-600 border border-slate-100 hover:border-slate-300'
-            }`}
-          >
-            <FileText size={18} />
-            Propositions & Projets
-          </button>
+    <section className="mx-auto max-w-7xl px-4 pb-24">
+      <div className="flex flex-col gap-5 rounded-[2rem] border border-slate-200 bg-slate-50 p-5 md:p-8">
+        <div className="grid grid-cols-2 gap-2 rounded-2xl bg-white p-2 shadow-sm">
+          <button onClick={() => setTab("promulgated")} className={`rounded-xl px-4 py-4 font-black ${tab === "promulgated" ? "bg-red-600 text-white" : "text-slate-600"}`}><Scale className="mr-2 inline" size={18} />Lois promulguées</button>
+          <button onClick={() => setTab("ongoing")} className={`rounded-xl px-4 py-4 font-black ${tab === "ongoing" ? "bg-slate-950 text-white" : "text-slate-600"}`}><FileText className="mr-2 inline" size={18} />Textes en cours</button>
         </div>
-      </div>
-      {activeTab === 'proposals' && (
-        <div className="mt-12 mb-32">
-          <div className="relative mb-16 text-center md:text-left">
-            <div className="flex items-center gap-4 justify-center md:justify-start">
-              <h2 className="text-5xl md:text-7xl font-staatliches uppercase tracking-tighter leading-none text-slate-900">
-                <span className="text-slate-900 opacity-10 absolute -top-8 left-0 select-none hidden md:block">EN COURS</span>
-                Propositions & <span className="bg-gradient-to-r from-blue-600 via-red-600 to-blue-600 bg-clip-text text-transparent">Projets de loi</span>
-              </h2>
-              {selectedCat && (
-                <button 
-                  onClick={() => setSelectedCat(null)}
-                  className="px-4 py-2 bg-slate-100 text-slate-600 rounded-full font-bold text-xs uppercase tracking-widest hover:bg-slate-200 transition-colors flex items-center gap-2"
-                >
-                  <X size={14} /> {CATEGORIES.find(c => c.id === selectedCat)?.label || selectedCat}
-                </button>
-              )}
-            </div>
-            <div className="h-1.5 w-24 bg-blue-600 mt-4 rounded-full mx-auto md:mx-0" />
-            <p className="text-lg font-bold italic text-slate-500 mt-6 max-w-2xl font-staatliches">
-              Consultez les textes déposés et en cours d&apos;examen au Parlement.
-            </p>
-          </div>
-          <LawsGrid onSelectLaw={setSelectedLaw} categoryFilter={CATEGORIES.find(c => c.id === selectedCat)?.label} />
-        </div>
-      )}
-      {activeTab === 'promulgated' && (
-        <>
-          {/* 1. FILTRES THÉMATIQUES (ULTRA COMPACT BENTO STYLE) */}
-      <div className="mb-24">
-        <div className="relative mb-10 text-center md:text-left">
-          <h3 className="text-5xl md:text-7xl font-staatliches uppercase tracking-tighter leading-none text-slate-900">
-            <span className="text-slate-900 opacity-5 absolute -top-8 left-0 select-none hidden md:block">COLLECTIONS</span>
-            Explorez par <span className="bg-gradient-to-r from-blue-600 via-red-600 to-blue-600 bg-clip-text text-transparent">thématique</span>
-          </h3>
-          <div className="h-1.5 w-24 bg-gradient-to-r from-blue-600 to-red-600 mt-4 rounded-full mx-auto md:mx-0" />
-        </div>
-
-        <div className="grid grid-cols-2 lg:grid-cols-3 gap-4 md:gap-6">
-          {CATEGORIES.map((cat) => {
-            const isActive = selectedCat === cat.id;
-            
-            const handleCategoryClick = () => {
-              if (cat.isFree || isPremium) {
-                if (isActive) {
-                  setSelectedCat(null);
-                } else {
-                  setSelectedCat(cat.id);
-                }
-              } else {
-                scrollToPremium();
-              }
-            };
-
-            return (
-              <button
-                key={cat.id}
-                onClick={handleCategoryClick}
-                className={`group relative flex items-center justify-center p-6 md:p-8 rounded-[1.5rem] transition-all duration-300 shadow-xl overflow-hidden ${
-                  isActive 
-                    ? `ring-4 ring-offset-4 ring-slate-900 ${cat.bgColor} text-white scale-[1.02]` 
-                    : `hover:shadow-2xl hover:-translate-y-2 ${cat.bgColor} ${cat.hoverColor} text-white/90 hover:text-white`
-                }`}
-              >
-                {/* Premium/Libre Badge (kept small and discreet) */}
-                <div className="absolute top-3 right-3 md:top-4 md:right-4">
-                  {cat.isFree ? (
-                    <span className="text-[9px] md:text-[11px] px-2 py-0.5 md:px-3 md:py-1 rounded-full uppercase tracking-widest font-black bg-white/20 text-white backdrop-blur-md">
-                      Libre
-                    </span>
-                  ) : !isPremium ? (
-                    <div className="p-1.5 rounded-full bg-white/10 backdrop-blur-md">
-                      <Lock className="w-3.5 h-3.5 md:w-4 md:h-4 text-white/70" />
-                    </div>
-                  ) : null}
-                </div>
-
-                <div className="text-center w-full flex justify-center mt-2">
-                  <span className="text-4xl sm:text-5xl md:text-5xl lg:text-5xl xl:text-6xl font-staatliches uppercase tracking-wider block leading-none w-full break-words drop-shadow-sm">
-                    {cat.label}.
-                  </span>
-                </div>
-              </button>
-            );
-          })}
+        <div className="flex flex-col gap-3 md:flex-row">
+          <label className="flex flex-1 items-center gap-3 rounded-xl border bg-white px-4"><Search size={18} /><input value={search} onChange={event => setSearch(event.target.value)} className="w-full bg-transparent py-4 outline-none" placeholder="Rechercher un texte officiel" /></label>
+          <select value={category || ""} onChange={event => setCategory((event.target.value || null) as LegislativeCategory | null)} className="rounded-xl border bg-white px-4 py-4 font-bold"><option value="">Toutes les catégories</option>{LEGISLATIVE_CATEGORIES.map(item => <option key={item.value} value={item.value}>{item.label}</option>)}</select>
         </div>
       </div>
 
-
-      {/* 3. DOSSIERS GRATUITS ET PREMIUM */}
-      <div className="space-y-4 mb-32">
-        <div className="relative mb-16 text-center md:text-left">
-          <div className="flex items-center gap-4 justify-center md:justify-start">
-            <h2 className="text-5xl md:text-7xl font-staatliches uppercase tracking-tighter leading-none text-slate-900">
-              <span className="text-slate-900 opacity-10 absolute -top-8 left-0 select-none hidden md:block">OFFICIEL</span>
-              {selectedCat ? `Lois promulguées : ${CATEGORIES.find(c => c.id === selectedCat)?.label}` : "Lois promulguées au Journal Officiel"}
-            </h2>
-            {selectedCat && (
-              <button 
-                onClick={() => setSelectedCat(null)}
-                className="px-4 py-2 bg-slate-100 text-slate-600 rounded-full font-bold text-xs uppercase tracking-widest hover:bg-slate-200 transition-colors flex items-center gap-2"
-              >
-                <X size={14} /> Réinitialiser
-              </button>
-            )}
-          </div>
-          <div className="h-1.5 w-24 bg-gradient-to-r from-blue-600 to-red-600 mt-4 rounded-full mx-auto md:mx-0" />
-          <p className="text-lg font-bold italic text-slate-500 mt-6 max-w-2xl font-staatliches">
-            {selectedCat ? "Consultez les lois de cette catégorie officiellement actives en France." : "Toutes les lois définitivement adoptées et promulguées, officiellement actives en France."}
-          </p>
-        </div>
-
-        <div className="relative max-w-xl mb-12">
-          <div className="absolute inset-0 bg-slate-900 rounded-2xl translate-x-2 translate-y-2 z-0" />
-          <div className="relative z-10 flex items-center bg-white border-4 border-slate-900 rounded-2xl overflow-hidden px-6 py-4 focus-within:ring-4 focus-within:ring-blue-500/20 transition-all">
-            <Search className="w-6 h-6 text-slate-400 mr-4" />
-            <input 
-              type="text"
-              placeholder="Rechercher une loi, un mot-clé (ex: Retraite, Santé...)"
-              value={searchQuery}
-              onChange={(e) => setSearchQuery(e.target.value)}
-              className="w-full bg-transparent border-none focus:ring-0 text-slate-900 font-bold placeholder:text-slate-300 placeholder:italic"
-            />
-            {searchQuery && (
-              <button 
-                onClick={() => setSearchQuery("")}
-                className="p-1 hover:bg-slate-100 rounded-full transition-colors"
-              >
-                <X size={18} className="text-slate-400" />
-              </button>
-            )}
-          </div>
-        </div>
-
-        <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-8 md:gap-10">
-          {loadingDossiers ? (
-             <div className="text-center py-20 bg-slate-50 rounded-[3rem] border border-dashed border-slate-300 col-span-full">
-                <div className="w-12 h-12 rounded-full border-2 border-slate-200 border-t-blue-500 animate-spin mx-auto mb-4" />
-                <p className="text-slate-400 font-bold uppercase tracking-widest text-sm">Chargement des dossiers...</p>
-             </div>
-          ) : (premiumDossiers.length > 0 || FREE_LAWS.length > 0) ? (
-            (() => {
-              const allPremiumDossiers = premiumDossiers.length > 0 ? premiumDossiers : FREE_LAWS;
-              const premiumScrutinIds = allPremiumDossiers.map(p => p.context?.split(':')[1] || p.id).filter(Boolean);
-              const filteredDbLaws = dbLaws.filter(law => !premiumScrutinIds.includes(law.id));
-
-              const combinedList = [
-                ...allPremiumDossiers.map(law => ({ ...law, sortDate: new Date(law.date_adopted || law.created_at || 0).getTime(), itemType: 'premium' })),
-                ...filteredDbLaws.map(law => ({ ...law, sortDate: new Date(law.date_scrutin || 0).getTime(), itemType: 'history' }))
-              ].sort((a, b) => b.sortDate - a.sortDate);
-
-              const promulgatedLaws = combinedList.filter(law => {
-                let isPromulgated = false;
-                if (law.itemType === 'premium') {
-                  const scrutinId = law.context?.split(':')[1];
-                  const originalScrutin = dbLaws.find(s => s.id === scrutinId);
-                  isPromulgated = originalScrutin?.status_detail === 'En application' || law.context?.endsWith(':application') || law.status === 'application';
-                } else {
-                  isPromulgated = law.status_detail === 'En application';
-                }
-                return isPromulgated;
-              });
-
-              const filteredLaws = promulgatedLaws.filter(law => {
-                const searchLower = searchQuery.toLowerCase();
-                const title = law.title || law.objet || '';
-                const category = law.category || '';
-                const summary = law.summary || '';
-                return (
-                  title.toLowerCase().includes(searchLower) || 
-                  summary.toLowerCase().includes(searchLower) ||
-                  category.toLowerCase().includes(searchLower)
-                );
-              });
-
-              if (filteredLaws.length === 0) {
-                return (
-                  <div className="text-center py-20 bg-slate-50 rounded-[3rem] border border-dashed border-slate-300 col-span-full">
-                    <Search className="w-12 h-12 text-slate-300 mx-auto mb-4" />
-                    <p className="text-slate-400 font-bold uppercase tracking-widest text-sm">Aucun dossier trouvé pour "{searchQuery}"</p>
-                  </div>
-                );
-              }
-
-              const PAGE_SIZE = 60;
-              const totalPages = Math.ceil(filteredLaws.length / PAGE_SIZE);
-              const paginatedLaws = filteredLaws.slice((currentPage - 1) * PAGE_SIZE, currentPage * PAGE_SIZE);
-
-              return (
-                <>
-                  {paginatedLaws.map((law: any, idx: number) => {
-                if (law.itemType === 'premium') {
-                  let impacts = [];
-                  let calendar = [];
-                  let premiumPoints = [];
-                  
-                  if (law.impact || law.timeline || law.content) {
-                    try { impacts = typeof law.impact === 'string' ? JSON.parse(law.impact) : (law.impact || []); } catch(e){}
-                    try { calendar = typeof law.timeline === 'string' ? JSON.parse(law.timeline) : (law.timeline || []); } catch(e){}
-                    try { premiumPoints = typeof law.content === 'string' ? JSON.parse(law.content) : (law.content || []); } catch(e){}
-
-                    const catObj = CATEGORIES.find(c => c.label === law.category || c.matchCategory === law.category);
-                    const color = catObj ? catObj.color : ((law.category || '').toLowerCase().includes('institution') ? 'violet' : 'slate');
-                    
-                    let voteData = null;
-                    if (law.scrutin_data) {
-                      voteData = {
-                        pour: law.scrutin_data.pour,
-                        contre: law.scrutin_data.contre,
-                        abstention: law.scrutin_data.abstention,
-                        group_results: law.scrutin_data.group_results
-                      };
-                    } else if (law.context?.startsWith('dossier_premium:')) {
-                      const scrutinId = law.context.split(':')[1];
-                      const originalScrutin = dbLaws.find(s => s.id === scrutinId);
-                      if (originalScrutin && (originalScrutin.pour + originalScrutin.contre + originalScrutin.abstention > 0)) {
-                        voteData = {
-                          pour: originalScrutin.pour,
-                          contre: originalScrutin.contre,
-                          abstention: originalScrutin.abstention,
-                          group_results: originalScrutin.group_results
-                        };
-                      }
-                    }
-
-                    let computedStatus = 'vote';
-                    let statusLabel = 'Loi Adoptée';
-                    
-                    if (law.context?.startsWith('dossier_premium:')) {
-                      const scrutinId = law.context.split(':')[1];
-                      const originalScrutin = dbLaws.find(s => s.id === scrutinId);
-                      if (originalScrutin?.status_detail === 'En application') {
-                        computedStatus = 'application';
-                        statusLabel = 'En application';
-                      }
-                    }
-
-                    if (law.context?.endsWith(':application')) {
-                      computedStatus = 'application';
-                      statusLabel = 'En application';
-                    }
-
-                    const formattedLaw = {
-                      id: law.id,
-                      title: law.title,
-                      category: law.category,
-                      summary: law.summary,
-                      impacts,
-                      calendar,
-                      premiumPoints,
-                      voteData,
-                      status: computedStatus,
-                      statusLabel: statusLabel,
-                      color: color,
-                      backgroundImage: law.background_image,
-                      date_adopted: law.date_adopted
-                    };
-                    return <DetailedLawDossier key={`premium-${formattedLaw.id}`} law={formattedLaw as any} />
-                  }
-                  return <DetailedLawDossier key={`premium-static-${law.id}`} law={law} />
-                } else {
-                  // History card formatted as DetailedLawDossier
-                  const catObj = CATEGORIES.find(c => c.label === law.category || c.matchCategory === law.category);
-                  const color = catObj ? catObj.color : ((law.category || '').toLowerCase().includes('institution') ? 'violet' : 'slate');
-
-                  const impacts = [];
-                  if (law.impact_detail) impacts.push(law.impact_detail);
-                  else if (law.why_it_matters) impacts.push(law.why_it_matters);
-                  else impacts.push(law.summary || "Détails approfondis non disponibles pour ce texte.");
-                  
-                  const calendar = [
-                    {
-                      date: new Date(law.date_scrutin).toLocaleDateString('fr-FR', { day: 'numeric', month: 'short', year: 'numeric' }),
-                      event: law.resultat || "Loi Adoptée"
-                    }
-                  ];
-
-                  const premiumPoints = [
-                    "Ce texte a été soumis au vote de l'Assemblée nationale.",
-                    "L'historique complet des débats est disponible sur les sources officielles."
-                  ];
-
-                  const voteData = (law.pour + law.contre + law.abstention) > 0 ? {
-                    pour: law.pour || 0,
-                    contre: law.contre || 0,
-                    abstention: law.abstention || 0,
-                    group_results: law.group_results || []
-                  } : null;
-
-                  const computedStatus = law.status_detail === 'En application' ? 'application' : 'vote';
-                  const statusLabel = law.status_detail === 'En application' ? 'En application' : 'Loi Adoptée';
-
-                  const formattedLaw = {
-                    id: law.id,
-                    title: law.title || law.objet || "Projet ou proposition de loi",
-                    category: law.category || "Institution",
-                    summary: law.summary || law.objet,
-                    impacts,
-                    calendar,
-                    premiumPoints,
-                    voteData,
-                    status: computedStatus,
-                    statusLabel,
-                    color,
-                    date_adopted: law.date_adopted || law.date_scrutin
-                  };
-
-                  return <DetailedLawDossier key={`history-${law.id}`} law={formattedLaw as any} />;
-                }
-              })}
-                  
-              {totalPages > 1 && (
-                <div className="col-span-full flex flex-col items-center justify-center mt-12 space-y-4">
-                  <div className="flex items-center gap-2">
-                    <button 
-                      onClick={() => {
-                        setCurrentPage(p => Math.max(1, p - 1));
-                        window.scrollTo({ top: 400, behavior: 'smooth' });
-                      }}
-                      disabled={currentPage === 1}
-                      className="px-4 py-2 rounded-xl border border-slate-200 bg-white text-slate-700 font-bold disabled:opacity-50 disabled:cursor-not-allowed hover:bg-slate-50 transition-colors"
-                    >
-                      Précédent
-                    </button>
-                    
-                    <div className="flex items-center gap-1 hidden md:flex">
-                      {Array.from({ length: totalPages }, (_, i) => i + 1).map(page => {
-                        if (
-                          page === 1 || 
-                          page === totalPages || 
-                          (page >= currentPage - 1 && page <= currentPage + 1)
-                        ) {
-                          return (
-                            <button
-                              key={page}
-                              onClick={() => {
-                                setCurrentPage(page);
-                                window.scrollTo({ top: 400, behavior: 'smooth' });
-                              }}
-                              className={`w-10 h-10 rounded-xl font-bold transition-colors ${
-                                currentPage === page 
-                                  ? 'bg-blue-600 text-white border-blue-600' 
-                                  : 'bg-white text-slate-700 border border-slate-200 hover:bg-slate-50'
-                              }`}
-                            >
-                              {page}
-                            </button>
-                          );
-                        } else if (
-                          page === currentPage - 2 || 
-                          page === currentPage + 2
-                        ) {
-                          return <span key={page} className="text-slate-400 px-1">...</span>;
-                        }
-                        return null;
-                      })}
-                    </div>
-
-                    <button 
-                      onClick={() => {
-                        setCurrentPage(p => Math.min(totalPages, p + 1));
-                        window.scrollTo({ top: 400, behavior: 'smooth' });
-                      }}
-                      disabled={currentPage === totalPages}
-                      className="px-4 py-2 rounded-xl border border-slate-200 bg-white text-slate-700 font-bold disabled:opacity-50 disabled:cursor-not-allowed hover:bg-slate-50 transition-colors"
-                    >
-                      Suivant
-                    </button>
-                  </div>
-                  <p className="text-slate-400 text-sm font-medium">Page {currentPage} sur {totalPages}</p>
-                </div>
-              )}
-            </>
-          );
-            })()
-          ) : selectedCat ? (
-            <div className="text-center py-20 bg-slate-50 rounded-[3rem] border border-dashed border-slate-300 col-span-full">
-               <FileText className="w-12 h-12 text-slate-300 mx-auto mb-4" />
-               <p className="text-slate-400 font-bold uppercase tracking-widest text-sm">Les dossiers pour cette catégorie sont en cours de création par l&apos;IA</p>
-            </div>
-          ) : null}
-        </div>
-      </div>
-
-      {/* 4. LE RIDEAU DORÉ (SECTION PREMIUM VERROUILLÉE) */}
-      {!isPremium && !pLoading && (
-        <div id="premium-section" className="relative mt-32">
-          {/* Fake Blurry Content */}
-          <div className="opacity-40 grayscale pointer-events-none select-none blur-md space-y-12 mb-12">
-             <div className="h-[400px] w-full bg-muted rounded-[3rem] border border-border" />
-          </div>
-
-          <div className="absolute inset-0 z-10 flex flex-col items-center justify-center">
-            <div className="w-full max-w-2xl bg-card/90 backdrop-blur-3xl border border-amber-200/50 rounded-[3rem] p-10 md:p-16 text-center shadow-2xl relative">
-              <div className="inline-flex items-center justify-center w-20 h-20 rounded-full bg-gradient-to-br from-amber-400 to-orange-500 text-white mb-8">
-                <Lock className="w-10 h-10" />
-              </div>
-              <h3 className="text-3xl md:text-5xl font-black text-foreground mb-6 leading-tight">
-                Accédez à <span className="text-amber-600 italic">tous</span> les dossiers
-              </h3>
-              <p className="text-lg text-muted-foreground mb-10 max-w-md mx-auto leading-relaxed">
-                Plus de <span className="text-foreground font-bold">150 dossiers législatifs</span> décryptés, mis à jour en temps réel.
-              </p>
-              <Link
-                href={getPremiumUrl(userId)}
-                className="group px-12 py-6 bg-gradient-to-r from-amber-500 to-orange-600 text-white font-black rounded-3xl hover:shadow-2xl transition-all text-xl flex items-center gap-4 mx-auto w-fit"
-              >
-                Devenir membre Premium
-                <ArrowRight className="w-6 h-6" />
-              </Link>
-            </div>
-          </div>
-        </div>
-      )}
-      </>
-      )}
-      {activeTab === 'votes' && (
-        <div className="mt-12 mb-32">
-          <div className="relative mb-16 text-center md:text-left">
-            <div className="flex items-center gap-4 justify-center md:justify-start">
-              <h2 className="text-5xl md:text-7xl font-staatliches uppercase tracking-tighter leading-none text-slate-900">
-                <span className="text-slate-900 opacity-10 absolute -top-8 left-0 select-none hidden md:block">VOTES</span>
-                Derniers <span className="bg-gradient-to-r from-blue-600 via-red-600 to-blue-600 bg-clip-text text-transparent">Votes de loi</span>
-              </h2>
-              {selectedCat && (
-                <button 
-                  onClick={() => setSelectedCat(null)}
-                  className="px-4 py-2 bg-slate-100 text-slate-600 rounded-full font-bold text-xs uppercase tracking-widest hover:bg-slate-200 transition-colors flex items-center gap-2"
-                >
-                  <X size={14} /> {CATEGORIES.find(c => c.id === selectedCat)?.label || selectedCat}
-                </button>
-              )}
-            </div>
-            <div className="h-1.5 w-24 bg-blue-600 mt-4 rounded-full mx-auto md:mx-0" />
-            <p className="text-lg font-bold italic text-slate-500 mt-6 max-w-2xl font-staatliches">
-              Suivez en temps réel tous les votes de lois à l'Assemblée nationale et au Sénat.
-            </p>
-          </div>
-
-          <div className="relative max-w-xl mb-12 mx-auto md:mx-0">
-            <div className="absolute inset-0 bg-slate-900 rounded-2xl translate-x-2 translate-y-2 z-0" />
-            <div className="relative z-10 flex items-center bg-white border-4 border-slate-900 rounded-2xl overflow-hidden px-6 py-4 focus-within:ring-4 focus-within:ring-blue-500/20 transition-all">
-              <Search className="w-6 h-6 text-slate-400 mr-4" />
-              <input 
-                type="text"
-                placeholder="Rechercher un vote (ex: Retraite, Santé...)"
-                value={searchQuery}
-                onChange={(e) => setSearchQuery(e.target.value)}
-                className="w-full bg-transparent border-none focus:ring-0 text-slate-900 font-bold placeholder:text-slate-300 placeholder:italic"
-              />
-              {searchQuery && (
-                <button 
-                  onClick={() => setSearchQuery("")}
-                  className="p-1 hover:bg-slate-100 rounded-full transition-colors"
-                >
-                  <X size={18} className="text-slate-400" />
-                </button>
-              )}
-            </div>
-          </div>
-
-          <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-8 md:gap-10">
-            {loadingLaws ? (
-               <div className="text-center py-20 bg-slate-50 rounded-[3rem] border border-dashed border-slate-300 col-span-full">
-                  <div className="w-12 h-12 rounded-full border-2 border-slate-200 border-t-blue-500 animate-spin mx-auto mb-4" />
-                  <p className="text-slate-400 font-bold uppercase tracking-widest text-sm">Chargement des votes...</p>
-               </div>
-            ) : (
-              (() => {
-                const votesList = dbLaws.filter(law => {
-                  if (selectedCat) {
-                    const catLabel = CATEGORIES.find(c => c.id === selectedCat)?.label;
-                    if (law.category !== catLabel && law.category !== CATEGORIES.find(c => c.id === selectedCat)?.matchCategory) return false;
-                  }
-                  return true;
-                });
-
-                const filteredVotes = votesList.filter(law => {
-                  const searchLower = searchQuery.toLowerCase();
-                  const title = law.objet || law.title || '';
-                  const category = law.category || '';
-                  const summary = law.summary || '';
-                  return (
-                    title.toLowerCase().includes(searchLower) || 
-                    summary.toLowerCase().includes(searchLower) ||
-                    category.toLowerCase().includes(searchLower)
-                  );
-                });
-
-                if (filteredVotes.length === 0) {
-                  return (
-                    <div className="text-center py-20 bg-slate-50 rounded-[3rem] border border-dashed border-slate-300 col-span-full">
-                      <Search className="w-12 h-12 text-slate-300 mx-auto mb-4" />
-                      <p className="text-slate-400 font-bold uppercase tracking-widest text-sm">Aucun vote trouvé pour "{searchQuery}"</p>
-                    </div>
-                  );
-                }
-
-                const PAGE_SIZE = 60;
-                const totalPages = Math.ceil(filteredVotes.length / PAGE_SIZE);
-                const paginatedVotes = filteredVotes.slice((currentPage - 1) * PAGE_SIZE, currentPage * PAGE_SIZE);
-
-                return (
-                  <>
-                    {paginatedVotes.map((law: any) => {
-                      const catObj = CATEGORIES.find(c => c.label === law.category || c.matchCategory === law.category);
-                      const color = catObj ? catObj.color : ((law.category || '').toLowerCase().includes('institution') ? 'violet' : 'slate');
-
-                      const impacts = [];
-                      if (law.impact_detail) impacts.push(law.impact_detail);
-                      else if (law.why_it_matters) impacts.push(law.why_it_matters);
-                      else impacts.push(law.summary || "Détails approfondis non disponibles pour ce vote.");
-                      
-                      const calendar = [
-                        {
-                          date: new Date(law.date_scrutin).toLocaleDateString('fr-FR', { day: 'numeric', month: 'short', year: 'numeric' }),
-                          event: law.resultat || "Vote"
-                        }
-                      ];
-
-                      const premiumPoints = [
-                        "Ce texte a été soumis au vote du Parlement.",
-                        "L'historique complet des débats est disponible sur les sources officielles."
-                      ];
-
-                      const voteData = (law.pour + law.contre + law.abstention) > 0 ? {
-                        pour: law.pour || 0,
-                        contre: law.contre || 0,
-                        abstention: law.abstention || 0,
-                        group_results: law.group_results || []
-                      } : null;
-
-                      const computedStatus = law.status_detail === 'En application' ? 'application' : 'vote';
-                      const statusLabel = law.status_detail === 'En application' ? 'En application' : 'Loi Adoptée';
-
-                      const formattedLaw = {
-                        id: law.id,
-                        title: law.objet || law.title || "Projet ou proposition de loi",
-                        category: law.category || "Institution",
-                        summary: law.summary || law.objet,
-                        impacts,
-                        calendar,
-                        premiumPoints,
-                        voteData,
-                        status: computedStatus,
-                        statusLabel,
-                        color,
-                        date_adopted: law.date_scrutin
-                      };
-
-                      return <DetailedLawDossier key={`vote-${law.id}`} law={formattedLaw as any} />;
-                    })}
-                    
-                    {totalPages > 1 && (
-                      <div className="col-span-full flex flex-col items-center justify-center mt-12 space-y-4">
-                        <div className="flex items-center gap-2">
-                          <button 
-                            onClick={() => {
-                              setCurrentPage(p => Math.max(1, p - 1));
-                              window.scrollTo({ top: 400, behavior: 'smooth' });
-                            }}
-                            disabled={currentPage === 1}
-                            className="px-4 py-2 rounded-xl border border-slate-200 bg-white text-slate-700 font-bold disabled:opacity-50 disabled:cursor-not-allowed hover:bg-slate-50 transition-colors"
-                          >
-                            Précédent
-                          </button>
-                          
-                          <div className="flex items-center gap-1 hidden md:flex">
-                            {Array.from({ length: totalPages }, (_, i) => i + 1).map(page => {
-                              if (
-                                page === 1 || 
-                                page === totalPages || 
-                                (page >= currentPage - 1 && page <= currentPage + 1)
-                              ) {
-                                return (
-                                  <button
-                                    key={page}
-                                    onClick={() => {
-                                      setCurrentPage(page);
-                                      window.scrollTo({ top: 400, behavior: 'smooth' });
-                                    }}
-                                    className={`w-10 h-10 rounded-xl font-bold transition-colors ${
-                                      currentPage === page 
-                                        ? 'bg-blue-600 text-white border-blue-600' 
-                                        : 'bg-white text-slate-700 border border-slate-200 hover:bg-slate-50'
-                                    }`}
-                                  >
-                                    {page}
-                                  </button>
-                                );
-                              } else if (
-                                page === currentPage - 2 || 
-                                page === currentPage + 2
-                              ) {
-                                return <span key={page} className="text-slate-400 px-1">...</span>;
-                              }
-                              return null;
-                            })}
-                          </div>
-
-                          <button 
-                            onClick={() => {
-                              setCurrentPage(p => Math.min(totalPages, p + 1));
-                              window.scrollTo({ top: 400, behavior: 'smooth' });
-                            }}
-                            disabled={currentPage === totalPages}
-                            className="px-4 py-2 rounded-xl border border-slate-200 bg-white text-slate-700 font-bold disabled:opacity-50 disabled:cursor-not-allowed hover:bg-slate-50 transition-colors"
-                          >
-                            Suivant
-                          </button>
-                        </div>
-                        <p className="text-slate-400 text-sm font-medium">Page {currentPage} sur {totalPages}</p>
-                      </div>
-                    )}
-                  </>
-                );
-              })()
-            )}
-          </div>
-        </div>
-      )}
-
-
-      {isPremium && (
-        <motion.div
-          initial={{ opacity: 0, y: 20 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.6, ease: [0.16, 1, 0.3, 1] }}
-          className="mt-20 p-8 rounded-[2.5rem] bg-gradient-to-br from-slate-900 via-slate-950 to-slate-900 border border-amber-500/20 flex flex-col md:flex-row items-center gap-8 shadow-[0_20px_50px_rgba(245,158,11,0.15)] relative overflow-hidden group"
-        >
-          {/* Glowing background details */}
-          <div className="absolute -top-24 -left-24 w-48 h-48 bg-amber-500/10 rounded-full blur-3xl group-hover:scale-150 transition-transform duration-1000" />
-          <div className="absolute -bottom-24 -right-24 w-48 h-48 bg-orange-500/10 rounded-full blur-3xl group-hover:scale-150 transition-transform duration-1000" />
-
-          {/* Sparkles Icon with Golden Glow */}
-          <div className="relative flex-shrink-0">
-            <div className="absolute inset-0 bg-gradient-to-tr from-amber-400 to-orange-500 rounded-full blur-md opacity-40 animate-pulse" />
-            <div className="relative w-16 h-16 rounded-full bg-gradient-to-tr from-amber-400 via-yellow-300 to-orange-500 flex items-center justify-center text-slate-950 shadow-xl">
-              <Sparkles className="w-8 h-8 animate-pulse" />
-            </div>
-          </div>
-
-          {/* Text Content */}
-          <div className="flex-1 text-center md:text-left relative z-10">
-            <h3 className="text-2xl md:text-3xl font-staatliches uppercase tracking-wider bg-gradient-to-r from-amber-200 via-yellow-400 to-orange-350 bg-clip-text text-transparent mb-1.5">
-              Accès Premium Actif
-            </h3>
-            <p className="text-slate-300 text-sm md:text-base leading-relaxed font-medium">
-              Bienvenue dans l&apos;espace privilégié ! En tant que membre <span className="text-amber-400 font-bold">Premium</span>, vous bénéficiez d&apos;un accès illimité à l&apos;intégralité des dossiers législatifs et à nos analyses comparatives poussées.
-            </p>
-          </div>
-
-          {/* Elite Badge */}
-          <div className="relative z-10 flex-shrink-0">
-            <div className="absolute inset-0 bg-amber-500/10 rounded-2xl blur-sm" />
-            <div className="relative flex items-center gap-2 px-5 py-3 bg-slate-950/80 backdrop-blur-md rounded-2xl border border-amber-500/30 text-amber-300 font-staatliches uppercase tracking-wider text-sm shadow-inner">
-              <CheckCircle2 className="w-5 h-5 text-amber-400" />
-              Membre Élite
-            </div>
-          </div>
-        </motion.div>
-      )}
-    </div>
+      <div className="mt-10"><h2 className="text-4xl font-staatliches uppercase md:text-6xl">{tab === "promulgated" ? "Publiées au Journal officiel" : "Dans la navette parlementaire"}</h2><p className="mt-2 text-slate-500">{tab === "promulgated" ? "Seule une publication JORF peut faire apparaître un texte ici." : "Projets et propositions, classés par dernière étape officielle."}</p></div>
+      {loading && <div className="flex justify-center py-24"><Loader2 className="animate-spin text-red-600" /></div>}
+      {error && <div className="mt-8 rounded-2xl bg-red-50 p-5 font-bold text-red-800">{error}</div>}
+      {!loading && !error && <div className="mt-8 grid gap-5 md:grid-cols-2">{items.map(item => <button key={item.id} onClick={() => openDossier(item.id)} className="group rounded-[2rem] border border-slate-200 bg-white p-7 text-left shadow-sm transition hover:-translate-y-1 hover:shadow-xl"><div className="flex items-start justify-between gap-4"><span className="rounded-full bg-red-50 px-3 py-1 text-[10px] font-black uppercase tracking-widest text-red-700">{categoryLabel(item.category)}</span><span className="text-xs font-bold text-slate-400">{item.current_chamber || "JORF"}</span></div><h3 className="mt-5 text-2xl font-staatliches uppercase leading-tight text-slate-950 md:text-3xl">{item.title}</h3><p className="mt-4 line-clamp-3 text-sm leading-6 text-slate-600">{item.summary || "Analyse indisponible."}</p><div className="mt-6 flex items-center justify-between border-t pt-4 text-xs font-bold text-slate-500"><span><CalendarDays className="mr-2 inline" size={14} />{formatDate(item.promulgated_at || item.latest_step_at)}</span><span className="text-red-600">Voir la fiche →</span></div></button>)}</div>}
+      {!loading && !error && !items.length && <div className="py-20 text-center text-slate-500">Aucun texte officiel ne correspond à ces filtres.</div>}
+      {!error && items.length > 0 && hasMore && <div className="mt-10 text-center"><button onClick={loadMore} disabled={loading} className="rounded-full bg-slate-950 px-8 py-4 font-black text-white disabled:opacity-50">Charger plus de textes</button></div>}
+      <DossierModal detail={detail} loading={detailLoading} onClose={closeDossier} />
+    </section>
   );
 }

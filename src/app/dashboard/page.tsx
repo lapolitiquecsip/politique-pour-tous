@@ -30,7 +30,6 @@ import {
 import { motion, AnimatePresence } from "framer-motion";
 import { api } from "@/lib/api";
 import { usePremium } from "@/lib/hooks/usePremium";
-import { FREE_LAWS } from "@/data/free-laws-dossiers";
 
 export default function DashboardPage() {
   const { userId, isPremium, loading: authLoading } = usePremium();
@@ -59,16 +58,12 @@ export default function DashboardPage() {
           const fullVotes = await Promise.all(votes.map(async (v: any) => {
             if (v.laws || v.scrutins) return v; // Already has relation info
             
-            // 1. Check in FREE_LAWS
-            const free = FREE_LAWS.find(l => l.id === v.law_id);
-            if (free) return { ...v, laws: free };
-            
-            // 2. Try fetching from laws table
+            // Resolve the canonical legislative record; never fall back to demo facts.
             try {
               let lawData = await api.getLaw(v.law_id);
               if (lawData) return { ...v, laws: lawData };
               
-              // 3. Try fetching from scrutins table
+              // Legacy citizen votes may still point at an old scrutin.
               const scrutinData = await api.getScrutin(v.law_id);
               if (scrutinData) return { ...v, scrutins: scrutinData };
               
@@ -321,7 +316,7 @@ export default function DashboardPage() {
                       </div>
                     ) : (
                       userVotes.map((v) => {
-                        const lawInfo = v.laws || v.scrutins || FREE_LAWS.find(l => l.id === v.law_id);
+                        const lawInfo = v.laws || v.scrutins;
                         const voteConfig = {
                           "POUR": { color: "bg-emerald-100 text-emerald-700", icon: CheckCircle2 },
                           "CONTRE": { color: "bg-red-100 text-red-700", icon: XCircle },

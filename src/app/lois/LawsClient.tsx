@@ -1,6 +1,6 @@
 "use client";
 
-import { useCallback, useEffect, useRef, useState } from "react";
+import { Suspense, useCallback, useEffect, useRef, useState } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
 import { CalendarDays, ExternalLink, FileText, Loader2, Search, Scale, X } from "lucide-react";
 import { api } from "@/lib/api";
@@ -56,7 +56,7 @@ function DossierModal({ detail, loading, onClose }: { detail: LegislativeDossier
   );
 }
 
-export default function LawsClient() {
+function LawsContent() {
   const router = useRouter();
   const params = useSearchParams();
   const [tab, setTab] = useState<Tab>("promulgated");
@@ -129,4 +129,8 @@ export default function LawsClient() {
       <DossierModal detail={detail} loading={detailLoading} onClose={closeDossier} />
     </section>
   );
+}
+
+export default function LawsClient() {
+  return <Suspense fallback={<div className="flex justify-center py-24"><Loader2 className="animate-spin text-red-600" /></div>}><LawsContent /></Suspense>;
 }

@@ -44,8 +44,8 @@ export interface LegislativeDossierDetail {
     author_name: string | null; source_updated_at: string; source_urls: string[];
   };
   promulgation: { jorf_id: string; nor: string; promulgated_at: string; source_url: string } | null;
-  summary: { summary: string } | null;
-  premium_analysis: { summary: string } | null;
+  summary: { summary: string; source_urls: string[] } | null;
+  premium_analysis: { summary: string; source_urls: string[] } | null;
   steps: Array<{ official_id: string; step_label: string; chamber: string; occurred_at: string | null }>;
   amendments: Array<{ official_id: string; number: string; outcome_label: string | null; subject: string | null; body: string | null }>;
   scrutins: Array<{

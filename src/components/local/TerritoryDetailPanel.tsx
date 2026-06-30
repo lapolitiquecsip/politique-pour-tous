@@ -25,7 +25,7 @@ const CATEGORIES = [
     textClass: 'text-blue-800',
     progressClass: 'bg-blue-600',
     metrics: [
-      { key: 'demographie.populationTotal', label: 'Population totale', format: (v: any) => v?.toLocaleString() + ' hab.', help: "Nombre total d'habitants résidents (recensement Insee 2021)." },
+      { key: 'demographie.populationTotal', label: 'Population totale', format: (v: any) => v?.toLocaleString() + ' hab.', help: "Population issue du dernier millésime disponible Insee/SDES." },
       { key: 'demographie.densite', label: 'Densité', format: (v: any) => v + ' hab/km²', help: "Nombre moyen d'habitants par kilomètre carré." },
       { key: 'demographie.evolution10ans', label: 'Évol. 10 ans', format: (v: any) => v, help: "Variation en pourcentage de la population sur les 10 dernières années." },
       { key: 'demographie.moins25ans', label: '% -25 ans', format: (v: any) => v + '%', help: "Part de la population de moins de 25 ans." },
@@ -42,7 +42,7 @@ const CATEGORIES = [
     textClass: 'text-emerald-800',
     progressClass: 'bg-emerald-600',
     metrics: [
-      { key: 'economie.chomage', label: 'Taux de chômage', format: (v: any) => v + '%', inverse: true, help: "Part des actifs sans emploi (Insee 2023)." },
+      { key: 'economie.chomage', label: 'Taux de chômage', format: (v: any) => v + '%', inverse: true, help: "Taux de chômage au sens du BIT, dernier millésime Insee disponible." },
       { key: 'economie.revenuMedian', label: 'Revenu médian', format: (v: any) => v + ' €/mois', help: "Revenu mensuel séparant la population en deux parts égales." },
       { key: 'economie.pauvrete', label: 'Taux de pauvreté', format: (v: any) => v + '%', inverse: true, help: "Vivant avec moins de 60% du revenu médian national (≈ 1150 €/mois)." },
     ]
@@ -73,7 +73,7 @@ const CATEGORIES = [
     progressClass: 'bg-rose-600',
     metrics: [
       { key: 'sante.medecins10k', label: 'Médecins / 10k hab.', format: (v: any) => v, help: "Nombre de médecins généralistes et spécialistes pour 10 000 hab." },
-      { key: 'sante.scoreAPL', label: 'Accessibilité Santé', format: (v: any) => v + '/100', help: "Indicateur d'accès aux soins basé sur la densité et le temps de trajet." },
+      { key: 'sante.scoreAPL', label: 'Accessibilité Santé', format: (v: any) => v + ' consult./an', help: "Accessibilité potentielle localisée aux médecins généralistes de moins de 65 ans, en consultations accessibles par habitant et par an." },
       { key: 'sante.esperanceVie', label: 'Espérance de vie', format: (v: any) => v + ' ans', help: "Durée de vie moyenne estimée à la naissance." },
     ]
   },
@@ -87,8 +87,8 @@ const CATEGORIES = [
     textClass: 'text-amber-800',
     progressClass: 'bg-amber-600',
     metrics: [
-      { key: 'securite.atteintesPersonnes', label: 'Violences / 1k hab.', format: (v: any) => v, inverse: true, help: "Crimes/délits contre les personnes enregistrés pour 1000 hab. (2023)." },
-      { key: 'securite.atteintesBiens', label: 'Vols / 1k hab.', format: (v: any) => v, inverse: true, help: "Vols et cambriolages enregistrés pour 1000 hab. (2023)." },
+      { key: 'securite.atteintesPersonnes', label: 'Violences / 1k hab.', format: (v: any) => v, inverse: true, help: "Somme des taux officiels d'homicides et violences enregistrées, dernier millésime SSMSI disponible." },
+      { key: 'securite.atteintesBiens', label: 'Vols / 1k hab.', format: (v: any) => v, inverse: true, help: "Somme des vols sur personnes, vols de véhicules et cambriolages enregistrés, dernier millésime SSMSI disponible." },
     ]
   },
   {

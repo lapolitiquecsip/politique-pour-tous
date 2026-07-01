@@ -1,10 +1,7 @@
 import PromisesClient from "./PromisesClient";
 
 export function generateStaticParams() {
-  return [
-    { id: "emmanuel-macron" },
-    { id: "gabriel-attal" }
-  ];
+  return [{ id: "indisponible" }];
 }
 
 export default function Page() {

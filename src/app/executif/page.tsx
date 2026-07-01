@@ -338,7 +338,7 @@ export default function ExecutifPage() {
   const [loadingNews, setLoadingNews] = useState(true);
   const [hoveredBudget, setHoveredBudget] = useState<any>(null);
 
-  const [dynamicMinisters, setDynamicMinisters] = useState<any[]>(MINISTERS);
+  const [dynamicMinisters, setDynamicMinisters] = useState<any[]>([]);
 
   useEffect(() => {
     async function loadNews() {
@@ -352,11 +352,10 @@ export default function ExecutifPage() {
   useEffect(() => {
     async function loadGov() {
       try {
-        const basePath = process.env.NEXT_PUBLIC_BASE_PATH || "";
-        const res = await fetch(`${basePath}/api/government`);
-        const json = await res.json();
-        if (json.success && json.data) {
-           const mapped = json.data.map((apiMin: any) => {
+        const government = await api.getGovernment();
+        if (government?.members) {
+           const mapped = government.members.map((member: any) => {
+              const apiMin = { ministerName: `${member.first_name} ${member.last_name}`.trim(), role: member.title, ministryName: member.ministry_name || '' };
               const apiNameNorm = normalizeName(apiMin.ministerName);
               const bioMatch = (ministersBios as any[]).find(b => 
                 normalizeName(b.name) === apiNameNorm || 

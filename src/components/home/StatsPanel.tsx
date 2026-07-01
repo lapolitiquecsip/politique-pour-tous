@@ -30,12 +30,6 @@ export default function StatsPanel() {
       let rawSlides = [];
       if (data && data[0]) {
         rawSlides = JSON.parse(data[0].description);
-      } else {
-        rawSlides = [
-          { id: 1, value: "11", label: "groupes politiques : un record historique sous la Ve République" },
-          { id: 2, value: "1000", label: "heures de débats cumulées durant la première session" },
-          { id: 3, value: "47%", label: "des textes du Sénat votés à l'unanimité depuis juin 2022" }
-        ];
       }
 
       const formattedCards: CardData[] = rawSlides.map((slide: RawSlide, index: number) => {
@@ -65,12 +59,7 @@ export default function StatsPanel() {
       setCards(formattedCards);
     } catch (err) {
       console.error("Error fetching stats:", err);
-      // Fallback
-      setCards([
-        { id: 1, title: "Le Saviez-Vous ?", description: "11 groupes politiques : un record historique sous la Ve République", value: "11", label: "groupes politiques : un record historique sous la Ve République", color: "bg-blue-600" },
-        { id: 2, title: "Le Saviez-Vous ?", description: "1000 heures de débats cumulées durant la première session", value: "1000", label: "heures de débats cumulées durant la première session", color: "bg-rose-600" },
-        { id: 3, title: "Le Saviez-Vous ?", description: "47% des textes du Sénat votés à l'unanimité depuis juin 2022", value: "47%", label: "des textes du Sénat votés à l'unanimité depuis juin 2022", color: "bg-emerald-600" }
-      ]);
+      setCards([]);
     }
   }, []);
 
@@ -78,6 +67,7 @@ export default function StatsPanel() {
     fetchStats();
   }, [fetchStats]);
 
+  if (cards.length === 0) return null;
   return (
     <div className="w-full relative py-6 flex justify-center items-center h-full">
       <AnimatedCardStack items={cards} />

@@ -32,6 +32,7 @@ import { usePremium } from "@/lib/hooks/usePremium";
 import { AwardBadge } from "@/components/ui/award-badge";
 import { BUDGETS } from "../page";
 import { Minus } from "lucide-react";
+import { api } from "@/lib/api";
 
 const COMPARISON_DATA = [
   { label: "Remboursements et dégrèvements", val2025: 138.50, val2026: 145.60, trend: "up" },
@@ -603,21 +604,29 @@ export default function DetailedBudgetPage() {
   const { isPremium, loading } = usePremium();
   const [selectedMissionId, setSelectedMissionId] = useState<string | null>(null);
   const [hoveredYear, setHoveredYear] = useState<number | null>(null);
-  const [dynamicMissions, setDynamicMissions] = useState<any[]>(MISSIONS_DETAILED);
-  const [dynamicComparison, setDynamicComparison] = useState<any[]>(COMPARISON_DATA);
+  const [dynamicMissions, setDynamicMissions] = useState<any[]>([]);
+  const [dynamicComparison, setDynamicComparison] = useState<any[]>([]);
   const [lastUpdate, setLastUpdate] = useState<Date | null>(null);
 
   // Dynamic Data Sync
   useEffect(() => {
     const fetchData = async () => {
       try {
-        const [budgetResponse, govResponse] = await Promise.all([
-          fetch('/api/budget/missions'),
-          fetch('/api/government').catch(() => null)
+        const [budget2024, budget2025, budget2026, government] = await Promise.all([
+          api.getStateBudget(2024), api.getStateBudget(2025), api.getStateBudget(2026), api.getGovernment()
         ]);
-
-        const budgetResult = await budgetResponse.json();
-        const govResult = govResponse ? await govResponse.json().catch(() => null) : null;
+        const byYear = [budget2024, budget2025, budget2026];
+        const ids = new Set(byYear.flatMap(result => (result?.missions || []).map((mission: any) => mission.official_id)));
+        const apiData = [...ids].map(id => {
+          const find = (result: any) => (result?.missions || []).find((mission: any) => mission.official_id === id);
+          const latest = find(budget2026) || find(budget2025) || find(budget2024);
+          const val2024 = Number(find(budget2024)?.amount || 0) / 1_000_000_000;
+          const val2025 = Number(find(budget2025)?.amount || 0) / 1_000_000_000;
+          const val2026 = Number(find(budget2026)?.amount || 0) / 1_000_000_000;
+          return { id, mission: latest?.name, val2024, val2025, val2026, trend: val2026 >= val2025 ? 'up' : 'down' };
+        });
+        const budgetResult = { success: apiData.length > 0, data: apiData, timestamp: budget2026?.missions?.[0]?.collected_at };
+        const govResult = { success: Boolean(government), data: (government?.members || []).map((member: any) => ({ missionId: member.ministry_id, ministerName: `${member.first_name} ${member.last_name}`.trim(), role: member.title, ministryName: member.ministry_name || '' })) };
         
         if (budgetResult.success && budgetResult.data) {
           const apiData = budgetResult.data as any[];
@@ -679,7 +688,9 @@ export default function DetailedBudgetPage() {
           setDynamicComparison(mergedComparison);
         }
       } catch (err) {
-        console.error("Failed to fetch dynamic budget data, using static fallback", err);
+        console.error("Failed to fetch official budget data", err);
+        setDynamicMissions([]);
+        setDynamicComparison([]);
       }
     };
 

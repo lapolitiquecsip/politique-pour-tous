@@ -34,9 +34,10 @@ export default async function SenatorDetailPage({ params }: { params: Promise<{ 
 export async function generateStaticParams() {
   try {
     const senators = await api.getSenators();
-    return senators.map((s: any) => ({ slug: s.slug }));
+    const params = senators.map((s: any) => ({ slug: s.slug }));
+    return params.length ? params : [{ slug: "indisponible" }];
   } catch (error) {
     console.error("Error generating static params for senators:", error);
-    return [];
+    return [{ slug: "indisponible" }];
   }
 }

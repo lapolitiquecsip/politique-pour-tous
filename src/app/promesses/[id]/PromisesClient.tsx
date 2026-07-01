@@ -18,6 +18,8 @@ interface Politician {
 
 import { api } from "@/lib/api";
 
+/* Legacy demonstration fixtures retained temporarily for test-data extraction only.
+   They are deliberately excluded from the production module and must never be rendered.
 const MOCK_PROMISES: Record<string, any[]> = {
   "emmanuel-macron": [
     { 
@@ -129,6 +131,7 @@ const MOCK_POLITICIANS_MAP: Record<string, any> = {
   "yael-braun-pivet": { id: "yael-braun-pivet", first_name: "Yaël", last_name: "Braun-Pivet", role: "Pr. de l'Assemblée Nationale", party: "Renaissance", party_color: "#005EB8" },
   "gerard-larcher": { id: "gerard-larcher", first_name: "Gérard", last_name: "Larcher", role: "Président du Sénat", party: "Les Républicains", party_color: "#0055ff" },
 };
+*/
 
 export default function PoliticianPromisesPage() {
   const { id } = useParams();
@@ -147,21 +150,12 @@ export default function PoliticianPromisesPage() {
           api.getPoliticianPromises(id as string)
         ]);
 
-        if (polData) {
-          setPolitician(polData);
-          setPromises(promData || []);
-        } else if (MOCK_POLITICIANS_MAP[id as string]) {
-          setPolitician(MOCK_POLITICIANS_MAP[id as string]);
-          setPromises(MOCK_PROMISES[id as string] || []);
-        } else {
-          throw new Error("Politician not found");
-        }
+        setPolitician(polData);
+        setPromises(polData ? (promData || []) : []);
       } catch (error) {
         console.error("Failed to fetch:", error);
-        if (MOCK_POLITICIANS_MAP[id as string]) {
-          setPolitician(MOCK_POLITICIANS_MAP[id as string]);
-          setPromises(MOCK_PROMISES[id as string] || []);
-        }
+        setPolitician(null);
+        setPromises([]);
       } finally {
         setLoading(false);
       }

@@ -4,10 +4,11 @@ import DeputyClient from "./DeputyClient";
 export async function generateStaticParams() {
   try {
     const deputies = await api.getDeputies();
-    return deputies.map((d: any) => ({ slug: d.slug }));
+    const params = deputies.map((d: any) => ({ slug: d.slug }));
+    return params.length ? params : [{ slug: "indisponible" }];
   } catch (error) {
     console.error("Error generating static params for deputies:", error);
-    return [];
+    return [{ slug: "indisponible" }];
   }
 }
 

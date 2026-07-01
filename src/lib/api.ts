@@ -142,7 +142,52 @@ export const api = {
   },
 
   getPoliticianPromises: async (id: string) => {
-    const { data, error } = await supabase.from('promises').select('*').eq('politician_id', id).order('created_at', { ascending: false });
+    const { data, error } = await supabase.rpc('public_promises', { p_politician: id, p_status: null, p_offset: 0, p_limit: 100 });
+    if (error) { console.error(error); return []; }
+    return (data || []).map((item: any) => ({
+      id: item.id,
+      citation: item.statement,
+      status: item.assessment?.status,
+      date_made: item.made_at,
+      category: item.category,
+      source_url: item.primary_source_url,
+      actions: (item.evidence || []).map((evidence: any) => evidence.title),
+      justification: item.assessment?.justification,
+    }));
+  },
+
+  getTerritory: async (code: string) => {
+    const { data, error } = await supabase.rpc('public_territory', { p_code: code });
+    if (error) { console.error(error); return null; }
+    return data;
+  },
+
+  getTerritoryIndicators: async (code: string, domain?: string) => {
+    const { data, error } = await supabase.rpc('public_territory_indicators', { p_code: code, p_domain: domain || null });
+    if (error) { console.error(error); return []; }
+    return data || [];
+  },
+
+  getDataFreshness: async (domain?: string) => {
+    const { data, error } = await supabase.rpc('public_data_freshness', { p_domain: domain || null });
+    if (error) { console.error(error); return []; }
+    return data || [];
+  },
+
+  getGovernment: async (date?: string) => {
+    const { data, error } = await supabase.rpc('public_government', { p_date: date || new Date().toISOString().slice(0, 10) });
+    if (error) { console.error(error); return null; }
+    return data;
+  },
+
+  getStateBudget: async (year: number) => {
+    const { data, error } = await supabase.rpc('public_state_budget', { p_year: year });
+    if (error) { console.error(error); return null; }
+    return data;
+  },
+
+  getElectionResults: async (election: string, round: number, territory?: string, offset = 0, limit = 100) => {
+    const { data, error } = await supabase.rpc('public_elections', { p_election: election, p_round: round, p_territory: territory || null, p_offset: offset, p_limit: limit });
     if (error) { console.error(error); return []; }
     return data || [];
   },

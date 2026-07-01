@@ -164,27 +164,6 @@ export default function DeputyDetailPage({ params }: { params: Promise<{ slug: s
     const loadDeputyData = async () => {
       let dbDeputy = await api.getDeputyBySlug(slug).catch(() => null);
       
-      // Inject mock data for Gabriel Attal (Demo purposes - robust even if DB/API fails)
-      if (slug === 'gabriel-attal') {
-        if (!dbDeputy) {
-          dbDeputy = { 
-            id: 'attal-gabriel', 
-            first_name: 'Gabriel', 
-            last_name: 'Attal', 
-            slug: 'gabriel-attal', 
-            party: 'EPR', 
-            department: 'Hauts-de-Seine',
-            constituency_number: 10
-          };
-        }
-        if (!dbDeputy.biography) {
-          dbDeputy.biography = "Gabriel Attal a commencé son parcours politique au Parti Socialiste avant de rejoindre En Marche en 2016. Plus jeune ministre de la République sous la Ve, puis plus jeune Premier ministre, il est une figure centrale de la majorité présidentielle. Son passage à l'Éducation Nationale lui a permis de porter des réformes majeures avant d'accéder à Matignon.";
-        }
-        if (!dbDeputy.legal_issues) {
-          dbDeputy.legal_issues = "Aucune affaire judiciaire connue ou signalée à ce jour.";
-        }
-      }
-      
       setDeputy(dbDeputy);
 
       if (dbDeputy && userId) {

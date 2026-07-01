@@ -131,9 +131,9 @@ const CATEGORIES = [
     textClass: 'text-purple-800',
     progressClass: 'bg-purple-600',
     metrics: [
-      { key: 'environnement.qualiteAir', label: 'Qualité Air', format: (v: any) => v + '/100', help: "Note moyenne sur les concentrations d'ozone, NO₂ et microparticules." },
+      { key: 'environnement.qualiteAir', label: 'Indice ATMO moyen', format: (v: any) => v + '/6', inverse: true, help: "Moyenne des indices ATMO quotidiens officiels (1 = bon, 6 = extrêmement mauvais), intégrant NO₂, O₃, PM10, PM2.5 et SO₂." },
       { key: 'environnement.surfaceNaturelle', label: '% Espaces verts', format: (v: any) => v + '%', help: "Part du territoire occupé par des forêts ou espaces naturels protégés." },
-      { key: 'environnement.risques', label: 'Exposition aux risques', format: (v: any) => v, help: "Niveau d'exposition aux risques naturels majeurs (crues, feux, séismes)." },
+      { key: 'environnement.risques', label: 'Exposition aux risques', format: (v: any) => v + '/3', inverse: true, help: "Niveau reproductible fondé sur le nombre de risques majeurs distincts recensés dans GASPAR." },
     ]
   }
 ];

@@ -607,7 +607,7 @@ function ComparateurContent() {
                       metrics: [
                         { key: "sante.medecins10k", label: "Médecins pour 10k hab.", color: "text-rose-500", format: (v: any) => v ? v : 'NC', max: 100 },
                         { key: "sante.esperanceVie", label: "Espérance de vie (ans)", color: "text-rose-500", format: (v: any) => v ? v : 'NC', max: 90 },
-                        { key: "sante.scoreAPL", label: "Accessibilité Potentielle Localisée", color: "text-rose-500", format: (v: any) => v ? v : 'NC', max: 100 },
+                        { key: "sante.scoreAPL", label: "APL médecins (consult./an)", color: "text-rose-500", format: (v: any) => v ?? 'NC', max: 8 },
                       ]
                     },
                     {
@@ -636,7 +636,7 @@ function ComparateurContent() {
                     {
                       title: "Environnement",
                       metrics: [
-                        { key: "environnement.qualiteAir", label: "Indice qualité air (0-100)", color: "text-purple-500", format: (v: any) => v ? v : 'NC', max: 100 },
+                        { key: "environnement.qualiteAir", label: "Indice ATMO moyen (1-6)", color: "text-purple-500", format: (v: any) => v ?? 'NC', max: 6, inverse: true },
                         { key: "environnement.surfaceNaturelle", label: "Surface naturelle (%)", color: "text-purple-500", format: (v: any) => v ? `${v}%` : 'NC', max: 100 },
                       ]
                     }

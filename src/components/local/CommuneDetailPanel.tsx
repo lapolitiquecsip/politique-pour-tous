@@ -182,7 +182,7 @@ const COMMUNE_CATEGORIES = [
     progressClass: 'bg-rose-600',
     metrics: [
       { key: 'sante.medecins10k', label: 'Médecins / 10k hab.', format: (v: any) => v, help: "Nombre de médecins pour 10 000 habitants." },
-      { key: 'sante.scoreAPL', label: 'Accessibilité Santé', format: (v: any) => v + '/100', help: "Indicateur d'accès aux soins APL (Ministère de la Santé)." },
+      { key: 'sante.scoreAPL', label: 'Accessibilité Santé', format: (v: any) => v + ' consult./an', help: "Consultations de médecine générale accessibles par habitant standardisé et par an (DREES)." },
       { key: 'sante.esperanceVie', label: 'Espérance de vie', format: (v: any) => v + ' ans', help: "Espérance de vie moyenne dans la commune." },
     ]
   },
@@ -211,9 +211,9 @@ const COMMUNE_CATEGORIES = [
     textClass: 'text-purple-800',
     progressClass: 'bg-purple-600',
     metrics: [
-      { key: 'environnement.qualiteAir', label: 'Qualité Air', format: (v: any) => v + '/100', help: "Note moyenne sur les concentrations de polluants." },
+      { key: 'environnement.qualiteAir', label: 'Indice ATMO moyen', format: (v: any) => v + '/6', inverse: true, help: "Moyenne des indices ATMO quotidiens officiels ; 1 est bon et 6 extrêmement mauvais." },
       { key: 'environnement.surfaceNaturelle', label: '% Espaces verts', format: (v: any) => v + '%', help: "Part du territoire occupé par des espaces verts, parcs ou forêts." },
-      { key: 'environnement.risques', label: 'Exposition aux risques', format: (v: any) => v, help: "Exposition aux risques naturels majeurs." },
+      { key: 'environnement.risques', label: 'Exposition aux risques', format: (v: any) => v + '/3', inverse: true, help: "Niveau fondé sur le nombre de risques distincts recensés dans GASPAR." },
     ]
   }
 ];
@@ -238,14 +238,11 @@ const NATIONAL_AVERAGES: Record<string, { value: any; label: string; format: (v:
   'securite.atteintesPersonnes': { value: 7.0, label: 'Moyenne nationale', format: (v: any) => v },
   'securite.atteintesBiens': { value: 25.0, label: 'Moyenne nationale', format: (v: any) => v },
   'sante.medecins10k': { value: 35.8, label: 'Moyenne nationale', format: (v: any) => v },
-  'sante.scoreAPL': { value: 60, label: 'Moyenne nationale', format: (v: any) => v + '/100' },
   'sante.esperanceVie': { value: 83.1, label: 'Moyenne nationale', format: (v: any) => v + ' ans' },
   'education.bac': { value: 91.8, label: 'Moyenne nationale', format: (v: any) => v + '%' },
   'education.diplomesSup': { value: 33.2, label: 'Moyenne nationale', format: (v: any) => v + '%' },
   'education.decrochage': { value: 7.6, label: 'Moyenne nationale', format: (v: any) => v + '%' },
-  'environnement.qualiteAir': { value: 70, label: 'Moyenne nationale', format: (v: any) => v + '/100' },
   'environnement.surfaceNaturelle': { value: 48.0, label: 'Moyenne nationale', format: (v: any) => v + '%' },
-  'environnement.risques': { value: 'modéré', label: 'Moyenne nationale', format: (v: any) => v }
 };
 
 const NEUTRAL_COMPARISON_KEYS = [
@@ -296,7 +293,7 @@ const renderComparison = (val: any, metricKey: string, inverse?: boolean) => {
     } else if (metricKey.includes('TF') || metricKey.includes('TH') || metricKey.includes('chomage') || metricKey.includes('pauvrete') || metricKey.includes('evolution') || metricKey.includes('ans') || metricKey.includes('Sociaux') || metricKey.includes('proprietaires') || metricKey.includes('investissement') || metricKey.includes('bac') || metricKey.includes('diplomesSup') || metricKey.includes('decrochage') || metricKey.includes('Air') || metricKey.includes('surfaceNaturelle') || metricKey.includes('endettement')) {
       diffStr = `${sign}${diff.toFixed(1).replace('.0', '')}%`;
     } else if (metricKey.includes('medecins10k') || metricKey.includes('atteintes') || metricKey.includes('scoreAPL') || metricKey.includes('esperanceVie')) {
-      const unit = metricKey.includes('esperanceVie') ? ' ans' : metricKey.includes('scoreAPL') ? '/100' : '';
+      const unit = metricKey.includes('esperanceVie') ? ' ans' : metricKey.includes('scoreAPL') ? ' consult./an' : '';
       diffStr = `${sign}${diff.toFixed(1).replace('.0', '')}${unit}`;
     } else {
       diffStr = `${sign}${diff.toFixed(1).replace('.0', '')}`;

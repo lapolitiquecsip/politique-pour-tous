@@ -3,10 +3,12 @@
 import { useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { Send, Mail, MessageSquare, User, CheckCircle2, ArrowRight } from "lucide-react";
+import { api } from "@/lib/api";
 
 export default function ContactPage() {
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [isSubmitted, setIsSubmitted] = useState(false);
+  const [error, setError] = useState<string | null>(null);
   const [formData, setFormData] = useState({
     name: "",
     email: "",
@@ -17,22 +19,14 @@ export default function ContactPage() {
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setIsSubmitting(true);
-
-    // Simulate API call
-    await new Promise(resolve => setTimeout(resolve, 2000));
+    setError(null);
 
     try {
-      const response = await fetch("/api/contact", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(formData)
-      });
-      
-      if (response.ok) {
-        setIsSubmitted(true);
-      }
-    } catch (error) {
-      console.error("Error submitting form:", error);
+      await api.sendContactMessage(formData);
+      setIsSubmitted(true);
+    } catch (err) {
+      console.error("Error submitting form:", err);
+      setError("L'envoi a échoué. Merci de réessayer dans un instant.");
     } finally {
       setIsSubmitting(false);
     }
@@ -136,7 +130,11 @@ export default function ContactPage() {
                     />
                   </div>
 
-                  <button 
+                  {error && (
+                    <div className="rounded-2xl bg-red-50 px-6 py-4 font-bold text-red-700">{error}</div>
+                  )}
+
+                  <button
                     type="submit"
                     disabled={isSubmitting}
                     className="w-full py-6 bg-slate-950 text-white font-black rounded-2xl hover:bg-red-600 transition-all flex items-center justify-center gap-4 group disabled:opacity-50 shadow-xl"

@@ -485,6 +485,14 @@ export const api = {
     return true;
   },
 
+  // Formulaire de contact — insert direct Supabase (site statique, pas de backend).
+  // RLS autorise l'insert anon uniquement ; pas de .select() (aucune lecture publique).
+  sendContactMessage: async (payload: { name: string; email: string; subject: string; message: string }) => {
+    const { error } = await supabase.from('contact_messages').insert(payload);
+    if (error) { throw new Error(error.message); }
+    return true;
+  },
+
   // Détail territorial (région/département/commune) en direct Supabase — remplace l'ancien
   // endpoint Express /api/comparateur/:code (backend absent sur l'hébergement statique GitHub Pages).
   // Réplique le mapping canonique du backend (routes/comparateur.ts).

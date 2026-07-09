@@ -145,8 +145,6 @@ export default function TerritoryDetailPanel({ territory, onClose }: TerritoryDe
   const [isSaved, setIsSaved] = useState(false);
   const [loadingSave, setLoadingSave] = useState(false);
 
-  const API_URL = process.env.NEXT_PUBLIC_API_URL || "http://localhost:3001";
-
   useEffect(() => {
     if (!territory) {
       setData(null);
@@ -156,8 +154,7 @@ export default function TerritoryDetailPanel({ territory, onClose }: TerritoryDe
     const fetchDetails = async () => {
       setLoading(true);
       try {
-        const res = await fetch(`${API_URL}/api/comparateur/${territory.id}?name=${encodeURIComponent(territory.name)}`);
-        const json = await res.json();
+        const json = await api.getTerritoryDetail(territory.id, territory.name);
         setData(json);
       } catch (e) {
         console.error("Failed to fetch territory details:", e);
@@ -167,7 +164,7 @@ export default function TerritoryDetailPanel({ territory, onClose }: TerritoryDe
     };
 
     fetchDetails();
-  }, [territory, API_URL]);
+  }, [territory]);
 
   useEffect(() => {
     const handleEsc = (e: KeyboardEvent) => {

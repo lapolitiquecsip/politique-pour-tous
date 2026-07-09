@@ -366,9 +366,7 @@ export default function CommuneDetailPanel({
     const fetchDetails = async () => {
       setLoadingDetails(true);
       try {
-        const API_URL = process.env.NEXT_PUBLIC_API_URL || "http://localhost:3001";
-        const res = await fetch(`${API_URL}/api/comparateur/${commune.code}?name=${encodeURIComponent(commune.nom)}`);
-        const json = await res.json();
+        const json = await api.getTerritoryDetail(commune.code, commune.nom);
         setCommuneData(json);
       } catch (e) {
         console.error("Failed to fetch commune details:", e);

@@ -13,6 +13,7 @@ import { usePremium } from "@/lib/hooks/usePremium";
 import { REGIONS, DEPARTMENTS } from "@/lib/data/territories";
 import { regionPaths } from "@/lib/data/regionPaths";
 import { departmentPaths } from "@/lib/data/departmentPaths";
+import { api } from "@/lib/api";
 
 interface SelectedTerritory {
   id: string;
@@ -32,7 +33,6 @@ function ComparateurContent() {
   
   const searchA = useCommuneSearch();
   const searchB = useCommuneSearch();
-  const API_URL = process.env.NEXT_PUBLIC_API_URL || "http://localhost:3001";
 
   const [activeSearch, setActiveSearch] = useState<'A' | 'B' | null>(null);
   const containerRefA = useRef<HTMLDivElement>(null);
@@ -86,9 +86,8 @@ function ComparateurContent() {
     const itemName = item.nom || item.name;
 
     try {
-      const populationParam = (item.population !== undefined && item.population !== null) ? `&population=${item.population}` : "";
-      const res = await fetch(`${API_URL}/api/comparateur/${codeInsee}?name=${encodeURIComponent(itemName)}${populationParam}`);
-      const details = await res.json();
+      const details = await api.getTerritoryDetail(codeInsee, itemName);
+      if (!details) return;
 
       const selected: SelectedTerritory = {
         id: codeInsee,
@@ -96,10 +95,11 @@ function ComparateurContent() {
         type,
         data: details
       };
-      
+
       // Enrich with mayor if commune
       if (type === 'commune') {
         const mayor = search.getMayor(codeInsee);
+        selected.data.politique = selected.data.politique || {};
         if (mayor && !selected.data.politique.elu) selected.data.politique.elu = mayor.n;
       }
 

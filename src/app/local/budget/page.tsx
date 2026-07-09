@@ -9,6 +9,7 @@ import {
   Wrench, Calendar
 } from "lucide-react";
 import { usePremium } from "@/lib/hooks/usePremium";
+import { api } from "@/lib/api";
 
 const MONTH_ORDER: Record<string, number> = {
   "janvier": 1, "février": 2, "mars": 3, "avril": 4, "mai": 5, "juin": 6,
@@ -58,10 +59,8 @@ function LocalBudgetContent() {
         const geoJson = await geoRes.json();
         setCommune(geoJson);
 
-        // Fetch detailed financial indicators from local backend API
-        const API_URL = process.env.NEXT_PUBLIC_API_URL || "http://localhost:3001";
-        const detailRes = await fetch(`${API_URL}/api/comparateur/${code}?name=${encodeURIComponent(geoJson.nom || "")}`);
-        const detailJson = await detailRes.json();
+        // Indicateurs détaillés en direct Supabase (plus de backend Express)
+        const detailJson = await api.getTerritoryDetail(code, geoJson.nom || "");
         setCommuneData(detailJson);
       } catch (e) {
         console.error("Failed to load budget data:", e);

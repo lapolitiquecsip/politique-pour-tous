@@ -483,6 +483,50 @@ export const api = {
       .eq('item_type', itemType);
     if (error) { throw new Error(error.message); }
     return true;
+  },
+
+  // Détail territorial (région/département/commune) en direct Supabase — remplace l'ancien
+  // endpoint Express /api/comparateur/:code (backend absent sur l'hébergement statique GitHub Pages).
+  // Réplique le mapping canonique du backend (routes/comparateur.ts).
+  getTerritoryDetail: async (code: string, name?: string) => {
+    const [{ data: territory, error: tErr }, { data: indicators, error: iErr }] = await Promise.all([
+      supabase.rpc('public_territory', { p_code: code }),
+      supabase.rpc('public_territory_indicators', { p_code: code, p_domain: null }),
+    ]);
+    if (tErr || iErr || !territory) { console.error(tErr || iErr || 'Territoire absent du référentiel'); return null; }
+    const payload: any = {
+      id: territory.code, name: territory.name || name, type: territory.type,
+      demographie: {}, economie: {}, education: {}, sante: {}, securite: {}, logement: {}, finances: {}, environnement: {},
+      source_urls: territory.source_urls || [], source_updated_at: territory.source_updated_at,
+      collected_at: territory.collected_at, data_freshness: territory.data_freshness,
+      quality_status: territory.quality_status, isEstimated: false,
+    };
+    const mappings: Record<string, [string, string]> = {
+      populationTotal: ['demographie', 'populationTotal'], densite: ['demographie', 'densite'], evolution10ans: ['demographie', 'evolution10ans'], moins25ans: ['demographie', 'moins25ans'], plus65ans: ['demographie', 'plus65ans'],
+      chomage: ['economie', 'chomage'], revenuMedian: ['economie', 'revenuMedian'], pauvrete: ['economie', 'pauvrete'],
+      bac: ['education', 'bac'], diplomesSup: ['education', 'diplomesSup'], decrochage: ['education', 'decrochage'], education_bac_success: ['education', 'bac'],
+      medecins10k: ['sante', 'medecins10k'], scoreAPL: ['sante', 'scoreAPL'], health_apl_gp: ['sante', 'scoreAPL'], esperanceVie: ['sante', 'esperanceVie'],
+      atteintesPersonnes: ['securite', 'atteintesPersonnes'], atteintesBiens: ['securite', 'atteintesBiens'], security_violence_rate: ['securite', 'atteintesPersonnes'], security_theft_burglary_rate: ['securite', 'atteintesBiens'],
+      prixM2: ['logement', 'prixM2'], logementsSociaux: ['logement', 'logementsSociaux'], proprietaires: ['logement', 'proprietaires'], housing_sale_price_m2: ['logement', 'prixM2'], housing_social_share: ['logement', 'logementsSociaux'],
+      budgetHabitant: ['finances', 'budgetHabitant'], endettement: ['finances', 'endettement'], investissement: ['finances', 'investissement'],
+      qualiteAir: ['environnement', 'qualiteAir'], surfaceNaturelle: ['environnement', 'surfaceNaturelle'], risques: ['environnement', 'risques'], environment_atmo_mean_index: ['environnement', 'qualiteAir'], environment_risk_exposure_level: ['environnement', 'risques'], environment_major_risk_count: ['environnement', 'nombreRisques'],
+    };
+    const newest = new Map<string, any>();
+    for (const indicator of (indicators || []) as any[]) {
+      const current = newest.get(indicator.indicator_code);
+      if (!current || indicator.reference_year > current.reference_year) newest.set(indicator.indicator_code, indicator);
+    }
+    payload.indicator_provenance = {};
+    for (const [icode, indicator] of newest) {
+      const mapping = mappings[icode];
+      if (!mapping) continue;
+      payload[mapping[0]][mapping[1]] = indicator.value;
+      payload.indicator_provenance[icode] = { reference_year: indicator.reference_year, unit: indicator.unit, methodology_version: indicator.methodology_version, source_urls: indicator.source_urls, quality_status: indicator.quality_status };
+      payload.source_urls.push(...(indicator.source_urls || []));
+    }
+    payload.source_urls = [...new Set(payload.source_urls)];
+    payload.sources = payload.source_urls.join(' | ');
+    return payload;
   }
 
 };

@@ -214,7 +214,8 @@ export const AwardBadge = ({
       upperTitle.includes("CHARGEMENT") ||
       upperTitle.includes("DISPONIBLE") ||
       upperTitle.includes("SÉLECTIONNÉE") ||
-      upperTitle.includes("SELECTIONNEE")
+      upperTitle.includes("SELECTIONNEE") ||
+      upperTitle.includes("ANALYSE")
     ) {
       displayText = upperTitle;
     }

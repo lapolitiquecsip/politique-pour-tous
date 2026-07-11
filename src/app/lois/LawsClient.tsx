@@ -5,6 +5,9 @@ import { useRouter, useSearchParams } from "next/navigation";
 import { CalendarDays, ExternalLink, FileText, Loader2, Search, Scale, X } from "lucide-react";
 import { api } from "@/lib/api";
 import { cleanHtmlText, formatAmendmentOutcome } from "@/lib/html";
+import { usePremium } from "@/lib/hooks/usePremium";
+import { AwardBadge } from "@/components/ui/award-badge";
+import { Lock } from "lucide-react";
 import {
   LEGISLATIVE_CATEGORIES,
   categoryLabel,
@@ -21,6 +24,7 @@ function formatDate(value?: string | null) {
 }
 
 function DossierModal({ detail, loading, onClose }: { detail: LegislativeDossierDetail | null; loading: boolean; onClose: () => void }) {
+  const { isPremium } = usePremium();
   if (!detail && !loading) return null;
   return (
     <div className="fixed inset-0 z-50 bg-slate-950/70 p-4 md:p-10 overflow-y-auto" role="dialog" aria-modal="true">
@@ -39,7 +43,15 @@ function DossierModal({ detail, loading, onClose }: { detail: LegislativeDossier
             </div>
 
             <section className="mt-10"><h3 className="text-2xl font-staatliches uppercase text-slate-950">Résumé</h3><p className="mt-3 leading-7 text-slate-700">{detail.summary?.summary || "Analyse indisponible."}</p></section>
-            {detail.premium_analysis && <section className="mt-10 rounded-3xl bg-amber-50 p-6"><h3 className="text-2xl font-staatliches uppercase text-amber-900">Analyse premium</h3><p className="mt-3 whitespace-pre-line leading-7 text-amber-950">{detail.premium_analysis.summary}</p></section>}
+            {detail.premium_analysis ? (
+              <section className="mt-10 rounded-3xl bg-amber-50 p-6"><h3 className="text-2xl font-staatliches uppercase text-amber-900">Analyse détaillée</h3><p className="mt-3 whitespace-pre-line leading-7 text-amber-950">{detail.premium_analysis.summary}</p></section>
+            ) : !isPremium ? (
+              <section className="mt-10 rounded-3xl border border-amber-200 bg-amber-50 p-6">
+                <div className="flex items-center gap-2 text-amber-900"><Lock size={18} /><h3 className="text-2xl font-staatliches uppercase">Analyse détaillée</h3></div>
+                <p className="mt-2 max-w-2xl text-sm leading-6 text-amber-800">Analyse approfondie de cette loi rédigée par notre IA (enjeux, portée, points clés), réservée aux membres premium.</p>
+                <div className="mt-4"><AwardBadge titleText="Analyse détaillée" link="/premium" /></div>
+              </section>
+            ) : null}
             <section className="mt-10">
               <h3 className="text-2xl font-staatliches uppercase text-slate-950">Navette parlementaire</h3>
               <ol className="mt-4 border-l-2 border-red-200 pl-6">

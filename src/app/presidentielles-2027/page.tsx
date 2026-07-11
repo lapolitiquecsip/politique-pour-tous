@@ -15,7 +15,7 @@ type Candidate = {
   declared_at: string | null;
   photo_url: string | null;
   summary: string | null;
-  bio: Record<string, string | string[]> | null;
+  bio: Record<string, any> | null;
   program: string | null;
   source_urls: string[] | null;
 };
@@ -70,39 +70,73 @@ function toPoints(value: string | string[] | undefined): string[] {
   return (Array.isArray(value) ? value : [value]).filter(Boolean);
 }
 
-// Souligne les chiffres (années, %, montants) au « feutre rouge ».
-const NUM_RE = /(\d{1,4}(?:[.,]\d+)?\s?%?(?:\s?[-–]\s?\d{1,4})?)/g;
+// Souligne au « feutre rouge » (trait droit, épais) UNIQUEMENT les chiffres
+// importants : pourcentages et montants (pas les simples années).
+const NUM_RE = /(\d+(?:[.,]\d+)?\s?%|\d[\d .]*\s?(?:€|milliards?|millions?|Md€|M€))/gi;
 function NumHighlight({ text }: { text: string }) {
   const parts = text.split(NUM_RE);
   return (
     <>
       {parts.map((part, i) =>
         i % 2 === 1
-          ? <span key={i} className="font-bold text-slate-900 underline decoration-red-500 decoration-wavy decoration-[3px] underline-offset-2">{part}</span>
+          ? <span key={i} className="font-bold text-slate-900 underline decoration-red-500 decoration-solid decoration-[3px] underline-offset-[3px]">{part}</span>
           : <span key={i}>{part}</span>
       )}
     </>
   );
 }
 
-// Rend une rubrique datée (parcours, chronologie) sous forme de frise, façon
-// suivi des étapes d'une loi.
+// Frise chronologique HORIZONTALE (scroll latéral) pour ne pas allonger la page.
 function Timeline({ points }: { points: string[] }) {
   return (
-    <ol className="relative mt-4 space-y-5 border-l-2 border-red-200 pl-6">
+    <div className="mt-4 flex gap-3 overflow-x-auto pb-3 [scrollbar-width:thin]">
       {points.map((p, i) => {
         const idx = p.indexOf(" : ");
         const date = idx > 0 ? p.slice(0, idx) : "";
         const desc = idx > 0 ? p.slice(idx + 3) : p;
         return (
-          <li key={i} className="relative">
-            <span className="absolute -left-[31px] top-1 h-3.5 w-3.5 rounded-full border-2 border-white bg-red-600 shadow" />
-            {date && <p className="font-staatliches text-xl uppercase leading-none text-red-600">{date}</p>}
-            <p className="mt-1 text-sm leading-6 text-slate-700"><NumHighlight text={desc} /></p>
-          </li>
+          <div key={i} className="relative w-[220px] shrink-0 rounded-2xl border border-slate-100 bg-slate-50 p-4">
+            <div className="mb-2 h-1 w-8 rounded-full bg-red-500" />
+            {date && <p className="font-staatliches text-2xl uppercase leading-none text-red-600">{date}</p>}
+            <p className="mt-2 text-sm leading-6 text-slate-700"><NumHighlight text={desc} /></p>
+          </div>
         );
       })}
-    </ol>
+    </div>
+  );
+}
+
+function computeAge(date?: string): number | null {
+  if (!date) return null;
+  const year = Number(date.slice(0, 4));
+  if (!year || year < 1900) return null;
+  const birth = /^\d{4}-\d{2}-\d{2}$/.test(date) ? new Date(date) : new Date(year, 0, 1);
+  const diff = Date.now() - birth.getTime();
+  return Math.floor(diff / (365.25 * 24 * 3600 * 1000));
+}
+
+// Vignettes de faits-clés illustrées (âge, lieu de naissance avec drapeau).
+function FactChips({ bio }: { bio: Record<string, any> | null }) {
+  const n = bio?.naissance;
+  const age = computeAge(n?.date);
+  if (!n?.ville && age === null) return null;
+  return (
+    <div className="mb-6 flex flex-wrap gap-2">
+      {age !== null && (
+        <span className="inline-flex items-center gap-1.5 rounded-full bg-slate-100 px-3.5 py-1.5 text-sm font-bold text-slate-700">
+          <span className="font-black text-slate-900 underline decoration-red-500 decoration-solid decoration-[3px] underline-offset-[3px]">{age}</span> ans
+        </span>
+      )}
+      {n?.ville && (
+        <span className="inline-flex items-center gap-2 rounded-full bg-slate-100 px-3.5 py-1.5 text-sm font-bold text-slate-700">
+          {n.pays_code && (
+            // eslint-disable-next-line @next/next/no-img-element
+            <img src={`https://flagcdn.com/${String(n.pays_code).toLowerCase()}.svg`} alt={n.pays || ""} className="h-4 w-6 rounded-sm object-cover shadow-sm" />
+          )}
+          Né·e à {n.ville}{n.pays ? `, ${n.pays}` : ""}
+        </span>
+      )}
+    </div>
   );
 }
 
@@ -155,7 +189,8 @@ function CandidateModal({ candidate, onClose }: { candidate: Candidate; onClose:
         </div>
 
         <div className="p-6 md:p-8">
-          {candidate.summary && <p className="mb-6 text-lg leading-7 text-slate-700">{candidate.summary}</p>}
+          {candidate.summary && <p className="mb-4 text-lg leading-7 text-slate-700">{candidate.summary}</p>}
+          <FactChips bio={candidate.bio} />
 
           <div className="grid gap-4 sm:grid-cols-2">
             {BIO_FIELDS.map(([key, label]) => {

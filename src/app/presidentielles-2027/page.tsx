@@ -15,7 +15,7 @@ type Candidate = {
   declared_at: string | null;
   photo_url: string | null;
   summary: string | null;
-  bio: Record<string, string> | null;
+  bio: Record<string, string | string[]> | null;
   program: string | null;
   source_urls: string[] | null;
 };
@@ -41,10 +41,18 @@ const BIO_FIELDS: Array<[string, string]> = [
   ["parcours", "Parcours"],
   ["jobs", "Métiers & jobs"],
   ["passions", "Passions"],
+  ["positions", "Positions & combats"],
   ["faits_marquants", "Faits marquants"],
-  ["sorties_mediatiques", "Sorties médiatiques"],
   ["realisations", "Réalisations concrètes"],
+  ["sorties_mediatiques", "Sorties médiatiques"],
+  ["controverses", "Controverses"],
+  ["chronologie", "Chronologie"],
 ];
+
+function toPoints(value: string | string[] | undefined): string[] {
+  if (!value) return [];
+  return (Array.isArray(value) ? value : [value]).filter(Boolean);
+}
 
 function initials(name: string) {
   const parts = name.trim().split(/\s+/);
@@ -99,12 +107,15 @@ function CandidateModal({ candidate, onClose }: { candidate: Candidate; onClose:
 
           <div className="grid gap-4 sm:grid-cols-2">
             {BIO_FIELDS.map(([key, label]) => {
-              const value = candidate.bio?.[key];
-              if (!value) return null;
+              const points = toPoints(candidate.bio?.[key]);
+              if (points.length === 0) return null;
+              const wide = key === "chronologie" || key === "parcours" ? "sm:col-span-2" : "";
               return (
-                <div key={key} className="rounded-2xl border border-slate-100 bg-slate-50 p-4">
+                <div key={key} className={`rounded-2xl border border-slate-100 bg-slate-50 p-4 ${wide}`}>
                   <h3 className="text-xs font-black uppercase tracking-widest text-slate-400">{label}</h3>
-                  <p className="mt-1 text-sm leading-6 text-slate-700">{value}</p>
+                  <ul className="mt-2 list-disc space-y-1 pl-4 text-sm leading-6 text-slate-700">
+                    {points.map((p, i) => <li key={i}>{p}</li>)}
+                  </ul>
                 </div>
               );
             })}

@@ -2,11 +2,13 @@
 
 import { Suspense, useCallback, useEffect, useRef, useState } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
+import Link from "next/link";
 import { CalendarDays, ExternalLink, FileText, Loader2, Search, Scale, X } from "lucide-react";
 import { api } from "@/lib/api";
 import { cleanHtmlText, formatAmendmentOutcome } from "@/lib/html";
 import { usePremium } from "@/lib/hooks/usePremium";
 import { groupLabel } from "@/lib/legislative-groups";
+import { parseInitiators, loadPeopleIndex, personHref, normalizeName, type InitiatorPerson } from "@/lib/initiators";
 import { AwardBadge } from "@/components/ui/award-badge";
 import { Lock, ChevronDown, ChevronLeft, ChevronRight } from "lucide-react";
 import {
@@ -192,6 +194,41 @@ function ScrutinsSection({ scrutins }: { scrutins: any[] }) {
   );
 }
 
+function InitiatorField({ authorName }: { authorName: string | null }) {
+  const names = parseInitiators(authorName);
+  const eligible = names.length >= 1 && names.length <= 3;
+  const [people, setPeople] = useState<Map<string, InitiatorPerson> | null>(null);
+
+  useEffect(() => {
+    if (!eligible) return;
+    let active = true;
+    loadPeopleIndex().then(index => { if (active) setPeople(index); }).catch(() => {});
+    return () => { active = false; };
+  }, [eligible, authorName]);
+
+  if (!eligible) {
+    return <span className="rounded-full bg-slate-100 px-4 py-2">Initiateur : {authorName || "Non renseigné par la source"}</span>;
+  }
+
+  return (
+    <span className="inline-flex flex-wrap items-center gap-2">
+      <span className="rounded-full bg-slate-100 px-4 py-2">{names.length > 1 ? "Initiateurs" : "Initiateur"} :</span>
+      {names.map((name, index) => {
+        const person = people?.get(normalizeName(name));
+        if (person) {
+          return (
+            <Link key={index} href={personHref(person)} className="inline-flex items-center gap-2 rounded-full bg-slate-100 py-1 pl-1 pr-4 transition hover:bg-slate-200">
+              {person.photo_url ? <img src={person.photo_url} alt="" className="h-8 w-8 rounded-full object-cover" /> : null}
+              <span>{person.display}</span>
+            </Link>
+          );
+        }
+        return <span key={index} className="rounded-full bg-slate-100 px-4 py-2">{name}</span>;
+      })}
+    </span>
+  );
+}
+
 function DossierModal({ detail, loading, onClose }: { detail: LegislativeDossierDetail | null; loading: boolean; onClose: () => void }) {
   const { isPremium } = usePremium();
   if (!detail && !loading) return null;
@@ -207,7 +244,7 @@ function DossierModal({ detail, loading, onClose }: { detail: LegislativeDossier
             <h2 className="text-4xl font-staatliches uppercase leading-none text-slate-950 md:text-6xl">{detail.dossier.title}</h2>
             <div className="mt-5 flex flex-wrap gap-2 text-sm font-bold text-slate-600">
               <span className="rounded-full bg-slate-100 px-4 py-2">{detail.dossier.status_label}</span>
-              <span className="rounded-full bg-slate-100 px-4 py-2">Initiateur : {detail.dossier.author_name || "Non renseigné par la source"}</span>
+              <InitiatorField authorName={detail.dossier.author_name} />
               <span className="rounded-full bg-slate-100 px-4 py-2">Mise à jour : {formatDate(detail.dossier.source_updated_at)}</span>
             </div>
 

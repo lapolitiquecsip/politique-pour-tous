@@ -71,7 +71,7 @@ export default function HomeHero() {
           className="text-sm md:text-base text-slate-600 max-w-2xl mx-auto leading-relaxed font-medium tracking-tight z-40 relative text-center px-4"
         >
             <GlossaryText>
-              Décryptez la politique française simplement et sans jargon. Suivez en direct les votes de vos députés et sénateurs, accédez aux résumés clairs des projets de loi en cours d'examen, et vérifiez la réalisation des promesses de l'exécutif.
+              La question n&apos;est pas de savoir si vous êtes de droite ou de gauche, mais plutôt : Qui vote quoi ? Où va l&apos;argent de votre commune ? Votre élu est-il vraiment ce qu&apos;il prétend être ? Nos outils permettent de contrôler l&apos;activité des politiques en temps réel, de décrypter toutes les lois, bref, de devenir un expert de la politique française. Faites-vous votre propre avis !
             </GlossaryText>
         </motion.div>
 

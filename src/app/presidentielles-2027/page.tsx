@@ -2,7 +2,7 @@
 
 import { Suspense, useEffect, useMemo, useState } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
-import { Search, Loader2, X, CalendarDays, ExternalLink } from "lucide-react";
+import { Search, Loader2, X, CalendarDays, ExternalLink, Briefcase, GraduationCap, Users } from "lucide-react";
 import { api } from "@/lib/api";
 
 type Candidate = {
@@ -115,29 +115,30 @@ function computeAge(date?: string): number | null {
   return Math.floor(diff / (365.25 * 24 * 3600 * 1000));
 }
 
-// Vignettes de faits-clés illustrées (âge, lieu de naissance avec drapeau).
-function FactChips({ bio }: { bio: Record<string, any> | null }) {
+// Vignettes de faits-clés illustrées (âge, naissance+drapeau, parti, profession…).
+function Chip({ children }: { children: React.ReactNode }) {
+  return <span className="inline-flex items-center gap-2 rounded-full bg-slate-100 px-3.5 py-1.5 text-sm font-bold text-slate-700">{children}</span>;
+}
+
+function FactChips({ candidate }: { candidate: Candidate }) {
+  const bio = candidate.bio;
   const n = bio?.naissance;
   const age = computeAge(n?.date);
-  if (!n?.ville && age === null) return null;
-  return (
-    <div className="mb-6 flex flex-wrap gap-2">
-      {age !== null && (
-        <span className="inline-flex items-center gap-1.5 rounded-full bg-slate-100 px-3.5 py-1.5 text-sm font-bold text-slate-700">
-          <span className="font-black text-slate-900 underline decoration-red-500 decoration-solid decoration-[3px] underline-offset-[3px]">{age}</span> ans
-        </span>
-      )}
-      {n?.ville && (
-        <span className="inline-flex items-center gap-2 rounded-full bg-slate-100 px-3.5 py-1.5 text-sm font-bold text-slate-700">
-          {n.pays_code && (
-            // eslint-disable-next-line @next/next/no-img-element
-            <img src={`https://flagcdn.com/${String(n.pays_code).toLowerCase()}.svg`} alt={n.pays || ""} className="h-4 w-6 rounded-sm object-cover shadow-sm" />
-          )}
-          Né·e à {n.ville}{n.pays ? `, ${n.pays}` : ""}
-        </span>
-      )}
-    </div>
-  );
+  const side = sideOf(candidate);
+  const chips: React.ReactNode[] = [];
+
+  if (age !== null) chips.push(<Chip key="age"><span className="font-black text-slate-900 underline decoration-red-500 decoration-solid decoration-[3px] underline-offset-[3px]">{age}</span> ans</Chip>);
+  if (n?.ville) chips.push(<Chip key="lieu">{n.pays_code && (
+    // eslint-disable-next-line @next/next/no-img-element
+    <img src={`https://flagcdn.com/${String(n.pays_code).toLowerCase()}.svg`} alt={n.pays || ""} className="h-4 w-6 rounded-sm object-cover shadow-sm" />
+  )}Né·e à {n.ville}{n.pays ? `, ${n.pays}` : ""}</Chip>);
+  if (candidate.party) chips.push(<Chip key="parti"><span className={`h-2.5 w-2.5 rounded-full ${side.badge}`} />{candidate.party}</Chip>);
+  if (bio?.profession) chips.push(<Chip key="prof"><Briefcase size={15} className="text-slate-400" />{bio.profession}</Chip>);
+  if (bio?.formation) chips.push(<Chip key="form"><GraduationCap size={16} className="text-slate-400" />{bio.formation}</Chip>);
+  if (bio?.enfants) chips.push(<Chip key="enf"><Users size={15} className="text-slate-400" />{bio.enfants}</Chip>);
+
+  if (chips.length === 0) return null;
+  return <div className="mb-6 flex flex-wrap gap-2">{chips}</div>;
 }
 
 function initials(name: string) {
@@ -179,7 +180,7 @@ function CandidateModal({ candidate, onClose }: { candidate: Candidate; onClose:
         <div className={`relative bg-gradient-to-br ${side.from} ${side.to} p-6 md:p-8`}>
           <button onClick={onClose} className="absolute right-4 top-4 rounded-full bg-white/20 p-2 text-white transition hover:bg-white/30" aria-label="Fermer"><X /></button>
           <div className="flex flex-col items-center gap-5 text-center text-white md:flex-row md:items-end md:text-left">
-            <CandidateAvatar c={candidate} className="h-28 w-28 shrink-0 rounded-3xl border-4 border-white/70 shadow-xl text-3xl" />
+            <CandidateAvatar c={candidate} className="h-32 w-32 shrink-0 rounded-full border-4 border-white/80 shadow-xl text-3xl" />
             <div>
               <span className="rounded-full bg-white/25 px-3 py-1 text-[11px] font-black uppercase tracking-widest">{side.label}{candidate.party ? ` · ${candidate.party}` : ""}</span>
               <h2 className="mt-3 text-4xl font-staatliches uppercase leading-none md:text-5xl">{candidate.full_name}</h2>
@@ -190,9 +191,9 @@ function CandidateModal({ candidate, onClose }: { candidate: Candidate; onClose:
 
         <div className="p-6 md:p-8">
           {candidate.summary && <p className="mb-4 text-lg leading-7 text-slate-700">{candidate.summary}</p>}
-          <FactChips bio={candidate.bio} />
+          <FactChips candidate={candidate} />
 
-          <div className="grid gap-4 sm:grid-cols-2">
+          <div className="grid items-start gap-4 sm:grid-cols-2">
             {BIO_FIELDS.map(([key, label]) => {
               const points = toPoints(candidate.bio?.[key]);
               if (points.length === 0) return null;

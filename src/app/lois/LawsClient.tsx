@@ -7,7 +7,7 @@ import { api } from "@/lib/api";
 import { cleanHtmlText, formatAmendmentOutcome } from "@/lib/html";
 import { usePremium } from "@/lib/hooks/usePremium";
 import { AwardBadge } from "@/components/ui/award-badge";
-import { Lock } from "lucide-react";
+import { Lock, ChevronDown, ChevronLeft, ChevronRight } from "lucide-react";
 import {
   LEGISLATIVE_CATEGORIES,
   categoryLabel,
@@ -21,6 +21,60 @@ type Tab = "promulgated" | "ongoing";
 function formatDate(value?: string | null) {
   if (!value) return "Date indisponible";
   return new Intl.DateTimeFormat("fr-FR", { dateStyle: "long" }).format(new Date(value));
+}
+
+function AmendmentsSection({ amendments }: { amendments: any[] }) {
+  const [show, setShow] = useState(false);
+  const [page, setPage] = useState(0);
+  const perPage = 6;
+
+  if (!amendments.length) {
+    return (
+      <section className="mt-10">
+        <h3 className="text-2xl font-staatliches uppercase text-slate-950">Amendements</h3>
+        <p className="mt-4 text-slate-500">Aucun amendement rattaché.</p>
+      </section>
+    );
+  }
+
+  const pageCount = Math.ceil(amendments.length / perPage);
+  const start = page * perPage;
+  const current = amendments.slice(start, start + perPage);
+
+  return (
+    <section className="mt-10">
+      <div className="flex flex-wrap items-center justify-between gap-3">
+        <h3 className="text-2xl font-staatliches uppercase text-slate-950">Amendements <span className="text-slate-400">({amendments.length})</span></h3>
+        <button onClick={() => setShow(s => !s)} className="inline-flex items-center gap-2 rounded-full bg-slate-100 px-4 py-2 text-sm font-bold text-slate-700 transition hover:bg-slate-200">
+          {show ? "Masquer les amendements" : "Voir les amendements"}
+          <ChevronDown size={16} className={`transition-transform ${show ? "rotate-180" : ""}`} />
+        </button>
+      </div>
+      {show && (
+        <>
+          <div className="mt-4 grid gap-3">
+            {current.map(amendment => (
+              <div key={amendment.official_id} className="rounded-2xl border border-slate-200 p-5 text-slate-900">
+                <div className="flex justify-between gap-4"><strong>Amendement {amendment.number}</strong><span>{formatAmendmentOutcome(amendment.outcome_label)}</span></div>
+                <p className="mt-2 text-sm text-slate-600">{cleanHtmlText(amendment.subject) || cleanHtmlText(amendment.body) || "Contenu disponible à la source."}</p>
+              </div>
+            ))}
+          </div>
+          {pageCount > 1 && (
+            <div className="mt-5 flex items-center justify-center gap-4">
+              <button onClick={() => setPage(p => Math.max(0, p - 1))} disabled={page === 0} className="inline-flex items-center gap-1 rounded-full bg-slate-100 px-4 py-2 text-sm font-bold text-slate-700 transition hover:bg-slate-200 disabled:cursor-not-allowed disabled:opacity-40">
+                <ChevronLeft size={16} />Précédent
+              </button>
+              <span className="text-sm font-bold text-slate-500">Page {page + 1} / {pageCount}</span>
+              <button onClick={() => setPage(p => Math.min(pageCount - 1, p + 1))} disabled={page >= pageCount - 1} className="inline-flex items-center gap-1 rounded-full bg-slate-100 px-4 py-2 text-sm font-bold text-slate-700 transition hover:bg-slate-200 disabled:cursor-not-allowed disabled:opacity-40">
+                Suivant<ChevronRight size={16} />
+              </button>
+            </div>
+          )}
+        </>
+      )}
+    </section>
+  );
 }
 
 function DossierModal({ detail, loading, onClose }: { detail: LegislativeDossierDetail | null; loading: boolean; onClose: () => void }) {
@@ -59,7 +113,7 @@ function DossierModal({ detail, loading, onClose }: { detail: LegislativeDossier
                 {!detail.steps.length && <li className="text-slate-500">Aucune étape publiée.</li>}
               </ol>
             </section>
-            <section className="mt-10"><h3 className="text-2xl font-staatliches uppercase text-slate-950">Amendements</h3><div className="mt-4 grid gap-3">{detail.amendments.map(amendment => <div key={amendment.official_id} className="rounded-2xl border border-slate-200 p-5 text-slate-900"><div className="flex justify-between gap-4"><strong>Amendement {amendment.number}</strong><span>{formatAmendmentOutcome(amendment.outcome_label)}</span></div><p className="mt-2 text-sm text-slate-600">{cleanHtmlText(amendment.subject) || cleanHtmlText(amendment.body) || "Contenu disponible à la source."}</p></div>)}{!detail.amendments.length && <p className="text-slate-500">Aucun amendement rattaché.</p>}</div></section>
+            <AmendmentsSection key={detail.dossier.id} amendments={detail.amendments} />
             <section className="mt-10"><h3 className="text-2xl font-staatliches uppercase text-slate-950">Scrutins</h3><div className="mt-4 grid gap-3">{detail.scrutins.map(scrutin => <div key={scrutin.official_id} className="rounded-2xl bg-slate-950 p-5 text-white"><strong>{scrutin.title}</strong><p className="mt-2 text-sm text-slate-300">Pour {scrutin.for_count} · Contre {scrutin.against_count} · Abstentions {scrutin.abstain_count}</p>{scrutin.group_results?.length > 0 && <div className="mt-4 grid gap-2 sm:grid-cols-2">{scrutin.group_results.map(group => <div key={group.group_code} className="rounded-xl bg-white/10 p-3 text-xs"><strong>{group.group_name || group.group_code}</strong><p className="mt-1 text-slate-300">Pour {group.for_count} · Contre {group.against_count} · Abst. {group.abstain_count}</p></div>)}</div>}<details className="mt-4 text-sm"><summary className="cursor-pointer font-bold text-red-300">Votes nominatifs ({scrutin.votes?.length || 0})</summary><div className="mt-3 max-h-52 overflow-y-auto rounded-xl bg-white/5 p-3">{scrutin.votes?.map(vote => <p key={vote.voter_official_id} className="border-b border-white/10 py-1"><span className="font-bold">{vote.voter_name}</span> — {vote.position}</p>)}</div></details></div>)}{!detail.scrutins.length && <p className="text-slate-500">Aucun scrutin rattaché.</p>}</div></section>
             <section className="mt-10"><h3 className="text-2xl font-staatliches uppercase text-slate-950">Sources officielles</h3><div className="mt-3 flex flex-col gap-2">{[...new Set([...(detail.dossier.source_urls || []), ...(detail.summary?.source_urls || []), ...(detail.promulgation?.source_url ? [detail.promulgation.source_url] : [])])].map((url: string) => <a key={url} href={url} target="_blank" rel="noreferrer" className="inline-flex items-center gap-2 text-blue-700 hover:underline"><ExternalLink size={15} />{url}</a>)}</div></section>
           </article>

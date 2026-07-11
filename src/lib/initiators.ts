@@ -2,10 +2,31 @@ import { supabase } from "@/lib/supabase";
 
 export type InitiatorPerson = {
   slug: string;
-  photo_url: string | null;
   display: string;
+  initials: string;
   kind: "depute" | "senateur";
+  /** URLs de photo à essayer dans l'ordre (cascade en cas d'échec de chargement). */
+  photoSources: string[];
 };
+
+// Sources photo d'un député : image officielle AN (via an_id) puis replis.
+// Le photo_url stocké (nosdeputes.fr) ne charge pas de façon fiable → cercle noir.
+function deputyPhotoSources(anId: string | null, slug: string, photoUrl: string | null): string[] {
+  if (anId) {
+    const id = anId.replace("PA", "");
+    return [
+      `https://www.assemblee-nationale.fr/dyn/static/tribun/17/photos/carre/${id}.jpg`,
+      `https://www.nosdeputes.fr/depute/photo/${slug}/250`,
+      `https://www.assemblee-nationale.fr/dyn/static/tribun/photos/carre/${id}.jpg`,
+    ];
+  }
+  if (photoUrl) return [photoUrl];
+  return [`https://www.nosdeputes.fr/depute/photo/${slug}/250`];
+}
+
+function makeInitials(first: string, last: string): string {
+  return `${(first[0] ?? "").toUpperCase()}${(last[0] ?? "").toUpperCase()}` || "?";
+}
 
 /** Normalise un nom pour la comparaison : minuscules, sans accents ni ponctuation. */
 export function normalizeName(value: string): string {
@@ -40,16 +61,22 @@ let indexCache: Promise<Map<string, InitiatorPerson>> | null = null;
 
 async function fetchPeopleIndex(): Promise<Map<string, InitiatorPerson>> {
   const [deputies, senators] = await Promise.all([
-    supabase.from("deputies").select("first_name,last_name,slug,photo_url"),
+    supabase.from("deputies").select("first_name,last_name,slug,photo_url,an_id"),
     supabase.from("senators").select("first_name,last_name,slug,photo_url"),
   ]);
   const map = new Map<string, InitiatorPerson>();
   const add = (rows: any[] | null, kind: InitiatorPerson["kind"]) => {
     for (const row of rows ?? []) {
       if (!row.slug) continue;
-      const display = `${row.first_name ?? ""} ${row.last_name ?? ""}`.trim();
+      const first = row.first_name ?? "";
+      const last = row.last_name ?? "";
+      const display = `${first} ${last}`.trim();
       const key = normalizeName(display);
-      if (key) map.set(key, { slug: row.slug, photo_url: row.photo_url ?? null, display, kind });
+      if (!key) continue;
+      const photoSources = kind === "depute"
+        ? deputyPhotoSources(row.an_id ?? null, row.slug, row.photo_url ?? null)
+        : (row.photo_url ? [row.photo_url] : []);
+      map.set(key, { slug: row.slug, display, initials: makeInitials(first, last), kind, photoSources });
     }
   };
   add(deputies.data, "depute");

@@ -194,6 +194,22 @@ function ScrutinsSection({ scrutins }: { scrutins: any[] }) {
   );
 }
 
+function InitiatorAvatar({ person }: { person: InitiatorPerson }) {
+  const [index, setIndex] = useState(0);
+  const exhausted = index >= person.photoSources.length;
+  if (exhausted) {
+    return <span className="flex h-8 w-8 items-center justify-center rounded-full bg-slate-500 text-[10px] font-black text-white">{person.initials}</span>;
+  }
+  return (
+    <img
+      src={person.photoSources[index]}
+      alt=""
+      onError={() => setIndex(i => i + 1)}
+      className="h-8 w-8 rounded-full border border-slate-200 object-cover object-top"
+    />
+  );
+}
+
 function InitiatorField({ authorName }: { authorName: string | null }) {
   const names = parseInitiators(authorName);
   const eligible = names.length >= 1 && names.length <= 3;
@@ -218,7 +234,7 @@ function InitiatorField({ authorName }: { authorName: string | null }) {
         if (person) {
           return (
             <Link key={index} href={personHref(person)} className="inline-flex items-center gap-2 rounded-full bg-slate-100 py-1 pl-1 pr-4 transition hover:bg-slate-200">
-              {person.photo_url ? <img src={person.photo_url} alt="" className="h-8 w-8 rounded-full object-cover" /> : null}
+              <InitiatorAvatar person={person} />
               <span>{person.display}</span>
             </Link>
           );

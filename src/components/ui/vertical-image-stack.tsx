@@ -433,7 +433,7 @@ export function VerticalImageStack({
       <div className="absolute right-8 top-1/2 -translate-y-1/2 select-none hidden md:block w-36">
         <motion.div 
           animate={combo > 0 ? { scale: [1, 1.08, 1], rotate: [0, 2, -2, 0] } : {}}
-          transition={{ type: "spring", stiffness: 300, damping: 15 }}
+          transition={{ duration: 0.5, ease: "easeInOut" }}
           className="flex flex-col items-center bg-white/90 dark:bg-slate-900/90 backdrop-blur-md px-3 py-3 rounded-2xl shadow-md border border-slate-100/50 dark:border-slate-800/50 text-center"
         >
           <span className="text-[9px] font-black uppercase tracking-widest text-amber-500 mb-1 flex items-center gap-1">

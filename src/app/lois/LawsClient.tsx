@@ -6,6 +6,7 @@ import { CalendarDays, ExternalLink, FileText, Loader2, Search, Scale, X } from 
 import { api } from "@/lib/api";
 import { cleanHtmlText, formatAmendmentOutcome } from "@/lib/html";
 import { usePremium } from "@/lib/hooks/usePremium";
+import { groupLabel } from "@/lib/legislative-groups";
 import { AwardBadge } from "@/components/ui/award-badge";
 import { Lock, ChevronDown, ChevronLeft, ChevronRight } from "lucide-react";
 import {
@@ -77,6 +78,120 @@ function AmendmentsSection({ amendments }: { amendments: any[] }) {
   );
 }
 
+function humanizeKey(key: string) {
+  const spaced = key.replace(/_/g, " ").trim();
+  return spaced.charAt(0).toUpperCase() + spaced.slice(1);
+}
+
+// Rend le gras Markdown (**texte**) car certaines analyses sont en texte, pas en JSON.
+function renderBold(text: string) {
+  return text.split(/\*\*/).map((part, i) =>
+    i % 2 === 1
+      ? <strong key={i} className="text-amber-900">{part}</strong>
+      : <span key={i}>{part}</span>
+  );
+}
+
+function PremiumAnalysis({ raw }: { raw: string }) {
+  let data: unknown = null;
+  try { data = JSON.parse(raw); } catch { /* pas du JSON : rendu texte/markdown */ }
+  if (!data || typeof data !== "object") {
+    return <p className="mt-4 whitespace-pre-line leading-7 text-amber-950">{renderBold(raw)}</p>;
+  }
+  return (
+    <div className="mt-4 space-y-5">
+      {Object.entries(data as Record<string, unknown>).map(([key, value]) => (
+        <div key={key}>
+          <h4 className="text-sm font-black uppercase tracking-wide text-amber-900">{humanizeKey(key)}</h4>
+          {typeof value === "string" ? (
+            <p className="mt-1 leading-7 text-amber-950">{value}</p>
+          ) : value && typeof value === "object" ? (
+            <div className="mt-2 space-y-2">
+              {Object.entries(value as Record<string, unknown>).map(([subKey, subValue]) => (
+                <p key={subKey} className="leading-7 text-amber-950">
+                  <span className="font-bold text-amber-900">{humanizeKey(subKey)} : </span>
+                  {typeof subValue === "string" ? subValue : JSON.stringify(subValue)}
+                </p>
+              ))}
+            </div>
+          ) : (
+            <p className="mt-1 text-amber-950">{String(value)}</p>
+          )}
+        </div>
+      ))}
+    </div>
+  );
+}
+
+function ScrutinsSection({ scrutins }: { scrutins: any[] }) {
+  const [show, setShow] = useState(false);
+  const [page, setPage] = useState(0);
+  const perPage = 4;
+
+  if (!scrutins.length) {
+    return (
+      <section className="mt-10">
+        <h3 className="text-2xl font-staatliches uppercase text-slate-950">Scrutins</h3>
+        <p className="mt-4 text-slate-500">Aucun scrutin rattaché.</p>
+      </section>
+    );
+  }
+
+  const pageCount = Math.ceil(scrutins.length / perPage);
+  const current = scrutins.slice(page * perPage, page * perPage + perPage);
+
+  return (
+    <section className="mt-10">
+      <div className="flex flex-wrap items-center justify-between gap-3">
+        <h3 className="text-2xl font-staatliches uppercase text-slate-950">Scrutins <span className="text-slate-400">({scrutins.length})</span></h3>
+        <button onClick={() => setShow(s => !s)} className="inline-flex items-center gap-2 rounded-full bg-slate-100 px-4 py-2 text-sm font-bold text-slate-700 transition hover:bg-slate-200">
+          {show ? "Masquer les scrutins" : "Voir les scrutins"}
+          <ChevronDown size={16} className={`transition-transform ${show ? "rotate-180" : ""}`} />
+        </button>
+      </div>
+      {show && (
+        <>
+          <div className="mt-4 grid gap-3">
+            {current.map(scrutin => (
+              <div key={scrutin.official_id} className="rounded-2xl bg-slate-950 p-5 text-white">
+                <strong>{scrutin.title}</strong>
+                <p className="mt-2 text-sm text-slate-300">Pour {scrutin.for_count} · Contre {scrutin.against_count} · Abstentions {scrutin.abstain_count}</p>
+                {scrutin.group_results?.length > 0 && (
+                  <div className="mt-4 grid gap-2 sm:grid-cols-2">
+                    {scrutin.group_results.map((group: any) => (
+                      <div key={group.group_code} className="rounded-xl bg-white/10 p-3 text-xs">
+                        <strong>{groupLabel(group.group_code, group.group_name)}</strong>
+                        <p className="mt-1 text-slate-300">Pour {group.for_count} · Contre {group.against_count} · Abst. {group.abstain_count}</p>
+                      </div>
+                    ))}
+                  </div>
+                )}
+                <details className="mt-4 text-sm">
+                  <summary className="cursor-pointer font-bold text-red-300">Votes nominatifs ({scrutin.votes?.length || 0})</summary>
+                  <div className="mt-3 max-h-52 overflow-y-auto rounded-xl bg-white/5 p-3">
+                    {scrutin.votes?.map((vote: any) => <p key={vote.voter_official_id} className="border-b border-white/10 py-1"><span className="font-bold">{vote.voter_name}</span> — {vote.position}</p>)}
+                  </div>
+                </details>
+              </div>
+            ))}
+          </div>
+          {pageCount > 1 && (
+            <div className="mt-5 flex items-center justify-center gap-4">
+              <button onClick={() => setPage(p => Math.max(0, p - 1))} disabled={page === 0} className="inline-flex items-center gap-1 rounded-full bg-slate-100 px-4 py-2 text-sm font-bold text-slate-700 transition hover:bg-slate-200 disabled:cursor-not-allowed disabled:opacity-40">
+                <ChevronLeft size={16} />Précédent
+              </button>
+              <span className="text-sm font-bold text-slate-500">Page {page + 1} / {pageCount}</span>
+              <button onClick={() => setPage(p => Math.min(pageCount - 1, p + 1))} disabled={page >= pageCount - 1} className="inline-flex items-center gap-1 rounded-full bg-slate-100 px-4 py-2 text-sm font-bold text-slate-700 transition hover:bg-slate-200 disabled:cursor-not-allowed disabled:opacity-40">
+                Suivant<ChevronRight size={16} />
+              </button>
+            </div>
+          )}
+        </>
+      )}
+    </section>
+  );
+}
+
 function DossierModal({ detail, loading, onClose }: { detail: LegislativeDossierDetail | null; loading: boolean; onClose: () => void }) {
   const { isPremium } = usePremium();
   if (!detail && !loading) return null;
@@ -98,7 +213,7 @@ function DossierModal({ detail, loading, onClose }: { detail: LegislativeDossier
 
             <section className="mt-10"><h3 className="text-2xl font-staatliches uppercase text-slate-950">Résumé</h3><p className="mt-3 leading-7 text-slate-700">{detail.summary?.summary || "Analyse indisponible."}</p></section>
             {detail.premium_analysis ? (
-              <section className="mt-10 rounded-3xl bg-amber-50 p-6"><h3 className="text-2xl font-staatliches uppercase text-amber-900">Analyse détaillée</h3><p className="mt-3 whitespace-pre-line leading-7 text-amber-950">{detail.premium_analysis.summary}</p></section>
+              <section className="mt-10 rounded-3xl bg-amber-50 p-6"><h3 className="text-2xl font-staatliches uppercase text-amber-900">Analyse détaillée</h3><PremiumAnalysis raw={detail.premium_analysis.summary} /></section>
             ) : !isPremium ? (
               <section className="mt-10 rounded-3xl border border-amber-200 bg-amber-50 p-6">
                 <div className="flex items-center gap-2 text-amber-900"><Lock size={18} /><h3 className="text-2xl font-staatliches uppercase">Analyse détaillée</h3></div>
@@ -114,7 +229,7 @@ function DossierModal({ detail, loading, onClose }: { detail: LegislativeDossier
               </ol>
             </section>
             <AmendmentsSection key={detail.dossier.id} amendments={detail.amendments} />
-            <section className="mt-10"><h3 className="text-2xl font-staatliches uppercase text-slate-950">Scrutins</h3><div className="mt-4 grid gap-3">{detail.scrutins.map(scrutin => <div key={scrutin.official_id} className="rounded-2xl bg-slate-950 p-5 text-white"><strong>{scrutin.title}</strong><p className="mt-2 text-sm text-slate-300">Pour {scrutin.for_count} · Contre {scrutin.against_count} · Abstentions {scrutin.abstain_count}</p>{scrutin.group_results?.length > 0 && <div className="mt-4 grid gap-2 sm:grid-cols-2">{scrutin.group_results.map(group => <div key={group.group_code} className="rounded-xl bg-white/10 p-3 text-xs"><strong>{group.group_name || group.group_code}</strong><p className="mt-1 text-slate-300">Pour {group.for_count} · Contre {group.against_count} · Abst. {group.abstain_count}</p></div>)}</div>}<details className="mt-4 text-sm"><summary className="cursor-pointer font-bold text-red-300">Votes nominatifs ({scrutin.votes?.length || 0})</summary><div className="mt-3 max-h-52 overflow-y-auto rounded-xl bg-white/5 p-3">{scrutin.votes?.map(vote => <p key={vote.voter_official_id} className="border-b border-white/10 py-1"><span className="font-bold">{vote.voter_name}</span> — {vote.position}</p>)}</div></details></div>)}{!detail.scrutins.length && <p className="text-slate-500">Aucun scrutin rattaché.</p>}</div></section>
+            <ScrutinsSection key={`s-${detail.dossier.id}`} scrutins={detail.scrutins} />
             <section className="mt-10"><h3 className="text-2xl font-staatliches uppercase text-slate-950">Sources officielles</h3><div className="mt-3 flex flex-col gap-2">{[...new Set([...(detail.dossier.source_urls || []), ...(detail.summary?.source_urls || []), ...(detail.promulgation?.source_url ? [detail.promulgation.source_url] : [])])].map((url: string) => <a key={url} href={url} target="_blank" rel="noreferrer" className="inline-flex items-center gap-2 text-blue-700 hover:underline"><ExternalLink size={15} />{url}</a>)}</div></section>
           </article>
         )}

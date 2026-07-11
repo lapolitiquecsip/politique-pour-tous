@@ -289,6 +289,27 @@ export const api = {
     return data;
   },
   
+  getCandidates: async () => {
+    const { data, error } = await supabase
+      .from('presidential_candidates')
+      .select('*')
+      .eq('status', 'declared')
+      .order('full_name');
+    if (error) { console.error(error); return []; }
+    return data || [];
+  },
+
+  getCandidateNews: async (candidateId: string) => {
+    const { data, error } = await supabase
+      .from('candidate_news')
+      .select('*')
+      .eq('candidate_id', candidateId)
+      .order('date', { ascending: false })
+      .limit(50);
+    if (error) { console.error(error); return []; }
+    return data || [];
+  },
+
   getLawsByAuthor: async (authorName: string) => {
     // Les dossiers législatifs relient l'auteur via le champ texte author_name.
     // On pré-filtre par le nom de famille (ilike), puis on confirme côté client que

@@ -34,25 +34,76 @@ function sideOf(c: Candidate) {
   return SIDES[(c.political_side || "autre").toLowerCase()] || SIDES.autre;
 }
 
-// [clé, libellé, emoji, dégradé coloré] — style éducatif très coloré.
-const BIO_FIELDS: Array<[string, string, string, string]> = [
-  ["famille", "Famille", "👪", "from-rose-500 to-pink-600"],
-  ["parents", "Parents", "🌳", "from-amber-500 to-orange-600"],
-  ["etudes", "Études", "🎓", "from-blue-500 to-indigo-600"],
-  ["parcours", "Parcours", "🧭", "from-violet-500 to-purple-600"],
-  ["jobs", "Métiers & jobs", "💼", "from-cyan-500 to-sky-600"],
-  ["passions", "Passions & hobbies", "🎨", "from-fuchsia-500 to-pink-600"],
-  ["positions", "Positions & combats", "⚖️", "from-emerald-500 to-green-600"],
-  ["faits_marquants", "Faits marquants", "⭐", "from-yellow-500 to-amber-600"],
-  ["realisations", "Réalisations concrètes", "🏗️", "from-teal-500 to-emerald-600"],
-  ["sorties_mediatiques", "Sorties médiatiques", "🎤", "from-red-500 to-rose-600"],
-  ["controverses", "Controverses", "⚡", "from-slate-600 to-slate-800"],
-  ["chronologie", "Chronologie", "📅", "from-indigo-500 to-blue-700"],
+const BIO_FIELDS: Array<[string, string]> = [
+  ["famille", "Famille"],
+  ["parents", "Parents"],
+  ["etudes", "Études"],
+  ["parcours", "Parcours"],
+  ["jobs", "Métiers & jobs"],
+  ["passions", "Passions & hobbies"],
+  ["positions", "Positions & combats"],
+  ["faits_marquants", "Faits marquants"],
+  ["realisations", "Réalisations concrètes"],
+  ["sorties_mediatiques", "Sorties médiatiques"],
+  ["controverses", "Controverses"],
+  ["chronologie", "Chronologie"],
 ];
+
+// Couleur d'accent par rubrique (classes explicites pour ne pas être purgées).
+const FIELD_COLORS: Record<string, { head: string; bar: string }> = {
+  famille: { head: "text-rose-600", bar: "bg-rose-500" },
+  parents: { head: "text-amber-600", bar: "bg-amber-500" },
+  etudes: { head: "text-blue-600", bar: "bg-blue-500" },
+  parcours: { head: "text-violet-600", bar: "bg-violet-500" },
+  jobs: { head: "text-cyan-600", bar: "bg-cyan-500" },
+  passions: { head: "text-fuchsia-600", bar: "bg-fuchsia-500" },
+  positions: { head: "text-emerald-600", bar: "bg-emerald-500" },
+  faits_marquants: { head: "text-yellow-600", bar: "bg-yellow-500" },
+  realisations: { head: "text-teal-600", bar: "bg-teal-500" },
+  sorties_mediatiques: { head: "text-red-600", bar: "bg-red-500" },
+  controverses: { head: "text-slate-700", bar: "bg-slate-600" },
+  chronologie: { head: "text-indigo-600", bar: "bg-indigo-500" },
+};
 
 function toPoints(value: string | string[] | undefined): string[] {
   if (!value) return [];
   return (Array.isArray(value) ? value : [value]).filter(Boolean);
+}
+
+// Souligne les chiffres (années, %, montants) au « feutre rouge ».
+const NUM_RE = /(\d{1,4}(?:[.,]\d+)?\s?%?(?:\s?[-–]\s?\d{1,4})?)/g;
+function NumHighlight({ text }: { text: string }) {
+  const parts = text.split(NUM_RE);
+  return (
+    <>
+      {parts.map((part, i) =>
+        i % 2 === 1
+          ? <span key={i} className="font-bold text-slate-900 underline decoration-red-500 decoration-wavy decoration-[3px] underline-offset-2">{part}</span>
+          : <span key={i}>{part}</span>
+      )}
+    </>
+  );
+}
+
+// Rend une rubrique datée (parcours, chronologie) sous forme de frise, façon
+// suivi des étapes d'une loi.
+function Timeline({ points }: { points: string[] }) {
+  return (
+    <ol className="relative mt-4 space-y-5 border-l-2 border-red-200 pl-6">
+      {points.map((p, i) => {
+        const idx = p.indexOf(" : ");
+        const date = idx > 0 ? p.slice(0, idx) : "";
+        const desc = idx > 0 ? p.slice(idx + 3) : p;
+        return (
+          <li key={i} className="relative">
+            <span className="absolute -left-[31px] top-1 h-3.5 w-3.5 rounded-full border-2 border-white bg-red-600 shadow" />
+            {date && <p className="font-staatliches text-xl uppercase leading-none text-red-600">{date}</p>}
+            <p className="mt-1 text-sm leading-6 text-slate-700"><NumHighlight text={desc} /></p>
+          </li>
+        );
+      })}
+    </ol>
+  );
 }
 
 function initials(name: string) {
@@ -107,18 +158,23 @@ function CandidateModal({ candidate, onClose }: { candidate: Candidate; onClose:
           {candidate.summary && <p className="mb-6 text-lg leading-7 text-slate-700">{candidate.summary}</p>}
 
           <div className="grid gap-4 sm:grid-cols-2">
-            {BIO_FIELDS.map(([key, label, emoji, gradient]) => {
+            {BIO_FIELDS.map(([key, label]) => {
               const points = toPoints(candidate.bio?.[key]);
               if (points.length === 0) return null;
-              const wide = key === "chronologie" || key === "parcours" ? "sm:col-span-2" : "";
+              const isTimeline = key === "parcours" || key === "chronologie";
+              const wide = isTimeline ? "sm:col-span-2" : "";
+              const color = FIELD_COLORS[key];
               return (
-                <div key={key} className={`rounded-3xl bg-gradient-to-br ${gradient} p-5 text-white shadow-lg ${wide}`}>
-                  <h3 className="flex items-center gap-2 text-sm font-black uppercase tracking-widest text-white/90">
-                    <span className="text-lg" aria-hidden>{emoji}</span>{label}
-                  </h3>
-                  <ul className="mt-3 list-disc space-y-1.5 pl-4 text-sm leading-6 text-white/95 marker:text-white/60">
-                    {points.map((p, i) => <li key={i}>{p}</li>)}
-                  </ul>
+                <div key={key} className={`rounded-3xl border border-slate-100 bg-white p-5 shadow-sm ${wide}`}>
+                  <h3 className={`font-staatliches text-2xl uppercase leading-none ${color.head}`}>{label}</h3>
+                  <div className={`mb-3 mt-1.5 h-1 w-12 rounded-full ${color.bar}`} />
+                  {isTimeline ? (
+                    <Timeline points={points} />
+                  ) : (
+                    <ul className="list-disc space-y-1.5 pl-4 text-sm leading-6 text-slate-700 marker:text-slate-300">
+                      {points.map((p, i) => <li key={i}><NumHighlight text={p} /></li>)}
+                    </ul>
+                  )}
                 </div>
               );
             })}

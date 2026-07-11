@@ -6,7 +6,7 @@ import LawsClient from "./LawsClient";
 
 export default function LawsPage() {
   return (
-    <div className="min-h-screen bg-white">
+    <div className="min-h-screen bg-white text-slate-900">
       {/* Hero Section (Premium White Style) */}
       <div className="relative pt-24 pb-16 md:pt-40 md:pb-32 bg-white overflow-hidden">
         {/* Background Glowing Blobs (More Red) */}

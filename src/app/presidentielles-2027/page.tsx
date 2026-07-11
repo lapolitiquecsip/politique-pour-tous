@@ -34,19 +34,20 @@ function sideOf(c: Candidate) {
   return SIDES[(c.political_side || "autre").toLowerCase()] || SIDES.autre;
 }
 
-const BIO_FIELDS: Array<[string, string]> = [
-  ["famille", "Famille"],
-  ["parents", "Parents"],
-  ["etudes", "Études"],
-  ["parcours", "Parcours"],
-  ["jobs", "Métiers & jobs"],
-  ["passions", "Passions"],
-  ["positions", "Positions & combats"],
-  ["faits_marquants", "Faits marquants"],
-  ["realisations", "Réalisations concrètes"],
-  ["sorties_mediatiques", "Sorties médiatiques"],
-  ["controverses", "Controverses"],
-  ["chronologie", "Chronologie"],
+// [clé, libellé, emoji, dégradé coloré] — style éducatif très coloré.
+const BIO_FIELDS: Array<[string, string, string, string]> = [
+  ["famille", "Famille", "👪", "from-rose-500 to-pink-600"],
+  ["parents", "Parents", "🌳", "from-amber-500 to-orange-600"],
+  ["etudes", "Études", "🎓", "from-blue-500 to-indigo-600"],
+  ["parcours", "Parcours", "🧭", "from-violet-500 to-purple-600"],
+  ["jobs", "Métiers & jobs", "💼", "from-cyan-500 to-sky-600"],
+  ["passions", "Passions & hobbies", "🎨", "from-fuchsia-500 to-pink-600"],
+  ["positions", "Positions & combats", "⚖️", "from-emerald-500 to-green-600"],
+  ["faits_marquants", "Faits marquants", "⭐", "from-yellow-500 to-amber-600"],
+  ["realisations", "Réalisations concrètes", "🏗️", "from-teal-500 to-emerald-600"],
+  ["sorties_mediatiques", "Sorties médiatiques", "🎤", "from-red-500 to-rose-600"],
+  ["controverses", "Controverses", "⚡", "from-slate-600 to-slate-800"],
+  ["chronologie", "Chronologie", "📅", "from-indigo-500 to-blue-700"],
 ];
 
 function toPoints(value: string | string[] | undefined): string[] {
@@ -106,14 +107,16 @@ function CandidateModal({ candidate, onClose }: { candidate: Candidate; onClose:
           {candidate.summary && <p className="mb-6 text-lg leading-7 text-slate-700">{candidate.summary}</p>}
 
           <div className="grid gap-4 sm:grid-cols-2">
-            {BIO_FIELDS.map(([key, label]) => {
+            {BIO_FIELDS.map(([key, label, emoji, gradient]) => {
               const points = toPoints(candidate.bio?.[key]);
               if (points.length === 0) return null;
               const wide = key === "chronologie" || key === "parcours" ? "sm:col-span-2" : "";
               return (
-                <div key={key} className={`rounded-2xl border border-slate-100 bg-slate-50 p-4 ${wide}`}>
-                  <h3 className="text-xs font-black uppercase tracking-widest text-slate-400">{label}</h3>
-                  <ul className="mt-2 list-disc space-y-1 pl-4 text-sm leading-6 text-slate-700">
+                <div key={key} className={`rounded-3xl bg-gradient-to-br ${gradient} p-5 text-white shadow-lg ${wide}`}>
+                  <h3 className="flex items-center gap-2 text-sm font-black uppercase tracking-widest text-white/90">
+                    <span className="text-lg" aria-hidden>{emoji}</span>{label}
+                  </h3>
+                  <ul className="mt-3 list-disc space-y-1.5 pl-4 text-sm leading-6 text-white/95 marker:text-white/60">
                     {points.map((p, i) => <li key={i}>{p}</li>)}
                   </ul>
                 </div>

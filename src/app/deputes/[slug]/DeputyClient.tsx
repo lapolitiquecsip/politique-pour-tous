@@ -545,7 +545,7 @@ export default function DeputyDetailPage({ params }: { params: Promise<{ slug: s
                   {authoredLaws.map((law: any) => (
                     <Link 
                       key={law.id}
-                      href={`/lois?id=${law.id}`}
+                      href={`/lois/?dossier=${law.id}`}
                       className="min-w-[300px] md:min-w-[350px] bg-white dark:bg-slate-900 rounded-[2rem] p-8 border border-slate-200 dark:border-slate-800 shadow-xl hover:border-amber-400 hover:shadow-amber-400/5 transition-all group"
                     >
                       <div className="flex items-center gap-3 mb-6">

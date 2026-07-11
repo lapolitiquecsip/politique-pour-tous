@@ -1,5 +1,6 @@
 import { supabase } from "./supabase";
 import type { LegislativeCategory, LegislativeDossierDetail, LegislativeListItem } from "./legislative";
+import { parseInitiators, normalizeName } from "./initiators";
 
 /**
  * API Client — FULL SUPABASE MIGRATION (SERVERLESS)
@@ -289,21 +290,25 @@ export const api = {
   },
   
   getLawsByAuthor: async (authorName: string) => {
-    // Search for the name with various common prefixes
-    const searchTerms = [
-      `%${authorName}%`,
-      `%M. ${authorName}%`,
-      `%Mme ${authorName}%`
-    ];
+    // Les dossiers législatifs relient l'auteur via le champ texte author_name.
+    // On pré-filtre par le nom de famille (ilike), puis on confirme côté client que
+    // l'élu figure bien parmi les initiateurs analysés — automatique pour toute
+    // nouvelle proposition synchronisée dans legislative_dossiers.
+    const parts = authorName.trim().split(/\s+/);
+    const lastName = parts[parts.length - 1] || authorName;
 
     const { data, error } = await supabase
-      .from('laws')
-      .select('*')
-      .or(`author.ilike.${searchTerms[0]},author.ilike.${searchTerms[1]},author.ilike.${searchTerms[2]}`)
-      .order('created_at', { ascending: false });
+      .from('legislative_dossiers')
+      .select('id,title,status_label,text_type,author_name,latest_step_at')
+      .ilike('author_name', `%${lastName}%`)
+      .order('latest_step_at', { ascending: false, nullsFirst: false });
 
     if (error) { console.error(error); return []; }
-    return data || [];
+
+    const target = normalizeName(authorName);
+    return (data || [])
+      .filter((dossier: any) => parseInitiators(dossier.author_name).some(name => normalizeName(name) === target))
+      .map((dossier: any) => ({ id: dossier.id, title: dossier.title, timeline: dossier.status_label }));
   },
 
   subscribeNewsletter: async (payload: { email: string, preferences: any, postal_code?: string, age?: string, csp?: string }) => {

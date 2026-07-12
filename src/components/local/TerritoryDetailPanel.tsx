@@ -168,7 +168,11 @@ export default function TerritoryDetailPanel({ territory, onClose, onNavigate }:
     const fetchDetails = async () => {
       setLoading(true);
       try {
-        const json = await api.getTerritoryDetail(territory.id, territory.name);
+        // Dans le référentiel, les régions sont codées « R52 », « R84 »… tandis
+        // que les départements utilisent « 52 ». Sans le préfixe, une région
+        // récupérait par erreur les données du département de même code.
+        const code = territory.type === 'region' ? `R${territory.id}` : territory.id;
+        const json = await api.getTerritoryDetail(code, territory.name);
         setData(json);
       } catch (e) {
         console.error("Failed to fetch territory details:", e);

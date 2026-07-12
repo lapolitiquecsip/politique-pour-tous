@@ -82,7 +82,9 @@ function ComparateurContent() {
 
   const handleSelect = async (side: 'A' | 'B', item: any, type: 'commune' | 'department' | 'region') => {
     const search = side === 'A' ? searchA : searchB;
-    const codeInsee = item.code || item.id || item.name;
+    const rawCode = item.code || item.id || item.name;
+    // Les régions sont codées « R52 » dans le référentiel (le « 52 » nu = département).
+    const codeInsee = type === 'region' ? `R${rawCode}` : rawCode;
     const itemName = item.nom || item.name;
 
     try {

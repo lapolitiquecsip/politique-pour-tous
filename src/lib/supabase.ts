@@ -20,4 +20,43 @@ const getValidSupabaseKey = (): string => {
 const supabaseUrl = getValidSupabaseUrl();
 const supabaseAnonKey = getValidSupabaseKey();
 
-export const supabase = createClient(supabaseUrl, supabaseAnonKey);
+// Custom fetch wrapper to enforce a strict timeout during build time
+const fetchWithTimeout = (url: RequestInfo | URL, options?: RequestInit): Promise<Response> => {
+  // Detect if we are in the static build phase of Next.js or production build environment
+  const isBuild = typeof window === 'undefined' && (
+    process.env.NEXT_PHASE === 'phase-production-build' ||
+    process.env.NODE_ENV === 'production'
+  );
+  
+  const timeoutMs = isBuild ? 2500 : 15000; // 2.5s timeout during build to prevent hangs, 15s otherwise
+
+  return new Promise((resolve, reject) => {
+    const controller = new AbortController();
+    const timeoutId = setTimeout(() => {
+      console.warn(`[Supabase Fetch] Request to ${url} timed out after ${timeoutMs}ms.`);
+      controller.abort();
+    }, timeoutMs);
+
+    fetch(url, {
+      ...options,
+      signal: controller.signal,
+    })
+      .then((res) => {
+        clearTimeout(timeoutId);
+        resolve(res);
+      })
+      .catch((err) => {
+        clearTimeout(timeoutId);
+        reject(err);
+      });
+  });
+};
+
+export const supabase = createClient(supabaseUrl, supabaseAnonKey, {
+  auth: {
+    persistSession: false,
+  },
+  global: {
+    fetch: fetchWithTimeout,
+  },
+});

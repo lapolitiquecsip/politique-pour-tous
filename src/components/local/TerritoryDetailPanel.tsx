@@ -3,7 +3,7 @@
 import { motion, AnimatePresence } from "framer-motion";
 import { X, Users, MapPin, Building2, TrendingUp, Star, Loader2, ArrowRight, Shield, Heart, GraduationCap, Home, Landmark, TreePine, Briefcase, ChevronLeft, ChevronRight } from "lucide-react";
 import RegionFinancesChart from "./RegionFinancesChart";
-import ItddSection from "./ItddSection";
+import { buildItddCards, ITDD_NEW_CATEGORIES, type ItddCard } from "@/lib/itdd-cards";
 import { REGIONS, DEPARTMENTS } from "@/lib/data/territories";
 import { useState, useEffect } from "react";
 import { usePremium } from "@/lib/hooks/usePremium";
@@ -159,6 +159,17 @@ export default function TerritoryDetailPanel({ territory, onClose, onNavigate }:
   const [loading, setLoading] = useState(false);
   const [isSaved, setIsSaved] = useState(false);
   const [loadingSave, setLoadingSave] = useState(false);
+  const [itddCards, setItddCards] = useState<ItddCard[]>([]);
+
+  useEffect(() => {
+    if (!territory || (territory.type !== 'region' && territory.type !== 'department')) { setItddCards([]); return; }
+    const level = territory.type;
+    let active = true;
+    api.getItddIndicators(level, territory.id)
+      .then(rows => { if (active) setItddCards(buildItddCards(rows as any, level)); })
+      .catch(() => { if (active) setItddCards([]); });
+    return () => { active = false; };
+  }, [territory]);
 
   useEffect(() => {
     if (!territory) {
@@ -458,47 +469,49 @@ export default function TerritoryDetailPanel({ territory, onClose, onNavigate }:
                   </div>
                 ) : (
                   <>
-                    {CATEGORIES.map((cat, catIdx) => (
-                      <div key={catIdx} className="space-y-6">
-                        <div className="flex items-center gap-3">
-                          <div className={`w-10 h-10 rounded-2xl flex items-center justify-center ${cat.iconClass}`}>
-                            <cat.icon size={20} />
+                    {CATEGORIES.map((cat, catIdx) => {
+                      const getVal = (obj: any, path: string) => path.split('.').reduce((o: any, k: string) => (o && typeof o[k] !== 'undefined') ? o[k] : null, obj);
+                      const metrics = cat.metrics
+                        .map((m: any) => { const raw = getVal(data, m.key); return { label: m.label, help: m.help, raw, display: raw !== null ? m.format(raw) : null }; })
+                        .filter((m: any) => m.display !== null);
+                      const extra = itddCards.filter(c => c.category === cat.title);
+                      if (metrics.length === 0 && extra.length === 0) return null;
+                      return (
+                        <div key={catIdx} className="space-y-6">
+                          <div className="flex items-center gap-3">
+                            <div className={`w-10 h-10 rounded-2xl flex items-center justify-center ${cat.iconClass}`}>
+                              <cat.icon size={20} />
+                            </div>
+                            <h3 className={`text-xl font-staatliches uppercase tracking-wide ${cat.textClass}`}>{cat.title}</h3>
                           </div>
-                          <h3 className={`text-xl font-staatliches uppercase tracking-wide ${cat.textClass}`}>{cat.title}</h3>
-                        </div>
-
-                        <div className={`grid grid-cols-1 md:grid-cols-2 gap-x-12 gap-y-6 rounded-[2rem] p-8 border ${cat.bgClass} ${cat.borderClass}`}>
-                          {cat.metrics.map((metric, mIdx) => {
-                            const getVal = (data: any, path: string) => {
-                              if (!data) return null;
-                              return path.split('.').reduce((obj, key) => (obj && typeof obj[key] !== 'undefined') ? obj[key] : null, data);
-                            };
-                            const val = getVal(data, metric.key);
-                            
-                            return (
-                              <div key={mIdx} className="space-y-2">
+                          <div className={`grid grid-cols-1 md:grid-cols-2 gap-x-12 gap-y-6 rounded-[2rem] p-8 border ${cat.bgClass} ${cat.borderClass}`}>
+                            {metrics.map((m: any, i: number) => (
+                              <div key={`m${i}`} className="space-y-2">
                                 <div className="flex justify-between text-[10px] font-black uppercase tracking-widest text-slate-400">
-                                  <span>{metric.label}</span>
-                                  <span className="text-slate-900 font-bold">{val !== null ? metric.format(val) : 'N/A'}</span>
+                                  <span>{m.label}</span>
+                                  <span className="text-slate-900 font-bold">{m.display}</span>
                                 </div>
-                                {metric.help && (
-                                  <div className="text-[10px] text-slate-400 font-medium normal-case leading-relaxed -mt-1">
-                                    {metric.help}
-                                  </div>
-                                )}
+                                {m.help && <div className="text-[10px] text-slate-400 font-medium normal-case leading-relaxed -mt-1">{m.help}</div>}
                                 <div className="h-2 w-full bg-slate-200/60 rounded-full overflow-hidden">
-                                  <motion.div
-                                    initial={{ width: 0 }}
-                                    animate={{ width: val ? (typeof val === 'number' ? Math.min(val, 100) : 50) + '%' : '0%' }}
-                                    className={`h-full ${cat.progressClass}`}
-                                  />
+                                  <div className={`h-full ${cat.progressClass}`} style={{ width: (typeof m.raw === 'number' ? Math.min(m.raw, 100) : 50) + '%' }} />
                                 </div>
                               </div>
-                            );
-                          })}
+                            ))}
+                            {extra.map((c, i) => (
+                              <div key={`e${i}`} className="space-y-2">
+                                <div className="flex justify-between text-[10px] font-black uppercase tracking-widest text-slate-400">
+                                  <span>{c.label}</span>
+                                  <span className="text-slate-900 font-bold">{c.display}</span>
+                                </div>
+                                <div className="h-2 w-full bg-slate-200/60 rounded-full overflow-hidden">
+                                  <div className={`h-full ${cat.progressClass}`} style={{ width: (c.pct ?? 50) + '%' }} />
+                                </div>
+                              </div>
+                            ))}
+                          </div>
                         </div>
-                      </div>
-                    ))}
+                      );
+                    })}
 
                     {/* Finances régionales 2012-2024 (OFGL) */}
                     {territory.type === 'region' && (
@@ -515,20 +528,34 @@ export default function TerritoryDetailPanel({ territory, onClose, onNavigate }:
                       </div>
                     )}
 
-                    {/* Développement durable (ITDD Insee/SDES) */}
-                    {(territory.type === 'region' || territory.type === 'department') && (
-                      <div className="space-y-6">
-                        <div className="flex items-center gap-3">
-                          <div className="w-10 h-10 rounded-2xl flex items-center justify-center bg-emerald-100 text-emerald-600">
-                            <TreePine size={20} />
+                    {/* Catégories développement durable (ITDD) sans équivalent existant */}
+                    {ITDD_NEW_CATEGORIES.map((cat) => {
+                      const extra = itddCards.filter(c => c.category === cat.title);
+                      if (extra.length === 0) return null;
+                      return (
+                        <div key={cat.title} className="space-y-6">
+                          <div className="flex items-center gap-3">
+                            <div className={`w-10 h-10 rounded-2xl flex items-center justify-center ${cat.iconClass}`}>
+                              <cat.icon size={20} />
+                            </div>
+                            <h3 className={`text-xl font-staatliches uppercase tracking-wide ${cat.textClass}`}>{cat.title}</h3>
                           </div>
-                          <h3 className="text-xl font-staatliches uppercase tracking-wide text-emerald-600">Développement durable</h3>
+                          <div className={`grid grid-cols-1 md:grid-cols-2 gap-x-12 gap-y-6 rounded-[2rem] p-8 border ${cat.bgClass} ${cat.borderClass}`}>
+                            {extra.map((c, i) => (
+                              <div key={i} className="space-y-2">
+                                <div className="flex justify-between text-[10px] font-black uppercase tracking-widest text-slate-400">
+                                  <span>{c.label}</span>
+                                  <span className="text-slate-900 font-bold">{c.display}</span>
+                                </div>
+                                <div className="h-2 w-full bg-slate-200/60 rounded-full overflow-hidden">
+                                  <div className={`h-full ${cat.progressClass}`} style={{ width: (c.pct ?? 50) + '%' }} />
+                                </div>
+                              </div>
+                            ))}
+                          </div>
                         </div>
-                        <div className="rounded-[2rem] p-6 md:p-8 border bg-slate-50/60 border-slate-100">
-                          <ItddSection level={territory.type === 'region' ? 'region' : 'department'} code={territory.id} />
-                        </div>
-                      </div>
-                    )}
+                      );
+                    })}
 
                     {/* Compare Button */}
                     <div className="pt-8">

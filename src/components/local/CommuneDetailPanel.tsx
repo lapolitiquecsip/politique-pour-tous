@@ -2,7 +2,7 @@
 
 import { motion, AnimatePresence } from "framer-motion";
 import { X, Users, MapPin, Calendar, Award, Building2, TrendingUp, UserMinus, Star, Loader2, Briefcase, GraduationCap, Heart, Shield, Home, Landmark, Coins, TreePine, Lock } from "lucide-react";
-import ItddSection from "./ItddSection";
+import { buildItddCards, ITDD_NEW_CATEGORIES, type ItddCard } from "@/lib/itdd-cards";
 import type { CommuneResult, MayorData, ElectionResult } from "@/lib/hooks/useCommuneSearch";
 import { useState, useEffect } from "react";
 import { usePremium } from "@/lib/hooks/usePremium";
@@ -347,6 +347,16 @@ export default function CommuneDetailPanel({
   const [communeData, setCommuneData] = useState<any | null>(null);
   const [loadingDetails, setLoadingDetails] = useState(false);
   const [showAllElus, setShowAllElus] = useState(false);
+  const [itddCards, setItddCards] = useState<ItddCard[]>([]);
+
+  useEffect(() => {
+    if (!commune) { setItddCards([]); return; }
+    let active = true;
+    api.getItddIndicators('commune', commune.code)
+      .then(rows => { if (active) setItddCards(buildItddCards(rows as any, 'commune')); })
+      .catch(() => { if (active) setItddCards([]); });
+    return () => { active = false; };
+  }, [commune]);
 
   const handleOpenBudget = () => {
     if (!commune) return;
@@ -726,73 +736,85 @@ export default function CommuneDetailPanel({
                   </div>
                 ) : communeData ? (
                   <>
-                    {COMMUNE_CATEGORIES.map((cat, catIdx) => (
-                      <motion.div 
-                        key={catIdx} 
-                        initial={{ opacity: 0, y: 20 }}
-                        animate={{ opacity: 1, y: 0 }}
-                        transition={{ delay: 0.1 + catIdx * 0.05 }}
-                        className="space-y-4 pt-2"
-                      >
-                        <div className="flex items-center gap-3">
-                          <div className={`w-10 h-10 rounded-2xl flex items-center justify-center ${cat.iconClass}`}>
-                            <cat.icon size={20} />
+                    {COMMUNE_CATEGORIES.map((cat, catIdx) => {
+                      const getVal = (obj: any, path: string) => path.split('.').reduce((o: any, k: string) => (o && typeof o[k] !== 'undefined') ? o[k] : null, obj);
+                      const metrics = cat.metrics
+                        .map((m: any) => { const raw = getVal(communeData, m.key); return { label: m.label, help: m.help, key: m.key, inverse: m.inverse, raw, display: (raw !== null && raw !== undefined) ? m.format(raw) : null }; })
+                        .filter((m: any) => m.display !== null);
+                      const extra = itddCards.filter(c => c.category === cat.title);
+                      if (metrics.length === 0 && extra.length === 0) return null;
+                      return (
+                        <motion.div
+                          key={catIdx}
+                          initial={{ opacity: 0, y: 20 }}
+                          animate={{ opacity: 1, y: 0 }}
+                          transition={{ delay: 0.1 + catIdx * 0.05 }}
+                          className="space-y-4 pt-2"
+                        >
+                          <div className="flex items-center gap-3">
+                            <div className={`w-10 h-10 rounded-2xl flex items-center justify-center ${cat.iconClass}`}>
+                              <cat.icon size={20} />
+                            </div>
+                            <h3 className={`text-xl font-staatliches uppercase tracking-wide ${cat.textClass}`}>{cat.title}</h3>
                           </div>
-                          <h3 className={`text-xl font-staatliches uppercase tracking-wide ${cat.textClass}`}>{cat.title}</h3>
-                        </div>
-
-                        <div className={`grid grid-cols-1 md:grid-cols-2 gap-x-12 gap-y-6 rounded-[2rem] p-8 border ${cat.bgClass} ${cat.borderClass} bg-white`}>
-                          {cat.metrics.map((metric, mIdx) => {
-                            const getVal = (data: any, path: string) => {
-                              if (!data) return null;
-                              return path.split('.').reduce((obj, key) => (obj && typeof obj[key] !== 'undefined') ? obj[key] : null, data);
-                            };
-                            const val = getVal(communeData, metric.key);
-                            
-                            return (
-                              <div key={mIdx} className="space-y-2">
+                          <div className={`grid grid-cols-1 md:grid-cols-2 gap-x-12 gap-y-6 rounded-[2rem] p-8 border ${cat.bgClass} ${cat.borderClass} bg-white`}>
+                            {metrics.map((m: any, i: number) => (
+                              <div key={`m${i}`} className="space-y-2">
                                 <div className="flex justify-between text-[10px] font-black uppercase tracking-widest text-slate-400">
-                                  <span>{metric.label}</span>
-                                  <span className="text-slate-900 font-bold">
-                                    {val !== null && val !== undefined ? metric.format(val) : 'Non disponible'}
-                                  </span>
+                                  <span>{m.label}</span>
+                                  <span className="text-slate-900 font-bold">{m.display}</span>
                                 </div>
-                                {metric.help && (
-                                  <div className="text-[10px] text-slate-400 font-medium normal-case leading-relaxed -mt-1">
-                                    {metric.help}
-                                  </div>
-                                )}
-                                {val !== null && val !== undefined && (
-                                  <>
-                                    <div className="h-2 w-full bg-slate-200/60 rounded-full overflow-hidden">
-                                      <motion.div
-                                        initial={{ width: 0 }}
-                                        animate={{ width: typeof val === 'number' ? Math.min(Math.max(val, 0), 100) + '%' : '50%' }}
-                                        className={`h-full ${cat.progressClass}`}
-                                      />
-                                    </div>
-                                    {renderComparison(val, metric.key, (metric as any).inverse)}
-                                  </>
-                                )}
+                                {m.help && <div className="text-[10px] text-slate-400 font-medium normal-case leading-relaxed -mt-1">{m.help}</div>}
+                                <div className="h-2 w-full bg-slate-200/60 rounded-full overflow-hidden">
+                                  <div className={`h-full ${cat.progressClass}`} style={{ width: typeof m.raw === 'number' ? Math.min(Math.max(m.raw, 0), 100) + '%' : '50%' }} />
+                                </div>
+                                {renderComparison(m.raw, m.key, m.inverse)}
                               </div>
-                            );
-                          })}
-                        </div>
-                      </motion.div>
-                    ))}
+                            ))}
+                            {extra.map((c, i) => (
+                              <div key={`e${i}`} className="space-y-2">
+                                <div className="flex justify-between text-[10px] font-black uppercase tracking-widest text-slate-400">
+                                  <span>{c.label}</span>
+                                  <span className="text-slate-900 font-bold">{c.display}</span>
+                                </div>
+                                <div className="h-2 w-full bg-slate-200/60 rounded-full overflow-hidden">
+                                  <div className={`h-full ${cat.progressClass}`} style={{ width: (c.pct ?? 50) + '%' }} />
+                                </div>
+                              </div>
+                            ))}
+                          </div>
+                        </motion.div>
+                      );
+                    })}
 
-                    {/* Développement durable (ITDD Insee/SDES) */}
-                    <div className="space-y-6">
-                      <div className="flex items-center gap-3">
-                        <div className="w-10 h-10 rounded-2xl flex items-center justify-center bg-emerald-100 text-emerald-600">
-                          <TreePine size={20} />
+                    {/* Catégories développement durable (ITDD) sans équivalent existant */}
+                    {ITDD_NEW_CATEGORIES.map((cat) => {
+                      const extra = itddCards.filter(c => c.category === cat.title);
+                      if (extra.length === 0) return null;
+                      return (
+                        <div key={cat.title} className="space-y-4 pt-2">
+                          <div className="flex items-center gap-3">
+                            <div className={`w-10 h-10 rounded-2xl flex items-center justify-center ${cat.iconClass}`}>
+                              <cat.icon size={20} />
+                            </div>
+                            <h3 className={`text-xl font-staatliches uppercase tracking-wide ${cat.textClass}`}>{cat.title}</h3>
+                          </div>
+                          <div className={`grid grid-cols-1 md:grid-cols-2 gap-x-12 gap-y-6 rounded-[2rem] p-8 border ${cat.bgClass} ${cat.borderClass} bg-white`}>
+                            {extra.map((c, i) => (
+                              <div key={i} className="space-y-2">
+                                <div className="flex justify-between text-[10px] font-black uppercase tracking-widest text-slate-400">
+                                  <span>{c.label}</span>
+                                  <span className="text-slate-900 font-bold">{c.display}</span>
+                                </div>
+                                <div className="h-2 w-full bg-slate-200/60 rounded-full overflow-hidden">
+                                  <div className={`h-full ${cat.progressClass}`} style={{ width: (c.pct ?? 50) + '%' }} />
+                                </div>
+                              </div>
+                            ))}
+                          </div>
                         </div>
-                        <h3 className="text-xl font-staatliches uppercase tracking-wide text-emerald-600">Développement durable</h3>
-                      </div>
-                      <div className="rounded-[2rem] p-6 md:p-8 border bg-slate-50/60 border-slate-100">
-                        <ItddSection level="commune" code={commune.code} />
-                      </div>
-                    </div>
+                      );
+                    })}
 
                     {/* Sources */}
                     {communeData.sources && (

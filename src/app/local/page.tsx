@@ -936,9 +936,10 @@ function LocalPoliticsContent() {
       onClose={() => setSelectedCommune(null)} 
     />
 
-    <TerritoryDetailPanel 
+    <TerritoryDetailPanel
       territory={selectedTerritory}
       onClose={() => setSelectedTerritory(null)}
+      onNavigate={(t) => setSelectedTerritory(t)}
     />
     </>
   );

@@ -1,8 +1,9 @@
 "use client";
 
 import { motion, AnimatePresence } from "framer-motion";
-import { X, Users, MapPin, Building2, TrendingUp, Star, Loader2, ArrowRight, Shield, Heart, GraduationCap, Home, Landmark, TreePine, Briefcase } from "lucide-react";
+import { X, Users, MapPin, Building2, TrendingUp, Star, Loader2, ArrowRight, Shield, Heart, GraduationCap, Home, Landmark, TreePine, Briefcase, ChevronLeft, ChevronRight } from "lucide-react";
 import RegionFinancesChart from "./RegionFinancesChart";
+import { REGIONS, DEPARTMENTS } from "@/lib/data/territories";
 import { useState, useEffect } from "react";
 import { usePremium } from "@/lib/hooks/usePremium";
 import { api } from "@/lib/api";
@@ -10,9 +11,11 @@ import Link from "next/link";
 import { AwardBadge } from "@/components/ui/award-badge";
 import { departmentPaths } from "@/lib/data/departmentPaths";
 
+type TerritoryRef = { id: string, name: string, type: 'region' | 'department' };
 interface TerritoryDetailPanelProps {
-  territory: { id: string, name: string, type: 'region' | 'department' } | null;
+  territory: TerritoryRef | null;
   onClose: () => void;
+  onNavigate?: (territory: TerritoryRef) => void;
 }
 
 const CATEGORIES = [
@@ -139,7 +142,17 @@ const CATEGORIES = [
   }
 ];
 
-export default function TerritoryDetailPanel({ territory, onClose }: TerritoryDetailPanelProps) {
+export default function TerritoryDetailPanel({ territory, onClose, onNavigate }: TerritoryDetailPanelProps) {
+  // Navigation préc./suiv. dans la liste des régions (ou départements).
+  const navList: TerritoryRef[] = territory
+    ? (territory.type === 'region' ? REGIONS : DEPARTMENTS).map((t: any) => ({ id: t.id, name: t.name, type: territory.type }))
+    : [];
+  const navIndex = territory ? navList.findIndex(t => t.id === territory.id) : -1;
+  const goTo = (delta: number) => {
+    if (!onNavigate || navIndex < 0 || navList.length === 0) return;
+    const next = navList[(navIndex + delta + navList.length) % navList.length];
+    onNavigate(next);
+  };
   const { userId, isPremium } = usePremium();
   const [data, setData] = useState<any | null>(null);
   const [loading, setLoading] = useState(false);
@@ -218,6 +231,24 @@ export default function TerritoryDetailPanel({ territory, onClose }: TerritoryDe
           />
 
           <div className="fixed inset-0 flex items-center justify-center p-4 md:p-8 z-50 pointer-events-none">
+            {onNavigate && navIndex >= 0 && (
+              <>
+                <button
+                  onClick={() => goTo(-1)}
+                  aria-label={territory.type === 'region' ? 'Région précédente' : 'Département précédent'}
+                  className="pointer-events-auto absolute left-2 top-1/2 z-[55] flex h-12 w-12 -translate-y-1/2 items-center justify-center rounded-full bg-white/90 text-slate-900 shadow-xl backdrop-blur transition hover:bg-white md:left-6"
+                >
+                  <ChevronLeft size={26} />
+                </button>
+                <button
+                  onClick={() => goTo(1)}
+                  aria-label={territory.type === 'region' ? 'Région suivante' : 'Département suivant'}
+                  className="pointer-events-auto absolute right-2 top-1/2 z-[55] flex h-12 w-12 -translate-y-1/2 items-center justify-center rounded-full bg-white/90 text-slate-900 shadow-xl backdrop-blur transition hover:bg-white md:right-6"
+                >
+                  <ChevronRight size={26} />
+                </button>
+              </>
+            )}
             <motion.div
               initial={{ opacity: 0, scale: 0.9, y: 20 }}
               animate={{ opacity: 1, scale: 1, y: 0 }}

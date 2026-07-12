@@ -174,8 +174,8 @@ function CandidateModal({ candidate, onClose }: { candidate: Candidate; onClose:
   }, [candidate.id]);
 
   return (
-    <div className="fixed inset-0 z-50 overflow-y-auto bg-slate-950/70 p-4 md:p-10" role="dialog" aria-modal="true">
-      <div className="mx-auto max-w-4xl overflow-hidden rounded-[2rem] bg-white shadow-2xl">
+    <div className="fixed inset-0 z-50 overflow-y-auto bg-slate-950/70 p-4 md:p-10" role="dialog" aria-modal="true" onClick={onClose}>
+      <div className="mx-auto max-w-4xl overflow-hidden rounded-[2rem] bg-white shadow-2xl" onClick={e => e.stopPropagation()}>
         {/* En-tête coloré */}
         <div className={`relative bg-gradient-to-br ${side.from} ${side.to} p-6 md:p-8`}>
           <button onClick={onClose} className="absolute right-4 top-4 rounded-full bg-white/20 p-2 text-white transition hover:bg-white/30" aria-label="Fermer"><X /></button>

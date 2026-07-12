@@ -3,6 +3,7 @@
 import { motion, AnimatePresence } from "framer-motion";
 import { X, Users, MapPin, Building2, TrendingUp, Star, Loader2, ArrowRight, Shield, Heart, GraduationCap, Home, Landmark, TreePine, Briefcase, ChevronLeft, ChevronRight } from "lucide-react";
 import RegionFinancesChart from "./RegionFinancesChart";
+import ItddSection from "./ItddSection";
 import { REGIONS, DEPARTMENTS } from "@/lib/data/territories";
 import { useState, useEffect } from "react";
 import { usePremium } from "@/lib/hooks/usePremium";
@@ -510,6 +511,21 @@ export default function TerritoryDetailPanel({ territory, onClose, onNavigate }:
                         </div>
                         <div className="rounded-[2rem] p-6 md:p-8 border bg-slate-50/60 border-slate-100">
                           <RegionFinancesChart regionCode={territory.id} />
+                        </div>
+                      </div>
+                    )}
+
+                    {/* Développement durable (ITDD Insee/SDES) */}
+                    {(territory.type === 'region' || territory.type === 'department') && (
+                      <div className="space-y-6">
+                        <div className="flex items-center gap-3">
+                          <div className="w-10 h-10 rounded-2xl flex items-center justify-center bg-emerald-100 text-emerald-600">
+                            <TreePine size={20} />
+                          </div>
+                          <h3 className="text-xl font-staatliches uppercase tracking-wide text-emerald-600">Développement durable</h3>
+                        </div>
+                        <div className="rounded-[2rem] p-6 md:p-8 border bg-slate-50/60 border-slate-100">
+                          <ItddSection level={territory.type === 'region' ? 'region' : 'department'} code={territory.id} />
                         </div>
                       </div>
                     )}

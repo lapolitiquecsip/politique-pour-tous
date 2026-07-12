@@ -2,6 +2,7 @@
 
 import { motion, AnimatePresence } from "framer-motion";
 import { X, Users, MapPin, Calendar, Award, Building2, TrendingUp, UserMinus, Star, Loader2, Briefcase, GraduationCap, Heart, Shield, Home, Landmark, Coins, TreePine, Lock } from "lucide-react";
+import ItddSection from "./ItddSection";
 import type { CommuneResult, MayorData, ElectionResult } from "@/lib/hooks/useCommuneSearch";
 import { useState, useEffect } from "react";
 import { usePremium } from "@/lib/hooks/usePremium";
@@ -779,6 +780,19 @@ export default function CommuneDetailPanel({
                         </div>
                       </motion.div>
                     ))}
+
+                    {/* Développement durable (ITDD Insee/SDES) */}
+                    <div className="space-y-6">
+                      <div className="flex items-center gap-3">
+                        <div className="w-10 h-10 rounded-2xl flex items-center justify-center bg-emerald-100 text-emerald-600">
+                          <TreePine size={20} />
+                        </div>
+                        <h3 className="text-xl font-staatliches uppercase tracking-wide text-emerald-600">Développement durable</h3>
+                      </div>
+                      <div className="rounded-[2rem] p-6 md:p-8 border bg-slate-50/60 border-slate-100">
+                        <ItddSection level="commune" code={commune.code} />
+                      </div>
+                    </div>
 
                     {/* Sources */}
                     {communeData.sources && (

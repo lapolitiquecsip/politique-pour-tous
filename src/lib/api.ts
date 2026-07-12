@@ -289,6 +289,17 @@ export const api = {
     return data;
   },
   
+  getItddIndicators: async (level: 'region' | 'department' | 'commune', code: string) => {
+    const { data, error } = await supabase
+      .from('itdd_indicators')
+      .select('variable,sub_field,year,value,unit,label,odd')
+      .eq('level', level)
+      .eq('territory_code', code)
+      .order('year');
+    if (error) { console.error(error); return []; }
+    return data || [];
+  },
+
   getRegionFinances: async (regionCode: string) => {
     const { data, error } = await supabase
       .from('region_finances')

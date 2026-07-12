@@ -2,6 +2,7 @@
 
 import { motion, AnimatePresence } from "framer-motion";
 import { X, Users, MapPin, Building2, TrendingUp, Star, Loader2, ArrowRight, Shield, Heart, GraduationCap, Home, Landmark, TreePine, Briefcase } from "lucide-react";
+import RegionFinancesChart from "./RegionFinancesChart";
 import { useState, useEffect } from "react";
 import { usePremium } from "@/lib/hooks/usePremium";
 import { api } from "@/lib/api";
@@ -462,6 +463,21 @@ export default function TerritoryDetailPanel({ territory, onClose }: TerritoryDe
                         </div>
                       </div>
                     ))}
+
+                    {/* Finances régionales 2012-2024 (OFGL) */}
+                    {territory.type === 'region' && (
+                      <div className="space-y-6">
+                        <div className="flex items-center gap-3">
+                          <div className="w-10 h-10 rounded-2xl flex items-center justify-center bg-blue-100 text-blue-600">
+                            <TrendingUp size={20} />
+                          </div>
+                          <h3 className="text-xl font-staatliches uppercase tracking-wide text-blue-600">Finances 2012-2024</h3>
+                        </div>
+                        <div className="rounded-[2rem] p-6 md:p-8 border bg-slate-50/60 border-slate-100">
+                          <RegionFinancesChart regionCode={territory.id} />
+                        </div>
+                      </div>
+                    )}
 
                     {/* Compare Button */}
                     <div className="pt-8">

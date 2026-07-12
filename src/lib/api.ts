@@ -289,6 +289,16 @@ export const api = {
     return data;
   },
   
+  getRegionFinances: async (regionCode: string) => {
+    const { data, error } = await supabase
+      .from('region_finances')
+      .select('year,indicator,montant_millions,euros_par_habitant')
+      .eq('region_code', regionCode)
+      .order('year');
+    if (error) { console.error(error); return []; }
+    return data || [];
+  },
+
   getCandidates: async () => {
     const { data, error } = await supabase
       .from('presidential_candidates')

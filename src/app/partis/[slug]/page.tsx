@@ -1,3 +1,4 @@
+// Génère les pages de fiches partis au build (une par force politique).
 import { api } from "@/lib/api";
 import PartyClient from "./PartyClient";
 

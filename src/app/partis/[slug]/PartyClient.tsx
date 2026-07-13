@@ -60,7 +60,7 @@ function Avatar({ name, anId, photo, color }: { name: string; anId?: string | nu
 export default function PartyClient({ params }: { params: Promise<{ slug: string }> }) {
   const { slug } = use(params);
   const [party, setParty] = useState<Party | null>(null);
-  const [members, setMembers] = useState<{ deputies: any[]; senators: any[]; candidates: any[] }>({ deputies: [], senators: [], candidates: [] });
+  const [members, setMembers] = useState<{ deputies: any[]; senators: any[]; candidates: any[]; meps: any[] }>({ deputies: [], senators: [], candidates: [], meps: [] });
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
@@ -122,8 +122,8 @@ export default function PartyClient({ params }: { params: Promise<{ slug: string
                 <div className="rounded-2xl bg-white/5 p-4">
                   <div className="flex items-center justify-between"><span className="text-[11px] font-black uppercase tracking-widest text-white/60">Âge moyen</span><span className="text-lg font-black text-white">{party.avg_age != null ? Math.round(party.avg_age) : "—"}</span></div>
                 </div>
-                <StatBar label="Cohésion" value={party.score_cohesion} display={score(party.score_cohesion)} color={color} />
-                <StatBar label="Participation" value={party.score_participation} display={score(party.score_participation)} color={color} />
+                <StatBar label="Cohésion des votes" value={party.score_cohesion} display={score(party.score_cohesion)} color={color} />
+                <StatBar label="Participation aux votes" value={party.score_participation} display={score(party.score_participation)} color={color} />
               </div>
             </div>
           )}
@@ -132,7 +132,7 @@ export default function PartyClient({ params }: { params: Promise<{ slug: string
 
       <div className="mx-auto max-w-5xl px-4">
         {/* Infos parti */}
-        <div className="-mt-8 grid grid-cols-1 gap-3 sm:grid-cols-2 lg:grid-cols-3">
+        <div className="mt-8 grid grid-cols-1 gap-3 sm:grid-cols-2 lg:grid-cols-3">
           <InfoRow icon={Calendar} label="Fondation" value={party.founded} />
           <InfoRow icon={Users} label="Adhérents" value={party.members} />
           <InfoRow icon={Wallet} label="Budget / financement" value={party.budget} />
@@ -147,6 +147,22 @@ export default function PartyClient({ params }: { params: Promise<{ slug: string
             <Globe className="h-4 w-4" /> Site officiel <ExternalLink className="h-3.5 w-3.5" />
           </a>
         )}
+
+        {/* Représentation (comptes, 0 inclus) */}
+        <div className="mt-8 grid grid-cols-3 gap-3">
+          <div className="rounded-2xl border border-slate-200 bg-white p-4 text-center">
+            <p className="text-3xl font-black text-slate-900">{members.deputies.length}</p>
+            <p className="mt-1 text-[11px] font-black uppercase tracking-widest text-slate-400">Député·e·s</p>
+          </div>
+          <div className="rounded-2xl border border-slate-200 bg-white p-4 text-center">
+            <p className="text-3xl font-black text-slate-900">{members.senators.length}</p>
+            <p className="mt-1 text-[11px] font-black uppercase tracking-widest text-slate-400">Sénateur·rice·s</p>
+          </div>
+          <div className="rounded-2xl border border-slate-200 bg-white p-4 text-center">
+            <p className="text-3xl font-black text-slate-900">{members.meps.length}</p>
+            <p className="mt-1 text-[11px] font-black uppercase tracking-widest text-slate-400">Député·e·s europ.</p>
+          </div>
+        </div>
 
         {/* Membres */}
         {(members.candidates.length > 0) && (
@@ -182,9 +198,11 @@ export default function PartyClient({ params }: { params: Promise<{ slug: string
           </section>
         )}
 
-        {members.senators.length > 0 && (
-          <section className="mt-12">
-            <h2 className="mb-1 text-2xl font-staatliches uppercase text-slate-900">Les sénateur·rice·s ({members.senators.length})</h2>
+        <section className="mt-12">
+          <h2 className="mb-1 text-2xl font-staatliches uppercase text-slate-900">Les sénateur·rice·s ({members.senators.length})</h2>
+          {members.senators.length === 0 ? (
+            <p className="mt-3 text-sm text-slate-500">Aucun·e sénateur·rice pour ce parti.</p>
+          ) : (
             <div className="mt-4 grid grid-cols-1 gap-3 sm:grid-cols-2 lg:grid-cols-3">
               {members.senators.map((s: any) => (
                 <Link key={s.slug} href={`/senateurs/${s.slug}`} className="flex items-center gap-3 rounded-2xl border border-slate-200 bg-white p-3 transition hover:border-amber-300 group">
@@ -194,8 +212,24 @@ export default function PartyClient({ params }: { params: Promise<{ slug: string
                 </Link>
               ))}
             </div>
-          </section>
-        )}
+          )}
+        </section>
+
+        <section className="mt-12">
+          <h2 className="mb-1 text-2xl font-staatliches uppercase text-slate-900">Les député·e·s européen·ne·s ({members.meps.length})</h2>
+          {members.meps.length === 0 ? (
+            <p className="mt-3 text-sm text-slate-500">Aucun·e député·e européen·ne pour ce parti.</p>
+          ) : (
+            <div className="mt-4 grid grid-cols-1 gap-3 sm:grid-cols-2 lg:grid-cols-3">
+              {members.meps.map((m: any) => (
+                <div key={m.id} className="flex items-center gap-3 rounded-2xl border border-slate-200 bg-white p-3">
+                  <Avatar name={m.full_name} color={color} />
+                  <span className="truncate font-bold text-slate-900">{m.full_name}</span>
+                </div>
+              ))}
+            </div>
+          )}
+        </section>
 
         {/* Sources */}
         <div className="mt-12 flex flex-wrap items-center gap-4 border-t border-slate-200 pt-6 text-xs text-slate-400">

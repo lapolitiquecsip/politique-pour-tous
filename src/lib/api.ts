@@ -353,6 +353,39 @@ export const api = {
     return Object.fromEntries(data.map((r: any) => [r.case_key, r.explanation])) as Record<string, string>;
   },
 
+  // --- Fiches partis ---
+  getParties: async () => {
+    const { data, error } = await supabase.from('political_parties').select('*').order('effectif', { ascending: false, nullsFirst: false });
+    if (error || !data) return [];
+    return data;
+  },
+
+  getPartyBySlug: async (slug: string) => {
+    const { data, error } = await supabase.from('political_parties').select('*').eq('slug', slug).single();
+    if (error) return null;
+    return data;
+  },
+
+  // Résout la valeur `party` d'un élu/candidat vers sa fiche parti, via les alias.
+  findPartyByAlias: async (value: string | null | undefined) => {
+    if (!value) return null;
+    const target = value.trim().toLowerCase();
+    const { data, error } = await supabase.from('political_parties').select('slug, name, abbrev, color, aliases');
+    if (error || !data) return null;
+    return data.find((p: any) => (p.aliases || []).some((a: string) => a.toLowerCase() === target)) ?? null;
+  },
+
+  // Membres d'un parti (députés / sénateurs / candidats) via ses alias.
+  getPartyMembers: async (aliases: string[]) => {
+    if (!aliases?.length) return { deputies: [], senators: [], candidates: [] };
+    const [dep, sen, cand] = await Promise.all([
+      supabase.from('deputies').select('slug, first_name, last_name, party, an_id, photo_url, department').in('party', aliases).order('last_name'),
+      supabase.from('senators').select('slug, first_name, last_name, party').in('party', aliases).order('last_name'),
+      supabase.from('presidential_candidates').select('slug, full_name, party').in('party', aliases).eq('status', 'declared'),
+    ]);
+    return { deputies: dep.data || [], senators: sen.data || [], candidates: cand.data || [] };
+  },
+
   // --- Fil conducteur : relier une même personne entre ses différentes pages ---
 
   // Cette personne (nom complet) est-elle candidate déclarée à la présidentielle ?

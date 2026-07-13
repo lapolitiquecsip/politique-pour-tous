@@ -172,12 +172,14 @@ function CandidateModal({ candidate, onClose }: { candidate: Candidate; onClose:
   const [news, setNews] = useState<any[] | null>(null);
   const [showLegal, setShowLegal] = useState(false);
   const [mandate, setMandate] = useState<{ type: string; slug: string } | null>(null);
+  const [partyLink, setPartyLink] = useState<{ slug: string; name: string } | null>(null);
   useEffect(() => {
     let active = true;
     api.getCandidateNews(candidate.id).then(rows => { if (active) setNews(rows); }).catch(() => setNews([]));
     api.findMandateByName(candidate.full_name).then(m => { if (active) setMandate(m); }).catch(() => {});
+    api.findPartyByAlias(candidate.party).then(p => { if (active) setPartyLink(p); }).catch(() => {});
     return () => { active = false; };
-  }, [candidate.id, candidate.full_name]);
+  }, [candidate.id, candidate.full_name, candidate.party]);
 
   // Fermeture au clavier (Échap). Le clic hors du panneau et la croix ferment aussi.
   useEffect(() => {
@@ -219,6 +221,15 @@ function CandidateModal({ candidate, onClose }: { candidate: Candidate; onClose:
 
         <div className="p-6 md:p-8">
           {candidate.summary && <p className="mb-4 text-lg leading-7 text-slate-700">{candidate.summary}</p>}
+
+          {/* Fil conducteur : fiche du parti */}
+          {partyLink && (
+            <Link href={`/partis/${partyLink.slug}`}
+              className="mb-4 flex items-center justify-between gap-3 rounded-2xl border border-slate-200 bg-slate-50 px-5 py-3 text-slate-800 transition hover:border-slate-300 hover:bg-slate-100">
+              <span className="flex items-center gap-2 text-sm font-bold"><Landmark size={17} /> Voir la fiche du parti — {partyLink.name}</span>
+              <ArrowRight size={17} />
+            </Link>
+          )}
 
           {/* Fil conducteur : lien vers la fiche parlementaire de la même personne */}
           {mandate && (

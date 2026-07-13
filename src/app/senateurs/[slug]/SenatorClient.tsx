@@ -35,10 +35,12 @@ export default function SenatorClient({ senator }: { senator: any }) {
   const [isBioExpanded, setIsBioExpanded] = useState(true);
   const [showLegalModal, setShowLegalModal] = useState(false);
   const [candidateLink, setCandidateLink] = useState<{ slug: string } | null>(null);
+  const [partyLink, setPartyLink] = useState<{ slug: string; name: string } | null>(null);
 
   useEffect(() => {
     api.findCandidateByName(`${senator.first_name} ${senator.last_name}`).then(c => setCandidateLink(c)).catch(() => {});
-  }, [senator.first_name, senator.last_name]);
+    api.findPartyByAlias(senator.party).then(p => setPartyLink(p)).catch(() => {});
+  }, [senator.first_name, senator.last_name, senator.party]);
 
   const isLegalClean = useMemo(() => {
     const issues = senator?.legal_issues || "";
@@ -101,17 +103,33 @@ export default function SenatorClient({ senator }: { senator: any }) {
               </div>
 
               <div className="p-8 space-y-6">
-                 <div className="flex items-center gap-4 p-4 rounded-3xl bg-amber-50/50 dark:bg-slate-800/50 border border-amber-100 dark:border-slate-700">
-                    <div className="w-12 h-12 rounded-2xl bg-amber-600 flex items-center justify-center text-white shrink-0 shadow-lg shadow-amber-500/20">
-                      <Users className="w-6 h-6" />
-                    </div>
-                    <div className="min-w-0">
-                      <p className="text-[10px] font-black text-slate-400 uppercase tracking-wider">Groupe Politique</p>
-                      <p className="font-bold text-slate-900 dark:text-white truncate">
-                        {getFullPartyName(senator.party)}
-                      </p>
-                    </div>
-                 </div>
+                 {(() => {
+                   const inner = (
+                     <>
+                       <div className="w-12 h-12 rounded-2xl bg-amber-600 flex items-center justify-center text-white shrink-0 shadow-lg shadow-amber-500/20">
+                         <Users className="w-6 h-6" />
+                       </div>
+                       <div className="min-w-0">
+                         <p className="text-[10px] font-black text-slate-400 uppercase tracking-wider">Groupe Politique</p>
+                         <p className="font-bold text-slate-900 dark:text-white truncate">
+                           {getFullPartyName(senator.party)}
+                         </p>
+                         {partyLink && (
+                           <span className="text-[10px] font-black uppercase tracking-widest text-amber-600 inline-flex items-center gap-1 mt-1 opacity-0 group-hover/party:opacity-100 transition-opacity">Voir la fiche du parti <ArrowRight className="w-3 h-3" /></span>
+                         )}
+                       </div>
+                     </>
+                   );
+                   return partyLink ? (
+                     <Link href={`/partis/${partyLink.slug}`} className="flex items-center gap-4 p-4 rounded-3xl bg-amber-50/50 dark:bg-slate-800/50 border border-amber-100 dark:border-slate-700 transition hover:border-amber-400 group/party">
+                       {inner}
+                     </Link>
+                   ) : (
+                     <div className="flex items-center gap-4 p-4 rounded-3xl bg-amber-50/50 dark:bg-slate-800/50 border border-amber-100 dark:border-slate-700">
+                       {inner}
+                     </div>
+                   );
+                 })()}
 
                 <div className="flex items-center gap-4 p-4 rounded-3xl bg-slate-50 dark:bg-slate-800/50 border border-slate-100 dark:border-slate-700">
                    <div className="w-12 h-12 rounded-2xl bg-blue-500 flex items-center justify-center text-white shrink-0 shadow-lg shadow-blue-500/20">

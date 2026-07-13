@@ -1,20 +1,28 @@
-// Génère les pages de fiches partis au build (une par force politique).
-import { api } from "@/lib/api";
 import PartyClient from "./PartyClient";
 
-// Ne pas réutiliser le Data Cache Next au build (évite qu'une ancienne réponse
-// vide de political_parties, mise en cache CI, empêche la génération des pages).
-export const fetchCache = "force-no-store";
+// Ensemble curé et stable des forces politiques → on génère les pages à partir de
+// cette liste fixe (déterministe, sans dépendre d'un fetch DB au build). Le contenu
+// de chaque fiche est chargé depuis Supabase côté client.
+const PARTY_SLUGS = [
+  "rassemblement-national",
+  "renaissance",
+  "la-france-insoumise",
+  "parti-socialiste",
+  "les-republicains",
+  "les-ecologistes",
+  "les-democrates",
+  "horizons",
+  "liot",
+  "parti-communiste-francais",
+  "union-des-droites",
+  "union-centriste",
+  "rdse",
+  "les-independants",
+  "non-inscrits",
+];
 
-export async function generateStaticParams() {
-  try {
-    const parties = await api.getParties();
-    const params = parties.map((p: any) => ({ slug: p.slug }));
-    return params.length ? params : [{ slug: "indisponible" }];
-  } catch (error) {
-    console.error("Error generating static params for parties:", error);
-    return [{ slug: "indisponible" }];
-  }
+export function generateStaticParams() {
+  return PARTY_SLUGS.map((slug) => ({ slug }));
 }
 
 export default function Page({ params }: { params: Promise<{ slug: string }> }) {

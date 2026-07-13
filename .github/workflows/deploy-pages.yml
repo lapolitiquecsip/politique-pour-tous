@@ -25,10 +25,11 @@ jobs:
         with:
           node-version: "20"
           cache: npm
+      # NB : pas de `static_site_generator: next` — il écrase next.config et supprime
+      # trailingSlash:true (→ fichiers plats, URLs en 404). Le basePath vient de
+      # NEXT_PUBLIC_BASE_PATH ci-dessous, la config du repo est ainsi respectée.
       - name: Setup Pages
         uses: actions/configure-pages@v5
-        with:
-          static_site_generator: next
       # Pas de cache .next : en output:export, un cache restauré provoque des
       # exports incomplets (seules les routes modifiées sont ré-émises). Build propre à chaque fois.
       - name: Install dependencies

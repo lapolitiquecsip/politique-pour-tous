@@ -160,6 +160,7 @@ export default function TerritoryDetailPanel({ territory, onClose, onNavigate }:
   const [isSaved, setIsSaved] = useState(false);
   const [loadingSave, setLoadingSave] = useState(false);
   const [itddCards, setItddCards] = useState<ItddCard[]>([]);
+  const [localDeputies, setLocalDeputies] = useState<any[]>([]);
 
   useEffect(() => {
     if (!territory || (territory.type !== 'region' && territory.type !== 'department')) { setItddCards([]); return; }
@@ -168,6 +169,16 @@ export default function TerritoryDetailPanel({ territory, onClose, onNavigate }:
     api.getItddIndicators(level, territory.id)
       .then(rows => { if (active) setItddCards(buildItddCards(rows as any, level)); })
       .catch(() => { if (active) setItddCards([]); });
+    return () => { active = false; };
+  }, [territory]);
+
+  // Fil conducteur : les députés du département (élus du territoire).
+  useEffect(() => {
+    if (!territory || territory.type !== 'department') { setLocalDeputies([]); return; }
+    let active = true;
+    api.getDeputiesByDepartment(territory.name)
+      .then(rows => { if (active) setLocalDeputies(rows as any[]); })
+      .catch(() => { if (active) setLocalDeputies([]); });
     return () => { active = false; };
   }, [territory]);
 
@@ -512,6 +523,33 @@ export default function TerritoryDetailPanel({ territory, onClose, onNavigate }:
                         </div>
                       );
                     })}
+
+                    {/* Fil conducteur : les député·e·s de ce département */}
+                    {territory.type === 'department' && localDeputies.length > 0 && (
+                      <div className="space-y-6">
+                        <div className="flex items-center gap-3">
+                          <div className="w-10 h-10 rounded-2xl flex items-center justify-center bg-red-100 text-red-600">
+                            <Landmark size={20} />
+                          </div>
+                          <h3 className="text-xl font-staatliches uppercase tracking-wide text-red-600">Les député·e·s du département</h3>
+                        </div>
+                        <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                          {localDeputies.map((dep) => (
+                            <Link key={dep.slug} href={`/deputes/${dep.slug}`}
+                              className="flex items-center gap-3 rounded-2xl border border-slate-100 bg-slate-50/60 p-3 transition hover:border-red-300 hover:bg-red-50/50 group">
+                              <div className="w-10 h-10 shrink-0 rounded-full bg-red-500 text-white flex items-center justify-center text-xs font-black">
+                                {`${(dep.first_name?.[0] || '')}${(dep.last_name?.[0] || '')}`.toUpperCase()}
+                              </div>
+                              <div className="min-w-0">
+                                <p className="font-bold text-slate-900 truncate">{dep.first_name} {dep.last_name}</p>
+                                <p className="text-[11px] font-bold text-slate-500 truncate">{dep.party || '—'}{dep.constituency_number ? ` · ${dep.constituency_number}ème circ.` : ''}</p>
+                              </div>
+                              <ArrowRight className="ml-auto w-4 h-4 text-slate-300 group-hover:text-red-500 transition-colors" />
+                            </Link>
+                          ))}
+                        </div>
+                      </div>
+                    )}
 
                     {/* Finances régionales 2012-2024 (OFGL) */}
                     {territory.type === 'region' && (

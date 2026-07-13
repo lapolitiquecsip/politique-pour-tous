@@ -351,17 +351,31 @@ export default function DeputyDetailPage({ params }: { params: Promise<{ slug: s
                    </div>
                 </div>
 
-                <div className="flex items-center gap-4 p-4 rounded-3xl bg-slate-50 dark:bg-slate-800/50 border border-slate-100 dark:border-slate-700">
-                   <div className="w-12 h-12 rounded-2xl bg-blue-500 flex items-center justify-center text-white shrink-0 shadow-lg shadow-blue-500/20">
-                     <MapPin className="w-6 h-6" />
-                   </div>
-                   <div>
-                     <p className="text-[10px] font-black text-slate-400 uppercase tracking-wider">Circonscription</p>
-                     <p className="font-bold text-slate-900 dark:text-white">
-                       {deputy?.department || '...'} {deputy?.constituency_number ? `- ${deputy.constituency_number}ème` : ''}
-                     </p>
-                   </div>
-                </div>
+                {deputy?.department ? (
+                  <Link href={`/local/?type=department&code=${encodeURIComponent(deputy.department)}`}
+                    className="flex items-center gap-4 p-4 rounded-3xl bg-slate-50 dark:bg-slate-800/50 border border-slate-100 dark:border-slate-700 transition hover:border-blue-400 hover:bg-blue-50/50 group">
+                     <div className="w-12 h-12 rounded-2xl bg-blue-500 flex items-center justify-center text-white shrink-0 shadow-lg shadow-blue-500/20">
+                       <MapPin className="w-6 h-6" />
+                     </div>
+                     <div className="min-w-0">
+                       <p className="text-[10px] font-black text-slate-400 uppercase tracking-wider">Circonscription</p>
+                       <p className="font-bold text-slate-900 dark:text-white">
+                         {deputy.department} {deputy?.constituency_number ? `- ${deputy.constituency_number}ème` : ''}
+                       </p>
+                       <span className="text-[10px] font-black uppercase tracking-widest text-blue-600 inline-flex items-center gap-1 mt-0.5 opacity-0 group-hover:opacity-100 transition-opacity">Voir la politique locale <ArrowRight className="w-3 h-3" /></span>
+                     </div>
+                  </Link>
+                ) : (
+                  <div className="flex items-center gap-4 p-4 rounded-3xl bg-slate-50 dark:bg-slate-800/50 border border-slate-100 dark:border-slate-700">
+                     <div className="w-12 h-12 rounded-2xl bg-blue-500 flex items-center justify-center text-white shrink-0 shadow-lg shadow-blue-500/20">
+                       <MapPin className="w-6 h-6" />
+                     </div>
+                     <div>
+                       <p className="text-[10px] font-black text-slate-400 uppercase tracking-wider">Circonscription</p>
+                       <p className="font-bold text-slate-900 dark:text-white">...</p>
+                     </div>
+                  </div>
+                )}
               </div>
             </div>
 

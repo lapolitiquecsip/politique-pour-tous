@@ -320,6 +320,28 @@ export const api = {
     return data || [];
   },
 
+  // Députés d'un département (par nom de département) — pour le fil conducteur local ↔ élus.
+  getDeputiesByDepartment: async (departmentName: string) => {
+    const { data, error } = await supabase
+      .from('deputies')
+      .select('slug, first_name, last_name, party, constituency_number, an_id, photo_url')
+      .eq('department', departmentName)
+      .order('constituency_number');
+    if (error || !data) return [];
+    return data;
+  },
+
+  // Sénateurs d'un département (par nom de département).
+  getSenatorsByDepartment: async (departmentName: string) => {
+    const { data, error } = await supabase
+      .from('senators')
+      .select('slug, first_name, last_name, party')
+      .eq('department', departmentName)
+      .order('last_name');
+    if (error || !data) return [];
+    return data;
+  },
+
   // Explications concrètes des affaires judiciaires (générées + mises en cache côté backend).
   getLegalExplanations: async (caseKeys: string[]) => {
     if (!caseKeys.length) return {} as Record<string, string>;

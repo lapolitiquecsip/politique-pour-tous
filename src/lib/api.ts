@@ -353,6 +353,17 @@ export const api = {
     return Object.fromEntries(data.map((r: any) => [r.case_key, r.explanation])) as Record<string, string>;
   },
 
+  // Historique d'un parti (adhérents + résultats électoraux).
+  getPartyHistory: async (slug: string) => {
+    const { data, error } = await supabase
+      .from('party_history')
+      .select('kind, year, value, label, source')
+      .eq('party_slug', slug)
+      .order('year');
+    if (error || !data) return [];
+    return data;
+  },
+
   // --- Fiches partis ---
   getParties: async () => {
     const { data, error } = await supabase.from('political_parties').select('*').order('effectif', { ascending: false, nullsFirst: false });

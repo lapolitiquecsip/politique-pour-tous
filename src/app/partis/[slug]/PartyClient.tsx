@@ -63,13 +63,17 @@ export default function PartyClient({ params }: { params: Promise<{ slug: string
   const [members, setMembers] = useState<{ deputies: any[]; senators: any[]; candidates: any[]; meps: any[] }>({ deputies: [], senators: [], candidates: [], meps: [] });
   const [loading, setLoading] = useState(true);
   const [tab, setTab] = useState<"deputies" | "senators" | "meps">("deputies");
+  const [history, setHistory] = useState<any[]>([]);
 
   useEffect(() => {
     let active = true;
     api.getPartyBySlug(slug).then(async (p: any) => {
       if (!active) return;
       setParty(p);
-      if (p) setMembers(await api.getPartyMembers(p.aliases || []));
+      if (p) {
+        setMembers(await api.getPartyMembers(p.aliases || []));
+        api.getPartyHistory(slug).then(h => setHistory(h)).catch(() => {});
+      }
       setLoading(false);
     }).catch(() => setLoading(false));
     return () => { active = false; };
@@ -91,7 +95,7 @@ export default function PartyClient({ params }: { params: Promise<{ slug: string
       {/* En-tête coloré */}
       <div className="relative overflow-hidden px-4 py-16 text-white" style={{ background: `linear-gradient(135deg, ${color} 0%, #0f172a 130%)` }}>
         <div className="mx-auto max-w-5xl">
-          <button onClick={() => history.back()} className="mb-6 inline-flex items-center gap-1 text-sm font-bold text-white/70 transition hover:text-white">
+          <button onClick={() => window.history.back()} className="mb-6 inline-flex items-center gap-1 text-sm font-bold text-white/70 transition hover:text-white">
             <ChevronLeft className="h-4 w-4" /> Retour
           </button>
           <div className="flex flex-col items-start gap-6 md:flex-row md:items-center">
@@ -227,6 +231,59 @@ export default function PartyClient({ params }: { params: Promise<{ slug: string
             </div>
           </section>
         )}
+
+        {/* Évolution : adhérents + résultats électoraux */}
+        {history.length > 0 && (() => {
+          const adherents = history.filter(h => h.kind === "adherents").sort((a, b) => a.year - b.year);
+          const elecKinds: Array<[string, string]> = [["presidentielle", "Présidentielle"], ["legislatives", "Législatives"], ["europeennes", "Européennes"], ["senatoriales", "Sénatoriales"]];
+          const maxAd = Math.max(1, ...adherents.map(a => Number(a.value)));
+          return (
+            <section className="mt-14">
+              <h2 className="mb-6 text-2xl font-staatliches uppercase text-slate-900">Évolution</h2>
+
+              {adherents.length > 1 && (
+                <div className="mb-8 rounded-3xl border border-slate-200 bg-white p-6">
+                  <p className="mb-4 text-sm font-black uppercase tracking-widest text-slate-400">Adhérents</p>
+                  <div className="flex items-end gap-3" style={{ height: 160 }}>
+                    {adherents.map((a) => (
+                      <div key={a.year} className="flex flex-1 flex-col items-center justify-end gap-2">
+                        <span className="text-xs font-bold text-slate-700">{Number(a.value).toLocaleString("fr-FR")}</span>
+                        <div className="w-full rounded-t-lg" style={{ height: `${Math.max(6, (Number(a.value) / maxAd) * 120)}px`, backgroundColor: color }} />
+                        <span className="text-[11px] font-black text-slate-400">{a.year}</span>
+                      </div>
+                    ))}
+                  </div>
+                </div>
+              )}
+
+              {elecKinds.some(([k]) => history.some(h => h.kind === k)) && (
+                <div className="rounded-3xl border border-slate-200 bg-white p-6">
+                  <p className="mb-4 text-sm font-black uppercase tracking-widest text-slate-400">Résultats électoraux (% des voix)</p>
+                  <div className="space-y-4">
+                    {elecKinds.map(([k, label]) => {
+                      const pts = history.filter(h => h.kind === k).sort((a, b) => a.year - b.year);
+                      if (pts.length === 0) return null;
+                      return (
+                        <div key={k}>
+                          <p className="mb-2 text-xs font-black uppercase tracking-widest" style={{ color }}>{label}</p>
+                          <div className="flex flex-wrap gap-2">
+                            {pts.map((p, i) => (
+                              <span key={i} className="rounded-xl bg-slate-100 px-3 py-1.5 text-sm">
+                                <span className="font-black text-slate-900">{Number(p.value).toLocaleString("fr-FR", { maximumFractionDigits: 1 })}%</span>
+                                <span className="ml-1.5 text-xs font-bold text-slate-500">{p.year}{p.label ? ` · ${p.label}` : ""}</span>
+                              </span>
+                            ))}
+                          </div>
+                        </div>
+                      );
+                    })}
+                  </div>
+                  <p className="mt-4 text-[11px] italic text-slate-400">Données extraites de Wikipédia — susceptibles d'être incomplètes.</p>
+                </div>
+              )}
+            </section>
+          );
+        })()}
 
         {/* Sources */}
         <div className="mt-12 flex flex-wrap items-center gap-4 border-t border-slate-200 pt-6 text-xs text-slate-400">

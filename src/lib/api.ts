@@ -378,13 +378,16 @@ export const api = {
   // Membres d'un parti (députés / sénateurs / candidats) via ses alias.
   getPartyMembers: async (aliases: string[]) => {
     if (!aliases?.length) return { deputies: [], senators: [], candidates: [], meps: [] };
-    const [dep, sen, cand, meps] = await Promise.all([
+    const lower = new Set(aliases.map(a => a.toLowerCase()));
+    const [dep, sen, cand, mepsAll] = await Promise.all([
       supabase.from('deputies').select('slug, first_name, last_name, party, an_id, photo_url, department').in('party', aliases).order('last_name'),
       supabase.from('senators').select('slug, first_name, last_name, party').in('party', aliases).order('last_name'),
       supabase.from('presidential_candidates').select('slug, full_name, party').in('party', aliases).eq('status', 'declared'),
-      supabase.from('meps').select('id, full_name, national_party, ep_group').in('national_party', aliases).order('full_name'),
+      // Casse variable côté Parlement européen → filtrage insensible à la casse.
+      supabase.from('meps').select('id, full_name, national_party, ep_group').order('full_name'),
     ]);
-    return { deputies: dep.data || [], senators: sen.data || [], candidates: cand.data || [], meps: meps.data || [] };
+    const meps = (mepsAll.data || []).filter((m: any) => lower.has((m.national_party || '').toLowerCase()));
+    return { deputies: dep.data || [], senators: sen.data || [], candidates: cand.data || [], meps };
   },
 
   // --- Fil conducteur : relier une même personne entre ses différentes pages ---

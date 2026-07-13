@@ -358,7 +358,7 @@ export default function DeputyDetailPage({ params }: { params: Promise<{ slug: s
                           {groupFullName}
                         </p>
                         {partyLink && (
-                          <span className="text-[10px] font-black uppercase tracking-widest text-red-600 inline-flex items-center gap-1 mt-1 opacity-0 group-hover/party:opacity-100 transition-opacity">Voir la fiche du parti <ArrowRight className="w-3 h-3" /></span>
+                          <span className="text-[10px] font-black uppercase tracking-widest text-red-600 inline-flex items-center gap-1 mt-1.5 bg-red-50 px-2 py-1 rounded-lg group-hover/party:bg-red-100 transition-colors">Voir la fiche du parti <ArrowRight className="w-3 h-3" /></span>
                         )}
                       </div>
                     </>

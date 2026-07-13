@@ -62,6 +62,7 @@ export default function PartyClient({ params }: { params: Promise<{ slug: string
   const [party, setParty] = useState<Party | null>(null);
   const [members, setMembers] = useState<{ deputies: any[]; senators: any[]; candidates: any[]; meps: any[] }>({ deputies: [], senators: [], candidates: [], meps: [] });
   const [loading, setLoading] = useState(true);
+  const [tab, setTab] = useState<"deputies" | "senators" | "meps">("deputies");
 
   useEffect(() => {
     let active = true;
@@ -94,11 +95,11 @@ export default function PartyClient({ params }: { params: Promise<{ slug: string
             <ChevronLeft className="h-4 w-4" /> Retour
           </button>
           <div className="flex flex-col items-start gap-6 md:flex-row md:items-center">
-            <div className="flex h-24 w-24 shrink-0 items-center justify-center rounded-3xl bg-white/15 backdrop-blur">
+            <div className="flex h-24 w-24 shrink-0 items-center justify-center overflow-hidden rounded-3xl bg-white p-1.5 shadow-lg">
               {party.logo_url
                 // eslint-disable-next-line @next/next/no-img-element
-                ? <img src={party.logo_url} alt={party.name} className="h-16 w-16 object-contain" />
-                : <Landmark className="h-12 w-12" />}
+                ? <img src={party.logo_url} alt={party.name} className="h-full w-full object-contain" />
+                : <Landmark className="h-12 w-12 text-slate-700" />}
             </div>
             <div>
               {party.abbrev && <span className="rounded-full bg-white/20 px-3 py-1 text-xs font-black uppercase tracking-widest">{party.abbrev}</span>}
@@ -148,24 +149,71 @@ export default function PartyClient({ params }: { params: Promise<{ slug: string
           </a>
         )}
 
-        {/* Représentation (comptes, 0 inclus) */}
+        {/* Représentation — compteurs cliquables (clic = voir les membres) */}
         <div className="mt-8 grid grid-cols-3 gap-3">
-          <div className="rounded-2xl border border-slate-200 bg-white p-4 text-center">
-            <p className="text-3xl font-black text-slate-900">{members.deputies.length}</p>
-            <p className="mt-1 text-[11px] font-black uppercase tracking-widest text-slate-400">Député·e·s</p>
-          </div>
-          <div className="rounded-2xl border border-slate-200 bg-white p-4 text-center">
-            <p className="text-3xl font-black text-slate-900">{members.senators.length}</p>
-            <p className="mt-1 text-[11px] font-black uppercase tracking-widest text-slate-400">Sénateur·rice·s</p>
-          </div>
-          <div className="rounded-2xl border border-slate-200 bg-white p-4 text-center">
-            <p className="text-3xl font-black text-slate-900">{members.meps.length}</p>
-            <p className="mt-1 text-[11px] font-black uppercase tracking-widest text-slate-400">Député·e·s europ.</p>
-          </div>
+          {([
+            { key: "deputies", label: "Député·e·s", n: members.deputies.length, ring: "ring-red-400" },
+            { key: "senators", label: "Sénateur·rice·s", n: members.senators.length, ring: "ring-amber-400" },
+            { key: "meps", label: "Député·e·s europ.", n: members.meps.length, ring: "ring-blue-400" },
+          ] as const).map((x) => (
+            <button
+              key={x.key}
+              onClick={() => setTab(x.key)}
+              className={`rounded-2xl border bg-white p-4 text-center transition ${tab === x.key ? `border-transparent ring-2 ${x.ring} shadow-md` : "border-slate-200 hover:border-slate-300 hover:shadow-sm"}`}
+            >
+              <p className="text-3xl font-black text-slate-900">{x.n}</p>
+              <p className="mt-1 text-[11px] font-black uppercase tracking-widest text-slate-400">{x.label}</p>
+            </button>
+          ))}
         </div>
 
-        {/* Membres */}
-        {(members.candidates.length > 0) && (
+        {/* Membres du groupe sélectionné */}
+        <section className="mt-6">
+          {tab === "deputies" && (
+            members.deputies.length === 0
+              ? <p className="text-sm text-slate-500">Aucun·e député·e pour ce parti.</p>
+              : <div className="grid grid-cols-1 gap-3 sm:grid-cols-2 lg:grid-cols-3">
+                  {members.deputies.map((d: any) => (
+                    <Link key={d.slug} href={`/deputes/${d.slug}`} className="flex items-center gap-3 rounded-2xl border border-slate-200 bg-white p-3 transition hover:border-red-300 group">
+                      <Avatar name={`${d.first_name} ${d.last_name}`} anId={d.an_id} photo={d.photo_url} color={color} />
+                      <div className="min-w-0">
+                        <p className="truncate font-bold text-slate-900">{d.first_name} {d.last_name}</p>
+                        <p className="truncate text-[11px] font-bold text-slate-500">{d.department || ""}</p>
+                      </div>
+                      <ArrowRight className="ml-auto h-4 w-4 shrink-0 text-slate-300 group-hover:text-red-500" />
+                    </Link>
+                  ))}
+                </div>
+          )}
+          {tab === "senators" && (
+            members.senators.length === 0
+              ? <p className="text-sm text-slate-500">Aucun·e sénateur·rice pour ce parti.</p>
+              : <div className="grid grid-cols-1 gap-3 sm:grid-cols-2 lg:grid-cols-3">
+                  {members.senators.map((s: any) => (
+                    <Link key={s.slug} href={`/senateurs/${s.slug}`} className="flex items-center gap-3 rounded-2xl border border-slate-200 bg-white p-3 transition hover:border-amber-300 group">
+                      <Avatar name={`${s.first_name} ${s.last_name}`} color={color} />
+                      <span className="truncate font-bold text-slate-900">{s.first_name} {s.last_name}</span>
+                      <ArrowRight className="ml-auto h-4 w-4 shrink-0 text-slate-300 group-hover:text-amber-500" />
+                    </Link>
+                  ))}
+                </div>
+          )}
+          {tab === "meps" && (
+            members.meps.length === 0
+              ? <p className="text-sm text-slate-500">Aucun·e député·e européen·ne pour ce parti.</p>
+              : <div className="grid grid-cols-1 gap-3 sm:grid-cols-2 lg:grid-cols-3">
+                  {members.meps.map((m: any) => (
+                    <div key={m.id} className="flex items-center gap-3 rounded-2xl border border-slate-200 bg-white p-3">
+                      <Avatar name={m.full_name} color={color} />
+                      <span className="truncate font-bold text-slate-900">{m.full_name}</span>
+                    </div>
+                  ))}
+                </div>
+          )}
+        </section>
+
+        {/* Candidat·e·s à la présidentielle */}
+        {members.candidates.length > 0 && (
           <section className="mt-12">
             <h2 className="mb-4 text-2xl font-staatliches uppercase text-slate-900">Candidat·e·s à la présidentielle</h2>
             <div className="grid grid-cols-1 gap-3 sm:grid-cols-2">
@@ -179,57 +227,6 @@ export default function PartyClient({ params }: { params: Promise<{ slug: string
             </div>
           </section>
         )}
-
-        {members.deputies.length > 0 && (
-          <section className="mt-12">
-            <h2 className="mb-1 text-2xl font-staatliches uppercase text-slate-900">Les député·e·s ({members.deputies.length})</h2>
-            <div className="mt-4 grid grid-cols-1 gap-3 sm:grid-cols-2 lg:grid-cols-3">
-              {members.deputies.map((d: any) => (
-                <Link key={d.slug} href={`/deputes/${d.slug}`} className="flex items-center gap-3 rounded-2xl border border-slate-200 bg-white p-3 transition hover:border-red-300 group">
-                  <Avatar name={`${d.first_name} ${d.last_name}`} anId={d.an_id} photo={d.photo_url} color={color} />
-                  <div className="min-w-0">
-                    <p className="truncate font-bold text-slate-900">{d.first_name} {d.last_name}</p>
-                    <p className="truncate text-[11px] font-bold text-slate-500">{d.department || ""}</p>
-                  </div>
-                  <ArrowRight className="ml-auto h-4 w-4 shrink-0 text-slate-300 group-hover:text-red-500" />
-                </Link>
-              ))}
-            </div>
-          </section>
-        )}
-
-        <section className="mt-12">
-          <h2 className="mb-1 text-2xl font-staatliches uppercase text-slate-900">Les sénateur·rice·s ({members.senators.length})</h2>
-          {members.senators.length === 0 ? (
-            <p className="mt-3 text-sm text-slate-500">Aucun·e sénateur·rice pour ce parti.</p>
-          ) : (
-            <div className="mt-4 grid grid-cols-1 gap-3 sm:grid-cols-2 lg:grid-cols-3">
-              {members.senators.map((s: any) => (
-                <Link key={s.slug} href={`/senateurs/${s.slug}`} className="flex items-center gap-3 rounded-2xl border border-slate-200 bg-white p-3 transition hover:border-amber-300 group">
-                  <Avatar name={`${s.first_name} ${s.last_name}`} color={color} />
-                  <span className="truncate font-bold text-slate-900">{s.first_name} {s.last_name}</span>
-                  <ArrowRight className="ml-auto h-4 w-4 shrink-0 text-slate-300 group-hover:text-amber-500" />
-                </Link>
-              ))}
-            </div>
-          )}
-        </section>
-
-        <section className="mt-12">
-          <h2 className="mb-1 text-2xl font-staatliches uppercase text-slate-900">Les député·e·s européen·ne·s ({members.meps.length})</h2>
-          {members.meps.length === 0 ? (
-            <p className="mt-3 text-sm text-slate-500">Aucun·e député·e européen·ne pour ce parti.</p>
-          ) : (
-            <div className="mt-4 grid grid-cols-1 gap-3 sm:grid-cols-2 lg:grid-cols-3">
-              {members.meps.map((m: any) => (
-                <div key={m.id} className="flex items-center gap-3 rounded-2xl border border-slate-200 bg-white p-3">
-                  <Avatar name={m.full_name} color={color} />
-                  <span className="truncate font-bold text-slate-900">{m.full_name}</span>
-                </div>
-              ))}
-            </div>
-          )}
-        </section>
 
         {/* Sources */}
         <div className="mt-12 flex flex-wrap items-center gap-4 border-t border-slate-200 pt-6 text-xs text-slate-400">

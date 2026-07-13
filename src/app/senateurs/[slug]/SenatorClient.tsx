@@ -115,7 +115,7 @@ export default function SenatorClient({ senator }: { senator: any }) {
                            {getFullPartyName(senator.party)}
                          </p>
                          {partyLink && (
-                           <span className="text-[10px] font-black uppercase tracking-widest text-amber-600 inline-flex items-center gap-1 mt-1 opacity-0 group-hover/party:opacity-100 transition-opacity">Voir la fiche du parti <ArrowRight className="w-3 h-3" /></span>
+                           <span className="text-[10px] font-black uppercase tracking-widest text-amber-600 inline-flex items-center gap-1 mt-1.5 bg-amber-50 px-2 py-1 rounded-lg group-hover/party:bg-amber-100 transition-colors">Voir la fiche du parti <ArrowRight className="w-3 h-3" /></span>
                          )}
                        </div>
                      </>

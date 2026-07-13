@@ -320,6 +320,37 @@ export const api = {
     return data || [];
   },
 
+  // --- Fil conducteur : relier une même personne entre ses différentes pages ---
+
+  // Cette personne (nom complet) est-elle candidate déclarée à la présidentielle ?
+  findCandidateByName: async (fullName: string) => {
+    const target = normalizeName(fullName);
+    if (!target) return null;
+    const { data, error } = await supabase
+      .from('presidential_candidates')
+      .select('slug, full_name, political_side, party')
+      .eq('status', 'declared');
+    if (error || !data) return null;
+    return data.find((c: any) => normalizeName(c.full_name) === target) ?? null;
+  },
+
+  // Cette personne (nom complet) a-t-elle une fiche député ou sénateur ?
+  findMandateByName: async (fullName: string) => {
+    const target = normalizeName(fullName);
+    if (!target) return null;
+    const parts = fullName.trim().split(/\s+/);
+    const lastToken = parts[parts.length - 1] || fullName;
+    for (const [table, type] of [['deputies', 'depute'], ['senators', 'senateur']] as const) {
+      const { data } = await supabase
+        .from(table)
+        .select('slug, first_name, last_name')
+        .ilike('last_name', `%${lastToken}%`);
+      const hit = (data || []).find((p: any) => normalizeName(`${p.first_name} ${p.last_name}`) === target);
+      if (hit) return { type, slug: hit.slug };
+    }
+    return null;
+  },
+
   getCandidateNews: async (candidateId: string) => {
     const { data, error } = await supabase
       .from('candidate_news')

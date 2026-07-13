@@ -2,7 +2,8 @@
 
 import { Suspense, useEffect, useMemo, useState } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
-import { Search, Loader2, X, CalendarDays, ExternalLink, Briefcase, GraduationCap, Users, ShieldCheck } from "lucide-react";
+import Link from "next/link";
+import { Search, Loader2, X, CalendarDays, ExternalLink, Briefcase, GraduationCap, Users, ShieldCheck, Landmark, ArrowRight } from "lucide-react";
 import { api } from "@/lib/api";
 import LegalStatusModal from "@/components/deputies/LegalStatusModal";
 
@@ -170,11 +171,13 @@ function CandidateModal({ candidate, onClose }: { candidate: Candidate; onClose:
   const side = sideOf(candidate);
   const [news, setNews] = useState<any[] | null>(null);
   const [showLegal, setShowLegal] = useState(false);
+  const [mandate, setMandate] = useState<{ type: string; slug: string } | null>(null);
   useEffect(() => {
     let active = true;
     api.getCandidateNews(candidate.id).then(rows => { if (active) setNews(rows); }).catch(() => setNews([]));
+    api.findMandateByName(candidate.full_name).then(m => { if (active) setMandate(m); }).catch(() => {});
     return () => { active = false; };
-  }, [candidate.id]);
+  }, [candidate.id, candidate.full_name]);
 
   const issues = (candidate.legal_issues || "").trim();
   // 3 états : inconnu (pas encore renseigné) / vierge / affaires à consulter.
@@ -209,6 +212,21 @@ function CandidateModal({ candidate, onClose }: { candidate: Candidate; onClose:
 
         <div className="p-6 md:p-8">
           {candidate.summary && <p className="mb-4 text-lg leading-7 text-slate-700">{candidate.summary}</p>}
+
+          {/* Fil conducteur : lien vers la fiche parlementaire de la même personne */}
+          {mandate && (
+            <Link
+              href={`/${mandate.type === "senateur" ? "senateurs" : "deputes"}/${mandate.slug}/`}
+              className="mb-4 flex items-center justify-between gap-3 rounded-2xl border border-blue-200 bg-blue-50 px-5 py-3 text-blue-800 transition hover:border-blue-300 hover:bg-blue-100"
+            >
+              <span className="flex items-center gap-2 text-sm font-bold">
+                <Landmark size={17} />
+                Voir aussi sa fiche {mandate.type === "senateur" ? "de sénateur·rice" : "de député·e"}
+              </span>
+              <ArrowRight size={17} />
+            </Link>
+          )}
+
           <FactChips candidate={candidate} />
 
           {/* Situation juridique — suivi en temps réel des affaires judiciaires */}

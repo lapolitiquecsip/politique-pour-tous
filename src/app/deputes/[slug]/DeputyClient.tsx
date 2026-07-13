@@ -28,7 +28,8 @@ import {
   Clock,
   Globe,
   Layers,
-  Users
+  Users,
+  ArrowRight
 } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
 import { api } from "@/lib/api";
@@ -65,6 +66,7 @@ export default function DeputyDetailPage({ params }: { params: Promise<{ slug: s
   const [checkingFollow, setCheckingFollow] = useState(true);
   const [showLegalModal, setShowLegalModal] = useState(false);
   const [isBioExpanded, setIsBioExpanded] = useState(false);
+  const [candidateLink, setCandidateLink] = useState<{ slug: string } | null>(null);
 
   const [votes, setVotes] = useState<any[]>([]);
   const [authoredLaws, setAuthoredLaws] = useState<any[]>([]);
@@ -188,6 +190,9 @@ export default function DeputyDetailPage({ params }: { params: Promise<{ slug: s
         const laws = await api.getLawsByAuthor(fullName);
         setAuthoredLaws(laws);
         setLoadingAuthoredLaws(false);
+
+        // Fil conducteur : cette personne est-elle candidate à la présidentielle ?
+        api.findCandidateByName(fullName).then(c => setCandidateLink(c)).catch(() => {});
       }
     };
     loadDeputyData();
@@ -360,8 +365,23 @@ export default function DeputyDetailPage({ params }: { params: Promise<{ slug: s
               </div>
             </div>
 
+            {/* Fil conducteur : candidat·e à la présidentielle 2027 */}
+            {candidateLink && (
+              <Link
+                href={`/presidentielles-2027/?candidat=${candidateLink.slug}`}
+                className="block rounded-[2rem] p-6 bg-gradient-to-br from-blue-600 to-indigo-700 text-white shadow-xl shadow-blue-600/20 relative overflow-hidden group transition-all hover:-translate-y-1"
+              >
+                <div className="absolute top-0 right-0 w-24 h-24 bg-white/10 rounded-full -mr-10 -mt-10 blur-2xl" />
+                <p className="text-[9px] font-black uppercase tracking-[0.2em] text-white/70 mb-1">Présidentielle 2027</p>
+                <h4 className="text-lg font-bold leading-tight mb-3">Candidat·e à l&apos;élection présidentielle</h4>
+                <span className="inline-flex items-center gap-2 text-[11px] font-black uppercase tracking-widest bg-white/15 px-4 py-2 rounded-xl group-hover:bg-white/25 transition-colors">
+                  Voir la fiche candidat·e <ArrowRight className="w-3.5 h-3.5" />
+                </span>
+              </Link>
+            )}
+
             {/* NEW: Integrity Badge Section (Bento Style) */}
-            <motion.div 
+            <motion.div
               whileHover={{ y: -4 }}
               className="bg-white dark:bg-slate-900 rounded-[2rem] p-6 border border-slate-200 dark:border-slate-800 shadow-xl relative overflow-hidden group transition-all duration-500"
             >

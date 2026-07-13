@@ -268,9 +268,10 @@ export default function PartyClient({ params }: { params: Promise<{ slug: string
                           <p className="mb-2 text-xs font-black uppercase tracking-widest" style={{ color }}>{label}</p>
                           <div className="flex flex-wrap gap-2">
                             {pts.map((p, i) => (
-                              <span key={i} className="rounded-xl bg-slate-100 px-3 py-1.5 text-sm">
+                              <span key={i} className={`rounded-xl px-3 py-1.5 text-sm ${p.source?.startsWith("officiel") ? "bg-emerald-50 ring-1 ring-emerald-200" : "bg-slate-100"}`}>
                                 <span className="font-black text-slate-900">{Number(p.value).toLocaleString("fr-FR", { maximumFractionDigits: 1 })}%</span>
                                 <span className="ml-1.5 text-xs font-bold text-slate-500">{p.year}{p.label ? ` · ${p.label}` : ""}</span>
+                                {p.source?.startsWith("officiel") && <span className="ml-1.5 text-[9px] font-black uppercase tracking-widest text-emerald-600">officiel</span>}
                               </span>
                             ))}
                           </div>
@@ -278,7 +279,7 @@ export default function PartyClient({ params }: { params: Promise<{ slug: string
                       );
                     })}
                   </div>
-                  <p className="mt-4 text-[11px] italic text-slate-400">Données extraites de Wikipédia — susceptibles d'être incomplètes.</p>
+                  <p className="mt-4 text-[11px] italic text-slate-400">En vert : résultats nationaux officiels (Ministère de l'Intérieur). Autres points : Wikipédia, susceptibles d'être incomplets.</p>
                 </div>
               )}
             </section>

@@ -38,12 +38,6 @@ jobs:
         run: rm -rf .next out
       - name: Build with Next.js
         run: npm run build
-      - name: Debug build output
-        run: |
-          echo "HTML_COUNT=$(find out -name '*.html' | wc -l)" | tee out/_debug.txt
-          echo "HAS_DEPUTES=$(test -f out/deputes/index.html && echo yes || echo no)" | tee -a out/_debug.txt
-          echo "HAS_PARTIS_RN=$(test -f out/partis/rassemblement-national/index.html && echo yes || echo no)" | tee -a out/_debug.txt
-          ls out | head -40 | tr '\n' ' ' | tee -a out/_debug.txt
         env:
           NEXT_PUBLIC_BASE_PATH: /politique-pour-tous
           NEXT_PUBLIC_SUPABASE_URL: ${{ secrets.NEXT_PUBLIC_SUPABASE_URL }}

@@ -1,7 +1,8 @@
 "use client";
 
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
+import { api } from '@/lib/api';
 import { 
   X, 
   Gavel, 
@@ -22,32 +23,25 @@ interface LegalStatusModalProps {
   deputy: any;
 }
 
-// Explication en langage simple selon l'infraction mentionnée dans l'affaire.
-const INFRACTION_INFO: Array<{ re: RegExp; text: string }> = [
-  { re: /détournement de fonds/i, text: "Utiliser à des fins privées de l'argent public confié dans le cadre d'une fonction." },
-  { re: /abus de bien/i, text: "Se servir des biens ou de l'argent d'une société pour son intérêt personnel, contre celui de la société." },
-  { re: /diffamation/i, text: "Tenir des propos portant atteinte à l'honneur ou à la réputation d'une personne." },
-  { re: /injure/i, text: "Employer des termes outrageants, sans imputer un fait précis." },
-  { re: /prise illégale d'intér/i, text: "Pour un élu, tirer un intérêt personnel d'une affaire dont il a la charge." },
-  { re: /favoritisme/i, text: "Accorder un avantage injustifié lors d'un marché public, rompant l'égalité entre candidats." },
-  { re: /corruption/i, text: "Accepter ou proposer un avantage en échange d'un acte lié à sa fonction." },
-  { re: /trafic d'influence/i, text: "Monnayer son influence, réelle ou supposée, auprès d'une autorité." },
-  { re: /financement (illégal|illicite)/i, text: "Ne pas respecter les règles de financement des campagnes ou des partis." },
-  { re: /empl(oi|ois?) fictif/i, text: "Verser une rémunération pour un travail qui n'est pas réellement effectué." },
-  { re: /fraude fiscale/i, text: "Se soustraire volontairement à l'impôt par dissimulation ou fausse déclaration." },
-  { re: /(provocation|incitation).*(haine|discrimination)|haine raciale/i, text: "Inciter à la haine ou à la discrimination envers un groupe de personnes." },
-  { re: /recel/i, text: "Détenir ou profiter d'un bien que l'on sait issu d'une infraction." },
-  { re: /harcèlement/i, text: "Faire subir à une personne des propos ou comportements répétés qui la dégradent." },
-];
-function explainIssue(text: string): string | null {
-  const hit = INFRACTION_INFO.find(i => i.re.test(text));
-  return hit ? hit.text : null;
+// Clé d'affaire normalisée — doit correspondre à explain-legal.ts côté backend.
+function caseKey(title: string): string {
+  return title.toLowerCase().normalize('NFD').replace(/[̀-ͯ]/g, '').replace(/[^a-z0-9]/g, '');
 }
 
 export default function LegalStatusModal({ isOpen, onClose, deputy }: LegalStatusModalProps) {
   // Parsing the legal issues string or using default
   const rawIssues = deputy?.legal_issues || "Aucune affaire judiciaire connue ou signalée à ce jour.";
   const isClean = rawIssues.toLowerCase().includes("aucune") || rawIssues.toLowerCase().includes("casier vierge");
+
+  // Explications concrètes, affaire par affaire (chargées depuis la base).
+  const [explanations, setExplanations] = useState<Record<string, string>>({});
+  useEffect(() => {
+    if (!isOpen || isClean) return;
+    const keys = rawIssues.split('\n\n\n').filter(Boolean)
+      .map((issue: string) => caseKey((issue.split('\n').filter(Boolean)[0] || '')))
+      .filter(Boolean);
+    if (keys.length) api.getLegalExplanations(keys).then(setExplanations).catch(() => {});
+  }, [isOpen, isClean, rawIssues]);
 
   return (
     <AnimatePresence>
@@ -119,7 +113,7 @@ export default function LegalStatusModal({ isOpen, onClose, deputy }: LegalStatu
                         const lines = issue.split('\n').filter(Boolean);
                         const title = lines[0];
                         const details = lines.slice(1).join('\n');
-                        const explanation = explainIssue(issue);
+                        const explanation = explanations[caseKey(title || '')];
 
                         return (
                           <div key={idx} className="relative pl-8 border-l-2 border-amber-500/20 dark:border-amber-500/10 py-2 group">

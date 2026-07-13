@@ -320,6 +320,17 @@ export const api = {
     return data || [];
   },
 
+  // Explications concrètes des affaires judiciaires (générées + mises en cache côté backend).
+  getLegalExplanations: async (caseKeys: string[]) => {
+    if (!caseKeys.length) return {} as Record<string, string>;
+    const { data, error } = await supabase
+      .from('legal_case_explanations')
+      .select('case_key, explanation')
+      .in('case_key', caseKeys);
+    if (error || !data) return {} as Record<string, string>;
+    return Object.fromEntries(data.map((r: any) => [r.case_key, r.explanation])) as Record<string, string>;
+  },
+
   // --- Fil conducteur : relier une même personne entre ses différentes pages ---
 
   // Cette personne (nom complet) est-elle candidate déclarée à la présidentielle ?

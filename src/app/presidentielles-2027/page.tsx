@@ -179,6 +179,13 @@ function CandidateModal({ candidate, onClose }: { candidate: Candidate; onClose:
     return () => { active = false; };
   }, [candidate.id, candidate.full_name]);
 
+  // Fermeture au clavier (Échap). Le clic hors du panneau et la croix ferment aussi.
+  useEffect(() => {
+    const onKey = (e: KeyboardEvent) => { if (e.key === "Escape") onClose(); };
+    window.addEventListener("keydown", onKey);
+    return () => window.removeEventListener("keydown", onKey);
+  }, [onClose]);
+
   const issues = (candidate.legal_issues || "").trim();
   // 3 états : inconnu (pas encore renseigné) / vierge / affaires à consulter.
   const legalState: "unknown" | "clean" | "flagged" =

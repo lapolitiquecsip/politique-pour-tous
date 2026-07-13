@@ -2,8 +2,9 @@
 
 import { Suspense, useEffect, useMemo, useState } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
-import { Search, Loader2, X, CalendarDays, ExternalLink, Briefcase, GraduationCap, Users } from "lucide-react";
+import { Search, Loader2, X, CalendarDays, ExternalLink, Briefcase, GraduationCap, Users, ShieldCheck } from "lucide-react";
 import { api } from "@/lib/api";
+import LegalStatusModal from "@/components/deputies/LegalStatusModal";
 
 type Candidate = {
   id: string;
@@ -18,6 +19,7 @@ type Candidate = {
   bio: Record<string, any> | null;
   program: string | null;
   source_urls: string[] | null;
+  legal_issues: string | null;
 };
 
 // Couleurs par bord politique — dans l'esprit coloré du site.
@@ -167,13 +169,20 @@ function formatDate(value?: string | null) {
 function CandidateModal({ candidate, onClose }: { candidate: Candidate; onClose: () => void }) {
   const side = sideOf(candidate);
   const [news, setNews] = useState<any[] | null>(null);
+  const [showLegal, setShowLegal] = useState(false);
   useEffect(() => {
     let active = true;
     api.getCandidateNews(candidate.id).then(rows => { if (active) setNews(rows); }).catch(() => setNews([]));
     return () => { active = false; };
   }, [candidate.id]);
 
+  const issues = candidate.legal_issues || "";
+  const isLegalClean = !issues || issues.toLowerCase().includes("aucune") || issues.toLowerCase().includes("casier vierge");
+  // Adaptateur pour réutiliser la modale des députés (attend first_name/last_name).
+  const legalPerson = { first_name: candidate.full_name, last_name: "", legal_issues: candidate.legal_issues, an_id: null, hatvp_url: null };
+
   return (
+    <>
     <div className="fixed inset-0 z-50 overflow-y-auto bg-slate-950/70 p-4 md:p-10" role="dialog" aria-modal="true" onClick={onClose}>
       <div className="mx-auto max-w-4xl overflow-hidden rounded-[2rem] bg-white shadow-2xl" onClick={e => e.stopPropagation()}>
         {/* En-tête coloré */}
@@ -192,6 +201,34 @@ function CandidateModal({ candidate, onClose }: { candidate: Candidate; onClose:
         <div className="p-6 md:p-8">
           {candidate.summary && <p className="mb-4 text-lg leading-7 text-slate-700">{candidate.summary}</p>}
           <FactChips candidate={candidate} />
+
+          {/* Situation juridique — suivi en temps réel des affaires judiciaires */}
+          <div className="mb-6 rounded-3xl border border-slate-200 bg-white p-5 shadow-sm relative overflow-hidden">
+            <div className={`absolute top-0 left-0 h-full w-2 ${isLegalClean ? "bg-emerald-500" : "bg-amber-500"}`} />
+            <div className="flex items-center justify-between gap-4 pl-2">
+              <div className="min-w-0">
+                <p className="text-[9px] font-black uppercase tracking-[0.2em] text-slate-400">Intégrité &amp; Transparence</p>
+                <h3 className="text-lg font-bold text-slate-900">Situation judiciaire</h3>
+                <div className="mt-1 flex items-center gap-2">
+                  <span className={`h-1.5 w-1.5 animate-pulse rounded-full ${isLegalClean ? "bg-emerald-500" : "bg-amber-500"}`} />
+                  <span className={`text-[10px] font-black uppercase tracking-widest ${isLegalClean ? "text-emerald-600" : "text-amber-600"}`}>
+                    {isLegalClean ? "Dossier vierge" : "Affaires à consulter"}
+                  </span>
+                </div>
+              </div>
+              <button
+                onClick={() => setShowLegal(true)}
+                className={`flex shrink-0 items-center gap-2 rounded-2xl border px-5 py-3 text-[10px] font-black uppercase tracking-widest shadow-lg transition-all active:scale-95 ${
+                  isLegalClean
+                    ? "border-emerald-500/20 bg-emerald-500/10 text-emerald-600 hover:bg-emerald-500 hover:text-white"
+                    : "border-amber-500/20 bg-amber-500/10 text-amber-600 hover:bg-amber-500 hover:text-white"
+                }`}
+              >
+                <ShieldCheck className="h-3.5 w-3.5" />
+                Consulter
+              </button>
+            </div>
+          </div>
 
           <div className="grid items-start gap-4 sm:grid-cols-2">
             {BIO_FIELDS.map(([key, label]) => {
@@ -260,6 +297,8 @@ function CandidateModal({ candidate, onClose }: { candidate: Candidate; onClose:
         </div>
       </div>
     </div>
+    <LegalStatusModal isOpen={showLegal} onClose={() => setShowLegal(false)} deputy={legalPerson} />
+    </>
   );
 }
 

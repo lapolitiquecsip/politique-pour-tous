@@ -66,6 +66,7 @@ export default function DeputyDetailPage({ params }: { params: Promise<{ slug: s
   const [checkingFollow, setCheckingFollow] = useState(true);
   const [showLegalModal, setShowLegalModal] = useState(false);
   const [isBioExpanded, setIsBioExpanded] = useState(false);
+  const [isActivityExpanded, setIsActivityExpanded] = useState(false);
   const [candidateLink, setCandidateLink] = useState<{ slug: string } | null>(null);
 
   const [votes, setVotes] = useState<any[]>([]);
@@ -565,6 +566,46 @@ export default function DeputyDetailPage({ params }: { params: Promise<{ slug: s
               </div>
             )}
 
+            {/* Activité Parlementaire — panneau ouvrant (même forme que Portrait & Parcours, en plus rouge) */}
+            <div className="bg-white dark:bg-slate-900 rounded-[3rem] border border-red-200 dark:border-red-900/40 shadow-xl relative overflow-hidden group pb-2">
+              <div className="absolute top-0 right-0 w-64 h-64 bg-red-500/5 rounded-full -mr-32 -mt-32 blur-3xl group-hover:bg-red-500/10 transition-colors duration-1000" />
+
+              <button
+                onClick={() => setIsActivityExpanded(!isActivityExpanded)}
+                className="w-full text-left p-8 md:px-12 md:py-10 relative z-10 flex items-center justify-between group/header"
+              >
+                <div className="flex flex-col md:flex-row gap-6 items-center">
+                  <div className="w-12 h-12 rounded-xl bg-red-600 flex items-center justify-center text-white shrink-0 shadow-lg shadow-red-600/20 group-hover/header:rotate-6 transition-transform duration-500">
+                    <Vote className="w-6 h-6" />
+                  </div>
+                  <div className="flex flex-col">
+                    <h3 className="text-3xl font-staatliches uppercase tracking-tight text-slate-900 dark:text-white leading-none">
+                      Activité <span className="text-red-600">Parlementaire</span>
+                    </h3>
+                  </div>
+                </div>
+                <div className={`w-10 h-10 rounded-full bg-red-50 dark:bg-red-900/30 flex items-center justify-center text-red-500 transition-transform duration-500 ${isActivityExpanded ? 'rotate-180' : ''}`}>
+                  <ChevronDown className="w-5 h-5" />
+                </div>
+              </button>
+
+              <AnimatePresence>
+                {isActivityExpanded && (
+                  <motion.div
+                    initial={{ height: 0, opacity: 0 }}
+                    animate={{ height: "auto", opacity: 1 }}
+                    exit={{ height: 0, opacity: 0 }}
+                    transition={{ duration: 0.3, ease: "easeOut" }}
+                    className="overflow-hidden"
+                  >
+                    <div className="px-6 pb-10 md:px-10 md:pb-12 relative z-10">
+                      <DeputyStats deputy={deputy} />
+                    </div>
+                  </motion.div>
+                )}
+              </AnimatePresence>
+            </div>
+
             {/* Authored Laws Section (Always visible, shows empty state if needed) */}
             <div className="pt-4 mb-10">
               <h2 className="text-4xl font-staatliches uppercase tracking-tight text-slate-900 dark:text-white mb-4">
@@ -728,9 +769,6 @@ export default function DeputyDetailPage({ params }: { params: Promise<{ slug: s
                 </motion.button>
               )}
             </div>
-
-            {/* Statistics & Performance Section */}
-            <DeputyStats deputy={deputy} />
 
             {/* Footer info */}
             <div className="p-8 rounded-[2rem] bg-slate-100 dark:bg-slate-800/30 border border-dashed border-slate-300 dark:border-slate-700 flex items-center gap-6">

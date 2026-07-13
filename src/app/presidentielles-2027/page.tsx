@@ -176,8 +176,17 @@ function CandidateModal({ candidate, onClose }: { candidate: Candidate; onClose:
     return () => { active = false; };
   }, [candidate.id]);
 
-  const issues = candidate.legal_issues || "";
-  const isLegalClean = !issues || issues.toLowerCase().includes("aucune") || issues.toLowerCase().includes("casier vierge");
+  const issues = (candidate.legal_issues || "").trim();
+  // 3 états : inconnu (pas encore renseigné) / vierge / affaires à consulter.
+  const legalState: "unknown" | "clean" | "flagged" =
+    !issues ? "unknown"
+      : (issues.toLowerCase().includes("aucune") || issues.toLowerCase().includes("casier vierge")) ? "clean"
+      : "flagged";
+  const legalStyle = {
+    unknown: { dot: "bg-slate-400", text: "text-slate-500", label: "Vérification en cours", bar: "bg-slate-300", btn: "border-slate-300/40 bg-slate-500/10 text-slate-600 hover:bg-slate-600 hover:text-white" },
+    clean: { dot: "bg-emerald-500", text: "text-emerald-600", label: "Dossier vierge", bar: "bg-emerald-500", btn: "border-emerald-500/20 bg-emerald-500/10 text-emerald-600 hover:bg-emerald-500 hover:text-white" },
+    flagged: { dot: "bg-amber-500", text: "text-amber-600", label: "Affaires à consulter", bar: "bg-amber-500", btn: "border-amber-500/20 bg-amber-500/10 text-amber-600 hover:bg-amber-500 hover:text-white" },
+  }[legalState];
   // Adaptateur pour réutiliser la modale des députés (attend first_name/last_name).
   const legalPerson = { first_name: candidate.full_name, last_name: "", legal_issues: candidate.legal_issues, an_id: null, hatvp_url: null };
 
@@ -204,25 +213,21 @@ function CandidateModal({ candidate, onClose }: { candidate: Candidate; onClose:
 
           {/* Situation juridique — suivi en temps réel des affaires judiciaires */}
           <div className="mb-6 rounded-3xl border border-slate-200 bg-white p-5 shadow-sm relative overflow-hidden">
-            <div className={`absolute top-0 left-0 h-full w-2 ${isLegalClean ? "bg-emerald-500" : "bg-amber-500"}`} />
+            <div className={`absolute top-0 left-0 h-full w-2 ${legalStyle.bar}`} />
             <div className="flex items-center justify-between gap-4 pl-2">
               <div className="min-w-0">
                 <p className="text-[9px] font-black uppercase tracking-[0.2em] text-slate-400">Intégrité &amp; Transparence</p>
                 <h3 className="text-lg font-bold text-slate-900">Situation judiciaire</h3>
                 <div className="mt-1 flex items-center gap-2">
-                  <span className={`h-1.5 w-1.5 animate-pulse rounded-full ${isLegalClean ? "bg-emerald-500" : "bg-amber-500"}`} />
-                  <span className={`text-[10px] font-black uppercase tracking-widest ${isLegalClean ? "text-emerald-600" : "text-amber-600"}`}>
-                    {isLegalClean ? "Dossier vierge" : "Affaires à consulter"}
+                  <span className={`h-1.5 w-1.5 animate-pulse rounded-full ${legalStyle.dot}`} />
+                  <span className={`text-[10px] font-black uppercase tracking-widest ${legalStyle.text}`}>
+                    {legalStyle.label}
                   </span>
                 </div>
               </div>
               <button
                 onClick={() => setShowLegal(true)}
-                className={`flex shrink-0 items-center gap-2 rounded-2xl border px-5 py-3 text-[10px] font-black uppercase tracking-widest shadow-lg transition-all active:scale-95 ${
-                  isLegalClean
-                    ? "border-emerald-500/20 bg-emerald-500/10 text-emerald-600 hover:bg-emerald-500 hover:text-white"
-                    : "border-amber-500/20 bg-amber-500/10 text-amber-600 hover:bg-amber-500 hover:text-white"
-                }`}
+                className={`flex shrink-0 items-center gap-2 rounded-2xl border px-5 py-3 text-[10px] font-black uppercase tracking-widest shadow-lg transition-all active:scale-95 ${legalStyle.btn}`}
               >
                 <ShieldCheck className="h-3.5 w-3.5" />
                 Consulter

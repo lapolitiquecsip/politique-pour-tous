@@ -28,7 +28,7 @@ const fetchWithTimeout = (url: RequestInfo | URL, options?: RequestInit): Promis
     process.env.NODE_ENV === 'production'
   );
   
-  const timeoutMs = isBuild ? 2500 : 15000; // 2.5s timeout during build to prevent hangs, 15s otherwise
+  const timeoutMs = isBuild ? 30000 : 15000; // 30s au build (CI + grosses requêtes) pour éviter des pages vides, 15s sinon
 
   return new Promise((resolve, reject) => {
     const controller = new AbortController();

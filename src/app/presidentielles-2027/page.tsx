@@ -343,6 +343,111 @@ function CandidateModal({ candidate, onClose }: { candidate: Candidate; onClose:
   );
 }
 
+const STANCE_META: Record<string, { label: string; dot: string; text: string; ring: string }> = {
+  pour: { label: "Pour", dot: "bg-emerald-500", text: "text-emerald-300", ring: "ring-emerald-500/30" },
+  nuance: { label: "Nuancé", dot: "bg-amber-500", text: "text-amber-300", ring: "ring-amber-500/30" },
+  contre: { label: "Contre", dot: "bg-rose-500", text: "text-rose-300", ring: "ring-rose-500/30" },
+};
+
+function PositionsView({ candidates }: { candidates: Candidate[] }) {
+  const [issues, setIssues] = useState<any[]>([]);
+  const [positions, setPositions] = useState<any[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [detail, setDetail] = useState<{ c: Candidate; issue: any; pos: any } | null>(null);
+
+  useEffect(() => {
+    Promise.all([api.getIssues(), api.getCandidatePositions()])
+      .then(([iss, pos]) => { setIssues(iss); setPositions(pos); })
+      .finally(() => setLoading(false));
+  }, []);
+
+  const bySlug = useMemo(() => new Map(candidates.map(c => [c.slug, c])), [candidates]);
+  const posMap = useMemo(() => {
+    const m = new Map<string, any>();
+    for (const p of positions) m.set(`${p.candidate_slug}|${p.issue_slug}`, p);
+    return m;
+  }, [positions]);
+  const categories = useMemo(() => {
+    const order: string[] = [];
+    const map = new Map<string, any[]>();
+    for (const i of issues) { if (!map.has(i.category)) { map.set(i.category, []); order.push(i.category); } map.get(i.category)!.push(i); }
+    return order.map(cat => ({ cat, items: map.get(cat)! }));
+  }, [issues]);
+
+  if (loading) return <div className="flex justify-center py-24 text-white/50"><Loader2 className="h-10 w-10 animate-spin" /></div>;
+  if (issues.length === 0) return <div className="mx-auto max-w-3xl px-4 pb-24 text-center text-white/60">Les positions seront disponibles très bientôt.</div>;
+
+  return (
+    <div className="mx-auto max-w-6xl px-4 pb-24">
+      <p className="mb-8 text-center text-sm text-white/50">Position de chaque candidat sur les grands enjeux — cliquez sur un candidat pour le détail et la source.</p>
+      {categories.map(({ cat, items }) => (
+        <div key={cat} className="mb-12">
+          <h2 className="mb-5 text-xl font-staatliches uppercase tracking-wide text-white/80">{cat}</h2>
+          <div className="space-y-4">
+            {items.map(issue => {
+              const groups: Record<string, Candidate[]> = { pour: [], nuance: [], contre: [] };
+              for (const c of candidates) {
+                const p = posMap.get(`${c.slug}|${issue.slug}`);
+                if (p && groups[p.stance]) groups[p.stance].push(c);
+              }
+              return (
+                <div key={issue.slug} className="rounded-3xl border border-white/10 bg-white/5 p-5">
+                  <p className="text-[10px] font-black uppercase tracking-widest text-white/40">{issue.title}</p>
+                  <h3 className="mb-4 text-lg font-bold text-white">{issue.proposition} ?</h3>
+                  <div className="grid gap-4 md:grid-cols-3">
+                    {(["pour", "nuance", "contre"] as const).map(stance => (
+                      <div key={stance}>
+                        <div className="mb-2 flex items-center gap-2">
+                          <span className={`h-2 w-2 rounded-full ${STANCE_META[stance].dot}`} />
+                          <span className={`text-[11px] font-black uppercase tracking-widest ${STANCE_META[stance].text}`}>{STANCE_META[stance].label} ({groups[stance].length})</span>
+                        </div>
+                        <div className="flex flex-wrap gap-2">
+                          {groups[stance].length === 0 ? <span className="text-xs text-white/30">—</span> : groups[stance].map(c => (
+                            <button key={c.slug} onClick={() => setDetail({ c, issue, pos: posMap.get(`${c.slug}|${issue.slug}`) })}
+                              className={`inline-flex items-center gap-2 rounded-full bg-white/5 py-1 pl-1 pr-3 ring-1 ${STANCE_META[stance].ring} transition hover:bg-white/10`}>
+                              <CandidateAvatar c={c} className="h-6 w-6 rounded-full text-[9px]" />
+                              <span className="text-xs font-bold text-white">{c.full_name}</span>
+                            </button>
+                          ))}
+                        </div>
+                      </div>
+                    ))}
+                  </div>
+                </div>
+              );
+            })}
+          </div>
+        </div>
+      ))}
+
+      {detail && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-slate-950/80 p-4" onClick={() => setDetail(null)}>
+          <div className="w-full max-w-lg rounded-3xl bg-white p-6 shadow-2xl" onClick={e => e.stopPropagation()}>
+            <div className="mb-4 flex items-center gap-3">
+              <CandidateAvatar c={detail.c} className="h-12 w-12 rounded-full text-sm" />
+              <div>
+                <p className="font-black text-slate-900">{detail.c.full_name}</p>
+                <p className="text-xs font-bold text-slate-500">{detail.issue.title}</p>
+              </div>
+              <button onClick={() => setDetail(null)} className="ml-auto rounded-full bg-slate-100 p-2"><X size={18} /></button>
+            </div>
+            <span className={`inline-flex items-center gap-2 rounded-full px-3 py-1 text-xs font-black uppercase tracking-widest ${detail.pos?.stance === "pour" ? "bg-emerald-100 text-emerald-700" : detail.pos?.stance === "contre" ? "bg-rose-100 text-rose-700" : "bg-amber-100 text-amber-700"}`}>
+              {STANCE_META[detail.pos?.stance]?.label ?? "—"} · {detail.issue.proposition}
+            </span>
+            <p className="mt-4 text-sm leading-6 text-slate-700">{detail.pos?.summary || "Position non détaillée."}</p>
+            {detail.pos?.source_url && (
+              <a href={detail.pos.source_url} target="_blank" rel="noreferrer" className="mt-4 inline-flex items-center gap-1.5 text-sm font-bold text-blue-700 hover:underline">
+                <ExternalLink size={14} /> Source ({detail.pos.source_type === "wikipedia" ? "Wikipédia" : detail.pos.source_type})
+              </a>
+            )}
+            <p className="mt-3 text-[11px] italic text-slate-400">Position résumée automatiquement à partir de la source. Vérifiez la source pour le détail exact.</p>
+          </div>
+        </div>
+      )}
+    </div>
+  );
+}
+
 function CandidatesContent() {
   const router = useRouter();
   const params = useSearchParams();
@@ -350,6 +455,7 @@ function CandidatesContent() {
   const [loading, setLoading] = useState(true);
   const [search, setSearch] = useState("");
   const [side, setSide] = useState<string>("Tous");
+  const [view, setView] = useState<"candidats" | "positions">("candidats");
 
   useEffect(() => {
     api.getCandidates().then(data => { setCandidates(data as Candidate[]); }).finally(() => setLoading(false));
@@ -382,9 +488,21 @@ function CandidatesContent() {
           <p className="mx-auto mt-6 max-w-2xl text-lg font-medium italic tracking-tight text-slate-400 md:text-xl">
             Tous les candidats officiellement déclarés, leur parcours détaillé et l'actualité de la campagne, actualisés automatiquement.
           </p>
+          {/* Onglets Candidats / Positions */}
+          <div className="mt-8 inline-flex rounded-full border border-white/10 bg-white/5 p-1">
+            {([["candidats", "Candidats"], ["positions", "Positions"]] as const).map(([key, label]) => (
+              <button key={key} onClick={() => setView(key)}
+                className={`rounded-full px-6 py-2 text-sm font-black uppercase tracking-widest transition ${view === key ? "bg-white text-slate-950" : "text-white/60 hover:text-white"}`}>
+                {label}
+              </button>
+            ))}
+          </div>
         </div>
       </div>
 
+      {view === "positions" ? (
+        <PositionsView candidates={candidates} />
+      ) : (
       <div className="mx-auto max-w-6xl px-4 pb-24">
         <div className="mb-10 flex flex-col items-start justify-between gap-5 md:flex-row md:items-center">
           <div className="flex flex-wrap gap-2">
@@ -434,6 +552,7 @@ function CandidatesContent() {
           </div>
         )}
       </div>
+      )}
 
       {selected && <CandidateModal candidate={selected} onClose={close} />}
     </div>

@@ -432,6 +432,18 @@ export const api = {
     return null;
   },
 
+  getIssues: async () => {
+    const { data, error } = await supabase.from('issues').select('*').order('sort_order');
+    if (error || !data) return [];
+    return data;
+  },
+
+  getCandidatePositions: async () => {
+    const { data, error } = await supabase.from('candidate_positions').select('candidate_slug, issue_slug, stance, summary, source_url');
+    if (error || !data) return [];
+    return data;
+  },
+
   getCandidateNews: async (candidateId: string) => {
     const { data, error } = await supabase
       .from('candidate_news')

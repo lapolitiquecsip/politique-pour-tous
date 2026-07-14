@@ -437,7 +437,7 @@ function PositionsView({ candidates }: { candidates: Candidate[] }) {
             <p className="mt-4 text-sm leading-6 text-slate-700">{detail.pos?.summary || "Position non détaillée."}</p>
             {detail.pos?.source_url && (
               <a href={detail.pos.source_url} target="_blank" rel="noreferrer" className="mt-4 inline-flex items-center gap-1.5 text-sm font-bold text-blue-700 hover:underline">
-                <ExternalLink size={14} /> Source ({detail.pos.source_type === "wikipedia" ? "Wikipédia" : detail.pos.source_type})
+                <ExternalLink size={14} /> Source ({detail.pos.source_type === "wikipedia" ? "Wikipédia" : detail.pos.source_type === "vote" ? "Vote au Parlement" : detail.pos.source_type === "programme" ? "Programme officiel" : detail.pos.source_type})
               </a>
             )}
             <p className="mt-3 text-[11px] italic text-slate-400">Position résumée automatiquement à partir de la source. Vérifiez la source pour le détail exact.</p>

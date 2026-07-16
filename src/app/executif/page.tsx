@@ -325,13 +325,6 @@ export const BUDGETS = [
   }
 ];
 
-const DECREES = [
-  { id: 1, title: "Décret n° 2026-452 relatif à l'encadrement des loyers", date: "24 Avril 2026", type: "Réglementaire" },
-  { id: 2, title: "Décret n° 2026-450 portant nomination du préfet de région", date: "22 Avril 2026", type: "Nomination" },
-  { id: 3, title: "Décret n° 2026-448 relatif à la cybersécurité des entreprises", date: "20 Avril 2026", type: "Sûreté" },
-  { id: 4, title: "Décret n° 2026-445 sur la réforme de l'assurance chômage", date: "18 Avril 2026", type: "Social" }
-];
-
 export default function ExecutifPage() {
   const [search, setSearch] = useState("");
   const [govtNews, setGovtNews] = useState<any[]>([]);
@@ -339,6 +332,7 @@ export default function ExecutifPage() {
   const [hoveredBudget, setHoveredBudget] = useState<any>(null);
 
   const [dynamicMinisters, setDynamicMinisters] = useState<any[]>([]);
+  const [decrees, setDecrees] = useState<any[]>([]);
 
   useEffect(() => {
     async function loadNews() {
@@ -347,6 +341,7 @@ export default function ExecutifPage() {
       setLoadingNews(false);
     }
     loadNews();
+    api.getDecrees(6).then(setDecrees).catch(() => {});
   }, []);
 
   useEffect(() => {
@@ -424,14 +419,14 @@ export default function ExecutifPage() {
           >
             <div className="flex items-center gap-3 mb-2">
               <span className="relative flex h-3 w-3">
-                <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-red-400 opacity-75"></span>
-                <span className="relative inline-flex rounded-full h-3 w-3 bg-red-600"></span>
+                <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-amber-400 opacity-75"></span>
+                <span className="relative inline-flex rounded-full h-3 w-3 bg-orange-500"></span>
               </span>
-              <span className="text-xs font-black uppercase tracking-widest text-red-600">Pouvoir Exécutif</span>
+              <span className="text-xs font-black uppercase tracking-widest text-orange-600">Pouvoir Exécutif</span>
             </div>
 
             <h1 className="text-6xl md:text-8xl font-staatliches uppercase tracking-tighter leading-none mb-8 text-slate-900">
-              Le <span className="bg-gradient-to-r from-blue-600 via-red-600 to-blue-600 bg-clip-text text-transparent">Gouvernement</span>
+              Le <span className="bg-gradient-to-r from-amber-500 via-orange-500 to-yellow-500 bg-clip-text text-transparent">Gouvernement</span>
             </h1>
             
             <p className="text-xl md:text-2xl text-slate-500 font-medium italic leading-relaxed max-w-3xl mx-auto">
@@ -440,7 +435,7 @@ export default function ExecutifPage() {
               </GlossaryText>
             </p>
 
-            <div className="h-1.5 w-32 bg-gradient-to-r from-blue-600 to-red-600 mt-8 rounded-full" />
+            <div className="h-1.5 w-32 bg-gradient-to-r from-amber-500 to-orange-600 mt-8 rounded-full" />
           </motion.div>
         </div>
       </section>
@@ -697,14 +692,24 @@ export default function ExecutifPage() {
                 </div>
 
                 <div className="space-y-3">
-                  {DECREES.map((decree) => (
-                    <div key={decree.id} className="p-4 rounded-2xl bg-white/5 border border-white/10 hover:bg-white/10 transition-colors cursor-pointer group flex flex-col gap-1">
+                  {decrees.length === 0 ? (
+                    <p className="text-xs text-white/40 italic py-4">Chargement des derniers décrets…</p>
+                  ) : decrees.map((decree) => (
+                    <a
+                      key={decree.jorf_id}
+                      href={decree.source_url}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="p-4 rounded-2xl bg-white/5 border border-white/10 hover:bg-white/10 transition-colors cursor-pointer group flex flex-col gap-1"
+                    >
                       <div className="flex justify-between items-center">
-                        <span className="text-[8px] font-black uppercase tracking-widest text-blue-400">{decree.type}</span>
-                        <span className="text-[8px] text-white/40 font-bold">{decree.date}</span>
+                        <span className="text-[8px] font-black uppercase tracking-widest text-blue-400">{decree.decree_type}</span>
+                        <span className="text-[8px] text-white/40 font-bold">
+                          {new Date(decree.date_publi).toLocaleDateString('fr-FR', { day: 'numeric', month: 'long', year: 'numeric' })}
+                        </span>
                       </div>
                       <h4 className="text-xs font-bold leading-snug group-hover:text-blue-300 transition-colors line-clamp-2">{decree.title}</h4>
-                    </div>
+                    </a>
                   ))}
                 </div>
 

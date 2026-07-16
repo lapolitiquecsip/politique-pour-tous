@@ -187,6 +187,17 @@ export const api = {
     return data;
   },
 
+  // Derniers décrets publiés au Journal Officiel (source DILA, sans IA).
+  getDecrees: async (limit = 6) => {
+    const { data, error } = await supabase
+      .from('decrees')
+      .select('jorf_id, title, decree_type, date_publi, source_url')
+      .order('date_publi', { ascending: false })
+      .limit(limit);
+    if (error) { console.error(error); return []; }
+    return data || [];
+  },
+
   getElectionResults: async (election: string, round: number, territory?: string, offset = 0, limit = 100) => {
     const { data, error } = await supabase.rpc('public_elections', { p_election: election, p_round: round, p_territory: territory || null, p_offset: offset, p_limit: limit });
     if (error) { console.error(error); return []; }

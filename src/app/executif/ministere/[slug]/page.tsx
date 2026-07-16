@@ -5,7 +5,8 @@ import FeedItemCard from '@/components/home/FeedItemCard';
 import { Building2, ArrowLeft, BookOpen, ChevronRight } from 'lucide-react';
 import Link from 'next/link';
 import MinisterImage from '@/components/executif/MinisterImage';
-import { cleanMinistryName } from '@/lib/executif-utils';
+import { cleanMinistryName, findMinistryBudget } from '@/lib/executif-utils';
+import { CircleDollarSign, ExternalLink } from 'lucide-react';
 
 const ministerSlug = (name: string) =>
   (name || "").normalize("NFD").replace(/[̀-ͯ]/g, "").toLowerCase().replace(/^(m\.|mme\.?)\s*/, "").replace(/[^a-z0-9]+/g, "-").replace(/(^-|-$)/g, "");
@@ -57,6 +58,11 @@ export default async function MinistryPage({ params }: { params: Promise<{ slug:
   // 3b. Fiche ministre enrichie (photo Wikimedia fiable + lien fiche détaillée)
   const mSlug = ministerSlug(ministryData.ministerName);
   const profile = await api.getMinisterBySlug(mSlug).catch(() => null);
+
+  // Budget officiel (mission budgétaire PLF 2026, source data.economie.gouv)
+  const budgetRes: any = await api.getStateBudget(2026).catch(() => null);
+  const missions = Array.isArray(budgetRes) ? budgetRes : (budgetRes?.missions || []);
+  const ministryBudget = findMinistryBudget(ministryData.ministryName, missions);
 
   // 4. Fetch News specifically for this ministry (fallback to 'gouvernement')
   const news = await api.getContent(10, "gouvernement");
@@ -124,6 +130,36 @@ export default async function MinistryPage({ params }: { params: Promise<{ slug:
             </div>
           </div>
         </Link>
+
+        {/* BUDGET OFFICIEL DU MINISTÈRE */}
+        {ministryBudget && (
+          <div className="bg-white rounded-[2.5rem] p-8 md:p-10 border border-slate-200 shadow-sm">
+            <div className="flex items-center gap-3 border-b border-slate-100 pb-6 mb-6">
+              <div className="w-10 h-10 bg-amber-50 text-amber-600 rounded-xl flex items-center justify-center">
+                <CircleDollarSign size={20} />
+              </div>
+              <h3 className="text-2xl font-staatliches uppercase tracking-wider text-slate-900">Budget du ministère</h3>
+            </div>
+            <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
+              <div>
+                <p className="text-4xl font-black text-slate-900">
+                  {(ministryBudget.amount / 1e9).toLocaleString('fr-FR', { maximumFractionDigits: 2 })} Md€
+                </p>
+                <p className="mt-1 text-sm text-slate-500">Mission budgétaire « {ministryBudget.name} » — crédits {new Date().getFullYear()}</p>
+              </div>
+              <a
+                href={(ministryBudget.source_urls && ministryBudget.source_urls[0]) || 'https://www.data.economie.gouv.fr'}
+                target="_blank" rel="noopener noreferrer"
+                className="inline-flex items-center gap-2 rounded-xl bg-slate-900 px-4 py-3 text-[11px] font-black uppercase tracking-widest text-white hover:bg-slate-700 transition-colors"
+              >
+                Source officielle (PLF) <ExternalLink size={14} />
+              </a>
+            </div>
+            <p className="mt-4 text-[11px] italic text-slate-400">
+              Montant de la mission budgétaire principale rattachée à ce ministère (budget de l'État, hors Sécurité sociale). Un ministère peut recouvrir plusieurs missions.
+            </p>
+          </div>
+        )}
 
         {/* NEWS FEED */}
         <div className="bg-white rounded-[2.5rem] p-8 md:p-12 border border-slate-200 shadow-sm mb-20">

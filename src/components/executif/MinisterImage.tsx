@@ -40,6 +40,7 @@ export default function MinisterImage({ src, fallbackSrc, alt, className, style 
       style={style}
       onError={handleError}
       loading="lazy"
+      decoding="async"
     />
   );
 }

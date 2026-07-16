@@ -40,7 +40,7 @@ interface CardProps {
   onSelect: (item: MinisterItem) => void;
 }
 
-const MinisterCard: React.FC<CardProps> = ({ position, item, handleMove, cardSize, onSelect }) => {
+const MinisterCard: React.FC<CardProps> = React.memo(({ position, item, handleMove, cardSize, onSelect }) => {
   const isCenter = position === 0;
   const key = item.name || item.ministry || "x";
   const colorIndex = (key.charCodeAt(0) + (key.charCodeAt(key.length - 1) || 0)) % cardColors.length;
@@ -53,7 +53,8 @@ const MinisterCard: React.FC<CardProps> = ({ position, item, handleMove, cardSiz
         else handleMove(position);
       }}
       className={cn(
-        "absolute left-1/2 top-1/2 cursor-pointer border-2 transition-all duration-500 ease-in-out overflow-hidden flex flex-col",
+        "absolute left-1/2 top-1/2 cursor-pointer border-2 overflow-hidden flex flex-col transform-gpu",
+        "transition-[transform,opacity] duration-500 ease-in-out will-change-transform",
         isCenter
           ? "z-10 bg-white border-amber-500 shadow-2xl"
           : "z-0 bg-white border-slate-200 hover:border-amber-400 opacity-60 hover:opacity-100"
@@ -61,6 +62,7 @@ const MinisterCard: React.FC<CardProps> = ({ position, item, handleMove, cardSiz
       style={{
         width: cardSize,
         height: cardSize + 60,
+        backfaceVisibility: "hidden",
         clipPath: `polygon(50px 0%, calc(100% - 50px) 0%, 100% 50px, 100% 100%, calc(100% - 50px) 100%, 50px 100%, 0 100%, 0 0)`,
         transform: `
           translate(-50%, -50%)
@@ -132,7 +134,8 @@ const MinisterCard: React.FC<CardProps> = ({ position, item, handleMove, cardSiz
       </div>
     </div>
   );
-};
+});
+MinisterCard.displayName = "MinisterCard";
 
 export const MinisterStagger: React.FC<{ items: MinisterItem[] }> = ({ items }) => {
   const router = useRouter();
@@ -200,7 +203,9 @@ export const MinisterStagger: React.FC<{ items: MinisterItem[] }> = ({ items }) 
 
       {list.map((item, index) => {
         const position = list.length % 2 ? index - (list.length - 1) / 2 : index - list.length / 2;
-        if (Math.abs(position) > 3) return null;
+        // On garde une fenêtre large montée (mais hors-champ) pour précharger les portraits
+        // voisins et éviter les à-coups quand une nouvelle carte entre en scène.
+        if (Math.abs(position) > 5) return null;
         return (
           <MinisterCard
             key={item.tempId}

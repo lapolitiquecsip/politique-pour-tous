@@ -205,6 +205,18 @@ export const api = {
     const { data } = await supabase.from('minister_profiles').select('slug, normalized_name, full_name');
     return (data || []).find((m: any) => m.normalized_name === target) ?? null;
   },
+  // Répartition du budget par programme d'une mission (PLF 2026).
+  getMinistryProgrammes: async (missionName: string) => {
+    if (!missionName) return [];
+    const { data, error } = await supabase
+      .from('state_budget_programmes')
+      .select('programme_name, programme_num, amount_2026')
+      .eq('mission_name', missionName)
+      .order('amount_2026', { ascending: false });
+    if (error || !data) return [];
+    return data;
+  },
+
   // Derniers décrets d'un ministère (filtre par mots-clés du nom du ministère).
   getDecreesForMinistry: async (keywords: string[], limit = 5) => {
     if (!keywords.length) return [];

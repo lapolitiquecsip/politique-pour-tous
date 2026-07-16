@@ -63,6 +63,7 @@ export default async function MinistryPage({ params }: { params: Promise<{ slug:
   const budgetRes: any = await api.getStateBudget(2026).catch(() => null);
   const missions = Array.isArray(budgetRes) ? budgetRes : (budgetRes?.missions || []);
   const ministryBudget = findMinistryBudget(ministryData.ministryName, missions);
+  const programmes = ministryBudget ? await api.getMinistryProgrammes(ministryBudget.name).catch(() => []) : [];
 
   // 4. Fetch News specifically for this ministry (fallback to 'gouvernement')
   const news = await api.getContent(10, "gouvernement");
@@ -155,8 +156,32 @@ export default async function MinistryPage({ params }: { params: Promise<{ slug:
                 Source officielle (PLF) <ExternalLink size={14} />
               </a>
             </div>
+            {programmes.length > 0 && (() => {
+              const total = programmes.reduce((s: number, p: any) => s + Number(p.amount_2026 || 0), 0) || 1;
+              return (
+                <div className="mt-8 border-t border-slate-100 pt-6">
+                  <p className="text-[10px] font-black uppercase tracking-widest text-slate-400 mb-4">Où va ce budget — répartition par programme</p>
+                  <div className="space-y-3">
+                    {programmes.slice(0, 8).map((p: any) => {
+                      const pct = (Number(p.amount_2026) / total) * 100;
+                      return (
+                        <div key={p.programme_num}>
+                          <div className="flex justify-between items-baseline gap-3 text-sm">
+                            <span className="font-medium text-slate-700 leading-tight">{p.programme_name}</span>
+                            <span className="font-black text-slate-900 whitespace-nowrap">{(Number(p.amount_2026) / 1e9).toLocaleString('fr-FR', { maximumFractionDigits: 2 })} Md€</span>
+                          </div>
+                          <div className="mt-1 h-1.5 w-full rounded-full bg-slate-100 overflow-hidden">
+                            <div className="h-full rounded-full bg-amber-500" style={{ width: `${Math.max(pct, 1)}%` }} />
+                          </div>
+                        </div>
+                      );
+                    })}
+                  </div>
+                </div>
+              );
+            })()}
             <p className="mt-4 text-[11px] italic text-slate-400">
-              Montant de la mission budgétaire principale rattachée à ce ministère (budget de l'État, hors Sécurité sociale). Un ministère peut recouvrir plusieurs missions.
+              Montant de la mission budgétaire principale rattachée à ce ministère (budget de l'État, hors Sécurité sociale). Un ministère peut recouvrir plusieurs missions. Source : PLF 2026 (data.economie.gouv).
             </p>
           </div>
         )}

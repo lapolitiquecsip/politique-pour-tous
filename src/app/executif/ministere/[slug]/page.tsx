@@ -53,6 +53,10 @@ export default async function MinistryPage({ params }: { params: Promise<{ slug:
     (b.name.toLowerCase().includes('moutchou') && ministryData.ministerName.toLowerCase().includes('moutchou'))
   );
   
+  // 3b. Fiche ministre enrichie (photo Wikimedia fiable + lien fiche détaillée)
+  const mSlug = ministerSlug(ministryData.ministerName);
+  const profile = await api.getMinisterBySlug(mSlug).catch(() => null);
+
   // 4. Fetch News specifically for this ministry (fallback to 'gouvernement')
   const news = await api.getContent(10, "gouvernement");
   // Simple filter based on minister name or ministry name
@@ -120,10 +124,8 @@ export default async function MinistryPage({ params }: { params: Promise<{ slug:
             {/* Left: Avatar & Identity */}
             <div className="md:w-1/3 flex flex-col items-center text-center space-y-4">
               <div className="w-48 h-48 rounded-full border-4 border-slate-50 overflow-hidden shadow-lg bg-slate-100">
-                <MinisterImage 
-                  src={ministryData.ministerName.toLowerCase().includes('moutchou') 
-                    ? 'https://images.weserv.nl/?url=www.assemblee-nationale.fr/dyn/static/tribun/17/photos/carre/720908.jpg&w=1000' 
-                    : (bioData?.image || `https://ui-avatars.com/api/?name=${encodeURIComponent(ministryData.ministerName)}&background=0D8ABC&color=fff&size=512`)} 
+                <MinisterImage
+                  src={profile?.photo_url || bioData?.image || `https://ui-avatars.com/api/?name=${encodeURIComponent(ministryData.ministerName)}&background=0D8ABC&color=fff&size=512`}
                   fallbackSrc={`https://ui-avatars.com/api/?name=${encodeURIComponent(ministryData.ministerName)}&background=0D8ABC&color=fff&size=512`}
                   alt={ministryData.ministerName}
                   className="w-full h-full object-cover"

@@ -193,6 +193,11 @@ export const api = {
     if (error) return null;
     return data;
   },
+  getMinisters: async () => {
+    const { data, error } = await supabase.from('minister_profiles').select('slug, full_name, normalized_name, photo_url');
+    if (error || !data) return [];
+    return data;
+  },
   // Résout un nom de ministre vers sa fiche (slug), pour rendre le nom cliquable.
   findMinisterByName: async (fullName: string) => {
     if (!fullName) return null;

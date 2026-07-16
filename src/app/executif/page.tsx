@@ -385,20 +385,23 @@ export default function ExecutifPage() {
   useEffect(() => {
     async function loadGov() {
       try {
-        const government = await api.getGovernment();
+        const [government, ministerProfiles] = await Promise.all([api.getGovernment(), api.getMinisters()]);
+        const photoByNorm = new Map<string, string>((ministerProfiles || []).filter((p: any) => p.photo_url).map((p: any) => [p.normalized_name, p.photo_url]));
         if (government?.members) {
            const mapped = government.members.map((member: any) => {
               const apiMin = { ministerName: `${member.first_name} ${member.last_name}`.trim(), role: member.title, ministryName: member.ministry_name || '' };
               const apiNameNorm = normalizeName(apiMin.ministerName);
+              const profilePhoto = photoByNorm.get(apiNameNorm);
               const bioMatch = (ministersBios as any[]).find(b => 
                 normalizeName(b.name) === apiNameNorm || 
                 (b.name.toLowerCase().includes('moutchou') && apiMin.ministerName.toLowerCase().includes('moutchou'))
               );
               const hardcoded = (MINISTERS as any[]).find(m => m.name && normalizeName(m.name) === apiNameNorm);
               
+              // Priorité : photo Wikimedia fiable (minister_profiles) > bios/hardcodé > avatar.
               let finalImage = `https://ui-avatars.com/api/?name=${encodeURIComponent(apiMin.ministerName)}&background=0D8ABC&color=fff&size=512`;
-              if (apiMin.ministerName.toLowerCase().includes('moutchou')) {
-                finalImage = 'https://images.weserv.nl/?url=www.assemblee-nationale.fr/dyn/static/tribun/17/photos/carre/720908.jpg&w=1000';
+              if (profilePhoto) {
+                finalImage = profilePhoto;
               } else if (bioMatch && bioMatch.image) {
                 finalImage = bioMatch.image;
               } else if (hardcoded && hardcoded.image) {

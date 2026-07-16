@@ -6,6 +6,9 @@ import { Building2, Users, CircleDollarSign, ArrowLeft, ShieldAlert, BookOpen, B
 import Link from 'next/link';
 import MinisterImage from '@/components/executif/MinisterImage';
 
+const ministerSlug = (name: string) =>
+  (name || "").normalize("NFD").replace(/[̀-ͯ]/g, "").toLowerCase().replace(/^(m\.|mme\.?)\s*/, "").replace(/[^a-z0-9]+/g, "-").replace(/(^-|-$)/g, "");
+
 const normalizeName = (name: string) => {
   if (!name) return "";
   return name
@@ -129,7 +132,10 @@ export default async function MinistryPage({ params }: { params: Promise<{ slug:
               </div>
               <div>
                 <p className="text-[10px] font-black text-blue-600 uppercase tracking-widest mb-1">Ministre en fonction</p>
-                <h2 className="text-2xl font-bold text-slate-900">{ministryData.ministerName}</h2>
+                <Link href={`/executif/ministre/${ministerSlug(ministryData.ministerName)}`} className="group inline-block">
+                  <h2 className="text-2xl font-bold text-slate-900 group-hover:text-blue-600 transition-colors">{ministryData.ministerName}</h2>
+                  <span className="text-[10px] font-black uppercase tracking-widest text-blue-600 inline-flex items-center gap-1 mt-1">Voir la fiche détaillée →</span>
+                </Link>
                 <p className="text-sm font-medium text-slate-500 italic mt-1">{ministryData.role}</p>
               </div>
             </div>

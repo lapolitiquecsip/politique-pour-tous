@@ -187,6 +187,28 @@ export const api = {
     return data;
   },
 
+  // Fiche détaillée d'un membre du gouvernement (bio Wikipédia + IA).
+  getMinisterBySlug: async (slug: string) => {
+    const { data, error } = await supabase.from('minister_profiles').select('*').eq('slug', slug).single();
+    if (error) return null;
+    return data;
+  },
+  // Résout un nom de ministre vers sa fiche (slug), pour rendre le nom cliquable.
+  findMinisterByName: async (fullName: string) => {
+    if (!fullName) return null;
+    const target = fullName.normalize('NFD').replace(/[̀-ͯ]/g, '').toLowerCase().replace(/[^a-z0-9]+/g, ' ').trim();
+    const { data } = await supabase.from('minister_profiles').select('slug, normalized_name, full_name');
+    return (data || []).find((m: any) => m.normalized_name === target) ?? null;
+  },
+  // Derniers décrets d'un ministère (filtre par mots-clés du nom du ministère).
+  getDecreesForMinistry: async (keywords: string[], limit = 5) => {
+    if (!keywords.length) return [];
+    const or = keywords.map(k => `title.ilike.*${k}*`).join(',');
+    const { data, error } = await supabase.from('decrees').select('jorf_id, title, decree_type, date_publi, source_url, summary').or(or).order('date_publi', { ascending: false }).limit(limit);
+    if (error || !data) return [];
+    return data;
+  },
+
   // Derniers décrets publiés au Journal Officiel (source DILA, sans IA).
   getDecrees: async (limit = 6) => {
     const { data, error } = await supabase

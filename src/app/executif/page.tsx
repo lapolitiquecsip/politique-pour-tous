@@ -25,6 +25,7 @@ import FeedItemCard from "@/components/home/FeedItemCard";
 import GlossaryText from "@/components/ui/GlossaryText";
 import ministersBios from "@/lib/data/ministersBios.json";
 import MinisterImage from "@/components/executif/MinisterImage";
+import MinisterStagger from "@/components/executif/MinisterStagger";
 import { cleanMinistryName } from "@/lib/executif-utils";
 import { AwardBadge } from "@/components/ui/award-badge";
 
@@ -517,54 +518,7 @@ export default function ExecutifPage() {
                 </div>
               </div>
 
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                {filteredMinisters.map((minister, idx) => {
-                  const slug = minister.ministry 
-                    ? minister.ministry.toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g, "").replace(/[^a-z0-9]+/g, '-').replace(/(^-|-$)/g, '')
-                    : 'ministere-inconnu';
-
-                  return (
-                    <Link
-                      key={idx}
-                      href={`/executif/ministere/${slug}`}
-                      className="group bg-white rounded-[2.5rem] border border-slate-200 overflow-hidden hover:shadow-2xl hover:border-amber-300 transition-all duration-500 flex flex-col"
-                    >
-                      <div className="relative h-48 overflow-hidden shrink-0">
-                        <MinisterImage
-                          src={minister.image}
-                          fallbackSrc={`https://ui-avatars.com/api/?name=${encodeURIComponent(minister.name)}&background=f59e0b&color=fff&size=512`}
-                          alt={minister.name}
-                          className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-700"
-                          style={{ objectPosition: (minister as any).objectPosition || 'center 20%' }}
-                        />
-                        <div className="absolute inset-0 bg-gradient-to-t from-slate-950/80 to-transparent" />
-                        <div className="absolute bottom-4 left-6">
-                          <p className="text-amber-400 font-black text-[9px] uppercase tracking-widest mb-1">Ministre</p>
-                          <h4 className="text-white font-bold text-sm leading-tight">{minister.name}</h4>
-                        </div>
-                      </div>
-
-                      <div className="p-6 flex flex-col flex-grow">
-                        <div className="mb-4">
-                          <h3 className="text-xl font-bold text-slate-900 group-hover:text-amber-600 transition-colors leading-tight mb-1">
-                            {cleanMinistryName(minister.ministry)}
-                          </h3>
-                          <p className="text-[11px] font-medium text-slate-500 italic line-clamp-2 leading-relaxed">
-                            {minister.role}
-                          </p>
-                        </div>
-
-                        <div className="w-full flex items-center justify-between mt-auto pt-4 border-t border-slate-50 text-slate-900 group-hover:text-amber-600 transition-colors">
-                          <span className="text-[10px] font-black uppercase tracking-widest">Voir le ministère en détail</span>
-                          <div className="w-8 h-8 rounded-full bg-slate-50 flex items-center justify-center group-hover:bg-amber-500 group-hover:text-white transition-all">
-                            <ChevronRight size={16} />
-                          </div>
-                        </div>
-                      </div>
-                    </Link>
-                  );
-                })}
-              </div>
+              <MinisterStagger items={filteredMinisters} />
             </section>
 
             {/* PREMIERS MINISTRES DEPUIS 2017 */}

@@ -25,6 +25,7 @@ import FeedItemCard from "@/components/home/FeedItemCard";
 import GlossaryText from "@/components/ui/GlossaryText";
 import ministersBios from "@/lib/data/ministersBios.json";
 import MinisterImage from "@/components/executif/MinisterImage";
+import { cleanMinistryName } from "@/lib/executif-utils";
 import { AwardBadge } from "@/components/ui/award-badge";
 
 const normalizeName = (name: string) => {
@@ -491,7 +492,7 @@ export default function ExecutifPage() {
             <section className="space-y-8">
               <div className="flex flex-col md:flex-row gap-6 items-center justify-between">
                 <h2 className="text-3xl font-staatliches uppercase tracking-wider text-slate-900">
-                  Les Membres du <span className="text-blue-600">Gouvernement</span>
+                  Les Membres du <span className="text-transparent bg-clip-text bg-gradient-to-r from-amber-500 via-orange-500 to-yellow-500">Gouvernement</span>
                 </h2>
                 <div className="relative w-full md:max-w-xs">
                   <Search className="absolute left-4 top-1/2 -translate-y-1/2 text-slate-400" size={16} />
@@ -512,61 +513,44 @@ export default function ExecutifPage() {
                     : 'ministere-inconnu';
 
                   return (
-                    <motion.div
+                    <Link
                       key={idx}
-                      initial={{ opacity: 0, y: 20 }}
-                      whileInView={{ opacity: 1, y: 0 }}
-                      viewport={{ once: true }}
-                      className="group bg-white rounded-[2.5rem] border border-slate-200 overflow-hidden hover:shadow-2xl transition-all duration-500 flex flex-col"
+                      href={`/executif/ministere/${slug}`}
+                      className="group bg-white rounded-[2.5rem] border border-slate-200 overflow-hidden hover:shadow-2xl hover:border-amber-300 transition-all duration-500 flex flex-col"
                     >
                       <div className="relative h-48 overflow-hidden shrink-0">
-                        <MinisterImage 
-                          src={minister.image} 
-                          fallbackSrc={`https://ui-avatars.com/api/?name=${encodeURIComponent(minister.name)}&background=0D8ABC&color=fff&size=512`}
+                        <MinisterImage
+                          src={minister.image}
+                          fallbackSrc={`https://ui-avatars.com/api/?name=${encodeURIComponent(minister.name)}&background=f59e0b&color=fff&size=512`}
                           alt={minister.name}
                           className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-700"
                           style={{ objectPosition: (minister as any).objectPosition || 'center 20%' }}
                         />
                         <div className="absolute inset-0 bg-gradient-to-t from-slate-950/80 to-transparent" />
                         <div className="absolute bottom-4 left-6">
-                          <p className="text-blue-400 font-black text-[9px] uppercase tracking-widest mb-1">Ministre</p>
+                          <p className="text-amber-400 font-black text-[9px] uppercase tracking-widest mb-1">Ministre</p>
                           <h4 className="text-white font-bold text-sm leading-tight">{minister.name}</h4>
                         </div>
                       </div>
 
                       <div className="p-6 flex flex-col flex-grow">
                         <div className="mb-4">
-                          <h3 className="text-xl font-bold text-slate-900 group-hover:text-blue-600 transition-colors leading-tight mb-1 capitalize">
-                            {minister.ministry}
+                          <h3 className="text-xl font-bold text-slate-900 group-hover:text-amber-600 transition-colors leading-tight mb-1">
+                            {cleanMinistryName(minister.ministry)}
                           </h3>
                           <p className="text-[11px] font-medium text-slate-500 italic line-clamp-2 leading-relaxed">
                             {minister.role}
                           </p>
                         </div>
 
-                        <div className="grid grid-cols-2 gap-4 py-4 border-y border-slate-50 mt-auto mb-4">
-                          <div className="space-y-1">
-                            <span className="text-[9px] font-black uppercase text-slate-400 tracking-widest flex items-center gap-1">
-                              <CircleDollarSign size={10} /> Budget
-                            </span>
-                            <p className="text-sm font-black text-slate-900">{minister.budget}</p>
-                          </div>
-                          <div className="space-y-1">
-                            <span className="text-[9px] font-black uppercase text-slate-400 tracking-widest flex items-center gap-1">
-                              <TrendingUp size={10} /> Priorité
-                            </span>
-                            <p className="text-[10px] font-bold text-slate-700 leading-tight line-clamp-2">{minister.priority}</p>
-                          </div>
-                        </div>
-
-                        <Link href={`/executif/ministere/${slug}`} className="w-full flex items-center justify-between group/btn text-slate-900 hover:text-blue-600 transition-colors pt-2">
+                        <div className="w-full flex items-center justify-between mt-auto pt-4 border-t border-slate-50 text-slate-900 group-hover:text-amber-600 transition-colors">
                           <span className="text-[10px] font-black uppercase tracking-widest">Voir le ministère en détail</span>
-                          <div className="w-8 h-8 rounded-full bg-slate-50 flex items-center justify-center group-hover/btn:bg-blue-600 group-hover/btn:text-white transition-all">
+                          <div className="w-8 h-8 rounded-full bg-slate-50 flex items-center justify-center group-hover:bg-amber-500 group-hover:text-white transition-all">
                             <ChevronRight size={16} />
                           </div>
-                        </Link>
+                        </div>
                       </div>
-                    </motion.div>
+                    </Link>
                   );
                 })}
               </div>

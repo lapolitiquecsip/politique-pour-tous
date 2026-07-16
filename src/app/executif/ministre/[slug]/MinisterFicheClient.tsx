@@ -4,6 +4,7 @@ import { use, useEffect, useState } from "react";
 import Link from "next/link";
 import { ArrowLeft, ShieldCheck, ExternalLink, Loader2, Briefcase, GraduationCap, Users } from "lucide-react";
 import { api } from "@/lib/api";
+import { cleanMinistryName } from "@/lib/executif-utils";
 import LegalStatusModal from "@/components/deputies/LegalStatusModal";
 
 const BIO_FIELDS: Array<[string, string, string]> = [
@@ -72,9 +73,9 @@ export default function MinisterFicheClient({ params }: { params: Promise<{ slug
                 : <div className="flex h-full w-full items-center justify-center text-3xl font-black">{m.full_name.split(" ").map((x: string) => x[0]).slice(0, 2).join("")}</div>}
             </div>
             <div>
-              <p className="text-[11px] font-black uppercase tracking-widest text-blue-400">{m.title || "Membre du gouvernement"}</p>
+              <p className="text-[11px] font-black uppercase tracking-widest text-amber-400">{cleanMinistryName(m.title) || "Membre du gouvernement"}</p>
               <h1 className="mt-2 text-4xl font-staatliches uppercase leading-none md:text-6xl">{m.full_name}</h1>
-              {m.ministry_name && <p className="mt-2 text-sm capitalize text-white/70">{m.ministry_name}</p>}
+              {m.ministry_name && <p className="mt-2 text-sm text-white/70">{cleanMinistryName(m.ministry_name)}</p>}
             </div>
           </div>
           {m.summary && <p className="mx-auto mt-6 max-w-3xl text-center text-lg leading-relaxed text-white/85 md:text-left">{m.summary}</p>}

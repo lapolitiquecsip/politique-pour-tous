@@ -52,9 +52,15 @@ const fetchWithTimeout = (url: RequestInfo | URL, options?: RequestInit): Promis
   });
 };
 
+// La session doit persister DANS LE NAVIGATEUR (localStorage) pour rester connecté,
+// mais pas au build/SSR (pas de window) → sinon on est déconnecté à chaque re-vérif.
+const isBrowser = typeof window !== "undefined";
+
 export const supabase = createClient(supabaseUrl, supabaseAnonKey, {
   auth: {
-    persistSession: false,
+    persistSession: isBrowser,
+    autoRefreshToken: isBrowser,
+    detectSessionInUrl: isBrowser,
   },
   global: {
     fetch: fetchWithTimeout,

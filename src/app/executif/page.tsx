@@ -354,6 +354,17 @@ function budgetMeta(name: string): { color: string; desc: string } {
   return { color: "bg-slate-400", desc: "Mission budgétaire de l'État (source : PLF, ministère de l'Économie)." };
 }
 
+// Premiers ministres depuis l'élection d'E. Macron (2017). Cliquables → fiche détaillée.
+const PM_TIMELINE = [
+  { slug: "edouard-philippe", name: "Édouard Philippe", period: "2017 – 2020" },
+  { slug: "jean-castex", name: "Jean Castex", period: "2020 – 2022" },
+  { slug: "elisabeth-borne", name: "Élisabeth Borne", period: "2022 – 2024" },
+  { slug: "gabriel-attal", name: "Gabriel Attal", period: "2024" },
+  { slug: "michel-barnier", name: "Michel Barnier", period: "2024" },
+  { slug: "francois-bayrou", name: "François Bayrou", period: "2024 – 2025" },
+  { slug: "sebastien-lecornu", name: "Sébastien Lecornu", period: "depuis 2025" },
+];
+
 export default function ExecutifPage() {
   const [search, setSearch] = useState("");
   const [govtNews, setGovtNews] = useState<any[]>([]);
@@ -553,6 +564,35 @@ export default function ExecutifPage() {
                     </Link>
                   );
                 })}
+              </div>
+            </section>
+
+            {/* PREMIERS MINISTRES DEPUIS 2017 */}
+            <section className="bg-white p-8 md:p-12 rounded-[3rem] border border-slate-200">
+              <div className="mb-8">
+                <p className="text-amber-600 font-black text-xs uppercase tracking-widest mb-2">Depuis 2017</p>
+                <h2 className="text-3xl md:text-4xl font-staatliches uppercase tracking-tight text-slate-900">
+                  Les <span className="text-transparent bg-clip-text bg-gradient-to-r from-amber-500 via-orange-500 to-yellow-500">Premiers ministres</span>
+                </h2>
+                <p className="mt-2 text-slate-500 text-sm">Cliquez sur un nom pour voir sa fiche détaillée et son bilan.</p>
+              </div>
+              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3">
+                {PM_TIMELINE.map((pm, i) => (
+                  <Link
+                    key={pm.slug}
+                    href={`/executif/ministre/${pm.slug}`}
+                    className="group flex items-center gap-4 rounded-2xl border border-slate-200 bg-slate-50/60 p-4 transition hover:border-amber-300 hover:bg-amber-50/40"
+                  >
+                    <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-amber-500/10 text-amber-600 font-black">
+                      {PM_TIMELINE.length - i}
+                    </div>
+                    <div className="min-w-0">
+                      <p className="font-bold text-slate-900 group-hover:text-amber-600 transition-colors truncate">{pm.name}</p>
+                      <p className="text-[11px] font-bold text-slate-500">{pm.period}</p>
+                    </div>
+                    <ChevronRight size={16} className="ml-auto text-slate-300 group-hover:text-amber-500 transition-colors" />
+                  </Link>
+                ))}
               </div>
             </section>
 

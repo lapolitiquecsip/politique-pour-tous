@@ -9,12 +9,15 @@ const slugify = (v: string) =>
 
 export async function generateStaticParams() {
   try {
+    // Toutes les fiches (membres du gouvernement + anciens Premiers ministres).
+    const profiles = await api.getMinisters();
+    const params = (profiles || []).map((m: any) => ({ slug: m.slug })).filter((p: any) => p.slug);
+    if (params.length) return params;
+    // Repli : dérive depuis le gouvernement courant.
     const gov = await api.getGovernment();
     const members = Array.isArray(gov) ? gov : (gov?.members || []);
-    const params = members
-      .map((m: any) => ({ slug: slugify(`${m.first_name || ""} ${m.last_name || ""}`.trim()) }))
-      .filter((p: any) => p.slug);
-    return params.length ? params : [{ slug: "indisponible" }];
+    const fallback = members.map((m: any) => ({ slug: slugify(`${m.first_name || ""} ${m.last_name || ""}`.trim()) })).filter((p: any) => p.slug);
+    return fallback.length ? fallback : [{ slug: "indisponible" }];
   } catch {
     return [{ slug: "indisponible" }];
   }

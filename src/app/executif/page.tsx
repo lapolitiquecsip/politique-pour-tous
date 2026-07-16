@@ -15,7 +15,8 @@ import {
   ArrowRight,
   Newspaper,
   CalendarDays,
-  Zap
+  Zap,
+  X
 } from "lucide-react";
 import Link from "next/link";
 import { useState, useEffect } from "react";
@@ -340,6 +341,7 @@ const BUDGET_META: Array<[RegExp, string, string]> = [
   [/sécurité/i, "bg-purple-500", "Police, gendarmerie, sécurité civile."],
   [/économie/i, "bg-orange-500", "Soutien aux entreprises, INSEE, douanes."],
   [/justice/i, "bg-slate-600", "Tribunaux, prisons, protection judiciaire de la jeunesse."],
+  [/santé/i, "bg-rose-400", "Budget de l'État pour la santé (agences, prévention). L'essentiel des dépenses de santé passe par la Sécurité sociale / Assurance maladie (~250 Md€), qui n'est PAS dans le budget de l'État."],
   [/engagements financiers|dette/i, "bg-orange-600", "Intérêts de la dette publique de l'État."],
   [/finances publiques/i, "bg-gray-500", "Administration fiscale (DGFiP) et gestion des comptes publics."],
   [/outre-mer/i, "bg-sky-500", "Politiques spécifiques aux territoires d'outre-mer."],
@@ -360,6 +362,7 @@ export default function ExecutifPage() {
   const [dynamicMinisters, setDynamicMinisters] = useState<any[]>([]);
   const [decrees, setDecrees] = useState<any[]>([]);
   const [budgets, setBudgets] = useState<any[]>([]);
+  const [openDecree, setOpenDecree] = useState<any>(null);
 
   useEffect(() => {
     async function loadNews() {
@@ -730,21 +733,19 @@ export default function ExecutifPage() {
                   {decrees.length === 0 ? (
                     <p className="text-xs text-white/40 italic py-4">Chargement des derniers décrets…</p>
                   ) : decrees.map((decree) => (
-                    <a
+                    <button
                       key={decree.jorf_id}
-                      href={decree.source_url}
-                      target="_blank"
-                      rel="noopener noreferrer"
-                      className="p-4 rounded-2xl bg-white/5 border border-white/10 hover:bg-white/10 transition-colors cursor-pointer group flex flex-col gap-1"
+                      onClick={() => setOpenDecree(decree)}
+                      className="w-full text-left p-4 rounded-2xl bg-white/5 border border-white/10 hover:bg-white/10 transition-colors cursor-pointer group flex flex-col gap-1"
                     >
                       <div className="flex justify-between items-center">
                         <span className="text-[8px] font-black uppercase tracking-widest text-blue-400">{decree.decree_type}</span>
                         <span className="text-[8px] text-white/40 font-bold">
-                          {new Date(decree.date_publi).toLocaleDateString('fr-FR', { day: 'numeric', month: 'long', year: 'numeric' })}
+                          Publié au JO le {new Date(decree.date_publi).toLocaleDateString('fr-FR', { day: 'numeric', month: 'long', year: 'numeric' })}
                         </span>
                       </div>
                       <h4 className="text-xs font-bold leading-snug group-hover:text-blue-300 transition-colors line-clamp-2">{decree.title}</h4>
-                    </a>
+                    </button>
                   ))}
                 </div>
 
@@ -762,6 +763,34 @@ export default function ExecutifPage() {
           </div>
         </div>
       </div>
+
+      {/* Modale décret : résumé + source officielle */}
+      {openDecree && (
+        <div className="fixed inset-0 z-[100] flex items-center justify-center bg-slate-950/80 p-4" onClick={() => setOpenDecree(null)}>
+          <div className="w-full max-w-lg rounded-3xl bg-white p-7 shadow-2xl" onClick={e => e.stopPropagation()}>
+            <div className="flex items-start justify-between gap-4">
+              <div>
+                <span className="text-[9px] font-black uppercase tracking-widest text-blue-600">{openDecree.decree_type}</span>
+                <p className="mt-1 text-[10px] font-bold uppercase tracking-widest text-slate-400">
+                  Publié au JO le {new Date(openDecree.date_publi).toLocaleDateString('fr-FR', { day: 'numeric', month: 'long', year: 'numeric' })}
+                </p>
+              </div>
+              <button onClick={() => setOpenDecree(null)} className="rounded-full bg-slate-100 p-2 text-slate-500 hover:bg-slate-200"><X size={18} /></button>
+            </div>
+            <h3 className="mt-3 text-lg font-bold leading-snug text-slate-900">{openDecree.title}</h3>
+            <div className="mt-4 rounded-2xl bg-slate-50 p-4">
+              <p className="text-[9px] font-black uppercase tracking-widest text-slate-400 mb-1">Ce que ça implique</p>
+              <p className="text-sm leading-relaxed text-slate-700">
+                {openDecree.summary || "Résumé en cours de génération — consultez le texte officiel pour le détail."}
+              </p>
+            </div>
+            <a href={openDecree.source_url} target="_blank" rel="noopener noreferrer"
+              className="mt-5 inline-flex items-center gap-2 rounded-xl bg-slate-900 px-5 py-3 text-xs font-black uppercase tracking-widest text-white transition hover:bg-slate-700">
+              Lire le texte officiel <ArrowRight size={14} />
+            </a>
+          </div>
+        </div>
+      )}
     </main>
   );
 }

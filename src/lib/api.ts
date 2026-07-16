@@ -191,7 +191,7 @@ export const api = {
   getDecrees: async (limit = 6) => {
     const { data, error } = await supabase
       .from('decrees')
-      .select('jorf_id, title, decree_type, date_publi, source_url')
+      .select('jorf_id, title, decree_type, date_publi, source_url, summary')
       .order('date_publi', { ascending: false })
       .limit(limit);
     if (error) { console.error(error); return []; }

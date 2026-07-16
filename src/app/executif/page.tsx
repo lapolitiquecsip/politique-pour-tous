@@ -325,6 +325,32 @@ export const BUDGETS = [
   }
 ];
 
+// Couleur + explication par mission budgétaire officielle (PLF).
+const BUDGET_META: Array<[RegExp, string, string]> = [
+  [/pension/i, "bg-slate-500", "Retraites des fonctionnaires de l'État (militaires, enseignants, agents publics)."],
+  [/enseignement scolaire/i, "bg-blue-500", "Écoles, collèges et lycées : salaires des enseignants et fonctionnement."],
+  [/défense/i, "bg-red-500", "Forces armées, dissuasion nucléaire, équipements et opérations."],
+  [/collectivit|psrct/i, "bg-indigo-500", "Prélèvement sur recettes reversé aux collectivités territoriales."],
+  [/solidarit/i, "bg-pink-500", "RSA, prime d'activité, aides aux personnes handicapées."],
+  [/travail|emploi/i, "bg-cyan-500", "France Travail, apprentissage, politiques de l'emploi."],
+  [/recherche|enseignement sup/i, "bg-violet-500", "Universités, CNRS, bourses étudiantes."],
+  [/cohésion des territoires/i, "bg-teal-500", "Logement, aides au logement (APL), politique de la ville."],
+  [/écologie|mobilité/i, "bg-green-500", "Transition écologique, transports, énergie."],
+  [/psrue|union européenne/i, "bg-amber-500", "Contribution de la France au budget de l'Union européenne."],
+  [/sécurité/i, "bg-purple-500", "Police, gendarmerie, sécurité civile."],
+  [/économie/i, "bg-orange-500", "Soutien aux entreprises, INSEE, douanes."],
+  [/justice/i, "bg-slate-600", "Tribunaux, prisons, protection judiciaire de la jeunesse."],
+  [/engagements financiers|dette/i, "bg-orange-600", "Intérêts de la dette publique de l'État."],
+  [/finances publiques/i, "bg-gray-500", "Administration fiscale (DGFiP) et gestion des comptes publics."],
+  [/outre-mer/i, "bg-sky-500", "Politiques spécifiques aux territoires d'outre-mer."],
+  [/agriculture/i, "bg-lime-600", "Agriculture, alimentation, forêt et affaires rurales."],
+  [/remboursement|dégrèvement/i, "bg-slate-400", "Sommes que l'État rend aux contribuables (trop-perçu, crédits d'impôt)."],
+];
+function budgetMeta(name: string): { color: string; desc: string } {
+  for (const [re, color, desc] of BUDGET_META) if (re.test(name)) return { color, desc };
+  return { color: "bg-slate-400", desc: "Mission budgétaire de l'État (source : PLF, ministère de l'Économie)." };
+}
+
 export default function ExecutifPage() {
   const [search, setSearch] = useState("");
   const [govtNews, setGovtNews] = useState<any[]>([]);
@@ -333,6 +359,7 @@ export default function ExecutifPage() {
 
   const [dynamicMinisters, setDynamicMinisters] = useState<any[]>([]);
   const [decrees, setDecrees] = useState<any[]>([]);
+  const [budgets, setBudgets] = useState<any[]>([]);
 
   useEffect(() => {
     async function loadNews() {
@@ -342,6 +369,14 @@ export default function ExecutifPage() {
     }
     loadNews();
     api.getDecrees(6).then(setDecrees).catch(() => {});
+    // Budgets officiels vérifiés (PLF, RPC) — remplace les valeurs codées en dur.
+    api.getStateBudget(2026).then((res: any) => {
+      const missions = Array.isArray(res) ? res : (res?.missions || []);
+      const mapped = missions
+        .map((m: any) => ({ label: m.name, amount: Math.round((m.amount / 1e9) * 100) / 100, ...budgetMeta(m.name || "") }))
+        .sort((a: any, b: any) => b.amount - a.amount);
+      setBudgets(mapped);
+    }).catch(() => {});
   }, []);
 
   useEffect(() => {
@@ -601,7 +636,7 @@ export default function ExecutifPage() {
               <div className="flex items-center justify-between mb-8">
                 <div className="space-y-1">
                   <h3 className="text-xl font-bold text-slate-900">Budgets de l'État</h3>
-                  <p className="text-[10px] text-slate-400 font-black uppercase tracking-widest">Répartition 2026</p>
+                  <p className="text-[10px] text-slate-400 font-black uppercase tracking-widest">PLF 2026 · missions (officiel)</p>
                 </div>
                 <div className="w-12 h-12 bg-emerald-50 text-emerald-600 rounded-2xl flex items-center justify-center">
                   <CircleDollarSign size={24} />
@@ -632,7 +667,7 @@ export default function ExecutifPage() {
 
               <div className="relative">
                 <div className="space-y-6 max-h-[420px] overflow-y-auto pr-4 custom-scrollbar scroll-smooth">
-                  {BUDGETS.map((item, idx) => (
+                  {budgets.map((item, idx) => (
                     <div 
                       key={idx} 
                       className="group/item relative space-y-2 cursor-help"
@@ -647,7 +682,7 @@ export default function ExecutifPage() {
                       <div className="h-2 bg-slate-100 rounded-full overflow-hidden">
                         <motion.div 
                           initial={{ width: 0 }}
-                          whileInView={{ width: `${(item.amount / 145.60) * 100}%` }}
+                          whileInView={{ width: `${(item.amount / (budgets[0]?.amount || item.amount)) * 100}%` }}
                           transition={{ duration: 1.5, delay: 0.1 }}
                           className={`h-full ${item.color} rounded-full`}
                         />

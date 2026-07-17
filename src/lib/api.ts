@@ -320,7 +320,7 @@ export const api = {
   getPresidentialProgram: async (year = 2022) => {
     const { data, error } = await supabase
       .from('presidential_program')
-      .select('id, pacte, theme, engagement, source_url, status, justification, ai_generated, assessed_at, evidence, evidence_count')
+      .select('id, pacte, theme, engagement, source_url, status, justification, ai_generated, assessed_at, evidence, evidence_count, certitudes, arguments_pour, arguments_contre, confidence, verified')
       .eq('year', year);
     if (error || !data) return [];
     return data;

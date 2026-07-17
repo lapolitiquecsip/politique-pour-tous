@@ -9,6 +9,8 @@ type Item = {
   id: string; pacte: string | null; theme: string | null; engagement: string;
   source_url: string; status: string | null; justification: string | null;
   ai_generated: boolean; evidence?: Ev[] | null; evidence_count?: number | null;
+  certitudes?: string | null; arguments_pour?: string | null; arguments_contre?: string | null;
+  confidence?: string | null; verified?: boolean | null;
 };
 
 const STATUS: Record<string, { label: string; chip: string; dot: string; bar: string }> = {
@@ -25,8 +27,8 @@ const ORDER = ["tenu", "en_cours", "partiel", "abandonne", "non_evaluable", "non
 // déjà produit des erreurs factuelles dans ce cas (ex. « pass Culture = tenu », justifié
 // par un décret de 2021 antérieur à la promesse, alors que le dispositif a été réduit
 // en 2025). Tant qu'aucun fait de notre base ne l'étaye, on affiche « Non vérifié ».
-const effectiveStatus = (i: { status: string | null; evidence_count?: number | null }) =>
-  (i.evidence_count ?? 0) > 0 ? (i.status || "non_evaluable") : "non_verifie";
+const effectiveStatus = (i: { status: string | null; evidence_count?: number | null; verified?: boolean | null }) =>
+  ((i.evidence_count ?? 0) > 0 || i.verified) ? (i.status || "non_evaluable") : "non_verifie";
 
 const fmtDate = (d: string | null) =>
   !d ? "" : new Date(d).toLocaleDateString("fr-FR", { day: "numeric", month: "short", year: "numeric" });
@@ -98,10 +100,10 @@ export default function ProgramSection() {
         <Sparkles size={15} className="mt-0.5 shrink-0 text-amber-600" />
         <p className="text-[11px] leading-relaxed text-amber-900">
           <strong>Les engagements sont des faits</strong>, repris du programme officiel de campagne.
-          <strong> L'avancement n'est affiché que lorsqu'un texte législatif ou un scrutin réel
-          l'établit</strong>, avec les preuves consultables. Sinon, il est marqué
-          « <strong>non vérifié</strong> » : nous préférons ne rien affirmer plutôt que d'avancer
-          une appréciation invérifiable.
+          <strong> L'avancement est instruit à charge et à décharge</strong> à partir des textes
+          législatifs, scrutins et sources publiques : chaque engagement indique ce qui est établi,
+          ce qui plaide pour, ce qui plaide contre. Quand les faits ne permettent pas de trancher,
+          nous l'assumons plutôt que d'affirmer à tort.
         </p>
       </div>
 
@@ -173,27 +175,47 @@ export default function ProgramSection() {
 
                 {isOpen && (
                   <div className="border-t border-slate-100 bg-white px-4 py-4 space-y-4">
-                    {(i.evidence_count ?? 0) > 0 && i.justification ? (
+                    {/* Ce qui est établi — affiché même quand le statut reste indécidable :
+                        c'est l'information utile, là où un « non évaluable » sec ne dit rien. */}
+                    {i.certitudes && (
                       <div>
-                        <p className="text-[9px] font-black uppercase tracking-widest text-emerald-600 flex items-center gap-1.5">
-                          <FileCheck2 size={11} /> Évaluation IA étayée par {i.evidence_count} fait(s) vérifiable(s)
+                        <p className="text-[9px] font-black uppercase tracking-widest text-slate-900 flex items-center gap-1.5">
+                          <FileCheck2 size={11} /> Ce qui est établi
+                        </p>
+                        <p className="mt-1 text-xs leading-relaxed text-slate-700">{i.certitudes}</p>
+                      </div>
+                    )}
+
+                    {/* Le dossier à charge et à décharge : le lecteur juge, on ne tranche pas
+                        à sa place quand les faits ne le permettent pas. */}
+                    {(i.arguments_pour || i.arguments_contre) && (
+                      <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                        {i.arguments_pour && (
+                          <div className="rounded-2xl border border-emerald-100 bg-emerald-50/50 p-3">
+                            <p className="text-[9px] font-black uppercase tracking-widest text-emerald-700">Ce qui plaide pour</p>
+                            <p className="mt-1 text-[11px] leading-relaxed text-slate-700">{i.arguments_pour}</p>
+                          </div>
+                        )}
+                        {i.arguments_contre && (
+                          <div className="rounded-2xl border border-rose-100 bg-rose-50/50 p-3">
+                            <p className="text-[9px] font-black uppercase tracking-widest text-rose-700">Ce qui plaide contre</p>
+                            <p className="mt-1 text-[11px] leading-relaxed text-slate-700">{i.arguments_contre}</p>
+                          </div>
+                        )}
+                      </div>
+                    )}
+
+                    {i.justification && (
+                      <div>
+                        <p className="text-[9px] font-black uppercase tracking-widest text-amber-600 flex items-center gap-1.5">
+                          <Sparkles size={11} /> Synthèse IA
+                          {i.confidence && (
+                            <span className="ml-1 rounded border border-slate-200 bg-slate-50 px-1.5 py-0.5 text-slate-500">
+                              confiance {i.confidence}
+                            </span>
+                          )}
                         </p>
                         <p className="mt-1 text-xs leading-relaxed text-slate-600">{i.justification}</p>
-                      </div>
-                    ) : (
-                      /* Aucune preuve en base : on n'affiche PAS le verdict du modèle. Il s'est
-                         révélé faux dans ce cas de figure, et une affirmation fausse est pire
-                         qu'une absence de réponse. L'engagement, lui, reste 100 % sourcé. */
-                      <div>
-                        <p className="text-[9px] font-black uppercase tracking-widest text-slate-400">
-                          Avancement non vérifié
-                        </p>
-                        <p className="mt-1 text-xs leading-relaxed text-slate-500">
-                          Aucun texte législatif ni scrutin de notre base ne permet d'établir le sort
-                          de cet engagement. Nous préférons ne rien affirmer plutôt que d'avancer une
-                          appréciation invérifiable — l'engagement ci-dessus, lui, est bien celui du
-                          programme officiel.
-                        </p>
                       </div>
                     )}
 

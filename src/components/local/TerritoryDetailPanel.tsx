@@ -3,6 +3,7 @@
 import { motion, AnimatePresence } from "framer-motion";
 import { X, Users, MapPin, Building2, TrendingUp, Star, Loader2, ArrowRight, Shield, Heart, GraduationCap, Home, Landmark, TreePine, Briefcase, ChevronLeft, ChevronRight } from "lucide-react";
 import RegionFinancesChart from "./RegionFinancesChart";
+import LocalFinancesSection from "./LocalFinancesSection";
 import { buildItddCards, ITDD_NEW_CATEGORIES, type ItddCard } from "@/lib/itdd-cards";
 import { REGIONS, DEPARTMENTS } from "@/lib/data/territories";
 import { useState, useEffect } from "react";
@@ -161,6 +162,18 @@ export default function TerritoryDetailPanel({ territory, onClose, onNavigate }:
   const [loadingSave, setLoadingSave] = useState(false);
   const [itddCards, setItddCards] = useState<ItddCard[]>([]);
   const [localDeputies, setLocalDeputies] = useState<any[]>([]);
+  const [finances, setFinances] = useState<any | null>(null);
+
+  // Finances réelles du département (OFGL). Les régions ont déjà leur propre
+  // visualisation (RegionFinancesChart, base region_finances).
+  useEffect(() => {
+    if (!territory || territory.type !== 'department') { setFinances(null); return; }
+    let active = true;
+    api.getDepartmentFinances(territory.id)
+      .then(f => { if (active) setFinances(f); })
+      .catch(() => { if (active) setFinances(null); });
+    return () => { active = false; };
+  }, [territory]);
 
   useEffect(() => {
     if (!territory || (territory.type !== 'region' && territory.type !== 'department')) { setItddCards([]); return; }
@@ -564,6 +577,11 @@ export default function TerritoryDetailPanel({ territory, onClose, onNavigate }:
                           <RegionFinancesChart regionCode={territory.id} />
                         </div>
                       </div>
+                    )}
+
+                    {/* Finances réelles du département (OFGL) */}
+                    {territory.type === 'department' && finances && (
+                      <LocalFinancesSection finances={finances} label="Finances départementales" />
                     )}
 
                     {/* Catégories développement durable (ITDD) sans équivalent existant */}

@@ -3,6 +3,7 @@
 import { motion, AnimatePresence } from "framer-motion";
 import { X, Users, MapPin, Calendar, Award, Building2, TrendingUp, UserMinus, Star, Loader2, Briefcase, GraduationCap, Heart, Shield, Home, Landmark, Coins, TreePine, Lock } from "lucide-react";
 import { buildItddCards, ITDD_NEW_CATEGORIES, type ItddCard } from "@/lib/itdd-cards";
+import LocalFinancesSection from "./LocalFinancesSection";
 import type { CommuneResult, MayorData, ElectionResult } from "@/lib/hooks/useCommuneSearch";
 import { useState, useEffect } from "react";
 import { usePremium } from "@/lib/hooks/usePremium";
@@ -738,39 +739,7 @@ export default function CommuneDetailPanel({
                   )}
                 </motion.div>
 
-                {/* FINANCES RÉELLES DE LA COMMUNE (source OFGL) */}
-                {finances && (finances.recettes != null || finances.depenses != null || finances.encours_dette != null) && (() => {
-                  const fmt = (v: number | null) => v == null ? "—" : (Math.abs(v) >= 1e6 ? (v / 1e6).toLocaleString("fr-FR", { maximumFractionDigits: 2 }) + " M€" : Math.round(v).toLocaleString("fr-FR") + " €");
-                  const perHab = (v: number | null) => v == null ? null : Math.round(v).toLocaleString("fr-FR") + " €/hab.";
-                  const rows: Array<{ label: string; value: number | null; hab: number | null; accent: string; hint?: string }> = [
-                    { label: "Recettes de fonctionnement", value: finances.recettes, hab: finances.recettes_hab, accent: "text-emerald-600", hint: "Recettes réelles de fonctionnement (retraité OFGL)." },
-                    { label: "Dépenses de fonctionnement", value: finances.depenses, hab: finances.depenses_hab, accent: "text-rose-600", hint: "Dépenses réelles de fonctionnement (retraité OFGL)." },
-                    { label: "Épargne brute", value: finances.epargne, hab: finances.epargne_hab, accent: (finances.epargne ?? 0) >= 0 ? "text-emerald-600" : "text-rose-600", hint: "Recettes réelles − dépenses réelles de fonctionnement." },
-                    { label: "Dépenses d'investissement", value: finances.investissement, hab: finances.investissement_hab, accent: "text-blue-600", hint: "Dépenses réelles d'investissement." },
-                    { label: "Encours de dette", value: finances.encours_dette, hab: finances.encours_dette_hab, accent: "text-amber-600", hint: "Dette totale restant à rembourser au 31/12." },
-                  ];
-                  return (
-                    <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.4 }} className="space-y-4">
-                      <div className="flex items-center gap-2">
-                        <Landmark size={16} className="text-slate-900" />
-                        <h4 className="text-sm font-black uppercase tracking-widest text-slate-900">Finances communales {finances.year}</h4>
-                      </div>
-                      <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
-                        {rows.map((r, i) => (
-                          <div key={i} className="p-4 rounded-3xl bg-white border border-slate-200 shadow-sm space-y-1" title={r.hint}>
-                            <p className="text-[9px] font-black uppercase tracking-widest text-slate-400">{r.label}</p>
-                            <p className={`text-xl font-black ${r.accent}`}>{fmt(r.value)}</p>
-                            {perHab(r.hab) && <p className="text-[10px] font-bold text-slate-400">{perHab(r.hab)}</p>}
-                          </div>
-                        ))}
-                      </div>
-                      <p className="text-[10px] text-slate-400/80 italic">
-                        Budget principal, exercice {finances.year}. Dépenses/recettes réelles retraitées. Source : OFGL (data.ofgl.fr).
-                      </p>
-                    </motion.div>
-                  );
-                })()}
-
+                {finances && <LocalFinancesSection finances={finances} label="Finances communales" />}
                 {/* Real indicators or coming soon */}
                 {loadingDetails ? (
                   <div className="flex flex-col items-center justify-center py-12 gap-3">

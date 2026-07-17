@@ -6,6 +6,7 @@ import Link from "next/link";
 import { User, Star, Vote, Users, ChevronRight, Bell, MapPin, CheckCircle2, XCircle, MinusCircle, Loader2, Calendar, LayoutDashboard, LogOut, Settings, ArrowRight, Bookmark, FileText, Search, Clock, Globe, Layers, UserMinus } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
 import { api } from "@/lib/api";
+import { BallotBox, BallotChip } from "@/components/dashboard/BallotVote";
 import { usePremium } from "@/lib/hooks/usePremium";
 
 // Les favoris et votes créés sous l'ancien schéma pointent vers des identifiants qui
@@ -340,16 +341,11 @@ export default function DashboardPage() {
                     ) : (
                       userVotes.map((v) => {
                         const lawInfo = v.laws || v.scrutins;
-                        const voteConfig = {
-                          "POUR": { color: "bg-emerald-100 text-emerald-700", icon: CheckCircle2 },
-                          "CONTRE": { color: "bg-red-100 text-red-700", icon: XCircle },
-                          "ABSTENTION": { color: "bg-slate-100 text-slate-700", icon: MinusCircle }
-                        }[v.vote as string] || { color: "bg-slate-100 text-slate-700", icon: Vote };
 
                         return (
                           <div key={v.id} className="group flex flex-col md:flex-row md:items-center gap-6 p-6 rounded-3xl border border-slate-100 hover:border-slate-300 hover:shadow-xl transition-all bg-white relative">
-                            <div className="w-14 h-14 rounded-2xl bg-slate-50 flex items-center justify-center text-slate-400 group-hover:text-slate-900 transition-colors shrink-0">
-                              <voteConfig.icon size={24} />
+                            <div className="w-14 h-14 rounded-2xl bg-slate-50 flex items-center justify-center shrink-0 transition-transform group-hover:scale-105">
+                              <BallotBox vote={v.vote} size={34} />
                             </div>
                             <div className="flex-1 min-w-0">
                               <div className="flex items-center gap-3 mb-1">
@@ -371,10 +367,7 @@ export default function DashboardPage() {
                                 </h3>
                               )}
                             </div>
-                            <div className={`px-4 py-2 rounded-full text-[10px] font-black uppercase tracking-widest flex items-center gap-2 ${voteConfig.color}`}>
-                              <voteConfig.icon size={12} />
-                              Position : {v.vote}
-                            </div>
+                            <BallotChip vote={v.vote} />
                             <Link 
                               href={`/lois`}
                               className="w-10 h-10 rounded-full border border-slate-100 flex items-center justify-center text-slate-400 hover:bg-slate-950 hover:text-white hover:border-slate-950 transition-all shrink-0"

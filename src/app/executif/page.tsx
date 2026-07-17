@@ -374,6 +374,8 @@ export default function ExecutifPage() {
 
   const [dynamicMinisters, setDynamicMinisters] = useState<any[]>([]);
   const [decrees, setDecrees] = useState<any[]>([]);
+  // Photos des Premiers ministres, indexées par slug (fiches minister_profiles).
+  const [photoBySlug, setPhotoBySlug] = useState<Record<string, string>>({});
   const [budgets, setBudgets] = useState<any[]>([]);
   const [openDecree, setOpenDecree] = useState<any>(null);
 
@@ -400,6 +402,7 @@ export default function ExecutifPage() {
       try {
         const [government, ministerProfiles] = await Promise.all([api.getGovernment(), api.getMinisters()]);
         const photoByNorm = new Map<string, string>((ministerProfiles || []).filter((p: any) => p.photo_url).map((p: any) => [p.normalized_name, p.photo_url]));
+        setPhotoBySlug(Object.fromEntries((ministerProfiles || []).filter((p: any) => p.slug && p.photo_url).map((p: any) => [p.slug, p.photo_url])));
         if (government?.members) {
            const mapped = government.members.map((member: any) => {
               const apiMin = { ministerName: `${member.first_name} ${member.last_name}`.trim(), role: member.title, ministryName: member.ministry_name || '' };
@@ -537,8 +540,13 @@ export default function ExecutifPage() {
                     href={`/executif/ministre/${pm.slug}`}
                     className="group flex items-center gap-4 rounded-2xl border border-slate-200 bg-slate-50/60 p-4 transition hover:border-amber-300 hover:bg-amber-50/40"
                   >
-                    <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-amber-500/10 text-amber-600 font-black">
-                      {PM_TIMELINE.length - i}
+                    <div className="relative h-12 w-12 shrink-0 rounded-full overflow-hidden border-2 border-amber-100 bg-amber-500/10">
+                      <MinisterImage
+                        src={photoBySlug[pm.slug] || `https://ui-avatars.com/api/?name=${encodeURIComponent(pm.name)}&background=f59e0b&color=fff&size=128&bold=true`}
+                        fallbackSrc={`https://ui-avatars.com/api/?name=${encodeURIComponent(pm.name)}&background=f59e0b&color=fff&size=128&bold=true`}
+                        alt={pm.name}
+                        className="w-full h-full object-cover object-top"
+                      />
                     </div>
                     <div className="min-w-0">
                       <p className="font-bold text-slate-900 group-hover:text-amber-600 transition-colors truncate">{pm.name}</p>

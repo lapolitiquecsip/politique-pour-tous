@@ -795,9 +795,11 @@ export default function CommuneDetailPanel({
                                   <span>{c.label}</span>
                                   <span className="text-slate-900 font-bold">{c.display}</span>
                                 </div>
-                                <div className="h-2 w-full bg-slate-200/60 rounded-full overflow-hidden">
-                                  <div className={`h-full ${cat.progressClass}`} style={{ width: (c.pct ?? 50) + '%' }} />
-                                </div>
+                                {c.pct != null && (
+                                  <div className="h-2 w-full bg-slate-200/60 rounded-full overflow-hidden">
+                                    <div className={`h-full ${cat.progressClass}`} style={{ width: c.pct + '%' }} />
+                                  </div>
+                                )}
                               </div>
                             ))}
                           </div>
@@ -824,9 +826,11 @@ export default function CommuneDetailPanel({
                                   <span>{c.label}</span>
                                   <span className="text-slate-900 font-bold">{c.display}</span>
                                 </div>
-                                <div className="h-2 w-full bg-slate-200/60 rounded-full overflow-hidden">
-                                  <div className={`h-full ${cat.progressClass}`} style={{ width: (c.pct ?? 50) + '%' }} />
-                                </div>
+                                {c.pct != null && (
+                                  <div className="h-2 w-full bg-slate-200/60 rounded-full overflow-hidden">
+                                    <div className={`h-full ${cat.progressClass}`} style={{ width: c.pct + '%' }} />
+                                  </div>
+                                )}
                               </div>
                             ))}
                           </div>

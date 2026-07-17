@@ -624,14 +624,10 @@ function LocalPoliticsContent() {
                                 </div>
                               </div>
                               <div className="p-6">
-                                <div className="grid grid-cols-2 gap-6 py-6 border-y border-slate-50">
+                                <div className="grid grid-cols-1 gap-6 py-6 border-y border-slate-50">
                                   <div className="space-y-1">
                                     <span className="text-[9px] font-black uppercase text-slate-400 tracking-widest flex items-center gap-1"><Users size={10} /> Population</span>
                                     <p className="text-sm font-black text-slate-900">{city.population}</p>
-                                  </div>
-                                  <div className="space-y-1">
-                                    <span className="text-[9px] font-black uppercase text-slate-400 tracking-widest flex items-center gap-1"><Building2 size={10} /> Mandat</span>
-                                    <p className="text-sm font-black text-slate-900">Depuis 2020</p>
                                   </div>
                                 </div>
                                 <div className={`w-full flex items-center justify-between group/btn text-slate-900 ${theme.hoverText} transition-colors pt-2`}>

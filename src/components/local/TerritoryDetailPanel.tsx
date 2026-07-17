@@ -4,6 +4,7 @@ import { motion, AnimatePresence } from "framer-motion";
 import { X, Users, MapPin, Building2, TrendingUp, Star, Loader2, ArrowRight, Shield, Heart, GraduationCap, Home, Landmark, TreePine, Briefcase, ChevronLeft, ChevronRight } from "lucide-react";
 import RegionFinancesChart from "./RegionFinancesChart";
 import LocalFinancesSection from "./LocalFinancesSection";
+import MinisterImage from "@/components/executif/MinisterImage";
 import { buildItddCards, ITDD_NEW_CATEGORIES, type ItddCard } from "@/lib/itdd-cards";
 import { REGIONS, DEPARTMENTS } from "@/lib/data/territories";
 import { useState, useEffect } from "react";
@@ -530,9 +531,11 @@ export default function TerritoryDetailPanel({ territory, onClose, onNavigate }:
                                   <span>{c.label}</span>
                                   <span className="text-slate-900 font-bold">{c.display}</span>
                                 </div>
-                                <div className="h-2 w-full bg-slate-200/60 rounded-full overflow-hidden">
-                                  <div className={`h-full ${cat.progressClass}`} style={{ width: (c.pct ?? 50) + '%' }} />
-                                </div>
+                                {c.pct != null && (
+                                  <div className="h-2 w-full bg-slate-200/60 rounded-full overflow-hidden">
+                                    <div className={`h-full ${cat.progressClass}`} style={{ width: c.pct + '%' }} />
+                                  </div>
+                                )}
                               </div>
                             ))}
                           </div>
@@ -553,12 +556,23 @@ export default function TerritoryDetailPanel({ territory, onClose, onNavigate }:
                           {localDeputies.map((dep) => (
                             <Link key={dep.slug} href={`/deputes/${dep.slug}`}
                               className="flex items-center gap-3 rounded-2xl border border-slate-100 bg-slate-50/60 p-3 transition hover:border-red-300 hover:bg-red-50/50 group">
-                              <div className="w-10 h-10 shrink-0 rounded-full bg-red-500 text-white flex items-center justify-center text-xs font-black">
-                                {`${(dep.first_name?.[0] || '')}${(dep.last_name?.[0] || '')}`.toUpperCase()}
-                              </div>
+                              {(() => {
+                                // Repli : avatar initiales si la photo est absente ou ne charge pas.
+                                const initialsAvatar = `https://ui-avatars.com/api/?name=${encodeURIComponent(`${dep.first_name || ''} ${dep.last_name || ''}`.trim())}&background=ef4444&color=fff&size=128&bold=true`;
+                                return (
+                                  <div className="w-10 h-10 shrink-0 rounded-full overflow-hidden bg-red-500">
+                                    <MinisterImage
+                                      src={dep.photo_url || initialsAvatar}
+                                      fallbackSrc={initialsAvatar}
+                                      alt={`${dep.first_name} ${dep.last_name}`}
+                                      className="w-full h-full object-cover object-top"
+                                    />
+                                  </div>
+                                );
+                              })()}
                               <div className="min-w-0">
                                 <p className="font-bold text-slate-900 truncate">{dep.first_name} {dep.last_name}</p>
-                                <p className="text-[11px] font-bold text-slate-500 truncate">{dep.party || '—'}{dep.constituency_number ? ` · ${dep.constituency_number}ème circ.` : ''}</p>
+                                <p className="text-[11px] font-bold text-slate-500 truncate">{dep.party || '—'}{dep.constituency_number ? ` · ${dep.constituency_number}${dep.constituency_number === 1 ? 'ère' : 'ème'} circ.` : ''}</p>
                               </div>
                               <ArrowRight className="ml-auto w-4 h-4 text-slate-300 group-hover:text-red-500 transition-colors" />
                             </Link>
@@ -609,9 +623,11 @@ export default function TerritoryDetailPanel({ territory, onClose, onNavigate }:
                                   <span>{c.label}</span>
                                   <span className="text-slate-900 font-bold">{c.display}</span>
                                 </div>
-                                <div className="h-2 w-full bg-slate-200/60 rounded-full overflow-hidden">
-                                  <div className={`h-full ${cat.progressClass}`} style={{ width: (c.pct ?? 50) + '%' }} />
-                                </div>
+                                {c.pct != null && (
+                                  <div className="h-2 w-full bg-slate-200/60 rounded-full overflow-hidden">
+                                    <div className={`h-full ${cat.progressClass}`} style={{ width: c.pct + '%' }} />
+                                  </div>
+                                )}
                               </div>
                             ))}
                           </div>

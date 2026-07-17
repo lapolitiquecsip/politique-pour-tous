@@ -36,12 +36,16 @@ export default function LocalFinancesSection({ finances, label }: { finances: Lo
   const has = finances.recettes != null || finances.depenses != null || finances.encours_dette != null;
   if (!has) return null;
 
-  const rows: Array<{ label: string; value: number | null; hab: number | null; accent: string; hint: string }> = [
+  const rows: Array<{ label: string; value: number | null; hab: number | null; accent: string; hint: string; note?: string }> = [
     { label: "Recettes de fonctionnement", value: finances.recettes, hab: finances.recettes_hab, accent: "text-emerald-600", hint: "Recettes réelles de fonctionnement (retraité OFGL)." },
     { label: "Dépenses de fonctionnement", value: finances.depenses, hab: finances.depenses_hab, accent: "text-rose-600", hint: "Dépenses réelles de fonctionnement (retraité OFGL)." },
     { label: "Épargne brute", value: finances.epargne, hab: finances.epargne_hab, accent: (finances.epargne ?? 0) >= 0 ? "text-emerald-600" : "text-rose-600", hint: "Recettes réelles − dépenses réelles de fonctionnement." },
     { label: "Dépenses d'investissement", value: finances.investissement, hab: finances.investissement_hab, accent: "text-blue-600", hint: "Dépenses réelles d'investissement." },
-    { label: "Encours de dette", value: finances.encours_dette, hab: finances.encours_dette_hab, accent: "text-amber-600", hint: "Dette totale restant à rembourser au 31/12." },
+    {
+      label: "Encours de dette", value: finances.encours_dette, hab: finances.encours_dette_hab, accent: "text-amber-600",
+      hint: "Dette totale restant à rembourser au 31/12.",
+      note: "Le capital qu'il reste à rembourser sur les emprunts déjà contractés, au 31 décembre.",
+    },
   ];
 
   // Action sociale : n'existe que pour les départements (compétence propre).
@@ -70,6 +74,7 @@ export default function LocalFinancesSection({ finances, label }: { finances: Lo
             <p className="text-[9px] font-black uppercase tracking-widest text-slate-400">{r.label}</p>
             <p className={`text-xl font-black ${r.accent}`}>{fmt(r.value)}</p>
             {perHab(r.hab) && <p className="text-[10px] font-bold text-slate-400">{perHab(r.hab)}</p>}
+            {r.note && <p className="mt-1.5 text-[10px] leading-snug text-slate-500 italic">{r.note}</p>}
           </div>
         ))}
       </div>

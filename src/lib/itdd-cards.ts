@@ -70,7 +70,19 @@ export function buildItddCards(rows: ItddRow[], level: "region" | "department" |
       if (val != null) cards.push({ category: "Qualité de l'air", label: `Air — ${name}`, display: val >= 1 ? "Dépassement" : "Conforme", pct: null });
     } else {
       const val = latest(rows, v, s => s.includes("ne respectent pas la norme"));
-      if (val != null) cards.push({ category: "Qualité de l'air", label: `Air — ${name}`, display: `${Math.round(val)} station(s) > norme`, pct: null });
+      if (val != null) {
+        const n = Math.round(val);
+        cards.push({
+          category: "Qualité de l'air",
+          label: `Air — ${name}`,
+          // « 0 station(s) > norme » était illisible : on dit ce que ça signifie.
+          display: n === 0 ? "Conforme" : `${n} station(s) > norme`,
+          pct: null,
+          help: n === 0
+            ? "Aucune station de mesure ne dépasse la norme réglementaire pour ce polluant."
+            : `${n} station(s) de mesure dépasse(nt) la norme réglementaire pour ce polluant.`,
+        });
+      }
     }
   }
 

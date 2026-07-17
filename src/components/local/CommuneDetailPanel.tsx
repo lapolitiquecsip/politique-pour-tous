@@ -738,16 +738,16 @@ export default function CommuneDetailPanel({
                   )}
                 </motion.div>
 
-                {/* BALANCES COMPTABLES 2025 (source DGFiP / data.economie.gouv) */}
-                {finances && (finances.produits != null || finances.charges != null || finances.encours_dette != null) && (() => {
-                  const pop = Number(commune.population) || Number(communeData?.demographie?.populationTotal) || 0;
+                {/* FINANCES RÉELLES DE LA COMMUNE (source OFGL) */}
+                {finances && (finances.recettes != null || finances.depenses != null || finances.encours_dette != null) && (() => {
                   const fmt = (v: number | null) => v == null ? "—" : (Math.abs(v) >= 1e6 ? (v / 1e6).toLocaleString("fr-FR", { maximumFractionDigits: 2 }) + " M€" : Math.round(v).toLocaleString("fr-FR") + " €");
-                  const perHab = (v: number | null) => (v == null || !pop) ? null : Math.round(v / pop).toLocaleString("fr-FR") + " €/hab.";
-                  const rows: Array<{ label: string; value: number | null; accent: string; hint?: string }> = [
-                    { label: "Produits de fonctionnement", value: finances.produits, accent: "text-emerald-600", hint: "Recettes de fonctionnement (comptes classe 7)." },
-                    { label: "Charges de fonctionnement", value: finances.charges, accent: "text-rose-600", hint: "Dépenses de fonctionnement (comptes classe 6)." },
-                    { label: "Résultat de fonctionnement", value: finances.resultat, accent: (finances.resultat ?? 0) >= 0 ? "text-emerald-600" : "text-rose-600", hint: "Produits − charges (épargne de gestion)." },
-                    { label: "Encours de dette", value: finances.encours_dette, accent: "text-amber-600", hint: "Emprunts et dettes assimilées (compte 16)." },
+                  const perHab = (v: number | null) => v == null ? null : Math.round(v).toLocaleString("fr-FR") + " €/hab.";
+                  const rows: Array<{ label: string; value: number | null; hab: number | null; accent: string; hint?: string }> = [
+                    { label: "Recettes de fonctionnement", value: finances.recettes, hab: finances.recettes_hab, accent: "text-emerald-600", hint: "Recettes réelles de fonctionnement (retraité OFGL)." },
+                    { label: "Dépenses de fonctionnement", value: finances.depenses, hab: finances.depenses_hab, accent: "text-rose-600", hint: "Dépenses réelles de fonctionnement (retraité OFGL)." },
+                    { label: "Épargne brute", value: finances.epargne, hab: finances.epargne_hab, accent: (finances.epargne ?? 0) >= 0 ? "text-emerald-600" : "text-rose-600", hint: "Recettes réelles − dépenses réelles de fonctionnement." },
+                    { label: "Dépenses d'investissement", value: finances.investissement, hab: finances.investissement_hab, accent: "text-blue-600", hint: "Dépenses réelles d'investissement." },
+                    { label: "Encours de dette", value: finances.encours_dette, hab: finances.encours_dette_hab, accent: "text-amber-600", hint: "Dette totale restant à rembourser au 31/12." },
                   ];
                   return (
                     <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.4 }} className="space-y-4">
@@ -760,12 +760,12 @@ export default function CommuneDetailPanel({
                           <div key={i} className="p-4 rounded-3xl bg-white border border-slate-200 shadow-sm space-y-1" title={r.hint}>
                             <p className="text-[9px] font-black uppercase tracking-widest text-slate-400">{r.label}</p>
                             <p className={`text-xl font-black ${r.accent}`}>{fmt(r.value)}</p>
-                            {perHab(r.value) && <p className="text-[10px] font-bold text-slate-400">{perHab(r.value)}</p>}
+                            {perHab(r.hab) && <p className="text-[10px] font-bold text-slate-400">{perHab(r.hab)}</p>}
                           </div>
                         ))}
                       </div>
                       <p className="text-[10px] text-slate-400/80 italic">
-                        Budget principal, exercice {finances.year}. Source : DGFiP — balances comptables des communes (data.economie.gouv).
+                        Budget principal, exercice {finances.year}. Dépenses/recettes réelles retraitées. Source : OFGL (data.ofgl.fr).
                       </p>
                     </motion.div>
                   );

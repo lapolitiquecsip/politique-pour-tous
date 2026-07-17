@@ -217,23 +217,33 @@ export const api = {
     return data;
   },
 
-  // Balances comptables 2025 d'une commune (produits/charges de fonctionnement, encours de dette).
-  // Source : data.economie.gouv (DGFiP), agrégée dans commune_finances.
-  getCommuneFinances: async (inseeCode: string, year = 2025) => {
+  // Finances réelles d'une commune (source OFGL, agrégée dans commune_finances).
+  // Renvoie le millésime le plus récent disponible pour cette commune.
+  getCommuneFinances: async (inseeCode: string) => {
     if (!inseeCode) return null;
     const { data, error } = await supabase
       .from('commune_finances')
-      .select('indicator, montant, source_url')
+      .select('indicator, montant, euros_par_habitant, source_url, year')
       .eq('insee_code', inseeCode)
-      .eq('year', year);
+      .order('year', { ascending: false });
     if (error || !data || data.length === 0) return null;
-    const by: Record<string, number> = {};
+    const year = (data as any[])[0].year;
+    const rows = (data as any[]).filter(r => r.year === year);
+    const m: Record<string, number> = {};
+    const eph: Record<string, number> = {};
     let source_url = '';
-    for (const r of data as any[]) { by[r.indicator] = Number(r.montant); if (r.source_url) source_url = r.source_url; }
-    const produits = by['produits_fonctionnement'] ?? null;
-    const charges = by['charges_fonctionnement'] ?? null;
-    const resultat = produits != null && charges != null ? produits - charges : null;
-    return { year, produits, charges, resultat, encours_dette: by['encours_dette'] ?? null, source_url };
+    for (const r of rows) { m[r.indicator] = Number(r.montant); eph[r.indicator] = r.euros_par_habitant != null ? Number(r.euros_par_habitant) : NaN; if (r.source_url) source_url = r.source_url; }
+    const get = (k: string) => (k in m ? m[k] : null);
+    const getEph = (k: string) => (Number.isFinite(eph[k]) ? eph[k] : null);
+    return {
+      year,
+      recettes: get('recettes_fonctionnement'), recettes_hab: getEph('recettes_fonctionnement'),
+      depenses: get('depenses_fonctionnement'), depenses_hab: getEph('depenses_fonctionnement'),
+      epargne: get('epargne_brute'), epargne_hab: getEph('epargne_brute'),
+      investissement: get('depenses_investissement'), investissement_hab: getEph('depenses_investissement'),
+      encours_dette: get('encours_dette'), encours_dette_hab: getEph('encours_dette'),
+      source_url,
+    };
   },
 
   // Derniers décrets d'un ministère (filtre par mots-clés du nom du ministère).

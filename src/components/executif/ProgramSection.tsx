@@ -17,8 +17,16 @@ const STATUS: Record<string, { label: string; chip: string; dot: string; bar: st
   partiel:       { label: "Partiel",       chip: "bg-amber-50 text-amber-700 border-amber-200",       dot: "bg-amber-500",   bar: "bg-amber-500" },
   abandonne:     { label: "Abandonné",     chip: "bg-rose-50 text-rose-700 border-rose-200",          dot: "bg-rose-500",    bar: "bg-rose-500" },
   non_evaluable: { label: "Non évaluable", chip: "bg-slate-100 text-slate-500 border-slate-200",      dot: "bg-slate-400",   bar: "bg-slate-300" },
+  non_verifie:   { label: "Non vérifié",   chip: "bg-slate-100 text-slate-500 border-slate-200",      dot: "bg-slate-300",   bar: "bg-slate-200" },
 };
-const ORDER = ["tenu", "en_cours", "partiel", "abandonne", "non_evaluable"];
+const ORDER = ["tenu", "en_cours", "partiel", "abandonne", "non_evaluable", "non_verifie"];
+
+// Un verdict sans preuve vérifiable n'est pas affiché comme un verdict : le modèle a
+// déjà produit des erreurs factuelles dans ce cas (ex. « pass Culture = tenu », justifié
+// par un décret de 2021 antérieur à la promesse, alors que le dispositif a été réduit
+// en 2025). Tant qu'aucun fait de notre base ne l'étaye, on affiche « Non vérifié ».
+const effectiveStatus = (i: { status: string | null; evidence_count?: number | null }) =>
+  (i.evidence_count ?? 0) > 0 ? (i.status || "non_evaluable") : "non_verifie";
 
 const fmtDate = (d: string | null) =>
   !d ? "" : new Date(d).toLocaleDateString("fr-FR", { day: "numeric", month: "short", year: "numeric" });
@@ -39,14 +47,14 @@ export default function ProgramSection() {
 
   const counts = useMemo(() => {
     const c: Record<string, number> = {};
-    for (const i of items) c[i.status || "non_evaluable"] = (c[i.status || "non_evaluable"] || 0) + 1;
+    for (const i of items) { const st = effectiveStatus(i); c[st] = (c[st] || 0) + 1; }
     return c;
   }, [items]);
 
   const shown = useMemo(() => {
     const q = query.trim().toLowerCase();
     return items.filter(i => {
-      if (filter && (i.status || "non_evaluable") !== filter) return false;
+      if (filter && effectiveStatus(i) !== filter) return false;
       if (!q) return true;
       return i.engagement.toLowerCase().includes(q) || (i.theme || "").toLowerCase().includes(q);
     });
@@ -89,10 +97,11 @@ export default function ProgramSection() {
       <div className="flex items-start gap-3 rounded-2xl border border-amber-200 bg-amber-50/60 p-3.5">
         <Sparkles size={15} className="mt-0.5 shrink-0 text-amber-600" />
         <p className="text-[11px] leading-relaxed text-amber-900">
-          <strong>Les engagements sont des faits</strong> (programme officiel de campagne).
-          <strong> L'avancement est une évaluation générée par IA</strong>, adossée aux textes
-          législatifs et scrutins réels — vérifiable via les preuves affichées. Elle peut rester
-          incomplète : « non évaluable » signifie qu'aucun fait probant n'a été trouvé.
+          <strong>Les engagements sont des faits</strong>, repris du programme officiel de campagne.
+          <strong> L'avancement n'est affiché que lorsqu'un texte législatif ou un scrutin réel
+          l'établit</strong>, avec les preuves consultables. Sinon, il est marqué
+          « <strong>non vérifié</strong> » : nous préférons ne rien affirmer plutôt que d'avancer
+          une appréciation invérifiable.
         </p>
       </div>
 
@@ -135,7 +144,7 @@ export default function ProgramSection() {
             <p className="py-8 text-center text-xs italic text-slate-400">Aucun engagement ne correspond.</p>
           )}
           {shown.map(i => {
-            const st = STATUS[i.status || "non_evaluable"];
+            const st = STATUS[effectiveStatus(i)];
             const isOpen = open === i.id;
             const evs = i.evidence ?? [];
             return (
@@ -164,15 +173,28 @@ export default function ProgramSection() {
 
                 {isOpen && (
                   <div className="border-t border-slate-100 bg-white px-4 py-4 space-y-4">
-                    {i.justification ? (
+                    {(i.evidence_count ?? 0) > 0 && i.justification ? (
                       <div>
-                        <p className="text-[9px] font-black uppercase tracking-widest text-amber-600 flex items-center gap-1.5">
-                          <Sparkles size={11} /> Évaluation générée par IA
+                        <p className="text-[9px] font-black uppercase tracking-widest text-emerald-600 flex items-center gap-1.5">
+                          <FileCheck2 size={11} /> Évaluation IA étayée par {i.evidence_count} fait(s) vérifiable(s)
                         </p>
                         <p className="mt-1 text-xs leading-relaxed text-slate-600">{i.justification}</p>
                       </div>
                     ) : (
-                      <p className="text-xs italic text-slate-400">Aucune évaluation disponible.</p>
+                      /* Aucune preuve en base : on n'affiche PAS le verdict du modèle. Il s'est
+                         révélé faux dans ce cas de figure, et une affirmation fausse est pire
+                         qu'une absence de réponse. L'engagement, lui, reste 100 % sourcé. */
+                      <div>
+                        <p className="text-[9px] font-black uppercase tracking-widest text-slate-400">
+                          Avancement non vérifié
+                        </p>
+                        <p className="mt-1 text-xs leading-relaxed text-slate-500">
+                          Aucun texte législatif ni scrutin de notre base ne permet d'établir le sort
+                          de cet engagement. Nous préférons ne rien affirmer plutôt que d'avancer une
+                          appréciation invérifiable — l'engagement ci-dessus, lui, est bien celui du
+                          programme officiel.
+                        </p>
+                      </div>
                     )}
 
                     {/* Les preuves réellement utilisées : le lecteur vérifie lui-même. */}

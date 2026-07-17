@@ -119,7 +119,10 @@ export const api = {
   },
 
   getScrutin: async (id: string) => {
-    const { data, error } = await supabase.from('scrutins').select('*').eq('id', id).single();
+    // maybeSingle : un identifiant orphelin (favori d'un ancien schéma) est un cas normal,
+    // pas une erreur — .single() faisait remonter une exception à chaque fois.
+    if (!id) return null;
+    const { data, error } = await supabase.from('scrutins').select('*').eq('id', id).maybeSingle();
     if (error) { console.error(error); return null; }
     return data;
   },
@@ -454,7 +457,10 @@ export const api = {
   },
 
   getLaw: async (id: string) => {
-    const { data, error } = await supabase.from('laws').select('*').eq('id', id).single();
+    // laws.id est un uuid : d'anciens votes référencent encore des slugs (« loi-immigration »).
+    // Sans ce garde-fou, Postgres renvoie une erreur 22P02 et pollue la console à chaque appel.
+    if (!id || !/^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i.test(id)) return null;
+    const { data, error } = await supabase.from('laws').select('*').eq('id', id).maybeSingle();
     if (error) { console.error(error); return null; }
     return data;
   },

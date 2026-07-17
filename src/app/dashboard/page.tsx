@@ -31,6 +31,29 @@ import { motion, AnimatePresence } from "framer-motion";
 import { api } from "@/lib/api";
 import { usePremium } from "@/lib/hooks/usePremium";
 
+// Les favoris et votes créés sous l'ancien schéma pointent vers des identifiants qui
+// n'existent plus (la table « laws » est une vue reconstruite depuis legislative_dossiers).
+// On ne peut PAS retrouver de quelle loi il s'agissait : le titre n'a jamais été stocké côté
+// utilisateur. Plutôt que d'afficher l'UUID brut ou « INVALID DATE », on le dit franchement.
+const REFERENCE_PERDUE = "Loi retirée de la base";
+
+// Renvoie null si la date est absente/illisible, au lieu de produire « INVALID DATE ».
+function formatDateSafe(value: any): string | null {
+  if (!value) return null;
+  const d = new Date(value);
+  if (isNaN(d.getTime())) return null;
+  return d.toLocaleDateString("fr-FR", { day: "numeric", month: "short", year: "numeric" });
+}
+
+// Un enregistrement est « résolu » si on a réellement récupéré son titre.
+function titreOuNull(data: any): string | null {
+  const t = data?.title || data?.objet;
+  if (!t) return null;
+  // Le placeholder de chargement ne doit jamais être pris pour un vrai titre.
+  if (typeof t === "string" && t.startsWith("Chargement...")) return null;
+  return t;
+}
+
 export default function DashboardPage() {
   const { userId, isPremium, loading: authLoading } = usePremium();
   const [loading, setLoading] = useState(true);
@@ -192,10 +215,10 @@ export default function DashboardPage() {
             <motion.button 
               whileTap={{ scale: 0.98 }}
               onClick={() => startTransition(() => setActiveTab("votes"))}
-              className={`relative flex-1 py-6 font-bold text-xs md:text-sm uppercase tracking-widest flex items-center justify-center gap-3 transition-all duration-300 ${
+              className={`relative flex-1 py-6 font-bold text-xs md:text-sm uppercase tracking-widest flex items-center justify-center gap-3 transition-all duration-300 border-r border-white/30 last:border-r-0 ${
                 activeTab === "votes" 
-                  ? "text-white bg-blue-600 shadow-xl shadow-blue-500/30 z-20 scale-[1.02]" 
-                  : "text-white/80 bg-blue-500/80 hover:bg-blue-500 hover:text-white z-10"
+                  ? "text-white bg-blue-600 shadow-xl shadow-blue-500/40 z-20 scale-[1.04] ring-2 ring-white/60 ring-inset" 
+                  : "text-white/70 bg-blue-500/40 hover:bg-blue-500/70 hover:text-white z-10"
               }`}
             >
               <motion.span 
@@ -216,10 +239,10 @@ export default function DashboardPage() {
             <motion.button 
               whileTap={{ scale: 0.98 }}
               onClick={() => startTransition(() => setActiveTab("deputies"))}
-              className={`relative flex-1 py-6 font-bold text-xs md:text-sm uppercase tracking-widest flex items-center justify-center gap-3 transition-all duration-300 ${
+              className={`relative flex-1 py-6 font-bold text-xs md:text-sm uppercase tracking-widest flex items-center justify-center gap-3 transition-all duration-300 border-r border-white/30 last:border-r-0 ${
                 activeTab === "deputies" 
-                  ? "text-white bg-emerald-600 shadow-xl shadow-emerald-500/30 z-20 scale-[1.02]" 
-                  : "text-white/80 bg-emerald-500/80 hover:bg-emerald-500 hover:text-white z-10"
+                  ? "text-white bg-emerald-600 shadow-xl shadow-emerald-500/40 z-20 scale-[1.04] ring-2 ring-white/60 ring-inset" 
+                  : "text-white/70 bg-emerald-500/40 hover:bg-emerald-500/70 hover:text-white z-10"
               }`}
             >
               <motion.span 
@@ -242,10 +265,10 @@ export default function DashboardPage() {
                 <motion.button 
                   whileTap={{ scale: 0.98 }}
                   onClick={() => startTransition(() => setActiveTab("saved"))}
-                  className={`relative flex-1 py-6 font-bold text-xs md:text-sm uppercase tracking-widest flex items-center justify-center gap-3 transition-all duration-300 ${
+                  className={`relative flex-1 py-6 font-bold text-xs md:text-sm uppercase tracking-widest flex items-center justify-center gap-3 transition-all duration-300 border-r border-white/30 last:border-r-0 ${
                     activeTab === "saved" 
-                      ? "text-white bg-amber-500 shadow-xl shadow-amber-500/30 z-20 scale-[1.02]" 
-                      : "text-white/80 bg-amber-400/80 hover:bg-amber-400 hover:text-white z-10"
+                      ? "text-white bg-amber-500 shadow-xl shadow-amber-500/40 z-20 scale-[1.04] ring-2 ring-white/60 ring-inset" 
+                      : "text-white/70 bg-amber-400/40 hover:bg-amber-400/70 hover:text-white z-10"
                   }`}
                 >
                   <motion.span 
@@ -266,10 +289,10 @@ export default function DashboardPage() {
                 <motion.button 
                   whileTap={{ scale: 0.98 }}
                   onClick={() => startTransition(() => setActiveTab("geos"))}
-                  className={`relative flex-1 py-6 font-bold text-xs md:text-sm uppercase tracking-widest flex items-center justify-center gap-3 transition-all duration-300 ${
+                  className={`relative flex-1 py-6 font-bold text-xs md:text-sm uppercase tracking-widest flex items-center justify-center gap-3 transition-all duration-300 border-r border-white/30 last:border-r-0 ${
                     activeTab === "geos" 
-                      ? "text-white bg-pink-600 shadow-xl shadow-pink-500/30 z-20 scale-[1.02]" 
-                      : "text-white/80 bg-pink-500/80 hover:bg-pink-500 hover:text-white z-10"
+                      ? "text-white bg-pink-600 shadow-xl shadow-pink-500/40 z-20 scale-[1.04] ring-2 ring-white/60 ring-inset" 
+                      : "text-white/70 bg-pink-500/40 hover:bg-pink-500/70 hover:text-white z-10"
                   }`}
                 >
                   <motion.span 
@@ -335,12 +358,18 @@ export default function DashboardPage() {
                                 </span>
                                 <div className="flex items-center gap-1.5 text-[10px] font-bold text-slate-400">
                                   <Calendar size={10} />
-                                  {new Date(v.created_at).toLocaleDateString('fr-FR', { day: 'numeric', month: 'short' })}
+                                  {formatDateSafe(v.created_at) || "Date inconnue"}
                                 </div>
                               </div>
-                              <h3 className="text-lg font-bold text-slate-900 truncate italic">
-                                {lawInfo?.title || lawInfo?.objet || `Loi #${v.law_id}`}
-                              </h3>
+                              {titreOuNull(lawInfo) ? (
+                                <h3 className="text-lg font-bold text-slate-900 truncate">
+                                  {titreOuNull(lawInfo)}
+                                </h3>
+                              ) : (
+                                <h3 className="text-lg font-bold text-slate-400 truncate">
+                                  {REFERENCE_PERDUE}
+                                </h3>
+                              )}
                             </div>
                             <div className={`px-4 py-2 rounded-full text-[10px] font-black uppercase tracking-widest flex items-center gap-2 ${voteConfig.color}`}>
                               <voteConfig.icon size={12} />
@@ -452,14 +481,17 @@ export default function DashboardPage() {
                               </div>
                             </div>
                             
-                            <h4 className="text-xl font-bold text-slate-900 group-hover:text-amber-600 transition-colors line-clamp-3 mb-4 italic">
-                              {item.data?.objet || item.data?.title}
+                            <h4 className={`text-xl font-bold line-clamp-3 mb-4 transition-colors ${
+                              titreOuNull(item.data) ? "text-slate-900 group-hover:text-amber-600" : "text-slate-400"
+                            }`}>
+                              {titreOuNull(item.data) || REFERENCE_PERDUE}
                             </h4>
                             
                             <div className="mt-auto flex items-center justify-between pt-6 border-t border-slate-50">
                                <div className="flex items-center gap-2 text-slate-400 text-[10px] font-bold uppercase">
                                   <Calendar size={12} />
-                                  {new Date(item.data?.date_scrutin || item.data?.created_at).toLocaleDateString('fr-FR', { day: 'numeric', month: 'short', year: 'numeric' })}
+                                  {formatDateSafe(item.data?.date_scrutin || item.data?.date_adopted || item.data?.created_at)
+                                    || "Non disponible"}
                                </div>
                                <ChevronRight size={18} className="text-slate-300 group-hover:text-amber-500 transition-colors" />
                             </div>
@@ -499,7 +531,10 @@ export default function DashboardPage() {
                               </div>
                             </div>
                             
-                            <h4 className="text-xl font-bold text-slate-900 group-hover:text-rose-600 transition-colors line-clamp-3 mb-4 italic">
+                            {/* Même police que les titres de sections (font-staatliches) :
+                                l'italique gras était illisible sur les noms de communes.
+                                Taille et couleurs volontairement inchangées. */}
+                            <h4 className="text-xl font-staatliches tracking-wide text-slate-900 group-hover:text-rose-600 transition-colors line-clamp-3 mb-4">
                               {item.data?.title}
                             </h4>
                             

@@ -4,6 +4,7 @@ import { motion, AnimatePresence } from "framer-motion";
 import { X, Users, MapPin, Calendar, Award, Building2, TrendingUp, UserMinus, Star, Loader2, Briefcase, GraduationCap, Heart, Shield, Home, Landmark, Coins, TreePine, Lock } from "lucide-react";
 import { buildItddCards, ITDD_NEW_CATEGORIES, type ItddCard } from "@/lib/itdd-cards";
 import LocalFinancesSection from "./LocalFinancesSection";
+import FiscaliteSection from "./FiscaliteSection";
 import type { CommuneResult, MayorData, ElectionResult } from "@/lib/hooks/useCommuneSearch";
 import { useState, useEffect } from "react";
 import { usePremium } from "@/lib/hooks/usePremium";
@@ -350,13 +351,17 @@ export default function CommuneDetailPanel({
   const [showAllElus, setShowAllElus] = useState(false);
   const [itddCards, setItddCards] = useState<ItddCard[]>([]);
   const [finances, setFinances] = useState<any | null>(null);
+  const [fiscalite, setFiscalite] = useState<any | null>(null);
 
   useEffect(() => {
-    if (!commune) { setFinances(null); return; }
+    if (!commune) { setFinances(null); setFiscalite(null); return; }
     let active = true;
     api.getCommuneFinances(commune.code)
       .then(f => { if (active) setFinances(f); })
       .catch(() => { if (active) setFinances(null); });
+    api.getCommuneFiscalite(commune.code)
+      .then(f => { if (active) setFiscalite(f); })
+      .catch(() => { if (active) setFiscalite(null); });
     return () => { active = false; };
   }, [commune]);
 
@@ -740,6 +745,7 @@ export default function CommuneDetailPanel({
                 </motion.div>
 
                 {finances && <LocalFinancesSection finances={finances} label="Finances communales" />}
+                {fiscalite && <FiscaliteSection fiscalite={fiscalite} />}
                 {/* Real indicators or coming soon */}
                 {loadingDetails ? (
                   <div className="flex flex-col items-center justify-center py-12 gap-3">

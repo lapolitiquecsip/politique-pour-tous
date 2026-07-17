@@ -276,6 +276,31 @@ export const api = {
   getDepartmentFinances: async (depCode: string) =>
     fetchLocalFinances('department_finances', 'dep_code', depCode),
 
+  // Fiscalité locale d'une commune (REI) : taux votés + produits de la part communale.
+  // Millésime le plus récent en base (le REI est publié plus tôt que les comptes OFGL).
+  getCommuneFiscalite: async (inseeCode: string) => {
+    if (!inseeCode) return null;
+    const { data, error } = await supabase
+      .from('commune_fiscalite')
+      .select('indicator, valeur, source_url, year')
+      .eq('insee_code', inseeCode)
+      .order('year', { ascending: false });
+    if (error || !data || data.length === 0) return null;
+    const year = (data as any[])[0].year;
+    const rows = (data as any[]).filter(r => r.year === year);
+    const v: Record<string, number> = {};
+    let source_url = '';
+    for (const r of rows) { v[r.indicator] = Number(r.valeur); if (r.source_url) source_url = r.source_url; }
+    const get = (k: string) => (k in v && Number.isFinite(v[k]) ? v[k] : null);
+    return {
+      year,
+      taux_fb: get('taux_fb'), produit_fb: get('produit_fb'),
+      taux_th: get('taux_th'), produit_th: get('produit_th'),
+      taux_fnb: get('taux_fnb'), produit_fnb: get('produit_fnb'),
+      source_url,
+    };
+  },
+
   // Derniers décrets d'un ministère (filtre par mots-clés du nom du ministère).
   getDecreesForMinistry: async (keywords: string[], limit = 5) => {
     if (!keywords.length) return [];

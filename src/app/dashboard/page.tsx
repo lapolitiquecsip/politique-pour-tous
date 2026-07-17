@@ -3,30 +3,7 @@
 import { useState, useEffect, useTransition } from "react";
 import Link from "next/link";
 // ... (imports lucide-react)
-import { 
-  User, 
-  Star, 
-  Vote, 
-  Users, 
-  ChevronRight, 
-  Bell, 
-  MapPin, 
-  CheckCircle2, 
-  XCircle, 
-  MinusCircle,
-  Loader2,
-  Calendar,
-  LayoutDashboard,
-  LogOut,
-  Settings,
-  ArrowRight,
-  Bookmark,
-  FileText,
-  Search,
-  Clock,
-  Globe,
-  Layers
-} from "lucide-react";
+import { User, Star, Vote, Users, ChevronRight, Bell, MapPin, CheckCircle2, XCircle, MinusCircle, Loader2, Calendar, LayoutDashboard, LogOut, Settings, ArrowRight, Bookmark, FileText, Search, Clock, Globe, Layers, UserMinus } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
 import { api } from "@/lib/api";
 import { usePremium } from "@/lib/hooks/usePremium";
@@ -144,6 +121,29 @@ export default function DashboardPage() {
 
     loadDashboardData();
   }, [userId, authLoading]);
+
+  // Retrait d'un élu suivi. Mise à jour optimiste : l'utilisateur voit l'effet
+  // immédiatement, et on restaure la liste si la suppression échoue côté serveur.
+  const [removingId, setRemovingId] = useState<string | null>(null);
+  const handleUnfollow = async (e: React.MouseEvent, follow: any) => {
+    e.preventDefault();
+    e.stopPropagation();   // la carte entière est un lien : sans ça, on navigue au lieu de retirer
+    if (!userId || removingId) return;
+    const nom = `${follow.deputies?.first_name ?? ""} ${follow.deputies?.last_name ?? ""}`.trim();
+    if (!window.confirm(`Ne plus suivre ${nom || "cet élu"} ?`)) return;
+
+    const avant = followedDeputies;
+    setRemovingId(follow.id);
+    setFollowedDeputies(prev => prev.filter(x => x.id !== follow.id));
+    try {
+      await api.unfollowDeputy(userId, follow.deputy_id);
+    } catch (err: any) {
+      setFollowedDeputies(avant);   // échec : on remet la carte
+      alert(`Impossible de retirer ce suivi : ${err?.message || "erreur inconnue"}`);
+    } finally {
+      setRemovingId(null);
+    }
+  };
 
   const savedLaws = savedItems.filter(item => ['scrutin', 'law'].includes(item.item_type));
   const savedGeos = savedItems.filter(item => ['commune', 'region', 'department'].includes(item.item_type));
@@ -421,7 +421,9 @@ export default function DashboardPage() {
                             <div className="absolute top-0 right-0 w-24 h-24 bg-amber-500/5 rounded-full -mr-12 -mt-12 group-hover:bg-amber-500/10 transition-colors" />
                             
                             <img 
-                              src={`https://www.nosdeputes.fr/depute/photo/${f.deputies?.slug}/100`} 
+                              src={f.deputies?.photo_url || `https://www.nosdeputes.fr/depute/photo/${f.deputies?.slug}/100`}
+                              loading="lazy"
+                              decoding="async" 
                               className="w-20 h-20 rounded-2xl object-cover grayscale group-hover:grayscale-0 transition-all duration-500 shadow-lg"
                               alt={f.deputies?.last_name}
                               onError={(e) => {
@@ -443,6 +445,15 @@ export default function DashboardPage() {
                                 Suivi Actif
                               </div>
                             </div>
+                            <button
+                              onClick={(e) => handleUnfollow(e, f)}
+                              disabled={removingId === f.id}
+                              title="Ne plus suivre cet élu"
+                              aria-label={`Ne plus suivre ${f.deputies?.first_name ?? ""} ${f.deputies?.last_name ?? ""}`}
+                              className="relative z-10 shrink-0 rounded-xl border border-slate-200 bg-white p-2 text-slate-300 transition hover:border-rose-300 hover:bg-rose-50 hover:text-rose-500 disabled:opacity-40"
+                            >
+                              <UserMinus size={16} />
+                            </button>
                             <ChevronRight size={20} className="text-slate-300 group-hover:text-amber-500 transition-colors shrink-0" />
                           </div>
                         </Link>

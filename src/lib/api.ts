@@ -301,6 +301,19 @@ export const api = {
     };
   },
 
+  // Publications de la présidence (elysee.fr) par type : conseil_ministres, discours,
+  // deplacement, actualite. Tri antéchronologique.
+  getElyseePublications: async (type: string, limit = 6) => {
+    const { data, error } = await supabase
+      .from('elysee_publications')
+      .select('id, type, title, url, published_at, summary')
+      .eq('type', type)
+      .order('published_at', { ascending: false })
+      .limit(limit);
+    if (error || !data) return [];
+    return data;
+  },
+
   // Derniers décrets d'un ministère (filtre par mots-clés du nom du ministère).
   getDecreesForMinistry: async (keywords: string[], limit = 5) => {
     if (!keywords.length) return [];

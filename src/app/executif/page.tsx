@@ -26,6 +26,7 @@ import GlossaryText from "@/components/ui/GlossaryText";
 import ministersBios from "@/lib/data/ministersBios.json";
 import MinisterImage from "@/components/executif/MinisterImage";
 import MinisterStagger from "@/components/executif/MinisterStagger";
+import PresidentSection from "@/components/executif/PresidentSection";
 import { cleanMinistryName } from "@/lib/executif-utils";
 import { AwardBadge } from "@/components/ui/award-badge";
 
@@ -502,7 +503,10 @@ export default function ExecutifPage() {
           
           {/* MAIN CONTENT AREA */}
           <div className="lg:col-span-8 space-y-12">
-            
+
+            {/* PRÉSIDENT DE LA RÉPUBLIQUE — chef de l'exécutif, donc en tête */}
+            <PresidentSection photoUrl={photoBySlug['emmanuel-macron']} />
+
             {/* SEARCH & MINISTERS SECTION */}
             <section className="space-y-8">
               <div className="flex flex-col md:flex-row gap-6 items-center justify-between">

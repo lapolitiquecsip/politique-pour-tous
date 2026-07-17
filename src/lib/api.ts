@@ -788,13 +788,25 @@ export const api = {
     return stats;
   },
 
+  // Suivis de l'utilisateur : députés ET sénateurs. Une ligne porte l'un ou l'autre
+  // (contrainte CHECK en base), on expose donc un `elu` normalisé pour le front.
   getUserFollows: async (userId: string) => {
     const { data, error } = await supabase
       .from('user_follows')
-      .select('*, deputies(*)')
+      .select('*, deputies(*), senators(*)')
       .eq('user_id', userId);
     if (error) { console.error(error); return []; }
-    return data || [];
+    return (data || []).map((f: any) => {
+      const isSenator = !!f.senator_id;
+      const elu = isSenator ? f.senators : f.deputies;
+      return {
+        ...f,
+        elu_type: isSenator ? 'senator' : 'deputy',
+        elu,
+        // Route de la fiche selon la chambre.
+        elu_href: elu?.slug ? `/${isSenator ? 'senateurs' : 'deputes'}/${elu.slug}` : null,
+      };
+    });
   },
 
   followDeputy: async (userId: string, deputyId: string) => {
@@ -813,6 +825,34 @@ export const api = {
       .delete()
       .eq('user_id', userId)
       .eq('deputy_id', deputyId);
+    if (error) { throw new Error(error.message); }
+    return true;
+  },
+
+  followSenator: async (userId: string, senatorId: string) => {
+    const { data, error } = await supabase
+      .from('user_follows')
+      .insert([{ user_id: userId, senator_id: senatorId }])
+      .select()
+      .single();
+    if (error) { throw new Error(error.message); }
+    return data;
+  },
+
+  unfollowSenator: async (userId: string, senatorId: string) => {
+    const { error } = await supabase
+      .from('user_follows')
+      .delete()
+      .eq('user_id', userId)
+      .eq('senator_id', senatorId);
+    if (error) { throw new Error(error.message); }
+    return true;
+  },
+
+  // Retire un suivi par l'identifiant de la ligne : marche pour les deux chambres,
+  // sans que l'appelant ait à savoir de quel type d'élu il s'agit.
+  unfollowById: async (followId: string) => {
+    const { error } = await supabase.from('user_follows').delete().eq('id', followId);
     if (error) { throw new Error(error.message); }
     return true;
   },

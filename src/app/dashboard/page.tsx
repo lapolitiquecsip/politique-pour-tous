@@ -130,14 +130,14 @@ export default function DashboardPage() {
     e.preventDefault();
     e.stopPropagation();   // la carte entière est un lien : sans ça, on navigue au lieu de retirer
     if (!userId || removingId) return;
-    const nom = `${follow.deputies?.first_name ?? ""} ${follow.deputies?.last_name ?? ""}`.trim();
+    const nom = `${follow.elu?.first_name ?? ""} ${follow.elu?.last_name ?? ""}`.trim();
     if (!window.confirm(`Ne plus suivre ${nom || "cet élu"} ?`)) return;
 
     const avant = followedDeputies;
     setRemovingId(follow.id);
     setFollowedDeputies(prev => prev.filter(x => x.id !== follow.id));
     try {
-      await api.unfollowDeputy(userId, follow.deputy_id);
+      await api.unfollowById(follow.id);   // vaut pour un député comme pour un sénateur
     } catch (err: any) {
       setFollowedDeputies(avant);   // échec : on remet la carte
       alert(`Impossible de retirer ce suivi : ${err?.message || "erreur inconnue"}`);
@@ -251,7 +251,7 @@ export default function DashboardPage() {
                 className="flex items-center gap-3"
               >
                 <Users size={18} className={isPending && activeTab !== "deputies" ? "opacity-30" : ""} />
-                Mes Députés Suivis
+                Mes Élus Suivis
               </motion.span>
               {activeTab === "deputies" && (
                 <motion.div 
@@ -409,40 +409,44 @@ export default function DashboardPage() {
                       </div>
                     ) : (
                       followedDeputies.map((f) => (
-                        <Link key={f.id} href={`/deputes/${f.deputies?.slug}`}>
+                        <Link key={f.id} href={f.elu_href || "#"}>
                           <div className="group flex items-center gap-6 p-6 rounded-3xl border border-slate-100 hover:border-amber-400 hover:shadow-xl transition-all h-full bg-white relative overflow-hidden">
                             <div className="absolute top-0 right-0 w-24 h-24 bg-amber-500/5 rounded-full -mr-12 -mt-12 group-hover:bg-amber-500/10 transition-colors" />
                             
                             <img 
-                              src={f.deputies?.photo_url || `https://www.nosdeputes.fr/depute/photo/${f.deputies?.slug}/100`}
+                              src={f.elu?.photo_url || `https://ui-avatars.com/api/?name=${encodeURIComponent(`${f.elu?.first_name ?? ""} ${f.elu?.last_name ?? ""}`.trim())}&background=fcd34d&color=1e293b`}
                               loading="lazy"
-                              decoding="async" 
+                              decoding="async"
                               className="w-20 h-20 rounded-2xl object-cover grayscale group-hover:grayscale-0 transition-all duration-500 shadow-lg"
-                              alt={f.deputies?.last_name}
+                              alt={`${f.elu?.first_name ?? ""} ${f.elu?.last_name ?? ""}`.trim()}
                               onError={(e) => {
-                                (e.target as HTMLImageElement).src = `https://ui-avatars.com/api/?name=${f.deputies?.first_name}+${f.deputies?.last_name}&background=fcd34d&color=1e293b`;
+                                (e.target as HTMLImageElement).src = `https://ui-avatars.com/api/?name=${encodeURIComponent(`${f.elu?.first_name ?? ""} ${f.elu?.last_name ?? ""}`.trim())}&background=fcd34d&color=1e293b`;
                               }}
                             />
                             <div className="flex-1 min-w-0">
                               <h4 className="text-xl font-bold text-slate-900 group-hover:text-amber-600 transition-colors truncate">
-                                {f.deputies?.first_name} {f.deputies?.last_name}
+                                {f.elu?.first_name} {f.elu?.last_name}
                               </h4>
                               <div className="flex items-center gap-2 text-slate-400">
                                 <MapPin size={12} className="text-amber-500" />
                                 <span className="text-[10px] font-black uppercase tracking-widest truncate">
-                                  {f.deputies?.department || "Circonscription"}
+                                  {f.elu?.department || (f.elu_type === "senator" ? "Sénat" : "Circonscription")}
                                 </span>
                               </div>
-                              <div className="flex items-center gap-2 text-[10px] font-black text-amber-600 uppercase tracking-widest bg-amber-50 px-3 py-1 rounded-lg w-fit mt-3">
+                              {/* La chambre est plus informative qu'un « suivi actif » redondant :
+                                  les deux chambres cohabitent désormais dans cette liste. */}
+                              <div className={`flex items-center gap-2 text-[10px] font-black uppercase tracking-widest px-3 py-1 rounded-lg w-fit mt-3 ${
+                                f.elu_type === "senator" ? "text-rose-600 bg-rose-50" : "text-blue-600 bg-blue-50"
+                              }`}>
                                 <Bell size={10} fill="currentColor" />
-                                Suivi Actif
+                                {f.elu_type === "senator" ? "Sénateur·rice" : "Député·e"}
                               </div>
                             </div>
                             <button
                               onClick={(e) => handleUnfollow(e, f)}
                               disabled={removingId === f.id}
                               title="Ne plus suivre cet élu"
-                              aria-label={`Ne plus suivre ${f.deputies?.first_name ?? ""} ${f.deputies?.last_name ?? ""}`}
+                              aria-label={`Ne plus suivre ${f.elu?.first_name ?? ""} ${f.elu?.last_name ?? ""}`}
                               className="relative z-10 shrink-0 rounded-xl border border-slate-200 bg-white p-2 text-slate-300 transition hover:border-rose-300 hover:bg-rose-50 hover:text-rose-500 disabled:opacity-40"
                             >
                               <UserMinus size={16} />

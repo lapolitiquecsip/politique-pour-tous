@@ -419,6 +419,42 @@ export const api = {
     return data || [];
   },
 
+  // Synthèse du dernier millésime pour une région, au même format que les communes et
+  // les départements (LocalFinancesSection). region_finances stocke des millions d'euros,
+  // on repasse en euros pour homogénéiser l'affichage.
+  getRegionFinancesSummary: async (regionCode: string) => {
+    const { data, error } = await supabase
+      .from('region_finances')
+      .select('year,indicator,montant_millions,euros_par_habitant')
+      .eq('region_code', regionCode)
+      .order('year', { ascending: false });
+    if (error || !data || data.length === 0) return null;
+    const year = (data as any[])[0].year;
+    const rows = (data as any[]).filter(r => r.year === year);
+    const m: Record<string, number> = {};
+    const eph: Record<string, number> = {};
+    for (const r of rows) {
+      if (r.montant_millions != null) m[r.indicator] = Number(r.montant_millions) * 1e6;
+      eph[r.indicator] = r.euros_par_habitant != null ? Number(r.euros_par_habitant) : NaN;
+    }
+    const get = (k: string) => (k in m ? m[k] : null);
+    const getEph = (k: string) => (Number.isFinite(eph[k]) ? eph[k] : null);
+    return {
+      year,
+      recettes: get('recettes_fonctionnement'), recettes_hab: getEph('recettes_fonctionnement'),
+      depenses: get('depenses_fonctionnement'), depenses_hab: getEph('depenses_fonctionnement'),
+      epargne: get('epargne_brute'), epargne_hab: getEph('epargne_brute'),
+      investissement: get('depenses_investissement'), investissement_hab: getEph('depenses_investissement'),
+      encours_dette: get('encours_dette'), encours_dette_hab: getEph('encours_dette'),
+      // Renseigné uniquement pour les collectivités uniques (Corse…).
+      rsa: get('allocations_rsa'), rsa_hab: getEph('allocations_rsa'),
+      apa: get('allocations_apa'), apa_hab: getEph('allocations_apa'),
+      pch: get('allocations_pch'), pch_hab: getEph('allocations_pch'),
+      entity_note: null as string | null,
+      source_url: 'https://data.ofgl.fr/explore/dataset/ofgl-base-regions/',
+    };
+  },
+
   getCandidates: async () => {
     const { data, error } = await supabase
       .from('presidential_candidates')

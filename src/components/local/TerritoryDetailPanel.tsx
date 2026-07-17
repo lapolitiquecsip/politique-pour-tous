@@ -164,13 +164,16 @@ export default function TerritoryDetailPanel({ territory, onClose, onNavigate }:
   const [localDeputies, setLocalDeputies] = useState<any[]>([]);
   const [finances, setFinances] = useState<any | null>(null);
 
-  // Finances réelles du département (OFGL). Les régions ont déjà leur propre
-  // visualisation (RegionFinancesChart, base region_finances).
+  // Finances réelles (OFGL), même synthèse pour les départements et les régions.
+  // Les régions gardent en plus leur graphe historique (RegionFinancesChart).
   useEffect(() => {
-    if (!territory || territory.type !== 'department') { setFinances(null); return; }
+    if (!territory || (territory.type !== 'department' && territory.type !== 'region')) { setFinances(null); return; }
     let active = true;
-    api.getDepartmentFinances(territory.id)
-      .then(f => { if (active) setFinances(f); })
+    const load = territory.type === 'department'
+      ? api.getDepartmentFinances(territory.id)
+      : api.getRegionFinancesSummary(territory.id);
+    load
+      .then((f: any) => { if (active) setFinances(f); })
       .catch(() => { if (active) setFinances(null); });
     return () => { active = false; };
   }, [territory]);
@@ -579,9 +582,12 @@ export default function TerritoryDetailPanel({ territory, onClose, onNavigate }:
                       </div>
                     )}
 
-                    {/* Finances réelles du département (OFGL) */}
-                    {territory.type === 'department' && finances && (
-                      <LocalFinancesSection finances={finances} label="Finances départementales" />
+                    {/* Finances réelles (OFGL) — synthèse du dernier millésime */}
+                    {finances && (
+                      <LocalFinancesSection
+                        finances={finances}
+                        label={territory.type === 'region' ? 'Finances régionales' : 'Finances départementales'}
+                      />
                     )}
 
                     {/* Catégories développement durable (ITDD) sans équivalent existant */}

@@ -348,6 +348,16 @@ export default function CommuneDetailPanel({
   const [loadingDetails, setLoadingDetails] = useState(false);
   const [showAllElus, setShowAllElus] = useState(false);
   const [itddCards, setItddCards] = useState<ItddCard[]>([]);
+  const [finances, setFinances] = useState<any | null>(null);
+
+  useEffect(() => {
+    if (!commune) { setFinances(null); return; }
+    let active = true;
+    api.getCommuneFinances(commune.code)
+      .then(f => { if (active) setFinances(f); })
+      .catch(() => { if (active) setFinances(null); });
+    return () => { active = false; };
+  }, [commune]);
 
   useEffect(() => {
     if (!commune) { setItddCards([]); return; }
@@ -727,6 +737,39 @@ export default function CommuneDetailPanel({
                     </div>
                   )}
                 </motion.div>
+
+                {/* BALANCES COMPTABLES 2025 (source DGFiP / data.economie.gouv) */}
+                {finances && (finances.produits != null || finances.charges != null || finances.encours_dette != null) && (() => {
+                  const pop = Number(commune.population) || Number(communeData?.demographie?.populationTotal) || 0;
+                  const fmt = (v: number | null) => v == null ? "—" : (Math.abs(v) >= 1e6 ? (v / 1e6).toLocaleString("fr-FR", { maximumFractionDigits: 2 }) + " M€" : Math.round(v).toLocaleString("fr-FR") + " €");
+                  const perHab = (v: number | null) => (v == null || !pop) ? null : Math.round(v / pop).toLocaleString("fr-FR") + " €/hab.";
+                  const rows: Array<{ label: string; value: number | null; accent: string; hint?: string }> = [
+                    { label: "Produits de fonctionnement", value: finances.produits, accent: "text-emerald-600", hint: "Recettes de fonctionnement (comptes classe 7)." },
+                    { label: "Charges de fonctionnement", value: finances.charges, accent: "text-rose-600", hint: "Dépenses de fonctionnement (comptes classe 6)." },
+                    { label: "Résultat de fonctionnement", value: finances.resultat, accent: (finances.resultat ?? 0) >= 0 ? "text-emerald-600" : "text-rose-600", hint: "Produits − charges (épargne de gestion)." },
+                    { label: "Encours de dette", value: finances.encours_dette, accent: "text-amber-600", hint: "Emprunts et dettes assimilées (compte 16)." },
+                  ];
+                  return (
+                    <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.4 }} className="space-y-4">
+                      <div className="flex items-center gap-2">
+                        <Landmark size={16} className="text-slate-900" />
+                        <h4 className="text-sm font-black uppercase tracking-widest text-slate-900">Finances communales {finances.year}</h4>
+                      </div>
+                      <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                        {rows.map((r, i) => (
+                          <div key={i} className="p-4 rounded-3xl bg-white border border-slate-200 shadow-sm space-y-1" title={r.hint}>
+                            <p className="text-[9px] font-black uppercase tracking-widest text-slate-400">{r.label}</p>
+                            <p className={`text-xl font-black ${r.accent}`}>{fmt(r.value)}</p>
+                            {perHab(r.value) && <p className="text-[10px] font-bold text-slate-400">{perHab(r.value)}</p>}
+                          </div>
+                        ))}
+                      </div>
+                      <p className="text-[10px] text-slate-400/80 italic">
+                        Budget principal, exercice {finances.year}. Source : DGFiP — balances comptables des communes (data.economie.gouv).
+                      </p>
+                    </motion.div>
+                  );
+                })()}
 
                 {/* Real indicators or coming soon */}
                 {loadingDetails ? (

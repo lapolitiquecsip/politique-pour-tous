@@ -217,6 +217,25 @@ export const api = {
     return data;
   },
 
+  // Balances comptables 2025 d'une commune (produits/charges de fonctionnement, encours de dette).
+  // Source : data.economie.gouv (DGFiP), agrégée dans commune_finances.
+  getCommuneFinances: async (inseeCode: string, year = 2025) => {
+    if (!inseeCode) return null;
+    const { data, error } = await supabase
+      .from('commune_finances')
+      .select('indicator, montant, source_url')
+      .eq('insee_code', inseeCode)
+      .eq('year', year);
+    if (error || !data || data.length === 0) return null;
+    const by: Record<string, number> = {};
+    let source_url = '';
+    for (const r of data as any[]) { by[r.indicator] = Number(r.montant); if (r.source_url) source_url = r.source_url; }
+    const produits = by['produits_fonctionnement'] ?? null;
+    const charges = by['charges_fonctionnement'] ?? null;
+    const resultat = produits != null && charges != null ? produits - charges : null;
+    return { year, produits, charges, resultat, encours_dette: by['encours_dette'] ?? null, source_url };
+  },
+
   // Derniers décrets d'un ministère (filtre par mots-clés du nom du ministère).
   getDecreesForMinistry: async (keywords: string[], limit = 5) => {
     if (!keywords.length) return [];

@@ -147,7 +147,12 @@ export default function DashboardPage() {
     }
   };
 
-  const savedLaws = savedItems.filter(item => ['scrutin', 'law'].includes(item.item_type));
+  const savedLawsAll = savedItems.filter(item => ['scrutin', 'law'].includes(item.item_type));
+  // On masque les favoris dont la loi n'existe plus (titre irrécupérable) : ils affichaient
+  // « Loi retirée de la base ». L'utilisateur a demandé à ne plus les voir sur son profil.
+  const savedLaws = savedLawsAll.filter(item => !!titreOuNull(item.data));
+  // Idem pour l'historique de vote : on ne garde que les votes dont la loi est résolue.
+  const resolvedVotes = userVotes.filter(v => !!titreOuNull(v.laws || v.scrutins));
   const savedGeos = savedItems.filter(item => ['commune', 'region', 'department'].includes(item.item_type));
 
   if (authLoading) {
@@ -218,12 +223,13 @@ export default function DashboardPage() {
       <div className={`container mx-auto max-w-6xl px-4 ${isPremium ? "" : "-mt-16"}`}>
         <div className="bg-white rounded-[2.5rem] border border-slate-200 shadow-2xl overflow-hidden min-h-[600px]">
           
-          {/* Tabs Navigation */}
-          <div className="flex border-b border-slate-100">
+          {/* Tabs Navigation — grille 2x2 sur mobile (4 onglets ne tiennent pas en ligne),
+              rangée unique sur écran large. */}
+          <div className="grid grid-cols-2 md:flex border-b border-slate-100">
             <motion.button 
               whileTap={{ scale: 0.98 }}
               onClick={() => startTransition(() => setActiveTab("votes"))}
-              className={`relative flex-1 py-6 font-bold text-xs md:text-sm uppercase tracking-widest flex items-center justify-center gap-3 transition-all duration-300 border-r border-white/30 last:border-r-0 ${
+              className={`relative flex-1 py-4 md:py-6 px-2 font-bold text-[11px] md:text-sm uppercase tracking-widest flex items-center justify-center gap-2 md:gap-3 transition-all duration-300 border-r border-b md:border-b-0 border-white/30 md:last:border-r-0 ${
                 activeTab === "votes" 
                   ? "text-white bg-blue-600 shadow-xl shadow-blue-500/40 z-20 scale-[1.04] ring-2 ring-white/60 ring-inset" 
                   : "text-white/70 bg-blue-500/40 hover:bg-blue-500/70 hover:text-white z-10"
@@ -247,7 +253,7 @@ export default function DashboardPage() {
             <motion.button 
               whileTap={{ scale: 0.98 }}
               onClick={() => startTransition(() => setActiveTab("deputies"))}
-              className={`relative flex-1 py-6 font-bold text-xs md:text-sm uppercase tracking-widest flex items-center justify-center gap-3 transition-all duration-300 border-r border-white/30 last:border-r-0 ${
+              className={`relative flex-1 py-4 md:py-6 px-2 font-bold text-[11px] md:text-sm uppercase tracking-widest flex items-center justify-center gap-2 md:gap-3 transition-all duration-300 border-r border-b md:border-b-0 border-white/30 md:last:border-r-0 ${
                 activeTab === "deputies" 
                   ? "text-white bg-emerald-600 shadow-xl shadow-emerald-500/40 z-20 scale-[1.04] ring-2 ring-white/60 ring-inset" 
                   : "text-white/70 bg-emerald-500/40 hover:bg-emerald-500/70 hover:text-white z-10"
@@ -273,7 +279,7 @@ export default function DashboardPage() {
                 <motion.button 
                   whileTap={{ scale: 0.98 }}
                   onClick={() => startTransition(() => setActiveTab("saved"))}
-                  className={`relative flex-1 py-6 font-bold text-xs md:text-sm uppercase tracking-widest flex items-center justify-center gap-3 transition-all duration-300 border-r border-white/30 last:border-r-0 ${
+                  className={`relative flex-1 py-4 md:py-6 px-2 font-bold text-[11px] md:text-sm uppercase tracking-widest flex items-center justify-center gap-2 md:gap-3 transition-all duration-300 border-r border-b md:border-b-0 border-white/30 md:last:border-r-0 ${
                     activeTab === "saved" 
                       ? "text-white bg-amber-500 shadow-xl shadow-amber-500/40 z-20 scale-[1.04] ring-2 ring-white/60 ring-inset" 
                       : "text-white/70 bg-amber-400/40 hover:bg-amber-400/70 hover:text-white z-10"
@@ -297,7 +303,7 @@ export default function DashboardPage() {
                 <motion.button 
                   whileTap={{ scale: 0.98 }}
                   onClick={() => startTransition(() => setActiveTab("geos"))}
-                  className={`relative flex-1 py-6 font-bold text-xs md:text-sm uppercase tracking-widest flex items-center justify-center gap-3 transition-all duration-300 border-r border-white/30 last:border-r-0 ${
+                  className={`relative flex-1 py-4 md:py-6 px-2 font-bold text-[11px] md:text-sm uppercase tracking-widest flex items-center justify-center gap-2 md:gap-3 transition-all duration-300 border-r border-b md:border-b-0 border-white/30 md:last:border-r-0 ${
                     activeTab === "geos" 
                       ? "text-white bg-pink-600 shadow-xl shadow-pink-500/40 z-20 scale-[1.04] ring-2 ring-white/60 ring-inset" 
                       : "text-white/70 bg-pink-500/40 hover:bg-pink-500/70 hover:text-white z-10"
@@ -322,7 +328,7 @@ export default function DashboardPage() {
             )}
           </div>
 
-          <div className="p-8 md:p-12">
+          <div className="p-4 sm:p-6 md:p-12">
             {loading ? (
               <div className="flex flex-col items-center justify-center py-20 grayscale opacity-30">
                 <Loader2 size={40} className="animate-spin mb-4" />
@@ -338,7 +344,7 @@ export default function DashboardPage() {
                     exit={{ opacity: 0, y: -10 }}
                     className="space-y-6"
                   >
-                    {userVotes.length === 0 ? (
+                    {resolvedVotes.length === 0 ? (
                       <div className="text-center py-20 bg-slate-50 rounded-[2rem] border border-dashed border-slate-200">
                         <Vote className="mx-auto mb-4 text-slate-300" size={48} />
                         <h3 className="text-xl font-bold mb-2">Aucun vote enregistré</h3>
@@ -346,11 +352,11 @@ export default function DashboardPage() {
                         <Link href="/lois" className="text-slate-950 font-black uppercase text-xs tracking-widest hover:underline">Voir les lois &rarr;</Link>
                       </div>
                     ) : (
-                      userVotes.map((v) => {
+                      resolvedVotes.map((v) => {
                         const lawInfo = v.laws || v.scrutins;
 
                         return (
-                          <div key={v.id} className="group flex flex-col md:flex-row md:items-center gap-6 p-6 rounded-3xl border border-slate-100 hover:border-slate-300 hover:shadow-xl transition-all bg-white relative">
+                          <div key={v.id} className="group flex flex-col md:flex-row md:items-center gap-4 md:gap-6 p-4 md:p-6 rounded-3xl border border-slate-100 hover:border-slate-300 hover:shadow-xl transition-all bg-white relative">
                             <div className="w-14 h-14 rounded-2xl bg-slate-50 flex items-center justify-center shrink-0 transition-transform group-hover:scale-105">
                               <BallotBox vote={v.vote} size={34} />
                             </div>
@@ -417,7 +423,7 @@ export default function DashboardPage() {
                     ) : (
                       followedDeputies.map((f) => (
                         <Link key={f.id} href={f.elu_href || "#"}>
-                          <div className="group flex items-center gap-6 p-6 rounded-3xl border border-slate-100 hover:border-amber-400 hover:shadow-xl transition-all h-full bg-white relative overflow-hidden">
+                          <div className="group flex items-center gap-4 md:gap-6 p-4 md:p-6 rounded-3xl border border-slate-100 hover:border-amber-400 hover:shadow-xl transition-all h-full bg-white relative overflow-hidden">
                             <div className="absolute top-0 right-0 w-24 h-24 bg-amber-500/5 rounded-full -mr-12 -mt-12 group-hover:bg-amber-500/10 transition-colors" />
                             
                             <img 
@@ -482,7 +488,7 @@ export default function DashboardPage() {
                     ) : (
                       savedLaws.map((item) => (
                         <Link key={item.id} href={`/lois?id=${item.item_id}`}>
-                          <div className="group flex flex-col p-8 rounded-[2.5rem] border border-slate-100 hover:border-amber-400 hover:shadow-2xl transition-all duration-500 h-full bg-white relative overflow-hidden">
+                          <div className="group flex flex-col p-6 md:p-8 rounded-[2.5rem] border border-slate-100 hover:border-amber-400 hover:shadow-2xl transition-all duration-500 h-full bg-white relative overflow-hidden">
                             <div className="absolute top-0 right-0 w-32 h-32 bg-amber-500/5 rounded-full -mr-16 -mt-16 group-hover:bg-amber-500/10 transition-colors" />
                             
                             <div className="flex items-center justify-between mb-6">
@@ -533,7 +539,7 @@ export default function DashboardPage() {
                     ) : (
                       savedGeos.map((item) => (
                         <Link key={item.id} href={`/local?code=${item.item_id}&type=${item.item_type}`}>
-                          <div className="group flex flex-col p-8 rounded-[2.5rem] border border-slate-100 hover:border-rose-400 hover:shadow-2xl transition-all duration-500 h-full bg-white relative overflow-hidden">
+                          <div className="group flex flex-col p-6 md:p-8 rounded-[2.5rem] border border-slate-100 hover:border-rose-400 hover:shadow-2xl transition-all duration-500 h-full bg-white relative overflow-hidden">
                             <div className="absolute top-0 right-0 w-32 h-32 bg-rose-500/5 rounded-full -mr-16 -mt-16 group-hover:bg-rose-500/10 transition-colors" />
                             
                             <div className="flex items-center justify-between mb-6">

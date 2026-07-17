@@ -326,6 +326,17 @@ export const api = {
     return data;
   },
 
+  // Fil vidéo de la présidence (chaîne YouTube officielle de l'Élysée).
+  getElyseeVideos: async (limit = 12) => {
+    const { data, error } = await supabase
+      .from('elysee_videos')
+      .select('video_id, title, published_at, url, thumbnail_url, description')
+      .order('published_at', { ascending: false })
+      .limit(limit);
+    if (error || !data) return [];
+    return data;
+  },
+
   // Derniers décrets d'un ministère (filtre par mots-clés du nom du ministère).
   getDecreesForMinistry: async (keywords: string[], limit = 5) => {
     if (!keywords.length) return [];

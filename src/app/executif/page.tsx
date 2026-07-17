@@ -28,6 +28,7 @@ import MinisterImage from "@/components/executif/MinisterImage";
 import MinisterStagger from "@/components/executif/MinisterStagger";
 import PresidentSection from "@/components/executif/PresidentSection";
 import ProgramSection from "@/components/executif/ProgramSection";
+import VideoFeed from "@/components/executif/VideoFeed";
 import { cleanMinistryName } from "@/lib/executif-utils";
 import { AwardBadge } from "@/components/ui/award-badge";
 
@@ -510,6 +511,9 @@ export default function ExecutifPage() {
 
             {/* PROGRAMME 2022 + AVANCEMENT (engagements officiels, avancement evalue par IA) */}
             <ProgramSection />
+
+            {/* FIL VIDEO (chaine YouTube officielle de l Elysee) */}
+            <VideoFeed />
 
             {/* SEARCH & MINISTERS SECTION */}
             <section className="space-y-8">

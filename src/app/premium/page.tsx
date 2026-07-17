@@ -99,52 +99,50 @@ const TESTIMONIALS = [
   },
 ];
 
-/* ── What You Receive (Expanded for Premium) ── */
+/* ── Avantages Premium — liste tenue à jour sur ce qui est RÉELLEMENT livré.
+   Chaque entrée correspond à une fonctionnalité en ligne, pas à une promesse. ── */
 const CONTENTS = [
   {
     icon: LayoutDashboard,
-    title: "Dashboard de Pilotage Elite",
-    desc: "Un espace personnel unique pour suivre l'écart entre vos convictions et les votes réels de l'Hémicycle.",
+    title: "Espace personnel complet",
+    desc: "Votre profil réunit votre historique de vote, vos élus suivis, vos lois favorites et vos territoires — le tout au même endroit.",
     color: "from-amber-400 to-orange-500",
     href: "/dashboard"
   },
   {
-    icon: BellRing,
-    title: "Suivi des Députés Interactif",
-    desc: "Abonnez-vous à vos élus favoris. Recevez un flux d'activité en temps réel sur leurs prises de position.",
+    icon: Users,
+    title: "Suivi des députés ET sénateurs",
+    desc: "Abonnez-vous à vos élus des deux chambres, avec leur photo. Retirez-les d'un clic quand vous le souhaitez.",
     color: "from-blue-500 to-indigo-600",
+    href: "/dashboard"
   },
   {
-    icon: Mail,
-    title: "Newsletter sur-mesure",
-    desc: "Le condensé politique le plus précis de France. Focus municipal, institutionnel et analyse d'impact profil.",
-    color: "from-emerald-500 to-teal-600",
+    icon: BellRing,
+    title: "Fil de notifications de vos élus",
+    desc: "Un fil, avec historique, qui vous prévient à chaque vote important d'un élu que vous suivez — avec son sens (pour, contre, abstention) et l'objet du scrutin.",
+    color: "from-purple-500 to-fuchsia-600",
+    href: "/dashboard"
   },
   {
     icon: FileText,
-    title: "Décryptages de Lois Illimités",
-    desc: "Accédez à l'intégralité de nos analyses 'Avant/Après' sans aucune restriction ni publicité.",
+    title: "Décryptages de lois illimités",
+    desc: "L'intégralité de nos analyses « avant / après » des lois, sans restriction.",
     color: "from-red-500 to-rose-600",
     href: "/lois",
   },
   {
-    icon: Zap,
-    title: "Alertes Votes Cruciaux",
-    desc: "Soyez notifié instantanément lors des votes à fort impact sur votre catégorie socio-professionnelle.",
-    color: "from-purple-500 to-fuchsia-600",
-  },
-  {
-    icon: Sparkles,
-    title: "Filtres Thématiques Avancés",
-    desc: "Économie, Écologie, Santé... Ne recevez que ce qui compte vraiment pour vous grâce à nos filtres IA.",
-    color: "from-amber-200 to-yellow-400",
+    icon: Building2,
+    title: "Budgets locaux expliqués",
+    desc: "Finances réelles de votre commune, département et région : recettes, dépenses, épargne, dette et fiscalité, sourcées et à jour.",
+    color: "from-emerald-500 to-teal-600",
+    href: "/local",
   },
   {
     icon: Bookmark,
-    title: "Bibliothèque de Lois Personnelle",
-    desc: "Enregistrez vos textes favoris et propositions de loi pour les consulter plus tard d'un simple clic sur votre profil.",
+    title: "Favoris : lois & territoires",
+    desc: "Enregistrez lois, communes, départements et régions pour les retrouver d'un clic sur votre profil.",
     color: "from-orange-400 to-amber-600",
-    href: "/lois",
+    href: "/dashboard",
   },
 ];
 
@@ -186,10 +184,9 @@ export default function PremiumPage() {
   const [prefLocalNews, setPrefLocalNews] = useState(true);
 
   const [billingCycle, setBillingCycle] = useState<'monthly' | 'annually'>('monthly');
-  const [selectedPlan, setSelectedPlan] = useState<'student' | 'elite' | 'institution'>('elite');
+  const [selectedPlan, setSelectedPlan] = useState<'elite' | 'institution'>('elite');
 
   const plans = {
-    student: { name: "Étudiant", monthly: "1.99€", annually: "19€", desc: "Pour les citoyens de -26 ans.", popular: false, comingSoon: false },
     elite: { name: "Elite", monthly: "3.99€", annually: "38€", desc: "L'expérience complète sans compromis.", popular: true, comingSoon: false },
     institution: { name: "Institution", monthly: "7.99€", annually: "77€", desc: "Suivi multi-circos & analyses poussées.", popular: false, comingSoon: true }
   };
@@ -332,8 +329,8 @@ export default function PremiumPage() {
             </div>
           </div>
 
-          <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
-            {(['student', 'elite', 'institution'] as const).map((planId) => {
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-8 max-w-3xl mx-auto">
+            {(['elite', 'institution'] as const).map((planId) => {
               const plan = plans[planId] as any;
               const isSelected = selectedPlan === planId;
               const isComingSoon = plan.comingSoon;

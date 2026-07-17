@@ -329,6 +329,34 @@ export const api = {
     return data;
   },
 
+  // Fil de notifications de l'utilisateur (votes de ses élus suivis).
+  getNotifications: async (userId: string, limit = 30) => {
+    const { data, error } = await supabase
+      .from('user_notifications')
+      .select('id, type, title, detail, position, event_at, read, created_at, deputy_id, senator_id')
+      .eq('user_id', userId)
+      .order('created_at', { ascending: false })
+      .limit(limit);
+    if (error) { console.error(error); return []; }
+    return data || [];
+  },
+  getUnreadNotificationCount: async (userId: string) => {
+    const { count, error } = await supabase
+      .from('user_notifications')
+      .select('id', { count: 'exact', head: true })
+      .eq('user_id', userId)
+      .eq('read', false);
+    if (error) return 0;
+    return count || 0;
+  },
+  markNotificationsRead: async (userId: string, ids?: string[]) => {
+    let q = supabase.from('user_notifications').update({ read: true }).eq('user_id', userId).eq('read', false);
+    if (ids && ids.length) q = q.in('id', ids);
+    const { error } = await q;
+    if (error) throw new Error(error.message);
+    return true;
+  },
+
   // Fil vidéo de la présidence (chaîne YouTube officielle de l'Élysée).
   getElyseeVideos: async (limit = 12) => {
     const { data, error } = await supabase

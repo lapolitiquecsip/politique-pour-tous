@@ -7,6 +7,7 @@ import { User, Star, Vote, Users, ChevronRight, Bell, MapPin, CheckCircle2, XCir
 import { motion, AnimatePresence } from "framer-motion";
 import { api } from "@/lib/api";
 import { BallotBox, BallotChip } from "@/components/dashboard/BallotVote";
+import NotificationsFeed from "@/components/dashboard/NotificationsFeed";
 import { usePremium } from "@/lib/hooks/usePremium";
 
 // Les favoris et votes créés sous l'ancien schéma pointent vers des identifiants qui
@@ -208,7 +209,13 @@ export default function DashboardPage() {
         </div>
       </section>
 
-      <div className="container mx-auto max-w-6xl px-4 -mt-16">
+      {isPremium && userId && (
+        <div className="container mx-auto max-w-6xl px-4 -mt-16 mb-6">
+          <NotificationsFeed userId={userId} />
+        </div>
+      )}
+
+      <div className={`container mx-auto max-w-6xl px-4 ${isPremium ? "" : "-mt-16"}`}>
         <div className="bg-white rounded-[2.5rem] border border-slate-200 shadow-2xl overflow-hidden min-h-[600px]">
           
           {/* Tabs Navigation */}

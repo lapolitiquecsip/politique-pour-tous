@@ -2,7 +2,7 @@
 
 import { useEffect, useState } from "react";
 import { motion } from "framer-motion";
-import { ScrollText, Mic, Plane, ExternalLink, ArrowRight } from "lucide-react";
+import { ScrollText, Mic, Plane, ExternalLink, ArrowRight, X, Sparkles } from "lucide-react";
 import { api } from "@/lib/api";
 import MinisterImage from "./MinisterImage";
 
@@ -14,29 +14,52 @@ const fmtDate = (d: string | null) =>
 // Les intitulés reconstruits depuis l'URL arrivent en minuscules : on les rend lisibles.
 const clean = (t: string) => (t || "").replace(/\.$/, "").trim();
 
-function PubList({ items, accent, empty }: { items: Pub[]; accent: string; empty: string }) {
+// Rend les puces du résumé IA (format "- texte" avec du **gras**).
+function SummaryBody({ text }: { text: string }) {
+  const lines = text.split(/\r?\n/).map(l => l.trim()).filter(Boolean);
+  return (
+    <ul className="space-y-2.5">
+      {lines.map((l, i) => {
+        const body = l.replace(/^[-•]\s*/, "");
+        const parts = body.split(/\*\*(.+?)\*\*/g);
+        return (
+          <li key={i} className="flex gap-2 text-sm leading-relaxed text-slate-700">
+            <span className="mt-1.5 h-1.5 w-1.5 shrink-0 rounded-full bg-amber-500" />
+            <span>{parts.map((p, k) => (k % 2 ? <strong key={k} className="text-slate-900">{p}</strong> : <span key={k}>{p}</span>))}</span>
+          </li>
+        );
+      })}
+    </ul>
+  );
+}
+
+function PubList({ items, accent, empty, onSelect }: { items: Pub[]; accent: string; empty: string; onSelect?: (p: Pub) => void }) {
   if (items.length === 0) {
     return <p className="text-xs text-slate-400 italic py-3">{empty}</p>;
   }
   return (
     <div className="space-y-2">
-      {items.map(p => (
-        <a
-          key={p.id}
-          href={p.url}
-          target="_blank"
-          rel="noopener noreferrer"
-          className="group flex items-start gap-3 rounded-2xl border border-slate-100 bg-slate-50/60 p-3 transition hover:border-amber-300 hover:bg-amber-50/40"
-        >
-          <div className="min-w-0 flex-1">
-            <p className="text-[10px] font-black uppercase tracking-widest text-slate-400">{fmtDate(p.published_at)}</p>
-            <p className="mt-0.5 text-sm font-bold leading-snug text-slate-900 group-hover:text-amber-600 transition-colors line-clamp-2">
-              {clean(p.title)}
-            </p>
-          </div>
-          <ExternalLink size={14} className={`mt-1 shrink-0 text-slate-300 group-hover:${accent} transition-colors`} />
-        </a>
-      ))}
+      {items.map(p => {
+        const inner = (
+          <>
+            <div className="min-w-0 flex-1">
+              <p className="text-[10px] font-black uppercase tracking-widest text-slate-400">{fmtDate(p.published_at)}</p>
+              <p className="mt-0.5 text-sm font-bold leading-snug text-slate-900 group-hover:text-amber-600 transition-colors line-clamp-2">
+                {clean(p.title)}
+              </p>
+            </div>
+            {onSelect
+              ? <Sparkles size={14} className="mt-1 shrink-0 text-amber-400" />
+              : <ExternalLink size={14} className="mt-1 shrink-0 text-slate-300" />}
+          </>
+        );
+        const cls = "group flex w-full items-start gap-3 rounded-2xl border border-slate-100 bg-slate-50/60 p-3 text-left transition hover:border-amber-300 hover:bg-amber-50/40";
+        // Conseils des ministres : on ouvre le résumé SUR le site plutôt que d'envoyer
+        // l'utilisateur déchiffrer le compte rendu officiel sur elysee.fr.
+        return onSelect
+          ? <button key={p.id} onClick={() => onSelect(p)} className={cls}>{inner}</button>
+          : <a key={p.id} href={p.url} target="_blank" rel="noopener noreferrer" className={cls}>{inner}</a>;
+      })}
     </div>
   );
 }
@@ -50,6 +73,7 @@ export default function PresidentSection({ photoUrl }: { photoUrl?: string }) {
   const [conseils, setConseils] = useState<Pub[]>([]);
   const [discours, setDiscours] = useState<Pub[]>([]);
   const [deplacements, setDeplacements] = useState<Pub[]>([]);
+  const [openCdm, setOpenCdm] = useState<Pub | null>(null);
 
   useEffect(() => {
     let active = true;
@@ -115,7 +139,7 @@ export default function PresidentSection({ photoUrl }: { photoUrl?: string }) {
               </div>
               <h3 className="text-sm font-black uppercase tracking-widest text-slate-900">{b.title}</h3>
             </div>
-            <PubList items={b.items} accent={b.accent} empty={b.empty} />
+            <PubList items={b.items} accent={b.accent} empty={b.empty} onSelect={b.key === "cdm" ? setOpenCdm : undefined} />
           </motion.div>
         ))}
       </div>
@@ -124,6 +148,38 @@ export default function PresidentSection({ photoUrl }: { photoUrl?: string }) {
         Source : présidence de la République (elysee.fr) — flux officiel, mis à jour quotidiennement.
         Titres, dates et liens repris tels que publiés.
       </p>
+
+      {/* Résumé du Conseil des ministres, lisible sans quitter le site. */}
+      {openCdm && (
+        <div className="fixed inset-0 z-[100] flex items-center justify-center bg-slate-950/80 p-4" onClick={() => setOpenCdm(null)}>
+          <div className="max-h-[85vh] w-full max-w-2xl overflow-y-auto rounded-3xl bg-white p-7 shadow-2xl" onClick={e => e.stopPropagation()}>
+            <div className="flex items-start justify-between gap-4">
+              <div>
+                <p className="text-[10px] font-black uppercase tracking-widest text-amber-600">Conseil des ministres</p>
+                <p className="mt-0.5 text-[11px] font-bold uppercase tracking-widest text-slate-400">{fmtDate(openCdm.published_at)}</p>
+              </div>
+              <button onClick={() => setOpenCdm(null)} className="rounded-full bg-slate-100 p-2 text-slate-500 transition hover:bg-slate-200">
+                <X size={18} />
+              </button>
+            </div>
+            <h3 className="mt-3 text-lg font-bold leading-snug text-slate-900">{clean(openCdm.title)}</h3>
+
+            <div className="mt-5 rounded-2xl bg-slate-50 p-5">
+              <p className="mb-3 flex items-center gap-1.5 text-[9px] font-black uppercase tracking-widest text-amber-600">
+                <Sparkles size={11} /> Ce qui a été décidé — résumé par IA du compte rendu officiel
+              </p>
+              {openCdm.summary
+                ? <SummaryBody text={openCdm.summary} />
+                : <p className="text-sm italic text-slate-400">Résumé en cours de génération.</p>}
+            </div>
+
+            <a href={openCdm.url} target="_blank" rel="noopener noreferrer"
+              className="mt-5 inline-flex items-center gap-2 rounded-xl bg-slate-900 px-5 py-3 text-[11px] font-black uppercase tracking-widest text-white transition hover:bg-slate-700">
+              Lire le compte rendu officiel <ExternalLink size={13} />
+            </a>
+          </div>
+        </div>
+      )}
     </section>
   );
 }

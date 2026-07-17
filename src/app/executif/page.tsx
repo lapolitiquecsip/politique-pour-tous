@@ -27,6 +27,7 @@ import ministersBios from "@/lib/data/ministersBios.json";
 import MinisterImage from "@/components/executif/MinisterImage";
 import MinisterStagger from "@/components/executif/MinisterStagger";
 import PresidentSection from "@/components/executif/PresidentSection";
+import ProgramSection from "@/components/executif/ProgramSection";
 import { cleanMinistryName } from "@/lib/executif-utils";
 import { AwardBadge } from "@/components/ui/award-badge";
 
@@ -506,6 +507,9 @@ export default function ExecutifPage() {
 
             {/* PRÉSIDENT DE LA RÉPUBLIQUE — chef de l'exécutif, donc en tête */}
             <PresidentSection photoUrl={photoBySlug['emmanuel-macron']} />
+
+            {/* PROGRAMME 2022 + AVANCEMENT (engagements officiels, avancement evalue par IA) */}
+            <ProgramSection />
 
             {/* SEARCH & MINISTERS SECTION */}
             <section className="space-y-8">

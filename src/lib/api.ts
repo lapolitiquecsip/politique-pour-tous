@@ -314,6 +314,18 @@ export const api = {
     return data;
   },
 
+  // Programme présidentiel et son avancement.
+  // ATTENTION : `engagement`/`theme` sont des faits (programme officiel), mais
+  // `status`/`justification` sont générés par IA (ai_generated) — le front doit le dire.
+  getPresidentialProgram: async (year = 2022) => {
+    const { data, error } = await supabase
+      .from('presidential_program')
+      .select('id, pacte, theme, engagement, source_url, status, justification, ai_generated, assessed_at')
+      .eq('year', year);
+    if (error || !data) return [];
+    return data;
+  },
+
   // Derniers décrets d'un ministère (filtre par mots-clés du nom du ministère).
   getDecreesForMinistry: async (keywords: string[], limit = 5) => {
     if (!keywords.length) return [];

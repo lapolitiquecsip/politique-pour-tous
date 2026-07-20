@@ -23,12 +23,6 @@ import { getFullPartyName } from "@/lib/party-utils";
 import { api } from "@/lib/api";
 import LegalStatusModal from "@/components/deputies/LegalStatusModal";
 
-// Mock data for senators (Senate votes are often different)
-const getMockSenateVotes = () => [
-  { id: 1, title: "Loi Travail (Sénat)", date: "Janvier 2024", vote: "POUR", color: "text-emerald-500", bg: "bg-emerald-500/10", icon: CheckCircle2, lawSlug: "plein-emploi" },
-  { id: 2, title: "Budget 2024", date: "Octobre 2023", vote: "CONTRE", color: "text-red-500", bg: "bg-red-500/10", icon: XCircle, lawSlug: "loi-militaire" },
-  { id: 3, title: "Loi Logement", date: "Mars 2023", vote: "POUR", color: "text-emerald-500", bg: "bg-emerald-500/10", icon: CheckCircle2, lawSlug: "loi-pouvoir-achat" },
-];
 
 export default function SenatorClient({ senator }: { senator: any }) {
   const { isPremium } = usePremium();
@@ -49,7 +43,13 @@ export default function SenatorClient({ senator }: { senator: any }) {
   }, [senator]);
 
   const name = `${senator.first_name} ${senator.last_name}`;
-  const votes = getMockSenateVotes();
+  // Vrais votes du Sénat (rapprochés par nom + chambre), plus de données factices.
+  const [votes, setVotes] = useState<any[]>([]);
+  useEffect(() => {
+    api.getSenatorVotes(senator.first_name, senator.last_name, 12)
+      .then(v => setVotes(v as any[]))
+      .catch(() => setVotes([]));
+  }, [senator.first_name, senator.last_name]);
 
   return (
     <div className="min-h-screen bg-slate-50 dark:bg-slate-950 pb-20">
@@ -251,6 +251,11 @@ export default function SenatorClient({ senator }: { senator: any }) {
                 Positions <span className="text-amber-600">législatives</span>
               </h2>
               <div className="space-y-4">
+                {votes.length === 0 && (
+                  <div className="rounded-[2rem] border border-dashed border-slate-200 bg-white p-8 text-center text-sm italic text-slate-400">
+                    Aucun scrutin public récent au Sénat pour cet élu, ou vote non encore synchronisé.
+                  </div>
+                )}
                 {votes.map((vote: any) => (
                   <div 
                     key={vote.id}

@@ -2,6 +2,7 @@
 // Version 1.1.2 - Mise à jour des synchronisations pétitions et IA
 
 import { useEffect, useState } from "react";
+import PetitionStatus from "./PetitionStatus";
 
 import { motion } from "framer-motion";
 import { 
@@ -69,13 +70,16 @@ function PetitionCard({ petition, idx }: { petition: Petition, idx: number }) {
           </div>
 
           <div className="h-2 bg-slate-100 dark:bg-slate-800 rounded-full overflow-hidden">
-            <motion.div 
+            <motion.div
               initial={{ width: 0 }}
               whileInView={{ width: `${cappedPercentage}%` }}
               transition={{ duration: 1.5, ease: "circOut" }}
               className="h-full bg-gradient-to-r from-blue-600 to-indigo-600"
             />
           </div>
+
+          {/* Statut factuel dans le processus AN (examinée ? transmise ? en collecte ?) */}
+          <PetitionStatus status={(petition as any).status ?? null} signatures={petition.signatures} threshold={petition.threshold} />
 
           <a 
             href={petition.url}

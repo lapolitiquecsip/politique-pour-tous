@@ -240,6 +240,32 @@ export default function SenatorClient({ senator }: { senator: any }) {
                     <div className="bg-amber-50/50 p-6 rounded-2xl border border-amber-100 italic font-playfair text-lg text-slate-700 leading-relaxed whitespace-pre-line">
                       {senator.biography}
                     </div>
+
+                    {/* Repères officiels — données du Sénat (ODSEN), précises et vérifiées. */}
+                    {(senator.birth_date || senator.profession || senator.senate_group || senator.committee) && (() => {
+                      const MOIS = ["janvier","février","mars","avril","mai","juin","juillet","août","septembre","octobre","novembre","décembre"];
+                      const frDate = (d: string) => { const m = String(d||"").match(/^(\d{4})-(\d{2})-(\d{2})/); return m ? `${+m[3]} ${MOIS[+m[2]-1]} ${m[1]}` : null; };
+                      const items: Array<{ k: string; v: string | null }> = [
+                        { k: "Né(e) le", v: senator.birth_date ? frDate(senator.birth_date) : null },
+                        { k: "Profession", v: senator.profession && !/sans profession/i.test(senator.profession) ? senator.profession : null },
+                        { k: "Groupe au Sénat", v: senator.senate_group || null },
+                        { k: "Commission", v: senator.committee || null },
+                      ].filter(i => i.v);
+                      return (
+                        <div className="mt-6">
+                          <p className="text-[10px] font-black uppercase tracking-widest text-slate-400 mb-3">Repères officiels</p>
+                          <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                            {items.map((i, k) => (
+                              <div key={k} className="rounded-2xl border border-slate-100 bg-white dark:bg-slate-900 dark:border-slate-800 p-4">
+                                <p className="text-[9px] font-black uppercase tracking-widest text-slate-400">{i.k}</p>
+                                <p className="mt-0.5 text-sm font-bold text-slate-900 dark:text-white capitalize">{i.v}</p>
+                              </div>
+                            ))}
+                          </div>
+                          <p className="mt-3 text-[10px] italic text-slate-400">Source : Sénat (open data ODSEN).</p>
+                        </div>
+                      );
+                    })()}
                   </motion.div>
                 )}
               </AnimatePresence>

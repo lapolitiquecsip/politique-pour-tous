@@ -5,20 +5,26 @@ import { useState, useEffect } from "react";
 import { useSearchParams, usePathname } from "next/navigation";
 import DeputyClient from "./DeputyClient";
 import SenatorClient from "@/components/senators/SenatorClient";
+import MepsList from "@/components/meps/MepsList";
 import { Users, GraduationCap } from "lucide-react";
+
+type Mode = "deputies" | "senators" | "meps";
 
 export default function DiscoveryClient({ initialDeputies }: { initialDeputies: any[] }) {
   const searchParams = useSearchParams();
   const pathname = usePathname();
   const modeParam = searchParams.get("mode");
-  
-  const [activeMode, setActiveMode] = useState<"deputies" | "senators">(
-    modeParam === "senators" || pathname.includes("senateurs") ? "senators" : "deputies"
+
+  const [activeMode, setActiveMode] = useState<Mode>(
+    modeParam === "senators" || pathname.includes("senateurs") ? "senators"
+      : modeParam === "meps" || pathname.includes("eurodeputes") ? "meps"
+      : "deputies"
   );
 
   // Synchronize state if param or path changes
   useEffect(() => {
     if (modeParam === "senators" || pathname.includes("senateurs")) setActiveMode("senators");
+    else if (modeParam === "meps" || pathname.includes("eurodeputes")) setActiveMode("meps");
     else if (modeParam === "deputies" || pathname.includes("deputes")) setActiveMode("deputies");
   }, [modeParam, pathname]);
 
@@ -37,7 +43,7 @@ export default function DiscoveryClient({ initialDeputies }: { initialDeputies: 
           
           {/* Subtitle - Discret mais clair */}
           <p className="text-slate-400 font-bold uppercase tracking-[0.2em] text-[10px] mt-4">
-            Assemblée Nationale & Sénat
+            Assemblée nationale • Sénat • Parlement européen
           </p>
         </div>
 
@@ -66,6 +72,17 @@ export default function DiscoveryClient({ initialDeputies }: { initialDeputies: 
               <div className={`w-2.5 h-2.5 rounded-full transition-colors ${activeMode === "senators" ? "bg-amber-600 shadow-[0_0_8px_rgba(217,119,6,0.6)] animate-pulse" : "bg-slate-300"}`} />
               SÉNATEURS
             </button>
+            <button
+              onClick={() => setActiveMode("meps")}
+              className={`flex items-center gap-3 px-10 py-4 rounded-[1.5rem] font-black tracking-tight transition-all duration-300 active:scale-95 ${
+                activeMode === "meps"
+                  ? "bg-white dark:bg-slate-800 text-sky-600 shadow-2xl shadow-sky-500/10 ring-1 ring-slate-200 dark:ring-slate-700"
+                  : "text-slate-400 hover:text-slate-600 dark:hover:text-slate-300"
+              }`}
+            >
+              <div className={`w-2.5 h-2.5 rounded-full transition-colors ${activeMode === "meps" ? "bg-sky-600 shadow-[0_0_8px_rgba(2,132,199,0.6)] animate-pulse" : "bg-slate-300"}`} />
+              EUROPÉENS
+            </button>
           </div>
         </div>
       </div>
@@ -74,8 +91,10 @@ export default function DiscoveryClient({ initialDeputies }: { initialDeputies: 
       <div className="transition-all duration-500">
         {activeMode === "deputies" ? (
           <DeputyClient initialDeputies={initialDeputies} />
-        ) : (
+        ) : activeMode === "senators" ? (
           <SenatorClient />
+        ) : (
+          <MepsList />
         )}
       </div>
     </div>

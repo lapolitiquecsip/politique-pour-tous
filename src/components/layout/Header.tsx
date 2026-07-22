@@ -55,7 +55,6 @@ export default function Header() {
     { href: "/lois", label: "Lois", icon: Scale, color: "text-red-600", iconColor: "text-red-500" },
     { href: "/local", label: "Local", icon: MapPin, color: "text-rose-600", iconColor: "text-rose-500" },
     { href: "/executif", label: "Exécutif", icon: ShieldCheck, color: "text-amber-600", iconColor: "text-amber-500" },
-    { href: "/eurodeputes", label: "Europe", icon: Landmark, color: "text-sky-600", iconColor: "text-sky-500" },
     { href: "/presidentielles-2027", label: "Présidentielles 2027", icon: MessageSquareQuote, color: "text-purple-600", iconColor: "text-purple-500" },
     { href: "/premium", label: "Premium", icon: Star, color: "text-yellow-600", iconColor: "text-yellow-500", isSpecial: true },
   ];

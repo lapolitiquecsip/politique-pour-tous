@@ -32,7 +32,7 @@ export default function MepClient({ mep, initialVotes }: { mep: any; initialVote
     <main className="min-h-screen bg-slate-50 dark:bg-slate-950 pb-20">
       <div className="bg-white/80 dark:bg-slate-900/80 backdrop-blur-md border-b border-amber-200 dark:border-slate-800 sticky top-0 z-40">
         <div className="container mx-auto px-4 h-16 flex items-center">
-          <Link href="/eurodeputes" className="inline-flex items-center gap-2 text-xs font-black uppercase tracking-widest text-slate-500 hover:text-amber-600">
+          <Link href="/deputes?mode=meps" className="inline-flex items-center gap-2 text-xs font-black uppercase tracking-widest text-slate-500 hover:text-amber-600">
             <ArrowLeft size={14} /> Tous les eurodéputés
           </Link>
         </div>

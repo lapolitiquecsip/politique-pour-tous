@@ -73,6 +73,33 @@ export const api = {
     return data;
   },
 
+  // Eurodéputés (députés européens français).
+  getMeps: async () => {
+    const { data, error } = await supabase
+      .from('meps')
+      .select('id, full_name, first_name, last_name, slug, photo_url, national_party, ep_group, ep_group_code, country')
+      .order('last_name');
+    if (error) { console.error(error); return []; }
+    return data || [];
+  },
+  getMepBySlug: async (slug: string) => {
+    const { data, error } = await supabase.from('meps').select('*').eq('slug', slug).maybeSingle();
+    if (error) { console.error(error); return null; }
+    return data;
+  },
+  // Historique de votes d'un eurodéputé (votes principaux du Parlement européen).
+  getMepVotes: async (mepId: string, limit = 15) => {
+    if (!mepId) return [];
+    const { data, error } = await supabase
+      .from('mep_votes')
+      .select('vote_id, title, reference, voted_at, position, result, url')
+      .eq('mep_id', mepId)
+      .order('voted_at', { ascending: false })
+      .limit(limit);
+    if (error || !data) return [];
+    return data;
+  },
+
   getSenators: async () => {
     const { data, error } = await supabase.from('senators').select('*').order('last_name');
     if (error) { console.error(error); return []; }

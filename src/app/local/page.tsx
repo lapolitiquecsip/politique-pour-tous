@@ -716,23 +716,43 @@ function LocalPoliticsContent() {
                  </div>
                  
                  <div className="space-y-4">
-                    <div className="bg-white/5 p-5 rounded-2xl border border-white/10 opacity-60">
-                      <p className="text-slate-400 font-black text-[9px] uppercase tracking-widest mb-1 flex items-center gap-2">
-                        <span className="w-1 h-1 rounded-full bg-slate-400" /> Mars 2026
-                      </p>
-                      <p className="font-bold text-lg mb-1 line-through opacity-50">Élections Municipales</p>
-                      <p className="text-xs text-white/40 italic">Scrutin terminé • Nouveaux maires installés.</p>
-                    </div>
-                    <div className="bg-white/5 p-5 rounded-2xl border border-white/10">
-                      <p className="text-rose-400 font-black text-[9px] uppercase tracking-widest mb-1">Mai - Juin 2026</p>
-                      <p className="font-bold text-lg mb-1">Installation des EPCI</p>
-                      <p className="text-sm text-white/60">Élection des présidents de communautés de communes et métropoles.</p>
-                    </div>
-                     <div className="bg-white/5 p-5 rounded-2xl border border-white/10 opacity-50">
-                       <p className="text-slate-400 font-black text-[9px] uppercase tracking-widest mb-1">Mars 2028</p>
-                       <p className="font-bold text-lg mb-1">Régionales & Départementales</p>
-                       <p className="text-sm text-white/60">Renouvellement des conseils régionaux et départementaux.</p>
-                     </div>
+                    {[
+                      {
+                        // date de FIN de la fenêtre : sert à décider si l'échéance est passée.
+                        end: new Date("2026-03-31"),
+                        periode: "Mars 2026",
+                        titre: "Élections municipales",
+                        desc: "Élection des conseils municipaux de toutes les communes, qui désignent ensuite le maire.",
+                      },
+                      {
+                        end: new Date("2026-06-30"),
+                        periode: "Avril – juin 2026",
+                        titre: "Installation des intercommunalités (EPCI)",
+                        // Explication en clair : c'est ce point qui n'était pas compris.
+                        desc: "Après les municipales, chaque commune envoie des élus siéger dans son intercommunalité — l'EPCI (communauté de communes, d'agglomération ou métropole), le regroupement de communes qui gère ensemble transports, déchets, eau, urbanisme… Ces conseils intercommunaux se réunissent alors pour élire leur président.",
+                      },
+                      {
+                        end: new Date("2028-03-31"),
+                        periode: "Mars 2028",
+                        titre: "Régionales & départementales",
+                        desc: "Renouvellement des conseils régionaux et départementaux (et de leurs présidents).",
+                      },
+                    ].map((e, i) => {
+                      const passe = new Date() > e.end;
+                      return (
+                        <div key={i} className={`bg-white/5 p-5 rounded-2xl border border-white/10 ${passe ? "opacity-70" : ""}`}>
+                          <p className={`font-black text-[9px] uppercase tracking-widest mb-1 flex items-center gap-2 ${passe ? "text-slate-400" : "text-rose-400"}`}>
+                            {passe && <span className="w-1 h-1 rounded-full bg-slate-400" />} {e.periode}
+                          </p>
+                          <p className="font-bold text-lg mb-1">{e.titre}</p>
+                          {/* Badge de statut calculé à partir de la date du jour : plus de « à venir » périmé. */}
+                          <span className={`inline-block mb-2 rounded-md px-2 py-0.5 text-[9px] font-black uppercase tracking-widest ${passe ? "bg-emerald-500/15 text-emerald-300" : "bg-rose-500/15 text-rose-300"}`}>
+                            {passe ? "✓ Terminé" : "À venir"}
+                          </span>
+                          <p className="text-sm text-white/60 leading-relaxed">{e.desc}</p>
+                        </div>
+                      );
+                    })}
                  </div>
                </div>
             </div>

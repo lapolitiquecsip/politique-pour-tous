@@ -164,6 +164,7 @@ export default function TerritoryDetailPanel({ territory, onClose, onNavigate }:
   const [itddCards, setItddCards] = useState<ItddCard[]>([]);
   const [localDeputies, setLocalDeputies] = useState<any[]>([]);
   const [finances, setFinances] = useState<any | null>(null);
+  const [deptPres, setDeptPres] = useState<any | null>(null);
 
   // Finances réelles (OFGL), même synthèse pour les départements et les régions.
   // Les régions gardent en plus leur graphe historique (RegionFinancesChart).
@@ -186,6 +187,16 @@ export default function TerritoryDetailPanel({ territory, onClose, onNavigate }:
     api.getItddIndicators(level, territory.id)
       .then(rows => { if (active) setItddCards(buildItddCards(rows as any, level)); })
       .catch(() => { if (active) setItddCards([]); });
+    return () => { active = false; };
+  }, [territory]);
+
+  // Président·e du conseil départemental (RNE) — avatar cliquable vers sa fiche.
+  useEffect(() => {
+    if (!territory || territory.type !== 'department') { setDeptPres(null); return; }
+    let active = true;
+    api.getDepartmentPresidentByDep(territory.id)
+      .then((p: any) => { if (active) setDeptPres(p); })
+      .catch(() => { if (active) setDeptPres(null); });
     return () => { active = false; };
   }, [territory]);
 
@@ -347,19 +358,45 @@ export default function TerritoryDetailPanel({ territory, onClose, onNavigate }:
                     </h2>
                     
                     <div className="flex items-center gap-4 text-white/70">
-                      <div className="flex items-center gap-3">
-                        <div className="w-8 h-8 rounded-lg bg-white/10 flex items-center justify-center text-white/80 shrink-0">
-                          <Building2 size={16} />
+                      {territory.type === 'department' && deptPres ? (
+                        <Link
+                          href={`/departements/${deptPres.slug}`}
+                          className="group flex items-center gap-3 rounded-2xl -ml-1 pl-1 pr-4 py-1.5 hover:bg-white/10 transition-colors"
+                        >
+                          <div className="w-11 h-11 rounded-xl overflow-hidden bg-white/10 flex items-center justify-center text-white/80 shrink-0 ring-2 ring-white/10 group-hover:ring-rose-400/60 transition">
+                            {deptPres.photo_url ? (
+                              // eslint-disable-next-line @next/next/no-img-element
+                              <img src={deptPres.photo_url} alt={deptPres.full_name} className="w-full h-full object-cover object-top" />
+                            ) : (
+                              <span className="text-xs font-black">{(deptPres.first_name?.[0] || '') + (deptPres.last_name?.[0] || '')}</span>
+                            )}
+                          </div>
+                          <div className="flex flex-col">
+                            <span className="text-[9px] font-black uppercase tracking-widest text-white/40">
+                              Président·e du Conseil Départemental
+                            </span>
+                            <span className="text-sm font-bold text-white group-hover:text-rose-300 transition-colors flex items-center gap-1">
+                              {deptPres.full_name}
+                              <ArrowRight size={13} className="opacity-0 -translate-x-1 group-hover:opacity-100 group-hover:translate-x-0 transition-all" />
+                            </span>
+                            <span className="text-[9px] font-bold uppercase tracking-widest text-rose-300/70">Voir la fiche complète</span>
+                          </div>
+                        </Link>
+                      ) : (
+                        <div className="flex items-center gap-3">
+                          <div className="w-8 h-8 rounded-lg bg-white/10 flex items-center justify-center text-white/80 shrink-0">
+                            <Building2 size={16} />
+                          </div>
+                          <div className="flex flex-col">
+                            <span className="text-[9px] font-black uppercase tracking-widest text-white/40">
+                              {territory.type === 'region' ? 'Président du Conseil Régional' : 'Président du Conseil Départemental'}
+                            </span>
+                            <span className="text-sm font-bold text-white">
+                              {data?.president || (data === null && loading ? "Chargement..." : territory.name)}
+                            </span>
+                          </div>
                         </div>
-                        <div className="flex flex-col">
-                          <span className="text-[9px] font-black uppercase tracking-widest text-white/40">
-                            {territory.type === 'region' ? 'Président du Conseil Régional' : 'Président du Conseil Départemental'}
-                          </span>
-                          <span className="text-sm font-bold text-white">
-                            {data?.president || (data === null && loading ? "Chargement..." : territory.name)}
-                          </span>
-                        </div>
-                      </div>
+                      )}
                     </div>
                   </div>
 

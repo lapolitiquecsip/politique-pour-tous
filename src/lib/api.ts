@@ -104,6 +104,22 @@ export const api = {
     return data;
   },
 
+  // Présidents des conseils départementaux.
+  getDepartmentPresidents: async () => {
+    const { data, error } = await supabase.from('department_presidents').select('dep_code, dep_name, full_name, slug, photo_url, party').order('dep_name');
+    if (error) { console.error(error); return []; }
+    return data || [];
+  },
+  getDepartmentPresidentByDep: async (depCode: string) => {
+    if (!depCode) return null;
+    const { data } = await supabase.from('department_presidents').select('dep_code, full_name, slug, photo_url').eq('dep_code', depCode).maybeSingle();
+    return data;
+  },
+  getDepartmentPresidentBySlug: async (slug: string) => {
+    const { data } = await supabase.from('department_presidents').select('*').eq('slug', slug).maybeSingle();
+    return data;
+  },
+
   getSenators: async () => {
     const { data, error } = await supabase.from('senators').select('*').order('last_name');
     if (error) { console.error(error); return []; }

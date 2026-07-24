@@ -1,0 +1,110 @@
+// Parcours éducatifs de la bulle d'aide : un cheminement d'étapes par page qui explique
+// le FONCTIONNEMENT (comment ça marche), pas de simples définitions de mots.
+// Chaque étape a une illustration (emoji) pour rester intuitif et visuel.
+
+export type Step = { emoji: string; title: string; text: string };
+export type Parcours = { title: string; intro: string; steps: Step[] };
+
+// Clé = préfixe de route. On choisit le parcours dont la clé (la plus longue) préfixe l'URL.
+export const PARCOURS: Record<string, Parcours> = {
+  "/presidentielles-2027": {
+    title: "L'élection présidentielle, comment ça marche ?",
+    intro: "Du dépôt de candidature au remboursement des frais : les grandes étapes.",
+    steps: [
+      { emoji: "✍️", title: "Les 500 parrainages", text: "Pour se présenter, un candidat doit réunir 500 parrainages d'élus (maires, parlementaires, conseillers…), issus d'au moins 30 départements différents, sans que plus de 50 viennent du même département. Le Conseil constitutionnel les vérifie et publie la liste." },
+      { emoji: "🗳️", title: "Deux tours, tous les 5 ans", text: "L'élection a lieu tous les 5 ans, en avril, au suffrage universel direct. Si personne n'obtient plus de 50 % au 1er tour, les deux premiers s'affrontent au 2ᵉ tour, deux semaines plus tard." },
+      { emoji: "💶", title: "Un plafond de dépenses", text: "Chaque candidat ne peut pas dépenser ce qu'il veut : les dépenses de campagne sont plafonnées (environ 16,9 M€ au 1er tour, plus pour les deux finalistes) et strictement contrôlées." },
+      { emoji: "🧾", title: "Le remboursement par l'État", text: "Après l'élection, l'État rembourse une partie des frais de campagne, selon le score : un candidat qui dépasse 5 % des voix est remboursé bien plus (environ la moitié du plafond) qu'un candidat en dessous (environ 4,75 %)." },
+      { emoji: "⚖️", title: "Casier & transparence", text: "Le panneau « situation judiciaire » recense les affaires connues d'un candidat (mises en cause, condamnations), avec leurs dates et sources. « Dossier vierge » = aucune affaire signalée." },
+      { emoji: "📋", title: "Suivre un programme", text: "Un programme rassemble les engagements pris en campagne. Après l'élection, chacun peut être tenu, en cours, partiel ou abandonné — c'est ce que le site suit, preuves à l'appui." },
+    ],
+  },
+
+  "/eurodeputes": {
+    title: "Le Parlement européen, comment ça marche ?",
+    intro: "Qui sont les eurodéputés, comment ils votent, et ce que mesure l'assiduité.",
+    steps: [
+      { emoji: "🇪🇺", title: "720 députés, 81 pour la France", text: "Le Parlement européen réunit 720 députés élus dans les 27 pays de l'Union, dont 81 élus en France. Ils votent les lois européennes avec le Conseil de l'UE (les États)." },
+      { emoji: "🤝", title: "Des groupes, pas des partis", text: "Au Parlement européen, les élus se regroupent par familles politiques européennes, au-delà de leur parti national. Ex. : PPE (droite), S&D (sociaux-démocrates), Renew (centristes), Les Verts, La Gauche, Patriotes." },
+      { emoji: "🗳️", title: "Le vote nominal", text: "Sur un vote nominal, la position de chaque député (pour, contre, abstention) est enregistrée individuellement. C'est ce qui permet de savoir précisément comment chacun a voté." },
+      { emoji: "📊", title: "L'assiduité aux votes", text: "Le taux d'assiduité affiché mesure la part des scrutins où l'élu a exprimé une position. Attention : cela mesure la participation aux VOTES, pas la présence physique en séance ou en commission." },
+      { emoji: "⚖️", title: "Situation judiciaire", text: "Comme pour les autres élus, un panneau recense les affaires judiciaires connues, mis à jour automatiquement chaque jour." },
+    ],
+  },
+
+  "/local": {
+    title: "Les collectivités locales, comment ça marche ?",
+    intro: "De la commune à la région : qui gère quoi, et comment lire leurs finances.",
+    steps: [
+      { emoji: "🏘️", title: "La commune", text: "L'échelon de base (~35 000 en France), dirigé par un maire et un conseil municipal élus. Elle gère l'état civil, les écoles, l'urbanisme de proximité." },
+      { emoji: "🔗", title: "L'intercommunalité (EPCI)", text: "Les communes se regroupent (communauté de communes, d'agglomération, métropole) pour gérer ensemble transports, déchets, eau… Leurs présidents sont élus par les conseillers communautaires." },
+      { emoji: "🏛️", title: "Département & région", text: "Au-dessus : le département (action sociale — RSA, APA, PCH —, collèges) et la région (économie, lycées, transports régionaux)." },
+      { emoji: "💰", title: "Lire les finances", text: "Recettes − dépenses de fonctionnement = épargne brute (ce qui reste pour investir et rembourser). L'encours de dette est le capital restant à rembourser. Source officielle : l'OFGL." },
+      { emoji: "🧾", title: "La fiscalité locale", text: "Les communes votent la taxe foncière (payée par les propriétaires) et la taxe d'habitation (résidences secondaires uniquement depuis 2023). Départements et régions ne votent plus ces taux." },
+    ],
+  },
+
+  "/executif": {
+    title: "Le pouvoir exécutif, comment ça marche ?",
+    intro: "Du président au budget : qui décide quoi.",
+    steps: [
+      { emoji: "🇫🇷", title: "Président & Premier ministre", text: "Le président nomme le Premier ministre, qui dirige le gouvernement. Le président préside le Conseil des ministres et fixe les grandes orientations." },
+      { emoji: "📜", title: "Le Conseil des ministres", text: "Chaque mercredi, le gouvernement adopte les projets de loi, les décrets et les nominations importantes. Le site en publie les comptes rendus résumés." },
+      { emoji: "🖋️", title: "Le décret", text: "Pour appliquer une loi, le gouvernement prend des décrets — des décisions réglementaires qui ne passent pas par le Parlement." },
+      { emoji: "💶", title: "Le budget (PLF)", text: "Chaque automne, le projet de loi de finances fixe les recettes et les dépenses de l'État par « mission » (Défense, Justice, Écologie…). Chaque ministère est rattaché à des missions." },
+      { emoji: "⚔️", title: "49-3 & motion de censure", text: "Le 49-3 permet d'adopter un texte sans vote — mais l'Assemblée peut riposter par une motion de censure qui, si elle réunit la majorité, renverse le gouvernement." },
+    ],
+  },
+
+  "/lois": {
+    title: "Comment une loi est adoptée ?",
+    intro: "Le parcours d'un texte, du dépôt à la promulgation.",
+    steps: [
+      { emoji: "📝", title: "Qui propose ?", text: "Un projet de loi vient du gouvernement ; une proposition de loi vient de parlementaires (députés ou sénateurs)." },
+      { emoji: "🔍", title: "L'examen en commission", text: "Avant le vote, une commission spécialisée étudie le texte en détail et l'amende (le modifie)." },
+      { emoji: "🔁", title: "La navette", text: "Le texte fait des allers-retours entre l'Assemblée et le Sénat jusqu'à une version identique. En cas de désaccord persistant, l'Assemblée a le dernier mot." },
+      { emoji: "🗳️", title: "Le vote solennel", text: "Les élus votent l'ensemble du texte. C'est ce vote « sur l'ensemble » qui compte vraiment — la plupart des autres votes portent sur des amendements." },
+      { emoji: "✅", title: "La promulgation", text: "Une fois adoptée, la loi est promulguée par le président, puis publiée au Journal officiel : elle devient applicable." },
+    ],
+  },
+
+  "/deputes": {
+    title: "Comprendre les votes des élus",
+    intro: "Comment lire ce que votent députés, sénateurs et eurodéputés.",
+    steps: [
+      { emoji: "🏛️", title: "Deux chambres", text: "Les députés (Assemblée, 577, élus directement) et les sénateurs (Sénat, 348, élus par des grands électeurs) votent tous les lois. Seule l'Assemblée peut renverser le gouvernement." },
+      { emoji: "🗳️", title: "Pour, contre, abstention", text: "Sur chaque scrutin, un élu vote pour, contre, ou s'abstient (il refuse de trancher). Le site montre sa position réelle, texte par texte." },
+      { emoji: "🧩", title: "Amendement ou texte entier ?", text: "La plupart des votes portent sur des amendements (des modifications). Le vote décisif est celui « sur l'ensemble du texte »." },
+      { emoji: "👥", title: "Les groupes", text: "Les élus se rassemblent en groupes politiques, qui coordonnent les votes et le temps de parole." },
+    ],
+  },
+
+  "/dashboard": {
+    title: "Votre espace premium",
+    intro: "Suivre vos élus et vos textes favoris.",
+    steps: [
+      { emoji: "⭐", title: "Suivre des élus", text: "Ajoutez des députés et sénateurs à vos suivis. Vous êtes prévenu de leurs votes importants dans votre fil de notifications." },
+      { emoji: "🔖", title: "Vos favoris", text: "Enregistrez des lois, communes, départements ou régions pour les retrouver d'un clic." },
+      { emoji: "🔔", title: "Le fil de notifications", text: "À chaque vote solennel d'un élu que vous suivez, une notification apparaît, avec son sens (pour/contre) et l'objet du scrutin." },
+    ],
+  },
+
+  "/": {
+    title: "Le pouvoir citoyen : les pétitions",
+    intro: "Comment une pétition peut influencer l'Assemblée.",
+    steps: [
+      { emoji: "✍️", title: "Signer une pétition", text: "Sur la plateforme officielle de l'Assemblée, tout citoyen peut soutenir une pétition en la signant." },
+      { emoji: "💯", title: "Le seuil des 100 000", text: "À partir de 100 000 signatures, la pétition peut être transmise à la Conférence des présidents de l'Assemblée." },
+      { emoji: "⚖️", title: "La décision", text: "La Conférence des présidents décide de la suite : examen en commission, débat en séance, ou classement. Le site affiche le statut réel de chaque pétition." },
+    ],
+  },
+};
+
+// Choisit le parcours le plus spécifique pour une URL donnée.
+export function parcoursForPath(pathname: string): Parcours | null {
+  const keys = Object.keys(PARCOURS).sort((a, b) => b.length - a.length);
+  for (const k of keys) {
+    if (k === "/" ? pathname === "/" : (pathname === k || pathname.startsWith(k + "/"))) return PARCOURS[k];
+  }
+  return null;
+}

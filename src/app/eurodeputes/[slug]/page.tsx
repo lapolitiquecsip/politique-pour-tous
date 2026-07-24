@@ -22,6 +22,6 @@ export default async function MepPage({ params }: { params: Promise<{ slug: stri
       </div>
     );
   }
-  const votes = await api.getMepVotes(String(mep.id), 15);
+  const votes = await api.getMepVotes(String(mep.id), { limit: 20, onlyMain: true });
   return <MepClient mep={mep} initialVotes={votes as any[]} />;
 }

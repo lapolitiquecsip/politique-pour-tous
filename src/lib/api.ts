@@ -88,14 +88,18 @@ export const api = {
     return data;
   },
   // Historique de votes d'un eurodéputé (votes principaux du Parlement européen).
-  getMepVotes: async (mepId: string, limit = 15) => {
+  getMepVotes: async (mepId: string, opts?: { limit?: number; offset?: number; onlyMain?: boolean }) => {
     if (!mepId) return [];
-    const { data, error } = await supabase
+    const limit = opts?.limit ?? 20;
+    const offset = opts?.offset ?? 0;
+    let q = supabase
       .from('mep_votes')
-      .select('vote_id, title, reference, voted_at, position, result, url')
-      .eq('mep_id', mepId)
+      .select('vote_id, title, reference, voted_at, position, result, url, is_main')
+      .eq('mep_id', mepId);
+    if (opts?.onlyMain) q = q.eq('is_main', true);
+    const { data, error } = await q
       .order('voted_at', { ascending: false })
-      .limit(limit);
+      .range(offset, offset + limit - 1);
     if (error || !data) return [];
     return data;
   },

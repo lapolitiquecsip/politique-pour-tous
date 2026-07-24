@@ -1,8 +1,10 @@
 "use client";
 
+import { useState } from "react";
 import Link from "next/link";
-import { ArrowLeft, Building2, ExternalLink, Star } from "lucide-react";
+import { ArrowLeft, Building2, ExternalLink, Star, Activity, ChevronDown } from "lucide-react";
 import { BallotBox } from "@/components/dashboard/BallotVote";
+import { api } from "@/lib/api";
 
 // Couleurs par groupe politique européen.
 const GROUP_CLR: Record<string, string> = {
@@ -27,6 +29,27 @@ const fmtDate = (d: string | null) =>
 export default function MepClient({ mep, initialVotes }: { mep: any; initialVotes: any[] }) {
   const grad = GROUP_CLR[mep.ep_group_code] || GROUP_CLR.NI;
   const initials = `${(mep.first_name?.[0] || "")}${(mep.last_name?.[0] || "")}`.toUpperCase();
+
+  // Votes : bascule « principaux / tous » + pagination « voir plus ».
+  const [onlyMain, setOnlyMain] = useState(true);
+  const [votes, setVotes] = useState<any[]>(initialVotes);
+  const [loading, setLoading] = useState(false);
+  const [end, setEnd] = useState(initialVotes.length < 20);
+
+  const reload = async (main: boolean) => {
+    setOnlyMain(main); setLoading(true); setEnd(false);
+    const rows = await api.getMepVotes(String(mep.id), { limit: 20, offset: 0, onlyMain: main });
+    setVotes(rows as any[]); setEnd((rows as any[]).length < 20); setLoading(false);
+  };
+  const loadMore = async () => {
+    setLoading(true);
+    const rows = await api.getMepVotes(String(mep.id), { limit: 20, offset: votes.length, onlyMain });
+    setVotes(v => [...v, ...(rows as any[])]); setEnd((rows as any[]).length < 20); setLoading(false);
+  };
+
+  // Assiduité (participation aux votes nominaux).
+  const rate = mep.attendance_rate != null ? Number(mep.attendance_rate) : null;
+  const rateClr = rate == null ? "text-slate-400" : rate >= 90 ? "text-emerald-600" : rate >= 70 ? "text-amber-600" : "text-rose-600";
 
   return (
     <main className="min-h-screen bg-slate-50 dark:bg-slate-950 pb-20">
@@ -99,20 +122,56 @@ export default function MepClient({ mep, initialVotes }: { mep: any; initialVote
               )}
             </section>
 
+            {/* ASSIDUITÉ — participation aux votes nominaux (métrique factuelle, pas la présence physique). */}
+            {rate != null && (
+              <section className="rounded-[2.5rem] border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900 p-8">
+                <div className="flex items-center gap-3 mb-4">
+                  <Activity className="text-sky-600" size={22} />
+                  <h2 className="text-3xl font-staatliches uppercase tracking-tight text-slate-900 dark:text-white">
+                    Assiduité aux <span className="text-sky-600">votes</span>
+                  </h2>
+                </div>
+                <div className="flex items-center gap-6">
+                  <p className={`text-5xl font-black ${rateClr}`}>{rate.toLocaleString("fr-FR", { maximumFractionDigits: 1 })}%</p>
+                  <div className="flex-1">
+                    <div className="h-3 w-full overflow-hidden rounded-full bg-slate-100 dark:bg-slate-800">
+                      <div className={`h-full rounded-full ${rate >= 90 ? "bg-emerald-500" : rate >= 70 ? "bg-amber-500" : "bg-rose-500"}`} style={{ width: `${rate}%` }} />
+                    </div>
+                    <p className="mt-2 text-sm text-slate-600 dark:text-slate-300">
+                      A participé à <strong>{mep.votes_participated?.toLocaleString("fr-FR")}</strong> des{" "}
+                      <strong>{mep.votes_total?.toLocaleString("fr-FR")}</strong> scrutins nominaux de la mandature.
+                    </p>
+                  </div>
+                </div>
+                <p className="mt-4 text-[11px] leading-snug italic text-slate-400">
+                  Mesure la <strong>participation aux votes nominaux</strong> (position exprimée), et non la présence
+                  physique en séance ou en commission — un vote peut être exprimé au nom du groupe. Source : Parlement
+                  européen via HowTheyVote.eu.
+                </p>
+              </section>
+            )}
+
+            {/* VOTES — principaux par défaut, bascule « tous », pagination. */}
             <section className="rounded-[2.5rem] border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900 p-8">
-              <div className="flex items-center gap-3 mb-6">
-                <Building2 className="text-amber-600" size={22} />
-                <h2 className="text-3xl font-staatliches uppercase tracking-tight text-slate-900 dark:text-white">
-                  Votes au <span className="text-amber-600">Parlement européen</span>
-                </h2>
+              <div className="flex flex-wrap items-center justify-between gap-3 mb-6">
+                <div className="flex items-center gap-3">
+                  <Building2 className="text-amber-600" size={22} />
+                  <h2 className="text-3xl font-staatliches uppercase tracking-tight text-slate-900 dark:text-white">
+                    Votes au <span className="text-amber-600">Parlement européen</span>
+                  </h2>
+                </div>
+                <div className="inline-flex rounded-xl border border-slate-200 dark:border-slate-700 p-1">
+                  <button onClick={() => reload(true)} className={`rounded-lg px-3 py-1.5 text-[10px] font-black uppercase tracking-widest transition ${onlyMain ? "bg-slate-900 text-white" : "text-slate-500"}`}>Principaux</button>
+                  <button onClick={() => reload(false)} className={`rounded-lg px-3 py-1.5 text-[10px] font-black uppercase tracking-widest transition ${!onlyMain ? "bg-slate-900 text-white" : "text-slate-500"}`}>Tous</button>
+                </div>
               </div>
-              {initialVotes.length === 0 ? (
+              {votes.length === 0 ? (
                 <p className="rounded-2xl border border-dashed border-slate-200 dark:border-slate-700 p-6 text-center text-sm italic text-slate-400">
                   Aucun vote synchronisé pour l'instant.
                 </p>
               ) : (
                 <div className="space-y-3">
-                  {initialVotes.map((v) => (
+                  {votes.map((v) => (
                     <a
                       key={v.vote_id}
                       href={v.url}
@@ -133,8 +192,17 @@ export default function MepClient({ mep, initialVotes }: { mep: any; initialVote
                   ))}
                 </div>
               )}
+              {!end && votes.length > 0 && (
+                <button
+                  onClick={loadMore}
+                  disabled={loading}
+                  className="mt-5 inline-flex items-center gap-2 rounded-xl border border-slate-200 dark:border-slate-700 px-4 py-2.5 text-[10px] font-black uppercase tracking-widest text-slate-500 transition hover:border-amber-300 hover:text-amber-600 disabled:opacity-50"
+                >
+                  {loading ? "Chargement…" : "Voir plus de votes"} <ChevronDown size={14} />
+                </button>
+              )}
               <p className="mt-4 text-[10px] italic text-slate-400">
-                Votes principaux (scrutins finaux). Source : Parlement européen via HowTheyVote.eu.
+                {onlyMain ? "Votes principaux (scrutins finaux sur les textes)." : "Tous les scrutins nominaux (y compris amendements)."} Source : Parlement européen via HowTheyVote.eu.
               </p>
             </section>
           </div>

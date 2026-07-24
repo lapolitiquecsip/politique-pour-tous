@@ -34,13 +34,18 @@ export const PARCOURS: Record<string, Parcours> = {
 
   "/local": {
     title: "Les collectivités locales, comment ça marche ?",
-    intro: "De la commune à la région : qui gère quoi, et comment lire leurs finances.",
+    intro: "De la commune à la région : qui est élu comment, qui décide, et comment lire les finances.",
     steps: [
-      { emoji: "🏘️", title: "La commune", text: "L'échelon de base (~35 000 en France), dirigé par un maire et un conseil municipal élus. Elle gère l'état civil, les écoles, l'urbanisme de proximité." },
-      { emoji: "🔗", title: "L'intercommunalité (EPCI)", text: "Les communes se regroupent (communauté de communes, d'agglomération, métropole) pour gérer ensemble transports, déchets, eau… Leurs présidents sont élus par les conseillers communautaires." },
-      { emoji: "🏛️", title: "Département & région", text: "Au-dessus : le département (action sociale — RSA, APA, PCH —, collèges) et la région (économie, lycées, transports régionaux)." },
+      { emoji: "🗳️", title: "Élire le conseil municipal", text: "Tous les 6 ans, les habitants élisent le conseil municipal. Dans les communes de 1 000 habitants et plus, on vote pour une liste : celle qui arrive en tête reçoit la moitié des sièges (« prime majoritaire »), le reste étant réparti à la proportionnelle — ce qui donne des sièges à l'opposition." },
+      { emoji: "👤", title: "Le maire et l'opposition", text: "Le conseil élu élit ensuite le maire (en général la tête de la liste gagnante) et ses adjoints. Les élus des autres listes forment l'opposition : ils siègent, débattent et votent, mais sont minoritaires." },
+      { emoji: "⚖️", title: "Comment se prennent les décisions", text: "Les décisions (projets, subventions, urbanisme…) sont votées en conseil municipal à la majorité des présents. Les séances sont publiques ; le maire prépare et exécute, le conseil décide." },
+      { emoji: "💶", title: "Voter le budget communal", text: "Chaque année, le conseil municipal vote le budget : d'abord les grandes orientations, puis le budget lui-même (recettes et dépenses). Il doit être voté à l'équilibre — la commune ne peut pas voter un budget en déficit." },
+      { emoji: "🔗", title: "L'intercommunalité (EPCI)", text: "Les communes se regroupent en intercommunalités (~1 250 en France : communautés de communes, d'agglomération, métropoles) pour gérer ensemble transports, déchets, eau… Les conseillers communautaires qui y siègent ne sont pas élus à part : ce sont des conseillers municipaux, désignés lors des municipales (leur nom est « fléché » sur le bulletin dans les communes de 1 000 habitants et plus). Ils élisent le président de l'intercommunalité." },
+      { emoji: "🏛️", title: "Le département", text: "Les conseillers départementaux sont élus par canton, par binôme femme-homme, tous les 6 ans. Le conseil départemental ainsi formé élit son président. Le département gère surtout l'action sociale (RSA, APA, PCH) et les collèges." },
+      { emoji: "🤝", title: "Le rôle de l'État dans le budget départemental", text: "Le département vote son budget, mais une grande part de ses recettes vient de l'État : dotations (dont la DGF) et compensations pour les aides sociales qu'il verse pour le compte de l'État (le RSA notamment). L'État ne vote pas le budget, mais il en conditionne fortement les moyens." },
+      { emoji: "🌍", title: "La région", text: "Élue à la proportionnelle de liste (avec prime majoritaire), la région gère l'économie, les lycées et les transports régionaux (TER). Elle élit aussi son président." },
       { emoji: "💰", title: "Lire les finances", text: "Recettes − dépenses de fonctionnement = épargne brute (ce qui reste pour investir et rembourser). L'encours de dette est le capital restant à rembourser. Source officielle : l'OFGL." },
-      { emoji: "🧾", title: "La fiscalité locale", text: "Les communes votent la taxe foncière (payée par les propriétaires) et la taxe d'habitation (résidences secondaires uniquement depuis 2023). Départements et régions ne votent plus ces taux." },
+      { emoji: "🧾", title: "La fiscalité locale", text: "Les communes votent la taxe foncière (payée par les propriétaires) et la taxe d'habitation (résidences secondaires uniquement depuis 2023). Départements et régions ne votent plus ces taux (compensés en TVA)." },
     ],
   },
 

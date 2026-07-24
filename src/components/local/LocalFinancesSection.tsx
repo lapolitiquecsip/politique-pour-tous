@@ -1,7 +1,7 @@
 "use client";
 
 import { motion } from "framer-motion";
-import { Landmark } from "lucide-react";
+import { Landmark, HelpCircle } from "lucide-react";
 
 export interface LocalFinances {
   year: number;
@@ -94,6 +94,21 @@ export default function LocalFinancesSection({ finances, label }: { finances: Lo
           </div>
         </div>
       )}
+      {/* Aide à la lecture, directement sur la fiche (demandé) : que signifient ces chiffres ? */}
+      <details className="group rounded-2xl border border-slate-100 bg-slate-50/60 p-3">
+        <summary className="flex cursor-pointer list-none items-center gap-2 text-[11px] font-black uppercase tracking-widest text-slate-500">
+          <HelpCircle size={13} className="text-sky-500" /> Comment lire ces chiffres ?
+          <span className="ml-auto text-sky-500 transition-transform group-open:rotate-45 text-base leading-none">+</span>
+        </summary>
+        <ul className="mt-2 space-y-1.5 text-[12px] leading-relaxed text-slate-600">
+          <li><strong>Recettes / dépenses de fonctionnement</strong> : ce que la collectivité encaisse et dépense pour son activité courante (salaires, services…).</li>
+          <li><strong>Épargne brute</strong> : recettes − dépenses de fonctionnement. C'est ce qui reste pour investir et rembourser la dette. Plus elle est élevée, plus la collectivité a de marge.</li>
+          <li><strong>Dépenses d'investissement</strong> : les dépenses durables (travaux, équipements, bâtiments).</li>
+          <li><strong>Encours de dette</strong> : le capital qu'il reste à rembourser sur les emprunts, au 31 décembre.</li>
+          <li>Le <strong>€/habitant</strong> permet de comparer des collectivités de tailles différentes.</li>
+        </ul>
+      </details>
+
       <p className="text-[10px] text-slate-400/80 italic">
         Budget principal, exercice {finances.year}. Dépenses/recettes réelles retraitées. Source : OFGL (data.ofgl.fr).
       </p>

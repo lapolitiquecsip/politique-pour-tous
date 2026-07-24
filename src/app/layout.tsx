@@ -30,6 +30,7 @@ export const metadata: Metadata = {
 };
 
 import GlossaryProvider from "@/components/providers/GlossaryProvider";
+import HelpBubble from "@/components/help/HelpBubble";
 
 export default function RootLayout({
   children,
@@ -51,6 +52,7 @@ export default function RootLayout({
             </main>
             <Footer />
             <PremiumButton />
+            <HelpBubble />
           </GlossaryProvider>
         </ThemeProvider>
       </body>

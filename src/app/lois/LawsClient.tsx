@@ -458,7 +458,7 @@ function LawsContent() {
               {sl && <span className="rounded-full bg-amber-50 px-3 py-1 text-[10px] font-black uppercase tracking-widest text-amber-700">{sl}</span>}
               <span className="ml-auto rounded-full bg-red-50 px-3 py-1 text-[10px] font-black uppercase tracking-widest text-red-700">{categoryLabel(item.category)}</span>
             </div>
-            <h3 className="mt-5 text-2xl font-staatliches uppercase leading-tight text-slate-950 md:text-3xl">{item.title}</h3>
+            <h3 className="mt-5 text-2xl font-staatliches uppercase leading-tight text-slate-950 md:text-3xl">{item.display_title || item.title}</h3>
             <p className="mt-4 line-clamp-3 text-sm leading-6 text-slate-600">{item.summary || "Analyse indisponible."}</p>
             <div className="mt-6 flex items-center justify-between border-t pt-4 text-xs font-bold text-slate-500"><span><CalendarDays className="mr-2 inline" size={14} />{formatDate(item.promulgated_at || item.latest_step_at)}</span><span className="text-red-600">Voir la fiche →</span></div>
           </button>

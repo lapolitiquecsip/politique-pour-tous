@@ -28,6 +28,7 @@ export interface LegislativeListItem {
   author_name: string | null;
   current_chamber?: string | null;
   text_type?: string | null;   // 'proposal' (proposition de loi) | 'bill' (projet de loi)
+  display_title?: string | null; // titre synthétisé (façon presse) pour les listes
   latest_step_at?: string | null;
   cursor_date?: string | null;
   promulgated_at?: string | null;

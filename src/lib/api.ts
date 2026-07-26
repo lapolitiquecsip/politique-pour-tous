@@ -559,7 +559,13 @@ export const api = {
       p_limit: filters.limit || 20,
     });
     if (error) throw error;
-    return (data || []) as LegislativeListItem[];
+    const items = (data || []) as LegislativeListItem[];
+    if (items.length) {
+      const { data: titles } = await supabase.from('dossier_display_title').select('dossier_id, display_title').in('dossier_id', items.map(i => i.id));
+      const byId = new Map((titles || []).map((t: any) => [t.dossier_id, t.display_title]));
+      for (const it of items) it.display_title = byId.get(it.id) || null;
+    }
+    return items;
   },
 
   getLegislativeDossiers: async (filters: { status?: string; chamber?: string; category?: LegislativeCategory | null; search?: string; cursorDate?: string; cursorId?: string; limit?: number } = {}) => {
@@ -574,13 +580,16 @@ export const api = {
     });
     if (error) throw error;
     const items = (data || []) as LegislativeListItem[];
-    // Enrichissement : le RPC ne renvoie pas le TYPE de texte (proposition/projet). On le
-    // récupère en lot depuis la table (lecture publique) pour permettre le tri par type.
+    // Enrichissement (le RPC ne les renvoie pas) : type de texte + titre synthétisé.
     if (items.length) {
       const ids = items.map(i => i.id);
-      const { data: types } = await supabase.from('legislative_dossiers').select('id, text_type').in('id', ids);
-      const byId = new Map((types || []).map((t: any) => [t.id, t.text_type]));
-      for (const it of items) (it as any).text_type = byId.get(it.id) || null;
+      const [types, titles] = await Promise.all([
+        supabase.from('legislative_dossiers').select('id, text_type').in('id', ids),
+        supabase.from('dossier_display_title').select('dossier_id, display_title').in('dossier_id', ids),
+      ]);
+      const typeById = new Map((types.data || []).map((t: any) => [t.id, t.text_type]));
+      const titleById = new Map((titles.data || []).map((t: any) => [t.dossier_id, t.display_title]));
+      for (const it of items) { (it as any).text_type = typeById.get(it.id) || null; it.display_title = titleById.get(it.id) || null; }
     }
     return items;
   },

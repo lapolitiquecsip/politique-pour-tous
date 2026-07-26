@@ -92,7 +92,7 @@ export default function ChamberLegislation({ chamber, chamberLabel }: { chamber:
                   {sl && <span className="rounded-full bg-amber-50 dark:bg-amber-500/10 px-3 py-1 text-[10px] font-black uppercase tracking-widest text-amber-700 dark:text-amber-400">{sl}</span>}
                   <span className="ml-auto rounded-full bg-red-50 dark:bg-red-500/10 px-3 py-1 text-[10px] font-black uppercase tracking-widest text-red-700 dark:text-red-400">{categoryLabel(item.category)}</span>
                 </div>
-                <h3 className="mt-5 text-2xl font-staatliches uppercase leading-tight text-slate-950 dark:text-white">{item.title}</h3>
+                <h3 className="mt-5 text-2xl font-staatliches uppercase leading-tight text-slate-950 dark:text-white">{item.display_title || item.title}</h3>
                 <p className="mt-4 line-clamp-3 text-sm leading-6 text-slate-600 dark:text-slate-300">{item.summary || "Analyse indisponible."}</p>
                 <div className="mt-6 flex items-center justify-between border-t border-slate-100 dark:border-slate-800 pt-4 text-xs font-bold text-slate-500"><span><CalendarDays className="mr-2 inline" size={14} />{item.latest_step_at ? new Date(item.latest_step_at).toLocaleDateString("fr-FR") : "—"}</span><span className="text-red-600">Voir la fiche →</span></div>
               </Link>

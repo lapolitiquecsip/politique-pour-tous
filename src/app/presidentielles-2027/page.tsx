@@ -1,6 +1,6 @@
 "use client";
 
-import { Suspense, useEffect, useMemo, useState } from "react";
+import { Suspense, useEffect, useMemo, useRef, useState } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
 import Link from "next/link";
 import { Search, Loader2, X, CalendarDays, ExternalLink, Briefcase, GraduationCap, Users, ShieldCheck, Landmark, ArrowRight } from "lucide-react";
@@ -468,10 +468,21 @@ function CandidatesContent() {
     return matchSide && matchSearch;
   }), [candidates, side, search]);
 
-  const openSlug = params.get("candidat");
-  const selected = openSlug ? candidates.find(c => c.slug === openSlug) ?? null : null;
-  const open = (c: Candidate) => router.replace(`/presidentielles-2027/?candidat=${c.slug}`, { scroll: false });
-  const close = () => router.replace("/presidentielles-2027/", { scroll: false });
+  // Modale pilotée par état local : en export statique, useSearchParams ne se
+  // rafraîchit pas de façon fiable sur router.replace (la croix ne fermait rien).
+  const [selectedSlug, setSelectedSlug] = useState<string | null>(null);
+  // Deep-link initial (?candidat=slug) appliqué UNE seule fois, une fois les candidats
+  // chargés — sinon la fermeture pourrait être annulée par une relecture des params.
+  const deepLinkDone = useRef(false);
+  useEffect(() => {
+    if (deepLinkDone.current || candidates.length === 0) return;
+    deepLinkDone.current = true;
+    const s = params.get("candidat");
+    if (s && candidates.some(c => c.slug === s)) setSelectedSlug(s);
+  }, [candidates, params]);
+  const selected = selectedSlug ? candidates.find(c => c.slug === selectedSlug) ?? null : null;
+  const open = (c: Candidate) => { setSelectedSlug(c.slug); router.replace(`/presidentielles-2027/?candidat=${c.slug}`, { scroll: false }); };
+  const close = () => { setSelectedSlug(null); router.replace("/presidentielles-2027/", { scroll: false }); };
 
   return (
     <div className="min-h-screen bg-slate-950">

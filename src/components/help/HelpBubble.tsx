@@ -6,6 +6,7 @@ import { motion, AnimatePresence } from "framer-motion";
 import { X, Search, Lightbulb, GraduationCap } from "lucide-react";
 import { NOTIONS } from "@/lib/help-notions";
 import { parcoursForPath } from "@/lib/help-parcours";
+import HelpDiagram from "@/components/help/HelpDiagram";
 
 const norm = (s: string) => s.toLowerCase().normalize("NFD").replace(/[̀-ͯ]/g, "");
 
@@ -22,6 +23,11 @@ export default function HelpBubble() {
   const [teaser, setTeaser] = useState(false);
 
   const parcours = useMemo(() => parcoursForPath(pathname), [pathname]);
+  // Sur la page Europe, la bulle d'aide prend les couleurs du drapeau de l'UE (bleu + or).
+  const eu = pathname.startsWith("/eurodeputes");
+  const th = eu
+    ? { cloud: "from-[#003399] to-[#001f5c]", ring: "bg-[#FFCC00]/40", header: "from-[#003399] via-[#002a7a] to-[#003399]", eyebrow: "text-[#FFD54A]", badge: "from-[#003399]/10 to-[#FFCC00]/25", num: "from-[#003399] to-[#001f5c]", line: "from-[#FFCC00] dark:from-[#b8940a]", tip: "from-[#003399]/10 to-[#FFCC00]/15 dark:from-slate-800/50 dark:to-slate-800/50", tipIcon: "text-[#003399] dark:text-[#FFD54A]", teaser: "text-[#FFD54A]", teaserRing: "ring-[#FFCC00]/40" }
+    : { cloud: "from-sky-400 to-blue-600", ring: "bg-sky-400/30", header: "from-blue-600 via-indigo-600 to-sky-500", eyebrow: "text-white/70", badge: "from-sky-100 to-indigo-100 dark:from-slate-800 dark:to-slate-800", num: "from-blue-600 to-indigo-600", line: "from-sky-300 dark:from-sky-700", tip: "from-sky-50 to-indigo-50 dark:from-slate-800/50 dark:to-slate-800/50", tipIcon: "text-sky-500", teaser: "text-sky-300", teaserRing: "ring-sky-400/30" };
 
   // À chaque changement de page : le bouton « pope » et une bulle incite à cliquer pour
   // comprendre le fonctionnement de l'organe/de la page. Disparaît après quelques secondes.
@@ -49,13 +55,13 @@ export default function HelpBubble() {
             animate={{ opacity: 1, y: 0, scale: 1 }}
             exit={{ opacity: 0, y: 12, scale: 0.9 }}
             transition={{ type: "spring", stiffness: 260, damping: 18 }}
-            className="fixed bottom-[92px] left-5 z-[60] max-w-[250px] rounded-2xl bg-slate-900 p-3.5 text-left shadow-2xl shadow-sky-900/30 ring-1 ring-sky-400/30"
+            className={`fixed bottom-[92px] left-5 z-[60] max-w-[250px] rounded-2xl bg-slate-900 p-3.5 text-left shadow-2xl shadow-sky-900/30 ring-1 ${th.teaserRing}`}
           >
-            <p className="flex items-center gap-1.5 text-[10px] font-black uppercase tracking-widest text-sky-300">
+            <p className={`flex items-center gap-1.5 text-[10px] font-black uppercase tracking-widest ${th.teaser}`}>
               <GraduationCap size={13} /> Comment ça marche ?
             </p>
             <p className="mt-1 text-sm font-bold leading-snug text-white">{parcours.title}</p>
-            <p className="mt-1 text-[11px] font-bold text-sky-300">Cliquez pour comprendre →</p>
+            <p className={`mt-1 text-[11px] font-bold ${th.teaser}`}>Cliquez pour comprendre →</p>
             <span className="absolute -bottom-1.5 left-9 h-3 w-3 rotate-45 bg-slate-900" />
           </motion.button>
         )}
@@ -72,20 +78,31 @@ export default function HelpBubble() {
         whileTap={{ scale: 0.94 }}
       >
         {/* Halo : pulse plus marqué juste après un changement de page. */}
-        <span className="absolute inline-flex h-16 w-20 animate-ping rounded-[50%] bg-sky-400/30" />
-        {teaser && <span className="absolute inline-flex h-16 w-20 animate-pulse rounded-[50%] bg-sky-400/40" />}
+        <span className={`absolute inline-flex h-16 w-20 animate-ping rounded-[50%] ${th.ring}`} />
+        {teaser && <span className={`absolute inline-flex h-16 w-20 animate-pulse rounded-[50%] ${th.ring}`} />}
         {/* Le nuage « pope » à chaque changement de page (key = pathname → rejoue l'anim). */}
         <motion.span
           key={pathname}
           initial={{ scale: 1.35, rotate: -12 }}
           animate={{ scale: 1, rotate: 0 }}
           transition={{ type: "spring", stiffness: 320, damping: 11 }}
-          className="relative flex h-14 w-20 items-center justify-center rounded-[50%] bg-gradient-to-br from-sky-400 to-blue-600 text-white shadow-xl shadow-sky-500/40"
+          className={`relative flex h-14 w-20 items-center justify-center rounded-[50%] bg-gradient-to-br ${th.cloud} text-white shadow-xl shadow-sky-500/40`}
         >
-          <span className="absolute -top-2 left-4 h-6 w-6 rounded-full bg-sky-400" />
-          <span className="absolute -top-3 left-8 h-8 w-8 rounded-full bg-sky-500" />
-          <span className="absolute -top-2 right-4 h-6 w-6 rounded-full bg-blue-500" />
-          <Lightbulb size={20} className="relative z-10" />
+          {eu ? (
+            <>
+              <span className="absolute -top-2 left-4 h-6 w-6 rounded-full bg-[#003399]" />
+              <span className="absolute -top-3 left-8 h-8 w-8 rounded-full bg-[#00297a]" />
+              <span className="absolute -top-2 right-4 h-6 w-6 rounded-full bg-[#002a7a]" />
+              <span className="relative z-10 text-lg">🇪🇺</span>
+            </>
+          ) : (
+            <>
+              <span className="absolute -top-2 left-4 h-6 w-6 rounded-full bg-sky-400" />
+              <span className="absolute -top-3 left-8 h-8 w-8 rounded-full bg-sky-500" />
+              <span className="absolute -top-2 right-4 h-6 w-6 rounded-full bg-blue-500" />
+              <Lightbulb size={20} className="relative z-10" />
+            </>
+          )}
         </motion.span>
         <span className="pointer-events-none absolute -top-9 left-1/2 -translate-x-1/2 whitespace-nowrap rounded-full bg-slate-900 px-2.5 py-1 text-[10px] font-black uppercase tracking-widest text-white opacity-0 shadow-lg transition-opacity duration-200 group-hover:opacity-100">
           Comprendre cette page
@@ -106,7 +123,7 @@ export default function HelpBubble() {
               onClick={e => e.stopPropagation()}
             >
               {/* En-tête — richement mis en page, ton pédagogique. */}
-              <div className="relative overflow-hidden bg-gradient-to-br from-blue-600 via-indigo-600 to-sky-500 p-6 text-white">
+              <div className={`relative overflow-hidden bg-gradient-to-br ${th.header} p-6 text-white`}>
                 <div className="pointer-events-none absolute -right-10 -top-10 h-36 w-36 rounded-full bg-white/10 blur-2xl" />
                 <div className="pointer-events-none absolute -bottom-12 left-10 h-28 w-28 rounded-full bg-sky-300/20 blur-2xl" />
                 <button onClick={() => setOpen(false)} className="absolute right-4 top-4 rounded-full bg-white/15 p-2 text-white transition hover:bg-white/25">
@@ -117,7 +134,7 @@ export default function HelpBubble() {
                     <GraduationCap size={26} />
                   </div>
                   <div>
-                    <p className="text-[10px] font-black uppercase tracking-[0.25em] text-white/70">
+                    <p className={`text-[10px] font-black uppercase tracking-[0.25em] ${eu ? th.eyebrow : "text-white/70"}`}>
                       {parcours ? `Comprendre en ${parcours.steps.length} étapes` : "Aide & lexique"}
                     </p>
                     <h3 className="mt-0.5 font-staatliches text-2xl uppercase leading-none tracking-tight md:text-3xl">
@@ -163,20 +180,21 @@ export default function HelpBubble() {
                     <ol className="relative space-y-4">
                       {parcours.steps.map((st, i) => (
                         <li key={i} className="relative flex gap-4">
-                          {i < parcours.steps.length - 1 && <span className="absolute left-6 top-14 bottom-[-18px] w-0.5 bg-gradient-to-b from-sky-300 to-transparent dark:from-sky-700" />}
-                          <div className="relative flex h-12 w-12 shrink-0 items-center justify-center rounded-2xl bg-gradient-to-br from-sky-100 to-indigo-100 text-3xl shadow-sm dark:from-slate-800 dark:to-slate-800">
+                          {i < parcours.steps.length - 1 && <span className={`absolute left-6 top-14 bottom-[-18px] w-0.5 bg-gradient-to-b ${th.line} to-transparent`} />}
+                          <div className={`relative flex h-12 w-12 shrink-0 items-center justify-center rounded-2xl bg-gradient-to-br ${th.badge} text-3xl shadow-sm`}>
                             {st.emoji}
-                            <span className="absolute -bottom-1.5 -right-1.5 flex h-6 w-6 items-center justify-center rounded-full bg-gradient-to-br from-blue-600 to-indigo-600 text-[11px] font-black text-white ring-2 ring-white dark:ring-slate-900">{i + 1}</span>
+                            <span className={`absolute -bottom-1.5 -right-1.5 flex h-6 w-6 items-center justify-center rounded-full bg-gradient-to-br ${th.num} text-[11px] font-black text-white ring-2 ring-white dark:ring-slate-900`}>{i + 1}</span>
                           </div>
-                          <div className="flex-1 rounded-2xl border border-slate-100 bg-white p-4 shadow-sm transition hover:border-sky-200 hover:shadow-md dark:border-slate-800 dark:bg-slate-900">
+                          <div className="flex-1 rounded-2xl border border-slate-100 bg-white p-4 shadow-sm transition hover:shadow-md dark:border-slate-800 dark:bg-slate-900">
                             <h4 className="font-staatliches text-lg uppercase leading-none tracking-wide text-slate-900 dark:text-white">{st.title}</h4>
                             <p className="mt-1.5 text-[13px] leading-relaxed text-slate-600 dark:text-slate-300">{st.text}</p>
+                            {st.diagram && <HelpDiagram name={st.diagram} />}
                           </div>
                         </li>
                       ))}
                     </ol>
-                    <div className="mt-5 flex items-center gap-3 rounded-2xl bg-gradient-to-br from-sky-50 to-indigo-50 p-4 dark:from-slate-800/50 dark:to-slate-800/50">
-                      <Search size={18} className="shrink-0 text-sky-500" />
+                    <div className={`mt-5 flex items-center gap-3 rounded-2xl bg-gradient-to-br ${th.tip} p-4`}>
+                      <Search size={18} className={`shrink-0 ${th.tipIcon}`} />
                       <p className="text-[12px] leading-snug text-slate-600 dark:text-slate-300">Un mot vous échappe ? Cherchez-le dans la barre ci-dessus (49-3, épargne brute, navette, EPCI…) — le lexique complet est à portée de clic.</p>
                     </div>
                   </>

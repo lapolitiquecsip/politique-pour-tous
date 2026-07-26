@@ -2,7 +2,7 @@
 // le FONCTIONNEMENT (comment ça marche), pas de simples définitions de mots.
 // Chaque étape a une illustration (emoji) pour rester intuitif et visuel.
 
-export type Step = { emoji: string; title: string; text: string };
+export type Step = { emoji: string; title: string; text: string; diagram?: string };
 export type Parcours = { title: string; intro: string; steps: Step[] };
 
 // Clé = préfixe de route. On choisit le parcours dont la clé (la plus longue) préfixe l'URL.
@@ -12,7 +12,7 @@ export const PARCOURS: Record<string, Parcours> = {
     intro: "Du dépôt de candidature au remboursement des frais : les grandes étapes.",
     steps: [
       { emoji: "✍️", title: "Les 500 parrainages", text: "Pour se présenter, un candidat doit réunir 500 parrainages d'élus (maires, parlementaires, conseillers…), issus d'au moins 30 départements différents, sans que plus de 50 viennent du même département. Le Conseil constitutionnel les vérifie et publie la liste." },
-      { emoji: "🗳️", title: "Deux tours, tous les 5 ans", text: "L'élection a lieu tous les 5 ans, en avril, au suffrage universel direct. Si personne n'obtient plus de 50 % au 1er tour, les deux premiers s'affrontent au 2ᵉ tour, deux semaines plus tard." },
+      { emoji: "🗳️", title: "Deux tours, tous les 5 ans", text: "L'élection a lieu tous les 5 ans, en avril, au suffrage universel direct. Si personne n'obtient plus de 50 % au 1er tour, les deux premiers s'affrontent au 2ᵉ tour, deux semaines plus tard.", diagram: "deux-tours" },
       { emoji: "💶", title: "Un plafond de dépenses", text: "Chaque candidat ne peut pas dépenser ce qu'il veut : les dépenses de campagne sont plafonnées (environ 16,9 M€ au 1er tour, plus pour les deux finalistes) et strictement contrôlées." },
       { emoji: "🧾", title: "Le remboursement par l'État", text: "Après l'élection, l'État rembourse une partie des frais de campagne, selon le score : un candidat qui dépasse 5 % des voix est remboursé bien plus (environ la moitié du plafond) qu'un candidat en dessous (environ 4,75 %)." },
       { emoji: "⚖️", title: "Casier & transparence", text: "Le panneau « situation judiciaire » recense les affaires connues d'un candidat (mises en cause, condamnations), avec leurs dates et sources. « Dossier vierge » = aucune affaire signalée." },
@@ -21,14 +21,15 @@ export const PARCOURS: Record<string, Parcours> = {
   },
 
   "/eurodeputes": {
-    title: "Le Parlement européen, comment ça marche ?",
-    intro: "Qui sont les eurodéputés, comment ils votent, et ce que mesure l'assiduité.",
+    title: "L'Union européenne, comment ça marche ?",
+    intro: "Le rôle de chaque institution — et où votent vos eurodéputés.",
     steps: [
-      { emoji: "🇪🇺", title: "720 députés, 81 pour la France", text: "Le Parlement européen réunit 720 députés élus dans les 27 pays de l'Union, dont 81 élus en France. Ils votent les lois européennes avec le Conseil de l'UE (les États)." },
-      { emoji: "🤝", title: "Des groupes, pas des partis", text: "Au Parlement européen, les élus se regroupent par familles politiques européennes, au-delà de leur parti national. Ex. : PPE (droite), S&D (sociaux-démocrates), Renew (centristes), Les Verts, La Gauche, Patriotes." },
-      { emoji: "🗳️", title: "Le vote nominal", text: "Sur un vote nominal, la position de chaque député (pour, contre, abstention) est enregistrée individuellement. C'est ce qui permet de savoir précisément comment chacun a voté." },
-      { emoji: "📊", title: "L'assiduité aux votes", text: "Le taux d'assiduité affiché mesure la part des scrutins où l'élu a exprimé une position. Attention : cela mesure la participation aux VOTES, pas la présence physique en séance ou en commission." },
-      { emoji: "⚖️", title: "Situation judiciaire", text: "Comme pour les autres élus, un panneau recense les affaires judiciaires connues, mis à jour automatiquement chaque jour." },
+      { emoji: "🇪🇺", title: "27 pays, des institutions communes", text: "L'Union européenne réunit 27 États qui décident ensemble de sujets communs (marché unique, commerce, climat, numérique…). Trois institutions se partagent le pouvoir : la Commission propose, le Parlement et le Conseil décident.", diagram: "eu-triangle" },
+      { emoji: "🏛️", title: "La Commission européenne", text: "C'est l'exécutif de l'UE (un commissaire par pays). Elle PROPOSE les lois européennes, veille à leur application et gère le budget — mais elle ne les vote pas. Elle est approuvée, puis contrôlée, par le Parlement." },
+      { emoji: "🗳️", title: "Le Parlement européen", text: "Les 720 eurodéputés, élus DIRECTEMENT par les citoyens (81 pour la France), votent les lois et le budget de l'UE, et contrôlent la Commission — qu'ils peuvent même renverser. C'est la voix directe des citoyens." },
+      { emoji: "🤝", title: "Le Conseil de l'UE", text: "Ce sont les ministres des 27 États. Ils votent les lois AVEC le Parlement : une loi européenne doit être adoptée par les DEUX (la « co-décision »). À ne pas confondre avec le Conseil européen, qui réunit les chefs d'État et fixe les grandes orientations." },
+      { emoji: "🔵", title: "Des groupes, pas des partis", text: "Au Parlement, les élus se regroupent par familles européennes au-delà de leur parti national : PPE (droite), S&D (sociaux-démocrates), Renew (centristes), Verts/ALE, La Gauche, Patriotes (PFE)…" },
+      { emoji: "📊", title: "Sur cette page", text: "Retrouvez chaque eurodéputé français, ses votes par thème (Ukraine, environnement, commerce…), sa présence aux votes comparée aux autres, et son parcours." },
     ],
   },
 
@@ -67,7 +68,7 @@ export const PARCOURS: Record<string, Parcours> = {
     steps: [
       { emoji: "📝", title: "Qui propose ?", text: "Un projet de loi vient du gouvernement ; une proposition de loi vient de parlementaires (députés ou sénateurs)." },
       { emoji: "🔍", title: "L'examen en commission", text: "Avant le vote, une commission spécialisée étudie le texte en détail et l'amende (le modifie)." },
-      { emoji: "🔁", title: "La navette", text: "Le texte fait des allers-retours entre l'Assemblée et le Sénat jusqu'à une version identique. En cas de désaccord persistant, l'Assemblée a le dernier mot." },
+      { emoji: "🔁", title: "La navette", text: "Le texte fait des allers-retours entre l'Assemblée et le Sénat jusqu'à une version identique. En cas de désaccord persistant, l'Assemblée a le dernier mot.", diagram: "navette" },
       { emoji: "🗳️", title: "Le vote solennel", text: "Les élus votent l'ensemble du texte. C'est ce vote « sur l'ensemble » qui compte vraiment — la plupart des autres votes portent sur des amendements." },
       { emoji: "✅", title: "La promulgation", text: "Une fois adoptée, la loi est promulguée par le président, puis publiée au Journal officiel : elle devient applicable." },
     ],

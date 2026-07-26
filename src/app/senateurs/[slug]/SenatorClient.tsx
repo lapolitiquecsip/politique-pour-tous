@@ -24,6 +24,7 @@ import { api } from "@/lib/api";
 import LegalStatusModal from "@/components/deputies/LegalStatusModal";
 import ActivityRank from "@/components/shared/ActivityRank";
 import FollowButton from "@/components/shared/FollowButton";
+import ParallelRoles from "@/components/shared/ParallelRoles";
 
 
 export default function SenatorClient({ senator }: { senator: any }) {
@@ -215,6 +216,8 @@ export default function SenatorClient({ senator }: { senator: any }) {
             <div className="flex justify-start">
               <FollowButton kind="senator" id={String(senator.id)} label="ce sénateur" />
             </div>
+
+            <ParallelRoles fullName={`${senator.first_name} ${senator.last_name}`} selfHref={`/senateurs/${senator.slug}`} />
 
             {/* Présence aux votes — comparaison entre sénateurs (scrutins publics du Sénat). */}
             <ActivityRank

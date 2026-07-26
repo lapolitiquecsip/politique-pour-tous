@@ -48,6 +48,30 @@ function InfoRow({ icon: Icon, label, value }: { icon: any; label: string; value
   );
 }
 
+// Ligne « Dirigeant·e » cliquable : résout le nom vers sa fiche d'élu (interconnexion).
+function LeaderRow({ value }: { value: string | null }) {
+  const [href, setHref] = useState<string | null>(null);
+  useEffect(() => {
+    let active = true;
+    if (value) api.resolvePersonHref(value).then(r => { if (active) setHref(r?.href || null); }).catch(() => {});
+    return () => { active = false; };
+  }, [value]);
+  if (!value) return null;
+  const inner = (
+    <div className={`flex items-start gap-3 rounded-2xl border p-4 transition ${href ? "border-indigo-200 bg-white hover:border-indigo-400 hover:shadow-md cursor-pointer group" : "border-slate-200 bg-white"}`}>
+      <div className="flex h-9 w-9 shrink-0 items-center justify-center rounded-xl bg-slate-100 text-slate-600"><UserCircle className="h-4 w-4" /></div>
+      <div className="min-w-0">
+        <p className="text-[10px] font-black uppercase tracking-widest text-slate-400">Dirigeant·e</p>
+        <p className="font-bold text-slate-900 group-hover:text-indigo-600 transition-colors inline-flex items-center gap-1">
+          {value}{href && <ArrowRight className="h-3.5 w-3.5 opacity-0 -translate-x-1 group-hover:opacity-100 group-hover:translate-x-0 transition-all" />}
+        </p>
+        {href && <p className="text-[10px] font-black uppercase tracking-widest text-indigo-400">Voir la fiche →</p>}
+      </div>
+    </div>
+  );
+  return href ? <Link href={href}>{inner}</Link> : inner;
+}
+
 function Avatar({ name, anId, photo, color }: { name: string; anId?: string | null; photo?: string | null; color: string }) {
   const [failed, setFailed] = useState(false);
   const src = anId ? `https://www.assemblee-nationale.fr/dyn/static/tribun/17/photos/carre/${anId.replace("PA", "")}.jpg` : photo || "";
@@ -141,7 +165,7 @@ export default function PartyClient({ params }: { params: Promise<{ slug: string
           <InfoRow icon={Calendar} label="Fondation" value={party.founded} />
           <InfoRow icon={Users} label="Adhérents" value={party.members} />
           <InfoRow icon={Wallet} label="Budget / financement" value={party.budget} />
-          <InfoRow icon={UserCircle} label="Dirigeant·e" value={party.leader} />
+          <LeaderRow value={party.leader} />
           <InfoRow icon={Compass} label="Orientation" value={party.orientation} />
           <InfoRow icon={MapPin} label="Siège" value={party.headquarters} />
         </div>

@@ -40,6 +40,7 @@ import VoteDetailsModal from "@/components/deputies/VoteDetailsModal";
 import LegalStatusModal from "@/components/deputies/LegalStatusModal";
 import DeputyStats from "@/components/deputies/DeputyStats";
 import ActivityRank from "@/components/shared/ActivityRank";
+import ParallelRoles from "@/components/shared/ParallelRoles";
 import { useGlossary } from "@/components/providers/GlossaryProvider";
 
 // Vote position formatting helper
@@ -637,6 +638,8 @@ export default function DeputyDetailPage({ params }: { params: Promise<{ slug: s
                 note="Taux de participation aux scrutins publics de l'Assemblée nationale. Comparaison entre députés pour situer l'assiduité de chacun·e. Source : Assemblée nationale."
               />
             )}
+
+            {deputy && <ParallelRoles fullName={`${deputy.first_name} ${deputy.last_name}`} selfHref={`/deputes/${deputy.slug}`} />}
 
             {/* Authored Laws Section (Always visible, shows empty state if needed) */}
             <div className="pt-4 mb-10">

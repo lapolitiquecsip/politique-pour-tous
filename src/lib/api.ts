@@ -1015,6 +1015,53 @@ export const api = {
     return true;
   },
 
+  // Résout un NOM d'élu vers sa fiche principale (pour interconnecter le site : ex. le
+  // dirigeant d'un parti → sa fiche). Cherche par ordre de priorité entre les chambres,
+  // les candidats et le gouvernement. Renvoie { href, kind } ou null.
+  resolvePersonHref: async (fullName: string) => {
+    const name = (fullName || "").trim();
+    if (!name) return null;
+    const sources: Array<{ table: string; base: (r: any) => string; kind: string; nameCol?: string }> = [
+      { table: 'meps', base: r => `/eurodeputes/${r.slug}`, kind: 'Eurodéputé·e' },
+      { table: 'deputies', base: r => `/deputes/${r.slug}`, kind: 'Député·e' },
+      { table: 'senators', base: r => `/senateurs/${r.slug}`, kind: 'Sénateur·rice' },
+      { table: 'presidential_candidates', base: r => `/presidentielles-2027/?candidat=${r.slug}`, kind: 'Candidat·e 2027', nameCol: 'full_name' },
+      { table: 'minister_profiles', base: r => `/executif/ministre/${r.slug}`, kind: 'Gouvernement', nameCol: 'full_name' },
+    ];
+    for (const s of sources) {
+      let q = supabase.from(s.table).select('slug, ' + (s.nameCol || 'first_name, last_name'));
+      if (s.nameCol) q = q.ilike(s.nameCol, name);
+      else { const parts = name.split(/\s+/); q = q.ilike('last_name', parts[parts.length - 1]).ilike('first_name', parts[0]); }
+      const { data } = await q.limit(1);
+      if (data && data[0] && (data[0] as any).slug) return { href: s.base(data[0]), kind: s.kind };
+    }
+    return null;
+  },
+
+  // Autres fonctions/rôles d'un·e élu·e EN PARALLÈLE de son mandat (ex. eurodéputé ET
+  // président d'un parti). Croise le nom avec les partis (dirigeant), le gouvernement,
+  // les candidats à la présidentielle, les présidents de département et les maires.
+  getParallelRoles: async (fullName: string, selfHref?: string) => {
+    const name = (fullName || "").trim();
+    if (!name) return [] as { label: string; kind: string; href: string }[];
+    const roles: { label: string; kind: string; href: string }[] = [];
+    const push = (label: string, kind: string, href: string) => { if (href !== selfHref) roles.push({ label, kind, href }); };
+
+    const [parties, cands, mins, deps, mayors] = await Promise.all([
+      supabase.from('political_parties').select('slug, name, leader').ilike('leader', name),
+      supabase.from('presidential_candidates').select('slug, full_name, category').ilike('full_name', name),
+      supabase.from('minister_profiles').select('slug, full_name, title, ministry_name').ilike('full_name', name),
+      supabase.from('department_presidents').select('slug, full_name, dep_name').ilike('full_name', name),
+      supabase.from('mayors').select('slug, full_name, commune_name, insee_code, population').ilike('full_name', name),
+    ]);
+    for (const p of (parties.data || []) as any[]) push(`Dirigeant·e — ${p.name}`, 'Parti', `/partis/${p.slug}`);
+    for (const c of (cands.data || []) as any[]) push(c.category?.startsWith('Primaire') ? `Candidat·e à la ${String(c.category).toLowerCase()}` : 'Candidat·e à la présidentielle 2027', 'Présidentielle', `/presidentielles-2027/?candidat=${c.slug}`);
+    for (const m of (mins.data || []) as any[]) push(m.title || m.ministry_name || 'Membre du gouvernement', 'Gouvernement', `/executif/ministre/${m.slug}`);
+    for (const d of (deps.data || []) as any[]) push(`Président·e du conseil départemental (${d.dep_name})`, 'Département', `/departements/${d.slug}`);
+    for (const my of (mayors.data || []) as any[]) push(`Maire de ${my.commune_name}`, 'Commune', `/maires/app?insee=${my.insee_code}`);
+    return roles;
+  },
+
   // Vérifie si l'utilisateur suit déjà un élu (toutes chambres).
   checkFollowing: async (userId: string, kind: 'deputy' | 'senator' | 'mep', id: string) => {
     if (!userId || !id) return false;

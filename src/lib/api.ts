@@ -514,6 +514,17 @@ export const api = {
   },
 
   // Fil vidéo de la présidence (chaîne YouTube officielle de l'Élysée).
+  // Fil vidéo de l'Assemblée (séances, auditions) — chaîne officielle LCP · Assemblée nationale.
+  getAnVideos: async (limit = 12) => {
+    const { data, error } = await supabase
+      .from('an_videos')
+      .select('video_id, title, published_at, url, thumbnail_url, description')
+      .order('published_at', { ascending: false })
+      .limit(limit);
+    if (error || !data) return [];
+    return data;
+  },
+
   getElyseeVideos: async (limit = 12) => {
     const { data, error } = await supabase
       .from('elysee_videos')

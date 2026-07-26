@@ -4,6 +4,7 @@ import HemicycleChart from "@/components/lois/HemicycleChart";
 import ChamberLegislation from "@/components/lois/ChamberLegislation";
 import ChamberHero from "@/components/lois/ChamberHero";
 import MemberFinderIntro from "@/components/lois/MemberFinderIntro";
+import VideoFeed from "@/components/executif/VideoFeed";
 
 import { Suspense } from "react";
 
@@ -34,6 +35,7 @@ export default async function DeputesPage() {
           { label: "Composition", href: "#composition" },
           { label: "Les députés & leurs votes", href: "#membres" },
           { label: "Textes législatifs", href: "#textes" },
+          { label: "Séances & auditions", href: "#videos" },
         ]}
       />
       <section id="composition" className="scroll-mt-24 pt-4 pb-8">
@@ -47,6 +49,9 @@ export default async function DeputesPage() {
       </section>
       <section id="textes" className="scroll-mt-24">
         <ChamberLegislation chamber="AN" chamberLabel="Assemblée nationale" />
+      </section>
+      <section id="videos" className="scroll-mt-24 mx-auto max-w-6xl px-4 pb-16">
+        <VideoFeed source="an" />
       </section>
     </div>
   );

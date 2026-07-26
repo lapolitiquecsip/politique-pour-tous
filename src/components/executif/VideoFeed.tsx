@@ -21,31 +21,33 @@ const fmtDate = (d: string | null) =>
  * aucune vidéo. Le lecteur n'est monté qu'au clic (pas d'iframe YouTube au chargement,
  * donc pas de traceur imposé à l'ouverture de la page).
  */
-export default function VideoFeed() {
+// source = "elysee" (présidence) | "an" (séances & auditions de l'Assemblée via LCP).
+export default function VideoFeed({ source = "elysee" }: { source?: "elysee" | "an" }) {
   const [videos, setVideos] = useState<Vid[]>([]);
   const [open, setOpen] = useState<Vid | null>(null);
+  const an = source === "an";
 
   useEffect(() => {
     let active = true;
-    api.getElyseeVideos(12)
+    (an ? api.getAnVideos(12) : api.getElyseeVideos(12))
       .then(d => { if (active) setVideos(d as Vid[]); })
       .catch(() => {});
     return () => { active = false; };
-  }, []);
+  }, [an]);
 
   if (videos.length === 0) return null;
 
   return (
-    <section className="bg-white p-8 md:p-10 rounded-[3rem] border border-slate-200 space-y-6">
+    <section className={`p-8 md:p-10 rounded-[3rem] border space-y-6 ${an ? "bg-white dark:bg-slate-900 border-slate-200 dark:border-slate-800" : "bg-white border-slate-200"}`}>
       <div className="flex items-center gap-3">
-        <div className="w-10 h-10 rounded-2xl bg-rose-50 text-rose-600 flex items-center justify-center">
+        <div className={`w-10 h-10 rounded-2xl flex items-center justify-center ${an ? "bg-emerald-50 text-emerald-600" : "bg-rose-50 text-rose-600"}`}>
           <Video size={20} />
         </div>
         <div>
-          <h2 className="text-2xl md:text-3xl font-staatliches uppercase tracking-tight text-slate-900">
-            En <span className="text-transparent bg-clip-text bg-gradient-to-r from-amber-500 via-orange-500 to-yellow-500">vidéo</span>
+          <h2 className="text-2xl md:text-3xl font-staatliches uppercase tracking-tight text-slate-900 dark:text-white">
+            {an ? <>Séances & <span className="text-transparent bg-clip-text bg-gradient-to-r from-emerald-500 to-teal-500">auditions</span></> : <>En <span className="text-transparent bg-clip-text bg-gradient-to-r from-amber-500 via-orange-500 to-yellow-500">vidéo</span></>}
           </h2>
-          <p className="text-xs text-slate-500">Interventions et déclarations du président</p>
+          <p className="text-xs text-slate-500">{an ? "Débats, questions au Gouvernement et auditions — chaîne officielle LCP · Assemblée nationale" : "Interventions et déclarations du président"}</p>
         </div>
       </div>
 

@@ -47,6 +47,8 @@ const GROUP_CLR: Record<string, string> = {
 // Position HowTheyVote → valeur d'urne (réutilise le composant du dashboard).
 const POS: Record<string, string> = { FOR: "POUR", AGAINST: "CONTRE", ABSTENTION: "ABSTENTION" };
 const posLabel: Record<string, string> = { FOR: "Pour", AGAINST: "Contre", ABSTENTION: "Abstention", DID_NOT_VOTE: "N'a pas voté" };
+// Couleur de la position : vert = POUR, rouge = CONTRE, ambre = abstention, gris = absent.
+const posColor: Record<string, string> = { FOR: "text-emerald-600", AGAINST: "text-rose-600", ABSTENTION: "text-amber-600", DID_NOT_VOTE: "text-slate-400" };
 
 // « À contre-courant » : l'eurodéputé a voté à l'inverse du résultat final du scrutin
 // (a voté POUR un texte rejeté, ou CONTRE un texte adopté).
@@ -283,7 +285,7 @@ export default function MepClient({ mep, initialVotes }: { mep: any; initialVote
                         </span>
                       </div>
                       <div className="shrink-0 flex flex-col items-end gap-1.5">
-                        <span className="text-[10px] font-black uppercase tracking-widest text-slate-500">
+                        <span className={`text-[11px] font-black uppercase tracking-widest ${posColor[v.position] || "text-slate-500"}`}>
                           {posLabel[v.position] || v.position}
                         </span>
                         {v.result && (

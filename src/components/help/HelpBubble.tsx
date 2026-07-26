@@ -105,20 +105,27 @@ export default function HelpBubble() {
               transition={{ type: "spring", damping: 26, stiffness: 300 }}
               onClick={e => e.stopPropagation()}
             >
-              {/* En-tête */}
-              <div className="flex items-center justify-between gap-3 bg-gradient-to-br from-sky-500 to-blue-600 p-5 text-white">
-                <div className="flex items-center gap-3">
-                  <div className="flex h-11 w-11 items-center justify-center rounded-2xl bg-white/20">
-                    <GraduationCap size={20} />
-                  </div>
-                  <div>
-                    <h3 className="text-sm font-black uppercase tracking-widest">{parcours ? parcours.title : "Comprendre le site"}</h3>
-                    <p className="text-[11px] text-white/80">{parcours ? parcours.intro : "Les notions clés, expliquées simplement"}</p>
-                  </div>
-                </div>
-                <button onClick={() => setOpen(false)} className="rounded-full bg-white/15 p-2 text-white hover:bg-white/25">
+              {/* En-tête — richement mis en page, ton pédagogique. */}
+              <div className="relative overflow-hidden bg-gradient-to-br from-blue-600 via-indigo-600 to-sky-500 p-6 text-white">
+                <div className="pointer-events-none absolute -right-10 -top-10 h-36 w-36 rounded-full bg-white/10 blur-2xl" />
+                <div className="pointer-events-none absolute -bottom-12 left-10 h-28 w-28 rounded-full bg-sky-300/20 blur-2xl" />
+                <button onClick={() => setOpen(false)} className="absolute right-4 top-4 rounded-full bg-white/15 p-2 text-white transition hover:bg-white/25">
                   <X size={18} />
                 </button>
+                <div className="relative flex items-start gap-4 pr-10">
+                  <div className="flex h-14 w-14 shrink-0 items-center justify-center rounded-2xl bg-white/20 ring-1 ring-white/30 backdrop-blur">
+                    <GraduationCap size={26} />
+                  </div>
+                  <div>
+                    <p className="text-[10px] font-black uppercase tracking-[0.25em] text-white/70">
+                      {parcours ? `Comprendre en ${parcours.steps.length} étapes` : "Aide & lexique"}
+                    </p>
+                    <h3 className="mt-0.5 font-staatliches text-2xl uppercase leading-none tracking-tight md:text-3xl">
+                      {parcours ? parcours.title : "Comprendre le site"}
+                    </h3>
+                    <p className="mt-1.5 text-[12px] leading-snug text-white/85">{parcours ? parcours.intro : "Les notions clés, expliquées simplement."}</p>
+                  </div>
+                </div>
               </div>
 
               {/* Recherche */}
@@ -151,23 +158,28 @@ export default function HelpBubble() {
                     ))}
                   </div>
                 ) : parcours ? (
-                  // Parcours éducatif : étapes numérotées + illustration.
-                  <ol className="relative space-y-3 pl-1">
-                    {parcours.steps.map((st, i) => (
-                      <li key={i} className="relative flex gap-3">
-                        {/* trait vertical reliant les étapes */}
-                        {i < parcours.steps.length - 1 && <span className="absolute left-[22px] top-12 bottom-[-14px] w-px bg-slate-200 dark:bg-slate-700" />}
-                        <div className="relative flex h-11 w-11 shrink-0 items-center justify-center rounded-2xl bg-sky-50 dark:bg-slate-800 text-2xl">
-                          {st.emoji}
-                          <span className="absolute -bottom-1 -right-1 flex h-5 w-5 items-center justify-center rounded-full bg-sky-600 text-[10px] font-black text-white">{i + 1}</span>
-                        </div>
-                        <div className="flex-1 rounded-2xl border border-slate-100 dark:border-slate-800 bg-white dark:bg-slate-900 p-3.5">
-                          <p className="text-sm font-black text-slate-900 dark:text-white">{st.title}</p>
-                          <p className="mt-1 text-[13px] leading-relaxed text-slate-600 dark:text-slate-300">{st.text}</p>
-                        </div>
-                      </li>
-                    ))}
-                  </ol>
+                  // Parcours éducatif : étapes illustrées, reliées par un fil dégradé.
+                  <>
+                    <ol className="relative space-y-4">
+                      {parcours.steps.map((st, i) => (
+                        <li key={i} className="relative flex gap-4">
+                          {i < parcours.steps.length - 1 && <span className="absolute left-6 top-14 bottom-[-18px] w-0.5 bg-gradient-to-b from-sky-300 to-transparent dark:from-sky-700" />}
+                          <div className="relative flex h-12 w-12 shrink-0 items-center justify-center rounded-2xl bg-gradient-to-br from-sky-100 to-indigo-100 text-3xl shadow-sm dark:from-slate-800 dark:to-slate-800">
+                            {st.emoji}
+                            <span className="absolute -bottom-1.5 -right-1.5 flex h-6 w-6 items-center justify-center rounded-full bg-gradient-to-br from-blue-600 to-indigo-600 text-[11px] font-black text-white ring-2 ring-white dark:ring-slate-900">{i + 1}</span>
+                          </div>
+                          <div className="flex-1 rounded-2xl border border-slate-100 bg-white p-4 shadow-sm transition hover:border-sky-200 hover:shadow-md dark:border-slate-800 dark:bg-slate-900">
+                            <h4 className="font-staatliches text-lg uppercase leading-none tracking-wide text-slate-900 dark:text-white">{st.title}</h4>
+                            <p className="mt-1.5 text-[13px] leading-relaxed text-slate-600 dark:text-slate-300">{st.text}</p>
+                          </div>
+                        </li>
+                      ))}
+                    </ol>
+                    <div className="mt-5 flex items-center gap-3 rounded-2xl bg-gradient-to-br from-sky-50 to-indigo-50 p-4 dark:from-slate-800/50 dark:to-slate-800/50">
+                      <Search size={18} className="shrink-0 text-sky-500" />
+                      <p className="text-[12px] leading-snug text-slate-600 dark:text-slate-300">Un mot vous échappe ? Cherchez-le dans la barre ci-dessus (49-3, épargne brute, navette, EPCI…) — le lexique complet est à portée de clic.</p>
+                    </div>
+                  </>
                 ) : (
                   <p className="py-8 text-center text-sm text-slate-500">
                     Utilisez la recherche ci-dessus pour comprendre un terme précis.

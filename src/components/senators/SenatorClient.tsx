@@ -15,6 +15,7 @@ export default function SenatorClient() {
   const [loading, setLoading] = useState(true);
   const [search, setSearch] = useState("");
   const [selectedDept, setSelectedDept] = useState<string | null>(null);
+  const [visible, setVisible] = useState(12); // pagination : évite d'afficher 348 cartes d'un coup
   
   // Mocking premium for now or using a hook
   const { isPremium } = usePremium() || { isPremium: false };
@@ -57,6 +58,9 @@ export default function SenatorClient() {
       return matchesSearch && matchesDept;
     });
   }, [senators, search, selectedDept]);
+
+  // Revenir au début de la pagination dès qu'un filtre change.
+  useEffect(() => { setVisible(12); }, [search, selectedDept]);
 
   return (
     <div className="space-y-8 relative">
@@ -140,11 +144,20 @@ export default function SenatorClient() {
                 <div key={i} className="h-48 bg-slate-100 animate-pulse rounded-2xl" />
               ))
             ) : (
-              filteredSenators.map(s => (
+              filteredSenators.slice(0, isPremium ? visible : filteredSenators.length).map(s => (
                 <SenatorCard key={s.id} senator={s} isBlurred={!isPremium} />
               ))
             )}
           </div>
+
+          {/* Pagination : on ne déroule pas les 348 sénateurs d'un coup. */}
+          {isPremium && !loading && visible < filteredSenators.length && (
+            <div className="mt-10 text-center">
+              <button onClick={() => setVisible(v => v + 12)} className="rounded-full bg-slate-900 dark:bg-white dark:text-slate-900 px-8 py-4 font-black text-white transition hover:bg-amber-600">
+                Voir plus de sénateurs ({filteredSenators.length - visible} restants)
+              </button>
+            </div>
+          )}
 
           {!isPremium && filteredSenators.length > 4 && (
              <div className="absolute bottom-0 left-0 w-full h-64 bg-gradient-to-t from-white via-white/90 to-transparent pointer-events-none flex items-end justify-center pb-8 p-4 text-center">

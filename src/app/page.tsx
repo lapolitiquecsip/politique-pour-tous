@@ -18,6 +18,7 @@ import FeedItemCard from "@/components/home/FeedItemCard";
 import InstitutionsGrid from "@/components/home/InstitutionsGrid";
 import StatsPanel from "@/components/home/StatsPanel";
 import HomeHero from "@/components/home/HomeHero";
+import JournalOfficielBook from "@/components/home/JournalOfficielBook";
 import FaqSection from "@/components/home/FaqSection";
 import NewsletterBanner from "@/components/home/NewsletterBanner";
 import PetitionsSection from "@/components/home/PetitionsSection";
@@ -69,6 +70,18 @@ export default function Home() {
             <div className="h-1.5 w-32 bg-gradient-to-r from-blue-600 to-red-600 mt-8 rounded-full mx-auto" />
           </div>
           <InstitutionsGrid />
+        </div>
+      </section>
+
+      {/* JOURNAL OFFICIEL — livre feuilletable (une page = un jour + une loi promulguée). */}
+      <section id="journal-officiel" className="scroll-mt-24 py-20 px-4 bg-gradient-to-b from-amber-50/40 to-transparent dark:from-slate-900/40">
+        <div className="container mx-auto max-w-6xl">
+          <div className="mb-12 text-center">
+            <p className="text-[11px] font-black uppercase tracking-[0.25em] text-red-600">Ce qui est devenu loi</p>
+            <h2 className="mt-2 text-4xl md:text-6xl font-staatliches uppercase tracking-tight text-slate-900 dark:text-white">Le Journal Officiel</h2>
+            <p className="mt-3 text-slate-500 max-w-2xl mx-auto">Feuilletez les dernières lois promulguées — une page par jour et par texte. Cliquez pour voir le parcours complet de chaque loi.</p>
+          </div>
+          <JournalOfficielBook />
         </div>
       </section>
 

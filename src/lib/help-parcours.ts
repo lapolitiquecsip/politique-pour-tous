@@ -73,14 +73,29 @@ export const PARCOURS: Record<string, Parcours> = {
     ],
   },
 
-  "/deputes": {
-    title: "Comprendre les votes des élus",
-    intro: "Comment lire ce que votent députés, sénateurs et eurodéputés.",
+  "/senateurs": {
+    title: "Le Sénat, comment ça marche ?",
+    intro: "Qui sont les sénateurs, comment ils sont élus et ce qu'ils font.",
     steps: [
-      { emoji: "🏛️", title: "Deux chambres", text: "Les députés (Assemblée, 577, élus directement) et les sénateurs (Sénat, 348, élus par des grands électeurs) votent tous les lois. Seule l'Assemblée peut renverser le gouvernement." },
-      { emoji: "🗳️", title: "Pour, contre, abstention", text: "Sur chaque scrutin, un élu vote pour, contre, ou s'abstient (il refuse de trancher). Le site montre sa position réelle, texte par texte." },
-      { emoji: "🧩", title: "Amendement ou texte entier ?", text: "La plupart des votes portent sur des amendements (des modifications). Le vote décisif est celui « sur l'ensemble du texte »." },
-      { emoji: "👥", title: "Les groupes", text: "Les élus se rassemblent en groupes politiques, qui coordonnent les votes et le temps de parole." },
+      { emoji: "🏛️", title: "348 sénateurs", text: "Le Sénat est la seconde chambre du Parlement. Il compte 348 sénateurs, élus pour 6 ans, renouvelés par moitié tous les 3 ans." },
+      { emoji: "🗳️", title: "Un suffrage indirect", text: "Contrairement aux députés, les sénateurs ne sont pas élus par tous les citoyens : ils sont élus par environ 162 000 « grands électeurs » (maires, conseillers municipaux, départementaux, régionaux, députés). C'est un scrutin indirect." },
+      { emoji: "🌍", title: "Représenter les territoires", text: "Le Sénat représente les collectivités territoriales (communes, départements, régions). Il porte particulièrement la voix des zones rurales et des élus locaux." },
+      { emoji: "🔁", title: "Voter la loi (la navette)", text: "Le Sénat vote les lois avec l'Assemblée : le texte fait des allers-retours entre les deux chambres (la « navette ») jusqu'à un accord. En cas de désaccord persistant, c'est l'Assemblée qui tranche en dernier." },
+      { emoji: "🔍", title: "Contrôler, sans renverser", text: "Le Sénat contrôle le gouvernement (questions, commissions d'enquête, rapports) mais, à la différence de l'Assemblée, il NE PEUT PAS le renverser : le gouvernement n'est responsable que devant les députés." },
+      { emoji: "📊", title: "Sur cette page", text: "Trouvez votre sénateur, sa présence aux votes comparée aux autres, ses initiatives législatives, et les textes actuellement examinés au Sénat." },
+    ],
+  },
+
+  "/deputes": {
+    title: "L'Assemblée nationale, comment ça marche ?",
+    intro: "Qui sont les députés, comment ils sont élus et ce qu'ils font.",
+    steps: [
+      { emoji: "🏛️", title: "577 députés", text: "L'Assemblée nationale est la chambre élue directement par les citoyens. Elle compte 577 députés, élus pour 5 ans, un par circonscription." },
+      { emoji: "🗳️", title: "Élus au suffrage direct", text: "Chaque député est élu au scrutin majoritaire à deux tours dans sa circonscription. C'est le vote direct de tous les citoyens, contrairement au Sénat (indirect)." },
+      { emoji: "📜", title: "Voter la loi et le budget", text: "Les députés examinent, amendent et votent les lois, ainsi que le budget de l'État (loi de finances). Le vote qui compte est celui « sur l'ensemble » du texte." },
+      { emoji: "⚔️", title: "Renverser le gouvernement", text: "L'Assemblée a un pouvoir que le Sénat n'a pas : elle peut renverser le gouvernement par une motion de censure. C'est aussi elle qui a le dernier mot en cas de désaccord avec le Sénat." },
+      { emoji: "✍️", title: "Proposer des textes", text: "Au-delà de voter, un député peut déposer ses propres propositions de loi. Le classement des initiatives montre qui en dépose le plus." },
+      { emoji: "📊", title: "Sur cette page", text: "Trouvez votre député, consultez ses votes réels, sa présence comparée aux autres, ses initiatives, et les textes examinés par l'Assemblée." },
     ],
   },
 

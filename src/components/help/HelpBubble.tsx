@@ -1,6 +1,6 @@
 "use client";
 
-import { useMemo, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { usePathname } from "next/navigation";
 import { motion, AnimatePresence } from "framer-motion";
 import { X, Search, Lightbulb, GraduationCap } from "lucide-react";
@@ -19,8 +19,18 @@ export default function HelpBubble() {
   const pathname = usePathname() || "/";
   const [open, setOpen] = useState(false);
   const [q, setQ] = useState("");
+  const [teaser, setTeaser] = useState(false);
 
   const parcours = useMemo(() => parcoursForPath(pathname), [pathname]);
+
+  // À chaque changement de page : le bouton « pope » et une bulle incite à cliquer pour
+  // comprendre le fonctionnement de l'organe/de la page. Disparaît après quelques secondes.
+  useEffect(() => {
+    if (!parcours) { setTeaser(false); return; }
+    setTeaser(true);
+    const t = setTimeout(() => setTeaser(false), 6500);
+    return () => clearTimeout(t);
+  }, [pathname]); // eslint-disable-line react-hooks/exhaustive-deps
 
   const results = useMemo(() => {
     const s = norm(q.trim());
@@ -30,9 +40,30 @@ export default function HelpBubble() {
 
   return (
     <>
+      {/* Bulle incitative — apparaît au changement de page pour donner envie de cliquer. */}
+      <AnimatePresence>
+        {teaser && !open && parcours && (
+          <motion.button
+            onClick={() => { setOpen(true); setTeaser(false); }}
+            initial={{ opacity: 0, y: 12, scale: 0.9 }}
+            animate={{ opacity: 1, y: 0, scale: 1 }}
+            exit={{ opacity: 0, y: 12, scale: 0.9 }}
+            transition={{ type: "spring", stiffness: 260, damping: 18 }}
+            className="fixed bottom-[92px] left-5 z-[60] max-w-[250px] rounded-2xl bg-slate-900 p-3.5 text-left shadow-2xl shadow-sky-900/30 ring-1 ring-sky-400/30"
+          >
+            <p className="flex items-center gap-1.5 text-[10px] font-black uppercase tracking-widest text-sky-300">
+              <GraduationCap size={13} /> Comment ça marche ?
+            </p>
+            <p className="mt-1 text-sm font-bold leading-snug text-white">{parcours.title}</p>
+            <p className="mt-1 text-[11px] font-bold text-sky-300">Cliquez pour comprendre →</p>
+            <span className="absolute -bottom-1.5 left-9 h-3 w-3 rotate-45 bg-slate-900" />
+          </motion.button>
+        )}
+      </AnimatePresence>
+
       {/* Bouton flottant en forme de nuage, animé en permanence. */}
       <motion.button
-        onClick={() => setOpen(true)}
+        onClick={() => { setOpen(true); setTeaser(false); }}
         aria-label="Aide : comprendre cette page"
         className="group fixed bottom-5 left-5 z-[60] flex items-center justify-center"
         animate={{ y: [0, -7, 0] }}
@@ -40,13 +71,22 @@ export default function HelpBubble() {
         whileHover={{ scale: 1.08 }}
         whileTap={{ scale: 0.94 }}
       >
+        {/* Halo : pulse plus marqué juste après un changement de page. */}
         <span className="absolute inline-flex h-16 w-20 animate-ping rounded-[50%] bg-sky-400/30" />
-        <span className="relative flex h-14 w-20 items-center justify-center rounded-[50%] bg-gradient-to-br from-sky-400 to-blue-600 text-white shadow-xl shadow-sky-500/40">
+        {teaser && <span className="absolute inline-flex h-16 w-20 animate-pulse rounded-[50%] bg-sky-400/40" />}
+        {/* Le nuage « pope » à chaque changement de page (key = pathname → rejoue l'anim). */}
+        <motion.span
+          key={pathname}
+          initial={{ scale: 1.35, rotate: -12 }}
+          animate={{ scale: 1, rotate: 0 }}
+          transition={{ type: "spring", stiffness: 320, damping: 11 }}
+          className="relative flex h-14 w-20 items-center justify-center rounded-[50%] bg-gradient-to-br from-sky-400 to-blue-600 text-white shadow-xl shadow-sky-500/40"
+        >
           <span className="absolute -top-2 left-4 h-6 w-6 rounded-full bg-sky-400" />
           <span className="absolute -top-3 left-8 h-8 w-8 rounded-full bg-sky-500" />
           <span className="absolute -top-2 right-4 h-6 w-6 rounded-full bg-blue-500" />
           <Lightbulb size={20} className="relative z-10" />
-        </span>
+        </motion.span>
         <span className="pointer-events-none absolute -top-9 left-1/2 -translate-x-1/2 whitespace-nowrap rounded-full bg-slate-900 px-2.5 py-1 text-[10px] font-black uppercase tracking-widest text-white opacity-0 shadow-lg transition-opacity duration-200 group-hover:opacity-100">
           Comprendre cette page
         </span>

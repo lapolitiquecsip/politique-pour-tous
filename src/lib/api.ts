@@ -585,6 +585,13 @@ export const api = {
     return items;
   },
 
+  // Résumés « impact citoyen » (À partir de maintenant…) pour un lot de lois promulguées.
+  getLawCitizenImpacts: async (ids: string[]) => {
+    if (!ids || ids.length === 0) return [] as { dossier_id: string; impact: string }[];
+    const { data } = await supabase.from('law_citizen_impact').select('dossier_id, impact').in('dossier_id', ids);
+    return (data || []) as { dossier_id: string; impact: string }[];
+  },
+
   getLegislativeDossier: async (id: string) => {
     const { data, error } = await supabase.rpc('public_legislative_dossier', { p_id: id });
     if (error) throw error;

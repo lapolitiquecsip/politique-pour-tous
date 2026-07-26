@@ -24,9 +24,22 @@ export default function JournalOfficielBook() {
   const [hasMore, setHasMore] = useState(true);
   const [loadingMore, setLoadingMore] = useState(false);
 
+  // Récupère l'« impact citoyen » (À partir de maintenant…) pour un lot de lois et l'attache.
+  const attachImpacts = async (rows: any[]) => {
+    try {
+      const impacts = await api.getLawCitizenImpacts(rows.map(r => r.id));
+      const byId = new Map(impacts.map((x: any) => [x.dossier_id, x.impact]));
+      for (const r of rows) r.impact = byId.get(r.id) || null;
+    } catch { /* le livre affiche le résumé standard en repli */ }
+    return rows;
+  };
+
   useEffect(() => {
     let active = true;
-    api.getPromulgatedLaws({ limit: PAGE }).then(rows => { if (active) { setLaws(rows); setHasMore(rows.length === PAGE); } }).catch(() => setLaws([]));
+    api.getPromulgatedLaws({ limit: PAGE }).then(async rows => {
+      await attachImpacts(rows);
+      if (active) { setLaws(rows); setHasMore(rows.length === PAGE); }
+    }).catch(() => setLaws([]));
     return () => { active = false; };
   }, []);
 
@@ -37,6 +50,7 @@ export default function JournalOfficielBook() {
     const last = laws[laws.length - 1];
     try {
       const rows = await api.getPromulgatedLaws({ limit: PAGE, cursorDate: last.promulgated_at || undefined, cursorId: last.jorf_id || undefined });
+      await attachImpacts(rows);
       setLaws(cur => [...(cur || []), ...rows]);
       setHasMore(rows.length === PAGE);
     } finally { setLoadingMore(false); }
@@ -103,7 +117,7 @@ export default function JournalOfficielBook() {
                   {law.nor && <span className="hidden font-mono text-[11px] text-slate-400 md:inline">NOR : {law.nor}</span>}
                 </div>
                 <h3 className="font-staatliches text-3xl uppercase leading-tight text-slate-900 dark:text-white md:text-4xl">{law.title}</h3>
-                <p className="mt-4 flex-1 overflow-hidden text-[15px] leading-7 text-slate-600 dark:text-slate-300 line-clamp-[8]">{law.summary || "Texte promulgué et publié au Journal officiel."}</p>
+                <p className="mt-4 flex-1 overflow-hidden text-[15px] leading-7 text-slate-600 dark:text-slate-300 line-clamp-[8]">{(law as any).impact || law.summary || "Texte promulgué et publié au Journal officiel."}</p>
                 <Link href={`/lois/?dossier=${law.id}`} className="mt-4 inline-flex items-center gap-2 self-start rounded-full bg-gradient-to-r from-red-600 to-fuchsia-600 px-5 py-2.5 text-[11px] font-black uppercase tracking-widest text-white shadow-lg shadow-rose-500/30 transition hover:shadow-rose-500/50">
                   Lire la loi & son parcours <ArrowRight size={14} />
                 </Link>

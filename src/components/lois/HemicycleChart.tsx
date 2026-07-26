@@ -1,13 +1,15 @@
 "use client";
 
 import { useEffect, useMemo, useState } from "react";
+import Link from "next/link";
+import { useRouter } from "next/navigation";
 import { api } from "@/lib/api";
 
 // Hémicycles de l'Assemblée nationale et du Sénat (façon Datan, plus moderne).
 // Couleurs = couleurs politiques (identité) ; structure = guide dataviz (légende + labels
 // directs, badges contrastés, écart 2px entre secteurs, thème clair/sombre).
 
-type Group = { label: string; seats: number; color: string; order: number };
+type Group = { label: string; seats: number; color: string; order: number; slug?: string | null };
 
 // Ordre gauche → droite dans l'hémicycle (rang par sigle) pour l'Assemblée.
 const AN_ORDER: Record<string, number> = {
@@ -77,13 +79,15 @@ function Hemicycle({ title, total, groups }: { title: string; total: number; gro
     return { g, degStart: degStart - PAD / 2, degEnd: degEnd + PAD / 2, bx, by, big: span > 7 };
   });
 
+  const router = useRouter();
   return (
     <figure className="flex flex-col items-center">
       <svg viewBox={`0 0 ${W} ${H}`} className="w-full max-w-[560px]" role="img" aria-label={`${title} : ${total} sièges`}>
         {arcs.map(({ g, degStart, degEnd }, i) => (
           <path key={i} d={sectorPath(cx, cy, r0, r1, degStart, degEnd)} fill={g.color}
-            className="transition-opacity hover:opacity-80">
-            <title>{g.label} — {g.seats} sièges</title>
+            onClick={() => g.slug && router.push(`/partis/${g.slug}`)}
+            className={`transition-opacity hover:opacity-80 ${g.slug ? "cursor-pointer" : ""}`}>
+            <title>{g.label} — {g.seats} sièges{g.slug ? " · voir la fiche du parti" : ""}</title>
           </path>
         ))}
         {/* Badges de sièges (seulement pour les secteurs assez larges pour rester lisibles). */}
@@ -96,14 +100,21 @@ function Hemicycle({ title, total, groups }: { title: string; total: number; gro
         <text x={cx} y={cy - 34} textAnchor="middle" className="fill-slate-900 dark:fill-white font-staatliches" fontSize={40}>{total}</text>
         <text x={cx} y={cy - 8} textAnchor="middle" className="fill-slate-400 font-black uppercase" fontSize={13} letterSpacing={2}>{title}</text>
       </svg>
-      {/* Légende (identité jamais portée par la seule couleur). */}
+      {/* Légende (identité jamais portée par la seule couleur) — cliquable vers la fiche du parti. */}
       <div className="mt-2 flex flex-wrap justify-center gap-x-4 gap-y-1.5">
-        {sorted.map((g, i) => (
-          <span key={i} className="inline-flex items-center gap-1.5 text-[11px] font-bold text-slate-600 dark:text-slate-300">
-            <span className="h-2.5 w-2.5 rounded-full" style={{ background: g.color }} />
-            {g.label} <span className="text-slate-400">· {g.seats}</span>
-          </span>
-        ))}
+        {sorted.map((g, i) => {
+          const inner = (
+            <>
+              <span className="h-2.5 w-2.5 rounded-full" style={{ background: g.color }} />
+              {g.label} <span className="text-slate-400">· {g.seats}</span>
+            </>
+          );
+          return g.slug ? (
+            <Link key={i} href={`/partis/${g.slug}`} className="inline-flex items-center gap-1.5 text-[11px] font-bold text-slate-600 transition hover:text-red-600 dark:text-slate-300">{inner}</Link>
+          ) : (
+            <span key={i} className="inline-flex items-center gap-1.5 text-[11px] font-bold text-slate-600 dark:text-slate-300">{inner}</span>
+          );
+        })}
       </div>
     </figure>
   );
@@ -121,7 +132,7 @@ export default function HemicycleChart({ chamber = "both", title, subtitle }: { 
       api.getParties().then((rows: any[]) => {
         if (!active) return;
         setAn((rows || []).filter(r => r.effectif > 0 && r.color).map(r => ({
-          label: r.abbrev || r.name, seats: r.effectif, color: r.color, order: AN_ORDER[r.abbrev] ?? AN_ORDER[r.name] ?? 8,
+          label: r.abbrev || r.name, seats: r.effectif, color: r.color, order: AN_ORDER[r.abbrev] ?? AN_ORDER[r.name] ?? 8, slug: r.slug || null,
         })));
       }).catch(() => setAn([]));
     }

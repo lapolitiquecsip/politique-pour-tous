@@ -490,8 +490,10 @@ function CandidatesContent() {
     if (s && candidates.some(c => c.slug === s)) setSelectedSlug(s);
   }, [candidates, params]);
   const selected = selectedSlug ? candidates.find(c => c.slug === selectedSlug) ?? null : null;
-  const open = (c: Candidate) => { setSelectedSlug(c.slug); router.replace(`/presidentielles-2027/?candidat=${c.slug}`, { scroll: false }); };
-  const close = () => { setSelectedSlug(null); router.replace("/presidentielles-2027/", { scroll: false }); };
+  // L'état local pilote l'ouverture/fermeture ; la mise à jour de l'URL est secondaire et ne
+  // doit jamais empêcher la fermeture (d'où le try/catch en export statique).
+  const open = (c: Candidate) => { setSelectedSlug(c.slug); try { router.replace(`/presidentielles-2027/?candidat=${c.slug}`, { scroll: false }); } catch {} };
+  const close = () => { setSelectedSlug(null); try { router.replace("/presidentielles-2027/", { scroll: false }); } catch {} };
 
   return (
     <div className="min-h-screen bg-slate-950">

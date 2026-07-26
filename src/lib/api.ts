@@ -763,6 +763,18 @@ export const api = {
     return data;
   },
 
+  // Composition du Sénat par groupe (pour l'hémicycle). Compte les sénateurs par groupe.
+  getSenateComposition: async () => {
+    const counts = new Map<string, number>();
+    for (let from = 0; ; from += 1000) {
+      const { data, error } = await supabase.from('senators').select('senate_group').range(from, from + 999);
+      if (error || !data) break;
+      for (const r of data as any[]) { const g = (r.senate_group || 'NI').trim(); counts.set(g, (counts.get(g) || 0) + 1); }
+      if (data.length < 1000) break;
+    }
+    return [...counts.entries()].map(([group, seats]) => ({ group, seats }));
+  },
+
   getPartyBySlug: async (slug: string) => {
     const { data, error } = await supabase.from('political_parties').select('*').eq('slug', slug).single();
     if (error) return null;

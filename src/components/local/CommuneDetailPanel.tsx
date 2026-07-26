@@ -1,7 +1,8 @@
 "use client";
 
 import { motion, AnimatePresence } from "framer-motion";
-import { X, Users, MapPin, Calendar, Award, Building2, TrendingUp, UserMinus, Star, Loader2, Briefcase, GraduationCap, Heart, Shield, Home, Landmark, Coins, TreePine, Lock } from "lucide-react";
+import { X, Users, MapPin, Calendar, Award, Building2, TrendingUp, UserMinus, Star, Loader2, Briefcase, GraduationCap, Heart, Shield, Home, Landmark, Coins, TreePine, Lock, ArrowRight } from "lucide-react";
+import Link from "next/link";
 import { buildItddCards, ITDD_NEW_CATEGORIES, type ItddCard } from "@/lib/itdd-cards";
 import LocalFinancesSection from "./LocalFinancesSection";
 import FiscaliteSection from "./FiscaliteSection";
@@ -352,6 +353,17 @@ export default function CommuneDetailPanel({
   const [itddCards, setItddCards] = useState<ItddCard[]>([]);
   const [finances, setFinances] = useState<any | null>(null);
   const [fiscalite, setFiscalite] = useState<any | null>(null);
+  const [mayorFiche, setMayorFiche] = useState<any | null>(null);
+
+  // Fiche détaillée du maire (photo + slug) pour rendre son nom cliquable.
+  useEffect(() => {
+    if (!commune) { setMayorFiche(null); return; }
+    let active = true;
+    api.getMayorByInsee(commune.code)
+      .then((m: any) => { if (active) setMayorFiche(m); })
+      .catch(() => { if (active) setMayorFiche(null); });
+    return () => { active = false; };
+  }, [commune]);
 
   useEffect(() => {
     if (!commune) { setFinances(null); setFiscalite(null); return; }
@@ -569,21 +581,40 @@ export default function CommuneDetailPanel({
                   transition={{ delay: 0.15 }}
                   className="bg-white rounded-3xl border border-slate-200 shadow-xl shadow-slate-200/50 p-6 space-y-5"
                 >
-                  <div className="flex items-center gap-3">
-                    <div className="w-10 h-10 rounded-2xl bg-rose-100 flex items-center justify-center text-rose-600">
-                      <Award size={20} />
-                    </div>
-                    <div>
-                      <p className="text-[9px] font-black uppercase tracking-widest text-slate-400">
-                        Mairie & Élus Municipaux (Source : RNE)
-                      </p>
-                      <h3 className="text-xl font-bold text-slate-900">
-                        {communeData?.rne?.maire 
-                          ? `${communeData.rne.maire.prenom} ${communeData.rne.maire.nom}` 
-                          : mayor ? mayor.n : "Données non disponibles"}
-                      </h3>
-                    </div>
-                  </div>
+                  {(() => {
+                    const mayorName = communeData?.rne?.maire
+                      ? `${communeData.rne.maire.prenom} ${communeData.rne.maire.nom}`
+                      : mayor ? mayor.n : "Données non disponibles";
+                    const inner = (
+                      <>
+                        <div className="w-12 h-12 rounded-2xl overflow-hidden bg-rose-100 flex items-center justify-center text-rose-600 shrink-0 ring-2 ring-transparent group-hover:ring-rose-300 transition">
+                          {mayorFiche?.photo_url ? (
+                            // eslint-disable-next-line @next/next/no-img-element
+                            <img src={mayorFiche.photo_url} alt={mayorName} className="w-full h-full object-cover object-top" />
+                          ) : (
+                            <Award size={20} />
+                          )}
+                        </div>
+                        <div>
+                          <p className="text-[9px] font-black uppercase tracking-widest text-slate-400">
+                            Mairie &amp; Élus Municipaux (Source : RNE)
+                          </p>
+                          <h3 className="text-xl font-bold text-slate-900 group-hover:text-rose-600 transition-colors flex items-center gap-1.5">
+                            {mayorName}
+                            {mayorFiche && <ArrowRight size={15} className="opacity-0 -translate-x-1 group-hover:opacity-100 group-hover:translate-x-0 transition-all text-rose-500" />}
+                          </h3>
+                          {mayorFiche && <span className="text-[9px] font-black uppercase tracking-widest text-rose-500/80">Voir la fiche complète du maire</span>}
+                        </div>
+                      </>
+                    );
+                    return mayorFiche ? (
+                      <Link href={`/maires/app?insee=${commune?.code}`} className="group flex items-center gap-3 rounded-2xl -m-2 p-2 hover:bg-rose-50/60 transition-colors">
+                        {inner}
+                      </Link>
+                    ) : (
+                      <div className="flex items-center gap-3">{inner}</div>
+                    );
+                  })()}
 
                   {(communeData?.rne?.maire || mayor) && (
                     <div className="grid grid-cols-1 md:grid-cols-2 gap-4">

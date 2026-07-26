@@ -120,6 +120,18 @@ export const api = {
     return data;
   },
 
+  // Maires — fiche détaillée par commune (code INSEE) ou par slug.
+  getMayorByInsee: async (insee: string) => {
+    if (!insee) return null;
+    const { data } = await supabase.from('mayors').select('*').eq('insee_code', insee).maybeSingle();
+    return data;
+  },
+  getMayorBySlug: async (slug: string) => {
+    if (!slug) return null;
+    const { data } = await supabase.from('mayors').select('*').eq('slug', slug).maybeSingle();
+    return data;
+  },
+
   getSenators: async () => {
     const { data, error } = await supabase.from('senators').select('*').order('last_name');
     if (error) { console.error(error); return []; }

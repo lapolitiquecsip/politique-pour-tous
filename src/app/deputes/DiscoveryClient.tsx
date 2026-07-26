@@ -10,23 +10,27 @@ import { Users, GraduationCap } from "lucide-react";
 
 type Mode = "deputies" | "senators" | "meps";
 
-export default function DiscoveryClient({ initialDeputies }: { initialDeputies: any[] }) {
+// `single` : verrouille sur une seule chambre (page dédiée Assemblée/Sénat) → masque le
+// sélecteur, chaque page ne concerne que son organe.
+export default function DiscoveryClient({ initialDeputies, single }: { initialDeputies: any[]; single?: Mode }) {
   const searchParams = useSearchParams();
   const pathname = usePathname();
   const modeParam = searchParams.get("mode");
 
   const [activeMode, setActiveMode] = useState<Mode>(
-    modeParam === "senators" || pathname.includes("senateurs") ? "senators"
+    single ? single
+      : modeParam === "senators" || pathname.includes("senateurs") ? "senators"
       : modeParam === "meps" || pathname.includes("eurodeputes") ? "meps"
       : "deputies"
   );
 
-  // Synchronize state if param or path changes
+  // Synchronize state if param or path changes (sauf page dédiée verrouillée).
   useEffect(() => {
+    if (single) return;
     if (modeParam === "senators" || pathname.includes("senateurs")) setActiveMode("senators");
     else if (modeParam === "meps" || pathname.includes("eurodeputes")) setActiveMode("meps");
     else if (modeParam === "deputies" || pathname.includes("deputes")) setActiveMode("deputies");
-  }, [modeParam, pathname]);
+  }, [modeParam, pathname, single]);
 
   return (
     <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
@@ -47,8 +51,8 @@ export default function DiscoveryClient({ initialDeputies }: { initialDeputies: 
           </p>
         </div>
 
-        {/* 2. INTEGRATED VISUAL SWITCHER (PREMIUM RE-DESIGN) */}
-        <div className="flex justify-center">
+        {/* 2. INTEGRATED VISUAL SWITCHER (masqué sur les pages dédiées à une chambre) */}
+        {!single && <div className="flex justify-center">
           <div className="inline-flex p-1.5 bg-slate-50/80 dark:bg-slate-900/80 backdrop-blur-md rounded-[2rem] border border-slate-200 dark:border-slate-800 shadow-xl shadow-slate-200/40 dark:shadow-none">
             <button
               onClick={() => setActiveMode("deputies")}
@@ -84,7 +88,7 @@ export default function DiscoveryClient({ initialDeputies }: { initialDeputies: 
               EUROPÉENS
             </button>
           </div>
-        </div>
+        </div>}
       </div>
 
       {/* Content Rendering */}

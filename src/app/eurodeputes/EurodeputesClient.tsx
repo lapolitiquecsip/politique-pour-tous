@@ -72,14 +72,14 @@ export default function EurodeputesClient({ meps }: { meps: any[] }) {
           ))}
         </div>
 
-        <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-4">
+        <div className="grid grid-cols-3 sm:grid-cols-4 md:grid-cols-5 lg:grid-cols-6 gap-3">
           {shown.map(m => (
             <Link
               key={m.id}
               href={`/eurodeputes/${m.slug}`}
-              className="group rounded-3xl border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900 overflow-hidden transition hover:shadow-xl hover:-translate-y-1"
+              className="group rounded-2xl border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900 overflow-hidden transition hover:shadow-xl hover:-translate-y-1"
             >
-              <div className="relative aspect-[3/4] bg-slate-100 dark:bg-slate-800 overflow-hidden">
+              <div className="relative aspect-square bg-slate-100 dark:bg-slate-800 overflow-hidden">
                 {/* eslint-disable-next-line @next/next/no-img-element */}
                 <img
                   src={m.photo_url}

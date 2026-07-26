@@ -1,5 +1,7 @@
 import { api } from "@/lib/api";
 import DiscoveryClient from "./DiscoveryClient";
+import HemicycleChart from "@/components/lois/HemicycleChart";
+import ChamberLegislation from "@/components/lois/ChamberLegislation";
 
 import { Suspense } from "react";
 
@@ -20,8 +22,14 @@ export default async function DeputesPage() {
   }));
 
   return (
-    <Suspense fallback={<div className="h-screen flex items-center justify-center">Chargement...</div>}>
-      <DiscoveryClient initialDeputies={mappedDeputies} />
-    </Suspense>
+    <div className="min-h-screen bg-white dark:bg-slate-950">
+      <div className="pt-10">
+        <HemicycleChart chamber="an" subtitle="Assemblée nationale" title="Composition de l'Assemblée" />
+      </div>
+      <Suspense fallback={<div className="h-64 flex items-center justify-center">Chargement...</div>}>
+        <DiscoveryClient initialDeputies={mappedDeputies} single="deputies" />
+      </Suspense>
+      <ChamberLegislation chamber="AN" chamberLabel="Assemblée nationale" />
+    </div>
   );
 }

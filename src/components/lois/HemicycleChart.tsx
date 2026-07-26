@@ -14,6 +14,20 @@ const AN_ORDER: Record<string, number> = {
   LFI: 0, PCF: 1, GDR: 1, EELV: 2, ECO: 2, PS: 3, SOC: 3, LIOT: 4, DEM: 5, MoDem: 5,
   RE: 6, EPR: 6, HOR: 7, LR: 8, DR: 8, UDR: 9, RN: 10, NI: 11,
 };
+// Groupes du Parlement européen (côté français) → couleur + ordre gauche→droite.
+const EU_GROUPS: Record<string, { label: string; color: string; order: number }> = {
+  GUE: { label: "The Left (GUE)", color: "#B71C3B", order: 0 },
+  VERTS: { label: "Verts/ALE", color: "#4CA85F", order: 1 },
+  "S&D": { label: "S&D", color: "#E24E8B", order: 2 },
+  SD: { label: "S&D", color: "#E24E8B", order: 2 },
+  RE: { label: "Renew (RE)", color: "#F2960F", order: 3 },
+  PPE: { label: "PPE", color: "#2E5AAC", order: 4 },
+  ECR: { label: "ECR", color: "#3A7CA5", order: 5 },
+  ESN: { label: "ESN", color: "#1B3A6B", order: 6 },
+  PFE: { label: "Patriotes (PFE)", color: "#313567", order: 7 },
+  NI: { label: "Non inscrits", color: "#8D949A", order: 9 },
+};
+
 // Groupes du Sénat → couleur moderne (par famille) + ordre gauche→droite.
 const SENATE: Record<string, { label: string; color: string; order: number }> = {
   "CRCE-K": { label: "CRCE-K", color: "#B01A2E", order: 0 },
@@ -95,47 +109,73 @@ function Hemicycle({ title, total, groups }: { title: string; total: number; gro
   );
 }
 
-export default function HemicycleChart() {
+// chamber = "both" (page Lois) | "an" | "senat" | "eu" (pages par organe).
+export default function HemicycleChart({ chamber = "both", title, subtitle }: { chamber?: "both" | "an" | "senat" | "eu"; title?: string; subtitle?: string }) {
   const [an, setAn] = useState<Group[] | null>(null);
   const [senat, setSenat] = useState<Group[] | null>(null);
+  const [eu, setEu] = useState<Group[] | null>(null);
 
   useEffect(() => {
     let active = true;
-    api.getParties().then((rows: any[]) => {
-      if (!active) return;
-      const g = (rows || []).filter(r => r.effectif > 0 && r.color).map(r => ({
-        label: r.abbrev || r.name, seats: r.effectif, color: r.color,
-        order: AN_ORDER[r.abbrev] ?? AN_ORDER[r.name] ?? 8,
-      }));
-      setAn(g);
-    }).catch(() => setAn([]));
-    api.getSenateComposition().then((rows: any[]) => {
-      if (!active) return;
-      const g = (rows || []).map(r => {
-        const m = SENATE[r.group] || { label: r.group, color: "#8D949A", order: 8 };
-        return { label: m.label, seats: r.seats, color: m.color, order: m.order };
-      });
-      setSenat(g);
-    }).catch(() => setSenat([]));
+    if (chamber === "both" || chamber === "an") {
+      api.getParties().then((rows: any[]) => {
+        if (!active) return;
+        setAn((rows || []).filter(r => r.effectif > 0 && r.color).map(r => ({
+          label: r.abbrev || r.name, seats: r.effectif, color: r.color, order: AN_ORDER[r.abbrev] ?? AN_ORDER[r.name] ?? 8,
+        })));
+      }).catch(() => setAn([]));
+    }
+    if (chamber === "both" || chamber === "senat") {
+      api.getSenateComposition().then((rows: any[]) => {
+        if (!active) return;
+        setSenat((rows || []).map(r => {
+          const m = SENATE[r.group] || { label: r.group, color: "#8D949A", order: 8 };
+          return { label: m.label, seats: r.seats, color: m.color, order: m.order };
+        }));
+      }).catch(() => setSenat([]));
+    }
+    if (chamber === "eu") {
+      api.getMeps().then((rows: any[]) => {
+        if (!active) return;
+        const counts = new Map<string, number>();
+        for (const m of rows || []) { const g = (m.ep_group_code || "NI"); counts.set(g, (counts.get(g) || 0) + 1); }
+        setEu([...counts.entries()].map(([code, seats]) => {
+          const m = EU_GROUPS[code] || { label: code, color: "#8D949A", order: 8 };
+          return { label: m.label, seats, color: m.color, order: m.order };
+        }));
+      }).catch(() => setEu([]));
+    }
     return () => { active = false; };
-  }, []);
+  }, [chamber]);
 
   const anTotal = useMemo(() => (an || []).reduce((s, g) => s + g.seats, 0), [an]);
   const senTotal = useMemo(() => (senat || []).reduce((s, g) => s + g.seats, 0), [senat]);
+  const euTotal = useMemo(() => (eu || []).reduce((s, g) => s + g.seats, 0), [eu]);
 
-  if (!an || !senat) return null;
+  const ready = chamber === "both" ? (an && senat) : chamber === "an" ? an : chamber === "senat" ? senat : eu;
+  if (!ready) return null;
 
   return (
     <section className="mx-auto max-w-7xl px-4">
       <div className="rounded-[2.5rem] border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900 p-6 md:p-10 shadow-sm">
         <div className="mb-6 text-center">
-          <p className="text-[11px] font-black uppercase tracking-[0.25em] text-red-600">Composition du Parlement</p>
-          <h2 className="mt-1 text-3xl font-staatliches uppercase tracking-tight text-slate-900 dark:text-white md:text-4xl">Qui siège à l'Assemblée et au Sénat</h2>
+          <p className="text-[11px] font-black uppercase tracking-[0.25em] text-red-600">{subtitle || "Composition du Parlement"}</p>
+          <h2 className="mt-1 text-3xl font-staatliches uppercase tracking-tight text-slate-900 dark:text-white md:text-4xl">
+            {title || "Qui siège à l'Assemblée et au Sénat"}
+          </h2>
         </div>
-        <div className="grid gap-10 md:grid-cols-2">
-          <Hemicycle title="Députés" total={anTotal} groups={an} />
-          <Hemicycle title="Sénateurs" total={senTotal} groups={senat} />
-        </div>
+        {chamber === "both" ? (
+          <div className="grid gap-10 md:grid-cols-2">
+            <Hemicycle title="Députés" total={anTotal} groups={an!} />
+            <Hemicycle title="Sénateurs" total={senTotal} groups={senat!} />
+          </div>
+        ) : (
+          <div className="mx-auto max-w-2xl">
+            {chamber === "an" && <Hemicycle title="Députés" total={anTotal} groups={an!} />}
+            {chamber === "senat" && <Hemicycle title="Sénateurs" total={senTotal} groups={senat!} />}
+            {chamber === "eu" && <Hemicycle title="Eurodéputés FR" total={euTotal} groups={eu!} />}
+          </div>
+        )}
       </div>
     </section>
   );

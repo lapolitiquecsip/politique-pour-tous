@@ -11,6 +11,11 @@ const THEMES = {
     pill: "border-rose-400/30 text-rose-200", underline: "from-[#e11d48] via-[#f43f5e] to-[#fb7185]",
     accent: "hover:border-rose-400 hover:text-rose-300", letter: "from-[#fda4af] to-[#e11d48]",
   },
+  green: {
+    bg: "bg-[#04271a]", blob1: "bg-emerald-500/45", blob2: "bg-teal-400/18",
+    pill: "border-emerald-400/30 text-emerald-200", underline: "from-emerald-600 via-emerald-500 to-teal-400",
+    accent: "hover:border-emerald-400 hover:text-emerald-300", letter: "from-emerald-300 to-emerald-600",
+  },
 } as const;
 
 export default function ChamberHero({
@@ -21,7 +26,7 @@ export default function ChamberHero({
   eyebrow: string;
   description: string;
   links: { label: string; href: string }[];
-  color: "blue" | "red";
+  color: "blue" | "red" | "green";
 }) {
   const t = THEMES[color];
   return (

@@ -26,7 +26,7 @@ export default async function DeputesPage() {
   return (
     <div className="min-h-screen bg-white dark:bg-slate-950">
       <ChamberHero
-        color="blue"
+        color="green"
         title="ASSEMBLÉE"
         eyebrow="Assemblée nationale · 577 députés"
         description="Les 577 députés, élus au suffrage direct dans chaque circonscription, votent la loi, votent le budget, contrôlent le Gouvernement et peuvent le renverser. Sur cette page : trouvez votre député, consultez ses votes, son assiduité et ses initiatives, et suivez les textes examinés par l'Assemblée."
@@ -40,7 +40,7 @@ export default async function DeputesPage() {
         <HemicycleChart chamber="an" subtitle="Assemblée nationale" title="Composition de l'Assemblée" />
       </section>
       <section id="membres" className="scroll-mt-24">
-        <MemberFinderIntro role="député" roleShort="député" accent="text-blue-600" />
+        <MemberFinderIntro role="député" roleShort="député" accent="text-emerald-600" />
         <Suspense fallback={<div className="h-64 flex items-center justify-center">Chargement...</div>}>
           <DiscoveryClient initialDeputies={mappedDeputies} single="deputies" />
         </Suspense>

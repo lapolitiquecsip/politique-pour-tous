@@ -416,9 +416,9 @@ export default function DashboardPage() {
                     ) : followedDeputies.length === 0 ? (
                       <div className="col-span-full text-center py-20 bg-slate-50 rounded-[2rem] border border-dashed border-slate-200">
                         <Users className="mx-auto mb-4 text-slate-300" size={48} />
-                        <h3 className="text-xl font-bold mb-2">Aucun député suivi</h3>
-                        <p className="text-slate-500 mb-8 max-w-sm mx-auto">Suivez vos députés préférés pour recevoir leurs derniers votes et positions.</p>
-                        <Link href="/deputes" className="text-slate-950 font-black uppercase text-xs tracking-widest hover:underline">Explorer la carte &rarr;</Link>
+                        <h3 className="text-xl font-bold mb-2">Aucun élu suivi</h3>
+                        <p className="text-slate-500 mb-8 max-w-sm mx-auto">Suivez vos députés, sénateurs et eurodéputés pour recevoir leurs derniers votes et positions.</p>
+                        <Link href="/deputes" className="text-slate-950 font-black uppercase text-xs tracking-widest hover:underline">Explorer les élus &rarr;</Link>
                       </div>
                     ) : (
                       followedDeputies.map((f) => (

@@ -481,14 +481,13 @@ export const api = {
 
   // Fil de notifications de l'utilisateur (votes de ses élus suivis).
   getNotifications: async (userId: string, limit = 30) => {
-    const { data, error } = await supabase
-      .from('user_notifications')
-      .select('id, type, title, detail, position, event_at, read, created_at, deputy_id, senator_id, mep_id')
-      .eq('user_id', userId)
-      .order('created_at', { ascending: false })
-      .limit(limit);
-    if (error) { console.error(error); return []; }
-    return data || [];
+    const base = 'id, type, title, detail, position, event_at, read, created_at, deputy_id, senator_id';
+    let res = await supabase.from('user_notifications').select(`${base}, mep_id`).eq('user_id', userId).order('created_at', { ascending: false }).limit(limit);
+    if (res.error) { // colonne mep_id absente (migration non appliquée) → repli
+      res = await supabase.from('user_notifications').select(base).eq('user_id', userId).order('created_at', { ascending: false }).limit(limit);
+    }
+    if (res.error) { console.error(res.error); return []; }
+    return res.data || [];
   },
   getUnreadNotificationCount: async (userId: string) => {
     const { count, error } = await supabase
@@ -996,11 +995,17 @@ export const api = {
   // Suivis de l'utilisateur : députés ET sénateurs. Une ligne porte l'un ou l'autre
   // (contrainte CHECK en base), on expose donc un `elu` normalisé pour le front.
   getUserFollows: async (userId: string) => {
-    const { data, error } = await supabase
-      .from('user_follows')
-      .select('*, deputies(*), senators(*), meps(*)')
-      .eq('user_id', userId);
-    if (error) { console.error(error); return []; }
+    // Embed complet (députés + sénateurs + eurodéputés). Si la relation `meps` n'existe pas
+    // encore en base (migration non appliquée), on ne casse pas TOUTE la liste : on retente
+    // sans les eurodéputés pour que députés et sénateurs restent visibles.
+    let data: any[] | null = null;
+    let res = await supabase.from('user_follows').select('*, deputies(*), senators(*), meps(*)').eq('user_id', userId);
+    if (res.error) {
+      console.warn('getUserFollows: embed meps indisponible, repli sans eurodéputés —', res.error.message);
+      res = await supabase.from('user_follows').select('*, deputies(*), senators(*)').eq('user_id', userId);
+    }
+    if (res.error) { console.error(res.error); return []; }
+    data = res.data;
     return (data || []).map((f: any) => {
       const type = f.senator_id ? 'senator' : f.mep_id ? 'mep' : 'deputy';
       const elu = type === 'senator' ? f.senators : type === 'mep' ? f.meps : f.deputies;

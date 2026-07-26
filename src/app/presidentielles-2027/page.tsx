@@ -212,9 +212,16 @@ function CandidateModal({ candidate, onClose }: { candidate: Candidate; onClose:
           <div className="flex flex-col items-center gap-5 text-center text-white md:flex-row md:items-end md:text-left">
             <CandidateAvatar c={candidate} className="h-32 w-32 shrink-0 rounded-full border-4 border-white/80 shadow-xl text-3xl" />
             <div>
-              <span className="rounded-full bg-white/25 px-3 py-1 text-[11px] font-black uppercase tracking-widest">{side.label}{candidate.party ? ` · ${candidate.party}` : ""}</span>
+              <div className="flex flex-wrap items-center justify-center gap-2 md:justify-start">
+                <span className="rounded-full bg-white/25 px-3 py-1 text-[11px] font-black uppercase tracking-widest">{side.label}{candidate.party ? ` · ${candidate.party}` : ""}</span>
+                {candidate.category?.startsWith("Primaire") && (
+                  <span className="rounded-full bg-amber-400 px-3 py-1 text-[11px] font-black uppercase tracking-widest text-slate-900">🗳️ {candidate.category}</span>
+                )}
+              </div>
               <h2 className="mt-3 text-4xl font-staatliches uppercase leading-none md:text-5xl">{candidate.full_name}</h2>
-              {candidate.declared_at && <p className="mt-2 text-sm font-bold text-white/80">Candidature déclarée le {formatDate(candidate.declared_at)}</p>}
+              {candidate.declared_at
+                ? <p className="mt-2 text-sm font-bold text-white/80">Candidature déclarée le {formatDate(candidate.declared_at)}</p>
+                : candidate.category?.startsWith("Primaire") && <p className="mt-2 text-sm font-bold text-white/80">Candidat·e à la {candidate.category.toLowerCase()}</p>}
             </div>
           </div>
         </div>
@@ -550,6 +557,9 @@ function CandidatesContent() {
                     <CandidateAvatar c={c} className="h-64 w-full text-5xl" />
                     <div className={`absolute inset-x-0 bottom-0 h-24 bg-gradient-to-t ${s.from} ${s.to} opacity-90 mix-blend-multiply`} />
                     <span className={`absolute left-4 top-4 rounded-full ${s.badge} px-3 py-1 text-[10px] font-black uppercase tracking-widest text-white shadow`}>{s.label}</span>
+                    {c.category?.startsWith("Primaire") && (
+                      <span className="absolute right-4 top-4 rounded-full bg-amber-400 px-3 py-1 text-[10px] font-black uppercase tracking-widest text-slate-900 shadow">🗳️ Primaire</span>
+                    )}
                   </div>
                   <div className="p-6">
                     <h3 className="text-2xl font-staatliches uppercase leading-none text-white">{c.full_name}</h3>

@@ -601,6 +601,19 @@ export const api = {
     return (data || []) as { dossier_id: string; impact: string }[];
   },
 
+  // Fil chronologique des derniers votes SOLENNELS (vote sur l'ensemble d'un texte + motions),
+  // déjà décryptés (catégorie, résumé). Source : scrutins publics de l'Assemblée nationale.
+  getRecentSolemnVotes: async (limit = 16) => {
+    const { data, error } = await supabase
+      .from('scrutins')
+      .select('id, numero, date_scrutin, title, objet, resultat, category, summary, why_it_matters, pour, contre, abstention, dossier_url, type')
+      .in('type', ['LOI', 'MOTION'])
+      .order('date_scrutin', { ascending: false })
+      .limit(limit);
+    if (error) { console.error(error); return []; }
+    return data || [];
+  },
+
   getLegislativeDossier: async (id: string) => {
     const { data, error } = await supabase.rpc('public_legislative_dossier', { p_id: id });
     if (error) throw error;

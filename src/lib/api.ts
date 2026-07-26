@@ -104,6 +104,21 @@ export const api = {
     return data;
   },
 
+  // Taux d'activité de tous les élus d'une chambre, pour situer un élu par rapport aux autres
+  // (classement de présence). mep = participation aux votes ; deputy/senator = participation.
+  getActivityRates: async (kind: 'mep' | 'deputy' | 'senator') => {
+    const table = kind === 'mep' ? 'meps' : kind === 'deputy' ? 'deputies' : 'senators';
+    const col = kind === 'mep' ? 'attendance_rate' : 'participation_rate';
+    const rows: { id: string; rate: number }[] = [];
+    for (let from = 0; ; from += 1000) {
+      const { data, error } = await supabase.from(table).select(`id, ${col}`).not(col, 'is', null).range(from, from + 999);
+      if (error || !data) break;
+      for (const r of data as any[]) rows.push({ id: String(r.id), rate: Number(r[col]) });
+      if (data.length < 1000) break;
+    }
+    return rows;
+  },
+
   // Explication pédagogique d'un vote (pré-générée par IA à partir des métadonnées officielles).
   getVoteExplanation: async (voteId: string) => {
     if (!voteId) return null;

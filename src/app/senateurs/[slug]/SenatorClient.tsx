@@ -22,6 +22,7 @@ import { usePremium } from "@/lib/hooks/usePremium";
 import { getFullPartyName } from "@/lib/party-utils";
 import { api } from "@/lib/api";
 import LegalStatusModal from "@/components/deputies/LegalStatusModal";
+import ActivityRank from "@/components/shared/ActivityRank";
 
 
 export default function SenatorClient({ senator }: { senator: any }) {
@@ -210,6 +211,14 @@ export default function SenatorClient({ senator }: { senator: any }) {
             transition={{ delay: 0.2 }}
             className="lg:col-span-2 space-y-10"
           >
+            {/* Présence aux votes — comparaison entre sénateurs (scrutins publics du Sénat). */}
+            <ActivityRank
+              kind="senator" rate={senator.participation_rate} selfId={String(senator.id)}
+              peerLabel="sénateurs"
+              participated={senator.votes_participated} total={senator.votes_total}
+              note="Participation aux scrutins publics du Sénat (position exprimée). Comparaison entre sénateurs pour situer l'assiduité de chacun·e. Source : Sénat (open data)."
+            />
+
             {/* Biography Section */}
             <div className="bg-white dark:bg-slate-900 rounded-[3rem] border border-slate-200 dark:border-slate-800 shadow-xl relative overflow-hidden group pb-2">
               <button 

@@ -2,9 +2,10 @@
 
 import { useState } from "react";
 import Link from "next/link";
-import { ArrowLeft, Building2, ExternalLink, Star, Activity, ChevronDown, ShieldCheck, Briefcase, GraduationCap, Users, X, Loader2, Sparkles, Info } from "lucide-react";
+import { ArrowLeft, Building2, ExternalLink, Star, ChevronDown, ShieldCheck, Briefcase, GraduationCap, Users, X, Loader2, Sparkles, Info } from "lucide-react";
 import { BallotBox } from "@/components/dashboard/BallotVote";
 import LegalStatusModal from "@/components/deputies/LegalStatusModal";
+import ActivityRank from "@/components/shared/ActivityRank";
 import { api } from "@/lib/api";
 
 // Rubriques de la bio structurée (mêmes que les fiches candidats/ministres).
@@ -50,7 +51,7 @@ const posLabel: Record<string, string> = { FOR: "Pour", AGAINST: "Contre", ABSTE
 const fmtDate = (d: string | null) =>
   !d ? "" : new Date(d).toLocaleDateString("fr-FR", { day: "numeric", month: "long", year: "numeric" });
 
-export default function MepClient({ mep, initialVotes, attendanceRank, attendanceTotal }: { mep: any; initialVotes: any[]; attendanceRank?: number | null; attendanceTotal?: number | null }) {
+export default function MepClient({ mep, initialVotes }: { mep: any; initialVotes: any[] }) {
   const grad = GROUP_CLR[mep.ep_group_code] || GROUP_CLR.NI;
   const initials = `${(mep.first_name?.[0] || "")}${(mep.last_name?.[0] || "")}`.toUpperCase();
 
@@ -79,10 +80,6 @@ export default function MepClient({ mep, initialVotes, attendanceRank, attendanc
     const e = await api.getVoteExplanation(String(v.vote_id));
     setExp(e ?? null);
   };
-
-  // Assiduité (participation aux votes nominaux).
-  const rate = mep.attendance_rate != null ? Number(mep.attendance_rate) : null;
-  const rateClr = rate == null ? "text-slate-400" : rate >= 90 ? "text-emerald-600" : rate >= 70 ? "text-amber-600" : "text-rose-600";
 
   // Bio structurée + situation judiciaire.
   const bio = mep.bio || {};
@@ -172,40 +169,13 @@ export default function MepClient({ mep, initialVotes, attendanceRank, attendanc
               </div>
             </section>
 
-            {/* ASSIDUITÉ — remontée en haut de fiche pour éviter un long défilement (participation
-                aux votes nominaux ; c'est la donnée de présence disponible et vérifiable). */}
-            {rate != null && (
-              <section className="rounded-[2.5rem] border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900 p-8">
-                <div className="flex items-center gap-3 mb-4">
-                  <Activity className="text-sky-600" size={22} />
-                  <h2 className="text-3xl font-staatliches uppercase tracking-tight text-slate-900 dark:text-white">
-                    Présence aux <span className="text-sky-600">votes</span>
-                  </h2>
-                </div>
-                <div className="flex items-center gap-6">
-                  <p className={`text-5xl font-black ${rateClr}`}>{rate.toLocaleString("fr-FR", { maximumFractionDigits: 1 })}%</p>
-                  <div className="flex-1">
-                    <div className="h-3 w-full overflow-hidden rounded-full bg-slate-100 dark:bg-slate-800">
-                      <div className={`h-full rounded-full ${rate >= 90 ? "bg-emerald-500" : rate >= 70 ? "bg-amber-500" : "bg-rose-500"}`} style={{ width: `${rate}%` }} />
-                    </div>
-                    <p className="mt-2 text-sm text-slate-600 dark:text-slate-300">
-                      A pris part à <strong>{mep.votes_participated?.toLocaleString("fr-FR")}</strong> des{" "}
-                      <strong>{mep.votes_total?.toLocaleString("fr-FR")}</strong> scrutins nominaux de la mandature.
-                    </p>
-                  </div>
-                </div>
-                {attendanceRank && attendanceTotal ? (
-                  <div className="mt-4 inline-flex items-center gap-2 rounded-full bg-sky-500/10 px-4 py-2 text-sm font-bold text-sky-700 dark:text-sky-300">
-                    🏅 {attendanceRank === 1 ? "Eurodéputé français le plus assidu" : `${attendanceRank}ᵉ eurodéputé français le plus assidu`} sur {attendanceTotal}
-                  </div>
-                ) : null}
-                <p className="mt-4 text-[11px] leading-snug italic text-slate-400">
-                  Mesure la <strong>participation aux votes nominaux</strong> (position exprimée à l'appel nominal) : c'est
-                  l'indicateur de présence fiable et vérifiable au Parlement européen. Il ne mesure pas la présence
-                  en commission, et un vote peut être exprimé au nom du groupe. Source : Parlement européen via HowTheyVote.eu.
-                </p>
-              </section>
-            )}
+            {/* PRÉSENCE AUX VOTES — remontée en haut, avec comparaison entre eurodéputés. */}
+            <ActivityRank
+              kind="mep" rate={mep.attendance_rate} selfId={String(mep.id)}
+              peerLabel="eurodéputés français"
+              participated={mep.votes_participated} total={mep.votes_total}
+              note="Participation aux votes nominaux (position exprimée à l'appel nominal) : l'indicateur de présence fiable et vérifiable au Parlement européen. Comparaison entre eurodéputés français. Source : Parlement européen via HowTheyVote.eu."
+            />
 
             {/* Portrait — panneaux structurés (repli sur le texte simple si non structuré). */}
             <section className="rounded-[2.5rem] border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900 p-8">

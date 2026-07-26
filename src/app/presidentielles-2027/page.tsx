@@ -3,7 +3,7 @@
 import { Suspense, useEffect, useMemo, useRef, useState } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
 import Link from "next/link";
-import { Search, Loader2, X, CalendarDays, ExternalLink, Briefcase, GraduationCap, Users, ShieldCheck, Landmark, ArrowRight } from "lucide-react";
+import { Search, Loader2, X, CalendarDays, ExternalLink, Briefcase, GraduationCap, Users, ShieldCheck, Landmark, ArrowRight, Vote } from "lucide-react";
 import { api } from "@/lib/api";
 import LegalStatusModal from "@/components/deputies/LegalStatusModal";
 
@@ -215,7 +215,9 @@ function CandidateModal({ candidate, onClose }: { candidate: Candidate; onClose:
               <div className="flex flex-wrap items-center justify-center gap-2 md:justify-start">
                 <span className="rounded-full bg-white/25 px-3 py-1 text-[11px] font-black uppercase tracking-widest">{side.label}{candidate.party ? ` · ${candidate.party}` : ""}</span>
                 {candidate.category?.startsWith("Primaire") && (
-                  <span className="rounded-full bg-amber-400 px-3 py-1 text-[11px] font-black uppercase tracking-widest text-slate-900">🗳️ {candidate.category}</span>
+                  <span className="inline-flex items-center gap-1.5 rounded-full bg-gradient-to-br from-amber-300 via-amber-400 to-orange-500 px-3.5 py-1.5 text-[11px] font-black uppercase tracking-wider text-white shadow-lg shadow-orange-500/40 ring-1 ring-white/50">
+                    <Vote size={13} strokeWidth={2.5} /> {candidate.category}
+                  </span>
                 )}
               </div>
               <h2 className="mt-3 text-4xl font-staatliches uppercase leading-none md:text-5xl">{candidate.full_name}</h2>
@@ -558,7 +560,9 @@ function CandidatesContent() {
                     <div className={`absolute inset-x-0 bottom-0 h-24 bg-gradient-to-t ${s.from} ${s.to} opacity-90 mix-blend-multiply`} />
                     <span className={`absolute left-4 top-4 rounded-full ${s.badge} px-3 py-1 text-[10px] font-black uppercase tracking-widest text-white shadow`}>{s.label}</span>
                     {c.category?.startsWith("Primaire") && (
-                      <span className="absolute right-4 top-4 rounded-full bg-amber-400 px-3 py-1 text-[10px] font-black uppercase tracking-widest text-slate-900 shadow">🗳️ Primaire</span>
+                      <span className="absolute right-3 top-3 inline-flex items-center gap-1.5 rounded-full bg-gradient-to-br from-amber-300 via-amber-400 to-orange-500 px-3 py-1.5 text-[10px] font-black uppercase tracking-wider text-white shadow-lg shadow-orange-500/40 ring-1 ring-white/50 backdrop-blur-sm">
+                        <Vote size={12} strokeWidth={2.5} /> Primaire
+                      </span>
                     )}
                   </div>
                   <div className="p-6">

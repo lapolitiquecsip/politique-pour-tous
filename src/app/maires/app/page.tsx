@@ -96,7 +96,6 @@ function MayorContent() {
                   {p.mandate_since && <div><p className="text-[9px] font-black uppercase tracking-widest text-slate-400">Maire depuis</p><p className="font-bold text-slate-900 dark:text-white">{frDate(p.mandate_since)}</p></div>}
                   {bio.profession && <div><p className="text-[9px] font-black uppercase tracking-widest text-slate-400">Profession</p><p className="font-bold text-slate-900 dark:text-white capitalize">{bio.profession}</p></div>}
                   {p.birth_date && <div><p className="text-[9px] font-black uppercase tracking-widest text-slate-400">Né·e le</p><p className="font-bold text-slate-900 dark:text-white">{frDate(p.birth_date)}</p></div>}
-                  {p.population != null && <div><p className="text-[9px] font-black uppercase tracking-widest text-slate-400">Population</p><p className="font-bold text-slate-900 dark:text-white">{Number(p.population).toLocaleString("fr-FR")} hab.</p></div>}
                 </div>
                 <p className="mt-4 text-[10px] italic text-slate-400">Source : RNE (Répertoire National des Élus).</p>
               </div>

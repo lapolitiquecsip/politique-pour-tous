@@ -104,6 +104,17 @@ export const api = {
     return data;
   },
 
+  // Explication pédagogique d'un vote (pré-générée par IA à partir des métadonnées officielles).
+  getVoteExplanation: async (voteId: string) => {
+    if (!voteId) return null;
+    const { data } = await supabase
+      .from('vote_explanations')
+      .select('vote_id, title, reference, subject, explanation, stakes')
+      .eq('vote_id', voteId)
+      .maybeSingle();
+    return data;
+  },
+
   // Présidents des conseils départementaux.
   getDepartmentPresidents: async () => {
     const { data, error } = await supabase.from('department_presidents').select('dep_code, dep_name, full_name, slug, photo_url, party').order('dep_name');

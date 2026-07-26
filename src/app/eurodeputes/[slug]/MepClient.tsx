@@ -2,7 +2,7 @@
 
 import { useState } from "react";
 import Link from "next/link";
-import { ArrowLeft, Building2, ExternalLink, Star, Activity, ChevronDown, ShieldCheck, Briefcase, GraduationCap, Users } from "lucide-react";
+import { ArrowLeft, Building2, ExternalLink, Star, Activity, ChevronDown, ShieldCheck, Briefcase, GraduationCap, Users, X, Loader2, Sparkles, Info } from "lucide-react";
 import { BallotBox } from "@/components/dashboard/BallotVote";
 import LegalStatusModal from "@/components/deputies/LegalStatusModal";
 import { api } from "@/lib/api";
@@ -50,7 +50,7 @@ const posLabel: Record<string, string> = { FOR: "Pour", AGAINST: "Contre", ABSTE
 const fmtDate = (d: string | null) =>
   !d ? "" : new Date(d).toLocaleDateString("fr-FR", { day: "numeric", month: "long", year: "numeric" });
 
-export default function MepClient({ mep, initialVotes }: { mep: any; initialVotes: any[] }) {
+export default function MepClient({ mep, initialVotes, attendanceRank, attendanceTotal }: { mep: any; initialVotes: any[]; attendanceRank?: number | null; attendanceTotal?: number | null }) {
   const grad = GROUP_CLR[mep.ep_group_code] || GROUP_CLR.NI;
   const initials = `${(mep.first_name?.[0] || "")}${(mep.last_name?.[0] || "")}`.toUpperCase();
 
@@ -69,6 +69,15 @@ export default function MepClient({ mep, initialVotes }: { mep: any; initialVote
     setLoading(true);
     const rows = await api.getMepVotes(String(mep.id), { limit: 20, offset: votes.length, onlyMain });
     setVotes(v => [...v, ...(rows as any[])]); setEnd((rows as any[]).length < 20); setLoading(false);
+  };
+
+  // Explication IA d'un vote : ouverte au clic, chargée depuis la base (pré-générée).
+  const [openVote, setOpenVote] = useState<any | null>(null);
+  const [exp, setExp] = useState<any | null | undefined>(undefined); // undefined = en cours
+  const openExplanation = async (v: any) => {
+    setOpenVote(v); setExp(undefined);
+    const e = await api.getVoteExplanation(String(v.vote_id));
+    setExp(e ?? null);
   };
 
   // Assiduité (participation aux votes nominaux).
@@ -163,6 +172,41 @@ export default function MepClient({ mep, initialVotes }: { mep: any; initialVote
               </div>
             </section>
 
+            {/* ASSIDUITÉ — remontée en haut de fiche pour éviter un long défilement (participation
+                aux votes nominaux ; c'est la donnée de présence disponible et vérifiable). */}
+            {rate != null && (
+              <section className="rounded-[2.5rem] border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900 p-8">
+                <div className="flex items-center gap-3 mb-4">
+                  <Activity className="text-sky-600" size={22} />
+                  <h2 className="text-3xl font-staatliches uppercase tracking-tight text-slate-900 dark:text-white">
+                    Présence aux <span className="text-sky-600">votes</span>
+                  </h2>
+                </div>
+                <div className="flex items-center gap-6">
+                  <p className={`text-5xl font-black ${rateClr}`}>{rate.toLocaleString("fr-FR", { maximumFractionDigits: 1 })}%</p>
+                  <div className="flex-1">
+                    <div className="h-3 w-full overflow-hidden rounded-full bg-slate-100 dark:bg-slate-800">
+                      <div className={`h-full rounded-full ${rate >= 90 ? "bg-emerald-500" : rate >= 70 ? "bg-amber-500" : "bg-rose-500"}`} style={{ width: `${rate}%` }} />
+                    </div>
+                    <p className="mt-2 text-sm text-slate-600 dark:text-slate-300">
+                      A pris part à <strong>{mep.votes_participated?.toLocaleString("fr-FR")}</strong> des{" "}
+                      <strong>{mep.votes_total?.toLocaleString("fr-FR")}</strong> scrutins nominaux de la mandature.
+                    </p>
+                  </div>
+                </div>
+                {attendanceRank && attendanceTotal ? (
+                  <div className="mt-4 inline-flex items-center gap-2 rounded-full bg-sky-500/10 px-4 py-2 text-sm font-bold text-sky-700 dark:text-sky-300">
+                    🏅 {attendanceRank === 1 ? "Eurodéputé français le plus assidu" : `${attendanceRank}ᵉ eurodéputé français le plus assidu`} sur {attendanceTotal}
+                  </div>
+                ) : null}
+                <p className="mt-4 text-[11px] leading-snug italic text-slate-400">
+                  Mesure la <strong>participation aux votes nominaux</strong> (position exprimée à l'appel nominal) : c'est
+                  l'indicateur de présence fiable et vérifiable au Parlement européen. Il ne mesure pas la présence
+                  en commission, et un vote peut être exprimé au nom du groupe. Source : Parlement européen via HowTheyVote.eu.
+                </p>
+              </section>
+            )}
+
             {/* Portrait — panneaux structurés (repli sur le texte simple si non structuré). */}
             <section className="rounded-[2.5rem] border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900 p-8">
               <h2 className="text-3xl font-staatliches uppercase tracking-tight text-slate-900 dark:text-white mb-2">
@@ -196,35 +240,6 @@ export default function MepClient({ mep, initialVotes }: { mep: any; initialVote
               )}
             </section>
 
-            {/* ASSIDUITÉ — participation aux votes nominaux (métrique factuelle, pas la présence physique). */}
-            {rate != null && (
-              <section className="rounded-[2.5rem] border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900 p-8">
-                <div className="flex items-center gap-3 mb-4">
-                  <Activity className="text-sky-600" size={22} />
-                  <h2 className="text-3xl font-staatliches uppercase tracking-tight text-slate-900 dark:text-white">
-                    Assiduité aux <span className="text-sky-600">votes</span>
-                  </h2>
-                </div>
-                <div className="flex items-center gap-6">
-                  <p className={`text-5xl font-black ${rateClr}`}>{rate.toLocaleString("fr-FR", { maximumFractionDigits: 1 })}%</p>
-                  <div className="flex-1">
-                    <div className="h-3 w-full overflow-hidden rounded-full bg-slate-100 dark:bg-slate-800">
-                      <div className={`h-full rounded-full ${rate >= 90 ? "bg-emerald-500" : rate >= 70 ? "bg-amber-500" : "bg-rose-500"}`} style={{ width: `${rate}%` }} />
-                    </div>
-                    <p className="mt-2 text-sm text-slate-600 dark:text-slate-300">
-                      A participé à <strong>{mep.votes_participated?.toLocaleString("fr-FR")}</strong> des{" "}
-                      <strong>{mep.votes_total?.toLocaleString("fr-FR")}</strong> scrutins nominaux de la mandature.
-                    </p>
-                  </div>
-                </div>
-                <p className="mt-4 text-[11px] leading-snug italic text-slate-400">
-                  Mesure la <strong>participation aux votes nominaux</strong> (position exprimée), et non la présence
-                  physique en séance ou en commission — un vote peut être exprimé au nom du groupe. Source : Parlement
-                  européen via HowTheyVote.eu.
-                </p>
-              </section>
-            )}
-
             {/* VOTES — principaux par défaut, bascule « tous », pagination. */}
             <section className="rounded-[2.5rem] border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900 p-8">
               <div className="flex flex-wrap items-center justify-between gap-3 mb-6">
@@ -246,11 +261,10 @@ export default function MepClient({ mep, initialVotes }: { mep: any; initialVote
               ) : (
                 <div className="space-y-3">
                   {votes.map((v) => (
-                    <a
+                    <button
                       key={v.vote_id}
-                      href={v.url}
-                      target="_blank" rel="noopener noreferrer"
-                      className="flex items-center gap-4 rounded-2xl border border-slate-100 dark:border-slate-800 bg-slate-50/60 dark:bg-slate-800/40 p-4 transition hover:border-amber-300"
+                      onClick={() => openExplanation(v)}
+                      className="flex w-full items-center gap-4 rounded-2xl border border-slate-100 dark:border-slate-800 bg-slate-50/60 dark:bg-slate-800/40 p-4 text-left transition hover:border-amber-300 hover:bg-amber-50/40 dark:hover:bg-slate-800"
                     >
                       <BallotBox vote={POS[v.position] || "ABSTENTION"} size={32} />
                       <div className="min-w-0 flex-1">
@@ -258,11 +272,14 @@ export default function MepClient({ mep, initialVotes }: { mep: any; initialVote
                           {fmtDate(v.voted_at)}{v.reference ? ` · ${v.reference}` : ""}
                         </p>
                         <p className="text-sm font-bold leading-snug text-slate-900 dark:text-white line-clamp-2">{v.title}</p>
+                        <span className="mt-1 inline-flex items-center gap-1 text-[10px] font-black uppercase tracking-widest text-amber-600">
+                          <Sparkles size={11} /> Comprendre ce vote
+                        </span>
                       </div>
                       <span className="shrink-0 text-[10px] font-black uppercase tracking-widest text-slate-500">
                         {posLabel[v.position] || v.position}
                       </span>
-                    </a>
+                    </button>
                   ))}
                 </div>
               )}
@@ -283,6 +300,61 @@ export default function MepClient({ mep, initialVotes }: { mep: any; initialVote
         </div>
       </div>
       <LegalStatusModal isOpen={showLegal} onClose={() => setShowLegal(false)} deputy={legalPerson} />
+
+      {/* Explication IA d'un vote */}
+      {openVote && (
+        <div className="fixed inset-0 z-[60] flex items-end justify-center bg-slate-950/70 p-0 backdrop-blur-sm sm:items-center sm:p-6" onClick={() => setOpenVote(null)}>
+          <div className="relative w-full max-w-2xl overflow-hidden rounded-t-[2rem] bg-white shadow-2xl dark:bg-slate-900 sm:rounded-[2rem] max-h-[90vh] flex flex-col" onClick={e => e.stopPropagation()}>
+            <div className="relative bg-gradient-to-br from-amber-500 to-orange-600 p-6 pr-14 text-white shrink-0">
+              <button onClick={() => setOpenVote(null)} className="absolute right-4 top-4 rounded-full bg-white/20 p-2 transition hover:bg-white/30" aria-label="Fermer"><X size={18} /></button>
+              <p className="flex items-center gap-1.5 text-[10px] font-black uppercase tracking-widest text-white/80">
+                <Sparkles size={12} /> Le vote expliqué
+              </p>
+              <h3 className="mt-1 text-lg font-bold leading-snug">{openVote.title}</h3>
+              <p className="mt-1 text-[11px] font-bold text-white/70">
+                {fmtDate(openVote.voted_at)}{openVote.reference ? ` · ${openVote.reference}` : ""} · Position : {posLabel[openVote.position] || openVote.position}
+              </p>
+            </div>
+            <div className="overflow-y-auto p-6 space-y-5">
+              {exp === undefined ? (
+                <div className="flex items-center justify-center gap-2 py-10 text-slate-400"><Loader2 className="animate-spin" size={18} /> Chargement de l'explication…</div>
+              ) : exp === null ? (
+                <div className="rounded-2xl border border-dashed border-slate-200 dark:border-slate-700 p-6 text-center text-sm text-slate-500 dark:text-slate-400">
+                  <Info className="mx-auto mb-2 text-slate-400" size={20} />
+                  L'explication de ce vote est en cours de génération et sera disponible très prochainement.
+                </div>
+              ) : (
+                <>
+                  {exp.subject && (
+                    <div>
+                      <p className="text-[10px] font-black uppercase tracking-widest text-amber-600">Le sujet</p>
+                      <p className="mt-1 text-[15px] font-bold leading-relaxed text-slate-900 dark:text-white">{exp.subject}</p>
+                    </div>
+                  )}
+                  {exp.explanation && (
+                    <div>
+                      <p className="text-[10px] font-black uppercase tracking-widest text-slate-400">L'enjeu, expliqué</p>
+                      <p className="mt-1 text-[15px] leading-relaxed text-slate-700 dark:text-slate-300">{exp.explanation}</p>
+                    </div>
+                  )}
+                  {exp.stakes && (
+                    <div className="rounded-2xl bg-amber-50/60 dark:bg-slate-800/60 p-4">
+                      <p className="text-[10px] font-black uppercase tracking-widest text-amber-600">Ce que ça change</p>
+                      <p className="mt-1 text-[15px] leading-relaxed text-slate-700 dark:text-slate-300">{exp.stakes}</p>
+                    </div>
+                  )}
+                  <p className="text-[10px] italic text-slate-400">Explication rédigée par IA à partir des métadonnées officielles du scrutin. Neutre et factuelle.</p>
+                </>
+              )}
+              {openVote.url && (
+                <a href={openVote.url} target="_blank" rel="noopener noreferrer" className="inline-flex items-center gap-1.5 text-[11px] font-black uppercase tracking-widest text-sky-600 hover:text-sky-500">
+                  <ExternalLink size={13} /> Voir le détail officiel du scrutin
+                </a>
+              )}
+            </div>
+          </div>
+        </div>
+      )}
     </main>
   );
 }

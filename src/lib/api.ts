@@ -482,7 +482,7 @@ export const api = {
   // Fil de notifications de l'utilisateur (votes de ses élus suivis).
   getNotifications: async (userId: string, limit = 30) => {
     const base = 'id, type, title, detail, position, event_at, read, created_at, deputy_id, senator_id';
-    let res = await supabase.from('user_notifications').select(`${base}, mep_id`).eq('user_id', userId).order('created_at', { ascending: false }).limit(limit);
+    let res: any = await supabase.from('user_notifications').select(`${base}, mep_id`).eq('user_id', userId).order('created_at', { ascending: false }).limit(limit);
     if (res.error) { // colonne mep_id absente (migration non appliquée) → repli
       res = await supabase.from('user_notifications').select(base).eq('user_id', userId).order('created_at', { ascending: false }).limit(limit);
     }
@@ -999,7 +999,7 @@ export const api = {
     // encore en base (migration non appliquée), on ne casse pas TOUTE la liste : on retente
     // sans les eurodéputés pour que députés et sénateurs restent visibles.
     let data: any[] | null = null;
-    let res = await supabase.from('user_follows').select('*, deputies(*), senators(*), meps(*)').eq('user_id', userId);
+    let res: any = await supabase.from('user_follows').select('*, deputies(*), senators(*), meps(*)').eq('user_id', userId);
     if (res.error) {
       console.warn('getUserFollows: embed meps indisponible, repli sans eurodéputés —', res.error.message);
       res = await supabase.from('user_follows').select('*, deputies(*), senators(*)').eq('user_id', userId);

@@ -6,6 +6,7 @@ import { ArrowLeft, Building2, ExternalLink, Star, ChevronDown, ShieldCheck, Bri
 import { BallotBox } from "@/components/dashboard/BallotVote";
 import LegalStatusModal from "@/components/deputies/LegalStatusModal";
 import ActivityRank from "@/components/shared/ActivityRank";
+import FollowButton from "@/components/shared/FollowButton";
 import { api } from "@/lib/api";
 
 // Rubriques de la bio structurée (mêmes que les fiches candidats/ministres).
@@ -185,6 +186,8 @@ export default function MepClient({ mep, initialVotes }: { mep: any; initialVote
                   <ShieldCheck className="h-3.5 w-3.5" /> Consulter
                 </button>
               </div>
+
+              <FollowButton kind="mep" id={String(mep.id)} label="cet eurodéputé" />
             </section>
 
             {/* PRÉSENCE AUX VOTES — remontée en haut, avec comparaison entre eurodéputés. */}

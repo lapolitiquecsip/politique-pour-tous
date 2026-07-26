@@ -443,16 +443,16 @@ export default function DashboardPage() {
                               <div className="flex items-center gap-2 text-slate-400">
                                 <MapPin size={12} className="text-amber-500" />
                                 <span className="text-[10px] font-black uppercase tracking-widest truncate">
-                                  {f.elu?.department || (f.elu_type === "senator" ? "Sénat" : "Circonscription")}
+                                  {f.elu?.department || (f.elu_type === "senator" ? "Sénat" : f.elu_type === "mep" ? (f.elu?.ep_group || "Parlement européen") : "Circonscription")}
                                 </span>
                               </div>
                               {/* La chambre est plus informative qu'un « suivi actif » redondant :
-                                  les deux chambres cohabitent désormais dans cette liste. */}
+                                  les trois chambres cohabitent désormais dans cette liste. */}
                               <div className={`flex items-center gap-2 text-[10px] font-black uppercase tracking-widest px-3 py-1 rounded-lg w-fit mt-3 ${
-                                f.elu_type === "senator" ? "text-rose-600 bg-rose-50" : "text-blue-600 bg-blue-50"
+                                f.elu_type === "senator" ? "text-rose-600 bg-rose-50" : f.elu_type === "mep" ? "text-sky-600 bg-sky-50" : "text-blue-600 bg-blue-50"
                               }`}>
                                 <Bell size={10} fill="currentColor" />
-                                {f.elu_type === "senator" ? "Sénateur·rice" : "Député·e"}
+                                {f.elu_type === "senator" ? "Sénateur·rice" : f.elu_type === "mep" ? "Eurodéputé·e" : "Député·e"}
                               </div>
                             </div>
                             <button

@@ -470,7 +470,7 @@ export const api = {
   getNotifications: async (userId: string, limit = 30) => {
     const { data, error } = await supabase
       .from('user_notifications')
-      .select('id, type, title, detail, position, event_at, read, created_at, deputy_id, senator_id')
+      .select('id, type, title, detail, position, event_at, read, created_at, deputy_id, senator_id, mep_id')
       .eq('user_id', userId)
       .order('created_at', { ascending: false })
       .limit(limit);
@@ -958,18 +958,19 @@ export const api = {
   getUserFollows: async (userId: string) => {
     const { data, error } = await supabase
       .from('user_follows')
-      .select('*, deputies(*), senators(*)')
+      .select('*, deputies(*), senators(*), meps(*)')
       .eq('user_id', userId);
     if (error) { console.error(error); return []; }
     return (data || []).map((f: any) => {
-      const isSenator = !!f.senator_id;
-      const elu = isSenator ? f.senators : f.deputies;
+      const type = f.senator_id ? 'senator' : f.mep_id ? 'mep' : 'deputy';
+      const elu = type === 'senator' ? f.senators : type === 'mep' ? f.meps : f.deputies;
+      const base = type === 'senator' ? 'senateurs' : type === 'mep' ? 'eurodeputes' : 'deputes';
       return {
         ...f,
-        elu_type: isSenator ? 'senator' : 'deputy',
+        elu_type: type,
         elu,
         // Route de la fiche selon la chambre.
-        elu_href: elu?.slug ? `/${isSenator ? 'senateurs' : 'deputes'}/${elu.slug}` : null,
+        elu_href: elu?.slug ? `/${base}/${elu.slug}` : null,
       };
     });
   },
@@ -1010,6 +1011,34 @@ export const api = {
       .delete()
       .eq('user_id', userId)
       .eq('senator_id', senatorId);
+    if (error) { throw new Error(error.message); }
+    return true;
+  },
+
+  // Vérifie si l'utilisateur suit déjà un élu (toutes chambres).
+  checkFollowing: async (userId: string, kind: 'deputy' | 'senator' | 'mep', id: string) => {
+    if (!userId || !id) return false;
+    const col = kind === 'senator' ? 'senator_id' : kind === 'mep' ? 'mep_id' : 'deputy_id';
+    const { data } = await supabase.from('user_follows').select('id').eq('user_id', userId).eq(col, String(id)).maybeSingle();
+    return !!data;
+  },
+
+  followMep: async (userId: string, mepId: string) => {
+    const { data, error } = await supabase
+      .from('user_follows')
+      .insert([{ user_id: userId, mep_id: String(mepId) }])
+      .select()
+      .single();
+    if (error) { throw new Error(error.message); }
+    return data;
+  },
+
+  unfollowMep: async (userId: string, mepId: string) => {
+    const { error } = await supabase
+      .from('user_follows')
+      .delete()
+      .eq('user_id', userId)
+      .eq('mep_id', String(mepId));
     if (error) { throw new Error(error.message); }
     return true;
   },

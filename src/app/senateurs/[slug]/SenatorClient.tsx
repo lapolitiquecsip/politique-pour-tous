@@ -23,6 +23,7 @@ import { getFullPartyName } from "@/lib/party-utils";
 import { api } from "@/lib/api";
 import LegalStatusModal from "@/components/deputies/LegalStatusModal";
 import ActivityRank from "@/components/shared/ActivityRank";
+import FollowButton from "@/components/shared/FollowButton";
 
 
 export default function SenatorClient({ senator }: { senator: any }) {
@@ -211,6 +212,10 @@ export default function SenatorClient({ senator }: { senator: any }) {
             transition={{ delay: 0.2 }}
             className="lg:col-span-2 space-y-10"
           >
+            <div className="flex justify-start">
+              <FollowButton kind="senator" id={String(senator.id)} label="ce sénateur" />
+            </div>
+
             {/* Présence aux votes — comparaison entre sénateurs (scrutins publics du Sénat). */}
             <ActivityRank
               kind="senator" rate={senator.participation_rate} selfId={String(senator.id)}

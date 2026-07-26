@@ -642,17 +642,22 @@ export default function DeputyDetailPage({ params }: { params: Promise<{ slug: s
 
             {deputy && <ParallelRoles fullName={`${deputy.first_name} ${deputy.last_name}`} selfHref={`/deputes/${deputy.slug}`} />}
 
-            {deputy && <InitiativeRank kind="deputy" selfId={String(deputy.id)} primary={deputy.initiative_primary_count} cosigned={deputy.initiative_count} peerLabel="députés" />}
-
-            {/* Authored Laws Section (Always visible, shows empty state if needed) */}
+            {/* Initiatives législatives : classement (déposés/co-signés + rang) PUIS la liste des textes. */}
             <div className="pt-4 mb-10">
-              <h2 className="text-4xl font-staatliches uppercase tracking-tight text-slate-900 dark:text-white mb-4">
+              <h2 className="text-4xl font-staatliches uppercase tracking-tight text-slate-900 dark:text-white mb-6">
                 Initiatives <span className="text-amber-500">Législatives</span>
               </h2>
+
+              {deputy && (
+                <div className="mb-8 rounded-[2rem] border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900 p-6 md:p-8">
+                  <InitiativeRank kind="deputy" selfId={String(deputy.id)} primary={deputy.initiative_primary_count} cosigned={deputy.initiative_count} peerLabel="députés" embedded />
+                </div>
+              )}
+
               <p className="text-slate-500 font-medium max-w-xl mb-8">
                 Retrouvez les propositions de loi portées par cet élu.
               </p>
-              
+
               {authoredLaws.length > 0 ? (
                 <div className="flex gap-6 overflow-x-auto pb-6 -mx-4 px-4 scrollbar-hide">
                   {authoredLaws.map((law: any) => (

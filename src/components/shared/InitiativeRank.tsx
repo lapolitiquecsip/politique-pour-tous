@@ -8,13 +8,14 @@ import { api } from "@/lib/api";
 // le nombre de textes DÉPOSÉS (auteur principal), et épingle les plus/moins prolifiques.
 // 100 % basé sur les données officielles (legislative_dossiers.author_name).
 export default function InitiativeRank({
-  kind, selfId, primary, cosigned, peerLabel,
+  kind, selfId, primary, cosigned, peerLabel, embedded = false,
 }: {
   kind: "deputy" | "senator";
   selfId: string;
   primary: number | null | undefined;  // textes déposés (auteur principal)
   cosigned: number | null | undefined; // total portés (co-signés inclus)
   peerLabel: string;                    // « députés » | « sénateurs »
+  embedded?: boolean;                   // intégré sous un en-tête existant (sans cadre ni titre)
 }) {
   const [peers, setPeers] = useState<{ id: string; count: number }[] | null>(null);
 
@@ -43,14 +44,17 @@ export default function InitiativeRank({
   const bottomDecile = rank != null && count != null && rank > count - Math.max(1, Math.ceil(count * 0.1));
   const co = cosigned == null ? 0 : Math.max(0, Number(cosigned) - p);
 
+  const Wrapper: any = embedded ? "div" : "section";
   return (
-    <section className="rounded-[2.5rem] border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900 p-8">
-      <div className="flex items-center gap-3 mb-4">
-        <FileText className="text-orange-500" size={22} />
-        <h2 className="text-3xl font-staatliches uppercase tracking-tight text-slate-900 dark:text-white">
-          Initiatives <span className="text-orange-500">législatives</span>
-        </h2>
-      </div>
+    <Wrapper className={embedded ? "" : "rounded-[2.5rem] border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900 p-8"}>
+      {!embedded && (
+        <div className="flex items-center gap-3 mb-4">
+          <FileText className="text-orange-500" size={22} />
+          <h2 className="text-3xl font-staatliches uppercase tracking-tight text-slate-900 dark:text-white">
+            Initiatives <span className="text-orange-500">législatives</span>
+          </h2>
+        </div>
+      )}
 
       <div className="flex items-center gap-6">
         <p className="text-5xl font-black text-orange-500">{p}</p>
@@ -95,6 +99,6 @@ export default function InitiativeRank({
         Nombre de propositions de loi déposées comme auteur·rice principal·e (1er signataire du texte officiel).
         Comparaison entre {peerLabel}. Source : dossiers législatifs officiels (Assemblée nationale / Sénat).
       </p>
-    </section>
+    </Wrapper>
   );
 }

@@ -20,7 +20,8 @@ import {
   Scale, 
   Star,
   Landmark,
-  MapPin
+  MapPin,
+  Globe
 } from "lucide-react";
 
 import { usePremium } from "@/lib/hooks/usePremium";
@@ -51,7 +52,9 @@ export default function Header() {
 
   const navLinks = [
     { href: "/", label: "Accueil", icon: Home, color: "text-indigo-600", iconColor: "text-indigo-500" },
-    { href: "/deputes", label: "Votes des élus", icon: Users, color: "text-blue-600", iconColor: "text-blue-500" },
+    { href: "/deputes", label: "Assemblée", icon: Users, color: "text-blue-600", iconColor: "text-blue-500" },
+    { href: "/senateurs", label: "Sénat", icon: Landmark, color: "text-rose-600", iconColor: "text-rose-500" },
+    { href: "/eurodeputes", label: "Europe", icon: Globe, color: "text-sky-600", iconColor: "text-sky-500" },
     { href: "/lois", label: "Lois", icon: Scale, color: "text-red-600", iconColor: "text-red-500" },
     { href: "/local", label: "Local", icon: MapPin, color: "text-rose-600", iconColor: "text-rose-500" },
     { href: "/executif", label: "Exécutif", icon: ShieldCheck, color: "text-amber-600", iconColor: "text-amber-500" },
@@ -85,7 +88,7 @@ export default function Header() {
           </Link>
 
           {/* Desktop Nav */}
-          <div className="hidden md:flex items-center gap-4">
+          <div className="hidden lg:flex items-center gap-3">
             {navLinks.map((link) => {
               const Icon = link.icon;
               return (
@@ -94,8 +97,8 @@ export default function Header() {
                   href={link.href} 
                   className={`flex items-center gap-1 group transition-all duration-300 whitespace-nowrap ${link.isSpecial ? 'underline decoration-yellow-400 decoration-2 underline-offset-4' : ''}`}
                 >
-                  <Icon size={link.label === 'Local' ? 14 : 15} className={`${link.iconColor} group-hover:scale-110 transition-transform`} />
-                  <span className={`font-staatliches text-xl uppercase tracking-wider ${link.color} pt-0.5 group-hover:opacity-80 transition-all`}>
+                  <Icon size={14} className={`${link.iconColor} group-hover:scale-110 transition-transform`} />
+                  <span className={`font-staatliches text-lg uppercase tracking-wide ${link.color} pt-0.5 group-hover:opacity-80 transition-all`}>
                     {link.label}
                   </span>
                 </Link>
@@ -137,7 +140,7 @@ export default function Header() {
           </div>
 
           {/* Mobile Menu Toggle */}
-          <button className="md:hidden text-slate-600" onClick={() => setIsMenuOpen(!isMenuOpen)}>
+          <button className="lg:hidden text-slate-600" onClick={() => setIsMenuOpen(!isMenuOpen)}>
             {isMenuOpen ? <X size={24} /> : <Menu size={24} />}
           </button>
         </div>
@@ -148,7 +151,7 @@ export default function Header() {
         <motion.div 
           initial={{ opacity: 0, y: -20 }}
           animate={{ opacity: 1, y: 0 }}
-          className="md:hidden bg-white border-b border-slate-100 px-4 py-6 space-y-4 shadow-xl"
+          className="lg:hidden bg-white border-b border-slate-100 px-4 py-6 space-y-4 shadow-xl"
         >
           {navLinks.map((link) => {
             const Icon = link.icon;

@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import Link from "next/link";
 import { ArrowLeft, Building2, ExternalLink, Star, ChevronDown, ShieldCheck, Briefcase, GraduationCap, Users, X, Loader2, Sparkles, Info } from "lucide-react";
 import { BallotBox } from "@/components/dashboard/BallotVote";
@@ -55,20 +55,31 @@ export default function MepClient({ mep, initialVotes }: { mep: any; initialVote
   const grad = GROUP_CLR[mep.ep_group_code] || GROUP_CLR.NI;
   const initials = `${(mep.first_name?.[0] || "")}${(mep.last_name?.[0] || "")}`.toUpperCase();
 
-  // Votes : bascule « principaux / tous » + pagination « voir plus ».
+  // Votes : bascule « principaux / tous » + filtre par domaine + pagination « voir plus ».
   const [onlyMain, setOnlyMain] = useState(true);
+  const [category, setCategory] = useState<string | null>(null);
+  const [cats, setCats] = useState<{ category: string; count: number }[]>([]);
   const [votes, setVotes] = useState<any[]>(initialVotes);
   const [loading, setLoading] = useState(false);
   const [end, setEnd] = useState(initialVotes.length < 20);
 
-  const reload = async (main: boolean) => {
-    setOnlyMain(main); setLoading(true); setEnd(false);
-    const rows = await api.getMepVotes(String(mep.id), { limit: 20, offset: 0, onlyMain: main });
+  // Domaines disponibles (recalculés selon la vue principaux/tous).
+  useEffect(() => {
+    let active = true;
+    api.getMepVoteCategories(String(mep.id), onlyMain).then(c => { if (active) setCats(c as any); }).catch(() => {});
+    return () => { active = false; };
+  }, [mep.id, onlyMain]);
+
+  const fetchVotes = async (main: boolean, cat: string | null) => {
+    setLoading(true); setEnd(false);
+    const rows = await api.getMepVotes(String(mep.id), { limit: 20, offset: 0, onlyMain: main, category: cat || undefined });
     setVotes(rows as any[]); setEnd((rows as any[]).length < 20); setLoading(false);
   };
+  const reload = async (main: boolean) => { setOnlyMain(main); setCategory(null); await fetchVotes(main, null); };
+  const selectCat = async (cat: string | null) => { setCategory(cat); await fetchVotes(onlyMain, cat); };
   const loadMore = async () => {
     setLoading(true);
-    const rows = await api.getMepVotes(String(mep.id), { limit: 20, offset: votes.length, onlyMain });
+    const rows = await api.getMepVotes(String(mep.id), { limit: 20, offset: votes.length, onlyMain, category: category || undefined });
     setVotes(v => [...v, ...(rows as any[])]); setEnd((rows as any[]).length < 20); setLoading(false);
   };
 
@@ -224,6 +235,23 @@ export default function MepClient({ mep, initialVotes }: { mep: any; initialVote
                   <button onClick={() => reload(false)} className={`rounded-lg px-3 py-1.5 text-[10px] font-black uppercase tracking-widest transition ${!onlyMain ? "bg-slate-900 text-white" : "text-slate-500"}`}>Tous</button>
                 </div>
               </div>
+
+              {/* Filtres par DOMAINE (catégories officielles) — éclaire les positions par thème. */}
+              {cats.length > 1 && (
+                <div className="mb-6 flex flex-wrap gap-2">
+                  <button onClick={() => selectCat(null)}
+                    className={`rounded-full px-3.5 py-1.5 text-[11px] font-black uppercase tracking-wide transition ${category === null ? "bg-amber-600 text-white shadow" : "bg-slate-100 dark:bg-slate-800 text-slate-500 hover:text-amber-600"}`}>
+                    Tous les domaines
+                  </button>
+                  {cats.map(c => (
+                    <button key={c.category} onClick={() => selectCat(c.category)}
+                      className={`rounded-full px-3.5 py-1.5 text-[11px] font-bold transition ${category === c.category ? "bg-amber-600 text-white shadow" : "bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-300 hover:text-amber-600"}`}>
+                      {c.category} <span className="opacity-60">· {c.count}</span>
+                    </button>
+                  ))}
+                </div>
+              )}
+
               {votes.length === 0 ? (
                 <p className="rounded-2xl border border-dashed border-slate-200 dark:border-slate-700 p-6 text-center text-sm italic text-slate-400">
                   Aucun vote synchronisé pour l'instant.
@@ -242,6 +270,9 @@ export default function MepClient({ mep, initialVotes }: { mep: any; initialVote
                           {fmtDate(v.voted_at)}{v.reference ? ` · ${v.reference}` : ""}
                         </p>
                         <p className="text-sm font-bold leading-snug text-slate-900 dark:text-white line-clamp-2">{v.title}</p>
+                        {v.category && v.category !== "Autres" && (
+                          <span className="mt-1 mr-2 inline-block rounded-full bg-slate-100 dark:bg-slate-700 px-2 py-0.5 text-[9px] font-black uppercase tracking-wide text-slate-500 dark:text-slate-300">{v.category}</span>
+                        )}
                         <span className="mt-1 inline-flex items-center gap-1 text-[10px] font-black uppercase tracking-widest text-amber-600">
                           <Sparkles size={11} /> Comprendre ce vote
                         </span>

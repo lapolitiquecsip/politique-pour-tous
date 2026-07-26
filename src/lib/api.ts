@@ -88,20 +88,36 @@ export const api = {
     return data;
   },
   // Historique de votes d'un eurodéputé (votes principaux du Parlement européen).
-  getMepVotes: async (mepId: string, opts?: { limit?: number; offset?: number; onlyMain?: boolean }) => {
+  getMepVotes: async (mepId: string, opts?: { limit?: number; offset?: number; onlyMain?: boolean; category?: string }) => {
     if (!mepId) return [];
     const limit = opts?.limit ?? 20;
     const offset = opts?.offset ?? 0;
     let q = supabase
       .from('mep_votes')
-      .select('vote_id, title, reference, voted_at, position, result, url, is_main')
+      .select('vote_id, title, reference, voted_at, position, result, url, is_main, category')
       .eq('mep_id', mepId);
     if (opts?.onlyMain) q = q.eq('is_main', true);
+    if (opts?.category) q = q.eq('category', opts.category);
     const { data, error } = await q
       .order('voted_at', { ascending: false })
       .range(offset, offset + limit - 1);
     if (error || !data) return [];
     return data;
+  },
+
+  // Domaines de vote d'un eurodéputé + nombre de votes par domaine (pour les filtres).
+  getMepVoteCategories: async (mepId: string, onlyMain = true) => {
+    if (!mepId) return [] as { category: string; count: number }[];
+    const counts = new Map<string, number>();
+    for (let from = 0; ; from += 1000) {
+      let q = supabase.from('mep_votes').select('category').eq('mep_id', mepId);
+      if (onlyMain) q = q.eq('is_main', true);
+      const { data, error } = await q.range(from, from + 999);
+      if (error || !data) break;
+      for (const r of data as any[]) { const c = r.category || 'Autres'; counts.set(c, (counts.get(c) || 0) + 1); }
+      if (data.length < 1000) break;
+    }
+    return [...counts.entries()].map(([category, count]) => ({ category, count })).sort((a, b) => b.count - a.count);
   },
 
   // Taux d'activité de tous les élus d'une chambre, pour situer un élu par rapport aux autres

@@ -135,6 +135,19 @@ export const api = {
     return rows;
   },
 
+  // Nombre d'initiatives (auteur principal) de tous les élus d'une chambre, pour le classement.
+  getInitiativeCounts: async (kind: 'deputy' | 'senator') => {
+    const table = kind === 'deputy' ? 'deputies' : 'senators';
+    const rows: { id: string; count: number }[] = [];
+    for (let from = 0; ; from += 1000) {
+      const { data, error } = await supabase.from(table).select('id, initiative_primary_count').not('initiative_primary_count', 'is', null).range(from, from + 999);
+      if (error || !data) break;
+      for (const r of data as any[]) rows.push({ id: String(r.id), count: Number(r.initiative_primary_count) });
+      if (data.length < 1000) break;
+    }
+    return rows;
+  },
+
   // Explication pédagogique d'un vote (pré-générée par IA à partir des métadonnées officielles).
   getVoteExplanation: async (voteId: string) => {
     if (!voteId) return null;

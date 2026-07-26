@@ -25,6 +25,7 @@ import LegalStatusModal from "@/components/deputies/LegalStatusModal";
 import ActivityRank from "@/components/shared/ActivityRank";
 import FollowButton from "@/components/shared/FollowButton";
 import ParallelRoles from "@/components/shared/ParallelRoles";
+import InitiativeRank from "@/components/shared/InitiativeRank";
 
 
 export default function SenatorClient({ senator }: { senator: any }) {
@@ -218,6 +219,8 @@ export default function SenatorClient({ senator }: { senator: any }) {
             </div>
 
             <ParallelRoles fullName={`${senator.first_name} ${senator.last_name}`} selfHref={`/senateurs/${senator.slug}`} />
+
+            <InitiativeRank kind="senator" selfId={String(senator.id)} primary={senator.initiative_primary_count} cosigned={senator.initiative_count} peerLabel="sénateurs" />
 
             {/* Présence aux votes — comparaison entre sénateurs (scrutins publics du Sénat). */}
             <ActivityRank

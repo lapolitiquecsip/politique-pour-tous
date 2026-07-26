@@ -41,6 +41,7 @@ import LegalStatusModal from "@/components/deputies/LegalStatusModal";
 import DeputyStats from "@/components/deputies/DeputyStats";
 import ActivityRank from "@/components/shared/ActivityRank";
 import ParallelRoles from "@/components/shared/ParallelRoles";
+import InitiativeRank from "@/components/shared/InitiativeRank";
 import { useGlossary } from "@/components/providers/GlossaryProvider";
 
 // Vote position formatting helper
@@ -640,6 +641,8 @@ export default function DeputyDetailPage({ params }: { params: Promise<{ slug: s
             )}
 
             {deputy && <ParallelRoles fullName={`${deputy.first_name} ${deputy.last_name}`} selfHref={`/deputes/${deputy.slug}`} />}
+
+            {deputy && <InitiativeRank kind="deputy" selfId={String(deputy.id)} primary={deputy.initiative_primary_count} cosigned={deputy.initiative_count} peerLabel="députés" />}
 
             {/* Authored Laws Section (Always visible, shows empty state if needed) */}
             <div className="pt-4 mb-10">

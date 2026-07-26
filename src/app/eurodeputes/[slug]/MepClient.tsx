@@ -2,7 +2,7 @@
 
 import { useState, useEffect } from "react";
 import Link from "next/link";
-import { ArrowLeft, Building2, ExternalLink, Star, ChevronDown, ShieldCheck, Briefcase, GraduationCap, Users, X, Loader2, Sparkles, Info } from "lucide-react";
+import { ArrowLeft, Building2, ExternalLink, Star, ChevronDown, ShieldCheck, Briefcase, GraduationCap, Users, X, Loader2, Sparkles, Info, TrendingDown } from "lucide-react";
 import { BallotBox } from "@/components/dashboard/BallotVote";
 import LegalStatusModal from "@/components/deputies/LegalStatusModal";
 import ActivityRank from "@/components/shared/ActivityRank";
@@ -47,6 +47,11 @@ const GROUP_CLR: Record<string, string> = {
 // Position HowTheyVote → valeur d'urne (réutilise le composant du dashboard).
 const POS: Record<string, string> = { FOR: "POUR", AGAINST: "CONTRE", ABSTENTION: "ABSTENTION" };
 const posLabel: Record<string, string> = { FOR: "Pour", AGAINST: "Contre", ABSTENTION: "Abstention", DID_NOT_VOTE: "N'a pas voté" };
+
+// « À contre-courant » : l'eurodéputé a voté à l'inverse du résultat final du scrutin
+// (a voté POUR un texte rejeté, ou CONTRE un texte adopté).
+const againstCurrent = (v: any) =>
+  (v.position === "FOR" && v.result === "REJECTED") || (v.position === "AGAINST" && v.result === "ADOPTED");
 
 const fmtDate = (d: string | null) =>
   !d ? "" : new Date(d).toLocaleDateString("fr-FR", { day: "numeric", month: "long", year: "numeric" });
@@ -277,9 +282,21 @@ export default function MepClient({ mep, initialVotes }: { mep: any; initialVote
                           <Sparkles size={11} /> Comprendre ce vote
                         </span>
                       </div>
-                      <span className="shrink-0 text-[10px] font-black uppercase tracking-widest text-slate-500">
-                        {posLabel[v.position] || v.position}
-                      </span>
+                      <div className="shrink-0 flex flex-col items-end gap-1.5">
+                        <span className="text-[10px] font-black uppercase tracking-widest text-slate-500">
+                          {posLabel[v.position] || v.position}
+                        </span>
+                        {v.result && (
+                          <span className={`inline-flex items-center gap-1 rounded-full px-2 py-0.5 text-[9px] font-black uppercase tracking-wide ${v.result === "ADOPTED" ? "bg-emerald-500/10 text-emerald-600" : "bg-rose-500/10 text-rose-600"}`}>
+                            {v.result === "ADOPTED" ? "Adopté" : "Rejeté"}
+                          </span>
+                        )}
+                        {againstCurrent(v) && (
+                          <span className="inline-flex items-center gap-1 rounded-full bg-amber-500/15 px-2 py-0.5 text-[9px] font-black uppercase tracking-wide text-amber-700 dark:text-amber-400" title="A voté à l'inverse du résultat final">
+                            <TrendingDown size={10} /> À contre-courant
+                          </span>
+                        )}
+                      </div>
                     </button>
                   ))}
                 </div>
@@ -314,6 +331,8 @@ export default function MepClient({ mep, initialVotes }: { mep: any; initialVote
               <h3 className="mt-1 text-lg font-bold leading-snug">{openVote.title}</h3>
               <p className="mt-1 text-[11px] font-bold text-white/70">
                 {fmtDate(openVote.voted_at)}{openVote.reference ? ` · ${openVote.reference}` : ""} · Position : {posLabel[openVote.position] || openVote.position}
+                {openVote.result ? ` · Scrutin ${openVote.result === "ADOPTED" ? "adopté" : "rejeté"}` : ""}
+                {againstCurrent(openVote) ? " · à contre-courant" : ""}
               </p>
             </div>
             <div className="overflow-y-auto p-6 space-y-5">

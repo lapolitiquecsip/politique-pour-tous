@@ -554,13 +554,28 @@ export const api = {
       p_limit: filters.limit || 20,
     });
     if (error) throw error;
-    return (data || []) as LegislativeListItem[];
+    const items = (data || []) as LegislativeListItem[];
+    // Enrichissement : le RPC ne renvoie pas le TYPE de texte (proposition/projet). On le
+    // récupère en lot depuis la table (lecture publique) pour permettre le tri par type.
+    if (items.length) {
+      const ids = items.map(i => i.id);
+      const { data: types } = await supabase.from('legislative_dossiers').select('id, text_type').in('id', ids);
+      const byId = new Map((types || []).map((t: any) => [t.id, t.text_type]));
+      for (const it of items) (it as any).text_type = byId.get(it.id) || null;
+    }
+    return items;
   },
 
   getLegislativeDossier: async (id: string) => {
     const { data, error } = await supabase.rpc('public_legislative_dossier', { p_id: id });
     if (error) throw error;
-    return data as LegislativeDossierDetail | null;
+    const detail = data as LegislativeDossierDetail | null;
+    // Enrichit la fiche avec la chambre saisie, le type et l'étape (non portés par le RPC).
+    if (detail?.dossier?.id) {
+      const { data: meta } = await supabase.from('legislative_dossiers').select('current_chamber, text_type, status_code').eq('id', detail.dossier.id).maybeSingle();
+      if (meta) Object.assign(detail.dossier, meta);
+    }
+    return detail;
   },
 
   getProposals: async () => {

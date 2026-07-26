@@ -27,6 +27,7 @@ export interface LegislativeListItem {
   status_label: string;
   author_name: string | null;
   current_chamber?: string | null;
+  text_type?: string | null;   // 'proposal' (proposition de loi) | 'bill' (projet de loi)
   latest_step_at?: string | null;
   cursor_date?: string | null;
   promulgated_at?: string | null;
@@ -42,6 +43,7 @@ export interface LegislativeDossierDetail {
   dossier: {
     id: string; title: string; category: LegislativeCategory; status_label: string;
     author_name: string | null; source_updated_at: string; source_urls: string[];
+    current_chamber?: string | null; text_type?: string | null; status_code?: string | null;
   };
   promulgation: { jorf_id: string; nor: string; promulgated_at: string; source_url: string } | null;
   summary: { summary: string; source_urls: string[] } | null;

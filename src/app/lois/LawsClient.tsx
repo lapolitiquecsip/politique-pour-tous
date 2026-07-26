@@ -21,6 +21,35 @@ import {
 
 type Tab = "promulgated" | "ongoing";
 
+// --- Reclassement ergonomique de la navette parlementaire (inspiré de Datan) ---------------
+// Chambre où le texte est ACTUELLEMENT examiné.
+const CHAMBERS: Array<{ value: string | null; label: string; short: string }> = [
+  { value: null, label: "Toutes les chambres", short: "Toutes" },
+  { value: "AN", label: "Assemblée nationale", short: "Assemblée nationale" },
+  { value: "SENAT", label: "Sénat", short: "Sénat" },
+];
+const chamberStyle = (c?: string | null) =>
+  c === "AN" ? { label: "Assemblée nationale", cls: "bg-blue-50 text-blue-700 border-blue-200" }
+  : c === "SENAT" ? { label: "Sénat", cls: "bg-rose-50 text-rose-700 border-rose-200" }
+  : c === "CC" ? { label: "Conseil constitutionnel", cls: "bg-purple-50 text-purple-700 border-purple-200" }
+  : { label: "Journal officiel", cls: "bg-emerald-50 text-emerald-700 border-emerald-200" };
+// Type de texte : qui en est à l'origine.
+const typeLabel = (t?: string | null) => t === "bill" ? "Projet de loi" : t === "proposal" ? "Proposition de loi" : null;
+const TYPES: Array<{ value: string | null; label: string }> = [
+  { value: null, label: "Tous les textes" },
+  { value: "proposal", label: "Propositions de loi" },
+  { value: "bill", label: "Projets de loi" },
+];
+// Étape courante dans la navette.
+const STAGES: Array<{ value: string | null; label: string }> = [
+  { value: null, label: "Toutes les étapes" },
+  { value: "filed", label: "Déposé" },
+  { value: "committee", label: "En commission" },
+  { value: "public_debate", label: "En séance" },
+  { value: "voted", label: "Voté" },
+];
+const stageLabel = (code?: string | null) => STAGES.find(s => s.value === code)?.label || null;
+
 function formatDate(value?: string | null) {
   if (!value) return "Date indisponible";
   return new Intl.DateTimeFormat("fr-FR", { dateStyle: "long" }).format(new Date(value));
@@ -259,10 +288,28 @@ function DossierModal({ detail, loading, onClose }: { detail: LegislativeDossier
             <div className="mb-3 text-xs font-black uppercase tracking-[0.2em] text-red-600">{categoryLabel(detail.dossier.category)}</div>
             <h2 className="text-4xl font-staatliches uppercase leading-none text-slate-950 md:text-6xl">{detail.dossier.title}</h2>
             <div className="mt-5 flex flex-wrap gap-2 text-sm font-bold text-slate-600">
-              <span className="rounded-full bg-slate-100 px-4 py-2">{detail.dossier.status_label}</span>
               <InitiatorField authorName={detail.dossier.author_name} />
               <span className="rounded-full bg-slate-100 px-4 py-2">Mise à jour : {formatDate(detail.dossier.source_updated_at)}</span>
             </div>
+
+            {/* État d'avancement (façon Datan) : chambre saisie, type, étape en cours. */}
+            {(() => {
+              const ch = chamberStyle(detail.dossier.current_chamber);
+              const tl = typeLabel(detail.dossier.text_type);
+              const promulgated = !!detail.promulgation;
+              return (
+                <div className="mt-6 flex flex-wrap items-center gap-3 rounded-3xl border border-slate-200 bg-slate-50 p-5">
+                  <div>
+                    <p className="text-[10px] font-black uppercase tracking-widest text-slate-400">{promulgated ? "Statut" : "Actuellement examiné par"}</p>
+                    <span className={`mt-1 inline-block rounded-full border px-4 py-1.5 text-sm font-black ${promulgated ? "bg-emerald-50 text-emerald-700 border-emerald-200" : ch.cls}`}>
+                      {promulgated ? "Promulguée au Journal officiel" : ch.label}
+                    </span>
+                  </div>
+                  {tl && <div><p className="text-[10px] font-black uppercase tracking-widest text-slate-400">Type</p><span className="mt-1 inline-block rounded-full bg-white border border-slate-200 px-4 py-1.5 text-sm font-black text-slate-700">{tl}</span></div>}
+                  <div><p className="text-[10px] font-black uppercase tracking-widest text-slate-400">Étape</p><span className="mt-1 inline-block rounded-full bg-white border border-slate-200 px-4 py-1.5 text-sm font-black text-slate-700">{detail.dossier.status_label}</span></div>
+                </div>
+              );
+            })()}
 
             <section className="mt-10"><h3 className="text-2xl font-staatliches uppercase text-slate-950">Résumé</h3><p className="mt-3 leading-7 text-slate-700">{detail.summary?.summary || "Analyse indisponible."}</p></section>
             {detail.premium_analysis ? (
@@ -297,6 +344,10 @@ function LawsContent() {
   const [tab, setTab] = useState<Tab>("promulgated");
   const [category, setCategory] = useState<LegislativeCategory | null>(null);
   const [search, setSearch] = useState("");
+  // Filtres propres à la navette parlementaire (onglet « textes en cours »).
+  const [chamber, setChamber] = useState<string | null>(null);   // AN | SENAT (côté serveur)
+  const [stage, setStage] = useState<string | null>(null);       // status_code (côté serveur)
+  const [textType, setTextType] = useState<string | null>(null); // proposal | bill (côté client)
   const [items, setItems] = useState<LegislativeListItem[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
@@ -308,12 +359,17 @@ function LawsContent() {
   const load = useCallback(async () => {
     setLoading(true); setError(null);
     try {
-      const rows = tab === "promulgated" ? await api.getPromulgatedLaws({ category, search, limit: 40 }) : await api.getLegislativeDossiers({ category, search, limit: 40 });
+      const rows = tab === "promulgated"
+        ? await api.getPromulgatedLaws({ category, search, limit: 40 })
+        : await api.getLegislativeDossiers({ category, search, chamber: chamber || undefined, status: stage || undefined, limit: 40 });
       setItems(rows); setHasMore(rows.length === 40);
     } catch (cause) {
       console.error(cause); setError("Les données législatives sont momentanément indisponibles.");
     } finally { setLoading(false); }
-  }, [tab, category, search]);
+  }, [tab, category, search, chamber, stage]);
+
+  // Le type (proposition/projet) est filtré côté client (non porté par le RPC).
+  const visibleItems = tab === "ongoing" && textType ? items.filter(i => (i as any).text_type === textType) : items;
 
   useEffect(() => { const timer = window.setTimeout(load, 250); return () => window.clearTimeout(timer); }, [load]);
 
@@ -337,7 +393,7 @@ function LawsContent() {
     try {
       const rows = tab === "promulgated"
         ? await api.getPromulgatedLaws({ category, search, cursorDate: last.promulgated_at || undefined, cursorId: last.jorf_id || undefined, limit: 40 })
-        : await api.getLegislativeDossiers({ category, search, cursorDate: last.cursor_date || undefined, cursorId: last.official_id, limit: 40 });
+        : await api.getLegislativeDossiers({ category, search, chamber: chamber || undefined, status: stage || undefined, cursorDate: last.cursor_date || undefined, cursorId: last.official_id, limit: 40 });
       setItems(current => [...current, ...rows]); setHasMore(rows.length === 40);
     } finally { setLoading(false); }
   };
@@ -353,14 +409,63 @@ function LawsContent() {
           <label className="flex flex-1 items-center gap-3 rounded-xl border border-slate-200 bg-white px-4 text-slate-600 focus-within:border-slate-400"><Search size={18} /><input value={search} onChange={event => setSearch(event.target.value)} className="w-full bg-transparent py-4 outline-none text-slate-900 placeholder:text-slate-400" placeholder="Rechercher un texte officiel" /></label>
           <select value={category || ""} onChange={event => setCategory((event.target.value || null) as LegislativeCategory | null)} className="rounded-xl border border-slate-200 bg-white px-4 py-4 font-bold text-slate-900 outline-none"><option value="">Toutes les catégories</option>{LEGISLATIVE_CATEGORIES.map(item => <option key={item.value} value={item.value}>{item.label}</option>)}</select>
         </div>
+
+        {/* Sous-filtres de la navette : où en est le texte, quel type, quelle étape. */}
+        {tab === "ongoing" && (
+          <div className="flex flex-col gap-3 border-t border-slate-200 pt-4">
+            <div>
+              <p className="mb-2 text-[10px] font-black uppercase tracking-widest text-slate-400">Chambre saisie actuellement</p>
+              <div className="inline-flex flex-wrap gap-2">
+                {CHAMBERS.map(c => (
+                  <button key={c.label} onClick={() => setChamber(c.value)} className={`rounded-full px-4 py-2 text-[11px] font-black uppercase tracking-wide transition ${chamber === c.value ? "bg-slate-950 text-white shadow" : "bg-white border border-slate-200 text-slate-600 hover:border-slate-400"}`}>{c.short}</button>
+                ))}
+              </div>
+            </div>
+            <div className="flex flex-col gap-3 sm:flex-row sm:gap-8">
+              <div>
+                <p className="mb-2 text-[10px] font-black uppercase tracking-widest text-slate-400">Type de texte</p>
+                <div className="inline-flex flex-wrap gap-2">
+                  {TYPES.map(t => (
+                    <button key={t.label} onClick={() => setTextType(t.value)} className={`rounded-full px-4 py-2 text-[11px] font-black uppercase tracking-wide transition ${textType === t.value ? "bg-red-600 text-white shadow" : "bg-white border border-slate-200 text-slate-600 hover:border-red-300"}`}>{t.label}</button>
+                  ))}
+                </div>
+              </div>
+              <div>
+                <p className="mb-2 text-[10px] font-black uppercase tracking-widest text-slate-400">Étape</p>
+                <div className="inline-flex flex-wrap gap-2">
+                  {STAGES.map(s => (
+                    <button key={s.label} onClick={() => setStage(s.value)} className={`rounded-full px-4 py-2 text-[11px] font-black uppercase tracking-wide transition ${stage === s.value ? "bg-amber-500 text-white shadow" : "bg-white border border-slate-200 text-slate-600 hover:border-amber-300"}`}>{s.label}</button>
+                  ))}
+                </div>
+              </div>
+            </div>
+          </div>
+        )}
       </div>
 
-      <div className="mt-10"><h2 className="text-4xl font-staatliches uppercase md:text-6xl text-slate-900">{tab === "promulgated" ? "Publiées au Journal officiel" : "Dans la navette parlementaire"}</h2><p className="mt-2 text-slate-500">{tab === "promulgated" ? "Seule une publication JORF peut faire apparaître un texte ici." : "Projets et propositions, classés par dernière étape officielle."}</p></div>
+      <div className="mt-10"><h2 className="text-4xl font-staatliches uppercase md:text-6xl text-slate-900">{tab === "promulgated" ? "Publiées au Journal officiel" : "Dans la navette parlementaire"}</h2><p className="mt-2 text-slate-500">{tab === "promulgated" ? "Seule une publication JORF peut faire apparaître un texte ici." : "Suivez chaque texte : la chambre qui l'examine, son type et son étape."}</p></div>
       {loading && <div className="flex justify-center py-24"><Loader2 className="animate-spin text-red-600" /></div>}
       {error && <div className="mt-8 rounded-2xl bg-red-50 p-5 font-bold text-red-800">{error}</div>}
-      {!loading && !error && <div className="mt-8 grid gap-5 md:grid-cols-2">{items.map(item => <button key={item.id} onClick={() => openDossier(item.id)} className="group rounded-[2rem] border border-slate-200 bg-white p-7 text-left shadow-sm transition hover:-translate-y-1 hover:shadow-xl"><div className="flex items-start justify-between gap-4"><span className="rounded-full bg-red-50 px-3 py-1 text-[10px] font-black uppercase tracking-widest text-red-700">{categoryLabel(item.category)}</span><span className="text-xs font-bold text-slate-400">{item.current_chamber || "JORF"}</span></div><h3 className="mt-5 text-2xl font-staatliches uppercase leading-tight text-slate-950 md:text-3xl">{item.title}</h3><p className="mt-4 line-clamp-3 text-sm leading-6 text-slate-600">{item.summary || "Analyse indisponible."}</p><div className="mt-6 flex items-center justify-between border-t pt-4 text-xs font-bold text-slate-500"><span><CalendarDays className="mr-2 inline" size={14} />{formatDate(item.promulgated_at || item.latest_step_at)}</span><span className="text-red-600">Voir la fiche →</span></div></button>)}</div>}
-      {!loading && !error && !items.length && <div className="py-20 text-center text-slate-500">Aucun texte officiel ne correspond à ces filtres.</div>}
-      {!error && items.length > 0 && hasMore && <div className="mt-10 text-center"><button onClick={loadMore} disabled={loading} className="rounded-full bg-slate-950 px-8 py-4 font-black text-white disabled:opacity-50">Charger plus de textes</button></div>}
+      {!loading && !error && <div className="mt-8 grid gap-5 md:grid-cols-2">{visibleItems.map(item => {
+        const ch = chamberStyle(item.current_chamber);
+        const tl = tab === "ongoing" ? typeLabel((item as any).text_type) : null;
+        const sl = tab === "ongoing" ? stageLabel(item.status_code) : null;
+        return (
+          <button key={item.id} onClick={() => openDossier(item.id)} className="group rounded-[2rem] border border-slate-200 bg-white p-7 text-left shadow-sm transition hover:-translate-y-1 hover:shadow-xl">
+            <div className="flex flex-wrap items-center gap-2">
+              {tab === "ongoing" && <span className={`rounded-full border px-3 py-1 text-[10px] font-black uppercase tracking-widest ${ch.cls}`}>{ch.label}</span>}
+              {tl && <span className="rounded-full bg-slate-100 px-3 py-1 text-[10px] font-black uppercase tracking-widest text-slate-600">{tl}</span>}
+              {sl && <span className="rounded-full bg-amber-50 px-3 py-1 text-[10px] font-black uppercase tracking-widest text-amber-700">{sl}</span>}
+              <span className="ml-auto rounded-full bg-red-50 px-3 py-1 text-[10px] font-black uppercase tracking-widest text-red-700">{categoryLabel(item.category)}</span>
+            </div>
+            <h3 className="mt-5 text-2xl font-staatliches uppercase leading-tight text-slate-950 md:text-3xl">{item.title}</h3>
+            <p className="mt-4 line-clamp-3 text-sm leading-6 text-slate-600">{item.summary || "Analyse indisponible."}</p>
+            <div className="mt-6 flex items-center justify-between border-t pt-4 text-xs font-bold text-slate-500"><span><CalendarDays className="mr-2 inline" size={14} />{formatDate(item.promulgated_at || item.latest_step_at)}</span><span className="text-red-600">Voir la fiche →</span></div>
+          </button>
+        );
+      })}</div>}
+      {!loading && !error && !visibleItems.length && <div className="py-20 text-center text-slate-500">Aucun texte officiel ne correspond à ces filtres.</div>}
+      {!error && visibleItems.length > 0 && hasMore && <div className="mt-10 text-center"><button onClick={loadMore} disabled={loading} className="rounded-full bg-slate-950 px-8 py-4 font-black text-white disabled:opacity-50">Charger plus de textes</button></div>}
       <DossierModal detail={detail} loading={detailLoading} onClose={closeDossier} />
     </section>
   );

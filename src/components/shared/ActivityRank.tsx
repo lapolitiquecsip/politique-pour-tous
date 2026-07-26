@@ -94,9 +94,15 @@ export default function ActivityRank({
           </span>
         )}
         {pct != null && (
-          <span className="inline-flex items-center rounded-full bg-slate-100 dark:bg-slate-800 px-4 py-2 text-sm font-bold text-slate-600 dark:text-slate-300">
-            Plus assidu·e que {pct}% des {peerLabel}
-          </span>
+          pct >= 50 ? (
+            <span className="inline-flex items-center rounded-full bg-slate-100 dark:bg-slate-800 px-4 py-2 text-sm font-bold text-slate-600 dark:text-slate-300">
+              Plus assidu·e que {pct}% des {peerLabel}
+            </span>
+          ) : (
+            <span className="inline-flex items-center rounded-full bg-rose-500/10 px-4 py-2 text-sm font-bold text-rose-700 dark:text-rose-300">
+              Moins assidu·e que {100 - pct}% des {peerLabel}
+            </span>
+          )
         )}
         {topDecile && (
           <span className="inline-flex items-center gap-1.5 rounded-full bg-gradient-to-br from-emerald-400 to-teal-600 px-4 py-2 text-sm font-black uppercase tracking-wide text-white shadow-lg shadow-emerald-500/30">

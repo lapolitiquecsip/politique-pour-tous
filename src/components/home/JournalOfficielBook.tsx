@@ -61,26 +61,30 @@ export default function JournalOfficielBook() {
       {/* Le livre : reliure centrale, page gauche (date) + page droite (loi) qui se tourne. */}
       <div className="relative mx-auto" style={{ perspective: 2200 }}>
         <div className="grid grid-cols-1 overflow-hidden rounded-[1.5rem] shadow-2xl md:grid-cols-2 md:rounded-[2rem]">
-          {/* Page gauche — le jour, façon frontispice. */}
-          <div className="relative hidden flex-col justify-between bg-[#f3ead6] p-10 md:flex"
-            style={{ backgroundImage: "repeating-linear-gradient(180deg, transparent, transparent 33px, rgba(120,90,40,0.06) 34px)" }}>
-            <div className="flex items-center gap-2 text-[10px] font-black uppercase tracking-[0.3em] text-amber-800/70">
+          {/* Page gauche — le jour, façon frontispice, dégradé de la marque. */}
+          <div className="relative hidden flex-col justify-between overflow-hidden bg-gradient-to-br from-red-600 via-rose-600 to-fuchsia-700 p-10 text-white md:flex"
+            style={{ backgroundImage: "linear-gradient(135deg, #dc2626, #e11d5f 45%, #a21caf), repeating-linear-gradient(180deg, transparent, transparent 33px, rgba(255,255,255,0.06) 34px)" }}>
+            <div className="pointer-events-none absolute -left-10 -top-10 h-40 w-40 rounded-full bg-white/10 blur-2xl" />
+            <div className="pointer-events-none absolute -bottom-12 right-6 h-36 w-36 rounded-full bg-fuchsia-300/20 blur-2xl" />
+            <div className="relative flex items-center gap-2 text-[10px] font-black uppercase tracking-[0.3em] text-white/80">
               <BookOpen size={14} /> Journal Officiel
             </div>
             {date && (
-              <div className="text-amber-900">
-                <p className="font-staatliches text-8xl leading-none">{String(date.jour).padStart(2, "0")}</p>
-                <p className="mt-1 text-2xl font-bold capitalize">{date.mois}</p>
-                <p className="text-lg text-amber-800/70">{date.annee}</p>
+              <div className="relative">
+                <p className="font-staatliches text-9xl leading-none drop-shadow-sm">{String(date.jour).padStart(2, "0")}</p>
+                <p className="mt-1 text-3xl font-bold capitalize">{date.mois}</p>
+                <p className="text-lg text-white/70">{date.annee}</p>
               </div>
             )}
-            <p className="text-[11px] italic text-amber-800/60">Lois promulguées de la République française.</p>
+            <p className="relative text-[11px] italic text-white/70">Lois promulguées de la République française.</p>
             {/* Ombre de reliure au centre. */}
-            <div className="pointer-events-none absolute inset-y-0 right-0 w-10 bg-gradient-to-l from-black/15 to-transparent" />
+            <div className="pointer-events-none absolute inset-y-0 right-0 w-10 bg-gradient-to-l from-black/25 to-transparent" />
           </div>
 
           {/* Page droite — la loi (se tourne). */}
-          <div className="relative bg-[#fbf6ea] min-h-[440px]">
+          <div className="relative min-h-[440px] bg-white dark:bg-slate-900">
+            <div className="pointer-events-none absolute inset-x-0 top-0 h-1.5 bg-gradient-to-r from-red-600 via-rose-500 to-fuchsia-600" />
+            <div className="pointer-events-none absolute -right-10 top-10 h-40 w-40 rounded-full bg-rose-500/5 blur-3xl" />
             <div className="pointer-events-none absolute inset-y-0 left-0 hidden w-10 bg-gradient-to-r from-black/12 to-transparent md:block" />
             <AnimatePresence mode="wait" custom={dir}>
               <motion.div
@@ -94,13 +98,13 @@ export default function JournalOfficielBook() {
                 className="flex h-full flex-col p-8 md:p-10"
               >
                 <div className="mb-4 flex items-center justify-between">
-                  <span className="rounded-full bg-red-700/10 px-3 py-1 text-[10px] font-black uppercase tracking-widest text-red-800">{categoryLabel(law.category)}</span>
-                  <span className="text-[11px] font-bold text-amber-800/60 md:hidden">{date ? `${date.jour} ${date.mois} ${date.annee}` : ""}</span>
-                  {law.nor && <span className="hidden font-mono text-[11px] text-amber-800/60 md:inline">NOR : {law.nor}</span>}
+                  <span className="rounded-full bg-gradient-to-r from-red-600 to-fuchsia-600 px-3 py-1 text-[10px] font-black uppercase tracking-widest text-white shadow-sm">{categoryLabel(law.category)}</span>
+                  <span className="text-[11px] font-bold text-slate-400 md:hidden">{date ? `${date.jour} ${date.mois} ${date.annee}` : ""}</span>
+                  {law.nor && <span className="hidden font-mono text-[11px] text-slate-400 md:inline">NOR : {law.nor}</span>}
                 </div>
-                <h3 className="font-staatliches text-3xl uppercase leading-tight text-slate-900 md:text-4xl">{law.title}</h3>
-                <p className="mt-4 flex-1 overflow-hidden text-[15px] leading-7 text-slate-700 line-clamp-[8]">{law.summary || "Texte promulgué et publié au Journal officiel."}</p>
-                <Link href={`/lois/?dossier=${law.id}`} className="mt-4 inline-flex items-center gap-2 self-start rounded-full bg-slate-900 px-5 py-2.5 text-[11px] font-black uppercase tracking-widest text-white transition hover:bg-red-700">
+                <h3 className="font-staatliches text-3xl uppercase leading-tight text-slate-900 dark:text-white md:text-4xl">{law.title}</h3>
+                <p className="mt-4 flex-1 overflow-hidden text-[15px] leading-7 text-slate-600 dark:text-slate-300 line-clamp-[8]">{law.summary || "Texte promulgué et publié au Journal officiel."}</p>
+                <Link href={`/lois/?dossier=${law.id}`} className="mt-4 inline-flex items-center gap-2 self-start rounded-full bg-gradient-to-r from-red-600 to-fuchsia-600 px-5 py-2.5 text-[11px] font-black uppercase tracking-widest text-white shadow-lg shadow-rose-500/30 transition hover:shadow-rose-500/50">
                   Lire la loi & son parcours <ArrowRight size={14} />
                 </Link>
               </motion.div>

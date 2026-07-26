@@ -45,8 +45,12 @@ export default function ActivityRank({
     median = mid[Math.floor(mid.length / 2)];
   }
 
-  const topDecile = rank != null && count != null && rank <= Math.max(1, Math.ceil(count * 0.1));
-  const bottomDecile = rank != null && count != null && rank > count - Math.max(1, Math.ceil(count * 0.1));
+  // Épinglage seuil-conscient : le classement seul ne suffit pas (au Sénat, le vote délégué
+  // par groupe sature les taux vers 100 %). On n'épingle « plus assidu » que si le taux est
+  // réellement élevé, et « moins assidu » que si le taux est réellement bas — pour ne jamais
+  // stigmatiser à tort un·e élu·e à 95 %.
+  const topDecile = rank != null && count != null && rank <= Math.max(1, Math.ceil(count * 0.1)) && r >= 90;
+  const bottomDecile = rank != null && count != null && rank > count - Math.max(1, Math.ceil(count * 0.1)) && r < 75;
 
   return (
     <section className="rounded-[2.5rem] border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900 p-8">

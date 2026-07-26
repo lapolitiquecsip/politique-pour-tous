@@ -148,6 +148,13 @@ export const api = {
     return rows;
   },
 
+  // Résultats de vote par groupe politique du Parlement européen (officiel, par scrutin).
+  getVoteGroupResults: async (voteId: string) => {
+    if (!voteId) return null;
+    const { data } = await supabase.from('vote_group_results').select('groups').eq('vote_id', voteId).maybeSingle();
+    return (data?.groups as any[]) || null;
+  },
+
   // Explication pédagogique d'un vote (pré-générée par IA à partir des métadonnées officielles).
   getVoteExplanation: async (voteId: string) => {
     if (!voteId) return null;

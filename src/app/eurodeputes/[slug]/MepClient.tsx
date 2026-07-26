@@ -95,10 +95,14 @@ export default function MepClient({ mep, initialVotes }: { mep: any; initialVote
   // Explication IA d'un vote : ouverte au clic, chargée depuis la base (pré-générée).
   const [openVote, setOpenVote] = useState<any | null>(null);
   const [exp, setExp] = useState<any | null | undefined>(undefined); // undefined = en cours
+  const [groupsVote, setGroupsVote] = useState<any[] | null>(null);
   const openExplanation = async (v: any) => {
-    setOpenVote(v); setExp(undefined);
-    const e = await api.getVoteExplanation(String(v.vote_id));
-    setExp(e ?? null);
+    setOpenVote(v); setExp(undefined); setGroupsVote(null);
+    const [e, g] = await Promise.all([
+      api.getVoteExplanation(String(v.vote_id)),
+      api.getVoteGroupResults(String(v.vote_id)),
+    ]);
+    setExp(e ?? null); setGroupsVote(g);
   };
 
   // Bio structurée + situation judiciaire.
@@ -374,6 +378,43 @@ export default function MepClient({ mep, initialVotes }: { mep: any; initialVote
                   <p className="text-[10px] italic text-slate-400">Explication rédigée par IA à partir des métadonnées officielles du scrutin. Neutre et factuelle.</p>
                 </>
               )}
+
+              {/* Position PAR GROUPE au Parlement européen (données officielles). */}
+              {groupsVote && groupsVote.length > 0 && (
+                <div>
+                  <p className="text-[10px] font-black uppercase tracking-widest text-slate-400">Position des groupes</p>
+                  <div className="mt-2 space-y-2">
+                    {groupsVote.map((g: any, idx: number) => {
+                      const total = (g.for || 0) + (g.against || 0) + (g.abstention || 0) + (g.dnv || 0);
+                      const pct = (n: number) => total ? `${(n / total) * 100}%` : "0%";
+                      const verdict = g.position === "FOR" ? { l: "Pour", c: "text-emerald-600" }
+                        : g.position === "AGAINST" ? { l: "Contre", c: "text-rose-600" }
+                        : g.position === "ABSTENTION" ? { l: "Abst.", c: "text-amber-600" }
+                        : { l: "Absent", c: "text-slate-400" };
+                      return (
+                        <div key={idx} className="flex items-center gap-3">
+                          <span className="w-14 shrink-0 text-[11px] font-black uppercase tracking-wide text-slate-700 dark:text-slate-200">{g.code}</span>
+                          <div className="flex h-3 flex-1 overflow-hidden rounded-full bg-slate-100 dark:bg-slate-800" title={`Pour ${g.for} · Contre ${g.against} · Abst. ${g.abstention} · N'a pas voté ${g.dnv}`}>
+                            <span className="bg-emerald-500" style={{ width: pct(g.for) }} />
+                            <span className="bg-rose-500" style={{ width: pct(g.against) }} />
+                            <span className="bg-amber-400" style={{ width: pct(g.abstention) }} />
+                            <span className="bg-slate-300 dark:bg-slate-600" style={{ width: pct(g.dnv) }} />
+                          </div>
+                          <span className={`w-14 shrink-0 text-right text-[11px] font-black uppercase tracking-wide ${verdict.c}`}>{verdict.l}</span>
+                        </div>
+                      );
+                    })}
+                  </div>
+                  <div className="mt-2 flex flex-wrap gap-x-3 gap-y-1 text-[9px] font-bold uppercase tracking-widest text-slate-400">
+                    <span className="inline-flex items-center gap-1"><span className="h-2 w-2 rounded-full bg-emerald-500" />Pour</span>
+                    <span className="inline-flex items-center gap-1"><span className="h-2 w-2 rounded-full bg-rose-500" />Contre</span>
+                    <span className="inline-flex items-center gap-1"><span className="h-2 w-2 rounded-full bg-amber-400" />Abstention</span>
+                    <span className="inline-flex items-center gap-1"><span className="h-2 w-2 rounded-full bg-slate-300 dark:bg-slate-600" />N'a pas voté</span>
+                  </div>
+                  <p className="mt-2 text-[10px] italic text-slate-400">Source : Parlement européen via HowTheyVote.eu.</p>
+                </div>
+              )}
+
               {openVote.url && (
                 <a href={openVote.url} target="_blank" rel="noopener noreferrer" className="inline-flex items-center gap-1.5 text-[11px] font-black uppercase tracking-widest text-sky-600 hover:text-sky-500">
                   <ExternalLink size={13} /> Voir le détail officiel du scrutin

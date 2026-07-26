@@ -137,7 +137,7 @@ export default function HelpBubble() {
                     <p className={`text-[10px] font-black uppercase tracking-[0.25em] ${eu ? th.eyebrow : "text-white/70"}`}>
                       {parcours ? `Comprendre en ${parcours.steps.length} étapes` : "Aide & lexique"}
                     </p>
-                    <h3 className="mt-0.5 font-staatliches text-2xl uppercase leading-none tracking-tight md:text-3xl">
+                    <h3 className="mt-0.5 font-staatliches text-xl uppercase leading-[1.05] tracking-tight md:text-2xl">
                       {parcours ? parcours.title : "Comprendre le site"}
                     </h3>
                     <p className="mt-1.5 text-[12px] leading-snug text-white/85">{parcours ? parcours.intro : "Les notions clés, expliquées simplement."}</p>

@@ -3,7 +3,6 @@
 import { motion } from "framer-motion";
 import { BookOpen } from "lucide-react";
 import LawsClient from "./LawsClient";
-import HemicycleChart from "@/components/lois/HemicycleChart";
 
 export default function LawsPage() {
   return (
@@ -55,11 +54,6 @@ export default function LawsPage() {
             </p>
           </motion.div>
         </div>
-      </div>
-
-      {/* Composition du Parlement (hémicycles AN + Sénat), juste au-dessus des textes. */}
-      <div className="mb-4">
-        <HemicycleChart />
       </div>
 
       {/* 2. CONTENU INTERACTIF (CLIENT) - BOUGHT UP CLOSER */}

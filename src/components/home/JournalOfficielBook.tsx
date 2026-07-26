@@ -15,21 +15,44 @@ function frDate(d?: string | null) {
   return m ? { jour: +m[3], mois: MOIS[+m[2] - 1], annee: m[1] } : null;
 }
 
+const PAGE = 40;
+
 export default function JournalOfficielBook() {
   const [laws, setLaws] = useState<LegislativeListItem[] | null>(null);
   const [i, setI] = useState(0);
   const [dir, setDir] = useState(1);
+  const [hasMore, setHasMore] = useState(true);
+  const [loadingMore, setLoadingMore] = useState(false);
 
   useEffect(() => {
     let active = true;
-    api.getPromulgatedLaws({ limit: 40 }).then(rows => { if (active) setLaws(rows); }).catch(() => setLaws([]));
+    api.getPromulgatedLaws({ limit: PAGE }).then(rows => { if (active) { setLaws(rows); setHasMore(rows.length === PAGE); } }).catch(() => setLaws([]));
     return () => { active = false; };
   }, []);
+
+  // Charge la suite du Journal quand on approche de la dernière page chargée.
+  const loadMore = async () => {
+    if (!laws || loadingMore || !hasMore) return;
+    setLoadingMore(true);
+    const last = laws[laws.length - 1];
+    try {
+      const rows = await api.getPromulgatedLaws({ limit: PAGE, cursorDate: last.promulgated_at || undefined, cursorId: last.jorf_id || undefined });
+      setLaws(cur => [...(cur || []), ...rows]);
+      setHasMore(rows.length === PAGE);
+    } finally { setLoadingMore(false); }
+  };
 
   if (!laws) return <div className="flex justify-center py-20"><Loader2 className="animate-spin text-red-600" /></div>;
   if (laws.length === 0) return null;
 
-  const go = (d: number) => { setDir(d); setI(v => Math.min(laws.length - 1, Math.max(0, v + d))); };
+  const go = (d: number) => {
+    setDir(d);
+    setI(v => {
+      const next = Math.max(0, Math.min(laws.length - 1, v + d));
+      if (d > 0 && next >= laws.length - 3) void loadMore(); // précharge la suite
+      return next;
+    });
+  };
   const law = laws[i];
   const date = frDate(law.promulgated_at);
 
@@ -89,8 +112,8 @@ export default function JournalOfficielBook() {
       {/* Commandes de feuilletage. */}
       <div className="mt-6 flex items-center justify-center gap-6">
         <button onClick={() => go(-1)} disabled={i === 0} className="flex h-12 w-12 items-center justify-center rounded-full border border-slate-200 bg-white text-slate-700 shadow-sm transition hover:border-red-300 hover:text-red-600 disabled:opacity-40 dark:bg-slate-900 dark:border-slate-700 dark:text-slate-200"><ChevronLeft /></button>
-        <span className="text-sm font-black uppercase tracking-widest text-slate-500">Loi {i + 1} / {laws.length}</span>
-        <button onClick={() => go(1)} disabled={i === laws.length - 1} className="flex h-12 w-12 items-center justify-center rounded-full border border-slate-200 bg-white text-slate-700 shadow-sm transition hover:border-red-300 hover:text-red-600 disabled:opacity-40 dark:bg-slate-900 dark:border-slate-700 dark:text-slate-200"><ChevronRight /></button>
+        <span className="text-sm font-black uppercase tracking-widest text-slate-500">Loi {i + 1} / {laws.length}{hasMore ? "+" : ""}</span>
+        <button onClick={() => go(1)} disabled={i === laws.length - 1 && !hasMore} className="flex h-12 w-12 items-center justify-center rounded-full border border-slate-200 bg-white text-slate-700 shadow-sm transition hover:border-red-300 hover:text-red-600 disabled:opacity-40 dark:bg-slate-900 dark:border-slate-700 dark:text-slate-200">{loadingMore && i >= laws.length - 1 ? <Loader2 size={18} className="animate-spin" /> : <ChevronRight />}</button>
       </div>
     </div>
   );

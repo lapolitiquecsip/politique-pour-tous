@@ -34,8 +34,8 @@ export default function DiscoveryClient({ initialDeputies, single }: { initialDe
 
   return (
     <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
-      {/* 1. GLOBAL POSTER HEADER */}
-      <div className="mb-16">
+      {/* 1. GLOBAL POSTER HEADER — masqué sur les pages dédiées (le titre vient de la page). */}
+      {!single && <div className="mb-16">
         <div className="relative mb-8 text-center">
           <h1 className="text-5xl md:text-7xl font-staatliches uppercase tracking-tighter leading-none relative z-10 text-black dark:text-white">
             <span className="text-slate-900 opacity-[0.08] absolute -top-10 left-1/2 -translate-x-1/2 select-none hidden md:block whitespace-nowrap">
@@ -89,7 +89,7 @@ export default function DiscoveryClient({ initialDeputies, single }: { initialDe
             </button>
           </div>
         </div>}
-      </div>
+      </div>}
 
       {/* Content Rendering */}
       <div className="transition-all duration-500">

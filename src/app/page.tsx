@@ -93,6 +93,9 @@ export default function Home() {
             <p className="text-[11px] font-black uppercase tracking-[0.25em] text-red-600">Ce qui est devenu loi</p>
             <h2 className="mt-2 text-4xl md:text-6xl font-staatliches uppercase tracking-tight text-slate-900 dark:text-white">Le Journal Officiel</h2>
             <p className="mt-3 text-slate-500 max-w-2xl mx-auto">Feuilletez les dernières lois promulguées — une page par jour et par texte. Cliquez pour voir le parcours complet de chaque loi.</p>
+            <p className="mt-4 inline-flex items-center gap-2 rounded-full bg-emerald-50 dark:bg-emerald-500/10 px-4 py-2 text-sm font-bold text-emerald-700 dark:text-emerald-400">
+              ✅ Publiée au Journal officiel = la loi <strong>entre en vigueur</strong> et devient applicable.
+            </p>
           </div>
           <JournalOfficielBook />
         </div>

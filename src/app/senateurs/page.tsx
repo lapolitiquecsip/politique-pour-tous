@@ -3,6 +3,7 @@ import HemicycleChart from "@/components/lois/HemicycleChart";
 import ChamberLegislation from "@/components/lois/ChamberLegislation";
 import ChamberHero from "@/components/lois/ChamberHero";
 import MemberFinderIntro from "@/components/lois/MemberFinderIntro";
+import VideoFeed from "@/components/executif/VideoFeed";
 import { Suspense } from "react";
 
 // Page dédiée au Sénat : composition + textes législatifs du Sénat + sénateurs.
@@ -18,6 +19,7 @@ export default async function SenateursPage() {
           { label: "Composition", href: "#composition" },
           { label: "Les sénateurs & leurs votes", href: "#membres" },
           { label: "Textes législatifs", href: "#textes" },
+          { label: "En vidéo", href: "#videos" },
         ]}
       />
       <section id="composition" className="scroll-mt-24 pt-4 pb-8">
@@ -31,6 +33,9 @@ export default async function SenateursPage() {
       </section>
       <section id="textes" className="scroll-mt-24">
         <ChamberLegislation chamber="SENAT" chamberLabel="Sénat" />
+      </section>
+      <section id="videos" className="scroll-mt-24 mx-auto max-w-6xl px-4 pb-16">
+        <VideoFeed source="senat" />
       </section>
     </div>
   );

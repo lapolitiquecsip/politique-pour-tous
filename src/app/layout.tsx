@@ -40,7 +40,7 @@ export default function RootLayout({
   return (
     <html
       lang="fr"
-      className={`${dmSans.variable} ${staatliches.variable} ${playfairDisplay.variable} antialiased`}
+      className={`${dmSans.variable} ${staatliches.variable} ${playfairDisplay.variable} antialiased scroll-smooth`}
       suppressHydrationWarning
     >
       <body className="min-h-screen flex flex-col font-sans bg-background text-foreground transition-colors duration-300">

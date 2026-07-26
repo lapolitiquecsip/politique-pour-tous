@@ -24,21 +24,25 @@ export default async function DeputesPage() {
 
   return (
     <div className="min-h-screen bg-white dark:bg-slate-950">
-      <ChamberHeader title="Assemblée nationale" links={[
-        { label: "Composition", href: "#composition" },
-        { label: "Textes législatifs", href: "#textes" },
-        { label: "Les députés", href: "#membres" },
-      ]} />
+      <ChamberHeader
+        title="Assemblée nationale"
+        description="Les 577 députés, élus au suffrage direct dans chaque circonscription, votent la loi, votent le budget, contrôlent le Gouvernement et peuvent le renverser. Sur cette page : trouvez votre député, consultez ses votes, son assiduité et ses initiatives, et suivez les textes examinés par l'Assemblée."
+        links={[
+          { label: "Composition", href: "#composition" },
+          { label: "Les députés & leurs votes", href: "#membres" },
+          { label: "Textes législatifs", href: "#textes" },
+        ]}
+      />
       <section id="composition" className="scroll-mt-24 pt-4 pb-8">
         <HemicycleChart chamber="an" subtitle="Assemblée nationale" title="Composition de l'Assemblée" />
-      </section>
-      <section id="textes" className="scroll-mt-24">
-        <ChamberLegislation chamber="AN" chamberLabel="Assemblée nationale" />
       </section>
       <section id="membres" className="scroll-mt-24">
         <Suspense fallback={<div className="h-64 flex items-center justify-center">Chargement...</div>}>
           <DiscoveryClient initialDeputies={mappedDeputies} single="deputies" />
         </Suspense>
+      </section>
+      <section id="textes" className="scroll-mt-24">
+        <ChamberLegislation chamber="AN" chamberLabel="Assemblée nationale" />
       </section>
     </div>
   );

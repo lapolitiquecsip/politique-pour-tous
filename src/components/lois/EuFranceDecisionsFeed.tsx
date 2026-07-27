@@ -14,8 +14,11 @@ const frDate = (d?: string | null) => {
 };
 
 const CAT_COLOR: Record<string, string> = {
+  "Justice (CJUE)": "bg-indigo-400/15 text-indigo-300 border-indigo-400/30",
   "Aides d'État": "bg-amber-400/15 text-amber-300 border-amber-400/30",
+  "Budget & finances": "bg-emerald-400/15 text-emerald-300 border-emerald-400/30",
   "Financement": "bg-emerald-400/15 text-emerald-300 border-emerald-400/30",
+  "Concentrations": "bg-slate-400/15 text-slate-300 border-slate-400/30",
   "Infractions": "bg-rose-400/15 text-rose-300 border-rose-400/30",
   "Numérique": "bg-sky-400/15 text-sky-300 border-sky-400/30",
   "Agriculture & pêche": "bg-lime-400/15 text-lime-300 border-lime-400/30",
@@ -41,7 +44,7 @@ export default function EuFranceDecisionsFeed() {
         <h2 className="text-3xl font-staatliches uppercase tracking-tight text-white md:text-4xl">
           Décisions de l'UE <span className="text-yellow-400">concernant la France</span>
         </h2>
-        <p className="mt-1 text-blue-200/70">Communiqués officiels de la Commission européenne qui concernent la France — mis à jour en continu depuis la source officielle.</p>
+        <p className="mt-1 text-blue-200/70">Actes juridiques et décisions de l'UE concernant la France — arrêts de la Cour de justice, décisions de la Commission et du Conseil, avis de la BCE — depuis les bases officielles EUR-Lex. Mise à jour automatique.</p>
       </div>
 
       {items.length === 0 ? (

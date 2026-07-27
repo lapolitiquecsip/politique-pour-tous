@@ -3,7 +3,7 @@
 import { Suspense, useCallback, useEffect, useRef, useState } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
 import Link from "next/link";
-import { CalendarDays, ExternalLink, FileText, Loader2, Search, Scale, X } from "lucide-react";
+import { ExternalLink, FileText, Loader2, Search, Scale, X } from "lucide-react";
 import { api } from "@/lib/api";
 import { cleanHtmlText, formatAmendmentOutcome } from "@/lib/html";
 import { usePremium } from "@/lib/hooks/usePremium";
@@ -18,6 +18,7 @@ import {
   type LegislativeDossierDetail,
   type LegislativeListItem,
 } from "@/lib/legislative";
+import { LawCardBody, CARD_CLASS, type LawCardStatus } from "@/components/lois/LawCard";
 
 type Tab = "promulgated" | "ongoing";
 
@@ -49,6 +50,12 @@ const STAGES: Array<{ value: string | null; label: string }> = [
   { value: "voted", label: "Voté" },
 ];
 const stageLabel = (code?: string | null) => STAGES.find(s => s.value === code)?.label || null;
+// Étape courante → badge de statut coloré (façon fil « Derniers votes »).
+const stageStatus = (code?: string | null): LawCardStatus =>
+  code === "voted" ? { label: "Voté", tone: "green" }
+  : code === "public_debate" ? { label: "En séance", tone: "blue" }
+  : code === "filed" ? { label: "Déposé", tone: "slate" }
+  : { label: stageLabel(code) || "En commission", tone: "amber" };
 
 function formatDate(value?: string | null) {
   if (!value) return "Date indisponible";
@@ -446,21 +453,19 @@ function LawsContent() {
       <div className="mt-10"><h2 className="text-4xl font-staatliches uppercase md:text-6xl text-slate-900">{tab === "promulgated" ? "Publiées au Journal officiel" : "Dans la navette parlementaire"}</h2><p className="mt-2 text-slate-500">{tab === "promulgated" ? "Seule une publication JORF peut faire apparaître un texte ici." : "Suivez chaque texte : la chambre qui l'examine, son type et son étape."}</p></div>
       {loading && <div className="flex justify-center py-24"><Loader2 className="animate-spin text-red-600" /></div>}
       {error && <div className="mt-8 rounded-2xl bg-red-50 p-5 font-bold text-red-800">{error}</div>}
-      {!loading && !error && <div className="mt-8 grid gap-5 md:grid-cols-2">{visibleItems.map(item => {
-        const ch = chamberStyle(item.current_chamber);
-        const tl = tab === "ongoing" ? typeLabel((item as any).text_type) : null;
-        const sl = tab === "ongoing" ? stageLabel(item.status_code) : null;
+      {!loading && !error && <div className="mt-8 grid gap-5 sm:grid-cols-2 lg:grid-cols-3">{visibleItems.map(item => {
+        const status: LawCardStatus | null = tab === "promulgated"
+          ? { label: "Promulguée", tone: "green" }
+          : stageStatus(item.status_code);
         return (
-          <button key={item.id} onClick={() => openDossier(item.id)} className="group rounded-[2rem] border border-slate-200 bg-white p-7 text-left shadow-sm transition hover:-translate-y-1 hover:shadow-xl">
-            <div className="flex flex-wrap items-center gap-2">
-              {tab === "ongoing" && <span className={`rounded-full border px-3 py-1 text-[10px] font-black uppercase tracking-widest ${ch.cls}`}>{ch.label}</span>}
-              {tl && <span className="rounded-full bg-slate-100 px-3 py-1 text-[10px] font-black uppercase tracking-widest text-slate-600">{tl}</span>}
-              {sl && <span className="rounded-full bg-amber-50 px-3 py-1 text-[10px] font-black uppercase tracking-widest text-amber-700">{sl}</span>}
-              <span className="ml-auto rounded-full bg-red-50 px-3 py-1 text-[10px] font-black uppercase tracking-widest text-red-700">{categoryLabel(item.category)}</span>
-            </div>
-            <h3 className="mt-5 text-2xl font-staatliches uppercase leading-tight text-slate-950 md:text-3xl">{item.display_title || item.title}</h3>
-            <p className="mt-4 line-clamp-3 text-sm leading-6 text-slate-600">{item.summary || "Analyse indisponible."}</p>
-            <div className="mt-6 flex items-center justify-between border-t pt-4 text-xs font-bold text-slate-500"><span><CalendarDays className="mr-2 inline" size={14} />{formatDate(item.promulgated_at || item.latest_step_at)}</span><span className="text-red-600">Voir la fiche →</span></div>
+          <button key={item.id} onClick={() => openDossier(item.id)} className={CARD_CLASS}>
+            <LawCardBody
+              title={item.display_title || item.title}
+              date={item.promulgated_at || item.latest_step_at}
+              status={status}
+              category={item.category}
+              typeLabel={tab === "ongoing" ? typeLabel((item as any).text_type) : null}
+            />
           </button>
         );
       })}</div>}

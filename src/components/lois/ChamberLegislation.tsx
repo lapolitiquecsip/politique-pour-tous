@@ -2,9 +2,10 @@
 
 import { useCallback, useEffect, useState } from "react";
 import Link from "next/link";
-import { CalendarDays, Loader2, FileText } from "lucide-react";
+import { Loader2 } from "lucide-react";
 import { api } from "@/lib/api";
-import { categoryLabel, type LegislativeListItem } from "@/lib/legislative";
+import { type LegislativeListItem } from "@/lib/legislative";
+import { LawCardBody, CARD_CLASS, type LawCardStatus } from "./LawCard";
 
 // Textes législatifs actuellement examinés par UNE chambre (AN ou Sénat). Reprend la donnée
 // de la navette filtrée par chambre ; chaque carte ouvre la fiche du dossier sur /lois.
@@ -21,7 +22,11 @@ const STAGES: Array<{ value: string | null; label: string }> = [
   { value: "public_debate", label: "En séance" },
   { value: "voted", label: "Voté" },
 ];
-const stageLabel = (code?: string | null) => STAGES.find(s => s.value === code)?.label || null;
+const stageStatus = (code?: string | null): LawCardStatus =>
+  code === "voted" ? { label: "Voté", tone: "green" }
+  : code === "public_debate" ? { label: "En séance", tone: "blue" }
+  : code === "filed" ? { label: "Déposé", tone: "slate" }
+  : { label: STAGES.find(s => s.value === code)?.label || "En commission", tone: "amber" };
 
 export default function ChamberLegislation({ chamber, chamberLabel }: { chamber: "AN" | "SENAT"; chamberLabel: string }) {
   const [stage, setStage] = useState<string | null>(null);
@@ -81,23 +86,18 @@ export default function ChamberLegislation({ chamber, chamberLabel }: { chamber:
       ) : visible.length === 0 ? (
         <div className="py-16 text-center text-slate-500">Aucun texte ne correspond à ces filtres pour cette chambre.</div>
       ) : (
-        <div className="grid gap-5 md:grid-cols-2">
-          {visible.map(item => {
-            const tl = typeLabel((item as any).text_type);
-            const sl = stageLabel(item.status_code);
-            return (
-              <Link key={item.id} href={`/lois/?dossier=${item.id}`} className="group rounded-[2rem] border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900 p-7 shadow-sm transition hover:-translate-y-1 hover:shadow-xl">
-                <div className="flex flex-wrap items-center gap-2">
-                  {tl && <span className="rounded-full bg-slate-100 dark:bg-slate-800 px-3 py-1 text-[10px] font-black uppercase tracking-widest text-slate-600 dark:text-slate-300">{tl}</span>}
-                  {sl && <span className="rounded-full bg-amber-50 dark:bg-amber-500/10 px-3 py-1 text-[10px] font-black uppercase tracking-widest text-amber-700 dark:text-amber-400">{sl}</span>}
-                  <span className="ml-auto rounded-full bg-red-50 dark:bg-red-500/10 px-3 py-1 text-[10px] font-black uppercase tracking-widest text-red-700 dark:text-red-400">{categoryLabel(item.category)}</span>
-                </div>
-                <h3 className="mt-5 text-2xl font-staatliches uppercase leading-tight text-slate-950 dark:text-white">{item.display_title || item.title}</h3>
-                <p className="mt-4 line-clamp-3 text-sm leading-6 text-slate-600 dark:text-slate-300">{item.summary || "Analyse indisponible."}</p>
-                <div className="mt-6 flex items-center justify-between border-t border-slate-100 dark:border-slate-800 pt-4 text-xs font-bold text-slate-500"><span><CalendarDays className="mr-2 inline" size={14} />{item.latest_step_at ? new Date(item.latest_step_at).toLocaleDateString("fr-FR") : "—"}</span><span className="text-red-600">Voir la fiche →</span></div>
-              </Link>
-            );
-          })}
+        <div className="grid gap-5 sm:grid-cols-2 lg:grid-cols-3">
+          {visible.map(item => (
+            <Link key={item.id} href={`/lois/?dossier=${item.id}`} className={CARD_CLASS}>
+              <LawCardBody
+                title={item.display_title || item.title}
+                date={item.latest_step_at}
+                status={stageStatus(item.status_code)}
+                category={item.category}
+                typeLabel={typeLabel((item as any).text_type)}
+              />
+            </Link>
+          ))}
         </div>
       )}
       {visible.length > 0 && hasMore && <div className="mt-8 text-center"><button onClick={loadMore} disabled={loading} className="rounded-full bg-slate-950 px-8 py-4 font-black text-white disabled:opacity-50">Charger plus de textes</button></div>}

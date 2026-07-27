@@ -669,6 +669,17 @@ export const api = {
     return data || [];
   },
 
+  // Projets concrets cofinancés par l'UE en France (base officielle Kohesio).
+  getEuFranceProjects: async (limit = 300) => {
+    const { data, error } = await supabase
+      .from('eu_france_projects')
+      .select('id, name, eu_budget_eur, total_budget_eur, region, image_url, description, url')
+      .order('eu_budget_eur', { ascending: false })
+      .limit(limit);
+    if (error) { console.error(error); return []; }
+    return data || [];
+  },
+
   // France ↔ budget de l'UE (donnée curée annuelle officielle).
   getEuFranceBudget: async () => {
     const { data, error } = await supabase

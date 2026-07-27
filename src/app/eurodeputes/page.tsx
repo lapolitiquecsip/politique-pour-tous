@@ -3,6 +3,7 @@ import EurodeputesClient from "./EurodeputesClient";
 import HemicycleChart from "@/components/lois/HemicycleChart";
 import EuropeHero from "@/components/lois/EuropeHero";
 import EuFranceBudget from "@/components/lois/EuFranceBudget";
+import EuFranceProjects from "@/components/lois/EuFranceProjects";
 import EuFranceDecisionsFeed from "@/components/lois/EuFranceDecisionsFeed";
 
 export const dynamic = "force-static";
@@ -16,6 +17,7 @@ export default async function EurodeputesPage() {
         links={[
           { label: "Composition", href: "#composition" },
           { label: "France & budget de l'UE", href: "#budget" },
+          { label: "Projets financés par l'UE", href: "#projets" },
           { label: "Décisions concernant la France", href: "#decisions" },
           { label: "Les eurodéputés & leurs votes", href: "#membres" },
         ]}
@@ -24,10 +26,13 @@ export default async function EurodeputesPage() {
         <HemicycleChart chamber="eu" subtitle="Parlement européen" title="Eurodéputés français" />
       </section>
 
-      {/* Bande bleu nuit UE : rapport financier France↔UE + fil des décisions. */}
+      {/* Bande bleu nuit UE : budget France↔UE + projets financés + fil des décisions. */}
       <div className="bg-gradient-to-b from-[#0a1a3f] to-[#050d24] py-16 space-y-16">
         <section id="budget" className="scroll-mt-24">
           <EuFranceBudget />
+        </section>
+        <section id="projets" className="scroll-mt-24">
+          <EuFranceProjects />
         </section>
         <section id="decisions" className="scroll-mt-24">
           <EuFranceDecisionsFeed />

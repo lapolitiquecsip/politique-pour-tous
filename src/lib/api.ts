@@ -636,6 +636,28 @@ export const api = {
     return data || [];
   },
 
+  // Derniers votes solennels « sur l'ensemble » d'un texte à l'Assemblée : issue, votes par
+  // parti (group_results) et étape suivante vérifiée (via scrutin_navette). Pour la page AN.
+  getRecentAssemblyTexts: async (limit = 12) => {
+    const { data, error } = await supabase
+      .from('scrutins')
+      .select('id, numero, date_scrutin, title, objet, resultat, category, summary, why_it_matters, pour, contre, abstention, non_votant, group_results, dossier_url')
+      .eq('type', 'LOI')
+      .ilike('title', "l'ensemble%")
+      .order('date_scrutin', { ascending: false })
+      .limit(limit);
+    if (error) { console.error(error); return []; }
+    const scrutins = data || [];
+    if (scrutins.length === 0) return [];
+    // Étape suivante (table séparée, tolérante si absente / migration non encore appliquée).
+    try {
+      const ids = scrutins.map((s: any) => s.id);
+      const { data: nav } = await supabase.from('scrutin_navette').select('scrutin_id, navette_status, navette_label').in('scrutin_id', ids);
+      const byId = new Map((nav || []).map((n: any) => [n.scrutin_id, n]));
+      return scrutins.map((s: any) => ({ ...s, navette: byId.get(s.id) || null }));
+    } catch { return scrutins.map((s: any) => ({ ...s, navette: null })); }
+  },
+
   getLegislativeDossier: async (id: string) => {
     const { data, error } = await supabase.rpc('public_legislative_dossier', { p_id: id });
     if (error) throw error;

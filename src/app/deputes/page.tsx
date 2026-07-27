@@ -2,6 +2,7 @@ import { api } from "@/lib/api";
 import DiscoveryClient from "./DiscoveryClient";
 import HemicycleChart from "@/components/lois/HemicycleChart";
 import ChamberLegislation from "@/components/lois/ChamberLegislation";
+import AdoptedTextsFeed from "@/components/lois/AdoptedTextsFeed";
 import ChamberHero from "@/components/lois/ChamberHero";
 import MemberFinderIntro from "@/components/lois/MemberFinderIntro";
 import VideoFeed from "@/components/executif/VideoFeed";
@@ -33,6 +34,7 @@ export default async function DeputesPage() {
         description="Les 577 députés, élus au suffrage direct dans chaque circonscription, votent la loi, votent le budget, contrôlent le Gouvernement et peuvent le renverser. Sur cette page : trouvez votre député, consultez ses votes, son assiduité et ses initiatives, et suivez les textes examinés par l'Assemblée."
         links={[
           { label: "Composition", href: "#composition" },
+          { label: "Derniers textes adoptés", href: "#adoptes" },
           { label: "Les députés & leurs votes", href: "#membres" },
           { label: "Textes législatifs", href: "#textes" },
           { label: "Séances & auditions", href: "#videos" },
@@ -40,6 +42,9 @@ export default async function DeputesPage() {
       />
       <section id="composition" className="scroll-mt-24 pt-4 pb-8">
         <HemicycleChart chamber="an" subtitle="Assemblée nationale" title="Composition de l'Assemblée" />
+      </section>
+      <section id="adoptes" className="scroll-mt-24 pb-12">
+        <AdoptedTextsFeed />
       </section>
       <section id="membres" className="scroll-mt-24">
         <MemberFinderIntro role="député" roleShort="député" accent="text-emerald-600" />

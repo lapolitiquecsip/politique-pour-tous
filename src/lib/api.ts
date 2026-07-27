@@ -658,6 +658,29 @@ export const api = {
     } catch { return scrutins.map((s: any) => ({ ...s, navette: null })); }
   },
 
+  // Fil « Décisions de l'UE concernant la France » (communiqués officiels de la Commission).
+  getEuFranceDecisions: async (limit = 30) => {
+    const { data, error } = await supabase
+      .from('eu_france_decisions')
+      .select('id, title, summary, url, published_at, category, institution')
+      .order('published_at', { ascending: false })
+      .limit(limit);
+    if (error) { console.error(error); return []; }
+    return data || [];
+  },
+
+  // France ↔ budget de l'UE (donnée curée annuelle officielle).
+  getEuFranceBudget: async () => {
+    const { data, error } = await supabase
+      .from('eu_france_budget')
+      .select('year, contribution_eur, spending_eur, breakdown, source_url, source_label')
+      .order('year', { ascending: false })
+      .limit(1)
+      .maybeSingle();
+    if (error) { console.error(error); return null; }
+    return data;
+  },
+
   getLegislativeDossier: async (id: string) => {
     const { data, error } = await supabase.rpc('public_legislative_dossier', { p_id: id });
     if (error) throw error;

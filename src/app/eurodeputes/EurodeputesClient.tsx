@@ -2,7 +2,7 @@
 
 import { useMemo, useState } from "react";
 import Link from "next/link";
-import { Search, Star } from "lucide-react";
+import { Search, Star, MousePointerClick } from "lucide-react";
 
 const GROUP_CLR: Record<string, string> = {
   RE: "bg-amber-500", PPE: "bg-blue-600", SD: "bg-rose-500", VERTS: "bg-emerald-500",
@@ -31,11 +31,14 @@ export default function EurodeputesClient({ meps }: { meps: any[] }) {
   return (
     <main className="pb-20">
       <div className="container mx-auto max-w-6xl px-4 mt-4 space-y-6">
-        <div className="flex flex-col items-center gap-1 text-center">
+        <div className="flex flex-col items-center gap-2 text-center">
           <p className="inline-flex items-center gap-2 text-[11px] font-black uppercase tracking-widest text-[#003399] dark:text-[#8CA6E8]">
             <Star size={14} className="fill-[#FFCC00] text-[#FFCC00]" /> {meps.length} eurodéputés français
           </p>
-          <p className="text-sm text-slate-500">Recherchez, filtrez par groupe, et ouvrez une fiche pour voir les votes.</p>
+          <p className="text-sm text-slate-500">Recherchez ou filtrez par groupe politique.</p>
+          <p className="inline-flex items-center gap-2 rounded-full border border-[#003399]/20 bg-[#003399]/[0.06] px-4 py-1.5 text-xs font-bold text-[#003399] dark:border-[#8CA6E8]/25 dark:bg-[#8CA6E8]/10 dark:text-[#8CA6E8]">
+            <MousePointerClick size={14} /> Cliquez sur un eurodéputé pour voir toute son activité : ses votes par thème et sa présence.
+          </p>
         </div>
         <div className="flex flex-col sm:flex-row gap-3">
           <div className="relative flex-1">

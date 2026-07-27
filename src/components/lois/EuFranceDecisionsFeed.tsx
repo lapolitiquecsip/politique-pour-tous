@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect, useMemo, useState } from "react";
-import { Loader2, ExternalLink, Landmark } from "lucide-react";
+import { Loader2, ExternalLink, Landmark, ChevronDown } from "lucide-react";
 import { api } from "@/lib/api";
 
 // Fil « Décisions & législation de l'UE concernant la France » — actes juridiques officiels
@@ -34,6 +34,7 @@ export default function EuFranceDecisionsFeed() {
   const [items, setItems] = useState<any[] | null>(null);
   const [filter, setFilter] = useState<string>("Tout");
   const [limit, setLimit] = useState(20);
+  const [open, setOpen] = useState(false);
 
   useEffect(() => {
     let active = true;
@@ -60,21 +61,28 @@ export default function EuFranceDecisionsFeed() {
 
   return (
     <section className="mx-auto max-w-6xl px-4">
-      <div className="mb-6">
-        <h2 className="text-3xl font-staatliches uppercase tracking-tight text-white md:text-4xl">
-          Décisions & lois de l'UE <span className="text-yellow-400">concernant la France</span>
-        </h2>
-        <p className="mt-1 text-blue-200/70">Arrêts de la Cour de justice visant la France, décisions de la Commission et du Conseil, et directives &amp; règlements européens qui s'appliquent en France — depuis les bases officielles EUR-Lex. Mise à jour automatique.</p>
-      </div>
+      {/* En-tête cliquable : le fil est replié par défaut pour ne pas allonger la page. */}
+      <button onClick={() => setOpen(o => !o)} className="flex w-full items-start justify-between gap-4 text-left">
+        <div>
+          <h2 className="text-3xl font-staatliches uppercase tracking-tight text-white md:text-4xl">
+            Décisions & lois de l'UE <span className="text-yellow-400">concernant la France</span>
+          </h2>
+          <p className="mt-1 text-blue-200/70">Arrêts de la Cour de justice visant la France, décisions de la Commission et du Conseil, et directives &amp; règlements européens qui s'appliquent en France — depuis les bases officielles EUR-Lex.</p>
+        </div>
+        <span className="mt-1 flex shrink-0 items-center gap-2 rounded-full border border-white/15 bg-white/5 px-4 py-2 text-[11px] font-black uppercase tracking-widest text-yellow-300">
+          {open ? "Fermer" : `Voir les ${items.length}`}
+          <ChevronDown size={16} className={`transition-transform ${open ? "rotate-180" : ""}`} />
+        </span>
+      </button>
 
-      {items.length === 0 ? (
-        <div className="rounded-3xl border border-white/10 bg-white/5 p-8 text-center text-blue-200/70">
+      {!open ? null : items.length === 0 ? (
+        <div className="mt-6 rounded-3xl border border-white/10 bg-white/5 p-8 text-center text-blue-200/70">
           Ce fil s'alimente automatiquement depuis les bases officielles de l'UE.
         </div>
       ) : (
         <>
           {/* Filtre par type. */}
-          <div className="mb-5 flex flex-wrap gap-2">
+          <div className="mb-5 mt-6 flex flex-wrap gap-2">
             {[["Tout", items.length] as [string, number], ...cats].map(([c, n]) => (
               <button key={c} onClick={() => { setFilter(c); setLimit(20); }}
                 className={`rounded-full border px-3.5 py-1.5 text-[11px] font-black uppercase tracking-wider transition ${filter === c ? "border-yellow-400 bg-yellow-400 text-blue-950" : "border-white/15 bg-white/5 text-blue-100 hover:border-yellow-400/40"}`}>

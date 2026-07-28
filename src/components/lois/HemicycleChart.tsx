@@ -131,8 +131,8 @@ export default function HemicycleChart({ chamber = "both", title, subtitle }: { 
     if (chamber === "both" || chamber === "an") {
       api.getParties().then((rows: any[]) => {
         if (!active) return;
-        setAn((rows || []).filter(r => r.effectif > 0 && r.color).map(r => ({
-          label: r.abbrev || r.name, seats: r.effectif, color: r.color, order: AN_ORDER[r.abbrev] ?? AN_ORDER[r.name] ?? 8, slug: r.slug || null,
+        setAn((rows || []).filter(r => r.effectif > 0).map(r => ({
+          label: r.abbrev || r.name, seats: r.effectif, color: r.color || "#8D949A", order: AN_ORDER[r.abbrev] ?? AN_ORDER[r.name] ?? 8, slug: r.slug || null,
         })));
       }).catch(() => setAn([]));
     }

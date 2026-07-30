@@ -462,11 +462,6 @@ export default function DeputyDetailPage({ params }: { params: Promise<{ slug: s
                     <ExternalLink className="w-4 h-4" />
                     Envoyer un message
                  </button>
-
-                 {/* Même bouton de suivi que les sénateurs/eurodéputés (composant partagé). */}
-                 <div className="[&_a]:w-full [&_a]:justify-center [&_button]:w-full [&_button]:justify-center [&_button]:py-4 [&_a]:py-4">
-                   <FollowButton kind="deputy" id={deputy?.id ? String(deputy.id) : null} label="ce député" />
-                 </div>
                </div>
             </div>
           </motion.div>
@@ -478,6 +473,11 @@ export default function DeputyDetailPage({ params }: { params: Promise<{ slug: s
             transition={{ delay: 0.2 }}
             className="lg:col-span-2 space-y-10"
           >
+            {/* Suivi bien en évidence, en tête de colonne (comme la fiche sénateur). */}
+            <div className="flex justify-start">
+              <FollowButton kind="deputy" id={deputy?.id ? String(deputy.id) : null} label="ce député" />
+            </div>
+
             {/* NEW: Biography / Background Section (Collapsible Editorial Style) */}
             {deputy?.biography && (
               <div className="bg-white dark:bg-slate-900 rounded-[3rem] border border-slate-200 dark:border-slate-800 shadow-xl relative overflow-hidden group pb-2">

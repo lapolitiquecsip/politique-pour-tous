@@ -34,7 +34,7 @@ export function LawCardBody({
 }) {
   return (
     <>
-      <div className="flex items-start justify-between gap-3">
+      <div className="flex flex-wrap items-center gap-2 pr-9">
         <span className="text-xs font-bold text-slate-400">{frDate(date)}</span>
         {status && (
           <span className={`inline-flex items-center gap-1 rounded-full px-3 py-1 text-[10px] font-black uppercase tracking-widest ${TONE[status.tone]}`}>

@@ -111,7 +111,15 @@ export default function DashboardPage() {
                 const data = await api.getScrutin(item.item_id);
                 return { ...item, data };
               } else if (item.item_type === 'law') {
-                const data = await api.getLaw(item.item_id);
+                let data: any = await api.getLaw(item.item_id);
+                // Les textes enregistrés depuis /lois sont des dossiers législatifs : repli si
+                // la table « laws » ne les résout pas, pour afficher le vrai titre.
+                if (!data) {
+                  try {
+                    const detail = await api.getLegislativeDossier(item.item_id);
+                    if (detail?.dossier) data = { ...detail.dossier, title: (detail.dossier as any).display_title || detail.dossier.title };
+                  } catch {}
+                }
                 return { ...item, data };
               } else if (item.item_type === 'commune') {
                 try {
@@ -509,7 +517,7 @@ export default function DashboardPage() {
                       </div>
                     ) : (
                       savedLaws.map((item) => (
-                        <Link key={item.id} href={`/lois?id=${item.item_id}`}>
+                        <Link key={item.id} href={`/lois/?dossier=${item.item_id}`}>
                           <div className="group flex flex-col p-6 md:p-8 rounded-[2.5rem] border border-white/10 hover:border-amber-400 hover:shadow-2xl transition-all duration-500 h-full gold-sheen-hover bg-white/[0.04] relative overflow-hidden">
                             <div className="absolute top-0 right-0 w-32 h-32 bg-amber-500/5 rounded-full -mr-16 -mt-16 group-hover:bg-amber-500/10 transition-colors" />
                             

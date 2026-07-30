@@ -6,6 +6,7 @@ import { Loader2 } from "lucide-react";
 import { api } from "@/lib/api";
 import { type LegislativeListItem } from "@/lib/legislative";
 import { LawCardBody, CARD_CLASS, type LawCardStatus } from "./LawCard";
+import SaveLawButton from "./SaveLawButton";
 
 // Textes législatifs actuellement examinés par UNE chambre (AN ou Sénat). Reprend la donnée
 // de la navette filtrée par chambre ; chaque carte ouvre la fiche du dossier sur /lois.
@@ -88,15 +89,18 @@ export default function ChamberLegislation({ chamber, chamberLabel }: { chamber:
       ) : (
         <div className="grid gap-5 sm:grid-cols-2 lg:grid-cols-3">
           {visible.map(item => (
-            <Link key={item.id} href={`/lois/?dossier=${item.id}`} className={CARD_CLASS}>
-              <LawCardBody
-                title={item.display_title || item.title}
-                date={item.latest_step_at}
-                status={stageStatus(item.status_code)}
-                category={item.category}
-                typeLabel={typeLabel((item as any).text_type)}
-              />
-            </Link>
+            <div key={item.id} className="relative">
+              <Link href={`/lois/?dossier=${item.id}`} className={CARD_CLASS}>
+                <LawCardBody
+                  title={item.display_title || item.title}
+                  date={item.latest_step_at}
+                  status={stageStatus(item.status_code)}
+                  category={item.category}
+                  typeLabel={typeLabel((item as any).text_type)}
+                />
+              </Link>
+              <SaveLawButton itemId={item.id} />
+            </div>
           ))}
         </div>
       )}

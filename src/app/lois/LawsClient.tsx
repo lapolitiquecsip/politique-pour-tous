@@ -19,6 +19,7 @@ import {
   type LegislativeListItem,
 } from "@/lib/legislative";
 import { LawCardBody, CARD_CLASS, type LawCardStatus } from "@/components/lois/LawCard";
+import SaveLawButton from "@/components/lois/SaveLawButton";
 
 type Tab = "promulgated" | "ongoing";
 
@@ -458,15 +459,18 @@ function LawsContent() {
           ? { label: "Promulguée", tone: "green" }
           : stageStatus(item.status_code);
         return (
-          <button key={item.id} onClick={() => openDossier(item.id)} className={CARD_CLASS}>
-            <LawCardBody
-              title={item.display_title || item.title}
-              date={item.promulgated_at || item.latest_step_at}
-              status={status}
-              category={item.category}
-              typeLabel={tab === "ongoing" ? typeLabel((item as any).text_type) : null}
-            />
-          </button>
+          <div key={item.id} className="relative">
+            <button onClick={() => openDossier(item.id)} className={CARD_CLASS}>
+              <LawCardBody
+                title={item.display_title || item.title}
+                date={item.promulgated_at || item.latest_step_at}
+                status={status}
+                category={item.category}
+                typeLabel={tab === "ongoing" ? typeLabel((item as any).text_type) : null}
+              />
+            </button>
+            <SaveLawButton itemId={item.id} />
+          </div>
         );
       })}</div>}
       {!loading && !error && !visibleItems.length && <div className="py-20 text-center text-slate-500">Aucun texte officiel ne correspond à ces filtres.</div>}

@@ -11,9 +11,9 @@ import { api } from "@/lib/api";
 export default function FollowButton({
   kind, id, label,
 }: {
-  kind: "mep" | "senator";
+  kind: "mep" | "senator" | "deputy";
   id: string | null | undefined;
-  label: string; // ex. « cet eurodéputé », « ce sénateur »
+  label: string; // ex. « cet eurodéputé », « ce sénateur », « ce député »
 }) {
   const { userId, isPremium } = usePremium();
   const [following, setFollowing] = useState(false);
@@ -45,6 +45,7 @@ export default function FollowButton({
     setFollowing(!prev);
     try {
       if (kind === "mep") { prev ? await api.unfollowMep(userId, String(id)) : await api.followMep(userId, String(id)); }
+      else if (kind === "deputy") { prev ? await api.unfollowDeputy(userId, String(id)) : await api.followDeputy(userId, String(id)); }
       else { prev ? await api.unfollowSenator(userId, String(id)) : await api.followSenator(userId, String(id)); }
     } catch (e) { setFollowing(prev); }
     finally { setLoading(false); }

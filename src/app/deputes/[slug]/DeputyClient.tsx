@@ -35,6 +35,7 @@ import { motion, AnimatePresence } from "framer-motion";
 import { api } from "@/lib/api";
 import { usePremium } from "@/lib/hooks/usePremium";
 import { AwardBadge } from "@/components/ui/award-badge";
+import FollowButton from "@/components/shared/FollowButton";
 import { getFullPartyName } from "@/lib/party-utils";
 import VoteDetailsModal from "@/components/deputies/VoteDetailsModal";
 import LegalStatusModal from "@/components/deputies/LegalStatusModal";
@@ -462,40 +463,10 @@ export default function DeputyDetailPage({ params }: { params: Promise<{ slug: s
                     Envoyer un message
                  </button>
 
-                 {isPremium && (
-                   <button 
-                     onClick={handleFollow}
-                     disabled={loadingFollow}
-                     className={`w-full py-4 rounded-2xl font-bold text-sm flex items-center justify-center gap-2 transition-all border-2 ${
-                       isFollowing 
-                         ? "bg-transparent border-white text-white hover:bg-white/10" 
-                         : "bg-slate-900 border-slate-900 text-white hover:bg-slate-800 shadow-lg"
-                     }`}
-                   >
-                     {loadingFollow ? (
-                       <Loader2 className="w-4 h-4 animate-spin" />
-                     ) : isFollowing ? (
-                       <>
-                         <BellRing className="w-4 h-4" />
-                         Suivi activé
-                       </>
-                     ) : (
-                       <>
-                         <Bell className="w-4 h-4" />
-                         Suivre ce député
-                       </>
-                     )}
-                   </button>
-                 )}
-
-                  {!isPremium && (
-                    <AwardBadge 
-                      titleText="Suivre (Premium)"
-                      subtitleText="Abonnement Citoyen"
-                      link="/premium"
-                      className="w-full"
-                    />
-                  )}
+                 {/* Même bouton de suivi que les sénateurs/eurodéputés (composant partagé). */}
+                 <div className="[&_a]:w-full [&_a]:justify-center [&_button]:w-full [&_button]:justify-center [&_button]:py-4 [&_a]:py-4">
+                   <FollowButton kind="deputy" id={deputy?.id ? String(deputy.id) : null} label="ce député" />
+                 </div>
                </div>
             </div>
           </motion.div>

@@ -585,7 +585,7 @@ export default function DashboardPage() {
                     ) : (
                       savedGeos.map((item) => (
                         <Link key={item.id} href={`/local?code=${item.item_id}&type=${item.item_type}`}>
-                          <div className="group relative flex h-full flex-col overflow-hidden rounded-[2.5rem] border border-white/10 bg-gradient-to-br from-emerald-500/[0.07] to-teal-600/[0.03] p-6 transition-all duration-500 hover:border-emerald-400/50 hover:shadow-2xl hover:shadow-emerald-500/10 md:p-8">
+                          <div className="group relative flex h-full flex-col overflow-hidden rounded-[2.5rem] border border-white/10 bg-gradient-to-br from-fuchsia-500/[0.07] to-pink-600/[0.03] p-6 transition-all duration-500 hover:border-fuchsia-400/50 hover:shadow-2xl hover:shadow-fuchsia-500/10 md:p-8">
                             {/* Grille façon carte */}
                             <div className="pointer-events-none absolute inset-0 opacity-[0.04] [background-image:linear-gradient(to_right,white_1px,transparent_1px),linear-gradient(to_bottom,white_1px,transparent_1px)] [background-size:24px_24px]" />
                             {/* Fond : silhouette RÉELLE du territoire (dép./région) ou skyline (commune) */}
@@ -600,7 +600,7 @@ export default function DashboardPage() {
                               if (shape) {
                                 return (
                                   <div className="pointer-events-none absolute -right-6 top-1/2 h-[155%] w-[70%] -translate-y-1/2 opacity-25 transition-transform duration-500 group-hover:scale-105">
-                                    <svg viewBox={shape.viewBox} preserveAspectRatio="xMidYMid meet" className="h-full w-full text-emerald-300">
+                                    <svg viewBox={shape.viewBox} preserveAspectRatio="xMidYMid meet" className="h-full w-full text-fuchsia-300">
                                       <path d={shape.d} fill="currentColor" fillOpacity="0.22" stroke="currentColor" strokeWidth="1.2" strokeOpacity="0.9" strokeLinejoin="round" />
                                     </svg>
                                   </div>
@@ -614,7 +614,7 @@ export default function DashboardPage() {
                               ];
                               return (
                                 <div className="pointer-events-none absolute inset-x-0 bottom-0 h-[58%] opacity-25 transition-transform duration-500 group-hover:translate-y-[-4px]">
-                                  <svg viewBox="0 0 322 140" preserveAspectRatio="xMidYMax slice" className="h-full w-full text-emerald-300">
+                                  <svg viewBox="0 0 322 140" preserveAspectRatio="xMidYMax slice" className="h-full w-full text-fuchsia-300">
                                     <g fill="currentColor">
                                       {B.map((b, i) => <rect key={i} x={b.x} y={b.y} width={b.w} height={140 - b.y} rx="2" />)}
                                       <polygon points="169,10 156,24 182,24" />
@@ -635,26 +635,26 @@ export default function DashboardPage() {
                             })()}
 
                             <div className="relative z-10 mb-6 flex items-start justify-between">
-                              <span className="rounded-full bg-emerald-500/15 px-3 py-1 text-[10px] font-black uppercase tracking-widest text-emerald-300 ring-1 ring-inset ring-emerald-400/20">
+                              <span className="rounded-full bg-fuchsia-500/15 px-3 py-1 text-[10px] font-black uppercase tracking-widest text-fuchsia-300 ring-1 ring-inset ring-fuchsia-400/20">
                                 {item.item_type === 'commune' ? 'Commune' : item.item_type === 'region' ? 'Région' : 'Département'}
                               </span>
                               {/* Marqueur de carte pulsant */}
                               <div className="relative">
-                                <span className="absolute inset-0 rounded-2xl ring-2 ring-emerald-400/30 opacity-40 animate-ping" />
-                                <div className="relative flex h-11 w-11 items-center justify-center rounded-2xl bg-emerald-500/15 text-emerald-300 ring-1 ring-emerald-400/30 transition-all group-hover:bg-emerald-500 group-hover:text-white">
-                                  {item.item_type === 'commune' ? <Building2 size={18} /> : <MapPin size={18} className="fill-emerald-400/20" />}
+                                <span className="absolute inset-0 rounded-2xl ring-2 ring-fuchsia-400/30 opacity-40 animate-ping" />
+                                <div className="relative flex h-11 w-11 items-center justify-center rounded-2xl bg-fuchsia-500/15 text-fuchsia-300 ring-1 ring-fuchsia-400/30 transition-all group-hover:bg-fuchsia-500 group-hover:text-white">
+                                  {item.item_type === 'commune' ? <Building2 size={18} /> : <MapPin size={18} className="fill-fuchsia-400/20" />}
                                 </div>
                               </div>
                             </div>
 
-                            <h4 className="relative z-10 mb-4 line-clamp-3 font-staatliches text-2xl tracking-wide text-white transition-colors group-hover:text-emerald-300">
+                            <h4 className="relative z-10 mb-4 line-clamp-3 font-staatliches text-2xl tracking-wide text-white transition-colors group-hover:text-fuchsia-300">
                               {item.data?.title}
                             </h4>
 
                             <div className="relative z-10 mt-auto flex items-center justify-between border-t border-white/10 pt-5">
                               <div className="flex items-center gap-2">
                                 {item.item_type === 'commune' && item.data?.population ? (
-                                  <span className="inline-flex items-center gap-1.5 rounded-full bg-white/5 px-3 py-1.5 text-[11px] font-black tracking-wide text-emerald-200">
+                                  <span className="inline-flex items-center gap-1.5 rounded-full bg-white/5 px-3 py-1.5 text-[11px] font-black tracking-wide text-fuchsia-200">
                                     <Users size={12} /> {item.data.population.toLocaleString('fr-FR')} hab.
                                   </span>
                                 ) : (
@@ -663,7 +663,7 @@ export default function DashboardPage() {
                                   </span>
                                 )}
                               </div>
-                              <span className="flex h-9 w-9 items-center justify-center rounded-full border border-white/10 text-slate-300 transition-all group-hover:border-emerald-400 group-hover:bg-emerald-500 group-hover:text-white">
+                              <span className="flex h-9 w-9 items-center justify-center rounded-full border border-white/10 text-slate-300 transition-all group-hover:border-fuchsia-400 group-hover:bg-fuchsia-500 group-hover:text-white">
                                 <ChevronRight size={18} />
                               </span>
                             </div>

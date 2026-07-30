@@ -112,13 +112,17 @@ export default function FeedItemCard({ item, colorIndex }: { item: ContentItem; 
           <span className="text-[10px] font-black uppercase tracking-widest text-slate-400 dark:text-slate-500">{relativeDate}</span>
         </div>
 
-        <h3 className="mb-3 text-[1.35rem] font-black leading-[1.15] tracking-tight text-slate-900 transition-colors dark:text-white">
+        <h3 className="mb-3 text-[1.35rem] font-black leading-[1.15] tracking-tight text-slate-900 line-clamp-3 transition-colors dark:text-white">
           <GlossaryText>{item.titre_simplifie}</GlossaryText>
         </h3>
 
-        <p className="mb-5 flex-grow text-[13.5px] font-medium leading-relaxed text-slate-500 line-clamp-6 dark:text-slate-400">
-          <GlossaryText>{item.resume_flash}</GlossaryText>
-        </p>
+        {/* Le résumé remplit l'espace restant et se coupe proprement (fondu) au lieu de déborder. */}
+        <div className="relative mb-4 min-h-0 flex-1 overflow-hidden">
+          <p className="text-[13.5px] font-medium leading-relaxed text-slate-500 dark:text-slate-400">
+            <GlossaryText>{item.resume_flash}</GlossaryText>
+          </p>
+          <div className="pointer-events-none absolute inset-x-0 bottom-0 h-9 bg-gradient-to-t from-white to-transparent dark:from-slate-900" />
+        </div>
 
       <div className="mt-auto pt-4 border-t border-slate-100 dark:border-slate-800">
         {item.source_url || item.source_name ? (

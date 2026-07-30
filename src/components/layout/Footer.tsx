@@ -23,9 +23,6 @@ export default function Footer() {
                 </span>
               </span>
             </Link>
-            <p className="text-slate-400 text-sm leading-relaxed max-w-xs">
-              Le premier média immersif pour décrypter la vie politique française sans filtre ni jargon.
-            </p>
           </div>
 
           {/* Site Map */}

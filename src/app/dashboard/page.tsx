@@ -171,7 +171,7 @@ export default function DashboardPage() {
           <User size={40} />
         </div>
         <h1 className="text-3xl font-bold uppercase mb-4">Connexion Requise</h1>
-        <p className="text-slate-500 max-w-md mb-8">
+        <p className="text-slate-400 max-w-md mb-8">
           Veuillez vous connecter pour accéder à votre espace personnel et suivre votre activité citoyenne.
         </p>
         <Link href="/login" className="px-8 py-4 bg-slate-900 text-white rounded-2xl font-bold hover:bg-slate-800 transition-all">
@@ -182,33 +182,34 @@ export default function DashboardPage() {
   }
 
   return (
-    <div className="min-h-screen bg-slate-50 pb-20">
+    <div className="min-h-screen bg-gradient-to-b from-[#0b1020] via-[#0a0e1c] to-[#070a14] pb-20 text-white">
       {/* 1. Dashboard Header */}
-      <section className="bg-white border-b border-slate-200 pt-28 pb-20 px-4 relative overflow-hidden">
-        {/* Animated premium background glows */}
-        <div className="absolute inset-0 opacity-10 pointer-events-none">
-          <div className="absolute top-12 left-[10%] w-72 h-72 bg-amber-500/5 rounded-full blur-[100px] animate-pulse" />
-          <div className="absolute bottom-5 right-[15%] w-60 h-60 bg-yellow-600/5 rounded-full blur-[80px]" />
+      <section className="border-b border-white/5 pt-28 pb-20 px-4 relative overflow-hidden">
+        {/* Halos dorés premium */}
+        <div className="absolute inset-0 pointer-events-none">
+          <div className="absolute top-12 left-[8%] w-80 h-80 bg-amber-500/20 rounded-full blur-[120px] animate-pulse" />
+          <div className="absolute bottom-0 right-[12%] w-72 h-72 bg-yellow-600/15 rounded-full blur-[100px]" />
+          <div className="absolute inset-0 bg-[radial-gradient(circle_at_top,rgba(251,191,36,0.08),transparent_60%)]" />
         </div>
-        <div className="absolute top-0 right-0 w-1/3 h-full bg-gradient-to-l from-amber-500/5 to-transparent pointer-events-none" />
+        <div className="absolute top-0 right-0 w-1/3 h-full bg-gradient-to-l from-amber-500/10 to-transparent pointer-events-none" />
         <div className="container mx-auto max-w-6xl relative z-10">
           <div className="flex flex-col sm:flex-row items-center sm:items-start gap-6 text-center sm:text-left">
-             <div className={`w-20 h-20 rounded-full border-2 p-1 flex items-center justify-center transition-all duration-300 ${isPremium ? 'border-amber-400 bg-gradient-to-br from-amber-100 to-yellow-100 shadow-[0_0_15px_rgba(251,191,36,0.15)] text-amber-600' : 'border-slate-300 bg-slate-100 text-slate-500'}`}>
+             <div className={`w-20 h-20 rounded-full border-2 p-1 flex items-center justify-center transition-all duration-300 ${isPremium ? 'border-amber-400 bg-gradient-to-br from-amber-400/20 to-yellow-600/10 shadow-[0_0_30px_rgba(251,191,36,0.35)] text-amber-300' : 'border-white/20 bg-white/5 text-slate-300'}`}>
                 <User size={40} />
              </div>
              <div className="flex flex-col items-center sm:items-start">
-                <div className={`inline-flex items-center gap-2 px-3.5 py-1 text-[10px] font-black uppercase rounded-full mb-3 tracking-widest ${isPremium ? 'bg-amber-100 border border-amber-200 text-amber-700 shadow-[0_0_10px_rgba(251,191,36,0.05)]' : 'bg-slate-100 border border-slate-200 text-slate-600'}`}>
+                <div className={`inline-flex items-center gap-2 px-3.5 py-1 text-[10px] font-black uppercase rounded-full mb-3 tracking-widest ${isPremium ? 'bg-amber-400/10 border border-amber-400/30 text-amber-300 shadow-[0_0_20px_rgba(251,191,36,0.15)]' : 'bg-white/5 border border-white/10 text-slate-300'}`}>
                   {isPremium && <Star size={12} className="fill-current" />}
                   {isPremium ? "Membre Elite" : "Compte Citoyen"}
                 </div>
                 <h1 className="text-5xl md:text-7xl font-staatliches uppercase tracking-tighter leading-none inline-flex items-center gap-2 md:gap-3 flex-wrap">
-                  <span className="text-slate-900">Mon Espace</span>{" "}
-                  <span className="bg-gradient-to-r from-amber-400 via-amber-500 to-yellow-600 text-white px-4 pt-1.5 pb-0.5 md:pt-3 md:pb-1 rounded-xl md:rounded-2xl shadow-sm">
+                  <span className="text-white drop-shadow-[0_2px_20px_rgba(255,255,255,0.15)]">Mon Espace</span>{" "}
+                  <span className="sword-shine bg-gradient-to-r from-amber-300 via-amber-500 to-yellow-600 text-white px-4 pt-1.5 pb-0.5 md:pt-3 md:pb-1 rounded-xl md:rounded-2xl shadow-[0_8px_30px_rgba(251,191,36,0.4)]">
                     Personnel
                   </span>
                 </h1>
-                <p className="text-slate-500 text-sm mt-3 font-medium">Gérez votre activité citoyenne et vos députés favoris.</p>
-                <div className={`h-[1px] w-32 mt-6 rounded-full ${isPremium ? 'bg-gradient-to-r from-amber-400/50 to-transparent' : 'bg-gradient-to-r from-blue-500/50 to-transparent'}`} />
+                <p className="text-slate-400 text-sm mt-3 font-medium">Gérez votre activité citoyenne et vos députés favoris.</p>
+                <div className={`h-[1px] w-32 mt-6 rounded-full ${isPremium ? 'bg-gradient-to-r from-amber-400/70 to-transparent' : 'bg-gradient-to-r from-blue-500/50 to-transparent'}`} />
              </div>
           </div>
         </div>
@@ -221,11 +222,11 @@ export default function DashboardPage() {
       )}
 
       <div className={`container mx-auto max-w-6xl px-4 ${isPremium ? "" : "-mt-16"}`}>
-        <div className="bg-white rounded-[2.5rem] border border-slate-200 shadow-2xl overflow-hidden min-h-[600px]">
+        <div className="bg-white/[0.03] backdrop-blur-xl rounded-[2.5rem] border border-white/10 shadow-2xl shadow-black/40 overflow-hidden min-h-[600px]">
           
           {/* Tabs Navigation — grille 2x2 sur mobile (4 onglets ne tiennent pas en ligne),
               rangée unique sur écran large. */}
-          <div className="grid grid-cols-2 md:flex border-b border-slate-100">
+          <div className="grid grid-cols-2 md:flex border-b border-white/10">
             <motion.button 
               whileTap={{ scale: 0.98 }}
               onClick={() => startTransition(() => setActiveTab("votes"))}
@@ -345,24 +346,24 @@ export default function DashboardPage() {
                     className="space-y-6"
                   >
                     {resolvedVotes.length === 0 ? (
-                      <div className="text-center py-20 bg-slate-50 rounded-[2rem] border border-dashed border-slate-200">
-                        <Vote className="mx-auto mb-4 text-slate-300" size={48} />
+                      <div className="text-center py-20 bg-white/[0.03] rounded-[2rem] border border-dashed border-white/15">
+                        <Vote className="mx-auto mb-4 text-white/25" size={48} />
                         <h3 className="text-xl font-bold mb-2">Aucun vote enregistré</h3>
-                        <p className="text-slate-500 mb-8 max-w-sm mx-auto">Votez sur les prochaines lois pour voir apparaître vos positions ici.</p>
-                        <Link href="/lois" className="text-slate-950 font-black uppercase text-xs tracking-widest hover:underline">Voir les lois &rarr;</Link>
+                        <p className="text-slate-400 mb-8 max-w-sm mx-auto">Votez sur les prochaines lois pour voir apparaître vos positions ici.</p>
+                        <Link href="/lois" className="text-amber-400 font-black uppercase text-xs tracking-widest hover:underline">Voir les lois &rarr;</Link>
                       </div>
                     ) : (
                       resolvedVotes.map((v) => {
                         const lawInfo = v.laws || v.scrutins;
 
                         return (
-                          <div key={v.id} className="group flex flex-col md:flex-row md:items-center gap-4 md:gap-6 p-4 md:p-6 rounded-3xl border border-slate-100 hover:border-slate-300 hover:shadow-xl transition-all bg-white relative">
-                            <div className="w-14 h-14 rounded-2xl bg-slate-50 flex items-center justify-center shrink-0 transition-transform group-hover:scale-105">
+                          <div key={v.id} className="group flex flex-col md:flex-row md:items-center gap-4 md:gap-6 p-4 md:p-6 rounded-3xl border border-white/10 hover:border-white/25 hover:shadow-xl transition-all gold-sheen-hover bg-white/[0.04] relative">
+                            <div className="w-14 h-14 rounded-2xl bg-white/5 flex items-center justify-center shrink-0 transition-transform group-hover:scale-105">
                               <BallotBox vote={v.vote} size={34} />
                             </div>
                             <div className="flex-1 min-w-0">
                               <div className="flex items-center gap-3 mb-1">
-                                <span className="text-[10px] font-black uppercase tracking-widest text-slate-400 bg-slate-50 px-2 py-0.5 rounded border border-slate-100">
+                                <span className="text-[10px] font-black uppercase tracking-widest text-slate-400 bg-white/5 px-2 py-0.5 rounded border border-white/10">
                                   {lawInfo?.category || "Législation"}
                                 </span>
                                 <div className="flex items-center gap-1.5 text-[10px] font-bold text-slate-400">
@@ -371,7 +372,7 @@ export default function DashboardPage() {
                                 </div>
                               </div>
                               {titreOuNull(lawInfo) ? (
-                                <h3 className="text-lg font-bold text-slate-900 truncate">
+                                <h3 className="text-lg font-bold text-white truncate">
                                   {titreOuNull(lawInfo)}
                                 </h3>
                               ) : (
@@ -383,7 +384,7 @@ export default function DashboardPage() {
                             <BallotChip vote={v.vote} />
                             <Link 
                               href={`/lois`}
-                              className="w-10 h-10 rounded-full border border-slate-100 flex items-center justify-center text-slate-400 hover:bg-slate-950 hover:text-white hover:border-slate-950 transition-all shrink-0"
+                              className="w-10 h-10 rounded-full border border-white/10 flex items-center justify-center text-slate-400 hover:bg-slate-950 hover:text-white hover:border-slate-950 transition-all shrink-0"
                             >
                               <ArrowRight size={18} />
                             </Link>
@@ -401,29 +402,29 @@ export default function DashboardPage() {
                     className="grid grid-cols-1 md:grid-cols-2 gap-6"
                   >
                     {!isPremium ? (
-                      <div className="col-span-full text-center py-20 bg-slate-50 rounded-[2.5rem] border-2 border-dashed border-amber-200">
+                      <div className="col-span-full text-center py-20 bg-amber-400/[0.06] rounded-[2.5rem] border-2 border-dashed border-amber-400/30">
                         <div className="w-16 h-16 bg-amber-100 rounded-full flex items-center justify-center text-amber-600 mx-auto mb-6">
                             <Star size={32} className="fill-current" />
                         </div>
                         <h3 className="text-2xl font-bold uppercase mb-2">Suivi Député Réservé Elite</h3>
-                        <p className="text-slate-500 mb-8 max-w-sm mx-auto">
+                        <p className="text-slate-400 mb-8 max-w-sm mx-auto">
                           Suivez vos députés favoris et recevez leurs derniers votes directement ici en passant Premium.
                         </p>
-                        <Link href="/premium" className="inline-flex items-center gap-2 px-8 py-4 bg-slate-900 text-white rounded-2xl font-bold hover:bg-slate-800 transition-all">
+                        <Link href="/premium" className="inline-flex items-center gap-2 px-8 py-4 bg-gradient-to-r from-amber-400 to-yellow-600 text-slate-950 rounded-2xl font-black hover:brightness-110 transition-all shadow-[0_8px_30px_rgba(251,191,36,0.35)]">
                           Devenir Premium Elite
                         </Link>
                       </div>
                     ) : followedDeputies.length === 0 ? (
-                      <div className="col-span-full text-center py-20 bg-slate-50 rounded-[2rem] border border-dashed border-slate-200">
-                        <Users className="mx-auto mb-4 text-slate-300" size={48} />
+                      <div className="col-span-full text-center py-20 bg-white/[0.03] rounded-[2rem] border border-dashed border-white/15">
+                        <Users className="mx-auto mb-4 text-white/25" size={48} />
                         <h3 className="text-xl font-bold mb-2">Aucun élu suivi</h3>
-                        <p className="text-slate-500 mb-8 max-w-sm mx-auto">Suivez vos députés, sénateurs et eurodéputés pour recevoir leurs derniers votes et positions.</p>
-                        <Link href="/deputes" className="text-slate-950 font-black uppercase text-xs tracking-widest hover:underline">Explorer les élus &rarr;</Link>
+                        <p className="text-slate-400 mb-8 max-w-sm mx-auto">Suivez vos députés, sénateurs et eurodéputés pour recevoir leurs derniers votes et positions.</p>
+                        <Link href="/deputes" className="text-amber-400 font-black uppercase text-xs tracking-widest hover:underline">Explorer les élus &rarr;</Link>
                       </div>
                     ) : (
                       followedDeputies.map((f) => (
                         <Link key={f.id} href={f.elu_href || "#"}>
-                          <div className="group flex items-center gap-4 md:gap-6 p-4 md:p-6 rounded-3xl border border-slate-100 hover:border-amber-400 hover:shadow-xl transition-all h-full bg-white relative overflow-hidden">
+                          <div className="group flex items-center gap-4 md:gap-6 p-4 md:p-6 rounded-3xl border border-white/10 hover:border-amber-400 hover:shadow-xl transition-all h-full gold-sheen-hover bg-white/[0.04] relative overflow-hidden">
                             <div className="absolute top-0 right-0 w-24 h-24 bg-amber-500/5 rounded-full -mr-12 -mt-12 group-hover:bg-amber-500/10 transition-colors" />
                             
                             <img 
@@ -437,7 +438,7 @@ export default function DashboardPage() {
                               }}
                             />
                             <div className="flex-1 min-w-0">
-                              <h4 className="text-xl font-bold text-slate-900 group-hover:text-amber-600 transition-colors truncate">
+                              <h4 className="text-xl font-bold text-white group-hover:text-amber-600 transition-colors truncate">
                                 {f.elu?.first_name} {f.elu?.last_name}
                               </h4>
                               <div className="flex items-center gap-2 text-slate-400">
@@ -449,7 +450,7 @@ export default function DashboardPage() {
                               {/* La chambre est plus informative qu'un « suivi actif » redondant :
                                   les trois chambres cohabitent désormais dans cette liste. */}
                               <div className={`flex items-center gap-2 text-[10px] font-black uppercase tracking-widest px-3 py-1 rounded-lg w-fit mt-3 ${
-                                f.elu_type === "senator" ? "text-rose-600 bg-rose-50" : f.elu_type === "mep" ? "text-sky-600 bg-sky-50" : "text-blue-600 bg-blue-50"
+                                f.elu_type === "senator" ? "text-rose-300 bg-rose-500/15" : f.elu_type === "mep" ? "text-sky-300 bg-sky-500/15" : "text-blue-300 bg-blue-500/15"
                               }`}>
                                 <Bell size={10} fill="currentColor" />
                                 {f.elu_type === "senator" ? "Sénateur·rice" : f.elu_type === "mep" ? "Eurodéputé·e" : "Député·e"}
@@ -479,36 +480,36 @@ export default function DashboardPage() {
                     className="grid grid-cols-1 md:grid-cols-2 gap-6"
                   >
                     {savedLaws.length === 0 ? (
-                      <div className="col-span-full text-center py-20 bg-slate-50 rounded-[2.5rem] border border-dashed border-slate-200">
-                        <Bookmark className="mx-auto mb-4 text-slate-300" size={48} />
+                      <div className="col-span-full text-center py-20 bg-white/[0.03] rounded-[2.5rem] border border-dashed border-white/15">
+                        <Bookmark className="mx-auto mb-4 text-white/25" size={48} />
                         <h3 className="text-xl font-bold mb-2">Aucune loi enregistrée</h3>
-                        <p className="text-slate-500 mb-8 max-w-sm mx-auto">Enregistrez vos lois et propositions favorites pour les retrouver ici.</p>
-                        <Link href="/lois" className="text-slate-950 font-black uppercase text-xs tracking-widest hover:underline">Explorer les lois &rarr;</Link>
+                        <p className="text-slate-400 mb-8 max-w-sm mx-auto">Enregistrez vos lois et propositions favorites pour les retrouver ici.</p>
+                        <Link href="/lois" className="text-amber-400 font-black uppercase text-xs tracking-widest hover:underline">Explorer les lois &rarr;</Link>
                       </div>
                     ) : (
                       savedLaws.map((item) => (
                         <Link key={item.id} href={`/lois?id=${item.item_id}`}>
-                          <div className="group flex flex-col p-6 md:p-8 rounded-[2.5rem] border border-slate-100 hover:border-amber-400 hover:shadow-2xl transition-all duration-500 h-full bg-white relative overflow-hidden">
+                          <div className="group flex flex-col p-6 md:p-8 rounded-[2.5rem] border border-white/10 hover:border-amber-400 hover:shadow-2xl transition-all duration-500 h-full gold-sheen-hover bg-white/[0.04] relative overflow-hidden">
                             <div className="absolute top-0 right-0 w-32 h-32 bg-amber-500/5 rounded-full -mr-16 -mt-16 group-hover:bg-amber-500/10 transition-colors" />
                             
                             <div className="flex items-center justify-between mb-6">
                               <span className={`px-3 py-1 rounded-full text-[10px] font-black uppercase tracking-widest ${
-                                item.item_type === 'scrutin' ? 'bg-blue-100 text-blue-600' : 'bg-purple-100 text-purple-600'
+                                item.item_type === 'scrutin' ? 'bg-blue-500/15 text-blue-300' : 'bg-purple-500/15 text-purple-300'
                               }`}>
                                 {item.item_type === 'scrutin' ? 'Loi Votée' : 'Proposition'}
                               </span>
-                              <div className="p-2 bg-amber-50 text-amber-500 rounded-lg group-hover:bg-amber-500 group-hover:text-white transition-all">
+                              <div className="p-2 bg-amber-500/15 text-amber-300 rounded-lg group-hover:bg-amber-500 group-hover:text-slate-950 transition-all">
                                 <Bookmark size={14} className="fill-current" />
                               </div>
                             </div>
                             
                             <h4 className={`text-xl font-bold line-clamp-3 mb-4 transition-colors ${
-                              titreOuNull(item.data) ? "text-slate-900 group-hover:text-amber-600" : "text-slate-400"
+                              titreOuNull(item.data) ? "text-white group-hover:text-amber-600" : "text-slate-400"
                             }`}>
                               {titreOuNull(item.data) || REFERENCE_PERDUE}
                             </h4>
                             
-                            <div className="mt-auto flex items-center justify-between pt-6 border-t border-slate-50">
+                            <div className="mt-auto flex items-center justify-between pt-6 border-t border-white/10">
                                <div className="flex items-center gap-2 text-slate-400 text-[10px] font-bold uppercase">
                                   <Calendar size={12} />
                                   {formatDateSafe(item.data?.date_scrutin || item.data?.date_adopted || item.data?.created_at)
@@ -530,24 +531,24 @@ export default function DashboardPage() {
                     className="grid grid-cols-1 md:grid-cols-2 gap-6"
                   >
                     {savedGeos.length === 0 ? (
-                      <div className="col-span-full text-center py-20 bg-slate-50 rounded-[2.5rem] border border-dashed border-slate-200">
-                        <MapPin className="mx-auto mb-4 text-slate-300" size={48} />
+                      <div className="col-span-full text-center py-20 bg-white/[0.03] rounded-[2.5rem] border border-dashed border-white/15">
+                        <MapPin className="mx-auto mb-4 text-white/25" size={48} />
                         <h3 className="text-xl font-bold mb-2">Aucun territoire suivi</h3>
-                        <p className="text-slate-500 mb-8 max-w-sm mx-auto">Suivez vos communes, départements ou régions pour les retrouver ici.</p>
-                        <Link href="/local" className="text-slate-950 font-black uppercase text-xs tracking-widest hover:underline">Découvrir les territoires &rarr;</Link>
+                        <p className="text-slate-400 mb-8 max-w-sm mx-auto">Suivez vos communes, départements ou régions pour les retrouver ici.</p>
+                        <Link href="/local" className="text-amber-400 font-black uppercase text-xs tracking-widest hover:underline">Découvrir les territoires &rarr;</Link>
                       </div>
                     ) : (
                       savedGeos.map((item) => (
                         <Link key={item.id} href={`/local?code=${item.item_id}&type=${item.item_type}`}>
-                          <div className="group flex flex-col p-6 md:p-8 rounded-[2.5rem] border border-slate-100 hover:border-rose-400 hover:shadow-2xl transition-all duration-500 h-full bg-white relative overflow-hidden">
+                          <div className="group flex flex-col p-6 md:p-8 rounded-[2.5rem] border border-white/10 hover:border-rose-400 hover:shadow-2xl transition-all duration-500 h-full gold-sheen-hover bg-white/[0.04] relative overflow-hidden">
                             <div className="absolute top-0 right-0 w-32 h-32 bg-rose-500/5 rounded-full -mr-16 -mt-16 group-hover:bg-rose-500/10 transition-colors" />
                             
                             <div className="flex items-center justify-between mb-6">
-                              <span className="px-3 py-1 rounded-full text-[10px] font-black uppercase tracking-widest bg-rose-100 text-rose-600">
+                              <span className="px-3 py-1 rounded-full text-[10px] font-black uppercase tracking-widest bg-rose-500/15 text-rose-300">
                                 {item.item_type === 'commune' ? 'Commune' :
                                  item.item_type === 'region' ? 'Région' : 'Département'}
                               </span>
-                              <div className="p-2 bg-rose-50 text-rose-500 rounded-lg group-hover:bg-rose-500 group-hover:text-white transition-all">
+                              <div className="p-2 bg-rose-500/15 text-rose-300 rounded-lg group-hover:bg-rose-500 group-hover:text-white transition-all">
                                 <Star size={14} className="fill-current" />
                               </div>
                             </div>
@@ -555,11 +556,11 @@ export default function DashboardPage() {
                             {/* Même police que les titres de sections (font-staatliches) :
                                 l'italique gras était illisible sur les noms de communes.
                                 Taille et couleurs volontairement inchangées. */}
-                            <h4 className="text-xl font-staatliches tracking-wide text-slate-900 group-hover:text-rose-600 transition-colors line-clamp-3 mb-4">
+                            <h4 className="text-xl font-staatliches tracking-wide text-white group-hover:text-rose-600 transition-colors line-clamp-3 mb-4">
                               {item.data?.title}
                             </h4>
                             
-                            <div className="mt-auto flex items-center justify-between pt-6 border-t border-slate-50">
+                            <div className="mt-auto flex items-center justify-between pt-6 border-t border-white/10">
                                <div className="flex items-center gap-2 text-slate-400 text-[10px] font-bold uppercase">
                                   <MapPin size={12} />
                                   {item.item_type === 'commune' ? `${item.data?.population?.toLocaleString()} hab.` : 'Territoire Suivi'}

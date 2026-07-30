@@ -47,6 +47,19 @@ interface ContentItem {
 }
 
 type InstCfg = { label: string; dot: string; grad: string; tintBg: string; tintText: string; glow: string };
+
+// Palette VIVE cyclique : la couleur d'accent change à chaque carte (par position dans le fil).
+const VIVID: Omit<InstCfg, "label">[] = [
+  { dot: "bg-fuchsia-500", grad: "from-fuchsia-500 to-pink-600",  tintBg: "bg-fuchsia-100 dark:bg-fuchsia-500/15", tintText: "text-fuchsia-700 dark:text-fuchsia-300", glow: "bg-fuchsia-500" },
+  { dot: "bg-violet-500",  grad: "from-violet-500 to-purple-600", tintBg: "bg-violet-100 dark:bg-violet-500/15",   tintText: "text-violet-700 dark:text-violet-300",   glow: "bg-violet-500" },
+  { dot: "bg-sky-500",     grad: "from-sky-500 to-blue-600",      tintBg: "bg-sky-100 dark:bg-sky-500/15",         tintText: "text-sky-700 dark:text-sky-300",         glow: "bg-sky-500" },
+  { dot: "bg-cyan-500",    grad: "from-cyan-500 to-teal-600",     tintBg: "bg-cyan-100 dark:bg-cyan-500/15",       tintText: "text-cyan-700 dark:text-cyan-300",       glow: "bg-cyan-500" },
+  { dot: "bg-emerald-500", grad: "from-emerald-500 to-green-600", tintBg: "bg-emerald-100 dark:bg-emerald-500/15", tintText: "text-emerald-700 dark:text-emerald-300", glow: "bg-emerald-500" },
+  { dot: "bg-amber-500",   grad: "from-amber-500 to-orange-600",  tintBg: "bg-amber-100 dark:bg-amber-500/15",     tintText: "text-amber-700 dark:text-amber-300",     glow: "bg-amber-500" },
+  { dot: "bg-rose-500",    grad: "from-rose-500 to-red-600",      tintBg: "bg-rose-100 dark:bg-rose-500/15",       tintText: "text-rose-700 dark:text-rose-300",       glow: "bg-rose-500" },
+  { dot: "bg-indigo-500",  grad: "from-indigo-500 to-blue-700",   tintBg: "bg-indigo-100 dark:bg-indigo-500/15",   tintText: "text-indigo-700 dark:text-indigo-300",   glow: "bg-indigo-500" },
+];
+
 const institutionConfig: Record<string, InstCfg> = {
   assemblée:      { label: "Assemblée",    dot: "bg-blue-600",    grad: "from-blue-500 to-blue-700",      tintBg: "bg-blue-50 dark:bg-blue-500/10",      tintText: "text-blue-700 dark:text-blue-300",      glow: "bg-blue-500" },
   sénat:          { label: "Sénat",        dot: "bg-purple-700",  grad: "from-purple-500 to-purple-800",  tintBg: "bg-purple-50 dark:bg-purple-500/10",  tintText: "text-purple-700 dark:text-purple-300",  glow: "bg-purple-500" },
@@ -72,10 +85,13 @@ function getRelativeDate(dateString: string) {
   }
 }
 
-export default function FeedItemCard({ item }: { item: ContentItem }) {
+export default function FeedItemCard({ item, colorIndex }: { item: ContentItem; colorIndex?: number }) {
   const normalizeLang = item.institution?.toLowerCase() || "assemblée";
-  const config = institutionConfig[normalizeLang] || institutionConfig.assemblée;
-  
+  const inst = institutionConfig[normalizeLang] || institutionConfig.assemblée;
+  // Couleur VIVE cyclique selon la position dans le fil (change à chaque scroll) ; à défaut,
+  // la couleur de l'institution. Le libellé du badge reste celui de l'institution.
+  const config = colorIndex != null ? { ...VIVID[((colorIndex % VIVID.length) + VIVID.length) % VIVID.length], label: inst.label } : inst;
+
   // Format the relative date
   const relativeDate = getRelativeDate(item.date_publication);
 

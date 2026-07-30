@@ -151,15 +151,15 @@ export default function Home() {
             <VerticalImageStack
               items={latestContent}
               height="h-[600px]"
-              renderCard={(item, isCurrent) => (
-                <div 
+              renderCard={(item, isCurrent, index) => (
+                <div
                   className={`h-[420px] w-[280px] rounded-3xl overflow-hidden transition-all duration-300 ${
-                    isCurrent 
-                      ? "shadow-2xl shadow-slate-900/15 ring-1 ring-slate-900/5 scale-100" 
+                    isCurrent
+                      ? "shadow-2xl shadow-slate-900/15 ring-1 ring-slate-900/5 scale-100"
                       : "shadow-md ring-1 ring-slate-900/5 opacity-80 scale-95"
                   }`}
                 >
-                  <FeedItemCard item={item} />
+                  <FeedItemCard item={item} colorIndex={index} />
                 </div>
               )}
             />

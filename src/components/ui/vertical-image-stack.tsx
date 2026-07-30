@@ -34,9 +34,13 @@ const DEFAULT_IMAGES = [
 
 export type VerticalImageStackProps = {
   items?: any[];
-  renderCard?: (item: any, isCurrent: boolean) => React.ReactNode;
+  renderCard?: (item: any, isCurrent: boolean, index: number) => React.ReactNode;
   height?: string;
 };
+
+// Palette VIVE cyclique — le halo de fond et les particules changent à chaque scroll.
+const VIVID_HEX = ["#d946ef", "#8b5cf6", "#0ea5e9", "#06b6d4", "#10b981", "#f59e0b", "#f43f5e", "#6366f1"];
+const vividAt = (i: number) => VIVID_HEX[((i % VIVID_HEX.length) + VIVID_HEX.length) % VIVID_HEX.length];
 
 export function VerticalImageStack({
   items = DEFAULT_IMAGES,
@@ -103,7 +107,7 @@ export function VerticalImageStack({
   const MILESTONES = [3, 5, 10, 15, 20, 30, 50];
   const nextMilestone = (c: number) => MILESTONES.find(m => m > c) ?? (c + 10);
 
-  const spawnParticles = useCallback((count = 18, big = false) => {
+  const spawnParticles = useCallback((count = 18, big = false, base?: string) => {
     const colorsMap: Record<string, string[]> = {
       blue: ["#3b82f6", "#60a5fa", "#93c5fd", "#fbbf24"],
       purple: ["#a855f7", "#c084fc", "#d8b4fe", "#34d399"],
@@ -111,7 +115,7 @@ export function VerticalImageStack({
       amber: ["#f59e0b", "#fbbf24", "#fcd34d", "#10b981"],
       emerald: ["#10b981", "#34d399", "#6ee7b7", "#3b82f6"],
     };
-    const colors = colorsMap[theme] || ["#64748b", "#94a3b8", "#cbd5e1"];
+    const colors = base ? [base, base, "#ffffff", "#fbbf24"] : (colorsMap[theme] || ["#64748b", "#94a3b8", "#cbd5e1"]);
 
     const newParticles = Array.from({ length: count }).map((_, i) => {
       const angle = (i / count) * Math.PI * 2 + (Math.random() - 0.5) * 0.3;
@@ -141,23 +145,24 @@ export function VerticalImageStack({
     
     setCurrentIndex((prev) => {
       const nextIndex = Math.max(0, Math.min(items.length - 1, prev + newDirection));
+      const vivid = vividAt(nextIndex);
       if (nextIndex !== prev) {
         if (newDirection > 0) {
           setCombo(c => {
             const nc = c + 1;
             if (MILESTONES.includes(nc)) {          // palier atteint → célébration
               setMilestone({ id: Date.now(), value: nc });
-              spawnParticles(34, true);
+              spawnParticles(34, true, vivid);
               haptic([0, 30, 40, 30]);
             } else {
-              spawnParticles();
+              spawnParticles(18, false, vivid);
               haptic(12);
             }
             return nc;
           });
         } else {
           setCombo(c => Math.max(0, c - 1));
-          spawnParticles();
+          spawnParticles(18, false, vivid);
           haptic(8);
         }
       }
@@ -264,9 +269,12 @@ export function VerticalImageStack({
       ref={containerRef}
       className={`relative flex ${height} w-full items-center justify-center overflow-hidden transition-all duration-500 rounded-[3rem] border shadow-inner ${bgColors}`}
     >
-      {/* Dynamic ambient glow behind the deck */}
+      {/* Halo ambiant VIF derrière la pile — change de couleur à chaque scroll */}
       <div className="pointer-events-none absolute inset-0">
-        <div className={`absolute left-1/2 top-1/2 h-[550px] w-[550px] -translate-x-1/2 -translate-y-1/2 rounded-full blur-3xl transition-all duration-500 ${glowColors}`} />
+        <div
+          className="absolute left-1/2 top-1/2 h-[550px] w-[550px] -translate-x-1/2 -translate-y-1/2 rounded-full blur-3xl transition-colors duration-500"
+          style={{ backgroundColor: vividAt(currentIndex), opacity: 0.16 }}
+        />
       </div>
 
       {/* Swipe Overlay Indicators (Tinder style visual feedback) */}
@@ -365,7 +373,7 @@ export function VerticalImageStack({
               }}
             >
               {renderCard ? (
-                renderCard(item, isCurrent)
+                renderCard(item, isCurrent, absoluteIndex)
               ) : (
                 <div
                   className="relative h-[420px] w-[280px] overflow-hidden rounded-3xl bg-card ring-1 ring-border/20"

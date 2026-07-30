@@ -478,6 +478,9 @@ export default function DeputyDetailPage({ params }: { params: Promise<{ slug: s
               <FollowButton kind="deputy" id={deputy?.id ? String(deputy.id) : null} label="ce député" />
             </div>
 
+            {/* Fiche unifiée : toutes les fonctions de la personne, en tête. */}
+            {deputy && <ParallelRoles fullName={`${deputy.first_name} ${deputy.last_name}`} selfHref={`/deputes/${deputy.slug}`} />}
+
             {/* NEW: Biography / Background Section (Collapsible Editorial Style) */}
             {deputy?.biography && (
               <div className="bg-white dark:bg-slate-900 rounded-[3rem] border border-slate-200 dark:border-slate-800 shadow-xl relative overflow-hidden group pb-2">
@@ -610,8 +613,6 @@ export default function DeputyDetailPage({ params }: { params: Promise<{ slug: s
                 note="Taux de participation aux scrutins publics de l'Assemblée nationale. Comparaison entre députés pour situer l'assiduité de chacun·e. Source : Assemblée nationale."
               />
             )}
-
-            {deputy && <ParallelRoles fullName={`${deputy.first_name} ${deputy.last_name}`} selfHref={`/deputes/${deputy.slug}`} />}
 
             {/* Initiatives législatives : classement (déposés/co-signés + rang) PUIS la liste des textes. */}
             <div className="pt-4 mb-10">

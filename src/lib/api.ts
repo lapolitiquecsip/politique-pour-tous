@@ -1206,18 +1206,30 @@ export const api = {
     const roles: { label: string; kind: string; href: string }[] = [];
     const push = (label: string, kind: string, href: string) => { if (href !== selfHref) roles.push({ label, kind, href }); };
 
-    const [parties, cands, mins, deps, mayors] = await Promise.all([
+    // Normalisation pour comparer un nom complet reconstitué (prénom + nom) au nom cherché.
+    const norm = (s: string) => (s || "").normalize("NFD").replace(/[̀-ͯ]/g, "").toLowerCase().replace(/[^a-z0-9]+/g, " ").trim();
+    const target = norm(name);
+    const last = name.split(/\s+/).pop() || name;
+
+    const [parties, cands, mins, deps, mayors, dep2, sen2, mep2] = await Promise.all([
       supabase.from('political_parties').select('slug, name, leader').ilike('leader', name),
       supabase.from('presidential_candidates').select('slug, full_name, category').ilike('full_name', name),
       supabase.from('minister_profiles').select('slug, full_name, title, ministry_name').ilike('full_name', name),
       supabase.from('department_presidents').select('slug, full_name, dep_name').ilike('full_name', name),
       supabase.from('mayors').select('slug, full_name, commune_name, insee_code, population').ilike('full_name', name),
+      supabase.from('deputies').select('slug, first_name, last_name').ilike('last_name', `%${last}%`),
+      supabase.from('senators').select('slug, first_name, last_name').ilike('last_name', `%${last}%`),
+      supabase.from('meps').select('slug, full_name').ilike('full_name', `%${name}%`),
     ]);
     for (const p of (parties.data || []) as any[]) push(`Dirigeant·e — ${p.name}`, 'Parti', `/partis/${p.slug}`);
     for (const c of (cands.data || []) as any[]) push(c.category?.startsWith('Primaire') ? `Candidat·e à la ${String(c.category).toLowerCase()}` : 'Candidat·e à la présidentielle 2027', 'Présidentielle', `/presidentielles-2027/?candidat=${c.slug}`);
     for (const m of (mins.data || []) as any[]) push(m.title || m.ministry_name || 'Membre du gouvernement', 'Gouvernement', `/executif/ministre/${m.slug}`);
     for (const d of (deps.data || []) as any[]) push(`Président·e du conseil départemental (${d.dep_name})`, 'Département', `/departements/${d.slug}`);
     for (const my of (mayors.data || []) as any[]) push(`Maire de ${my.commune_name}`, 'Commune', `/maires/app?insee=${my.insee_code}`);
+    // Mandats parlementaires (croisés par nom complet reconstitué).
+    for (const d of (dep2.data || []) as any[]) if (norm(`${d.first_name} ${d.last_name}`) === target) push("Député·e à l'Assemblée", 'Assemblée', `/deputes/${d.slug}`);
+    for (const s of (sen2.data || []) as any[]) if (norm(`${s.first_name} ${s.last_name}`) === target) push('Sénateur·rice', 'Sénat', `/senateurs/${s.slug}`);
+    for (const m of (mep2.data || []) as any[]) if (norm(m.full_name) === target) push('Eurodéputé·e', 'Parlement européen', `/eurodeputes/${m.slug}`);
     return roles;
   },
 

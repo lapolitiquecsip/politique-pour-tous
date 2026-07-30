@@ -6,6 +6,7 @@ import { ArrowLeft, ShieldCheck, ExternalLink, Loader2, Briefcase, GraduationCap
 import { api } from "@/lib/api";
 import { cleanMinistryName } from "@/lib/executif-utils";
 import LegalStatusModal from "@/components/deputies/LegalStatusModal";
+import ParallelRoles from "@/components/shared/ParallelRoles";
 
 const BIO_FIELDS: Array<[string, string, string]> = [
   ["parcours", "Parcours politique", "text-red-600"],
@@ -88,6 +89,11 @@ export default function MinisterFicheClient({ params }: { params: Promise<{ slug
           {bio.profession && <span className="inline-flex items-center gap-2 rounded-full bg-white px-4 py-2 text-sm font-bold text-slate-700 shadow-sm"><Briefcase size={15} className="text-slate-400" />{bio.profession}</span>}
           {bio.formation && <span className="inline-flex items-center gap-2 rounded-full bg-white px-4 py-2 text-sm font-bold text-slate-700 shadow-sm"><GraduationCap size={16} className="text-slate-400" />{bio.formation}</span>}
           {bio.enfants && <span className="inline-flex items-center gap-2 rounded-full bg-white px-4 py-2 text-sm font-bold text-slate-700 shadow-sm"><Users size={15} className="text-slate-400" />{bio.enfants}</span>}
+        </div>
+
+        {/* Fiche unifiée : toutes les fonctions de la personne (député, parti, etc.). */}
+        <div className="mt-8">
+          <ParallelRoles fullName={m.full_name} selfHref={`/executif/ministre/${slug}`} />
         </div>
 
         {/* Situation judiciaire */}

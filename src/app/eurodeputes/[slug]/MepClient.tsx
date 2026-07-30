@@ -7,7 +7,7 @@ import { BallotBox } from "@/components/dashboard/BallotVote";
 import LegalStatusModal from "@/components/deputies/LegalStatusModal";
 import ActivityRank from "@/components/shared/ActivityRank";
 import FollowButton from "@/components/shared/FollowButton";
-import ParallelRoles from "@/components/shared/ParallelRoles";
+import PersonTabs from "@/components/shared/PersonTabs";
 import { api } from "@/lib/api";
 
 // Rubriques de la bio structurée (mêmes que les fiches candidats/ministres).
@@ -123,6 +123,9 @@ export default function MepClient({ mep, initialVotes }: { mep: any; initialVote
         </div>
       </div>
 
+      {/* Fiche unifiée : onglets des fonctions de la personne. */}
+      <PersonTabs fullName={mep.full_name || `${mep.first_name} ${mep.last_name}`} currentHref={`/eurodeputes/${mep.slug}`} />
+
       <div className="container mx-auto max-w-5xl px-4 pt-10">
         <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
           {/* Colonne identité */}
@@ -194,8 +197,6 @@ export default function MepClient({ mep, initialVotes }: { mep: any; initialVote
 
               <FollowButton kind="mep" id={String(mep.id)} label="cet eurodéputé" />
             </section>
-
-            <ParallelRoles fullName={mep.full_name || `${mep.first_name} ${mep.last_name}`} selfHref={`/eurodeputes/${mep.slug}`} />
 
             {/* PRÉSENCE AUX VOTES — remontée en haut, avec comparaison entre eurodéputés. */}
             <ActivityRank

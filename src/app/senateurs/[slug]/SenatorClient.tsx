@@ -24,7 +24,7 @@ import { api } from "@/lib/api";
 import LegalStatusModal from "@/components/deputies/LegalStatusModal";
 import ActivityRank from "@/components/shared/ActivityRank";
 import FollowButton from "@/components/shared/FollowButton";
-import ParallelRoles from "@/components/shared/ParallelRoles";
+import PersonTabs from "@/components/shared/PersonTabs";
 import InitiativeRank from "@/components/shared/InitiativeRank";
 
 
@@ -74,9 +74,12 @@ export default function SenatorClient({ senator }: { senator: any }) {
         </div>
       </div>
 
+      {/* Fiche unifiée : onglets des fonctions de la personne. */}
+      <PersonTabs fullName={name} currentHref={`/senateurs/${senator.slug}`} />
+
       <div className="container mx-auto px-4 pt-12 max-w-6xl">
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-12">
-          
+
           {/* LEFT COLUMN: Profile Card */}
           <motion.div 
             initial={{ opacity: 0, x: -20 }}
@@ -217,8 +220,6 @@ export default function SenatorClient({ senator }: { senator: any }) {
             <div className="flex justify-start">
               <FollowButton kind="senator" id={String(senator.id)} label="ce sénateur" />
             </div>
-
-            <ParallelRoles fullName={`${senator.first_name} ${senator.last_name}`} selfHref={`/senateurs/${senator.slug}`} />
 
             <InitiativeRank kind="senator" selfId={String(senator.id)} primary={senator.initiative_primary_count} cosigned={senator.initiative_count} peerLabel="sénateurs" />
 

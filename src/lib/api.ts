@@ -1200,13 +1200,15 @@ export const api = {
   // Autres fonctions/rôles d'un·e élu·e EN PARALLÈLE de son mandat (ex. eurodéputé ET
   // président d'un parti). Croise le nom avec les partis (dirigeant), le gouvernement,
   // les candidats à la présidentielle, les présidents de département et les maires.
-  getParallelRoles: async (fullName: string, selfHref?: string) => {
+  // Toutes les fonctions (passées/présentes) d'une personne, croisées par nom entre les tables.
+  // Sert à la fiche unifiée (onglets par fonction). Inclut la fonction courante.
+  getPersonRoles: async (fullName: string) => {
     const name = (fullName || "").trim();
-    if (!name) return [] as { label: string; kind: string; href: string }[];
-    const roles: { label: string; kind: string; href: string }[] = [];
-    const push = (label: string, kind: string, href: string) => { if (href !== selfHref) roles.push({ label, kind, href }); };
+    type Role = { label: string; kind: string; href: string; type: string };
+    if (!name) return [] as Role[];
+    const roles: Role[] = [];
+    const push = (label: string, kind: string, href: string, type: string) => roles.push({ label, kind, href, type });
 
-    // Normalisation pour comparer un nom complet reconstitué (prénom + nom) au nom cherché.
     const norm = (s: string) => (s || "").normalize("NFD").replace(/[̀-ͯ]/g, "").toLowerCase().replace(/[^a-z0-9]+/g, " ").trim();
     const target = norm(name);
     const last = name.split(/\s+/).pop() || name;
@@ -1221,16 +1223,21 @@ export const api = {
       supabase.from('senators').select('slug, first_name, last_name').ilike('last_name', `%${last}%`),
       supabase.from('meps').select('slug, full_name').ilike('full_name', `%${name}%`),
     ]);
-    for (const p of (parties.data || []) as any[]) push(`Dirigeant·e — ${p.name}`, 'Parti', `/partis/${p.slug}`);
-    for (const c of (cands.data || []) as any[]) push(c.category?.startsWith('Primaire') ? `Candidat·e à la ${String(c.category).toLowerCase()}` : 'Candidat·e à la présidentielle 2027', 'Présidentielle', `/presidentielles-2027/?candidat=${c.slug}`);
-    for (const m of (mins.data || []) as any[]) push(m.title || m.ministry_name || 'Membre du gouvernement', 'Gouvernement', `/executif/ministre/${m.slug}`);
-    for (const d of (deps.data || []) as any[]) push(`Président·e du conseil départemental (${d.dep_name})`, 'Département', `/departements/${d.slug}`);
-    for (const my of (mayors.data || []) as any[]) push(`Maire de ${my.commune_name}`, 'Commune', `/maires/app?insee=${my.insee_code}`);
-    // Mandats parlementaires (croisés par nom complet reconstitué).
-    for (const d of (dep2.data || []) as any[]) if (norm(`${d.first_name} ${d.last_name}`) === target) push("Député·e à l'Assemblée", 'Assemblée', `/deputes/${d.slug}`);
-    for (const s of (sen2.data || []) as any[]) if (norm(`${s.first_name} ${s.last_name}`) === target) push('Sénateur·rice', 'Sénat', `/senateurs/${s.slug}`);
-    for (const m of (mep2.data || []) as any[]) if (norm(m.full_name) === target) push('Eurodéputé·e', 'Parlement européen', `/eurodeputes/${m.slug}`);
+    for (const d of (dep2.data || []) as any[]) if (norm(`${d.first_name} ${d.last_name}`) === target) push("Député·e à l'Assemblée", 'Assemblée', `/deputes/${d.slug}`, 'deputy');
+    for (const s of (sen2.data || []) as any[]) if (norm(`${s.first_name} ${s.last_name}`) === target) push('Sénateur·rice', 'Sénat', `/senateurs/${s.slug}`, 'senator');
+    for (const m of (mep2.data || []) as any[]) if (norm(m.full_name) === target) push('Eurodéputé·e', 'Europe', `/eurodeputes/${m.slug}`, 'mep');
+    for (const m of (mins.data || []) as any[]) push(m.title || m.ministry_name || 'Membre du gouvernement', 'Gouvernement', `/executif/ministre/${m.slug}`, 'minister');
+    for (const c of (cands.data || []) as any[]) push(c.category?.startsWith('Primaire') ? `Candidat·e à la ${String(c.category).toLowerCase()}` : 'Candidat·e à la présidentielle 2027', 'Présidentielle', `/presidentielles-2027/?candidat=${c.slug}`, 'candidate');
+    for (const p of (parties.data || []) as any[]) push(`Dirigeant·e — ${p.name}`, 'Parti', `/partis/${p.slug}`, 'party');
+    for (const d of (deps.data || []) as any[]) push(`Président·e du conseil départemental (${d.dep_name})`, 'Département', `/departements/${d.slug}`, 'department');
+    for (const my of (mayors.data || []) as any[]) push(`Maire de ${my.commune_name}`, 'Commune', `/maires/app?insee=${my.insee_code}`, 'mayor');
     return roles;
+  },
+
+  getParallelRoles: async (fullName: string, selfHref?: string) => {
+    const base = (h: string) => (h || "").split('?')[0].replace(/\/+$/, '');
+    const self = base(selfHref || "");
+    return (await (api as any).getPersonRoles(fullName)).filter((r: any) => base(r.href) !== self);
   },
 
   // Vérifie si l'utilisateur suit déjà un élu (toutes chambres).

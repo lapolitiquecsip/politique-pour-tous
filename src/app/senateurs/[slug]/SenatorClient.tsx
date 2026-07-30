@@ -25,6 +25,7 @@ import LegalStatusModal from "@/components/deputies/LegalStatusModal";
 import ActivityRank from "@/components/shared/ActivityRank";
 import FollowButton from "@/components/shared/FollowButton";
 import ParallelRoles from "@/components/shared/ParallelRoles";
+import StructuredBio from "@/components/shared/StructuredBio";
 import InitiativeRank from "@/components/shared/InitiativeRank";
 
 
@@ -260,9 +261,7 @@ export default function SenatorClient({ senator, embedded }: { senator: any; emb
                     exit={{ height: 0, opacity: 0 }}
                     className="overflow-hidden px-8 pb-10 md:px-12"
                   >
-                    <div className="bg-amber-50/50 p-6 rounded-2xl border border-amber-100 italic font-playfair text-lg text-slate-700 leading-relaxed whitespace-pre-line">
-                      {senator.biography}
-                    </div>
+                    <StructuredBio bio={senator.bio} fallbackText={senator.biography} />
 
                     {/* Repères officiels — données du Sénat (ODSEN), précises et vérifiées. */}
                     {(senator.birth_date || senator.profession || senator.senate_group || senator.committee) && (() => {

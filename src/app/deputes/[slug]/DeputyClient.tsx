@@ -42,6 +42,7 @@ import LegalStatusModal from "@/components/deputies/LegalStatusModal";
 import DeputyStats from "@/components/deputies/DeputyStats";
 import ActivityRank from "@/components/shared/ActivityRank";
 import ParallelRoles from "@/components/shared/ParallelRoles";
+import StructuredBio, { hasStructuredBio } from "@/components/shared/StructuredBio";
 import InitiativeRank from "@/components/shared/InitiativeRank";
 import { useGlossary } from "@/components/providers/GlossaryProvider";
 
@@ -484,10 +485,10 @@ export default function DeputyDetailPage({ params, embedded }: { params: Promise
             {name && <ParallelRoles fullName={name} selfHref={`/deputes/${deputy?.slug || ""}`} />}
 
             {/* NEW: Biography / Background Section (Collapsible Editorial Style) */}
-            {deputy?.biography && (
+            {(deputy?.biography || hasStructuredBio(deputy?.bio)) && (
               <div className="bg-white dark:bg-slate-900 rounded-[3rem] border border-slate-200 dark:border-slate-800 shadow-xl relative overflow-hidden group pb-2">
                 {(() => {
-                  const displayBio = deputy.biography.split('<!-- INTEGRITY_START -->')[0] || '';
+                  const displayBio = (deputy?.biography || "").split('<!-- INTEGRITY_START -->')[0] || '';
                   return (
                     <>
                       {/* Decorative background elements */}
@@ -522,7 +523,8 @@ export default function DeputyDetailPage({ params, embedded }: { params: Promise
                             className="overflow-hidden"
                           >
                             <div className="px-8 pb-10 md:px-12 md:pb-12 relative z-10 space-y-4">
-                              {displayBio.split('\n\n').filter(Boolean).map((paragraph: string, pIdx: number) => {
+                              {hasStructuredBio(deputy?.bio) && <StructuredBio bio={deputy.bio} />}
+                              {!hasStructuredBio(deputy?.bio) && displayBio.split('\n\n').filter(Boolean).map((paragraph: string, pIdx: number) => {
                                 let Icon = History;
                                 const pLower = paragraph.toLowerCase();
                                 if (pLower.includes('profession')) Icon = Briefcase;

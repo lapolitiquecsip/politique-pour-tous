@@ -19,9 +19,11 @@ import {
   Users,
   Star,
   Landmark,
-  MapPin
+  MapPin,
+  Search
 } from "lucide-react";
 import EuFlag from "@/components/icons/EuFlag";
+import GlobalSearch from "@/components/layout/GlobalSearch";
 
 import { usePremium } from "@/lib/hooks/usePremium";
 
@@ -29,6 +31,7 @@ export default function Header() {
   const [user, setUser] = useState<any>(null);
   const { isPremium } = usePremium();
   const [isMenuOpen, setIsMenuOpen] = useState(false);
+  const [searchOpen, setSearchOpen] = useState(false);
 
   useEffect(() => {
     // Check initial session
@@ -103,6 +106,11 @@ export default function Header() {
               );
             })}
             
+            <button onClick={() => setSearchOpen(true)} title="Rechercher (élu, territoire, loi…)" aria-label="Rechercher"
+              className="flex items-center justify-center w-9 h-9 rounded-full border border-slate-200 text-slate-500 hover:border-slate-400 hover:text-slate-900 transition">
+              <Search size={18} />
+            </button>
+
             <div className="h-6 w-[1px] bg-slate-200 mx-1" />
 
             {user ? (
@@ -137,10 +145,15 @@ export default function Header() {
             )}
           </div>
 
-          {/* Mobile Menu Toggle */}
-          <button className="lg:hidden text-slate-600" onClick={() => setIsMenuOpen(!isMenuOpen)}>
-            {isMenuOpen ? <X size={24} /> : <Menu size={24} />}
-          </button>
+          {/* Mobile : loupe + menu */}
+          <div className="lg:hidden flex items-center gap-3">
+            <button className="text-slate-600" onClick={() => setSearchOpen(true)} aria-label="Rechercher">
+              <Search size={22} />
+            </button>
+            <button className="text-slate-600" onClick={() => setIsMenuOpen(!isMenuOpen)}>
+              {isMenuOpen ? <X size={24} /> : <Menu size={24} />}
+            </button>
+          </div>
         </div>
       </div>
 
@@ -174,6 +187,19 @@ export default function Header() {
             </Link>
           </div>
         </motion.div>
+      )}
+
+      {/* Modale de recherche globale */}
+      {searchOpen && (
+        <div className="fixed inset-0 z-[60] bg-slate-950/60 backdrop-blur-sm" onClick={() => setSearchOpen(false)}>
+          <div className="mx-auto mt-24 w-[92%] max-w-2xl" onClick={e => e.stopPropagation()}>
+            <div className="mb-2 flex items-center justify-between">
+              <p className="text-[11px] font-black uppercase tracking-widest text-white/70">Recherche sur tout le site</p>
+              <button onClick={() => setSearchOpen(false)} className="rounded-full bg-white/10 p-2 text-white hover:bg-white/20"><X size={16} /></button>
+            </div>
+            <GlobalSearch variant="mobile" onNavigate={() => setSearchOpen(false)} />
+          </div>
+        </div>
       )}
     </header>
   );

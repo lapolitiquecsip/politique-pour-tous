@@ -46,13 +46,14 @@ interface ContentItem {
   source_name?: string;
 }
 
-const institutionConfig: Record<string, { color: string; label: string; border: string }> = {
-  assemblée: { color: "bg-blue-600", label: "Assemblée", border: "border-t-blue-600" },
-  sénat: { color: "bg-purple-800", label: "Sénat", border: "border-t-purple-800" },
-  gouvernement: { color: "bg-red-600", label: "Gouvernement", border: "border-t-red-600" },
-  média: { color: "bg-amber-600", label: "Média", border: "border-t-amber-600" },
-  cese: { color: "bg-emerald-700", label: "CESE", border: "border-t-emerald-700" },
-  "vie-publique": { color: "bg-indigo-600", label: "Vie Publique", border: "border-t-indigo-600" },
+type InstCfg = { label: string; dot: string; grad: string; tintBg: string; tintText: string; glow: string };
+const institutionConfig: Record<string, InstCfg> = {
+  assemblée:      { label: "Assemblée",    dot: "bg-blue-600",    grad: "from-blue-500 to-blue-700",      tintBg: "bg-blue-50 dark:bg-blue-500/10",      tintText: "text-blue-700 dark:text-blue-300",      glow: "bg-blue-500" },
+  sénat:          { label: "Sénat",        dot: "bg-purple-700",  grad: "from-purple-500 to-purple-800",  tintBg: "bg-purple-50 dark:bg-purple-500/10",  tintText: "text-purple-700 dark:text-purple-300",  glow: "bg-purple-500" },
+  gouvernement:   { label: "Gouvernement", dot: "bg-red-600",     grad: "from-rose-500 to-red-700",       tintBg: "bg-rose-50 dark:bg-rose-500/10",      tintText: "text-rose-700 dark:text-rose-300",      glow: "bg-rose-500" },
+  média:          { label: "Média",        dot: "bg-orange-500",  grad: "from-amber-400 to-orange-600",   tintBg: "bg-amber-50 dark:bg-amber-500/10",    tintText: "text-amber-700 dark:text-amber-300",    glow: "bg-orange-500" },
+  cese:           { label: "CESE",         dot: "bg-emerald-600", grad: "from-emerald-500 to-teal-700",   tintBg: "bg-emerald-50 dark:bg-emerald-500/10",tintText: "text-emerald-700 dark:text-emerald-300",glow: "bg-emerald-500" },
+  "vie-publique": { label: "Vie Publique", dot: "bg-indigo-600",  grad: "from-indigo-500 to-indigo-700",  tintBg: "bg-indigo-50 dark:bg-indigo-500/10",  tintText: "text-indigo-700 dark:text-indigo-300",  glow: "bg-indigo-500" },
 };
 
 
@@ -79,34 +80,31 @@ export default function FeedItemCard({ item }: { item: ContentItem }) {
   const relativeDate = getRelativeDate(item.date_publication);
 
   return (
-    <div className={`bg-gradient-to-b from-white to-slate-50 border border-slate-100 rounded-3xl p-6 shadow-sm hover:shadow-xl transition-all duration-300 h-full flex flex-col border-t-[5px] ${config.border} relative overflow-hidden group`}>
-      {/* Dynamic luxury gradient highlight */}
-      <div className="absolute inset-0 bg-gradient-to-tr from-transparent via-slate-500/[0.02] to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500 pointer-events-none" />
-      
-      {/* Glowing mesh background circle in the corner */}
-      <div className={`absolute -right-12 -top-12 w-28 h-28 rounded-full blur-2xl opacity-[0.08] pointer-events-none ${config.color}`} />
-      
-      {/* Metallic linear shimmer light ray */}
-      <div className="shimmer-effect" />
+    <div className="group relative flex h-full flex-col overflow-hidden rounded-[2rem] border border-slate-200/70 bg-white shadow-sm transition-all duration-300 hover:-translate-y-1 hover:shadow-2xl hover:shadow-slate-900/10 dark:border-slate-800 dark:bg-slate-900 dark:hover:shadow-black/40">
+      {/* Barre d'accent en dégradé (identité de l'institution) */}
+      <div className={`h-1.5 w-full bg-gradient-to-r ${config.grad}`} />
 
-      <div className="flex items-center justify-between mb-4 relative z-10">
-        <span
-          className={`px-3 py-1 text-[10px] font-black uppercase tracking-widest rounded-full text-white shadow-sm transition-all duration-300 group-hover:scale-105 ${config.color}`}
-        >
-          {config.label}
-        </span>
-        <span className="text-[11px] font-bold text-slate-400 bg-slate-100/80 px-2.5 py-1 rounded-full uppercase tracking-wider">{relativeDate}</span>
-      </div>
+      {/* Halo coloré discret dans le coin */}
+      <div className={`pointer-events-none absolute -right-16 -top-10 h-40 w-40 rounded-full opacity-[0.1] blur-3xl ${config.glow}`} />
 
-      <h3 className="text-xl font-heading font-extrabold text-slate-800 mb-3 leading-snug group-hover:text-slate-900 transition-colors relative z-10">
-        <GlossaryText>{item.titre_simplifie}</GlossaryText>
-      </h3>
+      <div className="relative z-10 flex flex-1 flex-col p-6">
+        <div className="mb-4 flex items-center justify-between">
+          <span className={`inline-flex items-center gap-1.5 rounded-full px-3 py-1 text-[10px] font-black uppercase tracking-widest ${config.tintBg} ${config.tintText}`}>
+            <span className={`h-1.5 w-1.5 rounded-full ${config.dot}`} />
+            {config.label}
+          </span>
+          <span className="text-[10px] font-black uppercase tracking-widest text-slate-400 dark:text-slate-500">{relativeDate}</span>
+        </div>
 
-      <p className="text-slate-600 flex-grow mb-4 leading-relaxed text-[13.5px] font-medium relative z-10">
-        <GlossaryText>{item.resume_flash}</GlossaryText>
-      </p>
+        <h3 className="mb-3 text-[1.35rem] font-black leading-[1.15] tracking-tight text-slate-900 transition-colors dark:text-white">
+          <GlossaryText>{item.titre_simplifie}</GlossaryText>
+        </h3>
 
-      <div className="mt-auto pt-3 border-t border-slate-100 relative z-10">
+        <p className="mb-5 flex-grow text-[13.5px] font-medium leading-relaxed text-slate-500 line-clamp-6 dark:text-slate-400">
+          <GlossaryText>{item.resume_flash}</GlossaryText>
+        </p>
+
+      <div className="mt-auto pt-4 border-t border-slate-100 dark:border-slate-800">
         {item.source_url || item.source_name ? (
           <div className="flex items-center justify-between">
             {item.source_url ? (
@@ -114,7 +112,7 @@ export default function FeedItemCard({ item }: { item: ContentItem }) {
                 href={item.source_url}
                 target="_blank"
                 rel="noopener noreferrer"
-                className="text-xs font-semibold text-slate-500 hover:text-slate-800 transition-colors flex items-center gap-2 group/link"
+                className="text-xs font-semibold text-slate-500 hover:text-slate-900 dark:text-slate-400 dark:hover:text-white transition-colors flex items-center gap-2 group/link"
               >
                 <div className="flex items-center">
                   <AvatarGroup members={getAvatarMembers(item.source_name || "Source officielle")} size={22} limit={4} />
@@ -127,7 +125,7 @@ export default function FeedItemCard({ item }: { item: ContentItem }) {
                 </svg>
               </a>
             ) : (
-              <div className="text-xs font-semibold text-slate-500 flex items-center gap-2 group w-full overflow-hidden">
+              <div className="text-xs font-semibold text-slate-500 dark:text-slate-400 flex items-center gap-2 group w-full overflow-hidden">
                 <div className="flex items-center shrink-0">
                   <AvatarGroup members={getAvatarMembers(item.source_name || "Source officielle")} size={22} limit={4} />
                 </div>
@@ -145,6 +143,7 @@ export default function FeedItemCard({ item }: { item: ContentItem }) {
             Source interne
           </span>
         )}
+        </div>
       </div>
     </div>
   );

@@ -14,8 +14,17 @@ const ICON: Record<string, any> = {
 };
 const norm = (s: string) => (s || "").toLowerCase().normalize("NFD").replace(/[̀-ͯ]/g, "");
 
-type Item = { label: string; sub?: string; href: string; type: string };
+type Item = { label: string; sub?: string; href: string; type: string; img?: string | null };
 type Group = { category: string; items: Item[] };
+
+// Index des élus/partis chargé UNE seule fois, partagé entre les ouvertures de la recherche.
+let indexCache: any[] | null = null;
+let indexPromise: Promise<any[]> | null = null;
+function loadIndex(): Promise<any[]> {
+  if (indexCache) return Promise.resolve(indexCache);
+  if (!indexPromise) indexPromise = api.getSearchIndex().then((x: any) => { indexCache = x; return x; }).catch(() => []);
+  return indexPromise;
+}
 
 export default function GlobalSearch({ variant = "desktop", onNavigate }: { variant?: "desktop" | "mobile"; onNavigate?: () => void }) {
   const router = useRouter();
@@ -42,18 +51,25 @@ export default function GlobalSearch({ variant = "desktop", onNavigate }: { vari
     setLoading(true);
     const t = setTimeout(async () => {
       try {
-        const res = (await api.globalSearch(s)) as Group[];
-        // Fusionne les territoires locaux (dép./régions) dans la catégorie Territoires.
-        const merged = [...res];
-        if (localTerritories.length) {
-          const ter = merged.find(g => g.category === "Territoires");
-          if (ter) ter.items = [...localTerritories, ...ter.items];
-          else merged.splice(1, 0, { category: "Territoires", items: localTerritories });
-        }
+        const [index, server] = await Promise.all([loadIndex(), api.globalSearch(s) as Promise<Group[]>]);
+        // Filtrage insensible aux accents, mot par mot (chaque mot doit apparaître).
+        const nq = norm(s).split(/\s+/).filter(Boolean);
+        const matches = (label: string) => { const nl = norm(label); return nq.every(tok => nl.includes(tok)); };
+        const rank = (a: any, b: any) => Number(norm(b.label).startsWith(nq[0])) - Number(norm(a.label).startsWith(nq[0]));
+        const elus = index.filter((it: any) => it.cat === "Élus" && matches(it.label)).sort(rank).slice(0, 8);
+        const partis = index.filter((it: any) => it.cat === "Partis" && matches(it.label)).sort(rank).slice(0, 5);
+        const communes = server.find(g => g.category === "Territoires")?.items || [];
+        const textes = server.find(g => g.category === "Textes de loi")?.items || [];
+        const merged: Group[] = [
+          { category: "Élus", items: elus },
+          { category: "Territoires", items: [...localTerritories, ...communes] },
+          { category: "Partis", items: partis },
+          { category: "Textes de loi", items: textes },
+        ].filter(g => g.items.length > 0);
         setGroups(merged);
       } catch { setGroups([]); }
       finally { setLoading(false); }
-    }, 220);
+    }, 200);
     return () => clearTimeout(t);
   }, [q, localTerritories]);
 

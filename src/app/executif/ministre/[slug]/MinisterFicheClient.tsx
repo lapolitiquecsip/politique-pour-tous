@@ -35,7 +35,7 @@ function toPoints(v: any): string[] {
   return (Array.isArray(v) ? v : [v]).filter(Boolean);
 }
 
-export default function MinisterFicheClient({ params }: { params: Promise<{ slug: string }> }) {
+export default function MinisterFicheClient({ params, embedded }: { params: Promise<{ slug: string }>; embedded?: boolean }) {
   const { slug } = use(params);
   const [m, setM] = useState<any>(null);
   const [loading, setLoading] = useState(true);
@@ -63,9 +63,11 @@ export default function MinisterFicheClient({ params }: { params: Promise<{ slug
       {/* En-tête */}
       <section className="relative bg-slate-900 px-4 pt-28 pb-16 text-white">
         <div className="mx-auto max-w-4xl">
+          {!embedded && (
           <Link href="/executif" className="mb-6 inline-flex items-center gap-2 text-xs font-black uppercase tracking-widest text-slate-400 hover:text-white">
             <ArrowLeft size={14} /> Retour au gouvernement
           </Link>
+          )}
           <div className="flex flex-col items-center gap-6 text-center md:flex-row md:items-end md:text-left">
             <div className="h-36 w-36 shrink-0 overflow-hidden rounded-full border-4 border-white/20 bg-slate-800">
               {m.photo_url
@@ -92,9 +94,11 @@ export default function MinisterFicheClient({ params }: { params: Promise<{ slug
         </div>
 
         {/* Fiche unifiée : onglets des fonctions de la personne. */}
+        {!embedded && (
         <div className="mt-8">
           <PersonTabs fullName={m.full_name} currentHref={`/executif/ministre/${slug}`} />
         </div>
+        )}
 
         {/* Situation judiciaire */}
         <div className="mt-8 flex items-center justify-between gap-4 rounded-3xl border border-slate-200 bg-white p-5">

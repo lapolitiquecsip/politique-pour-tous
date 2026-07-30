@@ -1234,6 +1234,15 @@ export const api = {
     return roles;
   },
 
+  // Retrouve le nom complet d'une personne à partir d'un type de fonction + slug (pour la fiche unifiée).
+  getPersonNameBySlug: async (type: string, slug: string): Promise<string | null> => {
+    if (type === 'deputy') { const d = await (api as any).getDeputyBySlug(slug); return d ? `${d.first_name} ${d.last_name}` : null; }
+    if (type === 'senator') { const s = await (api as any).getSenatorBySlug(slug); return s ? `${s.first_name} ${s.last_name}` : null; }
+    if (type === 'mep') { const m = await (api as any).getMepBySlug(slug); return m ? (m.full_name || `${m.first_name} ${m.last_name}`) : null; }
+    if (type === 'minister') { const m = await (api as any).getMinisterBySlug(slug); return m ? m.full_name : null; }
+    return null;
+  },
+
   getParallelRoles: async (fullName: string, selfHref?: string) => {
     const base = (h: string) => (h || "").split('?')[0].replace(/\/+$/, '');
     const self = base(selfHref || "");

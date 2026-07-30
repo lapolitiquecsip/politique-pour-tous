@@ -28,7 +28,7 @@ import PersonTabs from "@/components/shared/PersonTabs";
 import InitiativeRank from "@/components/shared/InitiativeRank";
 
 
-export default function SenatorClient({ senator }: { senator: any }) {
+export default function SenatorClient({ senator, embedded }: { senator: any; embedded?: boolean }) {
   const { isPremium } = usePremium();
   const [isBioExpanded, setIsBioExpanded] = useState(true);
   const [showLegalModal, setShowLegalModal] = useState(false);
@@ -58,10 +58,11 @@ export default function SenatorClient({ senator }: { senator: any }) {
   return (
     <div className="min-h-screen bg-slate-50 dark:bg-slate-950 pb-20">
       {/* Header Navigation */}
+      {!embedded && (
       <div className="bg-white/80 dark:bg-slate-900/80 backdrop-blur-md border-b border-amber-200 sticky top-0 z-50">
         <div className="container mx-auto px-4 h-16 flex items-center justify-between">
-          <Link 
-            href="/deputes" 
+          <Link
+            href="/deputes"
             className="flex items-center gap-2 text-sm font-semibold text-slate-600 dark:text-slate-400 hover:text-amber-600 transition-colors group"
           >
             <ChevronLeft className="w-4 h-4 group-hover:-translate-x-1 transition-transform" />
@@ -73,9 +74,10 @@ export default function SenatorClient({ senator }: { senator: any }) {
           </div>
         </div>
       </div>
+      )}
 
       {/* Fiche unifiée : onglets des fonctions de la personne. */}
-      <PersonTabs fullName={name} currentHref={`/senateurs/${senator.slug}`} />
+      {!embedded && <PersonTabs fullName={name} currentHref={`/senateurs/${senator.slug}`} />}
 
       <div className="container mx-auto px-4 pt-12 max-w-6xl">
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-12">

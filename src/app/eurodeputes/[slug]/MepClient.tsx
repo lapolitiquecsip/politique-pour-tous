@@ -60,7 +60,7 @@ const againstCurrent = (v: any) =>
 const fmtDate = (d: string | null) =>
   !d ? "" : new Date(d).toLocaleDateString("fr-FR", { day: "numeric", month: "long", year: "numeric" });
 
-export default function MepClient({ mep, initialVotes }: { mep: any; initialVotes: any[] }) {
+export default function MepClient({ mep, initialVotes, embedded }: { mep: any; initialVotes: any[]; embedded?: boolean }) {
   const grad = GROUP_CLR[mep.ep_group_code] || GROUP_CLR.NI;
   const initials = `${(mep.first_name?.[0] || "")}${(mep.last_name?.[0] || "")}`.toUpperCase();
 
@@ -115,6 +115,7 @@ export default function MepClient({ mep, initialVotes }: { mep: any; initialVote
 
   return (
     <main className="min-h-screen bg-slate-50 dark:bg-slate-950 pb-20">
+      {!embedded && (
       <div className="bg-white/80 dark:bg-slate-900/80 backdrop-blur-md border-b border-amber-200 dark:border-slate-800 sticky top-0 z-40">
         <div className="container mx-auto px-4 h-16 flex items-center">
           <Link href="/deputes?mode=meps" className="inline-flex items-center gap-2 text-xs font-black uppercase tracking-widest text-slate-500 hover:text-amber-600">
@@ -122,9 +123,10 @@ export default function MepClient({ mep, initialVotes }: { mep: any; initialVote
           </Link>
         </div>
       </div>
+      )}
 
       {/* Fiche unifiée : onglets des fonctions de la personne. */}
-      <PersonTabs fullName={mep.full_name || `${mep.first_name} ${mep.last_name}`} currentHref={`/eurodeputes/${mep.slug}`} />
+      {!embedded && <PersonTabs fullName={mep.full_name || `${mep.first_name} ${mep.last_name}`} currentHref={`/eurodeputes/${mep.slug}`} />}
 
       <div className="container mx-auto max-w-5xl px-4 pt-10">
         <div className="grid grid-cols-1 md:grid-cols-3 gap-8">

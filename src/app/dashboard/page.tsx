@@ -232,8 +232,8 @@ export default function DashboardPage() {
               onClick={() => startTransition(() => setActiveTab("votes"))}
               className={`relative flex-1 py-4 md:py-6 px-2 font-bold text-[11px] md:text-sm uppercase tracking-widest flex items-center justify-center gap-2 md:gap-3 transition-all duration-300 border-r border-b md:border-b-0 border-white/30 md:last:border-r-0 ${
                 activeTab === "votes" 
-                  ? "text-white bg-blue-600 shadow-xl shadow-blue-500/40 z-20 scale-[1.04] ring-2 ring-white/60 ring-inset" 
-                  : "text-white/70 bg-blue-500/40 hover:bg-blue-500/70 hover:text-white z-10"
+                  ? "text-white bg-gradient-to-br from-blue-400 to-blue-600 shadow-lg shadow-blue-500/50 z-20 scale-[1.04] ring-2 ring-white/70 ring-inset" 
+                  : "text-white/85 bg-gradient-to-br from-blue-500 to-blue-700 hover:from-blue-400 hover:to-blue-600 hover:text-white z-10"
               }`}
             >
               <motion.span 
@@ -256,8 +256,8 @@ export default function DashboardPage() {
               onClick={() => startTransition(() => setActiveTab("deputies"))}
               className={`relative flex-1 py-4 md:py-6 px-2 font-bold text-[11px] md:text-sm uppercase tracking-widest flex items-center justify-center gap-2 md:gap-3 transition-all duration-300 border-r border-b md:border-b-0 border-white/30 md:last:border-r-0 ${
                 activeTab === "deputies" 
-                  ? "text-white bg-emerald-600 shadow-xl shadow-emerald-500/40 z-20 scale-[1.04] ring-2 ring-white/60 ring-inset" 
-                  : "text-white/70 bg-emerald-500/40 hover:bg-emerald-500/70 hover:text-white z-10"
+                  ? "text-white bg-gradient-to-br from-emerald-400 to-emerald-600 shadow-lg shadow-emerald-500/50 z-20 scale-[1.04] ring-2 ring-white/70 ring-inset" 
+                  : "text-white/85 bg-gradient-to-br from-emerald-500 to-emerald-700 hover:from-emerald-400 hover:to-emerald-600 hover:text-white z-10"
               }`}
             >
               <motion.span 
@@ -282,8 +282,8 @@ export default function DashboardPage() {
                   onClick={() => startTransition(() => setActiveTab("saved"))}
                   className={`relative flex-1 py-4 md:py-6 px-2 font-bold text-[11px] md:text-sm uppercase tracking-widest flex items-center justify-center gap-2 md:gap-3 transition-all duration-300 border-r border-b md:border-b-0 border-white/30 md:last:border-r-0 ${
                     activeTab === "saved" 
-                      ? "text-white bg-amber-500 shadow-xl shadow-amber-500/40 z-20 scale-[1.04] ring-2 ring-white/60 ring-inset" 
-                      : "text-white/70 bg-amber-400/40 hover:bg-amber-400/70 hover:text-white z-10"
+                      ? "text-white bg-gradient-to-br from-orange-400 to-orange-600 shadow-lg shadow-orange-500/50 z-20 scale-[1.04] ring-2 ring-white/70 ring-inset" 
+                      : "text-white/85 bg-gradient-to-br from-orange-500 to-orange-700 hover:from-orange-400 hover:to-orange-600 hover:text-white z-10"
                   }`}
                 >
                   <motion.span 
@@ -306,8 +306,8 @@ export default function DashboardPage() {
                   onClick={() => startTransition(() => setActiveTab("geos"))}
                   className={`relative flex-1 py-4 md:py-6 px-2 font-bold text-[11px] md:text-sm uppercase tracking-widest flex items-center justify-center gap-2 md:gap-3 transition-all duration-300 border-r border-b md:border-b-0 border-white/30 md:last:border-r-0 ${
                     activeTab === "geos" 
-                      ? "text-white bg-pink-600 shadow-xl shadow-pink-500/40 z-20 scale-[1.04] ring-2 ring-white/60 ring-inset" 
-                      : "text-white/70 bg-pink-500/40 hover:bg-pink-500/70 hover:text-white z-10"
+                      ? "text-white bg-gradient-to-br from-fuchsia-500 to-pink-600 shadow-lg shadow-fuchsia-500/50 z-20 scale-[1.04] ring-2 ring-white/70 ring-inset" 
+                      : "text-white/85 bg-gradient-to-br from-fuchsia-500 to-pink-700 hover:from-fuchsia-400 hover:to-pink-600 hover:text-white z-10"
                   }`}
                 >
                   <motion.span 

@@ -3,12 +3,33 @@
 import { useState, useEffect, useTransition } from "react";
 import Link from "next/link";
 // ... (imports lucide-react)
-import { User, Star, Vote, Users, ChevronRight, Bell, MapPin, CheckCircle2, XCircle, MinusCircle, Loader2, Calendar, LayoutDashboard, LogOut, Settings, ArrowRight, Bookmark, FileText, Search, Clock, Globe, Layers, UserMinus } from "lucide-react";
+import { User, Star, Vote, Users, ChevronRight, Bell, MapPin, CheckCircle2, XCircle, MinusCircle, Loader2, Calendar, LayoutDashboard, LogOut, Settings, ArrowRight, Bookmark, FileText, Search, Clock, Globe, Layers, UserMinus, Building2 } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
 import { api } from "@/lib/api";
 import { BallotBox, BallotChip } from "@/components/dashboard/BallotVote";
 import NotificationsFeed from "@/components/dashboard/NotificationsFeed";
 import { usePremium } from "@/lib/hooks/usePremium";
+import { departmentPaths } from "@/lib/data/departmentPaths";
+import { regionPaths } from "@/lib/data/regionPaths";
+import { REGIONS, DEPARTMENTS } from "@/lib/data/territories";
+
+// Les favoris territoire sont enregistrés par NOM ; les silhouettes SVG sont indexées par CODE.
+const DEPT_CODE: Record<string, string> = Object.fromEntries((DEPARTMENTS as any[]).map(d => [d.name, d.id]));
+const REGION_CODE: Record<string, string> = Object.fromEntries((REGIONS as any[]).map(r => [r.name, r.id]));
+
+// Calcule un viewBox ajusté à un chemin SVG (les régions n'ont pas de viewBox stocké).
+function bboxFromPath(d: string): string {
+  const nums = (d.match(/-?\d+(?:\.\d+)?/g) || []).map(Number);
+  let minX = Infinity, minY = Infinity, maxX = -Infinity, maxY = -Infinity;
+  for (let i = 0; i + 1 < nums.length; i += 2) {
+    const x = nums[i], y = nums[i + 1];
+    if (x < minX) minX = x; if (x > maxX) maxX = x;
+    if (y < minY) minY = y; if (y > maxY) maxY = y;
+  }
+  if (!isFinite(minX)) return "0 0 100 100";
+  const pad = (maxX - minX) * 0.06 || 2;
+  return `${minX - pad} ${minY - pad} ${(maxX - minX) + pad * 2} ${(maxY - minY) + pad * 2}`;
+}
 
 // Les favoris et votes créés sous l'ancien schéma pointent vers des identifiants qui
 // n'existent plus (la table « laws » est une vue reconstruite depuis legislative_dossiers).
@@ -541,17 +562,53 @@ export default function DashboardPage() {
                       savedGeos.map((item) => (
                         <Link key={item.id} href={`/local?code=${item.item_id}&type=${item.item_type}`}>
                           <div className="group relative flex h-full flex-col overflow-hidden rounded-[2.5rem] border border-white/10 bg-gradient-to-br from-emerald-500/[0.07] to-teal-600/[0.03] p-6 transition-all duration-500 hover:border-emerald-400/50 hover:shadow-2xl hover:shadow-emerald-500/10 md:p-8">
-                            {/* Fond cartographique : courbes de niveau + grille façon carte */}
-                            <div className="pointer-events-none absolute inset-0 opacity-[0.13]">
-                              <svg viewBox="0 0 200 200" preserveAspectRatio="xMidYMid slice" className="h-full w-full text-emerald-300">
-                                <g fill="none" stroke="currentColor" strokeWidth="1.1">
-                                  {[16, 34, 54, 76, 100, 126].map((r) => (
-                                    <ellipse key={r} cx="158" cy="52" rx={r} ry={r * 0.66} />
-                                  ))}
-                                </g>
-                              </svg>
-                            </div>
+                            {/* Grille façon carte */}
                             <div className="pointer-events-none absolute inset-0 opacity-[0.04] [background-image:linear-gradient(to_right,white_1px,transparent_1px),linear-gradient(to_bottom,white_1px,transparent_1px)] [background-size:24px_24px]" />
+                            {/* Fond : silhouette RÉELLE du territoire (dép./région) ou skyline (commune) */}
+                            {(() => {
+                              const deptD = item.item_type === 'department' ? departmentPaths[DEPT_CODE[item.item_id] || item.item_id] : null;
+                              const regCode = item.item_type === 'region' ? (REGION_CODE[item.item_id] || item.item_id) : null;
+                              const shape = deptD
+                                ? deptD
+                                : regCode && regionPaths[regCode]
+                                  ? { d: regionPaths[regCode], viewBox: bboxFromPath(regionPaths[regCode]) }
+                                  : null;
+                              if (shape) {
+                                return (
+                                  <div className="pointer-events-none absolute -right-6 top-1/2 h-[155%] w-[70%] -translate-y-1/2 opacity-25 transition-transform duration-500 group-hover:scale-105">
+                                    <svg viewBox={shape.viewBox} preserveAspectRatio="xMidYMid meet" className="h-full w-full text-emerald-300">
+                                      <path d={shape.d} fill="currentColor" fillOpacity="0.22" stroke="currentColor" strokeWidth="1.2" strokeOpacity="0.9" strokeLinejoin="round" />
+                                    </svg>
+                                  </div>
+                                );
+                              }
+                              // Commune : skyline urbaine (immeubles + fenêtres)
+                              const B = [
+                                { x: 8, w: 34, y: 70 }, { x: 48, w: 30, y: 40 }, { x: 84, w: 26, y: 86 },
+                                { x: 116, w: 34, y: 54 }, { x: 156, w: 26, y: 24 }, { x: 188, w: 30, y: 72 },
+                                { x: 224, w: 34, y: 48 }, { x: 264, w: 26, y: 80 }, { x: 296, w: 26, y: 60 },
+                              ];
+                              return (
+                                <div className="pointer-events-none absolute inset-x-0 bottom-0 h-[58%] opacity-25 transition-transform duration-500 group-hover:translate-y-[-4px]">
+                                  <svg viewBox="0 0 322 140" preserveAspectRatio="xMidYMax slice" className="h-full w-full text-emerald-300">
+                                    <g fill="currentColor">
+                                      {B.map((b, i) => <rect key={i} x={b.x} y={b.y} width={b.w} height={140 - b.y} rx="2" />)}
+                                      <polygon points="169,10 156,24 182,24" />
+                                    </g>
+                                    <g fill="#0b1020" opacity="0.55">
+                                      {B.flatMap((b, i) => {
+                                        const cols = Math.max(2, Math.floor(b.w / 10));
+                                        const rows = Math.floor((140 - b.y - 8) / 12);
+                                        return Array.from({ length: cols * rows }).map((_, k) => {
+                                          const c = k % cols, r = Math.floor(k / cols);
+                                          return <rect key={`${i}-${k}`} x={b.x + 5 + c * (b.w / cols)} y={b.y + 8 + r * 12} width="4" height="6" rx="1" />;
+                                        });
+                                      })}
+                                    </g>
+                                  </svg>
+                                </div>
+                              );
+                            })()}
 
                             <div className="relative z-10 mb-6 flex items-start justify-between">
                               <span className="rounded-full bg-emerald-500/15 px-3 py-1 text-[10px] font-black uppercase tracking-widest text-emerald-300 ring-1 ring-inset ring-emerald-400/20">
@@ -561,7 +618,7 @@ export default function DashboardPage() {
                               <div className="relative">
                                 <span className="absolute inset-0 rounded-2xl ring-2 ring-emerald-400/30 opacity-40 animate-ping" />
                                 <div className="relative flex h-11 w-11 items-center justify-center rounded-2xl bg-emerald-500/15 text-emerald-300 ring-1 ring-emerald-400/30 transition-all group-hover:bg-emerald-500 group-hover:text-white">
-                                  <MapPin size={18} className="fill-emerald-400/20" />
+                                  {item.item_type === 'commune' ? <Building2 size={18} /> : <MapPin size={18} className="fill-emerald-400/20" />}
                                 </div>
                               </div>
                             </div>

@@ -64,6 +64,7 @@ export default function Header() {
   ];
 
   return (
+    <>
     <header className="fixed top-0 left-0 w-full z-40 bg-white/80 backdrop-blur-md border-b border-slate-100">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="flex justify-between items-center h-16">
@@ -189,18 +190,21 @@ export default function Header() {
         </motion.div>
       )}
 
-      {/* Modale de recherche globale */}
-      {searchOpen && (
-        <div className="fixed inset-0 z-[60] bg-slate-950/60 backdrop-blur-sm" onClick={() => setSearchOpen(false)}>
-          <div className="mx-auto mt-24 w-[92%] max-w-2xl" onClick={e => e.stopPropagation()}>
-            <div className="mb-2 flex items-center justify-between">
-              <p className="text-[11px] font-black uppercase tracking-widest text-white/70">Recherche sur tout le site</p>
-              <button onClick={() => setSearchOpen(false)} className="rounded-full bg-white/10 p-2 text-white hover:bg-white/20"><X size={16} /></button>
-            </div>
-            <GlobalSearch variant="mobile" onNavigate={() => setSearchOpen(false)} />
-          </div>
-        </div>
-      )}
     </header>
+
+    {/* Modale de recherche globale — HORS du header (dont le backdrop-blur casserait le
+        positionnement fixed). Toujours centrée en haut, quelle que soit la page. */}
+    {searchOpen && (
+      <div className="fixed inset-0 z-[100] bg-slate-950/60 backdrop-blur-sm" onClick={() => setSearchOpen(false)}>
+        <div className="mx-auto mt-24 w-[92%] max-w-2xl" onClick={e => e.stopPropagation()}>
+          <div className="mb-2 flex items-center justify-between">
+            <p className="text-[11px] font-black uppercase tracking-widest text-white/70">Recherche sur tout le site</p>
+            <button onClick={() => setSearchOpen(false)} className="rounded-full bg-white/10 p-2 text-white hover:bg-white/20"><X size={16} /></button>
+          </div>
+          <GlobalSearch variant="mobile" onNavigate={() => setSearchOpen(false)} />
+        </div>
+      </div>
+    )}
+    </>
   );
 }

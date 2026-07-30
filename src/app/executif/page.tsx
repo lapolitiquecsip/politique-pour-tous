@@ -745,7 +745,7 @@ export default function ExecutifPage() {
                           Publié au JO le {new Date(decree.date_publi).toLocaleDateString('fr-FR', { day: 'numeric', month: 'long', year: 'numeric' })}
                         </span>
                       </div>
-                      <h4 className="text-xs font-bold leading-snug group-hover:text-blue-300 transition-colors line-clamp-2">{decree.title}</h4>
+                      <h4 className="text-xs font-bold leading-snug group-hover:text-blue-300 transition-colors line-clamp-2">{decree.display_title || decree.title}</h4>
                     </button>
                   ))}
                 </div>
@@ -778,7 +778,8 @@ export default function ExecutifPage() {
               </div>
               <button onClick={() => setOpenDecree(null)} className="rounded-full bg-slate-100 p-2 text-slate-500 hover:bg-slate-200"><X size={18} /></button>
             </div>
-            <h3 className="mt-3 text-lg font-bold leading-snug text-slate-900">{openDecree.title}</h3>
+            <h3 className="mt-3 text-lg font-bold leading-snug text-slate-900">{openDecree.display_title || openDecree.title}</h3>
+            {openDecree.display_title && <p className="mt-1 text-[11px] leading-snug text-slate-400">{openDecree.title}</p>}
             <div className="mt-4 rounded-2xl bg-slate-50 p-4">
               <p className="text-[9px] font-black uppercase tracking-widest text-slate-400 mb-1">Ce que ça implique</p>
               <p className="text-sm leading-relaxed text-slate-700">

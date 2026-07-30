@@ -550,7 +550,7 @@ export const api = {
   getDecreesForMinistry: async (keywords: string[], limit = 5) => {
     if (!keywords.length) return [];
     const or = keywords.map(k => `title.ilike.*${k}*`).join(',');
-    const { data, error } = await supabase.from('decrees').select('jorf_id, title, decree_type, date_publi, source_url, summary').or(or).order('date_publi', { ascending: false }).limit(limit);
+    const { data, error } = await supabase.from('decrees').select('jorf_id, title, display_title, decree_type, date_publi, source_url, summary').or(or).order('date_publi', { ascending: false }).limit(limit);
     if (error || !data) return [];
     return data;
   },
@@ -559,7 +559,7 @@ export const api = {
   getDecrees: async (limit = 6) => {
     const { data, error } = await supabase
       .from('decrees')
-      .select('jorf_id, title, decree_type, date_publi, source_url, summary')
+      .select('jorf_id, title, display_title, decree_type, date_publi, source_url, summary')
       .order('date_publi', { ascending: false })
       .limit(limit);
     if (error) { console.error(error); return []; }

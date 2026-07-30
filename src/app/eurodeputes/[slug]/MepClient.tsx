@@ -128,7 +128,7 @@ export default function MepClient({ mep, initialVotes, embedded }: { mep: any; i
       {/* Toutes les fonctions de la personne. */}
       <div className="container mx-auto max-w-5xl px-4 pt-6">
         <ParallelRoles fullName={mep.full_name || `${mep.first_name} ${mep.last_name}`} selfHref={`/eurodeputes/${mep.slug}`} />
-      </div>}
+      </div>
 
       <div className="container mx-auto max-w-5xl px-4 pt-10">
         <div className="grid grid-cols-1 md:grid-cols-3 gap-8">

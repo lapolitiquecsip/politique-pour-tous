@@ -3,7 +3,7 @@
 import { useState, useEffect, useTransition } from "react";
 import Link from "next/link";
 // ... (imports lucide-react)
-import { User, Star, Vote, Users, ChevronRight, Bell, MapPin, CheckCircle2, XCircle, MinusCircle, Loader2, Calendar, LayoutDashboard, LogOut, Settings, ArrowRight, Bookmark, FileText, Search, Clock, Globe, Layers, UserMinus, Building2 } from "lucide-react";
+import { User, Star, Vote, Users, ChevronRight, Bell, MapPin, CheckCircle2, XCircle, MinusCircle, Loader2, Calendar, LayoutDashboard, LogOut, Settings, ArrowRight, Bookmark, FileText, Search, Clock, Globe, Layers, UserMinus, Building2, Scale } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
 import { api } from "@/lib/api";
 import { BallotBox, BallotChip } from "@/components/dashboard/BallotVote";
@@ -518,33 +518,49 @@ export default function DashboardPage() {
                     ) : (
                       savedLaws.map((item) => (
                         <Link key={item.id} href={`/lois/?dossier=${item.item_id}`}>
-                          <div className="group flex flex-col p-6 md:p-8 rounded-[2.5rem] border border-white/10 hover:border-amber-400 hover:shadow-2xl transition-all duration-500 h-full gold-sheen-hover bg-white/[0.04] relative overflow-hidden">
-                            <div className="absolute top-0 right-0 w-32 h-32 bg-amber-500/5 rounded-full -mr-16 -mt-16 group-hover:bg-amber-500/10 transition-colors" />
-                            
-                            <div className="flex items-center justify-between mb-6">
-                              <span className={`px-3 py-1 rounded-full text-[10px] font-black uppercase tracking-widest ${
-                                item.item_type === 'scrutin' ? 'bg-blue-500/15 text-blue-300' : 'bg-purple-500/15 text-purple-300'
-                              }`}>
-                                {item.item_type === 'scrutin' ? 'Loi Votée' : 'Proposition'}
-                              </span>
-                              <div className="p-2 bg-amber-500/15 text-amber-300 rounded-lg group-hover:bg-amber-500 group-hover:text-slate-950 transition-all">
-                                <Bookmark size={14} className="fill-current" />
+                          <div className="group relative flex h-full overflow-hidden rounded-3xl border border-white/10 bg-gradient-to-br from-amber-500/[0.06] to-white/[0.015] transition-all duration-500 hover:border-amber-400/50 hover:shadow-2xl hover:shadow-amber-500/10">
+                            {/* Marge reliée façon document officiel (œillets de reliure) */}
+                            <div className="relative w-9 shrink-0 border-r border-amber-400/20 bg-gradient-to-b from-amber-500/20 to-amber-700/10">
+                              <div className="absolute inset-y-0 left-1/2 w-px -translate-x-1/2 bg-amber-300/25" />
+                              <div className="absolute inset-y-0 left-1/2 flex -translate-x-1/2 flex-col justify-around py-7">
+                                {[0,1,2,3,4].map(i => <span key={i} className="h-2 w-2 rounded-full bg-slate-950/50 ring-1 ring-amber-300/25" />)}
                               </div>
                             </div>
-                            
-                            <h4 className={`text-xl font-bold line-clamp-3 mb-4 transition-colors ${
-                              titreOuNull(item.data) ? "text-white group-hover:text-amber-600" : "text-slate-400"
-                            }`}>
-                              {titreOuNull(item.data) || REFERENCE_PERDUE}
-                            </h4>
-                            
-                            <div className="mt-auto flex items-center justify-between pt-6 border-t border-white/10">
-                               <div className="flex items-center gap-2 text-slate-400 text-[10px] font-bold uppercase">
+
+                            <div className="relative flex flex-1 flex-col p-6 md:p-7">
+                              {/* Lignes de texte en filigrane (papier réglé) */}
+                              <div className="pointer-events-none absolute inset-0 opacity-[0.05] [background-image:repeating-linear-gradient(to_bottom,transparent,transparent_21px,white_22px)]" />
+
+                              <div className="relative z-10 flex items-start justify-between gap-3">
+                                <div>
+                                  <p className="mb-2 text-[9px] font-black uppercase tracking-[0.25em] text-amber-300/70">Texte de loi</p>
+                                  <span className={`inline-block rounded-md px-2.5 py-1 text-[10px] font-black uppercase tracking-widest ${
+                                    item.item_type === 'scrutin' ? 'bg-blue-500/15 text-blue-300' : 'bg-purple-500/15 text-purple-300'
+                                  }`}>
+                                    {item.item_type === 'scrutin' ? 'Loi votée' : 'Proposition'}
+                                  </span>
+                                </div>
+                                {/* Sceau justice */}
+                                <div className="flex h-12 w-12 shrink-0 items-center justify-center rounded-full border border-amber-400/40 bg-amber-500/10 text-amber-300 shadow-[0_0_20px_rgba(251,191,36,0.18)] transition-all group-hover:bg-amber-500 group-hover:text-slate-950">
+                                  <Scale size={20} />
+                                </div>
+                              </div>
+
+                              <h4 className={`relative z-10 mb-4 mt-5 line-clamp-3 font-serif text-lg font-bold leading-snug transition-colors ${
+                                titreOuNull(item.data) ? "text-white group-hover:text-amber-200" : "text-slate-400"
+                              }`}>
+                                {titreOuNull(item.data) || REFERENCE_PERDUE}
+                              </h4>
+
+                              <div className="relative z-10 mt-auto flex items-center justify-between border-t border-dashed border-white/15 pt-5">
+                                <span className="inline-flex items-center gap-2 text-[10px] font-bold uppercase tracking-widest text-slate-400">
                                   <Calendar size={12} />
-                                  {formatDateSafe(item.data?.date_scrutin || item.data?.date_adopted || item.data?.created_at)
-                                    || "Non disponible"}
-                               </div>
-                               <ChevronRight size={18} className="text-slate-300 group-hover:text-amber-500 transition-colors" />
+                                  {formatDateSafe(item.data?.date_scrutin || item.data?.date_adopted || item.data?.created_at) || "Non disponible"}
+                                </span>
+                                <span className="inline-flex items-center gap-1.5 text-[10px] font-black uppercase tracking-widest text-amber-300 transition-all group-hover:gap-2.5">
+                                  Consulter <ChevronRight size={14} />
+                                </span>
+                              </div>
                             </div>
                           </div>
                         </Link>

@@ -1208,22 +1208,22 @@ export const api = {
     if (s.length < 2) return [] as { category: string; items: any[] }[];
     const like = `%${s}%`;
     const [deps, sens, meps, mins, cands, parties, mayors, dossiers] = await Promise.all([
-      supabase.from('deputies').select('slug, first_name, last_name, party').or(`last_name.ilike.${like},first_name.ilike.${like}`).limit(6),
-      supabase.from('senators').select('slug, first_name, last_name, party').or(`last_name.ilike.${like},first_name.ilike.${like}`).limit(6),
-      supabase.from('meps').select('slug, full_name, ep_group_code').ilike('full_name', like).limit(6),
-      supabase.from('minister_profiles').select('slug, full_name, title').ilike('full_name', like).limit(6),
-      supabase.from('presidential_candidates').select('slug, full_name').ilike('full_name', like).limit(6),
+      supabase.from('deputies').select('slug, first_name, last_name, party, photo_url').or(`last_name.ilike.${like},first_name.ilike.${like}`).limit(6),
+      supabase.from('senators').select('slug, first_name, last_name, party, photo_url').or(`last_name.ilike.${like},first_name.ilike.${like}`).limit(6),
+      supabase.from('meps').select('slug, full_name, ep_group_code, photo_url').ilike('full_name', like).limit(6),
+      supabase.from('minister_profiles').select('slug, full_name, title, photo_url').ilike('full_name', like).limit(6),
+      supabase.from('presidential_candidates').select('slug, full_name, photo_url').ilike('full_name', like).limit(6),
       supabase.from('political_parties').select('slug, name').ilike('name', like).limit(6),
       supabase.from('mayors').select('slug, full_name, commune_name, insee_code, population').or(`commune_name.ilike.${like},last_name.ilike.${like}`).limit(8),
       supabase.from('legislative_dossiers').select('id, title, short_title').ilike('title', like).limit(6),
     ]);
     const M = (d: any) => `${d.first_name || ""} ${d.last_name || ""}`.trim();
     const elected: any[] = [
-      ...(deps.data || []).map((d: any) => ({ label: M(d), sub: `Député·e${d.party ? " · " + d.party : ""}`, href: `/deputes/${d.slug}`, type: 'deputy' })),
-      ...(sens.data || []).map((d: any) => ({ label: M(d), sub: `Sénateur·rice${d.party ? " · " + d.party : ""}`, href: `/senateurs/${d.slug}`, type: 'senator' })),
-      ...(meps.data || []).map((d: any) => ({ label: d.full_name, sub: `Eurodéputé·e${d.ep_group_code ? " · " + d.ep_group_code : ""}`, href: `/eurodeputes/${d.slug}`, type: 'mep' })),
-      ...(mins.data || []).map((d: any) => ({ label: d.full_name, sub: d.title || 'Gouvernement', href: `/executif/ministre/${d.slug}`, type: 'minister' })),
-      ...(cands.data || []).map((d: any) => ({ label: d.full_name, sub: 'Candidat·e 2027', href: `/presidentielles-2027/?candidat=${d.slug}`, type: 'candidate' })),
+      ...(deps.data || []).map((d: any) => ({ label: M(d), sub: `Député·e${d.party ? " · " + d.party : ""}`, href: `/deputes/${d.slug}`, type: 'deputy', img: d.photo_url })),
+      ...(sens.data || []).map((d: any) => ({ label: M(d), sub: `Sénateur·rice${d.party ? " · " + d.party : ""}`, href: `/senateurs/${d.slug}`, type: 'senator', img: d.photo_url })),
+      ...(meps.data || []).map((d: any) => ({ label: d.full_name, sub: `Eurodéputé·e${d.ep_group_code ? " · " + d.ep_group_code : ""}`, href: `/eurodeputes/${d.slug}`, type: 'mep', img: d.photo_url })),
+      ...(mins.data || []).map((d: any) => ({ label: d.full_name, sub: d.title || 'Gouvernement', href: `/executif/ministre/${d.slug}`, type: 'minister', img: d.photo_url })),
+      ...(cands.data || []).map((d: any) => ({ label: d.full_name, sub: 'Candidat·e 2027', href: `/presidentielles-2027/?candidat=${d.slug}`, type: 'candidate', img: d.photo_url })),
     ];
     const communes = (mayors.data || []).map((m: any) => ({ label: m.commune_name, sub: `Commune${m.population ? " · " + Number(m.population).toLocaleString('fr-FR') + " hab." : ""}`, href: `/local?code=${m.insee_code}&type=commune`, type: 'commune' }));
     const partisR = (parties.data || []).map((p: any) => ({ label: p.name, sub: 'Parti politique', href: `/partis/${p.slug}`, type: 'party' }));

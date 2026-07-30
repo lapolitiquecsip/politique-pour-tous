@@ -100,7 +100,13 @@ export default function GlobalSearch({ variant = "desktop", onNavigate }: { vari
                   return (
                     <button key={g.category + i} onClick={() => go(it.href)}
                       className="flex w-full items-center gap-3 rounded-xl px-3 py-2 text-left transition hover:bg-slate-100 dark:hover:bg-slate-800">
-                      <span className="flex h-8 w-8 shrink-0 items-center justify-center rounded-lg bg-slate-100 text-slate-500 dark:bg-slate-800 dark:text-slate-300"><Icon size={15} /></span>
+                      {it.img ? (
+                        // eslint-disable-next-line @next/next/no-img-element
+                        <img src={it.img} alt="" loading="lazy" className="h-9 w-9 shrink-0 rounded-lg object-cover object-top ring-1 ring-slate-200 dark:ring-slate-700"
+                          onError={e => { (e.currentTarget as HTMLImageElement).style.display = "none"; }} />
+                      ) : (
+                        <span className="flex h-9 w-9 shrink-0 items-center justify-center rounded-lg bg-slate-100 text-slate-500 dark:bg-slate-800 dark:text-slate-300"><Icon size={15} /></span>
+                      )}
                       <span className="min-w-0 flex-1">
                         <span className="block truncate text-sm font-bold text-slate-900 dark:text-white">{it.label}</span>
                         {it.sub && <span className="block truncate text-[11px] text-slate-400">{it.sub}</span>}

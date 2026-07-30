@@ -1,6 +1,6 @@
 import { api } from "@/lib/api";
 import Link from "next/link";
-import UnifiedPersonClient from "@/components/shared/UnifiedPersonClient";
+import SenatorClient from "./SenatorClient";
 import { Metadata } from "next";
 
 export async function generateMetadata({ params }: { params: Promise<{ slug: string }> }): Promise<Metadata> {
@@ -28,7 +28,7 @@ export default async function SenatorDetailPage({ params }: { params: Promise<{ 
     );
   }
 
-  return <UnifiedPersonClient entryType="senator" slug={slug} />;
+  return <SenatorClient senator={senator} />;
 }
 
 export async function generateStaticParams() {

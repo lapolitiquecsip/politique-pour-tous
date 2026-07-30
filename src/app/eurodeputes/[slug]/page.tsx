@@ -1,5 +1,5 @@
 import { api } from "@/lib/api";
-import UnifiedPersonClient from "@/components/shared/UnifiedPersonClient";
+import MepClient from "./MepClient";
 
 export const dynamic = "force-static";
 
@@ -22,5 +22,6 @@ export default async function MepPage({ params }: { params: Promise<{ slug: stri
       </div>
     );
   }
-  return <UnifiedPersonClient entryType="mep" slug={slug} />;
+  const votes = await api.getMepVotes(String(mep.id), { limit: 20, onlyMain: true });
+  return <MepClient mep={mep} initialVotes={votes as any[]} />;
 }

@@ -41,7 +41,7 @@ import VoteDetailsModal from "@/components/deputies/VoteDetailsModal";
 import LegalStatusModal from "@/components/deputies/LegalStatusModal";
 import DeputyStats from "@/components/deputies/DeputyStats";
 import ActivityRank from "@/components/shared/ActivityRank";
-import PersonTabs from "@/components/shared/PersonTabs";
+import ParallelRoles from "@/components/shared/ParallelRoles";
 import InitiativeRank from "@/components/shared/InitiativeRank";
 import { useGlossary } from "@/components/providers/GlossaryProvider";
 
@@ -307,9 +307,6 @@ export default function DeputyDetailPage({ params, embedded }: { params: Promise
       </div>
       )}
 
-      {/* Fiche unifiée : onglets des fonctions de la personne. */}
-      {!embedded && name && <PersonTabs fullName={name} currentHref={`/deputes/${deputy?.slug || ""}`} />}
-
       <div className="container mx-auto px-4 pt-12 max-w-6xl">
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-12">
           
@@ -482,6 +479,9 @@ export default function DeputyDetailPage({ params, embedded }: { params: Promise
             <div className="flex justify-start">
               <FollowButton kind="deputy" id={deputy?.id ? String(deputy.id) : null} label="ce député" />
             </div>
+
+            {/* Toutes les fonctions de la personne (député, PM, candidat, parti…). */}
+            {name && <ParallelRoles fullName={name} selfHref={`/deputes/${deputy?.slug || ""}`} />}
 
             {/* NEW: Biography / Background Section (Collapsible Editorial Style) */}
             {deputy?.biography && (

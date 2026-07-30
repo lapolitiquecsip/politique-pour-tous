@@ -1,5 +1,5 @@
 import { api } from "@/lib/api";
-import UnifiedPersonClient from "@/components/shared/UnifiedPersonClient";
+import MinisterFicheClient from "./MinisterFicheClient";
 
 // Évite qu'une réponse vide mise en cache au build empêche la génération des pages.
 export const fetchCache = "force-no-store";
@@ -23,7 +23,6 @@ export async function generateStaticParams() {
   }
 }
 
-export default async function Page({ params }: { params: Promise<{ slug: string }> }) {
-  const { slug } = await params;
-  return <UnifiedPersonClient entryType="minister" slug={slug} />;
+export default function Page({ params }: { params: Promise<{ slug: string }> }) {
+  return <MinisterFicheClient params={params} />;
 }

@@ -1,5 +1,5 @@
 import { api } from "@/lib/api";
-import UnifiedPersonClient from "@/components/shared/UnifiedPersonClient";
+import DeputyClient from "./DeputyClient";
 
 export async function generateStaticParams() {
   try {
@@ -12,7 +12,6 @@ export async function generateStaticParams() {
   }
 }
 
-export default async function Page({ params }: { params: Promise<{ slug: string }> }) {
-  const { slug } = await params;
-  return <UnifiedPersonClient entryType="deputy" slug={slug} />;
+export default function Page({ params }: { params: Promise<{ slug: string }> }) {
+  return <DeputyClient params={params} />;
 }

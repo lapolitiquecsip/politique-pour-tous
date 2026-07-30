@@ -540,32 +540,51 @@ export default function DashboardPage() {
                     ) : (
                       savedGeos.map((item) => (
                         <Link key={item.id} href={`/local?code=${item.item_id}&type=${item.item_type}`}>
-                          <div className="group flex flex-col p-6 md:p-8 rounded-[2.5rem] border border-white/10 hover:border-rose-400 hover:shadow-2xl transition-all duration-500 h-full gold-sheen-hover bg-white/[0.04] relative overflow-hidden">
-                            <div className="absolute top-0 right-0 w-32 h-32 bg-rose-500/5 rounded-full -mr-16 -mt-16 group-hover:bg-rose-500/10 transition-colors" />
-                            
-                            <div className="flex items-center justify-between mb-6">
-                              <span className="px-3 py-1 rounded-full text-[10px] font-black uppercase tracking-widest bg-rose-500/15 text-rose-300">
-                                {item.item_type === 'commune' ? 'Commune' :
-                                 item.item_type === 'region' ? 'Région' : 'Département'}
+                          <div className="group relative flex h-full flex-col overflow-hidden rounded-[2.5rem] border border-white/10 bg-gradient-to-br from-emerald-500/[0.07] to-teal-600/[0.03] p-6 transition-all duration-500 hover:border-emerald-400/50 hover:shadow-2xl hover:shadow-emerald-500/10 md:p-8">
+                            {/* Fond cartographique : courbes de niveau + grille façon carte */}
+                            <div className="pointer-events-none absolute inset-0 opacity-[0.13]">
+                              <svg viewBox="0 0 200 200" preserveAspectRatio="xMidYMid slice" className="h-full w-full text-emerald-300">
+                                <g fill="none" stroke="currentColor" strokeWidth="1.1">
+                                  {[16, 34, 54, 76, 100, 126].map((r) => (
+                                    <ellipse key={r} cx="158" cy="52" rx={r} ry={r * 0.66} />
+                                  ))}
+                                </g>
+                              </svg>
+                            </div>
+                            <div className="pointer-events-none absolute inset-0 opacity-[0.04] [background-image:linear-gradient(to_right,white_1px,transparent_1px),linear-gradient(to_bottom,white_1px,transparent_1px)] [background-size:24px_24px]" />
+
+                            <div className="relative z-10 mb-6 flex items-start justify-between">
+                              <span className="rounded-full bg-emerald-500/15 px-3 py-1 text-[10px] font-black uppercase tracking-widest text-emerald-300 ring-1 ring-inset ring-emerald-400/20">
+                                {item.item_type === 'commune' ? 'Commune' : item.item_type === 'region' ? 'Région' : 'Département'}
                               </span>
-                              <div className="p-2 bg-rose-500/15 text-rose-300 rounded-lg group-hover:bg-rose-500 group-hover:text-white transition-all">
-                                <Star size={14} className="fill-current" />
+                              {/* Marqueur de carte pulsant */}
+                              <div className="relative">
+                                <span className="absolute inset-0 rounded-2xl ring-2 ring-emerald-400/30 opacity-40 animate-ping" />
+                                <div className="relative flex h-11 w-11 items-center justify-center rounded-2xl bg-emerald-500/15 text-emerald-300 ring-1 ring-emerald-400/30 transition-all group-hover:bg-emerald-500 group-hover:text-white">
+                                  <MapPin size={18} className="fill-emerald-400/20" />
+                                </div>
                               </div>
                             </div>
-                            
-                            {/* Même police que les titres de sections (font-staatliches) :
-                                l'italique gras était illisible sur les noms de communes.
-                                Taille et couleurs volontairement inchangées. */}
-                            <h4 className="text-xl font-staatliches tracking-wide text-white group-hover:text-rose-600 transition-colors line-clamp-3 mb-4">
+
+                            <h4 className="relative z-10 mb-4 line-clamp-3 font-staatliches text-2xl tracking-wide text-white transition-colors group-hover:text-emerald-300">
                               {item.data?.title}
                             </h4>
-                            
-                            <div className="mt-auto flex items-center justify-between pt-6 border-t border-white/10">
-                               <div className="flex items-center gap-2 text-slate-400 text-[10px] font-bold uppercase">
-                                  <MapPin size={12} />
-                                  {item.item_type === 'commune' ? `${item.data?.population?.toLocaleString()} hab.` : 'Territoire Suivi'}
-                               </div>
-                               <ChevronRight size={18} className="text-slate-300 group-hover:text-rose-500 transition-colors" />
+
+                            <div className="relative z-10 mt-auto flex items-center justify-between border-t border-white/10 pt-5">
+                              <div className="flex items-center gap-2">
+                                {item.item_type === 'commune' && item.data?.population ? (
+                                  <span className="inline-flex items-center gap-1.5 rounded-full bg-white/5 px-3 py-1.5 text-[11px] font-black tracking-wide text-emerald-200">
+                                    <Users size={12} /> {item.data.population.toLocaleString('fr-FR')} hab.
+                                  </span>
+                                ) : (
+                                  <span className="inline-flex items-center gap-1.5 text-[10px] font-black uppercase tracking-widest text-slate-400">
+                                    <Globe size={12} /> Territoire suivi
+                                  </span>
+                                )}
+                              </div>
+                              <span className="flex h-9 w-9 items-center justify-center rounded-full border border-white/10 text-slate-300 transition-all group-hover:border-emerald-400 group-hover:bg-emerald-500 group-hover:text-white">
+                                <ChevronRight size={18} />
+                              </span>
                             </div>
                           </div>
                         </Link>

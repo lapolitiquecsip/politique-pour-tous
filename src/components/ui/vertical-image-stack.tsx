@@ -46,7 +46,17 @@ export function VerticalImageStack({
   // Start indexing at 0
   const [currentIndex, setCurrentIndex] = useState(0)
   const [combo, setCombo] = useState(0)
+  const [best, setBest] = useState(0)
+  const [milestone, setMilestone] = useState<{ id: number; value: number } | null>(null)
   const [dragDirection, setDragDirection] = useState<"up" | "down" | null>(null)
+
+  // Record personnel persistant : ressort à chaque visite (moteur de « battre son score »).
+  useEffect(() => {
+    try { setBest(parseInt(localStorage.getItem("feed-best-combo") || "0", 10) || 0); } catch {}
+  }, [])
+  useEffect(() => {
+    if (combo > best) { setBest(combo); try { localStorage.setItem("feed-best-combo", String(combo)); } catch {} }
+  }, [combo, best])
   
   interface Particle {
     id: number;
@@ -83,42 +93,17 @@ export function VerticalImageStack({
 
   const theme = getThemeColor()
 
-  const playPopSound = () => {
-    try {
-      const ctx = new (window.AudioContext || (window as any).webkitAudioContext)();
-      const now = ctx.currentTime;
-      
-      // Crisp retro-pop synth chime (chord C5 to E5 / G5 to C6)
-      const osc1 = ctx.createOscillator();
-      const osc2 = ctx.createOscillator();
-      const gainNode = ctx.createGain();
-      
-      osc1.type = "sine";
-      osc2.type = "triangle";
-      
-      osc1.frequency.setValueAtTime(523.25, now); // C5
-      osc1.frequency.exponentialRampToValueAtTime(783.99, now + 0.12); // G5
-      
-      osc2.frequency.setValueAtTime(659.25, now); // E5
-      osc2.frequency.exponentialRampToValueAtTime(1046.50, now + 0.15); // C6
-      
-      gainNode.gain.setValueAtTime(0.06, now);
-      gainNode.gain.exponentialRampToValueAtTime(0.001, now + 0.2);
-      
-      osc1.connect(gainNode);
-      osc2.connect(gainNode);
-      gainNode.connect(ctx.destination);
-      
-      osc1.start(now);
-      osc2.start(now);
-      osc1.stop(now + 0.2);
-      osc2.stop(now + 0.2);
-    } catch (e) {
-      console.warn("Audio Context blocked or unsupported");
-    }
+  // Plus de son au scroll. À la place, un retour HAPTIQUE discret (mobile) : dopamine tactile,
+  // sans bruit. Ignoré silencieusement sur les appareils qui ne le supportent pas.
+  const haptic = (pattern: number | number[]) => {
+    try { navigator.vibrate?.(pattern); } catch {}
   };
 
-  const spawnParticles = useCallback(() => {
+  // Paliers de combo qui déclenchent une célébration.
+  const MILESTONES = [3, 5, 10, 15, 20, 30, 50];
+  const nextMilestone = (c: number) => MILESTONES.find(m => m > c) ?? (c + 10);
+
+  const spawnParticles = useCallback((count = 18, big = false) => {
     const colorsMap: Record<string, string[]> = {
       blue: ["#3b82f6", "#60a5fa", "#93c5fd", "#fbbf24"],
       purple: ["#a855f7", "#c084fc", "#d8b4fe", "#34d399"],
@@ -128,9 +113,9 @@ export function VerticalImageStack({
     };
     const colors = colorsMap[theme] || ["#64748b", "#94a3b8", "#cbd5e1"];
 
-    const newParticles = Array.from({ length: 18 }).map((_, i) => {
-      const angle = (i / 18) * Math.PI * 2 + (Math.random() - 0.5) * 0.3;
-      const velocity = 60 + Math.random() * 100;
+    const newParticles = Array.from({ length: count }).map((_, i) => {
+      const angle = (i / count) * Math.PI * 2 + (Math.random() - 0.5) * 0.3;
+      const velocity = 60 + Math.random() * (big ? 200 : 100);
       return {
         id: Date.now() + i + Math.random(),
         x: 0,
@@ -138,7 +123,7 @@ export function VerticalImageStack({
         tx: Math.cos(angle) * velocity,
         ty: Math.sin(angle) * velocity,
         color: colors[Math.floor(Math.random() * colors.length)],
-        size: 5 + Math.random() * 8,
+        size: (big ? 8 : 5) + Math.random() * (big ? 12 : 8),
       };
     });
     setParticles(newParticles);
@@ -158,16 +143,34 @@ export function VerticalImageStack({
       const nextIndex = Math.max(0, Math.min(items.length - 1, prev + newDirection));
       if (nextIndex !== prev) {
         if (newDirection > 0) {
-          setCombo(c => c + 1);
+          setCombo(c => {
+            const nc = c + 1;
+            if (MILESTONES.includes(nc)) {          // palier atteint → célébration
+              setMilestone({ id: Date.now(), value: nc });
+              spawnParticles(34, true);
+              haptic([0, 30, 40, 30]);
+            } else {
+              spawnParticles();
+              haptic(12);
+            }
+            return nc;
+          });
         } else {
           setCombo(c => Math.max(0, c - 1));
+          spawnParticles();
+          haptic(8);
         }
-        playPopSound();
-        spawnParticles();
       }
       return nextIndex;
     });
   }, [items.length, spawnParticles]);
+
+  // Le toast de palier disparaît tout seul.
+  useEffect(() => {
+    if (!milestone) return;
+    const t = setTimeout(() => setMilestone(null), 1400);
+    return () => clearTimeout(t);
+  }, [milestone]);
 
   const handleDrag = (_: any, info: PanInfo) => {
     const threshold = 15;
@@ -409,9 +412,13 @@ export function VerticalImageStack({
           </svg>
         </motion.button>
 
-        <span className="text-[10px] font-black tracking-widest uppercase text-slate-400 dark:text-slate-500 select-none">
+        <motion.span
+          animate={{ opacity: [0.5, 1, 0.5] }}
+          transition={{ duration: 2, repeat: Infinity, ease: "easeInOut" }}
+          className="text-[10px] font-black tracking-widest uppercase text-amber-500 select-none"
+        >
           GLISSER / DÉFILER
-        </span>
+        </motion.span>
 
         <motion.button
           whileHover={{ scale: 1.15 }}
@@ -430,23 +437,73 @@ export function VerticalImageStack({
 
 
       {/* Combo Counter & Dopamine Streak meter */}
-      <div className="absolute right-8 top-1/2 -translate-y-1/2 select-none hidden md:block w-36">
-        <motion.div 
-          animate={combo > 0 ? { scale: [1, 1.08, 1], rotate: [0, 2, -2, 0] } : {}}
-          transition={{ duration: 0.5, ease: "easeInOut" }}
-          className="flex flex-col items-center bg-white/90 dark:bg-slate-900/90 backdrop-blur-md px-3 py-3 rounded-2xl shadow-md border border-slate-100/50 dark:border-slate-800/50 text-center"
+      <div className="absolute right-8 top-1/2 -translate-y-1/2 select-none hidden md:block w-40">
+        <motion.div
+          key={combo}
+          animate={combo > 0 ? { scale: [1, 1.06, 1] } : {}}
+          transition={{ duration: 0.35, ease: "easeOut" }}
+          className="flex flex-col items-center gap-2 rounded-3xl border border-slate-100/60 bg-white/90 px-4 py-4 text-center shadow-xl shadow-amber-500/5 backdrop-blur-md dark:border-slate-800/60 dark:bg-slate-900/90"
         >
-          <span className="text-[9px] font-black uppercase tracking-widest text-amber-500 mb-1 flex items-center gap-1">
-            COMBO {combo > 0 ? "🔥" : "💤"}
+          <span className="flex items-center gap-1 text-[9px] font-black uppercase tracking-widest text-amber-500">
+            Combo {combo > 0 ? "🔥" : "💤"}
           </span>
-          <span className="text-3xl font-black text-slate-800 dark:text-slate-100 tabular-nums mb-1 leading-none">
+          <span className="bg-gradient-to-b from-amber-500 to-orange-600 bg-clip-text text-5xl font-black leading-none tabular-nums text-transparent">
             {combo}
           </span>
-          <span className="text-[9px] font-bold text-slate-400 dark:text-slate-500 uppercase tracking-tight leading-tight">
+
+          {/* Progression vers le prochain palier. */}
+          <div className="w-full">
+            <div className="h-1.5 w-full overflow-hidden rounded-full bg-slate-100 dark:bg-slate-800">
+              <motion.div
+                className="h-full rounded-full bg-gradient-to-r from-amber-400 to-orange-500"
+                animate={{ width: `${Math.min(100, (combo / nextMilestone(combo)) * 100)}%` }}
+                transition={{ type: "spring", stiffness: 200, damping: 26 }}
+              />
+            </div>
+            <span className="mt-1 block text-[9px] font-bold uppercase tracking-tight text-slate-400 dark:text-slate-500">
+              {combo >= (MILESTONES[MILESTONES.length - 1]) ? "Palier max 👑" : `Palier à ${nextMilestone(combo)}`}
+            </span>
+          </div>
+
+          <span className="text-[9px] font-bold uppercase leading-tight tracking-tight text-slate-500 dark:text-slate-400">
             {getStreakMessage(combo)}
           </span>
+
+          {best > 0 && (
+            <span className="mt-0.5 flex items-center gap-1 rounded-full bg-amber-50 px-2.5 py-1 text-[9px] font-black uppercase tracking-widest text-amber-600 dark:bg-amber-500/10">
+              🏆 Record {best}
+            </span>
+          )}
         </motion.div>
       </div>
+
+      {/* Points de progression dans le fil (drive de complétion). */}
+      <div className="absolute left-6 top-1/2 hidden -translate-y-1/2 flex-col items-center gap-1.5 md:flex">
+        {items.slice(0, Math.min(items.length, 12)).map((_, i) => {
+          const idx = items.length <= 12 ? i : Math.round((i / 11) * (items.length - 1));
+          const active = idx === currentIndex;
+          const done = idx < currentIndex;
+          return (
+            <span key={i} className={`rounded-full transition-all duration-300 ${active ? "h-5 w-1.5 bg-amber-500" : done ? "h-1.5 w-1.5 bg-amber-400/70" : "h-1.5 w-1.5 bg-slate-300 dark:bg-slate-700"}`} />
+          );
+        })}
+      </div>
+
+      {/* Célébration de palier (toast central). */}
+      <AnimatePresence>
+        {milestone && (
+          <motion.div
+            key={milestone.id}
+            initial={{ opacity: 0, scale: 0.5, y: 10 }}
+            animate={{ opacity: 1, scale: 1, y: 0 }}
+            exit={{ opacity: 0, scale: 1.3, y: -30 }}
+            transition={{ type: "spring", stiffness: 320, damping: 18 }}
+            className="pointer-events-none absolute top-10 z-50 flex items-center gap-2 rounded-full bg-gradient-to-r from-amber-500 to-orange-600 px-6 py-3 text-sm font-black uppercase tracking-widest text-white shadow-2xl shadow-orange-500/40"
+          >
+            {milestone.value} d'affilée · {getStreakMessage(milestone.value)}
+          </motion.div>
+        )}
+      </AnimatePresence>
     </div>
   )
 }

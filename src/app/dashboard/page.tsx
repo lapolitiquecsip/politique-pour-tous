@@ -584,7 +584,7 @@ export default function DashboardPage() {
                       </div>
                     ) : (
                       savedGeos.map((item) => (
-                        <Link key={item.id} href={`/local?code=${item.item_id}&type=${item.item_type}`}>
+                        <Link key={item.id} href={`/local?code=${encodeURIComponent(item.item_id)}&type=${item.item_type}`}>
                           <div className="group relative flex h-full flex-col overflow-hidden rounded-[2.5rem] border border-white/10 bg-gradient-to-br from-fuchsia-500/[0.07] to-pink-600/[0.03] p-6 transition-all duration-500 hover:border-fuchsia-400/50 hover:shadow-2xl hover:shadow-fuchsia-500/10 md:p-8">
                             {/* Grille façon carte */}
                             <div className="pointer-events-none absolute inset-0 opacity-[0.04] [background-image:linear-gradient(to_right,white_1px,transparent_1px),linear-gradient(to_bottom,white_1px,transparent_1px)] [background-size:24px_24px]" />

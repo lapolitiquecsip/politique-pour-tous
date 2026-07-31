@@ -373,12 +373,20 @@ function LocalPoliticsContent() {
            }
         };
         fetchCommune();
-      } else if (type === 'region') {
-        setActiveTab('region');
-        setSearch(code); // Filter by region name
-      } else if (type === 'department') {
-        setActiveTab('departement');
-        setSearch(code); // Filter by department name
+      } else if (type === 'region' || type === 'department') {
+        // Le favori est enregistré par NOM (cf. TerritoryDetailPanel). On retrouve
+        // l'item et on OUVRE directement sa fiche (panneau), sans laisser l'utilisateur
+        // sur la page générale.
+        const norm = (s: string) => (s || "").normalize("NFD").replace(/[̀-ͯ]/g, "").toLowerCase();
+        const target = norm(decodeURIComponent(code));
+        const list = type === 'region' ? REGIONS : DEPARTMENTS;
+        const found = list.find((t: any) => norm(t.name) === target || norm(t.id) === target);
+        setActiveTab(type === 'region' ? 'region' : 'departement');
+        if (found) {
+          setSelectedTerritory({ id: found.id, name: found.name, type });
+        } else {
+          setSearch(decodeURIComponent(code)); // repli : filtre la grille
+        }
       }
     }
   }, [searchParams]);

@@ -42,9 +42,28 @@ const POWERS = {
 };
 
 // 1) Titulaires curés (stables sur la législature). Clé = nom normalisé.
+const commissionAN = (nom: string): InstRole => ({ role: `Président·e de la ${nom}`, institution: "Assemblée nationale", powers: POWERS.presidentCommission });
+const commissionSenat = (nom: string): InstRole => ({ role: `Président·e de la ${nom}`, institution: "Sénat", powers: POWERS.presidentCommission });
 const CURATED: Record<string, InstRole> = {
   "yael braun pivet": { role: "Présidente de l'Assemblée nationale", institution: "Assemblée nationale", since: "2022", powers: POWERS.presidentAN },
   "gerard larcher": { role: "Président du Sénat", institution: "Sénat", since: "2014", powers: POWERS.presidentSenat },
+  // Président·e·s des huit commissions permanentes de l'Assemblée nationale (source : vie-publique.fr).
+  "alexandre portier": commissionAN("Commission des Affaires culturelles et de l'Éducation"),
+  "stephane travert": commissionAN("Commission des Affaires économiques"),
+  "bruno fuchs": commissionAN("Commission des Affaires étrangères"),
+  "frederic valletoux": commissionAN("Commission des Affaires sociales"),
+  "jean michel jacques": commissionAN("Commission de la Défense nationale et des Forces armées"),
+  "sandrine le feur": commissionAN("Commission du Développement durable et de l'Aménagement du territoire"),
+  "eric coquerel": commissionAN("Commission des Finances, de l'Économie générale et du Contrôle budgétaire"),
+  "florent boudie": commissionAN("Commission des Lois constitutionnelles, de la Législation et de l'Administration générale"),
+  // Président·e·s des sept commissions permanentes du Sénat (source : senat.fr).
+  "claude raynal": commissionSenat("Commission des Finances"),
+  "muriel jourda": commissionSenat("Commission des Lois"),
+  "cedric perrin": commissionSenat("Commission des Affaires étrangères, de la Défense et des Forces armées"),
+  "philippe mouiller": commissionSenat("Commission des Affaires sociales"),
+  "dominique estrosi sassone": commissionSenat("Commission des Affaires économiques"),
+  "laurent lafon": commissionSenat("Commission de la Culture, de l'Éducation, de la Communication et du Sport"),
+  "jean francois longeot": commissionSenat("Commission de l'Aménagement du territoire et du Développement durable"),
 };
 
 // 2) Détecteur de secours depuis la bio structurée (parcours + summary), pour les rôles que la

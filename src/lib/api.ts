@@ -692,6 +692,16 @@ export const api = {
     return data;
   },
 
+  // Série pluriannuelle (toutes les années curées, ordre croissant) pour l'évolution.
+  getEuFranceBudgetSeries: async () => {
+    const { data, error } = await supabase
+      .from('eu_france_budget')
+      .select('year, contribution_eur, spending_eur, breakdown, source_url, source_label')
+      .order('year', { ascending: true });
+    if (error) { console.error(error); return []; }
+    return data ?? [];
+  },
+
   getLegislativeDossier: async (id: string) => {
     const { data, error } = await supabase.rpc('public_legislative_dossier', { p_id: id });
     if (error) throw error;

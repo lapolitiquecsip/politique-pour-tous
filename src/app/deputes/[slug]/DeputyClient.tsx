@@ -43,6 +43,7 @@ import DeputyStats from "@/components/deputies/DeputyStats";
 import ActivityRank from "@/components/shared/ActivityRank";
 import ParallelRoles from "@/components/shared/ParallelRoles";
 import StructuredBio, { hasStructuredBio } from "@/components/shared/StructuredBio";
+import InstitutionalRoleBanner from "@/components/shared/InstitutionalRoleBanner";
 import InitiativeRank from "@/components/shared/InitiativeRank";
 import { useGlossary } from "@/components/providers/GlossaryProvider";
 
@@ -480,6 +481,9 @@ export default function DeputyDetailPage({ params, embedded }: { params: Promise
             <div className="flex justify-start">
               <FollowButton kind="deputy" id={deputy?.id ? String(deputy.id) : null} label="ce député" />
             </div>
+
+            {/* Fonction institutionnelle (Président·e / Vice-président·e / président·e de commission). */}
+            {name && <InstitutionalRoleBanner fullName={name} bio={deputy?.bio} />}
 
             {/* Toutes les fonctions de la personne (député, PM, candidat, parti…). */}
             {name && <ParallelRoles fullName={name} selfHref={`/deputes/${deputy?.slug || ""}`} />}

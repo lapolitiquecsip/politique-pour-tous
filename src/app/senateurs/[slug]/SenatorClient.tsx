@@ -26,6 +26,7 @@ import ActivityRank from "@/components/shared/ActivityRank";
 import FollowButton from "@/components/shared/FollowButton";
 import ParallelRoles from "@/components/shared/ParallelRoles";
 import StructuredBio from "@/components/shared/StructuredBio";
+import InstitutionalRoleBanner from "@/components/shared/InstitutionalRoleBanner";
 import InitiativeRank from "@/components/shared/InitiativeRank";
 
 
@@ -220,6 +221,9 @@ export default function SenatorClient({ senator, embedded }: { senator: any; emb
             <div className="flex justify-start">
               <FollowButton kind="senator" id={String(senator.id)} label="ce sénateur" />
             </div>
+
+            {/* Fonction institutionnelle (Président·e / Vice-président·e / président·e de commission). */}
+            <InstitutionalRoleBanner fullName={name} bio={senator.bio} />
 
             {/* Toutes les fonctions de la personne. */}
             <ParallelRoles fullName={name} selfHref={`/senateurs/${senator.slug}`} />

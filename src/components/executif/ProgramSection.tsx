@@ -18,8 +18,8 @@ const STATUS: Record<string, { label: string; chip: string; dot: string; bar: st
   en_cours:      { label: "En cours",      chip: "bg-blue-50 text-blue-700 border-blue-200",          dot: "bg-blue-500",    bar: "bg-blue-500" },
   partiel:       { label: "Partiel",       chip: "bg-amber-50 text-amber-700 border-amber-200",       dot: "bg-amber-500",   bar: "bg-amber-500" },
   abandonne:     { label: "Abandonné",     chip: "bg-rose-50 text-rose-700 border-rose-200",          dot: "bg-rose-500",    bar: "bg-rose-500" },
-  non_evaluable: { label: "Non évaluable", chip: "bg-slate-100 text-slate-500 border-slate-200",      dot: "bg-slate-400",   bar: "bg-slate-300" },
-  non_verifie:   { label: "Non vérifié",   chip: "bg-slate-100 text-slate-500 border-slate-200",      dot: "bg-slate-300",   bar: "bg-slate-200" },
+  non_evaluable: { label: "Faites-vous votre propre avis", chip: "bg-slate-100 text-slate-500 border-slate-200",      dot: "bg-slate-400",   bar: "bg-slate-300" },
+  non_verifie:   { label: "Faites-vous votre propre avis", chip: "bg-slate-100 text-slate-500 border-slate-200",      dot: "bg-slate-300",   bar: "bg-slate-200" },
 };
 const ORDER = ["tenu", "en_cours", "partiel", "abandonne", "non_evaluable", "non_verifie"];
 

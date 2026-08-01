@@ -4,7 +4,7 @@ import { use, useEffect, useState } from "react";
 import Link from "next/link";
 import {
   Users, Calendar, Wallet, UserCircle, Compass, MapPin, Globe, Landmark,
-  TrendingUp, HeartHandshake, ChevronLeft, Loader2, ArrowRight, ExternalLink
+  TrendingUp, HeartHandshake, ChevronLeft, Loader2, ArrowRight, ExternalLink, Coins, Scale
 } from "lucide-react";
 import { api } from "@/lib/api";
 
@@ -16,10 +16,19 @@ type Party = {
   founded: string | null; members: string | null; budget: string | null; leader: string | null;
   orientation: string | null; headquarters: string | null; website: string | null;
   summary: string | null; logo_url: string | null; source_url: string | null;
+  subventions_eur: number | null; subventions_year: number | null; subventions_source: string | null;
+  dettes_eur: number | null; produits_eur: number | null; comptes_year: number | null; comptes_source: string | null;
 };
 
 function pct(v: number | null) { return v == null ? "—" : `${Math.round(v)}%`; }
 function score(v: number | null) { return v == null ? "—" : `${Math.round(v * 100)}%`; }
+// Montant en euros → format lisible (M€ / k€).
+function eur(n?: number | null) {
+  if (n == null) return "—";
+  if (Math.abs(n) >= 1e6) return (n / 1e6).toLocaleString("fr-FR", { maximumFractionDigits: 2 }) + " M€";
+  if (Math.abs(n) >= 1e3) return (n / 1e3).toLocaleString("fr-FR", { maximumFractionDigits: 0 }) + " k€";
+  return n.toLocaleString("fr-FR") + " €";
+}
 
 function StatBar({ label, value, display, color }: { label: string; value: number | null; display: string; color: string }) {
   return (
@@ -169,6 +178,42 @@ export default function PartyClient({ params }: { params: Promise<{ slug: string
           <InfoRow icon={Compass} label="Orientation" value={party.orientation} />
           <InfoRow icon={MapPin} label="Siège" value={party.headquarters} />
         </div>
+
+        {/* Finances du parti : subventions publiques + endettement (données officielles sourcées). */}
+        {(party.subventions_eur != null || party.dettes_eur != null) && (() => {
+          const taux = party.dettes_eur != null && party.produits_eur ? Math.round((party.dettes_eur / party.produits_eur) * 100) : null;
+          const src = party.subventions_source || party.comptes_source;
+          return (
+            <div className="mt-6 rounded-3xl border border-slate-200 bg-white p-6">
+              <h2 className="text-lg font-black uppercase tracking-widest text-slate-900">Finances du parti</h2>
+              <div className="mt-4 grid grid-cols-1 gap-4 sm:grid-cols-2">
+                {/* Subventions publiques */}
+                {party.subventions_eur != null && (
+                  <div className="rounded-2xl border border-emerald-100 bg-emerald-50/50 p-5">
+                    <div className="flex items-center gap-2 text-[11px] font-black uppercase tracking-widest text-emerald-700">
+                      <Coins className="h-4 w-4" /> Subventions publiques{party.subventions_year ? ` · ${party.subventions_year}` : ""}
+                    </div>
+                    <p className="mt-2 text-3xl font-staatliches text-emerald-900">{eur(party.subventions_eur)}</p>
+                    <p className="mt-1 text-xs text-emerald-800/70">aide publique de l'État versée au parti</p>
+                  </div>
+                )}
+                {/* Endettement */}
+                {party.dettes_eur != null && (
+                  <div className="rounded-2xl border border-rose-100 bg-rose-50/50 p-5">
+                    <div className="flex items-center gap-2 text-[11px] font-black uppercase tracking-widest text-rose-700">
+                      <Scale className="h-4 w-4" /> Endettement{party.comptes_year ? ` · ${party.comptes_year}` : ""}
+                    </div>
+                    <p className="mt-2 text-3xl font-staatliches text-rose-900">{taux != null ? `${taux}%` : eur(party.dettes_eur)}</p>
+                    <p className="mt-1 text-xs text-rose-800/70">
+                      {eur(party.dettes_eur)} de dettes{party.produits_eur ? ` pour ${eur(party.produits_eur)} de produits annuels` : ""}
+                    </p>
+                  </div>
+                )}
+              </div>
+              {src && <p className="mt-3 text-[11px] text-slate-400">Source : {src}</p>}
+            </div>
+          );
+        })()}
 
         {party.website && (
           <a href={party.website.startsWith("http") ? party.website : `https://${party.website}`} target="_blank" rel="noreferrer"

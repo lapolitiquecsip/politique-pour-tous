@@ -32,6 +32,9 @@ export default function EurodeputesClient({ meps }: { meps: any[] }) {
     <main className="pb-20">
       <div className="container mx-auto max-w-6xl px-4 mt-4 space-y-6">
         <div className="flex flex-col items-center gap-2 text-center">
+          <h1 className="font-staatliches text-5xl uppercase leading-none tracking-tight text-[#003399] dark:text-white md:text-6xl">
+            Euro<span className="text-[#FFCC00]">députés</span>
+          </h1>
           <p className="inline-flex items-center gap-2 text-[11px] font-black uppercase tracking-widest text-[#003399] dark:text-[#8CA6E8]">
             <Star size={14} className="fill-[#FFCC00] text-[#FFCC00]" /> {meps.length} eurodéputés français
           </p>

@@ -488,9 +488,10 @@ function LocalPoliticsContent() {
         <div className="mb-16">
           <div className="bg-white p-2 rounded-[2.5rem] border border-slate-200 shadow-2xl shadow-slate-200/50 flex flex-col md:flex-row gap-2">
             {[
-              { id: "region", label: "La Région", icon: Map },
-              { id: "departement", label: "Le Département", icon: Layers },
-              { id: "commune", label: "La Commune", icon: LayoutGrid }
+              // Chaque échelon a SA couleur d'état actif (classes littérales pour Tailwind JIT).
+              { id: "region", label: "La Région", icon: Map, active: "bg-sky-50 text-sky-600 shadow-inner", iconOn: "bg-sky-100", dot: "bg-sky-600" },
+              { id: "departement", label: "Le Département", icon: Layers, active: "bg-rose-50 text-rose-600 shadow-inner", iconOn: "bg-rose-100", dot: "bg-rose-600" },
+              { id: "commune", label: "La Commune", icon: LayoutGrid, active: "bg-emerald-50 text-emerald-600 shadow-inner", iconOn: "bg-emerald-100", dot: "bg-emerald-600" }
             ].map((tab) => {
               const isActive = activeTab === tab.id;
               const Icon = tab.icon;
@@ -500,10 +501,10 @@ function LocalPoliticsContent() {
                   onClick={() => setActiveTab(tab.id as any)}
                   className={`
                     flex-1 flex items-center justify-center gap-4 py-6 px-8 rounded-[2rem] transition-all duration-500 group
-                    ${isActive ? "bg-rose-50 text-rose-600 shadow-inner" : "text-slate-400 hover:text-slate-600 hover:bg-slate-50"}
+                    ${isActive ? tab.active : "text-slate-400 hover:text-slate-600 hover:bg-slate-50"}
                   `}
                 >
-                  <div className={`p-3 rounded-2xl transition-colors ${isActive ? "bg-rose-100" : "bg-slate-100 group-hover:bg-slate-200"}`}>
+                  <div className={`p-3 rounded-2xl transition-colors ${isActive ? tab.iconOn : "bg-slate-100 group-hover:bg-slate-200"}`}>
                     <Icon size={24} strokeWidth={isActive ? 2.5 : 2} />
                   </div>
                   <div className="text-left">
@@ -511,7 +512,7 @@ function LocalPoliticsContent() {
                     <p className="text-lg font-staatliches uppercase tracking-wide">{tab.label}</p>
                   </div>
                   {isActive && (
-                    <motion.div layoutId="activeTab" className="w-1.5 h-1.5 rounded-full bg-rose-600 ml-2" />
+                    <motion.div layoutId="activeTab" className={`w-1.5 h-1.5 rounded-full ml-2 ${tab.dot}`} />
                   )}
                 </button>
               );

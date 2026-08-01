@@ -40,11 +40,14 @@ export default function NotificationsFeed({ userId }: { userId: string }) {
     return () => { active = false; };
   }, [userId]);
 
+  // « Tout marquer lu » : marque tout comme lu PUIS efface ces votes anciens du fil.
   const markAllRead = async () => {
-    if (unread === 0) return;
     setUnread(0);
-    setItems(prev => prev.map(n => ({ ...n, read: true })));
-    try { await api.markNotificationsRead(userId); } catch { /* silencieux : cosmétique */ }
+    setItems([]); // le fil se vide immédiatement (optimiste)
+    try {
+      await api.markNotificationsRead(userId);
+      await api.deleteReadNotifications(userId);
+    } catch { /* silencieux : purement cosmétique si la suppression échoue */ }
   };
 
   if (loading) {
@@ -81,7 +84,7 @@ export default function NotificationsFeed({ userId }: { userId: string }) {
             <p className="text-[11px] text-slate-500">{unread > 0 ? `${unread} nouvelle${unread > 1 ? "s" : ""}` : "À jour"}</p>
           </div>
         </div>
-        {unread > 0 && (
+        {items.length > 0 && (
           <button
             onClick={markAllRead}
             className="inline-flex items-center gap-1.5 rounded-xl border border-slate-200 px-3 py-2 text-[10px] font-black uppercase tracking-widest text-slate-500 transition hover:border-amber-300 hover:text-amber-600"

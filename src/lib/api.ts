@@ -512,6 +512,12 @@ export const api = {
     if (error) throw new Error(error.message);
     return true;
   },
+  // Efface définitivement les notifications lues de l'utilisateur (vide le fil des votes anciens).
+  deleteReadNotifications: async (userId: string) => {
+    const { error } = await supabase.from('user_notifications').delete().eq('user_id', userId).eq('read', true);
+    if (error) throw new Error(error.message);
+    return true;
+  },
 
   // Fil vidéo de la présidence (chaîne YouTube officielle de l'Élysée).
   // Fil vidéo du Sénat — chaîne officielle Public Sénat.

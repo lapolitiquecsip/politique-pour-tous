@@ -52,7 +52,7 @@ export default function SenatorClient({ senator, embedded }: { senator: any; emb
   // Vrais votes du Sénat (rapprochés par nom + chambre), plus de données factices.
   const [votes, setVotes] = useState<any[]>([]);
   useEffect(() => {
-    api.getSenatorVotes(senator.first_name, senator.last_name, 12)
+    api.getSenatorVotes(senator.first_name, senator.last_name, 500)
       .then(v => setVotes(v as any[]))
       .catch(() => setVotes([]));
   }, [senator.first_name, senator.last_name]);
@@ -225,9 +225,6 @@ export default function SenatorClient({ senator, embedded }: { senator: any; emb
             {/* Fonction institutionnelle (Président·e / Vice-président·e / président·e de commission). */}
             <InstitutionalRoleBanner fullName={name} bio={senator.bio} />
 
-            {/* Toutes les fonctions de la personne. */}
-            <ParallelRoles fullName={name} selfHref={`/senateurs/${senator.slug}`} />
-
             <InitiativeRank kind="senator" selfId={String(senator.id)} primary={senator.initiative_primary_count} cosigned={senator.initiative_count} peerLabel="sénateurs" />
 
             {/* Présence aux votes — comparaison entre sénateurs (scrutins publics du Sénat). */}
@@ -297,6 +294,9 @@ export default function SenatorClient({ senator, embedded }: { senator: any; emb
               </AnimatePresence>
             </div>
 
+            {/* Toutes les fonctions de la personne — juste sous « Portrait & Engagement ». */}
+            <ParallelRoles fullName={name} selfHref={`/senateurs/${senator.slug}`} />
+
             {/* Votes Section */}
             <div>
               <h2 className="text-4xl font-staatliches uppercase tracking-tight text-slate-900 dark:text-white mb-6">
@@ -309,22 +309,31 @@ export default function SenatorClient({ senator, embedded }: { senator: any; emb
                   </div>
                 )}
                 {votes.map((vote: any) => (
-                  <div 
+                  <div
                     key={vote.id}
-                    className="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-[2rem] p-6 flex flex-col md:flex-row items-center gap-6 group hover:border-amber-500 transition-all"
+                    className="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-[2rem] p-6 group hover:border-amber-500 transition-all"
                   >
-                    <div className="flex-1 flex items-center gap-6">
-                       <div className="w-14 h-14 rounded-2xl bg-amber-50 flex items-center justify-center text-amber-600">
-                          <Vote className="w-6 h-6" />
-                       </div>
-                       <div>
-                          <p className="text-[10px] font-black text-slate-400 uppercase tracking-widest">{vote.date}</p>
-                          <h4 className="text-xl font-bold">{vote.title}</h4>
-                       </div>
+                    <div className="flex flex-col md:flex-row items-center gap-6">
+                      <div className="flex-1 flex items-center gap-6">
+                         <div className="w-14 h-14 rounded-2xl bg-amber-50 flex items-center justify-center text-amber-600 shrink-0">
+                            <Vote className="w-6 h-6" />
+                         </div>
+                         <div>
+                            <p className="text-[10px] font-black text-slate-400 uppercase tracking-widest">{vote.date}</p>
+                            <h4 className="text-xl font-bold">{vote.title}</h4>
+                         </div>
+                      </div>
+                      <div className={`px-6 py-3 rounded-xl ${vote.bg} ${vote.color} font-black text-sm shrink-0`}>
+                         VOTE : {vote.vote}
+                      </div>
                     </div>
-                    <div className={`px-6 py-3 rounded-xl ${vote.bg} ${vote.color} font-black text-sm`}>
-                       VOTE : {vote.vote}
-                    </div>
+                    {/* Résumé DeepSeek : de quoi parle le texte, pour comprendre le vote. */}
+                    {vote.explanation && (
+                      <div className="mt-4 rounded-2xl bg-slate-50 dark:bg-slate-800/60 border border-slate-100 dark:border-slate-800 p-4 md:ml-20">
+                        <p className="text-[10px] font-black uppercase tracking-widest text-amber-600 mb-1">En clair</p>
+                        <p className="text-sm leading-relaxed text-slate-600 dark:text-slate-300">{vote.explanation}</p>
+                      </div>
+                    )}
                   </div>
                 ))}
               </div>

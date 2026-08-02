@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useState } from "react";
+import { motion, AnimatePresence } from "framer-motion";
 import { Bell, Check, Vote } from "lucide-react";
 import { api } from "@/lib/api";
 import { BallotBox } from "./BallotVote";
@@ -40,14 +41,16 @@ export default function NotificationsFeed({ userId }: { userId: string }) {
     return () => { active = false; };
   }, [userId]);
 
-  // « Tout marquer lu » : marque tout comme lu PUIS efface ces votes anciens du fil.
+  const [clearing, setClearing] = useState(false);
+  // « Tout marquer lu » : 1) on estompe (marqué lu), 2) animation de sortie, 3) on vide.
   const markAllRead = async () => {
+    if (clearing || items.length === 0) return;
     setUnread(0);
-    setItems([]); // le fil se vide immédiatement (optimiste)
-    try {
-      await api.markNotificationsRead(userId);
-      await api.deleteReadNotifications(userId);
-    } catch { /* silencieux : purement cosmétique si la suppression échoue */ }
+    setClearing(true);                                   // déclenche l'atténuation visuelle (moins en valeur)
+    setItems(prev => prev.map(n => ({ ...n, read: true })));
+    // Persistance en tâche de fond ; l'animation joue quoi qu'il arrive.
+    api.markNotificationsRead(userId).then(() => api.deleteReadNotifications(userId)).catch(() => {});
+    setTimeout(() => { setItems([]); setClearing(false); }, 650); // laisse jouer l'exit AnimatePresence
   };
 
   if (loading) {
@@ -94,20 +97,31 @@ export default function NotificationsFeed({ userId }: { userId: string }) {
         )}
       </div>
 
-      <div className="max-h-[22rem] overflow-y-auto divide-y divide-slate-50">
-        {items.map(n => (
-          <div key={n.id} className={`flex items-start gap-3 p-4 transition ${n.read ? "" : "bg-amber-50/40"}`}>
-            <div className="mt-0.5 shrink-0">
-              {n.type === "vote" ? <BallotBox vote={n.position || "ABSTENTION"} size={30} /> : <Vote size={20} className="text-slate-400" />}
-            </div>
-            <div className="min-w-0 flex-1">
-              <p className="text-sm font-bold text-slate-900">{n.detail}</p>
-              <p className="mt-0.5 text-xs leading-snug text-slate-600 line-clamp-2">« {n.title} »</p>
-              <p className="mt-1 text-[10px] font-black uppercase tracking-widest text-slate-400">{fmtDate(n.event_at || n.created_at)}</p>
-            </div>
-            {!n.read && <span className="mt-1.5 h-2 w-2 shrink-0 rounded-full bg-amber-500" />}
-          </div>
-        ))}
+      <div className="max-h-[22rem] overflow-y-auto">
+        <AnimatePresence initial={false}>
+          {items.map((n, i) => (
+            <motion.div
+              key={n.id}
+              layout
+              initial={{ opacity: 1 }}
+              // À l'effacement : on estompe progressivement (« moins en valeur »), en cascade.
+              animate={{ opacity: clearing ? 0.35 : 1, filter: clearing ? "grayscale(1)" : "grayscale(0)" }}
+              exit={{ opacity: 0, height: 0, marginTop: 0, transition: { duration: 0.35 } }}
+              transition={{ duration: 0.3, delay: clearing ? i * 0.05 : 0 }}
+              className={`flex items-start gap-3 border-b border-slate-50 p-4 ${n.read ? "" : "bg-amber-50/40"}`}
+            >
+              <div className="mt-0.5 shrink-0">
+                {n.type === "vote" ? <BallotBox vote={n.position || "ABSTENTION"} size={30} /> : <Vote size={20} className="text-slate-400" />}
+              </div>
+              <div className="min-w-0 flex-1">
+                <p className="text-sm font-bold text-slate-900">{n.detail}</p>
+                <p className="mt-0.5 text-xs leading-snug text-slate-600 line-clamp-2">« {n.title} »</p>
+                <p className="mt-1 text-[10px] font-black uppercase tracking-widest text-slate-400">{fmtDate(n.event_at || n.created_at)}</p>
+              </div>
+              {!n.read && <span className="mt-1.5 h-2 w-2 shrink-0 rounded-full bg-amber-500" />}
+            </motion.div>
+          ))}
+        </AnimatePresence>
       </div>
     </div>
   );

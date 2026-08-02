@@ -60,11 +60,13 @@ function InfoRow({ icon: Icon, label, value }: { icon: any; label: string; value
 // Ligne « Dirigeant·e » cliquable : résout le nom vers sa fiche d'élu (interconnexion).
 function LeaderRow({ value }: { value: string | null }) {
   const [href, setHref] = useState<string | null>(null);
+  // Le nom peut contenir un suffixe « (depuis …) » ou une virgule : on ne résout que le nom.
+  const cleanName = (value || "").replace(/\s*[(,].*$/, "").trim();
   useEffect(() => {
     let active = true;
-    if (value) api.resolvePersonHref(value).then(r => { if (active) setHref(r?.href || null); }).catch(() => {});
+    if (cleanName) api.resolvePersonHref(cleanName).then(r => { if (active) setHref(r?.href || null); }).catch(() => {});
     return () => { active = false; };
-  }, [value]);
+  }, [cleanName]);
   if (!value) return null;
   const inner = (
     <div className={`flex items-start gap-3 rounded-2xl border p-4 transition ${href ? "border-indigo-200 bg-white hover:border-indigo-400 hover:shadow-md cursor-pointer group" : "border-slate-200 bg-white"}`}>

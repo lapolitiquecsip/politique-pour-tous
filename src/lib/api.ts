@@ -453,15 +453,15 @@ export const api = {
   // Vrais votes d'un sénateur (scrutins solennels du Sénat).
   // Côté Sénat, le votant est identifié par son nom (pas d'id commun avec notre table),
   // d'où le rapprochement par nom insensible à la casse + filtre chambre = SENAT.
-  getSenatorVotes: async (firstName: string, lastName: string, limit = 12) => {
+  getSenatorVotes: async (firstName: string, lastName: string, limit = 500) => {
     const name = `${firstName || ''} ${lastName || ''}`.trim();
     if (!name) return [];
     const { data, error } = await supabase
       .from('legislative_votes')
-      .select('id, position, legislative_scrutins!inner(title, voted_at, chamber)')
+      .select('id, position, legislative_scrutins!inner(title, explanation, voted_at, chamber)')
       .ilike('voter_name', name)
       .eq('legislative_scrutins.chamber', 'SENAT')
-      .limit(200);
+      .limit(1000);
     if (error || !data) return [];
     const STYLE: Record<string, { vote: string; color: string; bg: string }> = {
       for:        { vote: 'POUR',        color: 'text-emerald-600', bg: 'bg-emerald-50' },
@@ -477,6 +477,7 @@ export const api = {
         return {
           id: r.id,
           title: sc.title || 'Scrutin',
+          explanation: sc.explanation || null,
           _ts: d ? d.getTime() : 0,
           date: d ? d.toLocaleDateString('fr-FR', { month: 'long', year: 'numeric' }) : '',
           ...st,

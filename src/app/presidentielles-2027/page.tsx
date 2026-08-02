@@ -6,6 +6,7 @@ import Link from "next/link";
 import { Search, Loader2, X, CalendarDays, ExternalLink, Briefcase, GraduationCap, Users, ShieldCheck, Landmark, ArrowRight, Vote } from "lucide-react";
 import { api } from "@/lib/api";
 import LegalStatusModal from "@/components/deputies/LegalStatusModal";
+import ThemesView from "@/components/presidentielles/ThemesView";
 
 type Candidate = {
   id: string;
@@ -464,7 +465,7 @@ function CandidatesContent() {
   const [loading, setLoading] = useState(true);
   const [search, setSearch] = useState("");
   const [side, setSide] = useState<string>("Tous");
-  const [view, setView] = useState<"candidats" | "positions">("candidats");
+  const [view, setView] = useState<"candidats" | "positions" | "enjeux">("candidats");
 
   useEffect(() => {
     api.getCandidates().then(data => { setCandidates(data as Candidate[]); }).finally(() => setLoading(false));
@@ -512,7 +513,7 @@ function CandidatesContent() {
           </p>
           {/* Onglets Candidats / Positions */}
           <div className="mt-8 inline-flex rounded-full border border-white/10 bg-white/5 p-1">
-            {([["candidats", "Candidats"], ["positions", "Positions"]] as const).map(([key, label]) => (
+            {([["candidats", "Candidats"], ["positions", "Positions"], ["enjeux", "Enjeux"]] as const).map(([key, label]) => (
               <button key={key} onClick={() => setView(key)}
                 className={`rounded-full px-6 py-2 text-sm font-black uppercase tracking-widest transition ${view === key ? "bg-white text-slate-950" : "text-white/60 hover:text-white"}`}>
                 {label}
@@ -522,7 +523,9 @@ function CandidatesContent() {
         </div>
       </div>
 
-      {view === "positions" ? (
+      {view === "enjeux" ? (
+        <ThemesView />
+      ) : view === "positions" ? (
         <PositionsView candidates={candidates} />
       ) : (
       <div className="mx-auto max-w-6xl px-4 pb-24">

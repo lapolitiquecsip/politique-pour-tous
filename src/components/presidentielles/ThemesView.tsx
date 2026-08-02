@@ -13,6 +13,38 @@ function ThemeIcon({ name, className }: { name: string; className?: string }) {
   return <C className={className} />;
 }
 
+// Mini-graphe d'évolution (sparkline) : ligne + points, avec 1ère et dernière valeurs annotées.
+function Sparkline({ history, unit, betterWhen, accent }: {
+  history: { year: number; value: number }[]; unit?: string; betterWhen?: "down" | "up"; accent: string;
+}) {
+  if (!history || history.length < 2) return null;
+  const W = 108, H = 34, P = 4;
+  const vals = history.map(h => h.value);
+  const min = Math.min(...vals), max = Math.max(...vals);
+  const span = max - min || 1;
+  const x = (i: number) => P + (i * (W - 2 * P)) / (history.length - 1);
+  const y = (v: number) => H - P - ((v - min) / span) * (H - 2 * P);
+  const pts = history.map((h, i) => `${x(i)},${y(h.value)}`).join(" ");
+  const first = history[0], last = history[history.length - 1];
+  const rising = last.value >= first.value;
+  // Tendance favorable ou non (vert/rouge) selon le sens souhaité ; gris si non précisé.
+  const trendColor = !betterWhen ? "#94a3b8" : ((betterWhen === "down") === !rising) ? "#34d399" : "#fb7185";
+  const fmt = (v: number) => v.toLocaleString("fr-FR", { maximumFractionDigits: 1 });
+  return (
+    <div className="mt-3 flex items-center gap-3">
+      <svg width={W} height={H} viewBox={`0 0 ${W} ${H}`} className="shrink-0">
+        <polyline points={pts} fill="none" stroke={accent} strokeWidth="1.5" strokeLinejoin="round" strokeLinecap="round" opacity="0.9" />
+        {history.map((h, i) => <circle key={h.year} cx={x(i)} cy={y(h.value)} r={i === history.length - 1 ? 2.6 : 1.6} fill={i === history.length - 1 ? trendColor : accent} />)}
+      </svg>
+      <div className="text-[10px] leading-tight text-white/40">
+        <span className="tabular-nums">{first.year}: {fmt(first.value)}</span>
+        <span className="mx-1" style={{ color: trendColor }}>→</span>
+        <span className="tabular-nums font-bold" style={{ color: trendColor }}>{last.year}: {fmt(last.value)}{unit ? ` ${unit}` : ""}</span>
+      </div>
+    </div>
+  );
+}
+
 function ThemeCard({ theme }: { theme: CampaignTheme }) {
   const [open, setOpen] = useState(false);
   const head = theme.stats[0];
@@ -47,6 +79,7 @@ function ThemeCard({ theme }: { theme: CampaignTheme }) {
                 <p className="text-2xl font-black tabular-nums text-white">{s.value}</p>
                 <p className="mt-0.5 text-sm font-bold text-white/80">{s.label}</p>
                 {s.sub && <p className="mt-1 text-xs leading-snug text-white/50">{s.sub}</p>}
+                {s.history && <Sparkline history={s.history} unit={s.unit} betterWhen={s.betterWhen} accent={theme.accent} />}
                 <p className="mt-2 flex items-center gap-1 text-[10px] font-black uppercase tracking-widest text-white/30">
                   {s.year} · {s.source}
                   {s.url && (

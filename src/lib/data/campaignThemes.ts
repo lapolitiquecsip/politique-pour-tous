@@ -10,6 +10,10 @@ export type ThemeStat = {
   year: string;        // millésime de la donnée
   source: string;      // institution
   url?: string;        // lien vérifiable
+  // Mini-historique pour visualiser l'évolution (sparkline). Valeurs numériques officielles.
+  history?: { year: number; value: number }[];
+  unit?: string;       // unité affichée au survol de l'historique (ex. "% du PIB", "Md€")
+  betterWhen?: "down" | "up"; // sens favorable (colore la tendance)
 };
 
 export type CampaignTheme = {
@@ -30,9 +34,12 @@ export const CAMPAIGN_THEMES: CampaignTheme[] = [
     accent: "#f5b301",
     summary: "Déficit, dette et emploi : l'état des comptes publics et du marché du travail.",
     stats: [
-      { label: "Déficit public", value: "5,8 % du PIB", sub: "169,6 Md€ en 2024, après 5,4 % en 2023", year: "2024", source: "INSEE", url: "https://www.insee.fr/fr/statistiques/8540375" },
-      { label: "Dette publique", value: "113,0 % du PIB", sub: "115,6 % du PIB fin 2025", year: "fin 2024", source: "INSEE", url: "https://www.insee.fr/fr/statistiques/8540375" },
-      { label: "Taux de chômage", value: "7,3 %", sub: "2,3 millions de personnes (BIT)", year: "T4 2024", source: "INSEE", url: "https://www.insee.fr/fr/statistiques/8351234" },
+      { label: "Déficit public", value: "5,8 % du PIB", sub: "169,6 Md€ en 2024", year: "2024", source: "INSEE", url: "https://www.insee.fr/fr/statistiques/8540375", unit: "% du PIB", betterWhen: "down",
+        history: [{ year: 2021, value: 6.5 }, { year: 2022, value: 4.7 }, { year: 2023, value: 5.5 }, { year: 2024, value: 5.8 }, { year: 2025, value: 5.1 }] },
+      { label: "Dette publique", value: "113,0 % du PIB", sub: "115,6 % du PIB fin 2025", year: "fin 2024", source: "INSEE", url: "https://www.insee.fr/fr/statistiques/8540375", unit: "% du PIB", betterWhen: "down",
+        history: [{ year: 2021, value: 112.9 }, { year: 2022, value: 111.6 }, { year: 2023, value: 110.6 }, { year: 2024, value: 113.0 }, { year: 2025, value: 115.6 }] },
+      { label: "Taux de chômage", value: "7,3 %", sub: "2,3 millions de personnes (BIT) ; 7,9 % fin 2025", year: "T4 2024", source: "INSEE", url: "https://www.insee.fr/fr/statistiques/8351234", unit: "%", betterWhen: "down",
+        history: [{ year: 2024, value: 7.3 }, { year: 2025, value: 7.9 }] },
     ],
     perspective: "La dette a continué de monter à 115,6 % du PIB fin 2025 ; le déficit se réduit lentement (5,1 % du PIB en 2025).",
   },
@@ -56,7 +63,8 @@ export const CAMPAIGN_THEMES: CampaignTheme[] = [
     accent: "#a78bfa",
     summary: "Population immigrée, flux migratoires et demande d'asile.",
     stats: [
-      { label: "Personnes immigrées", value: "7,6 millions", sub: "soit 11,2 % de la population (8,0 M / 11,6 % en 2025)", year: "2024", source: "INSEE", url: "https://www.insee.fr/fr/statistiques/8998082" },
+      { label: "Personnes immigrées", value: "7,6 millions", sub: "soit 11,2 % de la population (8,0 M / 11,6 % en 2025)", year: "2024", source: "INSEE", url: "https://www.insee.fr/fr/statistiques/8998082", unit: "% de la population",
+        history: [{ year: 2024, value: 11.2 }, { year: 2025, value: 11.6 }] },
       { label: "Solde migratoire", value: "+152 000", sub: "principale composante de la croissance démographique", year: "2024", source: "INSEE", url: "https://www.insee.fr/fr/statistiques/8327319" },
       { label: "Demandes d'asile", value: "≈ 140 000 / an", sub: "enregistrées en guichet unique (GUDA)", year: "2023", source: "Ministère de l'Intérieur", url: "https://www.immigration.interieur.gouv.fr/Info-ressources/Etudes-et-statistiques/Les-chiffres-de-l-immigration-en-France/Asile" },
     ],
@@ -69,7 +77,8 @@ export const CAMPAIGN_THEMES: CampaignTheme[] = [
     summary: "Émissions de CO₂, mix électrique et trajectoire climatique.",
     stats: [
       { label: "Intensité carbone de l'électricité", value: "21,7 gCO₂/kWh", sub: "niveau le plus bas de l'histoire (mix très décarboné)", year: "2024", source: "RTE", url: "https://analysesetdonnees.rte-france.com/bilan-electrique-2024/emissions" },
-      { label: "Émissions du secteur électrique", value: "11,7 MtCO₂eq", sub: "−30 % en un an, plus bas niveau depuis 1945", year: "2024", source: "RTE", url: "https://analysesetdonnees.rte-france.com/bilan-electrique-2024/emissions" },
+      { label: "Émissions du secteur électrique", value: "11,7 MtCO₂eq", sub: "−30 % en un an, plus bas niveau depuis 1945", year: "2024", source: "RTE", url: "https://analysesetdonnees.rte-france.com/bilan-electrique-2024/emissions", unit: "MtCO₂eq", betterWhen: "down",
+        history: [{ year: 2023, value: 16.7 }, { year: 2024, value: 11.7 }] },
       { label: "Objectif climatique 2030", value: "270 MtCO₂e", sub: "hors puits de carbone — réduction requise de ≈ 4,7 %/an", year: "cible 2030", source: "SNBC / Citepa", url: "https://www.citepa.org/fr/2024_07_a01/" },
     ],
     perspective: "Le nucléaire (+13 % de production en 2024) et l'hydraulique tirent la baisse des émissions ; l'effort doit s'étendre aux transports et au bâtiment.",
@@ -81,9 +90,12 @@ export const CAMPAIGN_THEMES: CampaignTheme[] = [
     accent: "#fb7185",
     summary: "Violences aux personnes et évolution de la délinquance.",
     stats: [
-      { label: "Coups et blessures volontaires (15 ans +)", value: "+1 % en 2024", sub: "rupture après des hausses de ≈ 7 %/an entre 2016 et 2023", year: "2024", source: "SSMSI (Intérieur)", url: "https://mobile.interieur.gouv.fr/content/download/137740/1088872/file/IR_premierePhoto.pdf" },
+      { label: "Coups et blessures volontaires (15 ans +)", value: "+1 %", sub: "rupture après des hausses de ≈ 7 %/an entre 2016 et 2023", year: "2024", source: "SSMSI (Intérieur)", url: "https://www.interieur.gouv.fr/Interstats/Actualites/Insecurite-et-delinquance-en-2024-bilan-statistique-et-atlas-departemental" },
+      { label: "Homicides", value: "976 victimes", sub: "−2 % en 2024, première baisse depuis 2020", year: "2024", source: "SSMSI (Intérieur)", url: "https://www.interieur.gouv.fr/Interstats/Actualites/Insecurite-et-delinquance-en-2024-bilan-statistique-et-atlas-departemental", betterWhen: "down" },
+      { label: "Violences sexuelles (viols et tentatives)", value: "+9 %", sub: "poursuite d'une hausse rapide des faits enregistrés", year: "2024", source: "SSMSI (Intérieur)", url: "https://www.interieur.gouv.fr/Interstats/Actualites/Insecurite-et-delinquance-en-2024-bilan-statistique-et-atlas-departemental" },
+      { label: "Trafic de stupéfiants", value: "+6 %", sub: "usage +10 % ; en partie lié à la mobilisation pour les JOP 2024", year: "2024", source: "SSMSI (Intérieur)", url: "https://www.interieur.gouv.fr/Interstats/Actualites/Insecurite-et-delinquance-en-2024-bilan-statistique-et-atlas-departemental" },
     ],
-    perspective: "La quasi-stabilité de 2024 concerne aussi bien les violences intrafamiliales que hors du cadre familial (première photographie SSMSI).",
+    perspective: "Sur les 17 indicateurs suivis par le SSMSI en 2024 : 7 en hausse, 5 stables et 5 en baisse (dont les homicides, pour la première fois depuis 2020).",
   },
   {
     slug: "education",
@@ -92,7 +104,8 @@ export const CAMPAIGN_THEMES: CampaignTheme[] = [
     accent: "#60a5fa",
     summary: "Niveau des élèves, effectifs et dépense éducative.",
     stats: [
-      { label: "Score PISA en mathématiques", value: "474 points", sub: "moyenne OCDE : 472 — en recul par rapport aux éditions précédentes", year: "2022", source: "OCDE / PISA", url: "https://www.vie-publique.fr/eclairage/19539-resultats-des-eleves-la-france-et-le-classement-pisa-2022" },
+      { label: "Score PISA en mathématiques", value: "474 points", sub: "moyenne OCDE : 472 — recul de 21 points depuis 2018", year: "2022", source: "OCDE / PISA", url: "https://www.vie-publique.fr/eclairage/19539-resultats-des-eleves-la-france-et-le-classement-pisa-2022", unit: "points", betterWhen: "up",
+        history: [{ year: 2012, value: 495 }, { year: 2015, value: 493 }, { year: 2018, value: 495 }, { year: 2022, value: 474 }] },
       { label: "Dépense intérieure d'éducation", value: "197,1 Md€", sub: "soit 6,8 % du PIB", year: "2024", source: "Ministère de l'Éducation nationale (DEPP)", url: "https://www.education.gouv.fr/depp/l-education-nationale-en-chiffres-edition-2024-414935" },
       { label: "Élèves scolarisés", value: "≈ 12 millions", sub: "6,34 M en primaire, 3,40 M au collège, 2,25 M au lycée", year: "2024", source: "Ministère de l'Éducation nationale (DEPP)", url: "https://www.education.gouv.fr/depp/l-education-nationale-en-chiffres-edition-2024-414935" },
     ],
@@ -106,7 +119,8 @@ export const CAMPAIGN_THEMES: CampaignTheme[] = [
     stats: [
       { label: "Français en désert médical", value: "plus de 30 %", sub: "11 % des plus de 17 ans n'ont pas de médecin traitant", year: "2024", source: "vie-publique / Assurance maladie", url: "https://www.vie-publique.fr/eclairage/24080-sante-quelle-politique-publique-contre-les-deserts-medicaux" },
       { label: "Densité de médecins généralistes", value: "145 / 100 000 hab.", sub: "de 90 (Eure-et-Loir) à 298 (Hautes-Alpes) selon les départements", year: "2024", source: "CNAM / Sécurité sociale", url: "https://evaluation.securite-sociale.fr/home/maladie/261-inegalites-territoriales-de.html" },
-      { label: "Déficit de la Sécurité sociale", value: "15,3 Md€", sub: "0,5 % du PIB, +29 % par rapport à 2023", year: "2024", source: "Sécurité sociale", url: "https://www.vie-publique.fr/en-bref/298946-comptes-de-la-securite-sociale-un-deficit-qui-se-creuse-en-2024" },
+      { label: "Déficit de la Sécurité sociale", value: "15,3 Md€", sub: "0,5 % du PIB, +29 % par rapport à 2023", year: "2024", source: "Sécurité sociale", url: "https://www.vie-publique.fr/en-bref/298946-comptes-de-la-securite-sociale-un-deficit-qui-se-creuse-en-2024", unit: "Md€", betterWhen: "down",
+        history: [{ year: 2023, value: 10.8 }, { year: 2024, value: 15.3 }] },
     ],
   },
   {

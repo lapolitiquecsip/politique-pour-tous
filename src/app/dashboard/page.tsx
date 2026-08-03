@@ -245,7 +245,9 @@ export default function DashboardPage() {
       </section>
 
       {isPremium && userId && (
-        <div className="container mx-auto max-w-6xl px-4 -mt-16 mb-6">
+        // relative z-20 : le fil chevauche le hero (-mt-16) ; sans ça, le contenu du hero (z-10)
+        // recouvre le haut de la carte et intercepte le clic sur « Tout marquer lu ».
+        <div className="relative z-20 container mx-auto max-w-6xl px-4 -mt-16 mb-6">
           <NotificationsFeed userId={userId} />
         </div>
       )}

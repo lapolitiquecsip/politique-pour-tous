@@ -28,7 +28,7 @@ export default function NotificationsFeed({ userId }: { userId: string }) {
     (async () => {
       try {
         const [list, count] = await Promise.all([
-          api.getNotifications(userId, 30),
+          api.getNotifications(userId, 50),
           api.getUnreadNotificationCount(userId),
         ]);
         if (!active) return;

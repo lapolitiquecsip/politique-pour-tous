@@ -502,11 +502,14 @@ export const api = {
   },
 
   // Fil de notifications de l'utilisateur (votes de ses élus suivis).
-  getNotifications: async (userId: string, limit = 30) => {
+  getNotifications: async (userId: string, limit = 50) => {
     const base = 'id, type, title, detail, position, event_at, read, created_at, deputy_id, senator_id';
-    let res: any = await supabase.from('user_notifications').select(`${base}, mep_id`).eq('user_id', userId).order('created_at', { ascending: false }).limit(limit);
+    // Tri par DATE DU VOTE (event_at) décroissante — le vote le plus récent en haut, tous élus
+    // confondus. created_at en second critère pour les rares notifs sans date d'événement.
+    const ord = (q: any) => q.order('event_at', { ascending: false, nullsFirst: false }).order('created_at', { ascending: false });
+    let res: any = await ord(supabase.from('user_notifications').select(`${base}, mep_id`).eq('user_id', userId)).limit(limit);
     if (res.error) { // colonne mep_id absente (migration non appliquée) → repli
-      res = await supabase.from('user_notifications').select(base).eq('user_id', userId).order('created_at', { ascending: false }).limit(limit);
+      res = await ord(supabase.from('user_notifications').select(base).eq('user_id', userId)).limit(limit);
     }
     if (res.error) { console.error(res.error); return []; }
     return res.data || [];

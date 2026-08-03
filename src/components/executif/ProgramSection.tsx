@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect, useMemo, useState } from "react";
-import { ClipboardList, ExternalLink, Sparkles, ChevronDown, Search, FileCheck2 } from "lucide-react";
+import { ClipboardList, ExternalLink, Sparkles, ChevronDown, Search, FileCheck2, CheckCircle2, ThumbsUp, ThumbsDown, Landmark, Globe, FileText } from "lucide-react";
 import { api } from "@/lib/api";
 
 type Ev = { type: string; title: string; date: string | null; url: string | null; detail?: string | null };
@@ -22,6 +22,23 @@ const STATUS: Record<string, { label: string; chip: string; dot: string; bar: st
   non_verifie:   { label: "Faites-vous votre propre avis", chip: "bg-slate-100 text-slate-500 border-slate-200",      dot: "bg-slate-300",   bar: "bg-slate-200" },
 };
 const ORDER = ["tenu", "en_cours", "partiel", "abandonne", "non_evaluable", "non_verifie"];
+
+// Niveau de confiance de la synthèse IA → pastille colorée (au lieu d'un gris terne).
+const CONF: Record<string, { label: string; cls: string }> = {
+  faible:  { label: "Confiance faible",  cls: "bg-rose-50 text-rose-600 border-rose-200" },
+  moyenne: { label: "Confiance moyenne", cls: "bg-amber-50 text-amber-700 border-amber-200" },
+  forte:   { label: "Confiance élevée",  cls: "bg-emerald-50 text-emerald-700 border-emerald-200" },
+  elevee:  { label: "Confiance élevée",  cls: "bg-emerald-50 text-emerald-700 border-emerald-200" },
+};
+const confStyle = (c?: string | null) => CONF[(c || "").normalize("NFD").replace(/[̀-ͯ]/g, "").toLowerCase()] || { label: `Confiance ${c}`, cls: "bg-slate-50 text-slate-500 border-slate-200" };
+
+// Type de preuve → pastille colorée + icône, pour repérer la nature de la source d'un coup d'œil.
+const EVT: Record<string, { label: string; cls: string; Icon: any }> = {
+  scrutin: { label: "Vote AN",  cls: "bg-indigo-50 text-indigo-600", Icon: Landmark },
+  web:     { label: "Web",      cls: "bg-sky-50 text-sky-600",       Icon: Globe },
+  dossier: { label: "Dossier",  cls: "bg-slate-100 text-slate-500",  Icon: FileText },
+};
+const evStyle = (t: string) => EVT[t] || EVT.dossier;
 
 // Un verdict sans preuve vérifiable n'est pas affiché comme un verdict : le modèle a
 // déjà produit des erreurs factuelles dans ce cas (ex. « pass Culture = tenu », justifié
@@ -174,83 +191,88 @@ export default function ProgramSection() {
                 </button>
 
                 {isOpen && (
-                  <div className="border-t border-slate-100 bg-white px-4 py-4 space-y-4">
-                    {/* Ce qui est établi — affiché même quand le statut reste indécidable :
-                        c'est l'information utile, là où un « non évaluable » sec ne dit rien. */}
-                    {i.certitudes && (
-                      <div>
-                        <p className="text-[9px] font-black uppercase tracking-widest text-slate-900 flex items-center gap-1.5">
-                          <FileCheck2 size={11} /> Ce qui est établi
-                        </p>
-                        <p className="mt-1 text-xs leading-relaxed text-slate-700">{i.certitudes}</p>
-                      </div>
-                    )}
+                  <div className="border-t border-slate-100 bg-white">
+                    {/* Bandeau de statut coloré + niveau de confiance, repère immédiat. */}
+                    <div className={`flex items-center gap-2 border-b px-4 py-2.5 text-[10px] font-black uppercase tracking-widest ${st.chip}`}>
+                      <span className={`h-2.5 w-2.5 rounded-full ${st.dot}`} />
+                      {st.label}
+                      {i.confidence && (
+                        <span className={`ml-auto rounded-full border px-2 py-0.5 text-[9px] ${confStyle(i.confidence).cls}`}>
+                          {confStyle(i.confidence).label}
+                        </span>
+                      )}
+                    </div>
 
-                    {/* Le dossier à charge et à décharge : le lecteur juge, on ne tranche pas
-                        à sa place quand les faits ne le permettent pas. */}
-                    {(i.arguments_pour || i.arguments_contre) && (
-                      <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
-                        {i.arguments_pour && (
-                          <div className="rounded-2xl border border-emerald-100 bg-emerald-50/50 p-3">
-                            <p className="text-[9px] font-black uppercase tracking-widest text-emerald-700">Ce qui plaide pour</p>
-                            <p className="mt-1 text-[11px] leading-relaxed text-slate-700">{i.arguments_pour}</p>
+                    <div className="space-y-3 px-4 py-4">
+                      {/* Ce qui est établi */}
+                      {i.certitudes && (
+                        <div className="flex gap-2.5 rounded-xl border border-slate-200 bg-slate-50 p-3">
+                          <CheckCircle2 size={16} className="mt-0.5 shrink-0 text-slate-500" />
+                          <div>
+                            <p className="text-[10px] font-black uppercase tracking-widest text-slate-500">Ce qui est établi</p>
+                            <p className="mt-0.5 text-xs leading-relaxed text-slate-700">{i.certitudes}</p>
                           </div>
-                        )}
-                        {i.arguments_contre && (
-                          <div className="rounded-2xl border border-rose-100 bg-rose-50/50 p-3">
-                            <p className="text-[9px] font-black uppercase tracking-widest text-rose-700">Ce qui plaide contre</p>
-                            <p className="mt-1 text-[11px] leading-relaxed text-slate-700">{i.arguments_contre}</p>
-                          </div>
-                        )}
-                      </div>
-                    )}
+                        </div>
+                      )}
 
-                    {i.justification && (
-                      <div>
-                        <p className="text-[9px] font-black uppercase tracking-widest text-amber-600 flex items-center gap-1.5">
-                          <Sparkles size={11} /> Synthèse IA
-                          {i.confidence && (
-                            <span className="ml-1 rounded border border-slate-200 bg-slate-50 px-1.5 py-0.5 text-slate-500">
-                              confiance {i.confidence}
-                            </span>
+                      {/* Pour / contre — cartes à liseré coloré, le lecteur juge. */}
+                      {(i.arguments_pour || i.arguments_contre) && (
+                        <div className="grid grid-cols-1 gap-2.5 sm:grid-cols-2">
+                          {i.arguments_pour && (
+                            <div className="rounded-xl border-l-4 border-emerald-400 bg-emerald-50/60 p-3">
+                              <p className="flex items-center gap-1.5 text-[10px] font-black uppercase tracking-widest text-emerald-700"><ThumbsUp size={12} /> Plaide pour</p>
+                              <p className="mt-1 text-[11px] leading-relaxed text-slate-700">{i.arguments_pour}</p>
+                            </div>
                           )}
-                        </p>
-                        <p className="mt-1 text-xs leading-relaxed text-slate-600">{i.justification}</p>
-                      </div>
-                    )}
+                          {i.arguments_contre && (
+                            <div className="rounded-xl border-l-4 border-rose-400 bg-rose-50/60 p-3">
+                              <p className="flex items-center gap-1.5 text-[10px] font-black uppercase tracking-widest text-rose-700"><ThumbsDown size={12} /> Plaide contre</p>
+                              <p className="mt-1 text-[11px] leading-relaxed text-slate-700">{i.arguments_contre}</p>
+                            </div>
+                          )}
+                        </div>
+                      )}
 
-                    {/* Les preuves réellement utilisées : le lecteur vérifie lui-même. */}
-                    {evs.length > 0 && (
-                      <div>
-                        <p className="text-[9px] font-black uppercase tracking-widest text-slate-400 flex items-center gap-1.5">
-                          <FileCheck2 size={11} /> Faits sur lesquels repose l'évaluation
-                        </p>
-                        <ul className="mt-2 space-y-1.5">
-                          {evs.map((e, k) => (
-                            <li key={k} className="rounded-xl bg-slate-50 px-3 py-2">
-                              <span className="text-[8px] font-black uppercase tracking-widest text-slate-400">
-                                {e.type === "scrutin" ? "Vote AN" : "Dossier législatif"}{e.date ? ` · ${fmtDate(e.date)}` : ""}
-                              </span>
-                              <span className="mt-0.5 block text-[11px] font-medium leading-snug text-slate-700">
-                                {e.url ? (
-                                  <a href={e.url} target="_blank" rel="noopener noreferrer" className="hover:text-amber-600 hover:underline">
-                                    {e.title}
-                                  </a>
-                                ) : e.title}
-                              </span>
-                              {e.detail && <span className="text-[10px] font-bold text-slate-400">{e.detail}</span>}
-                            </li>
-                          ))}
-                        </ul>
-                      </div>
-                    )}
+                      {/* Synthèse IA — encart ambré distinct. */}
+                      {i.justification && (
+                        <div className="rounded-xl border border-amber-200 bg-gradient-to-br from-amber-50 to-white p-3">
+                          <p className="flex items-center gap-1.5 text-[10px] font-black uppercase tracking-widest text-amber-600"><Sparkles size={12} /> Synthèse IA</p>
+                          <p className="mt-1 text-xs leading-relaxed text-slate-600">{i.justification}</p>
+                        </div>
+                      )}
 
-                    <a
-                      href={i.source_url} target="_blank" rel="noopener noreferrer"
-                      className="inline-flex items-center gap-1.5 text-[10px] font-black uppercase tracking-widest text-slate-500 transition-colors hover:text-amber-600"
-                    >
-                      Programme officiel 2022 <ExternalLink size={12} />
-                    </a>
+                      {/* Sources — pastille de type colorée, compact. */}
+                      {evs.length > 0 && (
+                        <div>
+                          <p className="flex items-center gap-1.5 text-[10px] font-black uppercase tracking-widest text-slate-400"><FileCheck2 size={12} /> Sources ({evs.length})</p>
+                          <ul className="mt-2 space-y-1.5">
+                            {evs.map((e, k) => {
+                              const t = evStyle(e.type);
+                              return (
+                                <li key={k} className="flex items-start gap-2 rounded-lg border border-slate-100 bg-slate-50/70 px-2.5 py-2">
+                                  <span className={`mt-0.5 flex shrink-0 items-center gap-1 rounded px-1.5 py-0.5 text-[8px] font-black uppercase tracking-widest ${t.cls}`}>
+                                    <t.Icon size={9} /> {t.label}
+                                  </span>
+                                  <span className="min-w-0 flex-1 text-[11px] leading-snug text-slate-700">
+                                    {e.url ? (
+                                      <a href={e.url} target="_blank" rel="noopener noreferrer" className="hover:text-amber-600 hover:underline">{e.title}</a>
+                                    ) : e.title}
+                                    {e.date && <span className="ml-1 text-[9px] text-slate-400">· {fmtDate(e.date)}</span>}
+                                  </span>
+                                </li>
+                              );
+                            })}
+                          </ul>
+                        </div>
+                      )}
+
+                      <a
+                        href={i.source_url} target="_blank" rel="noopener noreferrer"
+                        className="inline-flex items-center gap-1.5 text-[10px] font-black uppercase tracking-widest text-slate-500 transition-colors hover:text-amber-600"
+                      >
+                        Programme officiel 2022 <ExternalLink size={12} />
+                      </a>
+                    </div>
                   </div>
                 )}
               </div>

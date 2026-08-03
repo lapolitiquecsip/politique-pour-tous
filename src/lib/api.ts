@@ -453,16 +453,30 @@ export const api = {
   // Vrais votes d'un sénateur (scrutins solennels du Sénat).
   // Côté Sénat, le votant est identifié par son nom (pas d'id commun avec notre table),
   // d'où le rapprochement par nom insensible à la casse + filtre chambre = SENAT.
-  getSenatorVotes: async (firstName: string, lastName: string, limit = 500) => {
-    const name = `${firstName || ''} ${lastName || ''}`.trim();
-    if (!name) return [];
-    const { data, error } = await supabase
+  // Votes du Sénat d'un·e sénateur·rice. Correspondance par MATRICULE officiel du Sénat
+  // (voter_official_id) — fiable à 100 %, contrairement au nom. Repli sur le nom si besoin.
+  getSenatorVotes: async (matricule: string | null, firstName?: string, lastName?: string, limit = 500) => {
+    let base = supabase
       .from('legislative_votes')
       .select('id, position, legislative_scrutins!inner(title, explanation, voted_at, chamber)')
-      .ilike('voter_name', name)
       .eq('legislative_scrutins.chamber', 'SENAT')
       .limit(1000);
-    if (error || !data) return [];
+    let data: any[] | null = null;
+    if (matricule) {
+      const res = await base.eq('voter_official_id', matricule);
+      if (!res.error) data = res.data as any[];
+    }
+    if ((!data || data.length === 0) && (firstName || lastName)) {
+      const name = `${firstName || ''} ${lastName || ''}`.trim();
+      const res = await supabase
+        .from('legislative_votes')
+        .select('id, position, legislative_scrutins!inner(title, explanation, voted_at, chamber)')
+        .ilike('voter_name', name)
+        .eq('legislative_scrutins.chamber', 'SENAT')
+        .limit(1000);
+      if (!res.error) data = res.data as any[];
+    }
+    if (!data) return [];
     const STYLE: Record<string, { vote: string; color: string; bg: string }> = {
       for:        { vote: 'POUR',        color: 'text-emerald-600', bg: 'bg-emerald-50' },
       against:    { vote: 'CONTRE',      color: 'text-red-600',     bg: 'bg-red-50' },

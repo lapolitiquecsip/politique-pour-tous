@@ -52,10 +52,10 @@ export default function SenatorClient({ senator, embedded }: { senator: any; emb
   // Vrais votes du Sénat (rapprochés par nom + chambre), plus de données factices.
   const [votes, setVotes] = useState<any[]>([]);
   useEffect(() => {
-    api.getSenatorVotes(senator.first_name, senator.last_name, 500)
+    api.getSenatorVotes(senator.senate_matricule || null, senator.first_name, senator.last_name, 1000)
       .then(v => setVotes(v as any[]))
       .catch(() => setVotes([]));
-  }, [senator.first_name, senator.last_name]);
+  }, [senator.senate_matricule, senator.first_name, senator.last_name]);
 
   return (
     <div className="min-h-screen bg-slate-50 dark:bg-slate-950 pb-20">

@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import { motion, AnimatePresence } from "framer-motion";
+import { motion } from "framer-motion";
 import { Bell, Check, Vote } from "lucide-react";
 import { api } from "@/lib/api";
 import { BallotBox } from "./BallotVote";
@@ -41,16 +41,13 @@ export default function NotificationsFeed({ userId }: { userId: string }) {
     return () => { active = false; };
   }, [userId]);
 
-  const [clearing, setClearing] = useState(false);
-  // « Tout marquer lu » : 1) on estompe (marqué lu), 2) animation de sortie, 3) on vide.
+  // « Tout marquer lu » : les notifications restent visibles mais deviennent LUES → grisées et
+  // estompées (« moins en valeur »), avec une animation en cascade. Le badge se remet à zéro.
   const markAllRead = async () => {
-    if (clearing || items.length === 0) return;
+    if (unread === 0) return;
     setUnread(0);
-    setClearing(true);                                   // déclenche l'atténuation visuelle (moins en valeur)
-    setItems(prev => prev.map(n => ({ ...n, read: true })));
-    // Persistance en tâche de fond ; l'animation joue quoi qu'il arrive.
-    api.markNotificationsRead(userId).then(() => api.deleteReadNotifications(userId)).catch(() => {});
-    setTimeout(() => { setItems([]); setClearing(false); }, 650); // laisse jouer l'exit AnimatePresence
+    setItems(prev => prev.map(n => ({ ...n, read: true })));   // animation gérée par motion (voir plus bas)
+    try { await api.markNotificationsRead(userId); } catch { /* silencieux : purement cosmétique */ }
   };
 
   if (loading) {
@@ -87,7 +84,7 @@ export default function NotificationsFeed({ userId }: { userId: string }) {
             <p className="text-[11px] text-slate-500">{unread > 0 ? `${unread} nouvelle${unread > 1 ? "s" : ""}` : "À jour"}</p>
           </div>
         </div>
-        {items.length > 0 && (
+        {unread > 0 && (
           <button
             onClick={markAllRead}
             className="inline-flex items-center gap-1.5 rounded-xl border border-slate-200 px-3 py-2 text-[10px] font-black uppercase tracking-widest text-slate-500 transition hover:border-amber-300 hover:text-amber-600"
@@ -98,30 +95,27 @@ export default function NotificationsFeed({ userId }: { userId: string }) {
       </div>
 
       <div className="max-h-[22rem] overflow-y-auto">
-        <AnimatePresence initial={false}>
-          {items.map((n, i) => (
-            <motion.div
-              key={n.id}
-              layout
-              initial={{ opacity: 1 }}
-              // À l'effacement : on estompe progressivement (« moins en valeur »), en cascade.
-              animate={{ opacity: clearing ? 0.35 : 1, filter: clearing ? "grayscale(1)" : "grayscale(0)" }}
-              exit={{ opacity: 0, height: 0, marginTop: 0, transition: { duration: 0.35 } }}
-              transition={{ duration: 0.3, delay: clearing ? i * 0.05 : 0 }}
-              className={`flex items-start gap-3 border-b border-slate-50 p-4 ${n.read ? "" : "bg-amber-50/40"}`}
-            >
-              <div className="mt-0.5 shrink-0">
-                {n.type === "vote" ? <BallotBox vote={n.position || "ABSTENTION"} size={30} /> : <Vote size={20} className="text-slate-400" />}
-              </div>
-              <div className="min-w-0 flex-1">
-                <p className="text-sm font-bold text-slate-900">{n.detail}</p>
-                <p className="mt-0.5 text-xs leading-snug text-slate-600 line-clamp-2">« {n.title} »</p>
-                <p className="mt-1 text-[10px] font-black uppercase tracking-widest text-slate-400">{fmtDate(n.event_at || n.created_at)}</p>
-              </div>
-              {!n.read && <span className="mt-1.5 h-2 w-2 shrink-0 rounded-full bg-amber-500" />}
-            </motion.div>
-          ))}
-        </AnimatePresence>
+        {items.map((n, i) => (
+          <motion.div
+            key={n.id}
+            // Lu → grisé et estompé (« moins en valeur »), transition douce en cascade.
+            animate={{ opacity: n.read ? 0.55 : 1, filter: n.read ? "grayscale(0.85)" : "grayscale(0)" }}
+            transition={{ duration: 0.4, delay: n.read ? Math.min(i, 12) * 0.04 : 0 }}
+            className={`flex items-start gap-3 border-b border-slate-50 p-4 ${n.read ? "" : "bg-amber-50/40"}`}
+          >
+            <div className="mt-0.5 shrink-0">
+              {n.type === "vote" ? <BallotBox vote={n.position || "ABSTENTION"} size={30} /> : <Vote size={20} className="text-slate-400" />}
+            </div>
+            <div className="min-w-0 flex-1">
+              <p className={`text-sm font-bold ${n.read ? "text-slate-500" : "text-slate-900"}`}>{n.detail}</p>
+              <p className="mt-0.5 text-xs leading-snug text-slate-600 line-clamp-2">« {n.title} »</p>
+              <p className="mt-1 text-[10px] font-black uppercase tracking-widest text-slate-400">{fmtDate(n.event_at || n.created_at)}</p>
+            </div>
+            {n.read
+              ? <Check size={14} className="mt-1 shrink-0 text-emerald-500" />
+              : <span className="mt-1.5 h-2 w-2 shrink-0 rounded-full bg-amber-500" />}
+          </motion.div>
+        ))}
       </div>
     </div>
   );

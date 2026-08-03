@@ -116,15 +116,15 @@ export default function Header() {
 
             {user ? (
               <div className="flex items-center gap-4">
-                <Link href="/dashboard" className={`flex items-center gap-2 px-3 py-1.5 rounded-full border transition-[background-color,border-color,box-shadow] duration-200 hover:shadow-md ${isPremium ? 'bg-amber-50 border-amber-200 shadow-sm hover:border-amber-400' : 'bg-slate-50 border-slate-100 hover:bg-slate-100'}`}>
-                  <div className={`w-5 h-5 rounded-full flex items-center justify-center ${isPremium ? 'bg-amber-400 text-white' : 'bg-blue-100 text-blue-600'}`}>
+                <Link href="/dashboard" className={`flex items-center gap-2 px-3 py-1.5 rounded-full border transition-[border-color,box-shadow] duration-200 hover:shadow-md ${isPremium ? 'sword-shine bg-gradient-to-r from-amber-300 via-amber-500 to-yellow-600 border-amber-400/50 shadow-[0_4px_20px_rgba(251,191,36,0.4)] hover:shadow-[0_6px_26px_rgba(251,191,36,0.55)]' : 'bg-slate-50 border-slate-100 hover:bg-slate-100'}`}>
+                  <div className={`w-5 h-5 rounded-full flex items-center justify-center ${isPremium ? 'bg-white/25 text-white' : 'bg-blue-100 text-blue-600'}`}>
                     {isPremium ? <Star size={10} fill="currentColor" /> : <User size={12} />}
                   </div>
                   <div className="flex flex-col">
-                    <span className="text-[10px] font-black uppercase text-slate-400 leading-none mb-0.5">
-                      {isPremium ? <span className="text-amber-600">Tableau de Bord</span> : "Mon Compte"}
+                    <span className={`text-[10px] font-black uppercase leading-none mb-0.5 ${isPremium ? 'text-white/90' : 'text-slate-400'}`}>
+                      {isPremium ? "Tableau de Bord" : "Mon Compte"}
                     </span>
-                    <span className="text-xs font-bold text-slate-700 truncate max-w-[120px] leading-none">{user.email}</span>
+                    <span className={`text-xs font-bold truncate max-w-[120px] leading-none ${isPremium ? 'text-white' : 'text-slate-700'}`}>{user.email}</span>
                   </div>
                 </Link>
                 <button 

@@ -946,6 +946,15 @@ export const api = {
     return data;
   },
 
+  // Finances de TOUS les partis (pour comparer un parti aux autres : subventions, endettement).
+  getPartyFinances: async () => {
+    const { data, error } = await supabase
+      .from('political_parties')
+      .select('slug, name, abbrev, color, subventions_eur, dettes_eur, produits_eur');
+    if (error || !data) return [];
+    return data;
+  },
+
   // Composition du Sénat par groupe (pour l'hémicycle). Compte les sénateurs par groupe.
   getSenateComposition: async () => {
     const counts = new Map<string, number>();

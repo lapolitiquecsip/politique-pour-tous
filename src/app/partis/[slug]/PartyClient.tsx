@@ -2,6 +2,7 @@
 
 import { use, useEffect, useState } from "react";
 import Link from "next/link";
+import PartyFinanceCompare from "@/components/partis/PartyFinanceCompare";
 import {
   Users, Calendar, Wallet, UserCircle, Compass, MapPin, Globe, Landmark,
   TrendingUp, HeartHandshake, ChevronLeft, Loader2, ArrowRight, ExternalLink, Coins, Scale
@@ -212,7 +213,9 @@ export default function PartyClient({ params }: { params: Promise<{ slug: string
                   </div>
                 )}
               </div>
-              {src && <p className="mt-3 text-[11px] text-slate-400">Source : {src}</p>}
+              {/* Comparaison avec les autres partis (classements subventions + endettement). */}
+              <PartyFinanceCompare currentSlug={party.slug} />
+              {src && <p className="mt-4 text-[11px] text-slate-400">Source : {src}</p>}
             </div>
           );
         })()}

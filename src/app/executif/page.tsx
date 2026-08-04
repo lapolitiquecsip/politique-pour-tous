@@ -29,6 +29,7 @@ import MinisterStagger from "@/components/executif/MinisterStagger";
 import PresidentSection from "@/components/executif/PresidentSection";
 import ProgramSection from "@/components/executif/ProgramSection";
 import VideoFeed from "@/components/executif/VideoFeed";
+import PublicFinancePanel from "@/components/executif/PublicFinancePanel";
 import { cleanMinistryName } from "@/lib/executif-utils";
 import { AwardBadge } from "@/components/ui/award-badge";
 
@@ -508,6 +509,11 @@ export default function ExecutifPage() {
 
             {/* PRÉSIDENT DE LA RÉPUBLIQUE — chef de l'exécutif, donc en tête */}
             <PresidentSection photoUrl={photoBySlug['emmanuel-macron']} />
+
+            {/* DETTE & DÉPENSES PUBLIQUES — compteur en direct (extrapolé de l'INSEE) + comparaisons */}
+            <section className="my-4 rounded-[3rem] bg-slate-950 py-10 md:py-12">
+              <PublicFinancePanel />
+            </section>
 
             {/* PROGRAMME 2022 + AVANCEMENT (engagements officiels, avancement evalue par IA) */}
             <ProgramSection />

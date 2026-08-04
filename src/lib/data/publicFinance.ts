@@ -18,9 +18,9 @@ export const DEBT_PER_SECOND = DEBT_ANNUAL_INCREASE_EUR / (365.25 * 24 * 3600); 
 // --- Hausse de la dette par président (points de PIB = mesure comparable) -----------------
 // Source : INSEE (ratio dette/PIB en fin d'exercice). Le montant en € est indicatif (arrondi).
 export const DEBT_BY_PRESIDENT = [
-  { name: "Sarkozy", years: "2007 → 2012", startPct: 64.5, endPct: 90.6, addedEur: 620_000_000_000, color: "#4ea1ff" },
-  { name: "Hollande", years: "2012 → 2017", startPct: 90.6, endPct: 98.5, addedEur: 425_000_000_000, color: "#f5b301" },
-  { name: "Macron", years: "2017 → 2025", startPct: 98.5, endPct: 115.6, addedEur: 1_200_000_000_000, color: "#fb7185" },
+  { name: "Sarkozy", slug: "nicolas-sarkozy", years: "2007 → 2012", startPct: 64.5, endPct: 90.6, addedEur: 620_000_000_000, color: "#4ea1ff" },
+  { name: "Hollande", slug: "francois-hollande", years: "2012 → 2017", startPct: 90.6, endPct: 98.5, addedEur: 425_000_000_000, color: "#f5b301" },
+  { name: "Macron", slug: "emmanuel-macron", years: "2017 → 2025", startPct: 98.5, endPct: 115.6, addedEur: 1_200_000_000_000, color: "#e11d48" },
 ];
 export const DEBT_BY_PRESIDENT_NOTE = "Hausse du ratio dette/PIB entre le début et la fin de mandat (source INSEE). Le quinquennat de Sarkozy et de Hollande couvre 5 ans ; la période Macron en couvre 8 (2017-2025). Les montants en euros sont indicatifs.";
 

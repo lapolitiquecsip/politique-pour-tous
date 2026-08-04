@@ -511,7 +511,7 @@ export default function ExecutifPage() {
             <PresidentSection photoUrl={photoBySlug['emmanuel-macron']} />
 
             {/* DETTE & DÉPENSES PUBLIQUES — compteur en direct (extrapolé de l'INSEE) + comparaisons */}
-            <section className="my-4 rounded-[3rem] bg-slate-950 py-10 md:py-12">
+            <section className="my-4 rounded-[2.5rem] border border-slate-200 bg-slate-50 py-8">
               <PublicFinancePanel />
             </section>
 

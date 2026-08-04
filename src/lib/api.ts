@@ -502,6 +502,18 @@ export const api = {
   },
 
   // Fil de notifications de l'utilisateur (votes de ses élus suivis).
+  // Présidents de la République : liste (avatars/panneau) + fiche complète.
+  getPresidents: async () => {
+    const { data, error } = await supabase.from('presidents').select('slug, full_name, photo_url, term').order('sort_order');
+    if (error) { console.error(error); return []; }
+    return data ?? [];
+  },
+  getPresidentBySlug: async (slug: string) => {
+    const { data, error } = await supabase.from('presidents').select('*').eq('slug', slug).maybeSingle();
+    if (error) { console.error(error); return null; }
+    return data;
+  },
+
   // Auditions & travaux de commission (comptes rendus officiels) + résumé IA.
   getCommissionReports: async (limit = 12) => {
     const { data, error } = await supabase

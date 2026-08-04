@@ -19,7 +19,6 @@ import InstitutionsGrid from "@/components/home/InstitutionsGrid";
 import StatsPanel from "@/components/home/StatsPanel";
 import HomeHero from "@/components/home/HomeHero";
 import JournalOfficielBook from "@/components/home/JournalOfficielBook";
-import RecentVotesFeed from "@/components/home/RecentVotesFeed";
 import FaqSection from "@/components/home/FaqSection";
 import NewsletterBanner from "@/components/home/NewsletterBanner";
 import PetitionsSection from "@/components/home/PetitionsSection";
@@ -71,18 +70,6 @@ export default function Home() {
             <div className="h-1.5 w-32 bg-gradient-to-r from-blue-600 to-red-600 mt-8 rounded-full mx-auto" />
           </div>
           <InstitutionsGrid />
-        </div>
-      </section>
-
-      {/* DERNIERS VOTES DÉCRYPTÉS — fil chronologique des votes solennels (façon Datan). */}
-      <section id="derniers-votes" className="scroll-mt-24 py-20 px-4">
-        <div className="container mx-auto max-w-6xl">
-          <div className="mb-10 text-center">
-            <p className="text-[11px] font-black uppercase tracking-[0.25em] text-red-600">Ce que votent vos élus</p>
-            <h2 className="mt-2 text-4xl md:text-6xl font-staatliches uppercase tracking-tight text-slate-900 dark:text-white">Derniers votes décryptés</h2>
-            <p className="mt-3 text-slate-500 max-w-2xl mx-auto">Les derniers votes solennels de l'Assemblée — adoptés ou rejetés — expliqués simplement. Cliquez pour le décryptage.</p>
-          </div>
-          <RecentVotesFeed />
         </div>
       </section>
 

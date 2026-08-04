@@ -576,41 +576,6 @@ export default function ExecutifPage() {
               </div>
             </section>
 
-            {/* GOVERNMENT NEWS SECTION */}
-            <section className="space-y-8 bg-white p-8 md:p-12 rounded-[3rem] border border-slate-200">
-              <div className="flex items-center gap-4">
-                <div className="w-12 h-12 bg-red-50 text-red-600 rounded-2xl flex items-center justify-center">
-                  <Newspaper size={24} />
-                </div>
-                <h2 className="text-3xl font-staatliches uppercase tracking-wider text-slate-900">
-                  Actus du <span className="text-red-600">Gouvernement</span>
-                </h2>
-              </div>
-
-              {loadingNews ? (
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                  {Array(2).fill(0).map((_, i) => (
-                    <div key={i} className="h-64 bg-slate-100 animate-pulse rounded-3xl" />
-                  ))}
-                </div>
-              ) : govtNews.length > 0 ? (
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                  {govtNews.map((item) => (
-                    <FeedItemCard key={item.id} item={item} />
-                  ))}
-                </div>
-              ) : (
-                <div className="text-center py-12 bg-slate-50 rounded-3xl border border-dashed border-slate-300">
-                  <p className="text-slate-500 font-medium italic">Aucune actualité gouvernementale récente disponible.</p>
-                </div>
-              )}
-
-              <div className="text-center">
-                 <Link href="/" className="text-xs font-black uppercase tracking-widest text-blue-600 hover:underline">
-                   Voir toutes les actualités de la plateforme
-                 </Link>
-              </div>
-            </section>
           </div>
 
           {/* SIDEBAR - BUDGETS & DECREES */}

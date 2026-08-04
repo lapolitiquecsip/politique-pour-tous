@@ -58,8 +58,12 @@ function ThemeCard({ theme, index }: { theme: CampaignTheme; index: number }) {
   const num = String(index + 1).padStart(2, "0");
   return (
     <div
-      className="group relative overflow-hidden rounded-2xl bg-slate-900/40 ring-1 ring-white/5 transition-all hover:ring-white/15"
-      style={{ boxShadow: open ? `inset 3px 0 0 ${theme.accent}` : `inset 3px 0 0 ${theme.accent}55` }}
+      className="group relative overflow-hidden rounded-2xl ring-1 ring-white/10 transition-all hover:ring-white/20"
+      style={{
+        // Fond teinté de la couleur du thème (dégradé doux, différent pour chaque ligne).
+        background: `linear-gradient(120deg, ${theme.accent}26 0%, ${theme.accent}12 42%, rgba(15,23,42,0.55) 100%)`,
+        boxShadow: open ? `inset 4px 0 0 ${theme.accent}` : `inset 4px 0 0 ${theme.accent}aa`,
+      }}
     >
       <button onClick={() => setOpen(o => !o)} className="flex w-full items-center gap-5 px-6 py-5 text-left sm:px-8">
         {/* Numéro d'ordre, ton éditorial */}

@@ -88,13 +88,17 @@ export default function EurodeputesClient({ meps }: { meps: any[] }) {
         </div>
 
         <div className="grid grid-cols-3 sm:grid-cols-4 md:grid-cols-5 lg:grid-cols-6 gap-3">
-          {shown.map(m => (
+          {shown.map(m => {
+            const g = grad(m.ep_group_code);
+            return (
             <Link
               key={m.id}
               href={`/eurodeputes/${m.slug}`}
-              className="group rounded-2xl border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900 overflow-hidden transition hover:shadow-xl hover:-translate-y-1"
+              // Carte teintée de la couleur du groupe (bordure + fond dégradé du groupe).
+              style={{ borderColor: `${g[0]}80`, background: `linear-gradient(180deg, ${g[0]}10 0%, ${g[0]}1f 62%, ${g[0]}33 100%)` }}
+              className="group overflow-hidden rounded-2xl border shadow-sm transition hover:-translate-y-1 hover:shadow-xl"
             >
-              <div className="relative aspect-square bg-slate-100 dark:bg-slate-800 overflow-hidden">
+              <div className="relative aspect-square overflow-hidden bg-slate-100 dark:bg-slate-800">
                 {/* eslint-disable-next-line @next/next/no-img-element */}
                 <img
                   src={m.photo_url}
@@ -112,11 +116,12 @@ export default function EurodeputesClient({ meps }: { meps: any[] }) {
                 </span>
               </div>
               <div className="p-3">
-                <p className="text-sm font-bold leading-tight text-slate-900 dark:text-white line-clamp-2 group-hover:text-[#003399] dark:group-hover:text-[#8CA6E8] transition-colors">{m.full_name}</p>
-                <p className="mt-0.5 text-[11px] text-slate-500 line-clamp-1">{m.national_party}</p>
+                <p className="text-sm font-bold leading-tight text-slate-900 line-clamp-2 transition-colors" style={{ color: g[1] }}>{m.full_name}</p>
+                <p className="mt-0.5 text-[11px] font-medium text-slate-600 line-clamp-1">{m.national_party}</p>
               </div>
             </Link>
-          ))}
+            );
+          })}
         </div>
         {shown.length === 0 && <p className="py-12 text-center text-sm italic text-slate-400">Aucun eurodéputé ne correspond.</p>}
       </div>

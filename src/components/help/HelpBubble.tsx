@@ -166,13 +166,22 @@ export default function HelpBubble() {
                     {results.map((n, i) => (
                       // Ouvert d'office quand il n'y a qu'un seul résultat : la définition s'affiche
                       // immédiatement. La croix (+ pivoté en ×) reste cliquable pour replier.
-                      <details key={i} open={results.length === 1} className="group rounded-2xl border border-slate-100 bg-slate-50/60 dark:border-slate-800 dark:bg-slate-800/40 p-3">
-                        <summary className="flex cursor-pointer list-none items-center justify-between gap-2 rounded-lg transition hover:bg-slate-100/60 dark:hover:bg-slate-700/40">
-                          <span className="text-sm font-bold text-slate-900 dark:text-white">{n.term}</span>
-                          <span className="flex h-6 w-6 shrink-0 items-center justify-center rounded-full bg-sky-100 text-sky-600 transition-transform group-open:rotate-45 dark:bg-sky-500/20 dark:text-sky-300 text-lg leading-none" aria-label="Ouvrir ou replier">+</span>
+                      <details key={i} open={results.length === 1} className="group overflow-hidden rounded-2xl border border-sky-100 bg-gradient-to-br from-sky-50 to-white shadow-sm ring-1 ring-sky-500/5 dark:border-slate-700 dark:from-slate-800/60 dark:to-slate-900">
+                        <summary className="flex cursor-pointer list-none items-center justify-between gap-2 p-3 transition hover:bg-sky-100/50 dark:hover:bg-slate-700/40">
+                          <span className="flex items-center gap-2 text-sm font-black text-sky-900 dark:text-sky-200">
+                            <span className="h-4 w-1 rounded-full bg-gradient-to-b from-sky-400 to-blue-600" />
+                            {n.term}
+                          </span>
+                          <span className="flex h-6 w-6 shrink-0 items-center justify-center rounded-full bg-sky-500 text-white shadow-sm transition-transform group-open:rotate-45 text-lg leading-none" aria-label="Ouvrir ou replier">+</span>
                         </summary>
-                        <p className="mt-2 text-[13px] leading-relaxed text-slate-600 dark:text-slate-300">{n.def}</p>
-                        {n.example && <p className="mt-1.5 text-[12px] italic text-slate-400">Ex. : {n.example}</p>}
+                        <div className="border-t border-sky-100/70 px-3 pb-3 pt-2.5 dark:border-slate-700/60">
+                          <p className="text-[13px] leading-relaxed text-slate-700 dark:text-slate-300">{n.def}</p>
+                          {n.example && (
+                            <p className="mt-2 rounded-xl bg-sky-100/50 px-3 py-2 text-[12px] italic leading-relaxed text-sky-800 dark:bg-sky-500/10 dark:text-sky-200">
+                              <span className="font-black not-italic">Ex. </span>{n.example}
+                            </p>
+                          )}
+                        </div>
                       </details>
                     ))}
                   </div>

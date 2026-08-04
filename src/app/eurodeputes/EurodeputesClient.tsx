@@ -8,6 +8,19 @@ const GROUP_CLR: Record<string, string> = {
   RE: "bg-amber-500", PPE: "bg-blue-600", SD: "bg-rose-500", VERTS: "bg-emerald-500",
   PfE: "bg-slate-700", ECR: "bg-sky-700", GUE: "bg-red-600", ESN: "bg-indigo-800", NI: "bg-slate-500",
 };
+// Dégradé par groupe (vraies teintes des groupes du Parlement européen) pour des badges modernes.
+const GROUP_GRAD: Record<string, [string, string]> = {
+  RE:    ["#F5B301", "#E08A00"],  // Renew — or/ambre
+  PPE:   ["#3B82F6", "#1D4ED8"],  // PPE — bleu
+  SD:    ["#F0426B", "#C81E4E"],  // S&D — rouge social
+  VERTS: ["#3EAA35", "#237A1E"],  // Verts/ALE — vert
+  PfE:   ["#334155", "#0F172A"],  // Patriotes — ardoise
+  ECR:   ["#2563EB", "#0C2E6E"],  // ECR — bleu profond
+  GUE:   ["#E5342A", "#A21B14"],  // La Gauche — rouge vif
+  ESN:   ["#4338CA", "#312E81"],  // ESN — indigo
+  NI:    ["#94A3B8", "#64748B"],  // Non-inscrits — gris
+};
+const grad = (code: string): [string, string] => GROUP_GRAD[code] || GROUP_GRAD.NI;
 
 export default function EurodeputesClient({ meps }: { meps: any[] }) {
   const [q, setQ] = useState("");
@@ -57,7 +70,7 @@ export default function EurodeputesClient({ meps }: { meps: any[] }) {
         <div className="flex flex-wrap gap-2">
           <button
             onClick={() => setGroup(null)}
-            className={`rounded-xl border px-3 py-2 text-[10px] font-black uppercase tracking-widest transition ${group === null ? "bg-[#003399] text-white border-[#003399]" : "bg-white dark:bg-slate-900 text-slate-500 border-slate-200 dark:border-slate-700"}`}
+            className={`rounded-full border px-3.5 py-2 text-[10px] font-black uppercase tracking-widest transition ${group === null ? "bg-[#003399] text-white border-[#003399] shadow-md" : "bg-white dark:bg-slate-900 text-slate-500 border-slate-200 dark:border-slate-700 hover:border-slate-300"}`}
           >
             Tous ({meps.length})
           </button>
@@ -65,8 +78,10 @@ export default function EurodeputesClient({ meps }: { meps: any[] }) {
             <button
               key={g}
               onClick={() => setGroup(group === g ? null : g)}
-              className={`rounded-xl border px-3 py-2 text-[10px] font-black uppercase tracking-widest transition ${group === g ? "text-white border-transparent " + (GROUP_CLR[g] || "bg-slate-500") : "bg-white dark:bg-slate-900 text-slate-500 border-slate-200 dark:border-slate-700"}`}
+              style={group === g ? { background: `linear-gradient(135deg, ${grad(g)[0]}, ${grad(g)[1]})`, boxShadow: `0 4px 12px ${grad(g)[0]}55` } : undefined}
+              className={`inline-flex items-center gap-1.5 rounded-full border px-3 py-2 text-[10px] font-black uppercase tracking-widest transition ${group === g ? "text-white border-transparent" : "bg-white dark:bg-slate-900 text-slate-500 border-slate-200 dark:border-slate-700 hover:border-slate-300"}`}
             >
+              <span className="h-1.5 w-1.5 rounded-full" style={{ background: group === g ? "rgba(255,255,255,0.9)" : grad(g)[0] }} />
               {g} ({n})
             </button>
           ))}
@@ -88,7 +103,11 @@ export default function EurodeputesClient({ meps }: { meps: any[] }) {
                   className="h-full w-full object-cover object-top transition group-hover:scale-105"
                   onError={(e) => { (e.currentTarget as HTMLImageElement).src = `https://ui-avatars.com/api/?name=${encodeURIComponent(m.full_name)}&background=003399&color=fff&size=256`; }}
                 />
-                <span className={`absolute top-2 left-2 rounded-md px-2 py-0.5 text-[9px] font-black uppercase tracking-widest text-white ${GROUP_CLR[m.ep_group_code] || "bg-slate-500"}`}>
+                <span
+                  className="absolute left-2.5 top-2.5 inline-flex items-center gap-1.5 rounded-full px-2.5 py-1 text-[9px] font-black uppercase tracking-widest text-white shadow-lg ring-1 ring-white/40 backdrop-blur-sm"
+                  style={{ background: `linear-gradient(135deg, ${grad(m.ep_group_code)[0]}, ${grad(m.ep_group_code)[1]})`, boxShadow: `0 4px 12px ${grad(m.ep_group_code)[0]}55` }}
+                >
+                  <span className="h-1.5 w-1.5 rounded-full bg-white/90" />
                   {m.ep_group_code}
                 </span>
               </div>

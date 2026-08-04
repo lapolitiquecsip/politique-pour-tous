@@ -502,6 +502,17 @@ export const api = {
   },
 
   // Fil de notifications de l'utilisateur (votes de ses élus suivis).
+  // Auditions & travaux de commission (comptes rendus officiels) + résumé IA.
+  getCommissionReports: async (limit = 12) => {
+    const { data, error } = await supabase
+      .from('commission_reports')
+      .select('ref, commission, title, meeting_date, cr_url, video_url, summary')
+      .order('meeting_date', { ascending: false })
+      .limit(limit);
+    if (error) { console.error(error); return []; }
+    return data ?? [];
+  },
+
   getNotifications: async (userId: string, limit = 50) => {
     const base = 'id, type, title, detail, position, event_at, read, created_at, deputy_id, senator_id';
     // Tri par DATE DU VOTE (event_at) décroissante — le vote le plus récent en haut, tous élus

@@ -6,6 +6,7 @@ import AdoptedTextsFeed from "@/components/lois/AdoptedTextsFeed";
 import ChamberHero from "@/components/lois/ChamberHero";
 import MemberFinderIntro from "@/components/lois/MemberFinderIntro";
 import VideoFeed from "@/components/executif/VideoFeed";
+import CommissionAuditions from "@/components/executif/CommissionAuditions";
 
 import { Suspense } from "react";
 
@@ -57,6 +58,7 @@ export default async function DeputesPage() {
       </section>
       <section id="videos" className="scroll-mt-24 mx-auto max-w-6xl px-4 pb-16">
         <VideoFeed source="an" />
+        <CommissionAuditions />
       </section>
     </div>
   );

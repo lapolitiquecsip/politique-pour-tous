@@ -83,8 +83,19 @@ export default function RecentVotesFeed() {
                 </p>
               </div>
               <div className="overflow-y-auto p-6 space-y-5">
-                {open.summary && <div><p className="text-[10px] font-black uppercase tracking-widest text-slate-400">De quoi s'agit-il</p><p className="mt-1 text-[15px] leading-relaxed text-slate-700 dark:text-slate-300">{open.summary}</p></div>}
-                {open.why_it_matters && <div className="rounded-2xl bg-red-50/60 p-4 dark:bg-slate-800/60"><p className="text-[10px] font-black uppercase tracking-widest text-red-600">Pourquoi c'est important</p><p className="mt-1 text-[15px] leading-relaxed text-slate-700 dark:text-slate-300">{open.why_it_matters}</p></div>}
+                {(() => {
+                  // Le champ why_it_matters encode « pourquoi|||DETAILED|||détails » : on sépare proprement.
+                  const [why, detailed] = String(open.why_it_matters || "").split("|||DETAILED|||").map(s => s.trim());
+                  const hasContent = open.summary || why || detailed;
+                  return (
+                    <>
+                      {open.summary && <div><p className="text-[10px] font-black uppercase tracking-widest text-slate-400">De quoi s'agit-il</p><p className="mt-1 text-[15px] leading-relaxed text-slate-700 dark:text-slate-300">{open.summary}</p></div>}
+                      {why && <div className="rounded-2xl bg-red-50/60 p-4 dark:bg-slate-800/60"><p className="text-[10px] font-black uppercase tracking-widest text-red-600">Pourquoi c'est important</p><p className="mt-1 text-[15px] leading-relaxed text-slate-700 dark:text-slate-300">{why}</p></div>}
+                      {detailed && detailed !== "Détails supplémentaires non disponibles." && <div><p className="text-[10px] font-black uppercase tracking-widest text-slate-400">En détail</p><p className="mt-1 text-[15px] leading-relaxed text-slate-700 dark:text-slate-300">{detailed}</p></div>}
+                      {!hasContent && <p className="rounded-2xl bg-slate-50 p-4 text-[14px] italic leading-relaxed text-slate-500 dark:bg-slate-800/60">Le décryptage de ce vote est en cours de génération. Revenez bientôt pour l'explication complète.</p>}
+                    </>
+                  );
+                })()}
                 {open.dossier_url && <a href={open.dossier_url} target="_blank" rel="noopener noreferrer" className="inline-flex items-center gap-1.5 text-[11px] font-black uppercase tracking-widest text-red-600 hover:text-red-500"><ExternalLink size={13} /> Voir le scrutin officiel</a>}
               </div>
             </motion.div>

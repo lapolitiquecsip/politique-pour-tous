@@ -101,14 +101,7 @@ export default function Home() {
         </div>
       </section>
 
-      {/* 3. STATS + LE SAVIEZ-VOUS (fusionnés) */}
-      <section className="py-12 px-4">
-        <div className="container mx-auto max-w-6xl">
-          <StatsPanel />
-        </div>
-      </section>
-
-      {/* 4. FIL D'ACTUALITÉ (POSTER IMPACT REBORN) */}
+      {/* 4. FIL D'ACTUALITÉ — placé juste sous le Journal Officiel. */}
       <section id="actualites" className="scroll-mt-24 py-20 px-4">
         <div className="container mx-auto max-w-6xl">
           <div className="relative mb-16 text-center md:text-left">
@@ -164,6 +157,13 @@ export default function Home() {
               )}
             />
           )}
+        </div>
+      </section>
+
+      {/* 3. STATS + LE SAVIEZ-VOUS (fusionnés) — déplacé sous le fil d'actualité. */}
+      <section className="py-12 px-4">
+        <div className="container mx-auto max-w-6xl">
+          <StatsPanel />
         </div>
       </section>
 

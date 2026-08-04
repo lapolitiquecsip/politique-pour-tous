@@ -126,7 +126,16 @@ export default function AdoptedTextsFeed() {
               </div>
               <div className="overflow-y-auto p-6 space-y-5">
                 {open.summary && <div><p className="text-[10px] font-black uppercase tracking-widest text-slate-400">De quoi s'agit-il</p><p className="mt-1 text-[15px] leading-relaxed text-slate-700 dark:text-slate-300">{open.summary}</p></div>}
-                {open.why_it_matters && <div className="rounded-2xl bg-blue-50/60 p-4 dark:bg-slate-800/60"><p className="text-[10px] font-black uppercase tracking-widest text-blue-600">Pourquoi c'est important</p><p className="mt-1 text-[15px] leading-relaxed text-slate-700 dark:text-slate-300">{open.why_it_matters}</p></div>}
+                {(() => {
+                  // why_it_matters encode « pourquoi|||DETAILED|||détails » : on sépare proprement.
+                  const [why, detailed] = String(open.why_it_matters || "").split("|||DETAILED|||").map((s: string) => s.trim());
+                  return (
+                    <>
+                      {why && <div className="rounded-2xl bg-blue-50/60 p-4 dark:bg-slate-800/60"><p className="text-[10px] font-black uppercase tracking-widest text-blue-600">Pourquoi c'est important</p><p className="mt-1 text-[15px] leading-relaxed text-slate-700 dark:text-slate-300">{why}</p></div>}
+                      {detailed && detailed !== "Détails supplémentaires non disponibles." && <div><p className="text-[10px] font-black uppercase tracking-widest text-slate-400">En détail</p><p className="mt-1 text-[15px] leading-relaxed text-slate-700 dark:text-slate-300">{detailed}</p></div>}
+                    </>
+                  );
+                })()}
 
                 <div>
                   <p className="text-[10px] font-black uppercase tracking-widest text-slate-400">Le vote de chaque parti</p>

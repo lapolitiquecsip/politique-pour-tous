@@ -164,10 +164,12 @@ export default function HelpBubble() {
                     <p className="mb-1 text-[10px] font-black uppercase tracking-widest text-slate-400">Résultats ({results.length})</p>
                     {results.length === 0 && <p className="py-6 text-center text-sm italic text-slate-400">Aucune notion trouvée.</p>}
                     {results.map((n, i) => (
-                      <details key={i} className="group rounded-2xl border border-slate-100 bg-slate-50/60 dark:border-slate-800 dark:bg-slate-800/40 p-3">
-                        <summary className="flex cursor-pointer list-none items-center justify-between gap-2">
+                      // Ouvert d'office quand il n'y a qu'un seul résultat : la définition s'affiche
+                      // immédiatement. La croix (+ pivoté en ×) reste cliquable pour replier.
+                      <details key={i} open={results.length === 1} className="group rounded-2xl border border-slate-100 bg-slate-50/60 dark:border-slate-800 dark:bg-slate-800/40 p-3">
+                        <summary className="flex cursor-pointer list-none items-center justify-between gap-2 rounded-lg transition hover:bg-slate-100/60 dark:hover:bg-slate-700/40">
                           <span className="text-sm font-bold text-slate-900 dark:text-white">{n.term}</span>
-                          <span className="text-sky-500 transition-transform group-open:rotate-45 text-lg leading-none">+</span>
+                          <span className="flex h-6 w-6 shrink-0 items-center justify-center rounded-full bg-sky-100 text-sky-600 transition-transform group-open:rotate-45 dark:bg-sky-500/20 dark:text-sky-300 text-lg leading-none" aria-label="Ouvrir ou replier">+</span>
                         </summary>
                         <p className="mt-2 text-[13px] leading-relaxed text-slate-600 dark:text-slate-300">{n.def}</p>
                         {n.example && <p className="mt-1.5 text-[12px] italic text-slate-400">Ex. : {n.example}</p>}

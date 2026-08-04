@@ -19,7 +19,6 @@ import InstitutionsGrid from "@/components/home/InstitutionsGrid";
 import StatsPanel from "@/components/home/StatsPanel";
 import HomeHero from "@/components/home/HomeHero";
 import JournalOfficielBook from "@/components/home/JournalOfficielBook";
-import FaqSection from "@/components/home/FaqSection";
 import NewsletterBanner from "@/components/home/NewsletterBanner";
 import PetitionsSection from "@/components/home/PetitionsSection";
 import { VerticalImageStack } from "@/components/ui/vertical-image-stack";
@@ -195,10 +194,6 @@ export default function Home() {
       {/* NEW: SECTION PÉTITIONS CITOYENNES */}
       <PetitionsSection />
 
-      {/* 5. F.A.Q. INTERACTIVE (POSTER IMPACT REBORN) */}
-      <div id="faq" className="scroll-mt-24">
-        <FaqSection />
-      </div>
 
 
 

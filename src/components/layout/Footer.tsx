@@ -57,6 +57,11 @@ export default function Footer() {
                   Contactez-nous
                 </Link>
               </li>
+              <li>
+                <Link href="/faq" className="text-slate-400 hover:text-white text-[11px] font-bold uppercase tracking-widest transition-colors inline-block">
+                  FAQ — Questions fréquentes
+                </Link>
+              </li>
               <li className="text-slate-500 text-[10px] uppercase tracking-widest font-bold pt-4">
                 © {currentYear} La Politique Simple Media
               </li>

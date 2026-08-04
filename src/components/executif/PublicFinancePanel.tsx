@@ -98,7 +98,7 @@ export default function PublicFinancePanel() {
       </div>
 
       {/* État & fonction publique */}
-      <div className="mt-3 grid gap-3 sm:grid-cols-3">
+      <div className="mt-3 grid gap-3 sm:grid-cols-2">
         {GOVERNANCE.map((g, i) => (
           <div key={g.label} className="rounded-2xl border border-slate-200 bg-white p-4 dark:border-slate-800 dark:bg-slate-900">
             <span className="flex h-8 w-8 items-center justify-center rounded-xl bg-blue-50 text-blue-600 dark:bg-blue-500/15">

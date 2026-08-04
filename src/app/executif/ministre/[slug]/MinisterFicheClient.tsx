@@ -2,9 +2,10 @@
 
 import { use, useEffect, useState } from "react";
 import Link from "next/link";
-import { ArrowLeft, ShieldCheck, ExternalLink, Loader2, Briefcase, GraduationCap, Users } from "lucide-react";
+import { ArrowLeft, ShieldCheck, ExternalLink, Loader2, Briefcase, GraduationCap, Users, Landmark } from "lucide-react";
 import { api } from "@/lib/api";
 import { cleanMinistryName } from "@/lib/executif-utils";
+import { PM_CABINET } from "@/lib/data/publicFinance";
 import LegalStatusModal from "@/components/deputies/LegalStatusModal";
 import ParallelRoles from "@/components/shared/ParallelRoles";
 
@@ -92,6 +93,19 @@ export default function MinisterFicheClient({ params, embedded }: { params: Prom
           {bio.formation && <span className="inline-flex items-center gap-2 rounded-full bg-white px-4 py-2 text-sm font-bold text-slate-700 shadow-sm"><GraduationCap size={16} className="text-slate-400" />{bio.formation}</span>}
           {bio.enfants && <span className="inline-flex items-center gap-2 rounded-full bg-white px-4 py-2 text-sm font-bold text-slate-700 shadow-sm"><Users size={15} className="text-slate-400" />{bio.enfants}</span>}
         </div>
+
+        {/* Cabinet de Matignon — uniquement sur la fiche du Premier ministre. */}
+        {/premier\s*ministre/i.test(m.title || "") && (
+          <div className="mt-8 flex items-start gap-4 rounded-3xl border border-blue-100 bg-blue-50/50 p-5">
+            <span className="flex h-11 w-11 shrink-0 items-center justify-center rounded-2xl bg-blue-100 text-blue-600"><Landmark size={20} /></span>
+            <div className="min-w-0">
+              <p className="text-[10px] font-black uppercase tracking-widest text-blue-600">Cabinet de Matignon</p>
+              <p className="mt-0.5 text-2xl font-black text-slate-900">{PM_CABINET.value} <span className="text-base font-bold text-slate-500">conseillers</span></p>
+              <p className="mt-0.5 text-sm leading-snug text-slate-500">{PM_CABINET.sub}</p>
+              <a href={PM_CABINET.url} target="_blank" rel="noopener noreferrer" className="mt-1.5 inline-flex items-center gap-1 text-[10px] font-black uppercase tracking-widest text-slate-400 hover:text-blue-600">{PM_CABINET.year} · {PM_CABINET.source} <ExternalLink size={10} /></a>
+            </div>
+          </div>
+        )}
 
         {/* Toutes les fonctions de la personne. */}
         <div className="mt-8">

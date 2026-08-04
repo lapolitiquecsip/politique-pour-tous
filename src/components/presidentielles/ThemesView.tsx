@@ -44,7 +44,7 @@ function Sparkline({ history, unit, betterWhen, accent }: {
         <polyline points={line} fill="none" stroke={accent} strokeWidth="1.75" strokeLinejoin="round" strokeLinecap="round" />
         {history.map((h, i) => <circle key={h.year} cx={x(i)} cy={y(h.value)} r={i === history.length - 1 ? 3 : 1.6} fill={i === history.length - 1 ? trendColor : accent} />)}
       </svg>
-      <div className="text-[11px] leading-tight text-white/40">
+      <div className="text-[11px] leading-tight text-slate-400">
         <div className="tabular-nums">{first.year} · {fmt(first.value)}</div>
         <div className="tabular-nums font-black" style={{ color: trendColor }}>{last.year} · {fmt(last.value)}{unit ? ` ${unit}` : ""}</div>
       </div>
@@ -58,49 +58,49 @@ function ThemeCard({ theme, index }: { theme: CampaignTheme; index: number }) {
   const num = String(index + 1).padStart(2, "0");
   return (
     <div
-      className="group relative overflow-hidden rounded-2xl ring-1 ring-white/10 transition-all hover:ring-white/20"
+      className="group relative overflow-hidden rounded-2xl ring-1 ring-black/5 shadow-sm transition-all hover:shadow-md"
       style={{
-        // Fond teinté de la couleur du thème (dégradé doux, différent pour chaque ligne).
-        background: `linear-gradient(120deg, ${theme.accent}26 0%, ${theme.accent}12 42%, rgba(15,23,42,0.55) 100%)`,
+        // Fond teinté de la couleur du thème (dégradé doux, différent pour chaque ligne), sur blanc.
+        background: `linear-gradient(120deg, ${theme.accent}22 0%, ${theme.accent}0d 40%, #ffffff 100%)`,
         boxShadow: open ? `inset 4px 0 0 ${theme.accent}` : `inset 4px 0 0 ${theme.accent}aa`,
       }}
     >
       <button onClick={() => setOpen(o => !o)} className="flex w-full items-center gap-5 px-6 py-5 text-left sm:px-8">
         {/* Numéro d'ordre, ton éditorial */}
-        <span className="hidden shrink-0 font-staatliches text-4xl leading-none text-white/10 sm:block">{num}</span>
-        <span className="flex h-11 w-11 shrink-0 items-center justify-center rounded-xl ring-1" style={{ backgroundColor: `${theme.accent}1a`, color: theme.accent, boxShadow: `inset 0 0 0 1px ${theme.accent}33` }}>
+        <span className="hidden shrink-0 font-staatliches text-4xl leading-none text-slate-900/10 sm:block">{num}</span>
+        <span className="flex h-11 w-11 shrink-0 items-center justify-center rounded-xl ring-1" style={{ backgroundColor: `${theme.accent}1f`, color: theme.accent, boxShadow: `inset 0 0 0 1px ${theme.accent}40` }}>
           <ThemeIcon name={theme.icon} className="h-5 w-5" />
         </span>
         <div className="min-w-0 flex-1">
-          <h3 className="font-staatliches text-2xl uppercase leading-none tracking-wide text-white md:text-3xl">{theme.title}</h3>
-          <p className="mt-1.5 text-sm text-white/45">{theme.summary}</p>
+          <h3 className="font-staatliches text-2xl uppercase leading-none tracking-wide text-slate-900 md:text-3xl">{theme.title}</h3>
+          <p className="mt-1.5 text-sm text-slate-500">{theme.summary}</p>
         </div>
         {/* Chiffre phare, aligné à droite */}
         {head && (
           <div className="hidden shrink-0 text-right md:block">
             <div className="font-staatliches text-3xl leading-none tabular-nums" style={{ color: theme.accent }}>{head.value}</div>
-            <div className="mt-1 text-[10px] font-black uppercase tracking-widest text-white/35">{head.label} · {head.year}</div>
+            <div className="mt-1 text-[10px] font-black uppercase tracking-widest text-slate-400">{head.label} · {head.year}</div>
           </div>
         )}
-        <span className="flex h-8 w-8 shrink-0 items-center justify-center rounded-full ring-1 ring-white/10 text-white/40 transition-all group-hover:ring-white/25" style={{ transform: open ? "rotate(45deg)" : "none" }}>
+        <span className="flex h-8 w-8 shrink-0 items-center justify-center rounded-full bg-white/70 ring-1 ring-slate-200 text-slate-400 transition-all group-hover:ring-slate-300" style={{ transform: open ? "rotate(45deg)" : "none" }}>
           <Plus className="h-4 w-4" />
         </span>
       </button>
 
       {open && (
-        <div className="px-6 pb-7 sm:px-8 sm:pl-24">
-          <div className="divide-y divide-white/5 border-t border-white/5">
+        <div className="bg-white/60 px-6 pb-7 sm:px-8 sm:pl-24">
+          <div className="divide-y divide-slate-200 border-t border-slate-200">
             {theme.stats.map((s) => (
               <div key={s.label} className="flex flex-col gap-3 py-4 sm:flex-row sm:items-center sm:justify-between">
                 <div className="min-w-0">
                   <div className="flex items-baseline gap-2">
-                    <span className="font-staatliches text-3xl leading-none tabular-nums text-white">{s.value}</span>
-                    <span className="text-sm font-bold text-white/70">{s.label}</span>
+                    <span className="font-staatliches text-3xl leading-none tabular-nums text-slate-900">{s.value}</span>
+                    <span className="text-sm font-bold text-slate-600">{s.label}</span>
                   </div>
-                  {s.sub && <p className="mt-1 text-xs leading-snug text-white/45">{s.sub}</p>}
+                  {s.sub && <p className="mt-1 text-xs leading-snug text-slate-500">{s.sub}</p>}
                   <a
                     href={s.url} target="_blank" rel="noreferrer"
-                    className="mt-1.5 inline-flex items-center gap-1 text-[10px] font-black uppercase tracking-widest text-white/30 hover:text-white/60"
+                    className="mt-1.5 inline-flex items-center gap-1 text-[10px] font-black uppercase tracking-widest text-slate-400 hover:text-slate-700"
                   >
                     {s.year} · {s.source} {s.url && <ExternalLink className="h-2.5 w-2.5" />}
                   </a>
@@ -110,9 +110,9 @@ function ThemeCard({ theme, index }: { theme: CampaignTheme; index: number }) {
             ))}
           </div>
           {theme.perspective && (
-            <div className="mt-5 flex gap-3 rounded-xl bg-white/[0.03] p-4">
+            <div className="mt-5 flex gap-3 rounded-xl bg-slate-50 p-4 ring-1 ring-slate-100">
               <span className="mt-0.5 font-staatliches text-lg uppercase tracking-widest" style={{ color: theme.accent }}>À venir</span>
-              <p className="text-sm leading-relaxed text-white/60">{theme.perspective}</p>
+              <p className="text-sm leading-relaxed text-slate-600">{theme.perspective}</p>
             </div>
           )}
         </div>
@@ -125,10 +125,10 @@ export default function ThemesView() {
   return (
     <div className="mx-auto max-w-4xl px-4 pb-24">
       <div className="mb-8 text-center">
-        <p className="mx-auto max-w-2xl text-sm leading-relaxed text-white/50">
-          Les grands enjeux de la campagne, éclairés par des <span className="font-bold text-white/80">données strictement officielles</span> — INSEE, RTE, COR, SSMSI, ministères, Commission européenne. Chaque chiffre est daté et sourcé. Dépliez un thème pour l'évolution et les sources.
+        <p className="mx-auto max-w-2xl text-sm leading-relaxed text-slate-500">
+          Les grands enjeux de la campagne, éclairés par des <span className="font-bold text-slate-800">données strictement officielles</span> — INSEE, RTE, COR, SSMSI, ministères, Commission européenne. Chaque chiffre est daté et sourcé. Dépliez un thème pour l'évolution et les sources.
         </p>
-        <div className="mx-auto mt-5 h-px w-24 bg-gradient-to-r from-transparent via-white/20 to-transparent" />
+        <div className="mx-auto mt-5 h-px w-24 bg-gradient-to-r from-transparent via-slate-300 to-transparent" />
       </div>
       <div className="space-y-3">
         {CAMPAIGN_THEMES.map((t, i) => <ThemeCard key={t.slug} theme={t} index={i} />)}

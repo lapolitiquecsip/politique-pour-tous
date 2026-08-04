@@ -1,6 +1,7 @@
 "use client";
 
 import { Suspense, useEffect, useMemo, useRef, useState } from "react";
+import { motion } from "framer-motion";
 import { useRouter, useSearchParams } from "next/navigation";
 import Link from "next/link";
 import { Search, Loader2, X, CalendarDays, ExternalLink, Briefcase, GraduationCap, Users, ShieldCheck, Landmark, ArrowRight, Vote } from "lucide-react";
@@ -384,15 +385,15 @@ function PositionsView({ candidates }: { candidates: Candidate[] }) {
     return order.map(cat => ({ cat, items: map.get(cat)! }));
   }, [issues]);
 
-  if (loading) return <div className="flex justify-center py-24 text-white/50"><Loader2 className="h-10 w-10 animate-spin" /></div>;
-  if (issues.length === 0) return <div className="mx-auto max-w-3xl px-4 pb-24 text-center text-white/60">Les positions seront disponibles très bientôt.</div>;
+  if (loading) return <div className="flex justify-center py-24 text-slate-400"><Loader2 className="h-10 w-10 animate-spin" /></div>;
+  if (issues.length === 0) return <div className="mx-auto max-w-3xl px-4 pb-24 text-center text-slate-500">Les positions seront disponibles très bientôt.</div>;
 
   return (
     <div className="mx-auto max-w-6xl px-4 pb-24">
-      <p className="mb-8 text-center text-sm text-white/50">Position de chaque candidat sur les grands enjeux — cliquez sur un candidat pour le détail et la source.</p>
+      <p className="mb-8 text-center text-sm text-slate-500">Position de chaque candidat sur les grands enjeux — cliquez sur un candidat pour le détail et la source.</p>
       {categories.map(({ cat, items }) => (
         <div key={cat} className="mb-12">
-          <h2 className="mb-5 text-xl font-staatliches uppercase tracking-wide text-white/80">{cat}</h2>
+          <h2 className="mb-5 text-xl font-staatliches uppercase tracking-wide text-slate-800">{cat}</h2>
           <div className="space-y-4">
             {items.map(issue => {
               const groups: Record<string, Candidate[]> = { pour: [], nuance: [], contre: [] };
@@ -401,9 +402,9 @@ function PositionsView({ candidates }: { candidates: Candidate[] }) {
                 if (p && groups[p.stance]) groups[p.stance].push(c);
               }
               return (
-                <div key={issue.slug} className="rounded-3xl border border-white/10 bg-white/5 p-5">
-                  <p className="text-[10px] font-black uppercase tracking-widest text-white/40">{issue.title}</p>
-                  <h3 className="mb-4 text-lg font-bold text-white">{issue.proposition} ?</h3>
+                <div key={issue.slug} className="rounded-3xl border border-slate-200 bg-white p-5 shadow-sm">
+                  <p className="text-[10px] font-black uppercase tracking-widest text-slate-400">{issue.title}</p>
+                  <h3 className="mb-4 text-lg font-bold text-slate-900">{issue.proposition} ?</h3>
                   <div className="grid gap-4 md:grid-cols-3">
                     {(["pour", "nuance", "contre"] as const).map(stance => (
                       <div key={stance}>
@@ -412,11 +413,11 @@ function PositionsView({ candidates }: { candidates: Candidate[] }) {
                           <span className={`text-[11px] font-black uppercase tracking-widest ${STANCE_META[stance].text}`}>{STANCE_META[stance].label} ({groups[stance].length})</span>
                         </div>
                         <div className="flex flex-wrap gap-2">
-                          {groups[stance].length === 0 ? <span className="text-xs text-white/30">—</span> : groups[stance].map(c => (
+                          {groups[stance].length === 0 ? <span className="text-xs text-slate-300">—</span> : groups[stance].map(c => (
                             <button key={c.slug} onClick={() => setDetail({ c, issue, pos: posMap.get(`${c.slug}|${issue.slug}`) })}
-                              className={`inline-flex items-center gap-2 rounded-full bg-white/5 py-1 pl-1 pr-3 ring-1 ${STANCE_META[stance].ring} transition hover:bg-white/10`}>
+                              className={`inline-flex items-center gap-2 rounded-full bg-slate-50 py-1 pl-1 pr-3 ring-1 ${STANCE_META[stance].ring} transition hover:bg-slate-100`}>
                               <CandidateAvatar c={c} className="h-6 w-6 rounded-full text-[9px]" />
-                              <span className="text-xs font-bold text-white">{c.full_name}</span>
+                              <span className="text-xs font-bold text-slate-800">{c.full_name}</span>
                             </button>
                           ))}
                         </div>
@@ -497,25 +498,25 @@ function CandidatesContent() {
   const close = () => { setSelectedSlug(null); try { router.replace("/presidentielles-2027/", { scroll: false }); } catch {} };
 
   return (
-    <div className="min-h-screen bg-slate-950">
+    <div className="min-h-screen bg-gradient-to-b from-slate-50 via-white to-slate-50">
       {/* Hero */}
       <div className="relative overflow-hidden px-4 py-24 text-center">
-        <div className="absolute left-1/4 top-0 h-96 w-96 -translate-x-1/2 rounded-full bg-blue-600/20 blur-[120px]" />
-        <div className="absolute right-1/4 top-10 h-96 w-96 translate-x-1/2 rounded-full bg-red-600/20 blur-[120px]" />
+        <div className="absolute left-1/4 top-0 h-96 w-96 -translate-x-1/2 rounded-full bg-blue-500/10 blur-[120px]" />
+        <div className="absolute right-1/4 top-10 h-96 w-96 translate-x-1/2 rounded-full bg-red-500/10 blur-[120px]" />
         <div className="relative mx-auto max-w-5xl">
-          <span className="rounded-full border border-white/15 bg-white/5 px-4 py-1.5 text-[11px] font-black uppercase tracking-[0.25em] text-white/70">Mis à jour chaque jour</span>
-          <h1 className="mt-6 text-6xl font-staatliches uppercase leading-none tracking-tight text-white md:text-8xl">
-            Présidentielles <span className="bg-gradient-to-r from-blue-500 via-white to-red-500 bg-clip-text text-transparent">2027</span>
+          <span className="rounded-full border border-slate-200 bg-white px-4 py-1.5 text-[11px] font-black uppercase tracking-[0.25em] text-slate-500 shadow-sm">Mis à jour chaque jour</span>
+          <h1 className="mt-6 text-6xl font-staatliches uppercase leading-none tracking-tight text-slate-900 md:text-8xl">
+            Présidentielles <span className="bg-gradient-to-r from-blue-600 to-red-600 bg-clip-text text-transparent">2027</span>
           </h1>
           <div className="mx-auto mt-6 h-1.5 w-40 rounded-full bg-gradient-to-r from-blue-600 to-red-600" />
-          <p className="mx-auto mt-6 max-w-2xl text-lg font-medium italic tracking-tight text-slate-400 md:text-xl">
+          <p className="mx-auto mt-6 max-w-2xl text-lg font-medium italic tracking-tight text-slate-500 md:text-xl">
             Tous les candidats officiellement déclarés, leur parcours détaillé et l'actualité de la campagne, actualisés automatiquement.
           </p>
           {/* Onglets Candidats / Positions */}
-          <div className="mt-8 inline-flex rounded-full border border-white/10 bg-white/5 p-1">
+          <div className="mt-8 inline-flex rounded-full border border-slate-200 bg-white p-1 shadow-sm">
             {([["candidats", "Candidats"], ["positions", "Positions"], ["enjeux", "Enjeux"]] as const).map(([key, label]) => (
               <button key={key} onClick={() => setView(key)}
-                className={`rounded-full px-6 py-2 text-sm font-black uppercase tracking-widest transition ${view === key ? "bg-white text-slate-950" : "text-white/60 hover:text-white"}`}>
+                className={`rounded-full px-6 py-2 text-sm font-black uppercase tracking-widest transition ${view === key ? "bg-slate-900 text-white" : "text-slate-500 hover:text-slate-900"}`}>
                 {label}
               </button>
             ))}
@@ -533,33 +534,44 @@ function CandidatesContent() {
           <div className="flex flex-wrap gap-2">
             {sideTabs.map(tab => (
               <button key={tab} onClick={() => setSide(tab)}
-                className={`rounded-full px-4 py-2 text-sm font-bold transition ${side === tab ? "bg-white text-slate-950" : "bg-white/5 text-white/70 hover:bg-white/10"}`}>
+                className={`rounded-full px-4 py-2 text-sm font-bold transition ${side === tab ? "bg-slate-900 text-white" : "border border-slate-200 bg-white text-slate-600 hover:bg-slate-100"}`}>
                 {tab === "Tous" ? "Tous" : SIDES[tab].label}
               </button>
             ))}
           </div>
           <div className="relative w-full md:w-72">
-            <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-5 w-5 text-white/40" />
+            <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-5 w-5 text-slate-400" />
             <input value={search} onChange={e => setSearch(e.target.value)} placeholder="Rechercher un candidat…"
-              className="w-full rounded-full border border-white/10 bg-white/5 py-3 pl-10 pr-4 text-white placeholder:text-white/40 focus:outline-none focus:ring-2 focus:ring-blue-500/50" />
+              className="w-full rounded-full border border-slate-200 bg-white py-3 pl-10 pr-4 text-slate-900 shadow-sm placeholder:text-slate-400 focus:outline-none focus:ring-2 focus:ring-blue-500/40" />
           </div>
         </div>
 
         {loading ? (
-          <div className="flex flex-col items-center py-24 text-white/50"><Loader2 className="mb-4 h-12 w-12 animate-spin" /><p>Chargement des candidats…</p></div>
+          <div className="flex flex-col items-center py-24 text-slate-400"><Loader2 className="mb-4 h-12 w-12 animate-spin" /><p>Chargement des candidats…</p></div>
         ) : filtered.length === 0 ? (
-          <div className="rounded-3xl border border-white/10 bg-white/5 py-20 text-center text-white/60">
+          <div className="rounded-3xl border border-slate-200 bg-white py-20 text-center text-slate-500">
             <div className="mb-3 text-5xl">🗳️</div>
             <p className="text-lg font-bold">Aucun candidat pour ce filtre.</p>
             <p className="mt-1 text-sm">Les nouveaux candidats déclarés sont ajoutés automatiquement chaque jour.</p>
           </div>
         ) : (
           <div className="grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-3">
-            {filtered.map(c => {
+            {filtered.map((c, i) => {
               const s = sideOf(c);
               return (
-                <button key={c.id} onClick={() => open(c)}
-                  className="group overflow-hidden rounded-[2rem] border border-white/10 bg-white/5 text-left transition hover:-translate-y-1 hover:border-white/20 hover:shadow-2xl">
+                <motion.button
+                  key={c.id}
+                  onClick={() => open(c)}
+                  // Entrée en cascade, puis léger flottement perpétuel décalé par carte (effet vivant).
+                  initial={{ opacity: 0, y: 24 }}
+                  animate={{ opacity: 1, y: [0, -7, 0] }}
+                  transition={{
+                    opacity: { duration: 0.4, delay: (i % 12) * 0.05 },
+                    y: { duration: 3.6 + (i % 5) * 0.4, repeat: Infinity, ease: "easeInOut", delay: (i % 6) * 0.25 },
+                  }}
+                  whileHover={{ y: -12, scale: 1.02, transition: { duration: 0.2 } }}
+                  className="group overflow-hidden rounded-[2rem] border border-slate-200 bg-white text-left shadow-lg shadow-slate-900/5 transition-shadow hover:shadow-2xl hover:shadow-slate-900/15"
+                >
                   <div className="relative">
                     <CandidateAvatar c={c} className="h-64 w-full text-5xl" />
                     <div className={`absolute inset-x-0 bottom-0 h-24 bg-gradient-to-t ${s.from} ${s.to} opacity-90 mix-blend-multiply`} />
@@ -571,12 +583,12 @@ function CandidatesContent() {
                     )}
                   </div>
                   <div className="p-6">
-                    <h3 className="text-2xl font-staatliches uppercase leading-none text-white">{c.full_name}</h3>
-                    {c.party && <p className="mt-1 text-sm font-bold text-white/50">{c.party}</p>}
-                    {c.summary && <p className="mt-3 line-clamp-2 text-sm leading-6 text-white/70">{c.summary}</p>}
-                    <span className="mt-4 inline-block text-xs font-black uppercase tracking-widest text-blue-400 transition group-hover:text-blue-300">Voir la fiche →</span>
+                    <h3 className="text-2xl font-staatliches uppercase leading-none text-slate-900">{c.full_name}</h3>
+                    {c.party && <p className="mt-1 text-sm font-bold text-slate-500">{c.party}</p>}
+                    {c.summary && <p className="mt-3 line-clamp-2 text-sm leading-6 text-slate-600">{c.summary}</p>}
+                    <span className="mt-4 inline-block text-xs font-black uppercase tracking-widest text-blue-600 transition group-hover:text-blue-500">Voir la fiche →</span>
                   </div>
-                </button>
+                </motion.button>
               );
             })}
           </div>
@@ -591,7 +603,7 @@ function CandidatesContent() {
 
 export default function Presidentielles2027Page() {
   return (
-    <Suspense fallback={<div className="min-h-screen bg-slate-950" />}>
+    <Suspense fallback={<div className="min-h-screen bg-slate-50" />}>
       <CandidatesContent />
     </Suspense>
   );

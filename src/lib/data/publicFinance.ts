@@ -37,5 +37,7 @@ export const PUBLIC_SPENDING = {
 export const GOVERNANCE = [
   { label: "Agents publics", value: "5,9 millions", sub: "dans les 3 fonctions publiques (État, territoriale, hospitalière)", year: "fin 2024", source: "INSEE / DGAFP", url: "https://www.insee.fr/fr/statistiques/8732435" },
   { label: "Part de l'emploi public", value: "19,8 %", sub: "de l'emploi total en France — près d'1 emploi sur 5", year: "2024", source: "INSEE", url: "https://www.insee.fr/fr/statistiques/8732435" },
-  { label: "Conseillers du Premier ministre", value: "≈ 50", sub: "cabinet de Matignon, encadré par le décret du 14 juin 2017 ; varie selon les gouvernements", year: "2025", source: "Arrêtés de composition (Légifrance)", url: "https://www.legifrance.gouv.fr/jorf/id/JORFTEXT000051836957" },
 ];
+
+// Affiché sur la fiche du Premier ministre (Matignon), pas sur le panneau finances.
+export const PM_CABINET = { label: "Conseillers du Premier ministre", value: "≈ 50", sub: "cabinet de Matignon, encadré par le décret du 14 juin 2017 ; varie selon les gouvernements", year: "2025", source: "Arrêtés de composition (Légifrance)", url: "https://www.legifrance.gouv.fr/jorf/id/JORFTEXT000051836957" };

@@ -989,7 +989,7 @@ export const api = {
     const [dep, sen, cand, mepsAll] = await Promise.all([
       supabase.from('deputies').select('slug, first_name, last_name, party, an_id, photo_url, department').in('party', aliases).order('last_name'),
       supabase.from('senators').select('slug, first_name, last_name, party').in('party', aliases).order('last_name'),
-      supabase.from('presidential_candidates').select('slug, full_name, party').in('party', aliases).eq('status', 'declared'),
+      supabase.from('presidential_candidates').select('slug, full_name, party, photo_url').in('party', aliases).eq('status', 'declared'),
       // Casse variable côté Parlement européen → filtrage insensible à la casse.
       supabase.from('meps').select('id, full_name, national_party, ep_group').order('full_name'),
     ]);
@@ -1254,11 +1254,11 @@ export const api = {
       { table: 'minister_profiles', base: r => `/executif/ministre/${r.slug}`, kind: 'Gouvernement', nameCol: 'full_name' },
     ];
     for (const s of sources) {
-      let q = supabase.from(s.table).select('slug, ' + (s.nameCol || 'first_name, last_name'));
+      let q = supabase.from(s.table).select('slug, photo_url, ' + (s.nameCol || 'first_name, last_name'));
       if (s.nameCol) q = q.ilike(s.nameCol, name);
       else { const parts = name.split(/\s+/); q = q.ilike('last_name', parts[parts.length - 1]).ilike('first_name', parts[0]); }
       const { data } = await q.limit(1);
-      if (data && data[0] && (data[0] as any).slug) return { href: s.base(data[0]), kind: s.kind };
+      if (data && data[0] && (data[0] as any).slug) return { href: s.base(data[0]), kind: s.kind, photo: (data[0] as any).photo_url || null };
     }
     return null;
   },

@@ -22,13 +22,13 @@ function Ranking({ rows, currentSlug, format, accent }: {
       {rows.map((r, i) => {
         const me = r.slug === currentSlug;
         return (
-          <div key={r.slug} className={`flex items-center gap-3 rounded-xl px-2 py-1.5 ${me ? "bg-slate-100 ring-1 ring-slate-200" : ""}`}>
-            <span className="w-6 shrink-0 text-right text-[11px] font-black tabular-nums text-slate-400">{i + 1}</span>
-            <span className={`w-16 shrink-0 truncate text-xs font-black uppercase ${me ? "text-slate-900" : "text-slate-500"}`} title={r.label}>{r.label}</span>
-            <div className="h-3 flex-1 overflow-hidden rounded-full bg-slate-100">
-              <div className="h-full rounded-full" style={{ width: `${(r.value / max) * 100}%`, background: me ? accent : `${r.color || "#94a3b8"}`, opacity: me ? 1 : 0.55 }} />
+          <div key={r.slug} className={`flex items-center gap-3 rounded-xl px-2 py-1.5 transition ${me ? "bg-slate-50 ring-2" : ""}`} style={me ? { boxShadow: `0 0 0 2px ${accent}55, 0 6px 18px ${accent}22` } : undefined}>
+            <span className={`w-6 shrink-0 text-right font-black tabular-nums ${me ? "text-[13px]" : "text-[11px] text-slate-400"}`} style={me ? { color: accent } : undefined}>{i + 1}</span>
+            <span className={`w-16 shrink-0 truncate uppercase ${me ? "text-[13px] font-black text-slate-900" : "text-xs font-black text-slate-500"}`} title={r.label}>{r.label}</span>
+            <div className="h-3.5 flex-1 overflow-hidden rounded-full bg-slate-100">
+              <div className={`h-full overflow-hidden rounded-full ${me ? "bar-shine" : ""}`} style={{ width: `${(r.value / max) * 100}%`, background: me ? accent : `${r.color || "#94a3b8"}`, opacity: me ? 1 : 0.5, boxShadow: me ? `0 0 12px ${accent}` : undefined }} />
             </div>
-            <span className={`w-20 shrink-0 text-right text-xs font-black tabular-nums ${me ? "text-slate-900" : "text-slate-500"}`}>{r.display}</span>
+            <span className={`shrink-0 text-right tabular-nums ${me ? "w-24 text-base font-black" : "w-20 text-xs font-black text-slate-500"}`} style={me ? { color: accent } : undefined}>{r.display}</span>
           </div>
         );
       })}

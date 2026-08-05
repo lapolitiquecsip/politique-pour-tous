@@ -259,6 +259,16 @@
   animation: sword-glint 4s cubic-bezier(.4,0,.2,1) infinite;
   pointer-events: none; mix-blend-mode: overlay;
 }
+/* Brillance qui balaie une barre mise en avant (parti courant dans un classement) */
+@keyframes bar-shine { 0% { transform: translateX(-120%); } 100% { transform: translateX(220%); } }
+.bar-shine { position: relative; }
+.bar-shine::after {
+  content: ""; position: absolute; inset: 0;
+  background: linear-gradient(100deg, transparent 30%, rgba(255,255,255,.65) 50%, transparent 70%);
+  animation: bar-shine 2.2s ease-in-out infinite;
+  pointer-events: none;
+}
+
 /* Reflet doré lent qui balaie la carte au survol */
 @keyframes gold-sheen {
   0%   { background-position: -150% 0; }

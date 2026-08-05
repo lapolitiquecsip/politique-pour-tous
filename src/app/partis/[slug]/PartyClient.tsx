@@ -62,17 +62,21 @@ function InfoRow({ icon: Icon, label, value }: { icon: any; label: string; value
 // Ligne « Dirigeant·e » cliquable : résout le nom vers sa fiche d'élu (interconnexion).
 function LeaderRow({ value }: { value: string | null }) {
   const [href, setHref] = useState<string | null>(null);
+  const [photo, setPhoto] = useState<string | null>(null);
+  const [imgOk, setImgOk] = useState(true);
   // Le nom peut contenir un suffixe « (depuis …) » ou une virgule : on ne résout que le nom.
   const cleanName = (value || "").replace(/\s*[(,].*$/, "").trim();
   useEffect(() => {
     let active = true;
-    if (cleanName) api.resolvePersonHref(cleanName).then(r => { if (active) setHref(r?.href || null); }).catch(() => {});
+    if (cleanName) api.resolvePersonHref(cleanName).then((r: any) => { if (active) { setHref(r?.href || null); setPhoto(r?.photo || null); } }).catch(() => {});
     return () => { active = false; };
   }, [cleanName]);
   if (!value) return null;
   const inner = (
     <div className={`flex items-start gap-3 rounded-2xl border p-4 transition ${href ? "border-indigo-200 bg-white hover:border-indigo-400 hover:shadow-md cursor-pointer group" : "border-slate-200 bg-white"}`}>
-      <div className="flex h-9 w-9 shrink-0 items-center justify-center rounded-xl bg-slate-100 text-slate-600"><UserCircle className="h-4 w-4" /></div>
+      {photo && imgOk
+        ? <img src={photo} alt={cleanName} onError={() => setImgOk(false)} className="h-10 w-10 shrink-0 rounded-xl object-cover object-top ring-1 ring-slate-200" />
+        : <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-slate-100 text-slate-600"><UserCircle className="h-5 w-5" /></div>}
       <div className="min-w-0">
         <p className="text-[10px] font-black uppercase tracking-widest text-slate-400">Dirigeant·e</p>
         <p className="font-bold text-slate-900 group-hover:text-indigo-600 transition-colors inline-flex items-center gap-1">
@@ -298,7 +302,7 @@ export default function PartyClient({ params }: { params: Promise<{ slug: string
             <div className="grid grid-cols-1 gap-3 sm:grid-cols-2">
               {members.candidates.map((c: any) => (
                 <Link key={c.slug} href={`/presidentielles-2027/?candidat=${c.slug}`} className="flex items-center gap-3 rounded-2xl border border-slate-200 bg-white p-3 transition hover:border-blue-300 group">
-                  <Avatar name={c.full_name} color={color} />
+                  <Avatar name={c.full_name} photo={c.photo_url} color={color} />
                   <span className="font-bold text-slate-900">{c.full_name}</span>
                   <ArrowRight className="ml-auto h-4 w-4 text-slate-300 group-hover:text-blue-500" />
                 </Link>

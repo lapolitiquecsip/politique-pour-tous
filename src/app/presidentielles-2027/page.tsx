@@ -26,13 +26,13 @@ type Candidate = {
 };
 
 // Couleurs par bord politique — dans l'esprit coloré du site.
-const SIDES: Record<string, { label: string; from: string; to: string; badge: string; ring: string }> = {
-  "extreme-gauche": { label: "Extrême gauche", from: "from-rose-600", to: "to-red-700", badge: "bg-red-700", ring: "group-hover:ring-red-500/60" },
-  gauche: { label: "Gauche", from: "from-pink-500", to: "to-rose-600", badge: "bg-rose-600", ring: "group-hover:ring-rose-500/60" },
-  centre: { label: "Centre", from: "from-amber-400", to: "to-orange-500", badge: "bg-orange-500", ring: "group-hover:ring-orange-400/60" },
-  droite: { label: "Droite", from: "from-sky-500", to: "to-blue-700", badge: "bg-blue-700", ring: "group-hover:ring-blue-500/60" },
-  "extreme-droite": { label: "Extrême droite", from: "from-indigo-600", to: "to-slate-800", badge: "bg-indigo-700", ring: "group-hover:ring-indigo-500/60" },
-  autre: { label: "Autre", from: "from-slate-500", to: "to-slate-700", badge: "bg-slate-600", ring: "group-hover:ring-slate-400/60" },
+const SIDES: Record<string, { label: string; from: string; to: string; badge: string; borderb: string }> = {
+  "extreme-gauche": { label: "Extrême gauche", from: "from-rose-500", to: "to-red-600", badge: "bg-red-600", borderb: "border-red-700" },
+  gauche: { label: "Gauche", from: "from-pink-500", to: "to-rose-600", badge: "bg-rose-600", borderb: "border-rose-700" },
+  centre: { label: "Centre", from: "from-amber-400", to: "to-orange-500", badge: "bg-orange-500", borderb: "border-orange-600" },
+  droite: { label: "Droite", from: "from-sky-500", to: "to-blue-600", badge: "bg-blue-600", borderb: "border-blue-700" },
+  "extreme-droite": { label: "Extrême droite", from: "from-indigo-500", to: "to-violet-700", badge: "bg-indigo-600", borderb: "border-indigo-700" },
+  autre: { label: "Autre", from: "from-slate-500", to: "to-slate-700", badge: "bg-slate-600", borderb: "border-slate-700" },
 };
 
 function sideOf(c: Candidate) {
@@ -562,33 +562,31 @@ function CandidatesContent() {
                 <motion.button
                   key={c.id}
                   onClick={() => open(c)}
-                  // Entrée en cascade, puis léger flottement perpétuel décalé par carte (effet vivant).
+                  // Entrée en cascade, puis flottement + léger balancement perpétuel — mêmes animations que les bulles FAQ.
                   initial={{ opacity: 0, y: 24 }}
-                  animate={{ opacity: 1, y: [0, -7, 0] }}
+                  animate={{ opacity: 1, y: [0, -12, 0], rotate: [0, 1.5, -1.5, 0] }}
                   transition={{
                     opacity: { duration: 0.4, delay: (i % 12) * 0.05 },
-                    y: { duration: 3.6 + (i % 5) * 0.4, repeat: Infinity, ease: "easeInOut", delay: (i % 6) * 0.25 },
+                    y: { duration: 4 + (i % 5) * 0.5, repeat: Infinity, ease: "easeInOut", delay: (i % 6) * 0.25 },
+                    rotate: { duration: 4 + (i % 5) * 0.5, repeat: Infinity, ease: "easeInOut", delay: (i % 6) * 0.25 },
                   }}
-                  whileHover={{ y: -12, scale: 1.02, transition: { duration: 0.2 } }}
-                  className={`group overflow-hidden rounded-[2rem] bg-white text-left shadow-lg shadow-slate-900/5 ring-1 ring-slate-200 ring-offset-0 transition-all duration-300 hover:shadow-2xl hover:shadow-slate-900/20 hover:ring-2 ${s.ring}`}
+                  whileHover={{ scale: 1.05, rotate: 0, transition: { duration: 0.2 } }}
+                  className={`group overflow-hidden rounded-[2rem] border-b-[6px] bg-white text-left shadow-xl shadow-slate-900/10 ring-1 ring-slate-200 transition-shadow hover:shadow-2xl ${s.borderb}`}
                 >
                   <div className="relative">
-                    {/* Photo plein cadre + fort dégradé coloré du bord politique → identité + relief. */}
-                    <CandidateAvatar c={c} className="h-72 w-full text-5xl" />
-                    <div className={`absolute inset-0 bg-gradient-to-t ${s.from} ${s.to} opacity-25 mix-blend-multiply`} />
-                    <div className={`absolute inset-x-0 bottom-0 h-2/3 bg-gradient-to-t ${s.from} ${s.to} opacity-95 mix-blend-multiply`} />
-                    <div className="absolute inset-x-0 bottom-0 h-1/2 bg-gradient-to-t from-black/70 to-transparent" />
+                    {/* Photo claire, sans voile sombre. */}
+                    <CandidateAvatar c={c} className="h-60 w-full text-5xl" />
                     <span className={`absolute left-4 top-4 rounded-full ${s.badge} px-3 py-1 text-[10px] font-black uppercase tracking-widest text-white shadow-lg ring-1 ring-white/30`}>{s.label}</span>
                     {c.category?.startsWith("Primaire") && (
                       <span className="absolute right-3 top-3 inline-flex items-center gap-1.5 rounded-full bg-gradient-to-br from-amber-300 via-amber-400 to-orange-500 px-3 py-1.5 text-[10px] font-black uppercase tracking-wider text-white shadow-lg shadow-orange-500/40 ring-1 ring-white/50 backdrop-blur-sm">
                         <Vote size={12} strokeWidth={2.5} /> Primaire
                       </span>
                     )}
-                    {/* Nom en surimpression, style magazine. */}
-                    <div className="absolute inset-x-0 bottom-0 p-5">
-                      <h3 className="text-2xl font-staatliches uppercase leading-none text-white drop-shadow-lg">{c.full_name}</h3>
-                      {c.party && <p className="mt-1 text-sm font-bold text-white/80">{c.party}</p>}
-                    </div>
+                  </div>
+                  {/* Bandeau plein coloré façon bulle FAQ : nom + parti en blanc. */}
+                  <div className={`bg-gradient-to-br ${s.from} ${s.to} px-5 py-4 text-white`}>
+                    <h3 className="text-2xl font-staatliches uppercase leading-none drop-shadow-sm">{c.full_name}</h3>
+                    {c.party && <p className="mt-1 text-sm font-bold text-white/85">{c.party}</p>}
                   </div>
                   <div className="p-5">
                     {c.summary && <p className="line-clamp-2 text-sm leading-6 text-slate-600">{c.summary}</p>}

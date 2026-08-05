@@ -4,6 +4,7 @@ import { use, useEffect, useState } from "react";
 import Link from "next/link";
 import PartyFinanceCompare from "@/components/partis/PartyFinanceCompare";
 import AllPartiesNav from "@/components/partis/AllPartiesNav";
+import FranceRnMap from "@/components/partis/FranceRnMap";
 import {
   Users, Calendar, Wallet, UserCircle, Compass, MapPin, Globe, Landmark,
   TrendingUp, HeartHandshake, ChevronLeft, Loader2, ArrowRight, ExternalLink, Coins, Scale
@@ -364,6 +365,9 @@ export default function PartyClient({ params }: { params: Promise<{ slug: string
             </section>
           );
         })()}
+
+        {/* Carte des scores RN aux législatives 2024 (uniquement sur la fiche du RN). */}
+        {party.slug === "rassemblement-national" && <FranceRnMap />}
 
         {/* Navigation vers tous les partis */}
         <AllPartiesNav currentSlug={party.slug} />

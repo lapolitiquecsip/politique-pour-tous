@@ -195,31 +195,7 @@ export default function PartyClient({ params }: { params: Promise<{ slug: string
           return (
             <div className="mt-6 rounded-3xl border border-slate-200 bg-white p-6">
               <h2 className="text-lg font-black uppercase tracking-widest text-slate-900">Finances du parti</h2>
-              <div className="mt-4 grid grid-cols-1 gap-4 sm:grid-cols-2">
-                {/* Subventions publiques */}
-                {party.subventions_eur != null && (
-                  <div className="rounded-2xl border border-emerald-100 bg-emerald-50/50 p-5">
-                    <div className="flex items-center gap-2 text-[11px] font-black uppercase tracking-widest text-emerald-700">
-                      <Coins className="h-4 w-4" /> Subventions publiques{party.subventions_year ? ` · ${party.subventions_year}` : ""}
-                    </div>
-                    <p className="mt-2 text-3xl font-staatliches text-emerald-900">{eur(party.subventions_eur)}</p>
-                    <p className="mt-1 text-xs text-emerald-800/70">aide publique de l'État versée au parti</p>
-                  </div>
-                )}
-                {/* Endettement */}
-                {party.dettes_eur != null && (
-                  <div className="rounded-2xl border border-rose-100 bg-rose-50/50 p-5">
-                    <div className="flex items-center gap-2 text-[11px] font-black uppercase tracking-widest text-rose-700">
-                      <Scale className="h-4 w-4" /> Endettement{party.comptes_year ? ` · ${party.comptes_year}` : ""}
-                    </div>
-                    <p className="mt-2 text-3xl font-staatliches text-rose-900">{taux != null ? `${taux}%` : eur(party.dettes_eur)}</p>
-                    <p className="mt-1 text-xs text-rose-800/70">
-                      {eur(party.dettes_eur)} de dettes{party.produits_eur ? ` pour ${eur(party.produits_eur)} de produits annuels` : ""}
-                    </p>
-                  </div>
-                )}
-              </div>
-              {/* Comparaison avec les autres partis (classements subventions + endettement). */}
+              {/* Classements comparatifs (subventions + endettement) — les montants du parti y figurent, surlignés. */}
               <PartyFinanceCompare currentSlug={party.slug} />
               {src && <p className="mt-4 text-[11px] text-slate-400">Source : {src}</p>}
             </div>
@@ -251,8 +227,9 @@ export default function PartyClient({ params }: { params: Promise<{ slug: string
           ))}
         </div>
 
-        {/* Membres du groupe sélectionné */}
-        <section className="mt-6">
+        {/* Membres du groupe sélectionné — hauteur bornée avec scroll interne : l'utilisateur
+            n'a plus à défiler tout le groupe pour atteindre le contenu en dessous. */}
+        <section className="mt-6 max-h-[26rem] overflow-y-auto rounded-2xl pr-1">
           {tab === "deputies" && (
             members.deputies.length === 0
               ? <p className="text-sm text-slate-500">Aucun·e député·e pour ce parti.</p>

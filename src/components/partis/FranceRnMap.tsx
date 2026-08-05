@@ -2,6 +2,7 @@
 
 import { useState } from "react";
 import { departmentPaths } from "@/lib/data/departmentPaths";
+import { DEPARTMENTS } from "@/lib/data/territories";
 import { RN_2024_BY_DEPT, RN_2024_NATIONAL, RN_2024_SOURCE, RN_2024_SOURCE_URL } from "@/lib/data/rnLegislatives2024";
 import { MLP_2022_BY_DEPT, MLP_2022_NATIONAL, MLP_2022_SOURCE, MLP_2022_SOURCE_URL } from "@/lib/data/presidentielle2022MLP";
 import { ExternalLink } from "lucide-react";
@@ -30,6 +31,10 @@ const MAPS: MapData[] = [
 ];
 
 const colorFor = (scale: Band[], v: number) => (scale.find(s => v >= s.min) || scale[scale.length - 1]).color;
+
+// Code département → nom lisible (ex. "02" → "Aisne").
+const DEPT_NAME: Record<string, string> = Object.fromEntries((DEPARTMENTS as any[]).map(d => [d.id, d.name]));
+const deptLabel = (code: string) => DEPT_NAME[code] || `Dép. ${code}`;
 
 function globalViewBox(data: Record<string, number>): string {
   let minX = Infinity, minY = Infinity, maxX = -Infinity, maxY = -Infinity;
@@ -76,14 +81,14 @@ export default function FranceRnMap() {
                 <path key={code} d={departmentPaths[code].d} fill={colorFor(m.scale, v)} stroke="#ffffff" strokeWidth={0.5}
                   className="cursor-pointer transition-[fill,opacity] hover:opacity-80"
                   onMouseEnter={() => setHover({ code, v })} onMouseLeave={() => setHover(null)}>
-                  <title>{`Département ${code} — ${v.toLocaleString("fr-FR")} %`}</title>
+                  <title>{`${deptLabel(code)} — ${v.toLocaleString("fr-FR")} %`}</title>
                 </path>
               );
             })}
           </svg>
           {hover && (
             <div className="pointer-events-none absolute left-2 top-2 rounded-lg bg-slate-900 px-3 py-1.5 text-xs font-black text-white shadow-lg">
-              Dép. {hover.code} · <span className="text-rose-300">{hover.v.toLocaleString("fr-FR")} %</span>
+              {deptLabel(hover.code)} · <span className="text-rose-300">{hover.v.toLocaleString("fr-FR")} %</span>
             </div>
           )}
         </div>
@@ -103,7 +108,7 @@ export default function FranceRnMap() {
               <li key={code} className="flex items-center gap-2 text-sm">
                 <span className="w-5 text-right font-black tabular-nums text-slate-400">{i + 1}</span>
                 <span className="h-3 w-3 rounded-full" style={{ background: colorFor(m.scale, v) }} />
-                <span className="font-bold text-slate-800">Dép. {code}</span>
+                <span className="font-bold text-slate-800">{deptLabel(code)}</span>
                 <span className="ml-auto font-black tabular-nums text-rose-700">{v.toLocaleString("fr-FR")} %</span>
               </li>
             ))}

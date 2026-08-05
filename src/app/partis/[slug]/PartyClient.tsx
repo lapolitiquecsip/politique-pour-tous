@@ -321,21 +321,6 @@ export default function PartyClient({ params }: { params: Promise<{ slug: string
             <section className="mt-14">
               <h2 className="mb-6 text-2xl font-staatliches uppercase text-slate-900">Évolution</h2>
 
-              {adherents.length > 1 && (
-                <div className="mb-8 rounded-3xl border border-slate-200 bg-white p-6">
-                  <p className="mb-4 text-sm font-black uppercase tracking-widest text-slate-400">Adhérents</p>
-                  <div className="flex items-end gap-3" style={{ height: 160 }}>
-                    {adherents.map((a) => (
-                      <div key={a.year} className="flex flex-1 flex-col items-center justify-end gap-2">
-                        <span className="text-xs font-bold text-slate-700">{Number(a.value).toLocaleString("fr-FR")}</span>
-                        <div className="w-full rounded-t-lg" style={{ height: `${Math.max(6, (Number(a.value) / maxAd) * 120)}px`, backgroundColor: color }} />
-                        <span className="text-[11px] font-black text-slate-400">{a.year}</span>
-                      </div>
-                    ))}
-                  </div>
-                </div>
-              )}
-
               {elecKinds.some(([k]) => history.some(h => h.kind === k)) && (
                 <div className="rounded-3xl border border-slate-200 bg-white p-6">
                   <p className="mb-4 text-sm font-black uppercase tracking-widest text-slate-400">Résultats électoraux (% des voix)</p>

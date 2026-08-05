@@ -18,6 +18,28 @@ const DROM_COM_PATHS = [
   { id: "976", name: "Mayotte", d: "m57.79,157.13l11.32,5.82l-3.24,7.46l-5.66,7.52l5.66,8.37l-4.04,5.7l-5.66,8.01l5.66,4.37l-7.28,4.37l-8.09-2.73l-4.04-5.04v-4.85l-3.24-6.55l7.28,3.88l4.04,1.13v-7.14l-4.85-8.43v-14.8l-8.09-2.61l-3.24-2.67v-5.76l8.9-6.79l7.28,10.19L57.79,157.13z M78.07,164.38l-5.56,3.42l4.81,5.59l3.93-4.79L78.07,164.38z" },
 ];
 
+// Couleur de survol PAR RÉGION : chaque région a sa teinte (PACA jaune, Auvergne-Rhône-Alpes
+// orange, etc.). Table code département → couleur, construite à partir des groupes régionaux.
+const REGION_GROUPS: Array<{ color: string; deps: string[] }> = [
+  { color: "#f97316", deps: ["01","03","07","15","26","38","42","43","63","69","73","74"] }, // Auvergne-Rhône-Alpes — orange
+  { color: "#f5b301", deps: ["04","05","06","13","83","84"] },                                 // PACA — jaune
+  { color: "#6366f1", deps: ["75","77","78","91","92","93","94","95"] },                        // Île-de-France — indigo
+  { color: "#ec4899", deps: ["09","11","12","30","31","32","34","46","48","65","66","81","82"] }, // Occitanie — rose
+  { color: "#14b8a6", deps: ["16","17","19","23","24","33","40","47","64","79","86","87"] },    // Nouvelle-Aquitaine — turquoise
+  { color: "#8b5cf6", deps: ["02","59","60","62","80"] },                                       // Hauts-de-France — violet
+  { color: "#ef4444", deps: ["08","10","51","52","54","55","57","67","68","88"] },              // Grand Est — rouge
+  { color: "#0ea5e9", deps: ["22","29","35","56"] },                                            // Bretagne — bleu ciel
+  { color: "#06b6d4", deps: ["14","27","50","61","76"] },                                       // Normandie — cyan
+  { color: "#84cc16", deps: ["44","49","53","72","85"] },                                       // Pays de la Loire — vert lime
+  { color: "#a855f7", deps: ["21","25","39","58","70","71","89","90"] },                        // Bourgogne-Franche-Comté — pourpre
+  { color: "#10b981", deps: ["18","28","36","37","41","45"] },                                  // Centre-Val de Loire — émeraude
+  { color: "#d946ef", deps: ["2A","2B"] },                                                      // Corse — fuchsia
+  { color: "#fb7185", deps: ["971","972","973","974","976"] },                                  // DROM — rose corail
+];
+const REGION_COLOR: Record<string, string> = Object.fromEntries(
+  REGION_GROUPS.flatMap(g => g.deps.map(d => [d, g.color]))
+);
+
 interface FranceMapProps {
   selectedDepartment: string | null;
   onDepartmentSelect: (dept: string | null) => void;
@@ -44,8 +66,8 @@ const MemoizedSVG = memo(({ content, selectedDepartment }: { content: string, se
         
         [&_path]:origin-center [&_path]:[transform-box:fill-box]
         
-        /* Hover effect (Géré 100% en CSS pour 0 latence) */
-        hover:[&_path:hover]:fill-red-500 hover:[&_path:hover]:stroke-red-700 hover:[&_path:hover]:stroke-[2] hover:[&_path:hover]:scale-[1.04] hover:[&_path:hover]:translate-z-10
+        /* Effet de survol : léger agrandissement ; la COULEUR est posée en JS (par région). */
+        [&_path:hover]:scale-[1.04]
         
         /* État de sélection */
         ${selectedDepartment ? "[&_path]:fill-sky-50 dark:[&_path]:fill-sky-950/30 [&_path]:opacity-60 [&_path]:stroke-sky-100 dark:[&_path]:stroke-sky-900" : ""}
@@ -155,6 +177,22 @@ export const FranceMap = memo(function FranceMap({
     }
   };
 
+  // Survol coloré PAR RÉGION : on pose la couleur de la région du département survolé.
+  const handleMouseOver = (e: React.MouseEvent) => {
+    const t = e.target as SVGElement;
+    if (t.tagName !== "path") return;
+    if (selectedDepartment) return; // en mode sélection, on ne recolore pas au survol
+    const id = t.getAttribute("id");
+    const col = id ? REGION_COLOR[id] : null;
+    if (col) { t.style.fill = col; t.style.stroke = "#1e293b"; t.style.strokeWidth = "1.8px"; t.style.filter = `drop-shadow(0 0 8px ${col}88)`; }
+  };
+  // Réinitialise le département quitté (retour au style de base géré en CSS).
+  const handlePathOut = (e: React.MouseEvent) => {
+    const t = e.target as SVGElement;
+    if (t.tagName !== "path") return;
+    t.style.fill = ""; t.style.stroke = ""; t.style.strokeWidth = ""; t.style.filter = "";
+  };
+
   const handleClick = (e: React.MouseEvent) => {
     const target = e.target as SVGElement;
     if (target.tagName === "path") {
@@ -195,6 +233,8 @@ export const FranceMap = memo(function FranceMap({
       <div 
         className="relative bg-card border border-border rounded-2xl p-4 md:p-8 overflow-hidden transition-all duration-300 shadow-sm hover:shadow-md"
         onMouseMove={handleMouseMove}
+        onMouseOver={handleMouseOver}
+        onMouseOut={(e) => { handlePathOut(e); }}
         onMouseLeave={handleMouseOut}
         onClick={handleClick}
       >

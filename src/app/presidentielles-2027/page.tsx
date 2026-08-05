@@ -26,13 +26,13 @@ type Candidate = {
 };
 
 // Couleurs par bord politique — dans l'esprit coloré du site.
-const SIDES: Record<string, { label: string; from: string; to: string; badge: string }> = {
-  "extreme-gauche": { label: "Extrême gauche", from: "from-rose-600", to: "to-red-700", badge: "bg-red-700" },
-  gauche: { label: "Gauche", from: "from-pink-500", to: "to-rose-600", badge: "bg-rose-600" },
-  centre: { label: "Centre", from: "from-amber-400", to: "to-orange-500", badge: "bg-orange-500" },
-  droite: { label: "Droite", from: "from-sky-500", to: "to-blue-700", badge: "bg-blue-700" },
-  "extreme-droite": { label: "Extrême droite", from: "from-indigo-600", to: "to-slate-800", badge: "bg-indigo-700" },
-  autre: { label: "Autre", from: "from-slate-500", to: "to-slate-700", badge: "bg-slate-600" },
+const SIDES: Record<string, { label: string; from: string; to: string; badge: string; ring: string }> = {
+  "extreme-gauche": { label: "Extrême gauche", from: "from-rose-600", to: "to-red-700", badge: "bg-red-700", ring: "group-hover:ring-red-500/60" },
+  gauche: { label: "Gauche", from: "from-pink-500", to: "to-rose-600", badge: "bg-rose-600", ring: "group-hover:ring-rose-500/60" },
+  centre: { label: "Centre", from: "from-amber-400", to: "to-orange-500", badge: "bg-orange-500", ring: "group-hover:ring-orange-400/60" },
+  droite: { label: "Droite", from: "from-sky-500", to: "to-blue-700", badge: "bg-blue-700", ring: "group-hover:ring-blue-500/60" },
+  "extreme-droite": { label: "Extrême droite", from: "from-indigo-600", to: "to-slate-800", badge: "bg-indigo-700", ring: "group-hover:ring-indigo-500/60" },
+  autre: { label: "Autre", from: "from-slate-500", to: "to-slate-700", badge: "bg-slate-600", ring: "group-hover:ring-slate-400/60" },
 };
 
 function sideOf(c: Candidate) {
@@ -570,23 +570,29 @@ function CandidatesContent() {
                     y: { duration: 3.6 + (i % 5) * 0.4, repeat: Infinity, ease: "easeInOut", delay: (i % 6) * 0.25 },
                   }}
                   whileHover={{ y: -12, scale: 1.02, transition: { duration: 0.2 } }}
-                  className="group overflow-hidden rounded-[2rem] border border-slate-200 bg-white text-left shadow-lg shadow-slate-900/5 transition-shadow hover:shadow-2xl hover:shadow-slate-900/15"
+                  className={`group overflow-hidden rounded-[2rem] bg-white text-left shadow-lg shadow-slate-900/5 ring-1 ring-slate-200 ring-offset-0 transition-all duration-300 hover:shadow-2xl hover:shadow-slate-900/20 hover:ring-2 ${s.ring}`}
                 >
                   <div className="relative">
-                    <CandidateAvatar c={c} className="h-64 w-full text-5xl" />
-                    <div className={`absolute inset-x-0 bottom-0 h-24 bg-gradient-to-t ${s.from} ${s.to} opacity-90 mix-blend-multiply`} />
-                    <span className={`absolute left-4 top-4 rounded-full ${s.badge} px-3 py-1 text-[10px] font-black uppercase tracking-widest text-white shadow`}>{s.label}</span>
+                    {/* Photo plein cadre + fort dégradé coloré du bord politique → identité + relief. */}
+                    <CandidateAvatar c={c} className="h-72 w-full text-5xl" />
+                    <div className={`absolute inset-0 bg-gradient-to-t ${s.from} ${s.to} opacity-25 mix-blend-multiply`} />
+                    <div className={`absolute inset-x-0 bottom-0 h-2/3 bg-gradient-to-t ${s.from} ${s.to} opacity-95 mix-blend-multiply`} />
+                    <div className="absolute inset-x-0 bottom-0 h-1/2 bg-gradient-to-t from-black/70 to-transparent" />
+                    <span className={`absolute left-4 top-4 rounded-full ${s.badge} px-3 py-1 text-[10px] font-black uppercase tracking-widest text-white shadow-lg ring-1 ring-white/30`}>{s.label}</span>
                     {c.category?.startsWith("Primaire") && (
                       <span className="absolute right-3 top-3 inline-flex items-center gap-1.5 rounded-full bg-gradient-to-br from-amber-300 via-amber-400 to-orange-500 px-3 py-1.5 text-[10px] font-black uppercase tracking-wider text-white shadow-lg shadow-orange-500/40 ring-1 ring-white/50 backdrop-blur-sm">
                         <Vote size={12} strokeWidth={2.5} /> Primaire
                       </span>
                     )}
+                    {/* Nom en surimpression, style magazine. */}
+                    <div className="absolute inset-x-0 bottom-0 p-5">
+                      <h3 className="text-2xl font-staatliches uppercase leading-none text-white drop-shadow-lg">{c.full_name}</h3>
+                      {c.party && <p className="mt-1 text-sm font-bold text-white/80">{c.party}</p>}
+                    </div>
                   </div>
-                  <div className="p-6">
-                    <h3 className="text-2xl font-staatliches uppercase leading-none text-slate-900">{c.full_name}</h3>
-                    {c.party && <p className="mt-1 text-sm font-bold text-slate-500">{c.party}</p>}
-                    {c.summary && <p className="mt-3 line-clamp-2 text-sm leading-6 text-slate-600">{c.summary}</p>}
-                    <span className="mt-4 inline-block text-xs font-black uppercase tracking-widest text-blue-600 transition group-hover:text-blue-500">Voir la fiche →</span>
+                  <div className="p-5">
+                    {c.summary && <p className="line-clamp-2 text-sm leading-6 text-slate-600">{c.summary}</p>}
+                    <span className={`mt-4 inline-flex items-center gap-1.5 rounded-full bg-gradient-to-r ${s.from} ${s.to} px-4 py-2 text-xs font-black uppercase tracking-widest text-white shadow-md transition-transform group-hover:translate-x-0.5`}>Voir la fiche →</span>
                   </div>
                 </motion.button>
               );

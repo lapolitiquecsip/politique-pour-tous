@@ -3,6 +3,7 @@
 import { useEffect, useMemo, useState } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
+import { MousePointerClick } from "lucide-react";
 import { api } from "@/lib/api";
 
 // Hémicycles de l'Assemblée nationale et du Sénat (façon Datan, plus moderne).
@@ -116,6 +117,12 @@ function Hemicycle({ title, total, groups }: { title: string; total: number; gro
           );
         })}
       </div>
+      {sorted.some(g => g.slug) && (
+        <figcaption className="mt-3 flex items-center gap-1.5 text-[10px] font-medium uppercase tracking-wider text-slate-400 dark:text-slate-500">
+          <MousePointerClick className="h-3 w-3" />
+          Cliquez sur un parti pour voir sa fiche
+        </figcaption>
+      )}
     </figure>
   );
 }

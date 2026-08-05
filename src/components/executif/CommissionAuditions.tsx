@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import { Loader2, ExternalLink, Lock, Sparkles, Mic, ChevronDown } from "lucide-react";
+import { Loader2, ExternalLink, Lock, Sparkles, Mic, ChevronDown, Users } from "lucide-react";
 import Link from "next/link";
 import { api } from "@/lib/api";
 import { usePremium } from "@/lib/hooks/usePremium";
@@ -13,6 +13,41 @@ type Report = {
 
 const fmtDate = (d: string | null) =>
   !d ? "" : new Date(d).toLocaleDateString("fr-FR", { day: "numeric", month: "long", year: "numeric" });
+
+const NAMED: Record<string, string> = { amp: "&", lt: "<", gt: ">", quot: '"', apos: "'", nbsp: " ", laquo: "«", raquo: "»", eacute: "é", egrave: "è", agrave: "à", ccedil: "ç", rsquo: "’", hellip: "…" };
+// Décode les entités HTML restées brutes dans les données officielles (ex. « &#XA0; » = espace insécable).
+function decode(s: string): string {
+  return s
+    .replace(/&#x([0-9a-f]+);/gi, (_, h) => String.fromCodePoint(parseInt(h, 16)))
+    .replace(/&#(\d+);/g, (_, d) => String.fromCodePoint(parseInt(d, 10)))
+    .replace(/&([a-z]+);/gi, (m, n) => NAMED[n.toLowerCase()] ?? m)
+    .replace(/ /g, " ")
+    .replace(/\s{2,}/g, " ")
+    .trim();
+}
+
+// Extrait les personnes auditionnées/citées (« M./Mme Prénom Nom »), hors titres institutionnels génériques.
+function extractPeople(title: string): string[] {
+  const out: string[] = [];
+  const re = /\b(M\.|Mme|Mlle|MM\.)\s+([A-ZÉÈÀÂÎÔ][\p{L}'’-]+(?:[-\s]+[A-ZÉÈÀÂÎÔ][\p{L}'’-]+)*)/gu;
+  for (const m of title.matchAll(re)) {
+    const name = m[2].trim();
+    if (/^(le|la|les|Président|Rapporteur|Ministre)\b/i.test(name)) continue;
+    const full = `${m[1]} ${name}`;
+    if (!out.includes(full)) out.push(full);
+  }
+  return out.slice(0, 3);
+}
+
+// Titre court et explicite : décode, retire le charabia juridique et les clauses accessoires.
+function cleanTitle(raw: string): string {
+  let t = decode(raw).replace(/\s*;\s*/g, ", ");
+  t = t.replace(/,?\s*en application de l['’]article[^,]*(?:du code[^,]*)?,?/gi, " ");
+  t = t.replace(/,?\s*dont la nomination[^.]*/gi, "");
+  t = t.replace(/,\s*(de|du|des|d['’])\s+(M\.|Mme|MM\.|Mlle)/g, " $1 $2");
+  t = t.replace(/\s{2,}/g, " ").replace(/^[\s,]+/, "").replace(/[\s,]+$/, "").trim();
+  return t ? t.charAt(0).toUpperCase() + t.slice(1) : "Réunion de commission";
+}
 
 // Rend un résumé (contexte + puces « - ») en liste lisible.
 function SummaryBody({ text }: { text: string }) {
@@ -37,6 +72,9 @@ function SummaryBody({ text }: { text: string }) {
 
 function AuditionCard({ r, isPremium }: { r: Report; isPremium: boolean }) {
   const [open, setOpen] = useState(false);
+  const commission = r.commission ? decode(r.commission) : "";
+  const people = r.title ? extractPeople(decode(r.title)) : [];
+  const title = r.title ? cleanTitle(r.title) : "Réunion de commission";
   return (
     <div className="overflow-hidden rounded-3xl border border-slate-200 bg-white transition-all hover:border-emerald-300 hover:shadow-lg dark:border-slate-800 dark:bg-slate-900">
       <button onClick={() => setOpen(o => !o)} className="flex w-full items-start gap-4 p-5 text-left">
@@ -44,8 +82,14 @@ function AuditionCard({ r, isPremium }: { r: Report; isPremium: boolean }) {
           <Mic size={18} />
         </span>
         <div className="min-w-0 flex-1">
-          <p className="text-[10px] font-black uppercase tracking-widest text-emerald-600">{fmtDate(r.meeting_date)}{r.commission ? ` · ${r.commission}` : ""}</p>
-          <p className="mt-1 text-sm font-bold leading-snug text-slate-900 dark:text-white line-clamp-2">{r.title || "Réunion de commission"}</p>
+          <p className="text-[10px] font-black uppercase tracking-widest text-emerald-600">{fmtDate(r.meeting_date)}{commission ? ` · ${commission}` : ""}</p>
+          <p className="mt-1 text-sm font-bold leading-snug text-slate-900 dark:text-white line-clamp-2">{title}</p>
+          {people.length > 0 && (
+            <p className="mt-1.5 flex items-center gap-1.5 text-[11px] font-semibold text-slate-500 dark:text-slate-400">
+              <Users size={12} className="shrink-0 text-emerald-500" />
+              <span className="truncate">Avec {people.join(", ")}</span>
+            </p>
+          )}
         </div>
         <ChevronDown size={18} className={`mt-1 shrink-0 text-slate-300 transition-transform ${open ? "rotate-180" : ""}`} />
       </button>

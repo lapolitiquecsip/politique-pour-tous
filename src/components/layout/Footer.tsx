@@ -16,10 +16,11 @@ export default function Footer() {
               <div className="w-10 h-10 rounded-xl bg-red-600 flex items-center justify-center shadow-lg shadow-red-600/20 group-hover:scale-110 transition-transform">
                 <Landmark className="w-6 h-6 text-white" />
               </div>
-              <span className="font-sans font-black text-[15px] sm:text-[16px] tracking-tight uppercase leading-none pt-0.5 flex items-center gap-1">
-                <span className="text-white">La politique, c'est</span>
-                <span className="bg-[#0bb274] text-white px-1.5 py-1 rounded-[5px] font-black text-[13px] sm:text-[14px] leading-none">
-                  Simple.
+              <span className="flex flex-col justify-center font-sans font-black tracking-tight uppercase leading-none">
+                <span className="text-white text-[15px] sm:text-[16px]">La politique,</span>
+                <span className="mt-0.5 flex items-center gap-1">
+                  <span className="text-white text-[13px] sm:text-[14px]">c'est</span>
+                  <span className="bg-[#0bb274] text-white px-1.5 py-0.5 rounded-[5px] text-[12px] sm:text-[13px] leading-none">Simple.</span>
                 </span>
               </span>
             </Link>

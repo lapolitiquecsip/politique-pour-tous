@@ -8,10 +8,22 @@ interface FaqItem {
   id: number;
   question: string;
   answer: string;
-  color: "red" | "white";
+  color: BubbleColor;
   position: { top: string; left: string };
   delay: number;
 }
+
+type BubbleColor = "red" | "blue" | "green" | "amber" | "violet" | "white";
+
+// Palette des bulles : fond + couleur de la "queue" du phylactère (classes statiques Tailwind).
+const BUBBLE_COLORS: Record<BubbleColor, { bubble: string; tail: string }> = {
+  red: { bubble: "bg-red-600/95 text-white border-red-500", tail: "border-t-red-600" },
+  blue: { bubble: "bg-blue-600/95 text-white border-blue-500", tail: "border-t-blue-600" },
+  green: { bubble: "bg-emerald-600/95 text-white border-emerald-500", tail: "border-t-emerald-600" },
+  amber: { bubble: "bg-amber-500/95 text-white border-amber-400", tail: "border-t-amber-500" },
+  violet: { bubble: "bg-violet-600/95 text-white border-violet-500", tail: "border-t-violet-600" },
+  white: { bubble: "bg-white/95 text-slate-900 border-slate-200", tail: "border-t-white" },
+};
 
 const faqData: FaqItem[] = [
   {
@@ -26,7 +38,7 @@ const faqData: FaqItem[] = [
     id: 2,
     question: "Le site est-il neutre ?",
     answer: "Totalement. Notre mission est de décrypter les faits et les votes officiels, sans aucune prise de position politique.",
-    color: "white",
+    color: "blue",
     position: { top: "25%", left: "45%" },
     delay: 0.5,
   },
@@ -34,7 +46,7 @@ const faqData: FaqItem[] = [
     id: 3,
     question: "Pourquoi un abonnement Premium ?",
     answer: "Le Premium nous aide à financer l'infrastructure IA nécessaire pour analyser des milliers de pages de rapports législatifs chaque jour.",
-    color: "red",
+    color: "green",
     position: { top: "10%", left: "80%" },
     delay: 1.2,
   },
@@ -42,7 +54,7 @@ const faqData: FaqItem[] = [
     id: 4,
     question: "Puis-je suivre mon député ?",
     answer: "Oui ! Utilisez la section 'Députés' pour trouver votre circonscription et voir exactement ce que votre élu a voté récemment.",
-    color: "white",
+    color: "amber",
     position: { top: "60%", left: "20%" },
     delay: 0.8,
   },
@@ -50,7 +62,7 @@ const faqData: FaqItem[] = [
     id: 5,
     question: "Qui êtes-vous ?",
     answer: "Je suis Hippolyte, un étudiant de 19 ans. J'ai créé ce site car j'étais frustré par le manque de transparence politique et le déclin de notre démocratie.",
-    color: "red",
+    color: "violet",
     position: { top: "70%", left: "60%" },
     delay: 1.5,
   },
@@ -116,15 +128,13 @@ export default function FaqSection() {
                 whileHover={{ scale: 1.1, rotate: 0 }}
                 onClick={() => setSelectedId(selectedId === item.id ? null : item.id)}
                 className={`relative px-6 py-4 rounded-3xl shadow-2xl max-w-[200px] md:max-w-[250px] select-none text-center
-                  ${item.color === "red" 
-                    ? "bg-red-600/95 text-white border-red-500" 
-                    : "bg-white/95 text-slate-900 border-slate-200"}
+                  ${BUBBLE_COLORS[item.color].bubble}
                   border-b-4 border transform transition-all active:scale-95 will-change-transform
                 `}
               >
                 {/* Speech Bubble "Tail" */}
                 <div className={`absolute -bottom-3 left-1/2 -translate-x-1/2 w-0 h-0 border-l-[10px] border-l-transparent border-r-[10px] border-r-transparent border-t-[10px]
-                  ${item.color === "red" ? "border-t-red-600" : "border-t-white"}
+                  ${BUBBLE_COLORS[item.color].tail}
                 `} />
 
                 <p className="font-bold text-sm md:text-base leading-tight">

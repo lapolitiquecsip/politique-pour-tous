@@ -27,6 +27,12 @@ function NumHighlight({ text }: { text: string }) {
 
 const toPoints = (v: any): string[] => (!v ? [] : (Array.isArray(v) ? v : [v]).filter(Boolean));
 
+// Détection de l'événement le PLUS RÉCENT (année la plus élevée) parmi les rubriques
+// « événementielles », pour le mettre en valeur (surlignage jaune).
+const EVENT_FIELDS = new Set(["parcours", "chronologie", "faits_marquants", "realisations"]);
+const YEAR_RE = /\b(?:19|20)\d{2}\b/g;
+const maxYearOf = (t: string): number => { const m = String(t).match(YEAR_RE); return m ? Math.max(...m.map(Number)) : 0; };
+
 export function hasStructuredBio(bio: any): boolean {
   if (!bio) return false;
   return BIO_FIELDS.some(([k]) => toPoints(bio[k]).length > 0);
@@ -34,6 +40,8 @@ export function hasStructuredBio(bio: any): boolean {
 
 export default function StructuredBio({ bio, fallbackText }: { bio: any; fallbackText?: string | null }) {
   if (hasStructuredBio(bio)) {
+    // Année la plus récente parmi les rubriques événementielles → événement à surligner.
+    const recentYear = Math.max(0, ...[...EVENT_FIELDS].flatMap(k => toPoints(bio[k]).map(maxYearOf)));
     return (
       <div className="grid items-start gap-4 sm:grid-cols-2">
         {BIO_FIELDS.map(([key, label, color]) => {
@@ -45,7 +53,16 @@ export default function StructuredBio({ bio, fallbackText }: { bio: any; fallbac
               <h3 className={`font-staatliches text-2xl uppercase leading-none ${color}`}>{label}</h3>
               <div className={`mb-3 mt-1.5 h-1 w-12 rounded-full ${color.replace(/text-/g, "bg-").split(" ")[0]}`} />
               <ul className="list-disc space-y-1.5 pl-4 text-sm leading-6 text-slate-700 dark:text-slate-300 marker:text-slate-300">
-                {points.map((p, i) => <li key={i}><NumHighlight text={p} /></li>)}
+                {points.map((p, i) => {
+                  const recent = recentYear > 0 && EVENT_FIELDS.has(key) && maxYearOf(p) === recentYear;
+                  return (
+                    <li key={i} className={recent ? "marker:text-yellow-500" : ""}>
+                      {recent
+                        ? <mark className="rounded bg-yellow-200 px-1 py-0.5 font-medium text-slate-900 dark:bg-yellow-400/30 dark:text-yellow-50"><NumHighlight text={p} /></mark>
+                        : <NumHighlight text={p} />}
+                    </li>
+                  );
+                })}
               </ul>
             </div>
           );

@@ -9,19 +9,23 @@ export type InitiatorPerson = {
   photoSources: string[];
 };
 
-// Sources photo d'un député : image officielle AN (via an_id) puis replis.
-// Le photo_url stocké (nosdeputes.fr) ne charge pas de façon fiable → cercle noir.
-function deputyPhotoSources(anId: string | null, slug: string, photoUrl: string | null): string[] {
+// Sources photo d'un député, dans l'ordre d'essai (cascade en cas d'échec de chargement) :
+// 1) photo Wikimedia Commons HD si disponible (photo_url enrichi, ~800 px, net) ;
+// 2) image officielle AN via an_id (miniature carrée ~240 px, repli propre) ;
+// 3) tout autre photo_url stocké.
+// NB : nosdeputes.fr est écarté — il ne renvoie plus qu'un placeholder vide (cercle noir).
+const isHdPhoto = (u: string | null): u is string => !!u && /wikimedia\.org|wikipedia\.org|commons/i.test(u);
+
+export function deputyPhotoSources(anId: string | null, slug: string, photoUrl: string | null): string[] {
+  const out: string[] = [];
+  if (isHdPhoto(photoUrl)) out.push(photoUrl);
   if (anId) {
     const id = anId.replace("PA", "");
-    return [
-      `https://www.assemblee-nationale.fr/dyn/static/tribun/17/photos/carre/${id}.jpg`,
-      `https://www.nosdeputes.fr/depute/photo/${slug}/250`,
-      `https://www.assemblee-nationale.fr/dyn/static/tribun/photos/carre/${id}.jpg`,
-    ];
+    out.push(`https://www.assemblee-nationale.fr/dyn/static/tribun/17/photos/carre/${id}.jpg`);
+    out.push(`https://www.assemblee-nationale.fr/dyn/static/tribun/photos/carre/${id}.jpg`);
   }
-  if (photoUrl) return [photoUrl];
-  return [`https://www.nosdeputes.fr/depute/photo/${slug}/250`];
+  if (photoUrl && !out.includes(photoUrl)) out.push(photoUrl);
+  return out.length ? out : [`https://www.assemblee-nationale.fr/dyn/static/tribun/17/photos/carre/0.jpg`];
 }
 
 function makeInitials(first: string, last: string): string {

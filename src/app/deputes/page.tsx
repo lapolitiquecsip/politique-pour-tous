@@ -24,6 +24,7 @@ export default async function DeputesPage() {
     constituencyNumber: d.constituency_number,
     anId: d.an_id,
     slug: d.slug,
+    photoUrl: d.photo_url || null,
   }));
 
   return (

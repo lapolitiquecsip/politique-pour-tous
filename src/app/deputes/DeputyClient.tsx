@@ -8,6 +8,7 @@ import FranceMap from "@/components/deputies/FranceMap";
 import { Deputy } from "@/components/deputies/DeputyCard";
 import DeputyCard from "@/components/deputies/DeputyCard";
 import { generateSlug } from "@/lib/slug-generator";
+import { deputyPhotoSources } from "@/lib/initiators";
 import { getDepartmentName } from "@/lib/department-mapping";
 import { motion, AnimatePresence } from "framer-motion";
 import { Map, List, Users, Landmark, ChevronRight, Loader2, MapPin, X } from "lucide-react";
@@ -236,16 +237,11 @@ export default function DeputyClient({ initialDeputies }: { initialDeputies: Dep
 
 function SidebarDeputyItem({ deputy, router }: { deputy: Deputy; router: any }) {
   const slug = deputy.slug || generateSlug(deputy.firstName, deputy.lastName);
-  const anImageId = deputy.anId ? deputy.anId.replace('PA', '') : null;
 
-  const sources = useMemo(() => {
-    if (!anImageId) return [`https://www.nosdeputes.fr/depute/photo/${slug}/250`];
-    return [
-      `https://www.assemblee-nationale.fr/dyn/static/tribun/17/photos/carre/${anImageId}.jpg`,
-      `https://www.nosdeputes.fr/depute/photo/${slug}/250`,
-      `https://www.assemblee-nationale.fr/dyn/static/tribun/photos/carre/${anImageId}.jpg`,
-    ];
-  }, [anImageId, slug]);
+  const sources = useMemo(
+    () => deputyPhotoSources(deputy.anId ?? null, slug, (deputy as any).photoUrl ?? null),
+    [deputy.anId, slug]
+  );
 
   const [srcIndex, setSrcIndex] = useState(0);
   const [imgError, setImgError] = useState(false);

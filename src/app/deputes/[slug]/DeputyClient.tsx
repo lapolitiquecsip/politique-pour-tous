@@ -45,6 +45,7 @@ import StructuredBio, { hasStructuredBio } from "@/components/shared/StructuredB
 import InstitutionalRoleBanner from "@/components/shared/InstitutionalRoleBanner";
 import InitiativeRank from "@/components/shared/InitiativeRank";
 import { useGlossary } from "@/components/providers/GlossaryProvider";
+import { deputyPhotoSources } from "@/lib/initiators";
 
 // Vote position formatting helper
 const getVoteDisplay = (position: string) => {
@@ -258,15 +259,10 @@ export default function DeputyDetailPage({ params, embedded }: { params: Promise
       .map(word => word.charAt(0).toUpperCase() + word.slice(1))
       .join(" ");
 
-  const anImageId = deputy?.an_id ? deputy.an_id.replace('PA', '') : null;
-  const sources = useMemo(() => {
-    if (!anImageId) return [`https://www.nosdeputes.fr/depute/photo/${slug}/250`];
-    return [
-      `https://www.assemblee-nationale.fr/dyn/static/tribun/17/photos/carre/${anImageId}.jpg`,
-      `https://www.nosdeputes.fr/depute/photo/${slug}/250`,
-      `https://www.assemblee-nationale.fr/dyn/static/tribun/photos/carre/${anImageId}.jpg`,
-    ];
-  }, [anImageId, slug]);
+  const sources = useMemo(
+    () => deputyPhotoSources(deputy?.an_id ?? null, slug, deputy?.photo_url ?? null),
+    [deputy?.an_id, slug, deputy?.photo_url]
+  );
 
   const [srcIndex, setSrcIndex] = useState(0);
   const [imgError, setImgError] = useState(false);

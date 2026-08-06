@@ -5,6 +5,7 @@ import Link from "next/link";
 import { ChevronRight } from "lucide-react";
 import { generateSlug } from "@/lib/slug-generator";
 import { getFullPartyName } from "@/lib/party-utils";
+import { deputyPhotoSources } from "@/lib/initiators";
 
 export interface Deputy {
   id: string;
@@ -15,6 +16,7 @@ export interface Deputy {
   constituencyNumber: number;
   slug?: string;
   anId?: string;
+  photoUrl?: string | null;
 }
 
 const partyColors: Record<string, string> = {
@@ -33,17 +35,10 @@ export const DeputyCard = memo(function DeputyCard({ deputy }: { deputy: Deputy 
   const initials = `${deputy.firstName.charAt(0)}${deputy.lastName.charAt(0)}`;
   const slug = deputy.slug || generateSlug(deputy.firstName, deputy.lastName);
   
-  // Official Assembly Image (Primary) -> Fallback to nosdeputes.fr -> Fallback archive
-  const anImageId = deputy.anId ? deputy.anId.replace('PA', '') : null;
-
-  const sources = useMemo(() => {
-    if (!anImageId) return [`https://www.nosdeputes.fr/depute/photo/${slug}/250`];
-    return [
-      `https://www.assemblee-nationale.fr/dyn/static/tribun/17/photos/carre/${anImageId}.jpg`,
-      `https://www.nosdeputes.fr/depute/photo/${slug}/250`,
-      `https://www.assemblee-nationale.fr/dyn/static/tribun/photos/carre/${anImageId}.jpg`,
-    ];
-  }, [anImageId, slug]);
+  const sources = useMemo(
+    () => deputyPhotoSources(deputy.anId ?? null, slug, deputy.photoUrl ?? null),
+    [deputy.anId, slug, deputy.photoUrl]
+  );
 
   const [srcIndex, setSrcIndex] = useState(0);
   const [imgError, setImgError] = useState(false);

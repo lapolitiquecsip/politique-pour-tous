@@ -555,7 +555,7 @@ function CandidatesContent() {
             <p className="mt-1 text-sm">Les nouveaux candidats déclarés sont ajoutés automatiquement chaque jour.</p>
           </div>
         ) : (
-          <div className="grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-3">
+          <div className="grid grid-cols-2 gap-4 sm:grid-cols-3 lg:grid-cols-4">
             {filtered.map((c, i) => {
               const s = sideOf(c);
               return (
@@ -571,26 +571,26 @@ function CandidatesContent() {
                     rotate: { duration: 4 + (i % 5) * 0.5, repeat: Infinity, ease: "easeInOut", delay: (i % 6) * 0.25 },
                   }}
                   whileHover={{ scale: 1.05, rotate: 0, transition: { duration: 0.2 } }}
-                  className={`group overflow-hidden rounded-[2rem] border-b-[6px] bg-white text-left shadow-xl shadow-slate-900/10 ring-1 ring-slate-200 transition-shadow hover:shadow-2xl ${s.borderb}`}
+                  className={`group overflow-hidden rounded-2xl border-b-4 bg-white text-left shadow-lg shadow-slate-900/10 ring-1 ring-slate-200 transition-shadow hover:shadow-xl ${s.borderb}`}
                 >
                   <div className="relative">
                     {/* Photo claire, sans voile sombre, cadrage portrait centré sur le visage. */}
-                    <CandidateAvatar c={c} className="aspect-[4/5] w-full text-5xl" />
-                    <span className={`absolute left-4 top-4 rounded-full ${s.badge} px-3 py-1 text-[10px] font-black uppercase tracking-widest text-white shadow-lg ring-1 ring-white/30`}>{s.label}</span>
+                    <CandidateAvatar c={c} className="aspect-[4/5] w-full text-3xl" />
+                    <span className={`absolute left-2.5 top-2.5 rounded-full ${s.badge} px-2 py-0.5 text-[8px] font-black uppercase tracking-widest text-white shadow-lg ring-1 ring-white/30`}>{s.label}</span>
                     {c.category?.startsWith("Primaire") && (
-                      <span className="absolute right-3 top-3 inline-flex items-center gap-1.5 rounded-full bg-gradient-to-br from-amber-300 via-amber-400 to-orange-500 px-3 py-1.5 text-[10px] font-black uppercase tracking-wider text-white shadow-lg shadow-orange-500/40 ring-1 ring-white/50 backdrop-blur-sm">
-                        <Vote size={12} strokeWidth={2.5} /> Primaire
+                      <span className="absolute right-2 top-2 inline-flex items-center gap-1 rounded-full bg-gradient-to-br from-amber-300 via-amber-400 to-orange-500 px-2 py-0.5 text-[8px] font-black uppercase tracking-wider text-white shadow-lg shadow-orange-500/40 ring-1 ring-white/50 backdrop-blur-sm">
+                        <Vote size={10} strokeWidth={2.5} /> Primaire
                       </span>
                     )}
                   </div>
                   {/* Bandeau plein coloré façon bulle FAQ : nom + parti en blanc. */}
-                  <div className={`bg-gradient-to-br ${s.from} ${s.to} px-5 py-4 text-white`}>
-                    <h3 className="text-2xl font-staatliches uppercase leading-none drop-shadow-sm">{c.full_name}</h3>
-                    {c.party && <p className="mt-1 text-sm font-bold text-white/85">{c.party}</p>}
+                  <div className={`bg-gradient-to-br ${s.from} ${s.to} px-3.5 py-2.5 text-white`}>
+                    <h3 className="text-lg font-staatliches uppercase leading-none drop-shadow-sm">{c.full_name}</h3>
+                    {c.party && <p className="mt-0.5 text-xs font-bold text-white/85">{c.party}</p>}
                   </div>
-                  <div className="p-5">
-                    {c.summary && <p className="line-clamp-2 text-sm leading-6 text-slate-600">{c.summary}</p>}
-                    <span className={`mt-4 inline-flex items-center gap-1.5 rounded-full bg-gradient-to-r ${s.from} ${s.to} px-4 py-2 text-xs font-black uppercase tracking-widest text-white shadow-md transition-transform group-hover:translate-x-0.5`}>Voir la fiche →</span>
+                  <div className="p-3.5">
+                    {c.summary && <p className="line-clamp-2 text-xs leading-5 text-slate-600">{c.summary}</p>}
+                    <span className={`mt-3 inline-flex items-center gap-1 rounded-full bg-gradient-to-r ${s.from} ${s.to} px-3 py-1.5 text-[10px] font-black uppercase tracking-widest text-white shadow-md transition-transform group-hover:translate-x-0.5`}>Voir la fiche →</span>
                   </div>
                 </motion.button>
               );

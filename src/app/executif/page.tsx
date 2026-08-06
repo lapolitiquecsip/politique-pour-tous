@@ -370,6 +370,34 @@ const PM_TIMELINE = [
   { slug: "sebastien-lecornu", name: "Sébastien Lecornu", period: "depuis 2025" },
 ];
 
+// Section repliable : l'utilisateur ouvre chaque partie de la page s'il le souhaite (fermé par défaut).
+function CollapsibleSection({ title, subtitle, icon, defaultOpen = false, children }: { title: string; subtitle?: string; icon?: React.ReactNode; defaultOpen?: boolean; children: React.ReactNode }) {
+  const [open, setOpen] = useState(defaultOpen);
+  return (
+    <section className="overflow-hidden rounded-[2rem] border border-slate-200 bg-white">
+      <button
+        onClick={() => setOpen(o => !o)}
+        className="flex w-full items-center justify-between gap-4 p-6 text-left transition-colors hover:bg-amber-50/40"
+        aria-expanded={open}
+      >
+        <div className="flex items-center gap-4">
+          {icon && <span className="flex h-11 w-11 shrink-0 items-center justify-center rounded-2xl bg-gradient-to-br from-amber-500 to-orange-500 text-white shadow-md">{icon}</span>}
+          <div>
+            <h2 className="text-2xl font-staatliches uppercase tracking-tight text-slate-900">{title}</h2>
+            {subtitle && <p className="mt-0.5 text-sm text-slate-500">{subtitle}</p>}
+          </div>
+        </div>
+        <span className={`flex h-9 w-9 shrink-0 items-center justify-center rounded-full bg-slate-100 text-slate-500 transition-transform ${open ? "rotate-180" : ""}`}>
+          <ChevronDown size={18} />
+        </span>
+      </button>
+      <motion.div initial={false} animate={{ height: open ? "auto" : 0, opacity: open ? 1 : 0 }} transition={{ duration: 0.25, ease: "circOut" }} className="overflow-hidden">
+        <div className="border-t border-slate-100 p-5 md:p-6">{children}</div>
+      </motion.div>
+    </section>
+  );
+}
+
 export default function ExecutifPage() {
   const [search, setSearch] = useState("");
   const [govtNews, setGovtNews] = useState<any[]>([]);
@@ -505,52 +533,47 @@ export default function ExecutifPage() {
         <div className="grid grid-cols-1 lg:grid-cols-12 gap-8">
           
           {/* MAIN CONTENT AREA */}
-          <div className="lg:col-span-8 space-y-12">
+          <div className="lg:col-span-8 space-y-6">
 
             {/* PRÉSIDENT DE LA RÉPUBLIQUE — chef de l'exécutif, donc en tête */}
-            <PresidentSection photoUrl={photoBySlug['emmanuel-macron']} />
+            <CollapsibleSection title="Le Président de la République" subtitle="Chef de l'exécutif : rôle, agenda et actualité" icon={<Landmark size={20} />} defaultOpen>
+              <PresidentSection photoUrl={photoBySlug['emmanuel-macron']} />
+            </CollapsibleSection>
 
             {/* DETTE & DÉPENSES PUBLIQUES — compteur en direct (extrapolé de l'INSEE) + comparaisons */}
-            <section className="my-4 rounded-[2.5rem] border border-slate-200 bg-slate-50 py-8">
+            <CollapsibleSection title="Dette & dépenses publiques" subtitle="Comptes de l'État en direct, sourcés (INSEE)" icon={<TrendingUp size={20} />}>
               <PublicFinancePanel />
-            </section>
+            </CollapsibleSection>
 
             {/* PROGRAMME 2022 + AVANCEMENT (engagements officiels, avancement evalue par IA) */}
-            <ProgramSection />
+            <CollapsibleSection title="Le programme et son avancement" subtitle="Les engagements de campagne et leur suivi factuel" icon={<ScrollText size={20} />}>
+              <ProgramSection />
+            </CollapsibleSection>
 
             {/* FIL VIDEO (chaine YouTube officielle de l Elysee) */}
-            <VideoFeed />
+            <CollapsibleSection title="Le fil vidéo de l'Élysée" subtitle="Chaîne YouTube officielle de la Présidence" icon={<Newspaper size={20} />}>
+              <VideoFeed />
+            </CollapsibleSection>
 
             {/* SEARCH & MINISTERS SECTION */}
-            <section className="space-y-8">
-              <div className="flex flex-col md:flex-row gap-6 items-center justify-between">
-                <h2 className="text-3xl font-staatliches uppercase tracking-wider text-slate-900">
-                  Les Membres du <span className="text-transparent bg-clip-text bg-gradient-to-r from-amber-500 via-orange-500 to-yellow-500">Gouvernement</span>
-                </h2>
+            <CollapsibleSection title="Les membres du Gouvernement" subtitle="Ministres en poste : rôle, ministère et budget" icon={<Users size={20} />}>
+              <div className="space-y-8">
                 <div className="relative w-full md:max-w-xs">
                   <Search className="absolute left-4 top-1/2 -translate-y-1/2 text-slate-400" size={16} />
-                  <input 
+                  <input
                     type="text"
-                    placeholder="Rechercher..."
+                    placeholder="Rechercher un ministre..."
                     value={search}
                     onChange={(e) => setSearch(e.target.value)}
                     className="w-full pl-10 pr-4 py-3 rounded-2xl bg-white border border-slate-200 focus:ring-2 focus:ring-blue-500 outline-none transition-all shadow-sm text-sm text-slate-900"
                   />
                 </div>
+                <MinisterStagger items={filteredMinisters} />
               </div>
-
-              <MinisterStagger items={filteredMinisters} />
-            </section>
+            </CollapsibleSection>
 
             {/* PREMIERS MINISTRES DEPUIS 2017 */}
-            <section className="bg-white p-8 md:p-12 rounded-[3rem] border border-slate-200">
-              <div className="mb-8">
-                <p className="text-amber-600 font-black text-xs uppercase tracking-widest mb-2">Depuis 2017</p>
-                <h2 className="text-3xl md:text-4xl font-staatliches uppercase tracking-tight text-slate-900">
-                  Les <span className="text-transparent bg-clip-text bg-gradient-to-r from-amber-500 via-orange-500 to-yellow-500">Premiers ministres</span>
-                </h2>
-                <p className="mt-2 text-slate-500 text-sm">Cliquez sur un nom pour voir sa fiche détaillée et son bilan.</p>
-              </div>
+            <CollapsibleSection title="Les Premiers ministres depuis 2017" subtitle="Cliquez sur un nom pour voir sa fiche et son bilan" icon={<Users size={20} />}>
               <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3">
                 {PM_TIMELINE.map((pm, i) => (
                   <Link
@@ -574,7 +597,7 @@ export default function ExecutifPage() {
                   </Link>
                 ))}
               </div>
-            </section>
+            </CollapsibleSection>
 
           </div>
 

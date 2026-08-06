@@ -1048,6 +1048,27 @@ export const api = {
     return null;
   },
 
+  // Brique #3 — tags d'enjeux des scrutins (les "actes"). Filtré au seuil de confiance 0.7
+  // (mieux vaut un filtre incomplet qu'un vote mal classé). Renvoie une map scrutin_id -> [slugs].
+  getScrutinIssues: async (scrutinIds: (string | number)[], minConfidence = 0.7) => {
+    const ids = [...new Set(scrutinIds.map(String))].filter(Boolean);
+    const map: Record<string, string[]> = {};
+    if (!ids.length) return map;
+    try {
+      for (let i = 0; i < ids.length; i += 300) {
+        const chunk = ids.slice(i, i + 300);
+        const { data, error } = await supabase
+          .from('scrutin_issues')
+          .select('scrutin_id, issue_slug, confidence')
+          .in('scrutin_id', chunk)
+          .gte('confidence', minConfidence);
+        if (error) { console.warn('API Warning (ScrutinIssues):', error.message); continue; }
+        for (const r of data || []) (map[r.scrutin_id] ||= []).push(r.issue_slug);
+      }
+    } catch (e) { console.error('API Error (ScrutinIssues):', e); }
+    return map;
+  },
+
   getIssues: async () => {
     const { data, error } = await supabase.from('issues').select('*').order('sort_order');
     if (error || !data) return [];

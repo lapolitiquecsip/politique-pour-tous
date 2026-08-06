@@ -29,7 +29,8 @@ import {
   Globe,
   Layers,
   Users,
-  ArrowRight
+  ArrowRight,
+  Search
 } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
 import { api } from "@/lib/api";
@@ -79,9 +80,13 @@ export default function DeputyDetailPage({ params, embedded }: { params: Promise
   const [authoredLaws, setAuthoredLaws] = useState<any[]>([]);
   const [loadingVotes, setLoadingVotes] = useState(true);
   const [loadingAuthoredLaws, setLoadingAuthoredLaws] = useState(true);
-  const [selectedCategory, setSelectedCategory] = useState("Tout");
   const [selectedVoteForModal, setSelectedVoteForModal] = useState<any | null>(null);
   const [isVotesExpanded, setIsVotesExpanded] = useState(false);
+  // Brique #3 — filtre thématique des votes ("ce qu'il fait" par enjeu).
+  const [issues, setIssues] = useState<any[]>([]);
+  const [scrutinIssues, setScrutinIssues] = useState<Record<string, string[]>>({});
+  const [selectedIssue, setSelectedIssue] = useState<string | null>(null);
+  const [issueQuery, setIssueQuery] = useState("");
 
   // Helper to extract law info and group them
   const extractLawInfo = (objet: string) => {
@@ -151,22 +156,48 @@ export default function DeputyDetailPage({ params, embedded }: { params: Promise
       }
     });
 
+    // Attache à chaque groupe l'ensemble des enjeux de ses scrutins (les "actes" par sujet).
+    for (const g of Object.values(groups) as any[]) {
+      const set = new Set<string>();
+      const collect = (v: any) => { for (const s of scrutinIssues[String(v?.scrutins?.id)] || []) set.add(s); };
+      if (g.mainVote) collect(g.mainVote);
+      collect(g.representative);
+      for (const sv of g.subVotes) collect(sv);
+      g.issues = set;
+    }
     return Object.values(groups);
-  }, [votes]);
+  }, [votes, scrutinIssues]);
 
-  // Filtering Logic (now on the GROUPED items)
+  // Enjeux réellement présents dans les votes de cet élu (pour les puces de filtre).
+  const presentIssues = useMemo(() => {
+    const count: Record<string, number> = {};
+    for (const g of groupedVotes as any[]) for (const s of g.issues || []) count[s] = (count[s] || 0) + 1;
+    return issues
+      .filter(i => count[i.slug])
+      .map(i => ({ ...i, count: count[i.slug] }))
+      .sort((a, b) => b.count - a.count);
+  }, [groupedVotes, issues]);
+
+  // Filtering Logic (now on the GROUPED items) — par ENJEU.
   const filteredVotes = useMemo(() => {
     return groupedVotes
-      .filter(g => {
-        const matchesCategory = selectedCategory === "Tout" || g.category === selectedCategory;
-        return matchesCategory;
-      })
+      .filter((g: any) => !selectedIssue || (g.issues && g.issues.has(selectedIssue)))
       .sort((a, b) => {
         const dateA = new Date(a.date || 0).getTime();
         const dateB = new Date(b.date || 0).getTime();
         return dateB - dateA;
       });
-  }, [groupedVotes, selectedCategory]);
+  }, [groupedVotes, selectedIssue]);
+
+  // Recherche thématique : "ukraine" matche le titre OU un mot-clé grand public de l'enjeu.
+  const normTxt = (s: string) => (s || "").normalize("NFD").replace(/[̀-ͯ]/g, "").toLowerCase();
+  const issueMatches = (i: any, q: string) => {
+    const n = normTxt(q).trim();
+    if (!n) return true;
+    return normTxt(i.title).includes(n) || (i.keywords || []).some((k: string) => normTxt(k).includes(n));
+  };
+  const issueChip = (active: boolean) =>
+    `px-4 py-2 rounded-xl text-[10px] font-black uppercase tracking-widest transition-all border ${active ? "bg-red-600 text-white border-red-600 shadow-lg" : "bg-white dark:bg-slate-900 text-slate-500 border-slate-200 dark:border-slate-800 hover:border-red-500"}`;
 
   // Load real deputy and follow status
   useEffect(() => {
@@ -188,6 +219,10 @@ export default function DeputyDetailPage({ params, embedded }: { params: Promise
         const realVotes = await api.getVotesByDeputy(dbDeputy.an_id);
         setVotes(realVotes);
         setLoadingVotes(false);
+        // Tags d'enjeux des scrutins votés (les "actes" par sujet) + référentiel des enjeux.
+        const ids = realVotes.map((v: any) => v?.scrutins?.id).filter(Boolean);
+        api.getScrutinIssues(ids).then(setScrutinIssues).catch(() => {});
+        api.getIssues().then(setIssues).catch(() => {});
       }
 
       // Load authored laws
@@ -658,22 +693,28 @@ export default function DeputyDetailPage({ params, embedded }: { params: Promise
                 Retrouvez comment cet élu s&apos;est positionné sur l&apos;intégralité des textes législatifs de la législature actuelle.
               </p>
 
-              {/* FILTERS UI */}
-              {!loadingVotes && votes.length > 0 && (
-                <div className="space-y-6 mb-10">
-                  {/* Category Tabs */}
-                  <div className="flex flex-wrap gap-2 pb-2">
-                    {["Tout", "Sécurité & Justice", "Économie & Budget", "Santé & Social", "Environnement & Énergie", "Éducation & Culture", "International & Défense", "Institution & Citoyenneté", "Autre"].map((cat) => (
+              {/* FILTRE THÉMATIQUE — "ce qu'il fait" par sujet (recherche + enjeux, via scrutin_issues) */}
+              {!loadingVotes && votes.length > 0 && presentIssues.length > 0 && (
+                <div className="space-y-4 mb-10">
+                  <div className="relative max-w-md">
+                    <Search className="absolute left-4 top-1/2 -translate-y-1/2 text-slate-400" size={16} />
+                    <input
+                      type="text"
+                      value={issueQuery}
+                      onChange={(e) => setIssueQuery(e.target.value)}
+                      placeholder="Filtrer les votes par sujet (retraites, ukraine, climat…)"
+                      className="w-full pl-10 pr-4 py-3 rounded-2xl bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 focus:ring-2 focus:ring-red-500 outline-none text-sm text-slate-900 dark:text-white"
+                    />
+                  </div>
+                  <div className="flex flex-wrap gap-2">
+                    <button onClick={() => setSelectedIssue(null)} className={issueChip(!selectedIssue)}>Tous les sujets</button>
+                    {presentIssues.filter(i => issueMatches(i, issueQuery)).map(i => (
                       <button
-                        key={cat}
-                        onClick={() => setSelectedCategory(cat)}
-                        className={`px-4 py-2 rounded-xl text-[10px] font-black uppercase tracking-widest transition-all border ${
-                          selectedCategory === cat 
-                            ? "bg-red-600 text-white border-red-600 shadow-lg scale-105" 
-                            : "bg-white dark:bg-slate-900 text-slate-500 border-slate-200 dark:border-slate-800 hover:border-red-500"
-                        }`}
+                        key={i.slug}
+                        onClick={() => setSelectedIssue(selectedIssue === i.slug ? null : i.slug)}
+                        className={issueChip(selectedIssue === i.slug)}
                       >
-                        {cat}
+                        {i.title} <span className="opacity-60">· {i.count}</span>
                       </button>
                     ))}
                   </div>

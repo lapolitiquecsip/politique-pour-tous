@@ -381,7 +381,9 @@ function PositionsView({ candidates }: { candidates: Candidate[] }) {
   const categories = useMemo(() => {
     const order: string[] = [];
     const map = new Map<string, any[]>();
-    for (const i of issues) { if (!map.has(i.category)) { map.set(i.category, []); order.push(i.category); } map.get(i.category)!.push(i); }
+    // Ne montrer ici que les enjeux « comparateur candidats » (ceux qui portent une proposition
+    // Pour/Contre). Les enjeux ajoutés pour la recherche des élus (sans proposition) sont exclus.
+    for (const i of issues) { if (!i.proposition) continue; if (!map.has(i.category)) { map.set(i.category, []); order.push(i.category); } map.get(i.category)!.push(i); }
     return order.map(cat => ({ cat, items: map.get(cat)! }));
   }, [issues]);
 

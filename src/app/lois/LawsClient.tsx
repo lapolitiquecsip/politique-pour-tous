@@ -288,7 +288,7 @@ function DossierModal({ detail, loading, onClose }: { detail: LegislativeDossier
   return (
     <div className="fixed inset-0 z-50 bg-slate-950/70 p-4 md:p-10 overflow-y-auto" role="dialog" aria-modal="true">
       <div className="mx-auto max-w-5xl rounded-[2rem] bg-white shadow-2xl text-slate-900">
-        <div className="sticky top-0 z-10 flex justify-end rounded-t-[2rem] bg-white/95 p-4 backdrop-blur">
+        <div className="sticky top-0 z-10 flex justify-end rounded-t-[2rem] bg-white p-4">
           <button onClick={onClose} className="rounded-full bg-slate-100 p-3" aria-label="Fermer"><X /></button>
         </div>
         {loading ? <div className="flex min-h-80 items-center justify-center"><Loader2 className="animate-spin text-red-600" /></div> : detail && (

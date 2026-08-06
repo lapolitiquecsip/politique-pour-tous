@@ -161,7 +161,7 @@ function CandidateAvatar({ c, className }: { c: Candidate; className: string }) 
     );
   }
   // eslint-disable-next-line @next/next/no-img-element
-  return <img src={c.photo_url} alt={c.full_name} onError={() => setFailed(true)} className={`object-cover object-top ${className}`} />;
+  return <img src={c.photo_url} alt={c.full_name} onError={() => setFailed(true)} className={`object-cover object-center ${className}`} />;
 }
 
 function formatDate(value?: string | null) {
@@ -574,8 +574,8 @@ function CandidatesContent() {
                   className={`group overflow-hidden rounded-[2rem] border-b-[6px] bg-white text-left shadow-xl shadow-slate-900/10 ring-1 ring-slate-200 transition-shadow hover:shadow-2xl ${s.borderb}`}
                 >
                   <div className="relative">
-                    {/* Photo claire, sans voile sombre. */}
-                    <CandidateAvatar c={c} className="h-60 w-full text-5xl" />
+                    {/* Photo claire, sans voile sombre, cadrage portrait centré sur le visage. */}
+                    <CandidateAvatar c={c} className="aspect-[4/5] w-full text-5xl" />
                     <span className={`absolute left-4 top-4 rounded-full ${s.badge} px-3 py-1 text-[10px] font-black uppercase tracking-widest text-white shadow-lg ring-1 ring-white/30`}>{s.label}</span>
                     {c.category?.startsWith("Primaire") && (
                       <span className="absolute right-3 top-3 inline-flex items-center gap-1.5 rounded-full bg-gradient-to-br from-amber-300 via-amber-400 to-orange-500 px-3 py-1.5 text-[10px] font-black uppercase tracking-wider text-white shadow-lg shadow-orange-500/40 ring-1 ring-white/50 backdrop-blur-sm">

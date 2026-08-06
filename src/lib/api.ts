@@ -266,6 +266,26 @@ export const api = {
     return data || [];
   },
 
+  // Brique #4 — fil d'actualité par entité (ministère, département…). Renvoie [] si la table
+  // n'existe pas encore ou est vide (composant masqué côté front).
+  getEntityFeed: async (entityType: string, entityId: string, limit = 12) => {
+    try {
+      const { data, error } = await supabase
+        .from('entity_feed')
+        .select('*')
+        .eq('entity_type', entityType)
+        .eq('entity_id', entityId)
+        .order('published_at', { ascending: false, nullsFirst: false })
+        .order('created_at', { ascending: false })
+        .limit(limit);
+      if (error) { console.warn('API Warning (EntityFeed):', error.message); return []; }
+      return data || [];
+    } catch (e) {
+      console.error('API Error (EntityFeed):', e);
+      return [];
+    }
+  },
+
   getContent: async (limit = 10, institution?: string) => {
     try {
       let query = supabase.from('content').select('*').limit(limit).order('date_publication', { ascending: false }).order('created_at', { ascending: false });

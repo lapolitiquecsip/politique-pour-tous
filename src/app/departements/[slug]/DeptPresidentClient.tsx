@@ -4,6 +4,7 @@ import { useState } from "react";
 import Link from "next/link";
 import { ArrowLeft, Star, ShieldCheck, Briefcase, GraduationCap, Users, MapPin } from "lucide-react";
 import LegalStatusModal from "@/components/deputies/LegalStatusModal";
+import EntityNewsFeed from "@/components/shared/EntityNewsFeed";
 
 const BIO_FIELDS: Array<[string, string, string]> = [
   ["parcours", "Parcours politique", "text-red-600"],
@@ -127,6 +128,12 @@ export default function DeptPresidentClient({ p }: { p: any }) {
           </div>
         </div>
       </div>
+
+      {p.dep_code && (
+        <div className="container mx-auto max-w-5xl px-4 pb-10">
+          <EntityNewsFeed entityType="department" entityId={p.dep_code} />
+        </div>
+      )}
 
       <LegalStatusModal isOpen={showLegal} onClose={() => setShowLegal(false)} deputy={legalPerson} />
     </main>

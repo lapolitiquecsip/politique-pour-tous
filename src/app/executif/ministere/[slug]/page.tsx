@@ -7,6 +7,7 @@ import Link from 'next/link';
 import MinisterImage from '@/components/executif/MinisterImage';
 import { cleanMinistryName, findMinistryBudget } from '@/lib/executif-utils';
 import { CircleDollarSign, ExternalLink } from 'lucide-react';
+import EntityNewsFeed from '@/components/shared/EntityNewsFeed';
 
 const ministerSlug = (name: string) =>
   (name || "").normalize("NFD").replace(/[̀-ͯ]/g, "").toLowerCase().replace(/^(m\.|mme\.?)\s*/, "").replace(/[^a-z0-9]+/g, "-").replace(/(^-|-$)/g, "");
@@ -131,6 +132,9 @@ export default async function MinistryPage({ params }: { params: Promise<{ slug:
             </div>
           </div>
         </Link>
+
+        {/* FIL D'ACTUALITÉ DE L'INSTITUTION (#4) — masqué tant qu'il n'y a pas d'actu */}
+        <EntityNewsFeed entityType="ministry" entityId={slug} />
 
         {/* BUDGET OFFICIEL DU MINISTÈRE */}
         {ministryBudget && (

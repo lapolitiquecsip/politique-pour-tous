@@ -478,7 +478,7 @@ export const api = {
   getSenatorVotes: async (matricule: string | null, firstName?: string, lastName?: string, limit = 500) => {
     let base = supabase
       .from('legislative_votes')
-      .select('id, position, legislative_scrutins!inner(title, explanation, voted_at, chamber)')
+      .select('id, position, legislative_scrutins!inner(id, title, explanation, voted_at, chamber)')
       .eq('legislative_scrutins.chamber', 'SENAT')
       .limit(1000);
     let data: any[] | null = null;
@@ -490,7 +490,7 @@ export const api = {
       const name = `${firstName || ''} ${lastName || ''}`.trim();
       const res = await supabase
         .from('legislative_votes')
-        .select('id, position, legislative_scrutins!inner(title, explanation, voted_at, chamber)')
+        .select('id, position, legislative_scrutins!inner(id, title, explanation, voted_at, chamber)')
         .ilike('voter_name', name)
         .eq('legislative_scrutins.chamber', 'SENAT')
         .limit(1000);
@@ -510,6 +510,7 @@ export const api = {
         const d = sc.voted_at ? new Date(sc.voted_at) : null;
         return {
           id: r.id,
+          scrutin_id: sc.id || null,
           title: sc.title || 'Scrutin',
           explanation: sc.explanation || null,
           _ts: d ? d.getTime() : 0,

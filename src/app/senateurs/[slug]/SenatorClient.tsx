@@ -15,7 +15,8 @@ import {
   ChevronDown,
   Quote,
   Users,
-  ArrowRight
+  ArrowRight,
+  Search
 } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
 import { usePremium } from "@/lib/hooks/usePremium";
@@ -51,11 +52,38 @@ export default function SenatorClient({ senator, embedded }: { senator: any; emb
   const name = `${senator.first_name} ${senator.last_name}`;
   // Vrais votes du Sénat (rapprochés par nom + chambre), plus de données factices.
   const [votes, setVotes] = useState<any[]>([]);
+  // Brique #3 — filtre thématique des votes du Sénat ("ce qu'il fait" par enjeu).
+  const [issues, setIssues] = useState<any[]>([]);
+  const [scrutinIssues, setScrutinIssues] = useState<Record<string, string[]>>({});
+  const [selectedIssue, setSelectedIssue] = useState<string | null>(null);
+  const [issueQuery, setIssueQuery] = useState("");
   useEffect(() => {
     api.getSenatorVotes(senator.senate_matricule || null, senator.first_name, senator.last_name, 1000)
-      .then(v => setVotes(v as any[]))
+      .then((v: any[]) => {
+        setVotes(v);
+        api.getScrutinIssues(v.map(x => x?.scrutin_id).filter(Boolean)).then(setScrutinIssues).catch(() => {});
+      })
       .catch(() => setVotes([]));
+    api.getIssues().then(setIssues).catch(() => {});
   }, [senator.senate_matricule, senator.first_name, senator.last_name]);
+
+  const normTxt = (s: string) => (s || "").normalize("NFD").replace(/[̀-ͯ]/g, "").toLowerCase();
+  const issueMatches = (i: any, q: string) => {
+    const n = normTxt(q).trim();
+    if (!n) return true;
+    return normTxt(i.title).includes(n) || (i.keywords || []).some((k: string) => normTxt(k).includes(n));
+  };
+  const issueChip = (active: boolean) =>
+    `px-4 py-2 rounded-xl text-[10px] font-black uppercase tracking-widest transition-all border ${active ? "bg-amber-600 text-white border-amber-600 shadow-lg" : "bg-white dark:bg-slate-900 text-slate-500 border-slate-200 dark:border-slate-800 hover:border-amber-500"}`;
+  const presentIssues = useMemo(() => {
+    const count: Record<string, number> = {};
+    for (const v of votes) for (const s of scrutinIssues[String(v.scrutin_id)] || []) count[s] = (count[s] || 0) + 1;
+    return issues.filter(i => count[i.slug]).map(i => ({ ...i, count: count[i.slug] })).sort((a, b) => b.count - a.count);
+  }, [votes, scrutinIssues, issues]);
+  const filteredVotes = useMemo(
+    () => votes.filter(v => !selectedIssue || (scrutinIssues[String(v.scrutin_id)] || []).includes(selectedIssue)),
+    [votes, scrutinIssues, selectedIssue]
+  );
 
   return (
     <div className="min-h-screen bg-slate-50 dark:bg-slate-950 pb-20">
@@ -302,13 +330,41 @@ export default function SenatorClient({ senator, embedded }: { senator: any; emb
               <h2 className="text-4xl font-staatliches uppercase tracking-tight text-slate-900 dark:text-white mb-6">
                 Positions <span className="text-amber-600">législatives</span>
               </h2>
+
+              {/* FILTRE THÉMATIQUE — "ce qu'il fait" par sujet (via scrutin_issues) */}
+              {presentIssues.length > 0 && (
+                <div className="space-y-4 mb-8">
+                  <div className="relative max-w-md">
+                    <Search className="absolute left-4 top-1/2 -translate-y-1/2 text-slate-400" size={16} />
+                    <input
+                      type="text"
+                      value={issueQuery}
+                      onChange={(e) => setIssueQuery(e.target.value)}
+                      placeholder="Filtrer les votes par sujet (retraites, ukraine, climat…)"
+                      className="w-full pl-10 pr-4 py-3 rounded-2xl bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 focus:ring-2 focus:ring-amber-500 outline-none text-sm text-slate-900 dark:text-white"
+                    />
+                  </div>
+                  <div className="flex flex-wrap gap-2">
+                    <button onClick={() => setSelectedIssue(null)} className={issueChip(!selectedIssue)}>Tous les sujets</button>
+                    {presentIssues.filter(i => issueMatches(i, issueQuery)).map(i => (
+                      <button key={i.slug} onClick={() => setSelectedIssue(selectedIssue === i.slug ? null : i.slug)} className={issueChip(selectedIssue === i.slug)}>
+                        {i.title} <span className="opacity-60">· {i.count}</span>
+                      </button>
+                    ))}
+                  </div>
+                </div>
+              )}
+
               <div className="space-y-4">
                 {votes.length === 0 && (
                   <div className="rounded-[2rem] border border-dashed border-slate-200 bg-white p-8 text-center text-sm italic text-slate-400">
                     Aucun scrutin public récent au Sénat pour cet élu, ou vote non encore synchronisé.
                   </div>
                 )}
-                {votes.map((vote: any) => (
+                {votes.length > 0 && filteredVotes.length === 0 && (
+                  <div className="rounded-[2rem] border border-slate-200 bg-white p-8 text-center text-sm text-slate-500">Aucun vote sur ce sujet.</div>
+                )}
+                {filteredVotes.map((vote: any) => (
                   <div
                     key={vote.id}
                     className="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-[2rem] p-6 group hover:border-amber-500 transition-all"

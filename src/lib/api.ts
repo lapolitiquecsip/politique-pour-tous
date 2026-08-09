@@ -1070,6 +1070,22 @@ export const api = {
     return map;
   },
 
+  // Brique #3 — positions déclaratives ("ce qu'il dit") par enjeu. Renvoie une map issue_slug -> position.
+  getEntityPositions: async (entityType: string, entityId: string) => {
+    try {
+      const { data, error } = await supabase
+        .from('entity_positions')
+        .select('*')
+        .eq('entity_type', entityType)
+        .eq('entity_id', entityId);
+      if (error || !data) return {} as Record<string, any>;
+      return Object.fromEntries(data.map((p: any) => [p.issue_slug, p])) as Record<string, any>;
+    } catch (e) {
+      console.error('API Error (EntityPositions):', e);
+      return {} as Record<string, any>;
+    }
+  },
+
   getIssues: async () => {
     const { data, error } = await supabase.from('issues').select('*').order('sort_order');
     if (error || !data) return [];

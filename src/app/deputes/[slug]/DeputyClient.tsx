@@ -87,6 +87,7 @@ export default function DeputyDetailPage({ params, embedded }: { params: Promise
   const [scrutinIssues, setScrutinIssues] = useState<Record<string, string[]>>({});
   const [selectedIssue, setSelectedIssue] = useState<string | null>(null);
   const [issueQuery, setIssueQuery] = useState("");
+  const [positions, setPositions] = useState<Record<string, any>>({}); // "ce qu'il dit" par enjeu
 
   // Helper to extract law info and group them
   const extractLawInfo = (objet: string) => {
@@ -224,6 +225,8 @@ export default function DeputyDetailPage({ params, embedded }: { params: Promise
         api.getScrutinIssues(ids).then(setScrutinIssues).catch(() => {});
         api.getIssues().then(setIssues).catch(() => {});
       }
+      // "Ce qu'il dit" : positions déclaratives (questions écrites) par enjeu.
+      if (dbDeputy?.slug) api.getEntityPositions("deputy", dbDeputy.slug).then(setPositions).catch(() => {});
 
       // Load authored laws
       if (dbDeputy?.first_name) {
@@ -720,6 +723,45 @@ export default function DeputyDetailPage({ params, embedded }: { params: Promise
                   </div>
                 </div>
               )}
+
+              {/* PAROLE vs ACTES — quand un sujet est choisi : "ce qu'il DIT" (questions écrites) */}
+              {selectedIssue && (() => {
+                const pos = positions[selectedIssue];
+                const label = (issues.find(i => i.slug === selectedIssue)?.title) || "ce sujet";
+                const STANCE: Record<string, { txt: string; cls: string }> = {
+                  pour: { txt: "Plutôt favorable", cls: "bg-emerald-100 text-emerald-700" },
+                  contre: { txt: "Plutôt opposé", cls: "bg-red-100 text-red-700" },
+                  nuance: { txt: "Position nuancée", cls: "bg-amber-100 text-amber-700" },
+                  inconnu: { txt: "Position non tranchée", cls: "bg-slate-100 text-slate-600" },
+                };
+                const st = STANCE[pos?.stance] || STANCE.inconnu;
+                return (
+                  <div className="mb-8 rounded-[2rem] border border-slate-200 bg-white p-6 dark:border-slate-800 dark:bg-slate-900">
+                    <div className="mb-3 flex flex-wrap items-center gap-3">
+                      <span className="flex items-center gap-2 text-[11px] font-black uppercase tracking-widest text-red-600"><Quote className="h-4 w-4" /> Ce qu'il·elle dit — {label}</span>
+                      {pos && <span className={`rounded-full px-3 py-1 text-[10px] font-black uppercase tracking-widest ${st.cls}`}>{st.txt}</span>}
+                    </div>
+                    {pos ? (
+                      <>
+                        {pos.summary && <p className="text-sm leading-relaxed text-slate-700 dark:text-slate-300">{pos.summary}</p>}
+                        {Array.isArray(pos.evidence) && pos.evidence.length > 0 && (
+                          <ul className="mt-3 space-y-1.5">
+                            {pos.evidence.slice(0, 6).map((e: any, i: number) => (
+                              <li key={i} className="flex gap-2 text-xs text-slate-600 dark:text-slate-400">
+                                <span className="mt-1.5 h-1.5 w-1.5 shrink-0 rounded-full bg-red-400" />
+                                <a href={e.url} target="_blank" rel="noopener noreferrer" className="hover:text-red-600 hover:underline">{e.excerpt}</a>
+                              </li>
+                            ))}
+                          </ul>
+                        )}
+                        <p className="mt-3 text-[10px] font-bold uppercase tracking-widest text-slate-400">Source : questions écrites au gouvernement (open data Assemblée nationale)</p>
+                      </>
+                    ) : (
+                      <p className="text-sm italic text-slate-500">Aucune prise de parole recensée sur ce sujet (questions écrites). Son <span className="font-bold">action</span> reste visible ci-dessous via ses votes.</p>
+                    )}
+                  </div>
+                );
+              })()}
             </div>
 
             <div className="space-y-4">

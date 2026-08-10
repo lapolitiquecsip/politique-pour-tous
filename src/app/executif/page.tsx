@@ -16,7 +16,10 @@ import {
   Newspaper,
   CalendarDays,
   Zap,
-  X
+  X,
+  Coins,
+  ListChecks,
+  PlayCircle
 } from "lucide-react";
 import Link from "next/link";
 import { useState, useEffect } from "react";
@@ -371,17 +374,17 @@ const PM_TIMELINE = [
 ];
 
 // Section repliable : l'utilisateur ouvre chaque partie de la page s'il le souhaite (fermé par défaut).
-function CollapsibleSection({ title, subtitle, icon, defaultOpen = false, children }: { title: string; subtitle?: string; icon?: React.ReactNode; defaultOpen?: boolean; children: React.ReactNode }) {
+function CollapsibleSection({ title, subtitle, icon, color = "from-amber-500 to-orange-500", defaultOpen = false, children }: { title: string; subtitle?: string; icon?: React.ReactNode; color?: string; defaultOpen?: boolean; children: React.ReactNode }) {
   const [open, setOpen] = useState(defaultOpen);
   return (
     <section className="overflow-hidden rounded-[2rem] border border-slate-200 bg-white">
       <button
         onClick={() => setOpen(o => !o)}
-        className="flex w-full items-center justify-between gap-4 p-6 text-left transition-colors hover:bg-amber-50/40"
+        className="flex w-full items-center justify-between gap-4 p-6 text-left transition-colors hover:bg-slate-50"
         aria-expanded={open}
       >
         <div className="flex items-center gap-4">
-          {icon && <span className="flex h-11 w-11 shrink-0 items-center justify-center rounded-2xl bg-gradient-to-br from-amber-500 to-orange-500 text-white shadow-md">{icon}</span>}
+          {icon && <span className={`flex h-12 w-12 shrink-0 items-center justify-center rounded-2xl bg-gradient-to-br ${color} text-white shadow-md`}>{icon}</span>}
           <div>
             <h2 className="text-2xl font-staatliches uppercase tracking-tight text-slate-900">{title}</h2>
             {subtitle && <p className="mt-0.5 text-sm text-slate-500">{subtitle}</p>}
@@ -536,33 +539,33 @@ export default function ExecutifPage() {
           <div className="lg:col-span-8 space-y-6">
 
             {/* PRÉSIDENT DE LA RÉPUBLIQUE — chef de l'exécutif, donc en tête */}
-            <CollapsibleSection title="Le Président de la République" subtitle="Chef de l'exécutif : rôle, agenda et actualité" icon={<Landmark size={20} />} defaultOpen>
+            <CollapsibleSection title="Le Président de la République" subtitle="Chef de l'exécutif : rôle, agenda et actualité" icon={<Landmark size={22} />} color="from-blue-600 to-indigo-700" defaultOpen>
               <PresidentSection photoUrl={photoBySlug['emmanuel-macron']} />
             </CollapsibleSection>
 
             {/* DETTE & DÉPENSES PUBLIQUES — compteur en direct (extrapolé de l'INSEE) + comparaisons */}
-            <CollapsibleSection title="Dette & dépenses publiques" subtitle="Comptes de l'État en direct, sourcés (INSEE)" icon={<TrendingUp size={20} />}>
+            <CollapsibleSection title="Dette & dépenses publiques" subtitle="Comptes de l'État en direct, sourcés (INSEE)" icon={<Coins size={22} />} color="from-emerald-500 to-teal-600">
               <PublicFinancePanel />
             </CollapsibleSection>
 
             {/* PROGRAMME 2022 + AVANCEMENT (engagements officiels, avancement evalue par IA) */}
-            <CollapsibleSection title="Le programme et son avancement" subtitle="Les engagements de campagne et leur suivi factuel" icon={<ScrollText size={20} />}>
+            <CollapsibleSection title="Le programme et son avancement" subtitle="Les engagements de campagne et leur suivi factuel" icon={<ListChecks size={22} />} color="from-amber-500 to-orange-600">
               <ProgramSection />
             </CollapsibleSection>
 
             {/* FIL VIDEO (chaine YouTube officielle de l Elysee) */}
-            <CollapsibleSection title="Le fil vidéo de l'Élysée" subtitle="Chaîne YouTube officielle de la Présidence" icon={<Newspaper size={20} />}>
+            <CollapsibleSection title="Le fil vidéo de l'Élysée" subtitle="Chaîne YouTube officielle de la Présidence" icon={<PlayCircle size={22} />} color="from-red-500 to-rose-600">
               <VideoFeed />
             </CollapsibleSection>
 
-            {/* SEARCH & MINISTERS SECTION */}
-            <CollapsibleSection title="Les membres du Gouvernement" subtitle="Ministres en poste : rôle, ministère et budget" icon={<Users size={20} />}>
+            {/* MINISTÈRES */}
+            <CollapsibleSection title="Les ministères" subtitle="Chaque ministère : périmètre, budget et ministre en poste" icon={<Building2 size={22} />} color="from-violet-600 to-fuchsia-600">
               <div className="space-y-8">
                 <div className="relative w-full md:max-w-xs">
                   <Search className="absolute left-4 top-1/2 -translate-y-1/2 text-slate-400" size={16} />
                   <input
                     type="text"
-                    placeholder="Rechercher un ministre..."
+                    placeholder="Rechercher un ministère..."
                     value={search}
                     onChange={(e) => setSearch(e.target.value)}
                     className="w-full pl-10 pr-4 py-3 rounded-2xl bg-white border border-slate-200 focus:ring-2 focus:ring-blue-500 outline-none transition-all shadow-sm text-sm text-slate-900"
@@ -573,7 +576,7 @@ export default function ExecutifPage() {
             </CollapsibleSection>
 
             {/* PREMIERS MINISTRES DEPUIS 2017 */}
-            <CollapsibleSection title="Les Premiers ministres depuis 2017" subtitle="Cliquez sur un nom pour voir sa fiche et son bilan" icon={<Users size={20} />}>
+            <CollapsibleSection title="Les Premiers ministres depuis 2017" subtitle="Cliquez sur un nom pour voir sa fiche et son bilan" icon={<Users size={22} />} color="from-sky-500 to-blue-600">
               <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3">
                 {PM_TIMELINE.map((pm, i) => (
                   <Link

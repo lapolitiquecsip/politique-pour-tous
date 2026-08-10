@@ -286,13 +286,13 @@ function DossierModal({ detail, loading, onClose }: { detail: LegislativeDossier
   const { isPremium } = usePremium();
   if (!detail && !loading) return null;
   return (
-    <div className="fixed inset-0 z-50 bg-slate-950/70 p-4 md:p-10 overflow-y-auto" role="dialog" aria-modal="true">
-      <div className="mx-auto max-w-5xl rounded-[2rem] bg-white shadow-2xl text-slate-900">
-        <div className="sticky top-0 z-10 flex justify-end rounded-t-[2rem] bg-white p-4">
-          <button onClick={onClose} className="rounded-full bg-slate-100 p-3" aria-label="Fermer"><X /></button>
-        </div>
+    <div className="fixed inset-0 z-50 flex items-start justify-center bg-slate-950/70 p-4 md:p-10" role="dialog" aria-modal="true">
+      <div className="relative mx-auto flex max-h-[calc(100dvh-2rem)] w-full max-w-5xl flex-col overflow-hidden rounded-[2rem] bg-white text-slate-900 shadow-2xl md:max-h-[calc(100dvh-5rem)]">
+        {/* Bouton fermer flottant (coin) — plus de bande blanche sticky qui recouvre le contenu au scroll */}
+        <button onClick={onClose} className="absolute right-4 top-4 z-20 rounded-full bg-slate-100 p-3 shadow-sm transition hover:bg-slate-200" aria-label="Fermer"><X /></button>
+        <div className="overflow-y-auto">
         {loading ? <div className="flex min-h-80 items-center justify-center"><Loader2 className="animate-spin text-red-600" /></div> : detail && (
-          <article className="px-6 pb-12 md:px-12">
+          <article className="px-6 pb-12 pt-16 md:px-12">
             <div className="mb-3 text-xs font-black uppercase tracking-[0.2em] text-red-600">{categoryLabel(detail.dossier.category)}</div>
             <h2 className="text-4xl font-staatliches uppercase leading-none text-slate-950 md:text-6xl">{detail.dossier.title}</h2>
             <div className="mt-5 flex flex-wrap gap-2 text-sm font-bold text-slate-600">
@@ -341,6 +341,7 @@ function DossierModal({ detail, loading, onClose }: { detail: LegislativeDossier
             <section className="mt-10"><h3 className="text-2xl font-staatliches uppercase text-slate-950">Sources officielles</h3><div className="mt-3 flex flex-col gap-2">{[...new Set([...(detail.dossier.source_urls || []), ...(detail.summary?.source_urls || []), ...(detail.promulgation?.source_url ? [detail.promulgation.source_url] : [])])].map((url: string) => <a key={url} href={url} target="_blank" rel="noreferrer" className="inline-flex items-center gap-2 text-blue-700 hover:underline"><ExternalLink size={15} />{url}</a>)}</div></section>
           </article>
         )}
+        </div>
       </div>
     </div>
   );

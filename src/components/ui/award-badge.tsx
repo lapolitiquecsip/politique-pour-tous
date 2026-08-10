@@ -1,6 +1,7 @@
 "use client";
 
 import React, { MouseEvent, useEffect, useRef, useState } from "react";
+import { usePremium } from "@/lib/hooks/usePremium";
 
 type AwardBadgeType = "golden-kitty" | "product-of-the-day" | "product-of-the-month" | "product-of-the-week";
 
@@ -44,6 +45,7 @@ export const AwardBadge = ({
   onClick,
   className = ""
 }: AwardBadgeProps) => {
+  const { isPremium } = usePremium();
   const ref = useRef<HTMLAnchorElement>(null);
   const [firstOverlayPosition, setFirstOverlayPosition] = useState<number>(0);
   const [matrix, setMatrix] = useState<string>(identityMatrix);
@@ -248,6 +250,9 @@ export const AwardBadge = ({
       return goldColors[index % goldColors.length];
     }
   };
+
+  // L'utilisateur déjà premium n'a pas à voir de bouton « Devenir premium ».
+  if (isPremium) return null;
 
   return (
     <a

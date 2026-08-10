@@ -75,10 +75,11 @@ function detectFromBio(bio: any): InstRole | null {
   for (const l of lines) {
     const nl = norm(l);
     if (/ancien|ancienne/.test(nl)) continue;
-    if (/president.* assemblee nationale/.test(nl) && current(l)) return { role: "Président·e de l'Assemblée nationale", institution: "Assemblée nationale", powers: /vice/.test(nl) ? POWERS.vicePresidentAN : POWERS.presidentAN };
-    if (/president.* senat/.test(nl) && current(l)) return { role: "Président·e du Sénat", institution: "Sénat", powers: /vice/.test(nl) ? POWERS.vicePresidentSenat : POWERS.presidentSenat };
+    // Vice-président·e d'abord (sinon « vice président du Sénat » matcherait la règle « président »).
     if (/vice president.* assemblee/.test(nl) && current(l)) return { role: "Vice-président·e de l'Assemblée nationale", institution: "Assemblée nationale", powers: POWERS.vicePresidentAN };
     if (/vice president.* senat/.test(nl) && current(l)) return { role: "Vice-président·e du Sénat", institution: "Sénat", powers: POWERS.vicePresidentSenat };
+    if (/president.* assemblee nationale/.test(nl) && !/vice/.test(nl) && current(l)) return { role: "Président·e de l'Assemblée nationale", institution: "Assemblée nationale", powers: POWERS.presidentAN };
+    if (/president.* senat/.test(nl) && !/vice/.test(nl) && current(l)) return { role: "Président·e du Sénat", institution: "Sénat", powers: POWERS.presidentSenat };
     const com = l.match(/pr[ée]sident[·e]*\s+de\s+la\s+(commission[^,.;(]+)/i);
     if (com && current(l)) return { role: `Président·e de la ${com[1].trim()}`, institution: "Commission permanente", powers: POWERS.presidentCommission };
   }

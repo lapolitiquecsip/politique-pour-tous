@@ -45,14 +45,14 @@ export default async function DeputesPage() {
       <section id="composition" className="scroll-mt-24 pt-4 pb-8">
         <HemicycleChart chamber="an" subtitle="Assemblée nationale" title="Composition de l'Assemblée" />
       </section>
-      <section id="adoptes" className="scroll-mt-24 pb-12">
-        <AdoptedTextsFeed />
-      </section>
       <section id="membres" className="scroll-mt-24">
         <MemberFinderIntro role="député" roleShort="député" accent="text-emerald-600" />
         <Suspense fallback={<div className="h-64 flex items-center justify-center">Chargement...</div>}>
           <DiscoveryClient initialDeputies={mappedDeputies} single="deputies" />
         </Suspense>
+      </section>
+      <section id="adoptes" className="scroll-mt-24 pb-12">
+        <AdoptedTextsFeed />
       </section>
       <section id="textes" className="scroll-mt-24">
         <ChamberLegislation chamber="AN" chamberLabel="Assemblée nationale" />

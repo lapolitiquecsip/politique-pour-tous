@@ -1378,12 +1378,14 @@ export const api = {
     const target = norm(name);
     const last = name.split(/\s+/).pop() || name;
 
-    const [parties, cands, mins, deps, mayors, dep2, sen2, mep2] = await Promise.all([
+    // NB : les MAIRES sont volontairement EXCLUS de ce croisement — 34 637 maires, matchés par
+    // simple nom, produisent des homonymes (ex. un sénateur renvoyé vers un maire du même nom qui
+    // est une autre personne). Sans identifiant commun fiable, on ne lie pas vers une fiche maire.
+    const [parties, cands, mins, deps, dep2, sen2, mep2] = await Promise.all([
       supabase.from('political_parties').select('slug, name, leader').ilike('leader', name),
       supabase.from('presidential_candidates').select('slug, full_name, category').ilike('full_name', name),
       supabase.from('minister_profiles').select('slug, full_name, title, ministry_name').ilike('full_name', name),
       supabase.from('department_presidents').select('slug, full_name, dep_name').ilike('full_name', name),
-      supabase.from('mayors').select('slug, full_name, commune_name, insee_code, population').ilike('full_name', name),
       supabase.from('deputies').select('slug, first_name, last_name').ilike('last_name', `%${last}%`),
       supabase.from('senators').select('slug, first_name, last_name').ilike('last_name', `%${last}%`),
       supabase.from('meps').select('slug, full_name').ilike('full_name', `%${name}%`),
@@ -1395,7 +1397,6 @@ export const api = {
     for (const c of (cands.data || []) as any[]) push(c.category?.startsWith('Primaire') ? `Candidat·e à la ${String(c.category).toLowerCase()}` : 'Candidat·e à la présidentielle 2027', 'Présidentielle', `/presidentielles-2027/?candidat=${c.slug}`, 'candidate');
     for (const p of (parties.data || []) as any[]) push(`Dirigeant·e — ${p.name}`, 'Parti', `/partis/${p.slug}`, 'party');
     for (const d of (deps.data || []) as any[]) push(`Président·e du conseil départemental (${d.dep_name})`, 'Département', `/departements/${d.slug}`, 'department');
-    for (const my of (mayors.data || []) as any[]) push(`Maire de ${my.commune_name}`, 'Commune', `/maires/app?insee=${my.insee_code}`, 'mayor');
     return roles;
   },
 

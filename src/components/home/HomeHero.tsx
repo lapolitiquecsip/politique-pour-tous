@@ -3,11 +3,15 @@
 import { motion } from "framer-motion";
 import { Vote, Coins, ShieldCheck } from "lucide-react";
 import { MarkerHighlight } from "@/components/ui/marker-highlight";
+import Link from "next/link";
 
+const MotionLink = motion(Link);
+
+// Chaque carte renvoie vers la page correspondante du site.
 const CARDS = [
-  { icon: Vote, title: "Qui vote quoi ?", text: "Le vote détaillé des députés et sénateurs sur chaque loi." },
-  { icon: Coins, title: "L'argent public ?", text: "Le budget, les dépenses et la dette de votre commune." },
-  { icon: ShieldCheck, title: "Votre élu est sincère ?", text: "Ses votes, ses prises de parole et ses promesses, confrontés." },
+  { icon: Vote, title: "Qui vote quoi ?", text: "Le vote détaillé des députés et sénateurs sur chaque loi.", href: "/deputes" },
+  { icon: Coins, title: "L'argent public ?", text: "Le budget, les dépenses et la dette de votre commune.", href: "/local" },
+  { icon: ShieldCheck, title: "Votre élu est sincère ?", text: "Ses votes, ses prises de parole et ses promesses, confrontés.", href: "/deputes" },
 ];
 
 export default function HomeHero() {
@@ -60,19 +64,21 @@ export default function HomeHero() {
         {/* 3 cartes minimalistes */}
         <div className="grid grid-cols-1 md:grid-cols-3 gap-4 w-full mb-10">
           {CARDS.map((card, i) => (
-            <motion.div
+            <MotionLink
               key={card.title}
+              href={card.href}
               initial={{ opacity: 0, y: 15 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.6, delay: 0.5 + i * 0.1 }}
-              className="flex flex-col items-center text-center gap-3 rounded-2xl border border-slate-200/70 dark:border-slate-800 bg-white dark:bg-slate-900/40 px-6 py-8"
+              whileHover={{ y: -4 }}
+              className="group flex flex-col items-center text-center gap-3 rounded-2xl border border-slate-200/70 dark:border-slate-800 bg-white dark:bg-slate-900/40 px-6 py-8 transition-shadow hover:border-slate-300 hover:shadow-lg dark:hover:border-slate-700"
             >
-              <div className="flex h-11 w-11 items-center justify-center rounded-xl bg-slate-900 dark:bg-white text-white dark:text-slate-900">
+              <div className="flex h-11 w-11 items-center justify-center rounded-xl bg-slate-900 dark:bg-white text-white dark:text-slate-900 transition-transform group-hover:scale-110">
                 <card.icon className="h-5 w-5" />
               </div>
-              <h3 className="text-base font-bold text-slate-900 dark:text-white">{card.title}</h3>
+              <h3 className="text-base font-bold text-slate-900 dark:text-white group-hover:text-red-600 transition-colors">{card.title}</h3>
               <p className="text-sm leading-relaxed text-slate-500 dark:text-slate-400">{card.text}</p>
-            </motion.div>
+            </MotionLink>
           ))}
         </div>
 

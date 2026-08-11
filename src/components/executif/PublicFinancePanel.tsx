@@ -6,7 +6,7 @@ import { TrendingUp, Users, Wallet, ExternalLink, Landmark, Coins, Percent } fro
 import { api } from "@/lib/api";
 import {
   DEBT_BASE_EUR, DEBT_BASE_DATE, DEBT_PER_SECOND, POPULATION, DEBT_RATIO_GDP, DEBT_SOURCE, DEBT_SOURCE_URL,
-  DEBT_BY_PRESIDENT, DEBT_BY_PRESIDENT_NOTE, PUBLIC_SPENDING, GOVERNANCE, BORROWING_RATES, SPENDING_BREAKDOWN,
+  DEBT_BY_PRESIDENT, DEBT_BY_PRESIDENT_NOTE, PUBLIC_SPENDING, GOVERNANCE, BORROWING_RATES, SPENDING_BREAKDOWN, PUBLIC_EMPLOYMENT_EU,
 } from "@/lib/data/publicFinance";
 
 const eur0 = (n: number) => Math.round(n).toLocaleString("fr-FR") + " €";
@@ -157,6 +157,25 @@ export default function PublicFinancePanel() {
             <a href={g.url} target="_blank" rel="noopener noreferrer" className="mt-1.5 inline-flex items-center gap-1 text-[9px] font-black uppercase tracking-widest text-slate-400 hover:text-blue-600">{g.year} · {g.source} <ExternalLink size={9} /></a>
           </div>
         ))}
+      </div>
+
+      {/* Emploi public — comparaison européenne (OCDE, base homogène) — (tâche 3) */}
+      <div className="mt-3 rounded-2xl border border-slate-200 bg-white p-5 dark:border-slate-800 dark:bg-slate-900">
+        <p className="flex flex-wrap items-center gap-1.5 text-[10px] font-black uppercase tracking-widest text-slate-500">
+          <Users size={13} /> L'emploi public en Europe
+          <span className="font-medium normal-case tracking-normal text-slate-400">· % de l'emploi total, {PUBLIC_EMPLOYMENT_EU.year}</span>
+        </p>
+        <div className="mt-4 space-y-2">
+          {(() => { const max = Math.max(...PUBLIC_EMPLOYMENT_EU.rows.map(r => r.pct)); return PUBLIC_EMPLOYMENT_EU.rows.map(r => (
+            <div key={r.label} className="flex items-center gap-3">
+              <span className={`w-24 shrink-0 text-xs ${r.self ? "font-black text-blue-700 dark:text-blue-300" : "font-bold text-slate-600 dark:text-slate-300"}`}>{r.label}</span>
+              <div className="h-2.5 flex-1 overflow-hidden rounded-full bg-slate-100 dark:bg-white/5"><div className="h-full rounded-full" style={{ width: `${(r.pct / max) * 100}%`, background: r.self ? "#2563eb" : "#93c5fd" }} /></div>
+              <span className={`w-12 text-right text-xs tabular-nums ${r.self ? "font-black text-blue-700 dark:text-blue-300" : "font-bold text-slate-700 dark:text-slate-200"}`}>{r.pct.toLocaleString("fr-FR", { minimumFractionDigits: 1 })} %</span>
+            </div>
+          )); })()}
+        </div>
+        <p className="mt-3 text-[10px] italic leading-snug text-slate-400">{PUBLIC_EMPLOYMENT_EU.note}</p>
+        <a href={PUBLIC_EMPLOYMENT_EU.sourceUrl} target="_blank" rel="noopener noreferrer" className="mt-1 inline-flex items-center gap-1 text-[9px] font-black uppercase tracking-widest text-slate-400 hover:text-blue-600">{PUBLIC_EMPLOYMENT_EU.year} · OCDE <ExternalLink size={9} /></a>
       </div>
     </section>
   );

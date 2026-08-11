@@ -6,6 +6,7 @@ import Link from "next/link";
 import { ArrowLeft, Loader2, Star, ShieldCheck, GraduationCap, Users, MapPin } from "lucide-react";
 import { api } from "@/lib/api";
 import LegalStatusModal from "@/components/deputies/LegalStatusModal";
+import EntityNewsFeed from "@/components/shared/EntityNewsFeed";
 
 const BIO_FIELDS: Array<[string, string, string]> = [
   ["parcours", "Parcours politique", "text-red-600"],
@@ -103,6 +104,9 @@ function MayorContent() {
           </div>
 
           <div className="md:col-span-2 space-y-8">
+            {/* Fil d'actualité de la commune (brique #1) — masqué tant qu'il n'y a pas d'actu */}
+            {p.insee_code && <EntityNewsFeed entityType="commune" entityId={p.insee_code} />}
+
             <section className="space-y-4">
               {(bio.formation || bio.enfants) && (
                 <div className="flex flex-wrap gap-2">

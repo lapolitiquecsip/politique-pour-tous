@@ -2,11 +2,11 @@
 
 import { useEffect, useRef, useState } from "react";
 import Link from "next/link";
-import { TrendingUp, Users, Wallet, ExternalLink, Landmark, Coins } from "lucide-react";
+import { TrendingUp, Users, Wallet, ExternalLink, Landmark, Coins, Percent } from "lucide-react";
 import { api } from "@/lib/api";
 import {
   DEBT_BASE_EUR, DEBT_BASE_DATE, DEBT_PER_SECOND, POPULATION, DEBT_RATIO_GDP, DEBT_SOURCE, DEBT_SOURCE_URL,
-  DEBT_BY_PRESIDENT, DEBT_BY_PRESIDENT_NOTE, PUBLIC_SPENDING, GOVERNANCE,
+  DEBT_BY_PRESIDENT, DEBT_BY_PRESIDENT_NOTE, PUBLIC_SPENDING, GOVERNANCE, BORROWING_RATES, SPENDING_BREAKDOWN,
 } from "@/lib/data/publicFinance";
 
 const eur0 = (n: number) => Math.round(n).toLocaleString("fr-FR") + " €";
@@ -72,6 +72,53 @@ export default function PublicFinancePanel() {
             <p className="text-sm text-slate-600 dark:text-slate-300"><span className="font-black text-slate-900 dark:text-white">{fmtMd(PUBLIC_SPENDING.deficitEur)}</span> de déficit public (2025)</p>
           </div>
         </div>
+      </div>
+
+      {/* Taux d'emprunt de l'État — comparaison européenne (tâche 1) */}
+      <div className="mt-3 rounded-2xl border border-slate-200 bg-white p-5 dark:border-slate-800 dark:bg-slate-900">
+        <p className="flex flex-wrap items-center gap-1.5 text-[10px] font-black uppercase tracking-widest text-slate-500">
+          <Percent size={13} /> À quel taux la France emprunte-t-elle ?
+          <span className="font-medium normal-case tracking-normal text-slate-400">· obligations d'État à 10 ans, {BORROWING_RATES.month}</span>
+        </p>
+        <div className="mt-4 space-y-2">
+          {(() => { const max = Math.max(...BORROWING_RATES.rows.map(r => r.pct)); return BORROWING_RATES.rows.map(r => (
+            <div key={r.label} className="flex items-center gap-3">
+              <span className={`w-24 shrink-0 text-xs ${r.self ? "font-black text-rose-700 dark:text-rose-300" : r.avg ? "font-bold italic text-slate-500" : "font-bold text-slate-600 dark:text-slate-300"}`}>{r.label}</span>
+              <div className="h-2.5 flex-1 overflow-hidden rounded-full bg-slate-100 dark:bg-white/5">
+                <div className="h-full rounded-full" style={{ width: `${(r.pct / max) * 100}%`, background: r.self ? "#e11d48" : r.avg ? "#94a3b8" : "#60a5fa" }} />
+              </div>
+              <span className={`w-14 text-right text-xs tabular-nums ${r.self ? "font-black text-rose-700 dark:text-rose-300" : "font-bold text-slate-700 dark:text-slate-200"}`}>{r.pct.toLocaleString("fr-FR", { minimumFractionDigits: 2 })} %</span>
+            </div>
+          )); })()}
+        </div>
+        <p className="mt-3 text-[11px] leading-snug text-slate-500 dark:text-slate-400">La France emprunte <span className="font-bold text-slate-700 dark:text-slate-200">plus cher</span> que l'Allemagne, l'Espagne ou la moyenne de la zone euro — proche du niveau italien. Plus le taux est élevé, plus la charge de la dette pèsera lourd les prochaines années.</p>
+        <a href={BORROWING_RATES.sourceUrl} target="_blank" rel="noopener noreferrer" className="mt-1.5 inline-flex items-center gap-1 text-[9px] font-black uppercase tracking-widest text-slate-400 hover:text-blue-600">{BORROWING_RATES.month} · Eurostat <ExternalLink size={9} /></a>
+      </div>
+
+      {/* Où va la dépense publique (toutes administrations, COFOG) — (tâche 2) */}
+      <div className="mt-3 rounded-2xl border border-slate-200 bg-white p-5 dark:border-slate-800 dark:bg-slate-900">
+        <p className="flex flex-wrap items-center gap-1.5 text-[10px] font-black uppercase tracking-widest text-slate-500">
+          <Wallet size={13} /> Où va la dépense publique ?
+          <span className="font-medium normal-case tracking-normal text-slate-400">· toutes administrations, {SPENDING_BREAKDOWN.year} · total {fmtMd(SPENDING_BREAKDOWN.totalEur)}</span>
+        </p>
+        <div className="mt-4 flex h-3 w-full overflow-hidden rounded-full">
+          {SPENDING_BREAKDOWN.items.map(it => <div key={it.label} className={it.color} style={{ width: `${(it.eur / SPENDING_BREAKDOWN.totalEur) * 100}%` }} title={it.label} />)}
+        </div>
+        <div className="mt-4 space-y-2">
+          {SPENDING_BREAKDOWN.items.map(it => (
+            <div key={it.label} className="flex items-center gap-2.5">
+              <span className={`h-3 w-3 shrink-0 rounded ${it.color}`} />
+              <div className="min-w-0 flex-1">
+                <span className="text-xs font-bold text-slate-800 dark:text-slate-200">{it.label}</span>
+                {it.sub && <span className="ml-1 text-[11px] text-slate-400">— {it.sub}</span>}
+              </div>
+              <span className="w-20 shrink-0 text-right text-xs font-black tabular-nums text-slate-900 dark:text-white">{fmtMd(it.eur)}</span>
+              <span className="w-9 shrink-0 text-right text-[11px] tabular-nums text-slate-400">{Math.round((it.eur / SPENDING_BREAKDOWN.totalEur) * 100)} %</span>
+            </div>
+          ))}
+        </div>
+        <p className="mt-3 text-[10px] italic leading-snug text-slate-400">{SPENDING_BREAKDOWN.note}</p>
+        <a href={SPENDING_BREAKDOWN.sourceUrl} target="_blank" rel="noopener noreferrer" className="mt-1 inline-flex items-center gap-1 text-[9px] font-black uppercase tracking-widest text-slate-400 hover:text-blue-600">{SPENDING_BREAKDOWN.year} · Eurostat (COFOG) <ExternalLink size={9} /></a>
       </div>
 
       {/* Hausse de la dette par président */}

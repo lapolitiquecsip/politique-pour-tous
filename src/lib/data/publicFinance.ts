@@ -33,6 +33,44 @@ export const PUBLIC_SPENDING = {
   sourceUrl: "https://www.insee.fr/fr/statistiques/8997691",
 };
 
+// --- Taux d'emprunt de l'État à 10 ans — comparaison européenne (données réelles) ---------
+// Source : Eurostat, taux d'intérêt à long terme (critère de Maastricht, obligations d'État 10 ans).
+export const BORROWING_RATES = {
+  month: "juin 2026",
+  source: "Eurostat — taux d'intérêt à long terme (critère de convergence de Maastricht, obligations d'État à 10 ans).",
+  sourceUrl: "https://ec.europa.eu/eurostat/databrowser/view/irt_lt_mcby_m/default/table",
+  rows: [
+    { label: "Allemagne", pct: 2.96 },
+    { label: "Pays-Bas", pct: 3.08 },
+    { label: "Zone euro", pct: 3.37, avg: true },
+    { label: "Espagne", pct: 3.42 },
+    { label: "Belgique", pct: 3.51 },
+    { label: "France", pct: 3.68, self: true },
+    { label: "Italie", pct: 3.73 },
+  ] as { label: string; pct: number; avg?: boolean; self?: boolean }[],
+};
+
+// --- Postes de la dépense publique TOTALE (toutes administrations, COFOG) -----------------
+// Source : Eurostat, dépenses des administrations publiques par fonction (COFOG), France 2024.
+// = État + Sécurité sociale + collectivités (pas seulement le budget de l'État).
+export const SPENDING_BREAKDOWN = {
+  year: "2024",
+  totalEur: 1_671_800_000_000,
+  source: "Eurostat — dépenses des administrations publiques par fonction (COFOG), France 2024.",
+  sourceUrl: "https://ec.europa.eu/eurostat/databrowser/view/gov_10a_exp/default/table",
+  note: "Dépense publique TOTALE (État + Sécurité sociale + collectivités), pas seulement le budget du gouvernement. La « protection sociale » regroupe retraites, chômage, famille et dépendance.",
+  items: [
+    { label: "Protection sociale", sub: "retraites, chômage, famille, dépendance", eur: 693_000_000_000, color: "bg-rose-500" },
+    { label: "Santé", sub: "hôpital, assurance maladie", eur: 261_200_000_000, color: "bg-emerald-500" },
+    { label: "Services généraux", sub: "dont 58,9 Md€ d'intérêts de la dette", eur: 181_100_000_000, color: "bg-slate-500" },
+    { label: "Affaires économiques", sub: "transports, énergie, soutien aux entreprises", eur: 166_100_000_000, color: "bg-amber-500" },
+    { label: "Éducation", sub: "écoles, universités", eur: 148_600_000_000, color: "bg-blue-500" },
+    { label: "Défense", sub: "armées", eur: 54_200_000_000, color: "bg-indigo-500" },
+    { label: "Ordre & sécurité", sub: "police, gendarmerie, justice", eur: 52_100_000_000, color: "bg-purple-500" },
+    { label: "Autres", sub: "logement, environnement, culture…", eur: 115_700_000_000, color: "bg-slate-300" },
+  ] as { label: string; sub?: string; eur: number; color: string }[],
+};
+
 // --- Administration & fonction publique --------------------------------------------------
 export const GOVERNANCE = [
   { label: "Agents publics", value: "5,9 millions", sub: "dans les 3 fonctions publiques (État, territoriale, hospitalière)", year: "fin 2024", source: "INSEE / DGAFP", url: "https://www.insee.fr/fr/statistiques/8732435" },

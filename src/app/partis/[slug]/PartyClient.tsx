@@ -252,7 +252,7 @@ export default function PartyClient({ params }: { params: Promise<{ slug: string
               : <div className="grid grid-cols-1 gap-3 sm:grid-cols-2 lg:grid-cols-3">
                   {members.senators.map((s: any) => (
                     <Link key={s.slug} href={`/senateurs/${s.slug}`} className="flex items-center gap-3 rounded-2xl border border-slate-200 bg-white p-3 transition hover:border-amber-300 group">
-                      <Avatar name={`${s.first_name} ${s.last_name}`} color={color} />
+                      <Avatar name={`${s.first_name} ${s.last_name}`} photo={s.photo_url} color={color} />
                       <span className="truncate font-bold text-slate-900">{s.first_name} {s.last_name}</span>
                       <ArrowRight className="ml-auto h-4 w-4 shrink-0 text-slate-300 group-hover:text-amber-500" />
                     </Link>

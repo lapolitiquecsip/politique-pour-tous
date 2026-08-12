@@ -1,8 +1,17 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { Newspaper, ChevronDown, ExternalLink, Loader2 } from "lucide-react";
 import { api } from "@/lib/api";
+
+// Libellés lisibles des types d'actu (badges + puces de filtre).
+const TYPE_LABEL: Record<string, string> = {
+  decret: "Décrets", annonce: "Annonces", mesure: "Mesures", decision: "Décisions",
+  budget: "Budget", nomination: "Nominations", lancement: "Lancements", bilan: "Bilans",
+  travaux: "Travaux", projet: "Projets", conseil_municipal: "Conseil municipal",
+  evenement: "Événements", equipement: "Équipements", arrete: "Arrêtés", actualite: "Autres",
+};
+const typeLabel = (t: string | null) => (t && TYPE_LABEL[t]) || "Autres";
 
 type FeedItem = {
   id: string;
@@ -24,14 +33,23 @@ export default function EntityNewsFeed({
 }: { entityType: string; entityId: string; defaultOpen?: boolean }) {
   const [items, setItems] = useState<FeedItem[] | null>(null);
   const [open, setOpen] = useState(defaultOpen);
+  const [filter, setFilter] = useState<string | null>(null); // null = tous les types
 
   useEffect(() => {
     let active = true;
-    api.getEntityFeed(entityType, entityId, 12)
+    api.getEntityFeed(entityType, entityId, 40)
       .then(d => { if (active) setItems(d as FeedItem[]); })
       .catch(() => { if (active) setItems([]); });
     return () => { active = false; };
   }, [entityType, entityId]);
+
+  // Types présents (avec compte), pour les puces de filtre.
+  const types = useMemo(() => {
+    const c: Record<string, number> = {};
+    for (const it of items || []) { const k = it.news_type || "actualite"; c[k] = (c[k] || 0) + 1; }
+    return Object.entries(c).sort((a, b) => b[1] - a[1]);
+  }, [items]);
+  const visible = useMemo(() => (items || []).filter(it => !filter || (it.news_type || "actualite") === filter), [items, filter]);
 
   // Rien à afficher (pas encore d'actu) → on ne pollue pas la fiche.
   if (items !== null && items.length === 0) return null;
@@ -64,13 +82,27 @@ export default function EntityNewsFeed({
           {items === null ? (
             <div className="flex justify-center py-8"><Loader2 className="animate-spin text-blue-500" /></div>
           ) : (
+            <>
+            {types.length > 1 && (
+              <div className="mb-4 flex flex-wrap gap-2">
+                {[["", items.length] as [string, number], ...types].map(([t, n]) => {
+                  const active = (filter || "") === t;
+                  return (
+                    <button key={t || "all"} onClick={() => setFilter(t || null)}
+                      className={`rounded-full px-3 py-1.5 text-[10px] font-black uppercase tracking-widest transition border ${active ? "bg-blue-600 text-white border-blue-600" : "bg-white dark:bg-slate-900 text-slate-500 border-slate-200 dark:border-slate-800 hover:border-blue-400"}`}>
+                      {t ? typeLabel(t) : "Tout"} <span className="opacity-60">· {n}</span>
+                    </button>
+                  );
+                })}
+              </div>
+            )}
             <ul className="grid grid-cols-1 gap-3 md:grid-cols-2">
-              {items.map(it => (
+              {visible.map(it => (
                 <li key={it.id}>
                   <a href={it.url} target="_blank" rel="noopener noreferrer"
                     className="flex h-full flex-col rounded-2xl border border-slate-200 bg-white p-4 transition hover:border-blue-300 hover:shadow-md dark:border-slate-800 dark:bg-slate-900">
                     <div className="mb-1.5 flex items-center justify-between gap-2">
-                      <span className="text-[10px] font-black uppercase tracking-widest text-blue-600">{it.news_type || "actualité"}</span>
+                      <span className="text-[10px] font-black uppercase tracking-widest text-blue-600">{typeLabel(it.news_type)}</span>
                       <span className="text-[10px] font-bold text-slate-400">{fmt(it.published_at)}</span>
                     </div>
                     <p className="text-sm font-bold leading-snug text-slate-900 dark:text-white">{it.title}</p>
@@ -82,6 +114,7 @@ export default function EntityNewsFeed({
                 </li>
               ))}
             </ul>
+            </>
           )}
         </div>
       )}

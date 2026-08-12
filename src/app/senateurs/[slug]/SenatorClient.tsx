@@ -86,6 +86,14 @@ export default function SenatorClient({ senator, embedded }: { senator: any; emb
     () => votes.filter(v => !selectedIssue || (scrutinIssues[String(v.scrutin_id)] || []).includes(selectedIssue)),
     [votes, scrutinIssues, selectedIssue]
   );
+  // Pré-sélection d'un sujet par défaut → parole vs actes visible sans action.
+  const [autoPicked, setAutoPicked] = useState(false);
+  useEffect(() => {
+    if (autoPicked || presentIssues.length === 0) return;
+    const withParole = presentIssues.find(i => positions[i.slug]);
+    setSelectedIssue((withParole || presentIssues[0]).slug);
+    setAutoPicked(true);
+  }, [presentIssues, positions, autoPicked]);
 
   return (
     <div className="min-h-screen bg-slate-50 dark:bg-slate-950 pb-20">

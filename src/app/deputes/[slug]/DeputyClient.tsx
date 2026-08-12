@@ -179,6 +179,16 @@ export default function DeputyDetailPage({ params, embedded }: { params: Promise
       .sort((a, b) => b.count - a.count);
   }, [groupedVotes, issues]);
 
+  // Pré-sélection : dès que les enjeux sont chargés, on ouvre par défaut le 1er sujet (idéalement
+  // un où l'élu s'est aussi EXPRIMÉ) → parole vs actes visible immédiatement, sans action.
+  const [autoPicked, setAutoPicked] = useState(false);
+  useEffect(() => {
+    if (autoPicked || presentIssues.length === 0) return;
+    const withParole = presentIssues.find(i => positions[i.slug]);
+    setSelectedIssue((withParole || presentIssues[0]).slug);
+    setAutoPicked(true);
+  }, [presentIssues, positions, autoPicked]);
+
   // Filtering Logic (now on the GROUPED items) — par ENJEU.
   const filteredVotes = useMemo(() => {
     return groupedVotes

@@ -75,11 +75,15 @@ function detectFromBio(bio: any): InstRole | null {
   for (const l of lines) {
     const nl = norm(l);
     if (/ancien|ancienne/.test(nl)) continue;
-    // Vice-président·e d'abord (sinon « vice président du Sénat » matcherait la règle « président »).
-    if (/vice president.* assemblee/.test(nl) && current(l)) return { role: "Vice-président·e de l'Assemblée nationale", institution: "Assemblée nationale", powers: POWERS.vicePresidentAN };
-    if (/vice president.* senat/.test(nl) && current(l)) return { role: "Vice-président·e du Sénat", institution: "Sénat", powers: POWERS.vicePresidentSenat };
-    if (/president.* assemblee nationale/.test(nl) && !/vice/.test(nl) && current(l)) return { role: "Président·e de l'Assemblée nationale", institution: "Assemblée nationale", powers: POWERS.presidentAN };
-    if (/president.* senat/.test(nl) && !/vice/.test(nl) && current(l)) return { role: "Président·e du Sénat", institution: "Sénat", powers: POWERS.presidentSenat };
+    // Formulation EXACTE exigée : « président·e de l'Assemblée nationale / du Sénat ». On n'utilise
+    // PAS de `.*` entre les mots, sinon « président du GROUPE … à l'Assemblée nationale » (chef de
+    // groupe) ou « président de la commission … » seraient faussement pris pour la présidence de la
+    // chambre. `presidente?` couvre président / présidente ; le `·e` est déjà normalisé en espace.
+    // Vice-président·e d'abord (sinon « vice-président » matcherait la règle « président »).
+    if (/\bvice presidente? de l assemblee nationale\b/.test(nl) && current(l)) return { role: "Vice-président·e de l'Assemblée nationale", institution: "Assemblée nationale", powers: POWERS.vicePresidentAN };
+    if (/\bvice presidente? du senat\b/.test(nl) && current(l)) return { role: "Vice-président·e du Sénat", institution: "Sénat", powers: POWERS.vicePresidentSenat };
+    if (/\bpresidente? de l assemblee nationale\b/.test(nl) && !/vice|groupe|commission/.test(nl) && current(l)) return { role: "Président·e de l'Assemblée nationale", institution: "Assemblée nationale", powers: POWERS.presidentAN };
+    if (/\bpresidente? du senat\b/.test(nl) && !/vice|groupe|commission/.test(nl) && current(l)) return { role: "Président·e du Sénat", institution: "Sénat", powers: POWERS.presidentSenat };
     const com = l.match(/pr[ée]sident[·e]*\s+de\s+la\s+(commission[^,.;(]+)/i);
     if (com && current(l)) return { role: `Président·e de la ${com[1].trim()}`, institution: "Commission permanente", powers: POWERS.presidentCommission };
   }

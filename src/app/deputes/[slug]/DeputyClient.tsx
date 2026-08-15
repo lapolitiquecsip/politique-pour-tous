@@ -49,6 +49,14 @@ import { useGlossary } from "@/components/providers/GlossaryProvider";
 import { deputyPhotoSources } from "@/lib/initiators";
 
 // Vote position formatting helper
+// Extrait d'evidence lisible sur le site : ajoute une ellipse si le texte a été tronqué
+// (les extraits sont volontairement courts — droit d'auteur — et coupés en milieu de phrase).
+const cleanExcerpt = (t: string) => {
+  const s = (t || "").trim();
+  if (!s) return s;
+  return /[.!?…»)]$/.test(s) ? s : s + "…";
+};
+
 const getVoteDisplay = (position: string) => {
   switch (position) {
     case 'POUR':
@@ -755,16 +763,18 @@ export default function DeputyDetailPage({ params, embedded }: { params: Promise
                       <>
                         {pos.summary && <p className="text-sm leading-relaxed text-slate-700 dark:text-slate-300">{pos.summary}</p>}
                         {Array.isArray(pos.evidence) && pos.evidence.length > 0 && (
-                          <ul className="mt-3 space-y-1.5">
+                          <ul className={`${pos.summary ? "mt-3" : ""} space-y-1.5`}>
                             {pos.evidence.slice(0, 6).map((e: any, i: number) => (
                               <li key={i} className="flex gap-2 text-xs text-slate-600 dark:text-slate-400">
                                 <span className="mt-1.5 h-1.5 w-1.5 shrink-0 rounded-full bg-red-400" />
-                                <a href={e.url} target="_blank" rel="noopener noreferrer" className="hover:text-red-600 hover:underline">{e.excerpt}</a>
+                                {/* Extrait lisible DIRECTEMENT sur le site (pas de lien sortant vers la
+                                    question écrite). La provenance officielle est indiquée sous la liste. */}
+                                <span>{cleanExcerpt(e.excerpt)}</span>
                               </li>
                             ))}
                           </ul>
                         )}
-                        <p className="mt-3 text-[10px] font-bold uppercase tracking-widest text-slate-400">Source : questions écrites au gouvernement (open data Assemblée nationale)</p>
+                        <p className="mt-3 text-[10px] font-bold uppercase tracking-widest text-slate-400">Source : questions écrites &amp; amendements (open data Assemblée nationale)</p>
                       </>
                     ) : (
                       <p className="text-sm italic text-slate-500">Aucune prise de parole recensée sur ce sujet (questions écrites). Son <span className="font-bold">action</span> reste visible ci-dessous via ses votes.</p>

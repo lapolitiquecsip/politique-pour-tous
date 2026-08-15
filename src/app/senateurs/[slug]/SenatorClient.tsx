@@ -30,6 +30,12 @@ import StructuredBio from "@/components/shared/StructuredBio";
 import InstitutionalRoleBanner from "@/components/shared/InstitutionalRoleBanner";
 import InitiativeRank from "@/components/shared/InitiativeRank";
 
+// Extrait d'evidence lisible sur le site : ellipse si le texte a été tronqué (extraits courts).
+const cleanExcerpt = (t: string) => {
+  const s = (t || "").trim();
+  if (!s) return s;
+  return /[.!?…»)]$/.test(s) ? s : s + "…";
+};
 
 export default function SenatorClient({ senator, embedded }: { senator: any; embedded?: boolean }) {
   const { isPremium } = usePremium();
@@ -386,11 +392,12 @@ export default function SenatorClient({ senator, embedded }: { senator: any; emb
                       <>
                         {pos.summary && <p className="text-sm leading-relaxed text-slate-700 dark:text-slate-300">{pos.summary}</p>}
                         {Array.isArray(pos.evidence) && pos.evidence.length > 0 && (
-                          <ul className="mt-3 space-y-1.5">
+                          <ul className={`${pos.summary ? "mt-3" : ""} space-y-1.5`}>
                             {pos.evidence.slice(0, 6).map((e: any, i: number) => (
                               <li key={i} className="flex gap-2 text-xs text-slate-600 dark:text-slate-400">
                                 <span className="mt-1.5 h-1.5 w-1.5 shrink-0 rounded-full bg-amber-400" />
-                                <a href={e.url} target="_blank" rel="noopener noreferrer" className="hover:text-amber-600 hover:underline">{e.excerpt}</a>
+                                {/* Extrait lisible directement sur le site (pas de lien sortant). */}
+                                <span>{cleanExcerpt(e.excerpt)}</span>
                               </li>
                             ))}
                           </ul>

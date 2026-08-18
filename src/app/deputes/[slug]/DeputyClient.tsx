@@ -37,6 +37,7 @@ import { api } from "@/lib/api";
 import { usePremium } from "@/lib/hooks/usePremium";
 import { AwardBadge } from "@/components/ui/award-badge";
 import FollowButton from "@/components/shared/FollowButton";
+import ShareButtons from "@/components/shared/ShareButtons";
 import { getFullPartyName } from "@/lib/party-utils";
 import VoteDetailsModal from "@/components/deputies/VoteDetailsModal";
 import LegalStatusModal from "@/components/deputies/LegalStatusModal";
@@ -528,8 +529,9 @@ export default function DeputyDetailPage({ params, embedded }: { params: Promise
             className="lg:col-span-2 space-y-10"
           >
             {/* Suivi bien en évidence, en tête de colonne (comme la fiche sénateur). */}
-            <div className="flex justify-start">
+            <div className="flex flex-col items-start gap-3">
               <FollowButton kind="deputy" id={deputy?.id ? String(deputy.id) : null} label="ce député" />
+              <ShareButtons title={`${deputy?.first_name ?? ""} ${deputy?.last_name ?? ""}`.trim() || "Fiche de l'élu"} />
             </div>
 
             {/* Fonction institutionnelle (Président·e / Vice-président·e / président·e de commission). */}

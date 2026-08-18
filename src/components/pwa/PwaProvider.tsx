@@ -7,6 +7,9 @@ import { Download, X, Share } from "lucide-react";
 // on capte l'événement natif `beforeinstallprompt` ; sur iOS (pas d'événement), on explique le
 // geste « Partager → Sur l'écran d'accueil ». Le bandeau est discret et mémorise le refus.
 const DISMISS_KEY = "pwa-install-dismissed";
+// Bandeau d'installation désactivé pour le moment (le service worker reste actif).
+// Repasser à true pour le réafficher.
+const BANNER_ENABLED = false;
 
 export default function PwaProvider() {
   const [deferred, setDeferred] = useState<any>(null);
@@ -32,7 +35,7 @@ export default function PwaProvider() {
     return () => window.removeEventListener("beforeinstallprompt", onPrompt);
   }, []);
 
-  if (!show) return null;
+  if (!show || !BANNER_ENABLED) return null;
 
   const dismiss = () => { setShow(false); try { localStorage.setItem(DISMISS_KEY, "1"); } catch {} };
 

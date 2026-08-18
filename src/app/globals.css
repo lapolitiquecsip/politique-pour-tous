@@ -281,3 +281,18 @@
   background-size: 250% 100%; transition: opacity .3s; pointer-events: none;
 }
 .gold-sheen-hover:hover::before { opacity: 1; animation: gold-sheen 1.1s ease-in-out; }
+
+/* Animations des illustrations des cartes d'accueil — ne tournent que si l'utilisateur
+   accepte le mouvement (sinon scènes statiques). Positions de base = attributs transform
+   sur les groupes parents ; l'animation CSS est portée par un groupe interne pour ne pas
+   écraser le placement. */
+@media (prefers-reduced-motion: no-preference) {
+  @keyframes ha-float { 0%, 100% { transform: translateY(0); } 50% { transform: translateY(-4.5px); } }
+  @keyframes ha-sway  { 0%, 100% { transform: rotate(-2.6deg); } 50% { transform: rotate(2.6deg); } }
+  @keyframes ha-draw  { from { stroke-dashoffset: 430; } to { stroke-dashoffset: 0; } }
+  .ha-float { animation: ha-float 3.6s ease-in-out infinite; }
+  .ha-float.d1 { animation-delay: .6s; }
+  .ha-float.d2 { animation-delay: 1.2s; }
+  .ha-sway { transform-box: view-box; transform-origin: 160px 44px; animation: ha-sway 5.5s ease-in-out infinite; }
+  .ha-draw { stroke-dasharray: 430; animation: ha-draw 1.9s ease-out forwards; }
+}

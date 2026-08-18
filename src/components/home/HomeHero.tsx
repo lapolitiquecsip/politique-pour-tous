@@ -10,7 +10,7 @@ const MotionLink = motion(Link);
 // Chaque carte renvoie vers la page correspondante du site.
 const CARDS = [
   { art: "vote" as const, title: "Qui vote quoi ?", text: "Le vote détaillé des députés et sénateurs sur chaque loi.", href: "/deputes" },
-  { art: "money" as const, title: "L'argent public ?", text: "Le budget, les dépenses et la dette de votre commune.", href: "/local" },
+  { art: "money" as const, title: "L'argent public ?", text: "Le budget, les dépenses et la dette de votre commune, département et région.", href: "/local" },
   { art: "sincere" as const, title: "Votre élu est sincère ?", text: "Ses votes, ses prises de parole et ses promesses, confrontés.", href: "/deputes" },
 ];
 

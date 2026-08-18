@@ -6,7 +6,8 @@ import MemberFinderIntro from "@/components/lois/MemberFinderIntro";
 import VideoFeed from "@/components/executif/VideoFeed";
 import { Suspense } from "react";
 import Link from "next/link";
-import { Landmark, ChevronRight } from "lucide-react";
+import { ChevronRight } from "lucide-react";
+import PresidentPhoto from "@/components/shared/PresidentPhoto";
 
 // Page dédiée au Sénat : composition + textes législatifs du Sénat + sénateurs.
 export default async function SenateursPage() {
@@ -27,7 +28,7 @@ export default async function SenateursPage() {
       {/* Président du Sénat — cliquable vers sa fiche */}
       <div className="mx-auto max-w-6xl px-4 pt-6">
         <Link href="/senateurs/gerard-larcher" className="group flex items-center gap-4 rounded-3xl border border-amber-200 bg-amber-50/60 p-5 transition hover:border-amber-300 hover:bg-amber-50">
-          <span className="flex h-12 w-12 shrink-0 items-center justify-center rounded-2xl bg-gradient-to-br from-amber-500 to-orange-500 text-white shadow-md"><Landmark size={22} /></span>
+          <PresidentPhoto src="https://www.senat.fr/senimg/larcher_gerard86034e.jpg" alt="Gérard Larcher" ring="ring-amber-300" gradient="from-amber-500 to-orange-500" />
           <div className="min-w-0">
             <p className="text-[10px] font-black uppercase tracking-widest text-amber-600">Président du Sénat</p>
             <p className="text-xl font-bold text-slate-900 group-hover:text-amber-700 transition-colors">Gérard Larcher</p>

@@ -7,6 +7,9 @@ import ChamberHero from "@/components/lois/ChamberHero";
 import MemberFinderIntro from "@/components/lois/MemberFinderIntro";
 import VideoFeed from "@/components/executif/VideoFeed";
 import CommissionAuditions from "@/components/executif/CommissionAuditions";
+import PresidentPhoto from "@/components/shared/PresidentPhoto";
+import Link from "next/link";
+import { ChevronRight } from "lucide-react";
 
 import { Suspense } from "react";
 
@@ -42,6 +45,18 @@ export default async function DeputesPage() {
           { label: "Séances & auditions", href: "#videos" },
         ]}
       />
+      {/* Présidente de l'Assemblée nationale — cliquable vers sa fiche */}
+      <div className="mx-auto max-w-6xl px-4 pt-6">
+        <Link href="/deputes/yael-braun-pivet" className="group flex items-center gap-4 rounded-3xl border border-emerald-200 bg-emerald-50/60 p-5 transition hover:border-emerald-300 hover:bg-emerald-50 dark:border-emerald-900/40 dark:bg-emerald-950/20">
+          <PresidentPhoto src="https://www.assemblee-nationale.fr/dyn/static/tribun/17/photos/carre/721908.jpg" alt="Yaël Braun-Pivet" ring="ring-emerald-300" gradient="from-emerald-500 to-teal-600" />
+          <div className="min-w-0">
+            <p className="text-[10px] font-black uppercase tracking-widest text-emerald-600">Présidente de l'Assemblée nationale</p>
+            <p className="text-xl font-bold text-slate-900 dark:text-white group-hover:text-emerald-700 transition-colors">Yaël Braun-Pivet</p>
+            <p className="text-sm text-slate-500">Quatrième personnage de l'État — voir sa fiche</p>
+          </div>
+          <ChevronRight className="ml-auto text-slate-300 group-hover:text-emerald-500 transition-colors" />
+        </Link>
+      </div>
       <section id="composition" className="scroll-mt-24 pt-4 pb-8">
         <HemicycleChart chamber="an" subtitle="Assemblée nationale" title="Composition de l'Assemblée" />
       </section>

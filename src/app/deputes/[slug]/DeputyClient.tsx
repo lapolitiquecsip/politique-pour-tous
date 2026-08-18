@@ -83,7 +83,7 @@ export default function DeputyDetailPage({ params, embedded }: { params: Promise
   const [showLegalModal, setShowLegalModal] = useState(false);
   const [isBioExpanded, setIsBioExpanded] = useState(false);
   const [candidateLink, setCandidateLink] = useState<{ slug: string } | null>(null);
-  const [partyLink, setPartyLink] = useState<{ slug: string; name: string } | null>(null);
+  const [partyLink, setPartyLink] = useState<{ slug: string; name: string; logo_url?: string | null; color?: string | null } | null>(null);
 
   const [votes, setVotes] = useState<any[]>([]);
   const [authoredLaws, setAuthoredLaws] = useState<any[]>([]);
@@ -405,9 +405,14 @@ export default function DeputyDetailPage({ params, embedded }: { params: Promise
                 {(() => {
                   const inner = (
                     <>
-                      <div className="w-12 h-12 rounded-2xl bg-red-500 flex items-center justify-center text-white shrink-0 shadow-lg shadow-red-500/20">
-                        <Landmark className="w-6 h-6" />
-                      </div>
+                      {partyLink?.logo_url ? (
+                        // eslint-disable-next-line @next/next/no-img-element
+                        <img src={partyLink.logo_url} alt={partyLink.name} className="w-12 h-12 rounded-2xl object-contain bg-white p-1 shrink-0 shadow-lg ring-1 ring-slate-200 dark:ring-slate-700" />
+                      ) : (
+                        <div className="w-12 h-12 rounded-2xl bg-red-500 flex items-center justify-center text-white shrink-0 shadow-lg shadow-red-500/20">
+                          <Landmark className="w-6 h-6" />
+                        </div>
+                      )}
                       <div className="min-w-0">
                         <p className="text-[10px] font-black text-slate-400 uppercase tracking-wider">Groupe Politique</p>
                         <p className="font-bold text-slate-900 dark:text-white truncate">

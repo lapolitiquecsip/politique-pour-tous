@@ -998,7 +998,7 @@ export const api = {
   findPartyByAlias: async (value: string | null | undefined) => {
     if (!value) return null;
     const target = value.trim().toLowerCase();
-    const { data, error } = await supabase.from('political_parties').select('slug, name, abbrev, color, aliases');
+    const { data, error } = await supabase.from('political_parties').select('slug, name, abbrev, color, aliases, logo_url');
     if (error || !data) return null;
     return data.find((p: any) => (p.aliases || []).some((a: string) => a.toLowerCase() === target)) ?? null;
   },
@@ -1479,7 +1479,7 @@ export const api = {
     // 'scrutins!inner' allows filtering on the related table
     const { data, error } = await supabase
       .from('deputy_votes')
-      .select('*, scrutins!inner(id, numero, date_scrutin, objet, resultat, type, category, summary, why_it_matters)')
+      .select('*, scrutins!inner(id, numero, date_scrutin, objet, resultat, type, category, summary, why_it_matters, group_results, dossier_url)')
       .eq('deputy_an_id', anId)
       .in('scrutins.type', ['LOI', 'ARTICLE'])
       .order('date_scrutin', { ascending: false })

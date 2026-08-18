@@ -43,7 +43,7 @@ export default function SenatorClient({ senator, embedded }: { senator: any; emb
   const [isBioExpanded, setIsBioExpanded] = useState(true);
   const [showLegalModal, setShowLegalModal] = useState(false);
   const [candidateLink, setCandidateLink] = useState<{ slug: string } | null>(null);
-  const [partyLink, setPartyLink] = useState<{ slug: string; name: string } | null>(null);
+  const [partyLink, setPartyLink] = useState<{ slug: string; name: string; logo_url?: string | null } | null>(null);
 
   useEffect(() => {
     api.findCandidateByName(`${senator.first_name} ${senator.last_name}`).then(c => setCandidateLink(c)).catch(() => {});
@@ -159,9 +159,14 @@ export default function SenatorClient({ senator, embedded }: { senator: any; emb
                  {(() => {
                    const inner = (
                      <>
-                       <div className="w-12 h-12 rounded-2xl bg-amber-600 flex items-center justify-center text-white shrink-0 shadow-lg shadow-amber-500/20">
-                         <Users className="w-6 h-6" />
-                       </div>
+                       {partyLink?.logo_url ? (
+                         // eslint-disable-next-line @next/next/no-img-element
+                         <img src={partyLink.logo_url} alt={partyLink.name} className="w-12 h-12 rounded-2xl object-contain bg-white p-1 shrink-0 shadow-lg ring-1 ring-slate-200 dark:ring-slate-700" />
+                       ) : (
+                         <div className="w-12 h-12 rounded-2xl bg-amber-600 flex items-center justify-center text-white shrink-0 shadow-lg shadow-amber-500/20">
+                           <Users className="w-6 h-6" />
+                         </div>
+                       )}
                        <div className="min-w-0">
                          <p className="text-[10px] font-black text-slate-400 uppercase tracking-wider">Groupe Politique</p>
                          <p className="font-bold text-slate-900 dark:text-white truncate">

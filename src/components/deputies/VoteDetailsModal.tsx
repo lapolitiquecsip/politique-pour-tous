@@ -3,6 +3,7 @@ import React from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { X, Landmark, ExternalLink, Info, CheckCircle2, XCircle, MinusCircle, AlertCircle, Layers, Lock, Star } from 'lucide-react';
 import { usePremium } from "@/lib/hooks/usePremium";
+import { groupLabel } from "@/lib/legislative-groups";
 import Link from 'next/link';
 
 interface VoteDetailsModalProps {
@@ -168,6 +169,48 @@ const VoteDetailsModal: React.FC<VoteDetailsModalProps> = ({ vote, onClose }) =>
                   </a>
                 )}
               </div>
+
+              {/* Détail par GROUPE politique : comment chaque groupe a voté sur ce scrutin.
+                  Permet de situer le vote de l'élu par rapport aux autres groupes. */}
+              {Array.isArray(s?.group_results) && s.group_results.length > 0 && (() => {
+                const groups = [...s.group_results]
+                  .map((g: any) => ({ ...g, name: groupLabel(g.group_id, g.group_name), total: g.total || (g.pour + g.contre + g.abstention) }))
+                  .filter((g: any) => g.total > 0)
+                  .sort((a: any, b: any) => b.total - a.total);
+                return (
+                  <div className="space-y-4 pt-4">
+                    <div className="flex items-center gap-2 text-slate-900 dark:text-white">
+                      <Landmark className="w-5 h-5 text-blue-500" />
+                      <h3 className="font-bold text-lg">Comment a voté chaque groupe</h3>
+                    </div>
+                    <div className="space-y-2.5">
+                      {groups.map((g: any) => {
+                        const pour = g.pour || 0, contre = g.contre || 0, abst = g.abstention || 0;
+                        const denom = pour + contre + abst || 1;
+                        return (
+                          <div key={g.group_id} className="rounded-2xl border border-slate-100 dark:border-slate-800 bg-white dark:bg-slate-800/50 p-3">
+                            <div className="mb-1.5 flex items-center justify-between gap-2">
+                              <span className="truncate text-xs font-black text-slate-800 dark:text-slate-200">{g.name}</span>
+                              <span className="shrink-0 text-[10px] font-bold text-slate-400">{g.total} votant{g.total > 1 ? "s" : ""}</span>
+                            </div>
+                            <div className="flex h-2.5 w-full overflow-hidden rounded-full bg-slate-100 dark:bg-white/5">
+                              <div className="h-full bg-emerald-500" style={{ width: `${(pour / denom) * 100}%` }} title={`${pour} pour`} />
+                              <div className="h-full bg-rose-500" style={{ width: `${(contre / denom) * 100}%` }} title={`${contre} contre`} />
+                              <div className="h-full bg-amber-400" style={{ width: `${(abst / denom) * 100}%` }} title={`${abst} abstention`} />
+                            </div>
+                            <div className="mt-1 flex gap-3 text-[10px] font-bold">
+                              <span className="text-emerald-600">{pour} pour</span>
+                              <span className="text-rose-600">{contre} contre</span>
+                              <span className="text-amber-600">{abst} abst.</span>
+                            </div>
+                          </div>
+                        );
+                      })}
+                    </div>
+                    <p className="text-[10px] text-slate-400">Résultats officiels par groupe (open data Assemblée nationale).</p>
+                  </div>
+                );
+              })()}
 
               {/* Sub-votes breakdown */}
               {subVotes.length > 0 && (

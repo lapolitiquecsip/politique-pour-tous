@@ -3,11 +3,16 @@
 // statique, et ces horloges sont elles-mêmes des extrapolations) : il EXTRAPOLE, seconde par
 // seconde, à partir de la DERNIÈRE donnée officielle INSEE (dette fin 2025) et du déficit 2025.
 
+// Date de dernière vérification manuelle des chiffres annuels (dette, déficit, population,
+// dépenses). Les taux d'emprunt, eux, se rafraîchissent seuls (cron Eurostat mensuel).
+// À mettre à jour à chaque revue des chiffres INSEE.
+export const FINANCE_LAST_VERIFIED = "août 2026";
+
 // --- Base du compteur (dernière donnée officielle INSEE) ---------------------------------
 export const DEBT_BASE_EUR = 3_460_500_000_000;      // dette publique fin 2025 (INSEE)
 export const DEBT_BASE_DATE = "2025-12-31T00:00:00Z";
 export const DEBT_ANNUAL_INCREASE_EUR = 152_500_000_000; // déficit public 2025 ≈ hausse annuelle (INSEE)
-export const POPULATION = 68_600_000;                // population France (INSEE, 1er janv. 2026)
+export const POPULATION = 69_082_000;                // population France au 1er janv. 2026 (INSEE, bilan démographique 2025 : 69,1 M)
 export const DEBT_RATIO_GDP = 115.6;                 // % du PIB, fin 2025 (INSEE)
 export const DEBT_SOURCE = "INSEE — dette publique fin 2025 (3 460,5 Md€, 115,6 % du PIB) ; déficit 2025 (152,5 Md€). Compteur extrapolé à partir de ces données officielles.";
 export const DEBT_SOURCE_URL = "https://www.insee.fr/fr/statistiques/8955019";
@@ -26,27 +31,27 @@ export const DEBT_BY_PRESIDENT_NOTE = "Hausse du ratio dette/PIB entre le début
 
 // --- Dépenses publiques ------------------------------------------------------------------
 export const PUBLIC_SPENDING = {
-  ratioGdp: 57.2,                    // % du PIB (2025, INSEE) — parmi les plus élevés de l'UE
-  approxEur: 1_713_000_000_000,      // ≈ 57,2 % d'un PIB ~2 994 Md€
+  ratioGdp: 57.3,                    // % du PIB (2025, INSEE) — parmi les plus élevés de l'UE
+  approxEur: 1_716_000_000_000,      // ≈ 57,3 % d'un PIB ~2 994 Md€
   deficitEur: 152_500_000_000,       // déficit public 2025 (INSEE)
-  source: "INSEE — comptes des administrations publiques 2025 (dépenses 57,2 % du PIB, déficit 152,5 Md€).",
+  source: "INSEE — comptes des administrations publiques 2025 (dépenses 57,3 % du PIB, déficit 152,5 Md€).",
   sourceUrl: "https://www.insee.fr/fr/statistiques/8997691",
 };
 
 // --- Taux d'emprunt de l'État à 10 ans — comparaison européenne (données réelles) ---------
 // Source : Eurostat, taux d'intérêt à long terme (critère de Maastricht, obligations d'État 10 ans).
 export const BORROWING_RATES = {
-  month: "juin 2026",
+  month: "juillet 2026",
   source: "Eurostat — taux d'intérêt à long terme (critère de convergence de Maastricht, obligations d'État à 10 ans).",
   sourceUrl: "https://ec.europa.eu/eurostat/databrowser/view/irt_lt_mcby_m/default/table",
   rows: [
-    { label: "Allemagne", pct: 2.96 },
-    { label: "Pays-Bas", pct: 3.08 },
-    { label: "Zone euro", pct: 3.37, avg: true },
-    { label: "Espagne", pct: 3.42 },
-    { label: "Belgique", pct: 3.51 },
-    { label: "France", pct: 3.68, self: true },
-    { label: "Italie", pct: 3.73 },
+    { label: "Allemagne", pct: 3.07 },
+    { label: "Pays-Bas", pct: 3.20 },
+    { label: "Zone euro", pct: 3.49, avg: true },
+    { label: "Espagne", pct: 3.53 },
+    { label: "Belgique", pct: 3.64 },
+    { label: "France", pct: 3.85, self: true },
+    { label: "Italie", pct: 3.88 },
   ] as { label: string; pct: number; avg?: boolean; self?: boolean }[],
 };
 

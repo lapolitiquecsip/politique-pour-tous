@@ -7,6 +7,7 @@ import { api } from "@/lib/api";
 import {
   DEBT_BASE_EUR, DEBT_BASE_DATE, DEBT_PER_SECOND, POPULATION, DEBT_RATIO_GDP, DEBT_SOURCE, DEBT_SOURCE_URL,
   DEBT_BY_PRESIDENT, DEBT_BY_PRESIDENT_NOTE, PUBLIC_SPENDING, GOVERNANCE, BORROWING_RATES, SPENDING_BREAKDOWN, PUBLIC_EMPLOYMENT_EU,
+  FINANCE_LAST_VERIFIED,
 } from "@/lib/data/publicFinance";
 
 const eur0 = (n: number) => Math.round(n).toLocaleString("fr-FR") + " €";
@@ -24,12 +25,16 @@ function PresAvatar({ name, photo, color }: { name: string; photo?: string; colo
 export default function PublicFinancePanel() {
   const [debt, setDebt] = useState(() => liveDebt(Date.now()));
   const [photos, setPhotos] = useState<Record<string, string>>({});
+  // Taux d'emprunt : live (Eurostat, cron mensuel) avec repli sur les valeurs codées.
+  const [liveRates, setLiveRates] = useState<typeof BORROWING_RATES | null>(null);
   const raf = useRef<number | null>(null);
+  const rates = liveRates ?? BORROWING_RATES;
 
   useEffect(() => {
     let mounted = true;
     const tick = () => { if (!mounted) return; setDebt(liveDebt(Date.now())); raf.current = window.setTimeout(tick, 100) as unknown as number; };
     tick();
+    api.getBorrowingRates().then((r: any) => { if (mounted && r?.rows?.length) setLiveRates(r); }).catch(() => {});
     api.getPresidents().then((list: any[]) => { if (mounted) setPhotos(Object.fromEntries(list.map(p => [p.slug, p.photo_url]).filter(x => x[1]))); }).catch(() => {});
     return () => { mounted = false; if (raf.current) clearTimeout(raf.current); };
   }, []);
@@ -44,6 +49,9 @@ export default function PublicFinancePanel() {
           Dette & <span className="text-rose-600">dépenses publiques</span>
         </h2>
         <p className="mt-0.5 text-sm text-slate-500">La situation des comptes de l'État, en direct et sourcée (INSEE).</p>
+        <p className="mt-1 inline-flex items-center gap-1 rounded-full bg-slate-100 px-2.5 py-0.5 text-[10px] font-black uppercase tracking-widest text-slate-500 dark:bg-slate-800 dark:text-slate-400">
+          Données vérifiées · {FINANCE_LAST_VERIFIED}
+        </p>
       </div>
 
       <div className="grid gap-3 md:grid-cols-2">
@@ -78,10 +86,10 @@ export default function PublicFinancePanel() {
       <div className="mt-3 rounded-2xl border border-slate-200 bg-white p-5 dark:border-slate-800 dark:bg-slate-900">
         <p className="flex flex-wrap items-center gap-1.5 text-[10px] font-black uppercase tracking-widest text-slate-500">
           <Percent size={13} /> À quel taux la France emprunte-t-elle ?
-          <span className="font-medium normal-case tracking-normal text-slate-400">· obligations d'État à 10 ans, {BORROWING_RATES.month}</span>
+          <span className="font-medium normal-case tracking-normal text-slate-400">· obligations d'État à 10 ans, {rates.month}</span>
         </p>
         <div className="mt-4 space-y-2">
-          {(() => { const max = Math.max(...BORROWING_RATES.rows.map(r => r.pct)); return BORROWING_RATES.rows.map(r => (
+          {(() => { const max = Math.max(...rates.rows.map(r => r.pct)); return rates.rows.map(r => (
             <div key={r.label} className="flex items-center gap-3">
               <span className={`w-24 shrink-0 text-xs ${r.self ? "font-black text-rose-700 dark:text-rose-300" : r.avg ? "font-bold italic text-slate-500" : "font-bold text-slate-600 dark:text-slate-300"}`}>{r.label}</span>
               <div className="h-2.5 flex-1 overflow-hidden rounded-full bg-slate-100 dark:bg-white/5">
@@ -92,7 +100,7 @@ export default function PublicFinancePanel() {
           )); })()}
         </div>
         <p className="mt-3 text-[11px] leading-snug text-slate-500 dark:text-slate-400">La France emprunte <span className="font-bold text-slate-700 dark:text-slate-200">plus cher</span> que l'Allemagne, l'Espagne ou la moyenne de la zone euro — proche du niveau italien. Plus le taux est élevé, plus la charge de la dette pèsera lourd les prochaines années.</p>
-        <a href={BORROWING_RATES.sourceUrl} target="_blank" rel="noopener noreferrer" className="mt-1.5 inline-flex items-center gap-1 text-[9px] font-black uppercase tracking-widest text-slate-400 hover:text-blue-600">{BORROWING_RATES.month} · Eurostat <ExternalLink size={9} /></a>
+        <a href={BORROWING_RATES.sourceUrl} target="_blank" rel="noopener noreferrer" className="mt-1.5 inline-flex items-center gap-1 text-[9px] font-black uppercase tracking-widest text-slate-400 hover:text-blue-600">{rates.month} · Eurostat <ExternalLink size={9} /></a>
       </div>
 
       {/* Où va la dépense publique (toutes administrations, COFOG) — (tâche 2) */}

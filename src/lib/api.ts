@@ -1003,6 +1003,28 @@ export const api = {
     return data.find((p: any) => (p.aliases || []).some((a: string) => a.toLowerCase() === target)) ?? null;
   },
 
+  // Taux d'emprunt à 10 ans (Eurostat), rafraîchis mensuellement par le cron finance-rates-sync
+  // dans national_finance_indicators. Renvoie null si vide → le front retombe sur les valeurs codées.
+  getBorrowingRates: async (): Promise<{ month: string; rows: { label: string; pct: number; avg?: boolean; self?: boolean }[] } | null> => {
+    const { data, error } = await supabase
+      .from('national_finance_indicators')
+      .select('indicator_code, value, source_updated_at')
+      .like('indicator_code', 'long_term_rate_%')
+      .eq('value_type', 'observed');
+    if (error || !data || !data.length) return null;
+    const LABELS: Record<string, string> = { FR: 'France', DE: 'Allemagne', NL: 'Pays-Bas', ES: 'Espagne', BE: 'Belgique', IT: 'Italie', EA: 'Zone euro' };
+    const MONTHS = ['janvier', 'février', 'mars', 'avril', 'mai', 'juin', 'juillet', 'août', 'septembre', 'octobre', 'novembre', 'décembre'];
+    let maxDate = '';
+    const rows = data.map((r: any) => {
+      const geo = r.indicator_code.replace('long_term_rate_', '');
+      if (r.source_updated_at > maxDate) maxDate = r.source_updated_at;
+      return { label: LABELS[geo] || geo, pct: Number(r.value), self: geo === 'FR', avg: geo === 'EA' };
+    }).sort((a, b) => a.pct - b.pct);
+    const d = maxDate ? new Date(maxDate) : null;
+    const month = d ? `${MONTHS[d.getUTCMonth()]} ${d.getUTCFullYear()}` : '';
+    return { month, rows };
+  },
+
   // Membres d'un parti (députés / sénateurs / candidats) via ses alias.
   getPartyMembers: async (aliases: string[]) => {
     if (!aliases?.length) return { deputies: [], senators: [], candidates: [], meps: [] };

@@ -26,6 +26,7 @@ import LegalStatusModal from "@/components/deputies/LegalStatusModal";
 import ActivityRank from "@/components/shared/ActivityRank";
 import FollowButton from "@/components/shared/FollowButton";
 import ShareButtons from "@/components/shared/ShareButtons";
+import RemunerationInfo from "@/components/shared/RemunerationInfo";
 import ParallelRoles from "@/components/shared/ParallelRoles";
 import StructuredBio from "@/components/shared/StructuredBio";
 import InstitutionalRoleBanner from "@/components/shared/InstitutionalRoleBanner";
@@ -189,6 +190,8 @@ export default function SenatorClient({ senator, embedded }: { senator: any; emb
                    );
                  })()}
 
+                <RemunerationInfo mode="parlementaire" />
+
                 <div className="flex items-center gap-4 p-4 rounded-3xl bg-slate-50 dark:bg-slate-800/50 border border-slate-100 dark:border-slate-700">
                    <div className="w-12 h-12 rounded-2xl bg-blue-500 flex items-center justify-center text-white shrink-0 shadow-lg shadow-blue-500/20">
                      <MapPin className="w-6 h-6" />
@@ -268,7 +271,7 @@ export default function SenatorClient({ senator, embedded }: { senator: any; emb
             transition={{ delay: 0.2 }}
             className="lg:col-span-2 space-y-10"
           >
-            <div className="flex flex-col items-start gap-3">
+            <div className="flex flex-wrap items-center gap-3">
               <FollowButton kind="senator" id={String(senator.id)} label="ce sénateur" />
               <ShareButtons title={`${senator.first_name ?? ""} ${senator.last_name ?? ""}`.trim() || "Fiche du sénateur"} />
             </div>

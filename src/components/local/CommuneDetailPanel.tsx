@@ -5,6 +5,8 @@ import { X, Users, MapPin, Calendar, Award, Building2, TrendingUp, UserMinus, St
 import Link from "next/link";
 import { buildItddCards, ITDD_NEW_CATEGORIES, type ItddCard } from "@/lib/itdd-cards";
 import LocalFinancesSection from "./LocalFinancesSection";
+import EntityNewsFeed from "@/components/shared/EntityNewsFeed";
+import RemunerationInfo from "@/components/shared/RemunerationInfo";
 import FiscaliteSection from "./FiscaliteSection";
 import type { CommuneResult, MayorData, ElectionResult } from "@/lib/hooks/useCommuneSearch";
 import { useState, useEffect } from "react";
@@ -645,6 +647,9 @@ export default function CommuneDetailPanel({
                     </div>
                   )}
 
+                  {/* Rémunération du maire — calculée automatiquement depuis la population (barème légal). */}
+                  <RemunerationInfo mode="maire" population={commune.population} />
+
                   {communeData?.rne && (
                     <div className="pt-4 border-t border-slate-100 space-y-4">
                       {communeData.rne.adjoints && communeData.rne.adjoints.length > 0 && (
@@ -691,6 +696,9 @@ export default function CommuneDetailPanel({
                     </div>
                   )}
                 </motion.div>
+
+                {/* Fil d'actualité de la ville (sources curées + résumé IA) — masqué s'il n'y a rien. */}
+                <EntityNewsFeed entityType="commune" entityId={commune.code} />
 
                 {/* Election Section */}
                 <motion.div

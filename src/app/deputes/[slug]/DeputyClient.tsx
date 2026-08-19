@@ -38,6 +38,7 @@ import { usePremium } from "@/lib/hooks/usePremium";
 import { AwardBadge } from "@/components/ui/award-badge";
 import FollowButton from "@/components/shared/FollowButton";
 import ShareButtons from "@/components/shared/ShareButtons";
+import RemunerationInfo from "@/components/shared/RemunerationInfo";
 import { getFullPartyName } from "@/lib/party-utils";
 import VoteDetailsModal from "@/components/deputies/VoteDetailsModal";
 import LegalStatusModal from "@/components/deputies/LegalStatusModal";
@@ -438,6 +439,8 @@ export default function DeputyDetailPage({ params, embedded }: { params: Promise
                   );
                 })()}
 
+                <RemunerationInfo mode="parlementaire" />
+
                 {deputy?.department ? (
                   <Link href={`/local/?type=department&code=${encodeURIComponent(deputy.department)}`}
                     className="flex items-center gap-4 p-4 rounded-3xl bg-slate-50 dark:bg-slate-800/50 border border-slate-100 dark:border-slate-700 transition hover:border-blue-400 hover:bg-blue-50/50 group">
@@ -533,8 +536,8 @@ export default function DeputyDetailPage({ params, embedded }: { params: Promise
             transition={{ delay: 0.2 }}
             className="lg:col-span-2 space-y-10"
           >
-            {/* Suivi bien en évidence, en tête de colonne (comme la fiche sénateur). */}
-            <div className="flex flex-col items-start gap-3">
+            {/* Suivi + partage sur la même ligne (partage à côté, pas en dessous). */}
+            <div className="flex flex-wrap items-center gap-3">
               <FollowButton kind="deputy" id={deputy?.id ? String(deputy.id) : null} label="ce député" />
               <ShareButtons title={`${deputy?.first_name ?? ""} ${deputy?.last_name ?? ""}`.trim() || "Fiche de l'élu"} />
             </div>

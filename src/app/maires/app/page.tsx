@@ -7,6 +7,7 @@ import { ArrowLeft, Loader2, Star, ShieldCheck, GraduationCap, Users, MapPin } f
 import { api } from "@/lib/api";
 import LegalStatusModal from "@/components/deputies/LegalStatusModal";
 import EntityNewsFeed from "@/components/shared/EntityNewsFeed";
+import RemunerationInfo from "@/components/shared/RemunerationInfo";
 
 const BIO_FIELDS: Array<[string, string, string]> = [
   ["parcours", "Parcours politique", "text-red-600"],
@@ -98,6 +99,7 @@ function MayorContent() {
                   {bio.profession && <div><p className="text-[9px] font-black uppercase tracking-widest text-slate-400">Profession</p><p className="font-bold text-slate-900 dark:text-white capitalize">{bio.profession}</p></div>}
                   {p.birth_date && <div><p className="text-[9px] font-black uppercase tracking-widest text-slate-400">Né·e le</p><p className="font-bold text-slate-900 dark:text-white">{frDate(p.birth_date)}</p></div>}
                 </div>
+                <RemunerationInfo mode="maire" population={p.population} className="mt-4" />
                 <p className="mt-4 text-[10px] italic text-slate-400">Source : RNE (Répertoire National des Élus).</p>
               </div>
             </div>

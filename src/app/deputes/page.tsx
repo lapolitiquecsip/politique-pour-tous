@@ -34,6 +34,7 @@ export default async function DeputesPage() {
     <div className="min-h-screen bg-white dark:bg-slate-950">
       <ChamberHero
         color="green"
+        image="/images/assemblee_nationale_premium.jpg"
         title="ASSEMBLÉE NATIONALE"
         eyebrow="Assemblée nationale · 577 députés"
         description="Les 577 députés, élus au suffrage direct dans chaque circonscription, votent la loi, votent le budget, contrôlent le Gouvernement et peuvent le renverser. Sur cette page : trouvez votre député, consultez ses votes, son assiduité et ses initiatives, et suivez les textes examinés par l'Assemblée."

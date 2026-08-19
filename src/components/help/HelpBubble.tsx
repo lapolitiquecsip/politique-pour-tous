@@ -55,7 +55,7 @@ export default function HelpBubble() {
             animate={{ opacity: 1, y: 0, scale: 1 }}
             exit={{ opacity: 0, y: 12, scale: 0.9 }}
             transition={{ type: "spring", stiffness: 260, damping: 18 }}
-            className={`fixed bottom-[92px] left-5 z-[60] max-w-[250px] rounded-2xl bg-slate-900 p-3.5 text-left shadow-2xl shadow-sky-900/30 ring-1 ${th.teaserRing}`}
+            className={`hidden sm:block fixed bottom-[92px] left-5 z-[60] max-w-[250px] rounded-2xl bg-slate-900 p-3.5 text-left shadow-2xl shadow-sky-900/30 ring-1 ${th.teaserRing}`}
           >
             <p className={`flex items-center gap-1.5 text-[10px] font-black uppercase tracking-widest ${th.teaser}`}>
               <GraduationCap size={13} /> Comment ça marche ?
@@ -67,11 +67,12 @@ export default function HelpBubble() {
         )}
       </AnimatePresence>
 
-      {/* Bouton flottant en forme de nuage, animé en permanence. */}
+      {/* Bouton flottant en forme de nuage. Réduit (~-32%) sur mobile pour prendre moins de place. */}
+      <div className="fixed bottom-5 left-5 z-[60] origin-bottom-left scale-[.68] sm:scale-100">
       <motion.button
         onClick={() => { setOpen(true); setTeaser(false); }}
         aria-label="Aide : comprendre cette page"
-        className="group fixed bottom-5 left-5 z-[60] flex items-center justify-center"
+        className="group relative flex items-center justify-center"
         animate={{ y: [0, -7, 0] }}
         transition={{ duration: 3.2, repeat: Infinity, ease: "easeInOut" }}
         whileHover={{ scale: 1.08 }}
@@ -108,6 +109,7 @@ export default function HelpBubble() {
           Comprendre cette page
         </span>
       </motion.button>
+      </div>
 
       <AnimatePresence>
         {open && (

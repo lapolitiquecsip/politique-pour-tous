@@ -2,7 +2,7 @@
 
 import { useState, useEffect } from "react";
 import { supabase } from "@/lib/supabase";
-import { Star, RefreshCw as Loader2, X, AlertCircle, ArrowRight } from "lucide-react";
+import { Star, RefreshCw as Loader2, X, AlertCircle, ArrowRight, Crown } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
 import Link from "next/link";
 import { AwardBadge } from "@/components/ui/award-badge";
@@ -150,11 +150,23 @@ export default function PremiumButton() {
               <X className="w-3 h-3" />
             </button>
 
-            <AwardBadge 
-              titleText={loading ? "Redirection..." : "Devenir Premium"}
-              subtitleText="Abonnement Citoyen"
+            {/* Mobile : pastille compacte (prend beaucoup moins de place). */}
+            <button
               onClick={handlePremiumClick}
-            />
+              aria-label="Devenir premium"
+              className="sm:hidden flex h-11 w-11 items-center justify-center rounded-full bg-gradient-to-br from-amber-400 to-amber-600 text-white shadow-lg shadow-amber-500/30 ring-2 ring-white/60 dark:ring-slate-900 transition-transform active:scale-95"
+            >
+              <Crown className="h-5 w-5" />
+            </button>
+
+            {/* Écran large : badge complet. */}
+            <div className="hidden sm:block">
+              <AwardBadge
+                titleText={loading ? "Redirection..." : "Devenir Premium"}
+                subtitleText="Abonnement Citoyen"
+                onClick={handlePremiumClick}
+              />
+            </div>
           </div>
         </motion.div>
       </div>

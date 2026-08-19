@@ -3,18 +3,19 @@
 import React, { useEffect, useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { api } from '@/lib/api';
-import { 
-  X, 
-  Gavel, 
-  ShieldCheck, 
-  AlertTriangle, 
-  Clock, 
-  ExternalLink, 
+import {
+  X,
+  Gavel,
+  ShieldCheck,
+  AlertTriangle,
+  Clock,
+  ExternalLink,
   FileText,
   Calendar,
   Search,
   CheckCircle2,
-  AlertCircle
+  AlertCircle,
+  ChevronDown
 } from 'lucide-react';
 
 interface LegalStatusModalProps {
@@ -35,12 +36,22 @@ export default function LegalStatusModal({ isOpen, onClose, deputy }: LegalStatu
 
   // Explications concrètes, affaire par affaire (chargées depuis la base).
   const [explanations, setExplanations] = useState<Record<string, string>>({});
+  const [loadingExpl, setLoadingExpl] = useState(false);
+  // Affaires dépliées (clic → précisions). Un Set d'index.
+  const [expanded, setExpanded] = useState<Set<number>>(new Set());
+  const toggle = (i: number) => setExpanded(prev => {
+    const n = new Set(prev); n.has(i) ? n.delete(i) : n.add(i); return n;
+  });
   useEffect(() => {
     if (!isOpen || isClean) return;
+    setExpanded(new Set());
     const keys = rawIssues.split('\n\n\n').filter(Boolean)
       .map((issue: string) => caseKey((issue.split('\n').filter(Boolean)[0] || '')))
       .filter(Boolean);
-    if (keys.length) api.getLegalExplanations(keys).then(setExplanations).catch(() => {});
+    if (keys.length) {
+      setLoadingExpl(true);
+      api.getLegalExplanations(keys).then(setExplanations).catch(() => {}).finally(() => setLoadingExpl(false));
+    }
   }, [isOpen, isClean, rawIssues]);
 
   return (
@@ -115,26 +126,63 @@ export default function LegalStatusModal({ isOpen, onClose, deputy }: LegalStatu
                         const details = lines.slice(1).join('\n');
                         const explanation = explanations[caseKey(title || '')];
 
+                        const isOpen2 = expanded.has(idx);
                         return (
                           <div key={idx} className="relative pl-8 border-l-2 border-amber-500/20 dark:border-amber-500/10 py-2 group">
                             <div className="absolute left-[-9px] top-4 w-4 h-4 rounded-full bg-amber-500 shadow-lg shadow-amber-500/20 group-hover:scale-125 transition-transform" />
-                            <div className="bg-white/60 dark:bg-slate-900/40 backdrop-blur-sm p-5 rounded-2xl border border-white dark:border-white/5 shadow-sm group-hover:shadow-md transition-all">
-                              <h5 className="text-xs font-black text-slate-900 dark:text-white uppercase tracking-tight mb-2 leading-tight">
-                                {title}
-                              </h5>
+                            <button
+                              type="button"
+                              onClick={() => toggle(idx)}
+                              aria-expanded={isOpen2}
+                              className="w-full text-left bg-white/60 dark:bg-slate-900/40 backdrop-blur-sm p-5 rounded-2xl border border-white dark:border-white/5 shadow-sm hover:shadow-md hover:border-amber-200 dark:hover:border-amber-500/30 transition-all cursor-pointer"
+                            >
+                              <div className="flex items-start justify-between gap-3">
+                                <h5 className="text-xs font-black text-slate-900 dark:text-white uppercase tracking-tight mb-2 leading-tight">
+                                  {title}
+                                </h5>
+                                <ChevronDown size={18} className={`shrink-0 text-amber-500 transition-transform duration-300 ${isOpen2 ? 'rotate-180' : ''}`} />
+                              </div>
                               <div className="text-[10px] text-slate-500 dark:text-slate-400 font-bold uppercase tracking-wider leading-relaxed">
                                 {details}
                               </div>
-                              {explanation && (
-                                <div className="mt-3 border-t border-slate-100 dark:border-white/5 pt-3">
-                                  <p className="flex gap-2 text-[11px] leading-relaxed text-slate-600 dark:text-slate-300 normal-case font-medium italic">
-                                    <span className="not-italic">💡</span>
-                                    <span>{explanation}</span>
-                                  </p>
-                                  <p className="mt-2 text-[9px] font-bold uppercase tracking-widest text-slate-300 dark:text-slate-600 normal-case">Résumé généré automatiquement</p>
-                                </div>
+
+                              {/* Précisions révélées au clic */}
+                              <AnimatePresence initial={false}>
+                                {isOpen2 && (
+                                  <motion.div
+                                    initial={{ height: 0, opacity: 0 }}
+                                    animate={{ height: 'auto', opacity: 1 }}
+                                    exit={{ height: 0, opacity: 0 }}
+                                    transition={{ duration: 0.28, ease: 'easeInOut' }}
+                                    className="overflow-hidden"
+                                  >
+                                    <div className="mt-3 border-t border-slate-100 dark:border-white/5 pt-3">
+                                      {explanation ? (
+                                        <>
+                                          <p className="flex gap-2 text-[12px] leading-relaxed text-slate-700 dark:text-slate-200 normal-case font-medium">
+                                            <span className="not-italic shrink-0">💡</span>
+                                            <span>{explanation}</span>
+                                          </p>
+                                          <p className="mt-2 text-[9px] font-bold uppercase tracking-widest text-slate-300 dark:text-slate-600 normal-case">Résumé généré automatiquement</p>
+                                        </>
+                                      ) : (
+                                        <p className="flex gap-2 text-[12px] leading-relaxed text-slate-500 dark:text-slate-400 normal-case italic">
+                                          <span className="not-italic shrink-0">💡</span>
+                                          <span>{loadingExpl ? 'Chargement des précisions…' : "Le détail de cette affaire n'est pas encore disponible. Les infractions et peines retenues sont indiquées ci-dessus."}</span>
+                                        </p>
+                                      )}
+                                    </div>
+                                  </motion.div>
+                                )}
+                              </AnimatePresence>
+
+                              {/* Invitation au clic (repliée) */}
+                              {!isOpen2 && (
+                                <p className="mt-3 text-[10px] font-black uppercase tracking-widest text-amber-600 dark:text-amber-400 flex items-center gap-1">
+                                  Comprendre cette affaire
+                                </p>
                               )}
-                            </div>
+                            </button>
                           </div>
                         );
                       })}

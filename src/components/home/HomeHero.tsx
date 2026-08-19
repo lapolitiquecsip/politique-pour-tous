@@ -73,7 +73,7 @@ export default function HomeHero() {
               whileHover={{ y: -4 }}
               className="group flex flex-col items-center text-center gap-3 rounded-2xl border border-slate-200/70 dark:border-slate-800 bg-white dark:bg-slate-900/40 px-5 pt-5 pb-7 transition-shadow hover:border-slate-300 hover:shadow-lg dark:hover:border-slate-700"
             >
-              <div className="w-full overflow-hidden rounded-xl">
+              <div className="w-full max-w-[200px] sm:max-w-none mx-auto overflow-hidden rounded-xl">
                 <div className="aspect-[320/150] w-full transition-transform duration-500 group-hover:scale-[1.04]">
                   <HomeCardArt kind={card.art} />
                 </div>

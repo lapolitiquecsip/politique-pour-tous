@@ -23,13 +23,17 @@ function StarCrown() {
 }
 
 export default function EuropeHero({ description, links }: { description: string; links: { label: string; href: string }[] }) {
+  const img = `${process.env.NEXT_PUBLIC_BASE_PATH || ""}/images/parlement_europeen_premium.jpg`;
   return (
     <div className="relative overflow-hidden bg-[#00133a] px-4 pt-28 pb-16 text-center">
+      {/* Photo de l'hémicycle du Parlement européen + voile bleu pour la lisibilité. */}
+      <div className="absolute inset-0 bg-cover bg-center" style={{ backgroundImage: `url(${img})` }} />
+      <div className="absolute inset-0 bg-gradient-to-b from-[#00133a]/86 via-[#00133a]/72 to-[#00133a]/95" />
       {/* Halos lumineux (bleu + or). */}
-      <div className="absolute left-1/4 top-0 h-96 w-96 -translate-x-1/2 rounded-full bg-[#003399]/50 blur-[120px]" />
+      <div className="absolute left-1/4 top-0 h-96 w-96 -translate-x-1/2 rounded-full bg-[#003399]/40 blur-[120px]" />
       <div className="absolute right-1/4 top-10 h-96 w-96 translate-x-1/2 rounded-full bg-[#FFCC00]/15 blur-[130px]" />
       <StarCrown />
-      <div className="relative mx-auto max-w-5xl">
+      <div className="relative z-10 mx-auto max-w-5xl">
         <span className="inline-flex items-center gap-2 rounded-full border border-[#FFCC00]/30 bg-white/5 px-4 py-1.5 text-[11px] font-black uppercase tracking-[0.25em] text-[#FFD54A]">
           🇪🇺 Parlement européen · 27 pays
         </span>

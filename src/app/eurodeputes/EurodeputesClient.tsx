@@ -24,7 +24,9 @@ const grad = (code: string): [string, string] => GROUP_GRAD[code] || GROUP_GRAD.
 
 export default function EurodeputesClient({ meps }: { meps: any[] }) {
   const [q, setQ] = useState("");
-  const [group, setGroup] = useState<string | null>(null);
+  // Pré-filtre par groupe si l'URL le précise (ex. clic sur un secteur de l'hémicycle → ?group=CODE).
+  const [group, setGroup] = useState<string | null>(() =>
+    typeof window === "undefined" ? null : new URLSearchParams(window.location.search).get("group"));
 
   const groups = useMemo(() => {
     const c: Record<string, number> = {};

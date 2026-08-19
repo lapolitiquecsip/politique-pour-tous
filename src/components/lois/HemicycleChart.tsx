@@ -10,7 +10,7 @@ import { api } from "@/lib/api";
 // Couleurs = couleurs politiques (identité) ; structure = guide dataviz (légende + labels
 // directs, badges contrastés, écart 2px entre secteurs, thème clair/sombre).
 
-type Group = { label: string; seats: number; color: string; order: number; slug?: string | null };
+type Group = { label: string; seats: number; color: string; order: number; slug?: string | null; href?: string | null };
 
 // Ordre gauche → droite dans l'hémicycle (rang par sigle) pour l'Assemblée.
 const AN_ORDER: Record<string, number> = {
@@ -31,17 +31,18 @@ const EU_GROUPS: Record<string, { label: string; color: string; order: number }>
   NI: { label: "Non inscrits", color: "#8D949A", order: 9 },
 };
 
-// Groupes du Sénat → couleur moderne (par famille) + ordre gauche→droite.
-const SENATE: Record<string, { label: string; color: string; order: number }> = {
-  "CRCE-K": { label: "CRCE-K", color: "#B01A2E", order: 0 },
-  GEST: { label: "Écologiste", color: "#4CA85F", order: 1 },
-  SER: { label: "Socialiste (SER)", color: "#E24E8B", order: 2 },
-  RDSE: { label: "RDSE", color: "#E0A02E", order: 3 },
-  RDPI: { label: "RDPI", color: "#8B5CF6", order: 4 },
-  UC: { label: "Union Centriste", color: "#F2960F", order: 5 },
-  "Les Indépendants": { label: "Les Indépendants", color: "#5B9BD5", order: 6 },
-  "Les Républicains": { label: "Les Républicains", color: "#2E5AAC", order: 7 },
-  NI: { label: "Non inscrits", color: "#8D949A", order: 9 },
+// Groupes du Sénat → couleur moderne (par famille) + ordre gauche→droite + fiche du parti
+// correspondant (slug de political_parties, via les alias : chaque groupe a une fiche).
+const SENATE: Record<string, { label: string; color: string; order: number; slug?: string }> = {
+  "CRCE-K": { label: "CRCE-K", color: "#B01A2E", order: 0, slug: "parti-communiste-francais" },
+  GEST: { label: "Écologiste", color: "#4CA85F", order: 1, slug: "les-ecologistes" },
+  SER: { label: "Socialiste (SER)", color: "#E24E8B", order: 2, slug: "parti-socialiste" },
+  RDSE: { label: "RDSE", color: "#E0A02E", order: 3, slug: "rdse" },
+  RDPI: { label: "RDPI", color: "#8B5CF6", order: 4, slug: "renaissance" },
+  UC: { label: "Union Centriste", color: "#F2960F", order: 5, slug: "union-centriste" },
+  "Les Indépendants": { label: "Les Indépendants", color: "#5B9BD5", order: 6, slug: "les-independants" },
+  "Les Républicains": { label: "Les Républicains", color: "#2E5AAC", order: 7, slug: "les-republicains" },
+  NI: { label: "Non inscrits", color: "#8D949A", order: 9, slug: "non-inscrits" },
 };
 
 function polar(cx: number, cy: number, r: number, deg: number) {
@@ -92,6 +93,8 @@ function Hemicycle({ title, total, groups }: { title: string; total: number; gro
   const hg = hovered !== null ? sorted[hovered] : null;
   const clip = (s: string) => (s.length > 15 ? s.slice(0, 14) + "…" : s);
   const EASE = "transform .28s cubic-bezier(.2,.8,.2,1), opacity .2s ease, filter .2s ease";
+  // Destination au clic : fiche du parti (slug) ou, à défaut, un lien explicite (href, ex. UE).
+  const linkOf = (g: Group): string | null => g.href ?? (g.slug ? `/partis/${g.slug}` : null);
   return (
     <figure className="flex flex-col items-center">
       <svg viewBox={`0 0 ${W} ${H}`} className="w-full max-w-[560px]" role="img" aria-label={`${title} : ${total} sièges`}>
@@ -101,11 +104,11 @@ function Hemicycle({ title, total, groups }: { title: string; total: number; gro
           return (
             <path key={i} d={sectorPath(cx, cy, r0, r1, degStart, degEnd)} fill={g.color}
               onMouseEnter={() => setHovered(i)} onMouseLeave={() => setHovered(null)}
-              onClick={() => g.slug && router.push(`/partis/${g.slug}`)}
-              className={g.slug ? "cursor-pointer" : ""}
+              onClick={() => { const l = linkOf(g); if (l) router.push(l); }}
+              className={linkOf(g) ? "cursor-pointer" : ""}
               style={{ transform: isH ? `translate(${dx}px, ${dy}px)` : "translate(0,0)", transition: EASE,
                 opacity: dim ? 0.4 : 1, filter: dim ? "grayscale(.75)" : (isH ? "brightness(1.06)" : "none") }}>
-              <title>{g.label} — {g.seats} sièges{g.slug ? " · voir la fiche du parti" : ""}</title>
+              <title>{g.label} — {g.seats} sièges{linkOf(g) ? " · cliquer pour en savoir plus" : ""}</title>
             </path>
           );
         })}
@@ -140,17 +143,18 @@ function Hemicycle({ title, total, groups }: { title: string; total: number; gro
           );
           const cls = "inline-flex items-center gap-1.5 text-[11px] font-bold text-slate-600 dark:text-slate-300 transition-all";
           const style = { opacity: dim ? 0.4 : 1, transform: isH ? "scale(1.08)" : "scale(1)" };
-          return g.slug ? (
-            <Link key={i} href={`/partis/${g.slug}`} onMouseEnter={() => setHovered(i)} onMouseLeave={() => setHovered(null)} className={`${cls} hover:text-red-600`} style={style}>{inner}</Link>
+          const link = linkOf(g);
+          return link ? (
+            <Link key={i} href={link} onMouseEnter={() => setHovered(i)} onMouseLeave={() => setHovered(null)} className={`${cls} hover:text-red-600`} style={style}>{inner}</Link>
           ) : (
             <span key={i} onMouseEnter={() => setHovered(i)} onMouseLeave={() => setHovered(null)} className={cls} style={style}>{inner}</span>
           );
         })}
       </div>
-      {sorted.some(g => g.slug) && (
+      {sorted.some(g => linkOf(g)) && (
         <figcaption className="mt-3 inline-flex items-center gap-1.5 rounded-md bg-yellow-200 px-2.5 py-1 text-[10px] font-bold uppercase tracking-wider text-slate-800 shadow-sm dark:bg-yellow-300 dark:text-slate-900">
           <MousePointerClick className="h-3 w-3" />
-          Cliquez sur un parti pour voir sa fiche
+          Cliquez sur un {sorted.some(g => g.href) ? "groupe" : "parti"} pour en savoir plus
         </figcaption>
       )}
     </figure>
@@ -178,7 +182,7 @@ export default function HemicycleChart({ chamber = "both", title, subtitle }: { 
         if (!active) return;
         setSenat((rows || []).map(r => {
           const m = SENATE[r.group] || { label: r.group, color: "#8D949A", order: 8 };
-          return { label: m.label, seats: r.seats, color: m.color, order: m.order };
+          return { label: m.label, seats: r.seats, color: m.color, order: m.order, slug: m.slug || null };
         }));
       }).catch(() => setSenat([]));
     }
@@ -189,7 +193,8 @@ export default function HemicycleChart({ chamber = "both", title, subtitle }: { 
         for (const m of rows || []) { const g = (m.ep_group_code || "NI"); counts.set(g, (counts.get(g) || 0) + 1); }
         setEu([...counts.entries()].map(([code, seats]) => {
           const m = EU_GROUPS[code] || { label: code, color: "#8D949A", order: 8 };
-          return { label: m.label, seats, color: m.color, order: m.order };
+          // Pas de fiche pour un groupe européen → on renvoie vers la liste des eurodéputés du groupe.
+          return { label: m.label, seats, color: m.color, order: m.order, href: `/eurodeputes?group=${encodeURIComponent(code)}` };
         }));
       }).catch(() => setEu([]));
     }

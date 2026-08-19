@@ -15,6 +15,7 @@ export default async function SenateursPage() {
     <div className="min-h-screen bg-white dark:bg-slate-950">
       <ChamberHero
         color="red"
+        image="/images/senat_luxembourg_premium.png"
         title="SÉNA" accentLetter="T"
         eyebrow="Seconde chambre · 348 sénateurs"
         description="Les 348 sénateurs, élus au suffrage indirect par les grands électeurs, représentent les territoires (communes, départements, régions). Ils votent la loi avec l'Assemblée et contrôlent le Gouvernement. Sur cette page : trouvez votre sénateur, consultez ses votes, sa présence et ses initiatives, et suivez les textes examinés au Sénat."

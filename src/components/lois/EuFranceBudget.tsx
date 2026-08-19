@@ -24,6 +24,7 @@ type Row = {
 
 export default function EuFranceBudget() {
   const [series, setSeries] = useState<Row[] | null | undefined>(undefined);
+  const [hov, setHov] = useState<string | null>(null); // survol d'un poste de dépense
 
   useEffect(() => {
     let active = true;
@@ -97,15 +98,21 @@ export default function EuFranceBudget() {
         <div className="mt-4 rounded-3xl border border-white/10 bg-white/[0.03] p-6">
           <p className="text-[11px] font-black uppercase tracking-widest text-yellow-400/90">Ce que l'UE finance en France</p>
           <div className="mt-4 space-y-3">
-            {breakdown.slice().sort((a, c) => c.amount_eur - a.amount_eur).map((x, i) => (
-              <div key={x.label} className="flex items-center gap-3">
-                <span className="w-40 shrink-0 truncate text-sm font-bold text-blue-100" title={x.label}>{x.label}</span>
-                <div className="h-3 flex-1 overflow-hidden rounded-full bg-white/5">
-                  <div className="h-full rounded-full" style={{ width: `${(x.amount_eur / maxAmt) * 100}%`, background: BAR[i % BAR.length] }} />
+            {breakdown.slice().sort((a, c) => c.amount_eur - a.amount_eur).map((x, i) => {
+              const color = BAR[i % BAR.length];
+              const isH = hov === x.label, dim = hov !== null && !isH;
+              return (
+                <div key={x.label} onMouseEnter={() => setHov(x.label)} onMouseLeave={() => setHov(null)}
+                  className="flex items-center gap-3 cursor-default transition-all duration-200"
+                  style={{ opacity: dim ? 0.4 : 1, transform: isH ? "translateX(6px)" : "translateX(0)" }}>
+                  <span className="w-40 shrink-0 truncate text-sm font-bold text-blue-100" title={x.label}>{x.label}</span>
+                  <div className="h-3 flex-1 overflow-hidden rounded-full bg-white/5">
+                    <div className="h-full rounded-full transition-all duration-200" style={{ width: `${(x.amount_eur / maxAmt) * 100}%`, background: color, boxShadow: isH ? `0 0 12px ${color}` : "none" }} />
+                  </div>
+                  <span className="w-20 shrink-0 text-right text-sm font-black tabular-nums text-white">{fmtMd(x.amount_eur)}</span>
                 </div>
-                <span className="w-20 shrink-0 text-right text-sm font-black tabular-nums text-white">{fmtMd(x.amount_eur)}</span>
-              </div>
-            ))}
+              );
+            })}
           </div>
         </div>
       )}

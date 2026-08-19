@@ -47,6 +47,7 @@ function LocalBudgetContent() {
   const [communeData, setCommuneData] = useState<any | null>(null);
   const [loadingData, setLoadingData] = useState(true);
   const [activeSection, setActiveSection] = useState<"fonctionnement" | "investissement">("fonctionnement");
+  const [hovItem, setHovItem] = useState<number | null>(null); // survol d'un poste (met en avant, estompe les autres)
 
   useEffect(() => {
     if (!code) return;
@@ -335,8 +336,11 @@ function LocalBudgetContent() {
               <div className="space-y-6">
                 {activeItems.map((item, idx) => {
                   const amount = Math.round(activeAmount * (item.percent / 100));
+                  const isH = hovItem === idx, dim = hovItem !== null && !isH;
                   return (
-                    <div key={idx} className="space-y-3 group p-4 hover:bg-slate-50/50 rounded-2xl transition-colors border border-transparent hover:border-slate-100">
+                    <div key={idx} onMouseEnter={() => setHovItem(idx)} onMouseLeave={() => setHovItem(null)}
+                      className="space-y-3 group p-4 hover:bg-slate-50/50 rounded-2xl transition-all duration-200 border border-transparent hover:border-slate-100"
+                      style={{ opacity: dim ? 0.4 : 1, transform: isH ? "translateX(6px)" : "translateX(0)" }}>
                       <div className="flex items-start justify-between gap-4">
                         <div className="flex gap-3">
                           <div className={`w-10 h-10 rounded-xl flex items-center justify-center shrink-0 text-white ${item.color} shadow-md`}>
@@ -360,6 +364,7 @@ function LocalBudgetContent() {
                           animate={{ width: `${item.percent}%` }}
                           transition={{ duration: 1, delay: 0.1 + idx * 0.05 }}
                           className={`h-full ${item.color} rounded-full`}
+                          style={{ filter: isH ? "brightness(1.12) saturate(1.2)" : "none", transition: "filter .2s" }}
                         />
                       </div>
                     </div>

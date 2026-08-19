@@ -77,43 +77,73 @@ function Hemicycle({ title, total, groups }: { title: string; total: number; gro
     cursor = degEnd;
     const mid = (degStart + degEnd) / 2;
     const [bx, by] = polar(cx, cy, rBadge, mid);
-    return { g, degStart: degStart - PAD / 2, degEnd: degEnd + PAD / 2, bx, by, big: span > 7 };
+    return { g, degStart: degStart - PAD / 2, degEnd: degEnd + PAD / 2, mid, bx, by, big: span > 7 };
   });
 
   const router = useRouter();
+  // Survol : le secteur ressort radialement, les autres s'estompent, le centre affiche le
+  // groupe survolé. Aucun changement au repos. (Effet type « donut interactif ».)
+  const [hovered, setHovered] = useState<number | null>(null);
+  const OFF = 13;
+  const offset = (mid: number): [number, number] => {
+    const a = (mid * Math.PI) / 180;
+    return [OFF * Math.cos(a), -OFF * Math.sin(a)];
+  };
+  const hg = hovered !== null ? sorted[hovered] : null;
+  const clip = (s: string) => (s.length > 15 ? s.slice(0, 14) + "…" : s);
+  const EASE = "transform .28s cubic-bezier(.2,.8,.2,1), opacity .2s ease, filter .2s ease";
   return (
     <figure className="flex flex-col items-center">
       <svg viewBox={`0 0 ${W} ${H}`} className="w-full max-w-[560px]" role="img" aria-label={`${title} : ${total} sièges`}>
-        {arcs.map(({ g, degStart, degEnd }, i) => (
-          <path key={i} d={sectorPath(cx, cy, r0, r1, degStart, degEnd)} fill={g.color}
-            onClick={() => g.slug && router.push(`/partis/${g.slug}`)}
-            className={`transition-opacity hover:opacity-80 ${g.slug ? "cursor-pointer" : ""}`}>
-            <title>{g.label} — {g.seats} sièges{g.slug ? " · voir la fiche du parti" : ""}</title>
-          </path>
-        ))}
+        {arcs.map(({ g, degStart, degEnd, mid }, i) => {
+          const isH = hovered === i, dim = hovered !== null && !isH;
+          const [dx, dy] = offset(mid);
+          return (
+            <path key={i} d={sectorPath(cx, cy, r0, r1, degStart, degEnd)} fill={g.color}
+              onMouseEnter={() => setHovered(i)} onMouseLeave={() => setHovered(null)}
+              onClick={() => g.slug && router.push(`/partis/${g.slug}`)}
+              className={g.slug ? "cursor-pointer" : ""}
+              style={{ transform: isH ? `translate(${dx}px, ${dy}px)` : "translate(0,0)", transition: EASE,
+                opacity: dim ? 0.4 : 1, filter: dim ? "grayscale(.75)" : (isH ? "brightness(1.06)" : "none") }}>
+              <title>{g.label} — {g.seats} sièges{g.slug ? " · voir la fiche du parti" : ""}</title>
+            </path>
+          );
+        })}
         {/* Badges de sièges (seulement pour les secteurs assez larges pour rester lisibles). */}
-        {arcs.filter(a => a.big).map(({ g, bx, by }, i) => (
-          <g key={`b-${i}`}>
-            <circle cx={bx} cy={by} r={17} fill={g.color} stroke="white" strokeWidth={2} className="dark:stroke-slate-900" />
-            <text x={bx} y={by} textAnchor="middle" dominantBaseline="central" className="fill-white font-black" fontSize={13}>{g.seats}</text>
-          </g>
-        ))}
-        <text x={cx} y={cy - 34} textAnchor="middle" className="fill-slate-900 dark:fill-white font-staatliches" fontSize={40}>{total}</text>
-        <text x={cx} y={cy - 8} textAnchor="middle" className="fill-slate-400 font-black uppercase" fontSize={13} letterSpacing={2}>{title}</text>
+        {arcs.map(({ g, bx, by, mid, big }, i) => {
+          if (!big) return null;
+          const isH = hovered === i, dim = hovered !== null && !isH;
+          const [dx, dy] = offset(mid);
+          return (
+            <g key={`b-${i}`} style={{ transform: `translate(${isH ? dx : 0}px, ${isH ? dy : 0}px) scale(${isH ? 1.18 : 1})`,
+              transformBox: "fill-box", transformOrigin: "center", transition: EASE, opacity: dim ? 0.4 : 1 }}>
+              <circle cx={bx} cy={by} r={17} fill={g.color} stroke="white" strokeWidth={2} className="dark:stroke-slate-900" />
+              <text x={bx} y={by} textAnchor="middle" dominantBaseline="central" className="fill-white font-black" fontSize={13}>{g.seats}</text>
+            </g>
+          );
+        })}
+        <text x={cx} y={cy - 34} textAnchor="middle" className="font-staatliches" fontSize={40}
+          style={{ fill: hg ? hg.color : undefined }} fillOpacity={1}>
+          <tspan className={hg ? "" : "fill-slate-900 dark:fill-white"}>{hg ? hg.seats : total}</tspan>
+        </text>
+        <text x={cx} y={cy - 8} textAnchor="middle" className="fill-slate-400 font-black uppercase" fontSize={hg ? 11 : 13} letterSpacing={hg ? 1 : 2}>{hg ? clip(hg.label) : title}</text>
       </svg>
       {/* Légende (identité jamais portée par la seule couleur) — cliquable vers la fiche du parti. */}
       <div className="mt-2 flex flex-wrap justify-center gap-x-4 gap-y-1.5">
         {sorted.map((g, i) => {
+          const isH = hovered === i, dim = hovered !== null && !isH;
           const inner = (
             <>
               <span className="h-2.5 w-2.5 rounded-full" style={{ background: g.color }} />
               {g.label} <span className="text-slate-400">· {g.seats}</span>
             </>
           );
+          const cls = "inline-flex items-center gap-1.5 text-[11px] font-bold text-slate-600 dark:text-slate-300 transition-all";
+          const style = { opacity: dim ? 0.4 : 1, transform: isH ? "scale(1.08)" : "scale(1)" };
           return g.slug ? (
-            <Link key={i} href={`/partis/${g.slug}`} className="inline-flex items-center gap-1.5 text-[11px] font-bold text-slate-600 transition hover:text-red-600 dark:text-slate-300">{inner}</Link>
+            <Link key={i} href={`/partis/${g.slug}`} onMouseEnter={() => setHovered(i)} onMouseLeave={() => setHovered(null)} className={`${cls} hover:text-red-600`} style={style}>{inner}</Link>
           ) : (
-            <span key={i} className="inline-flex items-center gap-1.5 text-[11px] font-bold text-slate-600 dark:text-slate-300">{inner}</span>
+            <span key={i} onMouseEnter={() => setHovered(i)} onMouseLeave={() => setHovered(null)} className={cls} style={style}>{inner}</span>
           );
         })}
       </div>

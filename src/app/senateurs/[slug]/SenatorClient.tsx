@@ -27,6 +27,7 @@ import ActivityRank from "@/components/shared/ActivityRank";
 import FollowButton from "@/components/shared/FollowButton";
 import ShareButtons from "@/components/shared/ShareButtons";
 import RemunerationInfo from "@/components/shared/RemunerationInfo";
+import MandateEndedBanner from "@/components/shared/MandateEndedBanner";
 import ParallelRoles from "@/components/shared/ParallelRoles";
 import StructuredBio from "@/components/shared/StructuredBio";
 import InstitutionalRoleBanner from "@/components/shared/InstitutionalRoleBanner";
@@ -271,6 +272,7 @@ export default function SenatorClient({ senator, embedded }: { senator: any; emb
             transition={{ delay: 0.2 }}
             className="lg:col-span-2 space-y-10"
           >
+            {senator.sitting === false && <MandateEndedBanner role="sénateur·rice" name={`${senator.first_name ?? ""} ${senator.last_name ?? ""}`.trim()} />}
             <div className="flex flex-wrap items-center gap-3">
               <FollowButton kind="senator" id={String(senator.id)} label="ce sénateur" />
               <ShareButtons title={`${senator.first_name ?? ""} ${senator.last_name ?? ""}`.trim() || "Fiche du sénateur"} />

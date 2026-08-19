@@ -64,7 +64,8 @@ export const api = {
   getDeputies: async () => {
     const { data, error } = await supabase.from('deputies').select('*').order('last_name');
     if (error) { console.error(error); return []; }
-    return data || [];
+    // Exclut les élus qui ont quitté leur fonction (sitting=false) des listings actifs.
+    return (data || []).filter((d: any) => d.sitting !== false);
   },
 
   getDeputyBySlug: async (slug: string) => {
@@ -197,7 +198,7 @@ export const api = {
   getSenators: async () => {
     const { data, error } = await supabase.from('senators').select('*').order('last_name');
     if (error) { console.error(error); return []; }
-    return data || [];
+    return (data || []).filter((s: any) => s.sitting !== false);
   },
 
   getSenatorBySlug: async (slug: string) => {

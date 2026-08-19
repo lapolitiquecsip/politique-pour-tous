@@ -39,6 +39,7 @@ import { AwardBadge } from "@/components/ui/award-badge";
 import FollowButton from "@/components/shared/FollowButton";
 import ShareButtons from "@/components/shared/ShareButtons";
 import RemunerationInfo from "@/components/shared/RemunerationInfo";
+import MandateEndedBanner from "@/components/shared/MandateEndedBanner";
 import { getFullPartyName } from "@/lib/party-utils";
 import VoteDetailsModal from "@/components/deputies/VoteDetailsModal";
 import LegalStatusModal from "@/components/deputies/LegalStatusModal";
@@ -536,6 +537,7 @@ export default function DeputyDetailPage({ params, embedded }: { params: Promise
             transition={{ delay: 0.2 }}
             className="lg:col-span-2 space-y-10"
           >
+            {deputy?.sitting === false && <MandateEndedBanner role="député·e" name={`${deputy?.first_name ?? ""} ${deputy?.last_name ?? ""}`.trim()} />}
             {/* Suivi + partage sur la même ligne (partage à côté, pas en dessous). */}
             <div className="flex flex-wrap items-center gap-3">
               <FollowButton kind="deputy" id={deputy?.id ? String(deputy.id) : null} label="ce député" />

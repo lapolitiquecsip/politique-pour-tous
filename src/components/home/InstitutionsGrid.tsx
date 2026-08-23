@@ -1,7 +1,7 @@
 "use client";
 import { useState, useEffect, memo } from "react";
 import { motion, AnimatePresence } from "framer-motion";
-import { X, ChevronRight, ChevronLeft, Landmark, CalendarDays, Clock } from "lucide-react";
+import { X, ChevronRight, ChevronLeft, Landmark, CalendarDays, Clock, MousePointerClick } from "lucide-react";
 
 import Link from "next/link";
 import { api } from "@/lib/api";
@@ -87,6 +87,14 @@ const InstitutionCard = memo(({ inst, index, onClick }: { inst: Institution, ind
       
       {/* Overlay dégradé - PRÉSERVÉ & AMÉLIORÉ */}
       <div className={`absolute inset-0 bg-gradient-to-t from-slate-950 via-slate-950/40 to-transparent group-hover:from-slate-900 group-hover:via-slate-900/20 transition-colors duration-500`} />
+
+      {/* Indicateur « cliquable » : onde qui pulse + icône de clic (tape ici) */}
+      <div className="absolute top-5 right-5 z-20 h-12 w-12 pointer-events-none">
+        <span className="absolute inset-0 rounded-full bg-white/50 animate-ping" />
+        <div className="relative flex h-12 w-12 items-center justify-center rounded-full bg-white text-slate-900 shadow-lg ring-1 ring-black/5 transition-transform duration-500 group-hover:scale-110">
+          <MousePointerClick className="h-6 w-6" />
+        </div>
+      </div>
 
       {/* Contenu */}
       <div className="relative z-10 flex flex-col justify-end h-full p-10">

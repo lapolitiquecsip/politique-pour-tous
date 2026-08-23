@@ -2,15 +2,15 @@
 
 import { useEffect, useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
-import { Sliders, Check, Loader2, ChevronDown, Mail, Bell } from "lucide-react";
+import { Sliders, Check, Loader2, ChevronDown, Mail, Bell, User, Briefcase, MapPin, Pencil, Sparkles } from "lucide-react";
 import { api } from "@/lib/api";
-import { INTEREST_DOMAINS } from "@/lib/data/interestDomains";
+import { INTEREST_DOMAINS, interestByCode } from "@/lib/data/interestDomains";
 
-const AGES = [
+const AGES: [string, string][] = [
   ["-18", "Moins de 18 ans"], ["18-24", "18 – 24 ans"], ["25-34", "25 – 34 ans"],
   ["35-49", "35 – 49 ans"], ["50-64", "50 – 64 ans"], ["65+", "65 ans et +"],
 ];
-const PROFESSIONS = [
+const PROFESSIONS: [string, string][] = [
   ["etudiant", "Étudiant·e"], ["salarie_prive", "Salarié·e (privé)"], ["fonctionnaire", "Fonctionnaire / service public"],
   ["independant", "Indépendant·e / chef·fe d'entreprise"], ["demandeur", "Demandeur d'emploi"], ["retraite", "Retraité·e"], ["autre", "Autre"],
 ];
@@ -19,9 +19,12 @@ const REGIONS = [
   "Grand Est", "Hauts-de-France", "Île-de-France", "Normandie", "Nouvelle-Aquitaine", "Occitanie",
   "Pays de la Loire", "Provence-Alpes-Côte d'Azur", "Guadeloupe", "Guyane", "Martinique", "La Réunion", "Mayotte",
 ];
-const IMPORTANCE = [
+const IMPORTANCE: [number, string][] = [
   [5, "Uniquement l'essentiel"], [4, "Important et +"], [3, "Notable et +"], [2, "Presque tout"], [1, "Tout"],
 ];
+
+const labelOf = (list: [string, string][], v: string) => list.find(x => x[0] === v)?.[1];
+const importanceLabel = (v: number) => IMPORTANCE.find(x => x[0] === v)?.[1] || "";
 
 const fieldCls = "w-full appearance-none rounded-xl border border-white/10 bg-white/5 px-4 py-3 text-sm font-medium text-white placeholder-slate-500 focus:border-amber-400/50 focus:outline-none focus:ring-2 focus:ring-amber-400/20";
 
@@ -65,13 +68,19 @@ export default function PremiumPreferences({ userId }: { userId: string }) {
         region: region || null, department: department || null, city: city || null, postal_code: postal || null,
         notify_email: notifyEmail, email_min_importance: minImportance,
       });
-      setSaved(true); setTimeout(() => setSaved(false), 2500);
+      setSaving(false);
+      setSaved(true);                       // ✓ vert « Profil enregistré »
+      setTimeout(() => setOpen(false), 900);  // puis le menu se referme sur le résumé
+      setTimeout(() => setSaved(false), 2600);
     } catch (e) {
       console.error("saveUserPreferences", e);
-    } finally { setSaving(false); }
+      setSaving(false);
+    }
   };
 
   const count = interests.length;
+  const hasData = count > 0 || !!age || !!profession || !!region || !!city || !!department || !!postal;
+  const locationStr = [city, department, region].filter(Boolean).join(" · ");
 
   return (
     <div className="bg-white/[0.03] backdrop-blur-xl rounded-[2.5rem] border border-white/10 shadow-2xl shadow-black/40 overflow-hidden">
@@ -87,15 +96,66 @@ export default function PremiumPreferences({ userId }: { userId: string }) {
               Mon profil & mes <span className="text-amber-400">notifications</span>
             </h2>
             <p className="mt-1 text-sm text-slate-400">
-              {loading ? "Chargement…" : count > 0 ? `${count} centre·s d'intérêt · alertes personnalisées activées` : "Complétez votre profil pour des alertes sur mesure"}
+              {loading ? "Chargement…" : hasData ? "Vos alertes personnalisées sont actives" : "Complétez votre profil pour des alertes sur mesure"}
             </p>
           </div>
         </div>
-        <span className={`flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-white/5 text-slate-300 ring-1 ring-white/10 transition-transform duration-500 ${open ? "rotate-180" : ""}`}>
-          <ChevronDown size={20} />
-        </span>
+        <div className="flex items-center gap-3">
+          <AnimatePresence>
+            {saved && (
+              <motion.span initial={{ opacity: 0, scale: 0.8 }} animate={{ opacity: 1, scale: 1 }} exit={{ opacity: 0 }}
+                className="hidden sm:inline-flex items-center gap-1.5 rounded-full bg-emerald-500/15 px-3 py-1.5 text-xs font-black uppercase tracking-widest text-emerald-400 ring-1 ring-emerald-500/30">
+                <Check size={14} /> Profil enregistré
+              </motion.span>
+            )}
+          </AnimatePresence>
+          <span className={`flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-white/5 text-slate-300 ring-1 ring-white/10 transition-transform duration-500 ${open ? "rotate-180" : ""}`}>
+            <ChevronDown size={20} />
+          </span>
+        </div>
       </button>
 
+      {/* RÉSUMÉ (menu fermé + profil rempli) : toutes les infos avec icônes. */}
+      {!open && hasData && !loading && (
+        <div className="px-6 md:px-8 pb-8 -mt-1 space-y-5">
+          {count > 0 && (
+            <div className="flex flex-wrap gap-2">
+              {interests.map(code => {
+                const d = interestByCode(code); if (!d) return null;
+                return (
+                  <span key={code} style={{ backgroundColor: d.color }}
+                    className="inline-flex items-center gap-1.5 rounded-full px-3.5 py-1.5 text-xs font-bold text-slate-900 shadow-sm">
+                    <span className="h-1.5 w-1.5 rounded-full bg-black/40" /> {d.label}
+                  </span>
+                );
+              })}
+            </div>
+          )}
+          <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-4">
+            <InfoTile icon={<User size={16} />} label="Tranche d'âge" value={labelOf(AGES, age) || "—"} />
+            <InfoTile icon={<Briefcase size={16} />} label="Profession" value={labelOf(PROFESSIONS, profession) || "—"} />
+            <InfoTile icon={<MapPin size={16} />} label="Localisation" value={locationStr || "—"} />
+            <InfoTile icon={notifyEmail ? <Mail size={16} /> : <Bell size={16} />} label="Alertes e-mail"
+              value={notifyEmail ? importanceLabel(minImportance) : "Désactivées"} accent={notifyEmail} />
+          </div>
+          <button onClick={() => setOpen(true)}
+            className="inline-flex items-center gap-2 rounded-xl border border-white/10 bg-white/5 px-4 py-2.5 text-[11px] font-black uppercase tracking-widest text-slate-300 transition hover:border-amber-400/40 hover:text-amber-300">
+            <Pencil size={13} /> Modifier mon profil
+          </button>
+        </div>
+      )}
+
+      {/* Invitation à compléter (menu fermé + profil vide). */}
+      {!open && !hasData && !loading && (
+        <div className="px-6 md:px-8 pb-8 -mt-1">
+          <button onClick={() => setOpen(true)}
+            className="inline-flex items-center gap-2 rounded-xl bg-gradient-to-r from-amber-400 to-yellow-500 px-5 py-3 text-[11px] font-black uppercase tracking-widest text-slate-900 shadow-lg shadow-amber-500/20 transition hover:brightness-110">
+            <Sparkles size={14} /> Compléter mon profil
+          </button>
+        </div>
+      )}
+
+      {/* FORMULAIRE (menu ouvert). */}
       <AnimatePresence initial={false}>
         {open && !loading && (
           <motion.div
@@ -195,7 +255,9 @@ export default function PremiumPreferences({ userId }: { userId: string }) {
                 <AnimatePresence>
                   {saved && (
                     <motion.span initial={{ opacity: 0, x: -8 }} animate={{ opacity: 1, x: 0 }} exit={{ opacity: 0 }}
-                      className="text-sm font-bold text-emerald-400">Profil enregistré ✓</motion.span>
+                      className="inline-flex items-center gap-1.5 text-sm font-black uppercase tracking-widest text-emerald-400">
+                      <Check size={16} /> Profil enregistré
+                    </motion.span>
                   )}
                 </AnimatePresence>
               </div>
@@ -203,6 +265,17 @@ export default function PremiumPreferences({ userId }: { userId: string }) {
           </motion.div>
         )}
       </AnimatePresence>
+    </div>
+  );
+}
+
+function InfoTile({ icon, label, value, accent }: { icon: React.ReactNode; label: string; value: string; accent?: boolean }) {
+  return (
+    <div className="rounded-2xl border border-white/10 bg-white/[0.02] p-4">
+      <p className="flex items-center gap-1.5 text-[10px] font-black uppercase tracking-widest text-slate-400">
+        <span className={accent ? "text-amber-300" : "text-slate-400"}>{icon}</span> {label}
+      </p>
+      <p className="mt-1.5 text-sm font-bold text-white leading-snug">{value}</p>
     </div>
   );
 }

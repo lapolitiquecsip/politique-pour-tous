@@ -2,13 +2,15 @@
 
 import { useEffect, useState } from "react";
 import { motion } from "framer-motion";
-import { Bell, Check, Vote } from "lucide-react";
+import { Bell, Check, Vote, Newspaper, ExternalLink } from "lucide-react";
 import { api } from "@/lib/api";
 import { BallotBox } from "./BallotVote";
+import { interestByCode } from "@/lib/data/interestDomains";
 
 type Notif = {
   id: string; type: string; title: string; detail: string | null;
-  position: string | null; event_at: string | null; read: boolean; created_at: string;
+  position: string | null; domain?: string | null; url?: string | null; importance?: number | null;
+  event_at: string | null; read: boolean; created_at: string;
 };
 
 const fmtDate = (d: string | null) =>
@@ -61,7 +63,7 @@ export default function NotificationsFeed({ userId }: { userId: string }) {
         </div>
         <div>
           <p className="font-bold text-slate-900">Aucune notification pour l'instant</p>
-          <p className="text-xs text-slate-500">Suivez des élus : vous serez prévenu ici à chaque vote important.</p>
+          <p className="text-xs text-slate-500">Complétez votre profil (centres d'intérêt, localisation) et suivez des élus : vos alertes personnalisées apparaîtront ici.</p>
         </div>
       </div>
     );
@@ -80,7 +82,7 @@ export default function NotificationsFeed({ userId }: { userId: string }) {
             )}
           </div>
           <div>
-            <h3 className="font-black uppercase tracking-widest text-slate-900 text-sm">Activité de vos élus</h3>
+            <h3 className="font-black uppercase tracking-widest text-slate-900 text-sm">Mes alertes</h3>
             <p className="text-[11px] text-slate-500">{unread > 0 ? `${unread} nouvelle${unread > 1 ? "s" : ""}` : "À jour"}</p>
           </div>
         </div>
@@ -95,27 +97,51 @@ export default function NotificationsFeed({ userId }: { userId: string }) {
       </div>
 
       <div className="max-h-[22rem] overflow-y-auto">
-        {items.map((n, i) => (
+        {items.map((n, i) => {
+          const isVote = n.type === "vote";
+          const dom = n.domain ? interestByCode(n.domain) : undefined;
+          const Wrapper: any = n.url ? "a" : "div";
+          const wrapperProps = n.url ? { href: n.url, target: "_blank", rel: "noopener noreferrer" } : {};
+          return (
           <motion.div
             key={n.id}
             // Lu → grisé et estompé (« moins en valeur »), transition douce en cascade.
             animate={{ opacity: n.read ? 0.55 : 1, filter: n.read ? "grayscale(0.85)" : "grayscale(0)" }}
             transition={{ duration: 0.4, delay: n.read ? Math.min(i, 12) * 0.04 : 0 }}
-            className={`flex items-start gap-3 border-b border-slate-50 p-4 ${n.read ? "" : "bg-amber-50/40"}`}
+          >
+          <Wrapper {...wrapperProps}
+            className={`flex items-start gap-3 border-b border-slate-50 p-4 ${n.read ? "" : "bg-amber-50/40"} ${n.url ? "transition-colors hover:bg-slate-50 cursor-pointer" : ""}`}
           >
             <div className="mt-0.5 shrink-0">
-              {n.type === "vote" ? <BallotBox vote={n.position || "ABSTENTION"} size={30} /> : <Vote size={20} className="text-slate-400" />}
+              {isVote
+                ? <BallotBox vote={n.position || "ABSTENTION"} size={30} />
+                : <span className="flex h-8 w-8 items-center justify-center rounded-xl" style={{ backgroundColor: (dom?.color || "#64748b") + "22", color: dom?.color || "#64748b" }}><Newspaper size={16} /></span>}
             </div>
             <div className="min-w-0 flex-1">
-              <p className={`text-sm font-bold ${n.read ? "text-slate-500" : "text-slate-900"}`}>{n.detail}</p>
-              <p className="mt-0.5 text-xs leading-snug text-slate-600 line-clamp-2">« {n.title} »</p>
-              <p className="mt-1 text-[10px] font-black uppercase tracking-widest text-slate-400">{fmtDate(n.event_at || n.created_at)}</p>
+              {isVote ? (
+                <>
+                  <p className={`text-sm font-bold ${n.read ? "text-slate-500" : "text-slate-900"}`}>{n.detail}</p>
+                  <p className="mt-0.5 text-xs leading-snug text-slate-600 line-clamp-2">« {n.title} »</p>
+                </>
+              ) : (
+                <>
+                  <p className={`text-sm font-bold leading-snug line-clamp-2 ${n.read ? "text-slate-500" : "text-slate-900"}`}>{n.title}</p>
+                  {n.detail && <p className="mt-0.5 text-xs leading-snug text-slate-600 line-clamp-2">{n.detail}</p>}
+                </>
+              )}
+              <div className="mt-1 flex items-center gap-2">
+                {dom && <span className="rounded-full px-2 py-0.5 text-[9px] font-black uppercase tracking-wider text-white" style={{ backgroundColor: dom.color }}>{dom.label}</span>}
+                <span className="text-[10px] font-black uppercase tracking-widest text-slate-400">{fmtDate(n.event_at || n.created_at)}</span>
+                {n.url && <ExternalLink size={11} className="text-slate-400" />}
+              </div>
             </div>
             {n.read
               ? <Check size={14} className="mt-1 shrink-0 text-emerald-500" />
               : <span className="mt-1.5 h-2 w-2 shrink-0 rounded-full bg-amber-500" />}
+          </Wrapper>
           </motion.div>
-        ))}
+          );
+        })}
       </div>
     </div>
   );

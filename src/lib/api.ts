@@ -548,7 +548,7 @@ export const api = {
   },
 
   getNotifications: async (userId: string, limit = 50) => {
-    const base = 'id, type, title, detail, position, event_at, read, created_at, deputy_id, senator_id';
+    const base = 'id, type, title, detail, position, domain, url, importance, event_at, read, created_at, deputy_id, senator_id';
     // Tri par DATE DU VOTE (event_at) décroissante — le vote le plus récent en haut, tous élus
     // confondus. created_at en second critère pour les rares notifs sans date d'événement.
     const ord = (q: any) => q.order('event_at', { ascending: false, nullsFirst: false }).order('created_at', { ascending: false });

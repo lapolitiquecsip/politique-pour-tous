@@ -2,6 +2,7 @@
 
 import { useState, useEffect } from "react";
 import Link from "next/link";
+import { motion, AnimatePresence } from "framer-motion";
 import { ArrowLeft, Building2, ExternalLink, Star, ChevronDown, ShieldCheck, Briefcase, GraduationCap, Users, X, Loader2, Sparkles, Info, TrendingDown } from "lucide-react";
 import { BallotBox } from "@/components/dashboard/BallotVote";
 import LegalStatusModal from "@/components/deputies/LegalStatusModal";
@@ -9,6 +10,7 @@ import ActivityRank from "@/components/shared/ActivityRank";
 import FollowButton from "@/components/shared/FollowButton";
 import ParallelRoles from "@/components/shared/ParallelRoles";
 import { api } from "@/lib/api";
+import { groupByCode } from "@/lib/data/epGroups";
 
 // Rubriques de la bio structurée (mêmes que les fiches candidats/ministres).
 const BIO_FIELDS: Array<[string, string, string]> = [
@@ -108,6 +110,8 @@ export default function MepClient({ mep, initialVotes, embedded }: { mep: any; i
   // Bio structurée + situation judiciaire.
   const bio = mep.bio || {};
   const hasStructured = BIO_FIELDS.some(([k]) => toPoints(bio[k]).length > 0);
+  const hasPortrait = hasStructured || !!mep.biography || !!bio.summary;
+  const [bioOpen, setBioOpen] = useState(false);   // repliable comme les fiches député/sénateur
   const [showLegal, setShowLegal] = useState(false);
   const issues = (mep.legal_issues || "").trim();
   const legalClean = !issues || issues.toLowerCase().includes("aucune");
@@ -158,7 +162,15 @@ export default function MepClient({ mep, initialVotes, embedded }: { mep: any; i
                 <div className="mt-4 space-y-3 text-sm">
                   <div>
                     <p className="text-[9px] font-black uppercase tracking-widest text-slate-400">Groupe au Parlement européen</p>
-                    <p className="font-bold text-slate-900 dark:text-white">{mep.ep_group || "—"}</p>
+                    {groupByCode(mep.ep_group_code) ? (
+                      <Link href={`/groupes-europeens/${groupByCode(mep.ep_group_code)!.slug}`}
+                        className="group/link inline-flex items-start gap-1 font-bold text-slate-900 dark:text-white hover:text-sky-600 dark:hover:text-sky-400 transition-colors">
+                        <span className="underline decoration-sky-500/40 decoration-2 underline-offset-2 group-hover/link:decoration-sky-500">{mep.ep_group || "—"}</span>
+                        <ExternalLink size={12} className="mt-1 shrink-0 opacity-50" />
+                      </Link>
+                    ) : (
+                      <p className="font-bold text-slate-900 dark:text-white">{mep.ep_group || "—"}</p>
+                    )}
                   </div>
                   <div>
                     <p className="text-[9px] font-black uppercase tracking-widest text-slate-400">Parti national</p>
@@ -210,38 +222,62 @@ export default function MepClient({ mep, initialVotes, embedded }: { mep: any; i
               note="Participation aux votes nominaux (position exprimée à l'appel nominal) : l'indicateur de présence fiable et vérifiable au Parlement européen. Comparaison entre eurodéputés français. Source : Parlement européen via HowTheyVote.eu."
             />
 
-            {/* Portrait — panneaux structurés (repli sur le texte simple si non structuré). */}
-            <section className="rounded-[2.5rem] border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900 p-8">
-              <h2 className="text-3xl font-staatliches uppercase tracking-tight text-slate-900 dark:text-white mb-2">
-                Portrait & <span className="text-sky-600">Engagement</span>
-              </h2>
-              {bio.summary && <p className="mb-6 text-[15px] leading-relaxed text-slate-600 dark:text-slate-300">{bio.summary}</p>}
+            {/* Portrait — menu déroulant (ouvrir/fermer), comme les fiches député/sénateur. */}
+            {hasPortrait && (
+            <section className="rounded-[2.5rem] border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900 overflow-hidden">
+              <button
+                onClick={() => setBioOpen(o => !o)}
+                aria-expanded={bioOpen}
+                className="w-full text-left p-8 flex items-center justify-between gap-4 group/header"
+              >
+                <h2 className="text-3xl font-staatliches uppercase tracking-tight text-slate-900 dark:text-white">
+                  Portrait & <span className="text-sky-600">Engagement</span>
+                </h2>
+                <div className={`w-10 h-10 shrink-0 rounded-full bg-slate-100 dark:bg-slate-800 flex items-center justify-center text-slate-500 transition-transform duration-500 ${bioOpen ? "rotate-180" : ""}`}>
+                  <ChevronDown className="w-5 h-5" />
+                </div>
+              </button>
 
-              {hasStructured ? (
-                <div className="grid items-start gap-4 sm:grid-cols-2">
-                  {BIO_FIELDS.map(([key, label, color]) => {
-                    const points = toPoints(bio[key]);
-                    if (points.length === 0) return null;
-                    const wide = key === "parcours" || key === "chronologie" || key === "realisations" ? "sm:col-span-2" : "";
-                    return (
-                      <div key={key} className={`rounded-3xl border border-slate-100 dark:border-slate-800 bg-slate-50/60 dark:bg-slate-800/40 p-5 ${wide}`}>
-                        <h3 className={`font-staatliches text-2xl uppercase leading-none ${color}`}>{label}</h3>
-                        <div className={`mb-3 mt-1.5 h-1 w-12 rounded-full ${color.replace("text-", "bg-")}`} />
-                        <ul className="list-disc space-y-1.5 pl-4 text-sm leading-6 text-slate-700 dark:text-slate-300 marker:text-slate-300">
-                          {points.map((p, i) => <li key={i}><NumHighlight text={p} /></li>)}
-                        </ul>
-                      </div>
-                    );
-                  })}
-                </div>
-              ) : mep.biography ? (
-                <div className="rounded-2xl bg-sky-50/50 dark:bg-slate-800/50 p-6 text-[15px] leading-relaxed text-slate-700 dark:text-slate-300 whitespace-pre-line">
-                  {mep.biography}
-                </div>
-              ) : (
-                <p className="text-sm italic text-slate-400">Biographie en cours de rédaction.</p>
-              )}
+              <AnimatePresence initial={false}>
+                {bioOpen && (
+                  <motion.div
+                    initial={{ height: 0, opacity: 0 }}
+                    animate={{ height: "auto", opacity: 1 }}
+                    exit={{ height: 0, opacity: 0 }}
+                    transition={{ duration: 0.3, ease: "easeOut" }}
+                    className="overflow-hidden"
+                  >
+                    <div className="px-8 pb-8">
+                      {bio.summary && <p className="mb-6 text-[15px] leading-relaxed text-slate-600 dark:text-slate-300">{bio.summary}</p>}
+
+                      {hasStructured ? (
+                        <div className="grid items-start gap-4 sm:grid-cols-2">
+                          {BIO_FIELDS.map(([key, label, color]) => {
+                            const points = toPoints(bio[key]);
+                            if (points.length === 0) return null;
+                            const wide = key === "parcours" || key === "chronologie" || key === "realisations" ? "sm:col-span-2" : "";
+                            return (
+                              <div key={key} className={`rounded-3xl border border-slate-100 dark:border-slate-800 bg-slate-50/60 dark:bg-slate-800/40 p-5 ${wide}`}>
+                                <h3 className={`font-staatliches text-2xl uppercase leading-none ${color}`}>{label}</h3>
+                                <div className={`mb-3 mt-1.5 h-1 w-12 rounded-full ${color.replace("text-", "bg-")}`} />
+                                <ul className="list-disc space-y-1.5 pl-4 text-sm leading-6 text-slate-700 dark:text-slate-300 marker:text-slate-300">
+                                  {points.map((p, i) => <li key={i}><NumHighlight text={p} /></li>)}
+                                </ul>
+                              </div>
+                            );
+                          })}
+                        </div>
+                      ) : mep.biography ? (
+                        <div className="rounded-2xl bg-sky-50/50 dark:bg-slate-800/50 p-6 text-[15px] leading-relaxed text-slate-700 dark:text-slate-300 whitespace-pre-line">
+                          {mep.biography}
+                        </div>
+                      ) : null}
+                    </div>
+                  </motion.div>
+                )}
+              </AnimatePresence>
             </section>
+            )}
 
             {/* VOTES — principaux par défaut, bascule « tous », pagination. */}
             <section className="rounded-[2.5rem] border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900 p-8">

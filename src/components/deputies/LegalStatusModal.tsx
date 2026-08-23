@@ -163,7 +163,6 @@ export default function LegalStatusModal({ isOpen, onClose, deputy }: LegalStatu
                                             <span className="not-italic shrink-0">💡</span>
                                             <span>{explanation}</span>
                                           </p>
-                                          <p className="mt-2 text-[9px] font-bold uppercase tracking-widest text-slate-300 dark:text-slate-600 normal-case">Résumé généré automatiquement</p>
                                         </>
                                       ) : (
                                         <p className="flex gap-2 text-[12px] leading-relaxed text-slate-500 dark:text-slate-400 normal-case italic">

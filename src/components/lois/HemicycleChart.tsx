@@ -5,6 +5,7 @@ import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { MousePointerClick } from "lucide-react";
 import { api } from "@/lib/api";
+import { groupByCode } from "@/lib/data/epGroups";
 
 // Hémicycles de l'Assemblée nationale et du Sénat (façon Datan, plus moderne).
 // Couleurs = couleurs politiques (identité) ; structure = guide dataviz (légende + labels
@@ -193,8 +194,9 @@ export default function HemicycleChart({ chamber = "both", title, subtitle }: { 
         for (const m of rows || []) { const g = (m.ep_group_code || "NI"); counts.set(g, (counts.get(g) || 0) + 1); }
         setEu([...counts.entries()].map(([code, seats]) => {
           const m = EU_GROUPS[code] || { label: code, color: "#8D949A", order: 8 };
-          // Pas de fiche pour un groupe européen → on renvoie vers la liste des eurodéputés du groupe.
-          return { label: m.label, seats, color: m.color, order: m.order, href: `/eurodeputes?group=${encodeURIComponent(code)}` };
+          // Fiche de groupe européen si elle existe, sinon liste filtrée des eurodéputés.
+          const g = groupByCode(code);
+          return { label: m.label, seats, color: m.color, order: m.order, href: g ? `/groupes-europeens/${g.slug}` : `/eurodeputes?group=${encodeURIComponent(code)}` };
         }));
       }).catch(() => setEu([]));
     }

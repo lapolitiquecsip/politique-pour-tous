@@ -88,11 +88,10 @@ const InstitutionCard = memo(({ inst, index, onClick }: { inst: Institution, ind
       {/* Overlay dégradé - PRÉSERVÉ & AMÉLIORÉ */}
       <div className={`absolute inset-0 bg-gradient-to-t from-slate-950 via-slate-950/40 to-transparent group-hover:from-slate-900 group-hover:via-slate-900/20 transition-colors duration-500`} />
 
-      {/* Indicateur « cliquable » : onde qui pulse + icône de clic (tape ici) */}
-      <div className="absolute top-5 right-5 z-20 h-12 w-12 pointer-events-none">
-        <span className="absolute inset-0 rounded-full bg-white/50 animate-ping" />
-        <div className="relative flex h-12 w-12 items-center justify-center rounded-full bg-white text-slate-900 shadow-lg ring-1 ring-black/5 transition-transform duration-500 group-hover:scale-110">
-          <MousePointerClick className="h-6 w-6" />
+      {/* Indicateur « cliquable » : pastille en verre dépoli, s'incruste sur toute image */}
+      <div className="absolute top-4 right-4 z-20 pointer-events-none">
+        <div className="flex h-11 w-11 items-center justify-center rounded-full bg-white/10 backdrop-blur-md ring-1 ring-inset ring-white/30 shadow-[0_4px_20px_rgba(0,0,0,0.25)] text-white transition-all duration-500 group-hover:bg-white/20 group-hover:ring-white/60">
+          <MousePointerClick className="h-[18px] w-[18px] drop-shadow-[0_1px_2px_rgba(0,0,0,0.5)]" />
         </div>
       </div>
 

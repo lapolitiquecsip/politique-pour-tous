@@ -582,6 +582,26 @@ export const api = {
     return true;
   },
 
+  // Préférences / profil du membre premium (base des notifications personnalisées).
+  // Renvoie null si le profil n'est pas encore rempli (ou table non migrée).
+  getUserPreferences: async (userId: string) => {
+    const { data, error } = await supabase.from('user_preferences').select('*').eq('user_id', userId).maybeSingle();
+    if (error) { console.warn('API Warning (getUserPreferences):', error.message); return null; }
+    return data;
+  },
+  saveUserPreferences: async (userId: string, prefs: {
+    age_range?: string | null; profession?: string | null; region?: string | null;
+    department?: string | null; city?: string | null; postal_code?: string | null;
+    interests?: string[]; notify_email?: boolean; email_min_importance?: number;
+  }) => {
+    const { error } = await supabase.from('user_preferences').upsert(
+      { user_id: userId, ...prefs, updated_at: new Date().toISOString() },
+      { onConflict: 'user_id' },
+    );
+    if (error) throw new Error(error.message);
+    return true;
+  },
+
   // Fil vidéo de la présidence (chaîne YouTube officielle de l'Élysée).
   // Fil vidéo du Sénat — chaîne officielle Public Sénat.
   getSenatVideos: async (limit = 12) => {

@@ -269,7 +269,7 @@ export default function PremiumPage() {
             transition={{ duration: 0.7, delay: 0.3 }}
             className="text-xl md:text-2xl text-white/70 max-w-2xl mx-auto mb-10 leading-relaxed"
           >
-            Newsletter hebdomadaire, décryptages de lois illimités et filtres thématiques exclusifs. Tout ce qu&apos;il vous faut pour comprendre.
+            Notifications personnalisées selon vos centres d&apos;intérêt, décryptages de lois illimités et filtres thématiques exclusifs. Tout ce qu&apos;il vous faut pour comprendre.
           </motion.p>
 
           <motion.div
@@ -382,7 +382,7 @@ export default function PremiumPage() {
                   <div className="space-y-4 mb-8">
                     <div className="flex items-center gap-3 text-sm font-medium">
                       <CheckCircle2 size={18} className="text-emerald-500" />
-                      Newsletter Elite
+                      Notifications personnalisées
                     </div>
                     <div className="flex items-center gap-3 text-sm font-medium">
                       <CheckCircle2 size={18} className="text-emerald-500" />
@@ -628,7 +628,7 @@ export default function PremiumPage() {
                           />
                           <span className="font-bold text-slate-800 text-sm flex items-center gap-2">
                             <Building2 className="w-4 h-4 text-amber-500" />
-                            Newsletter Hebdomadaire
+                            Notifications personnalisées
                           </span>
                         </label>
 
@@ -704,9 +704,9 @@ export default function PremiumPage() {
         <div className="max-w-3xl mx-auto">
           <FadeIn className="text-center mb-12">
             <h2 className="text-3xl md:text-5xl font-staatliches uppercase tracking-tighter text-slate-900 mb-4">
-              Aperçu d&apos;un <span className="text-amber-500">email type</span>
+              Aperçu de vos <span className="text-amber-500">notifications</span>
             </h2>
-            <p className="text-lg text-slate-500">Voici à quoi ressemblera votre résumé Premium chaque lundi.</p>
+            <p className="text-lg text-slate-500">Voici à quoi ressemblent les alertes personnalisées que vous recevez selon votre profil. Seules les plus importantes vous parviennent aussi par e-mail.</p>
           </FadeIn>
 
           <FadeIn delay={0.15}>
@@ -926,7 +926,7 @@ export default function PremiumPage() {
                     <span className="text-[10px] font-bold text-slate-400 uppercase tracking-widest cursor-pointer hover:text-slate-900">Archives</span>
                   </div>
                   <p className="text-[10px] text-slate-400 font-medium leading-none">
-                    Ceci est une simulation de l&apos;email Premium que vous recevrez chaque lundi.
+                    Ceci est une simulation des notifications personnalisées que vous recevez selon votre profil.
                   </p>
                 </div>
               </div>

@@ -8,6 +8,7 @@ import { motion, AnimatePresence } from "framer-motion";
 import { api } from "@/lib/api";
 import { BallotBox, BallotChip } from "@/components/dashboard/BallotVote";
 import NotificationsFeed from "@/components/dashboard/NotificationsFeed";
+import PremiumPreferences from "@/components/dashboard/PremiumPreferences";
 import { usePremium } from "@/lib/hooks/usePremium";
 import { departmentPaths } from "@/lib/data/departmentPaths";
 import { regionPaths } from "@/lib/data/regionPaths";
@@ -247,8 +248,9 @@ export default function DashboardPage() {
       {isPremium && userId && (
         // relative z-20 : le fil chevauche le hero (-mt-16) ; sans ça, le contenu du hero (z-10)
         // recouvre le haut de la carte et intercepte le clic sur « Tout marquer lu ».
-        <div className="relative z-20 container mx-auto max-w-6xl px-4 -mt-16 mb-6">
+        <div className="relative z-20 container mx-auto max-w-6xl px-4 -mt-16 mb-6 space-y-6">
           <NotificationsFeed userId={userId} />
+          <PremiumPreferences userId={userId} />
         </div>
       )}
 

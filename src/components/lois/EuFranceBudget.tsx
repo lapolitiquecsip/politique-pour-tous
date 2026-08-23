@@ -1,7 +1,8 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import { Loader2, ArrowDownRight, ArrowUpRight, ExternalLink, Sparkles } from "lucide-react";
+import { motion, AnimatePresence } from "framer-motion";
+import { Loader2, ArrowDownRight, ArrowUpRight, ExternalLink, Sparkles, ChevronDown } from "lucide-react";
 import { api } from "@/lib/api";
 
 // France ↔ budget de l'UE : ce que la France verse, ce que l'UE dépense en France, le solde net,
@@ -25,6 +26,7 @@ type Row = {
 export default function EuFranceBudget() {
   const [series, setSeries] = useState<Row[] | null | undefined>(undefined);
   const [hov, setHov] = useState<string | null>(null); // survol d'un poste de dépense
+  const [open, setOpen] = useState(false);             // panneau déroulant (fermé par défaut)
 
   useEffect(() => {
     let active = true;
@@ -50,13 +52,29 @@ export default function EuFranceBudget() {
 
   return (
     <section className="mx-auto max-w-6xl px-4">
-      <div className="mb-6">
-        <h2 className="text-3xl font-staatliches uppercase tracking-tight text-white md:text-4xl">
-          La France & le <span className="text-yellow-400">budget de l'UE</span>
-        </h2>
-        <p className="mt-1 text-blue-200/70">Ce que la France verse à l'Union, ce que l'Union dépense en France, et à quoi ça sert — année {b.year} (hors plan de relance).</p>
-      </div>
+      <button onClick={() => setOpen(o => !o)} aria-expanded={open}
+        className="mb-6 flex w-full items-start justify-between gap-4 text-left group/eu">
+        <div>
+          <h2 className="text-3xl font-staatliches uppercase tracking-tight text-white md:text-4xl">
+            La France & le <span className="text-yellow-400">budget de l'UE</span>
+          </h2>
+          <p className="mt-1 text-blue-200/70">Ce que la France verse à l'Union, ce que l'Union dépense en France, et à quoi ça sert — année {b.year} (hors plan de relance).</p>
+          {!open && <span className="mt-2 inline-flex items-center gap-1 text-[11px] font-black uppercase tracking-widest text-yellow-400/80">Voir le détail</span>}
+        </div>
+        <span className={`mt-1 flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-white/5 text-blue-200 ring-1 ring-white/10 transition-transform duration-500 ${open ? "rotate-180" : ""}`}>
+          <ChevronDown size={20} />
+        </span>
+      </button>
 
+      <AnimatePresence initial={false}>
+      {open && (
+      <motion.div
+        initial={{ height: 0, opacity: 0 }}
+        animate={{ height: "auto", opacity: 1 }}
+        exit={{ height: 0, opacity: 0 }}
+        transition={{ duration: 0.3, ease: "easeOut" }}
+        className="overflow-hidden"
+      >
       <div className="grid gap-4 md:grid-cols-3">
         {/* Contribution */}
         <div className="rounded-3xl border border-white/10 bg-gradient-to-br from-blue-500/10 to-transparent p-6">
@@ -154,6 +172,9 @@ export default function EuFranceBudget() {
           <ExternalLink size={12} /> {b.source_label || "Source officielle"}
         </a>
       )}
+      </motion.div>
+      )}
+      </AnimatePresence>
     </section>
   );
 }

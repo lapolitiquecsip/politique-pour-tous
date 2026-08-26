@@ -10,7 +10,7 @@ import { usePremium } from "@/lib/hooks/usePremium";
 import { groupLabel } from "@/lib/legislative-groups";
 import { parseInitiators, loadPeopleIndex, personHref, normalizeName, type InitiatorPerson } from "@/lib/initiators";
 import { AwardBadge } from "@/components/ui/award-badge";
-import { Lock, ChevronDown, ChevronLeft, ChevronRight } from "lucide-react";
+import { Lock, ChevronDown, ChevronLeft, ChevronRight, ArrowRight, TrendingUp, CheckCircle2 } from "lucide-react";
 import {
   LEGISLATIVE_CATEGORIES,
   categoryLabel,
@@ -282,8 +282,90 @@ function InitiatorField({ authorName }: { authorName: string | null }) {
   );
 }
 
+/* ── Barre de vote (chiffres officiels) ── */
+function LawVoteBar({ pour, contre, abstention, result }: { pour?: number; contre?: number; abstention?: number; result?: string | null }) {
+  const total = (pour || 0) + (contre || 0) + (abstention || 0);
+  if (!total) return null;
+  const pct = (n: number) => `${((n || 0) / total) * 100}%`;
+  return (
+    <div>
+      <div className="flex h-3.5 overflow-hidden rounded-full ring-1 ring-slate-200">
+        <span className="bg-emerald-500" style={{ width: pct(pour || 0) }} />
+        <span className="bg-rose-500" style={{ width: pct(contre || 0) }} />
+        <span className="bg-slate-300" style={{ width: pct(abstention || 0) }} />
+      </div>
+      <div className="mt-2 flex flex-wrap gap-x-4 gap-y-1 text-[12px] font-bold">
+        <span className="text-emerald-600">● Pour {pour || 0}</span>
+        <span className="text-rose-600">● Contre {contre || 0}</span>
+        <span className="text-slate-400">● Abstention {abstention || 0}</span>
+        {result && <span className="ml-auto text-slate-500 italic">{result}</span>}
+      </div>
+    </div>
+  );
+}
+
+/* ── Analyse détaillée « design premium » à partir des données visuelles structurées ── */
+function LawVisualAnalysis({ v }: { v: any }) {
+  const avantApres = Array.isArray(v?.avant_apres) ? v.avant_apres : [];
+  const impacts = Array.isArray(v?.impacts) ? v.impacts : [];
+  return (
+    <div className="space-y-7">
+      {v?.essence && (
+        <div>
+          <p className="text-[10px] font-black uppercase tracking-widest text-amber-600 mb-2">L&apos;essentiel</p>
+          <p className="text-[15px] leading-relaxed text-slate-800">{v.essence}</p>
+        </div>
+      )}
+      {avantApres.length > 0 && (
+        <div>
+          <p className="text-[10px] font-black uppercase tracking-widest text-amber-700/70 mb-3">Avant / Après</p>
+          <div className="space-y-2">
+            {avantApres.map((r: any, i: number) => (
+              <div key={i} className="grid grid-cols-[1fr_auto_1fr] items-center gap-3 rounded-2xl border border-amber-100 bg-white/70 p-3">
+                <span className="text-[13px] text-slate-400 line-through decoration-rose-400/50">{r.avant}</span>
+                <ArrowRight size={15} className="text-amber-400" />
+                <span className="text-[13px] font-bold text-slate-800">{r.apres}</span>
+              </div>
+            ))}
+          </div>
+        </div>
+      )}
+      {impacts.length > 0 && (
+        <div>
+          <p className="text-[10px] font-black uppercase tracking-widest text-amber-700/70 mb-3">Ce que ça change</p>
+          <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
+            {impacts.map((im: any, i: number) => (
+              <div key={i} className="rounded-2xl border border-amber-100 bg-white p-4 text-center shadow-sm">
+                <TrendingUp size={16} className="mx-auto mb-2 text-amber-500" />
+                <p className="text-lg font-black text-slate-900 leading-tight">{im.value}</p>
+                <p className="mt-1.5 text-[11px] leading-tight text-slate-500">{im.label}</p>
+              </div>
+            ))}
+          </div>
+        </div>
+      )}
+      {v?.vote && (
+        <div>
+          <p className="text-[10px] font-black uppercase tracking-widest text-amber-700/70 mb-3">Le vote</p>
+          <LawVoteBar pour={v.vote.pour} contre={v.vote.contre} abstention={v.vote.abstention} result={v.vote.result} />
+        </div>
+      )}
+    </div>
+  );
+}
+
 function DossierModal({ detail, loading, onClose }: { detail: LegislativeDossierDetail | null; loading: boolean; onClose: () => void }) {
   const { isPremium } = usePremium();
+  const [visual, setVisual] = useState<any>(null);
+  const dossierId = detail?.dossier?.id;
+  const hasPremiumAnalysis = !!(detail as any)?.premium_analysis;
+  useEffect(() => {
+    setVisual(null);
+    if (!dossierId || !hasPremiumAnalysis) return;
+    let active = true;
+    api.getLawVisual(dossierId).then((vv: any) => { if (active) setVisual(vv); }).catch(() => {});
+    return () => { active = false; };
+  }, [dossierId, hasPremiumAnalysis]);
   if (!detail && !loading) return null;
   return (
     <div className="fixed inset-0 z-50 flex items-start justify-center bg-slate-950/70 p-4 md:p-10" role="dialog" aria-modal="true">
@@ -321,7 +403,23 @@ function DossierModal({ detail, loading, onClose }: { detail: LegislativeDossier
 
             <section className="mt-10"><h3 className="text-2xl font-staatliches uppercase text-slate-950">Résumé</h3><p className="mt-3 leading-7 text-slate-700">{detail.summary?.summary || "Analyse indisponible."}</p></section>
             {detail.premium_analysis ? (
-              <section className="mt-10 rounded-3xl bg-amber-50 p-6"><h3 className="text-2xl font-staatliches uppercase text-amber-900">Analyse détaillée</h3><PremiumAnalysis raw={detail.premium_analysis.summary} /></section>
+              <section className="mt-10 rounded-[2rem] border border-amber-200 bg-gradient-to-b from-amber-50 to-white p-6 md:p-8">
+                <div className="flex items-center gap-2 mb-5">
+                  <span className="flex h-9 w-9 items-center justify-center rounded-xl bg-gradient-to-br from-amber-300 to-amber-500 text-white shadow"><Scale size={18} /></span>
+                  <h3 className="text-2xl font-staatliches uppercase text-amber-900">Analyse détaillée</h3>
+                </div>
+                {visual ? (
+                  <>
+                    <LawVisualAnalysis v={visual} />
+                    <details className="mt-6 group">
+                      <summary className="cursor-pointer list-none text-[11px] font-black uppercase tracking-widest text-amber-700/70 hover:text-amber-800">Lire l&apos;analyse complète</summary>
+                      <div className="mt-3"><PremiumAnalysis raw={detail.premium_analysis.summary} /></div>
+                    </details>
+                  </>
+                ) : (
+                  <PremiumAnalysis raw={detail.premium_analysis.summary} />
+                )}
+              </section>
             ) : !isPremium ? (
               <section className="mt-10 rounded-3xl border border-amber-200 bg-amber-50 p-6">
                 <div className="flex items-center gap-2 text-amber-900"><Lock size={18} /><h3 className="text-2xl font-staatliches uppercase">Analyse détaillée</h3></div>

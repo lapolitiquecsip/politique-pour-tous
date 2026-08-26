@@ -791,6 +791,16 @@ export const api = {
     return data ?? [];
   },
 
+  // Données visuelles de l'analyse détaillée (essence / avant-après / impacts / vote),
+  // extraites de l'analyse premium. Lisible par les membres premium (RLS). Null sinon.
+  getLawVisual: async (dossierId: string) => {
+    const { data, error } = await supabase.from('legislative_analyses')
+      .select('visual').eq('dossier_id', dossierId).eq('audience', 'premium')
+      .not('visual', 'is', null).limit(1).maybeSingle();
+    if (error) return null;   // colonne absente (avant migration) ou non premium
+    return (data as any)?.visual || null;
+  },
+
   getLegislativeDossier: async (id: string) => {
     const { data, error } = await supabase.rpc('public_legislative_dossier', { p_id: id });
     if (error) throw error;

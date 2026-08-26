@@ -22,6 +22,8 @@ export default function HelpBubble() {
   const [q, setQ] = useState("");
   const [teaser, setTeaser] = useState(false);
 
+  // Masquée sur la page Premium (vitrine) : la bulle d'aide n'y apporte rien.
+  const hidden = pathname.startsWith("/premium");
   const parcours = useMemo(() => parcoursForPath(pathname), [pathname]);
   // Sur la page Europe, la bulle d'aide prend les couleurs du drapeau de l'UE (bleu + or).
   const eu = pathname.startsWith("/eurodeputes");
@@ -43,6 +45,8 @@ export default function HelpBubble() {
     if (!s) return null;
     return NOTIONS.filter(n => norm(n.term).includes(s) || norm(n.def).includes(s));
   }, [q]);
+
+  if (hidden) return null;   // pas de bulle d'aide sur la page Premium
 
   return (
     <>

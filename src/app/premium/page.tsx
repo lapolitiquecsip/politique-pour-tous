@@ -2,13 +2,12 @@
 
 import { useState, useEffect, useRef } from "react";
 import { motion, AnimatePresence, useInView } from "framer-motion";
-import { api } from "@/lib/api";
 import { usePremium } from "@/lib/hooks/usePremium";
 import { getPremiumUrl } from "@/lib/utils";
 import {
   CheckCircle2, Star, TrendingUp, FileText, ArrowRight, Quote, Scale,
   LayoutDashboard, BellRing, Users, Bookmark, Building2, Sliders,
-  X, Sparkles, ExternalLink, Loader2, Vote, MapPin,
+  X, Sparkles, Vote, MapPin,
 } from "lucide-react";
 import Link from "next/link";
 
@@ -59,70 +58,131 @@ const FEATURES: Feature[] = [
   { icon: LayoutDashboard, title: "Espace personnel complet", desc: "Historique de vote, élus suivis, lois favorites, territoires : tout au même endroit, à jour.", color: "from-slate-500 to-slate-700", href: "/dashboard", cta: "Ouvrir mon tableau de bord" },
 ];
 
-/* ══════════ Démo 1 : exemple d'analyse de loi réelle ══════════ */
+/* ══════════ Démo 1 : aperçu d'une analyse détaillée (mock illustratif, toujours dispo) ══════════ */
+const LAW_DEMO = {
+  category: "Économie & Travail",
+  status: "Promulguée",
+  date: "12 mars 2026",
+  title: "Loi pour le plein emploi et le pouvoir d'achat",
+  essence:
+    "Le texte fusionne les opérateurs de l'emploi au sein de « France Travail », conditionne le versement du RSA à une activité hebdomadaire, et révise les règles de l'assurance-chômage. Objectif affiché : ramener le chômage à 5 % d'ici 2030.",
+  avantApres: [
+    { avant: "RSA versé sans contrepartie", apres: "15 h d'activité par semaine" },
+    { avant: "Pôle emploi & missions locales séparés", apres: "France Travail : guichet unique" },
+    { avant: "Indemnisation fixe (18 mois)", apres: "Durée modulée selon la conjoncture" },
+  ],
+  impacts: [
+    { icon: Users, value: "≈ 2 M", label: "allocataires du RSA concernés" },
+    { icon: TrendingUp, value: "+450 €/an", label: "estimés pour un salarié au SMIC" },
+    { icon: Building2, value: "Janv. 2027", label: "mise en place de France Travail" },
+  ],
+  vote: { pour: 310, contre: 240, abstention: 27 },
+  timeline: ["Dépôt", "Commission", "Séance AN", "Sénat", "Adoption", "Promulgation"],
+};
+
+function VoteBar({ pour, contre, abstention }: { pour: number; contre: number; abstention: number }) {
+  const total = pour + contre + abstention;
+  const pct = (n: number) => `${(n / total) * 100}%`;
+  return (
+    <div>
+      <div className="flex h-3.5 overflow-hidden rounded-full ring-1 ring-slate-200 dark:ring-slate-700">
+        <span className="bg-emerald-500" style={{ width: pct(pour) }} />
+        <span className="bg-rose-500" style={{ width: pct(contre) }} />
+        <span className="bg-slate-300 dark:bg-slate-600" style={{ width: pct(abstention) }} />
+      </div>
+      <div className="mt-2 flex flex-wrap gap-x-4 gap-y-1 text-[11px] font-bold">
+        <span className="text-emerald-600">● Pour {pour}</span>
+        <span className="text-rose-600">● Contre {contre}</span>
+        <span className="text-slate-400">● Abst. {abstention}</span>
+      </div>
+    </div>
+  );
+}
+
 function LawExampleModal({ open, onClose }: { open: boolean; onClose: () => void }) {
-  const [law, setLaw] = useState<any | null | undefined>(undefined);
-  useEffect(() => {
-    if (!open || law !== undefined) return;
-    api.getPremiumDossiers().then((rows: any[]) => {
-      const good = (rows || []).find(l => l.summary && l.summary.length > 60) || (rows || [])[0] || null;
-      setLaw(good);
-    }).catch(() => setLaw(null));
-  }, [open, law]);
-
-  const impactPoints = (() => {
-    if (!law?.impact) return [];
-    if (Array.isArray(law.impact)) return law.impact.filter((x: any) => typeof x === "string").slice(0, 4);
-    if (typeof law.impact === "string") return law.impact.split(/\n|•|·/).map((s: string) => s.trim()).filter((s: string) => s.length > 8).slice(0, 4);
-    return [];
-  })();
-
+  const d = LAW_DEMO;
   return (
     <AnimatePresence>
       {open && (
         <div className="fixed inset-0 z-[100] flex items-end sm:items-center justify-center p-0 sm:p-6">
           <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} onClick={onClose}
-            className="absolute inset-0 bg-slate-950/80 backdrop-blur-md" />
+            className="absolute inset-0 bg-slate-950/85 backdrop-blur-md" />
           <motion.div initial={{ opacity: 0, y: 40, scale: 0.98 }} animate={{ opacity: 1, y: 0, scale: 1 }} exit={{ opacity: 0, y: 40, scale: 0.98 }}
-            className="relative w-full max-w-2xl bg-white dark:bg-slate-900 rounded-t-[2rem] sm:rounded-[2rem] shadow-2xl overflow-hidden flex flex-col max-h-[88vh]">
-            <div className="relative bg-gradient-to-br from-red-600 to-rose-700 p-6 pr-14 text-white shrink-0">
-              <button onClick={onClose} className="absolute right-4 top-4 rounded-full bg-white/20 p-2 hover:bg-white/30 transition" aria-label="Fermer"><X size={18} /></button>
-              <p className="flex items-center gap-1.5 text-[10px] font-black uppercase tracking-widest text-white/80"><Sparkles size={12} /> Exemple : décryptage de loi</p>
-              <p className="mt-1 text-[11px] text-white/70">Voici ce que vous obtenez, sur chaque loi, en Premium.</p>
+            className="relative w-full max-w-2xl bg-white dark:bg-slate-900 rounded-t-[2rem] sm:rounded-[2.5rem] shadow-2xl overflow-hidden flex flex-col max-h-[90vh]">
+            {/* En-tête premium — sobre, quasi monochrome */}
+            <div className="relative bg-gradient-to-br from-slate-900 to-slate-800 p-6 pr-14 text-white shrink-0">
+              <div className="absolute inset-0 opacity-[0.15] bg-[radial-gradient(circle_at_top_right,rgba(251,191,36,0.6),transparent_60%)]" />
+              <button onClick={onClose} className="absolute right-4 top-4 z-10 rounded-full bg-white/15 p-2 hover:bg-white/25 transition" aria-label="Fermer"><X size={18} /></button>
+              <p className="relative flex items-center gap-1.5 text-[10px] font-black uppercase tracking-[0.25em] text-amber-400"><Scale size={12} /> Exemple · Analyse détaillée</p>
+              <h3 className="relative mt-2 text-xl sm:text-2xl font-bold leading-tight">{d.title}</h3>
+              <div className="relative mt-3 flex flex-wrap items-center gap-2">
+                <span className="rounded-full bg-white/10 px-3 py-1 text-[10px] font-black uppercase tracking-widest text-white/80">{d.category}</span>
+                <span className="inline-flex items-center gap-1 rounded-full bg-emerald-500/20 px-3 py-1 text-[10px] font-black uppercase tracking-widest text-emerald-300"><CheckCircle2 size={11} /> {d.status}</span>
+                <span className="text-[10px] font-black uppercase tracking-widest text-white/40">{d.date}</span>
+              </div>
             </div>
-            <div className="flex-1 overflow-y-auto p-6 sm:p-8">
-              {law === undefined ? (
-                <div className="flex items-center justify-center gap-2 py-16 text-slate-400"><Loader2 className="animate-spin" size={18} /> Chargement d'un exemple réel…</div>
-              ) : !law ? (
-                <p className="py-10 text-center text-sm text-slate-500">Exemple momentanément indisponible.</p>
-              ) : (
-                <>
-                  <div className="flex flex-wrap items-center gap-2 mb-3">
-                    {law.category && <span className="rounded-full bg-red-100 dark:bg-red-500/15 px-3 py-1 text-[10px] font-black uppercase tracking-widest text-red-600 dark:text-red-400">{law.category}</span>}
-                    {law.date_adopted && <span className="text-[10px] font-black uppercase tracking-widest text-slate-400">Adoptée le {new Date(law.date_adopted).toLocaleDateString("fr-FR")}</span>}
-                  </div>
-                  <h3 className="text-xl sm:text-2xl font-bold text-slate-900 dark:text-white leading-tight">{law.title}</h3>
-                  <div className="mt-5">
-                    <p className="text-[10px] font-black uppercase tracking-widest text-red-500 mb-2">L'analyse, en clair</p>
-                    <p className="text-[15px] leading-relaxed text-slate-700 dark:text-slate-300 whitespace-pre-line">{law.summary}</p>
-                  </div>
-                  {impactPoints.length > 0 && (
-                    <div className="mt-6">
-                      <p className="text-[10px] font-black uppercase tracking-widest text-slate-400 mb-2">Ce que ça change</p>
-                      <ul className="space-y-2">
-                        {impactPoints.map((p: string, i: number) => (
-                          <li key={i} className="flex gap-2 rounded-2xl border border-slate-100 dark:border-slate-800 bg-slate-50/60 dark:bg-slate-800/40 p-3 text-sm text-slate-700 dark:text-slate-300">
-                            <TrendingUp size={16} className="mt-0.5 shrink-0 text-emerald-500" /><span>{p}</span>
-                          </li>
-                        ))}
-                      </ul>
+
+            <div className="flex-1 overflow-y-auto p-6 sm:p-8 space-y-7">
+              {/* L'essentiel */}
+              <div>
+                <p className="text-[10px] font-black uppercase tracking-widest text-amber-500 mb-2">L'essentiel</p>
+                <p className="text-[15px] leading-relaxed text-slate-700 dark:text-slate-300">{d.essence}</p>
+              </div>
+
+              {/* Avant / Après */}
+              <div>
+                <p className="text-[10px] font-black uppercase tracking-widest text-slate-400 mb-3">Avant / Après</p>
+                <div className="space-y-2">
+                  {d.avantApres.map((r, i) => (
+                    <div key={i} className="grid grid-cols-[1fr_auto_1fr] items-center gap-3 rounded-2xl border border-slate-100 dark:border-slate-800 bg-slate-50/60 dark:bg-slate-800/40 p-3">
+                      <span className="text-[13px] text-slate-400 line-through decoration-rose-400/60">{r.avant}</span>
+                      <ArrowRight size={15} className="text-slate-300 dark:text-slate-600" />
+                      <span className="text-[13px] font-bold text-slate-800 dark:text-slate-100">{r.apres}</span>
                     </div>
-                  )}
-                </>
-              )}
+                  ))}
+                </div>
+              </div>
+
+              {/* Ce que ça change */}
+              <div>
+                <p className="text-[10px] font-black uppercase tracking-widest text-slate-400 mb-3">Ce que ça change pour vous</p>
+                <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
+                  {d.impacts.map((im, i) => (
+                    <div key={i} className="rounded-2xl border border-slate-100 dark:border-slate-800 bg-white dark:bg-slate-900 p-4 text-center shadow-sm">
+                      <im.icon size={18} className="mx-auto mb-2 text-amber-500" />
+                      <p className="text-lg font-black text-slate-900 dark:text-white leading-none">{im.value}</p>
+                      <p className="mt-1.5 text-[11px] leading-tight text-slate-500">{im.label}</p>
+                    </div>
+                  ))}
+                </div>
+              </div>
+
+              {/* Le vote */}
+              <div>
+                <p className="text-[10px] font-black uppercase tracking-widest text-slate-400 mb-3">Le vote à l'Assemblée</p>
+                <VoteBar {...d.vote} />
+              </div>
+
+              {/* Parcours */}
+              <div>
+                <p className="text-[10px] font-black uppercase tracking-widest text-slate-400 mb-3">Parcours législatif</p>
+                <div className="flex items-center gap-1.5 overflow-x-auto pb-1">
+                  {d.timeline.map((step, i) => (
+                    <div key={i} className="flex items-center gap-1.5 shrink-0">
+                      <span className={`rounded-full px-2.5 py-1 text-[10px] font-bold ${i === d.timeline.length - 1 ? "bg-emerald-500 text-white" : "bg-slate-100 dark:bg-slate-800 text-slate-500"}`}>{step}</span>
+                      {i < d.timeline.length - 1 && <span className="h-px w-3 bg-slate-200 dark:bg-slate-700" />}
+                    </div>
+                  ))}
+                </div>
+              </div>
+
+              <p className="text-[10px] italic text-slate-400">Exemple illustratif du niveau de détail des décryptages Premium.</p>
             </div>
-            <div className="p-5 border-t border-slate-100 dark:border-slate-800 bg-slate-50 dark:bg-slate-800/30 flex items-center gap-3">
-              <Link href="/lois" className="flex-1 text-center py-3 rounded-2xl bg-slate-900 dark:bg-white text-white dark:text-slate-900 font-bold text-sm hover:opacity-90 transition">Voir tous les décryptages</Link>
+
+            <div className="p-5 border-t border-slate-100 dark:border-slate-800 bg-slate-50 dark:bg-slate-800/30">
+              <Link href="/lois" className="flex items-center justify-center gap-2 py-3.5 rounded-2xl bg-gradient-to-r from-amber-400 to-yellow-500 text-slate-900 font-black uppercase tracking-widest text-xs hover:brightness-110 transition">
+                <Sparkles size={14} /> Voir tous les décryptages
+              </Link>
             </div>
           </motion.div>
         </div>
@@ -152,6 +212,14 @@ function NotifDemoModal({ open, onClose }: { open: boolean; onClose: () => void 
               <p className="mt-1 text-[11px] text-white/70">Un aperçu de ce qui vous attend, en temps réel.</p>
             </div>
             <div className="flex-1 overflow-y-auto p-4 space-y-2.5">
+              {/* mini en-tête façon fil réel */}
+              <div className="flex items-center justify-between px-1 pb-1">
+                <div className="flex items-center gap-2">
+                  <span className="flex h-8 w-8 items-center justify-center rounded-xl bg-amber-50 dark:bg-amber-500/15 text-amber-600"><BellRing size={15} /></span>
+                  <span className="text-xs font-black uppercase tracking-widest text-slate-900 dark:text-white">Mes alertes</span>
+                </div>
+                <span className="rounded-full bg-rose-500 px-2 py-0.5 text-[10px] font-black text-white">4 nouvelles</span>
+              </div>
               {DEMO_NOTIFS.map((n, i) => (
                 <motion.div key={i} initial={{ opacity: 0, x: -10 }} animate={{ opacity: 1, x: 0 }} transition={{ delay: 0.05 * i }}
                   className="flex items-start gap-3 rounded-2xl border border-slate-100 dark:border-slate-800 bg-slate-50/60 dark:bg-slate-800/40 p-3.5">
@@ -271,9 +339,9 @@ export default function PremiumPage() {
       {/* ══════ OFFRE & CTA ══════ */}
       <section className="py-24 px-4 bg-white dark:bg-slate-900">
         <div className="max-w-lg mx-auto">
-          <FadeIn>
-            <div className="relative rounded-[2.5rem] border-2 border-amber-400 bg-gradient-to-b from-amber-50/60 to-white dark:from-amber-500/5 dark:to-slate-900 p-8 md:p-10 shadow-2xl shadow-amber-500/10 overflow-hidden">
-              <div className="absolute top-0 left-1/2 -translate-x-1/2 -translate-y-1/2 bg-slate-900 text-white px-4 py-1 rounded-full text-[10px] font-black uppercase tracking-widest">Offre la plus populaire</div>
+          <FadeIn className="pt-4">
+            <div className="relative rounded-[2.5rem] border-2 border-amber-400 bg-gradient-to-b from-amber-50/60 to-white dark:from-amber-500/5 dark:to-slate-900 p-8 md:p-10 shadow-2xl shadow-amber-500/10">
+              <div className="absolute top-0 left-1/2 -translate-x-1/2 -translate-y-1/2 whitespace-nowrap bg-slate-900 text-white px-4 py-1.5 rounded-full text-[10px] font-black uppercase tracking-widest shadow-lg">Offre la plus populaire</div>
 
               <div className="flex items-center justify-center gap-4 mb-6">
                 <span className={`text-sm font-bold ${billingCycle === "monthly" ? "text-slate-900 dark:text-white" : "text-slate-400"}`}>Mensuel</span>

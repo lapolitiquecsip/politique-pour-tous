@@ -5,9 +5,10 @@ import { motion, AnimatePresence, useInView } from "framer-motion";
 import { usePremium } from "@/lib/hooks/usePremium";
 import { getPremiumUrl } from "@/lib/utils";
 import {
-  CheckCircle2, Star, TrendingUp, FileText, ArrowRight, Quote, Scale,
+  CheckCircle2, Star, FileText, ArrowRight, Quote, Scale,
   LayoutDashboard, BellRing, Users, Bookmark, Building2, Sliders,
   X, Sparkles, Vote, MapPin,
+  AlertTriangle, Target, GitBranch, Pencil, HelpCircle,
 } from "lucide-react";
 import Link from "next/link";
 
@@ -58,49 +59,49 @@ const FEATURES: Feature[] = [
   { icon: LayoutDashboard, title: "Espace personnel complet", desc: "Historique de vote, élus suivis, lois favorites, territoires : tout au même endroit, à jour.", color: "from-slate-500 to-slate-700", href: "/dashboard", cta: "Ouvrir mon tableau de bord" },
 ];
 
-/* ══════════ Démo 1 : aperçu d'une analyse détaillée (mock illustratif, toujours dispo) ══════════ */
-const LAW_DEMO = {
-  category: "Économie & Travail",
+/* ══════════ Démo 1 : une VRAIE analyse détaillée, rendue avec le VRAI design du site ══════════ */
+// Analyse réelle (report des élections en Nouvelle-Calédonie) — telle qu'affichée aux membres
+// premium : sections en cartes, chiffres surlignés. Aucun contenu inventé.
+const DEMO_ANALYSIS = {
+  title: "Report du renouvellement des institutions de la Nouvelle-Calédonie",
+  category: "Institutions",
   status: "Promulguée",
-  date: "12 mars 2026",
-  title: "Loi pour le plein emploi et le pouvoir d'achat",
-  essence:
-    "Le texte fusionne les opérateurs de l'emploi au sein de « France Travail », conditionne le versement du RSA à une activité hebdomadaire, et révise les règles de l'assurance-chômage. Objectif affiché : ramener le chômage à 5 % d'ici 2030.",
-  avantApres: [
-    { avant: "RSA versé sans contrepartie", apres: "15 h d'activité par semaine" },
-    { avant: "Pôle emploi & missions locales séparés", apres: "France Travail : guichet unique" },
-    { avant: "Indemnisation fixe (18 mois)", apres: "Durée modulée selon la conjoncture" },
-  ],
-  impacts: [
-    { icon: Users, value: "≈ 2 M", label: "allocataires du RSA concernés" },
-    { icon: TrendingUp, value: "+450 €/an", label: "estimés pour un salarié au SMIC" },
-    { icon: Building2, value: "Janv. 2027", label: "mise en place de France Travail" },
-  ],
-  vote: { pour: 310, contre: 240, abstention: 27 },
-  timeline: ["Dépôt", "Commission", "Séance AN", "Sénat", "Adoption", "Promulgation"],
+  text: `**Contexte et objectif** : le texte reporte le renouvellement des institutions calédoniennes – initialement prévu en mai 2024, puis reporté à décembre 2024 – afin de laisser une fenêtre de dialogue pour un accord consensuel sur le statut futur de l'archipel. **Procédure accélérée** : le gouvernement a déclaré l'urgence le 2 octobre 2024, ce qui a permis une navette parlementaire rapide (Sénat le 23 octobre, Assemblée nationale le 5 novembre). **Amendements clés** : l'amendement proposant un report au 30 mai 2025 a été rejeté, tandis que l'amendement des rapporteurs fixant l'échéance au 30 novembre 2025 a été adopté. Un amendement technique a prévu une entrée en vigueur dès le lendemain de la publication pour respecter les délais de convocation des électeurs. **Votes** : le texte a été adopté sans opposition en première lecture à l'Assemblée nationale (297 pour, 0 contre) et au Sénat (324 pour, 0 contre, 19 abstentions). La commission mixte paritaire a été saisie, et le texte définitif a été adopté par l'Assemblée (279 pour, 247 contre, 9 abstentions) et le Sénat (298 pour, 39 contre, 5 abstentions). Le Conseil constitutionnel, saisi le 6 novembre, a validé le texte le 13 novembre. **Limites de l'analyse** : les sources ne précisent pas les positions des groupes minoritaires calédoniens autres que ceux représentés par les amendements rejetés. Le report à novembre 2025 résulte d'un compromis entre continuité institutionnelle et temps laissé aux négociations politiques.`,
 };
 
-function VoteBar({ pour, contre, abstention }: { pour: number; contre: number; abstention: number }) {
-  const total = pour + contre + abstention;
-  const pct = (n: number) => `${(n / total) * 100}%`;
-  return (
-    <div>
-      <div className="flex h-3.5 overflow-hidden rounded-full ring-1 ring-slate-200 dark:ring-slate-700">
-        <span className="bg-emerald-500" style={{ width: pct(pour) }} />
-        <span className="bg-rose-500" style={{ width: pct(contre) }} />
-        <span className="bg-slate-300 dark:bg-slate-600" style={{ width: pct(abstention) }} />
-      </div>
-      <div className="mt-2 flex flex-wrap gap-x-4 gap-y-1 text-[11px] font-bold">
-        <span className="text-emerald-600">● Pour {pour}</span>
-        <span className="text-rose-600">● Contre {contre}</span>
-        <span className="text-slate-400">● Abst. {abstention}</span>
-      </div>
-    </div>
-  );
+// Mêmes helpers que le rendu réel (LawsClient) : découpage des sections + surlignage des chiffres.
+const NUM_RE = /(\d[\d  .]*\s?(?:%|€|Md€|M€|milliards?|millions?)|\d{1,4}\s?(?:pour|contre|abstentions?|voix|sièges)|\d+(?:[.,]\d+)?)/gi;
+function HL({ text }: { text: string }) {
+  const parts = String(text || "").split(NUM_RE);
+  return <>{parts.map((p, i) => i % 2 === 1
+    ? <span key={i} className="rounded-md bg-amber-400/25 px-1 font-black text-amber-900 dark:text-amber-300 whitespace-nowrap">{p}</span>
+    : <span key={i}>{p}</span>)}</>;
+}
+function sectionStyle(header: string) {
+  const h = header.toLowerCase();
+  if (/vote|scrutin/.test(h)) return { Icon: Vote, c: "text-emerald-600", bg: "bg-emerald-50 dark:bg-emerald-500/10" };
+  if (/limite|réserve/.test(h)) return { Icon: AlertTriangle, c: "text-slate-500", bg: "bg-slate-50 dark:bg-slate-800" };
+  if (/contexte|objectif|objet|mesure/.test(h)) return { Icon: Target, c: "text-amber-600", bg: "bg-amber-50 dark:bg-amber-500/10" };
+  if (/procédure|navette|étape|calendrier/.test(h)) return { Icon: GitBranch, c: "text-blue-600", bg: "bg-blue-50 dark:bg-blue-500/10" };
+  if (/amendement/.test(h)) return { Icon: Pencil, c: "text-fuchsia-600", bg: "bg-fuchsia-50 dark:bg-fuchsia-500/10" };
+  if (/problème|enjeu|pourquoi/.test(h)) return { Icon: HelpCircle, c: "text-rose-600", bg: "bg-rose-50 dark:bg-rose-500/10" };
+  return { Icon: FileText, c: "text-amber-600", bg: "bg-amber-50 dark:bg-amber-500/10" };
+}
+function parseSections(raw: string) {
+  const re = /\*\*(.+?)\*\*\s*:?\s*/g;
+  const out: { header: string; body: string }[] = [];
+  let m: RegExpExecArray | null, lastIdx = 0, lastHeader: string | null = null;
+  while ((m = re.exec(raw))) {
+    if (lastHeader !== null) out.push({ header: lastHeader, body: raw.slice(lastIdx, m.index).trim() });
+    lastHeader = m[1].trim(); lastIdx = re.lastIndex;
+  }
+  if (lastHeader !== null) out.push({ header: lastHeader, body: raw.slice(lastIdx).trim() });
+  return out.filter(s => s.body.length > 1);
 }
 
 function LawExampleModal({ open, onClose }: { open: boolean; onClose: () => void }) {
-  const d = LAW_DEMO;
+  const d = DEMO_ANALYSIS;
+  const sections = parseSections(d.text);
   return (
     <AnimatePresence>
       {open && (
@@ -109,74 +110,34 @@ function LawExampleModal({ open, onClose }: { open: boolean; onClose: () => void
             className="absolute inset-0 bg-slate-950/85 backdrop-blur-md" />
           <motion.div initial={{ opacity: 0, y: 40, scale: 0.98 }} animate={{ opacity: 1, y: 0, scale: 1 }} exit={{ opacity: 0, y: 40, scale: 0.98 }}
             className="relative w-full max-w-2xl bg-white dark:bg-slate-900 rounded-t-[2rem] sm:rounded-[2.5rem] shadow-2xl overflow-hidden flex flex-col max-h-[90vh]">
-            {/* En-tête premium — sobre, quasi monochrome */}
             <div className="relative bg-gradient-to-br from-slate-900 to-slate-800 p-6 pr-14 text-white shrink-0">
               <div className="absolute inset-0 opacity-[0.15] bg-[radial-gradient(circle_at_top_right,rgba(251,191,36,0.6),transparent_60%)]" />
               <button onClick={onClose} className="absolute right-4 top-4 z-10 rounded-full bg-white/15 p-2 hover:bg-white/25 transition" aria-label="Fermer"><X size={18} /></button>
-              <p className="relative flex items-center gap-1.5 text-[10px] font-black uppercase tracking-[0.25em] text-amber-400"><Scale size={12} /> Exemple · Analyse détaillée</p>
-              <h3 className="relative mt-2 text-xl sm:text-2xl font-bold leading-tight">{d.title}</h3>
+              <p className="relative flex items-center gap-1.5 text-[10px] font-black uppercase tracking-[0.25em] text-amber-400"><Scale size={12} /> Exemple réel · Analyse détaillée</p>
+              <h3 className="relative mt-2 text-lg sm:text-xl font-bold leading-tight">{d.title}</h3>
               <div className="relative mt-3 flex flex-wrap items-center gap-2">
                 <span className="rounded-full bg-white/10 px-3 py-1 text-[10px] font-black uppercase tracking-widest text-white/80">{d.category}</span>
                 <span className="inline-flex items-center gap-1 rounded-full bg-emerald-500/20 px-3 py-1 text-[10px] font-black uppercase tracking-widest text-emerald-300"><CheckCircle2 size={11} /> {d.status}</span>
-                <span className="text-[10px] font-black uppercase tracking-widest text-white/40">{d.date}</span>
               </div>
             </div>
 
-            <div className="flex-1 overflow-y-auto p-6 sm:p-8 space-y-7">
-              {/* L'essentiel */}
-              <div>
-                <p className="text-[10px] font-black uppercase tracking-widest text-amber-500 mb-2">L'essentiel</p>
-                <p className="text-[15px] leading-relaxed text-slate-700 dark:text-slate-300">{d.essence}</p>
-              </div>
-
-              {/* Avant / Après */}
-              <div>
-                <p className="text-[10px] font-black uppercase tracking-widest text-slate-400 mb-3">Avant / Après</p>
-                <div className="space-y-2">
-                  {d.avantApres.map((r, i) => (
-                    <div key={i} className="grid grid-cols-[1fr_auto_1fr] items-center gap-3 rounded-2xl border border-slate-100 dark:border-slate-800 bg-slate-50/60 dark:bg-slate-800/40 p-3">
-                      <span className="text-[13px] text-slate-400 line-through decoration-rose-400/60">{r.avant}</span>
-                      <ArrowRight size={15} className="text-slate-300 dark:text-slate-600" />
-                      <span className="text-[13px] font-bold text-slate-800 dark:text-slate-100">{r.apres}</span>
+            <div className="flex-1 overflow-y-auto p-5 sm:p-6">
+              <div className="grid gap-3 sm:grid-cols-2">
+                {sections.map((s, i) => {
+                  const { Icon, c, bg } = sectionStyle(s.header);
+                  const wide = /vote|scrutin|contexte|objectif|objet/i.test(s.header) ? "sm:col-span-2" : "";
+                  return (
+                    <div key={i} className={`rounded-2xl border border-slate-100 dark:border-slate-800 bg-white dark:bg-slate-900 p-4 shadow-sm ${wide}`}>
+                      <div className="mb-2 flex items-center gap-2">
+                        <span className={`flex h-8 w-8 items-center justify-center rounded-xl ${bg} ${c}`}><Icon size={16} /></span>
+                        <h4 className={`text-[11px] font-black uppercase tracking-widest ${c}`}>{s.header}</h4>
+                      </div>
+                      <p className="text-[13.5px] leading-6 text-slate-700 dark:text-slate-300"><HL text={s.body} /></p>
                     </div>
-                  ))}
-                </div>
+                  );
+                })}
               </div>
-
-              {/* Ce que ça change */}
-              <div>
-                <p className="text-[10px] font-black uppercase tracking-widest text-slate-400 mb-3">Ce que ça change pour vous</p>
-                <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
-                  {d.impacts.map((im, i) => (
-                    <div key={i} className="rounded-2xl border border-slate-100 dark:border-slate-800 bg-white dark:bg-slate-900 p-4 text-center shadow-sm">
-                      <im.icon size={18} className="mx-auto mb-2 text-amber-500" />
-                      <p className="text-lg font-black text-slate-900 dark:text-white leading-none">{im.value}</p>
-                      <p className="mt-1.5 text-[11px] leading-tight text-slate-500">{im.label}</p>
-                    </div>
-                  ))}
-                </div>
-              </div>
-
-              {/* Le vote */}
-              <div>
-                <p className="text-[10px] font-black uppercase tracking-widest text-slate-400 mb-3">Le vote à l'Assemblée</p>
-                <VoteBar {...d.vote} />
-              </div>
-
-              {/* Parcours */}
-              <div>
-                <p className="text-[10px] font-black uppercase tracking-widest text-slate-400 mb-3">Parcours législatif</p>
-                <div className="flex items-center gap-1.5 overflow-x-auto pb-1">
-                  {d.timeline.map((step, i) => (
-                    <div key={i} className="flex items-center gap-1.5 shrink-0">
-                      <span className={`rounded-full px-2.5 py-1 text-[10px] font-bold ${i === d.timeline.length - 1 ? "bg-emerald-500 text-white" : "bg-slate-100 dark:bg-slate-800 text-slate-500"}`}>{step}</span>
-                      {i < d.timeline.length - 1 && <span className="h-px w-3 bg-slate-200 dark:bg-slate-700" />}
-                    </div>
-                  ))}
-                </div>
-              </div>
-
-              <p className="text-[10px] italic text-slate-400">Exemple illustratif du niveau de détail des décryptages Premium.</p>
+              <p className="mt-4 text-[10px] italic text-slate-400">Exemple réel d&apos;un décryptage Premium — le design exact affiché sur chaque loi.</p>
             </div>
 
             <div className="p-5 border-t border-slate-100 dark:border-slate-800 bg-slate-50 dark:bg-slate-800/30">

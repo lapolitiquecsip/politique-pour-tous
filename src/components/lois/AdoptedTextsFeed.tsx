@@ -2,8 +2,54 @@
 
 import { useEffect, useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
-import { CheckCircle2, XCircle, X, ExternalLink, Loader2, ArrowRight, Landmark } from "lucide-react";
+import { CheckCircle2, XCircle, X, ExternalLink, Loader2, ArrowRight, Landmark, Info, HelpCircle, FileText, Target, AlertTriangle, GitBranch, Pencil } from "lucide-react";
 import { api } from "@/lib/api";
+
+// Surligne les chiffres (%, €, quantités, votes, dates) dans un texte d'analyse.
+const NUM_RE = /(\d[\d  .]*\s?(?:%|€|Md€|M€|milliards?|millions?)|\d{1,4}\s?(?:pour|contre|abstentions?|voix|sièges)|\d+(?:[.,]\d+)?)/gi;
+function HL({ text }: { text: string }) {
+  const parts = String(text || "").split(NUM_RE);
+  return <>{parts.map((p, i) => i % 2 === 1
+    ? <span key={i} className="rounded-md bg-amber-400/25 px-1 font-black text-amber-900 dark:text-amber-300 whitespace-nowrap">{p}</span>
+    : <span key={i}>{p}</span>)}</>;
+}
+function secStyle(header: string) {
+  const h = header.toLowerCase();
+  if (/vote|scrutin/.test(h)) return { Icon: CheckCircle2, c: "text-emerald-600", bg: "bg-emerald-50 dark:bg-emerald-500/10" };
+  if (/limite|réserve/.test(h)) return { Icon: AlertTriangle, c: "text-slate-500", bg: "bg-slate-50 dark:bg-slate-800" };
+  if (/contexte|objectif|objet|mesure|s'agit/.test(h)) return { Icon: Target, c: "text-amber-600", bg: "bg-amber-50 dark:bg-amber-500/10" };
+  if (/procédure|navette|étape|calendrier/.test(h)) return { Icon: GitBranch, c: "text-blue-600", bg: "bg-blue-50 dark:bg-blue-500/10" };
+  if (/amendement/.test(h)) return { Icon: Pencil, c: "text-fuchsia-600", bg: "bg-fuchsia-50 dark:bg-fuchsia-500/10" };
+  if (/important|pourquoi|enjeu/.test(h)) return { Icon: HelpCircle, c: "text-blue-600", bg: "bg-blue-50 dark:bg-blue-500/10" };
+  if (/détail|detail/.test(h)) return { Icon: FileText, c: "text-amber-600", bg: "bg-amber-50 dark:bg-amber-500/10" };
+  return { Icon: Info, c: "text-slate-500", bg: "bg-slate-50 dark:bg-slate-800" };
+}
+// Carte de section : icône + en-tête + corps avec chiffres surlignés.
+function SecCard({ header, body }: { header: string; body: string }) {
+  const { Icon, c, bg } = secStyle(header);
+  return (
+    <div className="rounded-2xl border border-slate-100 dark:border-slate-800 bg-white dark:bg-slate-900 p-4 shadow-sm">
+      <div className="mb-2 flex items-center gap-2">
+        <span className={`flex h-8 w-8 items-center justify-center rounded-xl ${bg} ${c}`}><Icon size={16} /></span>
+        <h4 className={`text-[11px] font-black uppercase tracking-widest ${c}`}>{header}</h4>
+      </div>
+      <p className="text-[14px] leading-6 text-slate-700 dark:text-slate-300"><HL text={body} /></p>
+    </div>
+  );
+}
+// Découpe un texte « **En-tête** : corps » en sections ; sinon une seule section « En détail ».
+function toSections(raw: string, fallbackHeader: string): { header: string; body: string }[] {
+  const re = /\*\*(.+?)\*\*\s*:?\s*/g;
+  const out: { header: string; body: string }[] = [];
+  let m: RegExpExecArray | null, lastIdx = 0, lastHeader: string | null = null;
+  while ((m = re.exec(raw))) {
+    if (lastHeader !== null) out.push({ header: lastHeader, body: raw.slice(lastIdx, m.index).trim() });
+    lastHeader = m[1].trim(); lastIdx = re.lastIndex;
+  }
+  if (lastHeader !== null) out.push({ header: lastHeader, body: raw.slice(lastIdx).trim() });
+  const clean = out.filter(s => s.body.length > 1);
+  return clean.length ? clean : [{ header: fallbackHeader, body: raw.trim() }];
+}
 
 // « Derniers textes adoptés par l'Assemblée » (façon CIVIX/Datan) : pour chaque vote solennel
 // sur l'ensemble d'un texte, l'issue (adopté/rejeté), le vote de CHAQUE parti, et l'étape
@@ -124,20 +170,22 @@ export default function AdoptedTextsFeed() {
                   <p className="mt-2 text-sm font-semibold text-white/90">{open.navette.navette_status === "senat" ? "→ " : ""}{open.navette.navette_label}</p>
                 )}
               </div>
-              <div className="overflow-y-auto p-6 space-y-5">
-                {open.summary && <div><p className="text-[10px] font-black uppercase tracking-widest text-slate-400">De quoi s'agit-il</p><p className="mt-1 text-[15px] leading-relaxed text-slate-700 dark:text-slate-300">{open.summary}</p></div>}
+              <div className="overflow-y-auto p-6 space-y-3">
+                {/* Analyse détaillée au design premium : chaque partie en carte, chiffres surlignés. */}
+                {open.summary && <SecCard header="De quoi s'agit-il" body={open.summary} />}
                 {(() => {
                   // why_it_matters encode « pourquoi|||DETAILED|||détails » : on sépare proprement.
                   const [why, detailed] = String(open.why_it_matters || "").split("|||DETAILED|||").map((s: string) => s.trim());
+                  const hasDetail = detailed && detailed !== "Détails supplémentaires non disponibles.";
                   return (
                     <>
-                      {why && <div className="rounded-2xl bg-blue-50/60 p-4 dark:bg-slate-800/60"><p className="text-[10px] font-black uppercase tracking-widest text-blue-600">Pourquoi c'est important</p><p className="mt-1 text-[15px] leading-relaxed text-slate-700 dark:text-slate-300">{why}</p></div>}
-                      {detailed && detailed !== "Détails supplémentaires non disponibles." && <div><p className="text-[10px] font-black uppercase tracking-widest text-slate-400">En détail</p><p className="mt-1 text-[15px] leading-relaxed text-slate-700 dark:text-slate-300">{detailed}</p></div>}
+                      {why && <SecCard header="Pourquoi c'est important" body={why} />}
+                      {hasDetail && toSections(detailed, "En détail").map((s, i) => <SecCard key={i} header={s.header} body={s.body} />)}
                     </>
                   );
                 })()}
 
-                <div>
+                <div className="pt-2">
                   <p className="text-[10px] font-black uppercase tracking-widest text-slate-400">Le vote de chaque parti</p>
                   <div className="mt-3 space-y-2.5">
                     {(open.group_results || []).slice().sort((a: any, b: any) => (b.total || 0) - (a.total || 0)).map((g: any) => (

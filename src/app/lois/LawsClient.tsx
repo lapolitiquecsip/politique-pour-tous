@@ -10,7 +10,7 @@ import { usePremium } from "@/lib/hooks/usePremium";
 import { groupLabel } from "@/lib/legislative-groups";
 import { parseInitiators, loadPeopleIndex, personHref, normalizeName, type InitiatorPerson } from "@/lib/initiators";
 import { AwardBadge } from "@/components/ui/award-badge";
-import { Lock, ChevronDown, ChevronLeft, ChevronRight, ArrowRight, TrendingUp, CheckCircle2 } from "lucide-react";
+import { Lock, ChevronDown, ChevronLeft, ChevronRight, AlertTriangle, Target, Vote, GitBranch, Pencil, HelpCircle } from "lucide-react";
 import {
   LEGISLATIVE_CATEGORIES,
   categoryLabel,
@@ -131,33 +131,66 @@ function renderBold(text: string) {
   );
 }
 
+// Surligne les chiffres (%, €, quantités, dates courtes, comptes de votes) dans un texte.
+const NUM_RE = /(\d[\d  .]*\s?(?:%|€|Md€|M€|milliards?|millions?)|\d{1,4}\s?(?:pour|contre|abstentions?|voix|sièges|députés|sénateurs)|\d+(?:[.,]\d+)?)/gi;
+function HL({ text }: { text: string }) {
+  const parts = String(text || "").split(NUM_RE);
+  return <>{parts.map((p, i) => i % 2 === 1
+    ? <span key={i} className="rounded-md bg-amber-400/25 px-1 font-black text-amber-900 whitespace-nowrap">{p}</span>
+    : <span key={i}>{p}</span>)}</>;
+}
+
+// Icône + couleur d'accent d'une section, d'après son intitulé.
+function sectionStyle(header: string) {
+  const h = header.toLowerCase();
+  if (/vote|scrutin/.test(h)) return { Icon: Vote, c: "text-emerald-600", bg: "bg-emerald-50", ring: "ring-emerald-100" };
+  if (/limite|réserve|reserve/.test(h)) return { Icon: AlertTriangle, c: "text-slate-500", bg: "bg-slate-50", ring: "ring-slate-100" };
+  if (/contexte|objectif|objet|mesure|dispositif/.test(h)) return { Icon: Target, c: "text-amber-600", bg: "bg-amber-50", ring: "ring-amber-100" };
+  if (/procédure|procedure|navette|étape|etape|calendrier|adoption/.test(h)) return { Icon: GitBranch, c: "text-blue-600", bg: "bg-blue-50", ring: "ring-blue-100" };
+  if (/amendement/.test(h)) return { Icon: Pencil, c: "text-fuchsia-600", bg: "bg-fuchsia-50", ring: "ring-fuchsia-100" };
+  if (/problème|probleme|enjeu|pourquoi/.test(h)) return { Icon: HelpCircle, c: "text-rose-600", bg: "bg-rose-50", ring: "ring-rose-100" };
+  return { Icon: FileText, c: "text-amber-600", bg: "bg-amber-50", ring: "ring-amber-100" };
+}
+
+// Découpe le texte d'analyse en sections « **En-tête** : contenu » (aucun besoin d'IA).
+function parseSections(raw: string): { header: string; body: string }[] {
+  const re = /\*\*(.+?)\*\*\s*:?\s*/g;
+  const out: { header: string; body: string }[] = [];
+  let m: RegExpExecArray | null, lastIdx = 0, lastHeader: string | null = null;
+  while ((m = re.exec(raw))) {
+    if (lastHeader !== null) out.push({ header: lastHeader, body: raw.slice(lastIdx, m.index).trim() });
+    lastHeader = m[1].trim(); lastIdx = re.lastIndex;
+  }
+  if (lastHeader !== null) out.push({ header: lastHeader, body: raw.slice(lastIdx).trim() });
+  return out.filter(s => s.body.length > 1);
+}
+
+// Rendu « design premium » de l'analyse détaillée, DIRECTEMENT depuis le texte existant :
+// chaque section en carte, chiffres surlignés. Aucun appel IA.
 function PremiumAnalysis({ raw }: { raw: string }) {
-  let data: unknown = null;
-  try { data = JSON.parse(raw); } catch { /* pas du JSON : rendu texte/markdown */ }
-  if (!data || typeof data !== "object") {
-    return <p className="mt-4 whitespace-pre-line leading-7 text-amber-950">{renderBold(raw)}</p>;
+  // Ancien format JSON éventuel → texte concaténé pour le parseur de sections.
+  let text = raw;
+  try { const j = JSON.parse(raw); if (j && typeof j === "object") text = Object.entries(j).map(([k, v]) => `**${humanizeKey(k)}** : ${typeof v === "string" ? v : JSON.stringify(v)}`).join(" "); } catch { /* texte */ }
+
+  const sections = parseSections(text);
+  if (sections.length === 0) {
+    return <p className="mt-4 whitespace-pre-line leading-7 text-slate-700"><HL text={text} /></p>;
   }
   return (
-    <div className="mt-4 space-y-5">
-      {Object.entries(data as Record<string, unknown>).map(([key, value]) => (
-        <div key={key}>
-          <h4 className="text-sm font-black uppercase tracking-wide text-amber-900">{humanizeKey(key)}</h4>
-          {typeof value === "string" ? (
-            <p className="mt-1 leading-7 text-amber-950">{value}</p>
-          ) : value && typeof value === "object" ? (
-            <div className="mt-2 space-y-2">
-              {Object.entries(value as Record<string, unknown>).map(([subKey, subValue]) => (
-                <p key={subKey} className="leading-7 text-amber-950">
-                  <span className="font-bold text-amber-900">{humanizeKey(subKey)} : </span>
-                  {typeof subValue === "string" ? subValue : JSON.stringify(subValue)}
-                </p>
-              ))}
+    <div className="mt-2 grid gap-3 sm:grid-cols-2">
+      {sections.map((s, i) => {
+        const { Icon, c, bg, ring } = sectionStyle(s.header);
+        const wide = /vote|scrutin|contexte|objectif|objet/i.test(s.header) ? "sm:col-span-2" : "";
+        return (
+          <div key={i} className={`rounded-2xl border border-slate-100 bg-white p-5 shadow-sm ${wide}`}>
+            <div className="mb-2 flex items-center gap-2">
+              <span className={`flex h-8 w-8 items-center justify-center rounded-xl ${bg} ${c} ring-1 ${ring}`}><Icon size={16} /></span>
+              <h4 className={`text-[11px] font-black uppercase tracking-widest ${c}`}>{s.header}</h4>
             </div>
-          ) : (
-            <p className="mt-1 text-amber-950">{String(value)}</p>
-          )}
-        </div>
-      ))}
+            <p className="text-[14px] leading-6 text-slate-700"><HL text={s.body} /></p>
+          </div>
+        );
+      })}
     </div>
   );
 }
@@ -282,90 +315,8 @@ function InitiatorField({ authorName }: { authorName: string | null }) {
   );
 }
 
-/* ── Barre de vote (chiffres officiels) ── */
-function LawVoteBar({ pour, contre, abstention, result }: { pour?: number; contre?: number; abstention?: number; result?: string | null }) {
-  const total = (pour || 0) + (contre || 0) + (abstention || 0);
-  if (!total) return null;
-  const pct = (n: number) => `${((n || 0) / total) * 100}%`;
-  return (
-    <div>
-      <div className="flex h-3.5 overflow-hidden rounded-full ring-1 ring-slate-200">
-        <span className="bg-emerald-500" style={{ width: pct(pour || 0) }} />
-        <span className="bg-rose-500" style={{ width: pct(contre || 0) }} />
-        <span className="bg-slate-300" style={{ width: pct(abstention || 0) }} />
-      </div>
-      <div className="mt-2 flex flex-wrap gap-x-4 gap-y-1 text-[12px] font-bold">
-        <span className="text-emerald-600">● Pour {pour || 0}</span>
-        <span className="text-rose-600">● Contre {contre || 0}</span>
-        <span className="text-slate-400">● Abstention {abstention || 0}</span>
-        {result && <span className="ml-auto text-slate-500 italic">{result}</span>}
-      </div>
-    </div>
-  );
-}
-
-/* ── Analyse détaillée « design premium » à partir des données visuelles structurées ── */
-function LawVisualAnalysis({ v }: { v: any }) {
-  const avantApres = Array.isArray(v?.avant_apres) ? v.avant_apres : [];
-  const impacts = Array.isArray(v?.impacts) ? v.impacts : [];
-  return (
-    <div className="space-y-7">
-      {v?.essence && (
-        <div>
-          <p className="text-[10px] font-black uppercase tracking-widest text-amber-600 mb-2">L&apos;essentiel</p>
-          <p className="text-[15px] leading-relaxed text-slate-800">{v.essence}</p>
-        </div>
-      )}
-      {avantApres.length > 0 && (
-        <div>
-          <p className="text-[10px] font-black uppercase tracking-widest text-amber-700/70 mb-3">Avant / Après</p>
-          <div className="space-y-2">
-            {avantApres.map((r: any, i: number) => (
-              <div key={i} className="grid grid-cols-[1fr_auto_1fr] items-center gap-3 rounded-2xl border border-amber-100 bg-white/70 p-3">
-                <span className="text-[13px] text-slate-400 line-through decoration-rose-400/50">{r.avant}</span>
-                <ArrowRight size={15} className="text-amber-400" />
-                <span className="text-[13px] font-bold text-slate-800">{r.apres}</span>
-              </div>
-            ))}
-          </div>
-        </div>
-      )}
-      {impacts.length > 0 && (
-        <div>
-          <p className="text-[10px] font-black uppercase tracking-widest text-amber-700/70 mb-3">Ce que ça change</p>
-          <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
-            {impacts.map((im: any, i: number) => (
-              <div key={i} className="rounded-2xl border border-amber-100 bg-white p-4 text-center shadow-sm">
-                <TrendingUp size={16} className="mx-auto mb-2 text-amber-500" />
-                <p className="text-lg font-black text-slate-900 leading-tight">{im.value}</p>
-                <p className="mt-1.5 text-[11px] leading-tight text-slate-500">{im.label}</p>
-              </div>
-            ))}
-          </div>
-        </div>
-      )}
-      {v?.vote && (
-        <div>
-          <p className="text-[10px] font-black uppercase tracking-widest text-amber-700/70 mb-3">Le vote</p>
-          <LawVoteBar pour={v.vote.pour} contre={v.vote.contre} abstention={v.vote.abstention} result={v.vote.result} />
-        </div>
-      )}
-    </div>
-  );
-}
-
 function DossierModal({ detail, loading, onClose }: { detail: LegislativeDossierDetail | null; loading: boolean; onClose: () => void }) {
   const { isPremium } = usePremium();
-  const [visual, setVisual] = useState<any>(null);
-  const dossierId = detail?.dossier?.id;
-  const hasPremiumAnalysis = !!(detail as any)?.premium_analysis;
-  useEffect(() => {
-    setVisual(null);
-    if (!dossierId || !hasPremiumAnalysis) return;
-    let active = true;
-    api.getLawVisual(dossierId).then((vv: any) => { if (active) setVisual(vv); }).catch(() => {});
-    return () => { active = false; };
-  }, [dossierId, hasPremiumAnalysis]);
   if (!detail && !loading) return null;
   return (
     <div className="fixed inset-0 z-50 flex items-start justify-center bg-slate-950/70 p-4 md:p-10" role="dialog" aria-modal="true">
@@ -403,22 +354,12 @@ function DossierModal({ detail, loading, onClose }: { detail: LegislativeDossier
 
             <section className="mt-10"><h3 className="text-2xl font-staatliches uppercase text-slate-950">Résumé</h3><p className="mt-3 leading-7 text-slate-700">{detail.summary?.summary || "Analyse indisponible."}</p></section>
             {detail.premium_analysis ? (
-              <section className="mt-10 rounded-[2rem] border border-amber-200 bg-gradient-to-b from-amber-50 to-white p-6 md:p-8">
+              <section className="mt-10 rounded-[2rem] border border-amber-200 bg-gradient-to-b from-amber-50/70 to-white p-6 md:p-8">
                 <div className="flex items-center gap-2 mb-5">
                   <span className="flex h-9 w-9 items-center justify-center rounded-xl bg-gradient-to-br from-amber-300 to-amber-500 text-white shadow"><Scale size={18} /></span>
                   <h3 className="text-2xl font-staatliches uppercase text-amber-900">Analyse détaillée</h3>
                 </div>
-                {visual ? (
-                  <>
-                    <LawVisualAnalysis v={visual} />
-                    <details className="mt-6 group">
-                      <summary className="cursor-pointer list-none text-[11px] font-black uppercase tracking-widest text-amber-700/70 hover:text-amber-800">Lire l&apos;analyse complète</summary>
-                      <div className="mt-3"><PremiumAnalysis raw={detail.premium_analysis.summary} /></div>
-                    </details>
-                  </>
-                ) : (
-                  <PremiumAnalysis raw={detail.premium_analysis.summary} />
-                )}
+                <PremiumAnalysis raw={detail.premium_analysis.summary} />
               </section>
             ) : !isPremium ? (
               <section className="mt-10 rounded-3xl border border-amber-200 bg-amber-50 p-6">

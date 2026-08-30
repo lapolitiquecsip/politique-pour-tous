@@ -6,6 +6,7 @@ import { useRouter, useSearchParams } from "next/navigation";
 import Link from "next/link";
 import { Search, Loader2, X, CalendarDays, ExternalLink, Briefcase, GraduationCap, Users, ShieldCheck, Landmark, ArrowRight, Vote } from "lucide-react";
 import { api } from "@/lib/api";
+import VideoFeed from "@/components/executif/VideoFeed";
 import LegalStatusModal from "@/components/deputies/LegalStatusModal";
 import ThemesView from "@/components/presidentielles/ThemesView";
 
@@ -335,6 +336,11 @@ function CandidateModal({ candidate, onClose }: { candidate: Candidate; onClose:
               </div>
             )}
           </section>
+
+          {/* Fil vidéo (chaîne YouTube officielle) — masqué si pas de chaîne vérifiée */}
+          <div className="mt-8">
+            <VideoFeed source="candidate" candidateId={candidate.id} />
+          </div>
 
           {candidate.source_urls && candidate.source_urls.length > 0 && (
             <section className="mt-8">

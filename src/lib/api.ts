@@ -635,6 +635,18 @@ export const api = {
     return data;
   },
 
+  // Fil vidéo d'un candidat (sa chaîne YouTube officielle). Vide s'il n'a pas de chaîne vérifiée.
+  getCandidateVideos: async (candidateId: string, limit = 12) => {
+    const { data, error } = await supabase
+      .from('candidate_videos')
+      .select('video_id, title, published_at, url, thumbnail_url, description')
+      .eq('candidate_id', candidateId)
+      .order('published_at', { ascending: false })
+      .limit(limit);
+    if (error || !data) return [];
+    return data;
+  },
+
   // Derniers décrets d'un ministère (filtre par mots-clés du nom du ministère).
   getDecreesForMinistry: async (keywords: string[], limit = 5) => {
     if (!keywords.length) return [];

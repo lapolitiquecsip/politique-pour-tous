@@ -26,18 +26,22 @@ const CFG = {
   elysee: { fetch: (n: number) => api.getElyseeVideos(n), icon: "bg-rose-50 text-rose-600", grad: "from-amber-500 via-orange-500 to-yellow-500", pre: "En ", accent: "vidéo", sub: "Interventions et déclarations du président", external: false, note: "Source : chaîne YouTube officielle de la présidence de la République. Lecture via le lecteur YouTube ; aucune vidéo n'est copiée. Mise à jour quotidienne." },
   an: { fetch: (n: number) => api.getAnVideos(n), icon: "bg-emerald-50 text-emerald-600", grad: "from-emerald-500 to-teal-500", pre: "Séances & ", accent: "auditions", sub: "Débats, questions au Gouvernement et auditions — chaîne officielle LCP · Assemblée nationale", external: false, note: "Source : chaîne YouTube officielle LCP · Assemblée nationale. Mise à jour quotidienne." },
   senat: { fetch: (n: number) => api.getSenatVideos(n), icon: "bg-rose-50 text-rose-600", grad: "from-rose-500 to-red-500", pre: "Séances & ", accent: "auditions", sub: "Séances publiques, auditions et travaux de commission — portail officiel videos.senat.fr", external: true, note: "Source : portail officiel videos.senat.fr (séances publiques, auditions, travaux de commission). La vidéo s'ouvre sur le site du Sénat." },
+  candidate: { fetch: (_n: number) => Promise.resolve([] as Vid[]), icon: "bg-amber-50 text-amber-600", grad: "from-amber-500 to-yellow-500", pre: "Discours & ", accent: "vidéos", sub: "Discours, débats et interviews — chaîne YouTube officielle du candidat", external: false, note: "Source : chaîne YouTube officielle du candidat. Lecture via le lecteur YouTube ; aucune vidéo n'est copiée." },
 } as const;
 
-export default function VideoFeed({ source = "elysee" }: { source?: "elysee" | "an" | "senat" }) {
+export default function VideoFeed({ source = "elysee", candidateId }: { source?: "elysee" | "an" | "senat" | "candidate"; candidateId?: string }) {
   const [videos, setVideos] = useState<Vid[]>([]);
   const [open, setOpen] = useState<Vid | null>(null);
   const cfg = CFG[source];
 
   useEffect(() => {
     let active = true;
-    cfg.fetch(12).then(d => { if (active) setVideos(d as Vid[]); }).catch(() => {});
+    const p = source === "candidate"
+      ? (candidateId ? api.getCandidateVideos(candidateId, 12) : Promise.resolve([]))
+      : cfg.fetch(12);
+    Promise.resolve(p).then(d => { if (active) setVideos(d as Vid[]); }).catch(() => {});
     return () => { active = false; };
-  }, [source]); // eslint-disable-line react-hooks/exhaustive-deps
+  }, [source, candidateId]); // eslint-disable-line react-hooks/exhaustive-deps
 
   if (videos.length === 0) return null;
 

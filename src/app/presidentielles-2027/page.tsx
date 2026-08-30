@@ -173,12 +173,14 @@ function formatDate(value?: string | null) {
 function CandidateModal({ candidate, onClose }: { candidate: Candidate; onClose: () => void }) {
   const side = sideOf(candidate);
   const [news, setNews] = useState<any[] | null>(null);
+  const [proposals, setProposals] = useState<any[]>([]);
   const [showLegal, setShowLegal] = useState(false);
   const [mandate, setMandate] = useState<{ type: string; slug: string } | null>(null);
   const [partyLink, setPartyLink] = useState<{ slug: string; name: string } | null>(null);
   useEffect(() => {
     let active = true;
     api.getCandidateNews(candidate.id).then(rows => { if (active) setNews(rows); }).catch(() => setNews([]));
+    api.getCandidateProposals(candidate.id).then(rows => { if (active) setProposals(rows as any[]); }).catch(() => {});
     api.findMandateByName(candidate.full_name).then(m => { if (active) setMandate(m); }).catch(() => {});
     api.findPartyByAlias(candidate.party).then(p => { if (active) setPartyLink(p); }).catch(() => {});
     return () => { active = false; };
@@ -312,6 +314,35 @@ function CandidateModal({ candidate, onClose }: { candidate: Candidate; onClose:
               <p className="mt-2 whitespace-pre-line text-sm leading-6 text-amber-950">{candidate.program}</p>
             </section>
           )}
+
+          {/* Ses propositions (scrapées verbatim du site officiel du mouvement) */}
+          {proposals.length > 0 && (() => {
+            const groups: Record<string, any[]> = {};
+            for (const p of proposals) { const k = p.theme || "Propositions"; (groups[k] ||= []).push(p); }
+            const src = proposals.find(p => p.source_url)?.source_url;
+            return (
+              <section className="mt-8">
+                <h3 className="text-2xl font-staatliches uppercase text-slate-950">Ses propositions</h3>
+                <p className="mt-1 text-xs text-slate-500">Mesures issues du programme officiel de son mouvement, reprises telles quelles.</p>
+                <div className="mt-4 space-y-5">
+                  {Object.entries(groups).map(([theme, items]) => (
+                    <div key={theme}>
+                      <p className="text-[11px] font-black uppercase tracking-widest text-amber-700">{theme} <span className="text-slate-400">· {items.length}</span></p>
+                      <ul className="mt-2 space-y-1.5">
+                        {items.map((p, i) => (
+                          <li key={i} className="flex gap-2 rounded-xl border border-slate-100 bg-slate-50/60 p-3 text-sm leading-6 text-slate-700">
+                            <span className="mt-2 h-1.5 w-1.5 shrink-0 rounded-full bg-amber-500" />
+                            <span>{p.text}</span>
+                          </li>
+                        ))}
+                      </ul>
+                    </div>
+                  ))}
+                </div>
+                {src && <a href={src} target="_blank" rel="noreferrer" className="mt-3 inline-flex items-center gap-1.5 text-[11px] font-black uppercase tracking-widest text-blue-700 hover:underline"><ExternalLink size={12} /> Programme officiel</a>}
+              </section>
+            );
+          })()}
 
           {/* Fil d'actu quotidien */}
           <section className="mt-8">

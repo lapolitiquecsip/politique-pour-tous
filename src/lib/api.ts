@@ -635,6 +635,17 @@ export const api = {
     return data;
   },
 
+  // Propositions/idées d'un candidat (scrapées verbatim du site officiel de son mouvement).
+  getCandidateProposals: async (candidateId: string) => {
+    const { data, error } = await supabase
+      .from('candidate_proposals')
+      .select('theme, subsection, text, source_url')
+      .eq('candidate_id', candidateId)
+      .order('sort_order', { ascending: true });
+    if (error || !data) return [];
+    return data;
+  },
+
   // Fil vidéo d'un candidat (sa chaîne YouTube officielle). Vide s'il n'a pas de chaîne vérifiée.
   getCandidateVideos: async (candidateId: string, limit = 12) => {
     const { data, error } = await supabase

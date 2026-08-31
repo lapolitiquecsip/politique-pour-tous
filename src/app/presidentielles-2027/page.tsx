@@ -2,7 +2,7 @@
 
 import { Suspense, useEffect, useMemo, useRef, useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
-import { useRouter, useSearchParams } from "next/navigation";
+import { useSearchParams } from "next/navigation";
 import Link from "next/link";
 import { Search, Loader2, X, CalendarDays, ExternalLink, Briefcase, GraduationCap, Users, ShieldCheck, Landmark, ArrowRight, Vote, ChevronDown } from "lucide-react";
 import { api } from "@/lib/api";
@@ -521,7 +521,6 @@ function PositionsView({ candidates }: { candidates: Candidate[] }) {
 }
 
 function CandidatesContent() {
-  const router = useRouter();
   const params = useSearchParams();
   const [candidates, setCandidates] = useState<Candidate[]>([]);
   const [loading, setLoading] = useState(true);
@@ -555,8 +554,10 @@ function CandidatesContent() {
   const selected = selectedSlug ? candidates.find(c => c.slug === selectedSlug) ?? null : null;
   // L'état local pilote l'ouverture/fermeture ; la mise à jour de l'URL est secondaire et ne
   // doit jamais empêcher la fermeture (d'où le try/catch en export statique).
-  const open = (c: Candidate) => { setSelectedSlug(c.slug); try { router.replace(`/presidentielles-2027/?candidat=${c.slug}`, { scroll: false }); } catch {} };
-  const close = () => { setSelectedSlug(null); try { router.replace("/presidentielles-2027/", { scroll: false }); } catch {} };
+  // URL mise à jour EN SILENCE (history), sans navigation Next → la modale s'ouvre direct,
+  // sans revenir d'abord sur la liste. (router.replace provoquait ce flash en export statique.)
+  const open = (c: Candidate) => { setSelectedSlug(c.slug); try { window.history.replaceState(null, "", `/presidentielles-2027/?candidat=${c.slug}`); } catch {} };
+  const close = () => { setSelectedSlug(null); try { window.history.replaceState(null, "", "/presidentielles-2027/"); } catch {} };
 
   return (
     <div className="min-h-screen bg-gradient-to-b from-slate-50 via-white to-slate-50">

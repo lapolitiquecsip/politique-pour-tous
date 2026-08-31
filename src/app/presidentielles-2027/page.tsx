@@ -1,10 +1,10 @@
 "use client";
 
 import { Suspense, useEffect, useMemo, useRef, useState } from "react";
-import { motion } from "framer-motion";
+import { motion, AnimatePresence } from "framer-motion";
 import { useRouter, useSearchParams } from "next/navigation";
 import Link from "next/link";
-import { Search, Loader2, X, CalendarDays, ExternalLink, Briefcase, GraduationCap, Users, ShieldCheck, Landmark, ArrowRight, Vote } from "lucide-react";
+import { Search, Loader2, X, CalendarDays, ExternalLink, Briefcase, GraduationCap, Users, ShieldCheck, Landmark, ArrowRight, Vote, ChevronDown } from "lucide-react";
 import { api } from "@/lib/api";
 import VideoFeed from "@/components/executif/VideoFeed";
 import LegalStatusModal from "@/components/deputies/LegalStatusModal";
@@ -174,6 +174,8 @@ function CandidateModal({ candidate, onClose }: { candidate: Candidate; onClose:
   const side = sideOf(candidate);
   const [news, setNews] = useState<any[] | null>(null);
   const [proposals, setProposals] = useState<any[]>([]);
+  const [openPanels, setOpenPanels] = useState<Set<string>>(new Set());   // panneaux bio dépliés
+  const togglePanel = (k: string) => setOpenPanels(p => { const n = new Set(p); n.has(k) ? n.delete(k) : n.add(k); return n; });
   const [showLegal, setShowLegal] = useState(false);
   const [mandate, setMandate] = useState<{ type: string; slug: string } | null>(null);
   const [partyLink, setPartyLink] = useState<{ slug: string; name: string } | null>(null);
@@ -292,17 +294,37 @@ function CandidateModal({ candidate, onClose }: { candidate: Candidate; onClose:
               const isTimeline = key === "parcours" || key === "chronologie";
               const wide = isTimeline ? "sm:col-span-2" : "";
               const color = FIELD_COLORS[key];
+              const isOpen = openPanels.has(key);
               return (
-                <div key={key} className={`rounded-3xl border border-slate-100 bg-white p-5 shadow-sm ${wide}`}>
-                  <h3 className={`font-staatliches text-2xl uppercase leading-none ${color.head}`}>{label}</h3>
-                  <div className={`mb-3 mt-1.5 h-1 w-12 rounded-full ${color.bar}`} />
-                  {isTimeline ? (
-                    <Timeline points={points} />
-                  ) : (
-                    <ul className="list-disc space-y-1.5 pl-4 text-sm leading-6 text-slate-700 marker:text-slate-300">
-                      {points.map((p, i) => <li key={i}><NumHighlight text={p} /></li>)}
-                    </ul>
-                  )}
+                <div key={key} className={`self-start overflow-hidden rounded-3xl border border-slate-100 bg-white shadow-sm ${wide}`}>
+                  {/* En-tête cliquable : déplie/replie le panneau (gain de place). */}
+                  <button onClick={() => togglePanel(key)} aria-expanded={isOpen}
+                    className="flex w-full items-center justify-between gap-3 p-5 text-left">
+                    <div>
+                      <h3 className={`font-staatliches text-2xl uppercase leading-none ${color.head}`}>{label}</h3>
+                      <div className={`mt-1.5 h-1 w-12 rounded-full ${color.bar}`} />
+                    </div>
+                    <span className="flex items-center gap-2 shrink-0">
+                      <span className="text-[10px] font-black uppercase tracking-widest text-slate-300">{points.length}</span>
+                      <ChevronDown size={20} className={`text-slate-400 transition-transform duration-300 ${isOpen ? "rotate-180" : ""}`} />
+                    </span>
+                  </button>
+                  <AnimatePresence initial={false}>
+                    {isOpen && (
+                      <motion.div initial={{ height: 0, opacity: 0 }} animate={{ height: "auto", opacity: 1 }} exit={{ height: 0, opacity: 0 }}
+                        transition={{ duration: 0.28, ease: "easeInOut" }} className="overflow-hidden">
+                        <div className="px-5 pb-5">
+                          {isTimeline ? (
+                            <Timeline points={points} />
+                          ) : (
+                            <ul className="list-disc space-y-1.5 pl-4 text-sm leading-6 text-slate-700 marker:text-slate-300">
+                              {points.map((p, i) => <li key={i}><NumHighlight text={p} /></li>)}
+                            </ul>
+                          )}
+                        </div>
+                      </motion.div>
+                    )}
+                  </AnimatePresence>
                 </div>
               );
             })}
@@ -352,16 +374,16 @@ function CandidateModal({ candidate, onClose }: { candidate: Candidate; onClose:
             ) : news.length === 0 ? (
               <p className="mt-3 text-sm text-slate-500">Aucune actualité recensée pour l'instant — le fil se met à jour chaque jour.</p>
             ) : (
-              <div className="mt-4 grid gap-3">
+              <div className="mt-4 flex gap-3 overflow-x-auto pb-3 snap-x snap-mandatory [scrollbar-width:thin]">
                 {news.map(item => (
-                  <a key={item.id} href={item.source_url || "#"} target="_blank" rel="noreferrer" className="block rounded-2xl border border-slate-200 p-4 transition hover:border-slate-300 hover:shadow-sm">
+                  <a key={item.id} href={item.source_url || "#"} target="_blank" rel="noreferrer" className="flex w-[280px] shrink-0 snap-start flex-col rounded-2xl border border-slate-200 p-4 transition hover:border-slate-300 hover:shadow-sm">
                     <div className="flex items-center justify-between gap-3 text-xs font-bold text-slate-400">
                       <span className="rounded-full bg-slate-100 px-2 py-0.5 uppercase tracking-widest">{item.news_type || "actu"}</span>
                       <span><CalendarDays className="mr-1 inline" size={13} />{formatDate(item.date)}</span>
                     </div>
-                    <p className="mt-2 font-bold text-slate-900">{item.title}</p>
-                    {item.summary && <p className="mt-1 text-sm leading-6 text-slate-600">{item.summary}</p>}
-                    {item.source_name && <p className="mt-2 inline-flex items-center gap-1 text-xs font-bold text-blue-700">{item.source_name}<ExternalLink size={12} /></p>}
+                    <p className="mt-2 font-bold text-slate-900 line-clamp-2">{item.title}</p>
+                    {item.summary && <p className="mt-1 text-sm leading-6 text-slate-600 line-clamp-3">{item.summary}</p>}
+                    {item.source_name && <p className="mt-auto pt-2 inline-flex items-center gap-1 text-xs font-bold text-blue-700">{item.source_name}<ExternalLink size={12} /></p>}
                   </a>
                 ))}
               </div>

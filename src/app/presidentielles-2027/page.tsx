@@ -4,7 +4,7 @@ import { Suspense, useEffect, useMemo, useRef, useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { useSearchParams } from "next/navigation";
 import Link from "next/link";
-import { Search, Loader2, X, CalendarDays, ExternalLink, Briefcase, GraduationCap, Users, ShieldCheck, Landmark, ArrowRight, Vote, ChevronDown } from "lucide-react";
+import { Search, Loader2, X, CalendarDays, ExternalLink, Briefcase, GraduationCap, Users, ShieldCheck, Landmark, ArrowRight, Vote, ChevronDown, Globe2, HeartPulse, Wheat, Leaf, Flag, TrendingUp, HelpCircle, FileText } from "lucide-react";
 import { api } from "@/lib/api";
 import VideoFeed from "@/components/executif/VideoFeed";
 import LegalStatusModal from "@/components/deputies/LegalStatusModal";
@@ -170,12 +170,29 @@ function formatDate(value?: string | null) {
   return new Intl.DateTimeFormat("fr-FR", { dateStyle: "long" }).format(new Date(value));
 }
 
+// Icône + couleur d'un thème de programme (différenciation visuelle).
+function themeStyle(name: string): { Icon: any; c: string; bg: string; dot: string } {
+  const h = (name || "").toLowerCase();
+  if (/immigr/.test(h)) return { Icon: Globe2, c: "text-amber-600", bg: "bg-amber-50", dot: "bg-amber-500" };
+  if (/éduc|educ|école|ecole/.test(h)) return { Icon: GraduationCap, c: "text-sky-600", bg: "bg-sky-50", dot: "bg-sky-500" };
+  if (/sécur|secur|justice/.test(h)) return { Icon: ShieldCheck, c: "text-rose-600", bg: "bg-rose-50", dot: "bg-rose-500" };
+  if (/santé|sante/.test(h)) return { Icon: HeartPulse, c: "text-pink-600", bg: "bg-pink-50", dot: "bg-pink-500" };
+  if (/agricult|rural/.test(h)) return { Icon: Wheat, c: "text-lime-700", bg: "bg-lime-50", dot: "bg-lime-500" };
+  if (/écolog|ecolog|énerg|energ|environ/.test(h)) return { Icon: Leaf, c: "text-emerald-600", bg: "bg-emerald-50", dot: "bg-emerald-500" };
+  if (/europ|internation/.test(h)) return { Icon: Flag, c: "text-blue-600", bg: "bg-blue-50", dot: "bg-blue-500" };
+  if (/économ|econom|ambition|prosp|emploi|travail/.test(h)) return { Icon: TrendingUp, c: "text-violet-600", bg: "bg-violet-50", dot: "bg-violet-500" };
+  if (/institution|destin|civique|démocr|democr|maître|maitre|renouveau/.test(h)) return { Icon: Landmark, c: "text-indigo-600", bg: "bg-indigo-50", dot: "bg-indigo-500" };
+  return { Icon: FileText, c: "text-slate-600", bg: "bg-slate-50", dot: "bg-slate-400" };
+}
+
 function CandidateModal({ candidate, onClose }: { candidate: Candidate; onClose: () => void }) {
   const side = sideOf(candidate);
   const [news, setNews] = useState<any[] | null>(null);
   const [proposals, setProposals] = useState<any[]>([]);
   const [openPanels, setOpenPanels] = useState<Set<string>>(new Set());   // panneaux bio dépliés
   const togglePanel = (k: string) => setOpenPanels(p => { const n = new Set(p); n.has(k) ? n.delete(k) : n.add(k); return n; });
+  const [openContext, setOpenContext] = useState<Set<string>>(new Set());  // « ? » contexte par thème
+  const toggleContext = (k: string) => setOpenContext(p => { const n = new Set(p); n.has(k) ? n.delete(k) : n.add(k); return n; });
   const [showLegal, setShowLegal] = useState(false);
   const [mandate, setMandate] = useState<{ type: string; slug: string } | null>(null);
   const [partyLink, setPartyLink] = useState<{ slug: string; name: string } | null>(null);
@@ -337,29 +354,54 @@ function CandidateModal({ candidate, onClose }: { candidate: Candidate; onClose:
             </section>
           )}
 
-          {/* Ses propositions (scrapées verbatim du site officiel du mouvement) */}
+          {/* Son programme : toutes les idées par thème + contexte au clic sur « ? » */}
           {proposals.length > 0 && (() => {
-            const groups: Record<string, any[]> = {};
-            for (const p of proposals) { const k = p.theme || "Propositions"; (groups[k] ||= []).push(p); }
+            const groups: Record<string, { ctx: string | null; items: any[] }> = {};
+            for (const p of proposals) {
+              const k = p.theme || "Propositions";
+              (groups[k] ||= { ctx: null, items: [] });
+              if (p.subsection === "__contexte__") groups[k].ctx = p.text; else groups[k].items.push(p);
+            }
             const src = proposals.find(p => p.source_url)?.source_url;
             return (
               <section className="mt-8">
-                <h3 className="text-2xl font-staatliches uppercase text-slate-950">Ses propositions</h3>
-                <p className="mt-1 text-xs text-slate-500">Mesures issues du programme officiel de son mouvement, reprises telles quelles.</p>
-                <div className="mt-4 space-y-5">
-                  {Object.entries(groups).map(([theme, items]) => (
-                    <div key={theme}>
-                      <p className="text-[11px] font-black uppercase tracking-widest text-amber-700">{theme} <span className="text-slate-400">· {items.length}</span></p>
-                      <ul className="mt-2 space-y-1.5">
-                        {items.map((p, i) => (
-                          <li key={i} className="flex gap-2 rounded-xl border border-slate-100 bg-slate-50/60 p-3 text-sm leading-6 text-slate-700">
-                            <span className="mt-2 h-1.5 w-1.5 shrink-0 rounded-full bg-amber-500" />
-                            <span>{p.text}</span>
-                          </li>
-                        ))}
-                      </ul>
-                    </div>
-                  ))}
+                <h3 className="text-2xl font-staatliches uppercase text-slate-950">Son programme</h3>
+                <p className="mt-1 text-xs text-slate-500">Toutes ses idées, par thème — issues du programme officiel. Cliquez sur <HelpCircle size={12} className="inline -mt-0.5" /> pour comprendre pourquoi.</p>
+                <div className="mt-4 space-y-4">
+                  {Object.entries(groups).map(([theme, g]) => {
+                    const { Icon, c, bg, dot } = themeStyle(theme);
+                    const ctxOpen = openContext.has(theme);
+                    return (
+                      <div key={theme} className="overflow-hidden rounded-2xl border border-slate-200">
+                        <div className={`flex items-center gap-2.5 ${bg} px-4 py-3`}>
+                          <span className={`flex h-8 w-8 shrink-0 items-center justify-center rounded-xl bg-white ${c} shadow-sm`}><Icon size={16} /></span>
+                          <p className={`text-sm font-black uppercase tracking-widest ${c}`}>{theme}</p>
+                          <span className="text-[10px] font-black text-slate-400">· {g.items.length}</span>
+                          {g.ctx && (
+                            <button onClick={() => toggleContext(theme)} title="Pourquoi ?"
+                              className={`ml-auto flex h-7 w-7 shrink-0 items-center justify-center rounded-full bg-white ${c} shadow-sm transition ${ctxOpen ? "ring-2 ring-current" : ""}`}>
+                              <HelpCircle size={15} />
+                            </button>
+                          )}
+                        </div>
+                        <AnimatePresence initial={false}>
+                          {ctxOpen && g.ctx && (
+                            <motion.div initial={{ height: 0, opacity: 0 }} animate={{ height: "auto", opacity: 1 }} exit={{ height: 0, opacity: 0 }} className="overflow-hidden">
+                              <p className="border-b border-slate-100 bg-slate-50 px-4 py-3 text-sm italic leading-6 text-slate-600">💡 {g.ctx}</p>
+                            </motion.div>
+                          )}
+                        </AnimatePresence>
+                        <ul className="divide-y divide-slate-50 bg-white">
+                          {g.items.map((p, i) => (
+                            <li key={i} className="flex gap-2.5 px-4 py-2.5 text-sm leading-6 text-slate-700">
+                              <span className={`mt-2 h-1.5 w-1.5 shrink-0 rounded-full ${dot}`} />
+                              <span>{p.text}</span>
+                            </li>
+                          ))}
+                        </ul>
+                      </div>
+                    );
+                  })}
                 </div>
                 {src && <a href={src} target="_blank" rel="noreferrer" className="mt-3 inline-flex items-center gap-1.5 text-[11px] font-black uppercase tracking-widest text-blue-700 hover:underline"><ExternalLink size={12} /> Programme officiel</a>}
               </section>

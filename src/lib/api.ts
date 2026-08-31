@@ -639,7 +639,7 @@ export const api = {
   getCandidateProposals: async (candidateId: string) => {
     const { data, error } = await supabase
       .from('candidate_proposals')
-      .select('theme, subsection, text, source_url')
+      .select('theme, subsection, text, source_url, explanation')
       .eq('candidate_id', candidateId)
       .order('sort_order', { ascending: true });
     if (error || !data) return [];

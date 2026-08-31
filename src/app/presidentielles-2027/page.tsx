@@ -193,6 +193,8 @@ function CandidateModal({ candidate, onClose }: { candidate: Candidate; onClose:
   const togglePanel = (k: string) => setOpenPanels(p => { const n = new Set(p); n.has(k) ? n.delete(k) : n.add(k); return n; });
   const [openContext, setOpenContext] = useState<Set<string>>(new Set());  // « ? » contexte par thème
   const toggleContext = (k: string) => setOpenContext(p => { const n = new Set(p); n.has(k) ? n.delete(k) : n.add(k); return n; });
+  const [openExpl, setOpenExpl] = useState<Set<string>>(new Set());         // « ? » explication par proposition
+  const toggleExpl = (k: string) => setOpenExpl(p => { const n = new Set(p); n.has(k) ? n.delete(k) : n.add(k); return n; });
   const [showLegal, setShowLegal] = useState(false);
   const [mandate, setMandate] = useState<{ type: string; slug: string } | null>(null);
   const [partyLink, setPartyLink] = useState<{ slug: string; name: string } | null>(null);
@@ -392,12 +394,31 @@ function CandidateModal({ candidate, onClose }: { candidate: Candidate; onClose:
                           )}
                         </AnimatePresence>
                         <ul className="divide-y divide-slate-50 bg-white">
-                          {g.items.map((p, i) => (
-                            <li key={i} className="flex gap-2.5 px-4 py-2.5 text-sm leading-6 text-slate-700">
-                              <span className={`mt-2 h-1.5 w-1.5 shrink-0 rounded-full ${dot}`} />
-                              <span>{p.text}</span>
-                            </li>
-                          ))}
+                          {g.items.map((p, i) => {
+                            const exKey = `${theme}#${i}`;
+                            const exOpen = openExpl.has(exKey);
+                            return (
+                              <li key={i} className="px-4 py-2.5 text-sm leading-6 text-slate-700">
+                                <div className="flex items-start gap-2.5">
+                                  <span className={`mt-2 h-1.5 w-1.5 shrink-0 rounded-full ${dot}`} />
+                                  <span className="flex-1">{p.text}</span>
+                                  {p.explanation && (
+                                    <button onClick={() => toggleExpl(exKey)} title="Comprendre cette proposition"
+                                      className={`mt-0.5 flex h-6 w-6 shrink-0 items-center justify-center rounded-full border transition ${exOpen ? "border-violet-300 bg-violet-100 text-violet-700" : "border-violet-200 bg-white text-violet-500 hover:bg-violet-50"}`}>
+                                      <HelpCircle size={14} />
+                                    </button>
+                                  )}
+                                </div>
+                                <AnimatePresence initial={false}>
+                                  {exOpen && p.explanation && (
+                                    <motion.div initial={{ height: 0, opacity: 0 }} animate={{ height: "auto", opacity: 1 }} exit={{ height: 0, opacity: 0 }} className="overflow-hidden">
+                                      <p className="ml-4 mt-2 rounded-xl border-l-2 border-violet-300 bg-violet-50/70 px-3 py-2.5 text-[13px] leading-6 text-slate-600">{p.explanation}</p>
+                                    </motion.div>
+                                  )}
+                                </AnimatePresence>
+                              </li>
+                            );
+                          })}
                         </ul>
                       </div>
                     );

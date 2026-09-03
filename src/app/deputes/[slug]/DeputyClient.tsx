@@ -12,6 +12,7 @@ import {
   MinusCircle, 
   Calendar,
   ExternalLink,
+  Mail,
   Bell,
   BellRing,
   Loader2,
@@ -516,18 +517,27 @@ export default function DeputyDetailPage({ params, embedded }: { params: Promise
                </div>
             </motion.div>
 
+            {(deputy?.mail || deputy?.an_id) && (
             <div className="bg-red-600 rounded-[2rem] p-8 text-white shadow-xl shadow-red-600/20">
                <h4 className="text-xl font-staatliches uppercase mb-4 tracking-tight">Contact Parlementaire</h4>
                <p className="text-sm opacity-90 leading-relaxed mb-6">
                  Vous pouvez contacter ce député pour toute question relative à l&apos;activité législative.
                </p>
                <div className="space-y-3">
-                 <button className="w-full py-4 rounded-2xl bg-white text-red-600 font-bold text-sm flex items-center justify-center gap-2 hover:bg-slate-100 transition-colors">
-                    <ExternalLink className="w-4 h-4" />
-                    Envoyer un message
-                 </button>
+                 {deputy?.mail ? (
+                   <a href={`mailto:${deputy.mail}`} className="w-full py-4 rounded-2xl bg-white text-red-600 font-bold text-sm flex items-center justify-center gap-2 hover:bg-slate-100 transition-colors">
+                      <Mail className="w-4 h-4" />
+                      Envoyer un message
+                   </a>
+                 ) : (
+                   <a href={`https://www.assemblee-nationale.fr/dyn/deputes/${deputy.an_id}`} target="_blank" rel="noopener noreferrer" className="w-full py-4 rounded-2xl bg-white text-red-600 font-bold text-sm flex items-center justify-center gap-2 hover:bg-slate-100 transition-colors">
+                      <ExternalLink className="w-4 h-4" />
+                      Voir sa fiche à l&apos;Assemblée
+                   </a>
+                 )}
                </div>
             </div>
+            )}
           </motion.div>
 
           {/* RIGHT COLUMN: Votes & Activity */}

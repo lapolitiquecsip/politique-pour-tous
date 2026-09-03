@@ -9,12 +9,19 @@ import { ExternalLink } from "lucide-react";
 type Serie = { national: number; dept: Record<string, number> };
 type PartyMaps = Partial<Record<"leg" | "euro" | "pres", Serie>>;
 
-// Ordre d'affichage + libellés + sources OFFICIELLES par élection.
-const ELECTIONS: { key: "leg" | "euro" | "pres"; tab: string; subtitle: (n: number) => string; source: string; url: string }[] = [
-  { key: "leg", tab: "Législatives 2024", subtitle: n => `Score par département — 1er tour des législatives 2024 (national : ${n.toLocaleString("fr-FR")} %)`, source: "Ministère de l'Intérieur — 1er tour des législatives 2024 (data.gouv.fr).", url: "https://www.data.gouv.fr/datasets/elections-legislatives-des-30-juin-et-7-juillet-2024-resultats-definitifs-du-1er-tour" },
-  { key: "euro", tab: "Européennes 2024", subtitle: n => `Score de la liste par département — élections européennes 2024 (national : ${n.toLocaleString("fr-FR")} %)`, source: "Ministère de l'Intérieur — résultats définitifs des européennes 2024 (data.gouv.fr).", url: "https://www.data.gouv.fr/datasets/resultats-des-elections-europeennes-du-9-juin-2024" },
-  { key: "pres", tab: "Présidentielle 2022", subtitle: n => `Score du candidat par département — 1er tour de la présidentielle 2022 (national : ${n.toLocaleString("fr-FR")} %)`, source: "Ministère de l'Intérieur — 1er tour de la présidentielle 2022 (data.gouv.fr).", url: "https://www.data.gouv.fr/datasets/election-presidentielle-des-10-et-24-avril-2022-resultats-definitifs-du-1er-tour" },
+// Ordre d'affichage + libellés + sources OFFICIELLES par élection. `label` = intitulé de l'élection
+// (sert de titre à côté du score national) ; `desc` = description de la carte par collectivité.
+const ELECTIONS: { key: "leg" | "euro" | "pres"; tab: string; label: string; desc: string; source: string; url: string }[] = [
+  { key: "leg", tab: "Législatives 2024", label: "1er tour des législatives 2024", desc: "Score par département", source: "Ministère de l'Intérieur — 1er tour des législatives 2024 (data.gouv.fr).", url: "https://www.data.gouv.fr/datasets/elections-legislatives-des-30-juin-et-7-juillet-2024-resultats-definitifs-du-1er-tour" },
+  { key: "euro", tab: "Européennes 2024", label: "Élections européennes 2024", desc: "Score de la liste par département", source: "Ministère de l'Intérieur — résultats définitifs des européennes 2024 (data.gouv.fr).", url: "https://www.data.gouv.fr/datasets/resultats-des-elections-europeennes-du-9-juin-2024" },
+  { key: "pres", tab: "Présidentielle 2022", label: "1er tour de la présidentielle 2022", desc: "Score du candidat par département", source: "Ministère de l'Intérieur — 1er tour de la présidentielle 2022 (data.gouv.fr).", url: "https://www.data.gouv.fr/datasets/election-presidentielle-des-10-et-24-avril-2022-resultats-definitifs-du-1er-tour" },
 ];
+
+// Le parti dispose-t-il d'une carte de scores par collectivité ? (sinon on garde le tableau national.)
+export function hasPartyElectionMap(slug: string): boolean {
+  const pm = (maps as Record<string, PartyMaps>)[slug] || {};
+  return ELECTIONS.some(e => pm[e.key]?.dept && Object.keys(pm[e.key]!.dept).length > 5);
+}
 
 const DEPT_NAME: Record<string, string> = Object.fromEntries((DEPARTMENTS as any[]).map(d => [d.id, d.name]));
 const deptLabel = (c: string) => DEPT_NAME[c] || `Dép. ${c}`;
@@ -61,7 +68,7 @@ export default function PartyElectionMap({ slug, color, name }: { slug: string; 
   return (
     <div className="mt-6 rounded-3xl border border-slate-200 bg-white p-6">
       <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
-        <h2 className="text-lg font-black uppercase tracking-widest text-slate-900">Ses meilleurs scores par département</h2>
+        <h2 className="text-lg font-black uppercase tracking-widest text-slate-900">Résultats électoraux</h2>
         {available.length > 1 && (
           <div className="inline-flex flex-wrap rounded-full border border-slate-200 bg-slate-50 p-1">
             {available.map(e => (
@@ -74,7 +81,14 @@ export default function PartyElectionMap({ slug, color, name }: { slug: string; 
           </div>
         )}
       </div>
-      <p className="mt-1 text-sm text-slate-500">{el.subtitle(serie.national)}.</p>
+      {/* EN TITRE : le score NATIONAL de l'élection sélectionnée (gros chiffre), puis la carte
+          permet d'explorer le détail par collectivité. */}
+      <div className="mt-4 flex flex-wrap items-baseline gap-x-3 gap-y-1">
+        <span className="text-4xl font-black leading-none tabular-nums" style={{ color }}>{serie.national.toLocaleString("fr-FR", { maximumFractionDigits: 1 })} %</span>
+        <span className="text-sm font-bold text-slate-500">à l&apos;échelle nationale · {el.label}</span>
+        <span className="rounded-full bg-emerald-50 px-2 py-0.5 text-[9px] font-black uppercase tracking-widest text-emerald-600 ring-1 ring-emerald-200">Officiel</span>
+      </div>
+      <p className="mt-1.5 text-sm text-slate-500">{el.desc} — survolez une collectivité pour voir son score.</p>
 
       <div className="mt-4 grid gap-6 md:grid-cols-[1.4fr_1fr] md:items-center">
         <div className="relative">

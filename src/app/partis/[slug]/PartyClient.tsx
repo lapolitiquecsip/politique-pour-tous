@@ -4,7 +4,7 @@ import { use, useEffect, useState } from "react";
 import Link from "next/link";
 import PartyFinanceCompare from "@/components/partis/PartyFinanceCompare";
 import AllPartiesNav from "@/components/partis/AllPartiesNav";
-import PartyElectionMap from "@/components/partis/PartyElectionMap";
+import PartyElectionMap, { hasPartyElectionMap } from "@/components/partis/PartyElectionMap";
 import {
   Users, Calendar, Wallet, UserCircle, Compass, MapPin, Globe, Landmark,
   TrendingUp, HeartHandshake, ChevronLeft, Loader2, ArrowRight, ExternalLink, Coins, Scale
@@ -291,14 +291,16 @@ export default function PartyClient({ params }: { params: Promise<{ slug: string
 
         {/* Évolution : adhérents + résultats électoraux */}
         {history.length > 0 && (() => {
-          const adherents = history.filter(h => h.kind === "adherents").sort((a, b) => a.year - b.year);
           const elecKinds: Array<[string, string]> = [["presidentielle", "Présidentielle"], ["legislatives", "Législatives"], ["europeennes", "Européennes"], ["senatoriales", "Sénatoriales"]];
-          const maxAd = Math.max(1, ...adherents.map(a => Number(a.value)));
+          // Tableau national affiché UNIQUEMENT si le parti n'a PAS de carte par collectivité (sinon
+          // le score national est mis en titre dans la carte ci-dessous → on évite le doublon).
+          const showElec = !hasPartyElectionMap(party.slug) && elecKinds.some(([k]) => history.some(h => h.kind === k));
+          if (!showElec) return null;
           return (
             <section className="mt-14">
               <h2 className="mb-6 text-2xl font-staatliches uppercase text-slate-900">Évolution</h2>
 
-              {elecKinds.some(([k]) => history.some(h => h.kind === k)) && (
+              {(
                 <div className="rounded-3xl border border-slate-200 bg-white p-6">
                   <p className="mb-4 text-sm font-black uppercase tracking-widest text-slate-400">Résultats électoraux (% des voix)</p>
                   <div className="space-y-4">

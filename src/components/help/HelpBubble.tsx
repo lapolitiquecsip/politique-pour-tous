@@ -22,8 +22,11 @@ export default function HelpBubble() {
   const [q, setQ] = useState("");
   const [teaser, setTeaser] = useState(false);
 
-  // Masquée sur la page Premium (vitrine) : la bulle d'aide n'y apporte rien.
-  const hidden = pathname.startsWith("/premium");
+  // Masquée sur la page Premium (vitrine) ET sur les FICHES individuelles (élus, partis) : la bulle
+  // flottante recouvre le contenu détaillé et gêne la lecture. Elle reste sur les pages de liste et
+  // les pages thématiques (où le parcours pédagogique a du sens).
+  const isFiche = /^\/(deputes|senateurs|eurodeputes|ministres|maires|partis)\/[^/]+/.test(pathname);
+  const hidden = pathname.startsWith("/premium") || isFiche;
   const parcours = useMemo(() => parcoursForPath(pathname), [pathname]);
   // Sur la page Europe, la bulle d'aide prend les couleurs du drapeau de l'UE (bleu + or).
   const eu = pathname.startsWith("/eurodeputes");

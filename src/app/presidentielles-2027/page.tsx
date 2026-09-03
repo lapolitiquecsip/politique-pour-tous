@@ -315,7 +315,7 @@ function CandidateModal({ candidate, onClose }: { candidate: Candidate; onClose:
               const color = FIELD_COLORS[key];
               const isOpen = openPanels.has(key);
               return (
-                <div key={key} className={`self-start overflow-hidden rounded-3xl border border-slate-100 bg-white shadow-sm ${wide}`}>
+                <div key={key} className={`min-w-0 self-start overflow-hidden rounded-3xl border border-slate-100 bg-white shadow-sm ${wide}`}>
                   {/* En-tête cliquable : déplie/replie le panneau (gain de place). */}
                   <button onClick={() => togglePanel(key)} aria-expanded={isOpen}
                     className="flex w-full items-center justify-between gap-3 p-5 text-left">
@@ -337,7 +337,7 @@ function CandidateModal({ candidate, onClose }: { candidate: Candidate; onClose:
                             <Timeline points={points} />
                           ) : (
                             <ul className="list-disc space-y-1.5 pl-4 text-sm leading-6 text-slate-700 marker:text-slate-300">
-                              {points.map((p, i) => <li key={i}><NumHighlight text={p} /></li>)}
+                              {points.map((p, i) => <li key={i} className="break-words [overflow-wrap:anywhere]"><NumHighlight text={p} /></li>)}
                             </ul>
                           )}
                         </div>
@@ -590,9 +590,22 @@ function CandidatesContent() {
   const [search, setSearch] = useState("");
   const [side, setSide] = useState<string>("Tous");
   const [view, setView] = useState<"candidats" | "positions" | "enjeux">("candidats");
+  // Flottement perpétuel des cartes : uniquement sur grand écran et hors « mouvement réduit ».
+  // Sur mobile, N animations infinies (y + rotate) simultanées saccadent → on les coupe.
+  const [floaty, setFloaty] = useState(false);
 
   useEffect(() => {
     api.getCandidates().then(data => { setCandidates(data as Candidate[]); }).finally(() => setLoading(false));
+  }, []);
+
+  useEffect(() => {
+    const check = () => setFloaty(
+      window.matchMedia("(min-width: 768px)").matches &&
+      !window.matchMedia("(prefers-reduced-motion: reduce)").matches,
+    );
+    check();
+    window.addEventListener("resize", check);
+    return () => window.removeEventListener("resize", check);
   }, []);
 
   const sideTabs = ["Tous", ...Object.keys(SIDES)];
@@ -687,14 +700,15 @@ function CandidatesContent() {
                 <motion.button
                   key={c.id}
                   onClick={() => open(c)}
-                  // Entrée en cascade, puis flottement + léger balancement perpétuel — mêmes animations que les bulles FAQ.
+                  // Entrée en cascade ; flottement + balancement perpétuel UNIQUEMENT sur desktop
+                  // (sur mobile, N animations infinies simultanées saccadent → on garde juste l'entrée).
                   initial={{ opacity: 0, y: 24 }}
-                  animate={{ opacity: 1, y: [0, -12, 0], rotate: [0, 1.5, -1.5, 0] }}
-                  transition={{
+                  animate={floaty ? { opacity: 1, y: [0, -12, 0], rotate: [0, 1.5, -1.5, 0] } : { opacity: 1, y: 0, rotate: 0 }}
+                  transition={floaty ? {
                     opacity: { duration: 0.4, delay: (i % 12) * 0.05 },
                     y: { duration: 4 + (i % 5) * 0.5, repeat: Infinity, ease: "easeInOut", delay: (i % 6) * 0.25 },
                     rotate: { duration: 4 + (i % 5) * 0.5, repeat: Infinity, ease: "easeInOut", delay: (i % 6) * 0.25 },
-                  }}
+                  } : { opacity: { duration: 0.4, delay: (i % 12) * 0.05 }, y: { duration: 0.4, delay: (i % 12) * 0.05 } }}
                   whileHover={{ scale: 1.05, rotate: 0, transition: { duration: 0.2 } }}
                   className={`group overflow-hidden rounded-2xl border-b-4 bg-white text-left shadow-lg shadow-slate-900/10 ring-1 ring-slate-200 transition-shadow hover:shadow-xl ${s.borderb}`}
                 >

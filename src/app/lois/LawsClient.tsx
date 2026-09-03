@@ -18,7 +18,7 @@ import {
   type LegislativeDossierDetail,
   type LegislativeListItem,
 } from "@/lib/legislative";
-import { LawCardBody, CARD_CLASS, type LawCardStatus } from "@/components/lois/LawCard";
+import { LawCardBody, CARD_CLASS, lawTypeMeta, type LawCardStatus } from "@/components/lois/LawCard";
 import SaveLawButton from "@/components/lois/SaveLawButton";
 
 type Tab = "promulgated" | "ongoing";
@@ -498,15 +498,18 @@ function LawsContent() {
         const status: LawCardStatus | null = tab === "promulgated"
           ? { label: "Promulguée", tone: "green" }
           : stageStatus(item.status_code);
+        // Accent de bordure coloré par type (proposition = violet, projet = cyan), onglet « en cours ».
+        const cardType = tab === "ongoing" ? (item as any).text_type : null;
+        const accent = lawTypeMeta(cardType)?.accent || "";
         return (
           <div key={item.id} className="relative">
-            <button onClick={() => openDossier(item.id)} className={CARD_CLASS}>
+            <button onClick={() => openDossier(item.id)} className={`${CARD_CLASS} ${accent}`}>
               <LawCardBody
                 title={item.display_title || item.title}
                 date={item.promulgated_at || item.latest_step_at}
                 status={status}
                 category={item.category}
-                typeLabel={tab === "ongoing" ? typeLabel((item as any).text_type) : null}
+                type={cardType}
               />
             </button>
             <SaveLawButton itemId={item.id} />

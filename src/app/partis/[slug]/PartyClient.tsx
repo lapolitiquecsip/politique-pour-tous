@@ -5,6 +5,7 @@ import Link from "next/link";
 import PartyFinanceCompare from "@/components/partis/PartyFinanceCompare";
 import AllPartiesNav from "@/components/partis/AllPartiesNav";
 import PartyElectionMap, { hasPartyElectionMap } from "@/components/partis/PartyElectionMap";
+import EntityNewsFeed from "@/components/shared/EntityNewsFeed";
 import {
   Users, Calendar, Wallet, UserCircle, Compass, MapPin, Globe, Landmark,
   TrendingUp, HeartHandshake, ChevronLeft, Loader2, ArrowRight, ExternalLink, Coins, Scale
@@ -18,6 +19,8 @@ type Party = {
   group_start: string | null; datan_updated_at: string | null;
   founded: string | null; members: string | null; budget: string | null; leader: string | null;
   orientation: string | null; headquarters: string | null; website: string | null;
+  ideology: string[] | null;
+  twitter: string | null; facebook: string | null; instagram: string | null; youtube: string | null; tiktok: string | null;
   summary: string | null; logo_url: string | null; source_url: string | null;
   subventions_eur: number | null; subventions_year: number | null; subventions_source: string | null;
   dettes_eur: number | null; produits_eur: number | null; comptes_year: number | null; comptes_source: string | null;
@@ -196,6 +199,18 @@ export default function PartyClient({ params }: { params: Promise<{ slug: string
           <InfoRow icon={MapPin} label="Siège" value={party.headquarters} />
         </div>
 
+        {/* Idéologie & valeurs — courants revendiqués par le parti (puces à sa couleur). */}
+        {party.ideology && party.ideology.length > 0 && (
+          <div className="mt-6 rounded-3xl border border-slate-200 bg-white p-6">
+            <h2 className="text-lg font-black uppercase tracking-widest text-slate-900">Idéologie &amp; valeurs</h2>
+            <div className="mt-3 flex flex-wrap gap-2">
+              {party.ideology.map((id, i) => (
+                <span key={i} className="rounded-full px-3.5 py-1.5 text-sm font-bold text-white shadow-sm" style={{ background: color }}>{id}</span>
+              ))}
+            </div>
+          </div>
+        )}
+
         {/* Finances du parti : subventions publiques + endettement (données officielles sourcées). */}
         {(party.subventions_eur != null || party.dettes_eur != null) && (() => {
           const taux = party.dettes_eur != null && party.produits_eur ? Math.round((party.dettes_eur / party.produits_eur) * 100) : null;
@@ -210,12 +225,30 @@ export default function PartyClient({ params }: { params: Promise<{ slug: string
           );
         })()}
 
-        {party.website && (
-          <a href={party.website.startsWith("http") ? party.website : `https://${party.website}`} target="_blank" rel="noreferrer"
-            className="mt-4 inline-flex items-center gap-2 rounded-xl bg-slate-900 px-5 py-3 text-sm font-bold text-white transition hover:bg-slate-700">
-            <Globe className="h-4 w-4" /> Site officiel <ExternalLink className="h-3.5 w-3.5" />
-          </a>
+        {/* Suivre le parti : site officiel + réseaux sociaux (liens directs). */}
+        {(party.website || party.twitter || party.facebook || party.instagram || party.youtube || party.tiktok) && (
+          <div className="mt-6">
+            <p className="mb-2 text-[10px] font-black uppercase tracking-widest text-slate-400">Suivre le parti</p>
+            <div className="flex flex-wrap gap-2">
+              {party.website && (
+                <a href={party.website.startsWith("http") ? party.website : `https://${party.website}`} target="_blank" rel="noreferrer"
+                  className="inline-flex items-center gap-2 rounded-xl bg-slate-900 px-4 py-2.5 text-sm font-bold text-white transition hover:bg-slate-700">
+                  <Globe className="h-4 w-4" /> Site officiel
+                </a>
+              )}
+              {party.twitter && <a href={party.twitter} target="_blank" rel="noreferrer" className="inline-flex items-center gap-1.5 rounded-xl bg-black px-4 py-2.5 text-sm font-bold text-white transition hover:opacity-80">X <ExternalLink className="h-3.5 w-3.5" /></a>}
+              {party.facebook && <a href={party.facebook} target="_blank" rel="noreferrer" className="inline-flex items-center gap-1.5 rounded-xl bg-[#1877F2] px-4 py-2.5 text-sm font-bold text-white transition hover:opacity-80">Facebook <ExternalLink className="h-3.5 w-3.5" /></a>}
+              {party.instagram && <a href={party.instagram} target="_blank" rel="noreferrer" className="inline-flex items-center gap-1.5 rounded-xl bg-gradient-to-br from-[#833AB4] via-[#E1306C] to-[#F77737] px-4 py-2.5 text-sm font-bold text-white transition hover:opacity-80">Instagram <ExternalLink className="h-3.5 w-3.5" /></a>}
+              {party.youtube && <a href={party.youtube} target="_blank" rel="noreferrer" className="inline-flex items-center gap-1.5 rounded-xl bg-[#FF0000] px-4 py-2.5 text-sm font-bold text-white transition hover:opacity-80">YouTube <ExternalLink className="h-3.5 w-3.5" /></a>}
+              {party.tiktok && <a href={party.tiktok} target="_blank" rel="noreferrer" className="inline-flex items-center gap-1.5 rounded-xl bg-black px-4 py-2.5 text-sm font-bold text-white transition hover:opacity-80">TikTok <ExternalLink className="h-3.5 w-3.5" /></a>}
+            </div>
+          </div>
         )}
+
+        {/* Fil d'actualité du parti (Google News, résumé IA court, sources officielles). */}
+        <div className="mt-8">
+          <EntityNewsFeed entityType="party" entityId={party.slug} defaultOpen />
+        </div>
 
         {/* Représentation — compteurs cliquables (clic = voir les membres) */}
         <div className="mt-8 grid grid-cols-3 gap-3">

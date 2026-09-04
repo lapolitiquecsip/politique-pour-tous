@@ -56,7 +56,10 @@ export default function IssuesVotesView() {
   return (
     <div className="mt-8">
       <div className="mb-2 text-4xl font-staatliches uppercase text-slate-900 md:text-6xl">Les votes par enjeu</div>
-      <p className="mb-6 text-slate-500">Choisissez un thème : voyez les <b>votes clés</b> de l&apos;Assemblée et comment chaque groupe s&apos;est prononcé.</p>
+      <p className="mb-4 text-slate-500">Choisissez un thème : voyez les <b>votes clés</b> de l&apos;Assemblée et comment chaque groupe s&apos;est prononcé.</p>
+      <a href="/vous-votez-comme-qui" className="mb-6 inline-flex items-center gap-2 rounded-full bg-slate-950 px-5 py-3 text-sm font-black text-white transition hover:bg-slate-700">
+        🗳️ Et vous, vous votez comme qui&nbsp;? Faites le test →
+      </a>
 
       {/* Sélecteur d'enjeux */}
       <div className="flex flex-wrap gap-2">

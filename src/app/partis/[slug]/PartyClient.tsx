@@ -5,6 +5,7 @@ import Link from "next/link";
 import PartyFinanceCompare from "@/components/partis/PartyFinanceCompare";
 import AllPartiesNav from "@/components/partis/AllPartiesNav";
 import PartyElectionMap, { hasPartyElectionMap } from "@/components/partis/PartyElectionMap";
+import PartyScorecard from "@/components/partis/PartyScorecard";
 import {
   Users, Calendar, Wallet, UserCircle, Compass, MapPin, Globe, Landmark,
   TrendingUp, HeartHandshake, ChevronLeft, Loader2, ArrowRight, ExternalLink, Coins, Scale
@@ -333,6 +334,9 @@ export default function PartyClient({ params }: { params: Promise<{ slug: string
         {/* Carte des scores électoraux par département (législatives 2024 / européennes 2024 /
             présidentielle 2022) — pour chaque parti disposant de données officielles. */}
         <PartyElectionMap slug={party.slug} color={color} name={party.name} />
+
+        {/* Scorecard : comment le groupe du parti vote à l'AN, par enjeu (votes solennels tagués). */}
+        <PartyScorecard partySlug={party.slug} color={color} />
 
         {/* Navigation vers tous les partis */}
         <AllPartiesNav currentSlug={party.slug} />

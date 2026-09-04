@@ -1168,6 +1168,35 @@ export const api = {
     return data;
   },
 
+  // Votes CLÉS = votes solennels « sur l'ensemble » d'un texte à l'AN, tagués par enjeu (conf ≥ 0.7).
+  // Chaque vote porte le résultat PAR GROUPE (group_results). Base commune du « scorecard » d'un parti
+  // (comment son groupe vote par enjeu) et de la vue Enjeux (par thème, comment chaque groupe a voté).
+  getKeyVotes: async () => {
+    const { data: sc, error } = await supabase
+      .from('scrutins')
+      .select('id, title, objet, date_scrutin, resultat, group_results, why_it_matters, summary')
+      .eq('type', 'LOI')
+      .ilike('title', "l'ensemble%")
+      .order('date_scrutin', { ascending: false });
+    if (error || !sc) return [];
+    const ids = sc.map((s: any) => s.id);
+    const issuesByScrutin = new Map<string, string[]>();
+    for (let i = 0; i < ids.length; i += 300) {
+      const { data: si } = await supabase.from('scrutin_issues')
+        .select('scrutin_id, issue_slug').in('scrutin_id', ids.slice(i, i + 300)).gte('confidence', 0.7);
+      for (const r of (si || []) as any[]) {
+        const arr = issuesByScrutin.get(r.scrutin_id) || [];
+        arr.push(r.issue_slug); issuesByScrutin.set(r.scrutin_id, arr);
+      }
+    }
+    return sc.map((s: any) => ({
+      id: s.id, title: s.title, objet: s.objet, date: s.date_scrutin, resultat: s.resultat,
+      why: s.why_it_matters, summary: s.summary,
+      issues: issuesByScrutin.get(s.id) || [],
+      groups: ((s.group_results as any[]) || []).map(g => ({ po: g.group_id, pour: g.pour ?? 0, contre: g.contre ?? 0, abstention: g.abstention ?? 0, total: g.total ?? 0 })),
+    })).filter((v: any) => v.issues.length > 0);
+  },
+
   getCandidatePositions: async () => {
     const { data, error } = await supabase.from('candidate_positions').select('candidate_slug, issue_slug, stance, summary, source_url');
     if (error || !data) return [];

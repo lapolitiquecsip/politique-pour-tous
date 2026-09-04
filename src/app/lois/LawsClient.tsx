@@ -19,9 +19,10 @@ import {
   type LegislativeListItem,
 } from "@/lib/legislative";
 import { LawCardBody, CARD_CLASS, lawTypeMeta, type LawCardStatus } from "@/components/lois/LawCard";
+import IssuesVotesView from "@/components/lois/IssuesVotesView";
 import SaveLawButton from "@/components/lois/SaveLawButton";
 
-type Tab = "promulgated" | "ongoing";
+type Tab = "promulgated" | "ongoing" | "enjeux";
 
 // --- Reclassement ergonomique de la navette parlementaire (inspiré de Datan) ---------------
 // Chambre où le texte est ACTUELLEMENT examiné.
@@ -405,6 +406,7 @@ function LawsContent() {
   const hydratedFromUrl = useRef(false);
 
   const load = useCallback(async () => {
+    if (tab === "enjeux") { setLoading(false); return; }   // l'onglet Enjeux charge ses propres données
     setLoading(true); setError(null);
     try {
       const rows = tab === "promulgated"
@@ -449,14 +451,17 @@ function LawsContent() {
   return (
     <section className="mx-auto max-w-7xl px-4 pb-24 text-slate-900">
       <div className="flex flex-col gap-5 rounded-[2rem] border border-slate-200 bg-slate-50 p-5 md:p-8">
-        <div className="grid grid-cols-2 gap-2 rounded-2xl bg-white p-2 shadow-sm">
-          <button onClick={() => setTab("promulgated")} className={`rounded-xl px-4 py-4 font-black ${tab === "promulgated" ? "bg-red-600 text-white" : "text-slate-600"}`}><Scale className="mr-2 inline" size={18} />Lois promulguées</button>
-          <button onClick={() => setTab("ongoing")} className={`rounded-xl px-4 py-4 font-black ${tab === "ongoing" ? "bg-slate-950 text-white" : "text-slate-600"}`}><FileText className="mr-2 inline" size={18} />Textes en cours</button>
+        <div className="grid grid-cols-3 gap-2 rounded-2xl bg-white p-2 shadow-sm">
+          <button onClick={() => setTab("promulgated")} className={`rounded-xl px-3 py-4 text-sm font-black md:text-base ${tab === "promulgated" ? "bg-red-600 text-white" : "text-slate-600"}`}><Scale className="mr-2 inline" size={18} />Lois promulguées</button>
+          <button onClick={() => setTab("ongoing")} className={`rounded-xl px-3 py-4 text-sm font-black md:text-base ${tab === "ongoing" ? "bg-slate-950 text-white" : "text-slate-600"}`}><FileText className="mr-2 inline" size={18} />Textes en cours</button>
+          <button onClick={() => setTab("enjeux")} className={`rounded-xl px-3 py-4 text-sm font-black md:text-base ${tab === "enjeux" ? "bg-violet-600 text-white" : "text-slate-600"}`}><Vote className="mr-2 inline" size={18} />Votes par enjeu</button>
         </div>
+        {tab !== "enjeux" && (
         <div className="flex flex-col gap-3 md:flex-row">
           <label className="flex flex-1 items-center gap-3 rounded-xl border border-slate-200 bg-white px-4 text-slate-600 focus-within:border-slate-400"><Search size={18} /><input value={search} onChange={event => setSearch(event.target.value)} className="w-full bg-transparent py-4 outline-none text-slate-900 placeholder:text-slate-400" placeholder="Rechercher un texte officiel" /></label>
           <select value={category || ""} onChange={event => setCategory((event.target.value || null) as LegislativeCategory | null)} className="rounded-xl border border-slate-200 bg-white px-4 py-4 font-bold text-slate-900 outline-none"><option value="">Toutes les catégories</option>{LEGISLATIVE_CATEGORIES.map(item => <option key={item.value} value={item.value}>{item.label}</option>)}</select>
         </div>
+        )}
 
         {/* Sous-filtres de la navette : où en est le texte, quel type, quelle étape. */}
         {tab === "ongoing" && (
@@ -491,6 +496,7 @@ function LawsContent() {
         )}
       </div>
 
+      {tab === "enjeux" ? <IssuesVotesView /> : (<>
       <div className="mt-10"><h2 className="text-4xl font-staatliches uppercase md:text-6xl text-slate-900">{tab === "promulgated" ? "Publiées au Journal officiel" : "Dans la navette parlementaire"}</h2><p className="mt-2 text-slate-500">{tab === "promulgated" ? "Seule une publication JORF peut faire apparaître un texte ici." : "Suivez chaque texte : la chambre qui l'examine, son type et son étape."}</p></div>
       {loading && <div className="flex justify-center py-24"><Loader2 className="animate-spin text-red-600" /></div>}
       {error && <div className="mt-8 rounded-2xl bg-red-50 p-5 font-bold text-red-800">{error}</div>}
@@ -518,6 +524,7 @@ function LawsContent() {
       })}</div>}
       {!loading && !error && !visibleItems.length && <div className="py-20 text-center text-slate-500">Aucun texte officiel ne correspond à ces filtres.</div>}
       {!error && visibleItems.length > 0 && hasMore && <div className="mt-10 text-center"><button onClick={loadMore} disabled={loading} className="rounded-full bg-slate-950 px-8 py-4 font-black text-white disabled:opacity-50">Charger plus de textes</button></div>}
+      </>)}
       <DossierModal detail={detail} loading={detailLoading} onClose={closeDossier} />
     </section>
   );

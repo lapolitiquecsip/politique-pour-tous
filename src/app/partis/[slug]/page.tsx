@@ -19,6 +19,18 @@ const PARTY_SLUGS = [
   "rdse",
   "les-independants",
   "non-inscrits",
+  // Mouvements des candidat·e·s à la présidentielle 2027 (fiches ajoutées 2026-09).
+  "nouvelle-energie",
+  "generation-ecologie",
+  "debout-la-france",
+  "les-patriotes",
+  "union-populaire-republicaine",
+  "lutte-ouvriere",
+  "revolution-permanente",
+  "union-democratique-bretonne",
+  "nouveau-parti-anticapitaliste",
+  "la-convention",
+  "debout-ruffin",
 ];
 
 export function generateStaticParams() {

@@ -6,9 +6,11 @@ import PartyFinanceCompare from "@/components/partis/PartyFinanceCompare";
 import AllPartiesNav from "@/components/partis/AllPartiesNav";
 import PartyElectionMap, { hasPartyElectionMap } from "@/components/partis/PartyElectionMap";
 import EntityNewsFeed from "@/components/shared/EntityNewsFeed";
+import CandidateProgram from "@/components/presidentielles/CandidateProgram";
+import { motion, AnimatePresence } from "framer-motion";
 import {
   Users, Calendar, Wallet, UserCircle, Compass, MapPin, Globe, Landmark,
-  TrendingUp, HeartHandshake, ChevronLeft, Loader2, ArrowRight, ExternalLink, Coins, Scale
+  TrendingUp, HeartHandshake, ChevronLeft, ChevronDown, Loader2, ArrowRight, ExternalLink, Coins, Scale
 } from "lucide-react";
 import { api } from "@/lib/api";
 
@@ -116,6 +118,8 @@ export default function PartyClient({ params }: { params: Promise<{ slug: string
   const [members, setMembers] = useState<{ deputies: any[]; senators: any[]; candidates: any[]; meps: any[] }>({ deputies: [], senators: [], candidates: [], meps: [] });
   const [loading, setLoading] = useState(true);
   const [tab, setTab] = useState<"deputies" | "senators" | "meps">("deputies");
+  const [openProgram, setOpenProgram] = useState<Set<string>>(new Set());   // « Voir le programme » par candidat
+  const toggleProgram = (k: string) => setOpenProgram(p => { const n = new Set(p); n.has(k) ? n.delete(k) : n.add(k); return n; });
   const [history, setHistory] = useState<any[]>([]);
 
   useEffect(() => {
@@ -318,14 +322,33 @@ export default function PartyClient({ params }: { params: Promise<{ slug: string
         {members.candidates.length > 0 && (
           <section className="mt-12">
             <h2 className="mb-4 text-2xl font-staatliches uppercase text-slate-900">Candidat·e·s à la présidentielle</h2>
-            <div className="grid grid-cols-1 gap-3 sm:grid-cols-2">
-              {members.candidates.map((c: any) => (
-                <Link key={c.slug} href={`/presidentielles-2027/?candidat=${c.slug}`} className="flex items-center gap-3 rounded-2xl border border-slate-200 bg-white p-3 transition hover:border-blue-300 group">
-                  <Avatar name={c.full_name} photo={c.photo_url} color={color} />
-                  <span className="font-bold text-slate-900">{c.full_name}</span>
-                  <ArrowRight className="ml-auto h-4 w-4 text-slate-300 group-hover:text-blue-500" />
-                </Link>
-              ))}
+            <div className="space-y-3">
+              {members.candidates.map((c: any) => {
+                const progOpen = openProgram.has(c.slug);
+                return (
+                  <div key={c.slug} className="overflow-hidden rounded-2xl border border-slate-200 bg-white">
+                    <div className="flex items-center gap-3 p-3">
+                      <Avatar name={c.full_name} photo={c.photo_url} color={color} />
+                      <Link href={`/presidentielles-2027/?candidat=${c.slug}`} className="font-bold text-slate-900 transition hover:text-blue-600">{c.full_name}</Link>
+                      {c.id && (
+                        <button onClick={() => toggleProgram(c.slug)}
+                          className={`ml-auto inline-flex items-center gap-1.5 rounded-full px-3.5 py-2 text-[11px] font-black uppercase tracking-widest transition ${progOpen ? "bg-blue-600 text-white" : "bg-blue-50 text-blue-700 hover:bg-blue-100"}`}>
+                          {progOpen ? "Masquer" : "Voir le programme"} <ChevronDown size={14} className={`transition-transform ${progOpen ? "rotate-180" : ""}`} />
+                        </button>
+                      )}
+                    </div>
+                    <AnimatePresence initial={false}>
+                      {progOpen && c.id && (
+                        <motion.div initial={{ height: 0, opacity: 0 }} animate={{ height: "auto", opacity: 1 }} exit={{ height: 0, opacity: 0 }} className="overflow-hidden">
+                          <div className="border-t border-slate-100 bg-slate-50/40 p-4">
+                            <CandidateProgram candidateId={c.id} emptyMessage="Programme pas encore disponible pour ce candidat·e." />
+                          </div>
+                        </motion.div>
+                      )}
+                    </AnimatePresence>
+                  </div>
+                );
+              })}
             </div>
           </section>
         )}

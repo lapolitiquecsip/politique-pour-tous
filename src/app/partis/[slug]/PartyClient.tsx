@@ -47,6 +47,14 @@ function StatBar({ label, value, display, color }: { label: string; value: numbe
   );
 }
 
+// N'affiche le nombre d'adhérents que s'il est RÉCENT (année ≥ 2023) : un chiffre daté de 2018
+// n'a plus d'intérêt et induit en erreur. Format attendu « 123 456 (2024) ».
+function recentMembers(m?: string | null): string | null {
+  if (!m) return null;
+  const y = m.match(/\((\d{4})\)/)?.[1];
+  return (!y || Number(y) >= 2023) ? m : null;
+}
+
 function InfoRow({ icon: Icon, label, value }: { icon: any; label: string; value: string | null }) {
   if (!value) return null;
   return (
@@ -181,7 +189,7 @@ export default function PartyClient({ params }: { params: Promise<{ slug: string
         {/* Infos parti */}
         <div className="mt-8 grid grid-cols-1 gap-3 sm:grid-cols-2 lg:grid-cols-3">
           <InfoRow icon={Calendar} label="Fondation" value={party.founded} />
-          <InfoRow icon={Users} label="Adhérents" value={party.members} />
+          <InfoRow icon={Users} label="Adhérents" value={recentMembers(party.members)} />
           <InfoRow icon={Wallet} label="Budget / financement" value={party.budget} />
           <LeaderRow value={party.leader} />
           <InfoRow icon={Compass} label="Orientation" value={party.orientation} />

@@ -58,6 +58,25 @@ export default async function DeputesPage() {
           <ChevronRight className="ml-auto text-slate-300 group-hover:text-emerald-500 transition-colors" />
         </Link>
       </div>
+      {/* Outils interactifs : comparateur de parlementaires + test de proximité de vote. */}
+      <div className="mx-auto mt-4 grid max-w-6xl gap-3 px-4 sm:grid-cols-2">
+        <Link href="/comparateur-parlementaires" className="group flex items-center gap-3 rounded-3xl border border-slate-200 bg-white p-5 transition hover:border-slate-400 hover:shadow-md dark:border-slate-800 dark:bg-slate-900">
+          <span className="text-3xl">⚖️</span>
+          <div className="min-w-0">
+            <p className="font-black text-slate-900 dark:text-white">Comparer deux parlementaires</p>
+            <p className="text-sm text-slate-500">Participation, amendements, loyauté — côte à côte</p>
+          </div>
+          <ChevronRight className="ml-auto shrink-0 text-slate-300 transition-colors group-hover:text-slate-600" />
+        </Link>
+        <Link href="/vous-votez-comme-qui" className="group flex items-center gap-3 rounded-3xl border border-slate-200 bg-white p-5 transition hover:border-slate-400 hover:shadow-md dark:border-slate-800 dark:bg-slate-900">
+          <span className="text-3xl">🗳️</span>
+          <div className="min-w-0">
+            <p className="font-black text-slate-900 dark:text-white">Vous votez comme qui&nbsp;?</p>
+            <p className="text-sm text-slate-500">Le test : de quel groupe êtes-vous le plus proche&nbsp;?</p>
+          </div>
+          <ChevronRight className="ml-auto shrink-0 text-slate-300 transition-colors group-hover:text-slate-600" />
+        </Link>
+      </div>
       <section id="composition" className="scroll-mt-24 pt-4 pb-8">
         <HemicycleChart chamber="an" subtitle="Assemblée nationale" title="Composition de l'Assemblée" />
       </section>

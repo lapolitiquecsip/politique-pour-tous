@@ -32,12 +32,15 @@ export const metadata: Metadata = {
   manifest: "/manifest.webmanifest",
   appleWebApp: { capable: true, title: "Politique", statusBarStyle: "default" },
   icons: {
+    // ?v=3 = cache-buster : l'icône a changé plusieurs fois à la même URL ; sans version, les
+    // navigateurs continuent de servir l'ancienne depuis leur cache. Bump ce numéro à chaque
+    // changement d'icône.
     icon: [
-      { url: "/icons/icon.svg", type: "image/svg+xml" },
-      { url: "/icons/icon-192.png", sizes: "192x192", type: "image/png" },
-      { url: "/icons/icon-512.png", sizes: "512x512", type: "image/png" },
+      { url: "/icons/icon.svg?v=3", type: "image/svg+xml" },
+      { url: "/icons/icon-192.png?v=3", sizes: "192x192", type: "image/png" },
+      { url: "/icons/icon-512.png?v=3", sizes: "512x512", type: "image/png" },
     ],
-    apple: "/icons/apple-touch-icon.png",
+    apple: "/icons/apple-touch-icon.png?v=3",
   },
 };
 

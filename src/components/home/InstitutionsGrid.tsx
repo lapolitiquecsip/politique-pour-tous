@@ -77,7 +77,7 @@ const InstitutionCard = memo(({ inst, index, onClick }: { inst: Institution, ind
       transition={{ delay: index * 0.1 }}
       onClick={onClick}
       style={{ willChange: "transform, opacity", transform: "translateZ(0)" }}
-      className={`group relative h-[450px] rounded-[2rem] overflow-hidden shadow-sm hover:shadow-2xl ${inst.id === 'assemblee' ? 'hover:shadow-red-500/50' : inst.id === 'senat' ? 'hover:shadow-blue-500/50' : 'hover:shadow-purple-500/50'} transition-all duration-500 cursor-pointer text-left w-full border border-border/50`}
+      className={`group relative h-[340px] md:h-[450px] rounded-[2rem] overflow-hidden shadow-sm hover:shadow-2xl ${inst.id === 'assemblee' ? 'hover:shadow-red-500/50' : inst.id === 'senat' ? 'hover:shadow-blue-500/50' : 'hover:shadow-purple-500/50'} transition-all duration-500 cursor-pointer text-left w-full border border-border/50`}
     >
       {/* Image de fond avec zoom coloré au survol */}
       <div 
@@ -107,7 +107,7 @@ const InstitutionCard = memo(({ inst, index, onClick }: { inst: Institution, ind
           </div>
         </div>
         
-        <h3 className="text-4xl font-staatliches uppercase tracking-tighter text-white mb-8 group-hover:text-blue-400 transition-colors">
+        <h3 className="text-3xl md:text-4xl font-staatliches uppercase tracking-tighter text-white mb-4 md:mb-8 group-hover:text-blue-400 transition-colors">
           {inst.name}
         </h3>
         
@@ -237,21 +237,30 @@ export default function InstitutionsGrid() {
     <div className="w-full">
       {/* ── MARQUEE DES INSTITUTIONS ── */}
       <div className="relative w-full overflow-hidden">
-        {/* Gradients de fondu sur les côtés */}
-        <div className="pointer-events-none absolute top-0 left-0 z-10 h-full w-16 bg-gradient-to-r from-background to-transparent" />
-        <div className="pointer-events-none absolute top-0 right-0 z-10 h-full w-16 bg-gradient-to-l from-background to-transparent" />
+        {/* Gradients de fondu sur les côtés — desktop uniquement (sur le marquee). */}
+        <div className="pointer-events-none absolute top-0 left-0 z-10 hidden h-full w-16 bg-gradient-to-r from-background to-transparent md:block" />
+        <div className="pointer-events-none absolute top-0 right-0 z-10 hidden h-full w-16 bg-gradient-to-l from-background to-transparent md:block" />
 
-        <Marquee className="[--gap:1.5rem]" pauseOnHover>
+        {/* MOBILE : scroll horizontal LIBRE (swipe fluide, l'utilisateur choisit son institution sans
+            attendre l'animation). Cartes plus compactes. */}
+        <div className="flex snap-x snap-mandatory gap-3 overflow-x-auto px-4 pb-2 md:hidden [scrollbar-width:none] [&::-webkit-scrollbar]:hidden">
           {INSTITUTIONS.map((inst, index) => (
-            <div key={inst.id} className="w-[300px] shrink-0 sm:w-[380px]">
-              <InstitutionCard 
-                inst={inst} 
-                index={index} 
-                onClick={() => setSelectedInst(inst)} 
-              />
+            <div key={inst.id} className="w-[240px] shrink-0 snap-center">
+              <InstitutionCard inst={inst} index={index} onClick={() => setSelectedInst(inst)} />
             </div>
           ))}
-        </Marquee>
+        </div>
+
+        {/* DESKTOP : marquee auto-défilant (inchangé). */}
+        <div className="hidden md:block">
+          <Marquee className="[--gap:1.5rem]" pauseOnHover>
+            {INSTITUTIONS.map((inst, index) => (
+              <div key={inst.id} className="w-[380px] shrink-0">
+                <InstitutionCard inst={inst} index={index} onClick={() => setSelectedInst(inst)} />
+              </div>
+            ))}
+          </Marquee>
+        </div>
       </div>
 
       {/* ── MODALE DE DÉTAIL (REDESIGN PREMIUM) ── */}

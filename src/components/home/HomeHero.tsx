@@ -62,7 +62,8 @@ export default function HomeHero() {
         </motion.p>
 
         {/* 3 cartes minimalistes */}
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-4 w-full mb-10">
+        {/* Mobile : 3 cartes CÔTE À CÔTE et compactes (glanceable, sans scroll) ; desktop inchangé. */}
+        <div className="grid grid-cols-3 gap-2 md:gap-4 w-full mb-6 md:mb-10">
           {CARDS.map((card, i) => (
             <MotionLink
               key={card.title}
@@ -71,15 +72,15 @@ export default function HomeHero() {
               animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.6, delay: 0.5 + i * 0.1 }}
               whileHover={{ y: -4 }}
-              className="group flex flex-col items-center text-center gap-3 rounded-2xl border border-slate-200/70 dark:border-slate-800 bg-white dark:bg-slate-900/40 px-5 pt-5 pb-7 transition-shadow hover:border-slate-300 hover:shadow-lg dark:hover:border-slate-700"
+              className="group flex flex-col items-center text-center gap-1.5 md:gap-3 rounded-xl md:rounded-2xl border border-slate-200/70 dark:border-slate-800 bg-white dark:bg-slate-900/40 px-2 pt-3 pb-3 md:px-5 md:pt-5 md:pb-7 transition-shadow hover:border-slate-300 hover:shadow-lg dark:hover:border-slate-700"
             >
-              <div className="w-full max-w-[200px] sm:max-w-none mx-auto overflow-hidden rounded-xl">
+              <div className="w-full mx-auto overflow-hidden rounded-lg md:rounded-xl">
                 <div className="aspect-[320/150] w-full transition-transform duration-500 group-hover:scale-[1.04]">
                   <HomeCardArt kind={card.art} />
                 </div>
               </div>
-              <h3 className="mt-1 text-base font-bold text-slate-900 dark:text-white group-hover:text-red-600 transition-colors">{card.title}</h3>
-              <p className="text-sm leading-relaxed text-slate-500 dark:text-slate-400">{card.text}</p>
+              <h3 className="mt-0.5 md:mt-1 text-[11px] leading-tight md:text-base font-bold text-slate-900 dark:text-white group-hover:text-red-600 transition-colors">{card.title}</h3>
+              <p className="hidden md:block text-sm leading-relaxed text-slate-500 dark:text-slate-400">{card.text}</p>
             </MotionLink>
           ))}
         </div>

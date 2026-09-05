@@ -167,15 +167,16 @@ export default function Header() {
         >
           {navLinks.map((link) => {
             const Icon = link.icon;
+            // L'item Premium est mis en valeur en PANNEAU DORÉ sur mobile (fond dégradé, texte blanc).
             return (
-              <Link 
+              <Link
                 key={link.href}
-                href={link.href} 
-                className="flex items-center gap-3 group" 
+                href={link.href}
+                className={`flex items-center gap-3 group ${link.isSpecial ? "rounded-2xl bg-gradient-to-r from-amber-300 via-amber-400 to-yellow-500 px-4 py-3 shadow-lg shadow-amber-500/30" : ""}`}
                 onClick={() => setIsMenuOpen(false)}
               >
-                <Icon className={link.iconColor} size={20} /> 
-                <span className={`font-staatliches text-2xl uppercase tracking-wider ${link.color} pt-1`}>
+                <Icon className={link.isSpecial ? "text-white" : link.iconColor} size={link.isSpecial ? 22 : 20} fill={link.isSpecial ? "currentColor" : "none"} />
+                <span className={`font-staatliches text-2xl uppercase tracking-wider pt-1 ${link.isSpecial ? "text-white drop-shadow-sm" : link.color}`}>
                   {link.label}
                 </span>
               </Link>
@@ -183,8 +184,8 @@ export default function Header() {
           })}
           
           <div className="pt-2">
-            <Link href="/login" className="flex items-center gap-3 text-lg font-bold text-rose-600 hover:text-blue-600 transition-colors" onClick={() => setIsMenuOpen(false)}>
-              <LogIn size={20} /> Mon Compte
+            <Link href={user ? "/dashboard" : "/login"} className="flex items-center gap-3 text-lg font-bold text-rose-600 hover:text-blue-600 transition-colors" onClick={() => setIsMenuOpen(false)}>
+              <User size={20} /> Mon Compte
             </Link>
           </div>
         </motion.div>

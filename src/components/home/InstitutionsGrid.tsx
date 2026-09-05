@@ -131,12 +131,24 @@ export default function InstitutionsGrid() {
   const [dailySummary, setDailySummary] = useState<string | null>(null);
   const [loading, setLoading] = useState(false);
 
+  // Heure d'un événement : accepte le format français [11h30] comme [11:30]. Renvoie "11h30" ou null.
+  const extractTime = (title: string) => {
+    const m = String(title || '').match(/^\[(\d{1,2})[h:](\d{2})\]/);
+    return m ? `${m[1]}h${m[2]}` : null;
+  };
+
+  // Retire les liens Markdown [libellé](url) en gardant le libellé lisible, et les URLs nues.
+  // → l'utilisateur voit « Déplacement au Royaume des Pays-Bas. » et non l'URL Élysée brute.
+  const stripLinks = (s: string) =>
+    s.replace(/\[([^\]]+)\]\(\s*<?https?:\/\/[^)]*>?\s*\)/g, '$1').replace(/https?:\/\/\S+/g, '');
+
   const cleanTitle = (title: string) => {
     if (!title) return "";
-    return title
-      .replace(/^\[\d{2}:\d{2}\]\s*/, '')
+    return stripLinks(title)
+      .replace(/^\[\d{1,2}[h:]\d{2}\]\s*/, '')
       .replace(/^-+\s*/, '')
       .replace(/\s*,-+\s*/g, ' • ')
+      .replace(/\s{2,}/g, ' ')
       .trim();
   };
 
@@ -149,7 +161,12 @@ export default function InstitutionsGrid() {
         if (Array.isArray(parsed)) return parsed.join(' • ');
       } catch (e) {}
     }
-    return desc.replace(/^-+\s*/, '').trim();
+    const text = stripLinks(desc)
+      .replace(/^-+\s*/, '')
+      .replace(/[ \t]*\r?\n[ \t]*/g, ' ')
+      .replace(/\s{2,}/g, ' ')
+      .trim();
+    return text || null;
   };
 
   useEffect(() => {
@@ -218,8 +235,8 @@ export default function InstitutionsGrid() {
       const sorted = filtered
         .filter(e => e.category !== 'DailySummary')
         .sort((a, b) => {
-          const timeA = a.title.match(/^\[(\d{2}:\d{2})\]/)?.[1] || a.time || '99:99';
-          const timeB = b.title.match(/^\[(\d{2}:\d{2})\]/)?.[1] || b.time || '99:99';
+          const timeA = extractTime(a.title) || a.time || '99h99';
+          const timeB = extractTime(b.title) || b.time || '99h99';
           return timeA.localeCompare(timeB);
         });
       
@@ -283,26 +300,36 @@ export default function InstitutionsGrid() {
               animate={{ opacity: 1, scale: 1, y: 0 }}
               exit={{ opacity: 0, scale: 0.95, y: 20 }}
               transition={{ type: "spring", damping: 30, stiffness: 400 }}
-              className="relative w-full max-w-5xl"
+              /* Swipe horizontal (mobile) : glisser pour passer d'une institution à l'autre. */
+              drag="x"
+              dragConstraints={{ left: 0, right: 0 }}
+              dragElastic={0.2}
+              dragMomentum={false}
+              onDragEnd={(_e, info) => {
+                if (info.offset.x < -60 || info.velocity.x < -450) handleNext();
+                else if (info.offset.x > 60 || info.velocity.x > 450) handlePrev();
+              }}
+              className="relative w-full max-w-5xl touch-pan-y"
             >
-              {/* Boutons de Navigation (Flèches - MOVED OUTSIDE overflow-hidden) */}
-              <div className="absolute inset-y-0 -left-12 md:-left-20 flex items-center z-50 pointer-events-none">
+              {/* Flèches de navigation. Sur mobile : à l'intérieur des bords (sinon tronquées hors
+                  écran) + verre dépoli pour rester lisibles sur l'image. Sur desktop : à l'extérieur. */}
+              <div className="absolute inset-y-0 left-2 md:-left-20 flex items-center z-50 pointer-events-none">
                 <button
                   onClick={(e) => { e.stopPropagation(); handlePrev(); }}
-                  className="pointer-events-auto p-4 rounded-full bg-slate-900 text-white hover:bg-rose-500 transition-all shadow-2xl border border-white/10 group"
+                  className="pointer-events-auto p-2.5 md:p-4 rounded-full bg-slate-900/80 md:bg-slate-900 text-white hover:bg-rose-500 transition-all shadow-2xl ring-1 ring-white/25 backdrop-blur-md group"
                   title="Précédent"
                 >
-                  <ChevronLeft className="w-6 h-6 group-hover:-translate-x-1 transition-transform" />
+                  <ChevronLeft className="w-5 h-5 md:w-6 md:h-6 group-hover:-translate-x-1 transition-transform" />
                 </button>
               </div>
 
-              <div className="absolute inset-y-0 -right-12 md:-right-20 flex items-center z-50 pointer-events-none">
+              <div className="absolute inset-y-0 right-2 md:-right-20 flex items-center z-50 pointer-events-none">
                 <button
                   onClick={(e) => { e.stopPropagation(); handleNext(); }}
-                  className="pointer-events-auto p-4 rounded-full bg-slate-900 text-white hover:bg-rose-500 transition-all shadow-2xl border border-white/10 group"
+                  className="pointer-events-auto p-2.5 md:p-4 rounded-full bg-slate-900/80 md:bg-slate-900 text-white hover:bg-rose-500 transition-all shadow-2xl ring-1 ring-white/25 backdrop-blur-md group"
                   title="Suivant"
                 >
-                  <ChevronRight className="w-6 h-6 group-hover:translate-x-1 transition-transform" />
+                  <ChevronRight className="w-5 h-5 md:w-6 md:h-6 group-hover:translate-x-1 transition-transform" />
                 </button>
               </div>
 
@@ -373,8 +400,7 @@ export default function InstitutionsGrid() {
                       ))
                     ) : events.length > 0 ? (
                       events.map((event, i) => {
-                        const timeMatch = event.title.match(/^\[(\d{2}:\d{2})\]/);
-                        const displayTime = timeMatch ? timeMatch[1] : (event.time || 'JOUR');
+                        const displayTime = extractTime(event.title) || event.time || 'JOUR';
                         const displayTitle = event.short_title || cleanTitle(event.title);
                         const displayDescription = event.short_summary || cleanDescription(event.description);
 
@@ -495,6 +521,13 @@ export default function InstitutionsGrid() {
                 )}
                 </div>
               </div>
+
+              {/* Pager mobile : montre l'institution courante (1/3) et rend le swipe évident. */}
+              <div className="pointer-events-none absolute bottom-3 left-1/2 z-50 flex -translate-x-1/2 items-center gap-1.5 rounded-full bg-slate-900/70 px-3 py-1.5 backdrop-blur-md md:hidden">
+                {INSTITUTIONS.map(i => (
+                  <span key={i.id} className={`h-1.5 rounded-full transition-all ${i.id === selectedInst.id ? "w-5 bg-white" : "w-1.5 bg-white/40"}`} />
+                ))}
+              </div>
             </motion.div>
 
             {/* --- DETAIL OVERLAY (Click on event) --- */}
@@ -523,7 +556,7 @@ export default function InstitutionsGrid() {
                           <div>
                             <p className="text-[10px] font-black uppercase tracking-widest text-slate-400 dark:text-slate-500">Horaire prévu</p>
                             <p className="text-slate-900 dark:text-white font-bold">
-                              {selectedEvent.title.match(/^\[(\d{2}:\d{2})\]/)?.[1] || selectedEvent.time || 'Non spécifié'}
+                              {extractTime(selectedEvent.title) || selectedEvent.time || 'Non spécifié'}
                             </p>
                           </div>
                         </div>

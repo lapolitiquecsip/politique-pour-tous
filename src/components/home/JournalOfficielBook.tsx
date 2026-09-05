@@ -1,11 +1,11 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import Link from "next/link";
 import { motion, AnimatePresence } from "framer-motion";
 import { ChevronLeft, ChevronRight, BookOpen, ArrowRight, Loader2 } from "lucide-react";
 import { api } from "@/lib/api";
-import { categoryLabel, type LegislativeListItem } from "@/lib/legislative";
+import { categoryLabel, type LegislativeListItem, type LegislativeDossierDetail } from "@/lib/legislative";
+import DossierModal from "@/components/lois/DossierModal";
 
 // Journal Officiel présenté comme un LIVRE que l'on feuillette : une page = un jour + une loi
 // promulguée. Mise en page uniquement — données réelles (lois publiées au JORF).
@@ -23,6 +23,14 @@ export default function JournalOfficielBook() {
   const [dir, setDir] = useState(1);
   const [hasMore, setHasMore] = useState(true);
   const [loadingMore, setLoadingMore] = useState(false);
+  const [detail, setDetail] = useState<LegislativeDossierDetail | null>(null);
+  const [detailLoading, setDetailLoading] = useState(false);
+
+  // Ouvre la fiche complète de la loi EN PANNEAU, sans quitter la page d'accueil.
+  const openDossier = async (id: string) => {
+    setDetailLoading(true); setDetail(null);
+    try { setDetail(await api.getLegislativeDossier(id)); } finally { setDetailLoading(false); }
+  };
 
   // Récupère l'« impact citoyen » (À partir de maintenant…) pour un lot de lois et l'attache.
   const attachImpacts = async (rows: any[]) => {
@@ -127,9 +135,9 @@ export default function JournalOfficielBook() {
                 </div>
                 <h3 className="font-staatliches text-3xl uppercase leading-tight text-slate-900 dark:text-white md:text-4xl">{(law as any).display_title || law.title}</h3>
                 <p className="mt-4 flex-1 overflow-hidden text-[15px] leading-7 text-slate-600 dark:text-slate-300 line-clamp-[8]">{(law as any).impact || law.summary || "Texte promulgué et publié au Journal officiel."}</p>
-                <Link href={`/lois/?dossier=${law.id}`} className="mt-4 inline-flex items-center gap-2 self-start rounded-full bg-gradient-to-r from-red-600 to-fuchsia-600 px-5 py-2.5 text-[11px] font-black uppercase tracking-widest text-white shadow-lg shadow-rose-500/30 transition hover:shadow-rose-500/50">
+                <button type="button" onClick={() => openDossier(law.id)} className="mt-4 inline-flex items-center gap-2 self-start rounded-full bg-gradient-to-r from-red-600 to-fuchsia-600 px-5 py-2.5 text-[11px] font-black uppercase tracking-widest text-white shadow-lg shadow-rose-500/30 transition hover:shadow-rose-500/50">
                   Lire la loi & son parcours <ArrowRight size={14} />
-                </Link>
+                </button>
               </motion.div>
             </AnimatePresence>
           </motion.div>
@@ -142,6 +150,9 @@ export default function JournalOfficielBook() {
         <span className="text-sm font-black uppercase tracking-widest text-slate-500">Loi {i + 1} / {laws.length}{hasMore ? "+" : ""}</span>
         <button onClick={() => go(1)} disabled={i === laws.length - 1 && !hasMore} className="flex h-12 w-12 items-center justify-center rounded-full border border-slate-200 bg-white text-slate-700 shadow-sm transition hover:border-red-300 hover:text-red-600 disabled:opacity-40 dark:bg-slate-900 dark:border-slate-700 dark:text-slate-200">{loadingMore && i >= laws.length - 1 ? <Loader2 size={18} className="animate-spin" /> : <ChevronRight />}</button>
       </div>
+
+      {/* Fiche complète de la loi, ouverte EN PANNEAU sur la home (fermable). */}
+      <DossierModal detail={detail} loading={detailLoading} onClose={() => { setDetail(null); setDetailLoading(false); }} />
     </div>
   );
 }

@@ -112,7 +112,7 @@ export default function FeedItemCard({ item, colorIndex }: { item: ContentItem; 
           <span className="text-[10px] font-black uppercase tracking-widest text-slate-400 dark:text-slate-500">{relativeDate}</span>
         </div>
 
-        <h3 className="mb-3 shrink-0 text-xl font-black leading-[1.15] tracking-tight text-slate-900 line-clamp-2 transition-colors dark:text-white">
+        <h3 className="mb-3 shrink-0 text-lg font-black leading-snug tracking-tight text-slate-900 line-clamp-3 transition-colors dark:text-white">
           <GlossaryText>{item.titre_simplifie}</GlossaryText>
         </h3>
 

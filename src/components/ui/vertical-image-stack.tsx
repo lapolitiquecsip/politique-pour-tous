@@ -74,7 +74,7 @@ export function VerticalImageStack({
   const [particles, setParticles] = useState<Particle[]>([])
 
   const lastNavigationTime = useRef(0)
-  const navigationCooldown = 400 // ms between navigations
+  const navigationCooldown = 220 // ms entre deux navigations — assez court pour un swipe fluide
   const containerRef = useRef<HTMLDivElement>(null)
 
   // Get active item (handles infinite wrap around)
@@ -179,21 +179,18 @@ export function VerticalImageStack({
 
   const handleDrag = (_: any, info: PanInfo) => {
     const threshold = 15;
-    if (info.offset.y < -threshold) {
-      setDragDirection("up")
-    } else if (info.offset.y > threshold) {
-      setDragDirection("down")
-    } else {
-      setDragDirection(null)
-    }
+    const dir = info.offset.y < -threshold ? "up" : info.offset.y > threshold ? "down" : null;
+    // Ne re-render que si la direction change vraiment (évite le jank au drag sur mobile).
+    setDragDirection(prev => (prev === dir ? prev : dir));
   }
 
   const handleDragEnd = (_: MouseEvent | TouchEvent | PointerEvent, info: PanInfo) => {
     setDragDirection(null)
-    const threshold = 50
-    if (info.offset.y < -threshold) {
+    // On valide soit sur la distance, soit sur un « flick » rapide (vélocité) → réactif.
+    const threshold = 45
+    if (info.offset.y < -threshold || info.velocity.y < -450) {
       navigate(1) // Glisser vers le haut = carte suivante
-    } else if (info.offset.y > threshold) {
+    } else if (info.offset.y > threshold || info.velocity.y > 450) {
       navigate(-1) // Glisser vers le bas = carte précédente
     }
   }
@@ -358,13 +355,13 @@ export function VerticalImageStack({
               }}
               transition={{
                 type: "spring",
-                stiffness: 300,
-                damping: 24,
-                mass: 0.8,
+                stiffness: 380,
+                damping: 30,
+                mass: 0.7,
               }}
               drag={isCurrent ? "y" : false}
               dragConstraints={{ top: 0, bottom: 0 }}
-              dragElastic={0.25}
+              dragElastic={0.6}
               onDrag={handleDrag}
               onDragEnd={handleDragEnd}
               style={{

@@ -52,6 +52,33 @@ async function fetchLocalFinances(table: 'commune_finances' | 'department_financ
   };
 }
 
+// Recherche de lois plus TOLÉRANTE : le RPC ne cherche que dans le titre officiel long. On
+// développe les sigles/surnoms courants vers les termes réellement présents dans les titres
+// officiels (ex. « LPM » → « programmation militaire », « PLFSS » → « financement de la sécurité
+// sociale »), pour que l'utilisateur retrouve la loi sans connaître son intitulé exact.
+const SEARCH_SYNONYMS: Record<string, string> = {
+  lpm: "programmation militaire",
+  plf: "loi de finances",
+  plfss: "financement de la sécurité sociale",
+  lfss: "financement de la sécurité sociale",
+  lfr: "finances rectificative",
+  lom: "orientation des mobilités",
+  egalim: "agriculture et alimentation",
+  elan: "logement",
+  ppl: "proposition de loi",
+  pjl: "projet de loi",
+  ia: "intelligence artificielle",
+  pma: "procréation médicalement assistée",
+  gpa: "gestation pour autrui",
+  smic: "salaire minimum",
+  rsa: "revenu de solidarité",
+};
+function expandLawSearch(q?: string | null): string | null {
+  const raw = (q || "").trim();
+  if (!raw) return null;
+  return SEARCH_SYNONYMS[raw.toLowerCase()] || raw;
+}
+
 export const api = {
   health: async () => ({ status: 'ok', source: 'supabase-direct' }),
 
@@ -687,7 +714,7 @@ export const api = {
   getPromulgatedLaws: async (filters: { category?: LegislativeCategory | null; search?: string; cursorDate?: string; cursorId?: string; limit?: number } = {}) => {
     const { data, error } = await supabase.rpc('public_promulgated_laws', {
       p_category: filters.category || null,
-      p_search: filters.search?.trim() || null,
+      p_search: expandLawSearch(filters.search),
       p_cursor_date: filters.cursorDate || null,
       p_cursor_id: filters.cursorId || null,
       p_limit: filters.limit || 20,
@@ -707,7 +734,7 @@ export const api = {
       p_status: filters.status || null,
       p_chamber: filters.chamber || null,
       p_category: filters.category || null,
-      p_search: filters.search?.trim() || null,
+      p_search: expandLawSearch(filters.search),
       p_cursor_date: filters.cursorDate || null,
       p_cursor_id: filters.cursorId || null,
       p_limit: filters.limit || 20,

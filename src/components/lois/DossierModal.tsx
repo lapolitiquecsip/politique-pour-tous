@@ -250,56 +250,99 @@ function InitiatorField({ authorName }: { authorName: string | null }) {
     return () => { active = false; };
   }, [eligible, authorName]);
 
+  // Libellé « Initiateur : » discret et INLINE, suivi du/des nom(s) sur la même ligne
+  // (le libellé n'est plus une grosse pastille qui repoussait le nom à la ligne sur mobile).
+  const label = <span className="shrink-0 text-slate-400">{names.length > 1 ? "Initiateurs :" : "Initiateur :"}</span>;
+
   if (!eligible) {
-    return <span className="rounded-full bg-slate-100 px-4 py-2">Initiateur : {authorName || "Non renseigné par la source"}</span>;
+    return (
+      <div className="flex flex-wrap items-baseline gap-x-2 gap-y-1 text-slate-700">
+        {label}<span>{authorName || "Non renseigné par la source"}</span>
+      </div>
+    );
   }
 
   return (
-    <span className="inline-flex flex-wrap items-center gap-2">
-      <span className="rounded-full bg-slate-100 px-4 py-2">{names.length > 1 ? "Initiateurs" : "Initiateur"} :</span>
+    <div className="flex flex-wrap items-center gap-x-2 gap-y-1.5 text-slate-700">
+      {label}
       {names.map((name, index) => {
         const person = people?.get(normalizeName(name));
         if (person) {
           return (
-            <Link key={index} href={personHref(person)} className="inline-flex items-center gap-2 rounded-full bg-slate-100 py-1 pl-1 pr-4 transition hover:bg-slate-200">
+            <Link key={index} href={personHref(person)} className="inline-flex items-center gap-2 rounded-full bg-slate-100 py-1 pl-1 pr-3.5 transition hover:bg-slate-200">
               <InitiatorAvatar person={person} />
               <span>{person.display}</span>
             </Link>
           );
         }
-        return <span key={index} className="rounded-full bg-slate-100 px-4 py-2">{name}</span>;
+        return <span key={index} className="rounded-full bg-slate-100 px-3.5 py-1.5">{name}</span>;
       })}
-    </span>
+    </div>
   );
 }
 
-export default function DossierModal({ detail, loading, onClose }: { detail: LegislativeDossierDetail | null; loading: boolean; onClose: () => void }) {
+// Repli quand le détail complet est indisponible (RPC muet) : on affiche au moins l'essentiel
+// vérifiable + le lien vers le texte officiel, plutôt qu'un clic mort.
+export type DossierFallback = {
+  title?: string | null; display_title?: string | null; category?: string | null;
+  promulgated_at?: string | null; nor?: string | null; jorf_id?: string | null;
+};
+
+export default function DossierModal({ detail, loading, onClose, fallback }: { detail: LegislativeDossierDetail | null; loading: boolean; onClose: () => void; fallback?: DossierFallback | null }) {
   const { isPremium } = usePremium();
+  // Repli affiché uniquement si le détail complet a bien été tenté mais est revenu vide.
+  const showFallback = !loading && !detail && !!fallback;
 
   // Fermeture au clavier (Échap) + verrou du scroll de fond tant que le panneau est ouvert.
   useEffect(() => {
-    if (!detail && !loading) return;
+    if (!detail && !loading && !showFallback) return;
     const onKey = (e: KeyboardEvent) => { if (e.key === "Escape") onClose(); };
     document.addEventListener("keydown", onKey);
     const prev = document.body.style.overflow;
     document.body.style.overflow = "hidden";
     return () => { document.removeEventListener("keydown", onKey); document.body.style.overflow = prev; };
-  }, [detail, loading, onClose]);
+  }, [detail, loading, showFallback, onClose]);
 
-  if (!detail && !loading) return null;
+  if (!detail && !loading && !showFallback) return null;
   return (
     <div className="fixed inset-0 z-50 flex items-start justify-center bg-slate-950/70 p-4 md:p-10" role="dialog" aria-modal="true" onClick={onClose}>
       <div onClick={e => e.stopPropagation()} className="relative mx-auto flex max-h-[calc(100dvh-2rem)] w-full max-w-5xl flex-col overflow-hidden rounded-[2rem] bg-white text-slate-900 shadow-2xl md:max-h-[calc(100dvh-5rem)]">
         {/* Bouton fermer flottant (coin) — plus de bande blanche sticky qui recouvre le contenu au scroll */}
         <button onClick={onClose} className="absolute right-4 top-4 z-20 rounded-full bg-slate-100 p-3 shadow-sm transition hover:bg-slate-200" aria-label="Fermer"><X /></button>
         <div className="overflow-y-auto">
-        {loading ? <div className="flex min-h-80 items-center justify-center"><Loader2 className="animate-spin text-red-600" /></div> : detail && (
+        {loading ? <div className="flex min-h-80 items-center justify-center"><Loader2 className="animate-spin text-red-600" /></div> : showFallback ? (
+          <article className="px-6 pb-12 pt-16 md:px-12">
+            {(() => {
+              const f = fallback!;
+              const promulgated = !!f.promulgated_at;              // ne rien affirmer sans date JO
+              const jo = f.jorf_id ? `https://www.legifrance.gouv.fr/jorf/id/${f.jorf_id}` : null;
+              return (
+                <>
+                  {f.category && <div className="mb-3 text-xs font-black uppercase tracking-[0.2em] text-red-600">{categoryLabel(f.category as any)}</div>}
+                  <h2 className="text-4xl font-staatliches uppercase leading-none text-slate-950 md:text-6xl">{f.display_title || f.title}</h2>
+                  {promulgated && (
+                    <div className="mt-6 rounded-3xl border border-emerald-200 bg-emerald-50 p-5">
+                      <p className="text-[10px] font-black uppercase tracking-widest text-emerald-600">Statut</p>
+                      <span className="mt-1 inline-block rounded-full border border-emerald-200 bg-white px-4 py-1.5 text-sm font-black text-emerald-700">Promulguée au Journal officiel</span>
+                      <p className="mt-3 text-sm font-bold text-slate-600">Publiée au Journal officiel le {formatDate(f.promulgated_at)}{f.nor ? ` · NOR ${f.nor}` : ""}</p>
+                    </div>
+                  )}
+                  <p className="mt-6 leading-7 text-slate-600">Le détail complet de ce texte (résumé, navette parlementaire, amendements) est en cours de consolidation.{jo ? " En attendant, vous pouvez lire le texte officiel tel que publié au Journal officiel :" : ""}</p>
+                  {jo && <a href={jo} target="_blank" rel="noreferrer" className="mt-4 inline-flex items-center gap-2 rounded-full bg-slate-950 px-5 py-3 text-sm font-black text-white transition hover:bg-slate-700">Lire le texte au Journal officiel <ExternalLink size={15} /></a>}
+                </>
+              );
+            })()}
+          </article>
+        ) : detail && (
           <article className="px-6 pb-12 pt-16 md:px-12">
             <div className="mb-3 text-xs font-black uppercase tracking-[0.2em] text-red-600">{categoryLabel(detail.dossier.category)}</div>
             <h2 className="text-4xl font-staatliches uppercase leading-none text-slate-950 md:text-6xl">{detail.dossier.title}</h2>
-            <div className="mt-5 flex flex-wrap gap-2 text-sm font-bold text-slate-600">
+            <div className="mt-5 space-y-2.5 text-sm font-bold">
               <InitiatorField authorName={detail.dossier.author_name} />
-              <span className="rounded-full bg-slate-100 px-4 py-2">Mise à jour : {formatDate(detail.dossier.source_updated_at)}</span>
+              <div className="flex flex-wrap items-baseline gap-x-2 gap-y-1 text-slate-700">
+                <span className="shrink-0 text-slate-400">Mise à jour :</span>
+                <span>{formatDate(detail.dossier.source_updated_at)}</span>
+              </div>
             </div>
 
             {/* État d'avancement (façon Datan) : chambre saisie, type, étape en cours. */}

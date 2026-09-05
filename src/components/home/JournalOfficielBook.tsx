@@ -25,11 +25,13 @@ export default function JournalOfficielBook() {
   const [loadingMore, setLoadingMore] = useState(false);
   const [detail, setDetail] = useState<LegislativeDossierDetail | null>(null);
   const [detailLoading, setDetailLoading] = useState(false);
+  const [openedLaw, setOpenedLaw] = useState<LegislativeListItem | null>(null);
 
-  // Ouvre la fiche complète de la loi EN PANNEAU, sans quitter la page d'accueil.
-  const openDossier = async (id: string) => {
-    setDetailLoading(true); setDetail(null);
-    try { setDetail(await api.getLegislativeDossier(id)); } finally { setDetailLoading(false); }
+  // Ouvre la fiche complète de la loi EN PANNEAU, sans quitter la page d'accueil. On garde la
+  // loi ouverte comme repli si le détail complet est indisponible (pas de clic mort).
+  const openDossier = async (item: LegislativeListItem) => {
+    setOpenedLaw(item); setDetailLoading(true); setDetail(null);
+    try { setDetail(await api.getLegislativeDossier(item.id)); } finally { setDetailLoading(false); }
   };
 
   // Récupère l'« impact citoyen » (À partir de maintenant…) pour un lot de lois et l'attache.
@@ -135,7 +137,7 @@ export default function JournalOfficielBook() {
                 </div>
                 <h3 className="font-staatliches text-3xl uppercase leading-tight text-slate-900 dark:text-white md:text-4xl">{(law as any).display_title || law.title}</h3>
                 <p className="mt-4 flex-1 overflow-hidden text-[15px] leading-7 text-slate-600 dark:text-slate-300 line-clamp-[8]">{(law as any).impact || law.summary || "Texte promulgué et publié au Journal officiel."}</p>
-                <button type="button" onClick={() => openDossier(law.id)} className="mt-4 inline-flex items-center gap-2 self-start rounded-full bg-gradient-to-r from-red-600 to-fuchsia-600 px-5 py-2.5 text-[11px] font-black uppercase tracking-widest text-white shadow-lg shadow-rose-500/30 transition hover:shadow-rose-500/50">
+                <button type="button" onClick={() => openDossier(law)} className="mt-4 inline-flex items-center gap-2 self-start rounded-full bg-gradient-to-r from-red-600 to-fuchsia-600 px-5 py-2.5 text-[11px] font-black uppercase tracking-widest text-white shadow-lg shadow-rose-500/30 transition hover:shadow-rose-500/50">
                   Lire la loi & son parcours <ArrowRight size={14} />
                 </button>
               </motion.div>
@@ -152,7 +154,7 @@ export default function JournalOfficielBook() {
       </div>
 
       {/* Fiche complète de la loi, ouverte EN PANNEAU sur la home (fermable). */}
-      <DossierModal detail={detail} loading={detailLoading} onClose={() => { setDetail(null); setDetailLoading(false); }} />
+      <DossierModal detail={detail} loading={detailLoading} fallback={openedLaw} onClose={() => { setDetail(null); setDetailLoading(false); setOpenedLaw(null); }} />
     </div>
   );
 }

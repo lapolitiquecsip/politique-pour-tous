@@ -61,6 +61,7 @@ function LawsContent() {
   const [hasMore, setHasMore] = useState(false);
   const [detail, setDetail] = useState<LegislativeDossierDetail | null>(null);
   const [detailLoading, setDetailLoading] = useState(false);
+  const [openedItem, setOpenedItem] = useState<LegislativeListItem | null>(null); // repli si détail muet
   const hydratedFromUrl = useRef(false);
 
   const load = useCallback(async () => {
@@ -81,8 +82,8 @@ function LawsContent() {
 
   useEffect(() => { const timer = window.setTimeout(load, 250); return () => window.clearTimeout(timer); }, [load]);
 
-  const openDossier = useCallback(async (id: string) => {
-    setDetailLoading(true); setDetail(null); router.replace(`/lois/?dossier=${id}`, { scroll: false });
+  const openDossier = useCallback(async (id: string, item?: LegislativeListItem) => {
+    setOpenedItem(item || null); setDetailLoading(true); setDetail(null); router.replace(`/lois/?dossier=${id}`, { scroll: false });
     try { setDetail(await api.getLegislativeDossier(id)); } finally { setDetailLoading(false); }
   }, [router]);
 
@@ -93,7 +94,7 @@ function LawsContent() {
     if (id) void openDossier(id);
   }, [openDossier, params]);
 
-  const closeDossier = () => { setDetail(null); setDetailLoading(false); router.replace("/lois/", { scroll: false }); };
+  const closeDossier = () => { setDetail(null); setDetailLoading(false); setOpenedItem(null); router.replace("/lois/", { scroll: false }); };
 
   const loadMore = async () => {
     const last = items.at(-1); if (!last) return;
@@ -169,7 +170,7 @@ function LawsContent() {
         const accent = lawTypeMeta(cardType)?.accent || "";
         return (
           <div key={item.id} className="relative">
-            <button onClick={() => openDossier(item.id)} className={`${CARD_CLASS} ${accent}`}>
+            <button onClick={() => openDossier(item.id, item)} className={`${CARD_CLASS} ${accent}`}>
               <LawCardBody
                 title={item.display_title || item.title}
                 date={item.promulgated_at || item.latest_step_at}
@@ -185,7 +186,7 @@ function LawsContent() {
       {!loading && !error && !visibleItems.length && <div className="py-20 text-center text-slate-500">Aucun texte officiel ne correspond à ces filtres.</div>}
       {!error && visibleItems.length > 0 && hasMore && <div className="mt-10 text-center"><button onClick={loadMore} disabled={loading} className="rounded-full bg-slate-950 px-8 py-4 font-black text-white disabled:opacity-50">Charger plus de textes</button></div>}
       </>)}
-      <DossierModal detail={detail} loading={detailLoading} onClose={closeDossier} />
+      <DossierModal detail={detail} loading={detailLoading} fallback={openedItem} onClose={closeDossier} />
     </section>
   );
 }

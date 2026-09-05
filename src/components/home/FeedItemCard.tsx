@@ -103,8 +103,8 @@ export default function FeedItemCard({ item, colorIndex }: { item: ContentItem; 
       {/* Halo coloré discret dans le coin */}
       <div className={`pointer-events-none absolute -right-16 -top-10 h-40 w-40 rounded-full opacity-[0.1] blur-3xl ${config.glow}`} />
 
-      <div className="relative z-10 flex flex-1 flex-col p-6">
-        <div className="mb-4 flex items-center justify-between">
+      <div className="relative z-10 flex min-h-0 flex-1 flex-col p-5">
+        <div className="mb-3 flex shrink-0 items-center justify-between">
           <span className={`inline-flex items-center gap-1.5 rounded-full px-3 py-1 text-[10px] font-black uppercase tracking-widest ${config.tintBg} ${config.tintText}`}>
             <span className={`h-1.5 w-1.5 rounded-full ${config.dot}`} />
             {config.label}
@@ -112,7 +112,7 @@ export default function FeedItemCard({ item, colorIndex }: { item: ContentItem; 
           <span className="text-[10px] font-black uppercase tracking-widest text-slate-400 dark:text-slate-500">{relativeDate}</span>
         </div>
 
-        <h3 className="mb-3 text-[1.35rem] font-black leading-[1.15] tracking-tight text-slate-900 line-clamp-3 transition-colors dark:text-white">
+        <h3 className="mb-3 shrink-0 text-xl font-black leading-[1.15] tracking-tight text-slate-900 line-clamp-2 transition-colors dark:text-white">
           <GlossaryText>{item.titre_simplifie}</GlossaryText>
         </h3>
 
@@ -124,7 +124,7 @@ export default function FeedItemCard({ item, colorIndex }: { item: ContentItem; 
           <div className="pointer-events-none absolute inset-x-0 bottom-0 h-9 bg-gradient-to-t from-white to-transparent dark:from-slate-900" />
         </div>
 
-      <div className="mt-auto pt-4 border-t border-slate-100 dark:border-slate-800">
+      <div className="mt-auto shrink-0 border-t border-slate-100 pt-3 dark:border-slate-800">
         {item.source_url || item.source_name ? (
           <div className="flex items-center justify-between">
             {item.source_url ? (

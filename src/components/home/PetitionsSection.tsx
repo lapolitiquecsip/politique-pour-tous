@@ -42,25 +42,25 @@ function PetitionCard({ petition, idx }: { petition: Petition, idx: number }) {
       initial={{ opacity: 0, y: 20 }}
       whileInView={{ opacity: 1, y: 0 }}
       transition={{ delay: idx * 0.1 }}
-      className="group bg-white dark:bg-slate-900 rounded-[2.5rem] border border-slate-200 dark:border-slate-800 overflow-hidden hover:shadow-2xl transition-all duration-500 hover:-translate-y-2 flex flex-col h-full"
+      className="group bg-white dark:bg-slate-900 rounded-3xl sm:rounded-[2.5rem] border border-slate-200 dark:border-slate-800 overflow-hidden hover:shadow-2xl transition-all duration-500 hover:-translate-y-2 flex flex-col h-full"
     >
-      <div className="p-8 flex flex-col h-full">
-        <div className="flex justify-between items-start mb-6">
+      <div className="p-5 sm:p-8 flex flex-col h-full">
+        <div className="flex justify-between items-start mb-3 sm:mb-6">
           <span className="px-3 py-1 bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-400 text-[10px] font-black uppercase tracking-widest rounded-full">
             {petition.category}
           </span>
           <FileSignature className="text-blue-500 opacity-20 group-hover:opacity-100 transition-opacity" size={24} />
         </div>
 
-        <h3 className="text-2xl font-bold mb-4 italic leading-tight group-hover:text-blue-600 dark:group-hover:text-blue-400 transition-colors line-clamp-3">
+        <h3 className="text-lg sm:text-2xl font-bold mb-2 sm:mb-4 italic leading-tight group-hover:text-blue-600 dark:group-hover:text-blue-400 transition-colors line-clamp-2 sm:line-clamp-3">
           {petition.title}
         </h3>
-        
-        <div className="text-slate-500 dark:text-slate-400 text-sm mb-8 flex-1 font-medium leading-relaxed line-clamp-4 whitespace-pre-line">
+
+        <div className="text-slate-500 dark:text-slate-400 text-sm mb-4 sm:mb-8 flex-1 font-medium leading-relaxed line-clamp-2 sm:line-clamp-4 whitespace-pre-line">
           {petition.description}
         </div>
 
-        <div className="space-y-4 mt-auto">
+        <div className="space-y-3 sm:space-y-4 mt-auto">
           <div className="flex justify-between text-[11px] font-black uppercase tracking-wider mb-2">
             <div className="flex items-center gap-2">
               <Users size={14} className="text-slate-400" />
@@ -85,7 +85,7 @@ function PetitionCard({ petition, idx }: { petition: Petition, idx: number }) {
             href={petition.url}
             target="_blank"
             rel="noopener noreferrer"
-            className="inline-flex items-center justify-center gap-2 w-full py-4 mt-4 bg-slate-950 dark:bg-slate-800 text-white dark:text-slate-100 rounded-2xl text-xs font-black uppercase tracking-widest hover:bg-blue-600 dark:hover:bg-blue-500 transition-all group-hover:shadow-[0_10px_20px_rgba(37,99,235,0.2)] dark:group-hover:shadow-[0_10px_20px_rgba(37,99,235,0.1)]"
+            className="inline-flex items-center justify-center gap-2 w-full py-3 sm:py-4 mt-2 sm:mt-4 bg-slate-950 dark:bg-slate-800 text-white dark:text-slate-100 rounded-2xl text-xs font-black uppercase tracking-widest hover:bg-blue-600 dark:hover:bg-blue-500 transition-all group-hover:shadow-[0_10px_20px_rgba(37,99,235,0.2)] dark:group-hover:shadow-[0_10px_20px_rgba(37,99,235,0.1)]"
           >
             Détails & Signer
             <ArrowUpRight size={16} />
@@ -125,7 +125,7 @@ export default function PetitionsSection() {
   }, []);
 
   return (
-    <section className="py-24 px-4 bg-slate-50 dark:bg-slate-950/20 relative overflow-hidden">
+    <section className="py-14 sm:py-24 px-4 bg-slate-50 dark:bg-slate-950/20 relative overflow-hidden">
       {/* Fond décoratif */}
       <div className="absolute top-0 left-0 w-full h-full opacity-[0.03] pointer-events-none select-none overflow-hidden">
         <span className="absolute -top-10 -left-10 text-[20rem] font-staatliches leading-none rotate-12">PÉTITIONS</span>
@@ -133,7 +133,7 @@ export default function PetitionsSection() {
       </div>
 
       <div className="container mx-auto max-w-6xl relative z-10">
-        <div className="flex flex-col md:flex-row items-end justify-between mb-16 gap-8">
+        <div className="flex flex-col md:flex-row items-end justify-between mb-8 md:mb-16 gap-8">
           <div className="max-w-2xl text-center md:text-left">
             <div className="flex items-center gap-3 mb-4 justify-center md:justify-start">
               <span className="relative flex h-3 w-3">
@@ -198,7 +198,7 @@ export default function PetitionsSection() {
                 </h3>
                 <div className="h-px flex-1 bg-slate-200 dark:bg-slate-800" />
               </div>
-              <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
+              <div className="grid grid-cols-1 md:grid-cols-3 gap-4 md:gap-8">
                 {petitions.slice(0, 3).map((petition, idx) => {
                   return (
                     <PetitionCard key={petition.id} petition={petition} idx={idx} />
@@ -216,7 +216,7 @@ export default function PetitionsSection() {
                 </h3>
                 <div className="h-px flex-1 bg-slate-200 dark:bg-slate-800" />
               </div>
-              <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
+              <div className="grid grid-cols-1 md:grid-cols-3 gap-4 md:gap-8">
                 {petitions.slice(3, 6).map((petition, idx) => {
                   return (
                     <PetitionCard key={petition.id} petition={petition} idx={idx + 3} />

@@ -863,6 +863,14 @@ export const api = {
     return detail;
   },
 
+  // Votes nominatifs d'un scrutin, chargés À LA DEMANDE (le RPC détail ne les inclut plus, pour
+  // ne pas exploser sur les gros dossiers). Repli silencieux si le RPC n'est pas encore déployé.
+  getScrutinVotes: async (scrutinId: string) => {
+    const { data, error } = await supabase.rpc('public_scrutin_votes', { p_scrutin_id: scrutinId });
+    if (error) { console.warn('getScrutinVotes:', error.message); return []; }
+    return (data || []) as { voter_official_id: string; voter_name: string; group_code: string | null; position: string }[];
+  },
+
   getProposals: async () => {
     // Les propositions en cours n'ont généralement pas de date d'adoption ni de contexte 'dossier_premium'
     const { data, error } = await supabase

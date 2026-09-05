@@ -6,6 +6,7 @@ import {
   ExternalLink, FileText, Loader2, Scale, X, Lock, ChevronDown, ChevronLeft, ChevronRight,
   AlertTriangle, Target, Vote, GitBranch, Pencil, HelpCircle,
 } from "lucide-react";
+import { api } from "@/lib/api";
 import { cleanHtmlText, formatAmendmentOutcome } from "@/lib/html";
 import { usePremium } from "@/lib/hooks/usePremium";
 import { groupLabel } from "@/lib/legislative-groups";
@@ -30,10 +31,11 @@ function formatDate(value?: string | null) {
   return new Intl.DateTimeFormat("fr-FR", { dateStyle: "long" }).format(new Date(value));
 }
 
-function AmendmentsSection({ amendments }: { amendments: any[] }) {
+function AmendmentsSection({ amendments, total }: { amendments: any[]; total?: number }) {
   const [show, setShow] = useState(false);
   const [page, setPage] = useState(0);
   const perPage = 6;
+  const truncated = typeof total === "number" && total > amendments.length; // RPC plafonné
 
   if (!amendments.length) {
     return (
@@ -51,12 +53,13 @@ function AmendmentsSection({ amendments }: { amendments: any[] }) {
   return (
     <section className="mt-10">
       <div className="flex flex-wrap items-center justify-between gap-3">
-        <h3 className="text-2xl font-staatliches uppercase text-slate-950">Amendements <span className="text-slate-400">({amendments.length})</span></h3>
+        <h3 className="text-2xl font-staatliches uppercase text-slate-950">Amendements <span className="text-slate-400">({truncated ? total : amendments.length})</span></h3>
         <button onClick={() => setShow(s => !s)} className="inline-flex items-center gap-2 rounded-full bg-slate-100 px-4 py-2 text-sm font-bold text-slate-700 transition hover:bg-slate-200">
           {show ? "Masquer les amendements" : "Voir les amendements"}
           <ChevronDown size={16} className={`transition-transform ${show ? "rotate-180" : ""}`} />
         </button>
       </div>
+      {truncated && show && <p className="mt-3 text-xs italic text-slate-400">Les {amendments.length} amendements les plus récents sont affichés (sur {total}).</p>}
       {show && (
         <>
           <div className="mt-4 grid gap-3">
@@ -153,10 +156,56 @@ function PremiumAnalysis({ raw }: { raw: string }) {
   );
 }
 
-function ScrutinsSection({ scrutins }: { scrutins: any[] }) {
+// Position d'un vote nominatif, en clair.
+const POS_FR: Record<string, string> = { for: "Pour", against: "Contre", abstain: "Abstention", non_voting: "N'a pas voté" };
+
+// Carte d'un scrutin : résultats + par groupe. Les votes nominatifs (jusqu'à ~577) sont chargés
+// À LA DEMANDE quand on déplie, pour ne pas alourdir la fiche (surtout les gros dossiers).
+function ScrutinCard({ scrutin }: { scrutin: any }) {
+  const inlineVotes: any[] | null = Array.isArray(scrutin.votes) ? scrutin.votes : null; // ancien RPC
+  const voteCount: number | null = scrutin.votes_count ?? inlineVotes?.length ?? null;
+  const [votes, setVotes] = useState<any[] | null>(inlineVotes);
+  const [loading, setLoading] = useState(false);
+
+  const loadVotes = async () => {
+    if (votes !== null || loading) return;
+    setLoading(true);
+    try { setVotes(await api.getScrutinVotes(scrutin.id)); } finally { setLoading(false); }
+  };
+
+  return (
+    <div className="rounded-2xl bg-slate-950 p-5 text-white">
+      <strong>{scrutin.title}</strong>
+      <p className="mt-2 text-sm text-slate-300">Pour {scrutin.for_count} · Contre {scrutin.against_count} · Abstentions {scrutin.abstain_count}</p>
+      {scrutin.group_results?.length > 0 && (
+        <div className="mt-4 grid gap-2 sm:grid-cols-2">
+          {scrutin.group_results.map((group: any) => (
+            <div key={group.group_code} className="rounded-xl bg-white/10 p-3 text-xs">
+              <strong>{groupLabel(group.group_code, group.group_name)}</strong>
+              <p className="mt-1 text-slate-300">Pour {group.for_count} · Contre {group.against_count} · Abst. {group.abstain_count}</p>
+            </div>
+          ))}
+        </div>
+      )}
+      {(voteCount === null || voteCount > 0) && (
+        <details className="mt-4 text-sm" onToggle={e => { if ((e.currentTarget as HTMLDetailsElement).open) void loadVotes(); }}>
+          <summary className="cursor-pointer font-bold text-red-300">Votes nominatifs{voteCount != null ? ` (${voteCount})` : ""}</summary>
+          <div className="mt-3 max-h-52 overflow-y-auto rounded-xl bg-white/5 p-3">
+            {loading && <p className="flex items-center gap-2 text-slate-300"><Loader2 size={14} className="animate-spin" /> Chargement…</p>}
+            {votes?.map((vote: any) => <p key={vote.voter_official_id} className="border-b border-white/10 py-1"><span className="font-bold">{vote.voter_name}</span> — {POS_FR[vote.position] || vote.position}</p>)}
+            {votes && votes.length === 0 && !loading && <p className="text-slate-400">Détail des votes indisponible.</p>}
+          </div>
+        </details>
+      )}
+    </div>
+  );
+}
+
+function ScrutinsSection({ scrutins, total }: { scrutins: any[]; total?: number }) {
   const [show, setShow] = useState(false);
   const [page, setPage] = useState(0);
   const perPage = 4;
+  const truncated = typeof total === "number" && total > scrutins.length; // RPC plafonné
 
   if (!scrutins.length) {
     return (
@@ -173,37 +222,17 @@ function ScrutinsSection({ scrutins }: { scrutins: any[] }) {
   return (
     <section className="mt-10">
       <div className="flex flex-wrap items-center justify-between gap-3">
-        <h3 className="text-2xl font-staatliches uppercase text-slate-950">Scrutins <span className="text-slate-400">({scrutins.length})</span></h3>
+        <h3 className="text-2xl font-staatliches uppercase text-slate-950">Scrutins <span className="text-slate-400">({truncated ? total : scrutins.length})</span></h3>
         <button onClick={() => setShow(s => !s)} className="inline-flex items-center gap-2 rounded-full bg-slate-100 px-4 py-2 text-sm font-bold text-slate-700 transition hover:bg-slate-200">
           {show ? "Masquer les scrutins" : "Voir les scrutins"}
           <ChevronDown size={16} className={`transition-transform ${show ? "rotate-180" : ""}`} />
         </button>
       </div>
+      {truncated && show && <p className="mt-3 text-xs italic text-slate-400">Les {scrutins.length} scrutins les plus récents sont affichés (sur {total}).</p>}
       {show && (
         <>
           <div className="mt-4 grid gap-3">
-            {current.map(scrutin => (
-              <div key={scrutin.official_id} className="rounded-2xl bg-slate-950 p-5 text-white">
-                <strong>{scrutin.title}</strong>
-                <p className="mt-2 text-sm text-slate-300">Pour {scrutin.for_count} · Contre {scrutin.against_count} · Abstentions {scrutin.abstain_count}</p>
-                {scrutin.group_results?.length > 0 && (
-                  <div className="mt-4 grid gap-2 sm:grid-cols-2">
-                    {scrutin.group_results.map((group: any) => (
-                      <div key={group.group_code} className="rounded-xl bg-white/10 p-3 text-xs">
-                        <strong>{groupLabel(group.group_code, group.group_name)}</strong>
-                        <p className="mt-1 text-slate-300">Pour {group.for_count} · Contre {group.against_count} · Abst. {group.abstain_count}</p>
-                      </div>
-                    ))}
-                  </div>
-                )}
-                <details className="mt-4 text-sm">
-                  <summary className="cursor-pointer font-bold text-red-300">Votes nominatifs ({scrutin.votes?.length || 0})</summary>
-                  <div className="mt-3 max-h-52 overflow-y-auto rounded-xl bg-white/5 p-3">
-                    {scrutin.votes?.map((vote: any) => <p key={vote.voter_official_id} className="border-b border-white/10 py-1"><span className="font-bold">{vote.voter_name}</span> — {vote.position}</p>)}
-                  </div>
-                </details>
-              </div>
-            ))}
+            {current.map(scrutin => <ScrutinCard key={scrutin.official_id} scrutin={scrutin} />)}
           </div>
           {pageCount > 1 && (
             <div className="mt-5 flex items-center justify-center gap-4">
@@ -359,7 +388,9 @@ export default function DossierModal({ detail, loading, onClose, fallback }: { d
                     </span>
                   </div>
                   {tl && <div><p className="text-[10px] font-black uppercase tracking-widest text-slate-400">Type</p><span className="mt-1 inline-block rounded-full bg-white border border-slate-200 px-4 py-1.5 text-sm font-black text-slate-700">{tl}</span></div>}
-                  <div><p className="text-[10px] font-black uppercase tracking-widest text-slate-400">Étape</p><span className="mt-1 inline-block rounded-full bg-white border border-slate-200 px-4 py-1.5 text-sm font-black text-slate-700">{detail.dossier.status_label}</span></div>
+                  {/* On masque l'« étape » de navette quand la loi est promulguée : le statut ci-dessus
+                      suffit, et le libellé de navette peut être périmé (resynchronisé côté backend). */}
+                  {!promulgated && <div><p className="text-[10px] font-black uppercase tracking-widest text-slate-400">Étape</p><span className="mt-1 inline-block rounded-full bg-white border border-slate-200 px-4 py-1.5 text-sm font-black text-slate-700">{detail.dossier.status_label}</span></div>}
                 </div>
               );
             })()}
@@ -387,8 +418,8 @@ export default function DossierModal({ detail, loading, onClose, fallback }: { d
                 {!detail.steps.length && <li className="text-slate-500">Aucune étape publiée.</li>}
               </ol>
             </section>
-            <AmendmentsSection key={detail.dossier.id} amendments={detail.amendments} />
-            <ScrutinsSection key={`s-${detail.dossier.id}`} scrutins={detail.scrutins} />
+            <AmendmentsSection key={detail.dossier.id} amendments={detail.amendments} total={(detail as any).amendments_total} />
+            <ScrutinsSection key={`s-${detail.dossier.id}`} scrutins={detail.scrutins} total={(detail as any).scrutins_total} />
             <section className="mt-10"><h3 className="text-2xl font-staatliches uppercase text-slate-950">Sources officielles</h3><div className="mt-3 flex flex-col gap-2">{[...new Set([...(detail.dossier.source_urls || []), ...(detail.summary?.source_urls || []), ...(detail.promulgation?.source_url ? [detail.promulgation.source_url] : [])])].map((url: string) => <a key={url} href={url} target="_blank" rel="noreferrer" className="inline-flex items-center gap-2 text-blue-700 hover:underline"><ExternalLink size={15} />{url}</a>)}</div></section>
           </article>
         )}

@@ -143,7 +143,7 @@ export default function CommissionAuditions() {
         <span className="flex h-12 w-12 shrink-0 items-center justify-center rounded-2xl bg-gradient-to-br from-emerald-500 to-teal-500 text-white shadow-lg"><Mic size={22} /></span>
         <div>
           <h3 className="font-staatliches text-3xl uppercase tracking-tight text-slate-900 dark:text-white">Auditions de <span className="text-emerald-600">commission</span></h3>
-          <p className="mt-0.5 text-sm text-slate-500">Ce qui a été dit lors des auditions, résumé par l'IA à partir du compte rendu officiel. <span className="font-bold text-amber-600">Résumés réservés aux membres premium.</span></p>
+          <p className="mt-0.5 text-sm text-slate-500">Ce qui a été dit lors des auditions, résumé à partir du compte rendu officiel. <span className="font-bold text-amber-600">Résumés réservés aux membres premium.</span></p>
         </div>
       </div>
       <div className="grid grid-cols-1 gap-3 md:grid-cols-2">

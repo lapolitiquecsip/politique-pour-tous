@@ -13,6 +13,7 @@ import { groupLabel } from "@/lib/legislative-groups";
 import { parseInitiators, loadPeopleIndex, personHref, normalizeName, type InitiatorPerson } from "@/lib/initiators";
 import { AwardBadge } from "@/components/ui/award-badge";
 import { categoryLabel, type LegislativeDossierDetail } from "@/lib/legislative";
+import { lockScroll, unlockScroll } from "@/lib/scroll-lock";
 
 // Panneau de détail d'une loi (fiche complète : résumé, analyse premium, navette, amendements,
 // scrutins, sources). Partagé entre la page « Lois » et la home (livre du Journal Officiel).
@@ -310,6 +311,29 @@ function InitiatorField({ authorName }: { authorName: string | null }) {
   );
 }
 
+// Parcours législatif (navette) — dépliant, replié par défaut : l'utilisateur ne le voit que
+// s'il le souhaite (le détail des étapes est dense).
+function NavetteSection({ steps }: { steps: any[] }) {
+  const [show, setShow] = useState(false);
+  return (
+    <section className="mt-10">
+      <div className="flex flex-wrap items-center justify-between gap-3">
+        <h3 className="text-2xl font-staatliches uppercase text-slate-950">Navette parlementaire {steps.length > 0 && <span className="text-slate-400">({steps.length})</span>}</h3>
+        <button onClick={() => setShow(s => !s)} className="inline-flex items-center gap-2 rounded-full bg-slate-100 px-4 py-2 text-sm font-bold text-slate-700 transition hover:bg-slate-200">
+          {show ? "Masquer le parcours" : "Voir le parcours"}
+          <ChevronDown size={16} className={`transition-transform ${show ? "rotate-180" : ""}`} />
+        </button>
+      </div>
+      {show && (
+        <ol className="mt-4 border-l-2 border-red-200 pl-6">
+          {steps.map(step => <li key={step.official_id} className="relative mb-6"><span className="absolute -left-[31px] top-1 h-3 w-3 rounded-full bg-red-600" /><p className="font-black text-slate-900">{step.step_label}</p><p className="text-sm text-slate-500">{step.chamber} · {formatDate(step.occurred_at)}</p></li>)}
+          {!steps.length && <li className="text-slate-500">Aucune étape publiée.</li>}
+        </ol>
+      )}
+    </section>
+  );
+}
+
 // Repli quand le détail complet est indisponible (RPC muet) : on affiche au moins l'essentiel
 // vérifiable + le lien vers le texte officiel, plutôt qu'un clic mort.
 export type DossierFallback = {
@@ -327,9 +351,8 @@ export default function DossierModal({ detail, loading, onClose, fallback }: { d
     if (!detail && !loading && !showFallback) return;
     const onKey = (e: KeyboardEvent) => { if (e.key === "Escape") onClose(); };
     document.addEventListener("keydown", onKey);
-    const prev = document.body.style.overflow;
-    document.body.style.overflow = "hidden";
-    return () => { document.removeEventListener("keydown", onKey); document.body.style.overflow = prev; };
+    lockScroll();
+    return () => { document.removeEventListener("keydown", onKey); unlockScroll(); };
   }, [detail, loading, showFallback, onClose]);
 
   if (!detail && !loading && !showFallback) return null;
@@ -338,7 +361,7 @@ export default function DossierModal({ detail, loading, onClose, fallback }: { d
       <div onClick={e => e.stopPropagation()} className="relative mx-auto flex max-h-[calc(100dvh-2rem)] w-full max-w-5xl flex-col overflow-hidden rounded-[2rem] bg-white text-slate-900 shadow-2xl md:max-h-[calc(100dvh-5rem)]">
         {/* Bouton fermer flottant (coin) — plus de bande blanche sticky qui recouvre le contenu au scroll */}
         <button onClick={onClose} className="absolute right-4 top-4 z-20 rounded-full bg-slate-100 p-3 shadow-sm transition hover:bg-slate-200" aria-label="Fermer"><X /></button>
-        <div className="overflow-y-auto">
+        <div className="overflow-y-auto overflow-x-hidden overscroll-contain">
         {loading ? <div className="flex min-h-80 items-center justify-center"><Loader2 className="animate-spin text-red-600" /></div> : showFallback ? (
           <article className="px-6 pb-12 pt-16 md:px-12">
             {(() => {
@@ -407,20 +430,14 @@ export default function DossierModal({ detail, loading, onClose, fallback }: { d
             ) : !isPremium ? (
               <section className="mt-10 rounded-3xl border border-amber-200 bg-amber-50 p-6">
                 <div className="flex items-center gap-2 text-amber-900"><Lock size={18} /><h3 className="text-2xl font-staatliches uppercase">Analyse détaillée</h3></div>
-                <p className="mt-2 max-w-2xl text-sm leading-6 text-amber-800">Analyse approfondie de cette loi rédigée par notre IA (enjeux, portée, points clés), réservée aux membres premium.</p>
+                <p className="mt-2 max-w-2xl text-sm leading-6 text-amber-800">Analyse approfondie de cette loi (enjeux, portée, points clés), réservée aux membres premium.</p>
                 <div className="mt-4"><AwardBadge titleText="Analyse détaillée" link="/premium" /></div>
               </section>
             ) : null}
-            <section className="mt-10">
-              <h3 className="text-2xl font-staatliches uppercase text-slate-950">Navette parlementaire</h3>
-              <ol className="mt-4 border-l-2 border-red-200 pl-6">
-                {detail.steps.map(step => <li key={step.official_id} className="relative mb-6"><span className="absolute -left-[31px] top-1 h-3 w-3 rounded-full bg-red-600" /><p className="font-black text-slate-900">{step.step_label}</p><p className="text-sm text-slate-500">{step.chamber} · {formatDate(step.occurred_at)}</p></li>)}
-                {!detail.steps.length && <li className="text-slate-500">Aucune étape publiée.</li>}
-              </ol>
-            </section>
+            <NavetteSection steps={detail.steps} />
             <AmendmentsSection key={detail.dossier.id} amendments={detail.amendments} total={(detail as any).amendments_total} />
             <ScrutinsSection key={`s-${detail.dossier.id}`} scrutins={detail.scrutins} total={(detail as any).scrutins_total} />
-            <section className="mt-10"><h3 className="text-2xl font-staatliches uppercase text-slate-950">Sources officielles</h3><div className="mt-3 flex flex-col gap-2">{[...new Set([...(detail.dossier.source_urls || []), ...(detail.summary?.source_urls || []), ...(detail.promulgation?.source_url ? [detail.promulgation.source_url] : [])])].map((url: string) => <a key={url} href={url} target="_blank" rel="noreferrer" className="inline-flex items-center gap-2 text-blue-700 hover:underline"><ExternalLink size={15} />{url}</a>)}</div></section>
+            <section className="mt-10"><h3 className="text-2xl font-staatliches uppercase text-slate-950">Sources officielles</h3><div className="mt-3 flex flex-col gap-2">{[...new Set([...(detail.dossier.source_urls || []), ...(detail.summary?.source_urls || []), ...(detail.promulgation?.source_url ? [detail.promulgation.source_url] : [])])].map((url: string) => <a key={url} href={url} target="_blank" rel="noreferrer" className="flex items-start gap-2 text-blue-700 hover:underline"><ExternalLink size={15} className="mt-0.5 shrink-0" /><span className="min-w-0 break-all">{url}</span></a>)}</div></section>
           </article>
         )}
         </div>

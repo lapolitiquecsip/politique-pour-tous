@@ -416,7 +416,7 @@ export default function MepClient({ mep, initialVotes, embedded }: { mep: any; i
                       <p className="mt-1 text-[15px] leading-relaxed text-slate-700 dark:text-slate-300">{exp.stakes}</p>
                     </div>
                   )}
-                  <p className="text-[10px] italic text-slate-400">Explication rédigée par IA à partir des métadonnées officielles du scrutin. Neutre et factuelle.</p>
+                  <p className="text-[10px] italic text-slate-400">Explication établie à partir des métadonnées officielles du scrutin. Neutre et factuelle.</p>
                 </>
               )}
 

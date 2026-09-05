@@ -2,6 +2,7 @@
 
 import { useState, useEffect } from "react";
 import { supabase } from "@/lib/supabase";
+import { lockScroll, unlockScroll } from "@/lib/scroll-lock";
 import Link from "next/link";
 import { motion } from "framer-motion";
 import { 
@@ -46,6 +47,14 @@ export default function Header() {
 
     return () => subscription.unsubscribe();
   }, []);
+
+  // Menu mobile ouvert → on FIGE l'arrière-plan (la page principale ne bouge plus ; seul le
+  // panneau du menu défile). Indispensable sur iOS où overflow:hidden ne suffit pas.
+  useEffect(() => {
+    if (!isMenuOpen) return;
+    lockScroll();
+    return () => unlockScroll();
+  }, [isMenuOpen]);
 
   const handleLogout = async () => {
     await supabase.auth.signOut();
@@ -160,10 +169,10 @@ export default function Header() {
 
       {/* Mobile Menu */}
       {isMenuOpen && (
-        <motion.div 
+        <motion.div
           initial={{ opacity: 0, y: -20 }}
           animate={{ opacity: 1, y: 0 }}
-          className="lg:hidden bg-white border-b border-slate-100 px-4 py-6 space-y-4 shadow-xl"
+          className="lg:hidden max-h-[calc(100dvh-4rem)] overflow-y-auto overscroll-contain bg-white border-b border-slate-100 px-4 py-6 space-y-4 shadow-xl"
         >
           {navLinks.map((link) => {
             const Icon = link.icon;

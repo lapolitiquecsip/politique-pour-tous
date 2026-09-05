@@ -407,7 +407,7 @@ export default function UniversalLawModal({ law, isOpen, onClose, onNext, onPrev
                           <CheckCircle2 size={20} />
                         </div>
                         <p className="text-xs text-slate-400 leading-relaxed font-medium">
-                          Ce dossier est <span className="text-white font-bold underline decoration-blue-500 underline-offset-4">mis à jour automatiquement</span> par notre intelligence artificielle.
+                          Ce dossier est <span className="text-white font-bold underline decoration-blue-500 underline-offset-4">mis à jour automatiquement</span> à partir des données officielles.
                         </p>
                       </div>
                     </div>

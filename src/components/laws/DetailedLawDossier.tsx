@@ -407,7 +407,7 @@ export default function DetailedLawDossier({ law }: DetailedLawDossierProps) {
                   <CheckCircle2 className="w-6 h-6 text-white" />
                 </div>
                 <p className="text-slate-300 text-sm leading-snug">
-                  Ce dossier est <span className="text-white font-bold underline decoration-blue-500 decoration-2 underline-offset-2">mis à jour automatiquement</span> par notre intelligence artificielle.
+                  Ce dossier est <span className="text-white font-bold underline decoration-blue-500 decoration-2 underline-offset-2">mis à jour automatiquement</span> à partir des données officielles.
                 </p>
               </div>
             </div>

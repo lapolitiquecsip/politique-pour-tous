@@ -236,7 +236,7 @@ export default function ProgramSection() {
                       {/* Synthèse IA — encart ambré distinct. */}
                       {i.justification && (
                         <div className="rounded-xl border border-amber-200 bg-gradient-to-br from-amber-50 to-white p-3">
-                          <p className="flex items-center gap-1.5 text-[10px] font-black uppercase tracking-widest text-amber-600"><Sparkles size={12} /> Synthèse IA</p>
+                          <p className="flex items-center gap-1.5 text-[10px] font-black uppercase tracking-widest text-amber-600"><Sparkles size={12} /> Synthèse</p>
                           <p className="mt-1 text-xs leading-relaxed text-slate-600">{i.justification}</p>
                         </div>
                       )}
@@ -288,8 +288,8 @@ export default function ProgramSection() {
         <span>
           Engagements : programme officiel « Emmanuel Macron — Avec Vous » (2022)
           {sourceUrl && <> — <a href={sourceUrl} target="_blank" rel="noopener noreferrer" className="underline hover:text-amber-600">source</a></>}.
-          Avancement : évaluation générée par IA à partir des scrutins et dossiers législatifs
-          postérieurs à mai 2022, non validée par un humain.
+          Avancement : évaluation à partir des scrutins et dossiers législatifs
+          postérieurs à mai 2022.
         </span>
       </p>
     </section>

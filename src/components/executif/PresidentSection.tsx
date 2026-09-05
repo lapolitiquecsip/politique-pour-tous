@@ -166,7 +166,7 @@ export default function PresidentSection({ photoUrl }: { photoUrl?: string }) {
 
             <div className="mt-5 rounded-2xl bg-slate-50 p-5">
               <p className="mb-3 flex items-center gap-1.5 text-[9px] font-black uppercase tracking-widest text-amber-600">
-                <Sparkles size={11} /> Ce qui a été décidé — résumé par IA du compte rendu officiel
+                <Sparkles size={11} /> Ce qui a été décidé — résumé du compte rendu officiel
               </p>
               {openCdm.summary
                 ? <SummaryBody text={openCdm.summary} />

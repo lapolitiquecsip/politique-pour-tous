@@ -45,7 +45,7 @@ const faqData: FaqItem[] = [
   {
     id: 3,
     question: "Pourquoi un abonnement Premium ?",
-    answer: "Le Premium nous aide à financer l'infrastructure IA nécessaire pour analyser des milliers de pages de rapports législatifs chaque jour.",
+    answer: "Le Premium nous aide à financer l'infrastructure nécessaire pour analyser des milliers de pages de rapports législatifs chaque jour.",
     color: "green",
     position: { top: "10%", left: "80%" },
     delay: 1.2,

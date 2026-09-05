@@ -871,6 +871,19 @@ export const api = {
     return (data || []) as { voter_official_id: string; voter_name: string; group_code: string | null; position: string }[];
   },
 
+  // Amendements & scrutins d'une loi, chargés À LA DEMANDE au dépliage (le RPC détail ne renvoie
+  // plus que les compteurs → la fiche s'ouvre instantanément). Agrègent le dossier frère.
+  getDossierAmendments: async (dossierId: string) => {
+    const { data, error } = await supabase.rpc('public_dossier_amendments', { p_id: dossierId });
+    if (error) { console.warn('getDossierAmendments:', error.message); return []; }
+    return (data || []) as any[];
+  },
+  getDossierScrutins: async (dossierId: string) => {
+    const { data, error } = await supabase.rpc('public_dossier_scrutins', { p_id: dossierId });
+    if (error) { console.warn('getDossierScrutins:', error.message); return []; }
+    return (data || []) as any[];
+  },
+
   getProposals: async () => {
     // Les propositions en cours n'ont généralement pas de date d'adoption ni de contexte 'dossier_premium'
     const { data, error } = await supabase

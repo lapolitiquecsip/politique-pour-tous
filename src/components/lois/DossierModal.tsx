@@ -32,13 +32,24 @@ function formatDate(value?: string | null) {
   return new Intl.DateTimeFormat("fr-FR", { dateStyle: "long" }).format(new Date(value));
 }
 
-function AmendmentsSection({ amendments, total }: { amendments: any[]; total?: number }) {
+// Amendements — chargés À LA DEMANDE au dépliage (la fiche s'ouvre instantanément). Rétro-compatible :
+// si le RPC détail fournit encore le tableau (`initial`), on l'utilise sans requête.
+function AmendmentsSection({ dossierId, total = 0, initial }: { dossierId: string; total?: number; initial?: any[] }) {
   const [show, setShow] = useState(false);
   const [page, setPage] = useState(0);
   const perPage = 6;
-  const truncated = typeof total === "number" && total > amendments.length; // RPC plafonné
+  const [items, setItems] = useState<any[] | null>(initial ?? null);
+  const [loading, setLoading] = useState(false);
 
-  if (!amendments.length) {
+  const toggle = async () => {
+    const next = !show; setShow(next);
+    if (next && items === null && !loading) {
+      setLoading(true);
+      try { setItems(await api.getDossierAmendments(dossierId)); } finally { setLoading(false); }
+    }
+  };
+
+  if (total === 0 && !(items && items.length)) {
     return (
       <section className="mt-10">
         <h3 className="text-2xl font-staatliches uppercase text-slate-950">Amendements</h3>
@@ -47,22 +58,25 @@ function AmendmentsSection({ amendments, total }: { amendments: any[]; total?: n
     );
   }
 
-  const pageCount = Math.ceil(amendments.length / perPage);
+  const shown = items ?? [];
+  const truncated = total > shown.length && items !== null;
+  const pageCount = Math.max(1, Math.ceil(shown.length / perPage));
   const start = page * perPage;
-  const current = amendments.slice(start, start + perPage);
+  const current = shown.slice(start, start + perPage);
 
   return (
     <section className="mt-10">
       <div className="flex flex-wrap items-center justify-between gap-3">
-        <h3 className="text-2xl font-staatliches uppercase text-slate-950">Amendements <span className="text-slate-400">({truncated ? total : amendments.length})</span></h3>
-        <button onClick={() => setShow(s => !s)} className="inline-flex items-center gap-2 rounded-full bg-slate-100 px-4 py-2 text-sm font-bold text-slate-700 transition hover:bg-slate-200">
+        <h3 className="text-2xl font-staatliches uppercase text-slate-950">Amendements <span className="text-slate-400">({total || shown.length})</span></h3>
+        <button onClick={toggle} className="inline-flex items-center gap-2 rounded-full bg-slate-100 px-4 py-2 text-sm font-bold text-slate-700 transition hover:bg-slate-200">
           {show ? "Masquer les amendements" : "Voir les amendements"}
           <ChevronDown size={16} className={`transition-transform ${show ? "rotate-180" : ""}`} />
         </button>
       </div>
-      {truncated && show && <p className="mt-3 text-xs italic text-slate-400">Les {amendments.length} amendements les plus récents sont affichés (sur {total}).</p>}
+      {truncated && show && <p className="mt-3 text-xs italic text-slate-400">Les {shown.length} amendements les plus récents sont affichés (sur {total}).</p>}
       {show && (
         <>
+          {loading && <div className="mt-4 flex items-center gap-2 text-slate-500"><Loader2 size={16} className="animate-spin" /> Chargement…</div>}
           <div className="mt-4 grid gap-3">
             {current.map(amendment => (
               <div key={amendment.official_id} className="rounded-2xl border border-slate-200 p-5 text-slate-900">
@@ -202,13 +216,24 @@ function ScrutinCard({ scrutin }: { scrutin: any }) {
   );
 }
 
-function ScrutinsSection({ scrutins, total }: { scrutins: any[]; total?: number }) {
+// Scrutins — chargés À LA DEMANDE au dépliage (fiche instantanée). Rétro-compatible avec l'ancien
+// RPC qui fournissait déjà le tableau (`initial`).
+function ScrutinsSection({ dossierId, total = 0, initial }: { dossierId: string; total?: number; initial?: any[] }) {
   const [show, setShow] = useState(false);
   const [page, setPage] = useState(0);
   const perPage = 4;
-  const truncated = typeof total === "number" && total > scrutins.length; // RPC plafonné
+  const [items, setItems] = useState<any[] | null>(initial ?? null);
+  const [loading, setLoading] = useState(false);
 
-  if (!scrutins.length) {
+  const toggle = async () => {
+    const next = !show; setShow(next);
+    if (next && items === null && !loading) {
+      setLoading(true);
+      try { setItems(await api.getDossierScrutins(dossierId)); } finally { setLoading(false); }
+    }
+  };
+
+  if (total === 0 && !(items && items.length)) {
     return (
       <section className="mt-10">
         <h3 className="text-2xl font-staatliches uppercase text-slate-950">Scrutins</h3>
@@ -217,21 +242,24 @@ function ScrutinsSection({ scrutins, total }: { scrutins: any[]; total?: number 
     );
   }
 
-  const pageCount = Math.ceil(scrutins.length / perPage);
-  const current = scrutins.slice(page * perPage, page * perPage + perPage);
+  const shown = items ?? [];
+  const truncated = total > shown.length && items !== null;
+  const pageCount = Math.max(1, Math.ceil(shown.length / perPage));
+  const current = shown.slice(page * perPage, page * perPage + perPage);
 
   return (
     <section className="mt-10">
       <div className="flex flex-wrap items-center justify-between gap-3">
-        <h3 className="text-2xl font-staatliches uppercase text-slate-950">Scrutins <span className="text-slate-400">({truncated ? total : scrutins.length})</span></h3>
-        <button onClick={() => setShow(s => !s)} className="inline-flex items-center gap-2 rounded-full bg-slate-100 px-4 py-2 text-sm font-bold text-slate-700 transition hover:bg-slate-200">
+        <h3 className="text-2xl font-staatliches uppercase text-slate-950">Scrutins <span className="text-slate-400">({total || shown.length})</span></h3>
+        <button onClick={toggle} className="inline-flex items-center gap-2 rounded-full bg-slate-100 px-4 py-2 text-sm font-bold text-slate-700 transition hover:bg-slate-200">
           {show ? "Masquer les scrutins" : "Voir les scrutins"}
           <ChevronDown size={16} className={`transition-transform ${show ? "rotate-180" : ""}`} />
         </button>
       </div>
-      {truncated && show && <p className="mt-3 text-xs italic text-slate-400">Les {scrutins.length} scrutins les plus récents sont affichés (sur {total}).</p>}
+      {truncated && show && <p className="mt-3 text-xs italic text-slate-400">Les {shown.length} scrutins les plus récents sont affichés (sur {total}).</p>}
       {show && (
         <>
+          {loading && <div className="mt-4 flex items-center gap-2 text-slate-500"><Loader2 size={16} className="animate-spin" /> Chargement…</div>}
           <div className="mt-4 grid gap-3">
             {current.map(scrutin => <ScrutinCard key={scrutin.official_id} scrutin={scrutin} />)}
           </div>
@@ -435,8 +463,8 @@ export default function DossierModal({ detail, loading, onClose, fallback }: { d
               </section>
             ) : null}
             <NavetteSection steps={detail.steps} />
-            <AmendmentsSection key={detail.dossier.id} amendments={detail.amendments} total={(detail as any).amendments_total} />
-            <ScrutinsSection key={`s-${detail.dossier.id}`} scrutins={detail.scrutins} total={(detail as any).scrutins_total} />
+            <AmendmentsSection key={detail.dossier.id} dossierId={detail.dossier.id} total={(detail as any).amendments_total} initial={detail.amendments} />
+            <ScrutinsSection key={`s-${detail.dossier.id}`} dossierId={detail.dossier.id} total={(detail as any).scrutins_total} initial={detail.scrutins} />
             <section className="mt-10"><h3 className="text-2xl font-staatliches uppercase text-slate-950">Sources officielles</h3><div className="mt-3 flex flex-col gap-2">{[...new Set([...(detail.dossier.source_urls || []), ...(detail.summary?.source_urls || []), ...(detail.promulgation?.source_url ? [detail.promulgation.source_url] : [])])].map((url: string) => <a key={url} href={url} target="_blank" rel="noreferrer" className="flex items-start gap-2 text-blue-700 hover:underline"><ExternalLink size={15} className="mt-0.5 shrink-0" /><span className="min-w-0 break-all">{url}</span></a>)}</div></section>
           </article>
         )}

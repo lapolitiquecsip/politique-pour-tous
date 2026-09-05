@@ -602,7 +602,18 @@ export default function InstitutionsGrid() {
                         )}
                       </div>
 
-                      <div className="mt-10 pt-8 border-t border-slate-100 dark:border-slate-800 flex justify-end">
+                      <div className="mt-10 pt-8 border-t border-slate-100 dark:border-slate-800 flex items-center justify-between gap-4">
+                        {/* Lien propre vers la page officielle (quand ce n'est pas l'agenda générique). */}
+                        {selectedEvent.source_url && !/\/agenda\/?$/.test(selectedEvent.source_url) ? (
+                          <a
+                            href={selectedEvent.source_url}
+                            target="_blank"
+                            rel="noopener noreferrer"
+                            className="text-xs font-bold uppercase tracking-widest text-slate-400 hover:text-blue-600 dark:hover:text-blue-400 transition-colors"
+                          >
+                            Page officielle ↗
+                          </a>
+                        ) : <span />}
                         <button
                           onClick={() => setSelectedEvent(null)}
                           className="px-8 py-4 bg-slate-900 dark:bg-white text-white dark:text-slate-900 rounded-2xl font-bold uppercase tracking-widest text-xs hover:bg-blue-600 dark:hover:bg-blue-500 transition-all shadow-xl shadow-slate-900/20"

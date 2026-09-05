@@ -1,7 +1,8 @@
 "use client";
 
 import { useEffect, useMemo, useState } from "react";
-import { Newspaper, ChevronDown, ExternalLink, Loader2 } from "lucide-react";
+import { Newspaper, ChevronDown, ExternalLink, Loader2, X } from "lucide-react";
+import { motion, AnimatePresence } from "framer-motion";
 import { api } from "@/lib/api";
 
 // Libellés lisibles des types d'actu (badges + puces de filtre).
@@ -34,6 +35,7 @@ export default function EntityNewsFeed({
   const [items, setItems] = useState<FeedItem[] | null>(null);
   const [open, setOpen] = useState(defaultOpen);
   const [filter, setFilter] = useState<string | null>(null); // null = tous les types
+  const [selected, setSelected] = useState<FeedItem | null>(null); // récap ouvert EN SITE (modale)
 
   useEffect(() => {
     let active = true;
@@ -99,8 +101,8 @@ export default function EntityNewsFeed({
             <ul className="grid grid-cols-1 gap-3 md:grid-cols-2">
               {visible.map(it => (
                 <li key={it.id}>
-                  <a href={it.url} target="_blank" rel="noopener noreferrer"
-                    className="flex h-full flex-col rounded-2xl border border-slate-200 bg-white p-4 transition hover:border-blue-300 hover:shadow-md dark:border-slate-800 dark:bg-slate-900">
+                  <button onClick={() => setSelected(it)}
+                    className="flex h-full w-full flex-col rounded-2xl border border-slate-200 bg-white p-4 text-left transition hover:border-blue-300 hover:shadow-md dark:border-slate-800 dark:bg-slate-900">
                     <div className="mb-1.5 flex items-center justify-between gap-2">
                       <span className="text-[10px] font-black uppercase tracking-widest text-blue-600">{typeLabel(it.news_type)}</span>
                       <span className="text-[10px] font-bold text-slate-400">{fmt(it.published_at)}</span>
@@ -108,9 +110,9 @@ export default function EntityNewsFeed({
                     <p className="text-sm font-bold leading-snug text-slate-900 dark:text-white">{it.title}</p>
                     {it.summary && <p className="mt-1 line-clamp-3 text-xs leading-5 text-slate-600 dark:text-slate-300">{it.summary}</p>}
                     <span className="mt-auto pt-2 inline-flex items-center gap-1 text-[10px] font-bold uppercase tracking-widest text-slate-400">
-                      <ExternalLink size={11} /> {it.source_name}
+                      {it.source_name}
                     </span>
-                  </a>
+                  </button>
                 </li>
               ))}
             </ul>
@@ -118,6 +120,45 @@ export default function EntityNewsFeed({
           )}
         </div>
       )}
+
+      {/* Récap de la news EN SITE : l'utilisateur lit l'essentiel sans quitter le site. */}
+      <AnimatePresence>
+        {selected && (
+          <motion.div
+            initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}
+            className="fixed inset-0 z-[80] flex items-end justify-center bg-slate-950/60 p-0 sm:items-center sm:p-4"
+            onClick={() => setSelected(null)}
+          >
+            <motion.div
+              initial={{ y: 40, opacity: 0 }} animate={{ y: 0, opacity: 1 }} exit={{ y: 40, opacity: 0 }}
+              transition={{ type: "spring", damping: 28, stiffness: 320 }}
+              onClick={e => e.stopPropagation()}
+              className="max-h-[85vh] w-full max-w-lg overflow-y-auto rounded-t-[2rem] bg-white p-6 shadow-2xl dark:bg-slate-900 sm:rounded-[2rem]"
+            >
+              <div className="mb-3 flex items-center justify-between gap-3">
+                <span className="inline-flex items-center gap-1.5 rounded-full bg-blue-100 px-3 py-1 text-[10px] font-black uppercase tracking-widest text-blue-700 dark:bg-blue-500/15 dark:text-blue-300">
+                  {typeLabel(selected.news_type)}
+                </span>
+                <button onClick={() => setSelected(null)} className="rounded-full bg-slate-100 p-2 text-slate-500 transition hover:bg-slate-200 dark:bg-slate-800 dark:text-slate-300">
+                  <X size={18} />
+                </button>
+              </div>
+              <p className="text-[11px] font-bold uppercase tracking-widest text-slate-400">{fmt(selected.published_at)}</p>
+              <h3 className="mt-1 text-xl font-black leading-snug text-slate-900 dark:text-white">{selected.title}</h3>
+              {selected.summary && <p className="mt-3 leading-7 text-slate-600 dark:text-slate-300">{selected.summary}</p>}
+              <div className="mt-5 flex items-center justify-between gap-3 border-t border-slate-100 pt-4 dark:border-slate-800">
+                <span className="text-[11px] font-bold uppercase tracking-widest text-slate-400">Source : {selected.source_name}</span>
+                {selected.url && (
+                  <a href={selected.url} target="_blank" rel="noopener noreferrer"
+                    className="inline-flex items-center gap-1.5 rounded-full bg-slate-950 px-4 py-2 text-[11px] font-black uppercase tracking-widest text-white transition hover:bg-slate-700 dark:bg-slate-800">
+                    Lire l&apos;article <ExternalLink size={12} />
+                  </a>
+                )}
+              </div>
+            </motion.div>
+          </motion.div>
+        )}
+      </AnimatePresence>
     </section>
   );
 }

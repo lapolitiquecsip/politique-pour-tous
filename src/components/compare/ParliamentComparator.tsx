@@ -52,7 +52,7 @@ function Picker({ people, value, onPick, placeholder }: { people: Person[]; valu
       <div className="flex items-center gap-2 rounded-2xl border border-slate-200 bg-white px-4">
         <Search size={18} className="text-slate-400" />
         <input value={q} onChange={e => setQ(e.target.value)} placeholder={placeholder}
-          className="w-full bg-transparent py-3.5 outline-none placeholder:text-slate-400" />
+          className="w-full bg-transparent py-3.5 text-slate-900 outline-none placeholder:text-slate-400 [color-scheme:light]" />
       </div>
       {matches.length > 0 && (
         <div className="absolute z-20 mt-1 max-h-72 w-full overflow-y-auto rounded-2xl border border-slate-200 bg-white shadow-xl">

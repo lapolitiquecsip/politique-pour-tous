@@ -95,8 +95,17 @@ export default function JournalOfficielBook() {
             <div className="pointer-events-none absolute inset-y-0 right-0 w-10 bg-gradient-to-l from-black/25 to-transparent" />
           </div>
 
-          {/* Page droite — la loi (se tourne). */}
-          <div className="relative min-h-[440px] bg-white dark:bg-slate-900">
+          {/* Page droite — la loi (se tourne). Swipe horizontal (mobile) pour feuilleter. */}
+          <motion.div
+            className="relative min-h-[440px] touch-pan-y bg-white dark:bg-slate-900"
+            drag="x"
+            dragConstraints={{ left: 0, right: 0 }}
+            dragElastic={0.18}
+            onDragEnd={(_e, info) => {
+              if (info.offset.x < -55 || info.velocity.x < -350) go(1);
+              else if (info.offset.x > 55 || info.velocity.x > 350) go(-1);
+            }}
+          >
             <div className="pointer-events-none absolute inset-x-0 top-0 h-1.5 bg-gradient-to-r from-red-600 via-rose-500 to-fuchsia-600" />
             <div className="pointer-events-none absolute -right-10 top-10 h-40 w-40 rounded-full bg-rose-500/5 blur-3xl" />
             <div className="pointer-events-none absolute inset-y-0 left-0 hidden w-10 bg-gradient-to-r from-black/12 to-transparent md:block" />
@@ -123,7 +132,7 @@ export default function JournalOfficielBook() {
                 </Link>
               </motion.div>
             </AnimatePresence>
-          </div>
+          </motion.div>
         </div>
       </div>
 

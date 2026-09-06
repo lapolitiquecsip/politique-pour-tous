@@ -126,29 +126,29 @@ export default function SenatorClient({ senator, embedded }: { senator: any; emb
       </div>
       )}
 
-      <div className="container mx-auto px-4 pt-12 max-w-6xl">
-        <div className="grid grid-cols-1 lg:grid-cols-3 gap-12">
+      <div className="container mx-auto px-4 pt-6 md:pt-12 max-w-6xl">
+        <div className="grid grid-cols-1 lg:grid-cols-3 gap-5 md:gap-8 lg:gap-12">
 
           {/* LEFT COLUMN: Profile Card */}
           <motion.div 
             initial={{ opacity: 0, x: -20 }}
             animate={{ opacity: 1, x: 0 }}
-            className="lg:col-span-1 space-y-6"
+            className="lg:col-span-1 space-y-4 md:space-y-6"
           >
             <div className="bg-white dark:bg-slate-900 rounded-[2.5rem] border border-amber-200 dark:border-slate-800 overflow-hidden shadow-2xl relative">
               <div className="absolute top-4 right-4 z-10">
                  <div className="bg-amber-600 text-white px-3 py-1 rounded-full text-[10px] font-black uppercase tracking-tighter shadow-lg">Premium Exclusive</div>
               </div>
               
-              <div className="relative aspect-[4/5] bg-slate-200 dark:bg-slate-800 flex items-center justify-center overflow-hidden">
-                <img 
-                  src={senator.photo_url} 
+              <div className="relative aspect-[3/2] sm:aspect-[4/5] bg-slate-200 dark:bg-slate-800 flex items-center justify-center overflow-hidden">
+                <img
+                  src={senator.photo_url}
                   alt={name}
-                  className="w-full h-full object-cover"
+                  className="w-full h-full object-cover object-top"
                 />
                 <div className="absolute inset-0 bg-gradient-to-t from-slate-900 via-transparent to-transparent opacity-80" />
-                <div className="absolute bottom-8 left-8 right-8">
-                  <h1 className="text-4xl font-staatliches text-white tracking-tight uppercase leading-none mb-2">
+                <div className="absolute bottom-5 left-5 right-5 md:bottom-8 md:left-8 md:right-8">
+                  <h1 className="text-3xl md:text-4xl font-staatliches text-white tracking-tight uppercase leading-none mb-2">
                     {name}
                   </h1>
                   <p className="text-amber-400 font-bold tracking-widest text-xs uppercase flex items-center gap-2">
@@ -158,7 +158,7 @@ export default function SenatorClient({ senator, embedded }: { senator: any; emb
                 </div>
               </div>
 
-              <div className="p-8 space-y-6">
+              <div className="p-5 md:p-8 space-y-4 md:space-y-6">
                  {(() => {
                    const inner = (
                      <>
@@ -255,9 +255,9 @@ export default function SenatorClient({ senator, embedded }: { senator: any; emb
             </motion.div>
 
             {(senator?.email || senator?.senate_matricule) && (
-            <div className="bg-amber-600 rounded-[2rem] p-8 text-white shadow-xl shadow-amber-600/20">
-               <h4 className="text-xl font-staatliches uppercase mb-4 tracking-tight">Contact Sénat</h4>
-               <p className="text-sm opacity-90 leading-relaxed mb-6">
+            <div className="bg-amber-600 rounded-3xl p-5 md:p-8 text-white shadow-xl shadow-amber-600/20">
+               <h4 className="text-xl font-staatliches uppercase mb-3 md:mb-4 tracking-tight">Contact Sénat</h4>
+               <p className="text-sm opacity-90 leading-relaxed mb-4 md:mb-6">
                  Vous pouvez contacter ce sénateur pour toute question relative à l&apos;activité législative.
                </p>
                {senator?.email ? (
@@ -280,7 +280,7 @@ export default function SenatorClient({ senator, embedded }: { senator: any; emb
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ delay: 0.2 }}
-            className="lg:col-span-2 space-y-10"
+            className="lg:col-span-2 space-y-5 md:space-y-10"
           >
             {senator.sitting === false && <MandateEndedBanner role="sénateur·rice" name={`${senator.first_name ?? ""} ${senator.last_name ?? ""}`.trim()} />}
             <div className="flex flex-wrap items-center gap-3">
@@ -302,12 +302,12 @@ export default function SenatorClient({ senator, embedded }: { senator: any; emb
             />
 
             {/* Biography Section */}
-            <div className="bg-white dark:bg-slate-900 rounded-[3rem] border border-slate-200 dark:border-slate-800 shadow-xl relative overflow-hidden group pb-2">
-              <button 
+            <div className="bg-white dark:bg-slate-900 rounded-3xl md:rounded-[3rem] border border-slate-200 dark:border-slate-800 shadow-xl relative overflow-hidden group pb-2">
+              <button
                 onClick={() => setIsBioExpanded(!isBioExpanded)}
-                className="w-full text-left p-8 md:px-12 md:py-10 relative z-10 flex items-center justify-between"
+                className="w-full text-left p-5 md:px-12 md:py-10 relative z-10 flex items-center justify-between"
               >
-                <div className="flex flex-col md:flex-row gap-6 items-center">
+                <div className="flex flex-row items-center gap-3 md:gap-6">
                   <div className="w-12 h-12 rounded-xl bg-amber-600 flex items-center justify-center text-white shrink-0 shadow-lg">
                     <Quote className="w-6 h-6 opacity-50" />
                   </div>
@@ -326,7 +326,7 @@ export default function SenatorClient({ senator, embedded }: { senator: any; emb
                     initial={{ height: 0, opacity: 0 }}
                     animate={{ height: "auto", opacity: 1 }}
                     exit={{ height: 0, opacity: 0 }}
-                    className="overflow-hidden px-8 pb-10 md:px-12"
+                    className="overflow-hidden px-5 pb-6 md:px-12 md:pb-10"
                   >
                     <StructuredBio bio={senator.bio} fallbackText={senator.biography} />
 

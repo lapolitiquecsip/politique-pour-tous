@@ -57,7 +57,7 @@ export default function ElectionsBanner() {
         </div>
       </div>
 
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
+      <div className="grid grid-cols-2 lg:grid-cols-4 gap-3 md:gap-4">
         {upcomingElections.map((election, index) => {
           const Icon = iconMap[election.icon];
           const colors = colorMap[election.color] || colorMap.blue;
@@ -71,28 +71,29 @@ export default function ElectionsBanner() {
               onClick={() => setSelectedElection(election)}
               className="relative group cursor-pointer"
             >
-              <div className="h-full p-6 bg-white dark:bg-slate-900 rounded-3xl border border-slate-200 dark:border-slate-800 shadow-sm hover:shadow-xl transition-all overflow-hidden">
+              {/* Cartes compactes sur mobile (padding/icône/texte réduits) → moins encombrant. */}
+              <div className="h-full p-4 md:p-6 bg-white dark:bg-slate-900 rounded-2xl md:rounded-3xl border border-slate-200 dark:border-slate-800 shadow-sm hover:shadow-xl transition-all overflow-hidden">
                 {/* Background Accent */}
                 <div className={`absolute top-0 right-0 w-24 h-24 -mr-8 -mt-8 rounded-full opacity-[0.05] group-hover:scale-150 transition-transform duration-500 ${colors.accent}`} />
-                
+
                 <div className="relative z-10">
-                  <div className={`w-12 h-12 rounded-2xl flex items-center justify-center mb-4 ${colors.bg} ${colors.text} group-hover:scale-110 transition-transform`}>
-                    <Icon size={24} />
+                  <div className={`w-9 h-9 md:w-12 md:h-12 rounded-xl md:rounded-2xl flex items-center justify-center mb-2.5 md:mb-4 ${colors.bg} ${colors.text} group-hover:scale-110 transition-transform`}>
+                    <Icon className="w-[18px] h-[18px] md:w-6 md:h-6" />
                   </div>
-                  
-                  <span className="text-[10px] font-black uppercase tracking-[0.2em] text-slate-400 dark:text-slate-500 mb-1 block">
+
+                  <span className="text-[9px] md:text-[10px] font-black uppercase tracking-[0.2em] text-slate-400 dark:text-slate-500 mb-0.5 md:mb-1 block">
                     {election.type}
                   </span>
-                  
-                  <h3 className="text-lg font-staatliches uppercase leading-none mb-2 text-slate-900 dark:text-white">
+
+                  <h3 className="text-sm md:text-lg font-staatliches uppercase leading-none mb-1.5 md:mb-2 text-slate-900 dark:text-white">
                     {election.date}
                   </h3>
-                  
-                  <p className="text-xs text-slate-500 dark:text-slate-400 line-clamp-2 mb-4 leading-relaxed">
+
+                  <p className="text-[11px] md:text-xs text-slate-500 dark:text-slate-400 line-clamp-2 md:mb-4 leading-relaxed">
                     {wrapWithGlossary(election.description)}
                   </p>
-                  
-                  <div className="flex items-center gap-1 text-[10px] font-bold text-blue-600 uppercase tracking-wider opacity-0 group-hover:opacity-100 transition-opacity">
+
+                  <div className="hidden md:flex items-center gap-1 text-[10px] font-bold text-blue-600 uppercase tracking-wider opacity-0 group-hover:opacity-100 transition-opacity">
                     Comment ça marche ? <ChevronRight size={12} />
                   </div>
                 </div>

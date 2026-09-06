@@ -8,6 +8,7 @@ import { Suspense } from "react";
 import Link from "next/link";
 import { ChevronRight } from "lucide-react";
 import PresidentPhoto from "@/components/shared/PresidentPhoto";
+import Senatoriales2026 from "@/components/senat/Senatoriales2026";
 
 // Page dédiée au Sénat : composition + textes législatifs du Sénat + sénateurs.
 export default async function SenateursPage() {
@@ -26,6 +27,8 @@ export default async function SenateursPage() {
           { label: "En vidéo", href: "#videos" },
         ]}
       />
+      {/* À LA UNE : élections sénatoriales du 27 septembre 2026 (série 2). */}
+      <Senatoriales2026 />
       {/* Président du Sénat — cliquable vers sa fiche */}
       <div className="mx-auto max-w-6xl px-4 pt-6">
         <Link href="/senateurs/gerard-larcher" className="group flex items-center gap-4 rounded-3xl border border-amber-200 bg-amber-50/60 p-5 transition hover:border-amber-300 hover:bg-amber-50">

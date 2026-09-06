@@ -754,7 +754,7 @@ export default function DeputyDetailPage({ params, embedded }: { params: Promise
             {/* REORDERED: Positions sur les scrutins Section (moved here) */}
             <div className="pt-8">
               <h2 className="text-4xl font-staatliches uppercase tracking-tight text-slate-900 dark:text-white mb-4">
-                Positions sur <span className="text-red-600">les scrutins</span>
+                <span className="text-red-600">Votes</span>
               </h2>
               <p className="text-slate-500 font-medium max-w-xl mb-8">
                 Retrouvez comment cet élu s&apos;est positionné sur l&apos;intégralité des textes législatifs de la législature actuelle.

@@ -144,7 +144,9 @@ export default function SenatorClient() {
                 <div key={i} className="h-48 bg-slate-100 animate-pulse rounded-2xl" />
               ))
             ) : (
-              filteredSenators.slice(0, isPremium ? visible : filteredSenators.length).map(s => (
+              /* Non-premium : on ne rend qu'un PETIT aperçu flouté (6 cartes). Rendre les 352
+                 cartes avec un filtre de flou saturait le GPU mobile → écran noir / crash. */
+              filteredSenators.slice(0, isPremium ? visible : 6).map(s => (
                 <SenatorCard key={s.id} senator={s} isBlurred={!isPremium} />
               ))
             )}

@@ -264,10 +264,10 @@ export default function PartyClient({ params }: { params: Promise<{ slug: string
             <button
               key={x.key}
               onClick={() => setTab(x.key)}
-              className={`rounded-2xl border bg-white p-4 text-center transition ${tab === x.key ? `border-transparent ring-2 ${x.ring} shadow-md` : "border-slate-200 hover:border-slate-300 hover:shadow-sm"}`}
+              className={`rounded-2xl border bg-white p-3 md:p-4 text-center transition ${tab === x.key ? `border-transparent ring-2 ${x.ring} shadow-md` : "border-slate-200 hover:border-slate-300 hover:shadow-sm"}`}
             >
-              <p className="text-3xl font-black text-slate-900">{x.n}</p>
-              <p className="mt-1 text-[11px] font-black uppercase tracking-widest text-slate-400">{x.label}</p>
+              <p className="text-2xl md:text-3xl font-black text-slate-900">{x.n}</p>
+              <p className="mt-1 text-[9px] md:text-[10px] font-black uppercase leading-tight tracking-tight text-slate-400 break-words">{x.label}</p>
             </button>
           ))}
         </div>

@@ -391,7 +391,7 @@ export default function SenatorClient({ senator, embedded }: { senator: any; emb
             {/* Votes Section */}
             <div>
               <h2 className="text-4xl font-staatliches uppercase tracking-tight text-slate-900 dark:text-white mb-6">
-                Positions <span className="text-amber-600">législatives</span>
+                <span className="text-amber-600">Votes</span>
               </h2>
 
               {/* FILTRE THÉMATIQUE — "ce qu'il fait" par sujet (via scrutin_issues) */}

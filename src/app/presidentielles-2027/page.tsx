@@ -196,6 +196,7 @@ function CandidateModal({ candidate, onClose }: { candidate: Candidate; onClose:
   const [openExpl, setOpenExpl] = useState<Set<string>>(new Set());         // « ? » explication par proposition
   const toggleExpl = (k: string) => setOpenExpl(p => { const n = new Set(p); n.has(k) ? n.delete(k) : n.add(k); return n; });
   const [showLegal, setShowLegal] = useState(false);
+  const [selectedNews, setSelectedNews] = useState<any | null>(null); // récap actu ouvert EN SITE
   const [mandate, setMandate] = useState<{ type: string; slug: string } | null>(null);
   const [partyLink, setPartyLink] = useState<{ slug: string; name: string } | null>(null);
   useEffect(() => {
@@ -439,19 +440,54 @@ function CandidateModal({ candidate, onClose }: { candidate: Candidate; onClose:
             ) : (
               <div className="mt-4 flex gap-3 overflow-x-auto pb-3 snap-x snap-mandatory [scrollbar-width:thin]">
                 {news.map(item => (
-                  <a key={item.id} href={item.source_url || "#"} target="_blank" rel="noreferrer" className="flex w-[280px] shrink-0 snap-start flex-col rounded-2xl border border-slate-200 p-4 transition hover:border-slate-300 hover:shadow-sm">
+                  <button key={item.id} onClick={() => setSelectedNews(item)} className="flex w-[280px] shrink-0 snap-start flex-col rounded-2xl border border-slate-200 p-4 text-left transition hover:border-slate-300 hover:shadow-sm">
                     <div className="flex items-center justify-between gap-3 text-xs font-bold text-slate-400">
                       <span className="rounded-full bg-slate-100 px-2 py-0.5 uppercase tracking-widest">{item.news_type || "actu"}</span>
                       <span><CalendarDays className="mr-1 inline" size={13} />{formatDate(item.date)}</span>
                     </div>
                     <p className="mt-2 font-bold text-slate-900 line-clamp-2">{item.title}</p>
                     {item.summary && <p className="mt-1 text-sm leading-6 text-slate-600 line-clamp-3">{item.summary}</p>}
-                    {item.source_name && <p className="mt-auto pt-2 inline-flex items-center gap-1 text-xs font-bold text-blue-700">{item.source_name}<ExternalLink size={12} /></p>}
-                  </a>
+                    {item.source_name && <p className="mt-auto pt-2 text-xs font-bold text-slate-400">{item.source_name}</p>}
+                  </button>
                 ))}
               </div>
             )}
           </section>
+
+          {/* Récap de l'actu EN SITE (comme les fiches de parti) : l'utilisateur lit l'essentiel
+              sans quitter le site ; « Lire l'article » reste dispo en discret. */}
+          <AnimatePresence>
+            {selectedNews && (
+              <motion.div
+                initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}
+                className="fixed inset-0 z-[60] flex items-end justify-center bg-slate-950/70 p-0 sm:items-center sm:p-4"
+                onClick={() => setSelectedNews(null)}
+              >
+                <motion.div
+                  initial={{ y: 40, opacity: 0 }} animate={{ y: 0, opacity: 1 }} exit={{ y: 40, opacity: 0 }}
+                  transition={{ type: "spring", damping: 28, stiffness: 320 }}
+                  onClick={e => e.stopPropagation()}
+                  className="max-h-[85vh] w-full max-w-lg overflow-y-auto rounded-t-[2rem] bg-white p-6 shadow-2xl sm:rounded-[2rem]"
+                >
+                  <div className="mb-3 flex items-center justify-between gap-3">
+                    <span className="inline-flex items-center rounded-full bg-slate-100 px-3 py-1 text-[10px] font-black uppercase tracking-widest text-slate-500">{selectedNews.news_type || "actu"}</span>
+                    <button onClick={() => setSelectedNews(null)} className="rounded-full bg-slate-100 p-2 text-slate-500 transition hover:bg-slate-200"><X size={18} /></button>
+                  </div>
+                  <p className="text-[11px] font-bold uppercase tracking-widest text-slate-400">{formatDate(selectedNews.date)}</p>
+                  <h3 className="mt-1 text-xl font-black leading-snug text-slate-900">{selectedNews.title}</h3>
+                  {selectedNews.summary && <p className="mt-3 leading-7 text-slate-600">{selectedNews.summary}</p>}
+                  <div className="mt-5 flex items-center justify-between gap-3 border-t border-slate-100 pt-4">
+                    <span className="text-[11px] font-bold uppercase tracking-widest text-slate-400">Source : {selectedNews.source_name || "—"}</span>
+                    {selectedNews.source_url && (
+                      <a href={selectedNews.source_url} target="_blank" rel="noopener noreferrer" className="inline-flex items-center gap-1.5 rounded-full bg-slate-950 px-4 py-2 text-[11px] font-black uppercase tracking-widest text-white transition hover:bg-slate-700">
+                        Lire l&apos;article <ExternalLink size={12} />
+                      </a>
+                    )}
+                  </div>
+                </motion.div>
+              </motion.div>
+            )}
+          </AnimatePresence>
 
           {/* Fil vidéo (chaîne YouTube officielle) — masqué si pas de chaîne vérifiée */}
           <div className="mt-8">

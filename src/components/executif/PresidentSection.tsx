@@ -39,7 +39,7 @@ function PubList({ items, accent, empty, onSelect }: { items: Pub[]; accent: str
   }
   return (
     <div className="space-y-2">
-      {items.map(p => {
+      {items.map((p, i) => {
         const inner = (
           <>
             <div className="min-w-0 flex-1">
@@ -53,7 +53,9 @@ function PubList({ items, accent, empty, onSelect }: { items: Pub[]; accent: str
               : <ExternalLink size={14} className="mt-1 shrink-0 text-slate-300" />}
           </>
         );
-        const cls = "group flex w-full items-start gap-3 rounded-2xl border border-slate-100 bg-slate-50/60 p-3 text-left transition hover:border-amber-300 hover:bg-amber-50/40";
+        // Mobile : on limite à 3 éléments par bloc (les suivants n'apparaissent qu'à partir de sm)
+        // pour que la section président ne mange pas tout l'écran avant le reste de l'exécutif.
+        const cls = `group w-full items-start gap-3 rounded-2xl border border-slate-100 bg-slate-50/60 p-3 text-left transition hover:border-amber-300 hover:bg-amber-50/40 ${i < 3 ? "flex" : "hidden sm:flex"}`;
         // Conseils des ministres : on ouvre le résumé SUR le site plutôt que d'envoyer
         // l'utilisateur déchiffrer le compte rendu officiel sur elysee.fr.
         return onSelect
@@ -99,10 +101,10 @@ export default function PresidentSection({ photoUrl }: { photoUrl?: string }) {
   ];
 
   return (
-    <section className="bg-white p-8 md:p-12 rounded-[3rem] border border-slate-200 space-y-8">
+    <section className="bg-white p-5 md:p-12 rounded-[2rem] md:rounded-[3rem] border border-slate-200 space-y-6 md:space-y-8">
       {/* En-tête président */}
-      <div className="flex flex-col sm:flex-row items-center gap-6">
-        <div className="w-24 h-24 shrink-0 rounded-full overflow-hidden border-4 border-amber-50 shadow-md bg-slate-100">
+      <div className="flex flex-col sm:flex-row items-center gap-4 md:gap-6">
+        <div className="w-20 h-20 md:w-24 md:h-24 shrink-0 rounded-full overflow-hidden border-4 border-amber-50 shadow-md bg-slate-100">
           <MinisterImage
             src={photoUrl || fallback}
             fallbackSrc={fallback}

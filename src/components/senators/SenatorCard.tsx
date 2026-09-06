@@ -59,7 +59,7 @@ export const SenatorCard = memo(function SenatorCard({
       )}
 
       {isBlurred && (
-        <div className="absolute inset-0 flex items-center justify-center bg-white/10 backdrop-blur-sm">
+        <div className="absolute inset-0 flex items-center justify-center">
           <div className="bg-white/90 p-2 rounded-full shadow-lg border border-amber-200">
             <Lock className="w-5 h-5 text-amber-600" />
           </div>
@@ -77,7 +77,7 @@ export const SenatorCard = memo(function SenatorCard({
 
 function SenatorContent({ senator, isBlurred, imgError, setImgError, initials, colorClass }: any) {
   return (
-    <div className={`${isBlurred ? "blur-md select-none" : ""} w-full flex flex-col items-center`}>
+    <div className={`${isBlurred ? "blur-[6px] select-none" : ""} w-full flex flex-col items-center`}>
       <div className="absolute -top-12 left-1/2 -translate-x-1/2">
         <div className="relative group/photo">
           {!imgError ? (

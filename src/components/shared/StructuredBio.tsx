@@ -67,8 +67,8 @@ export default function StructuredBio({ bio, fallbackText }: { bio: any; fallbac
   const sections = BIO_FIELDS
     .map(([key, label, color]) => ({ key, label, color, points: toPoints(bio?.[key]) }))
     .filter(s => s.points.length > 0);
-  // Sur mobile, on ouvre la 1re rubrique par défaut (les autres se déplient au clic).
-  const [open, setOpen] = useState<Set<string>>(() => new Set(sections[0] ? [sections[0].key] : []));
+  // Toutes les rubriques sont FERMÉES par défaut : c'est à l'utilisateur d'ouvrir ce qu'il veut.
+  const [open, setOpen] = useState<Set<string>>(() => new Set());
   const toggle = (k: string) => setOpen(prev => { const n = new Set(prev); n.has(k) ? n.delete(k) : n.add(k); return n; });
 
   if (sections.length > 0) {

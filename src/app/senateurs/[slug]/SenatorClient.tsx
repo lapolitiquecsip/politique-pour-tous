@@ -60,6 +60,11 @@ export default function SenatorClient({ senator, embedded }: { senator: any; emb
   }, [senator]);
 
   const name = `${senator.first_name} ${senator.last_name}`;
+  // Repères courts (profession + naissance) affichés juste sous le nom, en petit.
+  const MOIS_FR = ["janvier","février","mars","avril","mai","juin","juillet","août","septembre","octobre","novembre","décembre"];
+  const frBirth = (() => { const m = String(senator.birth_date||"").match(/^(\d{4})-(\d{2})-(\d{2})/); return m ? `${+m[3]} ${MOIS_FR[+m[2]-1]} ${m[1]}` : null; })();
+  const professionShort = senator.profession && !/sans profession/i.test(senator.profession) ? senator.profession : null;
+  const headerMeta = [professionShort, frBirth ? `né(e) le ${frBirth}` : null].filter(Boolean).join(" · ");
   // Vrais votes du Sénat (rapprochés par nom + chambre), plus de données factices.
   const [votes, setVotes] = useState<any[]>([]);
   // Brique #3 — filtre thématique des votes du Sénat ("ce qu'il fait" par enjeu).
@@ -112,11 +117,11 @@ export default function SenatorClient({ senator, embedded }: { senator: any; emb
       <div className="bg-white/80 dark:bg-slate-900/80 backdrop-blur-md border-b border-amber-200 sticky top-0 z-50">
         <div className="container mx-auto px-4 h-16 flex items-center justify-between">
           <Link
-            href="/deputes"
+            href="/senateurs"
             className="flex items-center gap-2 text-sm font-semibold text-slate-600 dark:text-slate-400 hover:text-amber-600 transition-colors group"
           >
             <ChevronLeft className="w-4 h-4 group-hover:-translate-x-1 transition-transform" />
-            Retour à la carte
+            Retour au Sénat
           </Link>
           <div className="flex items-center gap-3">
              <div className="h-2 w-2 rounded-full bg-amber-500 animate-pulse" />
@@ -152,6 +157,7 @@ export default function SenatorClient({ senator, embedded }: { senator: any; emb
                   <p className="mt-1.5 inline-flex items-center gap-1.5 text-[10px] font-bold uppercase tracking-widest text-amber-600">
                     <Landmark className="w-3 h-3" /> Membre du Sénat
                   </p>
+                  {headerMeta && <p className="mt-1 text-[11px] leading-snug text-slate-500 dark:text-slate-400 first-letter:uppercase">{headerMeta}</p>}
                 </div>
               </div>
 
@@ -171,6 +177,7 @@ export default function SenatorClient({ senator, embedded }: { senator: any; emb
                     <Landmark className="w-3 h-3" />
                     Membre du Sénat
                   </p>
+                  {headerMeta && <p className="mt-1.5 text-xs text-white/75 first-letter:uppercase">{headerMeta}</p>}
                 </div>
               </div>
 
@@ -351,13 +358,10 @@ export default function SenatorClient({ senator, embedded }: { senator: any; emb
                   >
                     <StructuredBio bio={senator.bio} fallbackText={senator.biography} />
 
-                    {/* Repères officiels — données du Sénat (ODSEN), précises et vérifiées. */}
-                    {(senator.birth_date || senator.profession || senator.senate_group || senator.committee) && (() => {
-                      const MOIS = ["janvier","février","mars","avril","mai","juin","juillet","août","septembre","octobre","novembre","décembre"];
-                      const frDate = (d: string) => { const m = String(d||"").match(/^(\d{4})-(\d{2})-(\d{2})/); return m ? `${+m[3]} ${MOIS[+m[2]-1]} ${m[1]}` : null; };
+                    {/* Repères officiels — données du Sénat (ODSEN). Profession & naissance sont
+                        remontées sous l'en-tête ; ici on garde le groupe et la commission. */}
+                    {(senator.senate_group || senator.committee) && (() => {
                       const items: Array<{ k: string; v: string | null }> = [
-                        { k: "Né(e) le", v: senator.birth_date ? frDate(senator.birth_date) : null },
-                        { k: "Profession", v: senator.profession && !/sans profession/i.test(senator.profession) ? senator.profession : null },
                         { k: "Groupe au Sénat", v: senator.senate_group || null },
                         { k: "Commission", v: senator.committee || null },
                       ].filter(i => i.v);

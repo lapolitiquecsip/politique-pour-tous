@@ -312,12 +312,14 @@ export default function DeputyDetailPage({ params, embedded }: { params: Promise
 
 
   // Format slug back to name for display
-  const name = deputy?.first_name 
+  const name = deputy?.first_name
     ? `${deputy.first_name} ${deputy.last_name}`
     : slug
       .split("-")
       .map(word => word.charAt(0).toUpperCase() + word.slice(1))
       .join(" ");
+  // Profession affichée en petit sous le nom (les députés n'ont pas de date de naissance en base).
+  const headerMeta = deputy?.job && !/sans profession/i.test(deputy.job) ? String(deputy.job) : "";
 
   const sources = useMemo(
     () => deputyPhotoSources(deputy?.an_id ?? null, slug, deputy?.photo_url ?? null),
@@ -387,6 +389,7 @@ export default function DeputyDetailPage({ params, embedded }: { params: Promise
                   <p className="mt-1.5 inline-flex items-center gap-1.5 text-[10px] font-bold uppercase tracking-widest text-red-500">
                     {deputy?.biography?.includes('**Ministre**') ? <><ShieldCheck className="w-3 h-3" /> Membre du Gouvernement</> : "Député de la Nation"}
                   </p>
+                  {headerMeta && <p className="mt-1 text-[11px] leading-snug text-slate-500 dark:text-slate-400 first-letter:uppercase">{headerMeta}</p>}
                 </div>
               </div>
               {/* DESKTOP : grande photo immersive (inchangée). */}
@@ -418,6 +421,7 @@ export default function DeputyDetailPage({ params, embedded }: { params: Promise
                       'Député de la Nation'
                     )}
                   </p>
+                  {headerMeta && <p className="mt-1.5 text-xs text-white/75 first-letter:uppercase">{headerMeta}</p>}
                 </div>
               </div>
 

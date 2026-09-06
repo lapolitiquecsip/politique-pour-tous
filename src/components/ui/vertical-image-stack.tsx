@@ -54,6 +54,16 @@ export function VerticalImageStack({
   const [milestone, setMilestone] = useState<{ id: number; value: number } | null>(null)
   const [dragDirection, setDragDirection] = useState<"up" | "down" | null>(null)
 
+  // Mobile : on ALLÈGE tout (3 cartes au lieu de 5, aucune particule, aucune 3D, halo statique)
+  // pour un défilement parfaitement fluide. Les effets riches restent sur desktop.
+  const [isMobile, setIsMobile] = useState(false)
+  useEffect(() => {
+    const mq = window.matchMedia("(max-width: 768px)")
+    const on = () => setIsMobile(mq.matches)
+    on(); mq.addEventListener("change", on)
+    return () => mq.removeEventListener("change", on)
+  }, [])
+
   // Record personnel persistant : ressort à chaque visite (moteur de « battre son score »).
   useEffect(() => {
     try { setBest(parseInt(localStorage.getItem("feed-best-combo") || "0", 10) || 0); } catch {}
@@ -108,6 +118,7 @@ export function VerticalImageStack({
   const nextMilestone = (c: number) => MILESTONES.find(m => m > c) ?? (c + 10);
 
   const spawnParticles = useCallback((count = 18, big = false, base?: string) => {
+    if (isMobile) return; // pas de confettis sur mobile : c'est le principal facteur de saccades
     const colorsMap: Record<string, string[]> = {
       blue: ["#3b82f6", "#60a5fa", "#93c5fd", "#fbbf24"],
       purple: ["#a855f7", "#c084fc", "#d8b4fe", "#34d399"],
@@ -135,7 +146,7 @@ export function VerticalImageStack({
     setTimeout(() => {
       setParticles(prev => prev.filter(p => !newParticles.find(np => np.id === p.id)));
     }, 800);
-  }, [theme]);
+  }, [theme, isMobile]);
 
   const navigate = useCallback((newDirection: number) => {
     const now = Date.now()
@@ -219,18 +230,21 @@ export function VerticalImageStack({
   }, [navigate, currentIndex, items.length])
 
   const getCardStyle = (diff: number) => {
+    // Sur mobile : AUCUNE rotation 3D (rotateX), écarts un peu plus courts → 2 transforms simples
+    // (y + scale) au lieu d'un rendu 3D coûteux à composer.
+    const rx = (v: number) => (isMobile ? 0 : v)
     if (diff === 0) {
       return { y: 0, scale: 1, opacity: 1, zIndex: 5, rotateX: 0 }
     } else if (diff === -1) {
-      return { y: -130, scale: 0.85, opacity: 0.65, zIndex: 4, rotateX: 8 }
+      return { y: isMobile ? -118 : -130, scale: 0.85, opacity: 0.65, zIndex: 4, rotateX: rx(8) }
     } else if (diff === -2) {
-      return { y: -230, scale: 0.72, opacity: 0.35, zIndex: 3, rotateX: 15 }
+      return { y: -230, scale: 0.72, opacity: 0.35, zIndex: 3, rotateX: rx(15) }
     } else if (diff === 1) {
-      return { y: 130, scale: 0.85, opacity: 0.65, zIndex: 4, rotateX: -8 }
+      return { y: isMobile ? 118 : 130, scale: 0.85, opacity: 0.65, zIndex: 4, rotateX: rx(-8) }
     } else if (diff === 2) {
-      return { y: 230, scale: 0.72, opacity: 0.35, zIndex: 3, rotateX: -15 }
+      return { y: 230, scale: 0.72, opacity: 0.35, zIndex: 3, rotateX: rx(-15) }
     } else {
-      return { y: diff > 0 ? 350 : -350, scale: 0.6, opacity: 0, zIndex: 0, rotateX: diff > 0 ? -20 : 20 }
+      return { y: diff > 0 ? 350 : -350, scale: 0.6, opacity: 0, zIndex: 0, rotateX: rx(diff > 0 ? -20 : 20) }
     }
   }
 
@@ -250,7 +264,8 @@ export function VerticalImageStack({
     emerald: "bg-emerald-500/10 dark:bg-emerald-500/15",
   }[theme] || "bg-slate-900/[0.01] dark:bg-slate-100/[0.02]"
 
-  const relativePositions = [-2, -1, 0, 1, 2]
+  // Mobile : 3 cartes (courante + voisines) au lieu de 5 → 40 % d'éléments animés en moins.
+  const relativePositions = isMobile ? [-1, 0, 1] : [-2, -1, 0, 1, 2]
 
   const getStreakMessage = (val: number) => {
     if (val === 0) return "Explorez l'actualité !";
@@ -266,10 +281,12 @@ export function VerticalImageStack({
       ref={containerRef}
       className={`relative flex ${height} w-full items-center justify-center overflow-hidden transition-all duration-500 rounded-[3rem] border shadow-inner ${bgColors}`}
     >
-      {/* Halo ambiant VIF derrière la pile — change de couleur à chaque scroll */}
+      {/* Halo ambiant VIF derrière la pile — change de couleur à chaque scroll. Sur mobile : plus
+          petit, flou plus léger, et SANS transition de couleur (la ré-rastérisation d'un gros flou
+          à chaque frame était un gros facteur de saccades). */}
       <div className="pointer-events-none absolute inset-0">
         <div
-          className="absolute left-1/2 top-1/2 h-[550px] w-[550px] -translate-x-1/2 -translate-y-1/2 rounded-full blur-3xl transition-colors duration-500"
+          className={`absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 rounded-full ${isMobile ? "h-[320px] w-[320px] blur-2xl" : "h-[550px] w-[550px] blur-3xl transition-colors duration-500"}`}
           style={{ backgroundColor: vividAt(currentIndex), opacity: 0.16 }}
         />
       </div>
@@ -330,7 +347,7 @@ export function VerticalImageStack({
       </div>
 
       {/* Card Stack */}
-      <div className="relative flex h-[480px] w-[340px] items-center justify-center" style={{ perspective: "1200px" }}>
+      <div className="relative flex h-[480px] w-[340px] items-center justify-center" style={{ perspective: isMobile ? undefined : "1200px" }}>
         {relativePositions.map((rel) => {
           const style = getCardStyle(rel)
           const isCurrent = rel === 0
@@ -346,18 +363,17 @@ export function VerticalImageStack({
             <motion.div
               key={absoluteIndex}
               className="absolute cursor-grab active:cursor-grabbing w-[280px]"
-              animate={{
-                y: style.y,
-                scale: style.scale,
-                opacity: style.opacity,
-                rotateX: style.rotateX,
-                zIndex: style.zIndex,
-              }}
+              animate={
+                // Mobile : on n'anime QUE y + scale + opacity (pas de rotateX → pas de couche 3D).
+                isMobile
+                  ? { y: style.y, scale: style.scale, opacity: style.opacity, zIndex: style.zIndex }
+                  : { y: style.y, scale: style.scale, opacity: style.opacity, rotateX: style.rotateX, zIndex: style.zIndex }
+              }
               transition={{
                 type: "spring",
-                stiffness: 380,
-                damping: 30,
-                mass: 0.7,
+                stiffness: isMobile ? 500 : 380,
+                damping: isMobile ? 40 : 30,
+                mass: isMobile ? 0.6 : 0.7,
               }}
               drag={isCurrent ? "y" : false}
               dragConstraints={{ top: 0, bottom: 0 }}
@@ -365,8 +381,9 @@ export function VerticalImageStack({
               onDrag={handleDrag}
               onDragEnd={handleDragEnd}
               style={{
-                transformStyle: "preserve-3d",
+                ...(isMobile ? {} : { transformStyle: "preserve-3d" }),
                 zIndex: style.zIndex,
+                willChange: "transform, opacity",
               }}
             >
               {renderCard ? (

@@ -42,6 +42,29 @@ export type VerticalImageStackProps = {
 const VIVID_HEX = ["#d946ef", "#8b5cf6", "#0ea5e9", "#06b6d4", "#10b981", "#f59e0b", "#f43f5e", "#6366f1"];
 const vividAt = (i: number) => VIVID_HEX[((i % VIVID_HEX.length) + VIVID_HEX.length) % VIVID_HEX.length];
 
+// Transition mobile : fondu + très léger glissement directionnel (~22px). Douce et minimale.
+const mobileCardVariants = {
+  enter: (d: number) => ({ opacity: 0, y: d > 0 ? 22 : -22 }),
+  center: { opacity: 1, y: 0 },
+  exit: (d: number) => ({ opacity: 0, y: d > 0 ? -22 : 22 }),
+};
+
+// Carte de démo par défaut (quand aucun renderCard n'est fourni).
+function DefaultDemoCard({ item, isCurrent }: { item: any; isCurrent: boolean }) {
+  return (
+    <div
+      className="relative h-[420px] w-[280px] overflow-hidden rounded-3xl bg-card ring-1 ring-border/20"
+      style={{ boxShadow: isCurrent ? "0 25px 50px -12px rgba(0,0,0,0.15), 0 0 0 1px rgba(0,0,0,0.05)" : "0 10px 30px -10px rgba(0,0,0,0.1)" }}
+    >
+      <div className="absolute inset-0 rounded-3xl bg-gradient-to-b from-black/20 via-transparent to-black/40 z-10" />
+      <Image src={item.src || "/placeholder.svg"} alt={item.alt || "Image"} fill className="object-cover w-full h-full" draggable={false} priority={isCurrent} />
+      <div className="absolute inset-x-0 bottom-0 p-6 z-20 text-white">
+        <h3 className="font-bold text-lg leading-tight">{item.alt || "La Politique"}</h3>
+      </div>
+    </div>
+  );
+}
+
 export function VerticalImageStack({
   items = DEFAULT_IMAGES,
   renderCard,
@@ -53,6 +76,7 @@ export function VerticalImageStack({
   const [best, setBest] = useState(0)
   const [milestone, setMilestone] = useState<{ id: number; value: number } | null>(null)
   const [dragDirection, setDragDirection] = useState<"up" | "down" | null>(null)
+  const [dir, setDir] = useState(1) // sens du dernier passage (pour le sens du fondu mobile)
 
   // Mobile : on ALLÈGE tout (3 cartes au lieu de 5, aucune particule, aucune 3D, halo statique)
   // pour un défilement parfaitement fluide. Les effets riches restent sur desktop.
@@ -158,6 +182,7 @@ export function VerticalImageStack({
       const nextIndex = Math.max(0, Math.min(items.length - 1, prev + newDirection));
       const vivid = vividAt(nextIndex);
       if (nextIndex !== prev) {
+        setDir(newDirection);
         if (newDirection > 0) {
           setCombo(c => {
             const nc = c + 1;
@@ -347,12 +372,37 @@ export function VerticalImageStack({
       </div>
 
       {/* Card Stack */}
-      <div className="relative flex h-[480px] w-[340px] items-center justify-center" style={{ perspective: isMobile ? undefined : "1200px" }}>
+      {isMobile ? (
+        // MOBILE : UNE seule carte, transition très douce (fondu + léger glissement, ~10px). Aucune
+        // carte voisine qui bouge/scale → lecture confortable, pas de « trop-plein » de mouvement.
+        <div className="relative flex h-[480px] w-[300px] items-center justify-center overflow-hidden">
+          <AnimatePresence initial={false} custom={dir}>
+            <motion.div
+              key={currentIndex}
+              custom={dir}
+              variants={mobileCardVariants}
+              initial="enter"
+              animate="center"
+              exit="exit"
+              className="absolute w-[280px] cursor-grab active:cursor-grabbing touch-pan-x"
+              transition={{ duration: 0.3, ease: [0.33, 1, 0.68, 1] }}
+              drag="y"
+              dragConstraints={{ top: 0, bottom: 0 }}
+              dragElastic={0.3}
+              onDragEnd={handleDragEnd}
+              style={{ willChange: "transform, opacity" }}
+            >
+              {items[currentIndex] && (renderCard ? renderCard(items[currentIndex], true, currentIndex) : <DefaultDemoCard item={items[currentIndex]} isCurrent />)}
+            </motion.div>
+          </AnimatePresence>
+        </div>
+      ) : (
+      <div className="relative flex h-[480px] w-[340px] items-center justify-center" style={{ perspective: "1200px" }}>
         {relativePositions.map((rel) => {
           const style = getCardStyle(rel)
           const isCurrent = rel === 0
           const absoluteIndex = currentIndex + rel
-          
+
           if (absoluteIndex < 0 || absoluteIndex >= items.length) return null;
 
           const item = items[absoluteIndex]
@@ -363,61 +413,21 @@ export function VerticalImageStack({
             <motion.div
               key={absoluteIndex}
               className="absolute cursor-grab active:cursor-grabbing w-[280px]"
-              animate={
-                // Mobile : on n'anime QUE y + scale + opacity (pas de rotateX → pas de couche 3D).
-                isMobile
-                  ? { y: style.y, scale: style.scale, opacity: style.opacity, zIndex: style.zIndex }
-                  : { y: style.y, scale: style.scale, opacity: style.opacity, rotateX: style.rotateX, zIndex: style.zIndex }
-              }
-              transition={{
-                type: "spring",
-                stiffness: isMobile ? 500 : 380,
-                damping: isMobile ? 40 : 30,
-                mass: isMobile ? 0.6 : 0.7,
-              }}
+              animate={{ y: style.y, scale: style.scale, opacity: style.opacity, rotateX: style.rotateX, zIndex: style.zIndex }}
+              transition={{ type: "spring", stiffness: 380, damping: 30, mass: 0.7 }}
               drag={isCurrent ? "y" : false}
               dragConstraints={{ top: 0, bottom: 0 }}
               dragElastic={0.6}
               onDrag={handleDrag}
               onDragEnd={handleDragEnd}
-              style={{
-                ...(isMobile ? {} : { transformStyle: "preserve-3d" }),
-                zIndex: style.zIndex,
-                willChange: "transform, opacity",
-              }}
+              style={{ transformStyle: "preserve-3d", zIndex: style.zIndex, willChange: "transform, opacity" }}
             >
-              {renderCard ? (
-                renderCard(item, isCurrent, absoluteIndex)
-              ) : (
-                <div
-                  className="relative h-[420px] w-[280px] overflow-hidden rounded-3xl bg-card ring-1 ring-border/20"
-                  style={{
-                    boxShadow: isCurrent
-                      ? "0 25px 50px -12px rgba(0, 0, 0, 0.15), 0 0 0 1px rgba(0, 0, 0, 0.05)"
-                      : "0 10px 30px -10px rgba(0, 0, 0, 0.1)",
-                  }}
-                >
-                  <div className="absolute inset-0 rounded-3xl bg-gradient-to-b from-black/20 via-transparent to-black/40 z-10" />
-
-                  <Image
-                    src={item.src || "/placeholder.svg"}
-                    alt={item.alt || "Image"}
-                    fill
-                    className="object-cover w-full h-full"
-                    draggable={false}
-                    priority={isCurrent}
-                  />
-
-                  {/* Text Overlay for default images */}
-                  <div className="absolute inset-x-0 bottom-0 p-6 z-20 text-white">
-                    <h3 className="font-bold text-lg leading-tight">{item.alt || "La Politique"}</h3>
-                  </div>
-                </div>
-              )}
+              {renderCard ? renderCard(item, isCurrent, absoluteIndex) : <DefaultDemoCard item={item} isCurrent={isCurrent} />}
             </motion.div>
           )
         })}
       </div>
+      )}
 
       {/* Instruction hint / Tinder-style Controls merged */}
       <div className="absolute bottom-6 left-1/2 -translate-x-1/2 z-30 flex items-center gap-6 select-none bg-white/80 dark:bg-slate-900/80 backdrop-blur-md px-5 py-2.5 rounded-full border border-slate-100 dark:border-slate-800 shadow-md">

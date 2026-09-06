@@ -135,20 +135,36 @@ export default function SenatorClient({ senator, embedded }: { senator: any; emb
             animate={{ opacity: 1, x: 0 }}
             className="lg:col-span-1 space-y-4 md:space-y-6"
           >
-            <div className="bg-white dark:bg-slate-900 rounded-[2.5rem] border border-amber-200 dark:border-slate-800 overflow-hidden shadow-2xl relative">
-              <div className="absolute top-4 right-4 z-10">
+            <div className="bg-white dark:bg-slate-900 rounded-3xl md:rounded-[2.5rem] border border-amber-200 dark:border-slate-800 overflow-hidden shadow-xl md:shadow-2xl relative">
+              <div className="absolute top-4 right-4 z-10 hidden md:block">
                  <div className="bg-amber-600 text-white px-3 py-1 rounded-full text-[10px] font-black uppercase tracking-tighter shadow-lg">Premium Exclusive</div>
               </div>
-              
-              <div className="relative aspect-[3/2] sm:aspect-[4/5] bg-slate-200 dark:bg-slate-800 flex items-center justify-center overflow-hidden">
+
+              {/* MOBILE : en-tête compact — petite photo RONDE cadrée sur le visage + nom. */}
+              <div className="flex items-center gap-4 p-5 md:hidden">
                 <img
                   src={senator.photo_url}
                   alt={name}
-                  className="w-full h-full object-cover object-top"
+                  className="h-20 w-20 shrink-0 rounded-full object-cover object-top ring-2 ring-amber-300 dark:ring-slate-700"
+                />
+                <div className="min-w-0">
+                  <h1 className="text-2xl font-staatliches uppercase leading-none tracking-tight text-slate-900 dark:text-white">{name}</h1>
+                  <p className="mt-1.5 inline-flex items-center gap-1.5 text-[10px] font-bold uppercase tracking-widest text-amber-600">
+                    <Landmark className="w-3 h-3" /> Membre du Sénat
+                  </p>
+                </div>
+              </div>
+
+              {/* DESKTOP : grande photo immersive (inchangée). */}
+              <div className="relative hidden aspect-[4/5] bg-slate-200 dark:bg-slate-800 md:flex items-center justify-center overflow-hidden">
+                <img
+                  src={senator.photo_url}
+                  alt={name}
+                  className="w-full h-full object-cover"
                 />
                 <div className="absolute inset-0 bg-gradient-to-t from-slate-900 via-transparent to-transparent opacity-80" />
-                <div className="absolute bottom-5 left-5 right-5 md:bottom-8 md:left-8 md:right-8">
-                  <h1 className="text-3xl md:text-4xl font-staatliches text-white tracking-tight uppercase leading-none mb-2">
+                <div className="absolute bottom-8 left-8 right-8">
+                  <h1 className="text-4xl font-staatliches text-white tracking-tight uppercase leading-none mb-2">
                     {name}
                   </h1>
                   <p className="text-amber-400 font-bold tracking-widest text-xs uppercase flex items-center gap-2">
@@ -194,9 +210,9 @@ export default function SenatorClient({ senator, embedded }: { senator: any; emb
 
                 <RemunerationInfo mode="parlementaire" />
 
-                <div className="flex items-center gap-4 p-4 rounded-3xl bg-slate-50 dark:bg-slate-800/50 border border-slate-100 dark:border-slate-700">
-                   <div className="w-12 h-12 rounded-2xl bg-blue-500 flex items-center justify-center text-white shrink-0 shadow-lg shadow-blue-500/20">
-                     <MapPin className="w-6 h-6" />
+                <div className="flex items-center gap-3 md:gap-4 p-3 md:p-4 rounded-2xl md:rounded-3xl bg-slate-50 dark:bg-slate-800/50 border border-slate-100 dark:border-slate-700">
+                   <div className="w-9 h-9 md:w-12 md:h-12 rounded-xl md:rounded-2xl bg-blue-500 flex items-center justify-center text-white shrink-0 shadow-lg shadow-blue-500/20">
+                     <MapPin className="w-[18px] h-[18px] md:w-6 md:h-6" />
                    </div>
                    <div className="min-w-0">
                      <p className="text-[10px] font-black text-slate-400 uppercase tracking-wider">Représentation</p>
@@ -226,9 +242,9 @@ export default function SenatorClient({ senator, embedded }: { senator: any; emb
             {/* Integrity Badge Section */}
             <motion.div
               whileHover={{ y: -4 }}
-              className="bg-white dark:bg-slate-900 rounded-[2rem] p-6 border border-slate-200 dark:border-slate-800 shadow-xl relative overflow-hidden group transition-all duration-500"
+              className="bg-white dark:bg-slate-900 rounded-2xl md:rounded-[2rem] p-4 md:p-6 border border-slate-200 dark:border-slate-800 shadow-xl relative overflow-hidden group transition-all duration-500"
             >
-               <div className={`absolute top-0 left-0 w-2 h-full transition-colors duration-500 ${isLegalClean ? 'bg-emerald-500' : 'bg-amber-500'}`} />
+               <div className={`absolute top-0 left-0 w-1.5 md:w-2 h-full transition-colors duration-500 ${isLegalClean ? 'bg-emerald-500' : 'bg-amber-500'}`} />
                <div className="flex items-center justify-between gap-4">
                   <div className="min-w-0">
                     <p className="text-[9px] font-black text-slate-400 uppercase tracking-[0.2em] mb-1">Intégrité & Transparence</p>
@@ -240,9 +256,9 @@ export default function SenatorClient({ senator, embedded }: { senator: any; emb
                       </span>
                     </div>
                   </div>
-                  <button 
+                  <button
                     onClick={() => setShowLegalModal(true)}
-                    className={`flex items-center gap-2 px-5 py-3 rounded-2xl text-[10px] font-black uppercase tracking-widest transition-all transform active:scale-95 shadow-lg border ${
+                    className={`flex shrink-0 items-center gap-2 px-3.5 py-2.5 md:px-5 md:py-3 rounded-xl md:rounded-2xl text-[10px] font-black uppercase tracking-widest transition-all transform active:scale-95 shadow-lg border ${
                       isLegalClean 
                         ? 'bg-emerald-500/10 text-emerald-600 border-emerald-500/20 hover:bg-emerald-500 hover:text-white shadow-emerald-500/10' 
                         : 'bg-amber-500/10 text-amber-600 border-amber-500/20 hover:bg-amber-500 hover:text-white shadow-amber-500/10'
@@ -254,25 +270,30 @@ export default function SenatorClient({ senator, embedded }: { senator: any; emb
                </div>
             </motion.div>
 
-            {(senator?.email || senator?.senate_matricule) && (
-            <div className="bg-amber-600 rounded-3xl p-5 md:p-8 text-white shadow-xl shadow-amber-600/20">
-               <h4 className="text-xl font-staatliches uppercase mb-3 md:mb-4 tracking-tight">Contact Sénat</h4>
-               <p className="text-sm opacity-90 leading-relaxed mb-4 md:mb-6">
-                 Vous pouvez contacter ce sénateur pour toute question relative à l&apos;activité législative.
-               </p>
-               {senator?.email ? (
-                 <a href={`mailto:${senator.email}`} className="w-full py-4 rounded-2xl bg-white text-amber-600 font-bold text-sm flex items-center justify-center gap-2 hover:bg-slate-100 transition-colors">
-                    <Mail className="w-4 h-4" />
-                    Envoyer un message
-                 </a>
-               ) : (
-                 <a href={`https://www.senat.fr/senateur/${senator.senate_matricule}.html`} target="_blank" rel="noopener noreferrer" className="w-full py-4 rounded-2xl bg-white text-amber-600 font-bold text-sm flex items-center justify-center gap-2 hover:bg-slate-100 transition-colors">
-                    <ExternalLink className="w-4 h-4" />
-                    Sa fiche au Sénat
-                 </a>
-               )}
-            </div>
-            )}
+            {(senator?.email || senator?.senate_matricule) && (() => {
+              const contactHref = senator?.email ? `mailto:${senator.email}` : `https://www.senat.fr/senateur/${senator.senate_matricule}.html`;
+              const ext = !senator?.email;
+              return (
+              <>
+                {/* MOBILE : bouton compact « Contact » (icône + mot), pas de gros pavé. */}
+                <a href={contactHref} {...(ext ? { target: "_blank", rel: "noopener noreferrer" } : {})}
+                  className="flex items-center justify-center gap-2 rounded-2xl bg-amber-600 py-3.5 text-sm font-black uppercase tracking-widest text-white shadow-lg shadow-amber-600/20 transition hover:bg-amber-700 md:hidden">
+                  <Mail className="w-4 h-4" /> Contact
+                </a>
+                {/* DESKTOP : bloc complet (inchangé). */}
+                <div className="hidden bg-amber-600 rounded-3xl p-8 text-white shadow-xl shadow-amber-600/20 md:block">
+                  <h4 className="text-xl font-staatliches uppercase mb-4 tracking-tight">Contact Sénat</h4>
+                  <p className="text-sm opacity-90 leading-relaxed mb-6">
+                    Vous pouvez contacter ce sénateur pour toute question relative à l&apos;activité législative.
+                  </p>
+                  <a href={contactHref} {...(ext ? { target: "_blank", rel: "noopener noreferrer" } : {})} className="w-full py-4 rounded-2xl bg-white text-amber-600 font-bold text-sm flex items-center justify-center gap-2 hover:bg-slate-100 transition-colors">
+                    {ext ? <ExternalLink className="w-4 h-4" /> : <Mail className="w-4 h-4" />}
+                    {ext ? "Sa fiche au Sénat" : "Envoyer un message"}
+                  </a>
+                </div>
+              </>
+              );
+            })()}
           </motion.div>
 
           {/* RIGHT COLUMN: Biography & Votes */}

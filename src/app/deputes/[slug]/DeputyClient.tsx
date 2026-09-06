@@ -363,20 +363,37 @@ export default function DeputyDetailPage({ params, embedded }: { params: Promise
       </div>
       )}
 
-      <div className="container mx-auto px-4 pt-12 max-w-6xl">
-        <div className="grid grid-cols-1 lg:grid-cols-3 gap-12">
+      <div className="container mx-auto px-4 pt-6 md:pt-12 max-w-6xl">
+        <div className="grid grid-cols-1 lg:grid-cols-3 gap-5 md:gap-8 lg:gap-12">
           
           {/* LEFT COLUMN: Profile Card */}
           <motion.div 
             initial={{ opacity: 0, x: -20 }}
             animate={{ opacity: 1, x: 0 }}
-            className="lg:col-span-1 space-y-6"
+            className="lg:col-span-1 space-y-4 md:space-y-6"
           >
-            <div className="bg-white dark:bg-slate-900 rounded-[2.5rem] border border-slate-200 dark:border-slate-800 overflow-hidden shadow-2xl">
-              <div className="relative aspect-[4/5] bg-slate-200 dark:bg-slate-800 flex items-center justify-center overflow-hidden">
+            <div className="bg-white dark:bg-slate-900 rounded-3xl md:rounded-[2.5rem] border border-slate-200 dark:border-slate-800 overflow-hidden shadow-xl md:shadow-2xl">
+              {/* MOBILE : photo ronde compacte cadrée sur le visage + nom. */}
+              <div className="flex items-center gap-4 p-5 md:hidden">
                 {!imgError ? (
-                  <img 
-                    src={sources[srcIndex]} 
+                  <img src={sources[srcIndex]} alt={name} onError={handleImgError} className="h-20 w-20 shrink-0 rounded-full object-cover object-top ring-2 ring-red-300 dark:ring-slate-700" />
+                ) : (
+                  <div className="flex h-20 w-20 shrink-0 items-center justify-center rounded-full bg-slate-200 text-2xl font-black text-slate-400 dark:bg-slate-800">
+                    {deputy?.first_name?.charAt(0)}{deputy?.last_name?.charAt(0)}
+                  </div>
+                )}
+                <div className="min-w-0">
+                  <h1 className="text-2xl font-staatliches uppercase leading-none tracking-tight text-slate-900 dark:text-white">{name}</h1>
+                  <p className="mt-1.5 inline-flex items-center gap-1.5 text-[10px] font-bold uppercase tracking-widest text-red-500">
+                    {deputy?.biography?.includes('**Ministre**') ? <><ShieldCheck className="w-3 h-3" /> Membre du Gouvernement</> : "Député de la Nation"}
+                  </p>
+                </div>
+              </div>
+              {/* DESKTOP : grande photo immersive (inchangée). */}
+              <div className="relative hidden aspect-[4/5] bg-slate-200 dark:bg-slate-800 md:flex items-center justify-center overflow-hidden">
+                {!imgError ? (
+                  <img
+                    src={sources[srcIndex]}
                     alt={name}
                     onError={handleImgError}
                     className="w-full h-full object-cover"
@@ -404,7 +421,7 @@ export default function DeputyDetailPage({ params, embedded }: { params: Promise
                 </div>
               </div>
 
-              <div className="p-8 space-y-6">
+              <div className="p-5 md:p-8 space-y-4 md:space-y-6">
                 {(() => {
                   const inner = (
                     <>
@@ -489,7 +506,7 @@ export default function DeputyDetailPage({ params, embedded }: { params: Promise
             {/* NEW: Integrity Badge Section (Bento Style) */}
             <motion.div
               whileHover={{ y: -4 }}
-              className="bg-white dark:bg-slate-900 rounded-[2rem] p-6 border border-slate-200 dark:border-slate-800 shadow-xl relative overflow-hidden group transition-all duration-500"
+              className="bg-white dark:bg-slate-900 rounded-2xl md:rounded-[2rem] p-4 md:p-6 border border-slate-200 dark:border-slate-800 shadow-xl relative overflow-hidden group transition-all duration-500"
             >
                <div className={`absolute top-0 left-0 w-2 h-full transition-colors duration-500 ${isLegalClean ? 'bg-emerald-500' : 'bg-amber-500'}`} />
                <div className="flex items-center justify-between gap-4">
@@ -517,27 +534,30 @@ export default function DeputyDetailPage({ params, embedded }: { params: Promise
                </div>
             </motion.div>
 
-            {(deputy?.mail || deputy?.an_id) && (
-            <div className="bg-red-600 rounded-[2rem] p-8 text-white shadow-xl shadow-red-600/20">
-               <h4 className="text-xl font-staatliches uppercase mb-4 tracking-tight">Contact Parlementaire</h4>
-               <p className="text-sm opacity-90 leading-relaxed mb-6">
-                 Vous pouvez contacter ce député pour toute question relative à l&apos;activité législative.
-               </p>
-               <div className="space-y-3">
-                 {deputy?.mail ? (
-                   <a href={`mailto:${deputy.mail}`} className="w-full py-4 rounded-2xl bg-white text-red-600 font-bold text-sm flex items-center justify-center gap-2 hover:bg-slate-100 transition-colors">
-                      <Mail className="w-4 h-4" />
-                      Envoyer un message
-                   </a>
-                 ) : (
-                   <a href={`https://www.assemblee-nationale.fr/dyn/deputes/${deputy.an_id}`} target="_blank" rel="noopener noreferrer" className="w-full py-4 rounded-2xl bg-white text-red-600 font-bold text-sm flex items-center justify-center gap-2 hover:bg-slate-100 transition-colors">
-                      <ExternalLink className="w-4 h-4" />
-                      Voir sa fiche à l&apos;Assemblée
-                   </a>
-                 )}
-               </div>
-            </div>
-            )}
+            {(deputy?.mail || deputy?.an_id) && (() => {
+              const contactHref = deputy?.mail ? `mailto:${deputy.mail}` : `https://www.assemblee-nationale.fr/dyn/deputes/${deputy.an_id}`;
+              const ext = !deputy?.mail;
+              return (
+              <>
+                {/* MOBILE : bouton compact « Contact ». */}
+                <a href={contactHref} {...(ext ? { target: "_blank", rel: "noopener noreferrer" } : {})}
+                  className="flex items-center justify-center gap-2 rounded-2xl bg-red-600 py-3.5 text-sm font-black uppercase tracking-widest text-white shadow-lg shadow-red-600/20 transition hover:bg-red-700 md:hidden">
+                  <Mail className="w-4 h-4" /> Contact
+                </a>
+                {/* DESKTOP : bloc complet. */}
+                <div className="hidden bg-red-600 rounded-[2rem] p-8 text-white shadow-xl shadow-red-600/20 md:block">
+                  <h4 className="text-xl font-staatliches uppercase mb-4 tracking-tight">Contact Parlementaire</h4>
+                  <p className="text-sm opacity-90 leading-relaxed mb-6">
+                    Vous pouvez contacter ce député pour toute question relative à l&apos;activité législative.
+                  </p>
+                  <a href={contactHref} {...(ext ? { target: "_blank", rel: "noopener noreferrer" } : {})} className="w-full py-4 rounded-2xl bg-white text-red-600 font-bold text-sm flex items-center justify-center gap-2 hover:bg-slate-100 transition-colors">
+                    {ext ? <ExternalLink className="w-4 h-4" /> : <Mail className="w-4 h-4" />}
+                    {ext ? "Voir sa fiche à l'Assemblée" : "Envoyer un message"}
+                  </a>
+                </div>
+              </>
+              );
+            })()}
           </motion.div>
 
           {/* RIGHT COLUMN: Votes & Activity */}
@@ -545,7 +565,7 @@ export default function DeputyDetailPage({ params, embedded }: { params: Promise
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ delay: 0.2 }}
-            className="lg:col-span-2 space-y-10"
+            className="lg:col-span-2 space-y-5 md:space-y-10"
           >
             {deputy?.sitting === false && <MandateEndedBanner role="député·e" name={`${deputy?.first_name ?? ""} ${deputy?.last_name ?? ""}`.trim()} />}
             {/* Suivi + partage sur la même ligne (partage à côté, pas en dessous). */}
@@ -572,7 +592,7 @@ export default function DeputyDetailPage({ params, embedded }: { params: Promise
                       
                       <button 
                         onClick={() => setIsBioExpanded(!isBioExpanded)}
-                        className="w-full text-left p-8 md:px-12 md:py-10 relative z-10 flex items-center justify-between group/header"
+                        className="w-full text-left p-5 md:px-12 md:py-10 relative z-10 flex items-center justify-between group/header"
                       >
                         <div className="flex flex-col md:flex-row gap-6 items-center">
                           <div className="w-12 h-12 rounded-xl bg-slate-900 dark:bg-slate-800 flex items-center justify-center text-white shrink-0 shadow-lg group-hover/header:rotate-6 transition-transform duration-500">
@@ -598,7 +618,7 @@ export default function DeputyDetailPage({ params, embedded }: { params: Promise
                             transition={{ duration: 0.3, ease: "easeOut" }}
                             className="overflow-hidden"
                           >
-                            <div className="px-8 pb-10 md:px-12 md:pb-12 relative z-10 space-y-4">
+                            <div className="px-5 pb-6 md:px-12 md:pb-12 relative z-10 space-y-4">
                               {hasStructuredBio(deputy?.bio) && <StructuredBio bio={deputy.bio} />}
                               {!hasStructuredBio(deputy?.bio) && displayBio.split('\n\n').filter(Boolean).map((paragraph: string, pIdx: number) => {
                                 let Icon = History;

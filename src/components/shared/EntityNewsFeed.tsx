@@ -1,7 +1,7 @@
 "use client";
 
-import { useEffect, useMemo, useState } from "react";
-import { Newspaper, ChevronDown, ExternalLink, Loader2, X } from "lucide-react";
+import { useEffect, useMemo, useRef, useState } from "react";
+import { Newspaper, ChevronDown, ChevronLeft, ChevronRight, ExternalLink, Loader2, X } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
 import { api } from "@/lib/api";
 
@@ -36,6 +36,7 @@ export default function EntityNewsFeed({
   const [open, setOpen] = useState(defaultOpen);
   const [filter, setFilter] = useState<string | null>(null); // null = tous les types
   const [selected, setSelected] = useState<FeedItem | null>(null); // récap ouvert EN SITE (modale)
+  const scrollerRef = useRef<HTMLUListElement>(null); // conteneur de défilement (mode horizontal)
 
   useEffect(() => {
     let active = true;
@@ -44,6 +45,27 @@ export default function EntityNewsFeed({
       .catch(() => { if (active) setItems([]); });
     return () => { active = false; };
   }, [entityType, entityId]);
+
+  // PC : la molette VERTICALE fait défiler à l'HORIZONTAL (listener natif non-passif pour
+  // pouvoir preventDefault — l'onWheel de React est passif). Actif seulement en mode horizontal.
+  useEffect(() => {
+    const el = scrollerRef.current;
+    if (!horizontal || !open || !el) return;
+    const onWheel = (e: WheelEvent) => {
+      if (Math.abs(e.deltaY) <= Math.abs(e.deltaX)) return;      // geste déjà horizontal → on laisse
+      if (el.scrollWidth <= el.clientWidth) return;               // rien à faire défiler
+      el.scrollLeft += e.deltaY;
+      e.preventDefault();
+    };
+    el.addEventListener("wheel", onWheel, { passive: false });
+    return () => el.removeEventListener("wheel", onWheel);
+  }, [horizontal, open, items]);
+
+  // Flèches PC : défile d'environ une largeur visible.
+  const scrollByCards = (dir: 1 | -1) => {
+    const el = scrollerRef.current;
+    if (el) el.scrollBy({ left: dir * Math.round(el.clientWidth * 0.85), behavior: "smooth" });
+  };
 
   // Types présents (avec compte), pour les puces de filtre.
   const types = useMemo(() => {
@@ -99,8 +121,21 @@ export default function EntityNewsFeed({
               </div>
             )}
             {/* Deux dispositions : grille (défaut) ou défilement HORIZONTAL (mobile-first) —
-                cartes qui « snappent », largeur ~82 % sur mobile pour laisser deviner la suivante. */}
-            <ul className={horizontal
+                cartes qui « snappent » ; sur PC : flèches ◀ ▶ + molette→horizontal. */}
+            <div className={horizontal ? "relative" : ""}>
+            {horizontal && visible.length > 1 && (
+              <>
+                <button type="button" aria-label="Actualités précédentes" onClick={() => scrollByCards(-1)}
+                  className="absolute left-0 top-1/2 z-10 hidden h-10 w-10 -translate-y-1/2 items-center justify-center rounded-full border border-slate-200 bg-white/95 text-slate-600 shadow-lg transition hover:bg-blue-600 hover:text-white md:flex dark:border-slate-700 dark:bg-slate-800/95 dark:text-slate-200">
+                  <ChevronLeft size={20} />
+                </button>
+                <button type="button" aria-label="Actualités suivantes" onClick={() => scrollByCards(1)}
+                  className="absolute right-0 top-1/2 z-10 hidden h-10 w-10 -translate-y-1/2 items-center justify-center rounded-full border border-slate-200 bg-white/95 text-slate-600 shadow-lg transition hover:bg-blue-600 hover:text-white md:flex dark:border-slate-700 dark:bg-slate-800/95 dark:text-slate-200">
+                  <ChevronRight size={20} />
+                </button>
+              </>
+            )}
+            <ul ref={horizontal ? scrollerRef : undefined} className={horizontal
               ? "-mx-1 flex snap-x snap-mandatory gap-3 overflow-x-auto px-1 pb-2 [-ms-overflow-style:none] [scrollbar-width:none] [&::-webkit-scrollbar]:hidden"
               : "grid grid-cols-1 gap-3 md:grid-cols-2"}>
               {visible.map(it => (
@@ -120,8 +155,9 @@ export default function EntityNewsFeed({
                 </li>
               ))}
             </ul>
+            </div>
             {horizontal && visible.length > 1 && (
-              <p className="mt-1 flex items-center gap-1 text-[10px] font-bold uppercase tracking-widest text-slate-400">
+              <p className="mt-1 flex items-center gap-1 text-[10px] font-bold uppercase tracking-widest text-slate-400 md:hidden">
                 <span aria-hidden>←</span> Faites défiler <span aria-hidden>→</span>
               </p>
             )}

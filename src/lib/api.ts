@@ -222,6 +222,20 @@ export const api = {
     return data;
   },
 
+  // Recherche de communes par nom (autocomplete « suivre ma commune »).
+  searchCommunes: async (query: string) => {
+    const q = (query || '').trim();
+    if (q.length < 2) return [];
+    const { data, error } = await supabase
+      .from('mayors')
+      .select('insee_code, commune_name, population')
+      .ilike('commune_name', `${q}%`)
+      .order('population', { ascending: false, nullsFirst: false })
+      .limit(8);
+    if (error) { console.warn('searchCommunes:', error.message); return []; }
+    return (data || []) as { insee_code: string; commune_name: string; population: number | null }[];
+  },
+
   getSenators: async () => {
     const { data, error } = await supabase.from('senators').select('*').order('last_name');
     if (error) { console.error(error); return []; }

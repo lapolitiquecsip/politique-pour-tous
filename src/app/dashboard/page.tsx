@@ -9,6 +9,7 @@ import { api } from "@/lib/api";
 import { BallotBox, BallotChip } from "@/components/dashboard/BallotVote";
 import NotificationsFeed from "@/components/dashboard/NotificationsFeed";
 import PremiumPreferences from "@/components/dashboard/PremiumPreferences";
+import CommuneFeedCard from "@/components/dashboard/CommuneFeedCard";
 import { usePremium } from "@/lib/hooks/usePremium";
 import { departmentPaths } from "@/lib/data/departmentPaths";
 import { regionPaths } from "@/lib/data/regionPaths";
@@ -250,6 +251,7 @@ export default function DashboardPage() {
         // recouvre le haut de la carte et intercepte le clic sur « Tout marquer lu ».
         <div className="relative z-20 container mx-auto max-w-6xl px-4 -mt-16 mb-6 space-y-6">
           <NotificationsFeed userId={userId} />
+          <CommuneFeedCard />
           <PremiumPreferences userId={userId} />
         </div>
       )}

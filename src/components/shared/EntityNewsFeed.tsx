@@ -30,8 +30,8 @@ const fmt = (d: string | null) =>
 // Fil d'actualité générique d'une entité (ministère, département…). Sources gratuites résumées
 // par IA (titre + résumé court + lien). Masqué tant qu'il n'y a pas d'actu.
 export default function EntityNewsFeed({
-  entityType, entityId, defaultOpen = false,
-}: { entityType: string; entityId: string; defaultOpen?: boolean }) {
+  entityType, entityId, defaultOpen = false, horizontal = false,
+}: { entityType: string; entityId: string; defaultOpen?: boolean; horizontal?: boolean }) {
   const [items, setItems] = useState<FeedItem[] | null>(null);
   const [open, setOpen] = useState(defaultOpen);
   const [filter, setFilter] = useState<string | null>(null); // null = tous les types
@@ -98,14 +98,18 @@ export default function EntityNewsFeed({
                 })}
               </div>
             )}
-            <ul className="grid grid-cols-1 gap-3 md:grid-cols-2">
+            {/* Deux dispositions : grille (défaut) ou défilement HORIZONTAL (mobile-first) —
+                cartes qui « snappent », largeur ~82 % sur mobile pour laisser deviner la suivante. */}
+            <ul className={horizontal
+              ? "-mx-1 flex snap-x snap-mandatory gap-3 overflow-x-auto px-1 pb-2 [-ms-overflow-style:none] [scrollbar-width:none] [&::-webkit-scrollbar]:hidden"
+              : "grid grid-cols-1 gap-3 md:grid-cols-2"}>
               {visible.map(it => (
-                <li key={it.id}>
+                <li key={it.id} className={horizontal ? "shrink-0 snap-start basis-[82%] sm:basis-[320px]" : ""}>
                   <button onClick={() => setSelected(it)}
                     className="flex h-full w-full flex-col rounded-2xl border border-slate-200 bg-white p-4 text-left transition hover:border-blue-300 hover:shadow-md dark:border-slate-800 dark:bg-slate-900">
                     <div className="mb-1.5 flex items-center justify-between gap-2">
                       <span className="text-[10px] font-black uppercase tracking-widest text-blue-600">{typeLabel(it.news_type)}</span>
-                      <span className="text-[10px] font-bold text-slate-400">{fmt(it.published_at)}</span>
+                      <span className="shrink-0 text-[10px] font-bold text-slate-400">{fmt(it.published_at)}</span>
                     </div>
                     <p className="text-sm font-bold leading-snug text-slate-900 dark:text-white">{it.title}</p>
                     {it.summary && <p className="mt-1 line-clamp-3 text-xs leading-5 text-slate-600 dark:text-slate-300">{it.summary}</p>}
@@ -116,6 +120,11 @@ export default function EntityNewsFeed({
                 </li>
               ))}
             </ul>
+            {horizontal && visible.length > 1 && (
+              <p className="mt-1 flex items-center gap-1 text-[10px] font-bold uppercase tracking-widest text-slate-400">
+                <span aria-hidden>←</span> Faites défiler <span aria-hidden>→</span>
+              </p>
+            )}
             </>
           )}
         </div>

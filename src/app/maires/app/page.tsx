@@ -107,7 +107,7 @@ function MayorContent() {
 
           <div className="md:col-span-2 space-y-8">
             {/* Fil d'actualité de la commune (brique #1) — masqué tant qu'il n'y a pas d'actu */}
-            {p.insee_code && <EntityNewsFeed entityType="commune" entityId={p.insee_code} />}
+            {p.insee_code && <EntityNewsFeed entityType="commune" entityId={p.insee_code} horizontal />}
 
             <section className="space-y-4">
               {(bio.formation || bio.enfants) && (

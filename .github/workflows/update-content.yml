@@ -1,0 +1,37 @@
+name: Update Content Feed (daytime)
+
+# Rafraîchit le fil d'actualité de l'accueil EN JOURNÉE. L'ingestion historique (repo backend)
+# tourne le soir/la nuit (~19h-06h Paris), donc en journée le fil montrait la veille. Ces passages
+# matin + midi comblent le trou. Dédup sur source_url → aucun doublon même en parallèle du backend.
+# Voir scripts/run-content-ingestion.ts
+
+on:
+  schedule:
+    # 06:10 UTC ≈ 08:10 Paris (matin) et 11:10 UTC ≈ 13:10 Paris (midi).
+    # Créneaux choisis HORS de la fenêtre du cron backend (17h-04h UTC) pour éviter toute collision.
+    - cron: '10 6 * * *'
+    - cron: '10 11 * * *'
+  workflow_dispatch: # déclenchement manuel depuis l'UI GitHub
+
+jobs:
+  ingest-content:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+          cache: 'npm'
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Run content ingestion
+        env:
+          NEXT_PUBLIC_SUPABASE_URL: ${{ secrets.NEXT_PUBLIC_SUPABASE_URL }}
+          SUPABASE_SERVICE_ROLE_KEY: ${{ secrets.SUPABASE_SERVICE_ROLE_KEY }}
+          ANTHROPIC_API_KEY: ${{ secrets.ANTHROPIC_API_KEY }}
+        run: npx --yes tsx scripts/run-content-ingestion.ts

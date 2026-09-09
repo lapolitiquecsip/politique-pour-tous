@@ -23,12 +23,15 @@ export default function SenatorClient() {
   useEffect(() => {
     async function fetchSenators() {
       setLoading(true);
+      // ⚠️ NE PAS faire select("*") : la table embarque de gros champs (biography ~2,5 Ko,
+      // bio JSON ~2,8 Ko) par ligne → ~2 Mo pour 352 sénateurs, très long à télécharger/parser
+      // sur mobile. La liste n'affiche que ces 7 colonnes → payload ≈ 100 Ko.
       const { data, error } = await supabase
         .from("senators")
-        .select("*")
+        .select("id, first_name, last_name, party, department, slug, photo_url")
         .order("last_name", { ascending: true });
 
-      if (data) setSenators(data);
+      if (data) setSenators(data as Senator[]);
       setLoading(false);
     }
     fetchSenators();
@@ -104,23 +107,25 @@ export default function SenatorClient() {
             )}
           </div>
           
-          <div className={`${!isPremium ? "blur-sm grayscale opacity-50 pointer-events-none" : ""}`}>
-            <FranceMap 
-              onDepartmentSelect={(deptName) => setSelectedDept(deptName)} 
+          {/* La FranceMap fait un fetch CDN externe + DOMParser + gros SVG : très lourd sur
+              mobile. On ne la MONTE que pour les premium (qui peuvent s'en servir). Pour les
+              non-premium, un simple placeholder statique — aucun fetch, aucun SVG à parser —
+              ce qui libère le thread principal pour charger le reste de la page. */}
+          {isPremium ? (
+            <FranceMap
+              onDepartmentSelect={(deptName) => setSelectedDept(deptName)}
               selectedDepartment={selectedDept}
             />
-          </div>
-
-          {!isPremium && (
-            <div className="absolute inset-0 z-10 flex flex-col items-center justify-center p-8 text-center bg-white/40 backdrop-blur-md">
-                <div className="bg-amber-600 p-4 rounded-full shadow-2xl mb-4 animate-pulse">
+          ) : (
+            <div className="absolute inset-0 z-10 flex flex-col items-center justify-center p-8 text-center">
+                <div className="bg-amber-600 p-4 rounded-full shadow-2xl mb-4">
                     <Lock className="w-8 h-8 text-white" />
                 </div>
-                <h3 className="text-2xl font-bold text-slate-900 mb-2">Carte des Sénateurs</h3>
-                <p className="text-slate-600 max-w-xs mb-6">
+                <h3 className="text-2xl font-bold text-slate-900 dark:text-white mb-2">Carte des Sénateurs</h3>
+                <p className="text-slate-600 dark:text-slate-300 max-w-xs mb-6">
                     Connectez-vous à votre compte <strong>Premium</strong> pour accéder à la carte interactive du Sénat.
                 </p>
-                <AwardBadge 
+                <AwardBadge
                   titleText="Passer au Premium"
                   subtitleText="Accéder à la carte"
                   link="/premium"

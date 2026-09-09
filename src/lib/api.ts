@@ -1107,24 +1107,36 @@ export const api = {
 
   // Taux d'emprunt à 10 ans (Eurostat), rafraîchis mensuellement par le cron finance-rates-sync
   // dans national_finance_indicators. Renvoie null si vide → le front retombe sur les valeurs codées.
-  getBorrowingRates: async (): Promise<{ month: string; rows: { label: string; pct: number; avg?: boolean; self?: boolean }[] } | null> => {
+  getBorrowingRates: async (): Promise<{ asOf: string; sourceLabel: string; sourceUrl: string; rows: { label: string; pct: number; avg?: boolean; self?: boolean }[] } | null> => {
+    // Deux familles de codes : `bond_yield_10y_*` (QUOTIDIEN, CNBC/BCE — prioritaire) et
+    // `long_term_rate_*` (mensuel Eurostat — repli si un pays manque en quotidien).
     const { data, error } = await supabase
       .from('national_finance_indicators')
       .select('indicator_code, value, source_updated_at')
-      .like('indicator_code', 'long_term_rate_%')
+      .or('indicator_code.like.bond_yield_10y_%,indicator_code.like.long_term_rate_%')
       .eq('value_type', 'observed');
     if (error || !data || !data.length) return null;
-    const LABELS: Record<string, string> = { FR: 'France', DE: 'Allemagne', NL: 'Pays-Bas', ES: 'Espagne', BE: 'Belgique', IT: 'Italie', EA: 'Zone euro' };
+    const LABELS: Record<string, string> = { FR: 'France', DE: 'Allemagne', NL: 'Pays-Bas', ES: 'Espagne', BE: 'Belgique', IT: 'Italie', EA: 'Zone euro', US: 'États-Unis', GB: 'Royaume-Uni' };
     const MONTHS = ['janvier', 'février', 'mars', 'avril', 'mai', 'juin', 'juillet', 'août', 'septembre', 'octobre', 'novembre', 'décembre'];
+    // Par géo : on retient la valeur QUOTIDIENNE si elle existe, sinon la mensuelle.
+    const byGeo = new Map<string, { pct: number; date: string; daily: boolean }>();
+    for (const r of data as any[]) {
+      const daily = r.indicator_code.startsWith('bond_yield_10y_');
+      const geo = r.indicator_code.replace(daily ? 'bond_yield_10y_' : 'long_term_rate_', '');
+      const prev = byGeo.get(geo);
+      if (!prev || (daily && !prev.daily)) byGeo.set(geo, { pct: Number(r.value), date: r.source_updated_at, daily });
+    }
+    const hasDaily = [...byGeo.values()].some(v => v.daily);
+    // Date affichée = la plus récente parmi les valeurs retenues (quotidiennes si dispo).
     let maxDate = '';
-    const rows = data.map((r: any) => {
-      const geo = r.indicator_code.replace('long_term_rate_', '');
-      if (r.source_updated_at > maxDate) maxDate = r.source_updated_at;
-      return { label: LABELS[geo] || geo, pct: Number(r.value), self: geo === 'FR', avg: geo === 'EA' };
-    }).sort((a, b) => a.pct - b.pct);
+    for (const v of byGeo.values()) { if ((!hasDaily || v.daily) && v.date > maxDate) maxDate = v.date; }
+    const rows = [...byGeo.values()].length
+      ? [...byGeo.entries()].map(([geo, v]) => ({ label: LABELS[geo] || geo, pct: v.pct, self: geo === 'FR', avg: geo === 'EA' })).sort((a, b) => a.pct - b.pct)
+      : [];
     const d = maxDate ? new Date(maxDate) : null;
-    const month = d ? `${MONTHS[d.getUTCMonth()]} ${d.getUTCFullYear()}` : '';
-    return { month, rows };
+    // Données quotidiennes → date précise (jour) ; sinon repli mensuel.
+    const asOf = d ? (hasDaily ? `${d.getUTCDate()} ${MONTHS[d.getUTCMonth()]} ${d.getUTCFullYear()}` : `${MONTHS[d.getUTCMonth()]} ${d.getUTCFullYear()}`) : '';
+    return { asOf, sourceLabel: 'Taux de marché à 10 ans — CNBC & BCE', sourceUrl: 'https://www.cnbc.com/bonds/', rows };
   },
 
   // Membres d'un parti (députés / sénateurs / candidats) via ses alias.

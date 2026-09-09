@@ -4,8 +4,8 @@
 // seconde, à partir de la DERNIÈRE donnée officielle INSEE (dette fin 2025) et du déficit 2025.
 
 // Date de dernière vérification manuelle des chiffres annuels (dette, déficit, population,
-// dépenses). Les taux d'emprunt, eux, se rafraîchissent seuls (cron Eurostat mensuel).
-// À mettre à jour à chaque revue des chiffres INSEE.
+// dépenses). Les taux d'emprunt à 10 ans, eux, se rafraîchissent seuls TOUS LES JOURS
+// (cron CNBC + BCE → voir BORROWING_RATES plus bas). À mettre à jour à chaque revue INSEE.
 export const FINANCE_LAST_VERIFIED = "août 2026";
 
 // --- Base du compteur (dernière donnée officielle INSEE) ---------------------------------
@@ -38,20 +38,25 @@ export const PUBLIC_SPENDING = {
   sourceUrl: "https://www.insee.fr/fr/statistiques/8997691",
 };
 
-// --- Taux d'emprunt de l'État à 10 ans — comparaison européenne (données réelles) ---------
-// Source : Eurostat, taux d'intérêt à long terme (critère de Maastricht, obligations d'État 10 ans).
+// --- Taux d'emprunt de l'État à 10 ans — comparaison internationale (données réelles) ------
+// Mise à jour QUOTIDIENNE (auto) : cron `scripts/update-borrowing-rates.js` → Supabase, lu par
+// `api.getBorrowingRates()`. Sources : CNBC (taux de marché des obligations d'État à 10 ans,
+// France/US/UK/DE/IT/ES/BE/NL) + BCE (agrégat zone euro). Les valeurs ci-dessous ne servent que
+// de REPLI (avant le 1er passage du cron, ou si Supabase est injoignable) — triées croissant.
 export const BORROWING_RATES = {
-  month: "juillet 2026",
-  source: "Eurostat — taux d'intérêt à long terme (critère de convergence de Maastricht, obligations d'État à 10 ans).",
-  sourceUrl: "https://ec.europa.eu/eurostat/databrowser/view/irt_lt_mcby_m/default/table",
+  asOf: "9 septembre 2026",
+  sourceLabel: "Taux de marché à 10 ans — CNBC & BCE",
+  sourceUrl: "https://www.cnbc.com/bonds/",
   rows: [
-    { label: "Allemagne", pct: 3.07 },
-    { label: "Pays-Bas", pct: 3.20 },
-    { label: "Zone euro", pct: 3.49, avg: true },
-    { label: "Espagne", pct: 3.53 },
-    { label: "Belgique", pct: 3.64 },
-    { label: "France", pct: 3.85, self: true },
-    { label: "Italie", pct: 3.88 },
+    { label: "Allemagne", pct: 3.45 },
+    { label: "Pays-Bas", pct: 3.52 },
+    { label: "Zone euro", pct: 3.80, avg: true },
+    { label: "Espagne", pct: 3.90 },
+    { label: "Belgique", pct: 4.04 },
+    { label: "Italie", pct: 4.29 },
+    { label: "France", pct: 4.34, self: true },
+    { label: "États-Unis", pct: 4.84 },
+    { label: "Royaume-Uni", pct: 5.26 },
   ] as { label: string; pct: number; avg?: boolean; self?: boolean }[],
 };
 

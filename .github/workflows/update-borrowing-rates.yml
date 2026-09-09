@@ -1,0 +1,33 @@
+name: Update Borrowing Rates
+
+# Met à jour CHAQUE JOUR les taux d'emprunt de l'État à 10 ans (France, États-Unis,
+# Royaume-Uni + pays de comparaison et zone euro) dans Supabase, via CNBC + BCE.
+# Voir scripts/update-borrowing-rates.js
+
+on:
+  schedule:
+    # Tous les jours à 06:10 UTC (matin en Europe ; intègre la clôture US de la veille).
+    - cron: '10 6 * * *'
+  workflow_dispatch: # déclenchement manuel depuis l'UI GitHub
+
+jobs:
+  update-rates:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+          cache: 'npm'
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Run borrowing-rates fetch script
+        env:
+          NEXT_PUBLIC_SUPABASE_URL: ${{ secrets.NEXT_PUBLIC_SUPABASE_URL }}
+          SUPABASE_SERVICE_ROLE_KEY: ${{ secrets.SUPABASE_SERVICE_ROLE_KEY }}
+        run: node scripts/update-borrowing-rates.js

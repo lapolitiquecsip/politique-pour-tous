@@ -86,7 +86,11 @@ export default function PublicFinancePanel() {
       <div className="mt-3 rounded-2xl border border-slate-200 bg-white p-5 dark:border-slate-800 dark:bg-slate-900">
         <p className="flex flex-wrap items-center gap-1.5 text-[10px] font-black uppercase tracking-widest text-slate-500">
           <Percent size={13} /> À quel taux la France emprunte-t-elle ?
-          <span className="font-medium normal-case tracking-normal text-slate-400">· obligations d'État à 10 ans, {rates.month}</span>
+          <span className="font-medium normal-case tracking-normal text-slate-400">· obligations d'État à 10 ans</span>
+          <span className="inline-flex items-center gap-1 rounded-full bg-emerald-50 px-2 py-0.5 text-[9px] font-black uppercase tracking-wider text-emerald-600 dark:bg-emerald-500/10 dark:text-emerald-400">
+            <span className="relative flex h-1.5 w-1.5"><span className="absolute inline-flex h-full w-full animate-ping rounded-full bg-emerald-400 opacity-75" /><span className="relative inline-flex h-1.5 w-1.5 rounded-full bg-emerald-500" /></span>
+            Quotidien{rates.asOf ? ` · ${rates.asOf}` : ""}
+          </span>
         </p>
         <div className="mt-4 space-y-2">
           {(() => { const max = Math.max(...rates.rows.map(r => r.pct)); return rates.rows.map(r => (
@@ -99,8 +103,19 @@ export default function PublicFinancePanel() {
             </div>
           )); })()}
         </div>
-        <p className="mt-3 text-[11px] leading-snug text-slate-500 dark:text-slate-400">La France emprunte <span className="font-bold text-slate-700 dark:text-slate-200">plus cher</span> que l'Allemagne, l'Espagne ou la moyenne de la zone euro — proche du niveau italien. Plus le taux est élevé, plus la charge de la dette pèsera lourd les prochaines années.</p>
-        <a href={BORROWING_RATES.sourceUrl} target="_blank" rel="noopener noreferrer" className="mt-1.5 inline-flex items-center gap-1 text-[9px] font-black uppercase tracking-widest text-slate-400 hover:text-blue-600">{rates.month} · Eurostat <ExternalLink size={9} /></a>
+        {(() => {
+          const fr = rates.rows.find(r => r.self)?.pct;
+          const de = rates.rows.find(r => r.label === "Allemagne")?.pct;
+          const spread = fr != null && de != null ? Math.round((fr - de) * 100) : null;
+          return (
+            <p className="mt-3 text-[11px] leading-snug text-slate-500 dark:text-slate-400">
+              {fr != null && <>La France emprunte à <span className="font-bold text-rose-700 dark:text-rose-300">{fr.toLocaleString("fr-FR", { minimumFractionDigits: 2 })} %</span>. </>}
+              {spread != null && spread > 0 && <>L'écart avec l'Allemagne — le « <span className="font-bold text-slate-700 dark:text-slate-200">spread</span> » que surveillent les marchés — est de <span className="font-bold text-slate-700 dark:text-slate-200">{spread} points de base</span>. </>}
+              Plus le taux est élevé, plus la charge de la dette pèsera lourd les prochaines années.
+            </p>
+          );
+        })()}
+        <a href={rates.sourceUrl} target="_blank" rel="noopener noreferrer" className="mt-1.5 inline-flex items-center gap-1 text-[9px] font-black uppercase tracking-widest text-slate-400 hover:text-blue-600">{rates.asOf ? `${rates.asOf} · ` : ""}{rates.sourceLabel} <ExternalLink size={9} /></a>
       </div>
 
       {/* Où va la dépense publique (toutes administrations, COFOG) — (tâche 2) */}

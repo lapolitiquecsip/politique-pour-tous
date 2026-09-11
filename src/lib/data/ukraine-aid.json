@@ -1,0 +1,132 @@
+{
+  "source": "Ukraine Support Tracker — Institut de Kiel (IfW)",
+  "sourceUrl": "https://www.ifw-kiel.de/topics/war-against-ukraine/ukraine-support-tracker/",
+  "release": "Release 30",
+  "unit": "Md€",
+  "metric": "Aide bilatérale allouée, cumul depuis janvier 2022",
+  "updatedAt": "2026-09-11",
+  "france": {
+    "financial": 0.8,
+    "humanitarian": 0.88,
+    "military": 6.23,
+    "total": 7.91,
+    "rank": 10
+  },
+  "eu": {
+    "name": "EU (Commission and Council)",
+    "en": "EU (Commission and Council)",
+    "financial": 87.61,
+    "humanitarian": 3.26,
+    "military": 4.4,
+    "total": 95.27,
+    "euMember": false
+  },
+  "totalAll": 374.22,
+  "donors": [
+    {
+      "name": "États-Unis",
+      "total": 115.38,
+      "military": 64.62,
+      "financial": 47.3,
+      "humanitarian": 3.47,
+      "isFrance": false
+    },
+    {
+      "name": "Union européenne",
+      "total": 95.27,
+      "military": 4.4,
+      "financial": 87.61,
+      "humanitarian": 3.26,
+      "isEU": true
+    },
+    {
+      "name": "Allemagne",
+      "total": 30.63,
+      "military": 24.9,
+      "financial": 1.66,
+      "humanitarian": 4.07,
+      "isFrance": false
+    },
+    {
+      "name": "Royaume-Uni",
+      "total": 22.5,
+      "military": 15.88,
+      "financial": 5.15,
+      "humanitarian": 1.46,
+      "isFrance": false
+    },
+    {
+      "name": "Canada",
+      "total": 14.28,
+      "military": 5.24,
+      "financial": 8.42,
+      "humanitarian": 0.61,
+      "isFrance": false
+    },
+    {
+      "name": "Japon",
+      "total": 12.16,
+      "military": 0.08,
+      "financial": 10.38,
+      "humanitarian": 1.71,
+      "isFrance": false
+    },
+    {
+      "name": "Danemark",
+      "total": 11.64,
+      "military": 10.54,
+      "financial": 0.12,
+      "humanitarian": 0.99,
+      "isFrance": false
+    },
+    {
+      "name": "Suède",
+      "total": 11.4,
+      "military": 9.25,
+      "financial": 1.1,
+      "humanitarian": 1.05,
+      "isFrance": false
+    },
+    {
+      "name": "Norvège",
+      "total": 11.22,
+      "military": 7.19,
+      "financial": 2.04,
+      "humanitarian": 1.99,
+      "isFrance": false
+    },
+    {
+      "name": "Pays-Bas",
+      "total": 11.2,
+      "military": 9.36,
+      "financial": 0.72,
+      "humanitarian": 1.13,
+      "isFrance": false
+    },
+    {
+      "name": "France",
+      "total": 7.91,
+      "military": 6.23,
+      "financial": 0.8,
+      "humanitarian": 0.88,
+      "isFrance": true
+    },
+    {
+      "name": "Pologne",
+      "total": 5.89,
+      "military": 4.45,
+      "financial": 0.93,
+      "humanitarian": 0.51,
+      "isFrance": false
+    },
+    {
+      "name": "Italie",
+      "total": 4.3,
+      "military": 3,
+      "financial": 0.47,
+      "humanitarian": 0.83,
+      "isFrance": false
+    }
+  ],
+  "nbCountries": 41
+}

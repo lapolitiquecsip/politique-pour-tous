@@ -1,0 +1,45 @@
+name: Update Ukraine Aid (Kiel)
+
+# Régénère src/lib/data/ukraine-aid.json depuis le Ukraine Support Tracker de l'Institut de Kiel
+# (la référence mondiale qui consolide l'aide à l'Ukraine par pays et par type). Committe le
+# fichier s'il a changé → le déploiement Pages repart avec les chiffres à jour.
+# Voir scripts/update-ukraine-aid.py
+
+on:
+  schedule:
+    - cron: '0 6 * * 1'   # tous les lundis à 06:00 UTC (l'Institut publie ~mensuellement)
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+jobs:
+  update-ukraine-aid:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Setup Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+
+      - name: Install dependencies
+        run: pip install requests openpyxl
+
+      - name: Fetch & regenerate Ukraine aid data
+        run: python scripts/update-ukraine-aid.py
+
+      - name: Commit if changed
+        run: |
+          if [ -n "$(git status --porcelain src/lib/data/ukraine-aid.json)" ]; then
+            git config user.name "github-actions[bot]"
+            git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+            git add src/lib/data/ukraine-aid.json
+            git commit -m "chore(ukraine): maj aide a l'Ukraine (Institut de Kiel)"
+            git push
+            echo "Données mises à jour et poussées."
+          else
+            echo "Aucun changement."
+          fi

@@ -5,6 +5,7 @@ import EuropeHero from "@/components/lois/EuropeHero";
 import EuFranceBudget from "@/components/lois/EuFranceBudget";
 import EuFranceProjects from "@/components/lois/EuFranceProjects";
 import EuFranceDecisionsFeed from "@/components/lois/EuFranceDecisionsFeed";
+import UkraineAidTracker from "@/components/lois/UkraineAidTracker";
 
 export const dynamic = "force-static";
 
@@ -18,6 +19,7 @@ export default async function EurodeputesPage() {
           { label: "Composition", href: "#composition" },
           { label: "France & budget de l'UE", href: "#budget" },
           { label: "Projets financés par l'UE", href: "#projets" },
+          { label: "Aide à l'Ukraine", href: "#ukraine" },
           { label: "Décisions concernant la France", href: "#decisions" },
           { label: "Les eurodéputés & leurs votes", href: "#membres" },
         ]}
@@ -33,6 +35,9 @@ export default async function EurodeputesPage() {
         </section>
         <section id="projets" className="scroll-mt-24">
           <EuFranceProjects />
+        </section>
+        <section id="ukraine" className="scroll-mt-24">
+          <UkraineAidTracker />
         </section>
         <section id="decisions" className="scroll-mt-24">
           <EuFranceDecisionsFeed />

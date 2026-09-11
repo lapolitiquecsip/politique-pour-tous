@@ -1,6 +1,8 @@
 // Hero « poster » de la page Europe, inspiré du hero Présidentielles 2027, adapté aux
 // couleurs du drapeau de l'UE (bleu #003399 + or #FFCC00) avec la couronne de 12 étoiles.
 
+import { MousePointerClick, ChevronDown } from "lucide-react";
+
 function StarCrown() {
   // 12 étoiles d'or disposées en arc au-dessus du titre.
   const stars = Array.from({ length: 12 }, (_, i) => {
@@ -42,13 +44,19 @@ export default function EuropeHero({ description, links }: { description: string
         </h1>
         <div className="mx-auto mt-6 h-1.5 w-44 rounded-full bg-gradient-to-r from-[#003399] via-[#3b6fd4] to-[#FFCC00]" />
         <p className="mx-auto mt-6 max-w-2xl text-[15px] leading-relaxed text-white/70 md:text-base">{description}</p>
-        <div className="mt-7 flex flex-wrap justify-center gap-2">
-          {links.map(l => (
-            <a key={l.href} href={l.href}
-              className="rounded-full border border-white/15 bg-white/5 px-5 py-2 text-[11px] font-black uppercase tracking-widest text-white/80 transition hover:border-[#FFCC00] hover:text-[#FFCC00]">
-              {l.label}
-            </a>
-          ))}
+        <div className="mt-8">
+          <p className="mb-3 inline-flex items-center gap-2 rounded-full bg-[#FFCC00]/15 px-3.5 py-1.5 text-[10px] font-black uppercase tracking-[0.2em] text-[#FFD54A] ring-1 ring-[#FFCC00]/25">
+            <MousePointerClick size={13} /> {links.length} sections · cliquez pour y accéder
+          </p>
+          <div className="flex flex-wrap justify-center gap-2.5">
+            {links.map(l => (
+              <a key={l.href} href={l.href}
+                className="group inline-flex items-center gap-1.5 rounded-full border border-white/25 bg-white/[0.08] px-4 py-2.5 text-[11px] font-black uppercase tracking-widest text-white shadow-sm transition hover:border-[#FFCC00] hover:bg-[#FFCC00] hover:text-[#00133a] active:scale-95">
+                {l.label}
+                <ChevronDown size={13} className="opacity-70 transition group-hover:translate-y-0.5" />
+              </a>
+            ))}
+          </div>
         </div>
       </div>
     </div>

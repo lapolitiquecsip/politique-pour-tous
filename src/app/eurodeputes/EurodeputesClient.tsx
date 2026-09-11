@@ -65,7 +65,6 @@ export default function EurodeputesClient({ meps }: { meps: any[] }) {
           <p className="inline-flex items-center gap-2 text-[11px] font-black uppercase tracking-widest text-[#003399] dark:text-[#8CA6E8]">
             <Star size={14} className="fill-[#FFCC00] text-[#FFCC00]" /> {meps.length} eurodéputés français
           </p>
-          <p className="text-sm text-slate-500">Recherchez ou filtrez par groupe politique.</p>
           <p className="inline-flex items-center gap-2 rounded-full border border-[#003399]/20 bg-[#003399]/[0.06] px-4 py-1.5 text-xs font-bold text-[#003399] dark:border-[#8CA6E8]/25 dark:bg-[#8CA6E8]/10 dark:text-[#8CA6E8]">
             <MousePointerClick size={14} /> Cliquez sur un eurodéputé pour voir toute son activité : ses votes par thème et sa présence.
           </p>

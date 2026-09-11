@@ -191,10 +191,10 @@ function CandidateModal({ candidate, onClose }: { candidate: Candidate; onClose:
   const [proposals, setProposals] = useState<any[]>([]);
   const [openPanels, setOpenPanels] = useState<Set<string>>(new Set());   // panneaux bio dépliés
   const togglePanel = (k: string) => setOpenPanels(p => { const n = new Set(p); n.has(k) ? n.delete(k) : n.add(k); return n; });
-  const [openContext, setOpenContext] = useState<Set<string>>(new Set());  // « ? » contexte par thème
-  const toggleContext = (k: string) => setOpenContext(p => { const n = new Set(p); n.has(k) ? n.delete(k) : n.add(k); return n; });
   const [openExpl, setOpenExpl] = useState<Set<string>>(new Set());         // « ? » explication par proposition
   const toggleExpl = (k: string) => setOpenExpl(p => { const n = new Set(p); n.has(k) ? n.delete(k) : n.add(k); return n; });
+  const [openTheme, setOpenTheme] = useState<Set<string>>(new Set());       // thèmes de programme dépliés (fermés par défaut)
+  const toggleTheme = (k: string) => setOpenTheme(p => { const n = new Set(p); n.has(k) ? n.delete(k) : n.add(k); return n; });
   const [showLegal, setShowLegal] = useState(false);
   const [selectedNews, setSelectedNews] = useState<any | null>(null); // récap actu ouvert EN SITE
   const [mandate, setMandate] = useState<{ type: string; slug: string } | null>(null);
@@ -373,54 +373,51 @@ function CandidateModal({ candidate, onClose }: { candidate: Candidate; onClose:
                 <div className="mt-4 space-y-4">
                   {Object.entries(groups).map(([theme, g]) => {
                     const { Icon, c, bg, dot } = themeStyle(theme);
-                    const ctxOpen = openContext.has(theme);
+                    const isOpen = openTheme.has(theme);
                     return (
                       <div key={theme} className="overflow-hidden rounded-2xl border border-slate-200">
-                        <div className={`flex items-center gap-2.5 ${bg} px-4 py-3`}>
+                        {/* En-tête cliquable : ouvre/ferme les propositions du thème (fermé par défaut). */}
+                        <button onClick={() => toggleTheme(theme)} aria-expanded={isOpen}
+                          className={`flex w-full items-center gap-2.5 ${bg} px-4 py-3 text-left transition hover:brightness-95`}>
                           <span className={`flex h-8 w-8 shrink-0 items-center justify-center rounded-xl bg-white ${c} shadow-sm`}><Icon size={16} /></span>
                           <p className={`text-sm font-black uppercase tracking-widest ${c}`}>{theme}</p>
                           <span className="text-[10px] font-black text-slate-400">· {g.items.length}</span>
-                          {g.ctx && (
-                            <button onClick={() => toggleContext(theme)} title="Pourquoi ?"
-                              className={`ml-auto flex h-7 w-7 shrink-0 items-center justify-center rounded-full bg-white ${c} shadow-sm transition ${ctxOpen ? "ring-2 ring-current" : ""}`}>
-                              <HelpCircle size={15} />
-                            </button>
-                          )}
-                        </div>
+                          <ChevronDown size={18} className={`ml-auto shrink-0 ${c} transition-transform ${isOpen ? "rotate-180" : ""}`} />
+                        </button>
                         <AnimatePresence initial={false}>
-                          {ctxOpen && g.ctx && (
+                          {isOpen && (
                             <motion.div initial={{ height: 0, opacity: 0 }} animate={{ height: "auto", opacity: 1 }} exit={{ height: 0, opacity: 0 }} className="overflow-hidden">
-                              <p className="border-b border-slate-100 bg-slate-50 px-4 py-3 text-sm italic leading-6 text-slate-600">💡 {g.ctx}</p>
+                              {g.ctx && <p className="border-b border-slate-100 bg-slate-50 px-4 py-3 text-sm italic leading-6 text-slate-600">💡 {g.ctx}</p>}
+                              <ul className="divide-y divide-slate-50 bg-white">
+                                {g.items.map((p, i) => {
+                                  const exKey = `${theme}#${i}`;
+                                  const exOpen = openExpl.has(exKey);
+                                  return (
+                                    <li key={i} className="px-4 py-2.5 text-sm leading-6 text-slate-700">
+                                      <div className="flex items-start gap-2.5">
+                                        <span className={`mt-2 h-1.5 w-1.5 shrink-0 rounded-full ${dot}`} />
+                                        <span className="flex-1">{p.text}</span>
+                                        {p.explanation && (
+                                          <button onClick={() => toggleExpl(exKey)} title="Comprendre cette proposition"
+                                            className={`mt-0.5 flex h-6 w-6 shrink-0 items-center justify-center rounded-full border transition ${exOpen ? "border-violet-300 bg-violet-100 text-violet-700" : "border-violet-200 bg-white text-violet-500 hover:bg-violet-50"}`}>
+                                            <HelpCircle size={14} />
+                                          </button>
+                                        )}
+                                      </div>
+                                      <AnimatePresence initial={false}>
+                                        {exOpen && p.explanation && (
+                                          <motion.div initial={{ height: 0, opacity: 0 }} animate={{ height: "auto", opacity: 1 }} exit={{ height: 0, opacity: 0 }} className="overflow-hidden">
+                                            <p className="ml-4 mt-2 rounded-xl border-l-2 border-violet-300 bg-violet-50/70 px-3 py-2.5 text-[13px] leading-6 text-slate-600">{p.explanation}</p>
+                                          </motion.div>
+                                        )}
+                                      </AnimatePresence>
+                                    </li>
+                                  );
+                                })}
+                              </ul>
                             </motion.div>
                           )}
                         </AnimatePresence>
-                        <ul className="divide-y divide-slate-50 bg-white">
-                          {g.items.map((p, i) => {
-                            const exKey = `${theme}#${i}`;
-                            const exOpen = openExpl.has(exKey);
-                            return (
-                              <li key={i} className="px-4 py-2.5 text-sm leading-6 text-slate-700">
-                                <div className="flex items-start gap-2.5">
-                                  <span className={`mt-2 h-1.5 w-1.5 shrink-0 rounded-full ${dot}`} />
-                                  <span className="flex-1">{p.text}</span>
-                                  {p.explanation && (
-                                    <button onClick={() => toggleExpl(exKey)} title="Comprendre cette proposition"
-                                      className={`mt-0.5 flex h-6 w-6 shrink-0 items-center justify-center rounded-full border transition ${exOpen ? "border-violet-300 bg-violet-100 text-violet-700" : "border-violet-200 bg-white text-violet-500 hover:bg-violet-50"}`}>
-                                      <HelpCircle size={14} />
-                                    </button>
-                                  )}
-                                </div>
-                                <AnimatePresence initial={false}>
-                                  {exOpen && p.explanation && (
-                                    <motion.div initial={{ height: 0, opacity: 0 }} animate={{ height: "auto", opacity: 1 }} exit={{ height: 0, opacity: 0 }} className="overflow-hidden">
-                                      <p className="ml-4 mt-2 rounded-xl border-l-2 border-violet-300 bg-violet-50/70 px-3 py-2.5 text-[13px] leading-6 text-slate-600">{p.explanation}</p>
-                                    </motion.div>
-                                  )}
-                                </AnimatePresence>
-                              </li>
-                            );
-                          })}
-                        </ul>
                       </div>
                     );
                   })}

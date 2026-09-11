@@ -17,18 +17,23 @@ export default async function EurodeputesPage() {
         description="Les eurodéputés français siègent au Parlement européen, à Strasbourg et Bruxelles. Ils votent les lois de l'Union européenne (climat, numérique, commerce, agriculture…), le budget de l'UE et contrôlent la Commission européenne. Sur cette page : la composition par groupe, chaque eurodéputé, ses votes par thème et sa présence."
         links={[
           { label: "Composition", href: "#composition" },
+          { label: "Les eurodéputés & leurs votes", href: "#membres" },
           { label: "France & budget de l'UE", href: "#budget" },
           { label: "Projets financés par l'UE", href: "#projets" },
           { label: "Aide à l'Ukraine", href: "#ukraine" },
           { label: "Décisions concernant la France", href: "#decisions" },
-          { label: "Les eurodéputés & leurs votes", href: "#membres" },
         ]}
       />
       <section id="composition" className="scroll-mt-24 pt-4 pb-8">
         <HemicycleChart chamber="eu" subtitle="Parlement européen" title="Eurodéputés français" />
       </section>
 
-      {/* Bande bleu nuit UE : budget France↔UE + projets financés + fil des décisions. */}
+      {/* La liste des eurodéputés vient DIRECTEMENT sous l'hémicycle (au clic sur un secteur, on filtre). */}
+      <section id="membres" className="scroll-mt-24">
+        <EurodeputesClient meps={meps as any[]} />
+      </section>
+
+      {/* Bande bleu nuit UE : budget France↔UE + projets financés + aide Ukraine + fil des décisions. */}
       <div className="bg-gradient-to-b from-[#0a1a3f] to-[#050d24] py-16 space-y-16">
         <section id="budget" className="scroll-mt-24">
           <EuFranceBudget />
@@ -43,10 +48,6 @@ export default async function EurodeputesPage() {
           <EuFranceDecisionsFeed />
         </section>
       </div>
-
-      <section id="membres" className="scroll-mt-24">
-        <EurodeputesClient meps={meps as any[]} />
-      </section>
     </div>
   );
 }

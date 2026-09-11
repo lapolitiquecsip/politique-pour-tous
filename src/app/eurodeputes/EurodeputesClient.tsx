@@ -4,23 +4,35 @@ import { useMemo, useState } from "react";
 import Link from "next/link";
 import { Search, Star, MousePointerClick } from "lucide-react";
 
-const GROUP_CLR: Record<string, string> = {
-  RE: "bg-amber-500", PPE: "bg-blue-600", SD: "bg-rose-500", VERTS: "bg-emerald-500",
-  PfE: "bg-slate-700", ECR: "bg-sky-700", GUE: "bg-red-600", ESN: "bg-indigo-800", NI: "bg-slate-500",
-};
 // Dégradé par groupe (vraies teintes des groupes du Parlement européen) pour des badges modernes.
+// ⚠️ Les clés doivent correspondre EXACTEMENT à `ep_group_code` (ex. « PFE », pas « PfE »),
+// sinon on retombe sur le gris NI.
 const GROUP_GRAD: Record<string, [string, string]> = {
   RE:    ["#F5B301", "#E08A00"],  // Renew — or/ambre
   PPE:   ["#3B82F6", "#1D4ED8"],  // PPE — bleu
   SD:    ["#F0426B", "#C81E4E"],  // S&D — rouge social
   VERTS: ["#3EAA35", "#237A1E"],  // Verts/ALE — vert
-  PfE:   ["#334155", "#0F172A"],  // Patriotes — ardoise
+  PFE:   ["#334155", "#0F172A"],  // Patriotes pour l'Europe — ardoise
   ECR:   ["#2563EB", "#0C2E6E"],  // ECR — bleu profond
   GUE:   ["#E5342A", "#A21B14"],  // La Gauche — rouge vif
   ESN:   ["#4338CA", "#312E81"],  // ESN — indigo
   NI:    ["#94A3B8", "#64748B"],  // Non-inscrits — gris
 };
 const grad = (code: string): [string, string] => GROUP_GRAD[code] || GROUP_GRAD.NI;
+
+// Nom complet + orientation de chaque groupe (pour expliquer les abréviations à l'utilisateur).
+const GROUP_NAME: Record<string, string> = {
+  RE: "Renew Europe — centristes & libéraux",
+  PPE: "Parti populaire européen — droite & centre-droit",
+  SD: "Sociaux-démocrates (S&D) — centre-gauche",
+  VERTS: "Les Verts / ALE — écologistes",
+  PFE: "Patriotes pour l'Europe — droite nationaliste",
+  ECR: "Conservateurs & Réformistes (ECR) — droite souverainiste",
+  GUE: "La Gauche (GUE/NGL) — gauche radicale",
+  ESN: "L'Europe des Nations souveraines — extrême droite",
+  NI: "Non-inscrits — sans groupe",
+};
+const groupName = (code: string) => GROUP_NAME[code] || code;
 
 export default function EurodeputesClient({ meps }: { meps: any[] }) {
   const [q, setQ] = useState("");
@@ -89,6 +101,20 @@ export default function EurodeputesClient({ meps }: { meps: any[] }) {
           ))}
         </div>
 
+        {/* Légende : ce que veulent dire les sigles des groupes (PFE, GUE, ECR…). */}
+        <div className="rounded-2xl border border-slate-200 dark:border-slate-800 bg-white/60 dark:bg-slate-900/60 p-4">
+          <p className="mb-2.5 text-[10px] font-black uppercase tracking-widest text-slate-400">Les groupes du Parlement européen</p>
+          <div className="grid gap-x-4 gap-y-2 sm:grid-cols-2 lg:grid-cols-3">
+            {groups.map(([g]) => (
+              <div key={g} className="flex items-center gap-2 text-xs">
+                <span className="h-2.5 w-2.5 shrink-0 rounded-sm" style={{ background: grad(g)[0] }} />
+                <span className="shrink-0 font-black text-slate-800 dark:text-slate-100">{g}</span>
+                <span className="truncate text-slate-500 dark:text-slate-400">{groupName(g)}</span>
+              </div>
+            ))}
+          </div>
+        </div>
+
         <div className="grid grid-cols-3 sm:grid-cols-4 md:grid-cols-5 lg:grid-cols-6 gap-3">
           {shown.map(m => {
             const g = grad(m.ep_group_code);
@@ -110,6 +136,7 @@ export default function EurodeputesClient({ meps }: { meps: any[] }) {
                   onError={(e) => { (e.currentTarget as HTMLImageElement).src = `https://ui-avatars.com/api/?name=${encodeURIComponent(m.full_name)}&background=003399&color=fff&size=256`; }}
                 />
                 <span
+                  title={groupName(m.ep_group_code)}
                   className="absolute left-2.5 top-2.5 inline-flex items-center gap-1.5 rounded-full px-2.5 py-1 text-[9px] font-black uppercase tracking-widest text-white shadow-lg ring-1 ring-white/40 backdrop-blur-sm"
                   style={{ background: `linear-gradient(135deg, ${grad(m.ep_group_code)[0]}, ${grad(m.ep_group_code)[1]})`, boxShadow: `0 4px 12px ${grad(m.ep_group_code)[0]}55` }}
                 >
@@ -118,8 +145,10 @@ export default function EurodeputesClient({ meps }: { meps: any[] }) {
                 </span>
               </div>
               <div className="p-3">
-                <p className="text-sm font-bold leading-tight text-slate-900 line-clamp-2 transition-colors" style={{ color: g[1] }}>{m.full_name}</p>
-                <p className="mt-0.5 text-[11px] font-medium text-slate-600 line-clamp-1">{m.national_party}</p>
+                {/* Nom TOUJOURS lisible (blanc en sombre) — l'ancienne couleur de groupe le rendait
+                    illisible pour les groupes foncés (PFE, ECR…). La couleur du groupe reste sur le badge. */}
+                <p className="text-sm font-bold leading-tight text-slate-900 dark:text-white line-clamp-2">{m.full_name}</p>
+                <p className="mt-0.5 text-[11px] font-medium text-slate-600 dark:text-slate-300 line-clamp-1">{m.national_party}</p>
               </div>
             </Link>
             );

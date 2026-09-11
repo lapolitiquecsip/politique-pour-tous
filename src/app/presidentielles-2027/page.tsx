@@ -4,11 +4,12 @@ import { Suspense, useEffect, useMemo, useRef, useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { useSearchParams } from "next/navigation";
 import Link from "next/link";
-import { Search, Loader2, X, CalendarDays, ExternalLink, Briefcase, GraduationCap, Users, ShieldCheck, Landmark, ArrowRight, Vote, ChevronDown, Globe2, HeartPulse, Wheat, Leaf, Flag, TrendingUp, HelpCircle, FileText } from "lucide-react";
+import { Search, Loader2, X, CalendarDays, ExternalLink, Briefcase, GraduationCap, Users, ShieldCheck, Landmark, ArrowRight, Vote, ChevronDown, Globe2, HeartPulse, Wheat, Leaf, Flag, TrendingUp, HelpCircle, FileText, Play, Bell } from "lucide-react";
 import { api } from "@/lib/api";
-import VideoFeed from "@/components/executif/VideoFeed";
 import LegalStatusModal from "@/components/deputies/LegalStatusModal";
 import ThemesView from "@/components/presidentielles/ThemesView";
+import { usePremium } from "@/lib/hooks/usePremium";
+import { isFollowingCandidate, toggleFollowCandidate } from "@/lib/candidateFollows";
 
 type Candidate = {
   id: string;
@@ -187,7 +188,16 @@ function themeStyle(name: string): { Icon: any; c: string; bg: string; dot: stri
 
 function CandidateModal({ candidate, onClose }: { candidate: Candidate; onClose: () => void }) {
   const side = sideOf(candidate);
+  const { isPremium } = usePremium() || { isPremium: false };
+  const [following, setFollowing] = useState(false);
+  useEffect(() => { setFollowing(isFollowingCandidate(candidate.id)); }, [candidate.id]);
+  const onToggleFollow = () => {
+    if (!isPremium) { window.location.href = "/premium"; return; }
+    setFollowing(toggleFollowCandidate({ id: candidate.id, slug: (candidate as any).slug, name: candidate.full_name, photo_url: (candidate as any).photo_url, party: candidate.party }));
+  };
   const [news, setNews] = useState<any[] | null>(null);
+  const [videos, setVideos] = useState<any[]>([]);              // vidéos YouTube officielles
+  const [selectedVideo, setSelectedVideo] = useState<any | null>(null); // lecteur vidéo ouvert
   const [proposals, setProposals] = useState<any[]>([]);
   const [openPanels, setOpenPanels] = useState<Set<string>>(new Set());   // panneaux bio dépliés
   const togglePanel = (k: string) => setOpenPanels(p => { const n = new Set(p); n.has(k) ? n.delete(k) : n.add(k); return n; });
@@ -202,6 +212,7 @@ function CandidateModal({ candidate, onClose }: { candidate: Candidate; onClose:
   useEffect(() => {
     let active = true;
     api.getCandidateNews(candidate.id).then(rows => { if (active) setNews(rows); }).catch(() => setNews([]));
+    api.getCandidateVideos(candidate.id, 12).then(rows => { if (active) setVideos(rows as any[]); }).catch(() => {});
     api.getCandidateProposals(candidate.id).then(rows => { if (active) setProposals(rows as any[]); }).catch(() => {});
     api.findMandateByName(candidate.full_name).then(m => { if (active) setMandate(m); }).catch(() => {});
     api.findPartyByAlias(candidate.party).then(p => { if (active) setPartyLink(p); }).catch(() => {});
@@ -251,6 +262,13 @@ function CandidateModal({ candidate, onClose }: { candidate: Candidate; onClose:
               {candidate.declared_at
                 ? <p className="mt-2 text-sm font-bold text-white/80">Candidature déclarée le {formatDate(candidate.declared_at)}</p>
                 : candidate.category?.startsWith("Primaire") && <p className="mt-2 text-sm font-bold text-white/80">Candidat·e à la {candidate.category.toLowerCase()}</p>}
+              {/* Cloche dorée : suivre ce candidat (membres premium) → son fil arrive sur le profil. */}
+              <button onClick={onToggleFollow}
+                title={following ? "Ne plus suivre" : "Suivre ce candidat"}
+                className={`mt-4 inline-flex items-center gap-2 rounded-full px-5 py-2.5 text-xs font-black uppercase tracking-widest transition ${following ? "bg-amber-400 text-slate-900 shadow-lg shadow-amber-500/30" : "bg-white/15 text-white ring-1 ring-white/40 hover:bg-white/25"}`}>
+                <Bell size={15} className={following ? "fill-slate-900" : ""} />
+                {following ? "Suivi ✓" : isPremium ? "Suivre ce candidat" : "Suivre (Premium)"}
+              </button>
             </div>
           </div>
         </div>
@@ -428,28 +446,53 @@ function CandidateModal({ candidate, onClose }: { candidate: Candidate; onClose:
           })()}
 
           {/* Fil d'actu quotidien */}
-          <section className="mt-8">
-            <h3 className="text-2xl font-staatliches uppercase text-slate-950">Fil d'actualité</h3>
-            {news === null ? (
-              <p className="mt-3 text-sm text-slate-400">Chargement…</p>
-            ) : news.length === 0 ? (
-              <p className="mt-3 text-sm text-slate-500">Aucune actualité recensée pour l'instant — le fil se met à jour chaque jour.</p>
-            ) : (
-              <div className="mt-4 flex gap-3 overflow-x-auto pb-3 snap-x snap-mandatory [scrollbar-width:thin]">
-                {news.map(item => (
-                  <button key={item.id} onClick={() => setSelectedNews(item)} className="flex w-[280px] shrink-0 snap-start flex-col rounded-2xl border border-slate-200 p-4 text-left transition hover:border-slate-300 hover:shadow-sm">
-                    <div className="flex items-center justify-between gap-3 text-xs font-bold text-slate-400">
-                      <span className="rounded-full bg-slate-100 px-2 py-0.5 uppercase tracking-widest">{item.news_type || "actu"}</span>
-                      <span><CalendarDays className="mr-1 inline" size={13} />{formatDate(item.date)}</span>
-                    </div>
-                    <p className="mt-2 font-bold text-slate-900 line-clamp-2">{item.title}</p>
-                    {item.summary && <p className="mt-1 text-sm leading-6 text-slate-600 line-clamp-3">{item.summary}</p>}
-                    {item.source_name && <p className="mt-auto pt-2 text-xs font-bold text-slate-400">{item.source_name}</p>}
-                  </button>
-                ))}
-              </div>
-            )}
-          </section>
+          {/* FIL UNIFIÉ : actualités de presse + vidéos YouTube officielles, en un seul défilement. */}
+          {(() => {
+            const feed = [
+              ...(news || []).map((n: any) => ({ kind: "news" as const, when: n.date, data: n })),
+              ...videos.map((v: any) => ({ kind: "video" as const, when: v.published_at, data: v })),
+            ].sort((a, b) => new Date(b.when || 0).getTime() - new Date(a.when || 0).getTime());
+            return (
+              <section className="mt-8">
+                <h3 className="text-2xl font-staatliches uppercase text-slate-950">Actualités &amp; <span className="text-amber-600">vidéos</span></h3>
+                <p className="mt-1 text-xs text-slate-500">Le fil du candidat — articles de presse et vidéos de sa chaîne YouTube officielle, réunis et actualisés chaque jour. Faites défiler →</p>
+                {news === null ? (
+                  <p className="mt-3 text-sm text-slate-400">Chargement…</p>
+                ) : feed.length === 0 ? (
+                  <p className="mt-3 text-sm text-slate-500">Aucune actualité ni vidéo recensée pour l'instant — le fil se met à jour chaque jour.</p>
+                ) : (
+                  <div className="mt-4 flex gap-3 overflow-x-auto pb-3 snap-x snap-mandatory [scrollbar-width:thin]">
+                    {feed.map(it => it.kind === "video" ? (
+                      <button key={`v${it.data.video_id}`} onClick={() => setSelectedVideo(it.data)} className="group flex w-[280px] shrink-0 snap-start flex-col overflow-hidden rounded-2xl border border-slate-200 text-left transition hover:border-slate-300 hover:shadow-sm">
+                        <div className="relative aspect-video overflow-hidden bg-slate-900">
+                          {/* eslint-disable-next-line @next/next/no-img-element */}
+                          {it.data.thumbnail_url && <img src={it.data.thumbnail_url} alt={it.data.title} loading="lazy" className="h-full w-full object-cover transition group-hover:scale-105" />}
+                          <span className="absolute inset-0 flex items-center justify-center"><span className="flex h-11 w-11 items-center justify-center rounded-full bg-white/90 text-slate-900 shadow-lg"><Play size={20} className="ml-0.5 fill-current" /></span></span>
+                          <span className="absolute left-2 top-2 inline-flex items-center gap-1 rounded-full bg-red-600 px-2 py-0.5 text-[9px] font-black uppercase tracking-widest text-white"><Play size={10} className="fill-current" /> Vidéo</span>
+                        </div>
+                        <div className="flex flex-1 flex-col p-4">
+                          <span className="text-xs font-bold text-slate-400"><CalendarDays className="mr-1 inline" size={13} />{formatDate(it.data.published_at)}</span>
+                          <p className="mt-1.5 font-bold text-slate-900 line-clamp-2">{it.data.title}</p>
+                          <span className="mt-auto pt-2 text-xs font-bold text-slate-400">YouTube</span>
+                        </div>
+                      </button>
+                    ) : (
+                      <button key={`n${it.data.id}`} onClick={() => setSelectedNews(it.data)} className="flex w-[280px] shrink-0 snap-start flex-col rounded-2xl border border-slate-200 p-4 text-left transition hover:border-slate-300 hover:shadow-sm">
+                        <div className="flex items-center justify-between gap-3 text-xs font-bold text-slate-400">
+                          <span className="rounded-full bg-slate-100 px-2 py-0.5 uppercase tracking-widest">{it.data.news_type || "actu"}</span>
+                          <span><CalendarDays className="mr-1 inline" size={13} />{formatDate(it.data.date)}</span>
+                        </div>
+                        <p className="mt-2 font-bold text-slate-900 line-clamp-2">{it.data.title}</p>
+                        {it.data.summary && <p className="mt-1 text-sm leading-6 text-slate-600 line-clamp-3">{it.data.summary}</p>}
+                        {it.data.source_name && <p className="mt-auto pt-2 text-xs font-bold text-slate-400">{it.data.source_name}</p>}
+                      </button>
+                    ))}
+                  </div>
+                )}
+                <p className="mt-2 text-[11px] italic leading-snug text-slate-400">Vidéos : chaîne YouTube officielle du candidat. Instagram, TikTok et X ne sont pas repris automatiquement (ces plateformes n'autorisent pas la récupération de leurs contenus).</p>
+              </section>
+            );
+          })()}
 
           {/* Récap de l'actu EN SITE (comme les fiches de parti) : l'utilisateur lit l'essentiel
               sans quitter le site ; « Lire l'article » reste dispo en discret. */}
@@ -486,10 +529,26 @@ function CandidateModal({ candidate, onClose }: { candidate: Candidate; onClose:
             )}
           </AnimatePresence>
 
-          {/* Fil vidéo (chaîne YouTube officielle) — masqué si pas de chaîne vérifiée */}
-          <div className="mt-8">
-            <VideoFeed source="candidate" candidateId={candidate.id} />
-          </div>
+          {/* Lecteur vidéo (embed YouTube officiel) — ouvert au clic sur une carte vidéo du fil. */}
+          <AnimatePresence>
+            {selectedVideo && (
+              <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}
+                className="fixed inset-0 z-[60] flex items-center justify-center bg-slate-950/80 p-4"
+                onClick={() => setSelectedVideo(null)}>
+                <motion.div initial={{ scale: 0.95, opacity: 0 }} animate={{ scale: 1, opacity: 1 }} exit={{ scale: 0.95, opacity: 0 }}
+                  onClick={e => e.stopPropagation()} className="w-full max-w-3xl">
+                  <div className="mb-2 flex items-center justify-between gap-3">
+                    <p className="line-clamp-1 text-sm font-bold text-white">{selectedVideo.title}</p>
+                    <button onClick={() => setSelectedVideo(null)} className="rounded-full bg-white/10 p-2 text-white transition hover:bg-white/20"><X size={18} /></button>
+                  </div>
+                  <div className="aspect-video overflow-hidden rounded-2xl bg-black shadow-2xl">
+                    <iframe src={`https://www.youtube-nocookie.com/embed/${selectedVideo.video_id}?autoplay=1&rel=0`} title={selectedVideo.title}
+                      allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowFullScreen className="h-full w-full" />
+                  </div>
+                </motion.div>
+              </motion.div>
+            )}
+          </AnimatePresence>
 
           {candidate.source_urls && candidate.source_urls.length > 0 && (
             <section className="mt-8">

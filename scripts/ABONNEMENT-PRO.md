@@ -143,12 +143,33 @@ rendu de la commission des finances (53 231 caractères) :
 Coût **mesuré au solde réel** (pas estimé) : 0,0133 $ par analyse, soit **~8 $ pour les
 617 réunions existantes** et **~2,30 $/mois** ensuite.
 
-Deux leviers si le budget devient un sujet :
-- `COMMISSION_MODEL=deepseek-flash` (variable de dépôt GitHub) divise le coût par ~6,
-  au prix de nettement moins de chiffres extraits ;
-- le cron tourne **à 04h40 UTC volontairement** : DeepSeek facture moitié prix hors
-  heures de pointe (01h-04h et 06h-10h UTC en semaine). Ne pas le déplacer dans ces
-  fenêtres sans raison, cela doublerait la facture.
+### Heures creuses : moitié prix, appliqué systématiquement
+
+DeepSeek facture **deux fois moins cher hors heures de pointe**. Ses heures pleines sont
+**01h-04h et 06h-10h UTC, du lundi au vendredi** — donc tout le week-end est à tarif
+réduit, ainsi que les soirées et le milieu de journée.
+
+Deux protections, et il faut garder les deux :
+- les quatre passages du cron (04h40, 12h00, 18h00 et 22h00 UTC) sont tous placés dans
+  des creux. Ne pas les déplacer dans les fenêtres de pointe sans raison ;
+- le script refuse de lui-même d'analyser en heures pleines (`--offpeak-only`, activé
+  dans le workflow). Si un passage tombe en pointe, il reporte plutôt que de payer
+  double. Un lancement manuel sans ce drapeau passe outre.
+
+### Rythme et garde-fous
+
+Quatre passages quotidiens : une commission publiée est analysée dans les heures qui
+suivent, pas le lendemain. Chaque passage traite jusqu'à 30 réunions, **les plus
+récentes d'abord**, 4 en parallèle. Le filtre `analysis is null` garantit qu'une réunion
+n'est jamais analysée deux fois, donc un plafond généreux ne coûte rien s'il n'y a rien
+de neuf.
+
+`--min-balance` (défaut 0,40 $) arrête proprement le traitement quand le solde DeepSeek
+descend trop bas, avec un contrôle toutes les 25 analyses. Rien n'est perdu : les
+réunions non traitées repartent au passage suivant.
+
+Si le budget devient un sujet, la variable de dépôt GitHub `COMMISSION_MODEL=deepseek-flash`
+divise le coût par ~6, au prix de nettement moins de chiffres extraits.
 
 ### Garde-fou contre les citations inventées
 

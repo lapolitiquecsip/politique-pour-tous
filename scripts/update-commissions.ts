@@ -17,10 +17,18 @@
  *     positions défendues, verbatim marquant, suites). C'est ce que voit l'abonné Pro.
  *
  * Usage :
- *   npx tsx scripts/update-commissions.ts                  # marche courante
- *   npx tsx scripts/update-commissions.ts --weeks=30        # rattrapage Sénat
- *   npx tsx scripts/update-commissions.ts --analyses=40     # plus d'analyses d'un coup
- *   npx tsx scripts/update-commissions.ts --skip-analysis   # ingestion seule (gratuit)
+ *   npx tsx scripts/update-commissions.ts                    # marche courante
+ *   npx tsx scripts/update-commissions.ts --weeks=30          # rattrapage Sénat
+ *   npx tsx scripts/update-commissions.ts --skip-analysis     # ingestion seule (gratuite)
+ *   npx tsx scripts/update-commissions.ts --skip-scrape  *       --analyses=700 --concurrency=6                        # rattrapage de l'historique
+ *
+ * Options de l'étape 2 :
+ *   --analyses=N      nombre maximum d'analyses sur ce passage (défaut 20)
+ *   --concurrency=N   analyses menées en parallèle (défaut 4)
+ *   --min-balance=X   plancher de solde DeepSeek en dollars ; en dessous, arrêt propre
+ *                     (défaut 0.4). Le reste est repris au passage suivant.
+ *   --offpeak-only    ne rien analyser pendant les heures pleines de DeepSeek, où le
+ *                     tarif double. Activé par le cron.
  *
  * Variables requises : NEXT_PUBLIC_SUPABASE_URL, SUPABASE_SERVICE_ROLE_KEY.
  * DEEPSEEK_API_KEY n'est nécessaire que pour l'étape 2 (analyses).
@@ -344,11 +352,103 @@ async function loadTranscript(row: any): Promise<string | null> {
   return text.length > 400 ? text : null;
 }
 
-async function analyseMeetings(supabase: any, limit: number) {
+/**
+ * Heures pleines DeepSeek : 01h-04h et 06h-10h UTC, du lundi au vendredi.
+ * Tout le reste — nuits, midi, soirées, et l'intégralité du week-end — est à moitié prix.
+ * Le rattrapage de l'historique a donc tout intérêt à tourner hors de ces fenêtres.
+ */
+function isOffPeak(d = new Date()): boolean {
+  const day = d.getUTCDay();                 // 0 = dimanche, 6 = samedi
+  if (day === 0 || day === 6) return true;   // week-end : toujours creux
+  const h = d.getUTCHours();
+  return !((h >= 1 && h < 4) || (h >= 6 && h < 10));
+}
+
+/** Solde DeepSeek en dollars, ou null si l'appel échoue. */
+async function readBalance(): Promise<number | null> {
+  try {
+    const r = await fetch("https://api.deepseek.com/user/balance", {
+      headers: { Authorization: `Bearer ${LLM_API_KEY}` },
+    });
+    if (!r.ok) return null;
+    const j: any = await r.json();
+    return Number(j.balance_infos?.[0]?.total_balance ?? NaN) || null;
+  } catch { return null; }
+}
+
+/** Analyse une réunion et l'enregistre. Renvoie un compte rendu d'exécution. */
+async function analyseOne(supabase: any, row: any) {
+  const transcript = await loadTranscript(row);
+  if (!transcript) return { ok: false, reason: "verbatim introuvable", dropped: 0, inTok: 0, outTok: 0 };
+
+  const res = await fetch(`${LLM_BASE_URL}chat/completions`, {
+    method: "POST",
+    headers: { "Content-Type": "application/json", Authorization: `Bearer ${LLM_API_KEY}` },
+    body: JSON.stringify({
+      model: MODEL,
+      messages: [
+        { role: "system", content: `${SYSTEM}\n\n${SHAPE}` },
+        {
+          role: "user",
+          content: `Compte rendu de la ${row.commission ?? "commission"} — séance du ${row.meeting_date}.\nObjet : ${row.title ?? "(non précisé)"}\n\n--- COMPTE RENDU INTÉGRAL ---\n${transcript}`,
+        },
+      ],
+      response_format: { type: "json_object" },
+      max_tokens: 16000,
+    }),
+  });
+
+  const body: any = await res.json();
+  if (!res.ok) throw new Error(`HTTP ${res.status} — ${JSON.stringify(body).slice(0, 160)}`);
+
+  const raw = body.choices?.[0]?.message?.content ?? "";
+  if (!raw.trim()) throw new Error("réponse vide (plafond de jetons trop bas ?)");
+  const parsed: Analysis = JSON.parse(raw.replace(/^```json\s*|\s*```$/g, ""));
+
+  const { analysis, dropped } = dropInventedQuotes(parsed, transcript);
+  const points = analysis.points_cles ?? [];
+  const summary = row.summary
+    ?? [analysis.contexte, ...points.slice(0, 4).map(p => `- ${p}`)].filter(Boolean).join("\n\n");
+
+  const { error } = await supabase
+    .from("commission_reports")
+    .update({ analysis, summary, word_count: transcript.split(/\s+/).length, analyzed_at: new Date().toISOString() })
+    .eq("ref", row.ref);
+  if (error) throw new Error(error.message);
+
+  return {
+    ok: true, dropped,
+    inTok: body.usage?.prompt_tokens ?? 0,
+    outTok: body.usage?.completion_tokens ?? 0,
+    points: points.length,
+    chiffres: (analysis.chiffres ?? []).length,
+    citations: (analysis.citations ?? []).length,
+  };
+}
+
+async function analyseMeetings(
+  supabase: any,
+  limit: number,
+  opts: { concurrency: number; minBalance: number; offPeakOnly: boolean },
+) {
   console.log(`\n🧠 Analyse détaillée — jusqu'à ${limit} réunion(s), modèle ${MODEL}`);
   if (!LLM_API_KEY) {
     console.warn("  ⚠ DEEPSEEK_API_KEY absente : étape ignorée.");
     return;
+  }
+
+  if (opts.offPeakOnly && !isOffPeak()) {
+    console.log("  ⏸ Heures pleines DeepSeek (tarif double) : analyses reportées au prochain passage.");
+    return;
+  }
+
+  const startBalance = await readBalance();
+  if (startBalance !== null) {
+    console.log(`  Solde DeepSeek : ${startBalance.toFixed(2)} $${isOffPeak() ? " (heures creuses, tarif réduit)" : " (heures pleines)"}`);
+    if (startBalance <= opts.minBalance) {
+      console.warn(`  ⚠ Solde insuffisant (plancher ${opts.minBalance} $) : rien n'est lancé.`);
+      return;
+    }
   }
 
   const { data: rows, error } = await supabase
@@ -360,76 +460,50 @@ async function analyseMeetings(supabase: any, limit: number) {
 
   if (error) { console.error(`  ✗ ${error.message}`); return; }
   if (!rows?.length) { console.log("  Rien à analyser."); return; }
+  console.log(`  ${rows.length} réunion(s) à traiter, ${opts.concurrency} en parallèle`);
 
   let done = 0, failed = 0, quotesDropped = 0, tokensIn = 0, tokensOut = 0;
+  let halted = false;
+  let cursor = 0;
 
-  for (const row of rows) {
-    const label = `${row.meeting_date} ${String(row.title ?? "").slice(0, 55)}`;
-    const transcript = await loadTranscript(row);
+  // Pool de travailleurs : chacun pioche la réunion suivante jusqu'à épuisement.
+  const worker = async () => {
+    while (!halted) {
+      const i = cursor++;
+      if (i >= rows.length) return;
+      const row = rows[i];
+      const label = `${row.meeting_date} ${String(row.title ?? "").slice(0, 48)}`;
+      try {
+        const r = await analyseOne(supabase, row);
+        if (!r.ok) { failed++; console.warn(`  ⚠ ${label} : ${r.reason}`); continue; }
+        done++; quotesDropped += r.dropped; tokensIn += r.inTok; tokensOut += r.outTok;
+        console.log(`  ✓ [${done + failed}/${rows.length}] ${label} — ${r.points} pts, ${r.chiffres} chiffres, ${r.citations} cit.${r.dropped ? ` (${r.dropped} écartée·s)` : ""}`);
 
-    if (!transcript) {
-      console.warn(`  ⚠ verbatim introuvable : ${label}`);
-      failed++;
-      continue;
+        // Contrôle de solde périodique : on s'arrête NET avant la panne sèche,
+        // le reste sera repris au passage suivant (rien n'est perdu).
+        if (done % 25 === 0) {
+          const b = await readBalance();
+          if (b !== null && b <= opts.minBalance) {
+            halted = true;
+            console.warn(`\n  ⛔ Solde descendu à ${b.toFixed(2)} $ (plancher ${opts.minBalance} $) — arrêt propre.`);
+          }
+        }
+      } catch (e) {
+        failed++;
+        console.warn(`  ✗ ${label} : ${(e as Error).message}`);
+      }
     }
+  };
 
-    try {
-      const res = await fetch(`${LLM_BASE_URL}chat/completions`, {
-        method: "POST",
-        headers: { "Content-Type": "application/json", Authorization: `Bearer ${LLM_API_KEY}` },
-        body: JSON.stringify({
-          model: MODEL,
-          messages: [
-            { role: "system", content: `${SYSTEM}\n\n${SHAPE}` },
-            {
-              role: "user",
-              content: `Compte rendu de la ${row.commission ?? "commission"} — séance du ${row.meeting_date}.\nObjet : ${row.title ?? "(non précisé)"}\n\n--- COMPTE RENDU INTÉGRAL ---\n${transcript}`,
-            },
-          ],
-          response_format: { type: "json_object" },
-          max_tokens: 16000,
-        }),
-      });
+  await Promise.all(Array.from({ length: opts.concurrency }, worker));
 
-      const body: any = await res.json();
-      if (!res.ok) throw new Error(`HTTP ${res.status} — ${JSON.stringify(body).slice(0, 180)}`);
-
-      const raw = body.choices?.[0]?.message?.content ?? "";
-      if (!raw.trim()) throw new Error("réponse vide (plafond de jetons trop bas ?)");
-      const parsed: Analysis = JSON.parse(raw.replace(/^```json\s*|\s*```$/g, ""));
-
-      const { analysis, dropped } = dropInventedQuotes(parsed, transcript);
-      quotesDropped += dropped;
-      tokensIn += body.usage?.prompt_tokens ?? 0;
-      tokensOut += body.usage?.completion_tokens ?? 0;
-
-      // Résumé court dérivé de l'analyse, pour le fil d'auditions tout public.
-      const points = analysis.points_cles ?? [];
-      const summary = row.summary
-        ?? [analysis.contexte, ...points.slice(0, 4).map(p => `- ${p}`)].filter(Boolean).join("\n\n");
-
-      const { error: upErr } = await supabase
-        .from("commission_reports")
-        .update({
-          analysis,
-          summary,
-          word_count: transcript.split(/\s+/).length,
-          analyzed_at: new Date().toISOString(),
-        })
-        .eq("ref", row.ref);
-
-      if (upErr) throw new Error(upErr.message);
-
-      done++;
-      console.log(`  ✓ ${label} — ${points.length} points, ${(analysis.chiffres ?? []).length} chiffres, ${(analysis.citations ?? []).length} citations${dropped ? ` (${dropped} écartée·s)` : ""}`);
-    } catch (e) {
-      failed++;
-      console.warn(`  ✗ ${label} : ${(e as Error).message}`);
-    }
-  }
-
-  console.log(`  → ${done} analyse(s), ${failed} échec(s), ${quotesDropped} citation(s) écartée(s) car absentes du verbatim`);
+  const endBalance = await readBalance();
+  console.log(`\n  → ${done} analyse(s), ${failed} échec(s), ${quotesDropped} citation(s) écartée(s) car absentes du verbatim`);
   console.log(`  → ${tokensIn} jetons entrants, ${tokensOut} sortants`);
+  if (startBalance !== null && endBalance !== null) {
+    const spent = startBalance - endBalance;
+    console.log(`  → dépensé ${spent.toFixed(2)} $ (${done ? (spent / done).toFixed(4) : "—"} $/analyse) — solde restant ${endBalance.toFixed(2)} $`);
+  }
 }
 
 /* ───────────────────────────────── Entrée ───────────────────────────────── */
@@ -455,7 +529,12 @@ async function main() {
     await ingestSenate(supabase, arg("weeks", 3));
   }
   if (!process.argv.includes("--skip-analysis")) {
-    await analyseMeetings(supabase, arg("analyses", 10));
+    await analyseMeetings(supabase, arg("analyses", 20), {
+      concurrency: arg("concurrency", 4),
+      minBalance: Number(process.argv.find(a => a.startsWith("--min-balance="))?.split("=")[1] ?? 0.4),
+      // Le cron l'active pour ne jamais payer le tarif fort ; un lancement manuel passe outre.
+      offPeakOnly: process.argv.includes("--offpeak-only"),
+    });
   }
 
   console.log("\n=== Terminé ===");

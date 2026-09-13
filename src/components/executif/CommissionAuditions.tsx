@@ -5,6 +5,7 @@ import { Loader2, ExternalLink, Lock, Sparkles, Mic, ChevronDown, Users } from "
 import Link from "next/link";
 import { api } from "@/lib/api";
 import { usePremium } from "@/lib/hooks/usePremium";
+import { cleanTitle, decode, extractPeople } from "@/lib/commissions";
 
 type Report = {
   ref: string; commission: string | null; title: string | null;
@@ -13,41 +14,6 @@ type Report = {
 
 const fmtDate = (d: string | null) =>
   !d ? "" : new Date(d).toLocaleDateString("fr-FR", { day: "numeric", month: "long", year: "numeric" });
-
-const NAMED: Record<string, string> = { amp: "&", lt: "<", gt: ">", quot: '"', apos: "'", nbsp: " ", laquo: "«", raquo: "»", eacute: "é", egrave: "è", agrave: "à", ccedil: "ç", rsquo: "’", hellip: "…" };
-// Décode les entités HTML restées brutes dans les données officielles (ex. « &#XA0; » = espace insécable).
-function decode(s: string): string {
-  return s
-    .replace(/&#x([0-9a-f]+);/gi, (_, h) => String.fromCodePoint(parseInt(h, 16)))
-    .replace(/&#(\d+);/g, (_, d) => String.fromCodePoint(parseInt(d, 10)))
-    .replace(/&([a-z]+);/gi, (m, n) => NAMED[n.toLowerCase()] ?? m)
-    .replace(/ /g, " ")
-    .replace(/\s{2,}/g, " ")
-    .trim();
-}
-
-// Extrait les personnes auditionnées/citées (« M./Mme Prénom Nom »), hors titres institutionnels génériques.
-function extractPeople(title: string): string[] {
-  const out: string[] = [];
-  const re = /\b(M\.|Mme|Mlle|MM\.)\s+([A-ZÉÈÀÂÎÔ][\p{L}'’-]+(?:[-\s]+[A-ZÉÈÀÂÎÔ][\p{L}'’-]+)*)/gu;
-  for (const m of title.matchAll(re)) {
-    const name = m[2].trim();
-    if (/^(le|la|les|Président|Rapporteur|Ministre)\b/i.test(name)) continue;
-    const full = `${m[1]} ${name}`;
-    if (!out.includes(full)) out.push(full);
-  }
-  return out.slice(0, 3);
-}
-
-// Titre court et explicite : décode, retire le charabia juridique et les clauses accessoires.
-function cleanTitle(raw: string): string {
-  let t = decode(raw).replace(/\s*;\s*/g, ", ");
-  t = t.replace(/,?\s*en application de l['’]article[^,]*(?:du code[^,]*)?,?/gi, " ");
-  t = t.replace(/,?\s*dont la nomination[^.]*/gi, "");
-  t = t.replace(/,\s*(de|du|des|d['’])\s+(M\.|Mme|MM\.|Mlle)/g, " $1 $2");
-  t = t.replace(/\s{2,}/g, " ").replace(/^[\s,]+/, "").replace(/[\s,]+$/, "").trim();
-  return t ? t.charAt(0).toUpperCase() + t.slice(1) : "Réunion de commission";
-}
 
 // Rend un résumé (contexte + puces « - ») en liste lisible.
 function SummaryBody({ text }: { text: string }) {

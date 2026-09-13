@@ -9,7 +9,9 @@ import {
   LayoutDashboard, BellRing, Users, Bookmark, Building2, Sliders,
   X, Sparkles, Vote, MapPin,
   AlertTriangle, Target, GitBranch, Pencil, HelpCircle,
+  Mic, Radio, Briefcase, Search, Download, LineChart,
 } from "lucide-react";
+import { PLANS, SALES_OPEN } from "@/lib/constants";
 import Link from "next/link";
 
 /* ── Animated Counter ── */
@@ -57,6 +59,45 @@ const FEATURES: Feature[] = [
   { icon: Building2, title: "Budgets locaux expliqués", desc: "Les finances réelles de votre commune, département et région : recettes, dépenses, dette, fiscalité.", color: "from-emerald-500 to-teal-600", href: "/local", cta: "Explorer les budgets" },
   { icon: Bookmark, title: "Favoris : lois & territoires", desc: "Enregistrez lois, communes et régions pour les suivre et les retrouver d'un clic sur votre profil.", color: "from-sky-500 to-indigo-600", href: "/dashboard", cta: "Voir mon espace" },
   { icon: LayoutDashboard, title: "Espace personnel complet", desc: "Historique de vote, élus suivis, lois favorites, territoires : tout au même endroit, à jour.", color: "from-slate-500 to-slate-700", href: "/dashboard", cta: "Ouvrir mon tableau de bord" },
+];
+
+/* ── Prix à la française : 3,99 € ── */
+const fmtPrice = (n: number) => `${n.toFixed(2).replace(".", ",").replace(",00", "")} €`;
+
+/* ── Ce que l'abonnement Pro ajoute par-dessus l'Elite. ── */
+const PRO_FEATURES = [
+  {
+    icon: Mic,
+    title: "Suivi des commissions parlementaires",
+    desc: "Assemblée ET Sénat : chaque réunion de commission, avec l'analyse détaillée de ce qui s'y est dit — positions défendues, chiffres avancés, arbitrages, suites annoncées.",
+    color: "from-emerald-500 to-teal-600",
+    href: "/deputes#commissions",
+    cta: "Voir les commissions",
+  },
+  {
+    icon: Radio,
+    title: "Veille réseaux sociaux des candidats",
+    desc: "Comptes personnels et comptes de soutien de chaque candidat à la présidentielle : audience, vues par semaine et par mois, dynamiques comparées.",
+    color: "from-fuchsia-500 to-purple-600",
+    href: "/presidentielles-2027#veille",
+    cta: "Voir les dynamiques",
+  },
+  {
+    icon: Search,
+    title: "Recherche plein texte",
+    desc: "Retrouvez une prise de parole, un chiffre ou un amendement dans l'ensemble des comptes rendus de commission indexés.",
+    color: "from-sky-500 to-blue-600",
+    href: "/deputes#commissions",
+    cta: "Chercher dans les comptes rendus",
+  },
+  {
+    icon: Download,
+    title: "Export des données",
+    desc: "Sortez en CSV ce que vous consultez — suivi de commission ou séries d'audience — pour vos notes, vos revues de presse et vos tableaux de bord.",
+    color: "from-amber-400 to-orange-500",
+    href: "/presidentielles-2027#veille",
+    cta: "Essayer un export",
+  },
 ];
 
 /* ══════════ Démo 1 : une VRAIE analyse détaillée, rendue avec le VRAI design du site ══════════ */
@@ -216,12 +257,15 @@ function NotifDemoModal({ open, onClose }: { open: boolean; onClose: () => void 
 export default function PremiumPage() {
   const { userId } = usePremium();
   const [billingCycle, setBillingCycle] = useState<"monthly" | "annually">("monthly");
-  const [selectedPlan] = useState<"elite">("elite");
   const [lawOpen, setLawOpen] = useState(false);
   const [notifOpen, setNotifOpen] = useState(false);
 
-  const plan = { name: "Elite", monthly: "3.99€", annually: "38€" };
-  const goPremium = () => { window.location.href = getPremiumUrl(userId, selectedPlan, billingCycle); };
+  const plan = PLANS.elite;
+  // Chaque carte lance son propre paiement : le clic porte l'offre choisie.
+  // Elite est mensuel uniquement — seule l'offre Pro suit la bascule de périodicité.
+  const goPremium = (key: "elite" | "pro" = "elite") => {
+    window.location.href = getPremiumUrl(userId, key, key === "pro" ? billingCycle : "monthly");
+  };
 
   return (
     <div className="min-h-screen bg-background pb-20">
@@ -242,9 +286,9 @@ export default function PremiumPage() {
             Décryptages de lois illimités, suivi de vos élus et notifications personnalisées sur tout ce qui vous concerne. L&apos;essentiel, sans le bruit.
           </motion.p>
           <motion.button initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.6, delay: 0.45 }}
-            onClick={goPremium}
+            onClick={() => SALES_OPEN ? goPremium("elite") : document.getElementById("offres")?.scrollIntoView({ behavior: "smooth" })}
             className="inline-flex items-center gap-2 rounded-2xl bg-gradient-to-r from-amber-400 to-yellow-500 px-8 py-4 text-slate-900 font-black uppercase tracking-widest text-sm shadow-[0_10px_40px_rgba(251,191,36,0.35)] hover:brightness-110 transition">
-            Devenir Premium — {plan.monthly}/mois <ArrowRight size={18} />
+            {SALES_OPEN ? <>Devenir Premium — dès {fmtPrice(plan.monthly)}/mois</> : <>Découvrir les formules</>} <ArrowRight size={18} />
           </motion.button>
           <div className="mt-12 flex flex-wrap items-center justify-center gap-8 md:gap-14">
             <div className="text-center"><p className="text-4xl md:text-5xl font-extrabold text-amber-400"><AnimatedCounter target={302} suffix="+" /></p><p className="text-sm text-white/50 mt-1 italic">Citoyens Premium</p></div>
@@ -292,45 +336,150 @@ export default function PremiumPage() {
         </div>
       </section>
 
-      {/* ══════ OFFRE & CTA ══════ */}
-      <section className="py-24 px-4 bg-white dark:bg-slate-900">
-        <div className="max-w-lg mx-auto">
-          <FadeIn className="pt-4">
-            <div className="relative rounded-[2.5rem] border-2 border-amber-400 bg-gradient-to-b from-amber-50/60 to-white dark:from-amber-500/5 dark:to-slate-900 p-8 md:p-10 shadow-2xl shadow-amber-500/10">
-              <div className="absolute top-0 left-1/2 -translate-x-1/2 -translate-y-1/2 whitespace-nowrap bg-slate-900 text-white px-4 py-1.5 rounded-full text-[10px] font-black uppercase tracking-widest shadow-lg">Offre la plus populaire</div>
-
-              <div className="flex items-center justify-center gap-4 mb-6">
-                <span className={`text-sm font-bold ${billingCycle === "monthly" ? "text-slate-900 dark:text-white" : "text-slate-400"}`}>Mensuel</span>
-                <button onClick={() => setBillingCycle(billingCycle === "monthly" ? "annually" : "monthly")} className="w-14 h-8 bg-slate-900 rounded-full p-1 relative">
-                  <motion.div animate={{ x: billingCycle === "monthly" ? 0 : 24 }} className="w-6 h-6 bg-amber-400 rounded-full shadow-lg" />
-                </button>
-                <span className={`text-sm font-bold flex items-center gap-2 ${billingCycle === "annually" ? "text-slate-900 dark:text-white" : "text-slate-400"}`}>
-                  Annuel <span className="px-2 py-0.5 bg-emerald-500 text-white text-[10px] rounded-full">-20% 🔥</span>
-                </span>
-              </div>
-
-              <div className="text-center mb-8">
-                <div className="flex items-baseline justify-center gap-1">
-                  <span className="text-6xl font-black text-slate-900 dark:text-white">{billingCycle === "monthly" ? plan.monthly : plan.annually}</span>
-                  <span className="text-slate-400 font-bold">/{billingCycle === "monthly" ? "mois" : "an"}</span>
-                </div>
-                {billingCycle === "annually" && <p className="text-emerald-600 text-xs font-bold mt-2 italic">Soit {(parseInt(plan.annually) / 12).toFixed(2)}€/mois</p>}
-                <p className="mt-2 text-sm text-slate-500">Formule <span className="font-bold text-amber-600">Elite</span> — l&apos;expérience complète.</p>
-              </div>
-
-              <div className="space-y-3 mb-8">
-                {["Décryptages de lois illimités", "Suivi des députés ET sénateurs", "Notifications personnalisées", "Budgets locaux & favoris"].map((t) => (
-                  <div key={t} className="flex items-center gap-3 text-sm font-medium text-slate-700 dark:text-slate-200"><CheckCircle2 size={18} className="text-emerald-500 shrink-0" /> {t}</div>
-                ))}
-              </div>
-
-              <button onClick={goPremium}
-                className="w-full inline-flex items-center justify-center gap-2 rounded-2xl bg-gradient-to-r from-amber-400 to-yellow-500 px-6 py-4 text-slate-900 font-black uppercase tracking-widest text-sm shadow-lg shadow-amber-500/20 hover:brightness-110 transition active:scale-[0.99]">
-                <Star size={16} className="fill-current" /> Devenir Premium
-              </button>
-              <p className="text-center text-[10px] text-slate-400 font-bold uppercase tracking-widest mt-4">Sécurisé par Stripe • Résiliable à tout moment</p>
-            </div>
+      {/* ══════ CE QUE L'OFFRE PRO AJOUTE ══════ */}
+      <section className="py-24 px-4 bg-slate-950 text-white">
+        <div className="max-w-6xl mx-auto">
+          <FadeIn className="text-center mb-16">
+            <p className="inline-flex items-center gap-2 rounded-full bg-white/10 px-4 py-1.5 text-[11px] font-black uppercase tracking-widest text-fuchsia-300 mb-5">
+              <Briefcase size={13} /> Formule Pro
+            </p>
+            <h2 className="text-4xl md:text-6xl font-staatliches uppercase tracking-tighter">
+              La veille des <span className="text-fuchsia-400">professionnels</span>
+            </h2>
+            <p className="mt-4 text-lg text-white/60 max-w-2xl mx-auto leading-relaxed">
+              Pour les collaborateurs parlementaires, les directions des affaires publiques, les
+              entreprises et la presse : le niveau de détail qu&apos;on ne trouve nulle part ailleurs,
+              sans éplucher soi-même les comptes rendus.
+            </p>
           </FadeIn>
+
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+            {PRO_FEATURES.map((f, i) => (
+              <FadeIn key={i} delay={i * 0.08}>
+                <div className="group relative flex h-full flex-col overflow-hidden rounded-[2rem] border border-white/10 bg-white/[0.04] p-7 transition-all duration-500 hover:border-fuchsia-400/40 hover:bg-white/[0.07]">
+                  <div className={`absolute left-0 top-0 bottom-0 w-1.5 bg-gradient-to-b ${f.color}`} />
+                  <div className={`mb-5 flex h-14 w-14 items-center justify-center rounded-2xl bg-gradient-to-br ${f.color} text-white shadow-lg transition-transform group-hover:scale-110`}>
+                    <f.icon size={26} />
+                  </div>
+                  <h3 className="text-lg font-bold">{f.title}</h3>
+                  <p className="mt-2 flex-1 text-sm leading-relaxed text-white/60">{f.desc}</p>
+                  <Link href={f.href} className="mt-5 inline-flex items-center gap-1.5 self-start text-[11px] font-black uppercase tracking-widest text-fuchsia-300 transition-all hover:gap-2.5">
+                    {f.cta} <ArrowRight size={14} />
+                  </Link>
+                </div>
+              </FadeIn>
+            ))}
+          </div>
+        </div>
+      </section>
+
+      {/* ══════ OFFRES & CTA ══════ */}
+      <section id="offres" className="scroll-mt-24 py-24 px-4 bg-white dark:bg-slate-900">
+        <div className="max-w-5xl mx-auto">
+          <FadeIn className="text-center mb-12">
+            <h2 className="text-4xl md:text-6xl font-staatliches uppercase tracking-tighter text-slate-900 dark:text-white">
+              Deux formules, <span className="text-amber-500">un seul site</span>
+            </h2>
+            <p className="mt-3 text-slate-500 text-lg">Choisissez selon l&apos;usage que vous en faites.</p>
+          </FadeIn>
+
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-8 items-start pt-4">
+            {/* ─── Elite ─── */}
+            <FadeIn>
+              <div className="relative rounded-[2.5rem] border-2 border-amber-400 bg-gradient-to-b from-amber-50/60 to-white dark:from-amber-500/5 dark:to-slate-900 p-8 shadow-2xl shadow-amber-500/10">
+                <div className="absolute top-0 left-1/2 -translate-x-1/2 -translate-y-1/2 whitespace-nowrap bg-slate-900 text-white px-4 py-1.5 rounded-full text-[10px] font-black uppercase tracking-widest shadow-lg">Offre la plus populaire</div>
+
+                <p className="text-[10px] font-black uppercase tracking-widest text-amber-600">{PLANS.elite.audience}</p>
+                <h3 className="mt-1 font-staatliches text-4xl uppercase tracking-tight text-slate-900 dark:text-white">{PLANS.elite.name}</h3>
+                <p className="mt-1 text-sm text-slate-500">{PLANS.elite.tagline}</p>
+
+                {/* Formule mensuelle uniquement : aucun choix de périodicité à proposer. */}
+                <div className="mt-6 mb-8">
+                  <div className="flex items-baseline gap-1">
+                    <span className="text-5xl font-black text-slate-900 dark:text-white">{fmtPrice(PLANS.elite.monthly)}</span>
+                    <span className="text-slate-400 font-bold">/mois</span>
+                  </div>
+                  <p className="mt-2 text-xs font-bold italic text-slate-400">Sans engagement, résiliable à tout moment.</p>
+                </div>
+
+                <div className="space-y-3 mb-8">
+                  {PLANS.elite.features.map((t) => (
+                    <div key={t} className="flex items-start gap-3 text-sm font-medium text-slate-700 dark:text-slate-200"><CheckCircle2 size={18} className="text-emerald-500 shrink-0 mt-0.5" /> {t}</div>
+                  ))}
+                </div>
+
+                {SALES_OPEN ? (
+                  <button onClick={() => goPremium("elite")}
+                    className="w-full inline-flex items-center justify-center gap-2 rounded-2xl bg-gradient-to-r from-amber-400 to-yellow-500 px-6 py-4 text-slate-900 font-black uppercase tracking-widest text-sm shadow-lg shadow-amber-500/20 hover:brightness-110 transition active:scale-[0.99]">
+                    <Star size={16} className="fill-current" /> Devenir Premium
+                  </button>
+                ) : (
+                  <div className="w-full rounded-2xl border-2 border-dashed border-amber-300 px-6 py-4 text-center text-sm font-black uppercase tracking-widest text-amber-700 dark:text-amber-400">
+                    Bientôt disponible
+                  </div>
+                )}
+              </div>
+            </FadeIn>
+
+            {/* ─── Pro ─── */}
+            <FadeIn delay={0.1}>
+              <div className="relative rounded-[2.5rem] border-2 border-slate-900 dark:border-fuchsia-500/40 bg-gradient-to-b from-slate-950 to-slate-900 p-8 text-white shadow-2xl shadow-slate-900/20">
+                <div className="absolute top-0 left-1/2 -translate-x-1/2 -translate-y-1/2 whitespace-nowrap bg-gradient-to-r from-fuchsia-500 to-purple-600 text-white px-4 py-1.5 rounded-full text-[10px] font-black uppercase tracking-widest shadow-lg">Professionnels</div>
+
+                <p className="text-[10px] font-black uppercase tracking-widest text-fuchsia-300">{PLANS.pro.audience}</p>
+                <h3 className="mt-1 font-staatliches text-4xl uppercase tracking-tight">{PLANS.pro.name}</h3>
+                <p className="mt-1 text-sm text-white/60">{PLANS.pro.tagline}</p>
+
+                {/* Le Pro est la seule formule à proposer l'annuel : la bascule vit donc ici. */}
+                <div className="mt-5 inline-flex items-center gap-3 rounded-full bg-white/10 p-1 pr-3">
+                  <button onClick={() => setBillingCycle(billingCycle === "monthly" ? "annually" : "monthly")}
+                    aria-label="Basculer entre facturation mensuelle et annuelle"
+                    className="relative h-7 w-12 rounded-full bg-slate-950/60 p-1">
+                    <motion.div animate={{ x: billingCycle === "monthly" ? 0 : 20 }} className="h-5 w-5 rounded-full bg-fuchsia-400 shadow-lg" />
+                  </button>
+                  <span className="text-[11px] font-black uppercase tracking-widest">
+                    {billingCycle === "monthly"
+                      ? <span className="text-white/50">Passer à l&apos;annuel <span className="ml-1 rounded-full bg-emerald-500 px-1.5 py-0.5 text-white">-20%</span></span>
+                      : <span className="text-emerald-400">Facturation annuelle</span>}
+                  </span>
+                </div>
+
+                <div className="mt-4 mb-8">
+                  <div className="flex items-baseline gap-1">
+                    <span className="text-5xl font-black">{fmtPrice(billingCycle === "monthly" ? PLANS.pro.monthly : PLANS.pro.annually)}</span>
+                    <span className="text-white/40 font-bold">/{billingCycle === "monthly" ? "mois" : "an"}</span>
+                  </div>
+                  {billingCycle === "annually" && <p className="mt-2 text-xs font-bold italic text-emerald-400">Soit {fmtPrice(PLANS.pro.annually / 12)}/mois — deux mois offerts</p>}
+                </div>
+
+                <div className="space-y-3 mb-8">
+                  {PLANS.pro.features.map((t, i) => (
+                    <div key={t} className="flex items-start gap-3 text-sm font-medium text-white/90">
+                      {i === 0
+                        ? <Sparkles size={18} className="text-amber-400 shrink-0 mt-0.5" />
+                        : <CheckCircle2 size={18} className="text-fuchsia-400 shrink-0 mt-0.5" />}
+                      {t}
+                    </div>
+                  ))}
+                </div>
+
+                {SALES_OPEN ? (
+                  <button onClick={() => goPremium("pro")}
+                    className="w-full inline-flex items-center justify-center gap-2 rounded-2xl bg-gradient-to-r from-fuchsia-500 to-purple-600 px-6 py-4 font-black uppercase tracking-widest text-sm shadow-lg shadow-fuchsia-500/30 hover:brightness-110 transition active:scale-[0.99]">
+                    <LineChart size={16} /> Passer au Pro
+                  </button>
+                ) : (
+                  <div className="w-full rounded-2xl border-2 border-dashed border-fuchsia-400/50 px-6 py-4 text-center text-sm font-black uppercase tracking-widest text-fuchsia-300">
+                    Bientôt disponible
+                  </div>
+                )}
+              </div>
+            </FadeIn>
+          </div>
+
+          <p className="text-center text-[10px] text-slate-400 font-bold uppercase tracking-widest mt-8">
+            {SALES_OPEN ? "Sécurisé par Stripe • Résiliable à tout moment" : "Ouverture des abonnements très prochainement"}
+          </p>
         </div>
       </section>
 

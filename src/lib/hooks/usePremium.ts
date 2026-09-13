@@ -2,18 +2,27 @@
 
 import { useEffect, useState } from "react";
 import { supabase } from "@/lib/supabase";
+import { tierAtLeast, type Tier } from "@/lib/constants";
 
+/**
+ * Statut d'abonnement de l'utilisateur courant.
+ *
+ * Trois niveaux : « free », « elite » (3,99 €) et « pro » (24,99 €).
+ * Le niveau est lu dans profiles.subscription_tier ; si la colonne n'existe pas
+ * encore (migration non appliquée), on retombe sur l'ancien booléen is_premium,
+ * qui vaut alors « elite ». Aucune page ne casse pendant la migration.
+ */
 export function usePremium() {
-  const [isPremium, setIsPremium] = useState<boolean>(false);
+  const [tier, setTier] = useState<Tier>("free");
   const [loading, setLoading] = useState<boolean>(true);
   const [userId, setUserId] = useState<string | null>(null);
 
   useEffect(() => {
     async function checkPremium() {
       const { data: { user } } = await supabase.auth.getUser();
-      
+
       if (!user) {
-        setIsPremium(false);
+        setTier("free");
         setUserId(null);
         setLoading(false);
         return;
@@ -21,19 +30,33 @@ export function usePremium() {
 
       setUserId(user.id);
 
-      const { data, error } = await supabase
+      // Tentative avec la colonne subscription_tier…
+      type Row = { is_premium: boolean | null; subscription_tier?: string | null };
+      let res: { data: Row | null; error: { message: string } | null } = await supabase
         .from("profiles")
-        .select("is_premium")
+        .select("is_premium, subscription_tier")
         .eq("id", user.id)
         .single();
 
-      if (error) {
-        console.warn("Erreur usePremium:", error.message);
-        setIsPremium(false);
-      } else {
-        setIsPremium(data?.is_premium || false);
+      // …repli si la colonne n'est pas encore en base.
+      if (res.error) {
+        res = await supabase
+          .from("profiles")
+          .select("is_premium")
+          .eq("id", user.id)
+          .single();
       }
-      
+
+      if (res.error) {
+        console.warn("Erreur usePremium:", res.error.message);
+        setTier("free");
+      } else {
+        const raw = String(res.data?.subscription_tier || "").toLowerCase();
+        if (raw === "pro") setTier("pro");
+        else if (raw === "elite" || res.data?.is_premium) setTier("elite");
+        else setTier("free");
+      }
+
       setLoading(false);
     }
 
@@ -46,7 +69,7 @@ export function usePremium() {
         checkPremium();
       } else {
         setUserId(null);
-        setIsPremium(false);
+        setTier("free");
       }
     });
 
@@ -55,5 +78,13 @@ export function usePremium() {
     };
   }, []);
 
-  return { isPremium, loading, userId };
+  return {
+    tier,
+    /** Elite OU Pro — c'est ce que testent toutes les fonctionnalités premium historiques. */
+    isPremium: tierAtLeast(tier, "elite"),
+    /** Réservé aux outils professionnels (commissions, veille réseaux sociaux). */
+    isPro: tier === "pro",
+    loading,
+    userId,
+  };
 }

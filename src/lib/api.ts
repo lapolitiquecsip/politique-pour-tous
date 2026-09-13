@@ -578,6 +578,106 @@ export const api = {
   },
 
   // Auditions & travaux de commission (comptes rendus officiels) + résumé IA.
+
+  /* ════════ SUIVI DES COMMISSIONS PARLEMENTAIRES (abonnement Pro) ════════ */
+
+  /**
+   * Réunions de commission d'une chambre, de la plus récente à la plus ancienne.
+   *
+   * `chamber` vaut 'AN' ou 'SENAT'. La colonne a été ajoutée par la migration
+   * 2026091301 ; tant qu'elle n'est pas appliquée, on retombe sur une requête sans
+   * filtre de chambre plutôt que de renvoyer une liste vide.
+   */
+  getCommissionMeetings: async (opts: {
+    chamber?: 'AN' | 'SENAT';
+    commission?: string | null;
+    search?: string | null;
+    limit?: number;
+    offset?: number;
+  } = {}) => {
+    const { chamber, commission, search, limit = 20, offset = 0 } = opts;
+    const COLS = 'ref, chamber, commission, title, meeting_date, cr_url, video_url, summary, analysis, speakers, topics';
+
+    // La syntaxe `or()` de PostgREST utilise la virgule comme séparateur et les
+    // parenthèses comme groupes : un terme de recherche qui en contient casserait le
+    // filtre. On neutralise ces caractères ainsi que les jokers de `ilike`.
+    const safeSearch = search?.replace(/[,()*%\\]/g, " ").replace(/\s+/g, " ").trim();
+
+    const build = (withChamber: boolean) => {
+      let q = supabase.from('commission_reports').select(withChamber ? COLS : COLS.replace('chamber, ', ''));
+      if (withChamber && chamber) q = q.eq('chamber', chamber);
+      if (commission) q = q.eq('commission', commission);
+      // Recherche plein texte simple sur le titre ET le résumé (avantage Pro).
+      if (safeSearch) q = q.or(`title.ilike.*${safeSearch}*,summary.ilike.*${safeSearch}*`);
+      return q.order('meeting_date', { ascending: false }).range(offset, offset + limit - 1);
+    };
+
+    let res: any = await build(true);
+    if (res.error) res = await build(false); // migration non appliquée
+    if (res.error) { console.error(res.error); return []; }
+    return res.data ?? [];
+  },
+
+  /**
+   * Liste des commissions d'une chambre avec le nombre de réunions et la date de
+   * la dernière. Sert de menu de navigation au suivi Pro.
+   */
+  getCommissionList: async (chamber: 'AN' | 'SENAT' = 'AN') => {
+    const run = async (withChamber: boolean) => {
+      let q = supabase.from('commission_reports').select(withChamber ? 'commission, meeting_date, chamber' : 'commission, meeting_date');
+      if (withChamber) q = q.eq('chamber', chamber);
+      return q.order('meeting_date', { ascending: false }).limit(2000);
+    };
+
+    let res: any = await run(true);
+    if (res.error) res = await run(false);
+    if (res.error || !res.data) return [];
+
+    const byName = new Map<string, { name: string; count: number; last: string | null }>();
+    for (const row of res.data as any[]) {
+      const name = (row.commission || '').trim();
+      if (!name) continue;
+      const entry = byName.get(name) ?? { name, count: 0, last: null };
+      entry.count += 1;
+      // Les lignes arrivent déjà triées par date décroissante : la première vue est la plus récente.
+      if (!entry.last) entry.last = row.meeting_date;
+      byName.set(name, entry);
+    }
+    return [...byName.values()].sort((a, b) => b.count - a.count);
+  },
+
+  /* ════════ VEILLE RÉSEAUX SOCIAUX DES CANDIDATS (abonnement Pro) ════════ */
+
+  /** Comptes suivis (officiels et de soutien) d'un candidat, ou de tous si omis. */
+  getCandidateSocialAccounts: async (candidateId?: string) => {
+    let q = supabase
+      .from('candidate_social_accounts')
+      .select('id, candidate_id, platform, handle, url, kind, label, external_id')
+      .eq('active', true);
+    if (candidateId) q = q.eq('candidate_id', candidateId);
+    const { data, error } = await q;
+    if (error || !data) return [];
+    return data;
+  },
+
+  /**
+   * Relevés quotidiens des comptes passés en argument, sur `days` jours.
+   * Les tendances (7 j / 30 j) sont calculées côté interface à partir de ces séries :
+   * aucune tendance n'est figée en base, donc aucune ne peut devenir fausse.
+   */
+  getCandidateSocialSnapshots: async (accountIds: string[], days = 90) => {
+    if (!accountIds.length) return [];
+    const since = new Date(Date.now() - days * 864e5).toISOString().slice(0, 10);
+    const { data, error } = await supabase
+      .from('candidate_social_snapshots')
+      .select('account_id, captured_on, followers, total_views, posts, period_views, period_posts, engagement, status, source')
+      .in('account_id', accountIds)
+      .gte('captured_on', since)
+      .order('captured_on', { ascending: true });
+    if (error || !data) return [];
+    return data;
+  },
+
   getCommissionReports: async (limit = 12) => {
     const { data, error } = await supabase
       .from('commission_reports')

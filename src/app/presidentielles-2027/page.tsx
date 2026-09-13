@@ -8,6 +8,7 @@ import { Search, Loader2, X, CalendarDays, ExternalLink, Briefcase, GraduationCa
 import { api } from "@/lib/api";
 import LegalStatusModal from "@/components/deputies/LegalStatusModal";
 import ThemesView from "@/components/presidentielles/ThemesView";
+import CandidateSocialTracker from "@/components/presidentielles/CandidateSocialTracker";
 import { usePremium } from "@/lib/hooks/usePremium";
 import { isFollowingCandidate, toggleFollowCandidate } from "@/lib/candidateFollows";
 
@@ -681,7 +682,7 @@ function CandidatesContent() {
   const [loading, setLoading] = useState(true);
   const [search, setSearch] = useState("");
   const [side, setSide] = useState<string>("Tous");
-  const [view, setView] = useState<"candidats" | "positions" | "enjeux">("candidats");
+  const [view, setView] = useState<"candidats" | "positions" | "enjeux" | "dynamiques">("candidats");
   // Flottement perpétuel des cartes : uniquement sur grand écran et hors « mouvement réduit ».
   // Sur mobile, N animations infinies (y + rotate) simultanées saccadent → on les coupe.
   const [floaty, setFloaty] = useState(false);
@@ -744,7 +745,7 @@ function CandidatesContent() {
           </p>
           {/* Onglets Candidats / Positions */}
           <div className="mt-8 inline-flex rounded-full border border-slate-200 bg-white p-1 shadow-sm">
-            {([["candidats", "Candidats"], ["positions", "Positions"], ["enjeux", "Enjeux"]] as const).map(([key, label]) => (
+            {([["candidats", "Candidats"], ["positions", "Positions"], ["enjeux", "Enjeux"], ["dynamiques", "Dynamiques"]] as const).map(([key, label]) => (
               <button key={key} onClick={() => setView(key)}
                 className={`rounded-full px-6 py-2 text-sm font-black uppercase tracking-widest transition ${view === key ? "bg-slate-900 text-white" : "text-slate-500 hover:text-slate-900"}`}>
                 {label}
@@ -754,7 +755,10 @@ function CandidatesContent() {
         </div>
       </div>
 
-      {view === "enjeux" ? (
+      {view === "dynamiques" ? (
+        // Veille réseaux sociaux des candidats — outil de l'abonnement Pro.
+        <CandidateSocialTracker candidates={candidates} />
+      ) : view === "enjeux" ? (
         <ThemesView />
       ) : view === "positions" ? (
         <PositionsView candidates={candidates} />

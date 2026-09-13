@@ -1,0 +1,484 @@
+[
+  {
+    "candidate_slug": "bruno-retailleau",
+    "accounts": [
+      {
+        "platform": "youtube",
+        "handle": "@bruno_retailleau",
+        "external_id": "UCRkuLQabW1hsihpZuHJSbEA",
+        "url": "https://www.youtube.com/@bruno_retailleau",
+        "kind": "official"
+      },
+      {
+        "platform": "youtube",
+        "handle": "@lesrepublicains",
+        "external_id": "UC3Ma4tRFxx85oZI_XKVTPwg",
+        "url": "https://www.youtube.com/@lesrepublicains",
+        "kind": "support",
+        "label": "Les Républicains"
+      },
+      {
+        "platform": "tiktok",
+        "handle": "@lesrepublicains",
+        "external_id": null,
+        "url": "https://www.tiktok.com/@lesrepublicains",
+        "kind": "support",
+        "label": "Les Républicains"
+      }
+    ]
+  },
+  {
+    "candidate_slug": "david-lisnard",
+    "accounts": [
+      {
+        "platform": "youtube",
+        "handle": "@david_lisnard",
+        "external_id": "UC2XZY-bjIEmyLZ9MPJQytZg",
+        "url": "https://www.youtube.com/@david_lisnard",
+        "kind": "official"
+      },
+      {
+        "platform": "tiktok",
+        "handle": "@david.lisnard",
+        "external_id": null,
+        "url": "https://www.tiktok.com/@david.lisnard",
+        "kind": "official"
+      },
+      {
+        "platform": "youtube",
+        "handle": "@nouvelleenergie",
+        "external_id": "UCE8VUisUzoZiHRMAeKd7acg",
+        "url": "https://www.youtube.com/@nouvelleenergie",
+        "kind": "support",
+        "label": "Nouvelle Énergie"
+      }
+    ]
+  },
+  {
+    "candidate_slug": "eric-zemmour",
+    "accounts": [
+      {
+        "platform": "youtube",
+        "handle": "@ericzemmouroff",
+        "external_id": "UCjTbZBXEw-gplUAnMXLYHpg",
+        "url": "https://www.youtube.com/@ericzemmouroff",
+        "kind": "official"
+      }
+    ]
+  },
+  {
+    "candidate_slug": "fabien-roussel",
+    "accounts": [
+      {
+        "platform": "tiktok",
+        "handle": "@fabien_roussel",
+        "external_id": null,
+        "url": "https://www.tiktok.com/@fabien_roussel",
+        "kind": "official"
+      }
+    ]
+  },
+  {
+    "candidate_slug": "florian-philippot",
+    "accounts": [
+      {
+        "platform": "tiktok",
+        "handle": "@florianphilippot",
+        "external_id": null,
+        "url": "https://www.tiktok.com/@florianphilippot",
+        "kind": "official"
+      },
+      {
+        "platform": "youtube",
+        "handle": "@lespatriotes",
+        "external_id": "UCjb9thdXXl4wmeb8ArPna9g",
+        "url": "https://www.youtube.com/@lespatriotes",
+        "kind": "support",
+        "label": "Les Patriotes"
+      }
+    ]
+  },
+  {
+    "candidate_slug": "francois-asselineau",
+    "accounts": [
+      {
+        "platform": "youtube",
+        "handle": "@f_asselineau",
+        "external_id": "UCJEJTYYZkYjLnGCgRDqnIGA",
+        "url": "https://www.youtube.com/@f_asselineau",
+        "kind": "official"
+      },
+      {
+        "platform": "tiktok",
+        "handle": "@fasselineau",
+        "external_id": null,
+        "url": "https://www.tiktok.com/@fasselineau",
+        "kind": "official"
+      }
+    ]
+  },
+  {
+    "candidate_slug": "francois-hollande",
+    "accounts": [
+      {
+        "platform": "youtube",
+        "handle": "@francoishollande",
+        "external_id": "UCbuEhWv9WciAjxT1nYlWbOg",
+        "url": "https://www.youtube.com/@francoishollande",
+        "kind": "official"
+      }
+    ]
+  },
+  {
+    "candidate_slug": "francois-ruffin",
+    "accounts": [
+      {
+        "platform": "youtube",
+        "handle": "@francois_ruffin",
+        "external_id": "UCIQGSp79vVch0vO3Efqif_w",
+        "url": "https://www.youtube.com/@francois_ruffin",
+        "kind": "official"
+      },
+      {
+        "platform": "tiktok",
+        "handle": "@francois_ruffin",
+        "external_id": null,
+        "url": "https://www.tiktok.com/@francois_ruffin",
+        "kind": "official"
+      },
+      {
+        "platform": "bluesky",
+        "handle": "francoisruffin.fr",
+        "external_id": "did:plc:e3tbauupqe4xf7qrnyv7rlkt",
+        "url": "https://bsky.app/profile/francoisruffin.fr",
+        "kind": "official"
+      }
+    ]
+  },
+  {
+    "candidate_slug": "gabriel-attal",
+    "accounts": [
+      {
+        "platform": "youtube",
+        "handle": "@gabriel_attal",
+        "external_id": "UCOcDPuYTuxoRBtfmTBXtqBA",
+        "url": "https://www.youtube.com/@gabriel_attal",
+        "kind": "official"
+      },
+      {
+        "platform": "tiktok",
+        "handle": "@gabriel_attal",
+        "external_id": null,
+        "url": "https://www.tiktok.com/@gabriel_attal",
+        "kind": "official"
+      },
+      {
+        "platform": "youtube",
+        "handle": "@renaissance",
+        "external_id": "UCBH3mPl5Jhwe37oEfKPvSiw",
+        "url": "https://www.youtube.com/@renaissance",
+        "kind": "support",
+        "label": "Renaissance"
+      }
+    ]
+  },
+  {
+    "candidate_slug": "jean-luc-melenchon",
+    "accounts": [
+      {
+        "platform": "youtube",
+        "handle": "@jlmelenchon",
+        "external_id": "UCk-_PEY3iC6DIGJKuoEe9bw",
+        "url": "https://www.youtube.com/@jlmelenchon",
+        "kind": "official"
+      },
+      {
+        "platform": "tiktok",
+        "handle": "@jlmelenchon",
+        "external_id": null,
+        "url": "https://www.tiktok.com/@jlmelenchon",
+        "kind": "official"
+      },
+      {
+        "platform": "bluesky",
+        "handle": "jlmelenchon.bsky.social",
+        "external_id": "did:plc:jtdzdmfunl7lqytyoz3ve6pp",
+        "url": "https://bsky.app/profile/jlmelenchon.bsky.social",
+        "kind": "official"
+      },
+      {
+        "platform": "youtube",
+        "handle": "@franceinsoumise",
+        "external_id": "UCKHKSD-yanY2ZwwU_4Tgf0w",
+        "url": "https://www.youtube.com/@franceinsoumise",
+        "kind": "support",
+        "label": "La France insoumise"
+      },
+      {
+        "platform": "tiktok",
+        "handle": "@franceinsoumise",
+        "external_id": null,
+        "url": "https://www.tiktok.com/@franceinsoumise",
+        "kind": "support",
+        "label": "La France insoumise"
+      }
+    ]
+  },
+  {
+    "candidate_slug": "jerome-guedj",
+    "accounts": [
+      {
+        "platform": "tiktok",
+        "handle": "@jerome_guedj",
+        "external_id": null,
+        "url": "https://www.tiktok.com/@jerome_guedj",
+        "kind": "official"
+      },
+      {
+        "platform": "youtube",
+        "handle": "@partisocialiste",
+        "external_id": "UCo7xGEOV-RfxOAxRfhlR3Ww",
+        "url": "https://www.youtube.com/@partisocialiste",
+        "kind": "support",
+        "label": "Parti socialiste"
+      },
+      {
+        "platform": "tiktok",
+        "handle": "@partisocialiste",
+        "external_id": null,
+        "url": "https://www.tiktok.com/@partisocialiste",
+        "kind": "support",
+        "label": "Parti socialiste"
+      }
+    ]
+  },
+  {
+    "candidate_slug": "jordan-bardella",
+    "accounts": [
+      {
+        "platform": "youtube",
+        "handle": "@j_bardella",
+        "external_id": "UC3U0VIDgANFaXeOAtt1m5Mw",
+        "url": "https://www.youtube.com/@j_bardella",
+        "kind": "official"
+      },
+      {
+        "platform": "tiktok",
+        "handle": "@jordanbardella",
+        "external_id": null,
+        "url": "https://www.tiktok.com/@jordanbardella",
+        "kind": "official"
+      },
+      {
+        "platform": "tiktok",
+        "handle": "@rnational_off",
+        "external_id": null,
+        "url": "https://www.tiktok.com/@rnational_off",
+        "kind": "support",
+        "label": "Rassemblement national"
+      }
+    ]
+  },
+  {
+    "candidate_slug": "juan-branco",
+    "accounts": [
+      {
+        "platform": "tiktok",
+        "handle": "@brancojuan",
+        "external_id": null,
+        "url": "https://www.tiktok.com/@brancojuan",
+        "kind": "official"
+      }
+    ]
+  },
+  {
+    "candidate_slug": "marine-le-pen",
+    "accounts": [
+      {
+        "platform": "youtube",
+        "handle": "@marinelepenofficiel",
+        "external_id": "UCU3z3px1_RCqYBwrs8LJVWg",
+        "url": "https://www.youtube.com/@marinelepenofficiel",
+        "kind": "official"
+      },
+      {
+        "platform": "tiktok",
+        "handle": "@rnational_off",
+        "external_id": null,
+        "url": "https://www.tiktok.com/@rnational_off",
+        "kind": "support",
+        "label": "Rassemblement national"
+      }
+    ]
+  },
+  {
+    "candidate_slug": "marine-tondelier",
+    "accounts": [
+      {
+        "platform": "tiktok",
+        "handle": "@marinetondelier",
+        "external_id": null,
+        "url": "https://www.tiktok.com/@marinetondelier",
+        "kind": "official"
+      },
+      {
+        "platform": "bluesky",
+        "handle": "marinetondelier.fr",
+        "external_id": "did:plc:gixn227k63od3d4cyrwp67w5",
+        "url": "https://bsky.app/profile/marinetondelier.fr",
+        "kind": "official"
+      },
+      {
+        "platform": "youtube",
+        "handle": "@lesecologistes",
+        "external_id": "UC7hIxNPqUSaPiV0yVjpHWOQ",
+        "url": "https://www.youtube.com/@lesecologistes",
+        "kind": "support",
+        "label": "Les Écologistes"
+      }
+    ]
+  },
+  {
+    "candidate_slug": "nathalie-arthaud",
+    "accounts": [
+      {
+        "platform": "tiktok",
+        "handle": "@nathaliearthaud",
+        "external_id": null,
+        "url": "https://www.tiktok.com/@nathaliearthaud",
+        "kind": "official"
+      },
+      {
+        "platform": "youtube",
+        "handle": "@lutteouvriere",
+        "external_id": "UCUzk9hBisz4aSMVTl37pWgw",
+        "url": "https://www.youtube.com/@lutteouvriere",
+        "kind": "support",
+        "label": "Lutte ouvrière"
+      }
+    ]
+  },
+  {
+    "candidate_slug": "olivier-faure",
+    "accounts": [
+      {
+        "platform": "youtube",
+        "handle": "@olivierfaure",
+        "external_id": "UClDGWj7M_Sl5R_etcvXq6NQ",
+        "url": "https://www.youtube.com/@olivierfaure",
+        "kind": "official"
+      },
+      {
+        "platform": "bluesky",
+        "handle": "olivierfaure.bsky.social",
+        "external_id": "did:plc:d5z43zq352zq6xmavrlavcwq",
+        "url": "https://bsky.app/profile/olivierfaure.bsky.social",
+        "kind": "official"
+      },
+      {
+        "platform": "youtube",
+        "handle": "@partisocialiste",
+        "external_id": "UCo7xGEOV-RfxOAxRfhlR3Ww",
+        "url": "https://www.youtube.com/@partisocialiste",
+        "kind": "support",
+        "label": "Parti socialiste"
+      },
+      {
+        "platform": "tiktok",
+        "handle": "@partisocialiste",
+        "external_id": null,
+        "url": "https://www.tiktok.com/@partisocialiste",
+        "kind": "support",
+        "label": "Parti socialiste"
+      }
+    ]
+  },
+  {
+    "candidate_slug": "philippe-brun",
+    "accounts": [
+      {
+        "platform": "youtube",
+        "handle": "@philippebrun",
+        "external_id": "UCeptUEol2GwojG-Mj9V2alw",
+        "url": "https://www.youtube.com/@philippebrun",
+        "kind": "official"
+      },
+      {
+        "platform": "youtube",
+        "handle": "@partisocialiste",
+        "external_id": "UCo7xGEOV-RfxOAxRfhlR3Ww",
+        "url": "https://www.youtube.com/@partisocialiste",
+        "kind": "support",
+        "label": "Parti socialiste"
+      },
+      {
+        "platform": "tiktok",
+        "handle": "@partisocialiste",
+        "external_id": null,
+        "url": "https://www.tiktok.com/@partisocialiste",
+        "kind": "support",
+        "label": "Parti socialiste"
+      }
+    ]
+  },
+  {
+    "candidate_slug": "raphael-glucksmann",
+    "accounts": [
+      {
+        "platform": "bluesky",
+        "handle": "raphaelglucksmann.bsky.social",
+        "external_id": "did:plc:tp4h6s2oey6byfx6d7d6qhhv",
+        "url": "https://bsky.app/profile/raphaelglucksmann.bsky.social",
+        "kind": "official"
+      },
+      {
+        "platform": "youtube",
+        "handle": "@placepublique",
+        "external_id": "UCFkJQynKi4CrOUk6RUq680A",
+        "url": "https://www.youtube.com/@placepublique",
+        "kind": "support",
+        "label": "Place publique"
+      }
+    ]
+  },
+  {
+    "candidate_slug": "segolene-royal",
+    "accounts": [
+      {
+        "platform": "youtube",
+        "handle": "@segoleneroyal",
+        "external_id": "UCmz1Ki4VEKH2aJ7xulbMEYg",
+        "url": "https://www.youtube.com/@segoleneroyal",
+        "kind": "official"
+      }
+    ]
+  },
+  {
+    "candidate_slug": "xavier-bertrand",
+    "accounts": [
+      {
+        "platform": "youtube",
+        "handle": "@xavier_bertrand",
+        "external_id": "UCOe4FufVFPf1BItkStNVX1w",
+        "url": "https://www.youtube.com/@xavier_bertrand",
+        "kind": "official"
+      },
+      {
+        "platform": "youtube",
+        "handle": "@lesrepublicains",
+        "external_id": "UC3Ma4tRFxx85oZI_XKVTPwg",
+        "url": "https://www.youtube.com/@lesrepublicains",
+        "kind": "support",
+        "label": "Les Républicains"
+      },
+      {
+        "platform": "tiktok",
+        "handle": "@lesrepublicains",
+        "external_id": null,
+        "url": "https://www.tiktok.com/@lesrepublicains",
+        "kind": "support",
+        "label": "Les Républicains"
+      }
+    ]
+  }
+]

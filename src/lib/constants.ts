@@ -1,17 +1,93 @@
 /**
- * Stripe Related Constants (Replace with your real Stripe Payment Links)
+ * Offres d'abonnement et liens de paiement Stripe.
+ *
+ * Deux formules sont commercialisées :
+ *  - « elite » (3,99 €/mois) : la formule citoyenne, pour qui veut comprendre en détail.
+ *    MENSUEL UNIQUEMENT — pas d'engagement annuel sur cette formule.
+ *  - « pro »   (24,99 €/mois ou 239 €/an) : la formule des professionnels de la politique
+ *    (collaborateurs parlementaires, affaires publiques, entreprises, presse).
+ *    Elle contient TOUT l'Elite, plus les outils de veille : suivi des commissions
+ *    parlementaires (Assemblée + Sénat) et suivi des dynamiques réseaux sociaux des
+ *    candidats à la présidentielle.
+ *
+ * ⚠️ Ces liens sont en MODE TEST (préfixe « test_ ») : aucun paiement réel n'est encaissé.
+ * Pour encaisser, recréer les liens en mode Live et remplacer les URL ci-dessous.
+ *
+ * « student » et « institution » sont des reliquats non commercialisés : ils sont
+ * conservés parce que getPremiumUrl() accepte encore ces clés.
  */
-export const STRIPE_LINKS = {
+export const STRIPE_LINKS: Record<string, { monthly: string; annually?: string }> = {
   student: {
     monthly: "https://buy.stripe.com/test_student_monthly", // 1.99€
     annually: "https://buy.stripe.com/test_student_annually" // 19€
   },
   elite: {
-    monthly: "https://buy.stripe.com/test_00w7sNdi4gIA4zDemn4Ni00", // 3.99€ (Current link)
-    annually: "https://buy.stripe.com/test_elite_annually" // 38€
+    // Pas de clé « annually » : c'est ce qui retire l'option annuelle de cette formule.
+    monthly: "https://buy.stripe.com/test_dRmaEWfLW6443jdeOofMA02", // 3,99 €/mois
+  },
+  pro: {
+    monthly: "https://buy.stripe.com/test_fZu4gy7fqdww1b55dOfMA00", // 24,99 €/mois
+    annually: "https://buy.stripe.com/test_6oU7sKfLW5003jd6hSfMA01" // 239 €/an
   },
   institution: {
     monthly: "https://buy.stripe.com/test_institution_monthly", // 7.99€
     annually: "https://buy.stripe.com/test_institution_annually" // 77€
   }
+};
+
+/**
+ * La vente est-elle ouverte ?
+ *
+ * `false` tant que les liens Stripe ci-dessus sont en mode TEST : les boutons d'achat
+ * affichent alors « Bientôt disponible » au lieu d'envoyer vers un paiement fictif, où
+ * n'importe quel visiteur obtiendrait un abonnement gratuit avec la carte 4242…
+ *
+ * À passer à `true` le jour où les liens sont recréés en mode Live — c'est le seul
+ * interrupteur à actionner, tout le reste du parcours est déjà en place.
+ */
+export const SALES_OPEN = false;
+
+/** Niveaux d'accès, du plus faible au plus fort. L'ordre sert aux comparaisons. */
+export const TIER_ORDER = ["free", "elite", "pro"] as const;
+export type Tier = (typeof TIER_ORDER)[number];
+
+/** Vrai si `tier` donne accès à une fonctionnalité qui exige `required`. */
+export function tierAtLeast(tier: Tier, required: Tier): boolean {
+  return TIER_ORDER.indexOf(tier) >= TIER_ORDER.indexOf(required);
+}
+
+/** Descriptif des deux offres affichées sur /premium. */
+export const PLANS = {
+  elite: {
+    key: "elite" as const,
+    name: "Elite",
+    tagline: "Pour tous les citoyens qui veulent comprendre en détail.",
+    monthly: 3.99,
+    /** null = formule mensuelle uniquement ; la carte n'affiche alors aucune bascule. */
+    annually: null,
+    audience: "Citoyens",
+    features: [
+      "Décryptages de lois illimités",
+      "Suivi des députés ET sénateurs",
+      "Notifications personnalisées",
+      "Budgets locaux & favoris",
+      "Suivi des candidats à la présidentielle",
+    ],
+  },
+  pro: {
+    key: "pro" as const,
+    name: "Pro",
+    tagline: "Pour les professionnels de la politique et les entreprises.",
+    monthly: 24.99,
+    annually: 239,
+    audience: "Collaborateurs, affaires publiques, entreprises, presse",
+    features: [
+      "Tout l'abonnement Elite",
+      "Suivi des commissions parlementaires (Assemblée + Sénat)",
+      "Analyse détaillée de chaque réunion de commission",
+      "Veille réseaux sociaux des candidats à la présidentielle",
+      "Tendances de vues et d'audience, semaine par semaine",
+      "Export des données et recherche plein texte",
+    ],
+  },
 };

@@ -1,0 +1,52 @@
+name: Veille réseaux sociaux des candidats
+
+# Relève chaque jour l'audience des comptes suivis (personnels et de soutien) et
+# enregistre un instantané par compte. Les tendances 7 j / 30 j sont recalculées à
+# l'affichage à partir de ces relevés : il faut donc au moins deux jours de relevés
+# avant que des tendances apparaissent.
+# Voir scripts/update-social-stats.ts
+
+on:
+  schedule:
+    # 04:40 UTC ≈ 06:40 Paris. Une heure fixe est importante : les tendances comparent
+    # des relevés espacés d'exactement 24 h.
+    - cron: '40 4 * * *'
+  workflow_dispatch:
+    inputs:
+      seed:
+        description: "Réinjecter d'abord la liste des comptes suivis"
+        type: boolean
+        required: false
+        default: false
+
+concurrency:
+  group: social-stats
+  cancel-in-progress: false
+
+jobs:
+  social:
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+          cache: 'npm'
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Relevé du jour
+        env:
+          NEXT_PUBLIC_SUPABASE_URL: ${{ secrets.NEXT_PUBLIC_SUPABASE_URL }}
+          SUPABASE_SERVICE_ROLE_KEY: ${{ secrets.SUPABASE_SERVICE_ROLE_KEY }}
+          # Optionnelle mais déterminante : sans elle, aucune donnée YouTube, donc
+          # aucune vue. Clé gratuite sur console.cloud.google.com (API YouTube Data v3).
+          YOUTUBE_API_KEY: ${{ secrets.YOUTUBE_API_KEY }}
+        run: >
+          npx --yes tsx scripts/update-social-stats.ts
+          ${{ github.event.inputs.seed == 'true' && '--seed' || '' }}

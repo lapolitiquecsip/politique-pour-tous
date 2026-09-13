@@ -8,7 +8,7 @@ import Link from "next/link";
 import { AwardBadge } from "@/components/ui/award-badge";
 import { usePathname } from "next/navigation";
 import { usePremium } from "@/lib/hooks/usePremium";
-import { STRIPE_LINKS } from "@/lib/constants";
+import { SALES_OPEN } from "@/lib/constants";
 import { getPremiumUrl } from "@/lib/utils";
 
 export default function PremiumButton() {
@@ -63,13 +63,20 @@ export default function PremiumButton() {
   }, [pathname]);
 
   const handlePremiumClick = async () => {
+    // Vente fermée : on envoie sur la page des offres plutôt que vers un paiement
+    // fictif, où n'importe qui obtiendrait un abonnement gratuit.
+    if (!SALES_OPEN) {
+      window.location.href = "/premium";
+      return;
+    }
+
     if (!userId) {
       setError("auth_required");
       return;
     }
 
     setLoading(true);
-    
+
     // Redirection directe vers Stripe Checkout (Plan Elite par défaut)
     window.location.href = getPremiumUrl(userId, 'elite', 'monthly');
   };
@@ -162,7 +169,7 @@ export default function PremiumButton() {
             {/* Écran large : badge complet. */}
             <div className="hidden sm:block">
               <AwardBadge
-                titleText={loading ? "Redirection..." : "Devenir Premium"}
+                titleText={loading ? "Redirection..." : SALES_OPEN ? "Devenir Premium" : "Découvrir Premium"}
                 subtitleText="Abonnement Citoyen"
                 onClick={handlePremiumClick}
               />

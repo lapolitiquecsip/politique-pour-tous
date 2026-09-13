@@ -9,6 +9,7 @@ import Link from "next/link";
 import { ChevronRight } from "lucide-react";
 import PresidentPhoto from "@/components/shared/PresidentPhoto";
 import Senatoriales2026 from "@/components/senat/Senatoriales2026";
+import CommissionTracker from "@/components/commissions/CommissionTracker";
 
 // Page dédiée au Sénat : composition + textes législatifs du Sénat + sénateurs.
 export default async function SenateursPage() {
@@ -24,6 +25,7 @@ export default async function SenateursPage() {
           { label: "Composition", href: "#composition" },
           { label: "Les sénateurs & leurs votes", href: "#membres" },
           { label: "Textes législatifs", href: "#textes" },
+          { label: "Commissions", href: "#commissions" },
           { label: "En vidéo", href: "#videos" },
         ]}
       />
@@ -52,6 +54,10 @@ export default async function SenateursPage() {
       </section>
       <section id="textes" className="scroll-mt-24">
         <ChamberLegislation chamber="SENAT" chamberLabel="Sénat" />
+      </section>
+      {/* Suivi détaillé des commissions — cœur de l'abonnement Pro. */}
+      <section className="mx-auto max-w-6xl px-4">
+        <CommissionTracker chamber="SENAT" chamberLabel="Sénat" accent="red" />
       </section>
       <section id="videos" className="scroll-mt-24 mx-auto max-w-6xl px-4 pb-16">
         <VideoFeed source="senat" />

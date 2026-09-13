@@ -1,0 +1,55 @@
+name: Suivi des commissions parlementaires
+
+# Alimente la fonctionnalité Pro « suivi des commissions » :
+#   1. ingestion des comptes rendus de commission du Sénat (senat.fr, Licence Ouverte) ;
+#   2. génération de l'analyse détaillée des réunions qui n'en ont pas encore,
+#      Sénat comme Assemblée (l'Assemblée est ingérée par le repo backend).
+# Voir scripts/update-commissions.ts
+
+on:
+  schedule:
+    # 03:20 UTC ≈ 05:20 Paris : hors de la fenêtre du cron backend (17h-04h UTC),
+    # et les comptes rendus de la veille sont publiés.
+    - cron: '20 3 * * *'
+  workflow_dispatch:
+    inputs:
+      weeks:
+        description: "Nombre de semaines à remonter côté Sénat (rattrapage)"
+        required: false
+        default: "3"
+      analyses:
+        description: "Nombre maximum d'analyses IA à générer sur ce passage"
+        required: false
+        default: "10"
+
+# Deux exécutions simultanées analyseraient les mêmes réunions deux fois.
+concurrency:
+  group: commissions
+  cancel-in-progress: false
+
+jobs:
+  commissions:
+    runs-on: ubuntu-latest
+    timeout-minutes: 50
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+          cache: 'npm'
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Ingestion + analyse des commissions
+        env:
+          NEXT_PUBLIC_SUPABASE_URL: ${{ secrets.NEXT_PUBLIC_SUPABASE_URL }}
+          SUPABASE_SERVICE_ROLE_KEY: ${{ secrets.SUPABASE_SERVICE_ROLE_KEY }}
+          ANTHROPIC_API_KEY: ${{ secrets.ANTHROPIC_API_KEY }}
+        run: >
+          npx --yes tsx scripts/update-commissions.ts
+          --weeks=${{ github.event.inputs.weeks || '3' }}
+          --analyses=${{ github.event.inputs.analyses || '10' }}

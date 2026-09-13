@@ -56,7 +56,14 @@ export function tierAtLeast(tier: Tier, required: Tier): boolean {
   return TIER_ORDER.indexOf(tier) >= TIER_ORDER.indexOf(required);
 }
 
-/** Descriptif des deux offres affichées sur /premium. */
+/**
+ * Descriptif des deux offres affichées sur /premium.
+ *
+ * La LISTE DES FONCTIONNALITÉS ne vit pas ici : les cartes d'offre affichent
+ * directement FEATURES et PRO_FEATURES (src/app/premium/page.tsx), qui portent aussi
+ * l'icône et le lien vers la vraie page. Une seconde liste de libellés ici serait une
+ * deuxième source de vérité, qu'on oublierait de mettre à jour.
+ */
 export const PLANS = {
   elite: {
     key: "elite" as const,
@@ -66,13 +73,6 @@ export const PLANS = {
     /** null = formule mensuelle uniquement ; la carte n'affiche alors aucune bascule. */
     annually: null,
     audience: "Citoyens",
-    features: [
-      "Décryptages de lois illimités",
-      "Suivi des députés ET sénateurs",
-      "Notifications personnalisées",
-      "Budgets locaux & favoris",
-      "Suivi des candidats à la présidentielle",
-    ],
   },
   pro: {
     key: "pro" as const,
@@ -81,13 +81,5 @@ export const PLANS = {
     monthly: 24.99,
     annually: 239,
     audience: "Collaborateurs, affaires publiques, entreprises, presse",
-    features: [
-      "Tout l'abonnement Elite",
-      "Suivi des commissions parlementaires (Assemblée + Sénat)",
-      "Analyse détaillée de chaque réunion de commission",
-      "Veille réseaux sociaux des candidats à la présidentielle",
-      "Tendances de vues et d'audience, semaine par semaine",
-      "Export des données et recherche plein texte",
-    ],
   },
 };

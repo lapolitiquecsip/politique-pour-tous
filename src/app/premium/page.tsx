@@ -1,7 +1,7 @@
 "use client";
 
 import { useState, useEffect, useRef } from "react";
-import { motion, AnimatePresence, useInView } from "framer-motion";
+import { motion, AnimatePresence, useInView, useReducedMotion } from "framer-motion";
 import { usePremium } from "@/lib/hooks/usePremium";
 import { getPremiumUrl } from "@/lib/utils";
 import {
@@ -60,6 +60,129 @@ const FEATURES: Feature[] = [
   { icon: Bookmark, title: "Favoris : lois & territoires", desc: "Enregistrez lois, communes et régions pour les suivre et les retrouver d'un clic sur votre profil.", color: "from-sky-500 to-indigo-600", href: "/dashboard", cta: "Voir mon espace" },
   { icon: LayoutDashboard, title: "Espace personnel complet", desc: "Historique de vote, élus suivis, lois favorites, territoires : tout au même endroit, à jour.", color: "from-slate-500 to-slate-700", href: "/dashboard", cta: "Ouvrir mon tableau de bord" },
 ];
+
+/**
+ * Particules qui tombent sur la carte Pro.
+ *
+ * Positions, tailles et délais sont FIXES et non tirés au hasard : un Math.random()
+ * au rendu donnerait des valeurs différentes côté serveur et côté navigateur, ce qui
+ * provoque une erreur d'hydratation. Une liste écrite à la main règle le problème et
+ * reste parfaitement lisible.
+ */
+const PARTICLES = [
+  { x: 8, size: 3, delay: 0, dur: 7.5, opacity: 0.7 },
+  { x: 21, size: 2, delay: 1.8, dur: 9.2, opacity: 0.5 },
+  { x: 34, size: 4, delay: 0.6, dur: 6.4, opacity: 0.8 },
+  { x: 47, size: 2, delay: 3.1, dur: 8.8, opacity: 0.45 },
+  { x: 58, size: 3, delay: 1.2, dur: 7.1, opacity: 0.65 },
+  { x: 69, size: 2, delay: 4.2, dur: 9.6, opacity: 0.4 },
+  { x: 78, size: 4, delay: 2.4, dur: 6.9, opacity: 0.75 },
+  { x: 88, size: 2, delay: 0.9, dur: 8.3, opacity: 0.55 },
+  { x: 95, size: 3, delay: 3.7, dur: 7.8, opacity: 0.6 },
+  { x: 15, size: 2, delay: 5.1, dur: 9.0, opacity: 0.5 },
+  { x: 41, size: 3, delay: 2.9, dur: 8.1, opacity: 0.6 },
+  { x: 63, size: 2, delay: 5.8, dur: 7.3, opacity: 0.45 },
+];
+
+function FallingParticles() {
+  const reduce = useReducedMotion();
+  if (reduce) return null;   // rien qui bouge si le système demande des animations réduites
+  return (
+    <div aria-hidden className="pointer-events-none absolute inset-0 overflow-hidden rounded-[2.5rem]">
+      {PARTICLES.map((p, i) => (
+        <motion.span
+          key={i}
+          className="absolute top-0 rounded-full bg-fuchsia-300"
+          style={{ left: `${p.x}%`, width: p.size, height: p.size }}
+          initial={{ y: -8, opacity: 0 }}
+          animate={{ y: 620, opacity: [0, p.opacity, p.opacity, 0] }}
+          transition={{ duration: p.dur, delay: p.delay, repeat: Infinity, ease: "linear", times: [0, 0.1, 0.8, 1] }}
+        />
+      ))}
+    </div>
+  );
+}
+
+/* ── Avis : défilement continu sur mobile, grille classique sur grand écran ── */
+function TestimonialCard({ t }: { t: (typeof TESTIMONIALS)[number] }) {
+  return (
+    <div className="flex h-full flex-col rounded-2xl sm:rounded-3xl border border-slate-100 bg-white p-5 sm:p-8 transition-all hover:shadow-xl dark:border-slate-800 dark:bg-slate-900">
+      <Quote className="mb-3 h-6 w-6 sm:mb-6 sm:h-10 sm:w-10 text-amber-200" />
+      <p className="flex-1 text-[13px] sm:text-lg italic leading-snug sm:leading-relaxed text-slate-700 dark:text-slate-300">&ldquo;{t.text}&rdquo;</p>
+      <div className="mt-4 flex items-center gap-3 border-t border-slate-100 pt-4 sm:mt-8 sm:gap-4 sm:pt-6 dark:border-slate-800">
+        <div className="flex h-9 w-9 sm:h-12 sm:w-12 shrink-0 items-center justify-center rounded-full bg-gradient-to-br from-amber-400 to-yellow-500 text-sm sm:text-base font-bold text-slate-900 shadow-md">{t.name.charAt(0)}</div>
+        <div className="min-w-0">
+          <p className="text-[13px] sm:text-base font-bold text-slate-900 dark:text-white">{t.name}</p>
+          <p className="truncate text-[11px] sm:text-sm text-slate-500">{t.role}</p>
+        </div>
+      </div>
+    </div>
+  );
+}
+
+/**
+ * Sur mobile, les avis défilent d'eux-mêmes de droite à gauche.
+ *
+ * La liste est affichée DEUX FOIS : quand le défilement atteint la moitié du rail, on
+ * revient au début sans transition visible — l'œil ne voit pas la couture, ce qui donne
+ * une boucle continue plutôt qu'un aller-retour.
+ *
+ * Le défilement automatique se met en pause dès que l'utilisateur touche le rail, et
+ * reprend deux secondes après qu'il l'a lâché : on n'arrache jamais le geste en cours.
+ * Respecte « animations réduites » du système.
+ */
+function TestimonialRail() {
+  const railRef = useRef<HTMLDivElement>(null);
+  const paused = useRef(false);
+  const resumeAt = useRef(0);
+
+  useEffect(() => {
+    const el = railRef.current;
+    if (!el) return;
+    if (window.matchMedia("(prefers-reduced-motion: reduce)").matches) return;
+
+    let raf = 0;
+    const step = () => {
+      // scrollWidth > clientWidth n'est vrai que dans la disposition en rail (mobile) :
+      // sur grand écran, la grille ne défile pas et la boucle ne fait rien.
+      if (!paused.current && Date.now() >= resumeAt.current && el.scrollWidth > el.clientWidth + 4) {
+        el.scrollLeft += 0.45;
+        const half = el.scrollWidth / 2;
+        if (el.scrollLeft >= half) el.scrollLeft -= half;
+      }
+      raf = requestAnimationFrame(step);
+    };
+    raf = requestAnimationFrame(step);
+    return () => cancelAnimationFrame(raf);
+  }, []);
+
+  const hold = () => { paused.current = true; };
+  const release = () => { paused.current = false; resumeAt.current = Date.now() + 2000; };
+
+  return (
+    <div
+      ref={railRef}
+      onPointerDown={hold}
+      onPointerUp={release}
+      onPointerCancel={release}
+      onMouseEnter={hold}
+      onMouseLeave={release}
+      className="flex gap-4 overflow-x-auto overscroll-x-contain pb-2 -mx-4 px-4 [scrollbar-width:none] [&::-webkit-scrollbar]:hidden md:mx-0 md:grid md:grid-cols-3 md:gap-8 md:overflow-visible md:px-0"
+    >
+      {TESTIMONIALS.map((t, i) => (
+        <div key={i} className="w-[78vw] max-w-xs shrink-0 md:w-auto md:max-w-none md:shrink">
+          <TestimonialCard t={t} />
+        </div>
+      ))}
+      {/* Doublon masqué sur grand écran : il ne sert qu'à fermer la boucle du rail. */}
+      {TESTIMONIALS.map((t, i) => (
+        <div key={`bis-${i}`} aria-hidden className="w-[78vw] max-w-xs shrink-0 md:hidden">
+          <TestimonialCard t={t} />
+        </div>
+      ))}
+    </div>
+  );
+}
 
 /* ── Prix à la française : 3,99 € ── */
 const fmtPrice = (n: number) => `${n.toFixed(2).replace(".", ",").replace(",00", "")} €`;
@@ -256,6 +379,7 @@ function NotifDemoModal({ open, onClose }: { open: boolean; onClose: () => void 
 
 export default function PremiumPage() {
   const { userId } = usePremium();
+  const reduceMotion = useReducedMotion();
   const [billingCycle, setBillingCycle] = useState<"monthly" | "annually">("monthly");
   const [lawOpen, setLawOpen] = useState(false);
   const [notifOpen, setNotifOpen] = useState(false);
@@ -445,10 +569,24 @@ export default function PremiumPage() {
                   <p className="mt-2 text-xs font-bold italic text-slate-400">Sans engagement, résiliable à tout moment.</p>
                 </div>
 
-                <div className="space-y-3 mb-8">
-                  {PLANS.elite.features.map((t) => (
-                    <div key={t} className="flex items-start gap-3 text-sm font-medium text-slate-700 dark:text-slate-200"><CheckCircle2 size={18} className="text-emerald-500 shrink-0 mt-0.5" /> {t}</div>
-                  ))}
+                {/* Les fonctionnalités sont listées ICI, et chacune mène à la vraie page
+                    ou ouvre sa démo : on décide et on essaie au même endroit. */}
+                <div className="mb-8 space-y-1">
+                  {FEATURES.map(f => {
+                    const inner = (
+                      <>
+                        <span className="flex h-7 w-7 shrink-0 items-center justify-center rounded-lg bg-emerald-50 text-emerald-600 dark:bg-emerald-500/15">
+                          <f.icon size={14} />
+                        </span>
+                        <span className="min-w-0 flex-1 text-[13px] font-medium leading-snug text-slate-700 dark:text-slate-200">{f.title}</span>
+                        <ArrowRight size={13} className="shrink-0 text-slate-300 transition-transform group-hover/f:translate-x-0.5" />
+                      </>
+                    );
+                    const cls = "group/f -mx-2 flex w-[calc(100%+1rem)] items-center gap-2.5 rounded-xl px-2 py-1.5 text-left transition hover:bg-slate-50 dark:hover:bg-slate-800/60";
+                    return f.demo
+                      ? <button key={f.title} onClick={() => (f.demo === "law" ? setLawOpen(true) : setNotifOpen(true))} className={cls}>{inner}</button>
+                      : <Link key={f.title} href={f.href} className={cls}>{inner}</Link>;
+                  })}
                 </div>
 
                 {SALES_OPEN ? (
@@ -466,7 +604,19 @@ export default function PremiumPage() {
 
             {/* ─── Pro ─── */}
             <FadeIn delay={0.1} className="w-[86vw] shrink-0 snap-center md:w-auto md:shrink">
-              <div className="relative rounded-[2.5rem] border-2 border-slate-900 dark:border-fuchsia-500/40 bg-gradient-to-b from-slate-950 to-slate-900 p-8 text-white shadow-2xl shadow-slate-900/20">
+              <div className="group relative overflow-hidden rounded-[2.5rem] border-2 border-fuchsia-400/70 bg-gradient-to-b from-slate-950 to-slate-900 p-8 text-white shadow-[0_0_45px_-8px_rgba(217,70,239,0.55)]">
+                {/* Halo qui respire le long du contour — l'offre Pro doit accrocher l'œil. */}
+                <motion.div
+                  aria-hidden
+                  className="pointer-events-none absolute -inset-px rounded-[2.5rem] ring-2 ring-fuchsia-400/60"
+                  animate={reduceMotion ? undefined : { opacity: [0.35, 1, 0.35], boxShadow: [
+                    "0 0 18px 0 rgba(217,70,239,0.25) inset",
+                    "0 0 34px 0 rgba(217,70,239,0.55) inset",
+                    "0 0 18px 0 rgba(217,70,239,0.25) inset",
+                  ] }}
+                  transition={{ duration: 3.4, repeat: Infinity, ease: "easeInOut" }}
+                />
+                <FallingParticles />
                 <div className="absolute top-0 left-1/2 -translate-x-1/2 -translate-y-1/2 whitespace-nowrap bg-gradient-to-r from-fuchsia-500 to-purple-600 text-white px-4 py-1.5 rounded-full text-[10px] font-black uppercase tracking-widest shadow-lg">Professionnels</div>
 
                 <p className="text-[10px] font-black uppercase tracking-widest text-fuchsia-300">{PLANS.pro.audience}</p>
@@ -495,14 +645,23 @@ export default function PremiumPage() {
                   {billingCycle === "annually" && <p className="mt-2 text-xs font-bold italic text-emerald-400">Soit {fmtPrice(PLANS.pro.annually / 12)}/mois — deux mois offerts</p>}
                 </div>
 
-                <div className="space-y-3 mb-8">
-                  {PLANS.pro.features.map((t, i) => (
-                    <div key={t} className="flex items-start gap-3 text-sm font-medium text-white/90">
-                      {i === 0
-                        ? <Sparkles size={18} className="text-amber-400 shrink-0 mt-0.5" />
-                        : <CheckCircle2 size={18} className="text-fuchsia-400 shrink-0 mt-0.5" />}
-                      {t}
-                    </div>
+                {/* Même principe côté Pro : tout l'Elite, puis les outils de veille, cliquables. */}
+                <div className="mb-8 space-y-1">
+                  <div className="-mx-2 flex items-center gap-2.5 rounded-xl px-2 py-1.5">
+                    <span className="flex h-7 w-7 shrink-0 items-center justify-center rounded-lg bg-amber-400/20 text-amber-300">
+                      <Sparkles size={14} />
+                    </span>
+                    <span className="text-[13px] font-bold text-white">Tout l&apos;abonnement Elite</span>
+                  </div>
+                  {PRO_FEATURES.map(f => (
+                    <Link key={f.title} href={f.href}
+                      className="group/f -mx-2 flex w-[calc(100%+1rem)] items-center gap-2.5 rounded-xl px-2 py-1.5 transition hover:bg-white/10">
+                      <span className="flex h-7 w-7 shrink-0 items-center justify-center rounded-lg bg-fuchsia-500/20 text-fuchsia-300">
+                        <f.icon size={14} />
+                      </span>
+                      <span className="min-w-0 flex-1 text-[13px] font-medium leading-snug text-white/90">{f.title}</span>
+                      <ArrowRight size={13} className="shrink-0 text-white/30 transition-transform group-hover/f:translate-x-0.5" />
+                    </Link>
                   ))}
                 </div>
 
@@ -541,20 +700,7 @@ export default function PremiumPage() {
             <p className="text-sm font-bold text-amber-500 uppercase tracking-widest mb-4">Expériences</p>
             <h2 className="text-4xl md:text-6xl font-staatliches uppercase tracking-tighter text-slate-900 dark:text-white">Ils en parlent <span className="text-amber-500">mieux que nous</span></h2>
           </FadeIn>
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
-            {TESTIMONIALS.map((t, i) => (
-              <FadeIn key={i} delay={i * 0.12}>
-                <div className="bg-white dark:bg-slate-900 rounded-3xl p-8 border border-slate-100 dark:border-slate-800 hover:shadow-xl transition-all h-full flex flex-col">
-                  <Quote className="w-10 h-10 text-amber-200 mb-6" />
-                  <p className="text-slate-700 dark:text-slate-300 text-lg leading-relaxed flex-1 italic">&ldquo;{t.text}&rdquo;</p>
-                  <div className="mt-8 pt-6 border-t border-slate-100 dark:border-slate-800 flex items-center gap-4">
-                    <div className="w-12 h-12 rounded-full bg-gradient-to-br from-amber-400 to-yellow-500 flex items-center justify-center text-slate-900 font-bold shadow-md">{t.name.charAt(0)}</div>
-                    <div><p className="text-base font-bold text-slate-900 dark:text-white">{t.name}</p><p className="text-sm text-slate-500">{t.role}</p></div>
-                  </div>
-                </div>
-              </FadeIn>
-            ))}
-          </div>
+          <TestimonialRail />
         </div>
       </section>
 

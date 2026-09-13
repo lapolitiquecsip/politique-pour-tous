@@ -109,16 +109,21 @@ export default function AdoptedTextsFeed() {
           Derniers textes <span className="text-blue-600">adoptés par l'Assemblée</span>
         </h2>
         <p className="mt-1 text-slate-500">Chaque vote solennel sur l'ensemble d'un texte : l'issue, le vote de chaque parti, et ce qui se passe ensuite.</p>
+        <p className="mt-2 text-[11px] font-black uppercase tracking-widest text-slate-400 sm:hidden">
+          Faites glisser pour parcourir &rarr;
+        </p>
       </div>
 
-      <div className="grid gap-5 sm:grid-cols-2 lg:grid-cols-3">
+      {/* Mobile : rail horizontal. Une carte par rangée pleine hauteur obligeait à
+          faire défiler très longtemps avant d'atteindre la suite de la page. */}
+      <div className="flex snap-x snap-mandatory gap-4 overflow-x-auto overscroll-x-contain pb-3 -mx-4 px-4 [scrollbar-width:none] [&::-webkit-scrollbar]:hidden sm:mx-0 sm:grid sm:grid-cols-2 sm:gap-5 sm:overflow-visible sm:px-0 sm:pb-0 lg:grid-cols-3">
         {items.map(v => {
           const adopted = isAdopted(v.resultat);
           const nav = v.navette;
           const groups = (v.group_results || []).filter((g: any) => (g.pour + g.contre + g.abstention) > 0);
           return (
             <button key={v.id} onClick={() => setOpen(v)}
-              className="group flex flex-col rounded-[2rem] border border-slate-200 bg-white p-6 text-left shadow-sm transition hover:-translate-y-1 hover:shadow-xl dark:border-slate-800 dark:bg-slate-900">
+              className="group w-[85vw] shrink-0 snap-center sm:w-auto sm:shrink flex flex-col rounded-[2rem] border border-slate-200 bg-white p-6 text-left shadow-sm transition hover:-translate-y-1 hover:shadow-xl dark:border-slate-800 dark:bg-slate-900">
               <div className="flex items-start justify-between gap-3">
                 <span className="text-xs font-bold text-slate-400">{frDate(v.date_scrutin)}</span>
                 <span className={`inline-flex items-center gap-1 rounded-full px-3 py-1 text-[10px] font-black uppercase tracking-widest text-white ${adopted ? "bg-emerald-500" : "bg-rose-500"}`}>

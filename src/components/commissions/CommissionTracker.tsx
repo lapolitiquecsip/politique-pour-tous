@@ -352,15 +352,15 @@ export default function CommissionTracker({ chamber, chamberLabel, accent = "eme
 
       {/* Filtre par commission */}
       {commissions.length > 0 && (
-        <div className="mb-5 flex flex-wrap gap-2">
+        <div className="mb-5 flex gap-2 overflow-x-auto pb-1 -mx-4 px-4 [scrollbar-width:none] [&::-webkit-scrollbar]:hidden sm:mx-0 sm:flex-wrap sm:overflow-visible sm:px-0">
           <button onClick={() => setSelected(null)}
-            className={`rounded-full px-3.5 py-1.5 text-[11px] font-black uppercase tracking-wider transition ${selected === null ? a.chip : "bg-slate-100 text-slate-600 hover:bg-slate-200 dark:bg-slate-800 dark:text-slate-300"}`}>
+            className={`shrink-0 rounded-full px-3.5 py-1.5 text-[11px] font-black uppercase tracking-wider transition ${selected === null ? a.chip : "bg-slate-100 text-slate-600 hover:bg-slate-200 dark:bg-slate-800 dark:text-slate-300"}`}>
             Toutes
           </button>
-          {commissions.slice(0, 14).map(c => (
+          {commissions.slice(0, 10).map(c => (
             <button key={c.name} onClick={() => setSelected(c.name === selected ? null : c.name)}
               title={decode(c.name)}
-              className={`rounded-full px-3.5 py-1.5 text-[11px] font-black uppercase tracking-wider transition ${selected === c.name ? a.chip : "bg-slate-100 text-slate-600 hover:bg-slate-200 dark:bg-slate-800 dark:text-slate-300"}`}>
+              className={`shrink-0 whitespace-nowrap rounded-full px-3.5 py-1.5 text-[11px] font-black uppercase tracking-wider transition ${selected === c.name ? a.chip : "bg-slate-100 text-slate-600 hover:bg-slate-200 dark:bg-slate-800 dark:text-slate-300"}`}>
               {shortCommission(c.name)} <span className="opacity-50">{c.count}</span>
             </button>
           ))}
@@ -369,18 +369,20 @@ export default function CommissionTracker({ chamber, chamberLabel, accent = "eme
 
       {/* Bandeau d'accroche pour les non-Pro */}
       {!isPro && (
-        <div className="mb-5 flex flex-wrap items-center gap-4 rounded-3xl border border-fuchsia-200 bg-gradient-to-r from-fuchsia-50 to-purple-50 p-5 dark:border-fuchsia-500/30 dark:from-fuchsia-500/10 dark:to-purple-500/10">
-          <span className="flex h-11 w-11 shrink-0 items-center justify-center rounded-2xl bg-gradient-to-br from-fuchsia-500 to-purple-600 text-white shadow-lg">
-            <Lock size={18} />
-          </span>
-          <div className="min-w-0 flex-1">
-            <p className="text-sm font-black text-slate-900 dark:text-white">L&apos;analyse détaillée est réservée à l&apos;abonnement Pro</p>
-            <p className="text-[13px] text-slate-600 dark:text-slate-400">
-              Le calendrier des réunions reste ouvert à tous. Positions défendues, chiffres avancés, verbatim et suites : côté Pro.
+        <div className="mb-5 rounded-3xl border border-fuchsia-200 bg-gradient-to-r from-fuchsia-50 to-purple-50 p-5 dark:border-fuchsia-500/30 dark:from-fuchsia-500/10 dark:to-purple-500/10">
+          <div className="flex items-center gap-3">
+            <span className="flex h-10 w-10 shrink-0 items-center justify-center rounded-2xl bg-gradient-to-br from-fuchsia-500 to-purple-600 text-white shadow-lg">
+              <Lock size={17} />
+            </span>
+            <p className="text-sm font-black leading-tight text-slate-900 dark:text-white">
+              L&apos;analyse détaillée est réservée à l&apos;abonnement Pro
             </p>
           </div>
+          <p className="mt-2.5 text-[13px] leading-snug text-slate-600 dark:text-slate-400">
+            Le calendrier des réunions reste ouvert à tous. Positions défendues, chiffres avancés, verbatim et suites : côté Pro.
+          </p>
           <Link href="/premium"
-            className="shrink-0 rounded-xl bg-gradient-to-r from-fuchsia-500 to-purple-600 px-4 py-2.5 text-[11px] font-black uppercase tracking-widest text-white shadow-lg transition hover:brightness-110">
+            className="mt-3 inline-flex rounded-xl bg-gradient-to-r from-fuchsia-500 to-purple-600 px-4 py-2.5 text-[11px] font-black uppercase tracking-widest text-white shadow-lg transition hover:brightness-110">
             Découvrir le Pro
           </Link>
         </div>

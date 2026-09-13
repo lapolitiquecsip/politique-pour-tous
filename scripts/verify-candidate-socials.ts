@@ -53,19 +53,53 @@ const HANDLES: Record<string, Partial<Record<"youtube" | "tiktok" | "bluesky", s
   "juan-branco": { tiktok: ["brancojuan"] },
 };
 
-/** Mouvements suivis comme comptes de SOUTIEN, rattachés à leur(s) candidat(s). */
+/**
+ * Mouvements suivis comme comptes de SOUTIEN, rattachés à leur(s) candidat(s).
+ *
+ * `label` sert aussi de requête à la recherche YouTube, et `keywords` vérifie que la
+ * chaîne trouvée est bien la bonne. Un mouvement peut soutenir plusieurs candidats : son
+ * audience est alors comptée pour chacun, c'est pourquoi l'interface sépare par défaut
+ * comptes personnels et comptes de soutien.
+ */
 const MOVEMENTS: { slugs: string[]; label: string; keywords: string[]; handles: string[] }[] = [
-  { slugs: ["jean-luc-melenchon"], label: "La France insoumise", keywords: ["insoumise"], handles: ["franceinsoumise"] },
-  { slugs: ["jordan-bardella", "marine-le-pen"], label: "Rassemblement national", keywords: ["rassemblement", "national"], handles: ["rnational_off", "rassemblementnational"] },
-  { slugs: ["bruno-retailleau", "xavier-bertrand"], label: "Les Républicains", keywords: ["republicains"], handles: ["lesrepublicains"] },
+  { slugs: ["jean-luc-melenchon"], label: "La France insoumise", keywords: ["insoumise"], handles: ["franceinsoumise", "lafranceinsoumise"] },
+  { slugs: ["jordan-bardella", "marine-le-pen"], label: "Rassemblement national", keywords: ["rassemblement", "national"], handles: ["rnational_off", "rassemblementnational", "rn_officiel"] },
+  { slugs: ["bruno-retailleau", "xavier-bertrand"], label: "Les Républicains", keywords: ["republicains"], handles: ["lesrepublicains", "republicains"] },
   { slugs: ["gabriel-attal"], label: "Renaissance", keywords: ["renaissance"], handles: ["renaissance", "renaissance_off"] },
-  { slugs: ["olivier-faure", "philippe-brun", "jerome-guedj"], label: "Parti socialiste", keywords: ["socialiste"], handles: ["partisocialiste"] },
-  { slugs: ["raphael-glucksmann"], label: "Place publique", keywords: ["place", "publique"], handles: ["placepublique"] },
-  { slugs: ["david-lisnard"], label: "Nouvelle Énergie", keywords: ["nouvelle", "energie"], handles: ["nouvelleenergie"] },
-  { slugs: ["nathalie-arthaud"], label: "Lutte ouvrière", keywords: ["lutte", "ouvriere"], handles: ["lutteouvriere"] },
-  { slugs: ["florian-philippot"], label: "Les Patriotes", keywords: ["patriotes"], handles: ["lespatriotes"] },
-  { slugs: ["marine-tondelier"], label: "Les Écologistes", keywords: ["ecologistes"], handles: ["lesecologistes"] },
+  { slugs: ["olivier-faure", "philippe-brun", "jerome-guedj"], label: "Parti socialiste", keywords: ["socialiste"], handles: ["partisocialiste", "ps_officiel"] },
+  { slugs: ["raphael-glucksmann"], label: "Place publique", keywords: ["place", "publique"], handles: ["placepublique", "place_publique"] },
+  { slugs: ["david-lisnard"], label: "Nouvelle Énergie", keywords: ["nouvelle", "energie"], handles: ["nouvelleenergie", "nouvelle_energie", "nouv_energie"] },
+  { slugs: ["nathalie-arthaud"], label: "Lutte ouvrière", keywords: ["lutte", "ouvriere"], handles: ["lutteouvriere", "lutte_ouvriere"] },
+  { slugs: ["florian-philippot"], label: "Les Patriotes", keywords: ["patriotes"], handles: ["lespatriotes", "patriotes_off"] },
+  { slugs: ["marine-tondelier"], label: "Les Écologistes", keywords: ["ecologistes"], handles: ["lesecologistes", "eelv"] },
+  { slugs: ["eric-zemmour"], label: "Reconquête", keywords: ["reconquete"], handles: ["reconquete_off", "parti_reconquete", "reconquete"] },
+  { slugs: ["fabien-roussel"], label: "Parti communiste français", keywords: ["communiste"], handles: ["pcf", "pcf_officiel", "partcommuniste"] },
+  { slugs: ["edouard-philippe"], label: "Horizons", keywords: ["horizons"], handles: ["horizons_org", "horizonsleparti", "horizons_officiel"] },
+  { slugs: ["nicolas-dupont-aignan"], label: "Debout la France", keywords: ["debout", "france"], handles: ["deboutlafrance", "dlf_officiel"] },
+  { slugs: ["francois-asselineau"], label: "Union populaire républicaine", keywords: ["union", "populaire", "republicaine"], handles: ["upr", "upr_officiel", "uprasselineau"] },
+  { slugs: ["francois-ruffin"], label: "Debout Ruffin", keywords: ["ruffin"], handles: ["deboutruffin", "ruffin2027"] },
+  { slugs: ["anasse-kazib"], label: "Révolution permanente", keywords: ["revolution", "permanente"], handles: ["revolutionpermanente", "revpermanente"] },
+  { slugs: ["selma-labib"], label: "NPA Révolutionnaires", keywords: ["npa"], handles: ["npa_revolutionnaires", "npa2009"] },
+  { slugs: ["delphine-batho"], label: "Génération écologie", keywords: ["generation", "ecologie"], handles: ["generationecologie", "gen_ecologie"] },
+  { slugs: ["emmanuel-maurel"], label: "Gauche républicaine et socialiste", keywords: ["gauche", "republicaine"], handles: ["g_r_s", "gaucherepublicaine"] },
+  { slugs: ["lydie-massard"], label: "Union démocratique bretonne", keywords: ["union", "democratique", "bretonne"], handles: ["udb_bzh", "udbbretagne"] },
 ];
+
+/**
+ * Comptes INSTAGRAM, renseignés à la main — et uniquement à la main.
+ *
+ * Instagram ne permet aucune vérification automatique : son API web répond 429 depuis un
+ * serveur, et la page publique renvoie 200 même pour un compte qui n'existe pas, sans
+ * aucun compteur lisible. Ces comptes sont donc listés sur la foi de qui les ajoute ici,
+ * et l'interface affiche « source indisponible » à la place des chiffres — jamais un
+ * nombre inventé. Ils restent utiles : le lien fonctionne et l'abonné voit le compte.
+ */
+const INSTAGRAM: Record<string, { handle: string; kind: "official" | "support"; label?: string }[]> = {
+  "david-lisnard": [{ handle: "nouv_energie", kind: "support", label: "Nouvelle Énergie" }],
+};
+
+/** Comptes Instagram des mouvements, même réserve que ci-dessus. */
+const INSTAGRAM_MOVEMENT: Record<string, string[]> = {};
 
 /* ─────────────────────────────── Utilitaires ─────────────────────────────── */
 
@@ -111,25 +145,41 @@ async function checkTikTok(handle: string, expect: string[]): Promise<Found | nu
 }
 
 /**
- * YouTube : l'identité se vérifie par le triplet titre + identifiant canonique + externalId.
- * On ne lit AUCUN compteur ici — une page de chaîne affiche aussi les compteurs des chaînes
- * recommandées, impossible à démêler de façon fiable. Les chiffres viendront de l'API.
+ * YouTube — RECHERCHE par l'API officielle, et non plus par devinette d'identifiant.
+ *
+ * Deviner « @prenomnom » et ses variantes ratait la majorité des chaînes : celles de
+ * Mélenchon ou du Rassemblement national ne suivent aucune règle dérivable du nom. La
+ * recherche de l'API trouve la vraie chaîne, et renvoie au passage le nombre d'abonnés
+ * exact, ce qui permet d'appliquer le seuil anti-usurpation sans requête de plus.
+ *
+ * Coût : 100 unités de quota par recherche, sur 10 000 par jour. Une cinquantaine de
+ * recherches par exécution, donc très loin du plafond.
  */
-async function checkYouTube(handle: string, expect: string[]): Promise<Found | null> {
+async function searchYouTube(query: string, expect: string[]): Promise<Found | null> {
+  const key = process.env.YOUTUBE_API_KEY;
+  if (!key) return null;
   try {
-    const r = await fetch(`https://www.youtube.com/@${handle}`, {
-      headers: { "User-Agent": UA, "Accept-Language": "fr-FR,fr;q=0.9" }, redirect: "follow",
-    });
-    if (!r.ok) return null;
-    const h = await r.text();
-    const title = h.match(/<meta property="og:title" content="([^"]{2,80})"/)?.[1];
-    const canonical = h.match(/"canonicalBaseUrl":"\/@([\w.-]+)"/)?.[1];
-    const cid = h.match(/"externalId":"(UC[\w-]{20,24})"/)?.[1];
-    if (!title || !cid || !confirms(title, expect)) return null;
-    // La page doit bien être celle de l'identifiant demandé, pas une redirection.
-    if (canonical && strip(canonical) !== strip(handle)) return null;
-    return { handle: "@" + handle, external_id: cid, followers: 0, verified: false };
-  } catch { return null; }
+    const r = await fetch(`https://www.googleapis.com/youtube/v3/search?part=snippet&type=channel&maxResults=5&q=${encodeURIComponent(query)}&key=${key}`);
+    const j: any = await r.json();
+    const ids = (j.items ?? []).map((i: any) => i.snippet?.channelId ?? i.id?.channelId).filter(Boolean);
+    if (!ids.length) return null;
+
+    const d = await fetch(`https://www.googleapis.com/youtube/v3/channels?part=snippet,statistics&id=${ids.join(",")}&key=${key}`);
+    const dj: any = await d.json();
+    for (const ch of dj.items ?? []) {
+      if (!confirms(ch.snippet?.title ?? "", expect)) continue;
+      const followers = Number(ch.statistics?.subscriberCount ?? 0);
+      if (followers < MIN_FOLLOWERS) continue;
+      const custom = String(ch.snippet?.customUrl ?? "");
+      return {
+        handle: custom.startsWith("@") ? custom : `@${custom || ch.id}`,
+        external_id: ch.id,
+        followers,
+        verified: false,
+      };
+    }
+  } catch {}
+  return null;
 }
 
 async function checkBluesky(handle: string, expect: string[]): Promise<Found | null> {
@@ -160,11 +210,11 @@ async function searchBluesky(name: string, expect: string[]): Promise<Found | nu
   return null;
 }
 
-const CHECKERS = { tiktok: checkTikTok, youtube: checkYouTube, bluesky: checkBluesky };
+const CHECKERS = { tiktok: checkTikTok, bluesky: checkBluesky };
 
 /** Essaie les identifiants l'un après l'autre, s'arrête au premier confirmé. */
 async function firstConfirmed(
-  platform: "tiktok" | "youtube" | "bluesky", handles: string[], expect: string[],
+  platform: "tiktok" | "bluesky", handles: string[], expect: string[],
 ): Promise<Found | null> {
   for (const h of handles) {
     const found = await CHECKERS[platform](h, expect);
@@ -199,20 +249,32 @@ async function main() {
     const expect = c.full_name.split(/[\s-]+/);
     const accounts: any[] = [];
 
-    for (const platform of ["youtube", "tiktok", "bluesky"] as const) {
-      const candidatesHandles = [...(HANDLES[c.slug]?.[platform] ?? []), ...variants(c.full_name)];
-      let found = await firstConfirmed(platform, candidatesHandles, expect);
+    // YouTube : recherche par l'API, bien plus fiable qu'une devinette d'identifiant.
+    const yt = await searchYouTube(c.full_name, expect);
+    if (yt) accounts.push({ platform: "youtube", handle: yt.handle, external_id: yt.external_id ?? null,
+      url: `https://www.youtube.com/${yt.handle}`, kind: "official" });
+
+    for (const platform of ["tiktok", "bluesky"] as const) {
+      const handles = [...(HANDLES[c.slug]?.[platform] ?? []), ...variants(c.full_name)];
+      let found = await firstConfirmed(platform, handles, expect);
       if (!found && platform === "bluesky") found = await searchBluesky(c.full_name, expect);
       if (!found) continue;
       accounts.push({
         platform,
         handle: found.handle,
         external_id: found.external_id ?? null,
-        url: platform === "youtube" ? `https://www.youtube.com/${found.handle}`
-          : platform === "tiktok" ? `https://www.tiktok.com/${found.handle}`
-          : `https://bsky.app/profile/${found.handle}`,
+        url: platform === "tiktok" ? `https://www.tiktok.com/${found.handle}` : `https://bsky.app/profile/${found.handle}`,
         kind: "official",
       });
+    }
+
+    // Instagram : renseigné À LA MAIN uniquement (voir INSTAGRAM plus haut). Aucune
+    // vérification possible — Instagram renvoie 200 même pour un compte inexistant — et
+    // aucun chiffre lisible sans authentification. Le compte est donc listé et cliquable,
+    // mais l'interface affichera « source indisponible » à la place des abonnés.
+    for (const ig of INSTAGRAM[c.slug] ?? []) {
+      accounts.push({ platform: "instagram", handle: `@${ig.handle}`, external_id: null,
+        url: `https://www.instagram.com/${ig.handle}/`, kind: ig.kind, label: ig.label ?? null });
     }
 
     if (accounts.length) bySlug.set(c.slug, accounts);
@@ -226,19 +288,26 @@ async function main() {
     const slugs = m.slugs.filter(s => todo.some(c => c.slug === s));
     if (!slugs.length) continue;
     const accounts: any[] = [];
-    for (const platform of ["youtube", "tiktok", "bluesky"] as const) {
+    const yt = await searchYouTube(m.label, m.keywords);
+    if (yt) accounts.push({ platform: "youtube", handle: yt.handle, external_id: yt.external_id ?? null,
+      url: `https://www.youtube.com/${yt.handle}`, kind: "support", label: m.label });
+
+    for (const platform of ["tiktok", "bluesky"] as const) {
       const found = await firstConfirmed(platform, m.handles, m.keywords);
       if (!found) continue;
       accounts.push({
         platform,
         handle: found.handle,
         external_id: found.external_id ?? null,
-        url: platform === "youtube" ? `https://www.youtube.com/${found.handle}`
-          : platform === "tiktok" ? `https://www.tiktok.com/${found.handle}`
-          : `https://bsky.app/profile/${found.handle}`,
+        url: platform === "tiktok" ? `https://www.tiktok.com/${found.handle}` : `https://bsky.app/profile/${found.handle}`,
         kind: "support",
         label: m.label,
       });
+    }
+
+    for (const ig of INSTAGRAM_MOVEMENT[m.label] ?? []) {
+      accounts.push({ platform: "instagram", handle: `@${ig}`, external_id: null,
+        url: `https://www.instagram.com/${ig}/`, kind: "support", label: m.label });
     }
     console.log(`${m.label.padEnd(24)} ${accounts.map(a => `${a.platform}:${a.handle}`).join(" ") || "(aucun)"}`);
     for (const slug of slugs) bySlug.set(slug, [...(bySlug.get(slug) ?? []), ...accounts]);

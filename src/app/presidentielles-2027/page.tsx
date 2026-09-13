@@ -765,8 +765,18 @@ function CandidatesContent() {
           {/* Onglets Candidats / Positions */}
           <div className="mt-8 inline-flex rounded-full border border-slate-200 bg-white p-1 shadow-sm">
             {([["candidats", "Candidats"], ["positions", "Positions"], ["enjeux", "Enjeux"], ["dynamiques", "Dynamiques"]] as const).map(([key, label]) => (
+              // « Dynamiques » est un outil de l'abonnement Pro : il porte donc les
+              // couleurs du Pro, actif comme inactif, pour se distinguer des autres onglets.
               <button key={key} onClick={() => setView(key)}
-                className={`rounded-full px-6 py-2 text-sm font-black uppercase tracking-widest transition ${view === key ? "bg-slate-900 text-white" : "text-slate-500 hover:text-slate-900"}`}>
+                className={`rounded-full px-6 py-2 text-sm font-black uppercase tracking-widest transition ${
+                  key === "dynamiques"
+                    ? view === key
+                      ? "bg-gradient-to-r from-fuchsia-500 to-purple-600 text-white shadow-[0_0_18px_-2px_rgba(217,70,239,0.7)]"
+                      : "text-fuchsia-600 hover:bg-fuchsia-50"
+                    : view === key
+                      ? "bg-slate-900 text-white"
+                      : "text-slate-500 hover:text-slate-900"
+                }`}>
                 {label}
               </button>
             ))}

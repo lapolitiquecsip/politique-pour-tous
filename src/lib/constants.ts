@@ -82,6 +82,5 @@ export const PLANS = {
     tagline: "Pour les professionnels de la politique et les entreprises.",
     monthly: 24.99,
     annually: 239,
-    audience: "Collaborateurs, affaires publiques, entreprises, presse",
   },
 };

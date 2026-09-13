@@ -439,8 +439,7 @@ export default function PremiumPage() {
           </motion.button>
           <div className="mt-12 flex flex-wrap items-center justify-center gap-8 md:gap-14">
             <div className="text-center"><p className="text-4xl md:text-5xl font-extrabold text-amber-400"><AnimatedCounter target={302} suffix="+" /></p><p className="text-sm text-white/50 mt-1 italic">Citoyens Premium</p></div>
-            <div className="text-center"><p className="text-4xl md:text-5xl font-extrabold text-white">∞</p><p className="text-sm text-white/50 mt-1 italic">Décryptages</p></div>
-            <div className="text-center"><p className="text-4xl md:text-5xl font-extrabold text-white">100%</p><p className="text-sm text-white/50 mt-1 italic">Indépendant</p></div>
+            <div className="text-center"><p className="text-4xl md:text-5xl font-extrabold text-fuchsia-400"><AnimatedCounter target={47} suffix="+" /></p><p className="text-sm text-white/50 mt-1 italic">Professionnels Pro</p></div>
           </div>
         </div>
       </section>
@@ -538,7 +537,6 @@ export default function PremiumPage() {
                 <FallingParticles />
                 <div className="absolute top-0 left-1/2 -translate-x-1/2 -translate-y-1/2 whitespace-nowrap bg-gradient-to-r from-fuchsia-500 to-purple-600 text-white px-4 py-1.5 rounded-full text-[10px] font-black uppercase tracking-widest shadow-lg">Professionnels</div>
 
-                <p className="text-[10px] font-black uppercase tracking-widest text-fuchsia-300">{PLANS.pro.audience}</p>
                 <h3 className="mt-1 font-staatliches text-4xl uppercase tracking-tight">{PLANS.pro.name}</h3>
                 <p className="mt-1 text-sm text-white/60">{PLANS.pro.tagline}</p>
 

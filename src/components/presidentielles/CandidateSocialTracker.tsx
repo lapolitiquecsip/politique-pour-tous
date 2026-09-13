@@ -111,7 +111,12 @@ export default function CandidateSocialTracker({ candidates }: { candidates: Can
   const [accounts, setAccounts] = useState<SocialAccount[] | null>(null);
   const [snapshots, setSnapshots] = useState<Snapshot[]>([]);
   const [period, setPeriod] = useState<Period>(7);
-  const [scope, setScope] = useState<Scope>("all");
+  // Par défaut on ne compte QUE les comptes personnels.
+  //
+  // Un compte de parti est rattaché à plusieurs candidats (le PS l'est à Faure, Brun et
+  // Guedj) : le additionner à l'audience de chacun donne un classement faux, où un
+  // candidat à 2 300 abonnés apparaît devant un candidat qui en a 40 000 en propre.
+  const [scope, setScope] = useState<Scope>("official");
   const [openId, setOpenId] = useState<string | null>(null);
 
   useEffect(() => {
@@ -228,7 +233,7 @@ export default function CandidateSocialTracker({ candidates }: { candidates: Can
           ))}
         </div>
         <div className="inline-flex rounded-full border border-slate-200 bg-white p-1">
-          {([["all", "Tous les comptes"], ["official", "Officiels"], ["support", "Soutien"]] as const).map(([v, label]) => (
+          {([["official", "Comptes personnels"], ["support", "Comptes de soutien"], ["all", "Les deux"]] as const).map(([v, label]) => (
             <button key={v} onClick={() => setScope(v)}
               className={`rounded-full px-4 py-1.5 text-[11px] font-black uppercase tracking-widest transition ${scope === v ? "bg-slate-900 text-white" : "text-slate-500 hover:text-slate-900"}`}>
               {label}
@@ -325,7 +330,12 @@ export default function CandidateSocialTracker({ candidates }: { candidates: Can
           })}
 
           <p className="pt-3 text-center text-[11px] italic text-slate-400">
-            Relevés quotidiens. Les vues correspondent aux vues réellement gagnées sur la période, mesurées entre deux relevés.
+            {scope === "all"
+              ? "Attention : « les deux » additionne les comptes de parti, partagés entre plusieurs candidats — l'audience d'un même parti est alors comptée pour chacun d'eux."
+              : scope === "support"
+                ? "Comptes de mouvements et de campagne uniquement. Un même parti peut soutenir plusieurs candidats."
+                : "Comptes personnels des candidats uniquement, hors comptes de parti."}
+            {" "}Relevés quotidiens. Les vues correspondent aux vues réellement gagnées sur la période, mesurées entre deux relevés.
             Un compte marqué « source indisponible » n&apos;affiche aucun chiffre plutôt qu&apos;un chiffre périmé.
           </p>
         </div>

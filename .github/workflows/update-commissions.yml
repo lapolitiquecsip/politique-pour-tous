@@ -8,9 +8,11 @@ name: Suivi des commissions parlementaires
 
 on:
   schedule:
-    # 03:20 UTC ≈ 05:20 Paris : hors de la fenêtre du cron backend (17h-04h UTC),
-    # et les comptes rendus de la veille sont publiés.
-    - cron: '20 3 * * *'
+    # 04:40 UTC ≈ 06:40 Paris. Créneau choisi pour DEUX raisons :
+    #  - DeepSeek facture MOITIÉ PRIX hors heures de pointe, et ses heures pleines sont
+    #    01h-04h et 06h-10h UTC en semaine : 04h40 tombe dans le creux entre les deux ;
+    #  - c'est hors de la fenêtre du cron backend (17h-04h UTC).
+    - cron: '40 4 * * *'
   workflow_dispatch:
     inputs:
       weeks:
@@ -20,7 +22,7 @@ on:
       analyses:
         description: "Nombre maximum d'analyses IA à générer sur ce passage"
         required: false
-        default: "10"
+        default: "20"
 
 # Deux exécutions simultanées analyseraient les mêmes réunions deux fois.
 concurrency:
@@ -48,8 +50,11 @@ jobs:
         env:
           NEXT_PUBLIC_SUPABASE_URL: ${{ secrets.NEXT_PUBLIC_SUPABASE_URL }}
           SUPABASE_SERVICE_ROLE_KEY: ${{ secrets.SUPABASE_SERVICE_ROLE_KEY }}
-          ANTHROPIC_API_KEY: ${{ secrets.ANTHROPIC_API_KEY }}
+          # Moteur d'analyse : DeepSeek (voir scripts/update-commissions.ts).
+          DEEPSEEK_API_KEY: ${{ secrets.DEEPSEEK_API_KEY }}
+          # Facultatif : bascule vers un modèle moins cher (deepseek-flash) sans toucher au code.
+          COMMISSION_MODEL: ${{ vars.COMMISSION_MODEL }}
         run: >
           npx --yes tsx scripts/update-commissions.ts
           --weeks=${{ github.event.inputs.weeks || '3' }}
-          --analyses=${{ github.event.inputs.analyses || '10' }}
+          --analyses=${{ github.event.inputs.analyses || '20' }}

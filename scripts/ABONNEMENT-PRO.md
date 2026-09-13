@@ -128,15 +128,37 @@ Ensuite, les deux crons GitHub prennent le relais tous les jours
 les variations sur 30 jours au bout d'un mois : une tendance est une différence entre
 deux relevés, jamais une valeur stockée.
 
-## 5. Coût des analyses de commission
+## 5. Moteur d'analyse et coût
 
-Chaque analyse lit le compte rendu intégral (souvent 50 000 à 90 000 caractères, soit
-15 000 à 25 000 jetons) et appelle `claude-opus-5`. Compter environ **0,10 à 0,15 € par
-réunion analysée**. Le cron est plafonné à 10 analyses par nuit (~1 €/nuit) ; le
-rattrapage initial de l'historique se règle avec `--analyses=N`, à doser selon le budget.
+**Moteur retenu : `deepseek-v4-pro`**, appelé par son point d'accès compatible OpenAI
+(`scripts/update-commissions.ts`). Choisi après comparaison mesurée sur un même compte
+rendu de la commission des finances (53 231 caractères) :
 
-Pour réduire la note, baisser l'effort ou changer de modèle dans
-`scripts/update-commissions.ts` (constante du bloc `anthropic.messages.stream`).
+| Moteur | Coût/analyse | Constat |
+|---|---|---|
+| Gemini Flash Lite | gratuit | HTTP 429 dès le 2e appel — le palier gratuit est déjà saturé par les 22 workflows du backend |
+| Claude Haiku 4.5 | 0,034 $ | A reformulé une citation et daté un chiffre du mauvais exercice |
+| **deepseek-v4-pro** | **0,0133 $** | 40 chiffres datés, citations exactes, aucune erreur détectée |
+
+Coût **mesuré au solde réel** (pas estimé) : 0,0133 $ par analyse, soit **~8 $ pour les
+617 réunions existantes** et **~2,30 $/mois** ensuite.
+
+Deux leviers si le budget devient un sujet :
+- `COMMISSION_MODEL=deepseek-flash` (variable de dépôt GitHub) divise le coût par ~6,
+  au prix de nettement moins de chiffres extraits ;
+- le cron tourne **à 04h40 UTC volontairement** : DeepSeek facture moitié prix hors
+  heures de pointe (01h-04h et 06h-10h UTC en semaine). Ne pas le déplacer dans ces
+  fenêtres sans raison, cela doublerait la facture.
+
+### Garde-fou contre les citations inventées
+
+Chaque citation produite est **recherchée dans le verbatim d'origine** avant d'être
+enregistrée ; celles qui ne s'y retrouvent pas sont supprimées (`dropInventedQuotes`).
+C'est la protection la plus importante du produit : un abonné professionnel qui repère
+un verbatim inventé ne revient pas. Le journal du cron indique combien de citations ont
+été écartées — si ce nombre grimpe, le moteur dérive et il faut le changer.
+
+Sur le premier lot réel de 5 analyses : 0 échec, 0 citation écartée.
 
 ## 6. Fragilité assumée des sources réseaux sociaux
 

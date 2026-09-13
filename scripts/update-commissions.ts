@@ -23,10 +23,9 @@
  *   npx tsx scripts/update-commissions.ts --skip-analysis   # ingestion seule (gratuit)
  *
  * Variables requises : NEXT_PUBLIC_SUPABASE_URL, SUPABASE_SERVICE_ROLE_KEY.
- * ANTHROPIC_API_KEY n'est nécessaire que pour l'étape 2.
+ * DEEPSEEK_API_KEY n'est nécessaire que pour l'étape 2 (analyses).
  */
 import { createClient } from "@supabase/supabase-js";
-import Anthropic from "@anthropic-ai/sdk";
 
 const UA = "Mozilla/5.0 (compatible; lapolitiquecestsimple/1.0; +https://lapolitiquecestsimple.fr)";
 const SENAT = "https://www.senat.fr";
@@ -248,81 +247,82 @@ async function ingestSenate(supabase: any, weeks: number) {
 
 /* ──────────────── Étape 2 : analyse détaillée (abonnement Pro) ──────────────── */
 
-const ANALYSIS_TOOL: Anthropic.Tool = {
-  name: "enregistrer_analyse",
-  description: "Enregistre l'analyse structurée d'une réunion de commission parlementaire.",
-  strict: true,
-  input_schema: {
-    type: "object",
-    additionalProperties: false,
-    required: ["contexte", "points_cles", "chiffres", "positions", "citations", "suites"],
-    properties: {
-      contexte: {
-        type: "string",
-        description: "2 à 3 phrases : de quoi traite la réunion, qui est auditionné, pourquoi maintenant.",
-      },
-      points_cles: {
-        type: "array",
-        description: "5 à 9 points sur ce qui a RÉELLEMENT été dit, du plus important au moins important. Phrases complètes et factuelles.",
-        items: { type: "string" },
-      },
-      chiffres: {
-        type: "array",
-        description: "Chiffres avancés pendant la réunion. Vide si aucun chiffre n'a été cité.",
-        items: {
-          type: "object",
-          additionalProperties: false,
-          required: ["valeur", "quoi"],
-          properties: {
-            valeur: { type: "string", description: "Le chiffre tel qu'énoncé, ex. « 125 milliards d'euros », « 5,1 % du PIB »." },
-            quoi: { type: "string", description: "Ce que mesure ce chiffre, en une courte phrase." },
-          },
-        },
-      },
-      positions: {
-        type: "array",
-        description: "Positions défendues, une par orateur marquant. Vide si la réunion est purement technique.",
-        items: {
-          type: "object",
-          additionalProperties: false,
-          required: ["orateur", "groupe", "position"],
-          properties: {
-            orateur: { type: "string", description: "Nom tel qu'il apparaît, ex. « Mme Muriel Jourda »." },
-            groupe: { type: "string", description: "Groupe politique ou fonction si le compte rendu l'indique, sinon chaîne vide." },
-            position: { type: "string", description: "Ce que cette personne défend, en une à deux phrases." },
-          },
-        },
-      },
-      citations: {
-        type: "array",
-        description: "1 à 3 extraits verbatim marquants, recopiés MOT POUR MOT depuis le compte rendu.",
-        items: {
-          type: "object",
-          additionalProperties: false,
-          required: ["orateur", "texte"],
-          properties: {
-            orateur: { type: "string" },
-            texte: { type: "string", description: "Citation exacte, sans guillemets, 30 mots maximum." },
-          },
-        },
-      },
-      suites: {
-        type: "array",
-        description: "Suites annoncées : rapport à venir, vote programmé, saisine, nouvelle audition. Vide si rien n'est annoncé.",
-        items: { type: "string" },
-      },
-    },
-  },
-};
+/**
+ * Moteur d'analyse : DeepSeek, par son point d'accès compatible OpenAI.
+ *
+ * Choisi après comparaison mesurée sur un même compte rendu (Gemini Flash Lite,
+ * DeepSeek, Claude Haiku 4.5) : DeepSeek a rendu les citations les plus fidèles au
+ * verbatim, là où un concurrent plus cher avait reformulé une citation et daté un
+ * chiffre du mauvais exercice.
+ *
+ * `deepseek-v4-pro` est le modèle de qualité ; `deepseek-flash` coûte ~6 fois moins
+ * mais extrait nettement moins de chiffres. Basculer par la variable COMMISSION_MODEL.
+ *
+ * ⚠️ max_tokens généreux À DESSEIN : ces modèles raisonnent, et un plafond trop bas
+ * renvoie une réponse VIDE sans la moindre erreur — panne silencieuse difficile à voir.
+ */
+const MODEL = process.env.COMMISSION_MODEL || "deepseek-v4-pro";
+const LLM_BASE_URL = process.env.COMMISSION_BASE_URL || "https://api.deepseek.com/";
+const LLM_API_KEY = process.env.DEEPSEEK_API_KEY || "";
 
 const SYSTEM = `Tu analyses des comptes rendus de commissions parlementaires françaises pour des professionnels de la politique : collaborateurs parlementaires, directions des affaires publiques, journalistes.
 
 Règles absolues :
 - Tu ne rapportes QUE ce qui figure dans le compte rendu. Aucune connaissance extérieure, aucune extrapolation, aucun commentaire de ta part.
-- Tu restes stricement neutre : tu rapportes les positions, tu ne les évalues pas.
-- Les citations sont recopiées mot pour mot. Si tu n'es pas certain d'un extrait, tu ne le cites pas.
+- Tu restes strictement neutre : tu rapportes les positions, tu ne les évalues pas.
+- Les citations sont recopiées MOT POUR MOT depuis le compte rendu. Si tu n'es pas certain d'un extrait, tu ne le cites pas.
+- Chaque chiffre est rattaché à l'exercice dont le compte rendu le date.
 - Un champ sans matière dans le compte rendu reste un tableau vide. Ne jamais combler un vide.
 - Tes lecteurs connaissent le vocabulaire parlementaire : sois précis et dense, pas pédagogique.`;
+
+const SHAPE = `Réponds UNIQUEMENT par un objet JSON de cette forme exacte :
+{
+  "contexte": "2 à 3 phrases : de quoi traite la réunion, qui est auditionné, pourquoi maintenant",
+  "points_cles": ["5 à 9 points sur ce qui a RÉELLEMENT été dit, du plus important au moins important"],
+  "chiffres": [{"valeur": "le chiffre tel qu'énoncé", "quoi": "ce qu'il mesure, avec l'exercice concerné"}],
+  "positions": [{"orateur": "M./Mme Nom", "groupe": "groupe ou fonction, sinon chaîne vide", "position": "ce qu'il ou elle défend"}],
+  "citations": [{"orateur": "M./Mme Nom", "texte": "citation exacte, 30 mots maximum"}],
+  "suites": ["suites annoncées : rapport, vote, saisine, nouvelle audition"]
+}`;
+
+type Analysis = {
+  contexte?: string;
+  points_cles?: string[];
+  chiffres?: { valeur: string; quoi: string }[];
+  positions?: { orateur: string; groupe?: string; position: string }[];
+  citations?: { orateur: string; texte: string }[];
+  suites?: string[];
+};
+
+/** Normalisation tolérante : accents, ponctuation et espaces ne doivent pas faire échouer une comparaison. */
+const normalize = (s: string) =>
+  s.normalize("NFD").replace(/[̀-ͯ]/g, "").toLowerCase()
+    .replace(/[^a-z0-9 ]/g, " ").replace(/\s+/g, " ").trim();
+
+/**
+ * GARDE-FOU : une citation absente du compte rendu est SUPPRIMÉE.
+ *
+ * C'est la protection la plus importante du produit. Un abonné professionnel qui
+ * repère un verbatim inventé ne revient pas. On tolère une correspondance partielle
+ * (le modèle coupe parfois une incise), mais rien qui ne se retrouve pas dans le texte.
+ */
+function dropInventedQuotes(analysis: Analysis, transcript: string): { analysis: Analysis; dropped: number } {
+  const hay = normalize(transcript);
+  const kept: { orateur: string; texte: string }[] = [];
+  let dropped = 0;
+
+  for (const c of analysis.citations ?? []) {
+    const needle = normalize(c.texte ?? "");
+    if (!needle) { dropped++; continue; }
+    const words = needle.split(" ");
+    // Les 60 % premiers mots suffisent : ils ancrent la citation dans le texte réel.
+    const anchor = words.slice(0, Math.max(4, Math.floor(words.length * 0.6))).join(" ");
+    if (hay.includes(needle) || hay.includes(anchor)) kept.push(c);
+    else dropped++;
+  }
+
+  return { analysis: { ...analysis, citations: kept }, dropped };
+}
 
 /** Récupère le verbatim intégral d'une réunion depuis son compte rendu officiel. */
 async function loadTranscript(row: any): Promise<string | null> {
@@ -345,9 +345,9 @@ async function loadTranscript(row: any): Promise<string | null> {
 }
 
 async function analyseMeetings(supabase: any, limit: number) {
-  console.log(`\n🧠 Analyse détaillée — jusqu'à ${limit} réunion(s)`);
-  if (!process.env.ANTHROPIC_API_KEY) {
-    console.warn("  ⚠ ANTHROPIC_API_KEY absente : étape ignorée.");
+  console.log(`\n🧠 Analyse détaillée — jusqu'à ${limit} réunion(s), modèle ${MODEL}`);
+  if (!LLM_API_KEY) {
+    console.warn("  ⚠ DEEPSEEK_API_KEY absente : étape ignorée.");
     return;
   }
 
@@ -355,17 +355,16 @@ async function analyseMeetings(supabase: any, limit: number) {
     .from("commission_reports")
     .select("ref, chamber, commission, title, meeting_date, cr_url, summary")
     .is("analysis", null)
-    .order("meeting_date", { ascending: false })
+    .order("meeting_date", { ascending: false })   // les réunions récentes d'abord
     .limit(limit);
 
   if (error) { console.error(`  ✗ ${error.message}`); return; }
   if (!rows?.length) { console.log("  Rien à analyser."); return; }
 
-  const anthropic = new Anthropic({ apiKey: process.env.ANTHROPIC_API_KEY });
-  let done = 0, failed = 0;
+  let done = 0, failed = 0, quotesDropped = 0, tokensIn = 0, tokensOut = 0;
 
   for (const row of rows) {
-    const label = `${row.meeting_date} ${String(row.title ?? "").slice(0, 60)}`;
+    const label = `${row.meeting_date} ${String(row.title ?? "").slice(0, 55)}`;
     const transcript = await loadTranscript(row);
 
     if (!transcript) {
@@ -375,27 +374,37 @@ async function analyseMeetings(supabase: any, limit: number) {
     }
 
     try {
-      // Les comptes rendus peuvent être très longs ; on diffuse pour ne pas heurter
-      // le délai HTTP du SDK, et on ne tronque jamais le texte transmis.
-      const stream = anthropic.messages.stream({
-        model: "claude-opus-5",
-        max_tokens: 8000,
-        system: SYSTEM,
-        tools: [ANALYSIS_TOOL],
-        tool_choice: { type: "tool", name: ANALYSIS_TOOL.name },
-        messages: [{
-          role: "user",
-          content: `Compte rendu de la ${row.commission ?? "commission"} — séance du ${row.meeting_date}.\nObjet : ${row.title ?? "(non précisé)"}\n\n--- COMPTE RENDU INTÉGRAL ---\n${transcript}`,
-        }],
+      const res = await fetch(`${LLM_BASE_URL}chat/completions`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json", Authorization: `Bearer ${LLM_API_KEY}` },
+        body: JSON.stringify({
+          model: MODEL,
+          messages: [
+            { role: "system", content: `${SYSTEM}\n\n${SHAPE}` },
+            {
+              role: "user",
+              content: `Compte rendu de la ${row.commission ?? "commission"} — séance du ${row.meeting_date}.\nObjet : ${row.title ?? "(non précisé)"}\n\n--- COMPTE RENDU INTÉGRAL ---\n${transcript}`,
+            },
+          ],
+          response_format: { type: "json_object" },
+          max_tokens: 16000,
+        }),
       });
-      const message = await stream.finalMessage();
 
-      const call = message.content.find(b => b.type === "tool_use");
-      if (!call || call.type !== "tool_use") throw new Error("aucune analyse renvoyée");
-      const analysis = call.input as Record<string, unknown>;
+      const body: any = await res.json();
+      if (!res.ok) throw new Error(`HTTP ${res.status} — ${JSON.stringify(body).slice(0, 180)}`);
+
+      const raw = body.choices?.[0]?.message?.content ?? "";
+      if (!raw.trim()) throw new Error("réponse vide (plafond de jetons trop bas ?)");
+      const parsed: Analysis = JSON.parse(raw.replace(/^```json\s*|\s*```$/g, ""));
+
+      const { analysis, dropped } = dropInventedQuotes(parsed, transcript);
+      quotesDropped += dropped;
+      tokensIn += body.usage?.prompt_tokens ?? 0;
+      tokensOut += body.usage?.completion_tokens ?? 0;
 
       // Résumé court dérivé de l'analyse, pour le fil d'auditions tout public.
-      const points = (analysis.points_cles as string[]) ?? [];
+      const points = analysis.points_cles ?? [];
       const summary = row.summary
         ?? [analysis.contexte, ...points.slice(0, 4).map(p => `- ${p}`)].filter(Boolean).join("\n\n");
 
@@ -412,15 +421,15 @@ async function analyseMeetings(supabase: any, limit: number) {
       if (upErr) throw new Error(upErr.message);
 
       done++;
-      const u = message.usage;
-      console.log(`  ✓ ${label} — ${u.input_tokens} jetons entrants, ${u.output_tokens} sortants`);
+      console.log(`  ✓ ${label} — ${points.length} points, ${(analysis.chiffres ?? []).length} chiffres, ${(analysis.citations ?? []).length} citations${dropped ? ` (${dropped} écartée·s)` : ""}`);
     } catch (e) {
       failed++;
       console.warn(`  ✗ ${label} : ${(e as Error).message}`);
     }
   }
 
-  console.log(`  → ${done} analyse(s) générée(s), ${failed} échec(s)`);
+  console.log(`  → ${done} analyse(s), ${failed} échec(s), ${quotesDropped} citation(s) écartée(s) car absentes du verbatim`);
+  console.log(`  → ${tokensIn} jetons entrants, ${tokensOut} sortants`);
 }
 
 /* ───────────────────────────────── Entrée ───────────────────────────────── */

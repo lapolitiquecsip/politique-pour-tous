@@ -20,13 +20,16 @@
  *   npx tsx scripts/update-commissions.ts                    # marche courante
  *   npx tsx scripts/update-commissions.ts --weeks=30          # rattrapage Sénat
  *   npx tsx scripts/update-commissions.ts --skip-analysis     # ingestion seule (gratuite)
- *   npx tsx scripts/update-commissions.ts --skip-scrape  *       --analyses=700 --concurrency=6                        # rattrapage de l'historique
+ *   npx tsx scripts/update-commissions.ts --skip-scrape --analyses=700 --concurrency=6
+ *                                                            # rattrapage de l'historique
  *
  * Options de l'étape 2 :
  *   --analyses=N      nombre maximum d'analyses sur ce passage (défaut 20)
  *   --concurrency=N   analyses menées en parallèle (défaut 4)
- *   --min-balance=X   plancher de solde DeepSeek en dollars ; en dessous, arrêt propre
- *                     (défaut 0.4). Le reste est repris au passage suivant.
+ *   --min-balance=X   réserve de solde DeepSeek à ne pas entamer, en dollars (défaut 0.4).
+ *                     La dépense est comptée localement à partir des jetons consommés, et
+ *                     NON par sondage du solde distant, facturé en différé : c'est ce
+ *                     sondage qui avait laissé le compte passer en négatif.
  *   --offpeak-only    ne rien analyser pendant les heures pleines de DeepSeek, où le
  *                     tarif double. Activé par le cron.
  *
@@ -364,6 +367,21 @@ function isOffPeak(d = new Date()): boolean {
   return !((h >= 1 && h < 4) || (h >= 6 && h < 10));
 }
 
+/**
+ * Plafond de coût d'un appel, en dollars, d'après les jetons réellement consommés.
+ *
+ * On applique TOUJOURS le tarif haut de deepseek-v4-pro (heures pleines, cache manqué),
+ * même en heures creuses. C'est délibéré : le premier rattrapage a été facturé 0,0259 $
+ * par analyse là où les tarifs creux publiés annonçaient 0,0187 $. Un garde-fou qui
+ * sous-estime laisse le compte passer en négatif ; un garde-fou qui surestime s'arrête
+ * un peu tôt et laisse du solde. Entre les deux, le choix est vite fait.
+ */
+const RATE_IN = 1.32, RATE_OUT = 3.96;   // $ par million de jetons
+
+function estimateCost(inTok: number, outTok: number): number {
+  return (inTok * RATE_IN + outTok * RATE_OUT) / 1e6;
+}
+
 /** Solde DeepSeek en dollars, ou null si l'appel échoue. */
 async function readBalance(): Promise<number | null> {
   try {
@@ -381,24 +399,30 @@ async function analyseOne(supabase: any, row: any) {
   const transcript = await loadTranscript(row);
   if (!transcript) return { ok: false, reason: "verbatim introuvable", dropped: 0, inTok: 0, outTok: 0 };
 
-  const res = await fetch(`${LLM_BASE_URL}chat/completions`, {
-    method: "POST",
-    headers: { "Content-Type": "application/json", Authorization: `Bearer ${LLM_API_KEY}` },
-    body: JSON.stringify({
-      model: MODEL,
-      messages: [
-        { role: "system", content: `${SYSTEM}\n\n${SHAPE}` },
-        {
-          role: "user",
-          content: `Compte rendu de la ${row.commission ?? "commission"} — séance du ${row.meeting_date}.\nObjet : ${row.title ?? "(non précisé)"}\n\n--- COMPTE RENDU INTÉGRAL ---\n${transcript}`,
-        },
-      ],
-      response_format: { type: "json_object" },
-      max_tokens: 16000,
-    }),
-  });
-
-  const body: any = await res.json();
+  // DeepSeek abaisse la concurrence autorisée à mesure que le solde baisse : les 429
+  // arrivent alors en rafale. On patiente plutôt que de perdre la réunion.
+  let res!: Response, body: any;
+  for (let attempt = 1; ; attempt++) {
+    res = await fetch(`${LLM_BASE_URL}chat/completions`, {
+      method: "POST",
+      headers: { "Content-Type": "application/json", Authorization: `Bearer ${LLM_API_KEY}` },
+      body: JSON.stringify({
+        model: MODEL,
+        messages: [
+          { role: "system", content: `${SYSTEM}\n\n${SHAPE}` },
+          {
+            role: "user",
+            content: `Compte rendu de la ${row.commission ?? "commission"} — séance du ${row.meeting_date}.\nObjet : ${row.title ?? "(non précisé)"}\n\n--- COMPTE RENDU INTÉGRAL ---\n${transcript}`,
+          },
+        ],
+        response_format: { type: "json_object" },
+        max_tokens: 16000,
+      }),
+    });
+    body = await res.json();
+    if (res.status !== 429 || attempt >= 4) break;
+    await sleep(attempt * 15000);
+  }
   if (!res.ok) throw new Error(`HTTP ${res.status} — ${JSON.stringify(body).slice(0, 160)}`);
 
   const raw = body.choices?.[0]?.message?.content ?? "";
@@ -465,6 +489,10 @@ async function analyseMeetings(
   let done = 0, failed = 0, quotesDropped = 0, tokensIn = 0, tokensOut = 0;
   let halted = false;
   let cursor = 0;
+  // Ce qu'on s'autorise à dépenser sur ce passage, réserve déduite.
+  const budget = startBalance !== null ? Math.max(0, startBalance - opts.minBalance) : null;
+  let spent = 0;
+  if (budget !== null) console.log(`  Budget de ce passage : ${budget.toFixed(2)} $ (réserve ${opts.minBalance} $)`);
 
   // Pool de travailleurs : chacun pioche la réunion suivante jusqu'à épuisement.
   const worker = async () => {
@@ -479,14 +507,17 @@ async function analyseMeetings(
         done++; quotesDropped += r.dropped; tokensIn += r.inTok; tokensOut += r.outTok;
         console.log(`  ✓ [${done + failed}/${rows.length}] ${label} — ${r.points} pts, ${r.chiffres} chiffres, ${r.citations} cit.${r.dropped ? ` (${r.dropped} écartée·s)` : ""}`);
 
-        // Contrôle de solde périodique : on s'arrête NET avant la panne sèche,
-        // le reste sera repris au passage suivant (rien n'est perdu).
-        if (done % 25 === 0) {
-          const b = await readBalance();
-          if (b !== null && b <= opts.minBalance) {
-            halted = true;
-            console.warn(`\n  ⛔ Solde descendu à ${b.toFixed(2)} $ (plancher ${opts.minBalance} $) — arrêt propre.`);
-          }
+        // Budget suivi LOCALEMENT, contrôlé après CHAQUE analyse.
+        //
+        // On n'interroge pas le solde distant pour cela : DeepSeek facture en différé,
+        // si bien qu'un sondage périodique lit une valeur périmée et laisse le
+        // traitement filer au-delà du plancher — c'est précisément ce qui a fait passer
+        // le compte en négatif lors du premier rattrapage. Les jetons consommés, eux,
+        // sont connus immédiatement et ne mentent pas.
+        spent += estimateCost(r.inTok, r.outTok);
+        if (budget !== null && spent >= budget) {
+          halted = true;
+          console.warn(`\n  ⛔ Budget atteint : ${spent.toFixed(2)} $ sur ${budget.toFixed(2)} $ disponibles — arrêt propre.`);
         }
       } catch (e) {
         failed++;
@@ -497,13 +528,12 @@ async function analyseMeetings(
 
   await Promise.all(Array.from({ length: opts.concurrency }, worker));
 
-  const endBalance = await readBalance();
   console.log(`\n  → ${done} analyse(s), ${failed} échec(s), ${quotesDropped} citation(s) écartée(s) car absentes du verbatim`);
   console.log(`  → ${tokensIn} jetons entrants, ${tokensOut} sortants`);
-  if (startBalance !== null && endBalance !== null) {
-    const spent = startBalance - endBalance;
-    console.log(`  → dépensé ${spent.toFixed(2)} $ (${done ? (spent / done).toFixed(4) : "—"} $/analyse) — solde restant ${endBalance.toFixed(2)} $`);
-  }
+  console.log(`  → plafond de dépense ${spent.toFixed(2)} $ (${done ? (spent / done).toFixed(4) : "—"} $/analyse au tarif haut ; la facture réelle est plus basse)`);
+  // Le solde annoncé se met à jour avec du retard : indicatif seulement.
+  const endBalance = await readBalance();
+  if (endBalance !== null) console.log(`  → solde annoncé par DeepSeek : ${endBalance.toFixed(2)} $ (facturation différée)`);
 }
 
 /* ───────────────────────────────── Entrée ───────────────────────────────── */

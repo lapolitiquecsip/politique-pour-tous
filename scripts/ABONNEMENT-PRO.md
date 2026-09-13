@@ -164,9 +164,22 @@ récentes d'abord**, 4 en parallèle. Le filtre `analysis is null` garantit qu'u
 n'est jamais analysée deux fois, donc un plafond généreux ne coûte rien s'il n'y a rien
 de neuf.
 
-`--min-balance` (défaut 0,40 $) arrête proprement le traitement quand le solde DeepSeek
-descend trop bas, avec un contrôle toutes les 25 analyses. Rien n'est perdu : les
-réunions non traitées repartent au passage suivant.
+`--min-balance` (défaut 0,40 $) est la réserve de solde à ne pas entamer. La dépense est
+comptée **localement**, à partir des jetons consommés, et contrôlée après chaque analyse.
+
+⚠️ **Ne pas revenir à un sondage du solde distant.** C'est la version qui a été essayée
+en premier, et elle a laissé le compte passer à −0,24 $ : DeepSeek facture en différé,
+donc le solde interrogé était périmé et six requêtes parallèles ont filé au-delà du
+plancher. Les jetons consommés, eux, sont connus immédiatement.
+
+Le calcul applique toujours le **tarif haut** (heures pleines, cache manqué), même en
+heures creuses : le premier rattrapage a coûté 0,0259 $ par analyse là où le tarif creux
+publié annonçait 0,0187 $. Un garde-fou qui surestime s'arrête trop tôt et laisse du
+solde ; un garde-fou qui sous-estime met le compte à découvert.
+
+Les erreurs `429` sont réessayées avec attente croissante plutôt que comptées en échec :
+DeepSeek abaisse la concurrence autorisée quand le solde baisse, ce qui les fait arriver
+en rafale en fin de rattrapage.
 
 Si le budget devient un sujet, la variable de dépôt GitHub `COMMISSION_MODEL=deepseek-flash`
 divise le coût par ~6, au prix de nettement moins de chiffres extraits.

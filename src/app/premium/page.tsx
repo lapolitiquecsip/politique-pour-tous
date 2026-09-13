@@ -260,6 +260,29 @@ export default function PremiumPage() {
   const [lawOpen, setLawOpen] = useState(false);
   const [notifOpen, setNotifOpen] = useState(false);
 
+  // Rail des offres sur mobile : on suit la carte visible pour allumer la bonne pastille.
+  const offersRef = useRef<HTMLDivElement>(null);
+  const [offerIndex, setOfferIndex] = useState(0);
+  // On mesure les cartes réelles plutôt qu'une fraction de la largeur : le rail a des
+  // marges asymétriques (débord à droite), qu'un simple découpage en deux fausserait.
+  const onOffersScroll = () => {
+    const el = offersRef.current;
+    if (!el) return;
+    const center = el.scrollLeft + el.clientWidth / 2;
+    let best = 0, bestGap = Infinity;
+    Array.from(el.children).forEach((node, i) => {
+      const card = node as HTMLElement;
+      const gap = Math.abs(card.offsetLeft - el.offsetLeft + card.offsetWidth / 2 - center);
+      if (gap < bestGap) { bestGap = gap; best = i; }
+    });
+    setOfferIndex(best);
+  };
+  const scrollToOffer = (i: number) => {
+    const el = offersRef.current;
+    const card = el?.children[i] as HTMLElement | undefined;
+    if (el && card) el.scrollTo({ left: card.offsetLeft - el.offsetLeft, behavior: "smooth" });
+  };
+
   const plan = PLANS.elite;
   // Chaque carte lance son propre paiement : le clic porte l'offre choisie.
   // Elite est mensuel uniquement — seule l'offre Pro suit la bascule de périodicité.
@@ -309,24 +332,30 @@ export default function PremiumPage() {
             <p className="mt-3 text-slate-500 text-lg">Chaque avantage est déjà en ligne. Cliquez pour l&apos;essayer.</p>
           </FadeIn>
 
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+          {/* Sur mobile : cartes compactes, icône en ligne avec le titre, deux par rangée.
+              Six cartes empilées pleine hauteur obligeaient à trop faire défiler avant
+              d'atteindre les offres. */}
+          <div className="grid grid-cols-2 lg:grid-cols-3 gap-3 sm:gap-6">
             {FEATURES.map((f, i) => (
-              <FadeIn key={i} delay={i * 0.08}>
-                <div className="group relative flex h-full flex-col bg-white dark:bg-slate-900 p-7 rounded-[2rem] border border-slate-200 dark:border-slate-800 hover:border-amber-300 dark:hover:border-amber-500/40 hover:shadow-2xl transition-all duration-500 overflow-hidden">
-                  <div className={`absolute left-0 top-0 bottom-0 w-1.5 bg-gradient-to-b ${f.color}`} />
-                  <div className={`mb-5 flex h-14 w-14 items-center justify-center rounded-2xl bg-gradient-to-br ${f.color} text-white shadow-lg group-hover:scale-110 transition-transform`}>
-                    <f.icon size={26} />
+              <FadeIn key={i} delay={i * 0.05}>
+                <div className="group relative flex h-full flex-col overflow-hidden rounded-2xl sm:rounded-[2rem] border border-slate-200 bg-white p-4 sm:p-7 transition-all duration-500 hover:border-amber-300 hover:shadow-2xl dark:border-slate-800 dark:bg-slate-900 dark:hover:border-amber-500/40">
+                  <div className={`absolute left-0 top-0 bottom-0 w-1 sm:w-1.5 bg-gradient-to-b ${f.color}`} />
+                  <div className="flex items-start gap-3 sm:block">
+                    <div className={`flex h-9 w-9 shrink-0 items-center justify-center rounded-xl sm:mb-5 sm:h-14 sm:w-14 sm:rounded-2xl bg-gradient-to-br ${f.color} text-white shadow-lg transition-transform group-hover:scale-110`}>
+                      <f.icon size={18} className="sm:hidden" />
+                      <f.icon size={26} className="hidden sm:block" />
+                    </div>
+                    <h3 className="text-[13px] sm:text-lg font-bold leading-tight text-slate-900 transition-colors group-hover:text-amber-600 dark:text-white">{f.title}</h3>
                   </div>
-                  <h3 className="text-lg font-bold text-slate-900 dark:text-white group-hover:text-amber-600 transition-colors">{f.title}</h3>
-                  <p className="mt-2 flex-1 text-sm leading-relaxed text-slate-500 dark:text-slate-400">{f.desc}</p>
+                  <p className="mt-2 flex-1 text-[12px] sm:text-sm leading-snug sm:leading-relaxed text-slate-500 dark:text-slate-400 line-clamp-3 sm:line-clamp-none">{f.desc}</p>
                   {f.demo ? (
                     <button onClick={() => (f.demo === "law" ? setLawOpen(true) : setNotifOpen(true))}
-                      className="mt-5 inline-flex items-center gap-2 self-start rounded-xl bg-slate-900 dark:bg-white px-4 py-2.5 text-[11px] font-black uppercase tracking-widest text-white dark:text-slate-900 hover:opacity-90 transition">
-                      <Sparkles size={13} /> {f.cta}
+                      className="mt-3 sm:mt-5 inline-flex items-center gap-1.5 sm:gap-2 self-start rounded-lg sm:rounded-xl bg-slate-900 px-2.5 py-1.5 sm:px-4 sm:py-2.5 text-[9px] sm:text-[11px] font-black uppercase tracking-widest text-white transition hover:opacity-90 dark:bg-white dark:text-slate-900">
+                      <Sparkles size={11} className="sm:hidden" /><Sparkles size={13} className="hidden sm:block" /> {f.cta}
                     </button>
                   ) : (
-                    <Link href={f.href} className="mt-5 inline-flex items-center gap-1.5 self-start text-[11px] font-black uppercase tracking-widest text-amber-600 hover:gap-2.5 transition-all">
-                      {f.cta} <ArrowRight size={14} />
+                    <Link href={f.href} className="mt-3 sm:mt-5 inline-flex items-center gap-1.5 self-start text-[9px] sm:text-[11px] font-black uppercase tracking-widest text-amber-600 transition-all hover:gap-2.5">
+                      {f.cta} <ArrowRight size={13} />
                     </Link>
                   )}
                 </div>
@@ -353,18 +382,22 @@ export default function PremiumPage() {
             </p>
           </FadeIn>
 
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+          {/* Mêmes proportions compactes que la vitrine Elite sur mobile. */}
+          <div className="grid grid-cols-2 gap-3 sm:gap-6">
             {PRO_FEATURES.map((f, i) => (
-              <FadeIn key={i} delay={i * 0.08}>
-                <div className="group relative flex h-full flex-col overflow-hidden rounded-[2rem] border border-white/10 bg-white/[0.04] p-7 transition-all duration-500 hover:border-fuchsia-400/40 hover:bg-white/[0.07]">
-                  <div className={`absolute left-0 top-0 bottom-0 w-1.5 bg-gradient-to-b ${f.color}`} />
-                  <div className={`mb-5 flex h-14 w-14 items-center justify-center rounded-2xl bg-gradient-to-br ${f.color} text-white shadow-lg transition-transform group-hover:scale-110`}>
-                    <f.icon size={26} />
+              <FadeIn key={i} delay={i * 0.05}>
+                <div className="group relative flex h-full flex-col overflow-hidden rounded-2xl sm:rounded-[2rem] border border-white/10 bg-white/[0.04] p-4 sm:p-7 transition-all duration-500 hover:border-fuchsia-400/40 hover:bg-white/[0.07]">
+                  <div className={`absolute left-0 top-0 bottom-0 w-1 sm:w-1.5 bg-gradient-to-b ${f.color}`} />
+                  <div className="flex items-start gap-3 sm:block">
+                    <div className={`flex h-9 w-9 shrink-0 items-center justify-center rounded-xl sm:mb-5 sm:h-14 sm:w-14 sm:rounded-2xl bg-gradient-to-br ${f.color} text-white shadow-lg transition-transform group-hover:scale-110`}>
+                      <f.icon size={18} className="sm:hidden" />
+                      <f.icon size={26} className="hidden sm:block" />
+                    </div>
+                    <h3 className="text-[13px] sm:text-lg font-bold leading-tight">{f.title}</h3>
                   </div>
-                  <h3 className="text-lg font-bold">{f.title}</h3>
-                  <p className="mt-2 flex-1 text-sm leading-relaxed text-white/60">{f.desc}</p>
-                  <Link href={f.href} className="mt-5 inline-flex items-center gap-1.5 self-start text-[11px] font-black uppercase tracking-widest text-fuchsia-300 transition-all hover:gap-2.5">
-                    {f.cta} <ArrowRight size={14} />
+                  <p className="mt-2 flex-1 text-[12px] sm:text-sm leading-snug sm:leading-relaxed text-white/60 line-clamp-3 sm:line-clamp-none">{f.desc}</p>
+                  <Link href={f.href} className="mt-3 sm:mt-5 inline-flex items-center gap-1.5 self-start text-[9px] sm:text-[11px] font-black uppercase tracking-widest text-fuchsia-300 transition-all hover:gap-2.5">
+                    {f.cta} <ArrowRight size={13} />
                   </Link>
                 </div>
               </FadeIn>
@@ -381,11 +414,21 @@ export default function PremiumPage() {
               Deux formules, <span className="text-amber-500">un seul site</span>
             </h2>
             <p className="mt-3 text-slate-500 text-lg">Choisissez selon l&apos;usage que vous en faites.</p>
+            <p className="mt-2 text-[11px] font-black uppercase tracking-widest text-slate-400 md:hidden">
+              Faites glisser pour comparer →
+            </p>
           </FadeIn>
 
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-8 items-start pt-4">
+          {/*
+            Mobile : les deux offres sont côte à côte dans un rail qui défile au doigt,
+            avec accrochage par carte. Le débord négatif laisse la carte suivante
+            dépasser du bord, ce qui signale qu'il y en a une autre à droite.
+            À partir de md, le rail redevient une grille classique à deux colonnes.
+          */}
+          <div ref={offersRef} onScroll={onOffersScroll}
+            className="flex snap-x snap-mandatory gap-4 overflow-x-auto overscroll-x-contain scroll-smooth px-1 pb-4 -mx-4 pl-4 pr-10 [scrollbar-width:none] [&::-webkit-scrollbar]:hidden md:mx-0 md:grid md:grid-cols-2 md:gap-8 md:overflow-visible md:px-0 md:pb-0 md:pt-4 items-start">
             {/* ─── Elite ─── */}
-            <FadeIn>
+            <FadeIn className="w-[86vw] shrink-0 snap-center md:w-auto md:shrink">
               <div className="relative rounded-[2.5rem] border-2 border-amber-400 bg-gradient-to-b from-amber-50/60 to-white dark:from-amber-500/5 dark:to-slate-900 p-8 shadow-2xl shadow-amber-500/10">
                 <div className="absolute top-0 left-1/2 -translate-x-1/2 -translate-y-1/2 whitespace-nowrap bg-slate-900 text-white px-4 py-1.5 rounded-full text-[10px] font-black uppercase tracking-widest shadow-lg">Offre la plus populaire</div>
 
@@ -422,7 +465,7 @@ export default function PremiumPage() {
             </FadeIn>
 
             {/* ─── Pro ─── */}
-            <FadeIn delay={0.1}>
+            <FadeIn delay={0.1} className="w-[86vw] shrink-0 snap-center md:w-auto md:shrink">
               <div className="relative rounded-[2.5rem] border-2 border-slate-900 dark:border-fuchsia-500/40 bg-gradient-to-b from-slate-950 to-slate-900 p-8 text-white shadow-2xl shadow-slate-900/20">
                 <div className="absolute top-0 left-1/2 -translate-x-1/2 -translate-y-1/2 whitespace-nowrap bg-gradient-to-r from-fuchsia-500 to-purple-600 text-white px-4 py-1.5 rounded-full text-[10px] font-black uppercase tracking-widest shadow-lg">Professionnels</div>
 
@@ -477,7 +520,15 @@ export default function PremiumPage() {
             </FadeIn>
           </div>
 
-          <p className="text-center text-[10px] text-slate-400 font-bold uppercase tracking-widest mt-8">
+          {/* Repère de position, pour qu'on sache laquelle des deux offres on regarde. */}
+          <div className="mt-1 flex justify-center gap-2 md:hidden">
+            {[0, 1].map(i => (
+              <button key={i} onClick={() => scrollToOffer(i)} aria-label={`Voir l'offre ${i + 1}`}
+                className={`h-2 rounded-full transition-all ${offerIndex === i ? "w-6 bg-slate-900 dark:bg-white" : "w-2 bg-slate-300 dark:bg-slate-700"}`} />
+            ))}
+          </div>
+
+          <p className="text-center text-[10px] text-slate-400 font-bold uppercase tracking-widest mt-6 md:mt-8">
             {SALES_OPEN ? "Sécurisé par Stripe • Résiliable à tout moment" : "Ouverture des abonnements très prochainement"}
           </p>
         </div>

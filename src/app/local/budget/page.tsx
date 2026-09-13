@@ -96,7 +96,7 @@ function LocalBudgetContent() {
           
           <div className="space-y-3">
             <span className="px-3 py-1 bg-amber-400/20 text-amber-300 text-[10px] font-black uppercase tracking-widest rounded-full border border-amber-400/30">
-              Option Premium Elite
+              Option Premium
             </span>
             <h2 className="text-3xl font-staatliches uppercase tracking-wide">Budget Communal Bloqué</h2>
             <p className="text-sm text-slate-400 leading-relaxed">
@@ -110,7 +110,7 @@ function LocalBudgetContent() {
             onClick={() => router.push("/premium")}
             className="w-full py-4 bg-gradient-to-r from-amber-400 to-orange-500 hover:from-amber-300 hover:to-orange-400 text-slate-950 font-black text-sm uppercase tracking-wider rounded-2xl transition-all shadow-lg shadow-orange-500/20 active:scale-98"
           >
-            Débloquer l'offre Elite
+            Débloquer l'offre Premium
           </button>
           
           <button
@@ -232,7 +232,7 @@ function LocalBudgetContent() {
           
           <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-emerald-50 text-[9px] font-black uppercase tracking-widest text-emerald-800 border border-emerald-100">
             <ShieldCheck size={12} className="fill-emerald-800/10" />
-            Espace premium elite
+            Espace premium
           </div>
         </div>
       </div>

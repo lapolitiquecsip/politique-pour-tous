@@ -80,7 +80,7 @@ export function usePremium() {
 
   return {
     tier,
-    /** Elite OU Pro — c'est ce que testent toutes les fonctionnalités premium historiques. */
+    /** Premium OU Pro — c'est ce que testent toutes les fonctionnalités premium historiques. */
     isPremium: tierAtLeast(tier, "elite"),
     /** Réservé aux outils professionnels (commissions, veille réseaux sociaux). */
     isPro: tier === "pro",

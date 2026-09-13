@@ -13,7 +13,7 @@ export function getPremiumUrl(
 ) {
   try {
     const links = STRIPE_LINKS[plan];
-    // Toutes les formules n'ont pas d'offre annuelle (Elite est mensuel uniquement) :
+    // Toutes les formules n'ont pas d'offre annuelle (le Premium est mensuel uniquement) :
     // on retombe sur le mensuel plutôt que de fabriquer une URL invalide.
     const baseUrl = (cycle === 'annually' ? links.annually : links.monthly) ?? links.monthly;
     const url = new URL(baseUrl);

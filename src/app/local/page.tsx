@@ -398,7 +398,7 @@ function LocalPoliticsContent() {
     }
 
     if (!isPremium) {
-      alert("Cette fonctionnalité est réservée aux membres PREMIUM. Passez à l'offre Elite pour suivre vos territoires !");
+      alert("Cette fonctionnalité est réservée aux membres PREMIUM. Passez à l'offre Premium pour suivre vos territoires !");
       return;
     }
 
@@ -939,7 +939,7 @@ function LocalPoliticsContent() {
                         </Link>
                       ) : (
                         <AwardBadge 
-                          titleText="Découvrir l'offre Elite"
+                          titleText="Découvrir l'offre Premium"
                           subtitleText="Accès Premium"
                           link={getPremiumUrl()}
                           className="w-full"

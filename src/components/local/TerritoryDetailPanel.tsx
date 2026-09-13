@@ -727,9 +727,9 @@ export default function TerritoryDetailPanel({ territory, onClose, onNavigate }:
                       ) : (
                         <div className="p-8 rounded-[2rem] bg-amber-50 border border-amber-100 text-center space-y-4 flex flex-col items-center">
                           <p className="font-bold text-amber-900 uppercase tracking-widest text-xs">Fonctionnalité Premium</p>
-                          <p className="text-sm text-amber-800 mb-2">Passez à l'offre <strong>Elite</strong> pour comparer les performances de ce territoire avec n'importe quel autre en France.</p>
+                          <p className="text-sm text-amber-800 mb-2">Passez à l'offre <strong>Premium</strong> pour comparer les performances de ce territoire avec n'importe quel autre en France.</p>
                           <AwardBadge 
-                            titleText="Découvrir l'offre Elite"
+                            titleText="Découvrir l'offre Premium"
                             subtitleText="Fonctionnalité Premium"
                             link="/premium"
                           />

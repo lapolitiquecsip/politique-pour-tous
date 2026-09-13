@@ -777,7 +777,7 @@ export default function DetailedBudgetPage() {
             }}
             className="text-4xl md:text-7xl font-staatliches uppercase tracking-wider bg-gradient-to-r from-amber-200 via-white to-amber-200 bg-[length:200%_auto] bg-clip-text text-transparent"
           >
-            Analyse Budgétaire Elite
+            Analyse Budgétaire Premium
           </motion.h1>
           <p className="text-slate-400 text-lg leading-relaxed">
             Accédez à l'analyse la plus précise du budget de l'État. 

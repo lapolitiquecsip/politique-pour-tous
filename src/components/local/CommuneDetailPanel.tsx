@@ -391,7 +391,7 @@ export default function CommuneDetailPanel({
   const handleOpenBudget = () => {
     if (!commune) return;
     if (!isPremium) {
-      alert("Cette fonctionnalité est réservée aux abonnés PREMIUM. Veuillez passer à l'offre Elite pour accéder aux budgets expliqués des communes de France.");
+      alert("Cette fonctionnalité est réservée aux abonnés PREMIUM. Veuillez passer à l'offre Premium pour accéder aux budgets expliqués des communes de France.");
       router.push("/premium");
     } else {
       router.push(`/local/budget?code=${commune.code}`);
@@ -436,7 +436,7 @@ export default function CommuneDetailPanel({
     }
 
     if (!isPremium) {
-      alert("Cette fonctionnalité est réservée aux membres PREMIUM. Passez à l'offre Elite pour suivre vos territoires !");
+      alert("Cette fonctionnalité est réservée aux membres PREMIUM. Passez à l'offre Premium pour suivre vos territoires !");
       return;
     }
 

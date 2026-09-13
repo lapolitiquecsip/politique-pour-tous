@@ -691,6 +691,25 @@ function CandidatesContent() {
     api.getCandidates().then(data => { setCandidates(data as Candidate[]); }).finally(() => setLoading(false));
   }, []);
 
+  // Ouverture directe d'un onglet depuis un lien extérieur (#veille, #enjeux, #positions).
+  // Sans cela, un lien vers /presidentielles-2027#veille atterrissait sur l'onglet
+  // « Candidats » et l'ancre ne menait nulle part, la section n'étant pas montée.
+  useEffect(() => {
+    const byHash: Record<string, "positions" | "enjeux" | "dynamiques"> = {
+      "#veille": "dynamiques", "#dynamiques": "dynamiques",
+      "#enjeux": "enjeux", "#positions": "positions",
+    };
+    const hash = window.location.hash;
+    const wanted = byHash[hash];
+    if (!wanted) return;
+    setView(wanted);
+    // L'onglet doit être monté avant que le navigateur puisse rejoindre l'ancre.
+    const t = setTimeout(() => {
+      document.getElementById(hash.slice(1))?.scrollIntoView({ behavior: "smooth" });
+    }, 150);
+    return () => clearTimeout(t);
+  }, []);
+
   useEffect(() => {
     const check = () => setFloaty(
       window.matchMedia("(min-width: 768px)").matches &&

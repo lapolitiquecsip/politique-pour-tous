@@ -232,7 +232,7 @@ export default function DashboardPage() {
              <div className="flex flex-col items-center sm:items-start">
                 <div className={`inline-flex items-center gap-2 px-3.5 py-1 text-[10px] font-black uppercase rounded-full mb-3 tracking-widest ${isPremium ? 'bg-amber-400/10 border border-amber-400/30 text-amber-300 shadow-[0_0_20px_rgba(251,191,36,0.15)]' : 'bg-white/5 border border-white/10 text-slate-300'}`}>
                   {isPremium && <Star size={12} className="fill-current" />}
-                  {isPremium ? "Membre Elite" : "Compte Citoyen"}
+                  {isPremium ? "Membre Premium" : "Compte Citoyen"}
                 </div>
                 <h1 className="text-5xl md:text-7xl font-staatliches uppercase tracking-tighter leading-none inline-flex items-center gap-2 md:gap-3 flex-wrap">
                   <span className="text-white drop-shadow-[0_2px_20px_rgba(255,255,255,0.15)]">Mon Espace</span>{" "}
@@ -443,12 +443,12 @@ export default function DashboardPage() {
                         <div className="w-16 h-16 bg-amber-100 rounded-full flex items-center justify-center text-amber-600 mx-auto mb-6">
                             <Star size={32} className="fill-current" />
                         </div>
-                        <h3 className="text-2xl font-bold uppercase mb-2">Suivi Député Réservé Elite</h3>
+                        <h3 className="text-2xl font-bold uppercase mb-2">Suivi Député Réservé Premium</h3>
                         <p className="text-slate-400 mb-8 max-w-sm mx-auto">
                           Suivez vos députés favoris et recevez leurs derniers votes directement ici en passant Premium.
                         </p>
                         <Link href="/premium" className="inline-flex items-center gap-2 px-8 py-4 bg-gradient-to-r from-amber-400 to-yellow-600 text-slate-950 rounded-2xl font-black hover:brightness-110 transition-all shadow-[0_8px_30px_rgba(251,191,36,0.35)]">
-                          Devenir Premium Elite
+                          Devenir Premium
                         </Link>
                       </div>
                     ) : followedDeputies.length === 0 ? (

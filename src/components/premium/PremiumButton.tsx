@@ -77,7 +77,8 @@ export default function PremiumButton() {
 
     setLoading(true);
 
-    // Redirection directe vers Stripe Checkout (Plan Elite par défaut)
+    // Redirection directe vers Stripe Checkout (offre Premium par défaut ; la clé
+    // technique reste « elite » côté Stripe et base de données).
     window.location.href = getPremiumUrl(userId, 'elite', 'monthly');
   };
 

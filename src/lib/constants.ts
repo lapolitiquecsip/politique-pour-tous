@@ -2,11 +2,13 @@
  * Offres d'abonnement et liens de paiement Stripe.
  *
  * Deux formules sont commercialisées :
- *  - « elite » (3,99 €/mois) : la formule citoyenne, pour qui veut comprendre en détail.
+ *  - « elite » (3,99 €/mois) : la formule citoyenne, AFFICHÉE SOUS LE NOM « Premium ».
+ *    La clé reste « elite » : elle est gravée dans les liens Stripe et dans
+ *    profiles.subscription_tier, la renommer casserait les abonnements existants.
  *    MENSUEL UNIQUEMENT — pas d'engagement annuel sur cette formule.
  *  - « pro »   (24,99 €/mois ou 239 €/an) : la formule des professionnels de la politique
  *    (collaborateurs parlementaires, affaires publiques, entreprises, presse).
- *    Elle contient TOUT l'Elite, plus les outils de veille : suivi des commissions
+ *    Elle contient TOUT le Premium, plus les outils de veille : suivi des commissions
  *    parlementaires (Assemblée + Sénat) et suivi des dynamiques réseaux sociaux des
  *    candidats à la présidentielle.
  *
@@ -67,7 +69,7 @@ export function tierAtLeast(tier: Tier, required: Tier): boolean {
 export const PLANS = {
   elite: {
     key: "elite" as const,
-    name: "Elite",
+    name: "Premium",
     tagline: "Pour tous les citoyens qui veulent comprendre en détail.",
     monthly: 3.99,
     /** null = formule mensuelle uniquement ; la carte n'affiche alors aucune bascule. */

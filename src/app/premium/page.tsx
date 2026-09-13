@@ -6,10 +6,10 @@ import { usePremium } from "@/lib/hooks/usePremium";
 import { getPremiumUrl } from "@/lib/utils";
 import {
   CheckCircle2, Star, FileText, ArrowRight, Quote, Scale,
-  LayoutDashboard, BellRing, Users, Bookmark, Building2, Sliders,
+  LayoutDashboard, BellRing, Bookmark, Building2, Sliders,
   X, Sparkles, Vote, MapPin,
   AlertTriangle, Target, GitBranch, Pencil, HelpCircle,
-  Mic, Radio, Briefcase, Search, Download, LineChart,
+  Mic, Radio, Search, Download, LineChart,
 } from "lucide-react";
 import { PLANS, SALES_OPEN } from "@/lib/constants";
 import Link from "next/link";
@@ -187,7 +187,7 @@ function TestimonialRail() {
 /* ── Prix à la française : 3,99 € ── */
 const fmtPrice = (n: number) => `${n.toFixed(2).replace(".", ",").replace(",00", "")} €`;
 
-/* ── Ce que l'abonnement Pro ajoute par-dessus l'Elite. ── */
+/* ── Ce que l'abonnement Pro ajoute par-dessus le Premium. ── */
 const PRO_FEATURES = [
   {
     icon: Mic,
@@ -409,7 +409,7 @@ export default function PremiumPage() {
 
   const plan = PLANS.elite;
   // Chaque carte lance son propre paiement : le clic porte l'offre choisie.
-  // Elite est mensuel uniquement — seule l'offre Pro suit la bascule de périodicité.
+  // Le Premium est mensuel uniquement — seule l'offre Pro suit la bascule de périodicité.
   const goPremium = (key: "elite" | "pro" = "elite") => {
     window.location.href = getPremiumUrl(userId, key, key === "pro" ? billingCycle : "monthly");
   };
@@ -445,90 +445,9 @@ export default function PremiumPage() {
         </div>
       </section>
 
-      {/* ══════ VITRINE DES AVANTAGES (interactive) ══════ */}
-      <section className="py-24 px-4 bg-slate-50 dark:bg-slate-950 overflow-hidden">
-        <div className="max-w-6xl mx-auto">
-          <FadeIn className="text-center mb-16">
-            <p className="text-amber-500 font-bold uppercase tracking-widest text-sm mb-3">Ce que Premium change pour vous</p>
-            <h2 className="text-4xl md:text-6xl font-staatliches uppercase tracking-tighter">
-              Tout ce que vous <span className="text-amber-500">débloquez</span>
-            </h2>
-            <p className="mt-3 text-slate-500 text-lg">Chaque avantage est déjà en ligne. Cliquez pour l&apos;essayer.</p>
-          </FadeIn>
-
-          {/* Sur mobile : cartes compactes, icône en ligne avec le titre, deux par rangée.
-              Six cartes empilées pleine hauteur obligeaient à trop faire défiler avant
-              d'atteindre les offres. */}
-          <div className="grid grid-cols-2 lg:grid-cols-3 gap-3 sm:gap-6">
-            {FEATURES.map((f, i) => (
-              <FadeIn key={i} delay={i * 0.05}>
-                <div className="group relative flex h-full flex-col overflow-hidden rounded-2xl sm:rounded-[2rem] border border-slate-200 bg-white p-4 sm:p-7 transition-all duration-500 hover:border-amber-300 hover:shadow-2xl dark:border-slate-800 dark:bg-slate-900 dark:hover:border-amber-500/40">
-                  <div className={`absolute left-0 top-0 bottom-0 w-1 sm:w-1.5 bg-gradient-to-b ${f.color}`} />
-                  <div className="flex items-start gap-3 sm:block">
-                    <div className={`flex h-9 w-9 shrink-0 items-center justify-center rounded-xl sm:mb-5 sm:h-14 sm:w-14 sm:rounded-2xl bg-gradient-to-br ${f.color} text-white shadow-lg transition-transform group-hover:scale-110`}>
-                      <f.icon size={18} className="sm:hidden" />
-                      <f.icon size={26} className="hidden sm:block" />
-                    </div>
-                    <h3 className="text-[13px] sm:text-lg font-bold leading-tight text-slate-900 transition-colors group-hover:text-amber-600 dark:text-white">{f.title}</h3>
-                  </div>
-                  <p className="mt-2 flex-1 text-[12px] sm:text-sm leading-snug sm:leading-relaxed text-slate-500 dark:text-slate-400 line-clamp-3 sm:line-clamp-none">{f.desc}</p>
-                  {f.demo ? (
-                    <button onClick={() => (f.demo === "law" ? setLawOpen(true) : setNotifOpen(true))}
-                      className="mt-3 sm:mt-5 inline-flex items-center gap-1.5 sm:gap-2 self-start rounded-lg sm:rounded-xl bg-slate-900 px-2.5 py-1.5 sm:px-4 sm:py-2.5 text-[9px] sm:text-[11px] font-black uppercase tracking-widest text-white transition hover:opacity-90 dark:bg-white dark:text-slate-900">
-                      <Sparkles size={11} className="sm:hidden" /><Sparkles size={13} className="hidden sm:block" /> {f.cta}
-                    </button>
-                  ) : (
-                    <Link href={f.href} className="mt-3 sm:mt-5 inline-flex items-center gap-1.5 self-start text-[9px] sm:text-[11px] font-black uppercase tracking-widest text-amber-600 transition-all hover:gap-2.5">
-                      {f.cta} <ArrowRight size={13} />
-                    </Link>
-                  )}
-                </div>
-              </FadeIn>
-            ))}
-          </div>
-        </div>
-      </section>
-
-      {/* ══════ CE QUE L'OFFRE PRO AJOUTE ══════ */}
-      <section className="py-24 px-4 bg-slate-950 text-white">
-        <div className="max-w-6xl mx-auto">
-          <FadeIn className="text-center mb-16">
-            <p className="inline-flex items-center gap-2 rounded-full bg-white/10 px-4 py-1.5 text-[11px] font-black uppercase tracking-widest text-fuchsia-300 mb-5">
-              <Briefcase size={13} /> Formule Pro
-            </p>
-            <h2 className="text-4xl md:text-6xl font-staatliches uppercase tracking-tighter">
-              La veille des <span className="text-fuchsia-400">professionnels</span>
-            </h2>
-            <p className="mt-4 text-lg text-white/60 max-w-2xl mx-auto leading-relaxed">
-              Pour les collaborateurs parlementaires, les directions des affaires publiques, les
-              entreprises et la presse : le niveau de détail qu&apos;on ne trouve nulle part ailleurs,
-              sans éplucher soi-même les comptes rendus.
-            </p>
-          </FadeIn>
-
-          {/* Mêmes proportions compactes que la vitrine Elite sur mobile. */}
-          <div className="grid grid-cols-2 gap-3 sm:gap-6">
-            {PRO_FEATURES.map((f, i) => (
-              <FadeIn key={i} delay={i * 0.05}>
-                <div className="group relative flex h-full flex-col overflow-hidden rounded-2xl sm:rounded-[2rem] border border-white/10 bg-white/[0.04] p-4 sm:p-7 transition-all duration-500 hover:border-fuchsia-400/40 hover:bg-white/[0.07]">
-                  <div className={`absolute left-0 top-0 bottom-0 w-1 sm:w-1.5 bg-gradient-to-b ${f.color}`} />
-                  <div className="flex items-start gap-3 sm:block">
-                    <div className={`flex h-9 w-9 shrink-0 items-center justify-center rounded-xl sm:mb-5 sm:h-14 sm:w-14 sm:rounded-2xl bg-gradient-to-br ${f.color} text-white shadow-lg transition-transform group-hover:scale-110`}>
-                      <f.icon size={18} className="sm:hidden" />
-                      <f.icon size={26} className="hidden sm:block" />
-                    </div>
-                    <h3 className="text-[13px] sm:text-lg font-bold leading-tight">{f.title}</h3>
-                  </div>
-                  <p className="mt-2 flex-1 text-[12px] sm:text-sm leading-snug sm:leading-relaxed text-white/60 line-clamp-3 sm:line-clamp-none">{f.desc}</p>
-                  <Link href={f.href} className="mt-3 sm:mt-5 inline-flex items-center gap-1.5 self-start text-[9px] sm:text-[11px] font-black uppercase tracking-widest text-fuchsia-300 transition-all hover:gap-2.5">
-                    {f.cta} <ArrowRight size={13} />
-                  </Link>
-                </div>
-              </FadeIn>
-            ))}
-          </div>
-        </div>
-      </section>
+      {/* Les vitrines de fonctionnalités ont été retirées : chaque fonctionnalité est
+          désormais listée — et cliquable — directement dans sa carte d'offre ci-dessous.
+          Les répéter en amont rallongeait la page sans rien ajouter, surtout sur mobile. */}
 
       {/* ══════ OFFRES & CTA ══════ */}
       <section id="offres" className="scroll-mt-24 py-24 px-4 bg-white dark:bg-slate-900">
@@ -550,10 +469,10 @@ export default function PremiumPage() {
             À partir de md, le rail redevient une grille classique à deux colonnes.
           */}
           <div ref={offersRef} onScroll={onOffersScroll}
-            className="flex snap-x snap-mandatory gap-4 overflow-x-auto overscroll-x-contain scroll-smooth px-1 pb-4 -mx-4 pl-4 pr-10 [scrollbar-width:none] [&::-webkit-scrollbar]:hidden md:mx-0 md:grid md:grid-cols-2 md:gap-8 md:overflow-visible md:px-0 md:pb-0 md:pt-4 items-start">
-            {/* ─── Elite ─── */}
-            <FadeIn className="w-[86vw] shrink-0 snap-center md:w-auto md:shrink">
-              <div className="relative rounded-[2.5rem] border-2 border-amber-400 bg-gradient-to-b from-amber-50/60 to-white dark:from-amber-500/5 dark:to-slate-900 p-8 shadow-2xl shadow-amber-500/10">
+            className="flex snap-x snap-mandatory gap-4 overflow-x-auto overscroll-x-contain scroll-smooth px-1 pb-4 -mx-4 pl-4 pr-10 [scrollbar-width:none] [&::-webkit-scrollbar]:hidden md:mx-0 md:grid md:grid-cols-2 md:gap-8 md:overflow-visible md:px-0 md:pb-0 md:pt-4 items-stretch">
+            {/* ─── Premium ─── */}
+            <FadeIn className="w-[86vw] shrink-0 snap-center md:w-auto md:shrink [&>div]:h-full">
+              <div className="relative flex h-full flex-col rounded-[2.5rem] border-2 border-amber-400 bg-gradient-to-b from-amber-50/60 to-white dark:from-amber-500/5 dark:to-slate-900 p-8 shadow-2xl shadow-amber-500/10">
                 <div className="absolute top-0 left-1/2 -translate-x-1/2 -translate-y-1/2 whitespace-nowrap bg-slate-900 text-white px-4 py-1.5 rounded-full text-[10px] font-black uppercase tracking-widest shadow-lg">Offre la plus populaire</div>
 
                 <p className="text-[10px] font-black uppercase tracking-widest text-amber-600">{PLANS.elite.audience}</p>
@@ -571,7 +490,7 @@ export default function PremiumPage() {
 
                 {/* Les fonctionnalités sont listées ICI, et chacune mène à la vraie page
                     ou ouvre sa démo : on décide et on essaie au même endroit. */}
-                <div className="mb-8 space-y-1">
+                <div className="mb-8 flex-1 space-y-1">
                   {FEATURES.map(f => {
                     const inner = (
                       <>
@@ -603,8 +522,8 @@ export default function PremiumPage() {
             </FadeIn>
 
             {/* ─── Pro ─── */}
-            <FadeIn delay={0.1} className="w-[86vw] shrink-0 snap-center md:w-auto md:shrink">
-              <div className="group relative overflow-hidden rounded-[2.5rem] border-2 border-fuchsia-400/70 bg-gradient-to-b from-slate-950 to-slate-900 p-8 text-white shadow-[0_0_45px_-8px_rgba(217,70,239,0.55)]">
+            <FadeIn delay={0.1} className="w-[86vw] shrink-0 snap-center md:w-auto md:shrink [&>div]:h-full">
+              <div className="group relative flex h-full flex-col rounded-[2.5rem] border-2 border-fuchsia-400/70 bg-gradient-to-b from-slate-950 to-slate-900 p-8 text-white shadow-[0_0_45px_-8px_rgba(217,70,239,0.55)]">
                 {/* Halo qui respire le long du contour — l'offre Pro doit accrocher l'œil. */}
                 <motion.div
                   aria-hidden
@@ -645,13 +564,13 @@ export default function PremiumPage() {
                   {billingCycle === "annually" && <p className="mt-2 text-xs font-bold italic text-emerald-400">Soit {fmtPrice(PLANS.pro.annually / 12)}/mois — deux mois offerts</p>}
                 </div>
 
-                {/* Même principe côté Pro : tout l'Elite, puis les outils de veille, cliquables. */}
-                <div className="mb-8 space-y-1">
+                {/* Même principe côté Pro : tout le Premium, puis les outils de veille, cliquables. */}
+                <div className="mb-8 flex-1 space-y-1">
                   <div className="-mx-2 flex items-center gap-2.5 rounded-xl px-2 py-1.5">
                     <span className="flex h-7 w-7 shrink-0 items-center justify-center rounded-lg bg-amber-400/20 text-amber-300">
                       <Sparkles size={14} />
                     </span>
-                    <span className="text-[13px] font-bold text-white">Tout l&apos;abonnement Elite</span>
+                    <span className="text-[13px] font-bold text-white">Tous les avantages premium</span>
                   </div>
                   {PRO_FEATURES.map(f => (
                     <Link key={f.title} href={f.href}

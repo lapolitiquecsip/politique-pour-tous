@@ -627,7 +627,7 @@ export default function DetailedLawDossier({ law }: DetailedLawDossierProps) {
                     <div className="relative z-10">
                       <div className={`inline-flex items-center gap-1.5 px-2.5 py-0.5 text-[8px] font-black uppercase rounded-full mb-4 ${isPremium ? "bg-amber-400 text-slate-950" : "bg-slate-800 text-slate-400"}`}>
                         <Star size={8} className={isPremium ? "fill-current" : ""} />
-                        {isPremium ? "Action Citoyenne Elite" : "Action Citoyenne (Membre)"}
+                        {isPremium ? "Action Citoyenne Premium" : "Action Citoyenne (Membre)"}
                       </div>
                       <h4 className="text-2xl font-staatliches uppercase mb-3 italic tracking-tight text-white leading-none">
                         Votre Position <span className={isPremium ? "text-amber-500" : "text-blue-400"}>Citoyenne</span>

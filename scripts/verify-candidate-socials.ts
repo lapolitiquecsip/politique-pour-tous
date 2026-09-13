@@ -155,19 +155,50 @@ async function checkTikTok(handle: string, expect: string[]): Promise<Found | nu
  * Coût : 100 unités de quota par recherche, sur 10 000 par jour. Une cinquantaine de
  * recherches par exécution, donc très loin du plafond.
  */
-async function searchYouTube(query: string, expect: string[]): Promise<Found | null> {
+let youtubeDown = false;   // quota épuisé ou API en erreur : on cesse d'interroger
+
+async function searchYouTube(query: string, expect: string[], opts: { strict?: boolean } = {}): Promise<Found | null> {
   const key = process.env.YOUTUBE_API_KEY;
-  if (!key) return null;
+  if (!key || youtubeDown) return null;
   try {
-    const r = await fetch(`https://www.googleapis.com/youtube/v3/search?part=snippet&type=channel&maxResults=5&q=${encodeURIComponent(query)}&key=${key}`);
+    // regionCode + relevanceLanguage écartent déjà une bonne part des chaînes étrangères.
+    const r = await fetch(`https://www.googleapis.com/youtube/v3/search?part=snippet&type=channel&maxResults=8&regionCode=FR&relevanceLanguage=fr&q=${encodeURIComponent(query)}&key=${key}`);
     const j: any = await r.json();
+    // Un quota épuisé renvoie 403/429. Sans ce test, l'erreur devient un « rien trouvé »
+    // silencieux — et la fusion de fin effacerait des comptes pourtant déjà vérifiés.
+    if (j.error) {
+      youtubeDown = true;
+      console.error(`\n❌ API YouTube indisponible : ${j.error.message?.slice(0, 120)}`);
+      console.error("   Les comptes YouTube déjà connus sont CONSERVÉS tels quels.\n");
+      return null;
+    }
     const ids = (j.items ?? []).map((i: any) => i.snippet?.channelId ?? i.id?.channelId).filter(Boolean);
     if (!ids.length) return null;
 
     const d = await fetch(`https://www.googleapis.com/youtube/v3/channels?part=snippet,statistics&id=${ids.join(",")}&key=${key}`);
     const dj: any = await d.json();
     for (const ch of dj.items ?? []) {
-      if (!confirms(ch.snippet?.title ?? "", expect)) continue;
+      const title = ch.snippet?.title ?? "";
+      if (!confirms(title, expect)) continue;
+
+      // Mode STRICT, pour les noms de mouvements — souvent un seul mot courant.
+      //
+      // « Renaissance » a fait remonter « Renaissance Periodization », une chaîne
+      // américaine de musculation ; « Horizons » a fait remonter « Horizons Reportages ».
+      // Le simple fait de contenir le mot-clé ne prouve rien. On exige donc en plus :
+      //  - un pays déclaré français quand la chaîne en déclare un ;
+      //  - un titre qui ne soit pas beaucoup plus long que le nom cherché, ce qui
+      //    élimine les chaînes qui ne font qu'emprunter le mot.
+      if (opts.strict) {
+        const country = ch.snippet?.country;
+        if (country && country !== "FR") continue;
+        // Le titre doit être le NOM DU MOUVEMENT, pas une chaîne qui contient le mot.
+        // « Renaissance du Savoir » et « Horizons Reportages » sont françaises et
+        // contiennent bien le mot-clé : seule l'égalité quasi stricte les écarte.
+        const wanted = strip(query), got = strip(title);
+        if (!got.startsWith(wanted) || got.length > wanted.length + 6) continue;
+      }
+
       const followers = Number(ch.statistics?.subscriberCount ?? 0);
       if (followers < MIN_FOLLOWERS) continue;
       const custom = String(ch.snippet?.customUrl ?? "");
@@ -234,7 +265,9 @@ async function main() {
     process.exit(1);
   }
 
-  const filter = process.argv[2]?.toLowerCase();
+  const movementsOnly = process.argv.includes("--movements");
+  // argv[0] et argv[1] sont l'exécutable et le script : le filtre ne peut venir qu'après.
+  const filter = process.argv.slice(2).find(a => !a.startsWith("--"))?.toLowerCase();
   const res = await fetch(`${url}/rest/v1/presidential_candidates?select=slug,full_name&status=eq.declared&order=full_name`, {
     headers: { apikey: key, Authorization: `Bearer ${key}` },
   });
@@ -244,8 +277,9 @@ async function main() {
   console.log(`=== Vérification des comptes — ${todo.length} candidat(s) ===\n`);
   const bySlug = new Map<string, any[]>();
 
-  // 1. Comptes personnels.
-  for (const c of todo) {
+  // 1. Comptes personnels (sautés en mode --movements : chaque recherche YouTube coûte
+  //    100 unités de quota, inutile de les refaire pour corriger les seuls mouvements).
+  for (const c of movementsOnly ? [] : todo) {
     const expect = c.full_name.split(/[\s-]+/);
     const accounts: any[] = [];
 
@@ -288,7 +322,7 @@ async function main() {
     const slugs = m.slugs.filter(s => todo.some(c => c.slug === s));
     if (!slugs.length) continue;
     const accounts: any[] = [];
-    const yt = await searchYouTube(m.label, m.keywords);
+    const yt = await searchYouTube(m.label, m.keywords, { strict: true });
     if (yt) accounts.push({ platform: "youtube", handle: yt.handle, external_id: yt.external_id ?? null,
       url: `https://www.youtube.com/${yt.handle}`, kind: "support", label: m.label });
 
@@ -310,14 +344,35 @@ async function main() {
         url: `https://www.instagram.com/${ig}/`, kind: "support", label: m.label });
     }
     console.log(`${m.label.padEnd(24)} ${accounts.map(a => `${a.platform}:${a.handle}`).join(" ") || "(aucun)"}`);
-    for (const slug of slugs) bySlug.set(slug, [...(bySlug.get(slug) ?? []), ...accounts]);
+    for (const slug of slugs) {
+      const already = bySlug.get(slug) ?? [];
+      // Le compte personnel d'un candidat ne doit pas être recompté comme son propre
+      // soutien : « Debout Ruffin » avait ainsi ramené la chaîne de François Ruffin.
+      const nouveaux = accounts.filter(a => !already.some(b => b.platform === a.platform && b.handle === a.handle));
+      bySlug.set(slug, [...already, ...nouveaux]);
+    }
   }
 
   // 3. Écriture. En mode filtré, on fusionne avec l'existant au lieu de l'écraser.
   let previous: any[] = [];
-  if (filter && fs.existsSync(OUT)) previous = JSON.parse(fs.readFileSync(OUT, "utf8"));
-  const merged = new Map(previous.map((e: any) => [e.candidate_slug, e.accounts]));
-  for (const [slug, accounts] of bySlug) merged.set(slug, accounts);
+  if ((filter || movementsOnly) && fs.existsSync(OUT)) previous = JSON.parse(fs.readFileSync(OUT, "utf8"));
+  const merged = new Map<string, any[]>(previous.map((e: any) => [e.candidate_slug, e.accounts]));
+  if (movementsOnly) {
+    // On conserve les comptes personnels, et on remplace les soutiens — SAUF ceux d'une
+    // plateforme qu'on n'a pas pu interroger : un quota épuisé ne doit pas valoir
+    // suppression. On ne retire que ce qu'on a effectivement pu re-vérifier.
+    const injoignables = new Set(youtubeDown ? ["youtube"] : []);
+    for (const [slug, accs] of merged) {
+      merged.set(slug, accs.filter((a: any) => a.kind === "official" || injoignables.has(a.platform)));
+    }
+    for (const [slug, accounts] of bySlug) {
+      const already = merged.get(slug) ?? [];
+      const nouveaux = accounts.filter((a: any) => !already.some((b: any) => b.platform === a.platform && b.handle === a.handle));
+      merged.set(slug, [...already, ...nouveaux]);
+    }
+  } else {
+    for (const [slug, accounts] of bySlug) merged.set(slug, accounts);
+  }
 
   const out = [...merged.entries()]
     .filter(([, a]) => a.length)

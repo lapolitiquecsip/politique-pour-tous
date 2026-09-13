@@ -1,7 +1,35 @@
 [
   {
+    "candidate_slug": "anasse-kazib",
+    "accounts": [
+      {
+        "platform": "youtube",
+        "handle": "@anassekazib1258",
+        "external_id": "UC7LNwiZKfwZmYj_RAWxjkKw",
+        "url": "https://www.youtube.com/@anassekazib1258",
+        "kind": "official"
+      },
+      {
+        "platform": "tiktok",
+        "handle": "@revpermanente",
+        "external_id": null,
+        "url": "https://www.tiktok.com/@revpermanente",
+        "kind": "support",
+        "label": "Révolution permanente"
+      }
+    ]
+  },
+  {
     "candidate_slug": "bruno-retailleau",
     "accounts": [
+      {
+        "platform": "tiktok",
+        "handle": "@lesrepublicains",
+        "external_id": null,
+        "url": "https://www.tiktok.com/@lesrepublicains",
+        "kind": "support",
+        "label": "Les Républicains"
+      },
       {
         "platform": "youtube",
         "handle": "@bruno_retailleau",
@@ -14,14 +42,6 @@
         "handle": "@lesrepublicains",
         "external_id": "UC3Ma4tRFxx85oZI_XKVTPwg",
         "url": "https://www.youtube.com/@lesrepublicains",
-        "kind": "support",
-        "label": "Les Républicains"
-      },
-      {
-        "platform": "tiktok",
-        "handle": "@lesrepublicains",
-        "external_id": null,
-        "url": "https://www.tiktok.com/@lesrepublicains",
         "kind": "support",
         "label": "Les Républicains"
       }
@@ -45,10 +65,26 @@
         "kind": "official"
       },
       {
+        "platform": "tiktok",
+        "handle": "@nouvelle_energie",
+        "external_id": null,
+        "url": "https://www.tiktok.com/@nouvelle_energie",
+        "kind": "support",
+        "label": "Nouvelle Énergie"
+      },
+      {
         "platform": "youtube",
         "handle": "@nouvelleenergie",
         "external_id": "UCE8VUisUzoZiHRMAeKd7acg",
         "url": "https://www.youtube.com/@nouvelleenergie",
+        "kind": "support",
+        "label": "Nouvelle Énergie"
+      },
+      {
+        "platform": "instagram",
+        "handle": "@nouv_energie",
+        "external_id": null,
+        "url": "https://www.instagram.com/nouv_energie/",
         "kind": "support",
         "label": "Nouvelle Énergie"
       }
@@ -81,6 +117,13 @@
   {
     "candidate_slug": "florian-philippot",
     "accounts": [
+      {
+        "platform": "youtube",
+        "handle": "@florianphilippot1",
+        "external_id": "UClaa_CwoQEmSo9Mb_M1f91g",
+        "url": "https://www.youtube.com/@florianphilippot1",
+        "kind": "official"
+      },
       {
         "platform": "tiktok",
         "handle": "@florianphilippot",
@@ -207,18 +250,18 @@
         "kind": "official"
       },
       {
-        "platform": "youtube",
-        "handle": "@franceinsoumise",
-        "external_id": "UCKHKSD-yanY2ZwwU_4Tgf0w",
-        "url": "https://www.youtube.com/@franceinsoumise",
-        "kind": "support",
-        "label": "La France insoumise"
-      },
-      {
         "platform": "tiktok",
         "handle": "@franceinsoumise",
         "external_id": null,
         "url": "https://www.tiktok.com/@franceinsoumise",
+        "kind": "support",
+        "label": "La France insoumise"
+      },
+      {
+        "platform": "youtube",
+        "handle": "@franceinsoumise",
+        "external_id": "UCKHKSD-yanY2ZwwU_4Tgf0w",
+        "url": "https://www.youtube.com/@franceinsoumise",
         "kind": "support",
         "label": "La France insoumise"
       }
@@ -235,18 +278,18 @@
         "kind": "official"
       },
       {
-        "platform": "youtube",
-        "handle": "@partisocialiste",
-        "external_id": "UCo7xGEOV-RfxOAxRfhlR3Ww",
-        "url": "https://www.youtube.com/@partisocialiste",
-        "kind": "support",
-        "label": "Parti socialiste"
-      },
-      {
         "platform": "tiktok",
         "handle": "@partisocialiste",
         "external_id": null,
         "url": "https://www.tiktok.com/@partisocialiste",
+        "kind": "support",
+        "label": "Parti socialiste"
+      },
+      {
+        "platform": "youtube",
+        "handle": "@partisocialiste",
+        "external_id": "UCo7xGEOV-RfxOAxRfhlR3Ww",
+        "url": "https://www.youtube.com/@partisocialiste",
         "kind": "support",
         "label": "Parti socialiste"
       }
@@ -282,6 +325,13 @@
   {
     "candidate_slug": "juan-branco",
     "accounts": [
+      {
+        "platform": "youtube",
+        "handle": "@juanbrancofr",
+        "external_id": "UCMOrzCo7Jdp6qqEX24CXuog",
+        "url": "https://www.youtube.com/@juanbrancofr",
+        "kind": "official"
+      },
       {
         "platform": "tiktok",
         "handle": "@brancojuan",
@@ -342,6 +392,13 @@
     "candidate_slug": "nathalie-arthaud",
     "accounts": [
       {
+        "platform": "youtube",
+        "handle": "@nathaliearthaudlutteouvriere",
+        "external_id": "UCZsh-MrJftAOP_-ZgRgLScw",
+        "url": "https://www.youtube.com/@nathaliearthaudlutteouvriere",
+        "kind": "official"
+      },
+      {
         "platform": "tiktok",
         "handle": "@nathaliearthaud",
         "external_id": null,
@@ -359,20 +416,40 @@
     ]
   },
   {
-    "candidate_slug": "olivier-faure",
+    "candidate_slug": "nicolas-dupont-aignan",
     "accounts": [
       {
         "platform": "youtube",
-        "handle": "@olivierfaure",
-        "external_id": "UClDGWj7M_Sl5R_etcvXq6NQ",
-        "url": "https://www.youtube.com/@olivierfaure",
+        "handle": "@dupontaignannicolas",
+        "external_id": "UCfA5DnCDX3Ixy5QOAMGtBlA",
+        "url": "https://www.youtube.com/@dupontaignannicolas",
         "kind": "official"
-      },
+      }
+    ]
+  },
+  {
+    "candidate_slug": "olivier-faure",
+    "accounts": [
       {
         "platform": "bluesky",
         "handle": "olivierfaure.bsky.social",
         "external_id": "did:plc:d5z43zq352zq6xmavrlavcwq",
         "url": "https://bsky.app/profile/olivierfaure.bsky.social",
+        "kind": "official"
+      },
+      {
+        "platform": "tiktok",
+        "handle": "@partisocialiste",
+        "external_id": null,
+        "url": "https://www.tiktok.com/@partisocialiste",
+        "kind": "support",
+        "label": "Parti socialiste"
+      },
+      {
+        "platform": "youtube",
+        "handle": "@olivierfaure",
+        "external_id": "UClDGWj7M_Sl5R_etcvXq6NQ",
+        "url": "https://www.youtube.com/@olivierfaure",
         "kind": "official"
       },
       {
@@ -382,7 +459,12 @@
         "url": "https://www.youtube.com/@partisocialiste",
         "kind": "support",
         "label": "Parti socialiste"
-      },
+      }
+    ]
+  },
+  {
+    "candidate_slug": "philippe-brun",
+    "accounts": [
       {
         "platform": "tiktok",
         "handle": "@partisocialiste",
@@ -390,12 +472,7 @@
         "url": "https://www.tiktok.com/@partisocialiste",
         "kind": "support",
         "label": "Parti socialiste"
-      }
-    ]
-  },
-  {
-    "candidate_slug": "philippe-brun",
-    "accounts": [
+      },
       {
         "platform": "youtube",
         "handle": "@philippebrun",
@@ -410,20 +487,19 @@
         "url": "https://www.youtube.com/@partisocialiste",
         "kind": "support",
         "label": "Parti socialiste"
-      },
-      {
-        "platform": "tiktok",
-        "handle": "@partisocialiste",
-        "external_id": null,
-        "url": "https://www.tiktok.com/@partisocialiste",
-        "kind": "support",
-        "label": "Parti socialiste"
       }
     ]
   },
   {
     "candidate_slug": "raphael-glucksmann",
     "accounts": [
+      {
+        "platform": "youtube",
+        "handle": "@raphaelglucksmann1",
+        "external_id": "UCyVYj4HdtEbcMngyD6_OLzg",
+        "url": "https://www.youtube.com/@raphaelglucksmann1",
+        "kind": "official"
+      },
       {
         "platform": "bluesky",
         "handle": "raphaelglucksmann.bsky.social",
@@ -457,6 +533,14 @@
     "candidate_slug": "xavier-bertrand",
     "accounts": [
       {
+        "platform": "tiktok",
+        "handle": "@lesrepublicains",
+        "external_id": null,
+        "url": "https://www.tiktok.com/@lesrepublicains",
+        "kind": "support",
+        "label": "Les Républicains"
+      },
+      {
         "platform": "youtube",
         "handle": "@xavier_bertrand",
         "external_id": "UCOe4FufVFPf1BItkStNVX1w",
@@ -468,14 +552,6 @@
         "handle": "@lesrepublicains",
         "external_id": "UC3Ma4tRFxx85oZI_XKVTPwg",
         "url": "https://www.youtube.com/@lesrepublicains",
-        "kind": "support",
-        "label": "Les Républicains"
-      },
-      {
-        "platform": "tiktok",
-        "handle": "@lesrepublicains",
-        "external_id": null,
-        "url": "https://www.tiktok.com/@lesrepublicains",
         "kind": "support",
         "label": "Les Républicains"
       }

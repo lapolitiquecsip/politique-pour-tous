@@ -5,8 +5,9 @@ import Link from "next/link";
 import { Search, Star, MousePointerClick } from "lucide-react";
 
 // Dégradé par groupe (vraies teintes des groupes du Parlement européen) pour des badges modernes.
-// ⚠️ Les clés doivent correspondre EXACTEMENT à `ep_group_code` (ex. « PFE », pas « PfE »),
-// sinon on retombe sur le gris NI.
+// Les clés sont écrites en majuscules et la recherche normalise le code : la base livre le
+// sigle avec sa typographie d'origine (« PfE »), et une clé « PFE » faisait retomber le
+// plus gros groupe français sur le gris des non-inscrits, sans nom ni orientation.
 const GROUP_GRAD: Record<string, [string, string]> = {
   RE:    ["#F5B301", "#E08A00"],  // Renew — or/ambre
   PPE:   ["#3B82F6", "#1D4ED8"],  // PPE — bleu
@@ -18,7 +19,9 @@ const GROUP_GRAD: Record<string, [string, string]> = {
   ESN:   ["#4338CA", "#312E81"],  // ESN — indigo
   NI:    ["#94A3B8", "#64748B"],  // Non-inscrits — gris
 };
-const grad = (code: string): [string, string] => GROUP_GRAD[code] || GROUP_GRAD.NI;
+/** Normalise le sigle avant toute recherche : « PfE » et « PFE » désignent le même groupe. */
+const cle = (code?: string | null) => (code || "NI").toUpperCase();
+const grad = (code: string): [string, string] => GROUP_GRAD[cle(code)] || GROUP_GRAD.NI;
 
 // Nom complet + orientation de chaque groupe (pour expliquer les abréviations à l'utilisateur).
 const GROUP_NAME: Record<string, string> = {
@@ -32,7 +35,7 @@ const GROUP_NAME: Record<string, string> = {
   ESN: "L'Europe des Nations souveraines — extrême droite",
   NI: "Non-inscrits — sans groupe",
 };
-const groupName = (code: string) => GROUP_NAME[code] || code;
+const groupName = (code: string) => GROUP_NAME[cle(code)] || code;
 
 export default function EurodeputesClient({ meps }: { meps: any[] }) {
   const [q, setQ] = useState("");
@@ -80,37 +83,39 @@ export default function EurodeputesClient({ meps }: { meps: any[] }) {
           </div>
         </div>
 
-        <div className="flex flex-wrap gap-2">
-          <button
-            onClick={() => setGroup(null)}
-            className={`rounded-full border px-3.5 py-2 text-[10px] font-black uppercase tracking-widest transition ${group === null ? "bg-[#003399] text-white border-[#003399] shadow-md" : "bg-white dark:bg-slate-900 text-slate-500 border-slate-200 dark:border-slate-700 hover:border-slate-300"}`}
-          >
-            Tous ({meps.length})
-          </button>
-          {groups.map(([g, n]) => (
+        {/* Un seul bloc pour filtrer ET comprendre les sigles. Les puces de filtre ne
+            portaient que le sigle, et la légende répétait la même liste juste en dessous :
+            l'utilisateur devait faire l'aller-retour pour savoir ce que « PfE » désigne. */}
+        <div>
+          <div className="mb-2.5 flex flex-wrap items-center justify-between gap-2">
+            <p className="text-[10px] font-black uppercase tracking-widest text-slate-400">Les groupes du Parlement européen</p>
             <button
-              key={g}
-              onClick={() => setGroup(group === g ? null : g)}
-              style={group === g ? { background: `linear-gradient(135deg, ${grad(g)[0]}, ${grad(g)[1]})`, boxShadow: `0 4px 12px ${grad(g)[0]}55` } : undefined}
-              className={`inline-flex items-center gap-1.5 rounded-full border px-3 py-2 text-[10px] font-black uppercase tracking-widest transition ${group === g ? "text-white border-transparent" : "bg-white dark:bg-slate-900 text-slate-500 border-slate-200 dark:border-slate-700 hover:border-slate-300"}`}
+              onClick={() => setGroup(null)}
+              className={`rounded-full border px-3.5 py-1.5 text-[10px] font-black uppercase tracking-widest transition ${group === null ? "bg-[#003399] text-white border-[#003399] shadow-md" : "bg-white dark:bg-slate-900 text-slate-500 border-slate-200 dark:border-slate-700 hover:border-slate-300"}`}
             >
-              <span className="h-1.5 w-1.5 rounded-full" style={{ background: group === g ? "rgba(255,255,255,0.9)" : grad(g)[0] }} />
-              {g} ({n})
+              Tous ({meps.length})
             </button>
-          ))}
-        </div>
-
-        {/* Légende : ce que veulent dire les sigles des groupes (PFE, GUE, ECR…). */}
-        <div className="rounded-2xl border border-slate-200 dark:border-slate-800 bg-white/60 dark:bg-slate-900/60 p-4">
-          <p className="mb-2.5 text-[10px] font-black uppercase tracking-widest text-slate-400">Les groupes du Parlement européen</p>
-          <div className="grid gap-x-4 gap-y-2 sm:grid-cols-2 lg:grid-cols-3">
-            {groups.map(([g]) => (
-              <div key={g} className="flex items-center gap-2 text-xs">
-                <span className="h-2.5 w-2.5 shrink-0 rounded-sm" style={{ background: grad(g)[0] }} />
-                <span className="shrink-0 font-black text-slate-800 dark:text-slate-100">{g}</span>
-                <span className="truncate text-slate-500 dark:text-slate-400">{groupName(g)}</span>
-              </div>
-            ))}
+          </div>
+          <div className="grid gap-2 sm:grid-cols-2 lg:grid-cols-3">
+            {groups.map(([g, n]) => {
+              const actif = group === g;
+              return (
+                <button
+                  key={g}
+                  onClick={() => setGroup(actif ? null : g)}
+                  style={actif ? { background: `linear-gradient(135deg, ${grad(g)[0]}, ${grad(g)[1]})`, boxShadow: `0 4px 12px ${grad(g)[0]}55` } : undefined}
+                  className={`flex items-center gap-2.5 rounded-xl border px-3 py-2.5 text-left transition ${actif ? "border-transparent text-white" : "border-slate-200 bg-white text-slate-600 hover:border-slate-300 dark:border-slate-700 dark:bg-slate-900"}`}
+                >
+                  <span className="h-2.5 w-2.5 shrink-0 rounded-sm" style={{ background: actif ? "rgba(255,255,255,0.9)" : grad(g)[0] }} />
+                  <span className="min-w-0">
+                    <span className="block text-[11px] font-black uppercase tracking-widest">
+                      {g} <span className={actif ? "text-white/70" : "text-slate-400"}>· {n}</span>
+                    </span>
+                    <span className={`block text-[11px] leading-snug ${actif ? "text-white/85" : "text-slate-500 dark:text-slate-400"}`}>{groupName(g)}</span>
+                  </span>
+                </button>
+              );
+            })}
           </div>
         </div>
 

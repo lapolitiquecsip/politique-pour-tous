@@ -161,7 +161,9 @@ export const EP_GROUPS: EpGroup[] = [
 export const groupBySlug = (slug: string): EpGroup | undefined =>
   EP_GROUPS.find(g => g.slug === slug);
 
+// Comparaison insensible à la casse : selon la source le sigle s'écrit « PfE » ou « PFE »,
+// et une égalité stricte renverrait « groupe inconnu » pour le plus gros groupe français.
 export const groupByCode = (code: string | null | undefined): EpGroup | undefined =>
-  code ? EP_GROUPS.find(g => g.code === code) : undefined;
+  code ? EP_GROUPS.find(g => g.code.toUpperCase() === code.toUpperCase()) : undefined;
 
 export const EP_GROUP_SLUGS = EP_GROUPS.map(g => g.slug);

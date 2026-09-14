@@ -150,13 +150,24 @@ export default function PublicFinancePanel() {
         <div className="mt-4 space-y-3.5">
           {DEBT_BY_PRESIDENT.map(p => (
             <div key={p.slug}>
-              <div className="mb-1.5 flex items-center justify-between gap-2">
-                <Link href={`/presidents/${p.slug}`} className="group flex items-center gap-2.5">
+              {/* Nom à gauche qui se rétrécit, chiffres dans une colonne de largeur fixe :
+                  les deux valeurs étaient auparavant collées sur une seule ligne insécable,
+                  d'où un débordement sur mobile et des montants qui ne s'alignaient pas
+                  d'un président à l'autre. */}
+              <div className="mb-1.5 flex items-center gap-2.5">
+                <Link href={`/presidents/${p.slug}`} className="group flex min-w-0 flex-1 items-center gap-2.5">
                   <PresAvatar name={p.name} photo={photos[p.slug]} color={p.color} />
-                  <span className="text-sm font-black text-slate-900 group-hover:underline dark:text-white" style={{ textDecorationColor: p.color }}>{p.name}</span>
-                  <span className="text-[11px] font-bold text-slate-400">{p.years}</span>
+                  <span className="min-w-0">
+                    <span className="block truncate text-sm font-black text-slate-900 group-hover:underline dark:text-white" style={{ textDecorationColor: p.color }}>{p.name}</span>
+                    <span className="block text-[10px] font-bold text-slate-400">{p.years}</span>
+                  </span>
                 </Link>
-                <span className="text-right text-sm font-black tabular-nums" style={{ color: p.color }}>+{(p.endPct - p.startPct).toLocaleString("fr-FR", { maximumFractionDigits: 1 })} pts&nbsp;·&nbsp;≈&nbsp;+{fmtMd(p.addedEur)}</span>
+                <span className="w-24 shrink-0 text-right">
+                  <span className="block text-sm font-black leading-tight tabular-nums" style={{ color: p.color }}>
+                    +{(p.endPct - p.startPct).toLocaleString("fr-FR", { maximumFractionDigits: 1 })} pts
+                  </span>
+                  <span className="block text-[10px] font-bold leading-tight tabular-nums text-slate-400">≈ +{fmtMd(p.addedEur)}</span>
+                </span>
               </div>
               <div className="h-2.5 overflow-hidden rounded-full bg-slate-100 dark:bg-white/5">
                 <div className="h-full rounded-full" style={{ width: `${(p.addedEur / maxAdded) * 100}%`, background: p.color }} />

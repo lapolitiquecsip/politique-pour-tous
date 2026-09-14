@@ -11,13 +11,15 @@ export const EP_GROUPS: Record<string, { clr: string; name: string }> = {
   PPE:   { clr: "bg-blue-600",    name: "Parti populaire européen (droite)" },
   SD:    { clr: "bg-rose-500",    name: "Sociaux-démocrates (S&D)" },
   VERTS: { clr: "bg-emerald-500", name: "Les Verts / ALE" },
-  PfE:   { clr: "bg-slate-700",   name: "Patriotes pour l’Europe (droite radicale)" },
+  PFE:   { clr: "bg-slate-700",   name: "Patriotes pour l’Europe (droite radicale)" },
   ECR:   { clr: "bg-sky-700",     name: "Conservateurs et réformistes (ECR)" },
   GUE:   { clr: "bg-red-600",     name: "La Gauche (GUE/NGL)" },
   ESN:   { clr: "bg-indigo-800",  name: "Europe des nations souveraines" },
   NI:    { clr: "bg-slate-500",   name: "Non-inscrits" },
 };
-const grp = (c: string) => EP_GROUPS[c] || EP_GROUPS.NI;
+// Le sigle arrive de la base avec sa typographie d'origine (« PfE ») : on cherche toujours
+// en majuscules, sinon le groupe retombe silencieusement sur les non-inscrits.
+const grp = (c: string) => EP_GROUPS[(c || "NI").toUpperCase()] || EP_GROUPS.NI;
 
 export default function MepsList({ meps: initial }: { meps?: any[] }) {
   const [meps, setMeps] = useState<any[]>(initial || []);

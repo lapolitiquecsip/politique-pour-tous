@@ -28,7 +28,7 @@ const EU_GROUPS: Record<string, { label: string; color: string; order: number }>
   PPE: { label: "PPE", color: "#2E5AAC", order: 4 },
   ECR: { label: "ECR", color: "#3A7CA5", order: 5 },
   ESN: { label: "ESN", color: "#1B3A6B", order: 6 },
-  PFE: { label: "Patriotes (PFE)", color: "#313567", order: 7 },
+  PFE: { label: "Patriotes (PfE)", color: "#313567", order: 7 },
   NI: { label: "Non inscrits", color: "#8D949A", order: 9 },
 };
 
@@ -193,7 +193,9 @@ export default function HemicycleChart({ chamber = "both", title, subtitle }: { 
         const counts = new Map<string, number>();
         for (const m of rows || []) { const g = (m.ep_group_code || "NI"); counts.set(g, (counts.get(g) || 0) + 1); }
         setEu([...counts.entries()].map(([code, seats]) => {
-          const m = EU_GROUPS[code] || { label: code, color: "#8D949A", order: 8 };
+          // La base écrit le sigle avec sa typographie d'origine (« PfE ») : on cherche en
+          // majuscules, sinon le plus gros groupe français retombe sur le gris des non-inscrits.
+          const m = EU_GROUPS[code.toUpperCase()] || { label: code, color: "#8D949A", order: 8 };
           // Fiche de groupe européen si elle existe, sinon liste filtrée des eurodéputés.
           const g = groupByCode(code);
           return { label: m.label, seats, color: m.color, order: m.order, href: g ? `/groupes-europeens/${g.slug}` : `/eurodeputes?group=${encodeURIComponent(code)}` };

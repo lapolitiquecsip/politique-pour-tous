@@ -41,7 +41,7 @@ const GROUP_CLR: Record<string, string> = {
   PPE: "from-blue-500 to-indigo-600",
   SD: "from-rose-500 to-red-600",
   VERTS: "from-emerald-500 to-green-600",
-  PfE: "from-slate-600 to-slate-800",
+  PFE: "from-slate-600 to-slate-800",
   ECR: "from-sky-600 to-blue-800",
   GUE: "from-red-600 to-rose-700",
   ESN: "from-indigo-700 to-slate-900",
@@ -63,7 +63,8 @@ const fmtDate = (d: string | null) =>
   !d ? "" : new Date(d).toLocaleDateString("fr-FR", { day: "numeric", month: "long", year: "numeric" });
 
 export default function MepClient({ mep, initialVotes, embedded }: { mep: any; initialVotes: any[]; embedded?: boolean }) {
-  const grad = GROUP_CLR[mep.ep_group_code] || GROUP_CLR.NI;
+  // Recherche en majuscules : la base écrit « PfE », la table « PFE ».
+  const grad = GROUP_CLR[(mep.ep_group_code || "NI").toUpperCase()] || GROUP_CLR.NI;
   const initials = `${(mep.first_name?.[0] || "")}${(mep.last_name?.[0] || "")}`.toUpperCase();
 
   // Votes : bascule « principaux / tous » + filtre par domaine + pagination « voir plus ».

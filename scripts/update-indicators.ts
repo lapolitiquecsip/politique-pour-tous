@@ -229,6 +229,143 @@ async function collectEnergie(): Promise<any[]> {
   ];
 }
 
+/* ═══════════════════════ Europe — Eurostat ═══════════════════════ */
+
+/**
+ * Eurostat, API de diffusion, publique et sans clé. Les libellés reviennent en français
+ * et la réponse porte un champ `updated` : la date de publication par Eurostat.
+ *
+ * L'intérêt ici n'est pas de répéter les chiffres du thème Économie, mais de SITUER la
+ * France : sa valeur, celle de l'Union, et son rang parmi les Vingt-Sept. C'est le rang
+ * qui fait l'information — « 2e pays le plus dépensier de l'Union » se retient.
+ */
+const EUROSTAT_BASE = "https://ec.europa.eu/eurostat/api/dissemination/statistics/1.0/data/";
+
+/**
+ * Les 27 États membres, en dur.
+ *
+ * Eurostat diffuse aussi la Norvège, la Suisse, la Turquie, le Royaume-Uni et les pays
+ * candidats dans les mêmes jeux : un filtre « code à deux lettres » donnait « 3e pays
+ * sur 34 », ce qui ne veut rien dire. Le classement doit porter sur l'Union, et sur elle
+ * seule. Attention : la Grèce est « EL » chez Eurostat, et non « GR ».
+ */
+const UE27 = new Set([
+  "BE", "BG", "CZ", "DK", "DE", "EE", "IE", "EL", "ES", "FR", "HR", "IT", "CY",
+  "LV", "LT", "LU", "HU", "MT", "NL", "AT", "PL", "PT", "RO", "SI", "SK", "FI", "SE",
+]);
+
+type EuroDef = {
+  code: string;
+  label: string;
+  dataset: string;
+  filters: string;
+  unit: string;
+  sortOrder: number;
+  betterWhen?: "up" | "down";
+  /** Comment nommer le rang : « le plus endetté », « le plus dépensier »… */
+  rangSuffixe: string;
+  /** true si une valeur haute place en tête du classement. */
+  hautEnTete: boolean;
+};
+
+const EUROPE: EuroDef[] = [
+  { code: "eu_dette", label: "Dette publique", dataset: "gov_10dd_edpt1", sortOrder: 1,
+    filters: "na_item=GD&sector=S13&unit=PC_GDP", unit: "% du PIB", betterWhen: "down",
+    rangSuffixe: "le plus endetté", hautEnTete: true },
+  { code: "eu_depense", label: "Dépense publique", dataset: "gov_10a_main", sortOrder: 2,
+    filters: "na_item=TE&sector=S13&unit=PC_GDP", unit: "% du PIB",
+    rangSuffixe: "où l'État dépense le plus", hautEnTete: true },
+  { code: "eu_prelevements", label: "Recettes publiques", dataset: "gov_10a_main", sortOrder: 3,
+    filters: "na_item=TR&sector=S13&unit=PC_GDP", unit: "% du PIB",
+    rangSuffixe: "qui prélève le plus", hautEnTete: true },
+  { code: "eu_chomage", label: "Chômage", dataset: "une_rt_a", sortOrder: 4,
+    filters: "unit=PC_ACT&sex=T&age=Y15-74", unit: "%", betterWhen: "down",
+    rangSuffixe: "au chômage le plus élevé", hautEnTete: true },
+];
+
+async function collectEurope(): Promise<any[]> {
+  const out: any[] = [];
+
+  for (const d of EUROPE) {
+    try {
+      // Tous les pays d'un coup, sur dix périodes : une seule requête donne à la fois la
+      // valeur française, celle de l'Union, le classement et la courbe.
+      const url = `${EUROSTAT_BASE}${d.dataset}?format=JSON&lang=FR&lastTimePeriod=10&${d.filters}`;
+      const r = await fetch(url, { headers: { "User-Agent": "lapolitiquecestsimple/1.0" } });
+      if (!r.ok) throw new Error(`Eurostat a répondu ${r.status}`);
+      const j: any = await r.json();
+
+      const geoIdx: Record<string, number> = j.dimension?.geo?.category?.index ?? {};
+      const timeIdx: Record<string, number> = j.dimension?.time?.category?.index ?? {};
+      const values: Record<string, number> = j.value ?? {};
+      const nbTime = Object.keys(timeIdx).length;
+      if (!nbTime || !Object.keys(geoIdx).length) throw new Error("réponse sans dimension");
+
+      // La valeur d'une cellule se lit à la position (rang du pays × nb de périodes + rang
+      // de la période) : c'est l'aplatissement standard de JSON-stat.
+      const at = (geo: string, time: string) => {
+        const gi = geoIdx[geo], ti = timeIdx[time];
+        if (gi === undefined || ti === undefined) return undefined;
+        const v = values[gi * nbTime + ti] ?? values[String(gi * nbTime + ti)];
+        return typeof v === "number" ? v : undefined;
+      };
+
+      const periodes = Object.keys(timeIdx).sort();
+      // Dernière période où la France est renseignée : Eurostat publie souvent une
+      // période de plus pour certains pays, avec un trou pour les autres.
+      const derniere = [...periodes].reverse().find(p => at("FR", p) !== undefined);
+      if (!derniere) throw new Error("aucune valeur française");
+
+      const fr = at("FR", derniere)!;
+      const ue = at("EU27_2020", derniere);
+
+      // Classement parmi les seuls États membres, agrégats exclus.
+      const pays = Object.keys(geoIdx)
+        .filter(g => UE27.has(g))
+        .map(g => ({ g, v: at(g, derniere) }))
+        .filter((p): p is { g: string; v: number } => p.v !== undefined)
+        .sort((a, b) => d.hautEnTete ? b.v - a.v : a.v - b.v);
+      const rang = pays.findIndex(p => p.g === "FR") + 1;
+
+      const nb = (v: number) => v.toLocaleString("fr-FR", { maximumFractionDigits: 1 });
+      const morceaux = [
+        ue !== undefined ? `contre ${nb(ue)} ${d.unit} dans l'Union` : null,
+        rang > 0 ? `${rang}${rang === 1 ? "er" : "e"} pays ${d.rangSuffixe} sur ${pays.length}` : null,
+      ].filter(Boolean);
+
+      out.push({
+        code: d.code,
+        theme: "europe",
+        label: d.label,
+        sub: morceaux.join(" — ") || null,
+        value: Number(fr.toFixed(1)),
+        unit: d.unit,
+        period: derniere,
+        period_label: derniere,
+        history: periodes
+          .map(p => ({ period: p, value: at("FR", p) }))
+          .filter((h): h is { period: string; value: number } => h.value !== undefined),
+        source: "Eurostat",
+        source_url: `https://ec.europa.eu/eurostat/databrowser/view/${d.dataset}/default/table?lang=fr`,
+        series_id: d.dataset,
+        provider: "eurostat",
+        // Date de publication annoncée par Eurostat, pas celle de notre relevé.
+        published_at: j.updated ? String(j.updated).slice(0, 10) : null,
+        better_when: d.betterWhen ?? null,
+        sort_order: d.sortOrder,
+        updated_at: new Date().toISOString(),
+      });
+
+      console.log(`  ✓ ${d.label.padEnd(22)} ${nb(fr).padStart(7)} ${d.unit} (${derniere}) — ${morceaux.join(" — ")}`);
+    } catch (e) {
+      // Un indicateur en échec n'empêche pas les autres : celui déjà en base reste affiché.
+      console.warn(`  ⚠ ${d.label} : ${(e as Error).message}`);
+    }
+  }
+
+  return out;
+}
+
 /* ───────────────────────────────── Traitement ───────────────────────────────── */
 
 async function main() {
@@ -310,6 +447,13 @@ async function main() {
     // Une source en panne ne doit pas empêcher les autres d'être enregistrées :
     // les indicateurs déjà en base restent affichés tels quels.
     console.warn(`  ⚠ énergie : ${(e as Error).message} — indicateurs laissés tels quels.`);
+  }
+
+  console.log("\n— Europe (Eurostat) —");
+  try {
+    rows.push(...await collectEurope());
+  } catch (e) {
+    console.warn(`  ⚠ Europe : ${(e as Error).message}`);
   }
 
   if (!rows.length) { console.error("Aucun indicateur exploitable."); return; }

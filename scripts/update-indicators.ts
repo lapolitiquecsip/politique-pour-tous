@@ -495,6 +495,349 @@ async function collectSante(): Promise<any[]> {
   ];
 }
 
+/* ═══════════════════════ Immigration — Eurostat ═══════════════════════ */
+
+/**
+ * Lit une série Eurostat pour la France et pour l'Union, sur la dernière période
+ * renseignée côté français. Renvoie aussi l'historique français et la date de
+ * publication annoncée par Eurostat.
+ */
+async function eurostatFr(dataset: string, filters: string, periodes = 10) {
+  const r = await fetch(
+    `${EUROSTAT_BASE}${dataset}?format=JSON&lang=FR&lastTimePeriod=${periodes}&${filters}`,
+    { headers: { "User-Agent": "lapolitiquecestsimple/1.0" } },
+  );
+  if (!r.ok) throw new Error(`Eurostat a répondu ${r.status}`);
+  const j: any = await r.json();
+  if (j.error || !j.dimension) throw new Error("requête refusée par Eurostat");
+
+  const geoIdx: Record<string, number> = j.dimension.geo.category.index ?? {};
+  const timeIdx: Record<string, number> = j.dimension.time.category.index ?? {};
+  const values: Record<string, number> = j.value ?? {};
+  const nbTime = Object.keys(timeIdx).length;
+  const at = (geo: string, time: string) => {
+    const gi = geoIdx[geo], ti = timeIdx[time];
+    if (gi === undefined || ti === undefined) return undefined;
+    const v = values[gi * nbTime + ti] ?? values[String(gi * nbTime + ti)];
+    return typeof v === "number" ? v : undefined;
+  };
+
+  const toutes = Object.keys(timeIdx).sort();
+  const derniere = [...toutes].reverse().find(p => at("FR", p) !== undefined);
+  if (!derniere) throw new Error("aucune valeur française");
+
+  return {
+    periode: derniere,
+    fr: at("FR", derniere)!,
+    ue: at("EU27_2020", derniere),
+    // Valeurs des États membres à la dernière période, de quoi classer la France. Le
+    // tableau se réduit à la France quand l'appelant a filtré sur geo=FR : à lui de
+    // vérifier qu'il y a matière à classement avant d'annoncer un rang.
+    classement: Object.keys(geoIdx)
+      .filter(g => UE27.has(g))
+      .map(g => ({ g, v: at(g, derniere) }))
+      .filter((p): p is { g: string; v: number } => p.v !== undefined),
+    publie: j.updated ? String(j.updated).slice(0, 10) : null,
+    histoire: toutes
+      .map(p => ({ period: p, value: at("FR", p) }))
+      .filter((h): h is { period: string; value: number } => h.value !== undefined),
+  };
+}
+
+async function collectImmigration(): Promise<any[]> {
+  const out: any[] = [];
+  const entier = (v: number) => Math.round(v).toLocaleString("fr-FR");
+
+  // 1. Part de la population née à l'étranger — rapport de deux séries du même jeu.
+  try {
+    const nes = await eurostatFr("migr_pop3ctb", "c_birth=FOR&sex=T&age=TOTAL&geo=FR&geo=EU27_2020");
+    const tous = await eurostatFr("migr_pop3ctb", "c_birth=TOTAL&sex=T&age=TOTAL&geo=FR&geo=EU27_2020");
+    const partFr = (nes.fr / tous.fr) * 100;
+    const parAn = new Map(tous.histoire.map(h => [h.period, h.value]));
+
+    out.push({
+      code: "immi_nes_etranger", theme: "immigration", sort_order: 1,
+      label: "Personnes nées à l'étranger", unit: "% de la population",
+      value: Number(partFr.toFixed(1)),
+      // Précision indispensable : Eurostat compte les personnes NÉES À L'ÉTRANGER, ce qui
+      // inclut les Français nés hors de France. L'INSEE compte les IMMIGRÉS — nés
+      // étrangers à l'étranger — et publie donc un chiffre plus bas. Sans cette note, on
+      // paraîtrait contredire l'INSEE alors qu'on ne mesure pas la même chose.
+      sub: `${entier(nes.fr)} personnes — définition Eurostat, plus large que la notion d'immigré de l'INSEE (qui exclut les Français nés hors de France)`,
+      period: nes.periode, period_label: nes.periode,
+      history: nes.histoire
+        .filter(h => parAn.get(h.period))
+        .map(h => ({ period: h.period, value: Number((h.value / parAn.get(h.period)! * 100).toFixed(1)) })),
+      source: "Eurostat", source_url: "https://ec.europa.eu/eurostat/databrowser/view/migr_pop3ctb/default/table?lang=fr",
+      series_id: "migr_pop3ctb", provider: "eurostat", published_at: nes.publie,
+      better_when: null, updated_at: new Date().toISOString(),
+    });
+  } catch (e) {
+    console.warn(`  ⚠ nés à l'étranger : ${(e as Error).message}`);
+  }
+
+  // 2. Premiers titres de séjour, 3. demandes d'asile — même forme, on boucle.
+  const flux: { code: string; label: string; dataset: string; filters: string; unit: string; sub: string; ordre: number }[] = [
+    {
+      code: "immi_titres", label: "Premiers titres de séjour", ordre: 2,
+      dataset: "migr_resfirst", filters: "citizen=TOTAL&reason=TOTAL&duration=TOTAL&geo=FR&geo=EU27_2020",
+      unit: "titres délivrés", sub: "délivrés dans l'année, tous motifs confondus",
+    },
+    {
+      code: "immi_asile", label: "Demandes d'asile", ordre: 3,
+      dataset: "migr_asyappctza", filters: "citizen=TOTAL&sex=T&age=TOTAL&unit=PER&geo=FR&geo=EU27_2020",
+      unit: "demandeurs", sub: "demandeurs enregistrés dans l'année",
+    },
+  ];
+
+  for (const f of flux) {
+    try {
+      const d = await eurostatFr(f.dataset, f.filters);
+      out.push({
+        code: f.code, theme: "immigration", sort_order: f.ordre,
+        label: f.label, unit: f.unit, value: Math.round(d.fr),
+        sub: d.ue !== undefined ? `${f.sub} — ${entier(d.ue)} dans l'ensemble de l'Union` : f.sub,
+        period: d.periode, period_label: d.periode,
+        history: d.histoire.map(h => ({ period: h.period, value: Math.round(h.value) })),
+        source: "Eurostat", source_url: `https://ec.europa.eu/eurostat/databrowser/view/${f.dataset}/default/table?lang=fr`,
+        series_id: f.dataset, provider: "eurostat", published_at: d.publie,
+        better_when: null, updated_at: new Date().toISOString(),
+      });
+    } catch (e) {
+      console.warn(`  ⚠ ${f.label} : ${(e as Error).message}`);
+    }
+  }
+
+  // L'affichage est assuré par la boucle appelante : ne pas le dupliquer ici.
+  return out;
+}
+
+/* ═══════════════════ Sécurité — SSMSI (ministère de l'Intérieur) ═══════════════════ */
+
+/**
+ * Le SSMSI publie la délinquance enregistrée sur data.gouv, à la commune, au département
+ * et à la région. On prend la base RÉGIONALE : 350 Ko contre 40 Mo pour la communale, et
+ * la somme des régions donne exactement le total national.
+ *
+ * L'adresse du fichier porte un horodatage de fabrication qui change à chaque
+ * republication : on la RÉSOUT à chaque passage par l'API de data.gouv plutôt que de la
+ * figer, sinon le cron continuerait de lire l'édition de l'an dernier sans rien signaler.
+ *
+ * Eurostat expose aussi des statistiques de criminalité, mais s'arrête à 2024 là où le
+ * SSMSI publie 2025 : on préfère la source nationale, plus fraîche.
+ */
+const SSMSI_DATASET = "621df2954fa5a3b5a023e23c";
+
+/** Indicateurs retenus, tels qu'écrits dans le fichier — ils servent de clé de filtre. */
+const DELINQUANCE: { code: string; indicateur: string; label: string; ordre: number }[] = [
+  { code: "secu_homicides", indicateur: "Homicides", label: "Homicides", ordre: 1 },
+  { code: "secu_intrafamiliales", indicateur: "Violences physiques intrafamiliales", label: "Violences intrafamiliales", ordre: 2 },
+  { code: "secu_cambriolages", indicateur: "Cambriolages de logement", label: "Cambriolages de logement", ordre: 3 },
+  { code: "secu_stupefiants", indicateur: "Trafic de stupéfiants", label: "Trafic de stupéfiants", ordre: 4 },
+];
+
+async function collectSecurite(): Promise<any[]> {
+  // 1. Résolution de l'adresse courante du fichier régional.
+  const meta = await fetch(`https://www.data.gouv.fr/api/1/datasets/${SSMSI_DATASET}/`);
+  if (!meta.ok) throw new Error(`data.gouv a répondu ${meta.status}`);
+  const mj: any = await meta.json();
+  const ressource = (mj.resources ?? []).find((r: any) => /^REG - /.test(r.title ?? "") && r.format === "csv");
+  if (!ressource?.url) throw new Error("base régionale introuvable dans le jeu de données");
+
+  // 2. Lecture du CSV : séparateur point-virgule, guillemets, BOM en tête.
+  const csv = await (await fetch(ressource.url)).text();
+  const lignes = csv.replace(/^﻿/, "").trim().split(/\r?\n/);
+  const entetes = lignes[0].split(";").map(h => h.replace(/"/g, ""));
+  const iAnnee = entetes.indexOf("annee");
+  const iInd = entetes.indexOf("indicateur");
+  const iNb = entetes.indexOf("nombre");
+  const iPop = entetes.indexOf("insee_pop");
+  if (iAnnee < 0 || iInd < 0 || iNb < 0) throw new Error("colonnes attendues absentes du fichier");
+
+  // 3. Somme des régions, par année et par indicateur.
+  const totaux = new Map<string, number>();     // "indicateur|année" → nombre
+  const population = new Map<string, number>(); // "année" → population
+  for (const ligne of lignes.slice(1)) {
+    const c = ligne.split(";").map(x => x.replace(/"/g, ""));
+    const annee = c[iAnnee], ind = c[iInd];
+    const nb = Number(c[iNb]);
+    if (!annee || !ind || !Number.isFinite(nb)) continue;
+    totaux.set(`${ind}|${annee}`, (totaux.get(`${ind}|${annee}`) ?? 0) + nb);
+    // La population régionale est répétée sur chaque ligne : on ne l'additionne qu'une
+    // fois par indicateur, sinon on compterait la France dix-huit fois.
+    if (ind === DELINQUANCE[0].indicateur && iPop >= 0) {
+      const pop = Number(c[iPop]);
+      if (Number.isFinite(pop)) population.set(annee, (population.get(annee) ?? 0) + pop);
+    }
+  }
+
+  const annees = [...new Set([...totaux.keys()].map(k => k.split("|")[1]))].sort();
+  const derniere = annees[annees.length - 1];
+  if (!derniere) throw new Error("aucune année exploitable");
+
+  const publie = String(mj.last_modified ?? "").slice(0, 10) || null;
+  const popFr = population.get(derniere);
+
+  return DELINQUANCE.map(d => {
+    const histoire = annees
+      .map(a => ({ period: a, value: totaux.get(`${d.indicateur}|${a}`) }))
+      .filter((h): h is { period: string; value: number } => h.value !== undefined);
+    const valeur = totaux.get(`${d.indicateur}|${derniere}`);
+    if (valeur === undefined) return null;
+
+    // Le taux pour 100 000 habitants situe le chiffre : « 1 020 homicides » ne dit rien
+    // sans la population à laquelle le rapporter.
+    const taux = popFr ? (valeur / popFr) * 100000 : null;
+
+    return {
+      code: d.code, theme: "securite", sort_order: d.ordre,
+      label: d.label, unit: "faits", better_when: "down",
+      value: valeur,
+      sub: taux
+        ? `soit ${taux.toLocaleString("fr-FR", { maximumFractionDigits: 1 })} pour 100 000 habitants — faits enregistrés par la police et la gendarmerie`
+        : "faits enregistrés par la police et la gendarmerie",
+      period: derniere, period_label: derniere,
+      history: histoire,
+      source: "SSMSI — ministère de l'Intérieur",
+      source_url: `https://www.data.gouv.fr/fr/datasets/${SSMSI_DATASET}/`,
+      series_id: d.indicateur,
+      provider: "ssmsi",
+      published_at: publie,
+      updated_at: new Date().toISOString(),
+    };
+  }).filter(Boolean) as any[];
+}
+
+/* ═══════════════════════ Retraites — DREES & Eurostat ═══════════════════════ */
+
+/**
+ * Les retraites sont le thème le plus mal outillé : le COR publie des rapports PDF, la
+ * CNAV des tableaux Excel, et la plupart des jeux « retraite » de la DREES sont des
+ * pièces jointes non interrogeables (l'API leur répond `total_count: 0`). Deux sources
+ * tiennent debout :
+ *
+ *  — la DREES pour l'âge de départ, seul chiffre français faisant autorité, repris de
+ *    l'édition 2025 de son Panorama (le jeu historique, lui, s'arrêtait à 2022) ;
+ *  — Eurostat pour le reste, qui a l'avantage de situer la France face aux Vingt-Sept.
+ *
+ * L'âge de départ porte sur 2023 : c'est la dernière année publiée par la DREES, et le
+ * `sub` le dit noir sur blanc plutôt que de laisser croire au chiffre du jour.
+ */
+const DREES_AGE_DEPART = "panorama-retraite2025_graphique-1_age-de-depart";
+
+type RetraiteEuro = {
+  code: string;
+  label: string;
+  dataset: string;
+  filters: string;
+  unit: string;
+  /** Unité abrégée pour la comparaison européenne, que l'unité complète alourdirait. */
+  uniteCourte: string;
+  ordre: number;
+  betterWhen: "up" | "down" | null;
+  /** Eurostat livre certains ratios entre 0 et 1 : on les affiche en pourcentage. */
+  facteur: number;
+  /** Comment nommer le rang une fois la France située : « qui dépense le plus »… */
+  rangSuffixe: string;
+  sub: (ue: string) => string;
+};
+
+const RETRAITES_EURO: RetraiteEuro[] = [
+  {
+    code: "retr_emploi_seniors", label: "Emploi des 55-64 ans", ordre: 2,
+    dataset: "lfsi_emp_a", filters: "sex=T&age=Y55-64&unit=PC_POP&indic_em=EMP_LFS",
+    unit: "%", uniteCourte: "%", betterWhen: "up", facteur: 1,
+    rangSuffixe: "où les seniors travaillent le plus",
+    sub: ue => `contre ${ue} dans l'Union`,
+  },
+  {
+    code: "retr_depenses", label: "Dépense publique de retraite", ordre: 3,
+    dataset: "gov_10a_exp", filters: "na_item=TE&sector=S13&unit=PC_GDP&cofog99=GF1002",
+    unit: "% du PIB", uniteCourte: "% du PIB", betterWhen: null, facteur: 1,
+    rangSuffixe: "qui dépense le plus pour les retraites",
+    sub: ue => `contre ${ue} dans l'Union`,
+  },
+  {
+    code: "retr_niveau_vie", label: "Niveau de vie des retraités", ordre: 4,
+    dataset: "ilc_pnp2", filters: "sex=T&age=Y_GE65&statinfo=R_MED_I",
+    unit: "%", uniteCourte: "%", betterWhen: "up", facteur: 100,
+    rangSuffixe: "où les retraités sont les mieux lotis",
+    sub: ue => `revenu médian des 65 ans et plus rapporté à celui du reste de la population — ${ue} dans l'Union`,
+  },
+];
+
+async function collectRetraites(): Promise<any[]> {
+  const out: any[] = [];
+  const nb = (v: number) => v.toLocaleString("fr-FR", { maximumFractionDigits: 1 });
+
+  // 1. Âge moyen de départ — DREES.
+  try {
+    const lignes = await ods(DREES_BASE, DREES_AGE_DEPART,
+      "select=annee,femme,homme,ensemble&order_by=annee&limit=60");
+    const annees = lignes
+      .map(r => ({ an: anneeDe(r.annee), ens: Number(r.ensemble), f: Number(r.femme), h: Number(r.homme) }))
+      .filter(r => r.an && Number.isFinite(r.ens))
+      .sort((a, b) => a.an! - b.an!);
+    if (!annees.length) throw new Error("aucune année exploitable");
+
+    const derniere = annees[annees.length - 1];
+    const premiere = annees[0];
+    const publie = await odsPublie(DREES_BASE, DREES_AGE_DEPART);
+
+    out.push({
+      code: "retr_age_depart", theme: "retraites", sort_order: 1,
+      label: "Âge moyen de départ à la retraite", unit: "ans", better_when: null,
+      value: Number(derniere.ens.toFixed(1)),
+      // On date le chiffre dans le texte : la DREES publie avec deux ans de retard, et un
+      // « 62,7 ans » nu laisserait croire qu'il intègre déjà la réforme de 2023.
+      sub: `femmes ${nb(derniere.f)} ans, hommes ${nb(derniere.h)} ans — dernière année publiée par la DREES (${derniere.an}), contre ${nb(premiere.ens)} ans en ${premiere.an}`,
+      period: String(derniere.an), period_label: String(derniere.an),
+      history: annees.map(a => ({ period: String(a.an), value: a.ens })),
+      source: "DREES — Panorama des retraités",
+      source_url: `${DREES_BASE}/explore/dataset/${DREES_AGE_DEPART}/`,
+      series_id: DREES_AGE_DEPART, provider: "drees",
+      published_at: publie,
+      updated_at: new Date().toISOString(),
+    });
+  } catch (e) {
+    console.warn(`  ⚠ âge de départ : ${(e as Error).message}`);
+  }
+
+  // 2 à 4. Comparaisons européennes — même forme, on boucle.
+  for (const d of RETRAITES_EURO) {
+    try {
+      // Aucun filtre `geo` : on veut aussi les vingt-six autres pays pour situer la France.
+      const s = await eurostatFr(d.dataset, d.filters);
+      const classement = [...s.classement].sort((a, b) => b.v - a.v);
+      const rang = classement.findIndex(p => p.g === "FR") + 1;
+      const morceaux = [
+        d.sub(s.ue !== undefined ? `${nb(s.ue * d.facteur)} ${d.uniteCourte}` : "la moyenne de l'Union"),
+        rang > 0 && classement.length > 2
+          ? `${rang}${rang === 1 ? "er" : "e"} pays ${d.rangSuffixe} sur ${classement.length}`
+          : null,
+      ].filter(Boolean);
+
+      out.push({
+        code: d.code, theme: "retraites", sort_order: d.ordre,
+        label: d.label, unit: d.unit, better_when: d.betterWhen,
+        value: Number((s.fr * d.facteur).toFixed(1)),
+        sub: morceaux.join(" — "),
+        period: s.periode, period_label: s.periode,
+        history: s.histoire.map(h => ({ period: h.period, value: Number((h.value * d.facteur).toFixed(1)) })),
+        source: "Eurostat",
+        source_url: `https://ec.europa.eu/eurostat/databrowser/view/${d.dataset}/default/table?lang=fr`,
+        series_id: d.dataset, provider: "eurostat",
+        published_at: s.publie,
+        updated_at: new Date().toISOString(),
+      });
+    } catch (e) {
+      console.warn(`  ⚠ ${d.label} : ${(e as Error).message}`);
+    }
+  }
+
+  return out;
+}
+
 /* ───────────────────────────────── Traitement ───────────────────────────────── */
 
 async function main() {
@@ -588,6 +931,9 @@ async function main() {
   for (const [titre, collecte] of [
     ["Éducation (ministère)", collectEducation],
     ["Santé (DREES)", collectSante],
+    ["Immigration (Eurostat)", collectImmigration],
+    ["Sécurité (SSMSI)", collectSecurite],
+    ["Retraites (DREES & Eurostat)", collectRetraites],
   ] as const) {
     console.log(`\n— ${titre} —`);
     try {

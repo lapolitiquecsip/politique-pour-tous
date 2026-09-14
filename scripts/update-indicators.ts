@@ -123,6 +123,112 @@ function periodLabel(period: string): string {
 const fr = (v: number, unit: string) =>
   `${v.toLocaleString("fr-FR", { maximumFractionDigits: 1 })} ${unit}`.replace(" %", " %");
 
+/* ═══════════════════ Énergie — éCO2mix (RTE, via Open Data Réseaux Énergies) ═══════════════════ */
+
+/**
+ * ODRE expose les données de production électrique de RTE, sans clé, avec agrégation
+ * côté serveur. On ne télécharge donc pas 500 000 points pour en tirer quatre chiffres :
+ * l'API fait les sommes et ne renvoie que les totaux.
+ *
+ * Deux requêtes suffisent : une pour les douze derniers mois (le chiffre affiché), une
+ * groupée par année (la courbe).
+ */
+const ODRE = "https://odre.opendatasoft.com/api/explore/v2.1/catalog/datasets/eco2mix-national-cons-def";
+const FILIERES = "sum(nucleaire) as nuc,sum(eolien) as eol,sum(solaire) as sol,sum(hydraulique) as hyd,sum(bioenergies) as bio,sum(gaz) as gaz,sum(charbon) as cha,sum(fioul) as fio,avg(taux_co2) as co2";
+
+type Mix = { an?: number; nuc: number; eol: number; sol: number; hyd: number; bio: number; gaz: number; cha: number; fio: number; co2: number };
+
+const renouvelable = (m: Mix) => m.eol + m.sol + m.hyd + m.bio;
+const totalProduit = (m: Mix) => m.nuc + renouvelable(m) + m.gaz + m.cha + m.fio;
+const part = (v: number, m: Mix) => (totalProduit(m) ? (v / totalProduit(m)) * 100 : 0);
+
+async function odre(params: string): Promise<any[]> {
+  const r = await fetch(`${ODRE}/records?${params}`, {
+    headers: { "User-Agent": "lapolitiquecestsimple/1.0 (+https://lapolitiquecestsimple.fr)" },
+  });
+  if (!r.ok) throw new Error(`ODRE a répondu ${r.status}`);
+  const j: any = await r.json();
+  return j.results ?? [];
+}
+
+async function collectEnergie(): Promise<any[]> {
+  // Borne des données. On NE prend PAS max(date_heure) : le jeu contient des lignes de
+  // calendrier déjà créées mais encore vides, qui feraient croire à des données plus
+  // récentes qu'elles ne sont. On se cale sur le dernier point réellement renseigné.
+  const [borne] = await odre(
+    "select=date_heure&where=" + encodeURIComponent("nucleaire is not null") +
+    "&order_by=" + encodeURIComponent("date_heure desc") + "&limit=1",
+  );
+  const fin = String(borne?.date_heure ?? "").slice(0, 10);
+  if (!fin) throw new Error("borne temporelle introuvable");
+  const debut = new Date(new Date(fin).getTime() - 365 * 864e5).toISOString().slice(0, 10);
+
+  // Douze mois glissants : c'est la photo la plus récente qui soit complète.
+  const [courant] = await odre(
+    "select=" + encodeURIComponent(FILIERES) +
+    "&where=" + encodeURIComponent(`date_heure>=date'${debut}'`),
+  ) as Mix[];
+  if (!courant?.nuc) throw new Error("agrégat courant vide");
+
+  // Historique par année civile, pour la courbe. On écarte l'année en cours, incomplète,
+  // et les toutes premières années du jeu, partielles elles aussi.
+  const annees = (await odre(
+    "select=" + encodeURIComponent(FILIERES) +
+    "&group_by=" + encodeURIComponent("year(date_heure) as an") +
+    "&order_by=an&limit=30",
+  ) as Mix[])
+    .filter(m => m.an && totalProduit(m) > 1e8 && m.an < new Date(fin).getFullYear());
+
+  const serie = (pick: (m: Mix) => number) =>
+    annees.map(m => ({ period: String(m.an), value: Number(pick(m).toFixed(1)) }));
+
+  const finLisible = new Date(fin).toLocaleDateString("fr-FR", { month: "long", year: "numeric" });
+  const commun = {
+    // Le thème du site s'appelle « ecologie » (Écologie & énergie) : c'est cette clé
+    // qui rattache l'indicateur à sa carte, pas le nom du domaine.
+    theme: "ecologie",
+    source: "RTE — éCO2mix",
+    source_url: "https://odre.opendatasoft.com/explore/dataset/eco2mix-national-cons-def/",
+    provider: "odre",
+    period: fin,
+    period_label: `12 mois à fin ${finLisible}`,
+    // Date de la dernière donnée publiée par RTE, et non date de notre relevé.
+    published_at: fin,
+    updated_at: new Date().toISOString(),
+  };
+
+  return [
+    {
+      ...commun, code: "ene_nucleaire", sort_order: 1,
+      label: "Part du nucléaire", unit: "% de l'électricité produite", better_when: null,
+      value: Number(part(courant.nuc, courant).toFixed(1)),
+      sub: "dans la production électrique française",
+      history: serie(m => part(m.nuc, m)),
+    },
+    {
+      ...commun, code: "ene_renouvelable", sort_order: 2,
+      label: "Part des renouvelables", unit: "% de l'électricité produite", better_when: "up",
+      value: Number(part(renouvelable(courant), courant).toFixed(1)),
+      sub: "éolien, solaire, hydraulique et bioénergies",
+      history: serie(m => part(renouvelable(m), m)),
+    },
+    {
+      ...commun, code: "ene_fossile", sort_order: 3,
+      label: "Part des fossiles", unit: "% de l'électricité produite", better_when: "down",
+      value: Number(part(courant.gaz + courant.cha + courant.fio, courant).toFixed(1)),
+      sub: "gaz, charbon et fioul",
+      history: serie(m => part(m.gaz + m.cha + m.fio, m)),
+    },
+    {
+      ...commun, code: "ene_co2", sort_order: 4,
+      label: "Intensité carbone", unit: "g CO₂/kWh", better_when: "down",
+      value: Number(courant.co2.toFixed(1)),
+      sub: "émissions moyennes de l'électricité consommée",
+      history: annees.map(m => ({ period: String(m.an), value: Number(m.co2.toFixed(1)) })),
+    },
+  ];
+}
+
 /* ───────────────────────────────── Traitement ───────────────────────────────── */
 
 async function main() {
@@ -135,7 +241,8 @@ async function main() {
   const dryRun = process.argv.includes("--dry-run");
   const supabase = createClient(url, key);
 
-  console.log("=== Indicateurs officiels (INSEE) ===");
+  console.log("=== Indicateurs officiels ===");
+  console.log("\n— Économie (INSEE) —");
 
   // Une seule requête pour toutes les séries : l'API accepte jusqu'à 400 idBank.
   const res = await fetch(SDMX + SERIES.map(s => s.idBank).join("+"), {
@@ -190,6 +297,19 @@ async function main() {
     });
 
     console.log(`  ✓ ${s.label.padEnd(20)} ${fr(last.value, s.unit).padStart(12)} (${periodLabel(last.period)}) — publié le ${p.lastUpdate}`);
+  }
+
+  console.log("\n— Énergie (RTE via ODRE) —");
+  try {
+    const energie = await collectEnergie();
+    rows.push(...energie);
+    for (const e of energie) {
+      console.log(`  ✓ ${e.label.padEnd(22)} ${String(e.value).padStart(7)} ${e.unit} (${e.period_label})`);
+    }
+  } catch (e) {
+    // Une source en panne ne doit pas empêcher les autres d'être enregistrées :
+    // les indicateurs déjà en base restent affichés tels quels.
+    console.warn(`  ⚠ énergie : ${(e as Error).message} — indicateurs laissés tels quels.`);
   }
 
   if (!rows.length) { console.error("Aucun indicateur exploitable."); return; }

@@ -366,6 +366,135 @@ async function collectEurope(): Promise<any[]> {
   return out;
 }
 
+/* ═══════════ Éducation & Santé — portails Opendatasoft des ministères ═══════════ */
+
+/**
+ * data.education.gouv.fr et data.drees.solidarites-sante.gouv.fr exposent la MÊME API
+ * qu'ODRE (Opendatasoft), publique et sans clé, avec agrégation côté serveur. Le même
+ * code sert donc pour les trois : on demande des sommes, pas des lignes.
+ *
+ * Les clauses ODSQL doivent être encodées — parenthèses, espaces et apostrophes —
+ * sinon la requête part tronquée et l'API répond une valeur fausse sans erreur.
+ */
+async function ods(base: string, dataset: string, params: string): Promise<any[]> {
+  const r = await fetch(`${base}/api/explore/v2.1/catalog/datasets/${dataset}/records?${params}`, {
+    headers: { "User-Agent": "lapolitiquecestsimple/1.0 (+https://lapolitiquecestsimple.fr)" },
+  });
+  if (!r.ok) throw new Error(`${dataset} a répondu ${r.status}`);
+  const j: any = await r.json();
+  return j.results ?? [];
+}
+
+/** Date de dernière modification annoncée par le portail, pour dater la publication. */
+async function odsPublie(base: string, dataset: string): Promise<string | null> {
+  try {
+    const r = await fetch(`${base}/api/explore/v2.1/catalog/datasets/${dataset}`);
+    if (!r.ok) return null;
+    const j: any = await r.json();
+    const d = j.metas?.default?.modified ?? j.metas?.default?.data_processed;
+    return d ? String(d).slice(0, 10) : null;
+  } catch { return null; }
+}
+
+/** « 2025-01-01T00:00:00+00:00 » ou « 2025 » → 2025. */
+const anneeDe = (v: unknown) => Number(String(v ?? "").slice(0, 4)) || null;
+
+const EDUCATION_BASE = "https://data.education.gouv.fr";
+const DREES_BASE = "https://data.drees.solidarites-sante.gouv.fr";
+
+async function collectEducation(): Promise<any[]> {
+  const DATASET = "fr-en-baccalaureat-par-academie";
+  const lignes = await ods(EDUCATION_BASE, DATASET,
+    "select=" + encodeURIComponent("sum(nombre_de_presents) as pres,sum(nombre_d_admis_totaux) as adm") +
+    "&group_by=" + encodeURIComponent("session as an") + "&order_by=an&limit=30");
+
+  const sessions = lignes
+    .map(r => ({ an: anneeDe(r.an), pres: Number(r.pres), adm: Number(r.adm) }))
+    .filter(r => r.an && r.pres > 0)
+    .sort((a, b) => a.an! - b.an!);
+  if (!sessions.length) throw new Error("aucune session exploitable");
+
+  const derniere = sessions[sessions.length - 1];
+  const publie = await odsPublie(EDUCATION_BASE, DATASET);
+  const commun = {
+    theme: "education",
+    source: "Ministère de l'Éducation nationale",
+    source_url: `${EDUCATION_BASE}/explore/dataset/${DATASET}/`,
+    series_id: DATASET,
+    provider: "education",
+    period: String(derniere.an),
+    period_label: `session ${derniere.an}`,
+    published_at: publie,
+    updated_at: new Date().toISOString(),
+  };
+
+  return [
+    {
+      ...commun, code: "edu_bac_taux", sort_order: 1,
+      label: "Réussite au baccalauréat", unit: "%", better_when: "up",
+      value: Number((derniere.adm / derniere.pres * 100).toFixed(1)),
+      sub: `${derniere.adm.toLocaleString("fr-FR")} admis sur ${derniere.pres.toLocaleString("fr-FR")} candidats présents`,
+      history: sessions.map(s => ({ period: String(s.an), value: Number((s.adm / s.pres * 100).toFixed(1)) })),
+    },
+    {
+      ...commun, code: "edu_bacheliers", sort_order: 2,
+      label: "Bacheliers", unit: "diplômés", better_when: null,
+      value: derniere.adm,
+      sub: "toutes voies confondues : générale, technologique et professionnelle",
+      history: sessions.map(s => ({ period: String(s.an), value: s.adm })),
+    },
+  ];
+}
+
+async function collectSante(): Promise<any[]> {
+  const DATASET = "graphique-1-effectifs-de-medecins-en-activite-au-1er-janvier-de-2012-a-2025";
+  const lignes = await ods(DREES_BASE, DATASET, "select=annee,medecine_generale,autres_specialites&limit=100");
+
+  const annees = lignes
+    .map(r => ({
+      an: anneeDe(r.annee),
+      generalistes: Number(r.medecine_generale),
+      specialistes: Number(r.autres_specialites),
+    }))
+    .filter(r => r.an && Number.isFinite(r.generalistes) && Number.isFinite(r.specialistes))
+    .sort((a, b) => a.an! - b.an!);
+  if (!annees.length) throw new Error("aucune année exploitable");
+
+  const derniere = annees[annees.length - 1];
+  const publie = await odsPublie(DREES_BASE, DATASET);
+  const commun = {
+    theme: "sante",
+    source: "DREES",
+    source_url: `${DREES_BASE}/explore/dataset/${DATASET}/`,
+    series_id: DATASET,
+    provider: "drees",
+    period: String(derniere.an),
+    period_label: `1er janvier ${derniere.an}`,
+    published_at: publie,
+    updated_at: new Date().toISOString(),
+  };
+
+  return [
+    {
+      ...commun, code: "sante_medecins", sort_order: 1,
+      label: "Médecins en activité", unit: "médecins", better_when: "up",
+      value: derniere.generalistes + derniere.specialistes,
+      sub: `dont ${derniere.generalistes.toLocaleString("fr-FR")} généralistes`,
+      history: annees.map(a => ({ period: String(a.an), value: a.generalistes + a.specialistes })),
+    },
+    {
+      ...commun, code: "sante_generalistes", sort_order: 2,
+      label: "Médecins généralistes", unit: "médecins", better_when: "up",
+      value: derniere.generalistes,
+      // On COMPARE au premier millésime plutôt que d'affirmer une tendance : écrire
+      // « en recul continu » serait faux, la série étant remontée entre 2023 et 2025.
+      // Un commentaire qualitatif figé finit toujours par contredire les données.
+      sub: `contre ${annees[0].generalistes.toLocaleString("fr-FR")} en ${annees[0].an}`,
+      history: annees.map(a => ({ period: String(a.an), value: a.generalistes })),
+    },
+  ];
+}
+
 /* ───────────────────────────────── Traitement ───────────────────────────────── */
 
 async function main() {
@@ -454,6 +583,23 @@ async function main() {
     rows.push(...await collectEurope());
   } catch (e) {
     console.warn(`  ⚠ Europe : ${(e as Error).message}`);
+  }
+
+  for (const [titre, collecte] of [
+    ["Éducation (ministère)", collectEducation],
+    ["Santé (DREES)", collectSante],
+  ] as const) {
+    console.log(`\n— ${titre} —`);
+    try {
+      const lot = await collecte();
+      rows.push(...lot);
+      for (const e of lot) {
+        console.log(`  ✓ ${e.label.padEnd(26)} ${String(e.value).padStart(9)} ${e.unit} (${e.period_label})`);
+      }
+    } catch (e) {
+      // Un portail en panne n'empêche pas les autres : ses indicateurs déjà en base restent.
+      console.warn(`  ⚠ ${titre} : ${(e as Error).message}`);
+    }
   }
 
   if (!rows.length) { console.error("Aucun indicateur exploitable."); return; }

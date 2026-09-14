@@ -8,6 +8,7 @@ import {
 } from "lucide-react";
 import { api } from "@/lib/api";
 import { usePremium } from "@/lib/hooks/usePremium";
+import LockedSection from "@/components/premium/LockedSection";
 import {
   cleanTitle, decode, extractPeople, shortCommission, fmtMeetingDate,
   type CommissionMeeting,
@@ -227,7 +228,7 @@ function MeetingCard({ m, isPro, accent }: { m: CommissionMeeting; isPro: boolea
 
 /* ═══════════════════════════════ Composant ═══════════════════════════════ */
 export default function CommissionTracker({ chamber, chamberLabel, accent = "emerald" }: Props) {
-  const { isPro } = usePremium();
+  const { isPro, isPremium } = usePremium();
   const a = ACCENTS[accent];
 
   const [commissions, setCommissions] = useState<CommissionSummary[]>([]);
@@ -332,6 +333,25 @@ export default function CommissionTracker({ chamber, chamberLabel, accent = "eme
         ) : null}
       </div>
 
+      {/* Sans abonnement, la section entière est remplacée par son argumentaire :
+          un contenu flouté frustre sans informer et sous-vend ce qu'on protège. */}
+      {!isPremium ? (
+        <LockedSection
+          proOnly
+          icon={<Briefcase size={26} />}
+          title={`Ce qui s'est dit en commission`}
+          pitch={`${total > 0 ? total.toLocaleString("fr-FR") + " réunions" : "Chaque réunion"} de commission ${chamberLabel === "Sénat" ? "du Sénat" : "de l'Assemblée nationale"}, analysées une par une à partir du compte rendu officiel.`}
+          bullets={[
+            "Ce qui a réellement été dit, réunion par réunion",
+            "Positions défendues, orateur par orateur",
+            "Chiffres avancés, datés de leur exercice",
+            "Verbatim vérifié mot pour mot dans le compte rendu",
+            "Suites annoncées : rapports, votes, saisines",
+            "Recherche plein texte et export CSV",
+          ]}
+        />
+      ) : (
+      <>
       {/* Recherche plein texte */}
       <div className="relative mb-4">
         <Search size={16} className="pointer-events-none absolute left-4 top-1/2 -translate-y-1/2 text-slate-400" />
@@ -418,6 +438,8 @@ export default function CommissionTracker({ chamber, chamberLabel, accent = "eme
             </div>
           )}
         </>
+      )}
+      </>
       )}
     </div>
   );

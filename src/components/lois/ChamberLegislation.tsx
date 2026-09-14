@@ -1,11 +1,13 @@
 "use client";
 
 import { useCallback, useEffect, useState } from "react";
-import Link from "next/link";
 import { Loader2 } from "lucide-react";
 import { api } from "@/lib/api";
 import { type LegislativeListItem } from "@/lib/legislative";
 import { LawCardBody, CARD_CLASS, lawTypeMeta, type LawCardStatus } from "./LawCard";
+import SwipeArrow from "@/components/ui/SwipeArrow";
+import DossierModal from "@/components/lois/DossierModal";
+import { type LegislativeDossierDetail } from "@/lib/legislative";
 import SaveLawButton from "./SaveLawButton";
 
 // Textes législatifs actuellement examinés par UNE chambre (AN ou Sénat). Reprend la donnée
@@ -34,6 +36,16 @@ export default function ChamberLegislation({ chamber, chamberLabel }: { chamber:
   const [items, setItems] = useState<LegislativeListItem[]>([]);
   const [loading, setLoading] = useState(true);
   const [hasMore, setHasMore] = useState(false);
+  // Le texte s'ouvre SUR PLACE : renvoyer vers /lois faisait atterrir l'utilisateur sur
+  // la page « Tout sur les lois », loin de la chambre qu'il consultait.
+  const [opened, setOpened] = useState<LegislativeListItem | null>(null);
+  const [detail, setDetail] = useState<LegislativeDossierDetail | null>(null);
+  const [detailLoading, setDetailLoading] = useState(false);
+
+  const openDossier = async (item: LegislativeListItem) => {
+    setOpened(item); setDetailLoading(true); setDetail(null);
+    try { setDetail(await api.getLegislativeDossier(item.id)); } finally { setDetailLoading(false); }
+  };
 
   const load = useCallback(async () => {
     setLoading(true);
@@ -60,9 +72,6 @@ export default function ChamberLegislation({ chamber, chamberLabel }: { chamber:
           Textes législatifs — <span className="text-red-600">{chamberLabel}</span>
         </h2>
         <p className="mt-1 text-slate-500">Textes actuellement examinés par {chamberLabel === "Assemblée nationale" ? "l'Assemblée" : "le Sénat"}, avec leur type et leur étape.</p>
-        <p className="mt-2 text-[11px] font-black uppercase tracking-widest text-slate-400 sm:hidden">
-          Faites glisser pour parcourir &rarr;
-        </p>
       </div>
 
       <div className="mb-6 flex flex-col gap-3 sm:flex-row sm:gap-8">
@@ -89,10 +98,13 @@ export default function ChamberLegislation({ chamber, chamberLabel }: { chamber:
       ) : visible.length === 0 ? (
         <div className="py-16 text-center text-slate-500">Aucun texte ne correspond à ces filtres pour cette chambre.</div>
       ) : (
+        <div className="relative">
+        <SwipeArrow color="#dc2626" />
         <div className="flex snap-x snap-mandatory gap-4 overflow-x-auto overscroll-x-contain pb-3 -mx-4 px-4 [scrollbar-width:none] [&::-webkit-scrollbar]:hidden sm:mx-0 sm:grid sm:grid-cols-2 sm:gap-5 sm:overflow-visible sm:px-0 sm:pb-0 lg:grid-cols-3">
           {visible.map(item => (
             <div key={item.id} className="relative w-[85vw] shrink-0 snap-center sm:w-auto sm:shrink">
-              <Link href={`/lois/?dossier=${item.id}`} className={`${CARD_CLASS} ${lawTypeMeta((item as any).text_type)?.accent || ""}`}>
+              <button type="button" onClick={() => void openDossier(item)}
+                className={`w-full text-left ${CARD_CLASS} ${lawTypeMeta((item as any).text_type)?.accent || ""}`}>
                 <LawCardBody
                   title={item.display_title || item.title}
                   date={item.latest_step_at}
@@ -100,12 +112,15 @@ export default function ChamberLegislation({ chamber, chamberLabel }: { chamber:
                   category={item.category}
                   type={(item as any).text_type}
                 />
-              </Link>
+              </button>
               <SaveLawButton itemId={item.id} />
             </div>
           ))}
         </div>
+        </div>
       )}
+      <DossierModal detail={detail} loading={detailLoading} fallback={opened as any}
+        onClose={() => { setDetail(null); setDetailLoading(false); setOpened(null); }} />
       {visible.length > 0 && hasMore && <div className="mt-8 text-center"><button onClick={loadMore} disabled={loading} className="rounded-full bg-slate-950 px-8 py-4 font-black text-white disabled:opacity-50">Charger plus de textes</button></div>}
     </section>
   );

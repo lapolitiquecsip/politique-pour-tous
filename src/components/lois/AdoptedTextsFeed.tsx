@@ -2,6 +2,7 @@
 
 import { useEffect, useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
+import SwipeArrow from "@/components/ui/SwipeArrow";
 import { CheckCircle2, XCircle, X, ExternalLink, Loader2, ArrowRight, Landmark, Info, HelpCircle, FileText, Target, AlertTriangle, GitBranch, Pencil } from "lucide-react";
 import { api } from "@/lib/api";
 
@@ -109,13 +110,12 @@ export default function AdoptedTextsFeed() {
           Derniers textes <span className="text-blue-600">adoptés par l'Assemblée</span>
         </h2>
         <p className="mt-1 text-slate-500">Chaque vote solennel sur l'ensemble d'un texte : l'issue, le vote de chaque parti, et ce qui se passe ensuite.</p>
-        <p className="mt-2 text-[11px] font-black uppercase tracking-widest text-slate-400 sm:hidden">
-          Faites glisser pour parcourir &rarr;
-        </p>
       </div>
 
       {/* Mobile : rail horizontal. Une carte par rangée pleine hauteur obligeait à
           faire défiler très longtemps avant d'atteindre la suite de la page. */}
+      <div className="relative">
+      <SwipeArrow color="#2563eb" />
       <div className="flex snap-x snap-mandatory gap-4 overflow-x-auto overscroll-x-contain pb-3 -mx-4 px-4 [scrollbar-width:none] [&::-webkit-scrollbar]:hidden sm:mx-0 sm:grid sm:grid-cols-2 sm:gap-5 sm:overflow-visible sm:px-0 sm:pb-0 lg:grid-cols-3">
         {items.map(v => {
           const adopted = isAdopted(v.resultat);
@@ -155,6 +155,7 @@ export default function AdoptedTextsFeed() {
             </button>
           );
         })}
+      </div>
       </div>
 
       {/* Détail : décryptage + vote de chaque parti. */}

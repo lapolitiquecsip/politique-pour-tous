@@ -6,6 +6,7 @@ import Link from "next/link";
 import { api } from "@/lib/api";
 import { usePremium } from "@/lib/hooks/usePremium";
 import { cleanTitle, decode, extractPeople } from "@/lib/commissions";
+import LockedSection from "@/components/premium/LockedSection";
 
 type Report = {
   ref: string; commission: string | null; title: string | null;
@@ -102,6 +103,26 @@ export default function CommissionAuditions() {
 
   if (reports === null) return <div className="flex justify-center py-10"><Loader2 className="animate-spin text-emerald-500" /></div>;
   if (reports.length === 0) return null;
+
+  // Sans abonnement, on ne montre ni la liste ni un aperçu flouté : seulement ce que
+  // l'abonnement débloque. Le calendrier détaillé reste accessible aux abonnés.
+  if (!isPremium) {
+    return (
+      <div className="mt-16">
+        <LockedSection
+          icon={<Mic size={26} />}
+          title="Les auditions de commission"
+          pitch="Ce qui a été dit lors de chaque audition, résumé à partir du compte rendu officiel de l'Assemblée."
+          bullets={[
+            "Résumé de chaque audition, point par point",
+            "Personnes auditionnées et fonction",
+            "Chiffres et engagements pris en séance",
+            "Lien direct vers le compte rendu et la vidéo",
+          ]}
+        />
+      </div>
+    );
+  }
 
   return (
     <div className="mt-16">

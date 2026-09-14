@@ -2,6 +2,7 @@
 
 import { useEffect, useState } from "react";
 import { Play, X, Video, ExternalLink } from "lucide-react";
+import SwipeArrow from "@/components/ui/SwipeArrow";
 import { api } from "@/lib/api";
 
 type Vid = {
@@ -59,7 +60,12 @@ export default function VideoFeed({ source = "elysee", candidateId }: { source?:
         </div>
       </div>
 
-      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
+      {/* Mobile : rail horizontal. `touch-pan-x` laisse le geste au navigateur, donc le
+          défilement reste au rythme natif du système ; `scroll-smooth` n'est PAS appliqué
+          ici, il rendrait le suivi du doigt visqueux. */}
+      <div className="relative">
+      <SwipeArrow color="#0ea5e9" />
+      <div className="flex touch-pan-x snap-x snap-mandatory gap-4 overflow-x-auto overscroll-x-contain pb-2 -mx-8 px-8 [scrollbar-width:none] [&::-webkit-scrollbar]:hidden sm:mx-0 sm:grid sm:grid-cols-2 sm:gap-4 sm:overflow-visible sm:px-0 sm:pb-0 lg:grid-cols-3">
         {videos.map(v => {
           const media = (
             <>
@@ -83,13 +89,14 @@ export default function VideoFeed({ source = "elysee", candidateId }: { source?:
               </div>
             </>
           );
-          const cls = "group text-left rounded-2xl overflow-hidden border border-slate-100 dark:border-slate-800 bg-slate-50/60 dark:bg-slate-800/40 transition hover:shadow-lg";
+          const cls = "group w-[78vw] shrink-0 snap-center sm:w-auto sm:shrink text-left rounded-2xl overflow-hidden border border-slate-100 dark:border-slate-800 bg-slate-50/60 dark:bg-slate-800/40 transition hover:shadow-lg";
           return cfg.external ? (
             <a key={v.video_id} href={v.url} target="_blank" rel="noopener noreferrer" className={cls}>{media}</a>
           ) : (
             <button key={v.video_id} onClick={() => setOpen(v)} className={cls}>{media}</button>
           );
         })}
+      </div>
       </div>
 
       <p className="text-[10px] text-slate-400/80 italic border-t border-slate-100 dark:border-slate-800 pt-4">{cfg.note}</p>

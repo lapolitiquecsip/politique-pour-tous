@@ -83,31 +83,13 @@ export const SPENDING_BREAKDOWN = {
 
 // --- Administration & fonction publique --------------------------------------------------
 export const GOVERNANCE = [
-  { label: "Agents publics", value: "5,9 millions", sub: "dans les 3 fonctions publiques (État, territoriale, hospitalière)", year: "fin 2024", source: "INSEE / DGAFP", url: "https://www.insee.fr/fr/statistiques/8732435" },
   { label: "Part de l'emploi public", value: "19,8 %", sub: "de l'emploi total en France — près d'1 emploi sur 5", year: "2024", source: "INSEE", url: "https://www.insee.fr/fr/statistiques/8732435" },
 ];
 
-// --- Emploi public — comparaison européenne (base OCDE homogène) --------------------------
-// Source : OCDE, Government at a Glance 2025 — emploi des administrations publiques (S13) en %
-// de l'emploi total. Base comparable entre pays (léger écart avec l'INSEE 19,8 %, qui compte
-// les 3 fonctions publiques françaises). Dernières données comparables (2022-2023).
-export const PUBLIC_EMPLOYMENT_EU = {
-  year: "2023",
-  source: "OCDE — Government at a Glance 2025 (emploi des administrations publiques en % de l'emploi total).",
-  sourceUrl: "https://www.oecd.org/en/topics/government-at-a-glance.html",
-  note: "Base OCDE, comparable entre pays (l'INSEE mesure 19,8 % pour la France, avec une définition un peu différente).",
-  rows: [
-    { label: "Norvège", pct: 30.1 },
-    { label: "Suède", pct: 28.1 },
-    { label: "Danemark", pct: 27.3 },
-    { label: "France", pct: 20.7, self: true },
-    { label: "Belgique", pct: 18.3 },
-    { label: "Espagne", pct: 15.2 },
-    { label: "Italie", pct: 13.7 },
-    { label: "Pays-Bas", pct: 12.3 },
-    { label: "Allemagne", pct: 11.5 },
-  ] as { label: string; pct: number; self?: boolean }[],
-};
-
+// NOTE — les données OCDE d'emploi public comparé (« Government at a Glance ») et la carte
+// « agents publics » ont été retirées : elles dataient respectivement de 2023 et de fin 2024.
+// L'INSEE publie l'emploi public avec environ un an de décalage : au 14/09/2026, fin 2024
+// reste le dernier millésime existant. Rétablir ces blocs dès qu'un millésime plus récent
+// paraît (Insee Première « L'emploi dans la fonction publique »).
 // Affiché sur la fiche du Premier ministre (Matignon), pas sur le panneau finances.
 export const PM_CABINET = { label: "Conseillers du Premier ministre", value: "≈ 50", sub: "cabinet de Matignon, encadré par le décret du 14 juin 2017 ; varie selon les gouvernements", year: "2025", source: "Arrêtés de composition (Légifrance)", url: "https://www.legifrance.gouv.fr/jorf/id/JORFTEXT000051836957" };

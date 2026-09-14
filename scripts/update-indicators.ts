@@ -744,21 +744,32 @@ type RetraiteEuro = {
 
 const RETRAITES_EURO: RetraiteEuro[] = [
   {
-    code: "retr_emploi_seniors", label: "Emploi des 55-64 ans", ordre: 2,
+    // Le moteur du déséquilibre : ce ratio explique pourquoi le système se finance de
+    // plus en plus mal, mieux qu'un solde comptable qui dépend d'hypothèses de croissance.
+    code: "retr_dependance", label: "Seniors pour 100 adultes de 20 à 64 ans", ordre: 2,
+    dataset: "demo_pjanind", filters: "indic_de=OLDDEP3",
+    // Unité vide : « 39,5 % » se lirait comme « 39,5 % de la population a plus de 65 ans »,
+    // ce qui est faux — c'est un rapport entre deux tranches d'âge, pas une part.
+    unit: "", uniteCourte: "", betterWhen: null, facteur: 1,
+    rangSuffixe: "où ce poids est le plus lourd",
+    sub: ue => `personnes de 65 ans et plus rapportées aux 20-64 ans — ${ue} dans l'Union`,
+  },
+  {
+    code: "retr_emploi_seniors", label: "Emploi des 55-64 ans", ordre: 3,
     dataset: "lfsi_emp_a", filters: "sex=T&age=Y55-64&unit=PC_POP&indic_em=EMP_LFS",
     unit: "%", uniteCourte: "%", betterWhen: "up", facteur: 1,
     rangSuffixe: "où les seniors travaillent le plus",
     sub: ue => `contre ${ue} dans l'Union`,
   },
   {
-    code: "retr_depenses", label: "Dépense publique de retraite", ordre: 3,
+    code: "retr_depenses", label: "Dépense publique de retraite", ordre: 4,
     dataset: "gov_10a_exp", filters: "na_item=TE&sector=S13&unit=PC_GDP&cofog99=GF1002",
     unit: "% du PIB", uniteCourte: "% du PIB", betterWhen: null, facteur: 1,
     rangSuffixe: "qui dépense le plus pour les retraites",
     sub: ue => `contre ${ue} dans l'Union`,
   },
   {
-    code: "retr_niveau_vie", label: "Niveau de vie des retraités", ordre: 4,
+    code: "retr_niveau_vie", label: "Niveau de vie des retraités", ordre: 5,
     dataset: "ilc_pnp2", filters: "sex=T&age=Y_GE65&statinfo=R_MED_I",
     unit: "%", uniteCourte: "%", betterWhen: "up", facteur: 100,
     rangSuffixe: "où les retraités sont les mieux lotis",
@@ -811,7 +822,7 @@ async function collectRetraites(): Promise<any[]> {
       const classement = [...s.classement].sort((a, b) => b.v - a.v);
       const rang = classement.findIndex(p => p.g === "FR") + 1;
       const morceaux = [
-        d.sub(s.ue !== undefined ? `${nb(s.ue * d.facteur)} ${d.uniteCourte}` : "la moyenne de l'Union"),
+        d.sub(s.ue !== undefined ? `${nb(s.ue * d.facteur)} ${d.uniteCourte}`.trim() : "la moyenne de l'Union"),
         rang > 0 && classement.length > 2
           ? `${rang}${rang === 1 ? "er" : "e"} pays ${d.rangSuffixe} sur ${classement.length}`
           : null,

@@ -579,6 +579,21 @@ export const api = {
 
   // Auditions & travaux de commission (comptes rendus officiels) + résumé IA.
 
+  /**
+   * Indicateurs officiels de l'onglet « Enjeux », alimentés par le cron INSEE.
+   * Renvoie une liste vide si la table n'existe pas encore : l'interface retombe
+   * alors sur les chiffres écrits à la main, sans rien casser.
+   */
+  getIndicators: async () => {
+    const { data, error } = await supabase
+      .from('indicators')
+      .select('code, theme, label, sub, value, unit, period, period_label, history, source, source_url, published_at, better_when, sort_order')
+      .order('theme')
+      .order('sort_order');
+    if (error) return [];
+    return data ?? [];
+  },
+
   /* ════════ SUIVI DES COMMISSIONS PARLEMENTAIRES (abonnement Pro) ════════ */
 
   /**

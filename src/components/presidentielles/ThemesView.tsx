@@ -1,9 +1,10 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import * as Icons from "lucide-react";
 import { ExternalLink, Plus } from "lucide-react";
-import { CAMPAIGN_THEMES, type CampaignTheme } from "@/lib/data/campaignThemes";
+import { CAMPAIGN_THEMES, type CampaignTheme, type ThemeStat } from "@/lib/data/campaignThemes";
+import { api } from "@/lib/api";
 
 // Onglet « Enjeux » : les grands thèmes de campagne, chacun avec des chiffres 100 % réels et
 // sourcés (situation actuelle + évolution + perspective). Style éditorial aligné sur le site.
@@ -121,17 +122,91 @@ function ThemeCard({ theme, index }: { theme: CampaignTheme; index: number }) {
   );
 }
 
+/** Une ligne de la table `indicators`, telle que la renvoie l'API. */
+type LiveIndicator = {
+  code: string; theme: string; label: string; sub: string | null;
+  value: number; unit: string | null; period_label: string | null;
+  history: { period: string; value: number }[] | null;
+  source: string; source_url: string | null; published_at: string | null;
+  better_when: "up" | "down" | null; sort_order: number;
+};
+
+/** « 2026-Q2 » → 2026 : la courbe existante raisonne en années. */
+const yearOf = (period: string) => Number(String(period).slice(0, 4));
+
+/**
+ * Convertit un indicateur vivant au format attendu par les cartes existantes.
+ * On garde exactement la même forme que les chiffres écrits à la main, si bien que le
+ * rendu n'a pas à savoir d'où vient la donnée.
+ */
+function toStat(i: LiveIndicator): ThemeStat {
+  const unit = i.unit ?? "";
+  const fmt = (v: number) => `${v.toLocaleString("fr-FR", { maximumFractionDigits: 1 })} ${unit}`.trim();
+  // La courbe attend un point par année : on garde la dernière valeur de chaque année.
+  const byYear = new Map<number, number>();
+  for (const h of i.history ?? []) byYear.set(yearOf(h.period), h.value);
+  return {
+    label: i.label,
+    value: fmt(i.value),
+    sub: i.sub ?? undefined,
+    year: i.period_label ?? "",
+    source: i.source,
+    url: i.source_url ?? undefined,
+    unit,
+    betterWhen: i.better_when ?? undefined,
+    history: [...byYear.entries()].sort((a, b) => a[0] - b[0]).map(([year, value]) => ({ year, value })),
+  };
+}
+
 export default function ThemesView() {
+  const [live, setLive] = useState<LiveIndicator[] | null>(null);
+
+  useEffect(() => {
+    let active = true;
+    api.getIndicators()
+      .then(rows => { if (active) setLive(rows as LiveIndicator[]); })
+      .catch(() => { if (active) setLive([]); });
+    return () => { active = false; };
+  }, []);
+
+  /**
+   * Les indicateurs relevés automatiquement REMPLACENT ceux écrits à la main, thème par
+   * thème. Un thème sans indicateur en base garde ses chiffres d'origine : la bascule se
+   * fait donc thème par thème, à mesure qu'on en automatise, sans jamais vider une carte.
+   */
+  const themes = useMemo(() => {
+    if (!live?.length) return CAMPAIGN_THEMES;
+    const byTheme = new Map<string, LiveIndicator[]>();
+    for (const i of live) byTheme.set(i.theme, [...(byTheme.get(i.theme) ?? []), i]);
+    return CAMPAIGN_THEMES.map(t => {
+      const rows = byTheme.get(t.slug);
+      if (!rows?.length) return t;
+      return { ...t, stats: rows.sort((a, b) => a.sort_order - b.sort_order).map(toStat) };
+    });
+  }, [live]);
+
+  // Date de publication la plus récente parmi les sources : preuve de fraîcheur.
+  const freshest = useMemo(() => {
+    const dates = (live ?? []).map(i => i.published_at).filter(Boolean).sort();
+    return dates.length ? dates[dates.length - 1] : null;
+  }, [live]);
+
   return (
     <div className="mx-auto max-w-4xl px-4 pb-24">
       <div className="mb-8 text-center">
         <p className="mx-auto max-w-2xl text-sm leading-relaxed text-slate-500">
-          Les grands enjeux de la campagne, éclairés par des <span className="font-bold text-slate-800">données strictement officielles</span> — INSEE, RTE, COR, SSMSI, ministères, Commission européenne. Chaque chiffre est daté et sourcé. Dépliez un thème pour l'évolution et les sources.
+          Les grands enjeux de la campagne, éclairés par des <span className="font-bold text-slate-800">données strictement officielles</span> — INSEE, RTE, COR, SSMSI, ministères, Commission européenne. Chaque chiffre est daté et sourcé. Dépliez un thème pour l&apos;évolution et les sources.
         </p>
+        {freshest && (
+          <p className="mt-3 inline-flex items-center gap-2 rounded-full bg-emerald-50 px-3 py-1.5 text-[11px] font-black uppercase tracking-widest text-emerald-700">
+            <span className="h-1.5 w-1.5 rounded-full bg-emerald-500" />
+            Dernière publication officielle reprise : {new Date(freshest).toLocaleDateString("fr-FR", { day: "numeric", month: "long", year: "numeric" })}
+          </p>
+        )}
         <div className="mx-auto mt-5 h-px w-24 bg-gradient-to-r from-transparent via-slate-300 to-transparent" />
       </div>
       <div className="space-y-3">
-        {CAMPAIGN_THEMES.map((t, i) => <ThemeCard key={t.slug} theme={t} index={i} />)}
+        {themes.map((t, i) => <ThemeCard key={t.slug} theme={t} index={i} />)}
       </div>
     </div>
   );

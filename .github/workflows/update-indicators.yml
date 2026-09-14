@@ -1,0 +1,42 @@
+name: Indicateurs officiels (INSEE)
+
+# Rafraîchit les chiffres de l'onglet « Enjeux » depuis la Banque de données
+# macroéconomiques de l'INSEE. L'API est publique et SANS CLÉ : aucun secret à gérer.
+#
+# L'INSEE publie à des dates irrégulières (comptes trimestriels, IPC mensuel, chômage
+# trimestriel). Deux passages par jour suffisent donc largement à être à jour le jour
+# même, sans marteler l'API.
+# Voir scripts/update-indicators.ts
+
+on:
+  schedule:
+    - cron: '15 7 * * *'    # 09h15 Paris — l'INSEE publie en général à 8h45
+    - cron: '15 15 * * *'   # 17h15 Paris — filet de sécurité
+  workflow_dispatch:
+
+concurrency:
+  group: indicators
+  cancel-in-progress: false
+
+jobs:
+  indicators:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+          cache: 'npm'
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Relevé des indicateurs
+        env:
+          NEXT_PUBLIC_SUPABASE_URL: ${{ secrets.NEXT_PUBLIC_SUPABASE_URL }}
+          SUPABASE_SERVICE_ROLE_KEY: ${{ secrets.SUPABASE_SERVICE_ROLE_KEY }}
+        run: npx --yes tsx scripts/update-indicators.ts

@@ -1,9 +1,8 @@
 "use client";
 
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
-import Link from "next/link";
 import {
-  Loader2, Lock, Search, ChevronDown, Users, ExternalLink, Download,
+  Loader2, Search, ChevronDown, Users, ExternalLink, Download,
   Mic, Target, Quote, ListChecks, ArrowRight, Briefcase, X, CalendarDays,
 } from "lucide-react";
 import { api } from "@/lib/api";
@@ -41,20 +40,6 @@ const ACCENTS = {
     hover: "hover:text-red-600",
   },
 };
-
-/* ───────────────────────── Invitation à passer Pro ───────────────────────── */
-function ProLock({ compact = false }: { compact?: boolean }) {
-  return (
-    <div className={`flex flex-col items-center justify-center gap-2 text-center ${compact ? "" : "py-6"}`}>
-      <span className="flex items-center gap-1.5 rounded-full bg-gradient-to-r from-fuchsia-500 to-purple-600 px-3 py-1 text-[11px] font-black uppercase tracking-widest text-white shadow-lg">
-        <Lock size={12} /> Réservé Pro
-      </span>
-      <Link href="/premium" className="text-[11px] font-black uppercase tracking-widest text-fuchsia-600 hover:underline">
-        Débloquer l&apos;analyse détaillée →
-      </Link>
-    </div>
-  );
-}
 
 /* ─────────────────── Analyse détaillée d'une réunion (Pro) ─────────────────── */
 function Analysis({ m, accent }: { m: CommissionMeeting; accent: typeof ACCENTS.emerald }) {
@@ -159,7 +144,7 @@ function Analysis({ m, accent }: { m: CommissionMeeting; accent: typeof ACCENTS.
 }
 
 /* ─────────────────────────── Une réunion, pliable ─────────────────────────── */
-function MeetingCard({ m, isPro, accent }: { m: CommissionMeeting; isPro: boolean; accent: typeof ACCENTS.emerald }) {
+function MeetingCard({ m, accent }: { m: CommissionMeeting; accent: typeof ACCENTS.emerald }) {
   const [open, setOpen] = useState(false);
   const commission = shortCommission(m.commission);
   const title = cleanTitle(m.title || "");
@@ -192,19 +177,9 @@ function MeetingCard({ m, isPro, accent }: { m: CommissionMeeting; isPro: boolea
 
       {open && (
         <div className="border-t border-slate-100 px-5 py-4 dark:border-slate-800">
-          {isPro ? (
-            <Analysis m={m} accent={accent} />
-          ) : (
-            // Aperçu flouté : le lecteur voit qu'il y a de la matière, sans la lire.
-            <div className="relative min-h-[180px]">
-              <div aria-hidden className="pointer-events-none select-none blur-[6px]">
-                <Analysis m={m} accent={accent} />
-              </div>
-              <div className="absolute inset-0 flex items-center justify-center">
-                <ProLock />
-              </div>
-            </div>
-          )}
+          {/* La carte n'est atteinte que par un abonné Pro : la liste entière est
+              derrière la porte, il n'y a plus d'aperçu à flouter. */}
+          <Analysis m={m} accent={accent} />
 
           <div className="mt-5 flex flex-wrap gap-3 border-t border-slate-100 pt-3 dark:border-slate-800">
             {m.cr_url && (
@@ -253,7 +228,10 @@ export default function CommissionTracker({ chamber, chamberLabel, accent = "eme
     return () => clearTimeout(t);
   }, [search]);
 
+  // Les réunions ne sont demandées qu'aux abonnés Pro. Sans ce garde-fou, un abonné
+  // Premium téléchargeait l'analyse complète de douze réunions pour ne jamais la voir.
   useEffect(() => {
+    if (!isPro) { setMeetings(null); return; }
     const id = ++requestId.current;
     setMeetings(null);
     setExhausted(false);
@@ -264,7 +242,7 @@ export default function CommissionTracker({ chamber, chamberLabel, accent = "eme
         setExhausted((rows as CommissionMeeting[]).length < PAGE);
       })
       .catch(() => { if (requestId.current === id) setMeetings([]); });
-  }, [chamber, selected, debounced]);
+  }, [isPro, chamber, selected, debounced]);
 
   const loadMore = useCallback(async () => {
     if (!meetings || loadingMore || exhausted) return;
@@ -333,11 +311,14 @@ export default function CommissionTracker({ chamber, chamberLabel, accent = "eme
         ) : null}
       </div>
 
-      {/* Sans abonnement, la section entière est remplacée par son argumentaire :
-          un contenu flouté frustre sans informer et sous-vend ce qu'on protège. */}
-      {!isPremium ? (
+      {/* Le suivi des commissions relève de l'offre Pro : la section entière est
+          remplacée par son argumentaire tant que l'abonnement n'est pas Pro — y
+          compris pour un abonné Premium, à qui on dit alors ce qui lui manque.
+          Un contenu flouté frustre sans informer et sous-vend ce qu'on protège. */}
+      {!isPro ? (
         <LockedSection
           proOnly
+          alreadySubscribed={isPremium}
           icon={<Briefcase size={26} />}
           title={`Ce qui s'est dit en commission`}
           pitch={`${total > 0 ? total.toLocaleString("fr-FR") + " réunions" : "Chaque réunion"} de commission ${chamberLabel === "Sénat" ? "du Sénat" : "de l'Assemblée nationale"}, analysées une par une à partir du compte rendu officiel.`}
@@ -387,27 +368,6 @@ export default function CommissionTracker({ chamber, chamberLabel, accent = "eme
         </div>
       )}
 
-      {/* Bandeau d'accroche pour les non-Pro */}
-      {!isPro && (
-        <div className="mb-5 rounded-3xl border border-fuchsia-200 bg-gradient-to-r from-fuchsia-50 to-purple-50 p-5 dark:border-fuchsia-500/30 dark:from-fuchsia-500/10 dark:to-purple-500/10">
-          <div className="flex items-center gap-3">
-            <span className="flex h-10 w-10 shrink-0 items-center justify-center rounded-2xl bg-gradient-to-br from-fuchsia-500 to-purple-600 text-white shadow-lg">
-              <Lock size={17} />
-            </span>
-            <p className="text-sm font-black leading-tight text-slate-900 dark:text-white">
-              L&apos;analyse détaillée est réservée à l&apos;abonnement Pro
-            </p>
-          </div>
-          <p className="mt-2.5 text-[13px] leading-snug text-slate-600 dark:text-slate-400">
-            Le calendrier des réunions reste ouvert à tous. Positions défendues, chiffres avancés, verbatim et suites : côté Pro.
-          </p>
-          <Link href="/premium"
-            className="mt-3 inline-flex rounded-xl bg-gradient-to-r from-fuchsia-500 to-purple-600 px-4 py-2.5 text-[11px] font-black uppercase tracking-widest text-white shadow-lg transition hover:brightness-110">
-            Découvrir le Pro
-          </Link>
-        </div>
-      )}
-
       {/* Liste */}
       {meetings === null ? (
         <div className="flex justify-center py-10"><Loader2 className={`animate-spin ${a.text}`} /></div>
@@ -426,7 +386,7 @@ export default function CommissionTracker({ chamber, chamberLabel, accent = "eme
       ) : (
         <>
           <div className="grid grid-cols-1 gap-3 lg:grid-cols-2">
-            {meetings.map(m => <MeetingCard key={m.ref} m={m} isPro={isPro} accent={a} />)}
+            {meetings.map(m => <MeetingCard key={m.ref} m={m} accent={a} />)}
           </div>
           {!exhausted && (
             <div className="mt-6 flex justify-center">

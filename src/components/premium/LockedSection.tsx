@@ -16,6 +16,7 @@ export default function LockedSection({
   pitch,
   bullets,
   proOnly = false,
+  alreadySubscribed = false,
   icon,
 }: {
   title: string;
@@ -23,6 +24,12 @@ export default function LockedSection({
   bullets: string[];
   /** true si la section relève de l'offre Pro plutôt que du Premium. */
   proOnly?: boolean;
+  /**
+   * true quand le visiteur a DÉJÀ un abonnement, mais d'un niveau insuffisant.
+   * Lui proposer de « découvrir les abonnements » serait absurde : il en a un. On lui
+   * dit ce qui lui manque, et on l'envoie vers la montée en gamme.
+   */
+  alreadySubscribed?: boolean;
   icon?: React.ReactNode;
 }) {
   const reduce = useReducedMotion();
@@ -46,7 +53,9 @@ export default function LockedSection({
         <span className={`inline-flex items-center gap-2 rounded-full px-3 py-1.5 text-[10px] font-black uppercase tracking-widest ${
           proOnly ? "bg-gradient-to-r from-fuchsia-500 to-purple-600 text-white" : "bg-amber-400 text-slate-950"
         }`}>
-          <Lock size={12} /> {proOnly ? "Réservé à l'abonnement Pro" : "Réservé aux abonnés"}
+          <Lock size={12} /> {alreadySubscribed
+            ? "Votre abonnement Premium ne couvre pas cette rubrique"
+            : proOnly ? "Réservé à l'abonnement Pro" : "Réservé aux abonnés"}
         </span>
 
         <div className="mt-4 flex items-start gap-4">
@@ -81,10 +90,12 @@ export default function LockedSection({
                 ? "bg-gradient-to-r from-fuchsia-500 to-purple-600 text-white shadow-fuchsia-500/30"
                 : "bg-gradient-to-r from-amber-400 to-yellow-500 text-slate-900 shadow-amber-500/30"
             }`}>
-            Découvrir les abonnements <ArrowRight size={15} />
+            {alreadySubscribed ? "Passer à l'offre Pro" : "Découvrir les abonnements"} <ArrowRight size={15} />
           </Link>
           <span className={`text-[11px] font-bold ${proOnly ? "text-white/50" : "text-slate-500"}`}>
-            {proOnly ? "Inclus dans l'offre Pro — 24,99 €/mois" : "À partir de 3,99 €/mois, sans engagement"}
+            {alreadySubscribed
+              ? "Offre Pro — 24,99 €/mois, sans engagement"
+              : proOnly ? "Inclus dans l'offre Pro — 24,99 €/mois" : "À partir de 3,99 €/mois, sans engagement"}
           </span>
         </div>
       </div>

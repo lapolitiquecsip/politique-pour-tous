@@ -52,7 +52,10 @@ const MemoizedSVG = memo(({ content, selectedDepartment }: { content: string, se
       dangerouslySetInnerHTML={{ __html: content }}
       className={`
         [&_svg]:w-full [&_svg]:h-auto [&_svg]:max-h-[500px] [&_svg]:mx-auto
-        [&_path]:cursor-pointer [&_path]:transition-all [&_path]:duration-150 [&_path]:outline-none
+        [&_path]:cursor-pointer [&_path]:outline-none
+        /* Ne jamais animer « all » ici : le filtre en faisait partie, et interpoler une
+           ombre portée sur une centaine de tracés coûte une image entière à chaque pas. */
+        [&_path]:transition-[fill,stroke,transform] [&_path]:duration-100
         
         /* État de base */
         [&_path]:fill-blue-50/50 dark:[&_path]:fill-slate-900 
@@ -61,8 +64,13 @@ const MemoizedSVG = memo(({ content, selectedDepartment }: { content: string, se
         [&_path]:[stroke-linejoin:round]
         
         /* Filtre Global */
+        /* Ce filtre dessine le liseré sombre du pourtour, mais il force la carte ENTIÈRE
+           à être redessinée dès qu'un seul département change d'aspect. On le retire le
+           temps du survol : un pixel d'ombre en moins ne se voit pas, et l'interaction
+           cesse de payer le prix d'une rastérisation complète à chaque image. */
         [&_svg]:[filter:drop-shadow(0px_0px_1px_#0f172a)_drop-shadow(0px_0px_1px_#0f172a)]
         dark:[&_svg]:[filter:drop-shadow(0px_0px_1px_#f8fafc)_drop-shadow(0px_0px_1px_#f8fafc)]
+        [&:hover_svg]:[filter:none] dark:[&:hover_svg]:[filter:none]
         
         [&_path]:origin-center [&_path]:[transform-box:fill-box]
         
@@ -90,6 +98,10 @@ export const FranceMap = memo(function FranceMap({
   const tooltipRef = useRef<HTMLDivElement>(null);
   const tooltipTextRef = useRef<HTMLSpanElement>(null);
   const tooltipCodeRef = useRef<HTMLSpanElement>(null);
+  // Dernier département survolé : la souris émet des dizaines d'événements par seconde
+  // à l'intérieur d'un même tracé, et réécrire l'infobulle à chacun d'eux la faisait
+  // recalculer pour rien.
+  const survoleRef = useRef<string | null>(null);
 
   // Fetch and manipulate SVG with global caching
   useEffect(() => {
@@ -159,18 +171,20 @@ export const FranceMap = memo(function FranceMap({
   // Update tooltip NATIVELY (Direct DOM) for 60fps performance
   const handleMouseMove = (e: React.MouseEvent) => {
     const target = e.target as SVGElement;
-    if (target.tagName === "path") {
-      const id = target.getAttribute("id");
-      if (id && tooltipRef.current && tooltipTextRef.current && tooltipCodeRef.current) {
-        tooltipCodeRef.current.innerText = id;
-        tooltipTextRef.current.innerText = getDepartmentName(id);
-        tooltipRef.current.style.opacity = "1";
-        tooltipRef.current.style.transform = "scale(1)";
-      }
+    if (target.tagName !== "path") return;
+    const id = target.getAttribute("id");
+    if (!id || id === survoleRef.current) return; // même département : rien à réécrire
+    survoleRef.current = id;
+    if (tooltipRef.current && tooltipTextRef.current && tooltipCodeRef.current) {
+      tooltipCodeRef.current.innerText = id;
+      tooltipTextRef.current.innerText = getDepartmentName(id);
+      tooltipRef.current.style.opacity = "1";
+      tooltipRef.current.style.transform = "scale(1)";
     }
   };
 
   const handleMouseOut = () => {
+    survoleRef.current = null;
     if (tooltipRef.current) {
       tooltipRef.current.style.opacity = "0";
       tooltipRef.current.style.transform = "scale(0.95)";
@@ -244,7 +258,7 @@ export const FranceMap = memo(function FranceMap({
         {/* Tooltip - Géré en DOM direct pour la fluidité */}
         <div
           ref={tooltipRef}
-          style={{ opacity: 0, transition: "all 0.1s ease-out", transform: "scale(0.95)" }}
+          style={{ opacity: 0, transition: "opacity 0.1s ease-out, transform 0.1s ease-out", transform: "scale(0.95)" }}
           className="absolute top-6 right-6 z-20 bg-slate-900 dark:bg-slate-100 text-white dark:text-slate-900 px-4 py-2.5 rounded-xl shadow-2xl text-sm font-bold pointer-events-none flex flex-col min-w-[140px]"
         >
           <span ref={tooltipCodeRef} className="text-[10px] uppercase tracking-wider opacity-60 mb-0.5">...</span>

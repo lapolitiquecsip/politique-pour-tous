@@ -19,6 +19,7 @@ import InstitutionsGrid from "@/components/home/InstitutionsGrid";
 import StatsPanel from "@/components/home/StatsPanel";
 import HomeHero from "@/components/home/HomeHero";
 import JournalOfficielBook from "@/components/home/JournalOfficielBook";
+import JournalOfficielDuJour from "@/components/home/JournalOfficielDuJour";
 import NewsletterBanner from "@/components/home/NewsletterBanner";
 import PetitionsSection from "@/components/home/PetitionsSection";
 import { VerticalImageStack } from "@/components/ui/vertical-image-stack";
@@ -83,6 +84,9 @@ export default function Home() {
               ✅ Publiée au Journal officiel = la loi <strong>entre en vigueur</strong> et devient applicable.
             </p>
           </div>
+          {/* Le JO du jour dans son intégralité (abonnés Pro), puis le livre des lois
+              promulguées : le premier donne le flux quotidien, le second le résultat final. */}
+          <JournalOfficielDuJour />
           <JournalOfficielBook />
         </div>
       </section>

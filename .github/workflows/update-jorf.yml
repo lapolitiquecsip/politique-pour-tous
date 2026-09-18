@@ -1,0 +1,52 @@
+name: Journal officiel du jour (DILA)
+
+# Récupère le sommaire du Journal officiel depuis le flux OPENDATA de la DILA.
+# Le flux est public et SANS CLÉ — Légifrance, lui, répond 403 au scrapage.
+#
+# La DILA dépose deux archives par jour : celle du petit matin (~00h30 UTC) contient
+# exactement l'édition du jour, celle du soir (~21h45 UTC) rejoue en plus une centaine
+# d'éditions anciennes qu'elle vient de corriger. Le script écarte ces dernières par
+# une fenêtre de dates ; on passe donc après chacune des deux livraisons.
+#
+# DEEPSEEK_API_KEY sert au résumé quotidien (un seul appel par édition, quelques
+# centimes par mois). Sans ce secret, le sommaire est publié sans résumé.
+# Voir scripts/update-jorf.ts
+
+on:
+  schedule:
+    - cron: '45 1 * * *'    # 03h45 Paris — après la livraison du petit matin
+    - cron: '30 22 * * *'   # 00h30 Paris — après la livraison du soir
+  workflow_dispatch:
+    inputs:
+      days:
+        description: "Fenêtre en jours (rattrapage)"
+        required: false
+        default: "10"
+
+concurrency:
+  group: jorf
+  cancel-in-progress: false
+
+jobs:
+  jorf:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+          cache: 'npm'
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Sommaire du Journal officiel
+        env:
+          NEXT_PUBLIC_SUPABASE_URL: ${{ secrets.NEXT_PUBLIC_SUPABASE_URL }}
+          SUPABASE_SERVICE_ROLE_KEY: ${{ secrets.SUPABASE_SERVICE_ROLE_KEY }}
+          DEEPSEEK_API_KEY: ${{ secrets.DEEPSEEK_API_KEY }}
+        run: npx --yes tsx scripts/update-jorf.ts --days=${{ github.event.inputs.days || '10' }}

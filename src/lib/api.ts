@@ -594,6 +594,41 @@ export const api = {
     return data ?? [];
   },
 
+  /* ════════ JOURNAL OFFICIEL DU JOUR (abonnement Pro) ════════ */
+
+  /**
+   * Les dernières éditions du Journal officiel, de la plus récente à la plus
+   * ancienne, alimentées par le cron qui lit le flux OPENDATA de la DILA.
+   *
+   * SANS le sommaire : une édition compte une centaine de textes, et sept éditions
+   * représenteraient quelques centaines de kilo-octets à hydrater sur la page
+   * d'accueil, qui en souffre déjà sur mobile. Le sommaire du jour consulté est
+   * demandé à part, par getJorfSections.
+   *
+   * Renvoie une liste vide si la table n'existe pas encore : la rubrique
+   * disparaît alors d'elle-même au lieu de casser la page d'accueil.
+   */
+  getJorfEditions: async (limit = 7) => {
+    const { data, error } = await supabase
+      .from('jorf_editions')
+      .select('date, num, title, eli_url, text_count, counts, digest, published_at')
+      .order('date', { ascending: false })
+      .limit(limit);
+    if (error) return [];
+    return data ?? [];
+  },
+
+  /** Sommaire complet d'une édition : rubriques, ministères et textes. */
+  getJorfSections: async (date: string) => {
+    const { data, error } = await supabase
+      .from('jorf_editions')
+      .select('sections')
+      .eq('date', date)
+      .maybeSingle();
+    if (error || !data) return [];
+    return (data.sections ?? []) as any[];
+  },
+
   /* ════════ SUIVI DES COMMISSIONS PARLEMENTAIRES (abonnement Pro) ════════ */
 
   /**

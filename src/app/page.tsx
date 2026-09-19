@@ -76,17 +76,28 @@ export default function Home() {
       {/* JOURNAL OFFICIEL — livre feuilletable (une page = un jour + une loi promulguée). */}
       <section id="journal-officiel" className="scroll-mt-24 py-20 px-4 bg-gradient-to-b from-amber-50/40 to-transparent dark:from-slate-900/40">
         <div className="container mx-auto max-w-6xl">
+          {/* Deux rubriques cohabitent ici, et l'ancien titre les confondait : le JO du
+              jour montre TOUT ce qui paraît chaque matin, le livre ne montre que les
+              lois promulguées. Chacune porte donc désormais son propre intitulé, et
+              l'introduction dit ce qui les distingue. */}
           <div className="mb-12 text-center">
-            <p className="text-[11px] font-black uppercase tracking-[0.25em] text-red-600">Ce qui est devenu loi</p>
+            <p className="text-[11px] font-black uppercase tracking-[0.25em] text-red-600">Ce qui est publié chaque jour</p>
             <h2 className="mt-2 text-4xl md:text-6xl font-staatliches uppercase tracking-tight text-slate-900 dark:text-white">Le Journal Officiel</h2>
-            <p className="mt-3 text-slate-500 max-w-2xl mx-auto">Feuilletez les dernières lois promulguées — une page par jour et par texte. Cliquez pour voir le parcours complet de chaque loi.</p>
+            <p className="mt-3 text-slate-500 max-w-2xl mx-auto">
+              L'État y publie une centaine de textes par matin — décrets, arrêtés, décisions, avis.
+              Les lois promulguées n'en sont qu'une petite part, la plus visible.
+            </p>
+          </div>
+
+          <JournalOfficielDuJour />
+
+          <div className="mt-20 mb-10 text-center">
+            <h3 className="text-3xl md:text-4xl font-staatliches uppercase tracking-tight text-slate-900 dark:text-white">Les lois promulguées</h3>
+            <p className="mt-2 text-slate-500 max-w-2xl mx-auto">Feuilletez les dernières lois — une page par jour et par texte. Cliquez pour voir le parcours complet de chaque loi.</p>
             <p className="mx-auto mt-4 max-w-md rounded-2xl bg-emerald-50 px-4 py-2.5 text-center text-sm font-bold leading-6 text-emerald-700 dark:bg-emerald-500/10 dark:text-emerald-400">
               ✅ Publiée au Journal officiel = la loi <strong>entre en vigueur</strong> et devient applicable.
             </p>
           </div>
-          {/* Le JO du jour dans son intégralité (abonnés Pro), puis le livre des lois
-              promulguées : le premier donne le flux quotidien, le second le résultat final. */}
-          <JournalOfficielDuJour />
           <JournalOfficielBook />
         </div>
       </section>

@@ -1,11 +1,11 @@
 "use client";
 
 import { useEffect, useMemo, useState } from "react";
-import { motion, AnimatePresence } from "framer-motion";
-import { Newspaper, ExternalLink, ChevronDown, Loader2, Sparkles } from "lucide-react";
+import Link from "next/link";
+import { motion, AnimatePresence, useReducedMotion } from "framer-motion";
+import { Newspaper, ExternalLink, ChevronDown, Loader2, Sparkles, Lock, Check, ArrowRight } from "lucide-react";
 import { api } from "@/lib/api";
 import { usePremium } from "@/lib/hooks/usePremium";
-import LockedSection from "@/components/premium/LockedSection";
 
 /**
  * Le Journal officiel du jour, réservé aux abonnés Pro.
@@ -51,7 +51,8 @@ function jourCourt(d: string) {
 }
 
 export default function JournalOfficielDuJour() {
-  const { isPro, loading: aboEnCours } = usePremium();
+  const { isPro, isPremium, loading: aboEnCours } = usePremium();
+  const reduce = useReducedMotion();
   const [editions, setEditions] = useState<Edition[] | null>(null);
   const [choisi, setChoisi] = useState(0);
   const [sections, setSections] = useState<Rubrique[] | null>(null);
@@ -107,26 +108,107 @@ export default function JournalOfficielDuJour() {
   // Tant que le cron n'a rien déposé, la rubrique s'efface au lieu de s'excuser.
   if (!edition) return null;
 
+  const { jour, mois } = jourCourt(edition.date);
+
+  /**
+   * Panneau fermé. Il reprend l'habillage exact du panneau ouvert — c'est le même
+   * objet, verrouillé — et s'appuie sur les VRAIS chiffres du jour : le volume
+   * publié et sa répartition par nature. Ces chiffres-là ne sont pas le contenu
+   * protégé, ils en sont la mesure, et ils prouvent que la rubrique vit tous les
+   * jours. Rien n'est flouté : un aperçu illisible frustre sans informer.
+   */
   if (!isPro) {
     return (
-      <div className="mb-10">
-        <LockedSection
-          proOnly
-          icon={<Newspaper size={26} />}
-          title="Le Journal officiel du jour"
-          pitch={`Chaque matin, l'intégralité du Journal officiel — ${edition.text_count} textes publiés le ${jourCourt(edition.date).jour} ${jourCourt(edition.date).mois} — classés par rubrique et par ministère, avec le point de ce qu'il faut en retenir.`}
-          bullets={[
-            "Tous les décrets, arrêtés, décisions et avis du jour",
-            "Classés par rubrique et par ministère",
-            "Le résumé du jour, en un paragraphe",
-            "Mis à jour automatiquement dès la parution",
-          ]}
+      <div className="relative mb-10 overflow-hidden rounded-[2rem] border-2 border-fuchsia-400/50 bg-gradient-to-br from-slate-950 via-slate-900 to-purple-950 text-white shadow-xl">
+        <motion.div
+          aria-hidden
+          className="pointer-events-none absolute -right-20 -top-20 h-56 w-56 rounded-full bg-fuchsia-500/25 blur-3xl"
+          animate={reduce ? undefined : { scale: [1, 1.15, 1], opacity: [0.5, 0.9, 0.5] }}
+          transition={{ duration: 5, repeat: Infinity, ease: "easeInOut" }}
         />
+
+        <div className="relative p-6 sm:p-9">
+          <div className="flex flex-wrap items-center gap-x-3 gap-y-2">
+            <span className="inline-flex items-center gap-1.5 rounded-full bg-gradient-to-r from-fuchsia-500 to-purple-600 px-3 py-1 text-[10px] font-black uppercase tracking-widest">
+              <Newspaper size={12} /> Pro
+            </span>
+            <h3 className="font-staatliches text-2xl uppercase leading-none tracking-tight sm:text-3xl">
+              Le Journal officiel du jour
+            </h3>
+          </div>
+          <p className="mt-2.5 max-w-2xl text-sm leading-relaxed text-white/70">
+            L&apos;État publie chaque matin une centaine de textes — décrets, arrêtés, décisions, avis —
+            qui font l&apos;essentiel du droit applicable et que personne ne lit. Les voici, classés par
+            rubrique et par ministère, avec le point de ce qu&apos;il faut en retenir.
+          </p>
+
+          {/* Le volume du jour, en données réelles. */}
+          <div className="mt-7 flex flex-wrap items-end gap-x-4 gap-y-1">
+            <span className="font-staatliches text-6xl leading-none tabular-nums text-white sm:text-7xl">
+              {edition.text_count}
+            </span>
+            <span className="pb-1.5 text-sm font-bold text-white/70">
+              textes publiés le {jour} {mois}
+            </span>
+          </div>
+          {repartition.length > 0 && (
+            <div className="mt-3 flex flex-wrap gap-1.5">
+              {repartition.map(([n, c]) => (
+                <span key={n} className="rounded-full bg-white/10 px-2.5 py-1 text-[10px] font-black uppercase tracking-widest text-white/75">
+                  {c} {c > 1 ? nat(n).plusieurs : nat(n).un.toLowerCase()}
+                </span>
+              ))}
+            </div>
+          )}
+
+          {/* Les jours précédents : la preuve que la rubrique est alimentée chaque matin. */}
+          <div className="mt-6 grid grid-cols-4 gap-2 sm:grid-cols-7">
+            {editions.slice(0, 7).map(e => {
+              const d = jourCourt(e.date);
+              return (
+                <div key={e.date} className="rounded-xl bg-white/[0.06] px-1 py-2 text-center ring-1 ring-white/10">
+                  <span className="block text-[9px] font-black uppercase tracking-widest text-white/40">{d.jour} {d.mois}</span>
+                  <span className="block font-staatliches text-xl leading-tight tabular-nums text-fuchsia-300">{e.text_count}</span>
+                </div>
+              );
+            })}
+          </div>
+
+          <div className="mt-7 rounded-2xl bg-white/[0.05] p-5 ring-1 ring-white/10">
+            <p className="flex items-start gap-2 text-[10px] font-black uppercase leading-snug tracking-widest text-fuchsia-300">
+              <Lock size={13} className="mt-px shrink-0" />
+              {isPremium
+                ? "Votre abonnement Premium ne couvre pas cette rubrique"
+                : "Réservé à l'offre Pro"}
+            </p>
+            <ul className="mt-3.5 grid gap-2 sm:grid-cols-2">
+              {[
+                "Le détail de chaque texte, jour par jour",
+                "Classé par rubrique et par ministère",
+                "Le résumé du jour, en un paragraphe",
+                "Filtres par nature : décrets, arrêtés, avis…",
+                "Lien direct vers le texte sur Légifrance",
+                "Mis à jour dès la parution, chaque matin",
+              ].map(b => (
+                <li key={b} className="flex items-start gap-2 text-[13px] leading-snug text-white/85">
+                  <Check size={15} className="mt-0.5 shrink-0 text-fuchsia-400" />
+                  {b}
+                </li>
+              ))}
+            </ul>
+          </div>
+
+          <div className="mt-6 flex flex-col gap-2 sm:flex-row sm:items-center sm:gap-3">
+            <Link href="/premium"
+              className="inline-flex items-center justify-center gap-2 rounded-2xl bg-gradient-to-r from-fuchsia-500 to-purple-600 px-6 py-3.5 text-[12px] font-black uppercase tracking-widest text-white shadow-lg shadow-fuchsia-500/30 transition hover:brightness-110">
+              {isPremium ? "Passer à l'offre Pro" : "Découvrir l'offre Pro"} <ArrowRight size={15} />
+            </Link>
+            <span className="text-[11px] font-bold text-white/45">24,99 €/mois, sans engagement</span>
+          </div>
+        </div>
       </div>
     );
   }
-
-  const { jour, mois } = jourCourt(edition.date);
 
   return (
     <div className="mb-10 overflow-hidden rounded-[2rem] border-2 border-fuchsia-400/40 bg-gradient-to-br from-slate-950 via-slate-900 to-purple-950 text-white shadow-xl">

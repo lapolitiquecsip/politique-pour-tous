@@ -30,7 +30,7 @@ import { usePremium } from "@/lib/hooks/usePremium";
 
 export default function Header() {
   const [user, setUser] = useState<any>(null);
-  const { isPremium } = usePremium();
+  const { isPremium, isPro } = usePremium();
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const [searchOpen, setSearchOpen] = useState(false);
 
@@ -125,7 +125,9 @@ export default function Header() {
 
             {user ? (
               <div className="flex items-center gap-4">
-                <Link href="/dashboard" className={`flex items-center gap-2 px-3 py-1.5 rounded-full border transition-[border-color,box-shadow] duration-200 hover:shadow-md ${isPremium ? 'sword-shine bg-gradient-to-r from-amber-300 via-amber-500 to-yellow-600 border-amber-400/50 shadow-[0_4px_20px_rgba(251,191,36,0.4)] hover:shadow-[0_6px_26px_rgba(251,191,36,0.55)]' : 'bg-slate-50 border-slate-100 hover:bg-slate-100'}`}>
+                {/* data-offre repeint la palette dorée en violet pour un abonné Pro,
+                    sans dupliquer la moindre classe (voir globals.css). */}
+                <Link href="/dashboard" data-offre={isPro ? "pro" : undefined} className={`flex items-center gap-2 px-3 py-1.5 rounded-full border transition-[border-color,box-shadow] duration-200 hover:shadow-md ${isPremium ? 'sword-shine bg-gradient-to-r from-amber-300 via-amber-500 to-yellow-600 border-amber-400/50 shadow-[0_4px_20px_rgb(var(--lueur-offre)/0.4)] hover:shadow-[0_6px_26px_rgb(var(--lueur-offre)/0.55)]' : 'bg-slate-50 border-slate-100 hover:bg-slate-100'}`}>
                   <div className={`w-5 h-5 rounded-full flex items-center justify-center ${isPremium ? 'bg-white/25 text-white' : 'bg-blue-100 text-blue-600'}`}>
                     {isPremium ? <Star size={10} fill="currentColor" /> : <User size={12} />}
                   </div>

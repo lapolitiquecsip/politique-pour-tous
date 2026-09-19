@@ -269,6 +269,36 @@
   pointer-events: none;
 }
 
+/* ── Habillage de l'offre Pro ─────────────────────────────────────────
+   Le tableau de bord et le bouton d'en-tête sont dessinés en doré, couleur de l'offre
+   Premium, par une quarantaine de classes Tailwind. Plutôt que de les dédoubler une
+   à une, on repeint la palette elle-même : Tailwind v4 compile `text-amber-400` en
+   `color: var(--color-amber-400)`, il suffit donc de redéfinir ces variables dans le
+   conteneur marqué Pro pour que tout l'écran bascule au violet.
+
+   Les lueurs écrites en dur dans des ombres portées ne passent pas par la palette :
+   elles lisent --lueur-offre. Elle est notée sans virgules pour rester utilisable en
+   `rgb(var(--lueur-offre)/.4)`, y compris dans une valeur Tailwind entre crochets. */
+:root { --lueur-offre: 251 191 36; }
+
+[data-offre="pro"] {
+  --lueur-offre: 168 85 247;
+  --color-amber-50:  #faf5ff;
+  --color-amber-100: #f3e8ff;
+  --color-amber-200: #e9d5ff;
+  --color-amber-300: #d8b4fe;
+  --color-amber-400: #c084fc;
+  --color-amber-500: #a855f7;
+  --color-amber-600: #9333ea;
+  --color-amber-700: #7e22ce;
+  /* Le second ton des dégradés « doré → jaune » devient « violet → fuchsia ». */
+  --color-yellow-300: #f0abfc;
+  --color-yellow-400: #e879f9;
+  --color-yellow-500: #d946ef;
+  --color-yellow-600: #c026d3;
+  --color-yellow-700: #a21caf;
+}
+
 /* Reflet doré lent qui balaie la carte au survol */
 @keyframes gold-sheen {
   0%   { background-position: -150% 0; }
@@ -277,7 +307,7 @@
 .gold-sheen-hover { position: relative; }
 .gold-sheen-hover::before {
   content: ""; position: absolute; inset: 0; border-radius: inherit; opacity: 0;
-  background: linear-gradient(105deg, transparent 30%, rgba(251,191,36,.18) 45%, rgba(255,255,255,.28) 50%, rgba(251,191,36,.18) 55%, transparent 70%);
+  background: linear-gradient(105deg, transparent 30%, rgb(var(--lueur-offre) / .18) 45%, rgba(255,255,255,.28) 50%, rgb(var(--lueur-offre) / .18) 55%, transparent 70%);
   background-size: 250% 100%; transition: opacity .3s; pointer-events: none;
 }
 .gold-sheen-hover:hover::before { opacity: 1; animation: gold-sheen 1.1s ease-in-out; }

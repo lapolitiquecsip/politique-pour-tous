@@ -40,6 +40,37 @@ function bboxFromPath(d: string): string {
 // utilisateur. Plutôt que d'afficher l'UUID brut ou « INVALID DATE », on le dit franchement.
 const REFERENCE_PERDUE = "Loi retirée de la base";
 
+/**
+ * Les quatre onglets du tableau de bord.
+ *
+ * Les classes sont écrites en toutes lettres et non composées à la volée : Tailwind
+ * n'analyse que ce qu'il lit dans le source, et un `from-${'${teinte}'}-400` ne
+ * produirait aucune règle. Le dégradé de l'onglet actif est plus clair que celui
+ * au repos, ce qui suffit à le désigner sans compter sur la seule couleur.
+ */
+const ONGLETS = [
+  {
+    id: "votes", label: "Mon historique de vote", icone: Vote, premium: false,
+    actif: "bg-gradient-to-br from-blue-400 to-blue-600 shadow-blue-500/50",
+    repos: "bg-gradient-to-br from-blue-500 to-blue-700 hover:from-blue-400 hover:to-blue-600",
+  },
+  {
+    id: "deputies", label: "Mes élus suivis", icone: Users, premium: false,
+    actif: "bg-gradient-to-br from-emerald-400 to-emerald-600 shadow-emerald-500/50",
+    repos: "bg-gradient-to-br from-emerald-500 to-emerald-700 hover:from-emerald-400 hover:to-emerald-600",
+  },
+  {
+    id: "saved", label: "Lois favorites", icone: Bookmark, premium: true,
+    actif: "bg-gradient-to-br from-orange-400 to-orange-600 shadow-orange-500/50",
+    repos: "bg-gradient-to-br from-orange-500 to-orange-700 hover:from-orange-400 hover:to-orange-600",
+  },
+  {
+    id: "geos", label: "Territoires", icone: MapPin, premium: true,
+    actif: "bg-gradient-to-br from-fuchsia-500 to-pink-600 shadow-fuchsia-500/50",
+    repos: "bg-gradient-to-br from-fuchsia-500 to-pink-700 hover:from-fuchsia-400 hover:to-pink-600",
+  },
+] as const;
+
 // Renvoie null si la date est absente/illisible, au lieu de produire « INVALID DATE ».
 function formatDateSafe(value: any): string | null {
   if (!value) return null;
@@ -58,7 +89,7 @@ function titreOuNull(data: any): string | null {
 }
 
 export default function DashboardPage() {
-  const { userId, isPremium, loading: authLoading } = usePremium();
+  const { userId, isPremium, isPro, loading: authLoading } = usePremium();
   const [loading, setLoading] = useState(true);
   const [userVotes, setUserVotes] = useState<any[]>([]);
   const [followedDeputies, setFollowedDeputies] = useState<any[]>([]);
@@ -214,29 +245,32 @@ export default function DashboardPage() {
   }
 
   return (
-    <div className="min-h-screen bg-gradient-to-b from-[#0b1020] via-[#0a0e1c] to-[#070a14] pb-20 text-white">
+    // data-offre repeint la palette dorée en violet pour un abonné Pro : les
+    // classes Tailwind ne changent pas, seules les variables de couleur (voir
+    // globals.css). Un seul attribut habille donc tout l'écran.
+    <div data-offre={isPro ? "pro" : undefined} className="min-h-screen bg-gradient-to-b from-[#0b1020] via-[#0a0e1c] to-[#070a14] pb-20 text-white">
       {/* 1. Dashboard Header */}
       <section className="border-b border-white/5 pt-28 pb-20 px-4 relative overflow-hidden">
         {/* Halos dorés premium */}
         <div className="absolute inset-0 pointer-events-none">
           <div className="absolute top-12 left-[8%] w-80 h-80 bg-amber-500/20 rounded-full blur-[120px] animate-pulse" />
           <div className="absolute bottom-0 right-[12%] w-72 h-72 bg-yellow-600/15 rounded-full blur-[100px]" />
-          <div className="absolute inset-0 bg-[radial-gradient(circle_at_top,rgba(251,191,36,0.08),transparent_60%)]" />
+          <div className="absolute inset-0 bg-[radial-gradient(circle_at_top,rgb(var(--lueur-offre)/0.08),transparent_60%)]" />
         </div>
         <div className="absolute top-0 right-0 w-1/3 h-full bg-gradient-to-l from-amber-500/10 to-transparent pointer-events-none" />
         <div className="container mx-auto max-w-6xl relative z-10">
           <div className="flex flex-col sm:flex-row items-center sm:items-start gap-6 text-center sm:text-left">
-             <div className={`w-20 h-20 rounded-full border-2 p-1 flex items-center justify-center transition-all duration-300 ${isPremium ? 'border-amber-400 bg-gradient-to-br from-amber-400/20 to-yellow-600/10 shadow-[0_0_30px_rgba(251,191,36,0.35)] text-amber-300' : 'border-white/20 bg-white/5 text-slate-300'}`}>
+             <div className={`w-20 h-20 rounded-full border-2 p-1 flex items-center justify-center transition-all duration-300 ${isPremium ? 'border-amber-400 bg-gradient-to-br from-amber-400/20 to-yellow-600/10 shadow-[0_0_30px_rgb(var(--lueur-offre)/0.35)] text-amber-300' : 'border-white/20 bg-white/5 text-slate-300'}`}>
                 <User size={40} />
              </div>
              <div className="flex flex-col items-center sm:items-start">
-                <div className={`inline-flex items-center gap-2 px-3.5 py-1 text-[10px] font-black uppercase rounded-full mb-3 tracking-widest ${isPremium ? 'bg-amber-400/10 border border-amber-400/30 text-amber-300 shadow-[0_0_20px_rgba(251,191,36,0.15)]' : 'bg-white/5 border border-white/10 text-slate-300'}`}>
+                <div className={`inline-flex items-center gap-2 px-3.5 py-1 text-[10px] font-black uppercase rounded-full mb-3 tracking-widest ${isPremium ? 'bg-amber-400/10 border border-amber-400/30 text-amber-300 shadow-[0_0_20px_rgb(var(--lueur-offre)/0.15)]' : 'bg-white/5 border border-white/10 text-slate-300'}`}>
                   {isPremium && <Star size={12} className="fill-current" />}
-                  {isPremium ? "Membre Premium" : "Compte Citoyen"}
+                  {isPro ? "Membre Pro" : isPremium ? "Membre Premium" : "Compte Citoyen"}
                 </div>
                 <h1 className="text-5xl md:text-7xl font-staatliches uppercase tracking-tighter leading-none inline-flex items-center gap-2 md:gap-3 flex-wrap">
                   <span className="text-white drop-shadow-[0_2px_20px_rgba(255,255,255,0.15)]">Mon Espace</span>{" "}
-                  <span className="sword-shine bg-gradient-to-r from-amber-300 via-amber-500 to-yellow-600 text-white px-4 pt-1.5 pb-0.5 md:pt-3 md:pb-1 rounded-xl md:rounded-2xl shadow-[0_8px_30px_rgba(251,191,36,0.4)]">
+                  <span className="sword-shine bg-gradient-to-r from-amber-300 via-amber-500 to-yellow-600 text-white px-4 pt-1.5 pb-0.5 md:pt-3 md:pb-1 rounded-xl md:rounded-2xl shadow-[0_8px_30px_rgb(var(--lueur-offre)/0.4)]">
                     Personnel
                   </span>
                 </h1>
@@ -259,111 +293,51 @@ export default function DashboardPage() {
       )}
 
       <div className={`container mx-auto max-w-6xl px-4 ${isPremium ? "" : "-mt-16"}`}>
-        <div className="bg-white/[0.03] backdrop-blur-xl rounded-[2.5rem] border border-white/10 shadow-2xl shadow-black/40 overflow-hidden min-h-[600px]">
+        <div className="bg-white/[0.03] rounded-[2.5rem] border border-white/10 shadow-2xl shadow-black/40 overflow-hidden min-h-[600px]">
           
-          {/* Tabs Navigation — grille 2x2 sur mobile (4 onglets ne tiennent pas en ligne),
-              rangée unique sur écran large. */}
+          {/* Onglets — grille 2x2 sur mobile (quatre onglets ne tiennent pas en ligne),
+              rangée unique sur écran large.
+
+              Les quatre boutons étaient écrits à l'identique quatre fois. Ils partagent
+              désormais une définition, ce qui a permis de corriger d'un coup ce qui
+              rendait le changement d'onglet poussif :
+
+              — `transition-all` animait le dégradé de fond, que les navigateurs
+                n'interpolent pas : c'était du calcul pour rien, à chaque survol ;
+              — chaque bouton portait DEUX mises à l'échelle concurrentes, l'une en CSS
+                (scale-[1.04]), l'autre en framer-motion. Le `whileTap` de framer laissait
+                une transformation en ligne qui écrasait la première : l'onglet actif
+                perdait son agrandissement après le premier clic. L'effet de pression est
+                maintenant en CSS pur, et il n'y a plus qu'une seule échelle. */}
           <div className="grid grid-cols-2 md:flex border-b border-white/10">
-            <motion.button 
-              whileTap={{ scale: 0.98 }}
-              onClick={() => startTransition(() => setActiveTab("votes"))}
-              className={`relative flex-1 py-4 md:py-6 px-2 font-bold text-[11px] md:text-sm uppercase tracking-widest flex items-center justify-center gap-2 md:gap-3 transition-all duration-300 border-r border-b md:border-b-0 border-white/30 md:last:border-r-0 ${
-                activeTab === "votes" 
-                  ? "text-white bg-gradient-to-br from-blue-400 to-blue-600 shadow-lg shadow-blue-500/50 z-20 scale-[1.04] ring-2 ring-white/70 ring-inset" 
-                  : "text-white/85 bg-gradient-to-br from-blue-500 to-blue-700 hover:from-blue-400 hover:to-blue-600 hover:text-white z-10"
-              }`}
-            >
-              <motion.span 
-                animate={{ scale: activeTab === "votes" ? 1.05 : 1 }}
-                className="flex items-center gap-3"
-              >
-                <Vote size={18} className={isPending && activeTab !== "votes" ? "opacity-30" : ""} />
-                Mon Historique de Vote
-              </motion.span>
-              {activeTab === "votes" && (
-                <motion.div 
-                  layoutId="activeTabIndicator" 
-                  className="absolute bottom-0 left-0 right-0 h-1.5 bg-white shadow-[0_-2px_10px_rgba(255,255,255,0.6)]"
-                  transition={{ type: "spring", stiffness: 380, damping: 30 }}
-                />
-              )}
-            </motion.button>
-            <motion.button 
-              whileTap={{ scale: 0.98 }}
-              onClick={() => startTransition(() => setActiveTab("deputies"))}
-              className={`relative flex-1 py-4 md:py-6 px-2 font-bold text-[11px] md:text-sm uppercase tracking-widest flex items-center justify-center gap-2 md:gap-3 transition-all duration-300 border-r border-b md:border-b-0 border-white/30 md:last:border-r-0 ${
-                activeTab === "deputies" 
-                  ? "text-white bg-gradient-to-br from-emerald-400 to-emerald-600 shadow-lg shadow-emerald-500/50 z-20 scale-[1.04] ring-2 ring-white/70 ring-inset" 
-                  : "text-white/85 bg-gradient-to-br from-emerald-500 to-emerald-700 hover:from-emerald-400 hover:to-emerald-600 hover:text-white z-10"
-              }`}
-            >
-              <motion.span 
-                animate={{ scale: activeTab === "deputies" ? 1.05 : 1 }}
-                className="flex items-center gap-3"
-              >
-                <Users size={18} className={isPending && activeTab !== "deputies" ? "opacity-30" : ""} />
-                Mes Élus Suivis
-              </motion.span>
-              {activeTab === "deputies" && (
-                <motion.div 
-                  layoutId="activeTabIndicator" 
-                  className="absolute bottom-0 left-0 right-0 h-1.5 bg-white shadow-[0_-2px_10px_rgba(255,255,255,0.6)]"
-                  transition={{ type: "spring", stiffness: 380, damping: 30 }}
-                />
-              )}
-            </motion.button>
-            {isPremium && (
-              <>
-                <motion.button 
-                  whileTap={{ scale: 0.98 }}
-                  onClick={() => startTransition(() => setActiveTab("saved"))}
-                  className={`relative flex-1 py-4 md:py-6 px-2 font-bold text-[11px] md:text-sm uppercase tracking-widest flex items-center justify-center gap-2 md:gap-3 transition-all duration-300 border-r border-b md:border-b-0 border-white/30 md:last:border-r-0 ${
-                    activeTab === "saved" 
-                      ? "text-white bg-gradient-to-br from-orange-400 to-orange-600 shadow-lg shadow-orange-500/50 z-20 scale-[1.04] ring-2 ring-white/70 ring-inset" 
-                      : "text-white/85 bg-gradient-to-br from-orange-500 to-orange-700 hover:from-orange-400 hover:to-orange-600 hover:text-white z-10"
+            {ONGLETS.filter(o => !o.premium || isPremium).map(o => {
+              const actif = activeTab === o.id;
+              const Icone = o.icone;
+              return (
+                <button
+                  key={o.id}
+                  onClick={() => startTransition(() => setActiveTab(o.id))}
+                  aria-current={actif ? "page" : undefined}
+                  className={`relative flex-1 py-4 md:py-6 px-2 font-bold text-[11px] md:text-sm uppercase tracking-widest flex items-center justify-center gap-2 md:gap-3 border-r border-b md:border-b-0 border-white/30 md:last:border-r-0 transition-[transform,box-shadow,color] duration-200 active:scale-[0.98] ${
+                    actif
+                      ? `${o.actif} text-white shadow-lg z-20 scale-[1.04] ring-2 ring-white/70 ring-inset`
+                      : `${o.repos} text-white/85 hover:text-white z-10`
                   }`}
                 >
-                  <motion.span 
-                    animate={{ scale: activeTab === "saved" ? 1.05 : 1 }}
-                    className="flex items-center gap-3"
-                  >
-                    <Bookmark size={18} className={isPending && activeTab !== "saved" ? "opacity-30" : ""} />
-                    Lois Favorites
-                  </motion.span>
-                  {activeTab === "saved" && (
-                    <motion.div 
-                      layoutId="activeTabIndicator" 
+                  <span className="flex items-center gap-3">
+                    <Icone size={18} className={isPending && !actif ? "opacity-30" : ""} />
+                    {o.label}
+                  </span>
+                  {actif && (
+                    <motion.div
+                      layoutId="activeTabIndicator"
                       className="absolute bottom-0 left-0 right-0 h-1.5 bg-white shadow-[0_-2px_10px_rgba(255,255,255,0.6)]"
                       transition={{ type: "spring", stiffness: 380, damping: 30 }}
                     />
                   )}
-                </motion.button>
-                <motion.button 
-                  whileTap={{ scale: 0.98 }}
-                  onClick={() => startTransition(() => setActiveTab("geos"))}
-                  className={`relative flex-1 py-4 md:py-6 px-2 font-bold text-[11px] md:text-sm uppercase tracking-widest flex items-center justify-center gap-2 md:gap-3 transition-all duration-300 border-r border-b md:border-b-0 border-white/30 md:last:border-r-0 ${
-                    activeTab === "geos" 
-                      ? "text-white bg-gradient-to-br from-fuchsia-500 to-pink-600 shadow-lg shadow-fuchsia-500/50 z-20 scale-[1.04] ring-2 ring-white/70 ring-inset" 
-                      : "text-white/85 bg-gradient-to-br from-fuchsia-500 to-pink-700 hover:from-fuchsia-400 hover:to-pink-600 hover:text-white z-10"
-                  }`}
-                >
-                  <motion.span 
-                    animate={{ scale: activeTab === "geos" ? 1.05 : 1 }}
-                    className="flex items-center gap-3"
-                  >
-                    <MapPin size={18} className={isPending && activeTab !== "geos" ? "opacity-30" : ""} />
-                    Territoires
-                  </motion.span>
-                  {activeTab === "geos" && (
-                    <motion.div 
-                      layoutId="activeTabIndicator" 
-                      className="absolute bottom-0 left-0 right-0 h-1.5 bg-white shadow-[0_-2px_10px_rgba(255,255,255,0.6)]"
-                      transition={{ type: "spring", stiffness: 380, damping: 30 }}
-                    />
-                  )}
-                </motion.button>
-              </>
-            )}
+                </button>
+              );
+            })}
           </div>
 
           <div className="p-4 sm:p-6 md:p-12">
@@ -447,7 +421,7 @@ export default function DashboardPage() {
                         <p className="text-slate-400 mb-8 max-w-sm mx-auto">
                           Suivez vos députés favoris et recevez leurs derniers votes directement ici en passant Premium.
                         </p>
-                        <Link href="/premium" className="inline-flex items-center gap-2 px-8 py-4 bg-gradient-to-r from-amber-400 to-yellow-600 text-slate-950 rounded-2xl font-black hover:brightness-110 transition-all shadow-[0_8px_30px_rgba(251,191,36,0.35)]">
+                        <Link href="/premium" className="inline-flex items-center gap-2 px-8 py-4 bg-gradient-to-r from-amber-400 to-yellow-600 text-slate-950 rounded-2xl font-black hover:brightness-110 transition-all shadow-[0_8px_30px_rgb(var(--lueur-offre)/0.35)]">
                           Devenir Premium
                         </Link>
                       </div>
@@ -549,7 +523,7 @@ export default function DashboardPage() {
                                   </span>
                                 </div>
                                 {/* Sceau justice */}
-                                <div className="flex h-12 w-12 shrink-0 items-center justify-center rounded-full border border-amber-400/40 bg-amber-500/10 text-amber-300 shadow-[0_0_20px_rgba(251,191,36,0.18)] transition-all group-hover:bg-amber-500 group-hover:text-slate-950">
+                                <div className="flex h-12 w-12 shrink-0 items-center justify-center rounded-full border border-amber-400/40 bg-amber-500/10 text-amber-300 shadow-[0_0_20px_rgb(var(--lueur-offre)/0.18)] transition-all group-hover:bg-amber-500 group-hover:text-slate-950">
                                   <Scale size={20} />
                                 </div>
                               </div>

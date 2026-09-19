@@ -44,6 +44,8 @@ const flag = (nom: string, defaut: number) => {
 const DRY = args.includes("--dry-run");
 const SANS_RESUME = args.includes("--no-digest");
 const NB_FICHIERS = flag("files", 4);
+/** Nombre maximal de résumés de rattrapage par passage, pour borner la dépense. */
+const RATTRAPAGE_MAX = flag("catchup", 10);
 
 /**
  * Première date retenue. Tout ce qui est plus ancien appartient au lot de
@@ -350,6 +352,51 @@ async function main() {
   const { error } = await supabase.from("jorf_editions").upsert(lignes, { onConflict: "date" });
   if (error) { console.error(`\n  ✗ écriture : ${error.message}`); process.exit(1); }
   console.log(`\n  → ${lignes.length} édition(s) enregistrée(s)`);
+
+  await rattraperResumes(supabase);
+}
+
+/**
+ * Résume les éditions déjà en base qui n'en ont pas.
+ *
+ * Sans cette étape, un résumé manqué l'était pour toujours : les archives lues à
+ * chaque passage ne couvrent que les deux derniers jours, si bien qu'une édition
+ * plus ancienne — ingérée alors que la clé DeepSeek manquait, ou pendant une panne
+ * de l'API — ne repassait jamais devant le modèle. Le sélecteur de jours du panneau
+ * Pro remonte à une semaine : ces éditions-là doivent avoir leur résumé.
+ */
+// `any` plutôt que les génériques du client Supabase : les typer ici ne dit rien
+// d'utile et fait diverger la signature de ce que createClient renvoie réellement.
+async function rattraperResumes(supabase: any) {
+  if (SANS_RESUME || !LLM_KEY) return;
+
+  const { data, error } = await supabase
+    .from("jorf_editions")
+    .select("date, title, text_count, sections")
+    .is("digest", null)
+    .gte("date", DEPUIS)
+    .order("date", { ascending: false })
+    .limit(RATTRAPAGE_MAX);
+  if (error || !data?.length) return;
+
+  console.log(`\n  Rattrapage des résumés manquants : ${data.length} édition(s)`);
+  for (const row of data as any[]) {
+    try {
+      const digest = await resumer({
+        date: row.date, num: "", title: row.title, eli_url: null,
+        text_count: row.text_count, counts: {}, sections: row.sections ?? [],
+      });
+      if (!digest) continue;
+      const { error: err } = await supabase
+        .from("jorf_editions")
+        .update({ digest, digest_at: new Date().toISOString() })
+        .eq("date", row.date);
+      if (err) throw new Error(err.message);
+      console.log(`    ✓ ${row.date} — ${digest.slice(0, 90)}…`);
+    } catch (e) {
+      console.warn(`    ⚠ ${row.date} : ${(e as Error).message}`);
+    }
+  }
 }
 
 main().catch(e => { console.error("Erreur fatale :", e); process.exit(1); });

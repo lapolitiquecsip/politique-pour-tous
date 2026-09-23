@@ -69,6 +69,7 @@ export const PARCOURS: Record<string, Parcours> = {
       { emoji: "📝", title: "Qui propose ?", text: "Un projet de loi vient du gouvernement ; une proposition de loi vient de parlementaires (députés ou sénateurs)." },
       { emoji: "🔍", title: "L'examen en commission", text: "Avant le vote, une commission spécialisée étudie le texte en détail et l'amende (le modifie)." },
       { emoji: "🔁", title: "La navette", text: "Le texte fait des allers-retours entre l'Assemblée et le Sénat jusqu'à une version identique. En cas de désaccord persistant, l'Assemblée a le dernier mot.", diagram: "navette" },
+      { emoji: "🗺️", title: "Le chemin complet, étape par étape", text: "De l'idée au décret d'application, voici les onze étapes qu'un texte peut traverser — en gris celles qui n'ont pas toujours lieu.", diagram: "loi-parcours" },
       { emoji: "🗳️", title: "Le vote solennel", text: "Les élus votent l'ensemble du texte. C'est ce vote « sur l'ensemble » qui compte vraiment — la plupart des autres votes portent sur des amendements." },
       { emoji: "✅", title: "La promulgation", text: "Une fois adoptée, la loi est promulguée par le président, puis publiée au Journal officiel : elle devient applicable." },
     ],
@@ -93,7 +94,7 @@ export const PARCOURS: Record<string, Parcours> = {
     steps: [
       { emoji: "🏛️", title: "577 députés", text: "L'Assemblée nationale est la chambre élue directement par les citoyens. Elle compte 577 députés, élus pour 5 ans, un par circonscription." },
       { emoji: "🗳️", title: "Élus au suffrage direct", text: "Chaque député est élu au scrutin majoritaire à deux tours dans sa circonscription. C'est le vote direct de tous les citoyens, contrairement au Sénat (indirect)." },
-      { emoji: "📜", title: "Voter la loi et le budget", text: "Les députés examinent, amendent et votent les lois, ainsi que le budget de l'État (loi de finances). Le vote qui compte est celui « sur l'ensemble » du texte." },
+      { emoji: "📜", title: "Voter la loi et le budget", text: "Les députés examinent, amendent et votent les lois, ainsi que le budget de l'État (loi de finances). Le vote qui compte est celui « sur l'ensemble » du texte.", diagram: "loi-parcours" },
       { emoji: "⚔️", title: "Renverser le gouvernement", text: "L'Assemblée a un pouvoir que le Sénat n'a pas : elle peut renverser le gouvernement par une motion de censure. C'est aussi elle qui a le dernier mot en cas de désaccord avec le Sénat." },
       { emoji: "✍️", title: "Proposer des textes", text: "Au-delà de voter, un député peut déposer ses propres propositions de loi. Le classement des initiatives montre qui en dépose le plus." },
       { emoji: "🎖️", title: "Ses fonctions à l'Assemblée", text: "En plus de son mandat, un député peut occuper des responsabilités internes : présider l'Assemblée (le « perchoir », 4ᵉ personnage de l'État), être vice-président·e, questeur·e ou secrétaire — ensemble ils forment le Bureau qui dirige l'Assemblée. Il peut aussi présider ou siéger dans l'une des 8 commissions permanentes (Finances, Lois, Affaires sociales…) où les textes sont préparés, présider son groupe politique, ou être rapporteur d'un texte, chargé de l'analyser et de le défendre en séance." },

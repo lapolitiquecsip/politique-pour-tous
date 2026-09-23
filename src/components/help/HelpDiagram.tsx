@@ -1,5 +1,8 @@
 // Mini-schémas pédagogiques affichés dans certaines étapes de la bulle d'aide.
-// SVG légers, lisibles en clair/sombre (couleurs explicites).
+// SVG légers, lisibles en clair/sombre (couleurs explicites). Le parcours complet
+// d'une loi fait exception : onze étapes ne tiennent pas lisiblement en SVG dans un
+// panneau de cinq cents pixels, il est donc composé en HTML.
+import ParcoursLoi from "./ParcoursLoi";
 
 function Box({ x, y, w, h, fill, stroke, children }: { x: number; y: number; w: number; h: number; fill: string; stroke: string; children: React.ReactNode }) {
   return (
@@ -73,8 +76,10 @@ export default function HelpDiagram({ name }: { name: string }) {
     "eu-triangle": <EuTriangle />,
     navette: <Navette />,
     "deux-tours": <DeuxTours />,
+    "loi-parcours": <ParcoursLoi />,
   };
   const el = map[name];
   if (!el) return null;
+  if (name === "loi-parcours") return <>{el}</>;   // ce schéma porte déjà son cadre
   return <div className="mt-3 rounded-xl border border-slate-100 bg-slate-50/70 p-3 dark:border-slate-800 dark:bg-slate-800/40">{el}</div>;
 }

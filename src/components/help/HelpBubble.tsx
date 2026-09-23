@@ -135,7 +135,9 @@ export default function HelpBubble() {
               onClick={e => e.stopPropagation()}
             >
               {/* En-tête — richement mis en page, ton pédagogique. */}
-              <div className={`relative overflow-hidden bg-gradient-to-br ${th.header} p-6 text-white`}>
+              {/* shrink-0 indispensable : en colonne flexible, la liste d'étapes
+                  comprimait l'en-tête et coupait la deuxième ligne du titre. */}
+              <div className={`relative shrink-0 overflow-hidden bg-gradient-to-br ${th.header} p-6 text-white`}>
                 <div className="pointer-events-none absolute -right-10 -top-10 h-36 w-36 rounded-full bg-white/10 blur-2xl" />
                 <div className="pointer-events-none absolute -bottom-12 left-10 h-28 w-28 rounded-full bg-sky-300/20 blur-2xl" />
                 <button onClick={() => setOpen(false)} className="absolute right-4 top-4 rounded-full bg-white/15 p-2 text-white transition hover:bg-white/25">
@@ -158,7 +160,7 @@ export default function HelpBubble() {
               </div>
 
               {/* Recherche */}
-              <div className="border-b border-slate-100 dark:border-slate-800 p-4">
+              <div className="shrink-0 border-b border-slate-100 dark:border-slate-800 p-4">
                 <div className="relative">
                   <Search className="absolute left-3 top-1/2 -translate-y-1/2 text-slate-400" size={15} />
                   <input

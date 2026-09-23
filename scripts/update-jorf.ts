@@ -368,7 +368,14 @@ async function main() {
 // `any` plutôt que les génériques du client Supabase : les typer ici ne dit rien
 // d'utile et fait diverger la signature de ce que createClient renvoie réellement.
 async function rattraperResumes(supabase: any) {
-  if (SANS_RESUME || !LLM_KEY) return;
+  if (SANS_RESUME) return;
+  if (!LLM_KEY) {
+    // Bruyant exprès : le sommaire seul passait pour un succès complet, et les
+    // résumés quotidiens sont restés absents sans que rien ne le signale.
+    console.error("❌ DEEPSEEK_API_KEY absente : les éditions resteront sans résumé.");
+    process.exitCode = 1;
+    return;
+  }
 
   const { data, error } = await supabase
     .from("jorf_editions")

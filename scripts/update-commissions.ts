@@ -457,7 +457,12 @@ async function analyseMeetings(
 ) {
   console.log(`\n🧠 Analyse détaillée — jusqu'à ${limit} réunion(s), modèle ${MODEL}`);
   if (!LLM_API_KEY) {
-    console.warn("  ⚠ DEEPSEEK_API_KEY absente : étape ignorée.");
+    // Échec bruyant, et non simple avertissement : sans clé, l'ingestion continuait
+    // de tourner au vert pendant que plus aucune analyse n'était produite. Dix jours
+    // ont passé avant qu'on s'en aperçoive, à l'il, sur le site.
+    console.error("❌ DEEPSEEK_API_KEY absente : aucune analyse ne peut être produite.");
+    console.error("   Dépôt GitHub → Settings → Secrets and variables → Actions → DEEPSEEK_API_KEY.");
+    process.exitCode = 1;
     return;
   }
 

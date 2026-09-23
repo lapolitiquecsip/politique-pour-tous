@@ -11,6 +11,7 @@ import NotificationsFeed from "@/components/dashboard/NotificationsFeed";
 import PremiumPreferences from "@/components/dashboard/PremiumPreferences";
 import CommuneFeedCard from "@/components/dashboard/CommuneFeedCard";
 import CandidatesFollowFeed from "@/components/dashboard/CandidatesFollowFeed";
+import CommissionsProFeed from "@/components/dashboard/CommissionsProFeed";
 import { usePremium } from "@/lib/hooks/usePremium";
 import { departmentPaths } from "@/lib/data/departmentPaths";
 import { regionPaths } from "@/lib/data/regionPaths";
@@ -298,6 +299,9 @@ export default function DashboardPage() {
         // recouvre le haut de la carte et intercepte le clic sur « Tout marquer lu ».
         <div className="relative z-20 container mx-auto max-w-6xl px-4 -mt-16 mb-6 space-y-6">
           <NotificationsFeed userId={userId} />
+          {/* Réservé à l'offre Pro : le fil quotidien des commissions, en tête de
+              l'espace personnel, là où un professionnel vient d'abord. */}
+          {isPro && <CommissionsProFeed />}
           <CandidatesFollowFeed />
           <CommuneFeedCard />
           <PremiumPreferences userId={userId} />

@@ -269,6 +269,47 @@
   pointer-events: none;
 }
 
+/* ── Bouton « tableau de bord » de l'en-tête ──────────────────────────────────
+   Sa couleur est décidée ici, à partir de l'attribut posé sur <html> avant le premier
+   rendu, et non par React : pilotée par l'état, elle se peignait en gris puis virait à
+   l'or ou au violet une fois l'abonnement vérifié, et ce clignotement se voyait à
+   chaque changement de page. Le libellé et l'icône suivent la même règle, pour que
+   rien ne saute. Habillage seulement : l'accès aux rubriques réservées reste décidé
+   par la vérification côté base. */
+.btn-tdb             { background: #f8fafc; border-color: #f1f5f9; }
+.btn-tdb:hover       { background: #f1f5f9; }
+.btn-tdb .tdb-ico    { background: #dbeafe; color: #2563eb; }
+.btn-tdb .tdb-sur    { color: #94a3b8; }
+.btn-tdb .tdb-mail   { color: #334155; }
+.btn-tdb .tdb-abonne { display: none; }
+.btn-tdb::after      { display: none; }
+
+html[data-abonnement="elite"] .btn-tdb,
+html[data-abonnement="pro"]   .btn-tdb {
+  border-color: rgb(var(--lueur-offre) / .5);
+  box-shadow: 0 4px 20px rgb(var(--lueur-offre) / .4);
+}
+html[data-abonnement="elite"] .btn-tdb:hover,
+html[data-abonnement="pro"]   .btn-tdb:hover { box-shadow: 0 6px 26px rgb(var(--lueur-offre) / .55); }
+
+html[data-abonnement="elite"] .btn-tdb .tdb-ico,
+html[data-abonnement="pro"]   .btn-tdb .tdb-ico  { background: rgb(255 255 255 / .25); color: #fff; }
+html[data-abonnement="elite"] .btn-tdb .tdb-sur,
+html[data-abonnement="pro"]   .btn-tdb .tdb-sur  { color: rgb(255 255 255 / .9); }
+html[data-abonnement="elite"] .btn-tdb .tdb-mail,
+html[data-abonnement="pro"]   .btn-tdb .tdb-mail { color: #fff; }
+
+html[data-abonnement="elite"] .btn-tdb .tdb-abonne,
+html[data-abonnement="pro"]   .btn-tdb .tdb-abonne { display: block; }
+html[data-abonnement="elite"] .btn-tdb .tdb-simple,
+html[data-abonnement="pro"]   .btn-tdb .tdb-simple { display: none; }
+
+html[data-abonnement="elite"] .btn-tdb::after,
+html[data-abonnement="pro"]   .btn-tdb::after { display: block; }
+
+html[data-abonnement="elite"] .btn-tdb { background: linear-gradient(to right, #ffd236, #f99c00, #dd7400); }
+html[data-abonnement="pro"]   .btn-tdb { --lueur-offre: 168 85 247; background: linear-gradient(to right, #d8b4fe, #a855f7, #c026d3); }
+
 /* ── Habillage de l'offre Pro ─────────────────────────────────────────
    Le tableau de bord et le bouton d'en-tête sont dessinés en doré, couleur de l'offre
    Premium, par une quarantaine de classes Tailwind. Plutôt que de les dédoubler une

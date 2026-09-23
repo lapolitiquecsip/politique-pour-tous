@@ -22,6 +22,24 @@ import { tierAtLeast, type Tier } from "@/lib/constants";
  * contenu Pro à qui n'y a pas droit.
  */
 const MEMOIRE = "lpcs.tier";
+
+/**
+ * Inscrit le niveau retenu, pour la mémoire du navigateur et pour l'habillage.
+ *
+ * L'attribut posé sur <html> est lu par la feuille de style : c'est lui qui donne
+ * sa couleur au bouton « tableau de bord », dès le premier rendu grâce au petit
+ * script du gabarit. Il ne décide d'aucun accès.
+ */
+function retenir(niveau: Tier) {
+  try {
+    if (niveau === "free") localStorage.removeItem(MEMOIRE);
+    else localStorage.setItem(MEMOIRE, niveau);
+  } catch { /* sans mémoire, tant pis */ }
+  try {
+    if (niveau === "free") delete document.documentElement.dataset.abonnement;
+    else document.documentElement.dataset.abonnement = niveau;
+  } catch { /* hors navigateur */ }
+}
 function tierMemorise(): Tier | null {
   try {
     const v = localStorage.getItem(MEMOIRE);
@@ -46,7 +64,7 @@ export function usePremium() {
       if (!user) {
         setTier("free");
         setHint("free");
-        try { localStorage.removeItem(MEMOIRE); } catch { /* sans mémoire, tant pis */ }
+        retenir("free");
         setUserId(null);
         setLoading(false);
         return;
@@ -81,7 +99,7 @@ export function usePremium() {
           : "free";
         setTier(niveau);
         setHint(niveau);
-        try { localStorage.setItem(MEMOIRE, niveau); } catch { /* sans mémoire, tant pis */ }
+        retenir(niveau);
       }
 
       setLoading(false);
@@ -98,7 +116,7 @@ export function usePremium() {
         setUserId(null);
         setTier("free");
         setHint("free");
-        try { localStorage.removeItem(MEMOIRE); } catch { /* sans mémoire, tant pis */ }
+        retenir("free");
       }
     });
 

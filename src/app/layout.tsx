@@ -62,6 +62,18 @@ export default function RootLayout({
       className={`${dmSans.variable} ${staatliches.variable} ${playfairDisplay.variable} antialiased scroll-smooth`}
       suppressHydrationWarning
     >
+      {/*
+        Niveau d'abonnement posé sur <html> AVANT le premier rendu.
+        Sans lui, le bouton « tableau de bord » se peint en gris puis vire à l'or ou au
+        violet une fois l'abonnement vérifié : le clignotement se voit à chaque page.
+        Ce n'est qu'un habillage — l'accès aux rubriques réservées reste décidé par la
+        vérification côté base, jamais par cette valeur mémorisée.
+      */}
+      <script
+        dangerouslySetInnerHTML={{
+          __html: `try{var t=localStorage.getItem("lpcs.tier");if(t==="pro"||t==="elite")document.documentElement.dataset.offre=t;}catch(e){}`,
+        }}
+      />
       <body className="min-h-screen flex flex-col font-sans bg-background text-foreground transition-colors duration-300">
         <ThemeProvider>
           <GlossaryProvider>

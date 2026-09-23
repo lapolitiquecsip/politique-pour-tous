@@ -31,6 +31,16 @@ export default function HelpBubble() {
   const hidden = pathname === "/" || pathname.startsWith("/premium")
     || pathname.startsWith("/dashboard") || isFiche;
   const parcours = useMemo(() => parcoursForPath(pathname), [pathname]);
+
+  // La croix n'était pas la seule sortie — le fond réagissait déjà au clic — mais sur
+  // téléphone la feuille couvre l'écran : il ne reste presque rien à toucher à côté.
+  // Échap au clavier, et un glissement vers le bas au doigt (plus bas), complètent.
+  useEffect(() => {
+    if (!open) return;
+    const onKey = (e: KeyboardEvent) => { if (e.key === "Escape") setOpen(false); };
+    document.addEventListener("keydown", onKey);
+    return () => document.removeEventListener("keydown", onKey);
+  }, [open]);
   // Sur la page Europe, la bulle d'aide prend les couleurs du drapeau de l'UE (bleu + or).
   const eu = pathname.startsWith("/eurodeputes");
   const th = eu
@@ -133,7 +143,16 @@ export default function HelpBubble() {
               initial={{ y: 40, opacity: 0 }} animate={{ y: 0, opacity: 1 }} exit={{ y: 40, opacity: 0 }}
               transition={{ type: "spring", damping: 26, stiffness: 300 }}
               onClick={e => e.stopPropagation()}
+              // Feuille que l'on chasse vers le bas au doigt, comme partout ailleurs sur
+              // téléphone. Le seuil évite qu'un défilement un peu vif la referme.
+              drag="y"
+              dragDirectionLock
+              dragConstraints={{ top: 0, bottom: 0 }}
+              dragElastic={{ top: 0, bottom: 0.4 }}
+              onDragEnd={(_, info) => { if (info.offset.y > 120 || info.velocity.y > 700) setOpen(false); }}
             >
+              {/* Poignée : dit sans mot que la feuille se chasse vers le bas. */}
+              <span aria-hidden className="mx-auto mt-2 h-1.5 w-10 shrink-0 rounded-full bg-white/40 sm:hidden" />
               {/* En-tête — richement mis en page, ton pédagogique. */}
               {/* shrink-0 indispensable : en colonne flexible, la liste d'étapes
                   comprimait l'en-tête et coupait la deuxième ligne du titre. */}

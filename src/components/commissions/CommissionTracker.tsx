@@ -385,7 +385,9 @@ export default function CommissionTracker({ chamber, chamberLabel, accent = "eme
         </div>
       ) : (
         <>
-          <div className="grid grid-cols-1 gap-3 lg:grid-cols-2">
+          {/* items-start : sans lui, déplier une réunion étire la carte voisine à la
+              même hauteur et laisse un grand vide blanc à côté. */}
+          <div className="grid grid-cols-1 items-start gap-3 lg:grid-cols-2">
             {meetings.map(m => <MeetingCard key={m.ref} m={m} accent={a} />)}
           </div>
           {!exhausted && (

@@ -30,11 +30,9 @@ import { usePremium } from "@/lib/hooks/usePremium";
 
 export default function Header() {
   const [user, setUser] = useState<any>(null);
-  // L'habillage du bouton suit le niveau mémorisé tant que la vérification court :
-  // sinon il reste gris à chaque chargement de page avant de virer à l'or.
-  const { tierAffiche } = usePremium();
-  const isPremium = tierAffiche === "elite" || tierAffiche === "pro";
-  const isPro = tierAffiche === "pro";
+  // Le hook est appelé pour tenir à jour l'attribut d'abonnement posé sur <html> ;
+  // l'habillage du bouton, lui, est entièrement décidé en CSS à partir de cet attribut.
+  usePremium();
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const [searchOpen, setSearchOpen] = useState(false);
 
@@ -129,17 +127,20 @@ export default function Header() {
 
             {user ? (
               <div className="flex items-center gap-4">
-                {/* data-offre repeint la palette dorée en violet pour un abonné Pro,
-                    sans dupliquer la moindre classe (voir globals.css). */}
-                <Link href="/dashboard" data-offre={isPro ? "pro" : undefined} className={`flex items-center gap-2 px-3 py-1.5 rounded-full border transition-[border-color,box-shadow] duration-200 hover:shadow-md ${isPremium ? 'sword-shine bg-gradient-to-r from-amber-300 via-amber-500 to-yellow-600 border-amber-400/50 shadow-[0_4px_20px_rgb(var(--lueur-offre)/0.4)] hover:shadow-[0_6px_26px_rgb(var(--lueur-offre)/0.55)]' : 'bg-slate-50 border-slate-100 hover:bg-slate-100'}`}>
-                  <div className={`w-5 h-5 rounded-full flex items-center justify-center ${isPremium ? 'bg-white/25 text-white' : 'bg-blue-100 text-blue-600'}`}>
-                    {isPremium ? <Star size={10} fill="currentColor" /> : <User size={12} />}
+                {/* Habillage entièrement en CSS (voir globals.css) : la couleur, l'icône
+                    et le libellé se décident depuis l'attribut posé sur <html> avant le
+                    premier rendu, ce qui évite le gris qui vire à l'or à chaque page. */}
+                <Link href="/dashboard" className="btn-tdb sword-shine flex items-center gap-2 rounded-full border px-3 py-1.5 transition-[border-color,box-shadow] duration-200 hover:shadow-md">
+                  <div className="tdb-ico flex h-5 w-5 items-center justify-center rounded-full">
+                    <Star size={10} fill="currentColor" className="tdb-abonne" />
+                    <User size={12} className="tdb-simple" />
                   </div>
                   <div className="flex flex-col">
-                    <span className={`text-[10px] font-black uppercase leading-none mb-0.5 ${isPremium ? 'text-white/90' : 'text-slate-400'}`}>
-                      {isPremium ? "Tableau de Bord" : "Mon Compte"}
+                    <span className="tdb-sur mb-0.5 text-[10px] font-black uppercase leading-none">
+                      <span className="tdb-abonne">Tableau de Bord</span>
+                      <span className="tdb-simple">Mon Compte</span>
                     </span>
-                    <span className={`text-xs font-bold truncate max-w-[120px] leading-none ${isPremium ? 'text-white' : 'text-slate-700'}`}>{user.email}</span>
+                    <span className="tdb-mail max-w-[120px] truncate text-xs font-bold leading-none">{user.email}</span>
                   </div>
                 </Link>
                 <button 

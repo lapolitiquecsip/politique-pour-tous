@@ -12,10 +12,32 @@ import { tierAtLeast, type Tier } from "@/lib/constants";
  * encore (migration non appliquée), on retombe sur l'ancien booléen is_premium,
  * qui vaut alors « elite ». Aucune page ne casse pendant la migration.
  */
+/**
+ * Dernier niveau connu, gardé d'une visite à l'autre.
+ *
+ * Il ne sert QU'À L'HABILLAGE, jamais à ouvrir une porte : le temps que Supabase
+ * réponde, le bouton d'en-tête restait gris puis virait à l'or ou au violet, ce qui
+ * se voyait à chaque page. Les réserves d'accès, elles, continuent d'attendre la
+ * vérification (`loading`), sans quoi une valeur périmée laisserait entrevoir du
+ * contenu Pro à qui n'y a pas droit.
+ */
+const MEMOIRE = "lpcs.tier";
+function tierMemorise(): Tier | null {
+  try {
+    const v = localStorage.getItem(MEMOIRE);
+    return v === "pro" || v === "elite" || v === "free" ? v : null;
+  } catch { return null; }
+}
+
 export function usePremium() {
   const [tier, setTier] = useState<Tier>("free");
+  const [hint, setHint] = useState<Tier | null>(null);
   const [loading, setLoading] = useState<boolean>(true);
   const [userId, setUserId] = useState<string | null>(null);
+
+  // Lu après le premier rendu : `localStorage` n'existe pas côté serveur, et une
+  // valeur initiale différente entre serveur et navigateur casserait l'hydratation.
+  useEffect(() => { setHint(tierMemorise()); }, []);
 
   useEffect(() => {
     async function checkPremium() {
@@ -23,6 +45,8 @@ export function usePremium() {
 
       if (!user) {
         setTier("free");
+        setHint("free");
+        try { localStorage.removeItem(MEMOIRE); } catch { /* sans mémoire, tant pis */ }
         setUserId(null);
         setLoading(false);
         return;
@@ -52,9 +76,12 @@ export function usePremium() {
         setTier("free");
       } else {
         const raw = String(res.data?.subscription_tier || "").toLowerCase();
-        if (raw === "pro") setTier("pro");
-        else if (raw === "elite" || res.data?.is_premium) setTier("elite");
-        else setTier("free");
+        const niveau: Tier = raw === "pro" ? "pro"
+          : (raw === "elite" || res.data?.is_premium) ? "elite"
+          : "free";
+        setTier(niveau);
+        setHint(niveau);
+        try { localStorage.setItem(MEMOIRE, niveau); } catch { /* sans mémoire, tant pis */ }
       }
 
       setLoading(false);
@@ -70,6 +97,8 @@ export function usePremium() {
       } else {
         setUserId(null);
         setTier("free");
+        setHint("free");
+        try { localStorage.removeItem(MEMOIRE); } catch { /* sans mémoire, tant pis */ }
       }
     });
 
@@ -80,6 +109,12 @@ export function usePremium() {
 
   return {
     tier,
+    /**
+     * Niveau à utiliser pour L'HABILLAGE seulement : le niveau vérifié dès qu'il est
+     * connu, sinon celui de la dernière visite. Ne jamais s'en servir pour décider
+     * d'un accès.
+     */
+    tierAffiche: loading ? (hint ?? tier) : tier,
     /** Premium OU Pro — c'est ce que testent toutes les fonctionnalités premium historiques. */
     isPremium: tierAtLeast(tier, "elite"),
     /** Réservé aux outils professionnels (commissions, veille réseaux sociaux). */

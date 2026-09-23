@@ -1,7 +1,7 @@
 "use client";
 
 import { Suspense, useCallback, useEffect, useRef, useState } from "react";
-import { useRouter, useSearchParams } from "next/navigation";
+import { useSearchParams } from "next/navigation";
 import { FileText, Loader2, Search, Scale, Vote } from "lucide-react";
 import { api } from "@/lib/api";
 import {
@@ -46,7 +46,6 @@ const stageStatus = (code?: string | null): LawCardStatus =>
   : { label: stageLabel(code) || "En commission", tone: "amber" };
 
 function LawsContent() {
-  const router = useRouter();
   const params = useSearchParams();
   const [tab, setTab] = useState<Tab>("promulgated");
   const [category, setCategory] = useState<LegislativeCategory | null>(null);
@@ -82,10 +81,23 @@ function LawsContent() {
 
   useEffect(() => { const timer = window.setTimeout(load, 250); return () => window.clearTimeout(timer); }, [load]);
 
+  /**
+   * Inscrit le texte ouvert dans l'adresse SANS passer par le routeur.
+   *
+   * `router.replace` déclenche une navigation Next ; sur un site exporté en statique,
+   * elle peut aller jusqu'au rechargement complet de la page — la liste repart de
+   * zéro, la fiche aussi, et le panneau reste sur son rond qui tourne le temps que
+   * tout se reconstruise. L'adresse reste partageable, la page ne bouge plus.
+   */
+  const inscrireAdresse = (url: string) => {
+    try { window.history.replaceState(window.history.state, "", url); } catch { /* adresse inchangée */ }
+  };
+
   const openDossier = useCallback(async (id: string, item?: LegislativeListItem) => {
-    setOpenedItem(item || null); setDetailLoading(true); setDetail(null); router.replace(`/lois/?dossier=${id}`, { scroll: false });
+    setOpenedItem(item || null); setDetailLoading(true); setDetail(null);
+    inscrireAdresse(`/lois/?dossier=${id}`);
     try { setDetail(await api.getLegislativeDossier(id)); } finally { setDetailLoading(false); }
-  }, [router]);
+  }, []);
 
   useEffect(() => {
     if (hydratedFromUrl.current) return;
@@ -94,7 +106,7 @@ function LawsContent() {
     if (id) void openDossier(id);
   }, [openDossier, params]);
 
-  const closeDossier = () => { setDetail(null); setDetailLoading(false); setOpenedItem(null); router.replace("/lois/", { scroll: false }); };
+  const closeDossier = () => { setDetail(null); setDetailLoading(false); setOpenedItem(null); inscrireAdresse("/lois/"); };
 
   const loadMore = async () => {
     const last = items.at(-1); if (!last) return;

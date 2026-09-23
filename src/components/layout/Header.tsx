@@ -30,7 +30,11 @@ import { usePremium } from "@/lib/hooks/usePremium";
 
 export default function Header() {
   const [user, setUser] = useState<any>(null);
-  const { isPremium, isPro } = usePremium();
+  // L'habillage du bouton suit le niveau mémorisé tant que la vérification court :
+  // sinon il reste gris à chaque chargement de page avant de virer à l'or.
+  const { tierAffiche } = usePremium();
+  const isPremium = tierAffiche === "elite" || tierAffiche === "pro";
+  const isPro = tierAffiche === "pro";
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const [searchOpen, setSearchOpen] = useState(false);
 

@@ -390,7 +390,24 @@ export default function DossierModal({ detail, loading, onClose, fallback }: { d
         {/* Bouton fermer flottant (coin) — plus de bande blanche sticky qui recouvre le contenu au scroll */}
         <button onClick={onClose} className="absolute right-4 top-4 z-20 rounded-full bg-slate-100 p-3 shadow-sm transition hover:bg-slate-200" aria-label="Fermer"><X /></button>
         <div className="overflow-y-auto overflow-x-hidden overscroll-contain">
-        {loading ? <div className="flex min-h-80 items-center justify-center"><Loader2 className="animate-spin text-red-600" /></div> : showFallback ? (
+        {loading ? (
+          /* Pendant le chargement, on affiche déjà ce que la carte cliquée savait :
+             catégorie et titre. Un panneau blanc avec un rond qui tourne donne le
+             sentiment d'un blocage, alors que le texte demandé est déjà connu. */
+          <div className="flex min-h-80 flex-col px-6 pb-12 pt-16 md:px-12">
+            {fallback?.category && (
+              <div className="mb-3 text-xs font-black uppercase tracking-[0.2em] text-red-600">{categoryLabel(fallback.category as any)}</div>
+            )}
+            {fallback && (
+              <h2 className="text-4xl font-staatliches uppercase leading-none text-slate-950 md:text-6xl">
+                {fallback.display_title || fallback.title}
+              </h2>
+            )}
+            <p className="mt-8 flex items-center gap-2 text-sm font-bold text-slate-400">
+              <Loader2 size={16} className="animate-spin text-red-600" /> Chargement du parcours législatif…
+            </p>
+          </div>
+        ) : showFallback ? (
           <article className="px-6 pb-12 pt-16 md:px-12">
             {(() => {
               const f = fallback!;

@@ -107,10 +107,11 @@ export default function SenatorClient() {
             )}
           </div>
           
-          {/* La FranceMap fait un fetch CDN externe + DOMParser + gros SVG : très lourd sur
-              mobile. On ne la MONTE que pour les premium (qui peuvent s'en servir). Pour les
-              non-premium, un simple placeholder statique — aucun fetch, aucun SVG à parser —
-              ce qui libère le thread principal pour charger le reste de la page. */}
+          {/* La carte n'est montée que pour les abonnés, qui seuls peuvent s'en servir ;
+              les autres voient un panneau statique. Sa justification d'origine — un
+              téléchargement CDN suivi d'un DOMParser, trop lourd sur mobile — a disparu
+              depuis que le fond de carte est livré avec la page, mais la réserve reste
+              un choix d'offre. */}
           {isPremium ? (
             <FranceMap
               onDepartmentSelect={(deptName) => setSelectedDept(deptName)}

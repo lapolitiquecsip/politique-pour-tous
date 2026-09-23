@@ -138,6 +138,15 @@ export default function DashboardPage() {
         setLoading(false); // Stop main loading state here
         
         if (isPremium && saved.length > 0) {
+          // Noms des territoires enregistrés, en UNE requête sur notre propre base.
+          // Auparavant chaque commune déclenchait un appel à geo.api.gouv.fr, tous lancés
+          // en même temps : l'API bride, certains appels dépassaient le délai de trois
+          // secondes et la carte affichait « Commune 44114 » au lieu d'Orvault.
+          const noms = await api.getTerritoryNames(
+            saved.filter((i: any) => ['commune', 'region', 'department'].includes(i.item_type))
+                 .map((i: any) => String(i.item_id)),
+          );
+
           // Fetch full data for saved items in the background
           const fullSavedItems = await Promise.all(saved.map(async (item: any) => {
             try {
@@ -156,19 +165,22 @@ export default function DashboardPage() {
                 }
                 return { ...item, data };
               } else if (item.item_type === 'commune') {
+                // Le nom vient de notre base ; l'appel extérieur ne sert plus qu'à
+                // enrichir la fiche (population, code postal). S'il échoue, le titre
+                // reste juste.
+                const nom = noms.get(String(item.item_id));
+                let extra: any = {};
                 try {
-                  const controller = new AbortController();
-                  const timeoutId = setTimeout(() => controller.abort(), 3000);
-                  const res = await fetch(`https://geo.api.gouv.fr/communes/${item.item_id}?fields=nom,code,codesPostaux,population`, { signal: controller.signal });
-                  clearTimeout(timeoutId);
-                  const data = await res.json();
-                  return { ...item, data: { ...data, title: data.nom || `Commune ${item.item_id}` } };
-                } catch (e) {
-                  return { ...item, data: { title: `Commune ${item.item_id}` } };
-                }
+                  const stop = new AbortController();
+                  const minuteur = setTimeout(() => stop.abort(), 4000);
+                  const res = await fetch(`https://geo.api.gouv.fr/communes/${item.item_id}?fields=nom,code,codesPostaux,population`, { signal: stop.signal });
+                  clearTimeout(minuteur);
+                  if (res.ok) extra = await res.json();
+                } catch { /* la fiche s'affichera sans population */ }
+                return { ...item, data: { ...extra, title: nom || extra.nom || `Commune ${item.item_id}` } };
               } else {
-                // region or department
-                return { ...item, data: { title: item.item_id } };
+                // Région ou département : le nom officiel plutôt que le code brut.
+                return { ...item, data: { title: noms.get(String(item.item_id)) || item.item_id } };
               }
             } catch (e) {
               console.error(`Error loading item ${item.item_id}:`, e);

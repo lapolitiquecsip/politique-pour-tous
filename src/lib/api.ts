@@ -594,6 +594,24 @@ export const api = {
     return data ?? [];
   },
 
+  /**
+   * Nom officiel de plusieurs territoires d'un coup, depuis notre propre base.
+   *
+   * Évite d'interroger geo.api.gouv.fr une fois par élément : en parallèle, ces
+   * appels se font brider et certains dépassent le délai d'attente, si bien qu'une
+   * commune enregistrée s'affichait « Commune 44114 » au lieu d'Orvault.
+   */
+  getTerritoryNames: async (codes: string[]) => {
+    const uniques = [...new Set(codes.filter(Boolean))];
+    if (!uniques.length) return new Map<string, string>();
+    const { data, error } = await supabase
+      .from('territories')
+      .select('code, name')
+      .in('code', uniques);
+    if (error) return new Map<string, string>();
+    return new Map((data ?? []).map((t: any) => [String(t.code), t.name as string]));
+  },
+
   /* ════════ JOURNAL OFFICIEL DU JOUR (abonnement Pro) ════════ */
 
   /**

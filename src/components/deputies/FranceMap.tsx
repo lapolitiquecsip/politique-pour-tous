@@ -1,22 +1,20 @@
 "use client";
 
-import { useState, useEffect, useRef, memo, useMemo } from "react";
-import { MapPin, X, Loader2 } from "lucide-react";
+import { useMemo, useState } from "react";
+import { MapPin, X } from "lucide-react";
 import { getDepartmentName } from "@/lib/department-mapping";
+import { departmentPaths } from "@/lib/data/departmentPaths";
 
-const SVG_CDN_URL =
-  "https://cdn.jsdelivr.net/npm/@svg-maps/france.departments@1.0.1/france.departments.svg";
-
-// Global cache to avoid re-parsing on every mount (Critical for INP)
-let cachedSvgContent: string | null = null;
-
-const DROM_COM_PATHS = [
-  { id: "971", name: "Guadeloupe", d: "M35.87,487.13l0.7,7.2l-4.5-1.1l-2,1.7l-5.8-0.6l-1.7-1.2l4.9,0.5l3.2-4.4L35.87,487.13z M104.87,553.63 l-4.4-1.8l-1.9,0.8l0.2,2.1l-1.9,0.3l-2.2,4.9l0.7,2.4l1.7,2.9l3.4,1.2l3.4-0.5l5.3-5l-0.4-2.5L104.87,553.63z M110.27,525.53 l-6.7-2.2l-2.4-4.2l-11.1-2.5l-2.7-5.7l-0.7-7.7l-6.2-4.7l-5.9,5.5l-0.8,2.9l1.2,4.5l3.1,1.2l-1,3.4l-2.6,1.2l-2.5,5.1l-1.9-0.2 l-1,1.9l-4.3-0.7l1.8-0.7l-3.5-3.7l-10.4-4.1l-3.4,1.6l-2.4,4.8l-0.5,3.5l3.1,9.7l0.6,12l6.3,9l0.6,2.7c3-1.2,6-2.5,9.1-3.7l5.9-6.9 l-0.4-8.7l-2.8-5.3l0.2-5.5l3.6,0.2l0.9-1.7l1.4,3.1l6.8,2l13.8-4.9L110.27,525.53z" },
-  { id: "972", name: "Martinique", d: "m44.23,433.5l1.4-4.1l-6.2-7.5l0.3-5.8l4.8-4 l4.9-0.9l17,9.9l7,8.8l9.4-5.2l1.8,2.2l-2.8,0.8l0.7,2.6l-2.9,1l-2.2-2.4l-1.9,1.7l0.6,2.5l5.1,1.6l-5.3,4.9l1.6,2.3l4.5-1.5 l-0.8,5.6l3.7,0.2l7.6,19l-1.8,5.5l-4.1,5.1h-2.6l-2-3l3.7-5.7l-4.3,1.7l-2.5-2.5l-2.4,1.2l-6-2.8l-5.5,0.1l-5.4,3.5l-2.4-2.1 l0.2-2.7l-2-2l2.5-4.9l3.4-2.5l4.9,3.4l3.2-1.9l-4.4-4.7l0.2-2.4l-1.8,1.2l-7.2-1.1l-7.6-7L44.23,433.5z" },
-  { id: "973", name: "Guyane", d: "m95.2,348.97l-11.7,16.4l0.3,2.4l-7.3,14.9 l-4.4,3.9l-2.6,1.3l-2.3-1.7l-4.4,0.8l0.7-1.8l-10.6-0.3l-4.3,0.8l-4.1,4.1l-9.1-4.4l6.6-11.8l0.3-6l4.2-10.8l-8.3-9.6l-2.7-8 l-0.6-11.4l3.8-7.5l5.9-5.4l1-4l4.2,0.5l-2.3-2l24.7,8.6l9.2,8.8l3.1,0.3l-0.7,1.2l6.1,4l1.4,4.1l-2.4,3.1l2.6-1.6l0.1-5.5l4,3.5 l2.4,7L95.2,348.97z" },
-  { id: "974", name: "La Réunion", d: "m41.33,265.3l-6.7-8.5l1.3-6l4.1-2.4l0.7-7.9 l3.3,0.4l7.6-6.1l5.7-0.8l21,4l5,5.3v4.1l7.3,10.1l6.7,4.5l1,3.6l-3.3,7.9l0.9,9.6l-3.4,3.5l-17.3,2.9l-19.6-6.5l-3.8-3.6l-4.7-1.2 l-0.9-2.5l-3.6-2.3L41.33,265.3z" },
-  { id: "976", name: "Mayotte", d: "m57.79,157.13l11.32,5.82l-3.24,7.46l-5.66,7.52l5.66,8.37l-4.04,5.7l-5.66,8.01l5.66,4.37l-7.28,4.37l-8.09-2.73l-4.04-5.04v-4.85l-3.24-6.55l7.28,3.88l4.04,1.13v-7.14l-4.85-8.43v-14.8l-8.09-2.61l-3.24-2.67v-5.76l8.9-6.79l7.28,10.19L57.79,157.13z M78.07,164.38l-5.56,3.42l4.81,5.59l3.93-4.79L78.07,164.38z" },
-];
+/**
+ * Carte des départements, pour retrouver ses élus.
+ *
+ * Les tracés viennent de `departmentPaths`, le fond de carte déjà utilisé ailleurs sur
+ * le site : cent un départements, DROM et Corse compris, livrés avec la page. L'ancienne
+ * version téléchargeait un SVG sur un CDN, le passait au DOMParser, le recomposait puis
+ * l'injectait en `innerHTML` — trois étapes avant le premier affichage, et un survol qui
+ * traînait parce qu'un filtre CSS posé sur le SVG entier obligeait à redessiner la carte
+ * entière à chaque changement de couleur. Ici, un `fill` change, rien d'autre.
+ */
 
 // Couleur de survol PAR RÉGION : chaque région a sa teinte (PACA jaune, Auvergne-Rhône-Alpes
 // orange, etc.). Table code département → couleur, construite à partir des groupes régionaux.
@@ -40,194 +38,41 @@ const REGION_COLOR: Record<string, string> = Object.fromEntries(
   REGION_GROUPS.flatMap(g => g.deps.map(d => [d, g.color]))
 );
 
+const CODES = Object.keys(departmentPaths);
+
+/** Cadre englobant tous les départements — calculé une fois, au chargement du module. */
+const VIEWBOX = (() => {
+  let minX = Infinity, minY = Infinity, maxX = -Infinity, maxY = -Infinity;
+  for (const code of CODES) {
+    const vb = departmentPaths[code]?.viewBox?.split(/\s+/).map(Number);
+    if (!vb || vb.length < 4) continue;
+    minX = Math.min(minX, vb[0]); minY = Math.min(minY, vb[1]);
+    maxX = Math.max(maxX, vb[0] + vb[2]); maxY = Math.max(maxY, vb[1] + vb[3]);
+  }
+  const marge = 6;
+  return `${minX - marge} ${minY - marge} ${maxX - minX + marge * 2} ${maxY - minY + marge * 2}`;
+})();
+
 interface FranceMapProps {
   selectedDepartment: string | null;
   onDepartmentSelect: (dept: string | null) => void;
 }
 
-// Sub-component to isolate SVG rendering and prevent re-parsing
-const MemoizedSVG = memo(({ content, selectedDepartment }: { content: string, selectedDepartment: string | null }) => {
-  return (
-    <div
-      dangerouslySetInnerHTML={{ __html: content }}
-      className={`
-        [&_svg]:w-full [&_svg]:h-auto [&_svg]:max-h-[500px] [&_svg]:mx-auto
-        [&_path]:cursor-pointer [&_path]:outline-none
-        /* Ne jamais animer « all » ici : le filtre en faisait partie, et interpoler une
-           ombre portée sur une centaine de tracés coûte une image entière à chaque pas. */
-        [&_path]:transition-[fill,stroke,transform] [&_path]:duration-100
-        
-        /* État de base */
-        [&_path]:fill-blue-50/50 dark:[&_path]:fill-slate-900 
-        [&_path]:stroke-blue-200 dark:[&_path]:stroke-slate-700
-        [&_path]:stroke-[1.3]
-        [&_path]:[stroke-linejoin:round]
-        
-        /* Filtre Global */
-        /* Ce filtre dessine le liseré sombre du pourtour, mais il force la carte ENTIÈRE
-           à être redessinée dès qu'un seul département change d'aspect. On le retire le
-           temps du survol : un pixel d'ombre en moins ne se voit pas, et l'interaction
-           cesse de payer le prix d'une rastérisation complète à chaque image. */
-        [&_svg]:[filter:drop-shadow(0px_0px_1px_#0f172a)_drop-shadow(0px_0px_1px_#0f172a)]
-        dark:[&_svg]:[filter:drop-shadow(0px_0px_1px_#f8fafc)_drop-shadow(0px_0px_1px_#f8fafc)]
-        [&:hover_svg]:[filter:none] dark:[&:hover_svg]:[filter:none]
-        
-        [&_path]:origin-center [&_path]:[transform-box:fill-box]
-        
-        /* Effet de survol : léger agrandissement ; la COULEUR est posée en JS (par région). */
-        [&_path:hover]:scale-[1.04]
-        
-        /* État de sélection */
-        ${selectedDepartment ? "[&_path]:fill-sky-50 dark:[&_path]:fill-sky-950/30 [&_path]:opacity-60 [&_path]:stroke-sky-100 dark:[&_path]:stroke-sky-900" : ""}
-      `}
-    />
-  );
-}, (prev, next) => {
-  // Only re-render if content changes OR if we go from selection to no-selection (or vice versa)
-  // We keep selecting department in dependencies because it affects the global opacity/style of paths
-  return prev.content === next.content && prev.selectedDepartment === next.selectedDepartment;
-});
+export default function FranceMap({ selectedDepartment, onDepartmentSelect }: FranceMapProps) {
+  const [survole, setSurvole] = useState<string | null>(null);
 
-export const FranceMap = memo(function FranceMap({
-  selectedDepartment,
-  onDepartmentSelect,
-}: FranceMapProps) {
-  const [svgContent, setSvgContent] = useState<string | null>(null);
-  const [loading, setLoading] = useState(true);
-  const svgContainerRef = useRef<HTMLDivElement>(null);
-  const tooltipRef = useRef<HTMLDivElement>(null);
-  const tooltipTextRef = useRef<HTMLSpanElement>(null);
-  const tooltipCodeRef = useRef<HTMLSpanElement>(null);
-  // Dernier département survolé : la souris émet des dizaines d'événements par seconde
-  // à l'intérieur d'un même tracé, et réécrire l'infobulle à chacun d'eux la faisait
-  // recalculer pour rien.
-  const survoleRef = useRef<string | null>(null);
-
-  // Fetch and manipulate SVG with global caching
-  useEffect(() => {
-    if (cachedSvgContent) {
-      setSvgContent(cachedSvgContent);
-      setLoading(false);
-      return;
-    }
-
-    fetch(SVG_CDN_URL)
-      .then((res) => res.text())
-      .then((text) => {
-        const parser = new DOMParser();
-        const doc = parser.parseFromString(text, "image/svg+xml");
-        const svgElement = doc.querySelector("svg");
-
-        if (svgElement) {
-          // 1. Expand ViewBox (adding space on the left for DROM-COM)
-          svgElement.setAttribute("viewBox", "0 0 740 585");
-
-          // 2. Wrap mainland paths in a shifted group
-          const mainlandGroup = doc.createElementNS("http://www.w3.org/2000/svg", "g");
-          mainlandGroup.setAttribute("transform", "translate(125, 0)");
-          
-          while (svgElement.firstChild) {
-            mainlandGroup.appendChild(svgElement.firstChild);
-          }
-          svgElement.appendChild(mainlandGroup);
-
-          // 3. Add Separation Line
-          const line = doc.createElementNS("http://www.w3.org/2000/svg", "line");
-          line.setAttribute("x1", "120"); line.setAttribute("y1", "40");
-          line.setAttribute("x2", "120"); line.setAttribute("y2", "545");
-          line.setAttribute("stroke", "currentColor");
-          line.setAttribute("stroke-width", "1.5");
-          line.setAttribute("opacity", "0.3");
-          line.setAttribute("stroke-linecap", "round");
-          line.setAttribute("style", "pointer-events: none;");
-          svgElement.prepend(line);
-
-          // 4. Add DROM-COM paths
-          DROM_COM_PATHS.forEach((drom) => {
-            const path = doc.createElementNS("http://www.w3.org/2000/svg", "path");
-            path.setAttribute("id", drom.id);
-            path.setAttribute("name", drom.name);
-            path.setAttribute("d", drom.d);
-            svgElement.prepend(path);
-          });
-
-          // Serialize back to string
-          let manipulatedSvg = new XMLSerializer().serializeToString(doc);
-          
-          // Clean attributes for CSS management
-          manipulatedSvg = manipulatedSvg
-            .replace(/fill="[^"]*"/g, "")
-            .replace(/stroke="[^"]*"/g, "")
-            .replace(/stroke-width="[^"]*"/g, "");
-
-          cachedSvgContent = manipulatedSvg;
-          setSvgContent(manipulatedSvg);
-        }
-        setLoading(false);
-      })
-      .catch(() => setLoading(false));
-  }, []);
-
-  // Update tooltip NATIVELY (Direct DOM) for 60fps performance
-  const handleMouseMove = (e: React.MouseEvent) => {
-    const target = e.target as SVGElement;
-    if (target.tagName !== "path") return;
-    const id = target.getAttribute("id");
-    if (!id || id === survoleRef.current) return; // même département : rien à réécrire
-    survoleRef.current = id;
-    if (tooltipRef.current && tooltipTextRef.current && tooltipCodeRef.current) {
-      tooltipCodeRef.current.innerText = id;
-      tooltipTextRef.current.innerText = getDepartmentName(id);
-      tooltipRef.current.style.opacity = "1";
-      tooltipRef.current.style.transform = "scale(1)";
-    }
-  };
-
-  const handleMouseOut = () => {
-    survoleRef.current = null;
-    if (tooltipRef.current) {
-      tooltipRef.current.style.opacity = "0";
-      tooltipRef.current.style.transform = "scale(0.95)";
-    }
-  };
-
-  // Survol coloré PAR RÉGION : on pose la couleur de la région du département survolé.
-  const handleMouseOver = (e: React.MouseEvent) => {
-    const t = e.target as SVGElement;
-    if (t.tagName !== "path") return;
-    if (selectedDepartment) return; // en mode sélection, on ne recolore pas au survol
-    const id = t.getAttribute("id");
-    const col = id ? REGION_COLOR[id] : null;
-    if (col) { t.style.fill = col; t.style.stroke = "#1e293b"; t.style.strokeWidth = "1.8px"; t.style.filter = `drop-shadow(0 0 8px ${col}88)`; }
-  };
-  // Réinitialise le département quitté (retour au style de base géré en CSS).
-  const handlePathOut = (e: React.MouseEvent) => {
-    const t = e.target as SVGElement;
-    if (t.tagName !== "path") return;
-    t.style.fill = ""; t.style.stroke = ""; t.style.strokeWidth = ""; t.style.filter = "";
-  };
-
-  const handleClick = (e: React.MouseEvent) => {
-    const target = e.target as SVGElement;
-    if (target.tagName === "path") {
-      const id = target.getAttribute("id");
-      if (id) {
-        onDepartmentSelect(selectedDepartment === id ? null : id);
-      }
-    } else {
-      onDepartmentSelect(null);
-    }
-  };
+  // Le département désigné par l'infobulle : celui qu'on survole, sinon la sélection.
+  const montre = survole ?? selectedDepartment;
+  const nom = useMemo(() => (montre ? getDepartmentName(montre) : null), [montre]);
 
   return (
     <div className="relative w-full">
-      {/* Header */}
-      <div className="flex items-center justify-between mb-4">
+      <div className="mb-4 flex items-center justify-between gap-3">
         <div className="flex items-center gap-2">
-          <MapPin className="w-5 h-5 text-red-500" />
+          <MapPin className="h-5 w-5 text-red-500" />
           <span className="text-sm font-semibold text-foreground">
-            {selectedDepartment 
-              ? "Cliquez sur un autre département ou réinitialisez" 
+            {selectedDepartment
+              ? "Cliquez sur un autre département ou réinitialisez"
               : "Cliquez sur un département (Hexagone ou DROM-COM)"}
           </span>
         </div>
@@ -235,68 +80,58 @@ export const FranceMap = memo(function FranceMap({
         {selectedDepartment && (
           <button
             onClick={() => onDepartmentSelect(null)}
-            className="flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-red-500/10 text-red-600 dark:text-red-400 text-xs font-semibold hover:bg-red-500/20 transition-all hover:scale-105 active:scale-95"
+            className="flex shrink-0 items-center gap-1.5 rounded-full bg-red-500/10 px-3 py-1.5 text-xs font-semibold text-red-600 transition-all hover:bg-red-500/20 active:scale-95 dark:text-red-400"
           >
-            <X className="w-3.5 h-3.5" />
+            <X className="h-3.5 w-3.5" />
             Voir toute la France
           </button>
         )}
       </div>
 
-      {/* Map container */}
-      <div 
-        className="relative bg-card border border-border rounded-2xl p-4 md:p-8 overflow-hidden transition-all duration-300 shadow-sm hover:shadow-md"
-        onMouseMove={handleMouseMove}
-        onMouseOver={handleMouseOver}
-        onMouseOut={(e) => { handlePathOut(e); }}
-        onMouseLeave={handleMouseOut}
-        onClick={handleClick}
-      >
-        {/* Subtle gradient overlay */}
-        <div className="absolute inset-0 bg-gradient-to-br from-red-500/[0.05] via-transparent to-red-500/[0.02] pointer-events-none rounded-2xl" />
+      <div className="relative overflow-hidden rounded-2xl border border-border bg-card p-4 shadow-sm md:p-8">
+        <div className="pointer-events-none absolute inset-0 rounded-2xl bg-gradient-to-br from-red-500/[0.05] via-transparent to-red-500/[0.02]" />
 
-        {/* Tooltip - Géré en DOM direct pour la fluidité */}
-        <div
-          ref={tooltipRef}
-          style={{ opacity: 0, transition: "opacity 0.1s ease-out, transform 0.1s ease-out", transform: "scale(0.95)" }}
-          className="absolute top-6 right-6 z-20 bg-slate-900 dark:bg-slate-100 text-white dark:text-slate-900 px-4 py-2.5 rounded-xl shadow-2xl text-sm font-bold pointer-events-none flex flex-col min-w-[140px]"
-        >
-          <span ref={tooltipCodeRef} className="text-[10px] uppercase tracking-wider opacity-60 mb-0.5">...</span>
-          <span ref={tooltipTextRef} className="text-base text-nowrap">Survolez la carte</span>
-        </div>
-
-        {/* Loading state */}
-        {loading && (
-          <div className="flex items-center justify-center h-64">
-            <Loader2 className="w-8 h-8 text-red-500 animate-spin" />
-            <span className="ml-3 text-muted-foreground text-sm">Géographie en cours...</span>
+        {montre && (
+          <div className="pointer-events-none absolute right-6 top-6 z-20 flex min-w-[140px] flex-col rounded-xl bg-slate-900 px-4 py-2.5 text-sm font-bold text-white shadow-2xl dark:bg-slate-100 dark:text-slate-900">
+            <span className="mb-0.5 text-[10px] uppercase tracking-wider opacity-60">{montre}</span>
+            <span className="text-nowrap text-base">{nom}</span>
           </div>
         )}
 
-        {/* SVG Map Container with optimized isolation */}
-        {svgContent && (
-          <MemoizedSVG content={svgContent} selectedDepartment={selectedDepartment} />
-        )}
-
-        {/* High-performance selection style */}
-        {selectedDepartment && (
-          <style dangerouslySetInnerHTML={{ __html: `
-            path[id="${selectedDepartment}"] {
-              fill: #ef4444 !important;
-              stroke: #991b1b !important;
-              stroke-width: 2.5px !important;
-              opacity: 1 !important;
-              transform: scale(1.06);
-              transform-origin: center;
-              transform-box: fill-box;
-              filter: drop-shadow(0 0 20px rgba(239, 68, 68, 0.6)) !important;
-              z-index: 50;
-            }
-          `}} />
-        )}
+        <svg
+          viewBox={VIEWBOX}
+          className="mx-auto h-auto max-h-[500px] w-full text-white dark:text-slate-900"
+          role="img"
+          aria-label="Carte des départements français"
+          onMouseLeave={() => setSurvole(null)}
+          // Un clic à côté des tracés remet la carte à plat.
+          onClick={e => { if ((e.target as Element).tagName !== "path") onDepartmentSelect(null); }}
+        >
+          {CODES.map(code => {
+            const choisi = selectedDepartment === code;
+            const teinte = choisi ? "#ef4444" : survole === code ? (REGION_COLOR[code] ?? "#94a3b8") : null;
+            return (
+              <path
+                key={code}
+                d={departmentPaths[code].d}
+                // La teinte n'est posée en style que sur le département désigné ; les autres
+                // gardent une classe, qui sait suivre le thème sombre.
+                className={`cursor-pointer outline-none transition-[fill] duration-150 ${
+                  teinte ? "" : "fill-slate-200 dark:fill-slate-700"
+                }`}
+                style={teinte ? { fill: teinte } : undefined}
+                stroke="currentColor"
+                strokeWidth={0.8}
+                strokeLinejoin="round"
+                onMouseEnter={() => setSurvole(code)}
+                onClick={() => onDepartmentSelect(choisi ? null : code)}
+              >
+                <title>{getDepartmentName(code)}</title>
+              </path>
+            );
+          })}
+        </svg>
       </div>
     </div>
   );
-});
-
-export default FranceMap;
+}

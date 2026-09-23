@@ -30,9 +30,10 @@ import { usePremium } from "@/lib/hooks/usePremium";
 
 export default function Header() {
   const [user, setUser] = useState<any>(null);
-  // Le hook est appelé pour tenir à jour l'attribut d'abonnement posé sur <html> ;
-  // l'habillage du bouton, lui, est entièrement décidé en CSS à partir de cet attribut.
-  usePremium();
+  // Le hook tient à jour l'attribut d'abonnement posé sur <html>, et se souvient de la
+  // session précédente. Supabase restaure la sienne de façon asynchrone : sans cette
+  // mémoire, l'en-tête affichait « Se connecter » une seconde à chaque page.
+  const { connecteMemorise, courrielMemorise } = usePremium();
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const [searchOpen, setSearchOpen] = useState(false);
 
@@ -42,9 +43,11 @@ export default function Header() {
       setUser(session?.user ?? null);
     });
 
-    // Listen for auth changes
-    const { data: { subscription } } = supabase.auth.onAuthStateChange((_event, session) => {
-      setUser(session?.user ?? null);
+    // Une session absente n'est une déconnexion que si elle est annoncée comme telle :
+    // l'événement initial arrive parfois vide avant que la session ne soit restaurée.
+    const { data: { subscription } } = supabase.auth.onAuthStateChange((evenement, session) => {
+      if (session) setUser(session.user);
+      else if (evenement === "SIGNED_OUT") setUser(null);
     });
 
     return () => subscription.unsubscribe();
@@ -134,7 +137,7 @@ export default function Header() {
 
             <div className="h-6 w-[1px] bg-slate-200 mx-1" />
 
-            {user ? (
+            {(user || connecteMemorise) ? (
               <div className="flex items-center gap-4">
                 {/* Habillage entièrement en CSS (voir globals.css) : la couleur, l'icône
                     et le libellé se décident depuis l'attribut posé sur <html> avant le
@@ -149,7 +152,7 @@ export default function Header() {
                       <span className="tdb-abonne">Tableau de Bord</span>
                       <span className="tdb-simple">Mon Compte</span>
                     </span>
-                    <span className="tdb-mail max-w-[120px] truncate text-xs font-bold leading-none">{user.email}</span>
+                    <span className="tdb-mail max-w-[120px] truncate text-xs font-bold leading-none">{user?.email ?? courrielMemorise ?? ""}</span>
                   </div>
                 </Link>
                 <button 

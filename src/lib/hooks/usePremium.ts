@@ -22,6 +22,8 @@ import { tierAtLeast, type Tier } from "@/lib/constants";
  * contenu Pro à qui n'y a pas droit.
  */
 const MEMOIRE = "lpcs.tier";
+const MEMOIRE_CONNECTE = "lpcs.connecte";
+const MEMOIRE_COURRIEL = "lpcs.courriel";
 
 /**
  * Inscrit le niveau retenu, pour la mémoire du navigateur et pour l'habillage.
@@ -30,14 +32,38 @@ const MEMOIRE = "lpcs.tier";
  * sa couleur au bouton « tableau de bord », dès le premier rendu grâce au petit
  * script du gabarit. Il ne décide d'aucun accès.
  */
-function retenir(niveau: Tier) {
+function retenir(niveau: Tier, courriel?: string | null) {
   try {
     if (niveau === "free") localStorage.removeItem(MEMOIRE);
     else localStorage.setItem(MEMOIRE, niveau);
+    localStorage.setItem(MEMOIRE_CONNECTE, "1");
+    if (courriel) localStorage.setItem(MEMOIRE_COURRIEL, courriel);
   } catch { /* sans mémoire, tant pis */ }
   try {
     if (niveau === "free") delete document.documentElement.dataset.abonnement;
     else document.documentElement.dataset.abonnement = niveau;
+    document.documentElement.dataset.connecte = "1";
+  } catch { /* hors navigateur */ }
+}
+
+/**
+ * Efface la mémoire. Réservé à une DÉCONNEXION CONFIRMÉE.
+ *
+ * Supabase restaure la session depuis le navigateur de façon asynchrone : à chaque
+ * chargement de page, il existe un instant où l'utilisateur paraît déconnecté alors
+ * qu'il ne l'est pas. Effacer à ce moment-là faisait retomber l'en-tête sur « Se
+ * connecter » et « Premium » pendant une seconde — et, pire, vidait la mémoire pour
+ * les visites suivantes.
+ */
+function oublier() {
+  try {
+    localStorage.removeItem(MEMOIRE);
+    localStorage.removeItem(MEMOIRE_CONNECTE);
+    localStorage.removeItem(MEMOIRE_COURRIEL);
+  } catch { /* sans mémoire, tant pis */ }
+  try {
+    delete document.documentElement.dataset.abonnement;
+    delete document.documentElement.dataset.connecte;
   } catch { /* hors navigateur */ }
 }
 function tierMemorise(): Tier | null {
@@ -46,25 +72,35 @@ function tierMemorise(): Tier | null {
     return v === "pro" || v === "elite" || v === "free" ? v : null;
   } catch { return null; }
 }
+const lire = (cle: string) => { try { return localStorage.getItem(cle); } catch { return null; } };
 
 export function usePremium() {
   const [tier, setTier] = useState<Tier>("free");
   const [hint, setHint] = useState<Tier | null>(null);
   const [loading, setLoading] = useState<boolean>(true);
   const [userId, setUserId] = useState<string | null>(null);
+  // Ce que la visite précédente savait de la session, pour dessiner l'en-tête avant
+  // que Supabase n'ait fini de la restaurer.
+  const [connecteMemorise, setConnecteMemorise] = useState(false);
+  const [courrielMemorise, setCourrielMemorise] = useState<string | null>(null);
 
   // Lu après le premier rendu : `localStorage` n'existe pas côté serveur, et une
   // valeur initiale différente entre serveur et navigateur casserait l'hydratation.
-  useEffect(() => { setHint(tierMemorise()); }, []);
+  useEffect(() => {
+    setHint(tierMemorise());
+    setConnecteMemorise(lire(MEMOIRE_CONNECTE) === "1");
+    setCourrielMemorise(lire(MEMOIRE_COURRIEL));
+  }, []);
 
   useEffect(() => {
     async function checkPremium() {
       const { data: { user } } = await supabase.auth.getUser();
 
       if (!user) {
+        // On ne touche pas à la mémoire ici : cet appel rend `null` aussi pendant la
+        // restauration de session. Seul l'événement SIGNED_OUT fait foi.
         setTier("free");
         setHint("free");
-        retenir("free");
         setUserId(null);
         setLoading(false);
         return;
@@ -99,7 +135,9 @@ export function usePremium() {
           : "free";
         setTier(niveau);
         setHint(niveau);
-        retenir(niveau);
+        setConnecteMemorise(true);
+        setCourrielMemorise(user.email ?? null);
+        retenir(niveau, user.email);
       }
 
       setLoading(false);
@@ -112,11 +150,14 @@ export function usePremium() {
       if (session) {
         setUserId(session.user.id);
         checkPremium();
-      } else {
+      } else if (_event === "SIGNED_OUT") {
+        // Déconnexion explicite : là, on oublie pour de bon.
         setUserId(null);
         setTier("free");
         setHint("free");
-        retenir("free");
+        setConnecteMemorise(false);
+        setCourrielMemorise(null);
+        oublier();
       }
     });
 
@@ -139,6 +180,10 @@ export function usePremium() {
      * À l'habillage seulement : ne jamais ouvrir un accès sur cette base.
      */
     niveauMemorise: hint !== null,
+    /** La visite précédente était connectée. Habillage seulement. */
+    connecteMemorise,
+    /** Adresse retenue, pour dessiner le bouton de compte avant la restauration. */
+    courrielMemorise,
     /** Premium OU Pro — c'est ce que testent toutes les fonctionnalités premium historiques. */
     isPremium: tierAtLeast(tier, "elite"),
     /** Réservé aux outils professionnels (commissions, veille réseaux sociaux). */

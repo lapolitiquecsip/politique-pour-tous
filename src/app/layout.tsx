@@ -71,7 +71,7 @@ export default function RootLayout({
       */}
       <script
         dangerouslySetInnerHTML={{
-          __html: `try{var t=localStorage.getItem("lpcs.tier");if(t==="pro"||t==="elite")document.documentElement.dataset.offre=t;}catch(e){}`,
+          __html: `try{var d=document.documentElement.dataset,t=localStorage.getItem("lpcs.tier");if(t==="pro"||t==="elite")d.abonnement=t;if(localStorage.getItem("lpcs.connecte")==="1")d.connecte="1";}catch(e){}`,
         }}
       />
       <body className="min-h-screen flex flex-col font-sans bg-background text-foreground transition-colors duration-300">

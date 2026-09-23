@@ -1,0 +1,55 @@
+name: Auditions sans compte rendu (transcription)
+
+# L'Assemblée ne rédige pas toujours de compte rendu : le document publié renvoie alors
+# à l'enregistrement vidéo. Environ une réunion sur huit. Ce passage transcrit ces
+# auditions-là, puis les analyse comme les autres.
+#
+# Deux secrets sont nécessaires :
+#   ASR_API_KEY      transcription (console.groq.com → API Keys ; quelques centimes l'heure d'audio)
+#   DEEPSEEK_API_KEY analyse, le même que pour les comptes rendus écrits
+#
+# ffmpeg est préinstallé sur les exécuteurs Ubuntu de GitHub. Le passage est volontairement
+# borné : une heure de vidéo prend plusieurs minutes à télécharger et à convertir.
+# Voir scripts/transcribe-auditions.ts
+
+on:
+  schedule:
+    - cron: '30 4 * * *'    # 06h30 Paris — après l'ingestion des comptes rendus
+  workflow_dispatch:
+    inputs:
+      limit:
+        description: "Nombre d'auditions à traiter"
+        required: false
+        default: "3"
+
+concurrency:
+  group: transcriptions
+  cancel-in-progress: false
+
+jobs:
+  transcrire:
+    runs-on: ubuntu-latest
+    timeout-minutes: 90
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+          cache: 'npm'
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Vérifier ffmpeg
+        run: ffmpeg -version | head -1
+
+      - name: Transcrire et analyser
+        env:
+          NEXT_PUBLIC_SUPABASE_URL: ${{ secrets.NEXT_PUBLIC_SUPABASE_URL }}
+          SUPABASE_SERVICE_ROLE_KEY: ${{ secrets.SUPABASE_SERVICE_ROLE_KEY }}
+          ASR_API_KEY: ${{ secrets.ASR_API_KEY }}
+          DEEPSEEK_API_KEY: ${{ secrets.DEEPSEEK_API_KEY }}
+        run: npx --yes tsx scripts/transcribe-auditions.ts --limit=${{ github.event.inputs.limit || '3' }}

@@ -430,14 +430,14 @@ async function collectEducation(): Promise<any[]> {
 
   return [
     {
-      ...commun, code: "edu_bac_taux", sort_order: 1,
+      ...commun, code: "edu_bac_taux", sort_order: 5,
       label: "Réussite au baccalauréat", unit: "%", better_when: "up",
       value: Number((derniere.adm / derniere.pres * 100).toFixed(1)),
       sub: `${derniere.adm.toLocaleString("fr-FR")} admis sur ${derniere.pres.toLocaleString("fr-FR")} candidats présents`,
       history: sessions.map(s => ({ period: String(s.an), value: Number((s.adm / s.pres * 100).toFixed(1)) })),
     },
     {
-      ...commun, code: "edu_bacheliers", sort_order: 2,
+      ...commun, code: "edu_bacheliers", sort_order: 6,
       label: "Bacheliers", unit: "diplômés", better_when: null,
       value: derniere.adm,
       sub: "toutes voies confondues : générale, technologique et professionnelle",
@@ -609,6 +609,121 @@ async function collectImmigration(): Promise<any[]> {
   }
 
   // L'affichage est assuré par la boucle appelante : ne pas le dupliquer ici.
+  return out;
+}
+
+/* ═══════════ Éducation — effectifs et encadrement (ministère) ═══════════ */
+
+/**
+ * Les chiffres de tête de « L'éducation nationale en chiffres », reconstitués depuis
+ * l'open data du ministère plutôt que depuis la brochure.
+ *
+ * La page de la DEPP est protégée par un pare-feu qui impose une épreuve JavaScript :
+ * elle répond 403 à toute lecture automatisée, et aucun en-tête de navigateur n'y
+ * change rien. Le portail data.education.gouv.fr, lui, sert les mêmes données par une
+ * API ouverte, mise à jour à chaque rentrée. On agrège donc établissement par
+ * établissement — l'API sait le faire côté serveur — pour retrouver les totaux
+ * nationaux, avec l'historique en prime, que la brochure ne donne pas.
+ *
+ * Les jeux « fr-en-effectifs-premier-degre » et « -second-degre » portent des noms
+ * prometteurs mais sont marqués obsolètes et figés depuis 2016 : ce sont les jeux
+ * par école et par établissement qui vivent encore.
+ */
+const EDUC_ELEVES_1D = "fr-en-ecoles-effectifs-nb_classes";
+const EDUC_COLLEGE = "fr-en-college-effectifs-niveau-sexe-lv";
+const EDUC_LYCEE_GT = "fr-en-lycee_gt-effectifs-niveau-sexe-lv";
+
+/** « 2025-01-01T00:00:00+00:00 » ou « 2025 » → « 2025 ». */
+const rentree = (v: unknown) => String(v ?? "").slice(0, 4) || null;
+
+async function collectEducationEffectifs(): Promise<any[]> {
+  const out: any[] = [];
+
+  /** Somme d'un champ par rentrée scolaire, calculée par le portail. */
+  const parRentree = async (dataset: string, champs: string) =>
+    ods(EDUCATION_BASE, dataset,
+      "select=" + encodeURIComponent(champs) +
+      "&group_by=" + encodeURIComponent("rentree_scolaire as an") + "&order_by=an&limit=40");
+
+  /* 1 et 2. Premier degré : combien d'élèves, et combien par classe. */
+  const ecoles = (await parRentree(EDUC_ELEVES_1D,
+    "sum(nombre_total_eleves) as eleves,sum(nombre_total_classes) as classes"))
+    .map(r => ({ an: rentree(r.an), eleves: Number(r.eleves), classes: Number(r.classes) }))
+    .filter(r => r.an && r.eleves > 0 && r.classes > 0)
+    .sort((a, b) => a.an!.localeCompare(b.an!));
+
+  const publie = await odsPublie(EDUCATION_BASE, EDUC_ELEVES_1D);
+  const commun = {
+    theme: "education",
+    source: "Ministère de l'Éducation nationale — DEPP",
+    provider: "education",
+    published_at: publie,
+    updated_at: new Date().toISOString(),
+  };
+
+  if (ecoles.length) {
+    const d = ecoles[ecoles.length - 1];
+    const premier = ecoles[0];
+    out.push({
+      ...commun,
+      code: "edu_eleves_1d", sort_order: 1,
+      label: "Élèves dans le premier degré", unit: "élèves", better_when: null,
+      value: d.eleves,
+      sub: `maternelle et élémentaire, public et privé — ${Math.abs(d.eleves - premier.eleves).toLocaleString("fr-FR")} élèves ${d.eleves < premier.eleves ? "de moins" : "de plus"} qu'à la rentrée ${premier.an}`,
+      period: d.an, period_label: `rentrée ${d.an}`,
+      history: ecoles.map(e => ({ period: e.an!, value: e.eleves })),
+      source_url: `${EDUCATION_BASE}/explore/dataset/${EDUC_ELEVES_1D}/`,
+      series_id: EDUC_ELEVES_1D,
+    });
+
+    const taille = (e: typeof d) => Number((e.eleves / e.classes).toFixed(1));
+    out.push({
+      ...commun,
+      code: "edu_taille_classe", sort_order: 2,
+      label: "Élèves par classe", unit: "en moyenne", better_when: "down",
+      value: taille(d),
+      // Le nombre de classes a peu bougé ; ce sont les élèves qui manquent. Le dire
+      // évite de lire la baisse comme un effort d'encadrement qu'elle n'est pas.
+      sub: `dans le premier degré, contre ${taille(premier).toLocaleString("fr-FR")} à la rentrée ${premier.an} — ${d.classes.toLocaleString("fr-FR")} classes pour ${d.eleves.toLocaleString("fr-FR")} élèves`,
+      period: d.an, period_label: `rentrée ${d.an}`,
+      history: ecoles.map(e => ({ period: e.an!, value: taille(e) })),
+      source_url: `${EDUCATION_BASE}/explore/dataset/${EDUC_ELEVES_1D}/`,
+      series_id: EDUC_ELEVES_1D,
+    });
+  }
+
+  /* 3 et 4. Collège et lycée général et technologique. */
+  const niveaux: { code: string; label: string; dataset: string; champ: string; ordre: number; sub: string }[] = [
+    { code: "edu_eleves_college", label: "Collégiens", dataset: EDUC_COLLEGE, champ: "nombre_eleves_total", ordre: 3, sub: "de la sixième à la troisième, public et privé" },
+    { code: "edu_eleves_lycee", label: "Lycéens (voie générale et technologique)", dataset: EDUC_LYCEE_GT, champ: "nombre_d_eleves", ordre: 4, sub: "hors voie professionnelle" },
+  ];
+
+  for (const n of niveaux) {
+    try {
+      const lignes = (await parRentree(n.dataset, `sum(${n.champ}) as eleves`))
+        .map(r => ({ an: rentree(r.an), eleves: Number(r.eleves) }))
+        .filter(r => r.an && r.eleves > 0)
+        .sort((a, b) => a.an!.localeCompare(b.an!));
+      if (!lignes.length) continue;
+      const d = lignes[lignes.length - 1];
+      out.push({
+        ...commun,
+        code: n.code, sort_order: n.ordre,
+        label: n.label, unit: "élèves", better_when: null,
+        value: d.eleves,
+        sub: n.sub,
+        period: d.an, period_label: `rentrée ${d.an}`,
+        history: lignes.map(l => ({ period: l.an!, value: l.eleves })),
+        source_url: `${EDUCATION_BASE}/explore/dataset/${n.dataset}/`,
+        series_id: n.dataset,
+        published_at: await odsPublie(EDUCATION_BASE, n.dataset),
+      });
+    } catch (e) {
+      // Un niveau manquant n'empêche pas les autres d'être publiés.
+      console.warn(`  ⚠ ${n.label} : ${(e as Error).message}`);
+    }
+  }
+
   return out;
 }
 
@@ -1119,7 +1234,8 @@ async function main() {
   }
 
   for (const [titre, collecte] of [
-    ["Éducation (ministère)", collectEducation],
+    ["Éducation — effectifs (DEPP)", collectEducationEffectifs],
+    ["Éducation — baccalauréat", collectEducation],
     ["Santé (DREES)", collectSante],
     ["Immigration (INSEE)", collectImmigrationInsee],
     ["Immigration (Eurostat)", collectImmigration],

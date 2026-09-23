@@ -1,6 +1,6 @@
 "use client";
 
-import { useMemo, useState } from "react";
+import { useEffect, useMemo, useRef } from "react";
 import { MapPin, X } from "lucide-react";
 import { getDepartmentName } from "@/lib/department-mapping";
 import { departmentPaths } from "@/lib/data/departmentPaths";
@@ -9,11 +9,12 @@ import { departmentPaths } from "@/lib/data/departmentPaths";
  * Carte des départements, pour retrouver ses élus.
  *
  * Les tracés viennent de `departmentPaths`, le fond de carte déjà utilisé ailleurs sur
- * le site : cent un départements, DROM et Corse compris, livrés avec la page. L'ancienne
- * version téléchargeait un SVG sur un CDN, le passait au DOMParser, le recomposait puis
- * l'injectait en `innerHTML` — trois étapes avant le premier affichage, et un survol qui
- * traînait parce qu'un filtre CSS posé sur le SVG entier obligeait à redessiner la carte
- * entière à chaque changement de couleur. Ici, un `fill` change, rien d'autre.
+ * le site : cent un départements, DROM et Corse compris, livrés avec la page.
+ *
+ * Deux choix commandent la fluidité. Le survol est traité EN CSS, pas en React : garder
+ * le département survolé dans un état redessinait les cent un tracés à chaque passage de
+ * frontière. Et l'infobulle est écrite directement dans le DOM, pour la même raison.
+ * React ne réagit plus qu'à la sélection, qui est rare.
  */
 
 // Couleur de survol PAR RÉGION : chaque région a sa teinte (PACA jaune, Auvergne-Rhône-Alpes
@@ -34,9 +35,22 @@ const REGION_GROUPS: Array<{ color: string; deps: string[] }> = [
   { color: "#d946ef", deps: ["2A","2B"] },                                                      // Corse — fuchsia
   { color: "#fb7185", deps: ["971","972","973","974","976"] },                                  // DROM — rose corail
 ];
-const REGION_COLOR: Record<string, string> = Object.fromEntries(
-  REGION_GROUPS.flatMap(g => g.deps.map(d => [d, g.color]))
+
+/** Code département → indice de sa région, pour lui attribuer sa classe de survol. */
+const REGION_INDEX: Record<string, number> = Object.fromEntries(
+  REGION_GROUPS.flatMap((g, i) => g.deps.map(d => [d, i]))
 );
+
+/**
+ * Une règle de survol par région, écrite une fois pour toutes.
+ *
+ * Tailwind ne sait pas composer un nom de classe à la volée, et de toute façon la
+ * couleur doit venir du même tableau que le reste. La double classe dans le sélecteur
+ * met la règle au-dessus de celle du thème sombre, qui a la même force.
+ */
+const REGION_CSS = REGION_GROUPS
+  .map((g, i) => `.fm-d.fm-r${i}:hover{fill:${g.color}}`)
+  .join("");
 
 const CODES = Object.keys(departmentPaths);
 
@@ -59,28 +73,50 @@ interface FranceMapProps {
 }
 
 export default function FranceMap({ selectedDepartment, onDepartmentSelect }: FranceMapProps) {
-  const [survole, setSurvole] = useState<string | null>(null);
+  const bulle = useRef<HTMLDivElement>(null);
+  const bulleCode = useRef<HTMLSpanElement>(null);
+  const bulleNom = useRef<HTMLSpanElement>(null);
+  // Dernier code écrit dans l'infobulle : la souris émet des dizaines d'événements par
+  // seconde à l'intérieur d'un même tracé, inutile de la réécrire à chacun.
+  const dernier = useRef<string | null>(null);
 
-  // Le département désigné par l'infobulle : celui qu'on survole, sinon la sélection.
-  const montre = survole ?? selectedDepartment;
-  const nom = useMemo(() => (montre ? getDepartmentName(montre) : null), [montre]);
+  /** Écrit l'infobulle sans repasser par React. */
+  const afficher = (code: string | null) => {
+    if (code === dernier.current) return;
+    dernier.current = code;
+    if (!bulle.current) return;
+    if (!code) { bulle.current.style.opacity = "0"; return; }
+    if (bulleCode.current) bulleCode.current.textContent = code;
+    if (bulleNom.current) bulleNom.current.textContent = getDepartmentName(code);
+    bulle.current.style.opacity = "1";
+  };
+
+  // Au repos, l'infobulle rappelle le département choisi.
+  useEffect(() => { dernier.current = null; afficher(selectedDepartment); }, [selectedDepartment]);
+
+  const liste = useMemo(
+    () => CODES.map(c => ({ code: c, nom: getDepartmentName(c) })).sort((a, b) => a.nom.localeCompare(b.nom, "fr")),
+    [],
+  );
 
   return (
     <div className="relative w-full">
-      <div className="mb-4 flex items-center justify-between gap-3">
+      <style dangerouslySetInnerHTML={{ __html: REGION_CSS }} />
+
+      <div className="mb-4 flex flex-wrap items-center justify-between gap-3">
         <div className="flex items-center gap-2">
-          <MapPin className="h-5 w-5 text-red-500" />
+          <MapPin className="h-5 w-5 shrink-0 text-red-500" />
           <span className="text-sm font-semibold text-foreground">
             {selectedDepartment
-              ? "Cliquez sur un autre département ou réinitialisez"
-              : "Cliquez sur un département (Hexagone ou DROM-COM)"}
+              ? "Touchez un autre département ou réinitialisez"
+              : "Touchez un département — Hexagone, Corse ou Outre-mer"}
           </span>
         </div>
 
         {selectedDepartment && (
           <button
             onClick={() => onDepartmentSelect(null)}
-            className="flex shrink-0 items-center gap-1.5 rounded-full bg-red-500/10 px-3 py-1.5 text-xs font-semibold text-red-600 transition-all hover:bg-red-500/20 active:scale-95 dark:text-red-400"
+            className="flex shrink-0 items-center gap-1.5 rounded-full bg-red-500/10 px-3 py-1.5 text-xs font-semibold text-red-600 transition hover:bg-red-500/20 active:scale-95 dark:text-red-400"
           >
             <X className="h-3.5 w-3.5" />
             Voir toute la France
@@ -88,43 +124,65 @@ export default function FranceMap({ selectedDepartment, onDepartmentSelect }: Fr
         )}
       </div>
 
+      {/* Sur un téléphone, viser le Val-de-Marne au doigt relève de l'exploit : la liste
+          déroulante fait le même travail, et reste utile au clavier sur grand écran. */}
+      <label className="mb-3 block sm:hidden">
+        <span className="sr-only">Choisir un département</span>
+        <select
+          value={selectedDepartment ?? ""}
+          onChange={e => onDepartmentSelect(e.target.value || null)}
+          className="w-full rounded-2xl border border-border bg-card px-4 py-3 text-sm font-semibold text-foreground"
+        >
+          <option value="">Choisir un département…</option>
+          {liste.map(d => <option key={d.code} value={d.code}>{d.code} — {d.nom}</option>)}
+        </select>
+      </label>
+
       <div className="relative overflow-hidden rounded-2xl border border-border bg-card p-4 shadow-sm md:p-8">
         <div className="pointer-events-none absolute inset-0 rounded-2xl bg-gradient-to-br from-red-500/[0.05] via-transparent to-red-500/[0.02]" />
 
-        {montre && (
-          <div className="pointer-events-none absolute right-6 top-6 z-20 flex min-w-[140px] flex-col rounded-xl bg-slate-900 px-4 py-2.5 text-sm font-bold text-white shadow-2xl dark:bg-slate-100 dark:text-slate-900">
-            <span className="mb-0.5 text-[10px] uppercase tracking-wider opacity-60">{montre}</span>
-            <span className="text-nowrap text-base">{nom}</span>
-          </div>
-        )}
+        <div
+          ref={bulle}
+          style={{ opacity: 0, transition: "opacity .12s ease-out" }}
+          className="pointer-events-none absolute right-4 top-4 z-20 flex min-w-[130px] flex-col rounded-xl bg-slate-900 px-4 py-2.5 text-sm font-bold text-white shadow-2xl dark:bg-slate-100 dark:text-slate-900 md:right-6 md:top-6"
+        >
+          <span ref={bulleCode} className="mb-0.5 text-[10px] uppercase tracking-wider opacity-60" />
+          <span ref={bulleNom} className="text-nowrap text-base" />
+        </div>
 
         <svg
           viewBox={VIEWBOX}
           className="mx-auto h-auto max-h-[500px] w-full text-white dark:text-slate-900"
           role="img"
           aria-label="Carte des départements français"
-          onMouseLeave={() => setSurvole(null)}
-          // Un clic à côté des tracés remet la carte à plat.
-          onClick={e => { if ((e.target as Element).tagName !== "path") onDepartmentSelect(null); }}
+          // Un seul écouteur pour les cent un tracés, et aucun rendu React déclenché.
+          onMouseOver={e => {
+            const t = e.target as Element;
+            afficher(t.tagName === "path" ? t.getAttribute("data-code") : selectedDepartment);
+          }}
+          onMouseLeave={() => afficher(selectedDepartment)}
+          onClick={e => {
+            const t = e.target as Element;
+            const code = t.tagName === "path" ? t.getAttribute("data-code") : null;
+            onDepartmentSelect(code && code !== selectedDepartment ? code : null);
+          }}
         >
           {CODES.map(code => {
             const choisi = selectedDepartment === code;
-            const teinte = choisi ? "#ef4444" : survole === code ? (REGION_COLOR[code] ?? "#94a3b8") : null;
             return (
               <path
                 key={code}
                 d={departmentPaths[code].d}
-                // La teinte n'est posée en style que sur le département désigné ; les autres
-                // gardent une classe, qui sait suivre le thème sombre.
-                className={`cursor-pointer outline-none transition-[fill] duration-150 ${
-                  teinte ? "" : "fill-slate-200 dark:fill-slate-700"
+                data-code={code}
+                // Le style en ligne ne sert qu'au département choisi, et passe alors
+                // devant la règle de survol de sa région.
+                className={`fm-d fm-r${REGION_INDEX[code] ?? 0} cursor-pointer outline-none transition-[fill] duration-150 ${
+                  choisi ? "" : "fill-slate-200 dark:fill-slate-700"
                 }`}
-                style={teinte ? { fill: teinte } : undefined}
+                style={choisi ? { fill: "#ef4444" } : undefined}
                 stroke="currentColor"
                 strokeWidth={0.8}
                 strokeLinejoin="round"
-                onMouseEnter={() => setSurvole(code)}
-                onClick={() => onDepartmentSelect(choisi ? null : code)}
               >
                 <title>{getDepartmentName(code)}</title>
               </path>

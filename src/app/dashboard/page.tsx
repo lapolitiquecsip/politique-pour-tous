@@ -12,6 +12,7 @@ import PremiumPreferences from "@/components/dashboard/PremiumPreferences";
 import CommuneFeedCard from "@/components/dashboard/CommuneFeedCard";
 import CandidatesFollowFeed from "@/components/dashboard/CandidatesFollowFeed";
 import CommissionsProFeed from "@/components/dashboard/CommissionsProFeed";
+import JournalOfficielDuJour from "@/components/home/JournalOfficielDuJour";
 import { usePremium } from "@/lib/hooks/usePremium";
 import { departmentPaths } from "@/lib/data/departmentPaths";
 import { regionPaths } from "@/lib/data/regionPaths";
@@ -301,7 +302,10 @@ export default function DashboardPage() {
           <NotificationsFeed userId={userId} />
           {/* Réservé à l'offre Pro : le fil quotidien des commissions, en tête de
               l'espace personnel, là où un professionnel vient d'abord. */}
+          {/* Tout ce qui relève de l'offre Pro est rassemblé ici : le professionnel
+              ouvre son espace et trouve la journée complète, sans chercher ailleurs. */}
           {isPro && <CommissionsProFeed />}
+          {isPro && <JournalOfficielDuJour />}
           <CandidatesFollowFeed />
           <CommuneFeedCard />
           <PremiumPreferences userId={userId} />

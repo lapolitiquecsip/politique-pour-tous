@@ -145,7 +145,24 @@ const NATURES: [RegExp, string][] = [
 ];
 const natureDe = (titre: string) => NATURES.find(([re]) => re.test(titre))?.[1] ?? "autre";
 
-type Texte = { id: string; titre: string; nature: string };
+type Texte = {
+  id: string;
+  titre: string;
+  nature: string;
+  /** Ce que le texte fait, en clair. Nul tant qu'il n'a pas été expliqué. */
+  explication?: string | null;
+  /** « notice » = note officielle de l'administration ; « ia » = résumé généré ;
+   *  « renvoi » = le JO ne publie qu'un pointeur, il n'y a rien à expliquer. */
+  source_explication?: "notice" | "ia" | "renvoi" | null;
+};
+
+/** Ce qu'on tire du texte intégral, livré dans la même archive que le sommaire. */
+type Corps = {
+  notice: string;
+  visas: string;
+  articles: { num: number; texte: string }[];
+  ministere: string;
+};
 type Groupe = { titre: string; textes: Texte[] };
 type Rubrique = { titre: string; groupes: Groupe[] };
 
@@ -217,6 +234,61 @@ function lireConteneur(xml: string): Edition | null {
   };
 }
 
+/* ──────────────────────── Lecture du texte intégral ──────────────────────── */
+
+/** Contenu d'une balise, débarrassé du balisage interne. */
+function baliseTexte(xml: string, t: string): string {
+  // Recherche par position, sans construire de motif : dans un gabarit, \s et \S
+  // sont consommés à l’écriture de la chaîne, si bien qu’un ([\s\S]*?) assemblé ainsi
+  // devient ([sS]*?) et ne capture plus que des suites de « s ». Toutes les balises
+  // revenaient vides sans qu’aucune erreur ne soit levée.
+  const ouvre = `<${t}>`, ferme = `</${t}>`;
+  const i = xml.indexOf(ouvre);
+  if (i < 0) return "";
+  const j = xml.indexOf(ferme, i + ouvre.length);
+  if (j < 0) return "";
+  return decode(xml.slice(i + ouvre.length, j).replace(/<[^>]+>/g, " "));
+}
+
+/**
+ * Lit la fiche d'un texte.
+ *
+ * La NOTICE est une note rédigée par l'administration elle-même — « Publics concernés :
+ * … Objet : … » — et vaut mieux que n'importe quel résumé généré. Elle est rare : cinq
+ * textes sur cent deux le 18 septembre, et le reste du temps la balise ne contient
+ * qu'un `<CONTENU/>` vide.
+ *
+ * Les VISAS disent d'où vient l'acte (« Vu la demande de dérogation formulée par… »).
+ * Le dispositif, lui, n'est PAS dans ce fichier : il vit dans des fichiers d'article
+ * séparés, que `lireArticle` rattache ensuite par l'identifiant du texte.
+ */
+function lireCorps(xml: string): Corps {
+  return {
+    notice: baliseTexte(xml, "NOTICE"),
+    visas: baliseTexte(xml, "VISAS"),
+    articles: [],
+    ministere: baliseTexte(xml, "MINISTERE"),
+  };
+}
+
+/** Un article et le texte auquel il appartient. */
+function lireArticle(xml: string): { cid: string; num: number; texte: string } | null {
+  const cid = xml.match(/<TEXTE\s+cid="(JORFTEXT\d+)"/)?.[1];
+  if (!cid) return null;
+  const texte = baliseTexte(xml, "CONTENU");
+  if (!texte) return null;
+  return { cid, num: Number(baliseTexte(xml, "NUM")) || 0, texte };
+}
+
+/** Identifiant du texte, tel qu'il figure dans le nom de son fichier. */
+const idDeFichier = (nom: string) => nom.match(/(JORFTEXT\d+)\.xml$/)?.[1] ?? null;
+
+/** Ce qu'on donne à lire au modèle : d'où vient l'acte, puis ce qu'il décide. */
+function corpsLisible(c: Corps): string {
+  const articles = [...c.articles].sort((a, b) => a.num - b.num).map(a => a.texte).join(" ");
+  return [c.visas, articles].filter(Boolean).join("\n\n").trim();
+}
+
 /* ─────────────────────────────── Résumé du jour ─────────────────────────────── */
 
 const MODEL = process.env.JORF_MODEL || "deepseek-v4-pro";
@@ -262,6 +334,119 @@ async function resumer(e: Edition): Promise<string | null> {
   return digest || null;
 }
 
+
+/* ──────────────────────── Expliquer chaque texte ──────────────────────── */
+
+/** Taille d'un lot envoyé au modèle. Assez petit pour que la réponse tienne. */
+const LOT_EXPLICATION = 12;
+
+const CONSIGNE_TEXTES = `Tu expliques, pour des professionnels de la politique et des entreprises, ce que font des textes parus au Journal officiel.
+
+Pour CHAQUE texte reçu, écris UNE phrase de 15 à 35 mots disant ce qu'il change concrètement et pour qui.
+Règles impératives :
+- ne t'appuie QUE sur l'intitulé et le corps fournis ; n'invente aucun chiffre, aucune date, aucun bénéficiaire ;
+- commence directement par le verbe ou l'objet, sans « Ce texte… » ni « Cet arrêté… » ;
+- si le corps est vide ou purement formel (délégation de signature, nomination), dis simplement de quoi il s'agit et pour qui ;
+- pas de jargon inutile : « les entreprises du bâtiment » plutôt que « les personnes visées à l'article L. 5424-6 ».
+Réponds en JSON : { "textes": [ { "id": "JORFTEXT…", "explication": "…" } ] } — un objet par texte reçu, avec son identifiant exact.`;
+
+/**
+ * Donne à chaque texte une phrase qui dit ce qu'il fait.
+ *
+ * Trois cas, dans cet ordre :
+ *   — une NOTICE officielle existe : on la reprend, raccourcie. C'est l'administration
+ *     qui explique son propre texte, aucun résumé ne fera mieux ;
+ *   — le JO ne publie qu'un renvoi (« Documents déposés », « Conférence des
+ *     présidents ») : son contenu est vide, il n'y a rien à expliquer et on le dit ;
+ *   — sinon, le modèle résume, par lots, à partir de l'intitulé et du corps.
+ *
+ * Le coût tient : une journée entière pèse une cinquantaine de milliers de caractères.
+ */
+async function expliquerTextes(sections: Rubrique[], corps: Map<string, Corps>): Promise<number> {
+  const aResumer: { id: string; titre: string; corps: string }[] = [];
+
+  for (const r of sections) {
+    for (const g of r.groupes) {
+      for (const t of g.textes) {
+        const c = corps.get(t.id);
+        const notice = c?.notice?.trim();
+        if (notice) {
+          // La notice officielle s'ouvre souvent sur « Publics concernés : … Objet : … ».
+          // On garde la phrase d'objet, qui porte le fond, et on borne la longueur.
+          const objet = notice.match(/Objet\s*:\s*([\s\S]*?)(?:\s*(?:Entr[ée]e en vigueur|Notice|R[ée]f[ée]rences)\s*:|$)/i)?.[1];
+          t.explication = abreger(objet?.trim() || notice, 320);
+          t.source_explication = "notice";
+          continue;
+        }
+        const lisible = c ? corpsLisible(c) : "";
+        if (!lisible) {
+          // Le Journal officiel signale ici une publication faite ailleurs : il n'en
+          // reprend pas le contenu. Le dire vaut mieux que de laisser une ligne muette.
+          t.explication = "Le Journal officiel signale cette publication sans en reprendre le contenu : le détail est tenu par l'assemblée concernée.";
+          t.source_explication = "renvoi";
+          continue;
+        }
+        aResumer.push({ id: t.id, titre: t.titre, corps: abreger(lisible, 1800) });
+      }
+    }
+  }
+
+  if (!aResumer.length || !LLM_KEY) return 0;
+
+  const obtenues = new Map<string, string>();
+  for (let i = 0; i < aResumer.length; i += LOT_EXPLICATION) {
+    const lot = aResumer.slice(i, i + LOT_EXPLICATION);
+    try {
+      const r = await fetch(`${LLM_URL}chat/completions`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json", Authorization: `Bearer ${LLM_KEY}` },
+        body: JSON.stringify({
+          model: MODEL,
+          messages: [
+            { role: "system", content: CONSIGNE_TEXTES },
+            { role: "user", content: lot.map(t => `### ${t.id}\n${t.titre}\n\n${t.corps}`).join("\n\n---\n\n") },
+          ],
+          response_format: { type: "json_object" },
+          max_tokens: 4000,
+        }),
+      });
+      const body: any = await r.json();
+      if (!r.ok) throw new Error(`HTTP ${r.status} — ${JSON.stringify(body).slice(0, 140)}`);
+      const brut = body.choices?.[0]?.message?.content ?? "";
+      const parsed = JSON.parse(brut.replace(/^```json\s*|\s*```$/g, ""));
+      // On n'accepte QUE les identifiants envoyés : un identifiant inventé rattacherait
+      // une explication au mauvais texte, ce qui est pire qu'une ligne sans explication.
+      const envoyes = new Set(lot.map(t => t.id));
+      for (const x of parsed.textes ?? []) {
+        const id = String(x?.id ?? "");
+        const e = String(x?.explication ?? "").trim();
+        if (e && envoyes.has(id)) obtenues.set(id, abreger(e, 320));
+      }
+    } catch (e) {
+      console.warn(`    ⚠ explications ${i + 1}-${i + lot.length} : ${(e as Error).message}`);
+    }
+  }
+
+  for (const r of sections) {
+    for (const g of r.groupes) {
+      for (const t of g.textes) {
+        const e = obtenues.get(t.id);
+        if (e) { t.explication = e; t.source_explication = "ia"; }
+      }
+    }
+  }
+  return obtenues.size;
+}
+
+/** Coupe à la phrase, sans laisser de mot tranché en deux. */
+function abreger(s: string, max: number): string {
+  const net = s.replace(/\s+/g, " ").trim();
+  if (net.length <= max) return net;
+  const coupe = net.slice(0, max);
+  const point = Math.max(coupe.lastIndexOf(". "), coupe.lastIndexOf(" ; "));
+  return (point > max * 0.5 ? coupe.slice(0, point + 1) : coupe.replace(/\s\S*$/, "")) + (point > max * 0.5 ? "" : "…");
+}
+
 /* ───────────────────────────────── Traitement ───────────────────────────────── */
 
 async function main() {
@@ -283,7 +468,7 @@ async function main() {
   const { data: connues } = await supabase.from("jorf_editions").select("date, digest");
   const dejaResumee = new Set((connues ?? []).filter(r => r.digest).map(r => r.date));
 
-  const editions = new Map<string, Edition & { source_file: string; published_at: string }>();
+  const editions = new Map<string, Edition & { corps: Map<string, Corps>; source_file: string; published_at: string }>();
 
   for (const fichier of archives) {
     try {
@@ -292,10 +477,31 @@ async function main() {
       const depose = r.headers.get("last-modified");
       const buf = gunzipSync(Buffer.from(await r.arrayBuffer()));
 
-      let trouves = 0, ecartes = 0;
+      // Une seule traverseée de l'archive : les sommaires ET les textes intégraux y
+      // sont, inutile de la relire. Les corps serviront à expliquer chaque entrée.
+      const conteneurs: string[] = [];
+      const corps = new Map<string, Corps>();
       for (const { nom, contenu } of lireTar(buf)) {
-        if (!/\/JORFCONT\d+\.xml$/.test(nom)) continue;
-        const e = lireConteneur(contenu.toString("utf8"));
+        if (/\/JORFCONT\d+\.xml$/.test(nom)) { conteneurs.push(contenu.toString("utf8")); continue; }
+        if (nom.includes("/texte/version/")) {
+          const id = idDeFichier(nom);
+          // Les articles peuvent avoir été lus avant leur texte : on garde les leurs.
+          if (id) corps.set(id, { ...lireCorps(contenu.toString("utf8")), articles: corps.get(id)?.articles ?? [] });
+        } else if (nom.includes("/article/")) {
+          // Les articles arrivent dans le désordre et avant ou après leur texte : on
+          // crée la fiche au besoin, elle sera complétée à la rencontre du texte.
+          const a = lireArticle(contenu.toString("utf8"));
+          if (a) {
+            const f = corps.get(a.cid) ?? { notice: "", visas: "", articles: [], ministere: "" };
+            f.articles.push({ num: a.num, texte: a.texte });
+            corps.set(a.cid, f);
+          }
+        }
+      }
+
+      let trouves = 0, ecartes = 0;
+      for (const xml of conteneurs) {
+        const e = lireConteneur(xml);
         if (!e) continue;
         if (e.date < DEPUIS) { ecartes++; continue; }   // correction d'archive ancienne
         trouves++;
@@ -305,6 +511,7 @@ async function main() {
         if (!editions.has(e.date)) {
           editions.set(e.date, {
             ...e,
+            corps,
             source_file: fichier,
             published_at: depose ? new Date(depose).toISOString() : new Date().toISOString(),
           });
@@ -326,6 +533,13 @@ async function main() {
     console.log(`\n  ${e.title}`);
     console.log(`    ${e.text_count} textes — ${repartition}`);
     console.log(`    ${e.sections.length} rubrique(s) : ${e.sections.map(s => s.titre).join(" | ")}`);
+
+    // Chaque texte reçoit sa phrase d'explication avant l'enregistrement : c'est elle
+    // qui fait la valeur de la rubrique, un intitulé nu ne dit rien à personne.
+    await expliquerTextes(e.sections, e.corps);
+    const tous = e.sections.flatMap(r => r.groupes.flatMap(g => g.textes));
+    const par = (src: string) => tous.filter(t => t.source_explication === src).length;
+    console.log(`    corps lus : ${e.corps.size} — expliqués : ${par("notice")} par notice, ${par("ia")} par résumé, ${par("renvoi")} sans contenu, ${tous.filter(t => !t.explication).length} en attente`);
 
     let digest: string | null = null;
     if (!SANS_RESUME && !dejaResumee.has(e.date)) {

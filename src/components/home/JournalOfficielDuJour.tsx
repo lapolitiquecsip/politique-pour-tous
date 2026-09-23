@@ -19,7 +19,13 @@ import { usePremium } from "@/lib/hooks/usePremium";
  * Les données viennent du flux OPENDATA de la DILA (voir scripts/update-jorf.ts).
  */
 
-type Texte = { id: string; titre: string; nature: string };
+type Texte = {
+  id: string; titre: string; nature: string;
+  /** Ce que le texte fait, en clair. */
+  explication?: string | null;
+  /** « notice » = note officielle ; « ia » = résumé ; « renvoi » = rien à expliquer. */
+  source_explication?: "notice" | "ia" | "renvoi" | null;
+};
 type Groupe = { titre: string; textes: Texte[] };
 type Rubrique = { titre: string; groupes: Groupe[] };
 type Edition = {
@@ -328,13 +334,23 @@ export default function JournalOfficielDuJour() {
                                     <a
                                       href={`https://www.legifrance.gouv.fr/jorf/id/${t.id}`}
                                       target="_blank" rel="noopener noreferrer"
-                                      className="group flex items-start gap-2 rounded-lg px-2 py-1.5 transition hover:bg-white/[0.06]"
+                                      className="group flex items-start gap-2 rounded-lg px-2 py-2 transition hover:bg-white/[0.06]"
                                     >
                                       <span className={`mt-0.5 shrink-0 rounded px-1.5 py-0.5 text-[9px] font-black uppercase tracking-wider ${nat(t.nature).classe}`}>
                                         {nat(t.nature).un}
                                       </span>
-                                      <span className="min-w-0 flex-1 text-[12px] leading-snug text-white/80 group-hover:text-white">
-                                        {t.titre}
+                                      <span className="min-w-0 flex-1">
+                                        <span className="block text-[12px] font-semibold leading-snug text-white/85 group-hover:text-white">
+                                          {t.titre}
+                                        </span>
+                                        {t.explication && (
+                                          <span className={`mt-1 block text-[12px] leading-snug ${t.source_explication === "renvoi" ? "italic text-white/35" : "text-white/60"}`}>
+                                            {t.explication}
+                                            {t.source_explication === "notice" && (
+                                              <span className="ml-1.5 align-middle text-[8px] font-black uppercase tracking-widest text-emerald-300/80">Notice officielle</span>
+                                            )}
+                                          </span>
+                                        )}
                                       </span>
                                       <ExternalLink size={11} className="mt-0.5 shrink-0 text-white/25 group-hover:text-fuchsia-300" />
                                     </a>

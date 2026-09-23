@@ -556,14 +556,14 @@ async function collectImmigration(): Promise<any[]> {
     const parAn = new Map(tous.histoire.map(h => [h.period, h.value]));
 
     out.push({
-      code: "immi_nes_etranger", theme: "immigration", sort_order: 1,
+      code: "immi_nes_etranger", theme: "immigration", sort_order: 2,
       label: "Personnes nées à l'étranger", unit: "% de la population",
       value: Number(partFr.toFixed(1)),
       // Précision indispensable : Eurostat compte les personnes NÉES À L'ÉTRANGER, ce qui
       // inclut les Français nés hors de France. L'INSEE compte les IMMIGRÉS — nés
       // étrangers à l'étranger — et publie donc un chiffre plus bas. Sans cette note, on
       // paraîtrait contredire l'INSEE alors qu'on ne mesure pas la même chose.
-      sub: `${entier(nes.fr)} personnes — définition Eurostat, plus large que la notion d'immigré de l'INSEE (qui exclut les Français nés hors de France)`,
+      sub: `${entier(nes.fr)} personnes — définition Eurostat, qui inclut les Français nés hors de France`,
       period: nes.periode, period_label: nes.periode,
       history: nes.histoire
         .filter(h => parAn.get(h.period))
@@ -579,12 +579,12 @@ async function collectImmigration(): Promise<any[]> {
   // 2. Premiers titres de séjour, 3. demandes d'asile — même forme, on boucle.
   const flux: { code: string; label: string; dataset: string; filters: string; unit: string; sub: string; ordre: number }[] = [
     {
-      code: "immi_titres", label: "Premiers titres de séjour", ordre: 2,
+      code: "immi_titres", label: "Premiers titres de séjour", ordre: 6,
       dataset: "migr_resfirst", filters: "citizen=TOTAL&reason=TOTAL&duration=TOTAL&geo=FR&geo=EU27_2020",
       unit: "titres délivrés", sub: "délivrés dans l'année, tous motifs confondus",
     },
     {
-      code: "immi_asile", label: "Demandes d'asile", ordre: 3,
+      code: "immi_asile", label: "Demandes d'asile", ordre: 7,
       dataset: "migr_asyappctza", filters: "citizen=TOTAL&sex=T&age=TOTAL&unit=PER&geo=FR&geo=EU27_2020",
       unit: "demandeurs", sub: "demandeurs enregistrés dans l'année",
     },
@@ -609,6 +609,185 @@ async function collectImmigration(): Promise<any[]> {
   }
 
   // L'affichage est assuré par la boucle appelante : ne pas le dupliquer ici.
+  return out;
+}
+
+/* ═══════════════ Immigration — INSEE, « L'essentiel sur… » ═══════════════ */
+
+/**
+ * La page de synthèse de l'INSEE sur les immigrés et les étrangers.
+ *
+ * Eurostat compte les personnes NÉES À L'ÉTRANGER (14 % de la population) ; l'INSEE
+ * compte les IMMIGRÉS — nées étrangères à l'étranger — soit 11,6 %. L'écart, ce sont
+ * les 1,66 million de Français nés hors de France. Publier les deux côte à côte, avec
+ * la décomposition, vaut mieux qu'une note de bas de page expliquant pourquoi nos
+ * chiffres semblent contredire ceux de l'INSEE.
+ *
+ * Les tableaux sont retrouvés par leur INTITULÉ, jamais par leur rang : l'INSEE en
+ * ajoute et en retire au fil des éditions, et un indice figé finirait par lire le
+ * mauvais tableau sans que rien ne le signale.
+ */
+const INSEE_IMMI_URL = "https://www.insee.fr/fr/statistiques/3633212";
+
+type Tableau = { titre: string; lignes: string[][] };
+
+/** Découpe la page en tableaux, intitulé et cellules nettoyés. */
+function lireTableaux(html: string): Tableau[] {
+  const sansCode = html
+    .replace(/<script[\s\S]*?<\/script>/gi, " ")
+    .replace(/<style[\s\S]*?<\/style>/gi, " ");
+  const net = (s: string) =>
+    s.replace(/<[^>]+>/g, " ").replace(/&#160;|&nbsp;| /g, " ")
+      .replace(/&amp;/g, "&").replace(/\s+/g, " ").trim();
+
+  const out: Tableau[] = [];
+  for (const tb of sansCode.match(/<table[\s\S]*?<\/table>/gi) ?? []) {
+    const titre = net(tb.match(/<caption[\s\S]*?<\/caption>/i)?.[0] ?? "");
+    const lignes: string[][] = [];
+    for (const tr of tb.match(/<tr[\s\S]*?<\/tr>/gi) ?? []) {
+      const cells = (tr.match(/<t[hd][\s\S]*?<\/t[hd]>/gi) ?? []).map(net);
+      if (cells.some(Boolean)) lignes.push(cells);
+    }
+    out.push({ titre, lignes });
+  }
+  return out;
+}
+
+/**
+ * « 7 970 » → 7970 ; « 11,6 » → 11.6 ; « nd » → null.
+ *
+ * Le contrôle préalable compte : sans lui, « nd » perdait tous ses caractères au
+ * nettoyage, `Number("")` rendait zéro, et la fiche annonçait « solde migratoire de 0
+ * en 2024 » là où l'INSEE dit seulement qu'il ne le sait pas encore. Un chiffre faux
+ * vaut bien pire qu'un chiffre absent, sur ce sujet plus qu'ailleurs.
+ */
+function nombreFr(v: string | undefined): number | null {
+  if (!v) return null;
+  const propre = v.replace(/\s/g, "").replace(",", ".").replace(/[^\d.-]/g, "");
+  if (!/\d/.test(propre)) return null;
+  const n = Number(propre);
+  return Number.isFinite(n) ? n : null;
+}
+
+/** Première ligne dont la première cellule répond au motif. */
+const ligneAvec = (t: Tableau, motif: RegExp) => t.lignes.find(l => motif.test(l[0] ?? ""));
+
+async function collectImmigrationInsee(): Promise<any[]> {
+  const r = await fetch(INSEE_IMMI_URL, {
+    headers: { "User-Agent": "lapolitiquecestsimple/1.0 (+https://lapolitiquecestsimple.fr)" },
+  });
+  if (!r.ok) throw new Error(`l'INSEE a répondu ${r.status}`);
+  const tableaux = lireTableaux(await r.text());
+
+  const trouve = (motif: RegExp) => tableaux.find(t => motif.test(t.titre));
+  const decompo = trouve(/D[ée]composition de la population/i);
+  const evolution = trouve(/[ÉE]volution de la population immigr[ée]e/i);
+  const continents = trouve(/selon leur continent de naissance \(en milliers\)/i);
+  const flux = trouve(/Flux migratoires des immigr[ée]s/i);
+  if (!decompo || !evolution) throw new Error("tableaux attendus absents de la page");
+
+  const out: any[] = [];
+  const commun = {
+    theme: "immigration",
+    source: "INSEE",
+    source_url: INSEE_IMMI_URL,
+    provider: "insee",
+    updated_at: new Date().toISOString(),
+  };
+  const milliers = (n: number) => Math.round(n * 1000).toLocaleString("fr-FR");
+
+  /* 1. Population immigrée, et ce qui la sépare du compte d'Eurostat. */
+  const annees = evolution.lignes
+    .map(l => ({ an: (l[0] ?? "").match(/(\d{4})/)?.[1], part: nombreFr(l[2]), eff: nombreFr(l[1]) }))
+    .filter((x): x is { an: string; part: number; eff: number } => !!x.an && x.part != null && x.eff != null);
+  const derniere = annees[annees.length - 1];
+
+  const nesEtranger = nombreFr(ligneAvec(decompo, /^N[ée]s à l'étranger$/i)?.[1]);
+  const francaisNesAilleurs = nombreFr(ligneAvec(decompo, /N[ée]s à l'étranger de nationalit[ée] fran/i)?.[1]);
+
+  if (derniere) {
+    out.push({
+      ...commun,
+      code: "immi_immigres", sort_order: 1,
+      label: "Population immigrée", unit: "% de la population", better_when: null,
+      value: derniere.part,
+      // La comparaison est mise noir sur blanc : c'est la question que se pose
+      // quiconque voit deux chiffres différents pour la même réalité.
+      sub: francaisNesAilleurs && nesEtranger
+        ? `${milliers(derniere.eff)} personnes nées étrangères à l'étranger. Les ${milliers(nesEtranger)} personnes nées à l'étranger comptent en plus ${milliers(francaisNesAilleurs)} Français nés hors de France, qui ne sont pas des immigrés.`
+        : `${milliers(derniere.eff)} personnes nées étrangères à l'étranger`,
+      period: derniere.an, period_label: derniere.an,
+      history: annees.map(a => ({ period: a.an, value: a.part })),
+      series_id: "essentiel-immigres-evolution",
+      published_at: null,
+    });
+  }
+
+  /* 2. Immigrés devenus français : un sur trois. */
+  const devenus = nombreFr(ligneAvec(decompo, /Immigr[ée]s ayant acquis la nationalit[ée]/i)?.[1]);
+  const ensemble = nombreFr(ligneAvec(decompo, /Ensemble immigr[ée]s/i)?.[1]);
+  if (devenus && ensemble) {
+    out.push({
+      ...commun,
+      code: "immi_naturalises", sort_order: 5,
+      label: "Immigrés devenus français", unit: "% des immigrés", better_when: null,
+      value: Number((devenus / ensemble * 100).toFixed(1)),
+      sub: `${milliers(devenus)} personnes sur ${milliers(ensemble)} immigrés ont acquis la nationalité française`,
+      period: derniere?.an ?? null, period_label: derniere?.an ?? null,
+      history: null,
+      series_id: "essentiel-immigres-decomposition",
+      published_at: null,
+    });
+  }
+
+  /* 3. D'où ils viennent. */
+  if (continents) {
+    const par = (motif: RegExp) => nombreFr(ligneAvec(continents, motif)?.[1]);
+    const af = par(/^Afrique/i), eu = par(/^Europe/i), as = par(/^Asie/i), am = par(/^Am[ée]rique/i);
+    const tot = par(/^Ensemble/i);
+    if (af && tot) {
+      const pc = (n: number | null) => (n ? Math.round((n / tot) * 100) : null);
+      out.push({
+        ...commun,
+        code: "immi_origine_afrique", sort_order: 4,
+        label: "Immigrés nés en Afrique", unit: "% des immigrés", better_when: null,
+        value: Number(((af / tot) * 100).toFixed(1)),
+        sub: `puis Europe ${pc(eu)} %, Asie ${pc(as)} %, Amériques et Océanie ${pc(am)} %`,
+        period: derniere?.an ?? null, period_label: derniere?.an ?? null,
+        history: null,
+        series_id: "essentiel-immigres-continents",
+        published_at: null,
+      });
+    }
+  }
+
+  /* 4. Combien arrivent chaque année, combien repartent. */
+  if (flux) {
+    const lignes = flux.lignes
+      .map(l => ({ an: (l[0] ?? "").match(/^(\d{4})/)?.[1], entrees: nombreFr(l[1]), solde: nombreFr(l[3]) }))
+      .filter((x): x is { an: string; entrees: number; solde: number | null } => !!x.an && x.entrees != null);
+    const recente = lignes[lignes.length - 1];
+    // Le solde suppose de connaître les sorties, que l'INSEE publie avec deux ans de
+    // retard. On donne donc les entrées, à jour, et on date le dernier solde connu.
+    const dernierSolde = [...lignes].reverse().find(x => x.solde != null);
+    if (recente) {
+      out.push({
+        ...commun,
+        code: "immi_entrees", sort_order: 3,
+        label: "Entrées d'immigrés", unit: "par an", better_when: null,
+        value: Math.round(recente.entrees * 1000),
+        sub: dernierSolde
+          ? `solde migratoire des immigrés de ${dernierSolde.solde! > 0 ? "+" : ""}${milliers(dernierSolde.solde!)} en ${dernierSolde.an}, dernière année où les sorties sont connues`
+          : "arrivées dans l'année",
+        period: recente.an, period_label: recente.an,
+        history: lignes.map(x => ({ period: x.an, value: Math.round(x.entrees * 1000) })),
+        series_id: "essentiel-immigres-flux",
+        published_at: null,
+      });
+    }
+  }
+
+  // Le bilan est déjà imprimé par la boucle principale : pas de doublon ici.
   return out;
 }
 
@@ -942,6 +1121,7 @@ async function main() {
   for (const [titre, collecte] of [
     ["Éducation (ministère)", collectEducation],
     ["Santé (DREES)", collectSante],
+    ["Immigration (INSEE)", collectImmigrationInsee],
     ["Immigration (Eurostat)", collectImmigration],
     ["Sécurité (SSMSI)", collectSecurite],
     ["Retraites (DREES & Eurostat)", collectRetraites],

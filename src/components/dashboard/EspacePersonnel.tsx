@@ -104,7 +104,7 @@ function titreOuNull(data: any): string | null {
 export type ModeEspace = "espace" | "compte" | "tout";
 
 export default function EspacePersonnel({ mode = "tout" }: { mode?: ModeEspace }) {
-  const { userId, isPremium, isPro, loading: authLoading } = usePremium();
+  const { userId, isPremium, isPro, loading: authLoading, niveauMemorise } = usePremium();
   const [loading, setLoading] = useState(true);
   const [userVotes, setUserVotes] = useState<any[]>([]);
   const [followedDeputies, setFollowedDeputies] = useState<any[]>([]);
@@ -247,7 +247,7 @@ export default function EspacePersonnel({ mode = "tout" }: { mode?: ModeEspace }
   const resolvedVotes = userVotes.filter(v => !!titreOuNull(v.laws || v.scrutins));
   const savedGeos = savedItems.filter(item => ['commune', 'region', 'department'].includes(item.item_type));
 
-  if (authLoading) {
+  if (authLoading && !niveauMemorise) {
     return (
       <div className="min-h-screen bg-slate-950 flex flex-col items-center justify-center p-4">
         <Loader2 size={40} className="animate-spin text-amber-500 mb-4" />

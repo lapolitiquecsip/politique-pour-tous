@@ -2,7 +2,9 @@
 
 import { useEffect, useState } from "react";
 import Link from "next/link";
-import { Mail, KeyRound, ShieldCheck, LogOut, Loader2, Check, AlertTriangle } from "lucide-react";
+import { motion, useReducedMotion } from "framer-motion";
+import { Mail, KeyRound, ShieldCheck, LogOut, Loader2, Check, AlertTriangle, CreditCard, ArrowUpRight } from "lucide-react";
+import { STRIPE_PORTAL_URL, CONTACT_EMAIL } from "@/lib/constants";
 import { supabase } from "@/lib/supabase";
 import { usePremium } from "@/lib/hooks/usePremium";
 
@@ -13,14 +15,15 @@ import { usePremium } from "@/lib/hooks/usePremium";
  * ou vérifier son abonnement, pas pour travailler. Le travail, lui, a sa propre page.
  */
 
-const NIVEAUX: Record<string, { nom: string; detail: string }> = {
-  pro: { nom: "Pro", detail: "24,99 €/mois — suivi des commissions, Journal officiel, veille réseaux sociaux." },
-  elite: { nom: "Premium", detail: "3,99 €/mois — décryptages illimités, suivi de vos élus, alertes personnalisées." },
-  free: { nom: "Compte citoyen", detail: "Gratuit — l'essentiel du site, sans les outils réservés." },
+const NIVEAUX: Record<string, { nom: string; prix: string | null; detail: string }> = {
+  pro: { nom: "Pro", prix: "24,99 € / mois", detail: "Suivi des commissions, Journal officiel du jour expliqué, veille des réseaux sociaux des candidats." },
+  elite: { nom: "Premium", prix: "3,99 € / mois", detail: "Décryptages illimités, suivi de vos élus, alertes personnalisées." },
+  free: { nom: "Compte citoyen", prix: null, detail: "Gratuit — l'essentiel du site, sans les outils réservés." },
 };
 
 export default function ParametresCompte() {
   const { tier } = usePremium();
+  const reduce = useReducedMotion();
   const [courriel, setCourriel] = useState<string | null>(null);
   const [depuis, setDepuis] = useState<string | null>(null);
 
@@ -95,18 +98,66 @@ export default function ParametresCompte() {
         </p>
       </div>
 
-      {/* Abonnement */}
-      <div className={carte}>
-        <p className={titre}><ShieldCheck size={13} /> Abonnement</p>
-        <p className="mt-2 text-lg font-bold text-white">{niveau.nom}</p>
-        <p className="mt-1 text-[13px] leading-snug text-white/60">{niveau.detail}</p>
-        {tier !== "pro" && (
-          <Link href="/premium"
-            className="mt-4 inline-flex rounded-2xl bg-gradient-to-r from-amber-400 to-yellow-600 px-5 py-2.5 text-[11px] font-black uppercase tracking-widest text-slate-950 transition hover:brightness-110">
-            {tier === "elite" ? "Passer à l'offre Pro" : "Découvrir les abonnements"}
-          </Link>
-        )}
+      {/* Abonnement — la carte la plus regardée de l'écran : on lui donne l'habillage
+          de l'offre, un halo qui respire, et surtout une sortie claire vers la gestion
+          de l'abonnement. Un abonné qui ne trouve pas comment changer de formule finit
+          par écrire, ou par partir. */}
+      <div className="relative overflow-hidden rounded-3xl border-2 border-fuchsia-400/40 bg-gradient-to-br from-slate-950 via-slate-900 to-purple-950 p-6 shadow-xl">
+        <motion.div
+          aria-hidden
+          className="pointer-events-none absolute -right-16 -top-16 h-48 w-48 rounded-full bg-fuchsia-500/25 blur-3xl"
+          animate={reduce ? undefined : { scale: [1, 1.18, 1], opacity: [0.45, 0.85, 0.45] }}
+          transition={{ duration: 5, repeat: Infinity, ease: "easeInOut" }}
+        />
+
+        <div className="relative">
+          <p className="flex items-center gap-2 text-[10px] font-black uppercase tracking-widest text-fuchsia-300">
+            <ShieldCheck size={13} /> Abonnement
+          </p>
+
+          <div className="mt-2 flex flex-wrap items-center gap-x-3 gap-y-1">
+            <span className="font-staatliches text-4xl uppercase leading-none tracking-tight text-white">{niveau.nom}</span>
+            {niveau.prix && (
+              <span className="rounded-full bg-gradient-to-r from-fuchsia-500 to-purple-600 px-3 py-1 text-[11px] font-black uppercase tracking-widest text-white shadow-lg shadow-fuchsia-500/30">
+                {niveau.prix}
+              </span>
+            )}
+          </div>
+          <p className="mt-2 max-w-xl text-[13px] leading-relaxed text-white/65">{niveau.detail}</p>
+
+          <div className="mt-5 flex flex-col gap-2 sm:flex-row sm:flex-wrap sm:items-center">
+            {STRIPE_PORTAL_URL ? (
+              <a
+                href={STRIPE_PORTAL_URL} target="_blank" rel="noopener noreferrer"
+                className="inline-flex items-center justify-center gap-2 rounded-2xl bg-gradient-to-r from-fuchsia-500 to-purple-600 px-5 py-3 text-[11px] font-black uppercase tracking-widest text-white shadow-lg shadow-fuchsia-500/30 transition hover:brightness-110"
+              >
+                <CreditCard size={15} /> Gérer mon abonnement <ArrowUpRight size={14} />
+              </a>
+            ) : (
+              <a
+                href={`mailto:${CONTACT_EMAIL}?subject=${encodeURIComponent("Changement d'abonnement")}&body=${encodeURIComponent(`Bonjour,\n\nJe souhaite modifier mon abonnement (actuellement : ${niveau.nom}).\n\nCompte : ${courriel ?? ""}\n`)}`}
+                className="inline-flex items-center justify-center gap-2 rounded-2xl bg-gradient-to-r from-fuchsia-500 to-purple-600 px-5 py-3 text-[11px] font-black uppercase tracking-widest text-white shadow-lg shadow-fuchsia-500/30 transition hover:brightness-110"
+              >
+                <CreditCard size={15} /> Changer ou résilier
+              </a>
+            )}
+
+            {tier !== "pro" && (
+              <Link href="/premium"
+                className="inline-flex items-center justify-center gap-2 rounded-2xl border border-white/20 px-5 py-3 text-[11px] font-black uppercase tracking-widest text-white/80 transition hover:border-white/50 hover:text-white">
+                {tier === "elite" ? "Passer à l'offre Pro" : "Voir les formules"}
+              </Link>
+            )}
+          </div>
+
+          <p className="mt-3 text-[11px] leading-snug text-white/35">
+            {STRIPE_PORTAL_URL
+              ? "Changement de formule, moyen de paiement, factures et résiliation se font depuis l'espace de facturation sécurisé de Stripe."
+              : "L'espace de facturation en libre-service n'est pas encore ouvert : écrivez-nous et le changement sera fait sous 48 heures."}
+          </p>
+        </div>
       </div>
+
 
       {/* Mot de passe */}
       <form onSubmit={changerMotDePasse} className={carte}>

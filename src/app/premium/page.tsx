@@ -387,11 +387,13 @@ function NotifDemoModal({ open, onClose }: { open: boolean; onClose: () => void 
  * ne change donc jamais de place : il mène toujours là où le lecteur a affaire.
  */
 export default function PremiumPage() {
-  const { isPro, loading: aboEnCours } = usePremium();
-  // On attend de connaître le niveau : sans cela, un abonné Pro verrait l'argumentaire
-  // de vente s'afficher une fraction de seconde avant d'être remplacé par son espace.
-  if (aboEnCours) return <div className="min-h-screen bg-slate-950" />;
-  if (isPro) return <EspacePersonnel mode="espace" />;
+  const { tierAffiche, loading: aboEnCours, niveauMemorise } = usePremium();
+  // Le niveau retenu de la visite précédente décide tout de suite : sans lui, chaque
+  // passage du tableau de bord à l'espace Pro repassait par un écran d'attente. Il ne
+  // sert qu'à choisir quelle page dessiner, jamais à ouvrir un accès : l'espace lui-même
+  // ne montre de contenu réservé qu'une fois le niveau vérifié.
+  if (aboEnCours && !niveauMemorise) return <div className="min-h-screen bg-slate-950" />;
+  if (tierAffiche === "pro") return <EspacePersonnel mode="espace" />;
   return <PageOffre />;
 }
 

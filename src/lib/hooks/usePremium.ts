@@ -133,6 +133,12 @@ export function usePremium() {
      * d'un accès.
      */
     tierAffiche: loading ? (hint ?? tier) : tier,
+    /**
+     * true quand un niveau a été retenu d'une visite précédente. Permet d'afficher la
+     * page tout de suite plutôt qu'un écran d'attente à chaque changement de page.
+     * À l'habillage seulement : ne jamais ouvrir un accès sur cette base.
+     */
+    niveauMemorise: hint !== null,
     /** Premium OU Pro — c'est ce que testent toutes les fonctionnalités premium historiques. */
     isPremium: tierAtLeast(tier, "elite"),
     /** Réservé aux outils professionnels (commissions, veille réseaux sociaux). */

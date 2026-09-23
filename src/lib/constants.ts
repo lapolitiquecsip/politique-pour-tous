@@ -18,6 +18,20 @@
  * « student » et « institution » sont des reliquats non commercialisés : ils sont
  * conservés parce que getPremiumUrl() accepte encore ces clés.
  */
+/**
+ * Portail client Stripe : l'abonné y change de formule, met à jour sa carte, télécharge
+ * ses factures ou résilie, sans que nous ayons à coder quoi que ce soit.
+ *
+ * À créer une fois dans Stripe : Réglages → Facturation → Portail client → activer,
+ * puis copier le lien fourni (https://billing.stripe.com/p/login/…) ci-dessous.
+ * Tant que la chaîne est vide, l'interface propose d'écrire à l'assistance plutôt que
+ * d'envoyer l'abonné sur un lien mort.
+ */
+export const STRIPE_PORTAL_URL = "";
+
+/** Adresse de repli, quand le portail n'est pas encore configuré. */
+export const CONTACT_EMAIL = "contact@lapolitiquecestsimple.fr";
+
 export const STRIPE_LINKS: Record<string, { monthly: string; annually?: string }> = {
   student: {
     monthly: "https://buy.stripe.com/test_student_monthly", // 1.99€

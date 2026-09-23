@@ -89,20 +89,21 @@ function Ligne({ m }: { m: CommissionMeeting }) {
             transition={{ duration: 0.18, ease: "easeOut" }}
             className="overflow-hidden"
           >
-            {/* L'analyse est dessinée pour un fond clair : on lui en donne un, plutôt
-                que d'en tenir une seconde version pour le thème sombre du profil. */}
-            <div className="mx-4 mb-4 rounded-xl bg-white p-4 text-slate-900">
-              <CommissionAnalysis m={m} accent={accent} />
-              <div className="mt-4 flex flex-wrap gap-3 border-t border-slate-100 pt-3">
+            {/* Le panneau est sombre en permanence, quel que soit le thème du site :
+                l'analyse doit donc l'être aussi. Lui imposer un fond blanc faisait
+                rendre ses variantes `dark:` en clair sur clair — illisible. */}
+            <div className="mx-4 mb-4 rounded-xl bg-white/[0.05] p-4 ring-1 ring-white/10">
+              <CommissionAnalysis m={m} accent={accent} sombre />
+              <div className="mt-4 flex flex-wrap gap-3 border-t border-white/10 pt-3">
                 {m.cr_url && (
                   <a href={m.cr_url} target="_blank" rel="noopener noreferrer"
-                    className="inline-flex items-center gap-1.5 text-[10px] font-black uppercase tracking-widest text-slate-500 hover:text-slate-900">
+                    className="inline-flex items-center gap-1.5 text-[10px] font-black uppercase tracking-widest text-white/50 hover:text-white">
                     <ExternalLink size={12} /> Compte rendu officiel
                   </a>
                 )}
                 {m.video_url && (
                   <a href={m.video_url} target="_blank" rel="noopener noreferrer"
-                    className="inline-flex items-center gap-1.5 text-[10px] font-black uppercase tracking-widest text-slate-500 hover:text-slate-900">
+                    className="inline-flex items-center gap-1.5 text-[10px] font-black uppercase tracking-widest text-white/50 hover:text-white">
                     <Video size={12} /> Vidéo de la séance
                   </a>
                 )}

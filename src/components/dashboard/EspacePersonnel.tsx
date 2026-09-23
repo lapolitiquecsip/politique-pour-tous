@@ -104,7 +104,14 @@ function titreOuNull(data: any): string | null {
 export type ModeEspace = "espace" | "compte" | "tout";
 
 export default function EspacePersonnel({ mode = "tout" }: { mode?: ModeEspace }) {
-  const { userId, isPremium, isPro, loading: authLoading, niveauMemorise } = usePremium();
+  const { userId, isPremium: premiumVerifie, isPro: proVerifie, tierAffiche, loading: authLoading, niveauMemorise } = usePremium();
+  // Deux lectures du niveau, volontairement séparées.
+  //   • l'habillage (badge, onglets, titre) suit le niveau RETENU, sinon la page
+  //     s'affiche en « compte citoyen » avant de se corriger sous les yeux du lecteur ;
+  //   • le contenu réservé attend le niveau VÉRIFIÉ, sans quoi une valeur périmée
+  //     ouvrirait des rubriques payantes à qui n'y a pas droit.
+  const isPremium = tierAffiche === "elite" || tierAffiche === "pro";
+  const isPro = tierAffiche === "pro";
   const [loading, setLoading] = useState(true);
   const [userVotes, setUserVotes] = useState<any[]>([]);
   const [followedDeputies, setFollowedDeputies] = useState<any[]>([]);
@@ -316,15 +323,15 @@ export default function EspacePersonnel({ mode = "tout" }: { mode?: ModeEspace }
         </div>
       </section>
 
-      {mode !== "compte" && isPremium && userId && (
+      {mode !== "compte" && premiumVerifie && userId && (
         // relative z-20 : le fil chevauche le hero (-mt-16) ; sans ça, le contenu du hero (z-10)
         // recouvre le haut de la carte et intercepte le clic sur « Tout marquer lu ».
         <div className="relative z-20 container mx-auto max-w-6xl px-4 -mt-16 mb-6 space-y-6">
           <NotificationsFeed userId={userId} />
           {/* Tout ce qui relève de l'offre Pro est rassemblé ici : le professionnel
               ouvre son espace et trouve la journée complète, sans chercher ailleurs. */}
-          {isPro && <CommissionsProFeed />}
-          {isPro && <JournalOfficielDuJour />}
+          {proVerifie && <CommissionsProFeed />}
+          {proVerifie && <JournalOfficielDuJour />}
           <CandidatesFollowFeed />
           <CommuneFeedCard />
           <PremiumPreferences userId={userId} />
@@ -382,10 +389,14 @@ export default function EspacePersonnel({ mode = "tout" }: { mode?: ModeEspace }
           </div>
 
           <div className="p-4 sm:p-6 md:p-12">
-            {loading ? (
-              <div className="flex flex-col items-center justify-center py-20 grayscale opacity-30">
-                <Loader2 size={40} className="animate-spin mb-4" />
-                <p className="text-sm font-bold uppercase tracking-widest">Chargement de votre compte...</p>
+            {/* Quelques lignes grisées tiennent la place, plutôt qu'un « chargement de
+                votre compte » qui remplace tout l'écran : le panneau garde sa forme,
+                et rien ne saute quand les données arrivent. */}
+            {loading && !userVotes.length && !followedDeputies.length ? (
+              <div className="space-y-3 py-6">
+                {[0, 1, 2].map(i => (
+                  <div key={i} className="h-16 animate-pulse rounded-2xl bg-white/[0.05]" style={{ animationDelay: `${i * 90}ms` }} />
+                ))}
               </div>
             ) : (
               <AnimatePresence mode="wait">

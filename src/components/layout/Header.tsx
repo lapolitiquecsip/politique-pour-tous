@@ -25,7 +25,6 @@ import {
 } from "lucide-react";
 import EuFlag from "@/components/icons/EuFlag";
 import GlobalSearch from "@/components/layout/GlobalSearch";
-import ThemeToggle from "@/components/layout/ThemeToggle";
 
 import { usePremium } from "@/lib/hooks/usePremium";
 
@@ -133,10 +132,6 @@ export default function Header() {
               <Search size={18} />
             </button>
 
-            {/* Le sélecteur de thème existait mais n'était monté nulle part : clair,
-                sombre, ou celui du système d'exploitation. */}
-            <ThemeToggle />
-
             <div className="h-6 w-[1px] bg-slate-200 mx-1" />
 
             {user ? (
@@ -181,7 +176,6 @@ export default function Header() {
             <button className="text-slate-600" onClick={() => setSearchOpen(true)} aria-label="Rechercher">
               <Search size={22} />
             </button>
-            <ThemeToggle />
             <button className="text-slate-600" onClick={() => setIsMenuOpen(!isMenuOpen)}>
               {isMenuOpen ? <X size={24} /> : <Menu size={24} />}
             </button>

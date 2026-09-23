@@ -3,10 +3,12 @@
 import { useEffect, useState } from "react";
 import Link from "next/link";
 import { motion, useReducedMotion } from "framer-motion";
+import { Palette, Sun, Moon, Laptop } from "lucide-react";
 import { Mail, KeyRound, ShieldCheck, LogOut, Loader2, Check, AlertTriangle, CreditCard, ArrowUpRight } from "lucide-react";
 import { STRIPE_PORTAL_URL, CONTACT_EMAIL } from "@/lib/constants";
 import { supabase } from "@/lib/supabase";
 import { usePremium } from "@/lib/hooks/usePremium";
+import { useTheme } from "@/components/providers";
 
 /**
  * Les réglages du compte : adresse, mot de passe, abonnement, déconnexion.
@@ -24,6 +26,7 @@ const NIVEAUX: Record<string, { nom: string; prix: string | null; detail: string
 export default function ParametresCompte() {
   const { tier } = usePremium();
   const reduce = useReducedMotion();
+  const { theme, setTheme } = useTheme();
   const [courriel, setCourriel] = useState<string | null>(null);
   const [depuis, setDepuis] = useState<string | null>(null);
 
@@ -158,6 +161,38 @@ export default function ParametresCompte() {
         </div>
       </div>
 
+
+      {/* Apparence — un réglage, donc à sa place dans les réglages plutôt qu'en
+          permanence dans la barre de navigation. */}
+      <div className={carte}>
+        <p className={titre}><Palette size={13} /> Apparence</p>
+        <p className="mt-2 text-[13px] leading-snug text-white/55">
+          Choisissez le thème du site. « Système » suit le réglage de votre appareil.
+        </p>
+        <div className="mt-4 inline-flex rounded-2xl border border-white/10 bg-white/[0.04] p-1">
+          {([
+            ["light", "Clair", Sun],
+            ["dark", "Sombre", Moon],
+            ["system", "Système", Laptop],
+          ] as const).map(([valeur, libelle, Icone]) => (
+            <button
+              key={valeur}
+              onClick={() => setTheme(valeur)}
+              aria-pressed={theme === valeur}
+              className={`inline-flex items-center gap-2 rounded-xl px-4 py-2.5 text-[11px] font-black uppercase tracking-widest transition ${
+                theme === valeur ? "bg-white text-slate-900" : "text-white/60 hover:text-white"
+              }`}
+            >
+              <Icone size={14} /> {libelle}
+            </button>
+          ))}
+        </div>
+        <p className="mt-3 text-[11px] leading-snug text-white/35">
+          Le thème sombre est en place sur une partie du site seulement : les pages qui ne
+          l&apos;ont pas encore restent claires. La bascule est enregistrée et s&apos;appliquera
+          partout à mesure que les pages sont reprises.
+        </p>
+      </div>
 
       {/* Mot de passe */}
       <form onSubmit={changerMotDePasse} className={carte}>

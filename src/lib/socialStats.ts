@@ -45,7 +45,16 @@ export type Metrics = {
   views7: number | null;
   views30: number | null;
   /** Contenus publiés sur la période. */
+  posts7: number | null;
   posts30: number | null;
+  /**
+   * Vues faites par les seules publications de la semaine.
+   *
+   * À ne pas confondre avec `views7`, qui mesure les vues gagnées par la chaîne
+   * ENTIÈRE, catalogue ancien compris. Renseigné pour YouTube, qui date ses mises
+   * en ligne ; nul ailleurs.
+   */
+  weekViews: number | null;
   /** Fraîcheur : nombre de jours depuis le dernier relevé « ok ». */
   staleDays: number | null;
   status: "ok" | "stale" | "unavailable";
@@ -89,7 +98,7 @@ export function computeMetrics(account: SocialAccount, snapshots: Snapshot[]): M
     return {
       account, latest: null, followers: null,
       followersDelta7: null, followersDelta30: null,
-      views7: null, views30: null, posts30: null,
+      views7: null, views30: null, posts7: null, posts30: null, weekViews: null,
       staleDays: null, status: "unavailable",
     };
   }
@@ -106,7 +115,11 @@ export function computeMetrics(account: SocialAccount, snapshots: Snapshot[]): M
     followersDelta30: delta(latest.followers, ref30?.followers),
     views7: delta(latest.total_views, ref7?.total_views),
     views30: delta(latest.total_views, ref30?.total_views),
+    // YouTube date ses mises en ligne : on prend son compte exact. Ailleurs, seule
+    // la variation du compteur total renseigne, et elle demande deux relévés.
+    posts7: latest.period_posts ?? delta(latest.posts, ref7?.posts),
     posts30: delta(latest.posts, ref30?.posts),
+    weekViews: latest.period_views,
     staleDays,
     // Au-delà de 3 jours sans relevé frais, l'interface le signale explicitement.
     status: staleDays > 3 ? "stale" : latest.status,
@@ -114,7 +127,7 @@ export function computeMetrics(account: SocialAccount, snapshots: Snapshot[]): M
 }
 
 /** Somme d'un indicateur sur plusieurs comptes ; null si aucun compte ne le fournit. */
-export function sumMetric(list: Metrics[], key: "followers" | "views7" | "views30" | "followersDelta30"): number | null {
+export function sumMetric(list: Metrics[], key: "followers" | "views7" | "views30" | "followersDelta30" | "posts7" | "weekViews"): number | null {
   const values = list.map(m => m[key]).filter((v): v is number => v != null);
   return values.length ? values.reduce((a, b) => a + b, 0) : null;
 }

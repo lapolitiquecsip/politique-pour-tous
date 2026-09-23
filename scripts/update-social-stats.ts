@@ -55,12 +55,15 @@ type Reading = {
   followers: number | null;
   total_views: number | null;
   posts: number | null;
+  /** Contenus publiés dans les 7 derniers jours, et vues qu'ils ont déjà faites. */
+  week_posts: number | null;
+  week_views: number | null;
   status: "ok" | "unavailable";
   source: string;
 };
 
 const UNAVAILABLE = (source: string): Reading =>
-  ({ followers: null, total_views: null, posts: null, status: "unavailable", source });
+  ({ followers: null, total_views: null, posts: null, week_posts: null, week_views: null, status: "unavailable", source });
 
 const sleep = (ms: number) => new Promise(r => setTimeout(r, ms));
 const num = (v: unknown): number | null => {
@@ -82,6 +85,52 @@ const num = (v: unknown): number | null => {
  * La clé est gratuite (console Google Cloud, aucun paiement) : c'est le bon prix à payer
  * pour des chiffres justes.
  */
+/**
+ * Ce qu'une chaîne a publié ces sept derniers jours, et ce que ça a fait.
+ *
+ * Le compteur d'abonnés dit l'audience accumulée ; il ne dit rien du rythme. Deux
+ * candidats à 300 000 abonnés n'ont pas la même présence si l'un publie quatre fois
+ * par semaine et l'autre une fois par trimestre. On date donc les mises en ligne.
+ *
+ * Coût : deux unités de quota par chaîne (la playlist, puis les vues des vidéos
+ * trouvées), sur les dix mille quotidiennes. Une trentaine de chaînes tient large.
+ *
+ * Renvoie des nuls — et non des zéros — quand la lecture échoue : un « 0 publication »
+ * inexact se lirait comme un candidat inactif, ce qui est une information, fausse.
+ */
+async function activiteSemaine(playlist: string | undefined, key: string): Promise<{ posts: number | null; views: number | null }> {
+  if (!playlist) return { posts: null, views: null };
+  const depuis = Date.now() - 7 * 24 * 3600 * 1000;
+  try {
+    const r = await fetch(
+      `https://www.googleapis.com/youtube/v3/playlistItems?part=contentDetails&maxResults=50&playlistId=${playlist}&key=${key}`,
+    );
+    if (!r.ok) throw new Error(`HTTP ${r.status}`);
+    const j: any = await r.json();
+
+    // La playlist des mises en ligne est triée du plus récent au plus ancien : on
+    // s'arrête dès qu'on sort de la fenêtre plutôt que de tout parcourir.
+    const ids: string[] = [];
+    for (const it of j.items ?? []) {
+      const publie = Date.parse(it.contentDetails?.videoPublishedAt ?? "");
+      if (!Number.isFinite(publie)) continue;
+      if (publie < depuis) break;
+      ids.push(it.contentDetails.videoId);
+    }
+    if (!ids.length) return { posts: 0, views: 0 };
+
+    const v = await fetch(
+      `https://www.googleapis.com/youtube/v3/videos?part=statistics&id=${ids.join(",")}&key=${key}`,
+    );
+    if (!v.ok) throw new Error(`HTTP ${v.status}`);
+    const vj: any = await v.json();
+    const vues = (vj.items ?? []).reduce((t: number, it: any) => t + (num(it.statistics?.viewCount) ?? 0), 0);
+    return { posts: ids.length, views: vues };
+  } catch {
+    return { posts: null, views: null };
+  }
+}
+
 async function readYouTube(accounts: Account[]): Promise<Map<string, Reading>> {
   const out = new Map<string, Reading>();
   const key = process.env.YOUTUBE_API_KEY;
@@ -117,23 +166,31 @@ async function readYouTube(accounts: Account[]): Promise<Map<string, Reading>> {
   for (let i = 0; i < resolvable.length; i += 50) {
     const batch = resolvable.slice(i, i + 50);
     try {
+      // `contentDetails` livre au passage la playlist des mises en ligne : elle sert
+      // ensuite à dater les publications de la semaine, sans coûter d'appel ici.
       const res = await fetch(
-        `https://www.googleapis.com/youtube/v3/channels?part=statistics&id=${batch.map(a => a.external_id).join(",")}&key=${key}`,
+        `https://www.googleapis.com/youtube/v3/channels?part=statistics,contentDetails&id=${batch.map(a => a.external_id).join(",")}&key=${key}`,
       );
       if (!res.ok) throw new Error(`HTTP ${res.status}`);
       const json: any = await res.json();
       const stats = new Map<string, any>((json.items ?? []).map((it: any) => [it.id, it.statistics]));
+      const uploads = new Map<string, string>((json.items ?? [])
+        .filter((it: any) => it.contentDetails?.relatedPlaylists?.uploads)
+        .map((it: any) => [it.id, it.contentDetails.relatedPlaylists.uploads]));
+
       for (const a of batch) {
         const s = stats.get(a.external_id!);
-        out.set(a.id, s
-          ? {
-              followers: num(s.subscriberCount),
-              total_views: num(s.viewCount),
-              posts: num(s.videoCount),
-              status: "ok",
-              source: "youtube_api",
-            }
-          : UNAVAILABLE("youtube_api_reponse_vide"));
+        if (!s) { out.set(a.id, UNAVAILABLE("youtube_api_reponse_vide")); continue; }
+        const semaine = await activiteSemaine(uploads.get(a.external_id!), key);
+        out.set(a.id, {
+          followers: num(s.subscriberCount),
+          total_views: num(s.viewCount),
+          posts: num(s.videoCount),
+          week_posts: semaine.posts,
+          week_views: semaine.views,
+          status: "ok",
+          source: "youtube_api",
+        });
       }
     } catch (e) {
       console.warn(`  ⚠ YouTube : ${(e as Error).message}`);
@@ -159,6 +216,8 @@ async function readBluesky(account: Account): Promise<Reading> {
       followers: num(json.followersCount),
       total_views: null, // Bluesky ne publie aucun compteur de vues.
       posts: num(json.postsCount),
+      week_posts: null,
+      week_views: null,
       status: "ok",
       source: "bluesky_public",
     };
@@ -191,6 +250,8 @@ async function readTikTok(account: Account): Promise<Reading> {
       // compteur cumulé disponible et sert de proxy d'engagement.
       total_views: num(hearts),
       posts: num(videos),
+      week_posts: null,
+      week_views: null,
       status: "ok",
       source: "tiktok_page",
     };
@@ -215,6 +276,8 @@ async function readInstagram(account: Account): Promise<Reading> {
       followers: num(u.edge_followed_by?.count),
       total_views: null,
       posts: num(u.edge_owner_to_timeline_media?.count),
+      week_posts: null,
+      week_views: null,
       status: "ok",
       source: "instagram_web",
     };
@@ -325,8 +388,11 @@ async function capture(supabase: any, dryRun: boolean) {
       followers: r.followers,
       total_views: r.total_views,
       posts: r.posts,
-      period_views: null,
-      period_posts: null,
+      // Activité de la semaine : nombre de publications et vues qu'elles ont faites.
+      // Renseigné pour YouTube, qui date ses mises en ligne ; nul ailleurs, où seule
+      // la variation du compteur total est observable.
+      period_views: r.week_views,
+      period_posts: r.week_posts,
       engagement: null,
       status: r.status,
       source: r.source,

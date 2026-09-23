@@ -4,7 +4,7 @@ import { useEffect, useMemo, useState } from "react";
 import Link from "next/link";
 import {
   Loader2, Lock, Radio, Download, ChevronDown, TrendingUp, TrendingDown,
-  AlertTriangle, ExternalLink, Minus, Eye, Users2,
+  AlertTriangle, ExternalLink, Minus, Eye, Users2, Clapperboard,
 } from "lucide-react";
 import { api } from "@/lib/api";
 import { usePremium } from "@/lib/hooks/usePremium";
@@ -163,6 +163,11 @@ export default function CandidateSocialTracker({ candidates }: { candidates: Can
           followers: sumMetric(metrics, "followers"),
           views: sumMetric(metrics, viewsKey as "views7" | "views30"),
           growth: sumMetric(metrics, "followersDelta30"),
+          // Publications de la semaine, et plateformes réellement couvertes : sans
+          // cette dernière, un candidat suivi sur la seule chaîne YouTube paraît
+          // minée face à un autre suivi sur quatre comptes.
+          posts7: sumMetric(metrics, "posts7"),
+          plateformes: [...new Set(metrics.map(m => m.account.platform))],
           spark,
         };
       })
@@ -173,7 +178,7 @@ export default function CandidateSocialTracker({ candidates }: { candidates: Can
   const exportCsv = () => {
     if (!rows.length) return;
     const esc = (v: unknown) => `"${String(v ?? "").replace(/"/g, '""')}"`;
-    const head = ["Candidat", "Parti", "Plateforme", "Compte", "Type", "Abonnés", `Abonnés +/- ${period}j`, `Vues ${period}j`, "Statut", "Dernier relevé"];
+    const head = ["Candidat", "Parti", "Plateforme", "Compte", "Type", "Abonnés", `Abonnés +/- ${period}j`, `Vues ${period}j`, "Publications 7j", "Vues des publications 7j", "Statut", "Dernier relevé"];
     const lines: string[] = [];
     for (const r of rows) {
       for (const m of r.metrics) {
@@ -183,6 +188,7 @@ export default function CandidateSocialTracker({ candidates }: { candidates: Can
           m.account.kind === "official" ? "Officiel" : "Soutien",
           m.followers ?? "", period === 7 ? m.followersDelta7 ?? "" : m.followersDelta30 ?? "",
           period === 7 ? m.views7 ?? "" : m.views30 ?? "",
+          m.posts7 ?? "", m.weekViews ?? "",
           m.status, m.latest?.captured_on ?? "",
         ].map(esc).join(";"));
       }
@@ -211,7 +217,9 @@ export default function CandidateSocialTracker({ candidates }: { candidates: Can
             <span className="rounded-full bg-gradient-to-r from-fuchsia-500 to-purple-600 px-2.5 py-1 text-[9px] font-black uppercase tracking-widest text-white shadow">Pro</span>
           </div>
           <p className="mt-0.5 text-sm text-slate-500">
-            Comptes personnels et comptes de soutien de chaque candidat. Audience, vues gagnées sur la période, tendances comparées.
+            Compte personnel et principal compte de soutien de chaque candidat : audience, publications de la
+            semaine et vues gagnées. <strong className="font-bold text-slate-600">Mesuré sur YouTube, TikTok et Bluesky</strong> —
+            X et Instagram ne publient aucune donnée exploitable sans contrat payant.
           </p>
         </div>
         {isPro && rows.length > 0 && (
@@ -291,6 +299,8 @@ export default function CandidateSocialTracker({ candidates }: { candidates: Can
                     <span className="block truncate text-sm font-black text-slate-900">{r.candidate.full_name}</span>
                     <span className="block truncate text-[11px] text-slate-400">
                       {r.candidate.party} · {r.metrics.length} compte{r.metrics.length > 1 ? "s" : ""} suivi{r.metrics.length > 1 ? "s" : ""}
+                      {" · "}
+                      {r.plateformes.map(pf => PLATFORM_META[pf].label).join(", ")}
                     </span>
                   </span>
 
@@ -300,6 +310,13 @@ export default function CandidateSocialTracker({ candidates }: { candidates: Can
                     <span className="block text-[9px] font-black uppercase tracking-wider text-slate-400">Audience</span>
                     <span className="flex items-center justify-end gap-1 text-sm font-black tabular-nums text-slate-900">
                       <Users2 size={12} className="text-slate-300" /><Masked isPro={isPro}>{compact(r.followers)}</Masked>
+                    </span>
+                  </span>
+
+                  <span className="hidden w-[72px] shrink-0 text-right sm:block">
+                    <span className="block text-[9px] font-black uppercase tracking-wider text-slate-400">Posts 7 j</span>
+                    <span className="flex items-center justify-end gap-1 text-sm font-black tabular-nums text-slate-900">
+                      <Clapperboard size={12} className="text-slate-300" /><Masked isPro={isPro}>{r.posts7 == null ? "—" : String(r.posts7)}</Masked>
                     </span>
                   </span>
 
@@ -335,8 +352,13 @@ export default function CandidateSocialTracker({ candidates }: { candidates: Can
               : scope === "support"
                 ? "Comptes de mouvements et de campagne uniquement. Un même parti peut soutenir plusieurs candidats."
                 : "Comptes personnels des candidats uniquement, hors comptes de parti."}
-            {" "}Relevés quotidiens. Les vues correspondent aux vues réellement gagnées sur la période, mesurées entre deux relevés.
+            {" "}Relevés quotidiens. Les vues sont celles réellement gagnées sur la période, mesurées entre deux
+            relevés ; les publications de la semaine sont datées une à une sur YouTube.
             Un compte marqué « source indisponible » n&apos;affiche aucun chiffre plutôt qu&apos;un chiffre périmé.
+            <br />
+            Ce classement mesure une présence sur ces plateformes, pas une notoriété : un responsable très présent
+            dans la presse ou sur X peut y paraître modeste, et un candidat qui publie beaucoup en vidéo y apparaître
+            très haut. Les plateformes suivies pour chacun sont indiquées sous son nom.
           </p>
         </div>
       )}

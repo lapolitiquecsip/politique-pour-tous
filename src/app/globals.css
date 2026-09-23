@@ -310,6 +310,14 @@ html[data-abonnement="pro"]   .btn-tdb::after { display: block; }
 html[data-abonnement="elite"] .btn-tdb { background: linear-gradient(to right, #ffd236, #f99c00, #dd7400); }
 html[data-abonnement="pro"]   .btn-tdb { --lueur-offre: 168 85 247; background: linear-gradient(to right, #d8b4fe, #a855f7, #c026d3); }
 
+/* Le lien « Premium » du menu devient « Mon espace Pro » pour un abonné Pro : il n'a
+   plus d'offre à découvrir, la page est devenue son espace de travail. Le choix se
+   fait en CSS, depuis l'attribut posé sur <html> avant le premier rendu, pour qu'aucun
+   libellé ne saute d'un mot à l'autre sous les yeux du lecteur. */
+.lbl-pro { display: none; }
+html[data-abonnement="pro"] .lbl-pro   { display: inline; }
+html[data-abonnement="pro"] .lbl-offre { display: none; }
+
 /* ── Habillage de l'offre Pro ─────────────────────────────────────────
    Le tableau de bord et le bouton d'en-tête sont dessinés en doré, couleur de l'offre
    Premium, par une quarantaine de classes Tailwind. Plutôt que de les dédoubler une

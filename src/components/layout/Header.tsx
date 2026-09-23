@@ -112,7 +112,16 @@ export default function Header() {
                 >
                   <Icon size={14} className={`${link.iconColor} group-hover:scale-110 transition-transform`} />
                   <span className={`font-staatliches text-lg uppercase tracking-wide ${link.color} pt-0.5 group-hover:opacity-80 transition-all`}>
-                    {link.label}
+                    {link.isSpecial ? (
+                      <>
+                        {/* Deux libellés, un seul visible : c'est la feuille de style qui
+                            tranche, depuis l'attribut posé sur <html> avant le premier rendu.
+                            Pour un abonné Pro, ce lien ne mène plus à une offre mais à son
+                            espace de travail. */}
+                        <span className="lbl-offre">{link.label}</span>
+                        <span className="lbl-pro">Mon espace Pro</span>
+                      </>
+                    ) : link.label}
                   </span>
                 </Link>
               );
@@ -193,7 +202,12 @@ export default function Header() {
               >
                 <Icon className={link.isSpecial ? "text-white" : link.iconColor} size={link.isSpecial ? 22 : 20} fill={link.isSpecial ? "currentColor" : "none"} />
                 <span className={`font-staatliches text-2xl uppercase tracking-wider pt-1 ${link.isSpecial ? "text-white drop-shadow-sm" : link.color}`}>
-                  {link.label}
+                  {link.isSpecial ? (
+                    <>
+                      <span className="lbl-offre">{link.label}</span>
+                      <span className="lbl-pro">Mon espace Pro</span>
+                    </>
+                  ) : link.label}
                 </span>
               </Link>
             );

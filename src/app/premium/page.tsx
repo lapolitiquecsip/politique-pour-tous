@@ -13,6 +13,7 @@ import {
 } from "lucide-react";
 import { PLANS, SALES_OPEN } from "@/lib/constants";
 import Link from "next/link";
+import EspacePersonnel from "@/components/dashboard/EspacePersonnel";
 
 /* ── Animated Counter ── */
 function AnimatedCounter({ target, suffix = "" }: { target: number; suffix?: string }) {
@@ -377,7 +378,24 @@ function NotifDemoModal({ open, onClose }: { open: boolean; onClose: () => void 
   );
 }
 
+/**
+ * La page /premium sert deux publics opposés.
+ *
+ * Pour un visiteur ou un abonné Premium, c'est la page d'offre : elle vend.
+ * Pour un abonné Pro, elle n'a plus rien à vendre — il a tout souscrit — et elle
+ * devient son espace de travail, sous le titre « Mon espace Pro ». Le lien du menu
+ * ne change donc jamais de place : il mène toujours là où le lecteur a affaire.
+ */
 export default function PremiumPage() {
+  const { isPro, loading: aboEnCours } = usePremium();
+  // On attend de connaître le niveau : sans cela, un abonné Pro verrait l'argumentaire
+  // de vente s'afficher une fraction de seconde avant d'être remplacé par son espace.
+  if (aboEnCours) return <div className="min-h-screen bg-slate-950" />;
+  if (isPro) return <EspacePersonnel mode="espace" />;
+  return <PageOffre />;
+}
+
+function PageOffre() {
   const { userId } = usePremium();
   const reduceMotion = useReducedMotion();
   const [billingCycle, setBillingCycle] = useState<"monthly" | "annually">("monthly");

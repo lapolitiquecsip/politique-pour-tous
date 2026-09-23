@@ -108,6 +108,23 @@ function LawsContent() {
 
   const closeDossier = () => { setDetail(null); setDetailLoading(false); setOpenedItem(null); inscrireAdresse("/lois/"); };
 
+  /**
+   * Passe au texte précédent ou suivant de la liste affichée.
+   *
+   * On se repère sur le texte ouvert plutôt que sur un indice gardé en mémoire : les
+   * filtres peuvent avoir redessiné la liste entre-temps, et un indice périmé ouvrirait
+   * un texte sans rapport. Renvoie null aux extrémités, ce qui éteint la flèche.
+   */
+  const voisin = (sens: -1 | 1): LegislativeListItem | null => {
+    const courant = detail?.dossier?.id ?? openedItem?.id;
+    if (!courant) return null;
+    const i = visibleItems.findIndex(x => x.id === courant);
+    if (i < 0) return null;
+    return visibleItems[i + sens] ?? null;
+  };
+  const precedent = voisin(-1);
+  const suivant = voisin(1);
+
   const loadMore = async () => {
     const last = items.at(-1); if (!last) return;
     setLoading(true);
@@ -198,7 +215,13 @@ function LawsContent() {
       {!loading && !error && !visibleItems.length && <div className="py-20 text-center text-slate-500">Aucun texte officiel ne correspond à ces filtres.</div>}
       {!error && visibleItems.length > 0 && hasMore && <div className="mt-10 text-center"><button onClick={loadMore} disabled={loading} className="rounded-full bg-slate-950 px-8 py-4 font-black text-white disabled:opacity-50">Charger plus de textes</button></div>}
       </>)}
-      <DossierModal detail={detail} loading={detailLoading} fallback={openedItem} onClose={closeDossier} />
+      <DossierModal
+        detail={detail} loading={detailLoading} fallback={openedItem} onClose={closeDossier}
+        onPrev={precedent ? () => openDossier(precedent.id, precedent) : undefined}
+        onNext={suivant ? () => openDossier(suivant.id, suivant) : undefined}
+        prevTitle={precedent?.display_title || precedent?.title || null}
+        nextTitle={suivant?.display_title || suivant?.title || null}
+      />
     </section>
   );
 }

@@ -1,6 +1,7 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
+import { motion, AnimatePresence } from "framer-motion";
 import Link from "next/link";
 import {
   ExternalLink, FileText, Loader2, Scale, X, Lock, ChevronDown, ChevronLeft, ChevronRight,
@@ -365,19 +366,48 @@ function NavetteSection({ steps }: { steps: any[] }) {
 // Repli quand le détail complet est indisponible (RPC muet) : on affiche au moins l'essentiel
 // vérifiable + le lien vers le texte officiel, plutôt qu'un clic mort.
 export type DossierFallback = {
+  /** Identifiant du dossier, qui sert de clé à l'animation de changement de texte. */
+  id?: string | null;
   title?: string | null; display_title?: string | null; category?: string | null;
   promulgated_at?: string | null; nor?: string | null; jorf_id?: string | null;
 };
 
-export default function DossierModal({ detail, loading, onClose, fallback }: { detail: LegislativeDossierDetail | null; loading: boolean; onClose: () => void; fallback?: DossierFallback | null }) {
+export default function DossierModal({
+  detail, loading, onClose, fallback, onPrev, onNext, prevTitle, nextTitle,
+}: {
+  detail: LegislativeDossierDetail | null;
+  loading: boolean;
+  onClose: () => void;
+  fallback?: DossierFallback | null;
+  /** Texte précédent / suivant de la liste. Absent aux extrémités. */
+  onPrev?: () => void;
+  onNext?: () => void;
+  prevTitle?: string | null;
+  nextTitle?: string | null;
+}) {
   const { isPremium } = usePremium();
+  // Sens du dernier changement, pour que le contenu entre du bon côté.
+  const [sens, setSens] = useState<1 | -1>(1);
+  const allerA = (direction: 1 | -1) => {
+    const aller = direction === 1 ? onNext : onPrev;
+    if (!aller) return;
+    setSens(direction);
+    aller();
+  };
+
+  // Début du geste tactile, pour reconnaître un balayage franc.
+  const depart = useRef<{ x: number; y: number } | null>(null);
   // Repli affiché uniquement si le détail complet a bien été tenté mais est revenu vide.
   const showFallback = !loading && !detail && !!fallback;
 
   // Fermeture au clavier (Échap) + verrou du scroll de fond tant que le panneau est ouvert.
   useEffect(() => {
     if (!detail && !loading && !showFallback) return;
-    const onKey = (e: KeyboardEvent) => { if (e.key === "Escape") onClose(); };
+    const onKey = (e: KeyboardEvent) => {
+      if (e.key === "Escape") onClose();
+      else if (e.key === "ArrowRight") allerA(1);
+      else if (e.key === "ArrowLeft") allerA(-1);
+    };
     document.addEventListener("keydown", onKey);
     lockScroll();
     return () => { document.removeEventListener("keydown", onKey); unlockScroll(); };
@@ -386,10 +416,54 @@ export default function DossierModal({ detail, loading, onClose, fallback }: { d
   if (!detail && !loading && !showFallback) return null;
   return (
     <div className="fixed inset-0 z-50 flex items-start justify-center bg-slate-950/70 p-4 md:p-10" role="dialog" aria-modal="true" onClick={onClose}>
-      <div onClick={e => e.stopPropagation()} className="relative mx-auto flex max-h-[calc(100dvh-2rem)] w-full max-w-5xl flex-col overflow-hidden rounded-[2rem] bg-white text-slate-900 shadow-2xl md:max-h-[calc(100dvh-5rem)]">
+      <div
+        onClick={e => e.stopPropagation()}
+        // Balayage horizontal franc = texte suivant/précédent. Le seuil vertical évite
+        // de déclencher la navigation quand l'utilisateur voulait simplement faire défiler.
+        onTouchStart={e => { const t = e.touches[0]; depart.current = { x: t.clientX, y: t.clientY }; }}
+        onTouchEnd={e => {
+          const d = depart.current; depart.current = null;
+          if (!d) return;
+          const t = e.changedTouches[0];
+          const dx = t.clientX - d.x, dy = t.clientY - d.y;
+          if (Math.abs(dx) < 70 || Math.abs(dx) < Math.abs(dy) * 1.5) return;
+          allerA(dx < 0 ? 1 : -1);
+        }}
+        className="relative mx-auto flex max-h-[calc(100dvh-2rem)] w-full max-w-5xl flex-col overflow-hidden rounded-[2rem] bg-white text-slate-900 shadow-2xl md:max-h-[calc(100dvh-5rem)]"
+      >
         {/* Bouton fermer flottant (coin) — plus de bande blanche sticky qui recouvre le contenu au scroll */}
         <button onClick={onClose} className="absolute right-4 top-4 z-20 rounded-full bg-slate-100 p-3 shadow-sm transition hover:bg-slate-200" aria-label="Fermer"><X /></button>
+
+        {/* Navigation entre textes. Sur grand écran les flèches flottent sur les bords ;
+            sur téléphone elles forment une barre en bas, atteignable au pouce, doublée
+            par le balayage. */}
+        {(onPrev || onNext) && (
+          <>
+            <button
+              onClick={() => allerA(-1)} disabled={!onPrev}
+              title={prevTitle ?? undefined} aria-label="Texte précédent"
+              className="absolute left-3 top-1/2 z-20 hidden -translate-y-1/2 rounded-full bg-white/95 p-3 shadow-lg ring-1 ring-slate-200 transition hover:bg-slate-100 disabled:pointer-events-none disabled:opacity-0 md:block"
+            >
+              <ChevronLeft />
+            </button>
+            <button
+              onClick={() => allerA(1)} disabled={!onNext}
+              title={nextTitle ?? undefined} aria-label="Texte suivant"
+              className="absolute right-3 top-1/2 z-20 hidden -translate-y-1/2 rounded-full bg-white/95 p-3 shadow-lg ring-1 ring-slate-200 transition hover:bg-slate-100 disabled:pointer-events-none disabled:opacity-0 md:block"
+            >
+              <ChevronRight />
+            </button>
+          </>
+        )}
         <div className="overflow-y-auto overflow-x-hidden overscroll-contain">
+        <AnimatePresence mode="wait" initial={false}>
+        <motion.div
+          key={detail?.dossier?.id ?? fallback?.id ?? "vide"}
+          initial={{ opacity: 0, x: sens * 28 }}
+          animate={{ opacity: 1, x: 0 }}
+          exit={{ opacity: 0, x: sens * -28 }}
+          transition={{ duration: 0.18, ease: "easeOut" }}
+        >
         {loading ? (
           /* Pendant le chargement, on affiche déjà ce que la carte cliquée savait :
              catégorie et titre. Un panneau blanc avec un rond qui tourne donne le
@@ -485,7 +559,28 @@ export default function DossierModal({ detail, loading, onClose, fallback }: { d
             <section className="mt-10"><h3 className="text-2xl font-staatliches uppercase text-slate-950">Sources officielles</h3><div className="mt-3 flex flex-col gap-2">{[...new Set([...(detail.dossier.source_urls || []), ...(detail.summary?.source_urls || []), ...(detail.promulgation?.source_url ? [detail.promulgation.source_url] : [])])].map((url: string) => <a key={url} href={url} target="_blank" rel="noreferrer" className="flex items-start gap-2 text-blue-700 hover:underline"><ExternalLink size={15} className="mt-0.5 shrink-0" /><span className="min-w-0 break-all">{url}</span></a>)}</div></section>
           </article>
         )}
+        </motion.div>
+        </AnimatePresence>
         </div>
+
+        {/* Sur téléphone, les flèches flottantes des bords sont hors de portée du pouce
+            et masqueraient le texte : elles deviennent une barre fixe en bas. */}
+        {(onPrev || onNext) && (
+          <div className="flex shrink-0 items-stretch gap-2 border-t border-slate-100 bg-white p-3 md:hidden">
+            <button
+              onClick={() => allerA(-1)} disabled={!onPrev}
+              className="flex flex-1 items-center justify-center gap-1.5 rounded-2xl bg-slate-100 py-3 text-[11px] font-black uppercase tracking-widest text-slate-700 transition active:scale-95 disabled:opacity-35"
+            >
+              <ChevronLeft size={16} /> Précédent
+            </button>
+            <button
+              onClick={() => allerA(1)} disabled={!onNext}
+              className="flex flex-1 items-center justify-center gap-1.5 rounded-2xl bg-slate-950 py-3 text-[11px] font-black uppercase tracking-widest text-white transition active:scale-95 disabled:opacity-35"
+            >
+              Suivant <ChevronRight size={16} />
+            </button>
+          </div>
+        )}
       </div>
     </div>
   );

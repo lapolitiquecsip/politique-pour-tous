@@ -37,7 +37,7 @@ export default function ContactPage() {
       {/* ── HEADER IMMERSIF ── */}
       <section className="relative bg-slate-950 py-24 md:py-32 overflow-hidden">
         <div className="absolute inset-0 bg-[url('https://www.elysee.fr/theme/front/dist/assets/images/elysee-social.jpg')] bg-cover bg-center opacity-10 saturate-0 scale-110" />
-        <div className="absolute inset-0 bg-gradient-to-t from-white via-transparent to-black/60" />
+        <div className="absolute inset-0 bg-gradient-to-t from-background via-transparent to-black/60" />
         
         <div className="container mx-auto px-6 relative z-10 text-center">
           <motion.div

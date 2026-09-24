@@ -280,7 +280,7 @@ export default function ProgramSection() {
           })}
         </div>
         {/* Dégradé : signale qu'il reste du contenu dans le cadre. */}
-        <div className="pointer-events-none absolute bottom-0 left-0 right-2 h-8 bg-gradient-to-t from-white to-transparent rounded-b-2xl" />
+        <div className="pointer-events-none absolute bottom-0 left-0 right-2 h-8 bg-gradient-to-t from-background to-transparent rounded-b-2xl" />
       </div>
 
       <p className="text-[10px] text-slate-400/80 italic border-t border-border pt-4 flex items-start gap-1.5">

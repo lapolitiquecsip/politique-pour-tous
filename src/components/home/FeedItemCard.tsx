@@ -121,7 +121,7 @@ export default function FeedItemCard({ item, colorIndex }: { item: ContentItem; 
           <p className="text-[13.5px] font-medium leading-relaxed text-muted-foreground dark:text-slate-400">
             <GlossaryText>{item.resume_flash}</GlossaryText>
           </p>
-          <div className="pointer-events-none absolute inset-x-0 bottom-0 h-9 bg-gradient-to-t from-white to-transparent dark:from-slate-900" />
+          <div className="pointer-events-none absolute inset-x-0 bottom-0 h-9 bg-gradient-to-t from-card to-transparent dark:from-slate-900" />
         </div>
 
       <div className="mt-auto shrink-0 border-t border-border pt-3 dark:border-slate-800">

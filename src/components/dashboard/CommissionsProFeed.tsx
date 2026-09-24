@@ -38,14 +38,29 @@ const aujourdhui = () => new Date().toISOString().slice(0, 10);
 /** Une réunion dans le fil, repliée sur son titre, dépliable sur son analyse. */
 function Ligne({ m }: { m: CommissionMeeting }) {
   const [ouvert, setOuvert] = useState(false);
+  // L'analyse n'arrive qu'au dépliage : la charger avec la liste coûtait plus d'une
+  // seconde et soixante-sept kilo-octets pour vingt-quatre réunions dont on n'en
+  // ouvre qu'une.
+  const [detail, setDetail] = useState<{ analysis: any; summary: string | null } | null>(null);
+  const [chargeant, setChargeant] = useState(false);
+
+  useEffect(() => {
+    if (!ouvert || detail || chargeant) return;
+    setChargeant(true);
+    api.getCommissionAnalysis(m.ref)
+      .then(d => setDetail(d ?? { analysis: null, summary: null }))
+      .finally(() => setChargeant(false));
+  }, [ouvert, detail, chargeant, m.ref]);
   const senat = m.chamber === "SENAT";
   const accent = senat ? ACCENTS.red : ACCENTS.emerald;
   const gens = m.speakers?.length
     ? m.speakers.slice(0, 3).map(s => s.name)
     : extractPeople(decode(m.title || ""));
-  // Une analyse structurée existe-t-elle, ou seulement le compte rendu brut ?
-  const a: any = m.analysis || {};
+  // Tant que l'analyse n'est pas chargée, on ne préjuge pas de son existence : un
+  // badge « en attente » affiché à tort serait pire que pas de badge du tout.
+  const a: any = detail?.analysis || {};
   const analysee = !!(a.contexte || a.points_cles?.length || a.positions?.length || a.citations?.length);
+  const verdictConnu = detail !== null;
 
   return (
     <div className="overflow-hidden rounded-2xl border border-white/10 bg-white/[0.04]">
@@ -62,7 +77,7 @@ function Ligne({ m }: { m: CommissionMeeting }) {
             <span className={senat ? "text-red-300" : "text-emerald-300"}>{senat ? "Sénat" : "Assemblée"}</span>
             <span className="text-white/25">·</span>
             <span className="text-white/45">{shortCommission(m.commission)}</span>
-            {!analysee && (
+            {verdictConnu && !analysee && (
               <span className="rounded-full bg-amber-400/15 px-1.5 py-0.5 text-[8px] tracking-wider text-amber-300">
                 Analyse en attente
               </span>
@@ -93,7 +108,13 @@ function Ligne({ m }: { m: CommissionMeeting }) {
                 l'analyse doit donc l'être aussi. Lui imposer un fond blanc faisait
                 rendre ses variantes `dark:` en clair sur clair — illisible. */}
             <div className="mx-4 mb-4 rounded-xl bg-white/[0.05] p-4 ring-1 ring-white/10">
-              <CommissionAnalysis m={m} accent={accent} sombre />
+              {detail === null ? (
+                <p className="flex items-center gap-2 py-4 text-sm text-white/50">
+                  <Loader2 size={15} className="animate-spin" /> Chargement de l&apos;analyse…
+                </p>
+              ) : (
+                <CommissionAnalysis m={{ ...m, analysis: detail.analysis, summary: detail.summary }} accent={accent} sombre />
+              )}
               <div className="mt-4 flex flex-wrap gap-3 border-t border-white/10 pt-3">
                 {m.cr_url && (
                   <a href={m.cr_url} target="_blank" rel="noopener noreferrer"
@@ -133,7 +154,7 @@ export default function CommissionsProFeed() {
   useEffect(() => {
     let vivant = true;
     setReunions(null); setEpuise(false);
-    api.getCommissionMeetings({ commission, search: differee || null, limit: PAGE })
+    api.getCommissionMeetings({ commission, search: differee || null, limit: PAGE, withAnalysis: false })
       .then(r => { if (vivant) { setReunions(r as CommissionMeeting[]); setEpuise((r as unknown[]).length < PAGE); } })
       .catch(() => { if (vivant) setReunions([]); });
     return () => { vivant = false; };
@@ -144,7 +165,7 @@ export default function CommissionsProFeed() {
     setEncore(true);
     try {
       const r = await api.getCommissionMeetings({
-        commission, search: differee || null, limit: PAGE, offset: reunions.length,
+        commission, search: differee || null, limit: PAGE, offset: reunions.length, withAnalysis: false,
       }) as CommissionMeeting[];
       setReunions(prev => [...(prev ?? []), ...r]);
       if (r.length < PAGE) setEpuise(true);

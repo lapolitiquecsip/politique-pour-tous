@@ -29,6 +29,16 @@ type Props = {
 /* ─────────────────────────── Une réunion, pliable ─────────────────────────── */
 function MeetingCard({ m, accent }: { m: CommissionMeeting; accent: typeof ACCENTS.emerald }) {
   const [open, setOpen] = useState(false);
+  // L'analyse est demandée au dépliage. Chargée avec la liste, elle coûtait plus d'une
+  // seconde et soixante-sept kilo-octets pour vingt-quatre réunions dont on n'en ouvre
+  // qu'une à la fois.
+  const [detail, setDetail] = useState<{ analysis: any; summary: string | null } | null>(null);
+  useEffect(() => {
+    if (!open || detail) return;
+    let vivant = true;
+    api.getCommissionAnalysis(m.ref).then(d => { if (vivant) setDetail(d ?? { analysis: null, summary: null }); });
+    return () => { vivant = false; };
+  }, [open, detail, m.ref]);
   const commission = shortCommission(m.commission);
   const title = cleanTitle(m.title || "");
   const people = m.speakers?.length
@@ -62,7 +72,13 @@ function MeetingCard({ m, accent }: { m: CommissionMeeting; accent: typeof ACCEN
         <div className="border-t border-border px-5 py-4 dark:border-slate-800">
           {/* La carte n'est atteinte que par un abonné Pro : la liste entière est
               derrière la porte, il n'y a plus d'aperçu à flouter. */}
-          <Analysis m={m} accent={accent} />
+          {detail === null ? (
+            <p className="flex items-center gap-2 py-4 text-sm text-muted-foreground">
+              <Loader2 size={15} className="animate-spin" /> Chargement de l&apos;analyse…
+            </p>
+          ) : (
+            <Analysis m={{ ...m, analysis: detail.analysis, summary: detail.summary }} accent={accent} />
+          )}
 
           <div className="mt-5 flex flex-wrap gap-3 border-t border-border pt-3 dark:border-slate-800">
             {m.cr_url && (
@@ -118,7 +134,7 @@ export default function CommissionTracker({ chamber, chamberLabel, accent = "eme
     const id = ++requestId.current;
     setMeetings(null);
     setExhausted(false);
-    api.getCommissionMeetings({ chamber, commission: selected, search: debounced || null, limit: PAGE })
+    api.getCommissionMeetings({ chamber, commission: selected, search: debounced || null, limit: PAGE, withAnalysis: false })
       .then(rows => {
         if (requestId.current !== id) return;
         setMeetings(rows as CommissionMeeting[]);
@@ -133,7 +149,7 @@ export default function CommissionTracker({ chamber, chamberLabel, accent = "eme
     const id = requestId.current;
     try {
       const rows = await api.getCommissionMeetings({
-        chamber, commission: selected, search: debounced || null, limit: PAGE, offset: meetings.length,
+        chamber, commission: selected, search: debounced || null, limit: PAGE, offset: meetings.length, withAnalysis: false,
       }) as CommissionMeeting[];
       if (requestId.current !== id) return;
       setMeetings(prev => [...(prev ?? []), ...rows]);

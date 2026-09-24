@@ -168,7 +168,7 @@ export default function SenatorClient() {
           )}
 
           {!isPremium && filteredSenators.length > 4 && (
-             <div className="absolute bottom-0 left-0 w-full h-64 bg-gradient-to-t from-white via-white/90 to-transparent pointer-events-none flex items-end justify-center pb-8 p-4 text-center">
+             <div className="absolute bottom-0 left-0 w-full h-64 bg-gradient-to-t from-background via-background/90 to-transparent pointer-events-none flex items-end justify-center pb-8 p-4 text-center">
              </div>
           )}        </div>
       </div>

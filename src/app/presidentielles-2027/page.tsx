@@ -756,7 +756,7 @@ function CandidatesContent() {
   const close = () => { setSelectedSlug(null); try { window.history.replaceState(null, "", "/presidentielles-2027/"); } catch {} };
 
   return (
-    <div className="min-h-screen bg-gradient-to-b from-slate-50 via-white to-slate-50">
+    <div className="min-h-screen bg-background">
       {/* Hero */}
       <div className="relative overflow-hidden px-4 py-24 text-center">
         <div className="absolute left-1/4 top-0 h-96 w-96 -translate-x-1/2 rounded-full bg-blue-500/10 blur-[120px]" />

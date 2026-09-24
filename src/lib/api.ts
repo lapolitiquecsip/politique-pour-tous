@@ -681,9 +681,20 @@ export const api = {
     search?: string | null;
     limit?: number;
     offset?: number;
+    /**
+     * Charger l'analyse complète avec la liste.
+     *
+     * Elle pèse lourd — soixante-sept kilo-octets et 1,3 seconde pour vingt-quatre
+     * réunions, contre quatorze kilo-octets et 0,3 seconde sans elle — alors qu'elle
+     * n'est lue qu'au dépliage d'une réunion. Les listes la laissent donc de côté et
+     * la demandent à la carte, par getCommissionAnalysis.
+     */
+    withAnalysis?: boolean;
   } = {}) => {
-    const { chamber, commission, search, limit = 20, offset = 0 } = opts;
-    const COLS = 'ref, chamber, commission, title, meeting_date, cr_url, video_url, summary, analysis, speakers, topics';
+    const { chamber, commission, search, limit = 20, offset = 0, withAnalysis = true } = opts;
+    const COLS = withAnalysis
+      ? 'ref, chamber, commission, title, meeting_date, cr_url, video_url, summary, analysis, speakers, topics'
+      : 'ref, chamber, commission, title, meeting_date, cr_url, video_url, speakers, topics';
 
     // La syntaxe `or()` de PostgREST utilise la virgule comme séparateur et les
     // parenthèses comme groupes : un terme de recherche qui en contient casserait le
@@ -703,6 +714,22 @@ export const api = {
     if (res.error) res = await build(false); // migration non appliquée
     if (res.error) { console.error(res.error); return []; }
     return res.data ?? [];
+  },
+
+  /**
+   * Analyse détaillée d'une réunion, chargée au moment où on la déplie.
+   *
+   * Renvoie aussi le résumé, qui sert de repli quand l'analyse structurée n'a pas
+   * encore été produite.
+   */
+  getCommissionAnalysis: async (ref: string) => {
+    const { data, error } = await supabase
+      .from('commission_reports')
+      .select('analysis, summary')
+      .eq('ref', ref)
+      .maybeSingle();
+    if (error || !data) return null;
+    return data as { analysis: any; summary: string | null };
   },
 
   /**

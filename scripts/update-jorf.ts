@@ -28,9 +28,12 @@
  *   npx tsx scripts/update-jorf.ts --no-digest        # sommaire seul, sans résumé
  *
  * Variables : NEXT_PUBLIC_SUPABASE_URL, SUPABASE_SERVICE_ROLE_KEY.
- * DEEPSEEK_API_KEY est facultative — sans elle, le résumé est simplement omis.
+ * LLM_FREE_API_KEY (Google AI Studio, gratuit) porte les explications et le
+ * résumé du jour — sans elle, le sommaire est enregistré mais reste muet.
+ * Voir scripts/lib/llm.ts, qui retombe sur DeepSeek si une clé payante existe.
  */
 import { createClient } from "@supabase/supabase-js";
+import { demanderJSON, llmDisponible, llmVoie } from "./lib/llm";
 import { gunzipSync } from "node:zlib";
 
 const DILA = "https://echanges.dila.gouv.fr/OPENDATA/JORF/";
@@ -43,6 +46,16 @@ const flag = (nom: string, defaut: number) => {
 };
 const DRY = args.includes("--dry-run");
 const SANS_RESUME = args.includes("--no-digest");
+/**
+ * Reprend les textes déjà en base restés sans explication, sans relire le flux.
+ *
+ * Utile après un rattrapage fait sans clé, ou quand une journée a échoué : un
+ * mois d'archives pèse cent trente mégaoctets, les retélécharger pour la seule
+ * rédaction serait absurde. Le corps des actes n'étant pas conservé, ces
+ * explications-là sont écrites d'après l'intitulé seul — moins riches que celles
+ * du jour même, mais justes.
+ */
+const RATTRAPER_EXPLICATIONS = args.includes("--rattraper-explications");
 const NB_FICHIERS = flag("files", 4);
 /** Nombre maximal de résumés de rattrapage par passage, pour borner la dépense. */
 const RATTRAPAGE_MAX = flag("catchup", 10);
@@ -291,9 +304,8 @@ function corpsLisible(c: Corps): string {
 
 /* ─────────────────────────────── Résumé du jour ─────────────────────────────── */
 
-const MODEL = process.env.JORF_MODEL || "deepseek-v4-pro";
-const LLM_URL = process.env.JORF_BASE_URL || "https://api.deepseek.com/";
-const LLM_KEY = process.env.DEEPSEEK_API_KEY || "";
+// Le choix du fournisseur vit dans scripts/lib/llm.ts : gratuit d'abord (Google
+// AI Studio), DeepSeek en secours si une clé payante traîne. Rien ici n'en dépend.
 
 const CONSIGNE = `Tu rédiges, pour des professionnels de la politique, le point quotidien sur le Journal officiel.
 On te donne le sommaire intégral d'une édition : rubriques, ministères, intitulés des textes.
@@ -308,37 +320,30 @@ Réponds en JSON : { "digest": "…" }`;
 
 /** Produit le résumé du jour. Un appel par édition : le coût est négligeable. */
 async function resumer(e: Edition): Promise<string | null> {
-  if (!LLM_KEY) return null;
+  if (!llmDisponible()) return null;
   const sommaire = e.sections
     .map(r => `## ${r.titre}\n` + r.groupes.map(g => `### ${g.titre}\n` + g.textes.map(t => `- ${t.titre}`).join("\n")).join("\n"))
     .join("\n");
 
-  const r = await fetch(`${LLM_URL}chat/completions`, {
-    method: "POST",
-    headers: { "Content-Type": "application/json", Authorization: `Bearer ${LLM_KEY}` },
-    body: JSON.stringify({
-      model: MODEL,
-      messages: [
-        { role: "system", content: CONSIGNE },
-        { role: "user", content: `${e.title} — ${e.text_count} textes.\n\n${sommaire}` },
-      ],
-      response_format: { type: "json_object" },
-      max_tokens: 2000,
-    }),
-  });
-  const body: any = await r.json();
-  if (!r.ok) throw new Error(`HTTP ${r.status} — ${JSON.stringify(body).slice(0, 160)}`);
-  const brut = body.choices?.[0]?.message?.content ?? "";
-  if (!brut.trim()) throw new Error("réponse vide");
-  const digest = String(JSON.parse(brut.replace(/^```json\s*|\s*```$/g, "")).digest ?? "").trim();
-  return digest || null;
+  const reponse = await demanderJSON<{ digest?: string }>(
+    CONSIGNE,
+    `${e.title} — ${e.text_count} textes.
+
+${sommaire}`,
+    { maxJetons: 4096 },
+  );
+  return String(reponse.digest ?? "").trim() || null;
 }
 
 
 /* ──────────────────────── Expliquer chaque texte ──────────────────────── */
 
 /** Taille d'un lot envoyé au modèle. Assez petit pour que la réponse tienne. */
-const LOT_EXPLICATION = 12;
+const LOT_EXPLICATION = Number(process.env.JORF_LOT || 25);
+// Vingt-cinq textes tiennent large dans la fenetre d'un modele « flash », et le
+// palier gratuit compte les REQUETES, pas les jetons : de gros lots coutent donc
+// moins cher en quota qu'une serie de petits. A douze, un mois de rattrapage
+// epuisait le quota quotidien avant d'avoir fini.
 
 const CONSIGNE_TEXTES = `Tu expliques, pour des professionnels de la politique et des entreprises, ce que font des textes parus au Journal officiel.
 
@@ -346,7 +351,8 @@ Pour CHAQUE texte reçu, écris UNE phrase de 15 à 35 mots disant ce qu'il chan
 Règles impératives :
 - ne t'appuie QUE sur l'intitulé et le corps fournis ; n'invente aucun chiffre, aucune date, aucun bénéficiaire ;
 - commence directement par le verbe ou l'objet, sans « Ce texte… » ni « Cet arrêté… » ;
-- si le corps est vide ou purement formel (délégation de signature, nomination), dis simplement de quoi il s'agit et pour qui ;
+- certains textes arrivent SANS corps, avec leur seul intitulé : explique-les quand même à partir de lui, sans rien supposer du dispositif, et reste au ras de ce qui est écrit ;
+- si le texte est purement formel (délégation de signature, nomination), dis simplement de quoi il s'agit et pour qui ;
 - pas de jargon inutile : « les entreprises du bâtiment » plutôt que « les personnes visées à l'article L. 5424-6 ».
 Réponds en JSON : { "textes": [ { "id": "JORFTEXT…", "explication": "…" } ] } — un objet par texte reçu, avec son identifiant exact.`;
 
@@ -378,11 +384,25 @@ async function expliquerTextes(sections: Rubrique[], corps: Map<string, Corps>):
           t.source_explication = "notice";
           continue;
         }
+        // Deux situations se ressemblent et n'ont rien à voir ; les confondre a
+        // produit des contresens. Un arrêté interdisant le déplacement de supporters
+        // s'est vu annoncer « publication signalée sans son contenu, le détail est
+        // tenu par l'assemblée concernée », ce qui est faux de bout en bout.
+        //
+        //   — la fiche du texte EXISTE dans l'archive mais son CONTENU est vide :
+        //     c'est un vrai renvoi, le JO ne publie qu'un pointeur (« Documents
+        //     déposés », « Conférence des présidents ») ;
+        //   — la fiche N'EST PAS dans l'archive : le texte a bien un contenu, nous
+        //     ne l'avons simplement pas reçu. C'est le cas de tout rattrapage, la
+        //     livraison du soir ne rejouant que les sommaires.
+        //
+        // Le second cas part au modèle avec son seul intitulé. Ceux du Journal
+        // officiel sont très descriptifs — « Arrêté du 1er septembre 2026 portant
+        // interdiction de déplacement des supporters du club de… » — et suffisent à
+        // dire ce que le texte fait.
         const lisible = c ? corpsLisible(c) : "";
-        if (!lisible) {
-          // Le Journal officiel signale ici une publication faite ailleurs : il n'en
-          // reprend pas le contenu. Le dire vaut mieux que de laisser une ligne muette.
-          t.explication = "Le Journal officiel signale cette publication sans en reprendre le contenu : le détail est tenu par l'assemblée concernée.";
+        if (c && !lisible) {
+          t.explication = "Le Journal officiel signale cette publication sans en reprendre le contenu : le détail est tenu par l'institution qui l'a produite.";
           t.source_explication = "renvoi";
           continue;
         }
@@ -391,29 +411,19 @@ async function expliquerTextes(sections: Rubrique[], corps: Map<string, Corps>):
     }
   }
 
-  if (!aResumer.length || !LLM_KEY) return 0;
+  if (!aResumer.length || !llmDisponible()) return 0;
 
   const obtenues = new Map<string, string>();
   for (let i = 0; i < aResumer.length; i += LOT_EXPLICATION) {
     const lot = aResumer.slice(i, i + LOT_EXPLICATION);
     try {
-      const r = await fetch(`${LLM_URL}chat/completions`, {
-        method: "POST",
-        headers: { "Content-Type": "application/json", Authorization: `Bearer ${LLM_KEY}` },
-        body: JSON.stringify({
-          model: MODEL,
-          messages: [
-            { role: "system", content: CONSIGNE_TEXTES },
-            { role: "user", content: lot.map(t => `### ${t.id}\n${t.titre}\n\n${t.corps}`).join("\n\n---\n\n") },
-          ],
-          response_format: { type: "json_object" },
-          max_tokens: 4000,
-        }),
-      });
-      const body: any = await r.json();
-      if (!r.ok) throw new Error(`HTTP ${r.status} — ${JSON.stringify(body).slice(0, 140)}`);
-      const brut = body.choices?.[0]?.message?.content ?? "";
-      const parsed = JSON.parse(brut.replace(/^```json\s*|\s*```$/g, ""));
+      // Un seul lot par appel. Le client espace les requêtes pour tenir sous la
+      // limite par minute du palier gratuit, et réessaie les refus passagers.
+      const parsed = await demanderJSON<{ textes?: { id?: string; explication?: string }[] }>(
+        CONSIGNE_TEXTES,
+        lot.map(t => [`### ${t.id}`, t.titre, "", t.corps].join("\n")).join("\n\n---\n\n"),
+        { maxJetons: 8192 },
+      );
       // On n'accepte QUE les identifiants envoyés : un identifiant inventé rattacherait
       // une explication au mauvais texte, ce qui est pire qu'une ligne sans explication.
       const envoyes = new Set(lot.map(t => t.id));
@@ -458,7 +468,11 @@ async function main() {
   }
   const supabase = createClient(url, key);
 
+  // Reprise de l'arriéré : on n'a pas besoin du flux, tout est déjà en base.
+  if (RATTRAPER_EXPLICATIONS) { await rattraperExplications(supabase); return; }
+
   console.log("=== Journal officiel — flux DILA ===");
+  console.log(`  voie de rédaction : ${llmVoie()}`);
   const archives = (await listerArchives()).slice(0, NB_FICHIERS);
   if (!archives.length) { console.error("Aucune archive listée."); process.exit(1); }
   console.log(`  ${archives.length} archive(s) à lire, de ${archives[archives.length - 1]} à ${archives[0]}`);
@@ -546,7 +560,7 @@ async function main() {
       try {
         digest = await resumer(e);
         if (digest) console.log(`    résumé : ${digest.slice(0, 120)}…`);
-        else if (!LLM_KEY) console.log("    (DEEPSEEK_API_KEY absente — résumé omis)");
+        else if (!llmDisponible()) console.log("    (aucune clé LLM — résumé omis)");
       } catch (err) {
         // Le sommaire reste la valeur principale : un résumé manquant ne bloque rien.
         console.warn(`    ⚠ résumé : ${(err as Error).message}`);
@@ -567,7 +581,146 @@ async function main() {
   if (error) { console.error(`\n  ✗ écriture : ${error.message}`); process.exit(1); }
   console.log(`\n  → ${lignes.length} édition(s) enregistrée(s)`);
 
+  await indexerTextes(supabase, lignes);
   await rattraperResumes(supabase);
+}
+
+/**
+ * Réécrit l'index de recherche à partir des sommaires.
+ *
+ * jorf_texts est dérivée : une ligne par texte, avec son intitulé et son
+ * explication, pour que la loupe de l'espace Pro interroge un index plein texte
+ * plutôt que de relire tout le JSONB à chaque frappe. On la réécrit
+ * systématiquement — c'est le sommaire qui fait foi, jamais l'inverse.
+ */
+async function indexerTextes(supabase: any, editions: any[]): Promise<void> {
+  const lignes: any[] = [];
+  for (const e of editions) {
+    for (const r of e.sections ?? []) {
+      for (const g of r.groupes ?? []) {
+        for (const t of g.textes ?? []) {
+          lignes.push({
+            id: t.id,
+            edition_date: e.date,
+            rubrique: r.titre ?? null,
+            groupe: g.titre ?? null,
+            titre: t.titre,
+            nature: t.nature ?? null,
+            explication: t.explication ?? null,
+            source_explication: t.source_explication ?? null,
+            updated_at: new Date().toISOString(),
+          });
+        }
+      }
+    }
+  }
+  if (!lignes.length) return;
+
+  // Par paquets : une journée chargée dépasse la centaine de textes, et un mois
+  // de rattrapage en aligne plus de deux mille — au-delà, PostgREST refuse.
+  let ecrits = 0;
+  for (let i = 0; i < lignes.length; i += 500) {
+    const { error } = await supabase
+      .from("jorf_texts").upsert(lignes.slice(i, i + 500), { onConflict: "id" });
+    if (error) {
+      // La migration peut ne pas être appliquée : on le dit sans faire échouer
+      // l'ingestion, qui a déjà enregistré l'essentiel.
+      console.warn(`  ⚠ index de recherche : ${error.message}`);
+      return;
+    }
+    ecrits += Math.min(500, lignes.length - i);
+  }
+  console.log(`  → ${ecrits} texte(s) indexé(s) pour la recherche`);
+}
+
+/**
+ * Écrit les explications manquantes des éditions déjà enregistrées.
+ *
+ * Le corps des actes n'est pas conservé : ces phrases-là sont donc rédigées à
+ * partir du seul intitulé. Ceux du Journal officiel sont très descriptifs, mais
+ * le résultat reste en deçà de ce que produit l'ingestion du jour, qui dispose
+ * des visas et du dispositif. On le marque « ia » comme les autres, la source
+ * étant la même ; c'est la richesse qui change, pas la nature.
+ */
+async function rattraperExplications(supabase: any): Promise<void> {
+  console.log("=== Journal officiel — reprise des explications ===");
+  console.log(`  voie de rédaction : ${llmVoie()}`);
+  if (!llmDisponible()) {
+    console.error("❌ Aucune clé LLM (LLM_FREE_API_KEY) : rien à faire.");
+    process.exit(1);
+  }
+
+  const { data: editions, error } = await supabase
+    .from("jorf_editions").select("date, sections").order("date", { ascending: false });
+  if (error) { console.error(`✗ lecture : ${error.message}`); process.exit(1); }
+
+  // Un seul inventaire pour toutes les éditions : les lots se remplissent ainsi
+  // complètement, au lieu de finir chaque journée sur un lot de trois textes.
+  type Manquant = { date: string; id: string; titre: string };
+  const manquants: Manquant[] = [];
+  for (const e of editions ?? []) {
+    for (const r of e.sections ?? []) {
+      for (const g of r.groupes ?? []) {
+        for (const t of g.textes ?? []) {
+          if (!String(t.explication ?? "").trim()) manquants.push({ date: e.date, id: t.id, titre: t.titre });
+        }
+      }
+    }
+  }
+
+  if (!manquants.length) { console.log("  Rien à reprendre : tous les textes ont leur explication."); return; }
+  console.log(`  ${manquants.length} texte(s) sans explication, sur ${editions.length} édition(s)`);
+
+  const obtenues = new Map<string, string>();
+  for (let i = 0; i < manquants.length; i += LOT_EXPLICATION) {
+    const lot = manquants.slice(i, i + LOT_EXPLICATION);
+    try {
+      const parsed = await demanderJSON<{ textes?: { id?: string; explication?: string }[] }>(
+        CONSIGNE_TEXTES,
+        lot.map(t => [`### ${t.id}`, t.titre].join("\n")).join("\n\n---\n\n"),
+        { maxJetons: 8192 },
+      );
+      const envoyes = new Set(lot.map(t => t.id));
+      for (const x of parsed.textes ?? []) {
+        const id = String(x?.id ?? "");
+        const phrase = String(x?.explication ?? "").trim();
+        if (phrase && envoyes.has(id)) obtenues.set(id, abreger(phrase, 320));
+      }
+      const fin = Math.min(i + LOT_EXPLICATION, manquants.length);
+      console.log(`  ${fin}/${manquants.length} — ${obtenues.size} rédigée(s)`);
+    } catch (e) {
+      console.warn(`  ⚠ lot ${i + 1}-${i + lot.length} : ${(e as Error).message}`);
+    }
+  }
+
+  if (!obtenues.size) { console.error("❌ Aucune explication obtenue."); process.exitCode = 1; return; }
+
+  // On ne réécrit que les éditions effectivement touchées.
+  const touchees: any[] = [];
+  for (const e of editions ?? []) {
+    let modifiee = false;
+    for (const r of e.sections ?? []) {
+      for (const g of r.groupes ?? []) {
+        for (const t of g.textes ?? []) {
+          const phrase = obtenues.get(t.id);
+          if (phrase && !String(t.explication ?? "").trim()) {
+            t.explication = phrase;
+            t.source_explication = "ia";
+            modifiee = true;
+          }
+        }
+      }
+    }
+    if (modifiee) touchees.push(e);
+  }
+
+  for (const e of touchees) {
+    const { error: err } = await supabase.from("jorf_editions")
+      .update({ sections: e.sections, updated_at: new Date().toISOString() }).eq("date", e.date);
+    if (err) console.warn(`  ⚠ ${e.date} : ${err.message}`);
+  }
+  console.log(`\n  → ${obtenues.size} explication(s) écrite(s) sur ${touchees.length} édition(s)`);
+  await indexerTextes(supabase, touchees);
 }
 
 /**
@@ -583,10 +736,10 @@ async function main() {
 // d'utile et fait diverger la signature de ce que createClient renvoie réellement.
 async function rattraperResumes(supabase: any) {
   if (SANS_RESUME) return;
-  if (!LLM_KEY) {
+  if (!llmDisponible()) {
     // Bruyant exprès : le sommaire seul passait pour un succès complet, et les
     // résumés quotidiens sont restés absents sans que rien ne le signale.
-    console.error("❌ DEEPSEEK_API_KEY absente : les éditions resteront sans résumé.");
+    console.error("❌ Aucune clé LLM (LLM_FREE_API_KEY) : les éditions resteront sans résumé.");
     process.exitCode = 1;
     return;
   }

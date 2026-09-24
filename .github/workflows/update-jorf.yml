@@ -48,5 +48,8 @@ jobs:
         env:
           NEXT_PUBLIC_SUPABASE_URL: ${{ secrets.NEXT_PUBLIC_SUPABASE_URL }}
           SUPABASE_SERVICE_ROLE_KEY: ${{ secrets.SUPABASE_SERVICE_ROLE_KEY }}
+          # Gratuit d'abord : cle Google AI Studio (aistudio.google.com/apikey).
+          # DEEPSEEK_API_KEY ne sert plus que de secours si elle est renseignee.
+          LLM_FREE_API_KEY: ${{ secrets.LLM_FREE_API_KEY }}
           DEEPSEEK_API_KEY: ${{ secrets.DEEPSEEK_API_KEY }}
         run: npx --yes tsx scripts/update-jorf.ts --days=${{ github.event.inputs.days || '10' }}

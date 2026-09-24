@@ -3,9 +3,10 @@
 import { useEffect, useMemo, useState } from "react";
 import Link from "next/link";
 import { motion, AnimatePresence, useReducedMotion } from "framer-motion";
-import { Newspaper, ExternalLink, ChevronDown, Loader2, Sparkles, Lock, Check, ArrowRight } from "lucide-react";
+import { Newspaper, ExternalLink, ChevronDown, Loader2, Sparkles, Lock, Check, ArrowRight, Search } from "lucide-react";
 import { api } from "@/lib/api";
 import { usePremium } from "@/lib/hooks/usePremium";
+import JorfSearch from "@/components/home/JorfSearch";
 
 /**
  * Le Journal officiel du jour, réservé aux abonnés Pro.
@@ -65,12 +66,17 @@ export default function JournalOfficielDuJour() {
   const [sectionsPour, setSectionsPour] = useState<string | null>(null);
   const [filtre, setFiltre] = useState<string | null>(null);
   const [deployees, setDeployees] = useState<Set<string>>(new Set());
+  const [recherche, setRecherche] = useState(false);
 
   // La liste légère est chargée pour tout le monde : le nombre réel de textes du jour
   // est l'argument le plus convaincant du panneau d'abonnement.
+  //
+  // Quarante éditions, soit un mois ouvré et des poussières : c'est la profondeur
+  // d'historique attendue d'un abonné, et la liste reste légère puisqu'elle ne
+  // porte pas les sommaires — deux kilo-octets pour sept, une dizaine pour tout.
   useEffect(() => {
     let vivant = true;
-    api.getJorfEditions(7)
+    api.getJorfEditions(40)
       .then(r => { if (vivant) setEditions(r as Edition[]); })
       .catch(() => { if (vivant) setEditions([]); });
     return () => { vivant = false; };
@@ -226,6 +232,22 @@ export default function JournalOfficielDuJour() {
           <h3 className="font-staatliches text-2xl uppercase leading-none tracking-tight sm:text-3xl">
             Le Journal officiel du jour
           </h3>
+          {/* La loupe cherche dans TOUT le Journal officiel conservé, pas dans la
+              seule journée affichée : c'est la différence entre feuilleter et
+              retrouver. Elle reste repliée pour ne pas encombrer la lecture. */}
+          <button
+            onClick={() => setRecherche(r => !r)}
+            aria-expanded={recherche}
+            aria-label={recherche ? "Fermer la recherche" : "Rechercher dans le Journal officiel"}
+            title="Rechercher dans tout le Journal officiel"
+            className={`ml-auto inline-flex items-center gap-1.5 rounded-full px-3 py-1.5 text-[10px] font-black uppercase tracking-widest transition ${
+              recherche
+                ? "bg-white text-slate-900"
+                : "bg-white/10 text-white/80 ring-1 ring-white/15 hover:bg-white/20 hover:text-white"
+            }`}
+          >
+            <Search size={13} /> <span className="hidden sm:inline">Rechercher</span>
+          </button>
         </div>
 
         {/* Rail des dernières éditions : on glisse sur le côté plutôt que d'empiler. */}
@@ -288,6 +310,22 @@ export default function JournalOfficielDuJour() {
           </div>
         )}
       </div>
+
+      {/* La recherche, quand on l'appelle. Montée seulement alors : son index des
+          natures est une requête, inutile tant que personne ne cherche. */}
+      <AnimatePresence initial={false}>
+        {recherche && (
+          <motion.div
+            initial={reduce ? false : { height: 0, opacity: 0 }}
+            animate={{ height: "auto", opacity: 1 }}
+            exit={reduce ? undefined : { height: 0, opacity: 0 }}
+            transition={{ duration: 0.2, ease: "easeOut" }}
+            className="overflow-hidden"
+          >
+            <JorfSearch onClose={() => setRecherche(false)} />
+          </motion.div>
+        )}
+      </AnimatePresence>
 
       {/* Sommaire complet, replié rubrique par rubrique. */}
       <div className="p-5 sm:p-7">

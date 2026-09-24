@@ -666,6 +666,63 @@ export const api = {
     return (data.sections ?? []) as any[];
   },
 
+  /**
+   * Cherche un texte dans tout le Journal officiel conservé.
+   *
+   * La recherche porte sur la table plate jorf_texts, indexée en plein texte
+   * français : l'intitulé pèse plus lourd que l'explication, et la racinisation
+   * fait que « nomination » trouve aussi « nominations ».
+   *
+   * `websearch` est le mode d'analyse le plus proche de ce qu'un lecteur tape :
+   * les mots sont combinés par ET, les guillemets forment une expression exacte
+   * et un tiret exclut. Un mot mal orthographié ne ramène rien — c'est voulu :
+   * mieux vaut zéro résultat qu'une liste au hasard.
+   *
+   * On retombe sur une correspondance simple quand la requête est trop courte
+   * ou ne contient que des mots vides, cas où le plein texte ne rend rien.
+   */
+  searchJorf: async (
+    q: string,
+    opts: { nature?: string | null; depuis?: string | null; limit?: number } = {},
+  ) => {
+    const terme = q.trim();
+    if (terme.length < 2) return [];
+    const { nature, depuis, limit = 60 } = opts;
+
+    const COLS = 'id, edition_date, rubrique, groupe, titre, nature, explication, source_explication';
+    const base = () => {
+      let r = supabase.from('jorf_texts').select(COLS);
+      if (nature) r = r.eq('nature', nature);
+      if (depuis) r = r.gte('edition_date', depuis);
+      return r.order('edition_date', { ascending: false }).limit(limit);
+    };
+
+    const { data, error } = await base().textSearch('recherche', terme, {
+      type: 'websearch', config: 'french',
+    });
+    if (!error && data?.length) return data;
+
+    // Repli : l'utilisateur a tapé un fragment (« supp »), un numéro, ou la
+    // migration n'est pas appliquée. `ilike` neutralise d'abord les jokers, un
+    // « % » tapé au clavier ramenant sinon la table entière.
+    const sansJoker = terme.replace(/[%_\\]/g, ' ').trim();
+    if (!sansJoker) return [];
+    const { data: repli } = await base().ilike('titre', `%${sansJoker}%`);
+    return repli ?? [];
+  },
+
+  /** Natures présentes, pour proposer des filtres qui existent vraiment. */
+  getJorfNatures: async () => {
+    const { data, error } = await supabase.from('jorf_texts').select('nature').limit(5000);
+    if (error) return [];
+    const compte = new Map<string, number>();
+    for (const r of data ?? []) {
+      const n = (r as any).nature;
+      if (n) compte.set(n, (compte.get(n) ?? 0) + 1);
+    }
+    return [...compte.entries()].sort((a, b) => b[1] - a[1]).map(([nature, count]) => ({ nature, count }));
+  },
+
   /* ════════ SUIVI DES COMMISSIONS PARLEMENTAIRES (abonnement Pro) ════════ */
 
   /**

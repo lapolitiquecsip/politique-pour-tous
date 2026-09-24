@@ -23,7 +23,7 @@
 
   "primaires": [
     {
-      "nom": "Primaire de la gauche socialiste et démocratique",
+      "nom": "Primaire Choisir 2027",
       "camp": "gauche",
       "candidats": [
         "olivier-faure",
@@ -32,13 +32,13 @@
         "jerome-guedj",
         "emmanuel-maurel"
       ],
-      "_note": "« Choisir 2027 », organisée par le PS, Place publique et la Gauche républicaine et socialiste. Philippe Brun, candidat déclaré, a été suspendu par le PS le 16 septembre 2026 et ne figure pas parmi les cinq candidats retenus."
+      "_note": "« Choisir 2027 », organisée par le PS, Place publique et la Gauche républicaine et socialiste. Philippe Brun a été exclu de la primaire et suspendu du PS le 16 septembre 2026 ; sa demande de réintégration a été rejetée en référé puis en appel le 23 septembre. Il ne figure donc pas parmi les cinq candidats, et sa fiche ne porte plus de rattachement à une primaire."
     },
     {
       "nom": "Primaire de la gauche unitaire",
       "camp": "gauche",
       "candidats": ["francois-ruffin", "lydie-massard", "marine-tondelier"],
-      "_note": "Aucun débat annoncé à ce jour : rien n'est inscrit au calendrier tant qu'une date ne l'est pas."
+      "_note": "Un scrutin avait été annoncé pour le 11 octobre 2026, mais le processus est considéré comme abandonné de fait depuis juillet 2026 : retraits de Clémentine Autain et de Benjamin Lucas-Lundy, puis refus du PS d'y participer. Aucune date n'ayant été reconfirmée depuis, rien n'est inscrit au calendrier — mieux vaut une rubrique vide qu'un rendez-vous qui n'aura pas lieu."
     },
     {
       "nom": "Primaire de la droite",
@@ -51,7 +51,7 @@
   "evenements": [
     {
       "id": "choisir2027-debat-1",
-      "primaire": "Primaire de la gauche socialiste et démocratique",
+      "primaire": "Primaire Choisir 2027",
       "type": "debat",
       "titre": "Premier débat : les cinq candidat·es face à David Pujadas",
       "date_prevue": "2026-09-23",
@@ -69,7 +69,7 @@
     },
     {
       "id": "choisir2027-debat-2",
-      "primaire": "Primaire de la gauche socialiste et démocratique",
+      "primaire": "Primaire Choisir 2027",
       "type": "debat",
       "titre": "Deuxième débat, sur France Télévisions et France Inter",
       "date_prevue": "2026-10-01",
@@ -86,7 +86,7 @@
     },
     {
       "id": "choisir2027-debat-3",
-      "primaire": "Primaire de la gauche socialiste et démocratique",
+      "primaire": "Primaire Choisir 2027",
       "type": "debat",
       "titre": "Troisième débat, dernier avant le scrutin",
       "date_prevue": "2026-10-04",
@@ -103,7 +103,7 @@
     },
     {
       "id": "choisir2027-tour-1",
-      "primaire": "Primaire de la gauche socialiste et démocratique",
+      "primaire": "Primaire Choisir 2027",
       "type": "vote",
       "titre": "Premier tour du scrutin, en ligne",
       "date_prevue": "2026-10-09",
@@ -120,7 +120,7 @@
     },
     {
       "id": "choisir2027-tour-2",
-      "primaire": "Primaire de la gauche socialiste et démocratique",
+      "primaire": "Primaire Choisir 2027",
       "type": "vote",
       "titre": "Second tour, si aucune candidature n'obtient la majorité absolue",
       "date_prevue": "2026-10-16",

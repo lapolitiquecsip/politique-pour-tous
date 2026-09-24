@@ -263,7 +263,7 @@ function CandidateModal({ candidate, onClose }: { candidate: Candidate; onClose:
               <h2 className="mt-3 text-4xl font-staatliches uppercase leading-none md:text-5xl">{candidate.full_name}</h2>
               {candidate.declared_at
                 ? <p className="mt-2 text-sm font-bold text-white/80">Candidature déclarée le {formatDate(candidate.declared_at)}</p>
-                : candidate.category?.startsWith("Primaire") && <p className="mt-2 text-sm font-bold text-white/80">Candidat·e à la {candidate.category.toLowerCase()}</p>}
+                : candidate.category?.startsWith("Primaire") && <p className="mt-2 text-sm font-bold text-white/80">Candidat·e à la {candidate.category.replace(/^Primaire/, "primaire")}</p>}
               {/* Cloche dorée : suivre ce candidat (membres premium) → son fil arrive sur le profil. */}
               <button onClick={onToggleFollow}
                 title={following ? "Ne plus suivre" : "Suivre ce candidat"}

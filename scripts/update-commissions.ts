@@ -417,7 +417,13 @@ async function analyseMeetings(
   if (startBalance !== null) {
     console.log(`  Solde DeepSeek : ${startBalance.toFixed(2)} $${isOffPeak() ? " (heures creuses, tarif réduit)" : " (heures pleines)"}`);
     if (startBalance <= opts.minBalance) {
-      console.warn(`  ⚠ Solde insuffisant (plancher ${opts.minBalance} $) : rien n'est lancé.`);
+      // Échec bruyant, comme pour une clé absente. Le cas s'est produit : la clé était
+      // bien en place, le solde à zéro, le script prévenait puis rendait la main — le
+      // workflow passait au vert et onze jours ont passé avant qu'on remarque, à l'il
+      // sur le site, que plus aucune réunion n'était analysée.
+      console.error(`❌ Solde DeepSeek insuffisant : ${startBalance.toFixed(2)} $ pour un plancher de ${opts.minBalance} $.`);
+      console.error("   Rechargez le compte sur platform.deepseek.com ; aucune analyse n'est produite d'ici là.");
+      process.exitCode = 1;
       return;
     }
   }

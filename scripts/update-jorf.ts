@@ -601,6 +601,7 @@ async function rattraperResumes(supabase: any) {
   if (error || !data?.length) return;
 
   console.log(`\n  Rattrapage des résumés manquants : ${data.length} édition(s)`);
+  let reussis = 0;
   for (const row of data as any[]) {
     try {
       const digest = await resumer({
@@ -614,9 +615,19 @@ async function rattraperResumes(supabase: any) {
         .eq("date", row.date);
       if (err) throw new Error(err.message);
       console.log(`    ✓ ${row.date} — ${digest.slice(0, 90)}…`);
+      reussis++;
     } catch (e) {
       console.warn(`    ⚠ ${row.date} : ${(e as Error).message}`);
     }
+  }
+
+  // Aucun résumé alors qu'il y avait du travail et une clé : le modèle refuse, le
+  // solde est à sec, ou l'interface a changé. Dans tous les cas il faut le savoir,
+  // plutôt que de voir le passage se terminer au vert sans rien avoir produit.
+  if (!reussis) {
+    console.error("❌ Aucun résumé produit alors que des éditions en attendaient un.");
+    console.error("   Vérifiez le solde DeepSeek sur platform.deepseek.com.");
+    process.exitCode = 1;
   }
 }
 

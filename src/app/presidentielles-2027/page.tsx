@@ -9,6 +9,7 @@ import { api } from "@/lib/api";
 import LegalStatusModal from "@/components/deputies/LegalStatusModal";
 import ThemesView from "@/components/presidentielles/ThemesView";
 import CandidateSocialTracker from "@/components/presidentielles/CandidateSocialTracker";
+import PrimaryDebates from "@/components/presidentielles/PrimaryDebates";
 import { usePremium } from "@/lib/hooks/usePremium";
 import { isFollowingCandidate, toggleFollowCandidate } from "@/lib/candidateFollows";
 
@@ -446,6 +447,13 @@ function CandidateModal({ candidate, onClose }: { candidate: Candidate; onClose:
             );
           })()}
 
+          {/* Ses débats de primaire — rubrique à part, avant le fil général : un débat
+              se cherche, il ne se croise pas au fil du défilement. La rubrique s'efface
+              d'elle-même pour un candidat qui n'est engagé dans aucune primaire. */}
+          <div className="-mx-4">
+            <PrimaryDebates candidateSlug={candidate.slug} />
+          </div>
+
           {/* Fil d'actu quotidien */}
           {/* FIL UNIFIÉ : actualités de presse + vidéos YouTube officielles, en un seul défilement. */}
           {(() => {
@@ -792,6 +800,8 @@ function CandidatesContent() {
       ) : view === "positions" ? (
         <PositionsView candidates={candidates} />
       ) : (
+      <>
+      <PrimaryDebates />
       <div className="mx-auto max-w-6xl px-4 pb-24">
         <div className="mb-10 flex flex-col items-start justify-between gap-5 md:flex-row md:items-center">
           <div className="flex flex-wrap gap-2">
@@ -862,6 +872,7 @@ function CandidatesContent() {
           </div>
         )}
       </div>
+      </>
       )}
 
       {selected && <CandidateModal candidate={selected} onClose={close} />}

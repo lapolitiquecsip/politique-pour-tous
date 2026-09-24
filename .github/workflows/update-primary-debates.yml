@@ -1,0 +1,43 @@
+name: Débats des primaires
+
+# Relit le calendrier tenu à la main (src/lib/data/primaires.json), puis cherche la
+# retransmission des rendez-vous passés qui n'en ont pas encore.
+#
+# Deux passages par jour suffisent : une chaîne met sa rediffusion en ligne dans les
+# heures qui suivent, rarement dans la minute. Le script n'interroge YouTube que pour
+# les rendez-vous passés et encore dépourvus de vidéo — quelques unités de quota.
+# Voir scripts/update-primary-debates.ts
+
+on:
+  schedule:
+    - cron: '0 7 * * *'     # 09h00 Paris
+    - cron: '0 21 * * *'    # 23h00 Paris — après les débats en soirée
+  workflow_dispatch:
+
+concurrency:
+  group: primaires
+  cancel-in-progress: false
+
+jobs:
+  primaires:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+          cache: 'npm'
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Calendrier et retransmissions
+        env:
+          NEXT_PUBLIC_SUPABASE_URL: ${{ secrets.NEXT_PUBLIC_SUPABASE_URL }}
+          SUPABASE_SERVICE_ROLE_KEY: ${{ secrets.SUPABASE_SERVICE_ROLE_KEY }}
+          YOUTUBE_API_KEY: ${{ secrets.YOUTUBE_API_KEY }}
+        run: npx --yes tsx scripts/update-primary-debates.ts

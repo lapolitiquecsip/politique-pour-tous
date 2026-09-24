@@ -1,0 +1,42 @@
+{
+  "_lisezmoi": [
+    "Calendrier des primaires : la moitié tenue à la main du dispositif hybride.",
+    "",
+    "Aucune API ne publie « Les Républicains débattront le 12 novembre sur LCI » :",
+    "l'annonce est éditoriale. La retransmission, elle, est retrouvée toute seule",
+    "après coup par recherche YouTube (voir scripts/update-primary-debates.ts).",
+    "",
+    "Pour ajouter un rendez-vous, copiez un bloc de `evenements` et renseignez-le.",
+    "  id            identifiant court et stable, jamais réutilisé",
+    "  primaire      EXACTEMENT la valeur de `category` dans presidential_candidates,",
+    "                sans quoi le débat ne sera rattaché à aucun candidat",
+    "  type          « debat » ou « vote »",
+    "  date_prevue   AAAA-MM-JJ",
+    "  participants  slugs des candidats attendus (voir `primaires` ci-dessous)",
+    "  recherche     mots-clés qui serviront à retrouver la vidéo ; laissez vide",
+    "                pour que le titre et le diffuseur soient utilisés",
+    "",
+    "Le script ne supprime jamais un évènement retiré de ce fichier : il faut le",
+    "passer en statut « annule » pour qu'il disparaisse proprement de l'affichage."
+  ],
+
+  "primaires": [
+    {
+      "nom": "Primaire de la droite",
+      "camp": "droite",
+      "candidats": ["david-lisnard"]
+    },
+    {
+      "nom": "Primaire socialiste",
+      "camp": "gauche",
+      "candidats": ["philippe-brun", "segolene-royal"]
+    },
+    {
+      "nom": "Primaire de la gauche unitaire",
+      "camp": "gauche",
+      "candidats": ["francois-ruffin", "lydie-massard", "marine-tondelier"]
+    }
+  ],
+
+  "evenements": []
+}

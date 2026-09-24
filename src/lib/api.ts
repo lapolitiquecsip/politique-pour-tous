@@ -612,6 +612,25 @@ export const api = {
     return new Map((data ?? []).map((t: any) => [String(t.code), t.name as string]));
   },
 
+  /* ════════ DÉBATS ET VOTES DES PRIMAIRES ════════ */
+
+  /**
+   * Les rendez-vous des primaires, du plus récent au plus ancien, annulés exclus.
+   *
+   * Renvoie une liste vide si la table n'existe pas encore : la rubrique disparaît
+   * d'elle-même plutôt que de casser la page.
+   */
+  getPrimaryEvents: async (limit = 40) => {
+    const { data, error } = await supabase
+      .from('primary_events')
+      .select('id, primaire, camp, type, titre, date_prevue, heure, diffuseur, participants, statut, video_id, video_url, video_title, resume, source_url')
+      .neq('statut', 'annule')
+      .order('date_prevue', { ascending: false })
+      .limit(limit);
+    if (error) return [];
+    return data ?? [];
+  },
+
   /* ════════ JOURNAL OFFICIEL DU JOUR (abonnement Pro) ════════ */
 
   /**

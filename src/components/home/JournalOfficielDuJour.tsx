@@ -3,10 +3,11 @@
 import { useEffect, useMemo, useState } from "react";
 import Link from "next/link";
 import { motion, AnimatePresence, useReducedMotion } from "framer-motion";
-import { Newspaper, ExternalLink, ChevronDown, Loader2, Sparkles, Lock, Check, ArrowRight, Search } from "lucide-react";
+import { Newspaper, ExternalLink, ChevronDown, Loader2, Sparkles, Lock, Check, ArrowRight, Search, ChevronUp } from "lucide-react";
 import { api } from "@/lib/api";
 import { usePremium } from "@/lib/hooks/usePremium";
 import JorfSearch from "@/components/home/JorfSearch";
+import JournalCouverture from "@/components/home/JournalCouverture";
 
 /**
  * Le Journal officiel du jour, réservé aux abonnés Pro.
@@ -67,6 +68,23 @@ export default function JournalOfficielDuJour() {
   const [filtre, setFiltre] = useState<string | null>(null);
   const [deployees, setDeployees] = useState<Set<string>>(new Set());
   const [recherche, setRecherche] = useState(false);
+  const [ouvert, setOuvert] = useState(false);
+
+  // L'édition se rouvre telle qu'on l'a laissée pendant la visite : un
+  // professionnel qui revient sur l'accueil entre deux pages n'a pas à recliquer.
+  // La mémoire s'arrête à l'onglet — une nouvelle visite retrouve la une, qui
+  // est le geste voulu. Lu après le premier rendu, et non dans l'état initial :
+  // le HTML est pré-rendu, et lire le stockage à la construction ferait diverger
+  // le serveur du navigateur.
+  useEffect(() => {
+    try { if (sessionStorage.getItem("lpcs.jo.ouvert") === "1") setOuvert(true); } catch { /* navigation privée */ }
+  }, []);
+  useEffect(() => {
+    try {
+      if (ouvert) sessionStorage.setItem("lpcs.jo.ouvert", "1");
+      else sessionStorage.removeItem("lpcs.jo.ouvert");
+    } catch { /* sans mémoire, la une revient à chaque fois : acceptable */ }
+  }, [ouvert]);
 
   // La liste légère est chargée pour tout le monde : le nombre réel de textes du jour
   // est l'argument le plus convaincant du panneau d'abonnement.
@@ -84,16 +102,18 @@ export default function JournalOfficielDuJour() {
 
   const edition = editions?.[choisi] ?? null;
 
-  // Le sommaire n'est demandé que pour l'édition consultée, et seulement aux abonnés.
+  // Le sommaire n'est demandé que pour l'édition consultée, à un abonné, et une
+  // fois le journal ouvert : il pèse vingt-six kilo-octets, autant ne pas les
+  // faire payer à qui referme la une sans la lire.
   useEffect(() => {
-    if (!isPro || !edition) return;
+    if (!isPro || !ouvert || !edition) return;
     let vivant = true;
     setSections(null);
     api.getJorfSections(edition.date)
       .then(r => { if (vivant) { setSections(r as Rubrique[]); setSectionsPour(edition.date); } })
       .catch(() => { if (vivant) setSections([]); });
     return () => { vivant = false; };
-  }, [isPro, edition?.date]);
+  }, [isPro, ouvert, edition?.date]);
 
   // La première rubrique s'ouvre d'office — c'est « Décrets, arrêtés, circulaires »,
   // celle qui porte le fond. Les autres restent repliées pour ne pas noyer le mobile.
@@ -223,6 +243,30 @@ export default function JournalOfficielDuJour() {
   }
 
   return (
+    // « wait » : la couverture finit de pivoter avant que l'édition n'entre.
+    // Les deux en même temps donnent une superposition confuse, où l'on ne voit
+    // plus ce qui s'ouvre.
+    <AnimatePresence mode="wait" initial={false}>
+      {!ouvert ? (
+        <motion.div
+          key="couverture"
+          exit={reduce ? { opacity: 0 } : { rotateY: -92, opacity: 0, transition: { duration: 0.5, ease: "easeIn" } }}
+          style={{ transformOrigin: "left center", transformPerspective: 1600 }}
+        >
+          <JournalCouverture
+            date={edition.date}
+            num={edition.num}
+            textCount={edition.text_count}
+            onOuvrir={() => setOuvert(true)}
+          />
+        </motion.div>
+      ) : (
+        <motion.div
+          key="edition"
+          initial={reduce ? false : { opacity: 0, y: 16, scale: 0.985 }}
+          animate={{ opacity: 1, y: 0, scale: 1 }}
+          transition={{ duration: 0.4, ease: "easeOut" }}
+        >
     <div className="mb-10 overflow-hidden rounded-[2rem] border-2 border-fuchsia-400/40 bg-gradient-to-br from-slate-950 via-slate-900 to-purple-950 text-white shadow-xl">
       <div className="border-b border-white/10 p-5 sm:p-7">
         <div className="flex flex-wrap items-center gap-x-3 gap-y-2">
@@ -248,26 +292,40 @@ export default function JournalOfficielDuJour() {
           >
             <Search size={13} /> <span className="hidden sm:inline">Rechercher</span>
           </button>
+          {/* Refermer : on rend la une, et l'accueil retrouve sa respiration. */}
+          <button
+            onClick={() => { setOuvert(false); setRecherche(false); }}
+            aria-label="Refermer le Journal officiel"
+            title="Refermer"
+            className="inline-flex items-center gap-1.5 rounded-full bg-white/10 px-3 py-1.5 text-[10px] font-black uppercase tracking-widest text-white/80 ring-1 ring-white/15 transition hover:bg-white/20 hover:text-white"
+          >
+            <ChevronUp size={13} /> <span className="hidden sm:inline">Refermer</span>
+          </button>
         </div>
 
-        {/* Rail des dernières éditions : on glisse sur le côté plutôt que d'empiler. */}
-        <div className="-mx-5 mt-4 flex snap-x snap-mandatory gap-2 overflow-x-auto px-5 pb-1 [scrollbar-width:none] [touch-action:pan-x] sm:-mx-7 sm:px-7 [&::-webkit-scrollbar]:hidden">
-          {editions.map((e, i) => {
-            const d = jourCourt(e.date);
-            const actif = i === choisi;
-            return (
-              <button
-                key={e.date}
-                onClick={() => { setChoisi(i); setFiltre(null); }}
-                className={`shrink-0 snap-start rounded-xl px-3 py-2 text-center transition ${
-                  actif ? "bg-white text-slate-900" : "bg-white/10 text-white/70 hover:bg-white/20"
-                }`}
-              >
-                <span className="block font-staatliches text-lg leading-none tabular-nums">{d.jour}</span>
-                <span className="block text-[9px] font-black uppercase tracking-widest opacity-70">{d.mois}</span>
-              </button>
-            );
-          })}
+        {/* Rail des éditions — un mois de profondeur, qu'on parcourt au doigt
+            comme à la souris. Le composant laisse le tactile au navigateur et
+            n'ajoute le glisser que pour la souris (voir DragScroller). */}
+        <div className="mt-4">
+          <DragScroller ariaLabel="Éditions précédentes du Journal officiel" sombre className="gap-2 md:gap-2">
+            {editions.map((e, i) => {
+              const d = jourCourt(e.date);
+              const actif = i === choisi;
+              return (
+                <button
+                  key={e.date}
+                  onClick={() => { setChoisi(i); setFiltre(null); }}
+                  aria-current={actif ? "true" : undefined}
+                  className={`shrink-0 rounded-xl px-3 py-2 text-center transition ${
+                    actif ? "bg-white text-slate-900" : "bg-white/10 text-white/70 hover:bg-white/20"
+                  }`}
+                >
+                  <span className="block font-staatliches text-lg leading-none tabular-nums">{d.jour}</span>
+                  <span className="block text-[9px] font-black uppercase tracking-widest opacity-70">{d.mois}</span>
+                </button>
+              );
+            })}
+          </DragScroller>
         </div>
 
         <p className="mt-4 text-sm font-bold text-white/90">
@@ -413,5 +471,8 @@ export default function JournalOfficielDuJour() {
         </p>
       </div>
     </div>
+        </motion.div>
+      )}
+    </AnimatePresence>
   );
 }

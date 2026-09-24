@@ -41,10 +41,17 @@ export default function DragScroller({
   children,
   ariaLabel,
   className = "",
+  sombre = false,
 }: {
   children: React.ReactNode;
   ariaLabel: string;
   className?: string;
+  /**
+   * Pour les rails posés sur une surface volontairement sombre en permanence —
+   * le panneau du Journal officiel, l'espace Pro — où les jetons de thème
+   * donneraient des flèches blanches sur fond noir en thème clair.
+   */
+  sombre?: boolean;
 }) {
   const piste = useRef<HTMLDivElement>(null);
   const [aGauche, setAGauche] = useState(false);
@@ -202,9 +209,13 @@ export default function DragScroller({
             onClick={() => pousser(sens as 1 | -1)}
             aria-label={sens === -1 ? "Voir les précédentes" : "Voir les suivantes"}
             tabIndex={-1}
-            className={`absolute top-1/2 hidden h-11 w-11 -translate-y-1/2 items-center justify-center rounded-full border border-border bg-card/95 text-foreground shadow-lg backdrop-blur transition md:flex ${
-              sens === -1 ? "-left-3 lg:-left-5" : "-right-3 lg:-right-5"
-            } ${actif ? "opacity-100 hover:scale-110" : "pointer-events-none opacity-0"}`}
+            className={`absolute top-1/2 hidden h-11 w-11 -translate-y-1/2 items-center justify-center rounded-full border shadow-lg backdrop-blur transition md:flex ${
+              sombre
+                ? "border-white/15 bg-slate-900/90 text-white"
+                : "border-border bg-card/95 text-foreground"
+            } ${sens === -1 ? "-left-3 lg:-left-5" : "-right-3 lg:-right-5"} ${
+              actif ? "opacity-100 hover:scale-110" : "pointer-events-none opacity-0"
+            }`}
           >
             <Icone size={20} />
           </button>

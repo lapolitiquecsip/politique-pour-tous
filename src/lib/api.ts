@@ -248,24 +248,32 @@ export const api = {
     return data;
   },
 
-  getPetitions: async () => {
+  /**
+   * Les pétitions les plus signées de l'Assemblée nationale.
+   *
+   * Colonnes choisies plutôt que `*` : la table en porte quinze, dont des
+   * horodatages de collecte qui ne servent qu'au moteur d'ingestion. Cinquante
+   * lignes complètes pèsent inutilement sur l'accueil, déjà lourd sur mobile.
+   */
+  getPetitions: async (limit = 50) => {
     const { data, error } = await supabase
       .from('petitions')
-      .select('*')
+      .select('id, title, description, signatures, threshold, category, url, status, created_at')
       .eq('institution', 'AN')
       .order('signatures', { ascending: false })
-      .limit(50);
+      .limit(limit);
     if (error) { console.error(error); return []; }
     return data || [];
   },
 
-  getRecentPetitions: async () => {
+  /** Les dernières déposées, dans l'ordre du dépôt. */
+  getRecentPetitions: async (limit = 50) => {
     const { data, error } = await supabase
       .from('petitions')
-      .select('*')
+      .select('id, title, description, signatures, threshold, category, url, status, created_at')
       .eq('institution', 'AN')
       .order('created_at', { ascending: false })
-      .limit(20);
+      .limit(limit);
     if (error) { console.error(error); return []; }
     return data || [];
   },

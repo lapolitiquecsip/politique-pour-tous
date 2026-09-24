@@ -15,6 +15,7 @@ import {
   Loader2
 } from "lucide-react";
 import { api } from "@/lib/api";
+import DragScroller from "@/components/ui/DragScroller";
 
 interface Petition {
   id: string;
@@ -41,7 +42,11 @@ function PetitionCard({ petition, idx }: { petition: Petition, idx: number }) {
     <motion.div
       initial={{ opacity: 0, y: 20 }}
       whileInView={{ opacity: 1, y: 0 }}
-      transition={{ delay: idx * 0.1 }}
+      viewport={{ once: true, margin: "0px 200px" }}
+      // Le décalage est plafonné : à raison d'un dixième de seconde par carte,
+      // la cinquantième d'un rail serait apparue au bout de cinq secondes. On
+      // garde l'effet de cascade sur les premières, et plus rien au-delà.
+      transition={{ duration: 0.3, delay: Math.min(idx, 4) * 0.06 }}
       className="group bg-card dark:bg-slate-900 rounded-3xl sm:rounded-[2.5rem] border border-border dark:border-slate-800 overflow-hidden hover:shadow-2xl transition-all duration-500 hover:-translate-y-2 flex flex-col h-full"
     >
       <div className="p-5 sm:p-8 flex flex-col h-full">
@@ -96,32 +101,33 @@ function PetitionCard({ petition, idx }: { petition: Petition, idx: number }) {
   );
 }
 
+/** Plafond par rail. Au-delà, on ne défile plus, on erre. */
+const MAX_PAR_RAIL = 50;
+
 export default function PetitionsSection() {
-  const [petitions, setPetitions] = useState<Petition[]>([]);
+  const [mobilisees, setMobilisees] = useState<Petition[]>([]);
+  const [recentes, setRecentes] = useState<Petition[]>([]);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    const load = async () => {
-      const data = await api.getPetitions();
-      const recentData = await api.getRecentPetitions();
-      if (data && data.length > 0) {
-        // 1. Get Top 3 most voted
-        const popular = [...data]
-          .sort((a, b) => b.signatures - a.signatures)
-          .slice(0, 3);
-        
-        const popularIds = new Set(popular.map(p => p.id));
-        
-        // 2. Get Top 3 most recent (not already in popular)
-        const recent = (recentData || [])
-          .filter(p => !popularIds.has(p.id))
-          .slice(0, 3);
-
-        setPetitions([...popular, ...recent]);
-      }
-      setLoading(false);
-    };
-    load();
+    let vivant = true;
+    // Les deux listes sont indépendantes et peuvent se recouper : une pétition
+    // déposée hier et déjà très signée a sa place dans les deux. L'ancienne
+    // version retirait des « dernières déposées » celles qui figuraient parmi
+    // les plus mobilisées, si bien que la rubrique ne montrait pas les
+    // dernières déposées — elle montrait les dernières des autres.
+    Promise.all([
+      api.getPetitions(MAX_PAR_RAIL),
+      api.getRecentPetitions(MAX_PAR_RAIL),
+    ])
+      .then(([populaires, dernieres]) => {
+        if (!vivant) return;
+        setMobilisees((populaires as Petition[]) ?? []);
+        setRecentes((dernieres as Petition[]) ?? []);
+      })
+      .catch(() => {})
+      .finally(() => { if (vivant) setLoading(false); });
+    return () => { vivant = false; };
   }, []);
 
   return (
@@ -189,41 +195,36 @@ export default function PetitionsSection() {
           </div>
         ) : (
           <div className="space-y-16">
-            {/* 1. Les plus populaires */}
-            <div>
-              <div className="flex items-center gap-4 mb-8">
-                <div className="h-px flex-1 bg-slate-200 dark:bg-slate-800" />
-                <h3 className="text-xl font-staatliches text-blue-600 dark:text-blue-400 uppercase tracking-widest italic">
-                  Les plus mobilisées (Top 3)
-                </h3>
-                <div className="h-px flex-1 bg-slate-200 dark:bg-slate-800" />
+            {[
+              { titre: "Les plus mobilisées", teinte: "text-blue-600 dark:text-blue-400", liste: mobilisees },
+              { titre: "Dernières déposées par les citoyens", teinte: "text-indigo-600 dark:text-indigo-400", liste: recentes },
+            ].map(rail => (
+              <div key={rail.titre}>
+                <div className="flex items-center gap-4 mb-8">
+                  <div className="h-px flex-1 bg-slate-200 dark:bg-slate-800" />
+                  <h3 className={`text-center text-xl font-staatliches uppercase tracking-widest italic ${rail.teinte}`}>
+                    {rail.titre}
+                    {rail.liste.length > 0 && (
+                      <span className="ml-2 not-italic opacity-50">({rail.liste.length})</span>
+                    )}
+                  </h3>
+                  <div className="h-px flex-1 bg-slate-200 dark:bg-slate-800" />
+                </div>
+                <DragScroller ariaLabel={rail.titre}>
+                  {rail.liste.map((petition, idx) => (
+                    // Largeur fixe : dans un rail, une carte qui se dimensionne
+                    // sur son contenu donne des colonnes inégales et un
+                    // défilement qui accroche.
+                    <div key={petition.id} className="w-[17.5rem] shrink-0 sm:w-[21rem]">
+                      <PetitionCard petition={petition} idx={idx} />
+                    </div>
+                  ))}
+                </DragScroller>
+                <p className="mt-1 text-center text-[11px] font-bold uppercase tracking-widest text-slate-400 md:hidden">
+                  Faites glisser pour en voir plus →
+                </p>
               </div>
-              <div className="grid grid-cols-1 md:grid-cols-3 gap-4 md:gap-8">
-                {petitions.slice(0, 3).map((petition, idx) => {
-                  return (
-                    <PetitionCard key={petition.id} petition={petition} idx={idx} />
-                  );
-                })}
-              </div>
-            </div>
-
-            {/* 2. Les plus récentes */}
-            <div>
-              <div className="flex items-center gap-4 mb-8">
-                <div className="h-px flex-1 bg-slate-200 dark:bg-slate-800" />
-                <h3 className="text-xl font-staatliches text-indigo-600 dark:text-indigo-400 uppercase tracking-widest italic">
-                  Dernières déposées par les citoyens
-                </h3>
-                <div className="h-px flex-1 bg-slate-200 dark:bg-slate-800" />
-              </div>
-              <div className="grid grid-cols-1 md:grid-cols-3 gap-4 md:gap-8">
-                {petitions.slice(3, 6).map((petition, idx) => {
-                  return (
-                    <PetitionCard key={petition.id} petition={petition} idx={idx + 3} />
-                  );
-                })}
-              </div>
-            </div>
+            ))}
           </div>
       )}
 

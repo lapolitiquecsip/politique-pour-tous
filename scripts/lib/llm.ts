@@ -53,11 +53,29 @@ const CLE_GRATUITE = process.env.LLM_FREE_API_KEY || process.env.GEMINI_API_KEY 
 const MODELES_GRATUITS = (
   process.env.LLM_FREE_MODEL ||
   process.env.LLM_FREE_MODELS ||
-  "gemini-3.6-flash,gemini-3.7-flash,gemini-3.8-flash,gemini-flash-latest"
+  // L'ordre n'est pas seulement une question de qualité : les quotas gratuits
+  // sont comptés PAR LIGNÉE. 3.6, 3.7 et 3.8 puisent au même seau et tombent
+  // ensemble ; 3.5 et la lignée « lite » ont le leur, et répondaient encore
+  // quand les trois premiers renvoyaient 429. On alterne donc les lignées
+  // plutôt que de descendre une gamme, et « lite » ferme la marche : moins fin,
+  // mais amplement suffisant pour reformuler un intitulé en une phrase.
+  "gemini-3.6-flash,gemini-3.5-flash,gemini-3.7-flash,gemini-3.8-flash,gemini-3.1-flash-lite,gemini-flash-latest"
 ).split(",").map(s => s.trim()).filter(Boolean);
 
 /** Modèle qui a répondu en dernier : on repart de lui plutôt que de resonder. */
 let modeleRetenu = MODELES_GRATUITS[0];
+
+/**
+ * Modèles à ne plus solliciter avant telle heure.
+ *
+ * Un 429 ne dit pas s'il s'agit du quota par minute ou de celui du jour. Plutôt
+ * que de deviner, on met le modèle de côté quelques minutes : cela suffit à
+ * absorber une limite par minute, et évite de rejouer à chaque lot une lignée
+ * épuisée pour la journée — ce qui, sur un rattrapage, coûtait plus d'attente
+ * que de travail.
+ */
+const enPause = new Map<string, number>();
+const PAUSE_APRES_429 = Number(process.env.LLM_FREE_PAUSE_MS || 300000);
 const RPM = Number(process.env.LLM_FREE_RPM || 10);
 
 const CLE_SECOURS = process.env.DEEPSEEK_API_KEY || "";
@@ -75,13 +93,20 @@ export const llmVoie = () =>
 
 const dors = (ms: number) => new Promise(r => setTimeout(r, ms));
 
-/** Espacement minimal entre deux appels, pour tenir sous la limite par minute. */
+/**
+ * Espacement minimal entre deux appels AU MÊME MODÈLE.
+ *
+ * Le quota par minute est compté par modèle, pas par compte : espacer les
+ * appels à des modèles différents ne protège de rien et ralentit tout. Une
+ * horloge globale faisait attendre six secondes à chaque essai de la cascade,
+ * si bien qu'un lot refusé coûtait une minute d'attente pure.
+ */
 const ECART = Math.ceil(60000 / Math.max(1, RPM));
-let dernierAppel = 0;
-async function attendreSonTour() {
-  const attente = dernierAppel + ECART - Date.now();
+const dernierAppel = new Map<string, number>();
+async function attendreSonTour(modele: string) {
+  const attente = (dernierAppel.get(modele) ?? 0) + ECART - Date.now();
   if (attente > 0) await dors(attente);
-  dernierAppel = Date.now();
+  dernierAppel.set(modele, Date.now());
 }
 
 class ErreurLLM extends Error {
@@ -96,7 +121,7 @@ class ErreurLLM extends Error {
  * Un appel, sur un modèle donné. La cascade est gérée par l'appelant.
  */
 async function appelGoogleSur(modele: string, systeme: string, utilisateur: string, maxJetons: number): Promise<string> {
-  await attendreSonTour();
+  await attendreSonTour(modele);
   const r = await fetch(`${GOOGLE}/${modele}:generateContent?key=${CLE_GRATUITE}`, {
     method: "POST",
     headers: { "Content-Type": "application/json" },
@@ -107,9 +132,9 @@ async function appelGoogleSur(modele: string, systeme: string, utilisateur: stri
         responseMimeType: "application/json",
         maxOutputTokens: maxJetons,
         temperature: 0.2,
-        // Voir le piège 1 en tête de fichier. Le champ est ignoré sans dommage
-        // par les modèles qui ne raisonnent pas.
-        thinkingConfig: { thinkingBudget: 0 },
+        // Voir le piège 1 en tête de fichier. Réservé aux modèles qui raisonnent :
+        // Gemma refuse le champ d'un franc 400 « Thinking budget is not supported ».
+        ...(modele.startsWith("gemini") ? { thinkingConfig: { thinkingBudget: 0 } } : {}),
       },
     }),
   });
@@ -117,7 +142,10 @@ async function appelGoogleSur(modele: string, systeme: string, utilisateur: stri
   const corps: any = await r.json().catch(() => ({}));
   if (!r.ok) {
     const msg = corps?.error?.message || `HTTP ${r.status}`;
-    // 429 : quota par minute. 500/503 : indisponibilité passagère.
+    // 429 : quota, par minute ou par jour — l'API ne le dit pas. On écarte le
+    // modèle quelques minutes plutôt que de le rejouer à chaque lot.
+    if (r.status === 429) enPause.set(modele, Date.now() + PAUSE_APRES_429);
+    // 500/503 : indisponibilité passagère, le modèle reste dans la course.
     throw new ErreurLLM(`${r.status} — ${String(msg).slice(0, 180)}`, r.status === 429 || r.status >= 500);
   }
 
@@ -142,7 +170,12 @@ async function appelGoogleSur(modele: string, systeme: string, utilisateur: stri
  * le dire tout de suite.
  */
 async function appelGoogle(systeme: string, utilisateur: string, maxJetons: number): Promise<string> {
-  const ordre = [modeleRetenu, ...MODELES_GRATUITS.filter(m => m !== modeleRetenu)];
+  const tous = [modeleRetenu, ...MODELES_GRATUITS.filter(m => m !== modeleRetenu)];
+  const maintenant = Date.now();
+  const libres = tous.filter(m => (enPause.get(m) ?? 0) <= maintenant);
+  // Si tout est en pause, on réessaie quand même : mieux vaut un refus rapide
+  // qu'une erreur « aucun modèle » qui masquerait la vraie cause.
+  const ordre = libres.length ? libres : tous;
   let derniere: Error | null = null;
   for (const modele of ordre) {
     try {
@@ -187,7 +220,9 @@ async function appelDeepSeek(systeme: string, utilisateur: string, maxJetons: nu
 export async function demanderJSON<T = any>(
   systeme: string,
   utilisateur: string,
-  { maxJetons = 8192, essais = 4 }: { maxJetons?: number; essais?: number } = {},
+  // Deux tours de cascade suffisent : chacun essaie déjà tous les modèles, et
+  // quatre tours faisaient seize appels pour un lot condamné, en pure attente.
+  { maxJetons = 8192, essais = 2 }: { maxJetons?: number; essais?: number } = {},
 ): Promise<T> {
   if (!llmDisponible()) {
     throw new Error("Aucune clé LLM : renseignez LLM_FREE_API_KEY (Google AI Studio, gratuit).");

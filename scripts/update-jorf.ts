@@ -671,7 +671,48 @@ async function rattraperExplications(supabase: any): Promise<void> {
   if (!manquants.length) { console.log("  Rien à reprendre : tous les textes ont leur explication."); return; }
   console.log(`  ${manquants.length} texte(s) sans explication, sur ${editions.length} édition(s)`);
 
-  const obtenues = new Map<string, string>();
+  /**
+   * Verse en base ce qui a été rédigé, puis vide l'accumulateur.
+   *
+   * On écrit en cours de route plutôt qu'une fois à la fin : quatre-vingts lots
+   * qui échoueraient au soixante-dixième perdraient tout le travail déjà payé en
+   * quota, et rien ne serait visible entre-temps.
+   */
+  let ecrites = 0;
+  const verser = async (obtenues: Map<string, string>) => {
+    if (!obtenues.size) return;
+    const touchees: any[] = [];
+    for (const e of editions ?? []) {
+      let modifiee = false;
+      for (const r of e.sections ?? []) {
+        for (const g of r.groupes ?? []) {
+          for (const t of g.textes ?? []) {
+            const phrase = obtenues.get(t.id);
+            if (phrase && !String(t.explication ?? "").trim()) {
+              t.explication = phrase;
+              t.source_explication = "ia";
+              modifiee = true;
+            }
+          }
+        }
+      }
+      if (modifiee) touchees.push(e);
+    }
+    for (const e of touchees) {
+      const { error: err } = await supabase.from("jorf_editions")
+        .update({ sections: e.sections, updated_at: new Date().toISOString() }).eq("date", e.date);
+      if (err) console.warn(`  ⚠ ${e.date} : ${err.message}`);
+    }
+    await indexerTextes(supabase, touchees);
+    ecrites += obtenues.size;
+    obtenues.clear();
+  };
+
+  /** Lots rédigés avant chaque versement. Assez pour ne pas écrire à chaque appel. */
+  const VERSEMENT = 8;
+
+  let obtenues = new Map<string, string>();
+  let depuisVersement = 0;
   for (let i = 0; i < manquants.length; i += LOT_EXPLICATION) {
     const lot = manquants.slice(i, i + LOT_EXPLICATION);
     try {
@@ -680,6 +721,8 @@ async function rattraperExplications(supabase: any): Promise<void> {
         lot.map(t => [`### ${t.id}`, t.titre].join("\n")).join("\n\n---\n\n"),
         { maxJetons: 8192 },
       );
+      // On n'accepte QUE les identifiants envoyés : un identifiant inventé
+      // rattacherait une explication au mauvais texte.
       const envoyes = new Set(lot.map(t => t.id));
       for (const x of parsed.textes ?? []) {
         const id = String(x?.id ?? "");
@@ -687,40 +730,16 @@ async function rattraperExplications(supabase: any): Promise<void> {
         if (phrase && envoyes.has(id)) obtenues.set(id, abreger(phrase, 320));
       }
       const fin = Math.min(i + LOT_EXPLICATION, manquants.length);
-      console.log(`  ${fin}/${manquants.length} — ${obtenues.size} rédigée(s)`);
+      console.log(`  ${fin}/${manquants.length} — ${ecrites + obtenues.size} rédigée(s)`);
     } catch (e) {
       console.warn(`  ⚠ lot ${i + 1}-${i + lot.length} : ${(e as Error).message}`);
     }
+    if (++depuisVersement >= VERSEMENT) { await verser(obtenues); depuisVersement = 0; }
   }
+  await verser(obtenues);
 
-  if (!obtenues.size) { console.error("❌ Aucune explication obtenue."); process.exitCode = 1; return; }
-
-  // On ne réécrit que les éditions effectivement touchées.
-  const touchees: any[] = [];
-  for (const e of editions ?? []) {
-    let modifiee = false;
-    for (const r of e.sections ?? []) {
-      for (const g of r.groupes ?? []) {
-        for (const t of g.textes ?? []) {
-          const phrase = obtenues.get(t.id);
-          if (phrase && !String(t.explication ?? "").trim()) {
-            t.explication = phrase;
-            t.source_explication = "ia";
-            modifiee = true;
-          }
-        }
-      }
-    }
-    if (modifiee) touchees.push(e);
-  }
-
-  for (const e of touchees) {
-    const { error: err } = await supabase.from("jorf_editions")
-      .update({ sections: e.sections, updated_at: new Date().toISOString() }).eq("date", e.date);
-    if (err) console.warn(`  ⚠ ${e.date} : ${err.message}`);
-  }
-  console.log(`\n  → ${obtenues.size} explication(s) écrite(s) sur ${touchees.length} édition(s)`);
-  await indexerTextes(supabase, touchees);
+  if (!ecrites) { console.error("❌ Aucune explication obtenue."); process.exitCode = 1; return; }
+  console.log(`\n  → ${ecrites} explication(s) écrite(s)`);
 }
 
 /**

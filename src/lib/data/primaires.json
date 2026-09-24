@@ -38,13 +38,13 @@
       "nom": "Primaire de la gauche unitaire",
       "camp": "gauche",
       "candidats": ["francois-ruffin", "lydie-massard", "marine-tondelier"],
-      "_note": "Un scrutin avait été annoncé pour le 11 octobre 2026, mais le processus est considéré comme abandonné de fait depuis juillet 2026 : retraits de Clémentine Autain et de Benjamin Lucas-Lundy, puis refus du PS d'y participer. Aucune date n'ayant été reconfirmée depuis, rien n'est inscrit au calendrier — mieux vaut une rubrique vide qu'un rendez-vous qui n'aura pas lieu."
+      "_note": "Un scrutin avait été annoncé pour le 11 octobre 2026, mais le processus est abandonné de fait depuis juillet 2026 : retraits de Clémentine Autain et de Benjamin Lucas-Lundy, puis refus du PS d'y participer. Aucune date n'ayant été reconfirmée depuis, rien n'est inscrit au calendrier — mieux vaut une rubrique vide qu'un rendez-vous qui n'aura pas lieu. En conséquence, les trois candidats ne sont plus rattachés à cette primaire dans presidential_candidates : leur fiche ne porte plus la pastille, qui annonçait une échéance inexistante. Ce bloc reste ici pour documenter la décision, et servira tel quel si la primaire repart."
     },
     {
       "nom": "Primaire de la droite",
       "camp": "droite",
       "candidats": ["david-lisnard"],
-      "_note": "Les Républicains ont désigné Bruno Retailleau le 19 avril 2026 sans primaire ouverte. Une primaire élargie reste réclamée par une partie de la droite, mais aucune date n'est fixée : le calendrier reste donc vide."
+      "_note": "Les Républicains ont désigné Bruno Retailleau le 19 avril 2026, la primaire ayant été écartée. David Lisnard, candidat déclaré à la présidentielle depuis le 31 mars 2026, plaide pour une primaire ouverte de la droite et du centre — Retailleau dit qu'il l'affronterait — mais elle n'existe pas et aucune date n'est fixée. Le calendrier reste donc vide. Sa fiche porte encore le rattachement « Primaire de la droite » : à trancher, puisqu'elle annonce une primaire qui n'a pas lieu d'être."
     }
   ],
 

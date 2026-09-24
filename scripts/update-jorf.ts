@@ -56,6 +56,14 @@ const SANS_RESUME = args.includes("--no-digest");
  * du jour même, mais justes.
  */
 const RATTRAPER_EXPLICATIONS = args.includes("--rattraper-explications");
+/**
+ * Reprend les resumes du jour manquants, sans relire le flux.
+ *
+ * Passer par l'ingestion pour cela obligerait a elargir la fenetre de dates, ce
+ * qui ferait RE-INGERER les editions rejouees par la livraison du soir. Le
+ * detour serait couteux et risque ; ce drapeau va droit au but.
+ */
+const RATTRAPER_RESUMES = args.includes("--rattraper-resumes");
 const NB_FICHIERS = flag("files", 4);
 /** Nombre maximal de résumés de rattrapage par passage, pour borner la dépense. */
 const RATTRAPAGE_MAX = flag("catchup", 10);
@@ -315,8 +323,19 @@ Règles impératives :
 - ne t'appuie QUE sur les intitulés fournis ; n'invente aucun texte, aucun chiffre, aucune date ;
 - cite les mesures de fond (textes généraux) et ignore les nominations individuelles, sauf si elles concernent une fonction de premier plan ;
 - si la journée est sans relief, dis-le simplement plutôt que de gonfler l'importance des textes ;
-- pas de titre, pas de liste à puces, pas de formule d'introduction : le paragraphe seul.
+- pas de titre, pas de liste à puces : le paragraphe seul ;
+- ATTAQUE PAR LE FAIT LE PLUS NOTABLE, jamais par une formule d'annonce. Sont interdites, entre autres, les ouvertures « Cette édition… », « Le Journal officiel de ce jour… », « Au sommaire… », « Cette journée est marquée par… ». Le lecteur sait qu'il lit le Journal officiel ; le lui redire coûte une phrase sur cinq. Écris « Les livreurs indépendants obtiennent une garantie minimale de revenus… » plutôt que « Cette édition est marquée par l'homologation d'une garantie… ».
 Réponds en JSON : { "digest": "…" }`;
+
+/**
+ * Ouvertures creuses, refusées à la relecture.
+ *
+ * La consigne les interdit déjà, mais une consigne n'est pas une garantie : les
+ * modèles les plus légers y reviennent, et vingt-sept éditions ouvrant toutes
+ * sur « Cette édition… » donnent une rubrique qui sonne la machine. On vérifie
+ * donc le résultat plutôt que de faire confiance.
+ */
+const OUVERTURE_CREUSE = /^\s*(cette (édition|journée|livraison)|le journal officiel|au sommaire|l'édition du jour|ce jour)/i;
 
 /** Produit le résumé du jour. Un appel par édition : le coût est négligeable. */
 async function resumer(e: Edition): Promise<string | null> {
@@ -325,14 +344,27 @@ async function resumer(e: Edition): Promise<string | null> {
     .map(r => `## ${r.titre}\n` + r.groupes.map(g => `### ${g.titre}\n` + g.textes.map(t => `- ${t.titre}`).join("\n")).join("\n"))
     .join("\n");
 
-  const reponse = await demanderJSON<{ digest?: string }>(
-    CONSIGNE,
-    `${e.title} — ${e.text_count} textes.
+  const entree = `${e.title} — ${e.text_count} textes.\n\n${sommaire}`;
 
-${sommaire}`,
-    { maxJetons: 4096 },
-  );
-  return String(reponse.digest ?? "").trim() || null;
+  const reponse = await demanderJSON<{ digest?: string }>(CONSIGNE, entree, { maxJetons: 4096 });
+  let digest = String(reponse.digest ?? "").trim();
+
+  // Une seule reprise, et seulement sur l'ouverture : le reste du paragraphe est
+  // bon, c'est sa première phrase qui tourne à vide. Si la reprise échoue aussi,
+  // on garde ce qu'on a — un résumé un peu convenu vaut mieux qu'aucun.
+  if (digest && OUVERTURE_CREUSE.test(digest)) {
+    try {
+      const reprise = await demanderJSON<{ digest?: string }>(
+        CONSIGNE,
+        `${entree}\n\nTa première tentative ouvrait par « ${digest.split(" ").slice(0, 5).join(" ")}… », ce que la consigne interdit. Recommence en attaquant directement par le fait le plus notable de la journée.`,
+        { maxJetons: 4096 },
+      );
+      const second = String(reprise.digest ?? "").trim();
+      if (second && !OUVERTURE_CREUSE.test(second)) digest = second;
+    } catch { /* on garde la première version */ }
+  }
+
+  return digest || null;
 }
 
 
@@ -368,7 +400,21 @@ Réponds en JSON : { "textes": [ { "id": "JORFTEXT…", "explication": "…" } ]
  *
  * Le coût tient : une journée entière pèse une cinquantaine de milliers de caractères.
  */
-async function expliquerTextes(sections: Rubrique[], corps: Map<string, Corps>): Promise<number> {
+async function expliquerTextes(
+  sections: Rubrique[],
+  corps: Map<string, Corps>,
+  /**
+   * Explications déjà en base pour ces textes.
+   *
+   * La livraison du soir rejoue une centaine d'éditions anciennes, dont les
+   * dernières journées. Sans cette mémoire, chaque passage du cron réécrivait
+   * des explications qui existaient déjà — en les DÉGRADANT, puisque les
+   * archives rejouées ne portent pas le corps des actes : une phrase tirée des
+   * visas et du dispositif était remplacée par une phrase tirée du seul titre.
+   * Et elle repayait chaque nuit huit cents textes de quota pour ce recul.
+   */
+  deja: Map<string, { explication: string; source: string }> = new Map(),
+): Promise<number> {
   const aResumer: { id: string; titre: string; corps: string }[] = [];
 
   for (const r of sections) {
@@ -382,6 +428,16 @@ async function expliquerTextes(sections: Rubrique[], corps: Map<string, Corps>):
           const objet = notice.match(/Objet\s*:\s*([\s\S]*?)(?:\s*(?:Entr[ée]e en vigueur|Notice|R[ée]f[ée]rences)\s*:|$)/i)?.[1];
           t.explication = abreger(objet?.trim() || notice, 320);
           t.source_explication = "notice";
+          continue;
+        }
+        // La notice officielle l'emporte toujours — c'est l'administration qui
+        // explique son propre texte. Passé elle, une explication déjà écrite est
+        // conservée : la réécrire coûterait du quota pour, au mieux, la même
+        // phrase, au pire une moins bonne.
+        const ancienne = deja.get(t.id);
+        if (ancienne) {
+          t.explication = ancienne.explication;
+          t.source_explication = ancienne.source as Texte["source_explication"];
           continue;
         }
         // Deux situations se ressemblent et n'ont rien à voir ; les confondre a
@@ -470,6 +526,7 @@ async function main() {
 
   // Reprise de l'arriéré : on n'a pas besoin du flux, tout est déjà en base.
   if (RATTRAPER_EXPLICATIONS) { await rattraperExplications(supabase); return; }
+  if (RATTRAPER_RESUMES) { await rattraperResumes(supabase); return; }
 
   console.log("=== Journal officiel — flux DILA ===");
   console.log(`  voie de rédaction : ${llmVoie()}`);
@@ -481,6 +538,23 @@ async function main() {
   // Éditions déjà résumées : on ne repaie pas un résumé pour rien.
   const { data: connues } = await supabase.from("jorf_editions").select("date, digest");
   const dejaResumee = new Set((connues ?? []).filter(r => r.digest).map(r => r.date));
+
+  // Explications déjà écrites, pour ne pas les refaire — ni, surtout, les
+  // remplacer par de moins bonnes. Voir le commentaire d'expliquerTextes.
+  const { data: ancien } = await supabase
+    .from("jorf_editions").select("sections").gte("date", DEPUIS);
+  const dejaExplique = new Map<string, { explication: string; source: string }>();
+  for (const e of (ancien ?? []) as any[]) {
+    for (const r of e.sections ?? []) {
+      for (const g of r.groupes ?? []) {
+        for (const t of g.textes ?? []) {
+          const phrase = String(t.explication ?? "").trim();
+          if (phrase) dejaExplique.set(t.id, { explication: phrase, source: t.source_explication ?? "ia" });
+        }
+      }
+    }
+  }
+  if (dejaExplique.size) console.log(`  ${dejaExplique.size} explication(s) déjà écrite(s), conservées`);
 
   const editions = new Map<string, Edition & { corps: Map<string, Corps>; source_file: string; published_at: string }>();
 
@@ -550,7 +624,7 @@ async function main() {
 
     // Chaque texte reçoit sa phrase d'explication avant l'enregistrement : c'est elle
     // qui fait la valeur de la rubrique, un intitulé nu ne dit rien à personne.
-    await expliquerTextes(e.sections, e.corps);
+    await expliquerTextes(e.sections, e.corps, dejaExplique);
     const tous = e.sections.flatMap(r => r.groupes.flatMap(g => g.textes));
     const par = (src: string) => tous.filter(t => t.source_explication === src).length;
     console.log(`    corps lus : ${e.corps.size} — expliqués : ${par("notice")} par notice, ${par("ia")} par résumé, ${par("renvoi")} sans contenu, ${tous.filter(t => !t.explication).length} en attente`);

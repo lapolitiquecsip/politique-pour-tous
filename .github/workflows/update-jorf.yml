@@ -68,3 +68,17 @@ jobs:
           LLM_FREE_API_KEY: ${{ secrets.LLM_FREE_API_KEY }}
           DEEPSEEK_API_KEY: ${{ secrets.DEEPSEEK_API_KEY }}
         run: npx --yes tsx scripts/update-jorf.ts --rattraper-explications
+
+      # Meme filet pour le resume du jour. Il ne peut pas passer par
+      # l'ingestion : elargir sa fenetre de dates ferait RE-INGERER les
+      # editions que la livraison du soir rejoue, et ecraserait des
+      # explications ecrites a partir du corps des actes par des phrases
+      # tirees du seul intitule.
+      - name: Reprise des resumes manquants
+        if: always()
+        env:
+          NEXT_PUBLIC_SUPABASE_URL: ${{ secrets.NEXT_PUBLIC_SUPABASE_URL }}
+          SUPABASE_SERVICE_ROLE_KEY: ${{ secrets.SUPABASE_SERVICE_ROLE_KEY }}
+          LLM_FREE_API_KEY: ${{ secrets.LLM_FREE_API_KEY }}
+          DEEPSEEK_API_KEY: ${{ secrets.DEEPSEEK_API_KEY }}
+        run: npx --yes tsx scripts/update-jorf.ts --rattraper-resumes --days=35 --catchup=10

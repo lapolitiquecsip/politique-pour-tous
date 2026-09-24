@@ -684,10 +684,15 @@ export const api = {
     /**
      * Charger l'analyse complète avec la liste.
      *
-     * Elle pèse lourd — soixante-sept kilo-octets et 1,3 seconde pour vingt-quatre
-     * réunions, contre quatorze kilo-octets et 0,3 seconde sans elle — alors qu'elle
-     * n'est lue qu'au dépliage d'une réunion. Les listes la laissent donc de côté et
-     * la demandent à la carte, par getCommissionAnalysis.
+     * Elle pèse lourd : soixante-sept kilo-octets pour vingt-quatre réunions,
+     * contre quatorze sans elle — presque cinq fois moins à transmettre, à
+     * décoder et à hydrater. Sur une connexion déjà ouverte l'écart de latence
+     * est mince — 318 ms contre 297 ms, médiane de sept mesures — et une
+     * première mesure à froid qui donnait 1,3 s ne mesurait que la poignée de
+     * main TLS. C'est donc le volume qui justifie le partage, et il se paie sur
+     * les liaisons lentes. Comme l'analyse n'est lue qu'au dépliage d'une
+     * réunion, les listes la laissent de côté et la demandent à la carte, par
+     * getCommissionAnalysis.
      */
     withAnalysis?: boolean;
   } = {}) => {

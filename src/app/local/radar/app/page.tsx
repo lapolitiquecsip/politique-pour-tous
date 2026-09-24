@@ -132,7 +132,7 @@ export default function RadarApp() {
   const projects = PROJECTS_BY_CITY[selectedCity] || [];
 
   return (
-    <main className="min-h-screen bg-slate-950 text-white">
+    <main className="dark min-h-screen bg-slate-950 text-white">
       <div className="container mx-auto max-w-6xl px-4 py-8">
         <Link href="/local" className="inline-flex items-center gap-2 text-white/40 hover:text-white transition-colors font-bold text-xs uppercase tracking-widest mb-8">
           <ChevronLeft size={16} /> Retour au portail

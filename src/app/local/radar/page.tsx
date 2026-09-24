@@ -19,7 +19,7 @@ export default function RadarConcept() {
   }, [isPremium, loading, router]);
 
   return (
-    <main className="min-h-screen bg-slate-950 text-white">
+    <main className="dark min-h-screen bg-slate-950 text-white">
       {/* 1. Header Navigation */}
       <div className="container mx-auto max-w-6xl px-4 py-8">
         <Link href="/local" className="inline-flex items-center gap-2 text-white/40 hover:text-white transition-colors font-bold text-xs uppercase tracking-widest">

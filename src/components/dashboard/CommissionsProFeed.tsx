@@ -38,9 +38,9 @@ const aujourdhui = () => new Date().toISOString().slice(0, 10);
 /** Une réunion dans le fil, repliée sur son titre, dépliable sur son analyse. */
 function Ligne({ m }: { m: CommissionMeeting }) {
   const [ouvert, setOuvert] = useState(false);
-  // L'analyse n'arrive qu'au dépliage : la charger avec la liste coûtait plus d'une
-  // seconde et soixante-sept kilo-octets pour vingt-quatre réunions dont on n'en
-  // ouvre qu'une.
+  // L'analyse n'arrive qu'au dépliage : la charger avec la liste pesait
+  // soixante-sept kilo-octets pour vingt-quatre réunions — contre quatorze sans
+  // elle — alors qu'on n'en ouvre qu'une.
   const [detail, setDetail] = useState<{ analysis: any; summary: string | null } | null>(null);
   const [chargeant, setChargeant] = useState(false);
 

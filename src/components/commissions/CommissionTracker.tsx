@@ -29,9 +29,9 @@ type Props = {
 /* ─────────────────────────── Une réunion, pliable ─────────────────────────── */
 function MeetingCard({ m, accent }: { m: CommissionMeeting; accent: typeof ACCENTS.emerald }) {
   const [open, setOpen] = useState(false);
-  // L'analyse est demandée au dépliage. Chargée avec la liste, elle coûtait plus d'une
-  // seconde et soixante-sept kilo-octets pour vingt-quatre réunions dont on n'en ouvre
-  // qu'une à la fois.
+  // L'analyse est demandée au dépliage. Chargée avec la liste, elle pesait
+  // soixante-sept kilo-octets pour vingt-quatre réunions — contre quatorze sans
+  // elle — alors qu'on n'en ouvre qu'une à la fois.
   const [detail, setDetail] = useState<{ analysis: any; summary: string | null } | null>(null);
   useEffect(() => {
     if (!open || detail) return;

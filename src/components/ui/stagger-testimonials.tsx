@@ -3,7 +3,7 @@
 import React, { useState, useEffect } from 'react';
 import { ChevronLeft, ChevronRight, Users, Building2, Coins, ArrowRight, Star, Loader2, MapPin } from 'lucide-react';
 import { cn } from '@/lib/utils';
-import { regionPaths } from '@/lib/data/regionPaths';
+import { useRegionPaths } from '@/lib/data/useRegionPaths';
 import { departmentPaths } from '@/lib/data/departmentPaths';
 
 const SQRT_5000 = Math.sqrt(5000);
@@ -47,6 +47,9 @@ const TestimonialCard: React.FC<TestimonialCardProps> = ({
   isPremium,
   onSelect
 }) => {
+  // Le méga-octet de tracés régionaux n'est chargé que pour une carte de région,
+  // après l'affichage ; le crochet ne déclenche qu'un import pour toute la pile.
+  const regionPaths = useRegionPaths(item.type === 'region');
   const isCenter = position === 0;
   // Pick a consistent vibrant color for this territory based on its ID
   const colorIndex = (item.id.charCodeAt(0) + (item.id.charCodeAt(item.id.length - 1) || 0)) % cardColors.length;

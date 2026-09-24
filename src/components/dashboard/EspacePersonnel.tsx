@@ -16,7 +16,7 @@ import JournalOfficielDuJour from "@/components/home/JournalOfficielDuJour";
 import ParametresCompte from "@/components/dashboard/ParametresCompte";
 import { usePremium } from "@/lib/hooks/usePremium";
 import { departmentPaths } from "@/lib/data/departmentPaths";
-import { regionPaths } from "@/lib/data/regionPaths";
+import { useRegionPaths } from "@/lib/data/useRegionPaths";
 import { REGIONS, DEPARTMENTS } from "@/lib/data/territories";
 
 // Les favoris territoire sont enregistrés par NOM ; les silhouettes SVG sont indexées par CODE.
@@ -254,9 +254,14 @@ export default function EspacePersonnel({ mode = "tout" }: { mode?: ModeEspace }
   const resolvedVotes = userVotes.filter(v => !!titreOuNull(v.laws || v.scrutins));
   const savedGeos = savedItems.filter(item => ['commune', 'region', 'department'].includes(item.item_type));
 
+  // Un méga-octet de tracés pour un décor à 25 % d'opacité : on ne le charge
+  // qu'après l'affichage, et seulement si un territoire enregistré est une
+  // région. C'était la moitié du poids de cette page (voir useRegionPaths).
+  const regionPaths = useRegionPaths(savedGeos.some(i => i.item_type === 'region'));
+
   if (authLoading && !niveauMemorise) {
     return (
-      <div className="min-h-screen bg-slate-950 flex flex-col items-center justify-center p-4">
+      <div className="dark min-h-screen bg-slate-950 flex flex-col items-center justify-center p-4">
         <Loader2 size={40} className="animate-spin text-amber-500 mb-4" />
         <p className="text-white font-bold uppercase tracking-[0.15em] text-sm">Authentification en cours...</p>
       </div>
@@ -284,7 +289,16 @@ export default function EspacePersonnel({ mode = "tout" }: { mode?: ModeEspace }
     // data-offre repeint la palette dorée en violet pour un abonné Pro : les
     // classes Tailwind ne changent pas, seules les variables de couleur (voir
     // globals.css). Un seul attribut habille donc tout l'écran.
-    <div data-offre={isPro ? "pro" : undefined} className="min-h-screen bg-gradient-to-b from-[#0b1020] via-[#0a0e1c] to-[#070a14] pb-20 text-white">
+    // La classe « dark » n'est pas ici un choix de thème : c'est la description
+    // d'un fait. Ce dégradé est sombre en permanence, quel que soit le thème
+    // retenu par le lecteur, et les composants qu'on y place — recherche de
+    // commune, suivi des candidats, préférences — sont écrits avec les jetons
+    // sémantiques (bg-card, text-foreground, border-border). Sans elle, ces
+    // jetons prenaient leurs valeurs claires : des cartes blanches posées sur
+    // un fond noir. La classe les fait résoudre sur la palette sombre, pour
+    // tout ce que le conteneur abrite, et la variante dark: suit (globals.css :
+    // @custom-variant dark (&:is(.dark *))).
+    <div data-offre={isPro ? "pro" : undefined} className="dark min-h-screen bg-gradient-to-b from-[#0b1020] via-[#0a0e1c] to-[#070a14] pb-20 text-white">
       {/* 1. Dashboard Header */}
       <section className="border-b border-white/5 pt-28 pb-20 px-4 relative overflow-hidden">
         {/* Halos dorés premium */}
@@ -640,6 +654,10 @@ export default function EspacePersonnel({ mode = "tout" }: { mode?: ModeEspace }
                                   </div>
                                 );
                               }
+                              // Une région dont les tracés ne sont pas encore arrivés reste
+                              // sans décor : lui donner la silhouette urbaine des communes
+                              // afficherait une ville à la place d'une région.
+                              if (regCode) return null;
                               // Commune : skyline urbaine (immeubles + fenêtres)
                               const B = [
                                 { x: 8, w: 34, y: 70 }, { x: 48, w: 30, y: 40 }, { x: 84, w: 26, y: 86 },

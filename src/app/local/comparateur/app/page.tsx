@@ -11,7 +11,7 @@ import { useSearchParams, useRouter } from "next/navigation";
 import { useCommuneSearch } from "@/lib/hooks/useCommuneSearch";
 import { usePremium } from "@/lib/hooks/usePremium";
 import { REGIONS, DEPARTMENTS } from "@/lib/data/territories";
-import { regionPaths } from "@/lib/data/regionPaths";
+import { useRegionPaths } from "@/lib/data/useRegionPaths";
 import { departmentPaths } from "@/lib/data/departmentPaths";
 import { api } from "@/lib/api";
 
@@ -24,6 +24,10 @@ interface SelectedTerritory {
 
 function ComparateurContent() {
   const { userId, isPremium, loading } = usePremium();
+  // Les tracés des régions pèsent un méga-octet : ils arrivent après le premier
+  // rendu plutôt que de le retarder. En attendant, les silhouettes cèdent la
+  // place à leur repli habituel (voir useRegionPaths).
+  const regionPaths = useRegionPaths();
   const router = useRouter();
   const searchParams = useSearchParams();
   const allowedType = searchParams.get('type'); // 'region' | 'department' | 'commune'

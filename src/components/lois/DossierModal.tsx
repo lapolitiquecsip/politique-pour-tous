@@ -53,7 +53,7 @@ function AmendmentsSection({ dossierId, total = 0, initial }: { dossierId: strin
   if (total === 0 && !(items && items.length)) {
     return (
       <section className="mt-10">
-        <h3 className="text-2xl font-staatliches uppercase text-slate-950">Amendements</h3>
+        <h3 className="text-2xl font-staatliches uppercase text-foreground">Amendements</h3>
         <p className="mt-4 text-muted-foreground">Aucun amendement rattaché.</p>
       </section>
     );
@@ -68,7 +68,7 @@ function AmendmentsSection({ dossierId, total = 0, initial }: { dossierId: strin
   return (
     <section className="mt-10">
       <div className="flex flex-wrap items-center justify-between gap-3">
-        <h3 className="text-2xl font-staatliches uppercase text-slate-950">Amendements <span className="text-slate-400">({total || shown.length})</span></h3>
+        <h3 className="text-2xl font-staatliches uppercase text-foreground">Amendements <span className="text-slate-400">({total || shown.length})</span></h3>
         <button onClick={toggle} className="inline-flex items-center gap-2 rounded-full bg-slate-100 px-4 py-2 text-sm font-bold text-slate-700 transition hover:bg-slate-200">
           {show ? "Masquer les amendements" : "Voir les amendements"}
           <ChevronDown size={16} className={`transition-transform ${show ? "rotate-180" : ""}`} />
@@ -237,7 +237,7 @@ function ScrutinsSection({ dossierId, total = 0, initial }: { dossierId: string;
   if (total === 0 && !(items && items.length)) {
     return (
       <section className="mt-10">
-        <h3 className="text-2xl font-staatliches uppercase text-slate-950">Scrutins</h3>
+        <h3 className="text-2xl font-staatliches uppercase text-foreground">Scrutins</h3>
         <p className="mt-4 text-muted-foreground">Aucun scrutin rattaché.</p>
       </section>
     );
@@ -251,7 +251,7 @@ function ScrutinsSection({ dossierId, total = 0, initial }: { dossierId: string;
   return (
     <section className="mt-10">
       <div className="flex flex-wrap items-center justify-between gap-3">
-        <h3 className="text-2xl font-staatliches uppercase text-slate-950">Scrutins <span className="text-slate-400">({total || shown.length})</span></h3>
+        <h3 className="text-2xl font-staatliches uppercase text-foreground">Scrutins <span className="text-slate-400">({total || shown.length})</span></h3>
         <button onClick={toggle} className="inline-flex items-center gap-2 rounded-full bg-slate-100 px-4 py-2 text-sm font-bold text-slate-700 transition hover:bg-slate-200">
           {show ? "Masquer les scrutins" : "Voir les scrutins"}
           <ChevronDown size={16} className={`transition-transform ${show ? "rotate-180" : ""}`} />
@@ -347,7 +347,7 @@ function NavetteSection({ steps }: { steps: any[] }) {
   return (
     <section className="mt-10">
       <div className="flex flex-wrap items-center justify-between gap-3">
-        <h3 className="text-2xl font-staatliches uppercase text-slate-950">Navette parlementaire {steps.length > 0 && <span className="text-slate-400">({steps.length})</span>}</h3>
+        <h3 className="text-2xl font-staatliches uppercase text-foreground">Navette parlementaire {steps.length > 0 && <span className="text-slate-400">({steps.length})</span>}</h3>
         <button onClick={() => setShow(s => !s)} className="inline-flex items-center gap-2 rounded-full bg-slate-100 px-4 py-2 text-sm font-bold text-slate-700 transition hover:bg-slate-200">
           {show ? "Masquer le parcours" : "Voir le parcours"}
           <ChevronDown size={16} className={`transition-transform ${show ? "rotate-180" : ""}`} />
@@ -473,7 +473,7 @@ export default function DossierModal({
               <div className="mb-3 text-xs font-black uppercase tracking-[0.2em] text-red-600">{categoryLabel(fallback.category as any)}</div>
             )}
             {fallback && (
-              <h2 className="text-4xl font-staatliches uppercase leading-none text-slate-950 md:text-6xl">
+              <h2 className="text-4xl font-staatliches uppercase leading-none text-foreground md:text-6xl">
                 {fallback.display_title || fallback.title}
               </h2>
             )}
@@ -490,7 +490,7 @@ export default function DossierModal({
               return (
                 <>
                   {f.category && <div className="mb-3 text-xs font-black uppercase tracking-[0.2em] text-red-600">{categoryLabel(f.category as any)}</div>}
-                  <h2 className="text-4xl font-staatliches uppercase leading-none text-slate-950 md:text-6xl">{f.display_title || f.title}</h2>
+                  <h2 className="text-4xl font-staatliches uppercase leading-none text-foreground md:text-6xl">{f.display_title || f.title}</h2>
                   {promulgated && (
                     <div className="mt-6 rounded-3xl border border-emerald-200 bg-emerald-50 p-5">
                       <p className="text-[10px] font-black uppercase tracking-widest text-emerald-600">Statut</p>
@@ -507,7 +507,7 @@ export default function DossierModal({
         ) : detail && (
           <article className="px-6 pb-12 pt-16 md:px-12">
             <div className="mb-3 text-xs font-black uppercase tracking-[0.2em] text-red-600">{categoryLabel(detail.dossier.category)}</div>
-            <h2 className="text-4xl font-staatliches uppercase leading-none text-slate-950 md:text-6xl">{detail.dossier.title}</h2>
+            <h2 className="text-4xl font-staatliches uppercase leading-none text-foreground md:text-6xl">{detail.dossier.title}</h2>
             <div className="mt-5 space-y-2.5 text-sm font-bold">
               <InitiatorField authorName={detail.dossier.author_name} />
               <div className="flex flex-wrap items-baseline gap-x-2 gap-y-1 text-slate-700">
@@ -529,15 +529,15 @@ export default function DossierModal({
                       {promulgated ? "Promulguée au Journal officiel" : ch.label}
                     </span>
                   </div>
-                  {tl && <div><p className="text-[10px] font-black uppercase tracking-widest text-slate-400">Type</p><span className="mt-1 inline-block rounded-full bg-card border border-border px-4 py-1.5 text-sm font-black text-slate-700">{tl}</span></div>}
+                  {tl && <div><p className="text-[10px] font-black uppercase tracking-widest text-slate-400">Type</p><span className="mt-1 inline-block rounded-full bg-card border border-border px-4 py-1.5 text-sm font-black text-foreground">{tl}</span></div>}
                   {/* On masque l'« étape » de navette quand la loi est promulguée : le statut ci-dessus
                       suffit, et le libellé de navette peut être périmé (resynchronisé côté backend). */}
-                  {!promulgated && <div><p className="text-[10px] font-black uppercase tracking-widest text-slate-400">Étape</p><span className="mt-1 inline-block rounded-full bg-card border border-border px-4 py-1.5 text-sm font-black text-slate-700">{detail.dossier.status_label}</span></div>}
+                  {!promulgated && <div><p className="text-[10px] font-black uppercase tracking-widest text-slate-400">Étape</p><span className="mt-1 inline-block rounded-full bg-card border border-border px-4 py-1.5 text-sm font-black text-foreground">{detail.dossier.status_label}</span></div>}
                 </div>
               );
             })()}
 
-            <section className="mt-10"><h3 className="text-2xl font-staatliches uppercase text-slate-950">Résumé</h3><p className="mt-3 leading-7 text-slate-700">{detail.summary?.summary || "Analyse indisponible."}</p></section>
+            <section className="mt-10"><h3 className="text-2xl font-staatliches uppercase text-foreground">Résumé</h3><p className="mt-3 leading-7 text-slate-700">{detail.summary?.summary || "Analyse indisponible."}</p></section>
             {detail.premium_analysis ? (
               <section className="mt-10 rounded-[2rem] border border-amber-200 bg-gradient-to-b from-amber-50/70 to-white p-6 md:p-8">
                 <div className="flex items-center gap-2 mb-5">
@@ -556,7 +556,7 @@ export default function DossierModal({
             <NavetteSection steps={detail.steps} />
             <AmendmentsSection key={detail.dossier.id} dossierId={detail.dossier.id} total={(detail as any).amendments_total} initial={detail.amendments} />
             <ScrutinsSection key={`s-${detail.dossier.id}`} dossierId={detail.dossier.id} total={(detail as any).scrutins_total} initial={detail.scrutins} />
-            <section className="mt-10"><h3 className="text-2xl font-staatliches uppercase text-slate-950">Sources officielles</h3><div className="mt-3 flex flex-col gap-2">{[...new Set([...(detail.dossier.source_urls || []), ...(detail.summary?.source_urls || []), ...(detail.promulgation?.source_url ? [detail.promulgation.source_url] : [])])].map((url: string) => <a key={url} href={url} target="_blank" rel="noreferrer" className="flex items-start gap-2 text-blue-700 hover:underline"><ExternalLink size={15} className="mt-0.5 shrink-0" /><span className="min-w-0 break-all">{url}</span></a>)}</div></section>
+            <section className="mt-10"><h3 className="text-2xl font-staatliches uppercase text-foreground">Sources officielles</h3><div className="mt-3 flex flex-col gap-2">{[...new Set([...(detail.dossier.source_urls || []), ...(detail.summary?.source_urls || []), ...(detail.promulgation?.source_url ? [detail.promulgation.source_url] : [])])].map((url: string) => <a key={url} href={url} target="_blank" rel="noreferrer" className="flex items-start gap-2 text-blue-700 hover:underline"><ExternalLink size={15} className="mt-0.5 shrink-0" /><span className="min-w-0 break-all">{url}</span></a>)}</div></section>
           </article>
         )}
         </motion.div>

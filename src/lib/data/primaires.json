@@ -8,11 +8,12 @@
     "",
     "Pour ajouter un rendez-vous, copiez un bloc de `evenements` et renseignez-le.",
     "  id            identifiant court et stable, jamais réutilisé",
-    "  primaire      EXACTEMENT la valeur de `category` dans presidential_candidates,",
-    "                sans quoi le débat ne sera rattaché à aucun candidat",
+    "  primaire      nom affiché, repris tel quel dans les filtres et les pastilles",
     "  type          « debat » ou « vote »",
     "  date_prevue   AAAA-MM-JJ",
     "  participants  slugs des candidats attendus (voir `primaires` ci-dessous)",
+    "  video_id      identifiant YouTube, SI on connaît déjà la retransmission ;",
+    "                laissez vide pour que le script la cherche après coup",
     "  recherche     mots-clés qui serviront à retrouver la vidéo ; laissez vide",
     "                pour que le titre et le diffuseur soient utilisés",
     "",
@@ -22,21 +23,117 @@
 
   "primaires": [
     {
-      "nom": "Primaire de la droite",
-      "camp": "droite",
-      "candidats": ["david-lisnard"]
-    },
-    {
-      "nom": "Primaire socialiste",
+      "nom": "Primaire de la gauche socialiste et démocratique",
       "camp": "gauche",
-      "candidats": ["philippe-brun", "segolene-royal"]
+      "candidats": [
+        "olivier-faure",
+        "raphael-glucksmann",
+        "segolene-royal",
+        "jerome-guedj",
+        "emmanuel-maurel"
+      ],
+      "_note": "« Choisir 2027 », organisée par le PS, Place publique et la Gauche républicaine et socialiste. Philippe Brun, candidat déclaré, a été suspendu par le PS le 16 septembre 2026 et ne figure pas parmi les cinq candidats retenus."
     },
     {
       "nom": "Primaire de la gauche unitaire",
       "camp": "gauche",
-      "candidats": ["francois-ruffin", "lydie-massard", "marine-tondelier"]
+      "candidats": ["francois-ruffin", "lydie-massard", "marine-tondelier"],
+      "_note": "Aucun débat annoncé à ce jour : rien n'est inscrit au calendrier tant qu'une date ne l'est pas."
+    },
+    {
+      "nom": "Primaire de la droite",
+      "camp": "droite",
+      "candidats": ["david-lisnard"],
+      "_note": "Les Républicains ont désigné Bruno Retailleau le 19 avril 2026 sans primaire ouverte. Une primaire élargie reste réclamée par une partie de la droite, mais aucune date n'est fixée : le calendrier reste donc vide."
     }
   ],
 
-  "evenements": []
+  "evenements": [
+    {
+      "id": "choisir2027-debat-1",
+      "primaire": "Primaire de la gauche socialiste et démocratique",
+      "type": "debat",
+      "titre": "Premier débat : les cinq candidat·es face à David Pujadas",
+      "date_prevue": "2026-09-23",
+      "heure": "20h40",
+      "diffuseur": "LCI",
+      "participants": [
+        "olivier-faure",
+        "jerome-guedj",
+        "emmanuel-maurel",
+        "raphael-glucksmann",
+        "segolene-royal"
+      ],
+      "video_id": "-o8Bs20Pqrs",
+      "source_url": "https://lcp.fr/actualites/primaire-de-gauche-les-candidats-face-a-face-lors-d-un-premier-debat-televise-ce"
+    },
+    {
+      "id": "choisir2027-debat-2",
+      "primaire": "Primaire de la gauche socialiste et démocratique",
+      "type": "debat",
+      "titre": "Deuxième débat, sur France Télévisions et France Inter",
+      "date_prevue": "2026-10-01",
+      "diffuseur": "France 2 et France Inter",
+      "participants": [
+        "olivier-faure",
+        "jerome-guedj",
+        "emmanuel-maurel",
+        "raphael-glucksmann",
+        "segolene-royal"
+      ],
+      "recherche": "débat primaire gauche Choisir 2027 France 2",
+      "source_url": "https://lcp.fr/actualites/primaire-de-gauche-les-candidats-face-a-face-lors-d-un-premier-debat-televise-ce"
+    },
+    {
+      "id": "choisir2027-debat-3",
+      "primaire": "Primaire de la gauche socialiste et démocratique",
+      "type": "debat",
+      "titre": "Troisième débat, dernier avant le scrutin",
+      "date_prevue": "2026-10-04",
+      "diffuseur": "BFMTV",
+      "participants": [
+        "olivier-faure",
+        "jerome-guedj",
+        "emmanuel-maurel",
+        "raphael-glucksmann",
+        "segolene-royal"
+      ],
+      "recherche": "débat primaire gauche Choisir 2027 BFMTV",
+      "source_url": "https://lcp.fr/actualites/primaire-de-gauche-les-candidats-face-a-face-lors-d-un-premier-debat-televise-ce"
+    },
+    {
+      "id": "choisir2027-tour-1",
+      "primaire": "Primaire de la gauche socialiste et démocratique",
+      "type": "vote",
+      "titre": "Premier tour du scrutin, en ligne",
+      "date_prevue": "2026-10-09",
+      "heure": "du vendredi 9 octobre 8h au samedi 10 octobre 20h",
+      "participants": [
+        "olivier-faure",
+        "jerome-guedj",
+        "emmanuel-maurel",
+        "raphael-glucksmann",
+        "segolene-royal"
+      ],
+      "recherche": "résultat premier tour primaire gauche Choisir 2027",
+      "source_url": "https://choisir2027.fr/"
+    },
+    {
+      "id": "choisir2027-tour-2",
+      "primaire": "Primaire de la gauche socialiste et démocratique",
+      "type": "vote",
+      "titre": "Second tour, si aucune candidature n'obtient la majorité absolue",
+      "date_prevue": "2026-10-16",
+      "heure": "du vendredi 16 octobre 8h au samedi 17 octobre 20h",
+      "participants": [
+        "olivier-faure",
+        "jerome-guedj",
+        "emmanuel-maurel",
+        "raphael-glucksmann",
+        "segolene-royal"
+      ],
+      "recherche": "résultat second tour primaire gauche Choisir 2027",
+      "source_url": "https://choisir2027.fr/"
+    }
+  ]
 }

@@ -33,7 +33,7 @@ export default function MentionsLegales() {
         <div className="prose prose-slate prose-lg max-w-none space-y-12 text-slate-700">
           
           <section>
-            <h2 className="text-3xl font-black text-slate-950 uppercase tracking-tighter mb-6 border-l-4 border-red-600 pl-6">
+            <h2 className="text-3xl font-black text-foreground uppercase tracking-tighter mb-6 border-l-4 border-red-600 pl-6">
               1. Éditeur du site
             </h2>
             <p className="leading-relaxed font-medium">
@@ -50,7 +50,7 @@ export default function MentionsLegales() {
           </section>
 
           <section>
-            <h2 className="text-3xl font-black text-slate-950 uppercase tracking-tighter mb-6 border-l-4 border-red-600 pl-6">
+            <h2 className="text-3xl font-black text-foreground uppercase tracking-tighter mb-6 border-l-4 border-red-600 pl-6">
               2. Hébergement
             </h2>
             <p className="leading-relaxed">
@@ -64,7 +64,7 @@ export default function MentionsLegales() {
           </section>
 
           <section>
-            <h2 className="text-3xl font-black text-slate-950 uppercase tracking-tighter mb-6 border-l-4 border-red-600 pl-6">
+            <h2 className="text-3xl font-black text-foreground uppercase tracking-tighter mb-6 border-l-4 border-red-600 pl-6">
               3. Propriété Intellectuelle
             </h2>
             <p className="leading-relaxed">
@@ -76,7 +76,7 @@ export default function MentionsLegales() {
           </section>
 
           <section>
-            <h2 className="text-3xl font-black text-slate-950 uppercase tracking-tighter mb-6 border-l-4 border-red-600 pl-6">
+            <h2 className="text-3xl font-black text-foreground uppercase tracking-tighter mb-6 border-l-4 border-red-600 pl-6">
               4. Données Personnelles et Cookies
             </h2>
             <p className="leading-relaxed">

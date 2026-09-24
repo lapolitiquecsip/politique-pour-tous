@@ -41,6 +41,8 @@ type Evenement = {
   diffuseur?: string;
   participants?: string[];
   statut?: "a_venir" | "diffuse" | "annule";
+  /** Retransmission déjà connue de l'éditeur : on la prend telle quelle. */
+  video_id?: string;
   recherche?: string;
   media_url?: string;
   source_url?: string;
@@ -53,6 +55,27 @@ type Calendrier = {
 
 const sansAccent = (s: string) =>
   s.normalize("NFD").replace(/[̀-ͯ]/g, "").toLowerCase();
+
+/**
+ * Titre et date de mise en ligne d'une vidéo dont on connaît déjà l'identifiant.
+ *
+ * Quand l'éditeur a repéré la retransmission lui-même — c'est le cas courant pour
+ * un débat diffusé par le parti organisateur, qui le met en ligne sur sa propre
+ * chaîne — chercher serait à la fois inutile et hasardeux. On se contente de lire
+ * la fiche de la vidéo pour afficher son vrai titre. Une réponse vide signifie que
+ * l'identifiant ne désigne rien : mieux vaut le savoir que servir un lecteur mort.
+ */
+async function ficheVideo(id: string): Promise<{ titre: string; publiee: string } | null> {
+  if (!YT_KEY) return null;
+  const url = "https://www.googleapis.com/youtube/v3/videos"
+    + `?part=snippet&id=${encodeURIComponent(id)}&key=${YT_KEY}`;
+  const r = await fetch(url);
+  if (!r.ok) throw new Error(`YouTube a répondu ${r.status}`);
+  const j: any = await r.json();
+  const v = (j.items ?? [])[0];
+  if (!v) return null;
+  return { titre: String(v.snippet?.title ?? ""), publiee: String(v.snippet?.publishedAt ?? "") };
+}
 
 /**
  * Cherche la retransmission d'un rendez-vous passé.
@@ -144,8 +167,25 @@ async function main() {
       updated_at: new Date().toISOString(),
     };
 
-    // On ne cherche la vidéo que pour un rendez-vous passé qui n'en a pas encore.
-    if (passe && ligne.statut !== "annule") {
+    // Retransmission donnée à la main : elle l'emporte, et rien n'est cherché.
+    if (e.video_id) {
+      ligne.video_id = e.video_id;
+      ligne.video_url = `https://www.youtube.com/watch?v=${e.video_id}`;
+      try {
+        const f = await ficheVideo(e.video_id);
+        if (f) {
+          ligne.video_title = f.titre;
+          ligne.video_published_at = f.publiee;
+          console.log(`  = ${e.id} → ${f.titre.slice(0, 70)} (indiquée au calendrier)`);
+        } else {
+          console.warn(`  ⚠ ${e.id} : la vidéo ${e.video_id} est introuvable ou privée`);
+        }
+      } catch (err) {
+        console.warn(`  ⚠ ${e.id} : ${(err as Error).message}`);
+      }
+    }
+    // Sinon on ne cherche que pour un rendez-vous passé qui n'a pas encore de vidéo.
+    else if (passe && ligne.statut !== "annule") {
       const { data: deja } = await supabase
         .from("primary_events").select("video_id").eq("id", e.id).maybeSingle();
       if (!deja?.video_id) {

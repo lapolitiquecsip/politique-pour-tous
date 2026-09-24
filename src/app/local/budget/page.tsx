@@ -477,7 +477,7 @@ function LocalBudgetContent() {
                         {proj.status}
                       </span>
                     </div>
-                    <h3 className="font-staatliches text-xl text-slate-800 uppercase tracking-wide group-hover:text-rose-600 transition-colors">
+                    <h3 className="font-staatliches text-xl text-foreground uppercase tracking-wide group-hover:text-rose-600 transition-colors">
                       {proj.title}
                     </h3>
                     <p className="text-xs text-muted-foreground leading-relaxed">
@@ -553,7 +553,7 @@ function LocalBudgetContent() {
                             {evt.category}
                           </span>
                         </div>
-                        <h3 className="font-extrabold text-sm text-slate-800">
+                        <h3 className="font-extrabold text-sm text-foreground">
                           {evt.title}
                         </h3>
                         <p className="text-[11px] text-slate-400 leading-normal">

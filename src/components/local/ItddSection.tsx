@@ -108,7 +108,7 @@ export default function ItddSection({ level, code }: { level: "region" | "depart
     <div>
       <div className="flex flex-wrap items-center gap-2">
         <select value={variable} onChange={e => setVariable(e.target.value)}
-          className="rounded-full border border-border bg-card px-4 py-2 text-sm font-bold text-slate-800 shadow-sm focus:outline-none focus:ring-2 focus:ring-emerald-500/40">
+          className="rounded-full border border-border bg-card px-4 py-2 text-sm font-bold text-foreground shadow-sm focus:outline-none focus:ring-2 focus:ring-emerald-500/40">
           {[...byTheme.entries()].map(([theme, vars]) => (
             <optgroup key={theme} label={theme}>
               {vars.map(v => <option key={v} value={v}>{CATALOG[v].label}</option>)}

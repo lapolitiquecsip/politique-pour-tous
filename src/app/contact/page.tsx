@@ -159,7 +159,7 @@ export default function ContactPage() {
                   <div className="w-24 h-24 rounded-full bg-emerald-500 flex items-center justify-center text-white mb-8 shadow-2xl shadow-emerald-500/20">
                     <CheckCircle2 className="w-12 h-12" />
                   </div>
-                  <h2 className="text-4xl font-black text-slate-950 uppercase tracking-tighter mb-4">Message Envoyé !</h2>
+                  <h2 className="text-4xl font-black text-foreground uppercase tracking-tighter mb-4">Message Envoyé !</h2>
                   <p className="text-muted-foreground font-medium mb-12 max-w-sm">
                     Votre demande a été transmise avec succès. Notre équipe reviendra vers vous sous peu.
                   </p>

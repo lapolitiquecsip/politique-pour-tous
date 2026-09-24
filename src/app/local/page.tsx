@@ -183,7 +183,7 @@ const DepartmentGridCard: React.FC<{
             </div>
             <div className="min-w-0">
               <p className="text-[8px] font-black uppercase tracking-widest text-slate-400">Président</p>
-              <p className="font-bold text-slate-800 text-xs truncate">{item.president}</p>
+              <p className="font-bold text-foreground text-xs truncate">{item.president}</p>
             </div>
           </div>
           
@@ -259,8 +259,8 @@ const teaserConfigs = {
     metric2Label: "Éducation",
     metric2ValA: "82 / 100",
     metric2ValB: "88 / 100",
-    metric2ColorA: "text-slate-800",
-    metric2ColorB: "text-slate-800",
+    metric2ColorA: "text-foreground",
+    metric2ColorB: "text-foreground",
     metric3Label: "Cadre de vie",
     metric3ValA: "Moyen",
     metric3ValB: "Excellent",
@@ -282,8 +282,8 @@ const teaserConfigs = {
     metric2Label: "Budget / Hab.",
     metric2ValA: "1 240 €",
     metric2ValB: "980 €",
-    metric2ColorA: "text-slate-800",
-    metric2ColorB: "text-slate-800",
+    metric2ColorA: "text-foreground",
+    metric2ColorB: "text-foreground",
     metric3Label: "Fiscalité",
     metric3ValA: "Basse",
     metric3ValB: "Élevée",
@@ -305,8 +305,8 @@ const teaserConfigs = {
     metric2Label: "Budget Lycées",
     metric2ValA: "680 M€",
     metric2ValB: "310 M€",
-    metric2ColorA: "text-slate-800",
-    metric2ColorB: "text-slate-800",
+    metric2ColorA: "text-foreground",
+    metric2ColorB: "text-foreground",
     metric3Label: "Développement",
     metric3ValA: "Très élevé",
     metric3ValB: "Élevé",
@@ -470,7 +470,7 @@ function LocalPoliticsContent() {
               <span className="text-xs font-black uppercase tracking-widest text-rose-600">Action Locale</span>
             </div>
 
-            <h1 className="text-6xl md:text-8xl font-staatliches uppercase tracking-tight leading-tight mb-8 py-4 text-black">
+            <h1 className="text-6xl md:text-8xl font-staatliches uppercase tracking-tight leading-tight mb-8 py-4 text-foreground">
               La Politique <span className="inline-block bg-gradient-to-r from-rose-600 via-fuchsia-600 to-rose-600 bg-clip-text text-transparent italic pl-2 pr-12">Locale</span>
             </h1>
             

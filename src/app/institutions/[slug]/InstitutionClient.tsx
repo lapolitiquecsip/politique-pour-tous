@@ -65,7 +65,7 @@ export default function InstitutionGuidePage() {
               </div>
               <h2 className="text-sm font-black uppercase tracking-[0.3em] text-slate-400">Son Rôle Principal</h2>
             </div>
-            <p className="text-xl md:text-2xl leading-relaxed text-slate-800 font-medium">
+            <p className="text-xl md:text-2xl leading-relaxed text-foreground font-medium">
               {guide.role}
             </p>
           </section>

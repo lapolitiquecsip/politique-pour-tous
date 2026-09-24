@@ -126,7 +126,7 @@ export default function PartyElectionMap({ slug, color, name }: { slug: string; 
               <li key={code} className="flex items-center gap-2 text-sm">
                 <span className="w-5 text-right font-black tabular-nums text-slate-400">{i + 1}</span>
                 <span className="h-3 w-3 rounded-full" style={{ background: colorFor(v) }} />
-                <span className="font-bold text-slate-800">{deptLabel(code)}</span>
+                <span className="font-bold text-foreground">{deptLabel(code)}</span>
                 <span className="ml-auto font-black tabular-nums" style={{ color }}>{v.toLocaleString("fr-FR")} %</span>
               </li>
             ))}

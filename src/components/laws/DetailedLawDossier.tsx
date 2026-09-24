@@ -306,7 +306,7 @@ export default function DetailedLawDossier({ law }: DetailedLawDossierProps) {
                 const pctContre = total > 0 ? Math.round((law.voteData.contre / total) * 100) : 0;
                 return (
                   <div className="space-y-1.5 bg-card rounded-xl p-2.5 shadow-[0_2px_8px_rgba(0,0,0,0.08)] select-none">
-                    <div className="flex justify-between items-center text-[8px] md:text-[9px] font-black uppercase tracking-wider text-slate-800">
+                    <div className="flex justify-between items-center text-[8px] md:text-[9px] font-black uppercase tracking-wider text-foreground">
                       <span className="opacity-75">🗳️ Vote Assemblée</span>
                       <span className="text-emerald-600 font-extrabold">{pctPour}% POUR</span>
                     </div>
@@ -349,7 +349,7 @@ export default function DetailedLawDossier({ law }: DetailedLawDossierProps) {
         }}
         className="overflow-hidden transform-gpu will-change-[height,opacity]"
       >
-        <div className="relative z-10 px-6 md:px-8 pb-8 pt-8 bg-card text-slate-800 rounded-[1.5rem] mx-2 mb-2 shadow-inner">
+        <div className="relative z-10 px-6 md:px-8 pb-8 pt-8 bg-card text-foreground rounded-[1.5rem] mx-2 mb-2 shadow-inner">
 
           <div className="grid grid-cols-1 lg:grid-cols-[2fr_1fr] gap-8 mb-12">
             {/* Left column */}
@@ -572,7 +572,7 @@ export default function DetailedLawDossier({ law }: DetailedLawDossierProps) {
                       <div key={idx} className="relative">
                         <div className="absolute -left-[27px] top-1.5 w-3 h-3 rounded-full bg-card border-2 border-primary" />
                         <p className="text-[10px] font-bold uppercase text-primary tracking-widest mb-1">{item.date}</p>
-                        <p className="text-sm text-slate-800 font-semibold">{item.event}</p>
+                        <p className="text-sm text-foreground font-semibold">{item.event}</p>
                       </div>
                     ))}
                   </div>
@@ -587,7 +587,7 @@ export default function DetailedLawDossier({ law }: DetailedLawDossierProps) {
                     <Zap className="w-6 h-6 text-amber-500" fill="currentColor" />
                     Analyse Détaillée
                   </h4>
-                  <div className="prose prose-slate max-w-none text-slate-800 space-y-4 whitespace-pre-wrap">
+                  <div className="prose prose-slate max-w-none text-foreground space-y-4 whitespace-pre-wrap">
                     {law.content || law.premiumPoints?.join('\n')}
                   </div>
                 </div>

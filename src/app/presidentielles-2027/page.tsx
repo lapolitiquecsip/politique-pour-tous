@@ -281,7 +281,7 @@ function CandidateModal({ candidate, onClose }: { candidate: Candidate; onClose:
           {/* Fil conducteur : fiche du parti */}
           {partyLink && (
             <Link href={`/partis/${partyLink.slug}`}
-              className="mb-4 flex items-center justify-between gap-3 rounded-2xl border border-border bg-muted px-5 py-3 text-slate-800 transition hover:border-slate-300 hover:bg-slate-100">
+              className="mb-4 flex items-center justify-between gap-3 rounded-2xl border border-border bg-muted px-5 py-3 text-foreground transition hover:border-slate-300 hover:bg-slate-100">
               <span className="flex items-center gap-2 text-sm font-bold"><Landmark size={17} /> Voir la fiche du parti — {partyLink.name}</span>
               <ArrowRight size={17} />
             </Link>
@@ -388,7 +388,7 @@ function CandidateModal({ candidate, onClose }: { candidate: Candidate; onClose:
             const src = proposals.find(p => p.source_url)?.source_url;
             return (
               <section className="mt-8">
-                <h3 className="text-2xl font-staatliches uppercase text-slate-950">Son programme</h3>
+                <h3 className="text-2xl font-staatliches uppercase text-foreground">Son programme</h3>
                 <p className="mt-1 text-xs text-muted-foreground">Toutes ses idées, par thème — issues du programme officiel. Cliquez sur <HelpCircle size={12} className="inline -mt-0.5" /> pour comprendre pourquoi.</p>
                 <div className="mt-4 space-y-4">
                   {Object.entries(groups).map(([theme, g]) => {
@@ -463,7 +463,7 @@ function CandidateModal({ candidate, onClose }: { candidate: Candidate; onClose:
             ].sort((a, b) => new Date(b.when || 0).getTime() - new Date(a.when || 0).getTime());
             return (
               <section className="mt-8">
-                <h3 className="text-2xl font-staatliches uppercase text-slate-950">Actualités &amp; <span className="text-amber-600">vidéos</span></h3>
+                <h3 className="text-2xl font-staatliches uppercase text-foreground">Actualités &amp; <span className="text-amber-600">vidéos</span></h3>
                 <p className="mt-1 text-xs text-muted-foreground">Le fil du candidat — articles de presse et vidéos de sa chaîne YouTube officielle, réunis et actualisés chaque jour. Faites défiler →</p>
                 {news === null ? (
                   <p className="mt-3 text-sm text-slate-400">Chargement…</p>
@@ -618,7 +618,7 @@ function PositionsView({ candidates }: { candidates: Candidate[] }) {
       <p className="mb-8 text-center text-sm text-muted-foreground">Position de chaque candidat sur les grands enjeux — cliquez sur un candidat pour le détail et la source.</p>
       {categories.map(({ cat, items }) => (
         <div key={cat} className="mb-12">
-          <h2 className="mb-5 text-xl font-staatliches uppercase tracking-wide text-slate-800">{cat}</h2>
+          <h2 className="mb-5 text-xl font-staatliches uppercase tracking-wide text-foreground">{cat}</h2>
           <div className="space-y-4">
             {items.map(issue => {
               const groups: Record<string, Candidate[]> = { pour: [], nuance: [], contre: [] };
@@ -642,7 +642,7 @@ function PositionsView({ candidates }: { candidates: Candidate[] }) {
                             <button key={c.slug} onClick={() => setDetail({ c, issue, pos: posMap.get(`${c.slug}|${issue.slug}`) })}
                               className={`inline-flex items-center gap-2 rounded-full bg-muted py-1 pl-1 pr-3 ring-1 ${STANCE_META[stance].ring} transition hover:bg-slate-100`}>
                               <CandidateAvatar c={c} className="h-6 w-6 rounded-full text-[9px]" />
-                              <span className="text-xs font-bold text-slate-800">{c.full_name}</span>
+                              <span className="text-xs font-bold text-foreground">{c.full_name}</span>
                             </button>
                           ))}
                         </div>

@@ -195,7 +195,7 @@ export default function ThemesView() {
     <div className="mx-auto max-w-4xl px-4 pb-24">
       <div className="mb-8 text-center">
         <p className="mx-auto max-w-2xl text-sm leading-relaxed text-muted-foreground">
-          Les grands enjeux de la campagne, éclairés par des <span className="font-bold text-slate-800">données strictement officielles</span> — INSEE, RTE, COR, SSMSI, ministères, Commission européenne. Chaque chiffre est daté et sourcé. Dépliez un thème pour l&apos;évolution et les sources.
+          Les grands enjeux de la campagne, éclairés par des <span className="font-bold text-foreground">données strictement officielles</span> — INSEE, RTE, COR, SSMSI, ministères, Commission européenne. Chaque chiffre est daté et sourcé. Dépliez un thème pour l&apos;évolution et les sources.
         </p>
         {freshest && (
           <p className="mt-3 inline-flex items-center gap-2 rounded-full bg-emerald-50 px-3 py-1.5 text-[11px] font-black uppercase tracking-widest text-emerald-700">

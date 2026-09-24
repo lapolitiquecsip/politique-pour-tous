@@ -143,7 +143,7 @@ export default function ElectionsBanner() {
                     <h4 className="text-[10px] font-black uppercase tracking-widest text-slate-400 mb-2 flex items-center gap-2">
                       <Calendar size={14} /> Échéance
                     </h4>
-                    <p className="text-lg font-bold text-slate-800">{selectedElection.date}</p>
+                    <p className="text-lg font-bold text-foreground">{selectedElection.date}</p>
                   </div>
 
                   <div>

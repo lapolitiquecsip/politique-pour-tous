@@ -53,7 +53,7 @@ export default function Footer() {
               <li>
                 <Link 
                   href="/contact" 
-                  className="inline-flex items-center gap-2 px-6 py-3 bg-card text-slate-950 font-black rounded-xl hover:bg-red-500 hover:text-white transition-all text-xs uppercase tracking-widest shadow-xl shadow-white/5"
+                  className="inline-flex items-center gap-2 px-6 py-3 bg-white text-slate-950 font-black rounded-xl hover:bg-red-500 hover:text-white transition-all text-xs uppercase tracking-widest shadow-xl shadow-white/5"
                 >
                   Contactez-nous
                 </Link>

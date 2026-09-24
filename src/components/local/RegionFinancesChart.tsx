@@ -94,7 +94,7 @@ export default function RegionFinancesChart({ regionCode }: { regionCode: string
         <select
           value={indicator}
           onChange={e => setIndicator(e.target.value)}
-          className="rounded-full border border-border bg-card px-4 py-2 text-sm font-bold text-slate-800 shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500/40"
+          className="rounded-full border border-border bg-card px-4 py-2 text-sm font-bold text-foreground shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500/40"
         >
           {INDICATORS.map(i => <option key={i.code} value={i.code}>{i.label}</option>)}
         </select>

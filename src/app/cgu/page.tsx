@@ -32,7 +32,7 @@ export default function CGU() {
         <div className="prose prose-slate prose-lg max-w-none space-y-12 text-slate-700 p-8 md:p-12">
           
           <section>
-            <h2 className="text-3xl font-black text-slate-950 uppercase tracking-tighter mb-8">
+            <h2 className="text-3xl font-black text-foreground uppercase tracking-tighter mb-8">
               ARTICLE 1 : OBJET
             </h2>
             <p className="leading-relaxed">
@@ -41,7 +41,7 @@ export default function CGU() {
           </section>
 
           <section>
-            <h2 className="text-3xl font-black text-slate-950 uppercase tracking-tighter mb-8">
+            <h2 className="text-3xl font-black text-foreground uppercase tracking-tighter mb-8">
               ARTICLE 2 : ACCÈS AU SITE ET SERVICES
             </h2>
             <p className="leading-relaxed">
@@ -53,7 +53,7 @@ export default function CGU() {
           </section>
 
           <section>
-            <h2 className="text-3xl font-black text-slate-950 uppercase tracking-tighter mb-8">
+            <h2 className="text-3xl font-black text-foreground uppercase tracking-tighter mb-8">
               ARTICLE 3 : RESPONSABILITÉ DE L'ÉDITEUR
             </h2>
             <p className="leading-relaxed">
@@ -65,7 +65,7 @@ export default function CGU() {
           </section>
 
           <section>
-            <h2 className="text-3xl font-black text-slate-950 uppercase tracking-tighter mb-8">
+            <h2 className="text-3xl font-black text-foreground uppercase tracking-tighter mb-8">
               ARTICLE 4 : PROPRIÉTÉ INTELLECTUELLE
             </h2>
             <p className="leading-relaxed">

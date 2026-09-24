@@ -83,9 +83,9 @@ function Row({ label, a, b, fmt, higherBetter = true, aRaw, bRaw }: { label: str
   const bWin = aRaw != null && bRaw != null && aRaw !== bRaw && (higherBetter ? bRaw > aRaw : bRaw < aRaw);
   return (
     <div className="grid grid-cols-[1fr_auto_1fr] items-center gap-3 border-b border-border py-3">
-      <p className={`text-right text-lg font-black tabular-nums ${aWin ? "text-emerald-600" : "text-slate-800"}`}>{a}{fmt}</p>
+      <p className={`text-right text-lg font-black tabular-nums ${aWin ? "text-emerald-600" : "text-foreground"}`}>{a}{fmt}</p>
       <p className="px-2 text-center text-[10px] font-black uppercase tracking-widest text-slate-400">{label}</p>
-      <p className={`text-left text-lg font-black tabular-nums ${bWin ? "text-emerald-600" : "text-slate-800"}`}>{b}{fmt}</p>
+      <p className={`text-left text-lg font-black tabular-nums ${bWin ? "text-emerald-600" : "text-foreground"}`}>{b}{fmt}</p>
     </div>
   );
 }

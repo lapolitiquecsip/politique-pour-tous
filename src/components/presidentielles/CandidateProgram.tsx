@@ -48,7 +48,7 @@ export default function CandidateProgram({ candidateId, title = true, heading, c
 
   return (
     <div className={className}>
-      {heading && <h3 className="mb-1 text-2xl font-staatliches uppercase text-slate-950">{heading}</h3>}
+      {heading && <h3 className="mb-1 text-2xl font-staatliches uppercase text-foreground">{heading}</h3>}
       {title && <p className="mb-3 text-xs text-muted-foreground">Toutes ses idées, par thème — issues du programme officiel. Cliquez sur <HelpCircle size={12} className="inline -mt-0.5" /> pour comprendre pourquoi.</p>}
       <div className="space-y-4">
         {Object.entries(groups).map(([theme, g]) => {

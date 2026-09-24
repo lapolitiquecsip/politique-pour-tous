@@ -60,7 +60,14 @@ const CAMPS: Record<string, string> = {
 function Ligne({ e, isPro, noms }: { e: Evenement; isPro: boolean; noms: Map<string, string> }) {
   const [ouvert, setOuvert] = useState(false);
   const passe = e.statut === "diffuse";
-  const Icone = e.type === "vote" ? Vote : Mic2;
+  const vote = e.type === "vote";
+  const Icone = vote ? Vote : Mic2;
+  // Un scrutin s'étale : « du vendredi 9 octobre 8h au samedi 10 octobre 20h » dit
+  // déjà le jour, et le faire précéder de la date le répéterait.
+  const intervalle = /^du\s/i.test(e.heure ?? "");
+  const quand = intervalle
+    ? String(e.heure)
+    : `${jourLong(e.date_prevue)}${e.heure ? ` · ${e.heure}` : ""}`;
 
   return (
     <div className="overflow-hidden rounded-3xl border border-border bg-card transition hover:shadow-lg">
@@ -75,7 +82,7 @@ function Ligne({ e, isPro, noms }: { e: Evenement; isPro: boolean; noms: Map<str
         <span className="min-w-0 flex-1">
           <span className="flex flex-wrap items-center gap-x-2 gap-y-1 text-[10px] font-black uppercase tracking-widest">
             <span className={`rounded-full px-2 py-0.5 ${CAMPS[e.camp ?? ""] ?? "bg-muted text-muted-foreground"}`}>{e.primaire}</span>
-            <span className="text-muted-foreground">{jourLong(e.date_prevue)}{e.heure ? ` · ${e.heure}` : ""}</span>
+            <span className="text-muted-foreground">{quand}</span>
             {!passe && (
               <span className="rounded-full bg-fuchsia-100 px-2 py-0.5 text-fuchsia-700 dark:bg-fuchsia-500/20 dark:text-fuchsia-300">
                 À venir
@@ -120,18 +127,22 @@ function Ligne({ e, isPro, noms }: { e: Evenement; isPro: boolean; noms: Map<str
                 </div>
               ) : passe ? (
                 <p className="text-sm italic text-muted-foreground">
-                  La retransmission n&apos;a pas encore été retrouvée. Elle s&apos;affichera ici dès
-                  qu&apos;elle sera mise en ligne.
+                  {vote
+                    ? "Aucune vidéo du dépouillement n’a encore été trouvée. Elle s’affichera ici dès qu’elle sera en ligne."
+                    : "La retransmission n’a pas encore été retrouvée. Elle s’affichera ici dès qu’elle sera mise en ligne."}
                 </p>
               ) : (
                 <p className="flex items-center gap-2 text-sm text-muted-foreground">
-                  <CalendarDays size={15} /> Rendez-vous le {jourLong(e.date_prevue)}
-                  {e.heure ? ` à ${e.heure}` : ""}{e.diffuseur ? `, sur ${e.diffuseur}` : ""}.
+                  <CalendarDays size={15} />
+                  {intervalle
+                    ? `Scrutin ouvert ${e.heure}, en ligne.`
+                    : `Rendez-vous le ${jourLong(e.date_prevue)}${e.heure ? ` à ${e.heure}` : ""}${e.diffuseur ? `, sur ${e.diffuseur}` : ""}.`}
                 </p>
               )}
 
-              {/* Résumé écrit : réservé à l'offre Pro. */}
-              {passe && (
+              {/* Résumé écrit : réservé à l'offre Pro, et propre aux débats — un
+                  scrutin n'a pas de compte rendu, il a un résultat. */}
+              {passe && !vote && (
                 <div className="mt-4">
                   {!isPro ? (
                     <div className="flex flex-wrap items-center gap-3 rounded-2xl border border-fuchsia-200 bg-fuchsia-50/60 p-4 dark:border-fuchsia-500/30 dark:bg-fuchsia-500/10">
@@ -191,10 +202,21 @@ export default function PrimaryDebates({ candidateSlug }: { candidateSlug?: stri
   }, []);
 
   // Sur une fiche de candidat, on ne garde que ses rendez-vous.
-  const siens = useMemo(
-    () => (events ?? []).filter(e => !candidateSlug || (e.participants ?? []).includes(candidateSlug)),
-    [events, candidateSlug],
-  );
+  //
+  // L'ordre est celui d'un calendrier : le prochain rendez-vous en tête, du plus
+  // proche au plus lointain, puis ce qui a déjà eu lieu du plus récent au plus
+  // ancien. Tout trier par date décroissante placerait le second tour au-dessus
+  // du premier, ce qui se lit à l'envers.
+  const siens = useMemo(() => {
+    const gardes = (events ?? []).filter(
+      e => !candidateSlug || (e.participants ?? []).includes(candidateSlug),
+    );
+    const parDate = (a: Evenement, b: Evenement) => a.date_prevue.localeCompare(b.date_prevue);
+    return [
+      ...gardes.filter(e => e.statut === "a_venir").sort(parDate),
+      ...gardes.filter(e => e.statut !== "a_venir").sort((a, b) => parDate(b, a)),
+    ];
+  }, [events, candidateSlug]);
   const primaires = useMemo(() => [...new Set(siens.map(e => e.primaire))], [siens]);
   const visibles = primaire ? siens.filter(e => e.primaire === primaire) : siens;
 

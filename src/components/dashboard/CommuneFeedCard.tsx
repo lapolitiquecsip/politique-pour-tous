@@ -70,8 +70,8 @@ export default function CommuneFeedCard() {
           {results.map((h) => (
             <li key={h.insee_code}>
               <button onClick={() => choose(h)}
-                className="flex w-full items-center justify-between gap-3 px-4 py-2.5 text-left transition hover:bg-blue-50">
-                <span className="flex items-center gap-2 text-sm font-bold text-slate-800">
+                className="flex w-full items-center justify-between gap-3 px-4 py-2.5 text-left transition hover:bg-muted">
+                <span className="flex items-center gap-2 text-sm font-bold text-foreground">
                   <MapPin size={14} className="text-rose-500" /> {h.commune_name}
                 </span>
                 {h.population != null && (

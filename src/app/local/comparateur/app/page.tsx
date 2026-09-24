@@ -566,7 +566,7 @@ function ComparateurContent() {
           </div>
 
           {/* Metrics Section */}
-          <div className="bg-slate-50/50 border-t border-border p-12 md:p-16 text-slate-800 overflow-hidden relative">
+          <div className="bg-slate-50/50 border-t border-border p-12 md:p-16 text-foreground overflow-hidden relative">
             <div className="absolute top-0 left-1/2 -translate-x-1/2 w-px h-full bg-slate-200/60 hidden lg:block" />
             
             <div className="relative z-10">
@@ -723,15 +723,15 @@ function ComparateurContent() {
                           <>
                             <div className="bg-card p-4 rounded-2xl border border-border/80">
                               <div className="text-[10px] font-black uppercase text-slate-400 tracking-wider mb-1">Présidentielle 2022 (T1)</div>
-                              <div className="text-sm font-bold text-slate-800">{sideA.data.politique.pres2022T1}</div>
+                              <div className="text-sm font-bold text-foreground">{sideA.data.politique.pres2022T1}</div>
                             </div>
                             <div className="bg-card p-4 rounded-2xl border border-border/80">
                               <div className="text-[10px] font-black uppercase text-slate-400 tracking-wider mb-1">Présidentielle 2022 (T2)</div>
-                              <div className="text-sm font-bold text-slate-800">{sideA.data.politique.pres2022T2}</div>
+                              <div className="text-sm font-bold text-foreground">{sideA.data.politique.pres2022T2}</div>
                             </div>
                             <div className="bg-card p-4 rounded-2xl border border-border/80">
                               <div className="text-[10px] font-black uppercase text-slate-400 tracking-wider mb-1">Élu en place</div>
-                              <div className="text-sm font-bold text-slate-800">{sideA.data.politique.elu} {sideA.data.politique.eluDepuis && `(depuis ${sideA.data.politique.eluDepuis})`}</div>
+                              <div className="text-sm font-bold text-foreground">{sideA.data.politique.elu} {sideA.data.politique.eluDepuis && `(depuis ${sideA.data.politique.eluDepuis})`}</div>
                             </div>
                           </>
                         ) : (
@@ -753,15 +753,15 @@ function ComparateurContent() {
                           <>
                             <div className="bg-card p-4 rounded-2xl border border-border/80">
                               <div className="text-[10px] font-black uppercase text-slate-400 tracking-wider mb-1">Présidentielle 2022 (T1)</div>
-                              <div className="text-sm font-bold text-slate-800">{sideB.data.politique.pres2022T1}</div>
+                              <div className="text-sm font-bold text-foreground">{sideB.data.politique.pres2022T1}</div>
                             </div>
                             <div className="bg-card p-4 rounded-2xl border border-border/80">
                               <div className="text-[10px] font-black uppercase text-slate-400 tracking-wider mb-1">Présidentielle 2022 (T2)</div>
-                              <div className="text-sm font-bold text-slate-800">{sideB.data.politique.pres2022T2}</div>
+                              <div className="text-sm font-bold text-foreground">{sideB.data.politique.pres2022T2}</div>
                             </div>
                             <div className="bg-card p-4 rounded-2xl border border-border/80">
                               <div className="text-[10px] font-black uppercase text-slate-400 tracking-wider mb-1">Élu en place</div>
-                              <div className="text-sm font-bold text-slate-800">{sideB.data.politique.elu} {sideB.data.politique.eluDepuis && `(depuis ${sideB.data.politique.eluDepuis})`}</div>
+                              <div className="text-sm font-bold text-foreground">{sideB.data.politique.elu} {sideB.data.politique.eluDepuis && `(depuis ${sideB.data.politique.eluDepuis})`}</div>
                             </div>
                           </>
                         ) : (

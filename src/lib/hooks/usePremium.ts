@@ -93,54 +93,76 @@ export function usePremium() {
   }, []);
 
   useEffect(() => {
+    /**
+     * Détermine le niveau d'abonnement, et sort TOUJOURS de l'état de chargement.
+     *
+     * Deux corrections tiennent dans cette fonction :
+     *
+     *  — on lit la session déjà restaurée dans le navigateur (`getSession`) plutôt que
+     *    de la faire revalider par le serveur (`getUser`). Le hook est monté dans
+     *    l'en-tête de CHAQUE page : un aller-retour réseau y précédait le moindre
+     *    rendu, ce qui expliquait la lenteur ressentie d'une page à l'autre ;
+     *
+     *  — tout est enveloppé, de sorte qu'une exception ne puisse plus laisser la page
+     *    entre deux eaux. Sans cela, un appel en échec gelait `loading` à vrai : ni le
+     *    contenu réservé ni l'invitation à s'abonner ne s'affichaient, et l'espace Pro
+     *    restait vide sans le moindre message.
+     *
+     * La lecture du profil reste protégée par les règles de la base : c'est elle qui
+     * décide, pas ce qui est lu ici.
+     */
     async function checkPremium() {
-      const { data: { user } } = await supabase.auth.getUser();
+      try {
+        const { data: { session } } = await supabase.auth.getSession();
+        const user = session?.user ?? null;
 
-      if (!user) {
-        // On ne touche pas à la mémoire ici : cet appel rend `null` aussi pendant la
-        // restauration de session. Seul l'événement SIGNED_OUT fait foi.
-        setTier("free");
-        setHint("free");
-        setUserId(null);
-        setLoading(false);
-        return;
-      }
+        if (!user) {
+          // On ne touche pas à la mémoire ici : cet appel rend `null` aussi pendant la
+          // restauration de session. Seul l'événement SIGNED_OUT fait foi.
+          setTier("free");
+          setHint("free");
+          setUserId(null);
+          return;
+        }
 
-      setUserId(user.id);
+        setUserId(user.id);
 
-      // Tentative avec la colonne subscription_tier…
-      type Row = { is_premium: boolean | null; subscription_tier?: string | null };
-      let res: { data: Row | null; error: { message: string } | null } = await supabase
-        .from("profiles")
-        .select("is_premium, subscription_tier")
-        .eq("id", user.id)
-        .single();
-
-      // …repli si la colonne n'est pas encore en base.
-      if (res.error) {
-        res = await supabase
+        // Tentative avec la colonne subscription_tier…
+        type Row = { is_premium: boolean | null; subscription_tier?: string | null };
+        let res: { data: Row | null; error: { message: string } | null } = await supabase
           .from("profiles")
-          .select("is_premium")
+          .select("is_premium, subscription_tier")
           .eq("id", user.id)
           .single();
-      }
 
-      if (res.error) {
-        console.warn("Erreur usePremium:", res.error.message);
-        setTier("free");
-      } else {
-        const raw = String(res.data?.subscription_tier || "").toLowerCase();
-        const niveau: Tier = raw === "pro" ? "pro"
-          : (raw === "elite" || res.data?.is_premium) ? "elite"
-          : "free";
-        setTier(niveau);
-        setHint(niveau);
-        setConnecteMemorise(true);
-        setCourrielMemorise(user.email ?? null);
-        retenir(niveau, user.email);
-      }
+        // …repli si la colonne n'est pas encore en base.
+        if (res.error) {
+          res = await supabase
+            .from("profiles")
+            .select("is_premium")
+            .eq("id", user.id)
+            .single();
+        }
 
-      setLoading(false);
+        if (res.error) {
+          console.warn("Erreur usePremium:", res.error.message);
+          setTier("free");
+        } else {
+          const raw = String(res.data?.subscription_tier || "").toLowerCase();
+          const niveau: Tier = raw === "pro" ? "pro"
+            : (raw === "elite" || res.data?.is_premium) ? "elite"
+            : "free";
+          setTier(niveau);
+          setHint(niveau);
+          setConnecteMemorise(true);
+          setCourrielMemorise(user.email ?? null);
+          retenir(niveau, user.email);
+        }
+      } catch (e) {
+        console.warn("usePremium :", (e as Error).message);
+      } finally {
+        setLoading(false);
+      }
     }
 
     checkPremium();

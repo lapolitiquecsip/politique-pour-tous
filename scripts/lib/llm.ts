@@ -32,7 +32,32 @@
 const GOOGLE = "https://generativelanguage.googleapis.com/v1beta/models";
 
 const CLE_GRATUITE = process.env.LLM_FREE_API_KEY || process.env.GEMINI_API_KEY || "";
-const MODELE_GRATUIT = process.env.LLM_FREE_MODEL || "gemini-2.5-flash";
+/**
+ * Modèles essayés, dans l'ordre.
+ *
+ * Un seul ne suffit pas, et pour deux raisons observées l'une après l'autre :
+ *
+ *   — un modèle est retiré. gemini-2.5-flash, d'abord retenu, a été fermé aux
+ *     nouveaux comptes et répond 404 en renvoyant vers son successeur ;
+ *   — un modèle sature. Le palier gratuit est partagé : 3.8-flash et 3.5-flash
+ *     répondaient 503 « high demand » quand 3.6-flash servait normalement. La
+ *     saturation est propre au modèle, jamais au compte, si bien qu'attendre est
+ *     la mauvaise réponse et changer de modèle la bonne.
+ *
+ * On épingle plutôt qu'un alias « latest » : ce qu'on produit est publié tel
+ * quel, et un modèle qui changerait sous nos pieds changerait le ton sans que
+ * rien ne le signale. L'alias ferme néanmoins la liste, comme filet.
+ *
+ * LLM_FREE_MODEL impose un modèle unique ; LLM_FREE_MODELS redéfinit la liste.
+ */
+const MODELES_GRATUITS = (
+  process.env.LLM_FREE_MODEL ||
+  process.env.LLM_FREE_MODELS ||
+  "gemini-3.6-flash,gemini-3.7-flash,gemini-3.8-flash,gemini-flash-latest"
+).split(",").map(s => s.trim()).filter(Boolean);
+
+/** Modèle qui a répondu en dernier : on repart de lui plutôt que de resonder. */
+let modeleRetenu = MODELES_GRATUITS[0];
 const RPM = Number(process.env.LLM_FREE_RPM || 10);
 
 const CLE_SECOURS = process.env.DEEPSEEK_API_KEY || "";
@@ -44,7 +69,7 @@ export const llmDisponible = () => Boolean(CLE_GRATUITE || CLE_SECOURS);
 
 /** Nom de la voie retenue, pour que les journaux disent ce qui a servi. */
 export const llmVoie = () =>
-  CLE_GRATUITE ? `Google AI Studio (${MODELE_GRATUIT}, gratuit)`
+  CLE_GRATUITE ? `Google AI Studio (${modeleRetenu}, gratuit)`
     : CLE_SECOURS ? `DeepSeek (${MODELE_SECOURS}, payant)`
       : "aucune";
 
@@ -67,9 +92,12 @@ class ErreurLLM extends Error {
   }
 }
 
-async function appelGoogle(systeme: string, utilisateur: string, maxJetons: number): Promise<string> {
+/**
+ * Un appel, sur un modèle donné. La cascade est gérée par l'appelant.
+ */
+async function appelGoogleSur(modele: string, systeme: string, utilisateur: string, maxJetons: number): Promise<string> {
   await attendreSonTour();
-  const r = await fetch(`${GOOGLE}/${MODELE_GRATUIT}:generateContent?key=${CLE_GRATUITE}`, {
+  const r = await fetch(`${GOOGLE}/${modele}:generateContent?key=${CLE_GRATUITE}`, {
     method: "POST",
     headers: { "Content-Type": "application/json" },
     body: JSON.stringify({
@@ -102,6 +130,34 @@ async function appelGoogle(systeme: string, utilisateur: string, maxJetons: numb
     throw new ErreurLLM(`réponse vide (arrêt : ${raison})`, raison !== "MAX_TOKENS");
   }
   return texte;
+}
+
+/**
+ * Parcourt les modèles jusqu'à ce que l'un réponde.
+ *
+ * On commence par celui qui a servi la dernière fois : une saturation dure des
+ * minutes, et resonder la liste entière à chaque appel gaspillerait le quota.
+ * Seuls les refus réessayables — saturation, indisponibilité — font passer au
+ * suivant ; une clé invalide ou une requête mal formée échouent partout, autant
+ * le dire tout de suite.
+ */
+async function appelGoogle(systeme: string, utilisateur: string, maxJetons: number): Promise<string> {
+  const ordre = [modeleRetenu, ...MODELES_GRATUITS.filter(m => m !== modeleRetenu)];
+  let derniere: Error | null = null;
+  for (const modele of ordre) {
+    try {
+      const texte = await appelGoogleSur(modele, systeme, utilisateur, maxJetons);
+      if (modele !== modeleRetenu) {
+        console.warn(`    ↳ bascule sur ${modele}`);
+        modeleRetenu = modele;
+      }
+      return texte;
+    } catch (e) {
+      derniere = e as Error;
+      if (!(e instanceof ErreurLLM) || !e.reessayable) throw e;
+    }
+  }
+  throw derniere ?? new Error("aucun modèle disponible");
 }
 
 async function appelDeepSeek(systeme: string, utilisateur: string, maxJetons: number): Promise<string> {

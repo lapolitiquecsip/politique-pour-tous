@@ -8,8 +8,9 @@ name: Journal officiel du jour (DILA)
 # d'éditions anciennes qu'elle vient de corriger. Le script écarte ces dernières par
 # une fenêtre de dates ; on passe donc après chacune des deux livraisons.
 #
-# DEEPSEEK_API_KEY sert au résumé quotidien (un seul appel par édition, quelques
-# centimes par mois). Sans ce secret, le sommaire est publié sans résumé.
+# LLM_FREE_API_KEY (clé Google AI Studio, gratuite) rédige l'explication de chaque
+# texte et le résumé du jour. Sans ce secret, le sommaire est publié mais muet,
+# ce qui vide la rubrique de sa valeur pour un abonné Pro.
 # Voir scripts/update-jorf.ts
 
 on:
@@ -53,3 +54,17 @@ jobs:
           LLM_FREE_API_KEY: ${{ secrets.LLM_FREE_API_KEY }}
           DEEPSEEK_API_KEY: ${{ secrets.DEEPSEEK_API_KEY }}
         run: npx --yes tsx scripts/update-jorf.ts --days=${{ github.event.inputs.days || '10' }}
+
+      # Filet. L'ingestion ci-dessus explique les textes du jour au fil de leur
+      # lecture ; un lot qui echoue les laisserait muets pour toujours, et un
+      # abonne Pro paie precisement pour ne pas tomber sur une ligne sans
+      # explication. Cette passe reprend tout ce qui est reste en attente, sans
+      # relire le flux : elle ne coute rien quand il n'y a rien a reprendre.
+      - name: Reprise des explications manquantes
+        if: always()
+        env:
+          NEXT_PUBLIC_SUPABASE_URL: ${{ secrets.NEXT_PUBLIC_SUPABASE_URL }}
+          SUPABASE_SERVICE_ROLE_KEY: ${{ secrets.SUPABASE_SERVICE_ROLE_KEY }}
+          LLM_FREE_API_KEY: ${{ secrets.LLM_FREE_API_KEY }}
+          DEEPSEEK_API_KEY: ${{ secrets.DEEPSEEK_API_KEY }}
+        run: npx --yes tsx scripts/update-jorf.ts --rattraper-explications

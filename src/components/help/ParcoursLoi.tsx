@@ -24,7 +24,7 @@ type Etape = {
 };
 
 const TONS: Record<Etape["ton"], { pastille: string; puce: string; barre: string }> = {
-  gris:    { pastille: "bg-slate-200 text-slate-700",  puce: "bg-slate-100 text-slate-600",   barre: "bg-slate-300" },
+  gris:    { pastille: "bg-slate-200 text-slate-700",  puce: "bg-slate-100 text-muted-foreground",   barre: "bg-slate-300" },
   bleu:    { pastille: "bg-blue-600 text-white",       puce: "bg-blue-50 text-blue-700",      barre: "bg-blue-300" },
   rouge:   { pastille: "bg-rose-600 text-white",       puce: "bg-rose-50 text-rose-700",      barre: "bg-rose-300" },
   violet:  { pastille: "bg-violet-600 text-white",     puce: "bg-violet-50 text-violet-700",  barre: "bg-violet-300" },
@@ -81,7 +81,7 @@ const ETAPES: Etape[] = [
 
 export default function ParcoursLoi() {
   return (
-    <div className="mt-3 rounded-xl border border-slate-100 bg-slate-50/70 p-3 dark:border-slate-800 dark:bg-slate-800/40">
+    <div className="mt-3 rounded-xl border border-border bg-slate-50/70 p-3 dark:border-slate-800 dark:bg-slate-800/40">
       <p className="mb-3 text-[10px] font-black uppercase tracking-widest text-slate-400">
         Le chemin complet d&apos;une loi
       </p>
@@ -102,7 +102,7 @@ export default function ParcoursLoi() {
 
               <div className={`min-w-0 flex-1 ${dernier ? "pb-0" : "pb-4"}`}>
                 <div className="flex flex-wrap items-center gap-x-2 gap-y-1">
-                  <h5 className="text-[13px] font-black leading-tight text-slate-900 dark:text-white">{e.titre}</h5>
+                  <h5 className="text-[13px] font-black leading-tight text-foreground dark:text-white">{e.titre}</h5>
                   {e.conditionnel && (
                     <span className="rounded-full bg-amber-100 px-1.5 py-0.5 text-[8px] font-black uppercase tracking-widest text-amber-700 dark:bg-amber-500/20 dark:text-amber-300">
                       Seulement si besoin
@@ -112,14 +112,14 @@ export default function ParcoursLoi() {
                 <span className={`mt-1 inline-block rounded-full px-2 py-0.5 text-[9px] font-black uppercase tracking-wider dark:bg-white/10 dark:text-slate-200 ${t.puce}`}>
                   {e.qui}
                 </span>
-                <p className="mt-1.5 text-[11.5px] leading-snug text-slate-600 dark:text-slate-300">{e.detail}</p>
+                <p className="mt-1.5 text-[11.5px] leading-snug text-muted-foreground dark:text-slate-300">{e.detail}</p>
               </div>
             </li>
           );
         })}
       </ol>
 
-      <p className="mt-3 border-t border-slate-200 pt-2.5 text-[10.5px] leading-snug text-slate-500 dark:border-slate-700 dark:text-slate-400">
+      <p className="mt-3 border-t border-border pt-2.5 text-[10.5px] leading-snug text-muted-foreground dark:border-slate-700 dark:text-slate-400">
         Les étapes marquées « seulement si besoin » n&apos;ont pas toujours lieu : un texte voté
         dans les mêmes termes par les deux chambres va directement à la promulgation.
       </p>

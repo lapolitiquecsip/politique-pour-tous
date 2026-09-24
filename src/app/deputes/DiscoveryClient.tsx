@@ -38,7 +38,7 @@ export default function DiscoveryClient({ initialDeputies, single }: { initialDe
       {!single && <div className="mb-16">
         <div className="relative mb-8 text-center">
           <h1 className="text-5xl md:text-7xl font-staatliches uppercase tracking-tighter leading-none relative z-10 text-black dark:text-white">
-            <span className="text-slate-900 opacity-[0.08] absolute -top-10 left-1/2 -translate-x-1/2 select-none hidden md:block whitespace-nowrap">
+            <span className="text-foreground opacity-[0.08] absolute -top-10 left-1/2 -translate-x-1/2 select-none hidden md:block whitespace-nowrap">
               RÉPUBLIQUE • ÉLUS
             </span>
             Que votent vos <span className="inline-flex items-center bg-[#3b82f6] px-4 pt-1.5 pb-0.5 md:pt-3 md:pb-1 rounded-xl md:rounded-2xl shadow-sm mx-1"><span className="text-white">élus</span></span> ?
@@ -53,13 +53,13 @@ export default function DiscoveryClient({ initialDeputies, single }: { initialDe
 
         {/* 2. INTEGRATED VISUAL SWITCHER (masqué sur les pages dédiées à une chambre) */}
         {!single && <div className="flex justify-center">
-          <div className="inline-flex p-1.5 bg-slate-50/80 dark:bg-slate-900/80 backdrop-blur-md rounded-[2rem] border border-slate-200 dark:border-slate-800 shadow-xl shadow-slate-200/40 dark:shadow-none">
+          <div className="inline-flex p-1.5 bg-slate-50/80 dark:bg-slate-900/80 backdrop-blur-md rounded-[2rem] border border-border dark:border-slate-800 shadow-xl shadow-slate-200/40 dark:shadow-none">
             <button
               onClick={() => setActiveMode("deputies")}
               className={`flex items-center gap-3 px-10 py-4 rounded-[1.5rem] font-black tracking-tight transition-all duration-300 active:scale-95 ${
                 activeMode === "deputies"
-                  ? "bg-white dark:bg-slate-800 text-blue-600 shadow-2xl shadow-blue-500/10 ring-1 ring-slate-200 dark:ring-slate-700"
-                  : "text-slate-400 hover:text-slate-600 dark:hover:text-slate-300"
+                  ? "bg-card dark:bg-slate-800 text-blue-600 shadow-2xl shadow-blue-500/10 ring-1 ring-slate-200 dark:ring-slate-700"
+                  : "text-slate-400 hover:text-muted-foreground dark:hover:text-slate-300"
               }`}
             >
               <div className={`w-2.5 h-2.5 rounded-full transition-colors ${activeMode === "deputies" ? "bg-blue-600 shadow-[0_0_8px_rgba(37,99,235,0.6)] animate-pulse" : "bg-slate-300"}`} />
@@ -69,8 +69,8 @@ export default function DiscoveryClient({ initialDeputies, single }: { initialDe
               onClick={() => setActiveMode("senators")}
               className={`flex items-center gap-3 px-10 py-4 rounded-[1.5rem] font-black tracking-tight transition-all duration-300 active:scale-95 ${
                 activeMode === "senators"
-                  ? "bg-white dark:bg-slate-800 text-amber-600 shadow-2xl shadow-amber-500/10 ring-1 ring-slate-200 dark:ring-slate-700"
-                  : "text-slate-400 hover:text-slate-600 dark:hover:text-slate-300"
+                  ? "bg-card dark:bg-slate-800 text-amber-600 shadow-2xl shadow-amber-500/10 ring-1 ring-slate-200 dark:ring-slate-700"
+                  : "text-slate-400 hover:text-muted-foreground dark:hover:text-slate-300"
               }`}
             >
               <div className={`w-2.5 h-2.5 rounded-full transition-colors ${activeMode === "senators" ? "bg-amber-600 shadow-[0_0_8px_rgba(217,119,6,0.6)] animate-pulse" : "bg-slate-300"}`} />
@@ -80,8 +80,8 @@ export default function DiscoveryClient({ initialDeputies, single }: { initialDe
               onClick={() => setActiveMode("meps")}
               className={`flex items-center gap-3 px-10 py-4 rounded-[1.5rem] font-black tracking-tight transition-all duration-300 active:scale-95 ${
                 activeMode === "meps"
-                  ? "bg-white dark:bg-slate-800 text-sky-600 shadow-2xl shadow-sky-500/10 ring-1 ring-slate-200 dark:ring-slate-700"
-                  : "text-slate-400 hover:text-slate-600 dark:hover:text-slate-300"
+                  ? "bg-card dark:bg-slate-800 text-sky-600 shadow-2xl shadow-sky-500/10 ring-1 ring-slate-200 dark:ring-slate-700"
+                  : "text-slate-400 hover:text-muted-foreground dark:hover:text-slate-300"
               }`}
             >
               <div className={`w-2.5 h-2.5 rounded-full transition-colors ${activeMode === "meps" ? "bg-sky-600 shadow-[0_0_8px_rgba(2,132,199,0.6)] animate-pulse" : "bg-slate-300"}`} />

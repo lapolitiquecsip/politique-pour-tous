@@ -42,11 +42,11 @@ function PetitionCard({ petition, idx }: { petition: Petition, idx: number }) {
       initial={{ opacity: 0, y: 20 }}
       whileInView={{ opacity: 1, y: 0 }}
       transition={{ delay: idx * 0.1 }}
-      className="group bg-white dark:bg-slate-900 rounded-3xl sm:rounded-[2.5rem] border border-slate-200 dark:border-slate-800 overflow-hidden hover:shadow-2xl transition-all duration-500 hover:-translate-y-2 flex flex-col h-full"
+      className="group bg-card dark:bg-slate-900 rounded-3xl sm:rounded-[2.5rem] border border-border dark:border-slate-800 overflow-hidden hover:shadow-2xl transition-all duration-500 hover:-translate-y-2 flex flex-col h-full"
     >
       <div className="p-5 sm:p-8 flex flex-col h-full">
         <div className="flex justify-between items-start mb-3 sm:mb-6">
-          <span className="px-3 py-1 bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-400 text-[10px] font-black uppercase tracking-widest rounded-full">
+          <span className="px-3 py-1 bg-slate-100 dark:bg-slate-800 text-muted-foreground dark:text-slate-400 text-[10px] font-black uppercase tracking-widest rounded-full">
             {petition.category}
           </span>
           <FileSignature className="text-blue-500 opacity-20 group-hover:opacity-100 transition-opacity" size={24} />
@@ -56,7 +56,7 @@ function PetitionCard({ petition, idx }: { petition: Petition, idx: number }) {
           {petition.title}
         </h3>
 
-        <div className="text-slate-500 dark:text-slate-400 text-sm mb-4 sm:mb-8 flex-1 font-medium leading-relaxed line-clamp-2 sm:line-clamp-4 whitespace-pre-line">
+        <div className="text-muted-foreground dark:text-slate-400 text-sm mb-4 sm:mb-8 flex-1 font-medium leading-relaxed line-clamp-2 sm:line-clamp-4 whitespace-pre-line">
           {petition.description}
         </div>
 
@@ -125,7 +125,7 @@ export default function PetitionsSection() {
   }, []);
 
   return (
-    <section className="py-14 sm:py-24 px-4 bg-slate-50 dark:bg-slate-950/20 relative overflow-hidden">
+    <section className="py-14 sm:py-24 px-4 bg-muted dark:bg-slate-950/20 relative overflow-hidden">
       {/* Fond décoratif */}
       <div className="absolute top-0 left-0 w-full h-full opacity-[0.03] pointer-events-none select-none overflow-hidden">
         <span className="absolute -top-10 -left-10 text-[20rem] font-staatliches leading-none rotate-12">PÉTITIONS</span>
@@ -145,7 +145,7 @@ export default function PetitionsSection() {
             <h2 className="text-5xl md:text-7xl font-staatliches uppercase tracking-tighter leading-none mb-6">
               Le pouvoir <span className="bg-gradient-to-r from-blue-600 to-indigo-600 bg-clip-text text-transparent">citoyen</span>
             </h2>
-            <p className="text-lg text-slate-600 dark:text-slate-400 font-medium leading-relaxed italic">
+            <p className="text-lg text-muted-foreground dark:text-slate-400 font-medium leading-relaxed italic">
               L&apos;Assemblée Nationale permet aux citoyens de proposer des lois. Voici les pétitions qui mobilisent la France aujourd&apos;hui.
             </p>
           </div>
@@ -154,7 +154,7 @@ export default function PetitionsSection() {
           <motion.div 
             initial={{ opacity: 0, x: 20 }}
             whileInView={{ opacity: 1, x: 0 }}
-            className="bg-white dark:bg-slate-900 p-6 rounded-[2rem] border border-blue-100 dark:border-slate-800 shadow-xl shadow-blue-500/5 dark:shadow-none max-w-sm"
+            className="bg-card dark:bg-slate-900 p-6 rounded-[2rem] border border-blue-100 dark:border-slate-800 shadow-xl shadow-blue-500/5 dark:shadow-none max-w-sm"
           >
             <div className="flex items-center gap-3 mb-4 text-blue-600 dark:text-blue-400">
               <Info size={20} />
@@ -165,16 +165,16 @@ export default function PetitionsSection() {
                 <div className="w-5 h-5 rounded-full bg-blue-100 dark:bg-blue-950/50 flex items-center justify-center shrink-0 mt-0.5">
                   <CheckCircle2 size={12} className="text-blue-600 dark:text-blue-400" />
                 </div>
-                <p className="text-xs text-slate-600 dark:text-slate-400 leading-relaxed font-semibold">
-                  <span className="text-slate-900 dark:text-slate-100 font-black">100 000 signatures :</span> La pétition est examinée par une commission de l&apos;Assemblée.
+                <p className="text-xs text-muted-foreground dark:text-slate-400 leading-relaxed font-semibold">
+                  <span className="text-foreground dark:text-slate-100 font-black">100 000 signatures :</span> La pétition est examinée par une commission de l&apos;Assemblée.
                 </p>
               </li>
               <li className="flex gap-3 items-start">
                 <div className="w-5 h-5 rounded-full bg-indigo-100 dark:bg-indigo-950/50 flex items-center justify-center shrink-0 mt-0.5">
                   <AlertCircle size={12} className="text-indigo-600 dark:text-indigo-400" />
                 </div>
-                <p className="text-xs text-slate-600 dark:text-slate-400 leading-relaxed font-semibold">
-                  <span className="text-slate-900 dark:text-slate-100 font-black">500 000 signatures :</span> Elle peut faire l&apos;objet d&apos;un débat obligatoire au Parlement.
+                <p className="text-xs text-muted-foreground dark:text-slate-400 leading-relaxed font-semibold">
+                  <span className="text-foreground dark:text-slate-100 font-black">500 000 signatures :</span> Elle peut faire l&apos;objet d&apos;un débat obligatoire au Parlement.
                 </p>
               </li>
             </ul>
@@ -233,7 +233,7 @@ export default function PetitionsSection() {
             href="https://petitions.assemblee-nationale.fr/initiatives"
             target="_blank"
             rel="noopener noreferrer"
-            className="inline-flex items-center gap-2 text-slate-900 dark:text-slate-100 font-extrabold hover:text-blue-600 dark:hover:text-blue-400 transition-colors"
+            className="inline-flex items-center gap-2 text-foreground dark:text-slate-100 font-extrabold hover:text-blue-600 dark:hover:text-blue-400 transition-colors"
           >
             Découvrir toutes les pétitions en cours
             <ArrowUpRight size={18} />

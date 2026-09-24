@@ -71,12 +71,12 @@ export default function IncomeChart({ data, totalLabel = "Revenu Mensuel", unit 
             const formattedTotal = new Intl.NumberFormat('fr-FR', { style: 'currency', currency: 'EUR', maximumFractionDigits: 0 }).format(total);
             const fontSize = formattedTotal.length > 10 ? 'text-sm' : formattedTotal.length > 8 ? 'text-base' : 'text-lg';
             return (
-              <span className={`${fontSize} font-bold text-slate-900 dark:text-white leading-none text-center`}>
+              <span className={`${fontSize} font-bold text-foreground dark:text-white leading-none text-center`}>
                 {formattedTotal}
               </span>
             );
           })()}
-          <span className="text-[10px] font-bold text-slate-500 mt-1 italic">{unit}</span>
+          <span className="text-[10px] font-bold text-muted-foreground mt-1 italic">{unit}</span>
         </div>
       </div>
 
@@ -84,14 +84,14 @@ export default function IncomeChart({ data, totalLabel = "Revenu Mensuel", unit 
         {data.map((item, i) => (
           <div 
             key={i}
-            className="flex items-center justify-between p-3 rounded-2xl bg-slate-50 dark:bg-slate-800/40 border border-slate-100 dark:border-slate-800"
+            className="flex items-center justify-between p-3 rounded-2xl bg-muted dark:bg-slate-800/40 border border-border dark:border-slate-800"
           >
             <div className="flex items-center gap-3">
               <div className="w-3 h-3 rounded-full" style={{ backgroundColor: item.color }} />
               <span className="text-sm font-bold text-slate-700 dark:text-slate-300">{item.label}</span>
             </div>
             <div className="text-right">
-              <span className="text-sm font-black text-slate-900 dark:text-white">
+              <span className="text-sm font-black text-foreground dark:text-white">
                 {new Intl.NumberFormat('fr-FR', { style: 'currency', currency: 'EUR', maximumFractionDigits: 0 }).format(item.value)}
               </span>
               <span className="text-[10px] text-slate-400 block font-bold">

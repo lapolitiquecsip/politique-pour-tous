@@ -18,8 +18,8 @@ const STATUS: Record<string, { label: string; chip: string; dot: string; bar: st
   en_cours:      { label: "En cours",      chip: "bg-blue-50 text-blue-700 border-blue-200",          dot: "bg-blue-500",    bar: "bg-blue-500" },
   partiel:       { label: "Partiel",       chip: "bg-amber-50 text-amber-700 border-amber-200",       dot: "bg-amber-500",   bar: "bg-amber-500" },
   abandonne:     { label: "Abandonné",     chip: "bg-rose-50 text-rose-700 border-rose-200",          dot: "bg-rose-500",    bar: "bg-rose-500" },
-  non_evaluable: { label: "Faites-vous votre propre avis", chip: "bg-slate-100 text-slate-500 border-slate-200",      dot: "bg-slate-400",   bar: "bg-slate-300" },
-  non_verifie:   { label: "Faites-vous votre propre avis", chip: "bg-slate-100 text-slate-500 border-slate-200",      dot: "bg-slate-300",   bar: "bg-slate-200" },
+  non_evaluable: { label: "Faites-vous votre propre avis", chip: "bg-slate-100 text-muted-foreground border-border",      dot: "bg-slate-400",   bar: "bg-slate-300" },
+  non_verifie:   { label: "Faites-vous votre propre avis", chip: "bg-slate-100 text-muted-foreground border-border",      dot: "bg-slate-300",   bar: "bg-slate-200" },
 };
 const ORDER = ["tenu", "en_cours", "partiel", "abandonne", "non_evaluable", "non_verifie"];
 
@@ -30,13 +30,13 @@ const CONF: Record<string, { label: string; cls: string }> = {
   forte:   { label: "Confiance élevée",  cls: "bg-emerald-50 text-emerald-700 border-emerald-200" },
   elevee:  { label: "Confiance élevée",  cls: "bg-emerald-50 text-emerald-700 border-emerald-200" },
 };
-const confStyle = (c?: string | null) => CONF[(c || "").normalize("NFD").replace(/[̀-ͯ]/g, "").toLowerCase()] || { label: `Confiance ${c}`, cls: "bg-slate-50 text-slate-500 border-slate-200" };
+const confStyle = (c?: string | null) => CONF[(c || "").normalize("NFD").replace(/[̀-ͯ]/g, "").toLowerCase()] || { label: `Confiance ${c}`, cls: "bg-muted text-muted-foreground border-border" };
 
 // Type de preuve → pastille colorée + icône, pour repérer la nature de la source d'un coup d'œil.
 const EVT: Record<string, { label: string; cls: string; Icon: any }> = {
   scrutin: { label: "Vote AN",  cls: "bg-indigo-50 text-indigo-600", Icon: Landmark },
   web:     { label: "Web",      cls: "bg-sky-50 text-sky-600",       Icon: Globe },
-  dossier: { label: "Dossier",  cls: "bg-slate-100 text-slate-500",  Icon: FileText },
+  dossier: { label: "Dossier",  cls: "bg-slate-100 text-muted-foreground",  Icon: FileText },
 };
 const evStyle = (t: string) => EVT[t] || EVT.dossier;
 
@@ -84,13 +84,13 @@ export default function ProgramSection() {
   const total = items.length;
 
   return (
-    <section className="bg-white p-8 md:p-10 rounded-[3rem] border border-slate-200 space-y-5">
+    <section className="bg-card p-8 md:p-10 rounded-[3rem] border border-border space-y-5">
       <div>
         <p className="text-amber-600 font-black text-xs uppercase tracking-widest mb-2">Élection 2022</p>
-        <h2 className="text-3xl md:text-4xl font-staatliches uppercase tracking-tight text-slate-900">
+        <h2 className="text-3xl md:text-4xl font-staatliches uppercase tracking-tight text-foreground">
           Le <span className="text-transparent bg-clip-text bg-gradient-to-r from-amber-500 via-orange-500 to-yellow-500">programme</span> et son avancement
         </h2>
-        <p className="mt-2 text-sm text-slate-500">
+        <p className="mt-2 text-sm text-muted-foreground">
           {total} engagements du programme officiel « Avec Vous ».
         </p>
       </div>
@@ -104,9 +104,9 @@ export default function ProgramSection() {
         </div>
         <div className="flex flex-wrap gap-x-4 gap-y-1">
           {ORDER.filter(s => counts[s]).map(s => (
-            <span key={s} className="flex items-center gap-1.5 text-[10px] font-bold text-slate-500">
+            <span key={s} className="flex items-center gap-1.5 text-[10px] font-bold text-muted-foreground">
               <span className={`h-2 w-2 rounded-full ${STATUS[s].dot}`} />
-              {STATUS[s].label} <span className="text-slate-900 font-black">{counts[s]}</span>
+              {STATUS[s].label} <span className="text-foreground font-black">{counts[s]}</span>
             </span>
           ))}
         </div>
@@ -129,7 +129,7 @@ export default function ProgramSection() {
         <div className="flex flex-wrap gap-2 flex-1">
           <button
             onClick={() => setFilter(null)}
-            className={`rounded-xl border px-3 py-2 text-[10px] font-black uppercase tracking-widest transition ${filter === null ? "bg-slate-900 text-white border-slate-900" : "bg-white text-slate-500 border-slate-200 hover:border-slate-300"}`}
+            className={`rounded-xl border px-3 py-2 text-[10px] font-black uppercase tracking-widest transition ${filter === null ? "bg-slate-900 text-white border-slate-900" : "bg-card text-muted-foreground border-border hover:border-slate-300"}`}
           >
             Tous ({total})
           </button>
@@ -137,7 +137,7 @@ export default function ProgramSection() {
             <button
               key={s}
               onClick={() => { setFilter(filter === s ? null : s); setOpen(null); }}
-              className={`rounded-xl border px-3 py-2 text-[10px] font-black uppercase tracking-widest transition ${filter === s ? STATUS[s].chip + " ring-2 ring-offset-1 ring-slate-300" : "bg-white text-slate-500 border-slate-200 hover:border-slate-300"}`}
+              className={`rounded-xl border px-3 py-2 text-[10px] font-black uppercase tracking-widest transition ${filter === s ? STATUS[s].chip + " ring-2 ring-offset-1 ring-slate-300" : "bg-card text-muted-foreground border-border hover:border-slate-300"}`}
             >
               {STATUS[s].label} ({counts[s]})
             </button>
@@ -150,7 +150,7 @@ export default function ProgramSection() {
             placeholder="Rechercher…"
             value={query}
             onChange={e => setQuery(e.target.value)}
-            className="w-full rounded-xl border border-slate-200 bg-white py-2 pl-9 pr-3 text-xs text-slate-900 outline-none transition focus:border-amber-300"
+            className="w-full rounded-xl border border-border bg-card py-2 pl-9 pr-3 text-xs text-foreground outline-none transition focus:border-amber-300"
           />
         </div>
       </div>
@@ -167,15 +167,15 @@ export default function ProgramSection() {
             const isOpen = open === i.id;
             const evs = i.evidence ?? [];
             return (
-              <div key={i.id} className="rounded-2xl border border-slate-100 bg-slate-50/60 overflow-hidden">
+              <div key={i.id} className="rounded-2xl border border-border bg-slate-50/60 overflow-hidden">
                 <button
                   onClick={() => setOpen(isOpen ? null : i.id)}
-                  className="w-full flex items-start gap-3 p-3.5 text-left transition hover:bg-slate-50"
+                  className="w-full flex items-start gap-3 p-3.5 text-left transition hover:bg-muted"
                 >
                   <span className={`mt-1.5 h-2 w-2 shrink-0 rounded-full ${st.dot}`} />
                   <span className="min-w-0 flex-1">
                     {i.theme && <span className="block text-[9px] font-black uppercase tracking-widest text-slate-400 truncate">{i.theme}</span>}
-                    <span className="mt-0.5 block text-sm font-bold leading-snug text-slate-900">{i.engagement}</span>
+                    <span className="mt-0.5 block text-sm font-bold leading-snug text-foreground">{i.engagement}</span>
                   </span>
                   <span className="flex shrink-0 items-center gap-2">
                     {(i.evidence_count ?? 0) > 0 && (
@@ -191,7 +191,7 @@ export default function ProgramSection() {
                 </button>
 
                 {isOpen && (
-                  <div className="border-t border-slate-100 bg-white">
+                  <div className="border-t border-border bg-card">
                     {/* Bandeau de statut coloré + niveau de confiance, repère immédiat. */}
                     <div className={`flex items-center gap-2 border-b px-4 py-2.5 text-[10px] font-black uppercase tracking-widest ${st.chip}`}>
                       <span className={`h-2.5 w-2.5 rounded-full ${st.dot}`} />
@@ -206,10 +206,10 @@ export default function ProgramSection() {
                     <div className="space-y-3 px-4 py-4">
                       {/* Ce qui est établi */}
                       {i.certitudes && (
-                        <div className="flex gap-2.5 rounded-xl border border-slate-200 bg-slate-50 p-3">
-                          <CheckCircle2 size={16} className="mt-0.5 shrink-0 text-slate-500" />
+                        <div className="flex gap-2.5 rounded-xl border border-border bg-muted p-3">
+                          <CheckCircle2 size={16} className="mt-0.5 shrink-0 text-muted-foreground" />
                           <div>
-                            <p className="text-[10px] font-black uppercase tracking-widest text-slate-500">Ce qui est établi</p>
+                            <p className="text-[10px] font-black uppercase tracking-widest text-muted-foreground">Ce qui est établi</p>
                             <p className="mt-0.5 text-xs leading-relaxed text-slate-700">{i.certitudes}</p>
                           </div>
                         </div>
@@ -237,7 +237,7 @@ export default function ProgramSection() {
                       {i.justification && (
                         <div className="rounded-xl border border-amber-200 bg-gradient-to-br from-amber-50 to-white p-3">
                           <p className="flex items-center gap-1.5 text-[10px] font-black uppercase tracking-widest text-amber-600"><Sparkles size={12} /> Synthèse</p>
-                          <p className="mt-1 text-xs leading-relaxed text-slate-600">{i.justification}</p>
+                          <p className="mt-1 text-xs leading-relaxed text-muted-foreground">{i.justification}</p>
                         </div>
                       )}
 
@@ -249,7 +249,7 @@ export default function ProgramSection() {
                             {evs.map((e, k) => {
                               const t = evStyle(e.type);
                               return (
-                                <li key={k} className="flex items-start gap-2 rounded-lg border border-slate-100 bg-slate-50/70 px-2.5 py-2">
+                                <li key={k} className="flex items-start gap-2 rounded-lg border border-border bg-slate-50/70 px-2.5 py-2">
                                   <span className={`mt-0.5 flex shrink-0 items-center gap-1 rounded px-1.5 py-0.5 text-[8px] font-black uppercase tracking-widest ${t.cls}`}>
                                     <t.Icon size={9} /> {t.label}
                                   </span>
@@ -268,7 +268,7 @@ export default function ProgramSection() {
 
                       <a
                         href={i.source_url} target="_blank" rel="noopener noreferrer"
-                        className="inline-flex items-center gap-1.5 text-[10px] font-black uppercase tracking-widest text-slate-500 transition-colors hover:text-amber-600"
+                        className="inline-flex items-center gap-1.5 text-[10px] font-black uppercase tracking-widest text-muted-foreground transition-colors hover:text-amber-600"
                       >
                         Programme officiel 2022 <ExternalLink size={12} />
                       </a>
@@ -283,7 +283,7 @@ export default function ProgramSection() {
         <div className="pointer-events-none absolute bottom-0 left-0 right-2 h-8 bg-gradient-to-t from-white to-transparent rounded-b-2xl" />
       </div>
 
-      <p className="text-[10px] text-slate-400/80 italic border-t border-slate-100 pt-4 flex items-start gap-1.5">
+      <p className="text-[10px] text-slate-400/80 italic border-t border-border pt-4 flex items-start gap-1.5">
         <ClipboardList size={12} className="mt-0.5 shrink-0" />
         <span>
           Engagements : programme officiel « Emmanuel Macron — Avec Vous » (2022)

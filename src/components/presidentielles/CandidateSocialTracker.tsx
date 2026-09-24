@@ -61,18 +61,18 @@ function AccountRow({ m, period, isPro }: { m: Metrics; period: Period; isPro: b
   const delta = period === 7 ? m.followersDelta7 : m.followersDelta30;
 
   return (
-    <div className="flex flex-wrap items-center gap-x-4 gap-y-2 border-t border-slate-100 py-3 dark:border-slate-800">
+    <div className="flex flex-wrap items-center gap-x-4 gap-y-2 border-t border-border py-3 dark:border-slate-800">
       <span className="flex items-center gap-2 min-w-[150px]">
         <span className="h-2.5 w-2.5 shrink-0 rounded-full" style={{ backgroundColor: meta.color }} />
-        <span className="text-[13px] font-bold text-slate-900 dark:text-white">{meta.label}</span>
-        <span className={`rounded-full px-1.5 py-0.5 text-[9px] font-black uppercase tracking-wider ${m.account.kind === "official" ? "bg-slate-100 text-slate-600 dark:bg-slate-800 dark:text-slate-300" : "bg-amber-100 text-amber-700 dark:bg-amber-500/20 dark:text-amber-300"}`}>
+        <span className="text-[13px] font-bold text-foreground dark:text-white">{meta.label}</span>
+        <span className={`rounded-full px-1.5 py-0.5 text-[9px] font-black uppercase tracking-wider ${m.account.kind === "official" ? "bg-slate-100 text-muted-foreground dark:bg-slate-800 dark:text-slate-300" : "bg-amber-100 text-amber-700 dark:bg-amber-500/20 dark:text-amber-300"}`}>
           {m.account.kind === "official" ? "Officiel" : "Soutien"}
         </span>
       </span>
 
       <span className="min-w-0 flex-1 truncate text-[12px] text-slate-400">
         {m.account.url
-          ? <a href={m.account.url} target="_blank" rel="noopener noreferrer" className="inline-flex items-center gap-1 hover:text-slate-600 hover:underline">{m.account.handle} <ExternalLink size={10} /></a>
+          ? <a href={m.account.url} target="_blank" rel="noopener noreferrer" className="inline-flex items-center gap-1 hover:text-muted-foreground hover:underline">{m.account.handle} <ExternalLink size={10} /></a>
           : m.account.handle}
         {m.account.label && <span className="ml-2 italic">{m.account.label}</span>}
       </span>
@@ -211,20 +211,20 @@ export default function CandidateSocialTracker({ candidates }: { candidates: Can
         </span>
         <div className="min-w-0 flex-1">
           <div className="flex flex-wrap items-center gap-2">
-            <h2 className="font-staatliches text-3xl uppercase tracking-tight text-slate-900">
+            <h2 className="font-staatliches text-3xl uppercase tracking-tight text-foreground">
               Dynamiques <span className="text-fuchsia-600">réseaux sociaux</span>
             </h2>
             <span className="rounded-full bg-gradient-to-r from-fuchsia-500 to-purple-600 px-2.5 py-1 text-[9px] font-black uppercase tracking-widest text-white shadow">Pro</span>
           </div>
-          <p className="mt-0.5 text-sm text-slate-500">
+          <p className="mt-0.5 text-sm text-muted-foreground">
             Compte personnel et principal compte de soutien de chaque candidat : audience, publications de la
-            semaine et vues gagnées. <strong className="font-bold text-slate-600">Mesuré sur YouTube, TikTok et Bluesky</strong> —
+            semaine et vues gagnées. <strong className="font-bold text-muted-foreground">Mesuré sur YouTube, TikTok et Bluesky</strong> —
             X et Instagram ne publient aucune donnée exploitable sans contrat payant.
           </p>
         </div>
         {isPro && rows.length > 0 && (
           <button onClick={exportCsv}
-            className="inline-flex shrink-0 items-center gap-1.5 rounded-xl border border-slate-200 px-3.5 py-2 text-[10px] font-black uppercase tracking-widest text-slate-600 transition hover:border-slate-400">
+            className="inline-flex shrink-0 items-center gap-1.5 rounded-xl border border-border px-3.5 py-2 text-[10px] font-black uppercase tracking-widest text-muted-foreground transition hover:border-slate-400">
             <Download size={13} /> Export CSV
           </button>
         )}
@@ -232,18 +232,18 @@ export default function CandidateSocialTracker({ candidates }: { candidates: Can
 
       {/* Réglages */}
       <div className="mb-5 flex flex-wrap items-center gap-3">
-        <div className="inline-flex rounded-full border border-slate-200 bg-white p-1">
+        <div className="inline-flex rounded-full border border-border bg-card p-1">
           {([[7, "7 jours"], [30, "30 jours"]] as const).map(([v, label]) => (
             <button key={v} onClick={() => setPeriod(v)}
-              className={`rounded-full px-4 py-1.5 text-[11px] font-black uppercase tracking-widest transition ${period === v ? "bg-slate-900 text-white" : "text-slate-500 hover:text-slate-900"}`}>
+              className={`rounded-full px-4 py-1.5 text-[11px] font-black uppercase tracking-widest transition ${period === v ? "bg-slate-900 text-white" : "text-muted-foreground hover:text-foreground"}`}>
               {label}
             </button>
           ))}
         </div>
-        <div className="inline-flex rounded-full border border-slate-200 bg-white p-1">
+        <div className="inline-flex rounded-full border border-border bg-card p-1">
           {([["official", "Comptes personnels"], ["support", "Comptes de soutien"], ["all", "Les deux"]] as const).map(([v, label]) => (
             <button key={v} onClick={() => setScope(v)}
-              className={`rounded-full px-4 py-1.5 text-[11px] font-black uppercase tracking-widest transition ${scope === v ? "bg-slate-900 text-white" : "text-slate-500 hover:text-slate-900"}`}>
+              className={`rounded-full px-4 py-1.5 text-[11px] font-black uppercase tracking-widest transition ${scope === v ? "bg-slate-900 text-white" : "text-muted-foreground hover:text-foreground"}`}>
               {label}
             </button>
           ))}
@@ -257,8 +257,8 @@ export default function CandidateSocialTracker({ candidates }: { candidates: Can
             <Lock size={18} />
           </span>
           <div className="min-w-0 flex-1">
-            <p className="text-sm font-black text-slate-900">Les chiffres sont réservés à l&apos;abonnement Pro</p>
-            <p className="text-[13px] text-slate-600">
+            <p className="text-sm font-black text-foreground">Les chiffres sont réservés à l&apos;abonnement Pro</p>
+            <p className="text-[13px] text-muted-foreground">
               Vous voyez quels comptes sont suivis. Audience, vues par semaine et tendances : côté Pro.
             </p>
           </div>
@@ -273,9 +273,9 @@ export default function CandidateSocialTracker({ candidates }: { candidates: Can
       {accounts === null ? (
         <div className="flex justify-center py-16"><Loader2 className="animate-spin text-fuchsia-500" /></div>
       ) : rows.length === 0 ? (
-        <div className="rounded-3xl border border-dashed border-slate-200 py-14 text-center">
+        <div className="rounded-3xl border border-dashed border-border py-14 text-center">
           <Radio size={28} className="mx-auto mb-3 text-slate-300" />
-          <p className="text-sm font-bold text-slate-500">Aucun compte suivi pour l&apos;instant.</p>
+          <p className="text-sm font-bold text-muted-foreground">Aucun compte suivi pour l&apos;instant.</p>
           <p className="mx-auto mt-1 max-w-lg text-[13px] text-slate-400">
             Les comptes des candidats sont renseignés puis relevés chaque nuit. Les tendances apparaissent
             dès qu&apos;au moins deux relevés existent.
@@ -286,7 +286,7 @@ export default function CandidateSocialTracker({ candidates }: { candidates: Can
           {rows.map((r, rank) => {
             const open = openId === r.candidate.id;
             return (
-              <div key={r.candidate.id} className="overflow-hidden rounded-3xl border border-slate-200 bg-white transition-all hover:border-fuchsia-300 hover:shadow-lg">
+              <div key={r.candidate.id} className="overflow-hidden rounded-3xl border border-border bg-card transition-all hover:border-fuchsia-300 hover:shadow-lg">
                 <button onClick={() => setOpenId(open ? null : r.candidate.id)} aria-expanded={open}
                   className="flex w-full flex-wrap items-center gap-x-4 gap-y-3 p-4 text-left sm:flex-nowrap">
                   <span className="w-6 shrink-0 text-center font-staatliches text-xl text-slate-300">{rank + 1}</span>
@@ -296,7 +296,7 @@ export default function CandidateSocialTracker({ candidates }: { candidates: Can
                     : <span className="flex h-11 w-11 shrink-0 items-center justify-center rounded-full bg-slate-100 text-sm font-black text-slate-400">{r.candidate.full_name.charAt(0)}</span>}
 
                   <span className="min-w-0 flex-1">
-                    <span className="block truncate text-sm font-black text-slate-900">{r.candidate.full_name}</span>
+                    <span className="block truncate text-sm font-black text-foreground">{r.candidate.full_name}</span>
                     <span className="block truncate text-[11px] text-slate-400">
                       {r.candidate.party} · {r.metrics.length} compte{r.metrics.length > 1 ? "s" : ""} suivi{r.metrics.length > 1 ? "s" : ""}
                       {" · "}
@@ -308,14 +308,14 @@ export default function CandidateSocialTracker({ candidates }: { candidates: Can
 
                   <span className="w-[96px] shrink-0 text-right">
                     <span className="block text-[9px] font-black uppercase tracking-wider text-slate-400">Audience</span>
-                    <span className="flex items-center justify-end gap-1 text-sm font-black tabular-nums text-slate-900">
+                    <span className="flex items-center justify-end gap-1 text-sm font-black tabular-nums text-foreground">
                       <Users2 size={12} className="text-slate-300" /><Masked isPro={isPro}>{compact(r.followers)}</Masked>
                     </span>
                   </span>
 
                   <span className="hidden w-[72px] shrink-0 text-right sm:block">
                     <span className="block text-[9px] font-black uppercase tracking-wider text-slate-400">Posts 7 j</span>
-                    <span className="flex items-center justify-end gap-1 text-sm font-black tabular-nums text-slate-900">
+                    <span className="flex items-center justify-end gap-1 text-sm font-black tabular-nums text-foreground">
                       <Clapperboard size={12} className="text-slate-300" /><Masked isPro={isPro}>{r.posts7 == null ? "—" : String(r.posts7)}</Masked>
                     </span>
                   </span>

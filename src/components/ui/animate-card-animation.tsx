@@ -128,7 +128,7 @@ function CardContent({ data }: { data: CardData }) {
               </div>
 
               {/* Réalité Box */}
-              <div className={`bg-white text-slate-900 rounded-xl p-3 text-left w-full max-w-sm shadow-xl border-l-4 ${
+              <div className={`bg-card text-foreground rounded-xl p-3 text-left w-full max-w-sm shadow-xl border-l-4 ${
                 isFaux 
                   ? 'border-rose-500' 
                   : isVrai 
@@ -223,7 +223,7 @@ function AnimatedCard({
         x: "-50%",
         bottom: 24,
       }}
-      className="absolute flex h-[360px] w-[324px] items-center justify-center overflow-hidden rounded-[2rem] border border-slate-200 bg-white p-1.5 shadow-2xl will-change-transform sm:w-[512px]"
+      className="absolute flex h-[360px] w-[324px] items-center justify-center overflow-hidden rounded-[2rem] border border-border bg-card p-1.5 shadow-2xl will-change-transform sm:w-[512px]"
     >
       <CardContent data={card} />
     </motion.div>
@@ -282,7 +282,7 @@ export default function AnimatedCardStack({ items = [] }: { items: CardData[] })
       <div className="relative z-10 flex w-full items-center justify-center pt-2">
         <button
           onClick={handleAnimate}
-          className="flex h-12 cursor-pointer select-none items-center justify-center gap-1 overflow-hidden rounded-xl border-2 border-slate-900 bg-white px-8 font-black text-slate-900 transition-all hover:bg-slate-900 hover:text-white active:scale-[0.98] shadow-[0_8px_0_rgba(15,23,42,1)] hover:translate-y-1 hover:shadow-[0_4px_0_rgba(15,23,42,1)] active:translate-y-2 active:shadow-none uppercase tracking-widest text-xs"
+          className="flex h-12 cursor-pointer select-none items-center justify-center gap-1 overflow-hidden rounded-xl border-2 border-slate-900 bg-card px-8 font-black text-foreground transition-all hover:bg-slate-900 hover:text-white active:scale-[0.98] shadow-[0_8px_0_rgba(15,23,42,1)] hover:translate-y-1 hover:shadow-[0_4px_0_rgba(15,23,42,1)] active:translate-y-2 active:shadow-none uppercase tracking-widest text-xs"
         >
           Voir le suivant
         </button>

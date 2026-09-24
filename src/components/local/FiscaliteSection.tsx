@@ -47,15 +47,15 @@ export default function FiscaliteSection({ fiscalite }: { fiscalite: CommuneFisc
   return (
     <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.45 }} className="space-y-4">
       <div className="flex items-center gap-2">
-        <Coins size={16} className="text-slate-900" />
-        <h4 className="text-sm font-black uppercase tracking-widest text-slate-900">
+        <Coins size={16} className="text-foreground" />
+        <h4 className="text-sm font-black uppercase tracking-widest text-foreground">
           Fiscalité locale {fiscalite.year}
         </h4>
       </div>
 
       <div className="space-y-3">
         {rows.map((r, i) => (
-          <div key={i} className="p-4 rounded-3xl bg-white border border-slate-200 shadow-sm" title={r.hint}>
+          <div key={i} className="p-4 rounded-3xl bg-card border border-border shadow-sm" title={r.hint}>
             <div className="flex items-baseline justify-between gap-3">
               <p className="text-[10px] font-black uppercase tracking-widest text-slate-400 leading-tight">{r.label}</p>
               <p className="text-2xl font-black text-amber-600 whitespace-nowrap">{fmtTaux(r.taux)}</p>

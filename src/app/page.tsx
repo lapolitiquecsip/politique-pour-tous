@@ -52,7 +52,7 @@ export default function Home() {
         <div className="container mx-auto max-w-6xl">
           <div className="relative mb-16 text-center">
             <div className="relative z-10 flex flex-col md:flex-row items-center justify-center gap-4 md:gap-6">
-              <span className="text-slate-900 dark:text-slate-100 opacity-[0.08] absolute -top-10 left-1/2 -translate-x-1/2 select-none hidden md:block whitespace-nowrap text-8xl font-staatliches tracking-widest">
+              <span className="text-foreground dark:text-slate-100 opacity-[0.08] absolute -top-10 left-1/2 -translate-x-1/2 select-none hidden md:block whitespace-nowrap text-8xl font-staatliches tracking-widest">
                 RÉPUBLIQUE • SYSTÈME
               </span>
               
@@ -82,8 +82,8 @@ export default function Home() {
               l'introduction dit ce qui les distingue. */}
           <div className="mb-12 text-center">
             <p className="text-[11px] font-black uppercase tracking-[0.25em] text-red-600">Ce qui est publié chaque jour</p>
-            <h2 className="mt-2 text-4xl md:text-6xl font-staatliches uppercase tracking-tight text-slate-900 dark:text-white">Le Journal Officiel</h2>
-            <p className="mt-3 text-slate-500 max-w-2xl mx-auto">
+            <h2 className="mt-2 text-4xl md:text-6xl font-staatliches uppercase tracking-tight text-foreground dark:text-white">Le Journal Officiel</h2>
+            <p className="mt-3 text-muted-foreground max-w-2xl mx-auto">
               L'État y publie une centaine de textes par matin — décrets, arrêtés, décisions, avis.
               Les lois promulguées n'en sont qu'une petite part, la plus visible.
             </p>
@@ -92,8 +92,8 @@ export default function Home() {
           <JournalOfficielDuJour />
 
           <div className="mt-20 mb-10 text-center">
-            <h3 className="text-3xl md:text-4xl font-staatliches uppercase tracking-tight text-slate-900 dark:text-white">Les lois promulguées</h3>
-            <p className="mt-2 text-slate-500 max-w-2xl mx-auto">Feuilletez les dernières lois — une page par jour et par texte. Cliquez pour voir le parcours complet de chaque loi.</p>
+            <h3 className="text-3xl md:text-4xl font-staatliches uppercase tracking-tight text-foreground dark:text-white">Les lois promulguées</h3>
+            <p className="mt-2 text-muted-foreground max-w-2xl mx-auto">Feuilletez les dernières lois — une page par jour et par texte. Cliquez pour voir le parcours complet de chaque loi.</p>
             <p className="mx-auto mt-4 max-w-md rounded-2xl bg-emerald-50 px-4 py-2.5 text-center text-sm font-bold leading-6 text-emerald-700 dark:bg-emerald-500/10 dark:text-emerald-400">
               ✅ Publiée au Journal officiel = la loi <strong>entre en vigueur</strong> et devient applicable.
             </p>
@@ -107,7 +107,7 @@ export default function Home() {
         <div className="container mx-auto max-w-6xl">
           <div className="relative mb-16 text-center md:text-left">
             <div className="relative z-10 flex flex-col md:flex-row items-center gap-4 md:gap-6">
-              <span className="text-slate-900 dark:text-slate-100 opacity-[0.08] absolute -top-10 left-0 select-none hidden md:block whitespace-nowrap text-8xl font-staatliches tracking-widest">
+              <span className="text-foreground dark:text-slate-100 opacity-[0.08] absolute -top-10 left-0 select-none hidden md:block whitespace-nowrap text-8xl font-staatliches tracking-widest">
                 ACTUALITÉ • DIRECT
               </span>
               
@@ -175,7 +175,7 @@ export default function Home() {
             <motion.div 
               whileHover={{ scale: 1.01 }}
               whileTap={{ scale: 0.99 }}
-              className="bg-white dark:bg-slate-900 p-8 md:p-12 rounded-[3rem] border border-slate-200 dark:border-slate-800 shadow-xl shadow-slate-200/20 dark:shadow-none flex flex-col md:flex-row items-center justify-between gap-8 group-hover:border-amber-200 dark:group-hover:border-amber-500/30 transition-all duration-500 overflow-hidden relative"
+              className="bg-card dark:bg-slate-900 p-8 md:p-12 rounded-[3rem] border border-border dark:border-slate-800 shadow-xl shadow-slate-200/20 dark:shadow-none flex flex-col md:flex-row items-center justify-between gap-8 group-hover:border-amber-200 dark:group-hover:border-amber-500/30 transition-all duration-500 overflow-hidden relative"
             >
               <div className="absolute -top-12 -left-12 w-48 h-48 bg-amber-500/5 rounded-full blur-3xl" />
               <div className="absolute -bottom-12 -right-12 w-48 h-48 bg-blue-500/5 rounded-full blur-3xl" />
@@ -188,7 +188,7 @@ export default function Home() {
                   <h3 className="text-3xl md:text-4xl font-staatliches uppercase tracking-tighter leading-none">
                     L'agenda <span className="text-amber-500">Complet</span> de la république
                   </h3>
-                  <p className="text-slate-500 dark:text-slate-400 font-medium text-lg italic">
+                  <p className="text-muted-foreground dark:text-slate-400 font-medium text-lg italic">
                     Découvrez toutes les séances, auditions et événements politiques à venir.
                   </p>
                 </div>

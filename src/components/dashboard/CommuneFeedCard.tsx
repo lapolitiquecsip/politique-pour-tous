@@ -54,19 +54,19 @@ export default function CommuneFeedCard() {
   // Champ de recherche réutilisé (activation + changement de commune).
   const searchBox = (
     <div ref={boxRef} className="relative">
-      <div className="flex items-center gap-2 rounded-2xl border border-slate-200 bg-white px-3 focus-within:border-blue-400">
+      <div className="flex items-center gap-2 rounded-2xl border border-border bg-card px-3 focus-within:border-blue-400">
         <Search size={16} className="shrink-0 text-slate-400" />
         <input
           autoFocus
           value={query}
           onChange={(e) => setQuery(e.target.value)}
           placeholder="Nom de votre commune (ex. Orvault)"
-          className="w-full bg-transparent py-3 text-sm text-slate-900 outline-none placeholder:text-slate-400"
+          className="w-full bg-transparent py-3 text-sm text-foreground outline-none placeholder:text-slate-400"
         />
         {searching && <Loader2 size={15} className="shrink-0 animate-spin text-slate-400" />}
       </div>
       {results.length > 0 && (
-        <ul className="absolute z-20 mt-1.5 w-full overflow-hidden rounded-2xl border border-slate-200 bg-white shadow-xl">
+        <ul className="absolute z-20 mt-1.5 w-full overflow-hidden rounded-2xl border border-border bg-card shadow-xl">
           {results.map((h) => (
             <li key={h.insee_code}>
               <button onClick={() => choose(h)}
@@ -91,25 +91,25 @@ export default function CommuneFeedCard() {
   if (commune && !picking) {
     return (
       <div className="space-y-3">
-        <div className="flex items-center justify-between gap-3 rounded-[2rem] border border-slate-200 bg-white p-5">
+        <div className="flex items-center justify-between gap-3 rounded-[2rem] border border-border bg-card p-5">
           <div className="flex min-w-0 items-center gap-3">
             <span className="flex h-11 w-11 shrink-0 items-center justify-center rounded-2xl bg-blue-50 text-blue-600">
               <MapPin size={20} />
             </span>
             <div className="min-w-0">
-              <h3 className="truncate text-sm font-black uppercase tracking-widest text-slate-900">
+              <h3 className="truncate text-sm font-black uppercase tracking-widest text-foreground">
                 Actus de {commune.name}
               </h3>
-              <p className="text-[11px] text-slate-500">Le fil de votre commune, mis à jour automatiquement.</p>
+              <p className="text-[11px] text-muted-foreground">Le fil de votre commune, mis à jour automatiquement.</p>
             </div>
           </div>
           <div className="flex shrink-0 items-center gap-2">
             <button onClick={() => { setPicking(true); setQuery(""); }} title="Changer de commune"
-              className="inline-flex items-center gap-1.5 rounded-xl border border-slate-200 px-3 py-2 text-[10px] font-black uppercase tracking-widest text-slate-500 transition hover:border-blue-300 hover:text-blue-600">
+              className="inline-flex items-center gap-1.5 rounded-xl border border-border px-3 py-2 text-[10px] font-black uppercase tracking-widest text-muted-foreground transition hover:border-blue-300 hover:text-blue-600">
               <RefreshCw size={12} /> <span className="hidden sm:inline">Changer</span>
             </button>
             <button onClick={disable} title="Désactiver le fil"
-              className="inline-flex items-center gap-1.5 rounded-xl border border-slate-200 px-3 py-2 text-[10px] font-black uppercase tracking-widest text-slate-500 transition hover:border-rose-300 hover:text-rose-600">
+              className="inline-flex items-center gap-1.5 rounded-xl border border-border px-3 py-2 text-[10px] font-black uppercase tracking-widest text-muted-foreground transition hover:border-rose-300 hover:text-rose-600">
               <X size={12} /> <span className="hidden sm:inline">Désactiver</span>
             </button>
           </div>
@@ -122,22 +122,22 @@ export default function CommuneFeedCard() {
 
   // ─── ACTIVATION (ou changement de commune) ─────────────────────────────────────────────
   return (
-    <div className="rounded-[2rem] border border-slate-200 bg-white p-6">
+    <div className="rounded-[2rem] border border-border bg-card p-6">
       <div className="flex items-start gap-4">
         <span className="flex h-11 w-11 shrink-0 items-center justify-center rounded-2xl bg-gradient-to-br from-blue-500 to-sky-500 text-white shadow-md">
           <Newspaper size={20} />
         </span>
         <div className="min-w-0 flex-1">
-          <h3 className="text-lg font-black text-slate-900">
+          <h3 className="text-lg font-black text-foreground">
             {picking ? "Changer de commune" : "Activez le fil d'actualité de votre commune"}
           </h3>
-          <p className="mt-0.5 text-sm text-slate-500">
+          <p className="mt-0.5 text-sm text-muted-foreground">
             Recevez directement, ici sur votre profil, les actualités de votre ville.
           </p>
           <div className="mt-4 max-w-md">{searchBox}</div>
           {picking && (
             <button onClick={() => setPicking(false)}
-              className="mt-3 inline-flex items-center gap-1.5 text-[11px] font-black uppercase tracking-widest text-slate-400 hover:text-slate-600">
+              className="mt-3 inline-flex items-center gap-1.5 text-[11px] font-black uppercase tracking-widest text-slate-400 hover:text-muted-foreground">
               <Check size={12} /> Garder {commune?.name}
             </button>
           )}

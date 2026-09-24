@@ -72,8 +72,8 @@ export default function StatsPanel() {
     <div className="w-full">
       {/* Titre : l'utilisateur comprend qu'il s'agit d'anecdotes / fun-facts. */}
       <div className="mb-2 text-center">
-        <h2 className="font-staatliches text-4xl uppercase tracking-tight text-slate-900 dark:text-white md:text-5xl">Le saviez-vous&nbsp;?</h2>
-        <p className="mt-1 text-sm font-medium italic text-slate-500 dark:text-slate-400">Anecdotes et chiffres surprenants sur nos institutions.</p>
+        <h2 className="font-staatliches text-4xl uppercase tracking-tight text-foreground dark:text-white md:text-5xl">Le saviez-vous&nbsp;?</h2>
+        <p className="mt-1 text-sm font-medium italic text-muted-foreground dark:text-slate-400">Anecdotes et chiffres surprenants sur nos institutions.</p>
       </div>
       <div className="relative flex h-full items-center justify-center py-4">
         <AnimatedCardStack items={cards} />

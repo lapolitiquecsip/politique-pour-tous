@@ -56,8 +56,8 @@ const MinisterCard: React.FC<CardProps> = React.memo(({ position, item, handleMo
         "absolute left-1/2 top-1/2 cursor-pointer border-2 overflow-hidden flex flex-col transform-gpu",
         "transition-[transform,opacity] duration-500 ease-in-out will-change-transform",
         isCenter
-          ? "z-10 bg-white border-amber-500 shadow-2xl"
-          : "z-0 bg-white border-slate-200 hover:border-amber-400 opacity-60 hover:opacity-100"
+          ? "z-10 bg-card border-amber-500 shadow-2xl"
+          : "z-0 bg-card border-border hover:border-amber-400 opacity-60 hover:opacity-100"
       )}
       style={{
         width: cardSize,
@@ -80,17 +80,17 @@ const MinisterCard: React.FC<CardProps> = React.memo(({ position, item, handleMo
       />
 
       {/* Top Banner : nom + portrait */}
-      <div className={cn("relative h-40 shrink-0 w-full flex items-center justify-between overflow-hidden border-b border-slate-100 px-6", theme.lightBg)}>
+      <div className={cn("relative h-40 shrink-0 w-full flex items-center justify-between overflow-hidden border-b border-border px-6", theme.lightBg)}>
         <div className="absolute inset-0 bg-[radial-gradient(circle_at_20%_20%,rgba(255,255,255,0.4),transparent_70%)]" />
 
         {/* Texte à gauche */}
         <div className="relative z-10 max-w-[60%]">
           <p className={cn("font-black text-[9px] uppercase tracking-widest mb-1.5", theme.text)}>Ministère</p>
-          <h4 className="text-slate-900 font-extrabold text-lg leading-tight line-clamp-3">{cleanMinistryName(item.ministry)}</h4>
+          <h4 className="text-foreground font-extrabold text-lg leading-tight line-clamp-3">{cleanMinistryName(item.ministry)}</h4>
         </div>
 
         {/* Portrait à droite */}
-        <div className="relative w-24 h-24 shrink-0 flex items-center justify-center rounded-2xl bg-white/95 border border-slate-100/80 shadow-md overflow-hidden transition-transform hover:scale-105 z-10">
+        <div className="relative w-24 h-24 shrink-0 flex items-center justify-center rounded-2xl bg-white/95 border border-border/80 shadow-md overflow-hidden transition-transform hover:scale-105 z-10">
           <MinisterImage
             src={item.image}
             fallbackSrc={`https://ui-avatars.com/api/?name=${encodeURIComponent(item.name)}&background=f59e0b&color=fff&size=512`}
@@ -102,7 +102,7 @@ const MinisterCard: React.FC<CardProps> = React.memo(({ position, item, handleMo
       </div>
 
       {/* Contenu */}
-      <div className="p-6 flex-1 flex flex-col justify-between bg-white relative z-10">
+      <div className="p-6 flex-1 flex flex-col justify-between bg-card relative z-10">
         <div className="space-y-4">
           <div className="flex items-center gap-3">
             <div className={cn("w-10 h-10 rounded-xl flex items-center justify-center shrink-0", theme.lightBg, theme.text)}>
@@ -110,7 +110,7 @@ const MinisterCard: React.FC<CardProps> = React.memo(({ position, item, handleMo
             </div>
             <div className="min-w-0">
               <p className="text-[9px] font-black uppercase tracking-widest text-slate-400">Ministre</p>
-              <p className="font-bold text-slate-900 text-sm truncate">{item.name}</p>
+              <p className="font-bold text-foreground text-sm truncate">{item.name}</p>
             </div>
           </div>
           <div className="flex items-center gap-3">
@@ -119,13 +119,13 @@ const MinisterCard: React.FC<CardProps> = React.memo(({ position, item, handleMo
             </div>
             <div className="min-w-0">
               <p className="text-[9px] font-black uppercase tracking-widest text-slate-400">Fonction</p>
-              <p className="font-bold text-slate-900 text-xs leading-snug line-clamp-2">{item.role}</p>
+              <p className="font-bold text-foreground text-xs leading-snug line-clamp-2">{item.role}</p>
             </div>
           </div>
         </div>
 
         {isCenter && (
-          <div className="mt-4 pt-4 border-t border-slate-100">
+          <div className="mt-4 pt-4 border-t border-border">
             <span className={cn("w-full flex items-center justify-center gap-2 font-bold text-xs uppercase tracking-widest transition-colors", theme.text)}>
               Voir le ministère <ArrowRight size={14} />
             </span>
@@ -198,7 +198,7 @@ export const MinisterStagger: React.FC<{ items: MinisterItem[] }> = ({ items }) 
     );
 
   return (
-    <div className="relative w-full overflow-hidden rounded-[2.5rem] bg-slate-50 border border-slate-200/60" style={{ height: 620 }}>
+    <div className="relative w-full overflow-hidden rounded-[2.5rem] bg-muted border border-border/60" style={{ height: 620 }}>
       <div className="absolute inset-0 bg-[radial-gradient(circle_at_center,rgba(245,158,11,0.04)_0%,transparent_70%)]" />
 
       {list.map((item, index) => {
@@ -223,7 +223,7 @@ export const MinisterStagger: React.FC<{ items: MinisterItem[] }> = ({ items }) 
           onClick={() => handleMove(-1)}
           className={cn(
             "flex h-14 w-14 items-center justify-center text-2xl transition-all rounded-full shadow-lg",
-            "bg-white border-2 border-slate-200 text-slate-600 hover:border-amber-500 hover:text-amber-500 hover:scale-105 active:scale-95",
+            "bg-card border-2 border-border text-muted-foreground hover:border-amber-500 hover:text-amber-500 hover:scale-105 active:scale-95",
             "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-amber-500 focus-visible:ring-offset-2"
           )}
           aria-label="Ministre précédent"
@@ -234,7 +234,7 @@ export const MinisterStagger: React.FC<{ items: MinisterItem[] }> = ({ items }) 
           onClick={() => handleMove(1)}
           className={cn(
             "flex h-14 w-14 items-center justify-center text-2xl transition-all rounded-full shadow-lg",
-            "bg-white border-2 border-slate-200 text-slate-600 hover:border-amber-500 hover:text-amber-500 hover:scale-105 active:scale-95",
+            "bg-card border-2 border-border text-muted-foreground hover:border-amber-500 hover:text-amber-500 hover:scale-105 active:scale-95",
             "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-amber-500 focus-visible:ring-offset-2"
           )}
           aria-label="Ministre suivant"

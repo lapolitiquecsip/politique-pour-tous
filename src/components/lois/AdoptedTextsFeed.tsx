@@ -17,19 +17,19 @@ function HL({ text }: { text: string }) {
 function secStyle(header: string) {
   const h = header.toLowerCase();
   if (/vote|scrutin/.test(h)) return { Icon: CheckCircle2, c: "text-emerald-600", bg: "bg-emerald-50 dark:bg-emerald-500/10" };
-  if (/limite|réserve/.test(h)) return { Icon: AlertTriangle, c: "text-slate-500", bg: "bg-slate-50 dark:bg-slate-800" };
+  if (/limite|réserve/.test(h)) return { Icon: AlertTriangle, c: "text-muted-foreground", bg: "bg-muted dark:bg-slate-800" };
   if (/contexte|objectif|objet|mesure|s'agit/.test(h)) return { Icon: Target, c: "text-amber-600", bg: "bg-amber-50 dark:bg-amber-500/10" };
   if (/procédure|navette|étape|calendrier/.test(h)) return { Icon: GitBranch, c: "text-blue-600", bg: "bg-blue-50 dark:bg-blue-500/10" };
   if (/amendement/.test(h)) return { Icon: Pencil, c: "text-fuchsia-600", bg: "bg-fuchsia-50 dark:bg-fuchsia-500/10" };
   if (/important|pourquoi|enjeu/.test(h)) return { Icon: HelpCircle, c: "text-blue-600", bg: "bg-blue-50 dark:bg-blue-500/10" };
   if (/détail|detail/.test(h)) return { Icon: FileText, c: "text-amber-600", bg: "bg-amber-50 dark:bg-amber-500/10" };
-  return { Icon: Info, c: "text-slate-500", bg: "bg-slate-50 dark:bg-slate-800" };
+  return { Icon: Info, c: "text-muted-foreground", bg: "bg-muted dark:bg-slate-800" };
 }
 // Carte de section : icône + en-tête + corps avec chiffres surlignés.
 function SecCard({ header, body }: { header: string; body: string }) {
   const { Icon, c, bg } = secStyle(header);
   return (
-    <div className="rounded-2xl border border-slate-100 dark:border-slate-800 bg-white dark:bg-slate-900 p-4 shadow-sm">
+    <div className="rounded-2xl border border-border dark:border-slate-800 bg-card dark:bg-slate-900 p-4 shadow-sm">
       <div className="mb-2 flex items-center gap-2">
         <span className={`flex h-8 w-8 items-center justify-center rounded-xl ${bg} ${c}`}><Icon size={16} /></span>
         <h4 className={`text-[11px] font-black uppercase tracking-widest ${c}`}>{header}</h4>
@@ -87,7 +87,7 @@ const NAV_TONE: Record<string, string> = {
   senat: "bg-rose-100 text-rose-700 dark:bg-rose-500/15 dark:text-rose-300",
   cc: "bg-purple-100 text-purple-700 dark:bg-purple-500/15 dark:text-purple-300",
   assemblee: "bg-blue-100 text-blue-700 dark:bg-blue-500/15 dark:text-blue-300",
-  rejet: "bg-slate-100 text-slate-600 dark:bg-slate-800 dark:text-slate-300",
+  rejet: "bg-slate-100 text-muted-foreground dark:bg-slate-800 dark:text-slate-300",
 };
 
 export default function AdoptedTextsFeed() {
@@ -106,10 +106,10 @@ export default function AdoptedTextsFeed() {
   return (
     <section className="mx-auto max-w-7xl px-4">
       <div className="mb-6">
-        <h2 className="text-3xl font-staatliches uppercase tracking-tight text-slate-900 dark:text-white md:text-4xl">
+        <h2 className="text-3xl font-staatliches uppercase tracking-tight text-foreground dark:text-white md:text-4xl">
           Derniers textes <span className="text-blue-600">adoptés par l'Assemblée</span>
         </h2>
-        <p className="mt-1 text-slate-500">Chaque vote solennel sur l'ensemble d'un texte : l'issue, le vote de chaque parti, et ce qui se passe ensuite.</p>
+        <p className="mt-1 text-muted-foreground">Chaque vote solennel sur l'ensemble d'un texte : l'issue, le vote de chaque parti, et ce qui se passe ensuite.</p>
       </div>
 
       {/* Mobile : rail horizontal. Une carte par rangée pleine hauteur obligeait à
@@ -123,14 +123,14 @@ export default function AdoptedTextsFeed() {
           const groups = (v.group_results || []).filter((g: any) => (g.pour + g.contre + g.abstention) > 0);
           return (
             <button key={v.id} onClick={() => setOpen(v)}
-              className="group w-[85vw] shrink-0 snap-center sm:w-auto sm:shrink flex flex-col rounded-[2rem] border border-slate-200 bg-white p-6 text-left shadow-sm transition hover:-translate-y-1 hover:shadow-xl dark:border-slate-800 dark:bg-slate-900">
+              className="group w-[85vw] shrink-0 snap-center sm:w-auto sm:shrink flex flex-col rounded-[2rem] border border-border bg-card p-6 text-left shadow-sm transition hover:-translate-y-1 hover:shadow-xl dark:border-slate-800 dark:bg-slate-900">
               <div className="flex items-start justify-between gap-3">
                 <span className="text-xs font-bold text-slate-400">{frDate(v.date_scrutin)}</span>
                 <span className={`inline-flex items-center gap-1 rounded-full px-3 py-1 text-[10px] font-black uppercase tracking-widest text-white ${adopted ? "bg-emerald-500" : "bg-rose-500"}`}>
                   {adopted ? <CheckCircle2 size={12} /> : <XCircle size={12} />}{adopted ? "Adopté" : "Rejeté"}
                 </span>
               </div>
-              <h3 className="mt-3 line-clamp-3 text-base font-bold leading-snug text-slate-900 group-hover:text-blue-600 dark:text-white">{cleanTitle(v)}</h3>
+              <h3 className="mt-3 line-clamp-3 text-base font-bold leading-snug text-foreground group-hover:text-blue-600 dark:text-white">{cleanTitle(v)}</h3>
 
               {/* Étape suivante vérifiée. */}
               {nav?.navette_label && (
@@ -163,7 +163,7 @@ export default function AdoptedTextsFeed() {
         {open && (
           <motion.div className="fixed inset-0 z-[80] flex items-end justify-center bg-slate-950/70 p-0 backdrop-blur-sm sm:items-center sm:p-6"
             initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} onClick={() => setOpen(null)}>
-            <motion.div className="relative flex max-h-[90vh] w-full max-w-2xl flex-col overflow-hidden rounded-t-[2rem] bg-white shadow-2xl dark:bg-slate-900 sm:rounded-[2rem]"
+            <motion.div className="relative flex max-h-[90vh] w-full max-w-2xl flex-col overflow-hidden rounded-t-[2rem] bg-card shadow-2xl dark:bg-slate-900 sm:rounded-[2rem]"
               initial={{ y: 40, opacity: 0 }} animate={{ y: 0, opacity: 1 }} exit={{ y: 40, opacity: 0 }} onClick={e => e.stopPropagation()}>
               <div className={`relative p-6 pr-14 text-white ${isAdopted(open.resultat) ? "bg-gradient-to-br from-emerald-600 to-teal-700" : "bg-gradient-to-br from-rose-600 to-red-700"}`}>
                 <button onClick={() => setOpen(null)} className="absolute right-4 top-4 rounded-full bg-white/20 p-2 transition hover:bg-white/30"><X size={18} /></button>

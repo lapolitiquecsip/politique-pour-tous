@@ -17,7 +17,7 @@ function SubSection({ label, events, color }: { label: string, events: CalendarE
         className="w-full py-2 px-3 flex items-center justify-between bg-white/5 hover:bg-white/10 rounded-xl transition-all border border-white/5"
       >
         <div className="flex items-center gap-2">
-          <ChevronDown className={`w-3 h-3 text-slate-500 transition-transform ${isOpen ? "" : "-rotate-90"}`} />
+          <ChevronDown className={`w-3 h-3 text-muted-foreground transition-transform ${isOpen ? "" : "-rotate-90"}`} />
           <span className="text-[10px] font-black uppercase tracking-widest text-slate-300">{label}</span>
         </div>
         <span className={`text-[10px] font-bold ${color}`}>{events.length}</span>
@@ -106,7 +106,7 @@ function InstitutionSection({
             <span className={`text-[10px] font-bold ${color}`}>{events.length} évènements</span>
           </div>
         </div>
-        <ChevronDown className={`w-5 h-5 text-slate-500 transition-transform ${isOpen ? "rotate-180" : ""}`} />
+        <ChevronDown className={`w-5 h-5 text-muted-foreground transition-transform ${isOpen ? "rotate-180" : ""}`} />
       </button>
 
       <AnimatePresence>
@@ -134,12 +134,12 @@ function InstitutionSection({
 export default function CalendarDayDetail({ selectedDate, events }: CalendarDayDetailProps) {
   if (!selectedDate) {
     return (
-      <div className="h-full flex flex-col items-center justify-center p-8 text-center bg-slate-50/50 rounded-[2.5rem] border-2 border-dashed border-slate-200">
+      <div className="h-full flex flex-col items-center justify-center p-8 text-center bg-slate-50/50 rounded-[2.5rem] border-2 border-dashed border-border">
         <div className="w-16 h-16 rounded-full bg-slate-200/50 flex items-center justify-center mb-4">
           <Calendar className="w-8 h-8 text-slate-400" />
         </div>
-        <h3 className="text-xl font-black text-slate-900 mb-2">Sélectionnez un jour</h3>
-        <p className="text-slate-500 text-sm">Cliquez sur une date pour voir les évènements.</p>
+        <h3 className="text-xl font-black text-foreground mb-2">Sélectionnez un jour</h3>
+        <p className="text-muted-foreground text-sm">Cliquez sur une date pour voir les évènements.</p>
       </div>
     );
   }
@@ -189,7 +189,7 @@ export default function CalendarDayDetail({ selectedDate, events }: CalendarDayD
 
       <div className="flex-1 overflow-y-auto p-6 custom-scrollbar-blue">
         {dayEvents.length === 0 ? (
-          <div className="py-20 text-center text-slate-500">
+          <div className="py-20 text-center text-muted-foreground">
             <Bookmark className="w-12 h-12 mx-auto mb-4 opacity-5" />
             <p className="text-xs italic">Aucun évènement pour cette date.</p>
           </div>

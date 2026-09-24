@@ -30,7 +30,7 @@ export default function PersonTabs({ fullName, currentHref }: { fullName: string
   const cur = base(currentHref);
 
   return (
-    <div className="border-y border-slate-200 bg-white dark:border-slate-800 dark:bg-slate-900">
+    <div className="border-y border-border bg-card dark:border-slate-800 dark:bg-slate-900">
       <div className="mx-auto flex max-w-6xl items-center gap-2 overflow-x-auto px-4 py-2.5 [scrollbar-width:none] [&::-webkit-scrollbar]:hidden">
         <span className="hidden shrink-0 items-center gap-1.5 pr-1 text-[10px] font-black uppercase tracking-widest text-slate-400 sm:flex">
           <Layers3 size={13} /> Ses fonctions
@@ -41,7 +41,7 @@ export default function PersonTabs({ fullName, currentHref }: { fullName: string
           const cls = `group inline-flex shrink-0 items-center gap-2 rounded-full px-4 py-2 text-[11px] font-black uppercase tracking-wide transition ${
             isActive
               ? "bg-slate-900 text-white shadow-md dark:bg-white dark:text-slate-900"
-              : "border border-slate-200 bg-white text-slate-600 hover:border-slate-400 hover:text-slate-900 dark:border-slate-700 dark:bg-slate-900 dark:text-slate-300 dark:hover:text-white"
+              : "border border-border bg-card text-muted-foreground hover:border-slate-400 hover:text-foreground dark:border-slate-700 dark:bg-slate-900 dark:text-slate-300 dark:hover:text-white"
           }`;
           const inner = <><Icon size={14} className={isActive ? "" : "text-slate-400 group-hover:text-current"} /> {r.kind}</>;
           return isActive

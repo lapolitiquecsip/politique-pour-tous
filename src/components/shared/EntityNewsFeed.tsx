@@ -79,7 +79,7 @@ export default function EntityNewsFeed({
   if (items !== null && items.length === 0) return null;
 
   return (
-    <section className="overflow-hidden rounded-[2rem] border border-slate-200 bg-white dark:border-slate-800 dark:bg-slate-900">
+    <section className="overflow-hidden rounded-[2rem] border border-border bg-card dark:border-slate-800 dark:bg-slate-900">
       <button
         onClick={() => setOpen(o => !o)}
         className="flex w-full items-center justify-between gap-4 p-6 text-left transition-colors hover:bg-blue-50/40 dark:hover:bg-slate-800/40"
@@ -90,19 +90,19 @@ export default function EntityNewsFeed({
             <Newspaper size={20} />
           </span>
           <div>
-            <h2 className="text-2xl font-staatliches uppercase tracking-tight text-slate-900 dark:text-white">Fil d'actualité</h2>
-            <p className="mt-0.5 text-sm text-slate-500">
+            <h2 className="text-2xl font-staatliches uppercase tracking-tight text-foreground dark:text-white">Fil d'actualité</h2>
+            <p className="mt-0.5 text-sm text-muted-foreground">
               {items === null ? "Chargement…" : `${items.length} actualité${items.length > 1 ? "s" : ""} récente${items.length > 1 ? "s" : ""}`}
             </p>
           </div>
         </div>
-        <span className={`flex h-9 w-9 shrink-0 items-center justify-center rounded-full bg-slate-100 text-slate-500 transition-transform dark:bg-slate-800 ${open ? "rotate-180" : ""}`}>
+        <span className={`flex h-9 w-9 shrink-0 items-center justify-center rounded-full bg-slate-100 text-muted-foreground transition-transform dark:bg-slate-800 ${open ? "rotate-180" : ""}`}>
           <ChevronDown size={18} />
         </span>
       </button>
 
       {open && (
-        <div className="border-t border-slate-100 p-4 dark:border-slate-800 sm:p-5">
+        <div className="border-t border-border p-4 dark:border-slate-800 sm:p-5">
           {items === null ? (
             <div className="flex justify-center py-8"><Loader2 className="animate-spin text-blue-500" /></div>
           ) : (
@@ -113,7 +113,7 @@ export default function EntityNewsFeed({
                   const active = (filter || "") === t;
                   return (
                     <button key={t || "all"} onClick={() => setFilter(t || null)}
-                      className={`rounded-full px-3 py-1.5 text-[10px] font-black uppercase tracking-widest transition border ${active ? "bg-blue-600 text-white border-blue-600" : "bg-white dark:bg-slate-900 text-slate-500 border-slate-200 dark:border-slate-800 hover:border-blue-400"}`}>
+                      className={`rounded-full px-3 py-1.5 text-[10px] font-black uppercase tracking-widest transition border ${active ? "bg-blue-600 text-white border-blue-600" : "bg-card dark:bg-slate-900 text-muted-foreground border-border dark:border-slate-800 hover:border-blue-400"}`}>
                       {t ? typeLabel(t) : "Tout"} <span className="opacity-60">· {n}</span>
                     </button>
                   );
@@ -126,11 +126,11 @@ export default function EntityNewsFeed({
             {horizontal && visible.length > 1 && (
               <>
                 <button type="button" aria-label="Actualités précédentes" onClick={() => scrollByCards(-1)}
-                  className="absolute left-0 top-1/2 z-10 hidden h-10 w-10 -translate-y-1/2 items-center justify-center rounded-full border border-slate-200 bg-white/95 text-slate-600 shadow-lg transition hover:bg-blue-600 hover:text-white md:flex dark:border-slate-700 dark:bg-slate-800/95 dark:text-slate-200">
+                  className="absolute left-0 top-1/2 z-10 hidden h-10 w-10 -translate-y-1/2 items-center justify-center rounded-full border border-border bg-white/95 text-muted-foreground shadow-lg transition hover:bg-blue-600 hover:text-white md:flex dark:border-slate-700 dark:bg-slate-800/95 dark:text-slate-200">
                   <ChevronLeft size={20} />
                 </button>
                 <button type="button" aria-label="Actualités suivantes" onClick={() => scrollByCards(1)}
-                  className="absolute right-0 top-1/2 z-10 hidden h-10 w-10 -translate-y-1/2 items-center justify-center rounded-full border border-slate-200 bg-white/95 text-slate-600 shadow-lg transition hover:bg-blue-600 hover:text-white md:flex dark:border-slate-700 dark:bg-slate-800/95 dark:text-slate-200">
+                  className="absolute right-0 top-1/2 z-10 hidden h-10 w-10 -translate-y-1/2 items-center justify-center rounded-full border border-border bg-white/95 text-muted-foreground shadow-lg transition hover:bg-blue-600 hover:text-white md:flex dark:border-slate-700 dark:bg-slate-800/95 dark:text-slate-200">
                   <ChevronRight size={20} />
                 </button>
               </>
@@ -141,13 +141,13 @@ export default function EntityNewsFeed({
               {visible.map(it => (
                 <li key={it.id} className={horizontal ? "shrink-0 snap-start basis-[82%] sm:basis-[320px]" : ""}>
                   <button onClick={() => setSelected(it)}
-                    className="flex h-full w-full flex-col rounded-2xl border border-slate-200 bg-white p-4 text-left transition hover:border-blue-300 hover:shadow-md dark:border-slate-800 dark:bg-slate-900">
+                    className="flex h-full w-full flex-col rounded-2xl border border-border bg-card p-4 text-left transition hover:border-blue-300 hover:shadow-md dark:border-slate-800 dark:bg-slate-900">
                     <div className="mb-1.5 flex items-center justify-between gap-2">
                       <span className="text-[10px] font-black uppercase tracking-widest text-blue-600">{typeLabel(it.news_type)}</span>
                       <span className="shrink-0 text-[10px] font-bold text-slate-400">{fmt(it.published_at)}</span>
                     </div>
-                    <p className="text-sm font-bold leading-snug text-slate-900 dark:text-white">{it.title}</p>
-                    {it.summary && <p className="mt-1 line-clamp-3 text-xs leading-5 text-slate-600 dark:text-slate-300">{it.summary}</p>}
+                    <p className="text-sm font-bold leading-snug text-foreground dark:text-white">{it.title}</p>
+                    {it.summary && <p className="mt-1 line-clamp-3 text-xs leading-5 text-muted-foreground dark:text-slate-300">{it.summary}</p>}
                     <span className="mt-auto pt-2 inline-flex items-center gap-1 text-[10px] font-bold uppercase tracking-widest text-slate-400">
                       {it.source_name}
                     </span>
@@ -178,20 +178,20 @@ export default function EntityNewsFeed({
               initial={{ y: 40, opacity: 0 }} animate={{ y: 0, opacity: 1 }} exit={{ y: 40, opacity: 0 }}
               transition={{ type: "spring", damping: 28, stiffness: 320 }}
               onClick={e => e.stopPropagation()}
-              className="max-h-[85vh] w-full max-w-lg overflow-y-auto rounded-t-[2rem] bg-white p-6 shadow-2xl dark:bg-slate-900 sm:rounded-[2rem]"
+              className="max-h-[85vh] w-full max-w-lg overflow-y-auto rounded-t-[2rem] bg-card p-6 shadow-2xl dark:bg-slate-900 sm:rounded-[2rem]"
             >
               <div className="mb-3 flex items-center justify-between gap-3">
                 <span className="inline-flex items-center gap-1.5 rounded-full bg-blue-100 px-3 py-1 text-[10px] font-black uppercase tracking-widest text-blue-700 dark:bg-blue-500/15 dark:text-blue-300">
                   {typeLabel(selected.news_type)}
                 </span>
-                <button onClick={() => setSelected(null)} className="rounded-full bg-slate-100 p-2 text-slate-500 transition hover:bg-slate-200 dark:bg-slate-800 dark:text-slate-300">
+                <button onClick={() => setSelected(null)} className="rounded-full bg-slate-100 p-2 text-muted-foreground transition hover:bg-slate-200 dark:bg-slate-800 dark:text-slate-300">
                   <X size={18} />
                 </button>
               </div>
               <p className="text-[11px] font-bold uppercase tracking-widest text-slate-400">{fmt(selected.published_at)}</p>
-              <h3 className="mt-1 text-xl font-black leading-snug text-slate-900 dark:text-white">{selected.title}</h3>
-              {selected.summary && <p className="mt-3 leading-7 text-slate-600 dark:text-slate-300">{selected.summary}</p>}
-              <div className="mt-5 flex items-center justify-between gap-3 border-t border-slate-100 pt-4 dark:border-slate-800">
+              <h3 className="mt-1 text-xl font-black leading-snug text-foreground dark:text-white">{selected.title}</h3>
+              {selected.summary && <p className="mt-3 leading-7 text-muted-foreground dark:text-slate-300">{selected.summary}</p>}
+              <div className="mt-5 flex items-center justify-between gap-3 border-t border-border pt-4 dark:border-slate-800">
                 <span className="text-[11px] font-bold uppercase tracking-widest text-slate-400">Source : {selected.source_name}</span>
                 {selected.url && (
                   <a href={selected.url} target="_blank" rel="noopener noreferrer"

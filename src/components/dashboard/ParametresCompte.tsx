@@ -188,9 +188,9 @@ export default function ParametresCompte() {
           ))}
         </div>
         <p className="mt-3 text-[11px] leading-snug text-white/35">
-          Le thème sombre est en place sur une partie du site seulement : les pages qui ne
-          l&apos;ont pas encore restent claires. La bascule est enregistrée et s&apos;appliquera
-          partout à mesure que les pages sont reprises.
+          Le choix vaut pour tout le site et reste mémorisé d&apos;une visite à l&apos;autre.
+          Quelques écrans gardent volontairement leurs couleurs — l&apos;espace Pro, les
+          panneaux d&apos;abonnement — parce qu&apos;ils sont dessinés sombres.
         </p>
       </div>
 

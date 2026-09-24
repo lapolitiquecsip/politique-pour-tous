@@ -31,7 +31,7 @@ export default function NewsletterBanner() {
             <ArrowRight className="w-5 h-5 group-hover:translate-x-1 transition-transform" />
           </Link>
           
-          <p className="text-sm font-bold text-slate-500 uppercase tracking-widest flex items-center gap-3">
+          <p className="text-sm font-bold text-muted-foreground uppercase tracking-widest flex items-center gap-3">
             <span className="w-2 h-2 rounded-full bg-green-500 animate-pulse"></span>
             Personnalisé • Hebdomadaire • Sans jargon
           </p>

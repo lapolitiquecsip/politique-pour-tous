@@ -142,7 +142,7 @@ export default function RadarApp() {
           <header className="flex flex-col md:flex-row justify-between items-end gap-8">
             <div className="space-y-4">
               <div className="flex items-center gap-3">
-                <span className="px-3 py-1 bg-amber-500 text-slate-900 text-[10px] font-black uppercase tracking-widest rounded-full">Exclusivité Élite</span>
+                <span className="px-3 py-1 bg-amber-500 text-foreground text-[10px] font-black uppercase tracking-widest rounded-full">Exclusivité Élite</span>
                 <span className="text-white/20 font-black text-xs uppercase tracking-widest">Temps Réel</span>
               </div>
               <h1 className="text-6xl md:text-8xl font-staatliches uppercase tracking-tight leading-none">Radar des <br /><span className="text-amber-500 italic">Grands Travaux</span></h1>
@@ -238,10 +238,10 @@ export default function RadarApp() {
 
             {/* Sidebar Stats */}
             <div className="space-y-8">
-              <div className="bg-amber-500 p-10 rounded-[3rem] text-slate-900 shadow-2xl shadow-amber-500/20">
+              <div className="bg-amber-500 p-10 rounded-[3rem] text-foreground shadow-2xl shadow-amber-500/20">
                 <TrendingUp size={40} className="mb-6" />
                 <h3 className="text-2xl font-staatliches uppercase tracking-tight leading-none mb-4">Analyse de la <br />Dépense Publique</h3>
-                <p className="text-slate-900/60 text-sm font-medium italic mb-8">Nous surveillons les appels d'offres et les dépassements de coûts pour vous.</p>
+                <p className="text-foreground/60 text-sm font-medium italic mb-8">Nous surveillons les appels d'offres et les dépassements de coûts pour vous.</p>
                 <div className="space-y-4">
                   <div className="flex justify-between items-center py-2 border-b border-slate-900/10">
                     <span className="text-[10px] font-black uppercase">Dépassement Moyen</span>

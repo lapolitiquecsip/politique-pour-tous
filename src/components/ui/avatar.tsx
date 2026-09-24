@@ -12,13 +12,13 @@ interface AvatarProps {
 export const Avatar = ({ placeholder = false, size = 24, src, alt = "Avatar" }: AvatarProps) => {
   if (placeholder) {
     return (
-      <Skeleton rounded height={size} width={size} className="border border-slate-200" />
+      <Skeleton rounded height={size} width={size} className="border border-border" />
     );
   }
 
   return (
     <span
-      className="rounded-full inline-block overflow-hidden border border-slate-200 duration-200 bg-white shadow-sm shrink-0"
+      className="rounded-full inline-block overflow-hidden border border-border duration-200 bg-card shadow-sm shrink-0"
       style={{ width: size, height: size }}
     >
       {src && (
@@ -56,7 +56,7 @@ export const AvatarGroup = ({ members, size = 24, limit = 3 }: AvatarGroupProps)
           title={member.username}
         >
           <span
-            className="rounded-full inline-block overflow-hidden border-2 border-white bg-white duration-200 shadow-sm"
+            className="rounded-full inline-block overflow-hidden border-2 border-white bg-card duration-200 shadow-sm"
             style={{ width: size, height: size }}
           >
             {member.src && (
@@ -81,7 +81,7 @@ export const AvatarGroup = ({ members, size = 24, limit = 3 }: AvatarGroupProps)
           title={members[members.length - 1].username}
         >
           <span
-            className="rounded-full inline-block overflow-hidden border-2 border-white bg-white duration-200 shadow-sm"
+            className="rounded-full inline-block overflow-hidden border-2 border-white bg-card duration-200 shadow-sm"
             style={{ width: size, height: size }}
           >
             <img

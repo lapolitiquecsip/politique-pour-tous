@@ -135,24 +135,24 @@ const DepartmentGridCard: React.FC<{
       animate={{ opacity: 1, y: 0 }}
       whileHover={{ y: -6, transition: { duration: 0.2 } }}
       onClick={() => onSelect(item)}
-      className="cursor-pointer border border-slate-200/80 bg-white rounded-3xl overflow-hidden flex flex-col hover:border-slate-300 hover:shadow-xl transition-all duration-300 shadow-sm"
+      className="cursor-pointer border border-border/80 bg-card rounded-3xl overflow-hidden flex flex-col hover:border-slate-300 hover:shadow-xl transition-all duration-300 shadow-sm"
     >
       {/* Top Banner: Colored background and two columns */}
-      <div className={cn("relative h-36 shrink-0 w-full flex items-center justify-between overflow-hidden border-b border-slate-100 px-6", theme.lightBg)}>
+      <div className={cn("relative h-36 shrink-0 w-full flex items-center justify-between overflow-hidden border-b border-border px-6", theme.lightBg)}>
         {/* Subtle background graphic */}
         <div className="absolute inset-0 bg-[radial-gradient(circle_at_30%_20%,rgba(255,255,255,0.4),transparent_70%)]" />
         
         {/* Left column: Text */}
         <div className="relative z-10 max-w-[65%] space-y-1">
-          <span className={cn("text-[9px] font-black uppercase tracking-widest px-2.5 py-0.5 rounded-full bg-white border inline-block shadow-sm", theme.text)}>
+          <span className={cn("text-[9px] font-black uppercase tracking-widest px-2.5 py-0.5 rounded-full bg-card border inline-block shadow-sm", theme.text)}>
             N° {item.id}
           </span>
           <p className="text-slate-400 font-bold text-[8px] uppercase tracking-widest mt-1">Département</p>
-          <h4 className="text-slate-900 font-extrabold text-lg leading-tight line-clamp-2">{item.name}</h4>
+          <h4 className="text-foreground font-extrabold text-lg leading-tight line-clamp-2">{item.name}</h4>
         </div>
 
         {/* Right column: Geographic Shape */}
-        <div className="relative w-20 h-20 shrink-0 flex items-center justify-center rounded-2xl bg-white/90 border border-slate-100/80 shadow-md overflow-hidden p-2 transition-transform hover:scale-105">
+        <div className="relative w-20 h-20 shrink-0 flex items-center justify-center rounded-2xl bg-white/90 border border-border/80 shadow-md overflow-hidden p-2 transition-transform hover:scale-105">
           {pathData ? (
             <svg 
               viewBox={pathData.viewBox} 
@@ -174,11 +174,11 @@ const DepartmentGridCard: React.FC<{
       </div>
 
       {/* Body Content */}
-      <div className="p-6 flex-1 flex flex-col justify-between space-y-5 bg-white">
+      <div className="p-6 flex-1 flex flex-col justify-between space-y-5 bg-card">
         <div className="space-y-3">
           {/* President row */}
           <div className="flex items-center gap-3">
-            <div className={cn("w-9 h-9 rounded-xl flex items-center justify-center shrink-0 bg-slate-50 border border-slate-100 text-slate-500")}>
+            <div className={cn("w-9 h-9 rounded-xl flex items-center justify-center shrink-0 bg-muted border border-border text-muted-foreground")}>
               <Users size={14} />
             </div>
             <div className="min-w-0">
@@ -189,12 +189,12 @@ const DepartmentGridCard: React.FC<{
           
           {/* Party row */}
           <div className="flex items-center gap-3">
-            <div className={cn("w-9 h-9 rounded-xl flex items-center justify-center shrink-0 bg-slate-50 border border-slate-100 text-slate-500")}>
+            <div className={cn("w-9 h-9 rounded-xl flex items-center justify-center shrink-0 bg-muted border border-border text-muted-foreground")}>
               <Building2 size={14} />
             </div>
             <div className="min-w-0">
               <p className="text-[8px] font-black uppercase tracking-widest text-slate-400">Parti Majoritaire</p>
-              <span className={cn("inline-block font-black text-[9px] px-2 py-0.5 rounded-full mt-0.5 border border-slate-100 shadow-sm bg-slate-50 text-slate-700", 
+              <span className={cn("inline-block font-black text-[9px] px-2 py-0.5 rounded-full mt-0.5 border border-border shadow-sm bg-muted text-slate-700", 
                 item.party !== "N/A" && "font-black"
               )}>
                 {item.party}
@@ -208,7 +208,7 @@ const DepartmentGridCard: React.FC<{
           <span className={cn("text-[9px] font-black uppercase tracking-widest transition-colors duration-200", cardTheme.text)}>
             Analyser
           </span>
-          <div className={cn("w-8 h-8 rounded-full bg-slate-50 flex items-center justify-center text-slate-400 transition-all duration-300", 
+          <div className={cn("w-8 h-8 rounded-full bg-muted flex items-center justify-center text-slate-400 transition-all duration-300", 
             "group-hover/btn:bg-rose-600 group-hover/btn:text-white group-hover/btn:scale-110 shadow-sm"
           )}>
             <ChevronRight size={14} />
@@ -317,7 +317,7 @@ const teaserConfigs = {
 
 export default function LocalPoliticsPage() {
   return (
-    <Suspense fallback={<div className="min-h-screen bg-slate-50 flex items-center justify-center"><Loader2 className="animate-spin text-rose-600" size={40} /></div>}>
+    <Suspense fallback={<div className="min-h-screen bg-muted flex items-center justify-center"><Loader2 className="animate-spin text-rose-600" size={40} /></div>}>
       <LocalPoliticsContent />
     </Suspense>
   );
@@ -448,9 +448,9 @@ function LocalPoliticsContent() {
 
   return (
     <>
-    <main className="min-h-screen bg-slate-50 pb-20">
+    <main className="min-h-screen bg-muted pb-20">
       {/* 1. HERO SECTION (POSTER IMPACT STYLE) */}
-      <section className="relative pt-32 pb-24 px-4 overflow-hidden bg-white">
+      <section className="relative pt-32 pb-24 px-4 overflow-hidden bg-card">
         <div className="absolute top-0 left-0 w-full h-full opacity-[0.03] pointer-events-none select-none">
           <span className="absolute top-10 left-10 text-[15rem] font-staatliches leading-none rotate-12">TERRITOIRES</span>
           <span className="absolute bottom-10 right-10 text-[15rem] font-staatliches leading-none -rotate-12">PROXIMITÉ</span>
@@ -474,7 +474,7 @@ function LocalPoliticsContent() {
               La Politique <span className="inline-block bg-gradient-to-r from-rose-600 via-fuchsia-600 to-rose-600 bg-clip-text text-transparent italic pl-2 pr-12">Locale</span>
             </h1>
             
-            <p className="text-xl md:text-2xl text-slate-500 font-medium italic leading-relaxed max-w-3xl mx-auto text-pretty">
+            <p className="text-xl md:text-2xl text-muted-foreground font-medium italic leading-relaxed max-w-3xl mx-auto text-pretty">
               Découvrez les acteurs de vos territoires, des maires aux conseillers municipaux, et comprenez comment vos impôts locaux façonnent votre ville.
             </p>
 
@@ -486,7 +486,7 @@ function LocalPoliticsContent() {
       <div className="container mx-auto max-w-7xl px-4 mt-12">
         {/* 1.5 TABS NAVIGATION (GROS PANNEAU) */}
         <div className="mb-16">
-          <div className="bg-white p-2 rounded-[2.5rem] border border-slate-200 shadow-2xl shadow-slate-200/50 flex flex-col md:flex-row gap-2">
+          <div className="bg-card p-2 rounded-[2.5rem] border border-border shadow-2xl shadow-slate-200/50 flex flex-col md:flex-row gap-2">
             {[
               // Chaque échelon a SA couleur d'état actif (classes littérales pour Tailwind JIT).
               { id: "region", label: "La Région", icon: Map, active: "bg-sky-50 text-sky-600 shadow-inner", iconOn: "bg-sky-100", dot: "bg-sky-600" },
@@ -501,7 +501,7 @@ function LocalPoliticsContent() {
                   onClick={() => setActiveTab(tab.id as any)}
                   className={`
                     flex-1 flex items-center justify-center gap-4 py-6 px-8 rounded-[2rem] transition-all duration-500 group
-                    ${isActive ? tab.active : "text-slate-400 hover:text-slate-600 hover:bg-slate-50"}
+                    ${isActive ? tab.active : "text-slate-400 hover:text-muted-foreground hover:bg-muted"}
                   `}
                 >
                   <div className={`p-3 rounded-2xl transition-colors ${isActive ? tab.iconOn : "bg-slate-100 group-hover:bg-slate-200"}`}>
@@ -545,7 +545,7 @@ function LocalPoliticsContent() {
                     setShowDropdown(true);
                   }
                 }}
-                className="w-full bg-white border-2 border-slate-100 rounded-3xl py-7 pl-20 pr-10 text-xl font-medium text-slate-900 focus:outline-none focus:border-rose-600/30 focus:bg-rose-50/10 transition-all shadow-xl shadow-slate-200/20"
+                className="w-full bg-card border-2 border-border rounded-3xl py-7 pl-20 pr-10 text-xl font-medium text-foreground focus:outline-none focus:border-rose-600/30 focus:bg-rose-50/10 transition-all shadow-xl shadow-slate-200/20"
               />
               
               {/* Commune Dropdown */}
@@ -555,7 +555,7 @@ function LocalPoliticsContent() {
                     initial={{ opacity: 0, y: 10 }}
                     animate={{ opacity: 1, y: 0 }}
                     exit={{ opacity: 0, y: 10 }}
-                    className="absolute top-full left-0 w-full mt-4 bg-white rounded-3xl border border-slate-100 shadow-2xl z-50 overflow-hidden max-h-96 overflow-y-auto"
+                    className="absolute top-full left-0 w-full mt-4 bg-card rounded-3xl border border-border shadow-2xl z-50 overflow-hidden max-h-96 overflow-y-auto"
                   >
                     {communeSearch.results.map((c: CommuneResult) => (
                       <button
@@ -565,13 +565,13 @@ function LocalPoliticsContent() {
                           setSearch("");
                           setShowDropdown(false);
                         }}
-                        className="w-full px-8 py-6 text-left hover:bg-slate-50 border-b border-slate-50 flex items-center justify-between group"
+                        className="w-full px-8 py-6 text-left hover:bg-muted border-b border-slate-50 flex items-center justify-between group"
                       >
                         <div>
-                          <p className="text-lg font-bold text-slate-900 group-hover:text-rose-600 transition-colors">{c.nom}</p>
+                          <p className="text-lg font-bold text-foreground group-hover:text-rose-600 transition-colors">{c.nom}</p>
                           <p className="text-sm text-slate-400">{c.codesPostaux[0]} • {c.departement.nom}</p>
                         </div>
-                        <div className="w-10 h-10 rounded-full bg-slate-50 flex items-center justify-center text-slate-400 group-hover:bg-rose-600 group-hover:text-white transition-all">
+                        <div className="w-10 h-10 rounded-full bg-muted flex items-center justify-center text-slate-400 group-hover:bg-rose-600 group-hover:text-white transition-all">
                           <ChevronRight size={20} />
                         </div>
                       </button>
@@ -618,7 +618,7 @@ function LocalPoliticsContent() {
                                   region: { nom: "" }
                                 } as any);
                               }}
-                              className="group relative bg-white rounded-[2.5rem] border border-slate-200 overflow-hidden hover:shadow-2xl transition-all duration-500 text-left"
+                              className="group relative bg-card rounded-[2.5rem] border border-border overflow-hidden hover:shadow-2xl transition-all duration-500 text-left"
                             >
                               <div className="h-40 overflow-hidden relative">
                                 <img src={city.image.startsWith('/') ? `${process.env.NEXT_PUBLIC_BASE_PATH || ''}${city.image}` : city.image} alt={city.name} className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-700" />
@@ -636,12 +636,12 @@ function LocalPoliticsContent() {
                                 <div className="grid grid-cols-1 gap-6 py-6 border-y border-slate-50">
                                   <div className="space-y-1">
                                     <span className="text-[9px] font-black uppercase text-slate-400 tracking-widest flex items-center gap-1"><Users size={10} /> Population</span>
-                                    <p className="text-sm font-black text-slate-900">{city.population}</p>
+                                    <p className="text-sm font-black text-foreground">{city.population}</p>
                                   </div>
                                 </div>
-                                <div className={`w-full flex items-center justify-between group/btn text-slate-900 ${theme.hoverText} transition-colors pt-2`}>
+                                <div className={`w-full flex items-center justify-between group/btn text-foreground ${theme.hoverText} transition-colors pt-2`}>
                                   <span className="text-[10px] font-black uppercase tracking-widest">Voir les détails</span>
-                                  <div className={`w-10 h-10 rounded-full bg-slate-50 flex items-center justify-center ${theme.hoverBg} group-hover/btn:text-white transition-all`}><ChevronRight size={18} /></div>
+                                  <div className={`w-10 h-10 rounded-full bg-muted flex items-center justify-center ${theme.hoverBg} group-hover/btn:text-white transition-all`}><ChevronRight size={18} /></div>
                                 </div>
                               </div>
                             </motion.button>
@@ -653,7 +653,7 @@ function LocalPoliticsContent() {
                     <div className="flex items-center gap-4">
                       <button 
                         onClick={() => setSelectedCommune(null)}
-                        className="flex items-center gap-2 text-slate-500 hover:text-rose-600 transition-colors font-black text-[10px] uppercase tracking-widest"
+                        className="flex items-center gap-2 text-muted-foreground hover:text-rose-600 transition-colors font-black text-[10px] uppercase tracking-widest"
                       >
                         <ChevronRight className="rotate-180" size={16} />
                         Retour à la liste
@@ -678,7 +678,7 @@ function LocalPoliticsContent() {
               {activeTab === 'departement' && (
                 <div className="w-full py-4 space-y-8">
                   {filteredItems.length === 0 ? (
-                    <div className="text-center py-20 bg-white border border-slate-200/60 rounded-[2.5rem] shadow-sm">
+                    <div className="text-center py-20 bg-card border border-border/60 rounded-[2.5rem] shadow-sm">
                       <p className="text-slate-400 font-bold text-sm">Aucun département ne correspond à votre recherche.</p>
                     </div>
                   ) : (
@@ -699,7 +699,7 @@ function LocalPoliticsContent() {
                           <button
                             onClick={() => setVisibleCount(prev => prev + 12)}
                             className={cn(
-                              "px-8 py-3.5 bg-white border-2 border-slate-200 text-slate-700 font-bold text-xs uppercase tracking-widest rounded-full shadow-md hover:border-rose-600 hover:text-rose-600 transition-all active:scale-95 duration-200 cursor-pointer"
+                              "px-8 py-3.5 bg-card border-2 border-border text-slate-700 font-bold text-xs uppercase tracking-widest rounded-full shadow-md hover:border-rose-600 hover:text-rose-600 transition-all active:scale-95 duration-200 cursor-pointer"
                             )}
                           >
                             Charger plus de départements
@@ -768,13 +768,13 @@ function LocalPoliticsContent() {
 
             {/* Mayors by Party Panel */}
             {activeTab === 'commune' && (
-              <div className="bg-white dark:bg-slate-900 rounded-[2.5rem] border border-slate-200 dark:border-slate-800 p-8 space-y-8">
+              <div className="bg-card dark:bg-slate-900 rounded-[2.5rem] border border-border dark:border-slate-800 p-8 space-y-8">
                 <div className="flex items-center justify-between">
                   <div className="space-y-1">
-                    <h3 className="text-2xl font-staatliches uppercase tracking-wide text-slate-900 dark:text-white">Maires par Étiquette</h3>
+                    <h3 className="text-2xl font-staatliches uppercase tracking-wide text-foreground dark:text-white">Maires par Étiquette</h3>
                     <p className="text-[10px] font-black uppercase tracking-widest text-slate-400 dark:text-slate-500">France entière • Mandature 2026 vs 2020</p>
                   </div>
-                  <div className="w-12 h-12 rounded-2xl bg-slate-50 dark:bg-slate-800 flex items-center justify-center text-slate-900 dark:text-slate-100 border border-slate-100 dark:border-slate-800 shadow-sm">
+                  <div className="w-12 h-12 rounded-2xl bg-muted dark:bg-slate-800 flex items-center justify-center text-foreground dark:text-slate-100 border border-border dark:border-slate-800 shadow-sm">
                     <Building size={22} />
                   </div>
                 </div>
@@ -796,7 +796,7 @@ function LocalPoliticsContent() {
                     { party: "LFI", count: 9, diff: 6, color: "bg-red-900", total: 34965 },
                   ].map((stat, idx) => (
                     <div key={idx} className="space-y-2 group">
-                      <div className="flex items-center justify-between text-sm font-bold text-slate-900 dark:text-slate-200">
+                      <div className="flex items-center justify-between text-sm font-bold text-foreground dark:text-slate-200">
                         <span className="flex items-center gap-2">
                           <span className={`w-2 h-2 rounded-full ${stat.color} shadow-sm`} />
                           {stat.party}
@@ -812,7 +812,7 @@ function LocalPoliticsContent() {
                           </span>
                         </div>
                       </div>
-                      <div className="h-2.5 w-full bg-slate-50 dark:bg-slate-800/80 rounded-full overflow-hidden">
+                      <div className="h-2.5 w-full bg-muted dark:bg-slate-800/80 rounded-full overflow-hidden">
                         <motion.div 
                           initial={{ width: 0 }}
                           animate={{ width: `${(stat.count / stat.total) * 100}%` }}
@@ -829,7 +829,7 @@ function LocalPoliticsContent() {
                     <span className="flex items-center gap-1.5"><span className="w-1.5 h-1.5 rounded-full bg-emerald-500" /> Progression</span>
                     <span className="flex items-center gap-1.5"><span className="w-1.5 h-1.5 rounded-full bg-rose-500" /> Recul</span>
                   </p>
-                  <p className="text-xs text-slate-500 dark:text-slate-400 italic text-center">
+                  <p className="text-xs text-muted-foreground dark:text-slate-400 italic text-center">
                     La majorité des communes rurales de moins de 3500 habitants sont gérées par des maires sans étiquette. Les évolutions comparent les résultats post-2026 à la mandature de 2020.
                   </p>
                 </div>
@@ -840,24 +840,24 @@ function LocalPoliticsContent() {
             {(() => {
               const config = teaserConfigs[activeTab] || teaserConfigs.commune;
               return (
-                <div className="bg-gradient-to-br from-amber-400 to-orange-500 rounded-[2.5rem] p-8 text-slate-900 space-y-6 shadow-xl shadow-orange-200">
+                <div className="bg-gradient-to-br from-amber-400 to-orange-500 rounded-[2.5rem] p-8 text-foreground space-y-6 shadow-xl shadow-orange-200">
                   {pLoading ? (
                     <div className="flex flex-col items-center justify-center py-12 gap-4">
-                      <Loader2 className="animate-spin text-slate-900" size={32} />
-                      <p className="text-xs font-bold text-slate-900/60 uppercase tracking-wider">Vérification de l'accès...</p>
+                      <Loader2 className="animate-spin text-foreground" size={32} />
+                      <p className="text-xs font-bold text-foreground/60 uppercase tracking-wider">Vérification de l'accès...</p>
                     </div>
                   ) : (
                     <>
                       <div className="flex items-center justify-between">
-                        <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-white/25 border border-white/30 text-[9px] font-black uppercase tracking-widest text-slate-900 shadow-sm">
-                          <Coins size={12} className="text-slate-900 fill-slate-900/10" />
+                        <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-white/25 border border-white/30 text-[9px] font-black uppercase tracking-widest text-foreground shadow-sm">
+                          <Coins size={12} className="text-foreground fill-slate-900/10" />
                           {isPremium ? "Outil Premium Actif" : "Option Premium"}
                         </div>
                         <div className="w-8 h-8 rounded-full bg-white/20 flex items-center justify-center border border-white/10">
                           {isPremium ? (
-                            <ShieldCheck size={14} className="text-slate-900" />
+                            <ShieldCheck size={14} className="text-foreground" />
                           ) : (
-                            <Lock size={14} className="text-slate-900" />
+                            <Lock size={14} className="text-foreground" />
                           )}
                         </div>
                       </div>
@@ -876,14 +876,14 @@ function LocalPoliticsContent() {
                         {/* Entity headers */}
                         <div className="grid grid-cols-7 items-center gap-1 text-center mb-4">
                           <div className="col-span-3 bg-white/30 rounded-2xl p-2.5 flex flex-col items-center border border-white/10 shadow-sm min-w-0">
-                            <span className="text-[10px] font-black uppercase tracking-wider text-slate-900 truncate max-w-full">{config.entityA}</span>
+                            <span className="text-[10px] font-black uppercase tracking-wider text-foreground truncate max-w-full">{config.entityA}</span>
                             <span className="text-[9px] font-bold text-slate-700 mt-0.5 truncate max-w-full">{config.subA}</span>
                           </div>
                           <div className="col-span-1 flex justify-center">
                             <span className="w-7 h-7 rounded-full bg-slate-900 text-white font-black text-[10px] flex items-center justify-center shadow-md border border-white/15">VS</span>
                           </div>
                           <div className="col-span-3 bg-white/30 rounded-2xl p-2.5 flex flex-col items-center border border-white/10 shadow-sm min-w-0">
-                            <span className="text-[10px] font-black uppercase tracking-wider text-slate-900 truncate max-w-full">{config.entityB}</span>
+                            <span className="text-[10px] font-black uppercase tracking-wider text-foreground truncate max-w-full">{config.entityB}</span>
                             <span className="text-[9px] font-bold text-slate-700 mt-0.5 truncate max-w-full">{config.subB}</span>
                           </div>
                         </div>
@@ -891,7 +891,7 @@ function LocalPoliticsContent() {
                         {/* Comparative Metrics (Locked & Blurred only if not premium) */}
                         <div className="space-y-3.5 relative">
                           {/* Metric 1 */}
-                          <div className="grid grid-cols-7 items-center text-xs font-bold text-slate-900 border-b border-white/10 pb-2">
+                          <div className="grid grid-cols-7 items-center text-xs font-bold text-foreground border-b border-white/10 pb-2">
                             <div className={cn("col-span-2 text-left font-black", config.metric1ColorA)}>{config.metric1ValA}</div>
                             <div className="col-span-3 text-center text-[8px] uppercase tracking-widest text-slate-700 font-extrabold flex items-center justify-center gap-1">
                               <Scale size={10} className="opacity-60" /> {config.metric1Label}
@@ -900,7 +900,7 @@ function LocalPoliticsContent() {
                           </div>
                           
                           {/* Metric 2 */}
-                          <div className="grid grid-cols-7 items-center text-xs font-bold text-slate-900 border-b border-white/10 pb-2">
+                          <div className="grid grid-cols-7 items-center text-xs font-bold text-foreground border-b border-white/10 pb-2">
                             <div className={cn("col-span-2 text-left font-black", config.metric2ColorA)}>{config.metric2ValA}</div>
                             <div className="col-span-3 text-center text-[8px] uppercase tracking-widest text-slate-700 font-extrabold">
                               {config.metric2Label}
@@ -909,7 +909,7 @@ function LocalPoliticsContent() {
                           </div>
 
                           {/* Metric 3 */}
-                          <div className="grid grid-cols-7 items-center text-xs font-bold text-slate-900">
+                          <div className="grid grid-cols-7 items-center text-xs font-bold text-foreground">
                             <div className={cn("col-span-2 text-left font-black", config.metric3ColorA)}>{config.metric3ValA}</div>
                             <div className="col-span-3 text-center text-[8px] uppercase tracking-widest text-slate-700 font-extrabold">
                               {config.metric3Label}

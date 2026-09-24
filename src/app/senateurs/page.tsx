@@ -14,7 +14,7 @@ import CommissionTracker from "@/components/commissions/CommissionTracker";
 // Page dédiée au Sénat : composition + textes législatifs du Sénat + sénateurs.
 export default async function SenateursPage() {
   return (
-    <div className="min-h-screen bg-white dark:bg-slate-950">
+    <div className="min-h-screen bg-card dark:bg-slate-950">
       <ChamberHero
         color="red"
         image="/images/senat_luxembourg_premium.png"
@@ -37,8 +37,8 @@ export default async function SenateursPage() {
           <PresidentPhoto src="https://www.senat.fr/senimg/larcher_gerard86034e.jpg" alt="Gérard Larcher" ring="ring-amber-300" gradient="from-amber-500 to-orange-500" />
           <div className="min-w-0">
             <p className="text-[10px] font-black uppercase tracking-widest text-amber-600">Président du Sénat</p>
-            <p className="text-xl font-bold text-slate-900 group-hover:text-amber-700 transition-colors">Gérard Larcher</p>
-            <p className="text-sm text-slate-500">Deuxième personnage de l'État — voir sa fiche</p>
+            <p className="text-xl font-bold text-foreground group-hover:text-amber-700 transition-colors">Gérard Larcher</p>
+            <p className="text-sm text-muted-foreground">Deuxième personnage de l'État — voir sa fiche</p>
           </div>
           <ChevronRight className="ml-auto text-slate-300 group-hover:text-amber-500 transition-colors" />
         </Link>

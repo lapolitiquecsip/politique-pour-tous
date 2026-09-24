@@ -83,7 +83,7 @@ export default function RadarConcept() {
 
       {/* 4. Pricing & CTA */}
       <section className="py-32 px-4">
-        <div className="container mx-auto max-w-3xl text-center bg-white rounded-[3.5rem] p-12 md:p-20 text-slate-900 relative overflow-hidden shadow-2xl">
+        <div className="container mx-auto max-w-3xl text-center bg-card rounded-[3.5rem] p-12 md:p-20 text-foreground relative overflow-hidden shadow-2xl">
           <div className="absolute top-0 right-0 w-64 h-64 bg-amber-500/10 rounded-full blur-[100px]" />
           
           <div className="relative z-10 space-y-10">
@@ -91,13 +91,13 @@ export default function RadarConcept() {
               <h2 className="text-4xl md:text-6xl font-staatliches uppercase tracking-tighter leading-none">
                 Passez au <span className="text-amber-600">Premium</span>
               </h2>
-              <p className="text-slate-500 text-lg font-medium italic">
+              <p className="text-muted-foreground text-lg font-medium italic">
                 Sachez enfin où va votre argent.
               </p>
             </div>
 
             <div className="inline-flex flex-col items-center gap-2">
-              <span className="text-5xl font-black text-slate-900">2,99€<span className="text-xl text-slate-400">/mois</span></span>
+              <span className="text-5xl font-black text-foreground">2,99€<span className="text-xl text-slate-400">/mois</span></span>
               <p className="text-[10px] font-black uppercase tracking-[0.3em] text-amber-600">Offre Élite</p>
             </div>
 

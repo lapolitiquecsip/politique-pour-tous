@@ -279,7 +279,7 @@ export function VerticalImageStack({
     red: "bg-rose-50/10 dark:bg-rose-950/20 border-rose-100/20 dark:border-rose-900/30",
     amber: "bg-amber-50/10 dark:bg-amber-950/20 border-amber-100/20 dark:border-amber-900/30",
     emerald: "bg-emerald-50/10 dark:bg-emerald-950/20 border-emerald-100/20 dark:border-emerald-900/30",
-  }[theme] || "bg-slate-50/10 dark:bg-slate-950/20 border-slate-100/20 dark:border-slate-900/30"
+  }[theme] || "bg-slate-50/10 dark:bg-slate-950/20 border-border/20 dark:border-slate-900/30"
 
   const glowColors = {
     blue: "bg-blue-500/10 dark:bg-blue-500/15",
@@ -430,13 +430,13 @@ export function VerticalImageStack({
       )}
 
       {/* Instruction hint / Tinder-style Controls merged */}
-      <div className="absolute bottom-6 left-1/2 -translate-x-1/2 z-30 flex items-center gap-6 select-none bg-white/80 dark:bg-slate-900/80 backdrop-blur-md px-5 py-2.5 rounded-full border border-slate-100 dark:border-slate-800 shadow-md">
+      <div className="absolute bottom-6 left-1/2 -translate-x-1/2 z-30 flex items-center gap-6 select-none bg-white/80 dark:bg-slate-900/80 backdrop-blur-md px-5 py-2.5 rounded-full border border-border dark:border-slate-800 shadow-md">
         <motion.button
           whileHover={{ scale: 1.15 }}
           whileTap={{ scale: 0.9 }}
           onClick={() => navigate(-1)}
           disabled={currentIndex === 0}
-          className={`w-9 h-9 flex items-center justify-center rounded-full bg-slate-50 dark:bg-slate-800 border border-slate-100 dark:border-slate-700 text-slate-500 dark:text-slate-400 hover:text-slate-800 dark:hover:text-slate-200 disabled:opacity-30 disabled:cursor-not-allowed transition-all shadow-sm`}
+          className={`w-9 h-9 flex items-center justify-center rounded-full bg-muted dark:bg-slate-800 border border-border dark:border-slate-700 text-muted-foreground dark:text-slate-400 hover:text-slate-800 dark:hover:text-slate-200 disabled:opacity-30 disabled:cursor-not-allowed transition-all shadow-sm`}
           title="Précédent"
         >
           <svg className="w-5 h-5 stroke-[2.5]" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -457,7 +457,7 @@ export function VerticalImageStack({
           whileTap={{ scale: 0.9 }}
           onClick={() => navigate(1)}
           disabled={currentIndex === items.length - 1}
-          className={`w-9 h-9 flex items-center justify-center rounded-full bg-slate-50 dark:bg-slate-800 border border-slate-100 dark:border-slate-700 text-slate-500 dark:text-slate-400 hover:text-slate-800 dark:hover:text-slate-200 disabled:opacity-30 disabled:cursor-not-allowed transition-all shadow-sm`}
+          className={`w-9 h-9 flex items-center justify-center rounded-full bg-muted dark:bg-slate-800 border border-border dark:border-slate-700 text-muted-foreground dark:text-slate-400 hover:text-slate-800 dark:hover:text-slate-200 disabled:opacity-30 disabled:cursor-not-allowed transition-all shadow-sm`}
           title="Suivant"
         >
           <svg className="w-5 h-5 stroke-[2.5]" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -474,7 +474,7 @@ export function VerticalImageStack({
           key={combo}
           animate={combo > 0 ? { scale: [1, 1.06, 1] } : {}}
           transition={{ duration: 0.35, ease: "easeOut" }}
-          className="flex flex-col items-center gap-2 rounded-3xl border border-slate-100/60 bg-white/90 px-4 py-4 text-center shadow-xl shadow-amber-500/5 backdrop-blur-md dark:border-slate-800/60 dark:bg-slate-900/90"
+          className="flex flex-col items-center gap-2 rounded-3xl border border-border/60 bg-white/90 px-4 py-4 text-center shadow-xl shadow-amber-500/5 backdrop-blur-md dark:border-slate-800/60 dark:bg-slate-900/90"
         >
           <span className="flex items-center gap-1 text-[9px] font-black uppercase tracking-widest text-amber-500">
             Combo {combo > 0 ? "🔥" : "💤"}
@@ -497,7 +497,7 @@ export function VerticalImageStack({
             </span>
           </div>
 
-          <span className="text-[9px] font-bold uppercase leading-tight tracking-tight text-slate-500 dark:text-slate-400">
+          <span className="text-[9px] font-bold uppercase leading-tight tracking-tight text-muted-foreground dark:text-slate-400">
             {getStreakMessage(combo)}
           </span>
 

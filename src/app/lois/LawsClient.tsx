@@ -137,30 +137,30 @@ function LawsContent() {
   };
 
   return (
-    <section className="mx-auto max-w-7xl px-4 pb-24 text-slate-900">
-      <div className="flex flex-col gap-5 rounded-[2rem] border border-slate-200 bg-slate-50 p-5 md:p-8">
+    <section className="mx-auto max-w-7xl px-4 pb-24 text-foreground">
+      <div className="flex flex-col gap-5 rounded-[2rem] border border-border bg-muted p-5 md:p-8">
         {/* Onglets : sur mobile, icône AU-DESSUS d'un libellé court centré (fini le texte qui se
             replie de travers) ; sur desktop, disposition en ligne inchangée. */}
-        <div className="grid grid-cols-3 gap-2 rounded-2xl bg-white p-2 shadow-sm">
-          <button onClick={() => setTab("promulgated")} className={`flex flex-col items-center justify-center gap-1.5 rounded-xl px-2 py-3 text-center text-xs font-black leading-tight transition md:flex-row md:gap-2 md:py-4 md:text-base ${tab === "promulgated" ? "bg-red-600 text-white" : "text-slate-600"}`}><Scale size={18} className="shrink-0" /><span>Lois promulguées</span></button>
-          <button onClick={() => setTab("ongoing")} className={`flex flex-col items-center justify-center gap-1.5 rounded-xl px-2 py-3 text-center text-xs font-black leading-tight transition md:flex-row md:gap-2 md:py-4 md:text-base ${tab === "ongoing" ? "bg-slate-950 text-white" : "text-slate-600"}`}><FileText size={18} className="shrink-0" /><span>Textes en cours</span></button>
-          <button onClick={() => setTab("enjeux")} className={`flex flex-col items-center justify-center gap-1.5 rounded-xl px-2 py-3 text-center text-xs font-black leading-tight transition md:flex-row md:gap-2 md:py-4 md:text-base ${tab === "enjeux" ? "bg-violet-600 text-white" : "text-slate-600"}`}><Vote size={18} className="shrink-0" /><span>Votes par enjeu</span></button>
+        <div className="grid grid-cols-3 gap-2 rounded-2xl bg-card p-2 shadow-sm">
+          <button onClick={() => setTab("promulgated")} className={`flex flex-col items-center justify-center gap-1.5 rounded-xl px-2 py-3 text-center text-xs font-black leading-tight transition md:flex-row md:gap-2 md:py-4 md:text-base ${tab === "promulgated" ? "bg-red-600 text-white" : "text-muted-foreground"}`}><Scale size={18} className="shrink-0" /><span>Lois promulguées</span></button>
+          <button onClick={() => setTab("ongoing")} className={`flex flex-col items-center justify-center gap-1.5 rounded-xl px-2 py-3 text-center text-xs font-black leading-tight transition md:flex-row md:gap-2 md:py-4 md:text-base ${tab === "ongoing" ? "bg-slate-950 text-white" : "text-muted-foreground"}`}><FileText size={18} className="shrink-0" /><span>Textes en cours</span></button>
+          <button onClick={() => setTab("enjeux")} className={`flex flex-col items-center justify-center gap-1.5 rounded-xl px-2 py-3 text-center text-xs font-black leading-tight transition md:flex-row md:gap-2 md:py-4 md:text-base ${tab === "enjeux" ? "bg-violet-600 text-white" : "text-muted-foreground"}`}><Vote size={18} className="shrink-0" /><span>Votes par enjeu</span></button>
         </div>
         {tab !== "enjeux" && (
         <div className="flex flex-col gap-3 md:flex-row">
-          <label className="flex flex-1 items-center gap-3 rounded-xl border border-slate-200 bg-white px-4 text-slate-600 focus-within:border-slate-400"><Search size={18} /><input value={search} onChange={event => setSearch(event.target.value)} className="w-full bg-transparent py-4 outline-none text-slate-900 placeholder:text-slate-400" placeholder="Rechercher un texte officiel" /></label>
-          <select value={category || ""} onChange={event => setCategory((event.target.value || null) as LegislativeCategory | null)} className="rounded-xl border border-slate-200 bg-white px-4 py-4 font-bold text-slate-900 outline-none"><option value="">Toutes les catégories</option>{LEGISLATIVE_CATEGORIES.map(item => <option key={item.value} value={item.value}>{item.label}</option>)}</select>
+          <label className="flex flex-1 items-center gap-3 rounded-xl border border-border bg-card px-4 text-muted-foreground focus-within:border-slate-400"><Search size={18} /><input value={search} onChange={event => setSearch(event.target.value)} className="w-full bg-transparent py-4 outline-none text-foreground placeholder:text-slate-400" placeholder="Rechercher un texte officiel" /></label>
+          <select value={category || ""} onChange={event => setCategory((event.target.value || null) as LegislativeCategory | null)} className="rounded-xl border border-border bg-card px-4 py-4 font-bold text-foreground outline-none"><option value="">Toutes les catégories</option>{LEGISLATIVE_CATEGORIES.map(item => <option key={item.value} value={item.value}>{item.label}</option>)}</select>
         </div>
         )}
 
         {/* Sous-filtres de la navette : où en est le texte, quel type, quelle étape. */}
         {tab === "ongoing" && (
-          <div className="flex flex-col gap-3 border-t border-slate-200 pt-4">
+          <div className="flex flex-col gap-3 border-t border-border pt-4">
             <div>
               <p className="mb-2 text-[10px] font-black uppercase tracking-widest text-slate-400">Chambre saisie actuellement</p>
               <div className="inline-flex flex-wrap gap-2">
                 {CHAMBERS.map(c => (
-                  <button key={c.label} onClick={() => setChamber(c.value)} className={`rounded-full px-4 py-2 text-[11px] font-black uppercase tracking-wide transition ${chamber === c.value ? "bg-slate-950 text-white shadow" : "bg-white border border-slate-200 text-slate-600 hover:border-slate-400"}`}>{c.short}</button>
+                  <button key={c.label} onClick={() => setChamber(c.value)} className={`rounded-full px-4 py-2 text-[11px] font-black uppercase tracking-wide transition ${chamber === c.value ? "bg-slate-950 text-white shadow" : "bg-card border border-border text-muted-foreground hover:border-slate-400"}`}>{c.short}</button>
                 ))}
               </div>
             </div>
@@ -169,7 +169,7 @@ function LawsContent() {
                 <p className="mb-2 text-[10px] font-black uppercase tracking-widest text-slate-400">Type de texte</p>
                 <div className="inline-flex flex-wrap gap-2">
                   {TYPES.map(t => (
-                    <button key={t.label} onClick={() => setTextType(t.value)} className={`rounded-full px-4 py-2 text-[11px] font-black uppercase tracking-wide transition ${textType === t.value ? "bg-red-600 text-white shadow" : "bg-white border border-slate-200 text-slate-600 hover:border-red-300"}`}>{t.label}</button>
+                    <button key={t.label} onClick={() => setTextType(t.value)} className={`rounded-full px-4 py-2 text-[11px] font-black uppercase tracking-wide transition ${textType === t.value ? "bg-red-600 text-white shadow" : "bg-card border border-border text-muted-foreground hover:border-red-300"}`}>{t.label}</button>
                   ))}
                 </div>
               </div>
@@ -177,7 +177,7 @@ function LawsContent() {
                 <p className="mb-2 text-[10px] font-black uppercase tracking-widest text-slate-400">Étape</p>
                 <div className="inline-flex flex-wrap gap-2">
                   {STAGES.map(s => (
-                    <button key={s.label} onClick={() => setStage(s.value)} className={`rounded-full px-4 py-2 text-[11px] font-black uppercase tracking-wide transition ${stage === s.value ? "bg-amber-500 text-white shadow" : "bg-white border border-slate-200 text-slate-600 hover:border-amber-300"}`}>{s.label}</button>
+                    <button key={s.label} onClick={() => setStage(s.value)} className={`rounded-full px-4 py-2 text-[11px] font-black uppercase tracking-wide transition ${stage === s.value ? "bg-amber-500 text-white shadow" : "bg-card border border-border text-muted-foreground hover:border-amber-300"}`}>{s.label}</button>
                   ))}
                 </div>
               </div>
@@ -187,7 +187,7 @@ function LawsContent() {
       </div>
 
       {tab === "enjeux" ? <IssuesVotesView /> : (<>
-      <div className="mt-10"><h2 className="text-4xl font-staatliches uppercase md:text-6xl text-slate-900">{tab === "promulgated" ? "Publiées au Journal officiel" : "Dans la navette parlementaire"}</h2><p className="mt-2 text-slate-500">{tab === "promulgated" ? "Seule une publication JORF peut faire apparaître un texte ici." : "Suivez chaque texte : la chambre qui l'examine, son type et son étape."}</p></div>
+      <div className="mt-10"><h2 className="text-4xl font-staatliches uppercase md:text-6xl text-foreground">{tab === "promulgated" ? "Publiées au Journal officiel" : "Dans la navette parlementaire"}</h2><p className="mt-2 text-muted-foreground">{tab === "promulgated" ? "Seule une publication JORF peut faire apparaître un texte ici." : "Suivez chaque texte : la chambre qui l'examine, son type et son étape."}</p></div>
       {loading && <div className="flex justify-center py-24"><Loader2 className="animate-spin text-red-600" /></div>}
       {error && <div className="mt-8 rounded-2xl bg-red-50 p-5 font-bold text-red-800">{error}</div>}
       {!loading && !error && <div className="mt-8 grid gap-5 sm:grid-cols-2 lg:grid-cols-3">{visibleItems.map(item => {
@@ -212,7 +212,7 @@ function LawsContent() {
           </div>
         );
       })}</div>}
-      {!loading && !error && !visibleItems.length && <div className="py-20 text-center text-slate-500">Aucun texte officiel ne correspond à ces filtres.</div>}
+      {!loading && !error && !visibleItems.length && <div className="py-20 text-center text-muted-foreground">Aucun texte officiel ne correspond à ces filtres.</div>}
       {!error && visibleItems.length > 0 && hasMore && <div className="mt-10 text-center"><button onClick={loadMore} disabled={loading} className="rounded-full bg-slate-950 px-8 py-4 font-black text-white disabled:opacity-50">Charger plus de textes</button></div>}
       </>)}
       <DossierModal

@@ -52,7 +52,7 @@ function EmbeddedFunction({ role }: { role: Role }) {
   // Fonctions non embarquables (candidat, parti, département, maire) : accès direct.
   return (
     <div className="mx-auto max-w-3xl px-4 py-16 text-center">
-      <p className="text-slate-500 dark:text-slate-400">Cette fonction dispose de sa propre page dédiée.</p>
+      <p className="text-muted-foreground dark:text-slate-400">Cette fonction dispose de sa propre page dédiée.</p>
       <Link href={role.href} className="mt-4 inline-flex items-center gap-2 rounded-2xl bg-slate-900 px-6 py-4 font-black uppercase tracking-widest text-white transition hover:bg-slate-800 dark:bg-white dark:text-slate-900">
         Ouvrir : {role.label} <ArrowUpRight size={16} />
       </Link>
@@ -87,11 +87,11 @@ export default function UnifiedPersonClient({ entryType, slug }: { entryType: st
   const multi = roles && roles.length > 1;
 
   return (
-    <div className="min-h-screen bg-slate-50 dark:bg-slate-950">
+    <div className="min-h-screen bg-muted dark:bg-slate-950">
       {/* En-tête unifié : retour + onglets des fonctions de la personne */}
-      <div className="sticky top-0 z-40 border-b border-slate-200 bg-white/90 backdrop-blur-md dark:border-slate-800 dark:bg-slate-950/90">
+      <div className="sticky top-0 z-40 border-b border-border bg-white/90 backdrop-blur-md dark:border-slate-800 dark:bg-slate-950/90">
         <div className="mx-auto flex max-w-6xl items-center gap-3 overflow-x-auto px-4 py-2.5 [scrollbar-width:none] [&::-webkit-scrollbar]:hidden">
-          <Link href={backHref} className="inline-flex shrink-0 items-center gap-1.5 text-xs font-black uppercase tracking-widest text-slate-500 hover:text-slate-900 dark:hover:text-white">
+          <Link href={backHref} className="inline-flex shrink-0 items-center gap-1.5 text-xs font-black uppercase tracking-widest text-muted-foreground hover:text-foreground dark:hover:text-white">
             <ArrowLeft size={14} /> {backLabel}
           </Link>
           {multi && <span className="mx-1 h-5 w-px shrink-0 bg-slate-200 dark:bg-slate-700" />}
@@ -105,7 +105,7 @@ export default function UnifiedPersonClient({ entryType, slug }: { entryType: st
                   <button key={i} onClick={() => setActive(r)} title={r.label}
                     className={`group inline-flex shrink-0 items-center gap-2 rounded-full px-4 py-2 text-[11px] font-black uppercase tracking-wide transition ${
                       on ? "bg-slate-900 text-white shadow-md dark:bg-white dark:text-slate-900"
-                         : "border border-slate-200 bg-white text-slate-600 hover:border-slate-400 hover:text-slate-900 dark:border-slate-700 dark:bg-slate-900 dark:text-slate-300 dark:hover:text-white"}`}>
+                         : "border border-border bg-card text-muted-foreground hover:border-slate-400 hover:text-foreground dark:border-slate-700 dark:bg-slate-900 dark:text-slate-300 dark:hover:text-white"}`}>
                     <Icon size={14} className={on ? "" : "text-slate-400"} /> {r.kind}
                   </button>
                 );

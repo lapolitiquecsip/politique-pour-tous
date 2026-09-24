@@ -110,7 +110,7 @@ export default function PremiumButton() {
                 <p className="text-xs opacity-90 mt-1 mb-2">Veuillez vous connecter pour accéder au paiement.</p>
                 <Link 
                   href="/login" 
-                  className="inline-flex items-center gap-1.5 px-3 py-1.5 bg-white text-red-600 rounded-lg text-xs font-extrabold hover:bg-red-50 transition-colors shadow-sm"
+                  className="inline-flex items-center gap-1.5 px-3 py-1.5 bg-card text-red-600 rounded-lg text-xs font-extrabold hover:bg-red-50 transition-colors shadow-sm"
                 >
                   Se connecter
                   <ArrowRight size={12} />

@@ -16,7 +16,7 @@ export default function VocabularySearch({
       </div>
       <input
         type="text"
-        className="block w-full pl-10 pr-3 py-3 border border-gray-300 rounded-xl leading-5 bg-white placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-accent-blue focus:border-accent-blue sm:text-sm shadow-sm"
+        className="block w-full pl-10 pr-3 py-3 border border-gray-300 rounded-xl leading-5 bg-card placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-accent-blue focus:border-accent-blue sm:text-sm shadow-sm"
         placeholder="Rechercher un terme..."
         value={searchQuery}
         onChange={(e) => setSearchQuery(e.target.value)}

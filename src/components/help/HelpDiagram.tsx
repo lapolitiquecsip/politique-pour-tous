@@ -81,5 +81,5 @@ export default function HelpDiagram({ name }: { name: string }) {
   const el = map[name];
   if (!el) return null;
   if (name === "loi-parcours") return <>{el}</>;   // ce schéma porte déjà son cadre
-  return <div className="mt-3 rounded-xl border border-slate-100 bg-slate-50/70 p-3 dark:border-slate-800 dark:bg-slate-800/40">{el}</div>;
+  return <div className="mt-3 rounded-xl border border-border bg-slate-50/70 p-3 dark:border-slate-800 dark:bg-slate-800/40">{el}</div>;
 }

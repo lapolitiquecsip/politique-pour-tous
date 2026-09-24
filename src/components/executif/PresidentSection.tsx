@@ -25,7 +25,7 @@ function SummaryBody({ text }: { text: string }) {
         return (
           <li key={i} className="flex gap-2 text-sm leading-relaxed text-slate-700">
             <span className="mt-1.5 h-1.5 w-1.5 shrink-0 rounded-full bg-amber-500" />
-            <span>{parts.map((p, k) => (k % 2 ? <strong key={k} className="text-slate-900">{p}</strong> : <span key={k}>{p}</span>))}</span>
+            <span>{parts.map((p, k) => (k % 2 ? <strong key={k} className="text-foreground">{p}</strong> : <span key={k}>{p}</span>))}</span>
           </li>
         );
       })}
@@ -44,7 +44,7 @@ function PubList({ items, accent, empty, onSelect }: { items: Pub[]; accent: str
           <>
             <div className="min-w-0 flex-1">
               <p className="text-[10px] font-black uppercase tracking-widest text-slate-400">{fmtDate(p.published_at)}</p>
-              <p className="mt-0.5 text-sm font-bold leading-snug text-slate-900 group-hover:text-amber-600 transition-colors line-clamp-2">
+              <p className="mt-0.5 text-sm font-bold leading-snug text-foreground group-hover:text-amber-600 transition-colors line-clamp-2">
                 {clean(p.title)}
               </p>
             </div>
@@ -55,7 +55,7 @@ function PubList({ items, accent, empty, onSelect }: { items: Pub[]; accent: str
         );
         // Mobile : on limite à 3 éléments par bloc (les suivants n'apparaissent qu'à partir de sm)
         // pour que la section président ne mange pas tout l'écran avant le reste de l'exécutif.
-        const cls = `group w-full items-start gap-3 rounded-2xl border border-slate-100 bg-slate-50/60 p-3 text-left transition hover:border-amber-300 hover:bg-amber-50/40 ${i < 3 ? "flex" : "hidden sm:flex"}`;
+        const cls = `group w-full items-start gap-3 rounded-2xl border border-border bg-slate-50/60 p-3 text-left transition hover:border-amber-300 hover:bg-amber-50/40 ${i < 3 ? "flex" : "hidden sm:flex"}`;
         // Conseils des ministres : on ouvre le résumé SUR le site plutôt que d'envoyer
         // l'utilisateur déchiffrer le compte rendu officiel sur elysee.fr.
         return onSelect
@@ -101,7 +101,7 @@ export default function PresidentSection({ photoUrl }: { photoUrl?: string }) {
   ];
 
   return (
-    <section className="bg-white p-5 md:p-12 rounded-[2rem] md:rounded-[3rem] border border-slate-200 space-y-6 md:space-y-8">
+    <section className="bg-card p-5 md:p-12 rounded-[2rem] md:rounded-[3rem] border border-border space-y-6 md:space-y-8">
       {/* En-tête président */}
       <div className="flex flex-col sm:flex-row items-center gap-4 md:gap-6">
         <div className="w-20 h-20 md:w-24 md:h-24 shrink-0 rounded-full overflow-hidden border-4 border-amber-50 shadow-md bg-slate-100">
@@ -114,10 +114,10 @@ export default function PresidentSection({ photoUrl }: { photoUrl?: string }) {
         </div>
         <div className="flex-1 text-center sm:text-left">
           <p className="text-amber-600 font-black text-xs uppercase tracking-widest mb-1">Chef de l'État · depuis 2017</p>
-          <h2 className="text-3xl md:text-4xl font-staatliches uppercase tracking-tight text-slate-900">
+          <h2 className="text-3xl md:text-4xl font-staatliches uppercase tracking-tight text-foreground">
             Emmanuel <span className="text-transparent bg-clip-text bg-gradient-to-r from-amber-500 via-orange-500 to-yellow-500">Macron</span>
           </h2>
-          <p className="mt-1 text-sm text-slate-500">
+          <p className="mt-1 text-sm text-muted-foreground">
             Président de la République. Il préside le Conseil des ministres et nomme le Premier ministre.
           </p>
         </div>
@@ -139,14 +139,14 @@ export default function PresidentSection({ photoUrl }: { photoUrl?: string }) {
               <div className={`w-9 h-9 rounded-xl flex items-center justify-center ${b.iconBg}`}>
                 <b.icon size={16} />
               </div>
-              <h3 className="text-sm font-black uppercase tracking-widest text-slate-900">{b.title}</h3>
+              <h3 className="text-sm font-black uppercase tracking-widest text-foreground">{b.title}</h3>
             </div>
             <PubList items={b.items} accent={b.accent} empty={b.empty} onSelect={b.key === "cdm" ? setOpenCdm : undefined} />
           </motion.div>
         ))}
       </div>
 
-      <p className="text-[10px] text-slate-400/80 italic border-t border-slate-100 pt-4">
+      <p className="text-[10px] text-slate-400/80 italic border-t border-border pt-4">
         Source : présidence de la République (elysee.fr) — flux officiel, mis à jour quotidiennement.
         Titres, dates et liens repris tels que publiés.
       </p>
@@ -154,19 +154,19 @@ export default function PresidentSection({ photoUrl }: { photoUrl?: string }) {
       {/* Résumé du Conseil des ministres, lisible sans quitter le site. */}
       {openCdm && (
         <div className="fixed inset-0 z-[100] flex items-center justify-center bg-slate-950/80 p-4" onClick={() => setOpenCdm(null)}>
-          <div className="max-h-[85vh] w-full max-w-2xl overflow-y-auto rounded-3xl bg-white p-7 shadow-2xl" onClick={e => e.stopPropagation()}>
+          <div className="max-h-[85vh] w-full max-w-2xl overflow-y-auto rounded-3xl bg-card p-7 shadow-2xl" onClick={e => e.stopPropagation()}>
             <div className="flex items-start justify-between gap-4">
               <div>
                 <p className="text-[10px] font-black uppercase tracking-widest text-amber-600">Conseil des ministres</p>
                 <p className="mt-0.5 text-[11px] font-bold uppercase tracking-widest text-slate-400">{fmtDate(openCdm.published_at)}</p>
               </div>
-              <button onClick={() => setOpenCdm(null)} className="rounded-full bg-slate-100 p-2 text-slate-500 transition hover:bg-slate-200">
+              <button onClick={() => setOpenCdm(null)} className="rounded-full bg-slate-100 p-2 text-muted-foreground transition hover:bg-slate-200">
                 <X size={18} />
               </button>
             </div>
-            <h3 className="mt-3 text-lg font-bold leading-snug text-slate-900">{clean(openCdm.title)}</h3>
+            <h3 className="mt-3 text-lg font-bold leading-snug text-foreground">{clean(openCdm.title)}</h3>
 
-            <div className="mt-5 rounded-2xl bg-slate-50 p-5">
+            <div className="mt-5 rounded-2xl bg-muted p-5">
               <p className="mb-3 flex items-center gap-1.5 text-[9px] font-black uppercase tracking-widest text-amber-600">
                 <Sparkles size={11} /> Ce qui a été décidé — résumé du compte rendu officiel
               </p>

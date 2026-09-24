@@ -65,7 +65,7 @@ export default function ItddSection({ level, code }: { level: "region" | "depart
   }, [rows, variable, sub]);
 
   if (rows === null) return <p className="mt-3 text-sm text-slate-400">Chargement des indicateurs…</p>;
-  if (variables.length === 0) return <p className="mt-3 text-sm text-slate-500">Aucun indicateur de développement durable disponible pour ce territoire.</p>;
+  if (variables.length === 0) return <p className="mt-3 text-sm text-muted-foreground">Aucun indicateur de développement durable disponible pour ce territoire.</p>;
 
   const unit = CATALOG[variable]?.unit || (rows.find(r => r.variable === variable)?.unit ?? "");
   const fmt = (v: number) =>
@@ -108,7 +108,7 @@ export default function ItddSection({ level, code }: { level: "region" | "depart
     <div>
       <div className="flex flex-wrap items-center gap-2">
         <select value={variable} onChange={e => setVariable(e.target.value)}
-          className="rounded-full border border-slate-200 bg-white px-4 py-2 text-sm font-bold text-slate-800 shadow-sm focus:outline-none focus:ring-2 focus:ring-emerald-500/40">
+          className="rounded-full border border-border bg-card px-4 py-2 text-sm font-bold text-slate-800 shadow-sm focus:outline-none focus:ring-2 focus:ring-emerald-500/40">
           {[...byTheme.entries()].map(([theme, vars]) => (
             <optgroup key={theme} label={theme}>
               {vars.map(v => <option key={v} value={v}>{CATALOG[v].label}</option>)}
@@ -119,7 +119,7 @@ export default function ItddSection({ level, code }: { level: "region" | "depart
           <div className="inline-flex flex-wrap gap-1">
             {subFields.map(s => (
               <button key={s} onClick={() => setSub(s)}
-                className={`rounded-full px-3 py-1.5 text-xs font-bold transition ${sub === s ? "bg-emerald-600 text-white" : "bg-slate-100 text-slate-600 hover:bg-slate-200"}`}>
+                className={`rounded-full px-3 py-1.5 text-xs font-bold transition ${sub === s ? "bg-emerald-600 text-white" : "bg-slate-100 text-muted-foreground hover:bg-slate-200"}`}>
                 {s || "total"}
               </button>
             ))}
@@ -129,7 +129,7 @@ export default function ItddSection({ level, code }: { level: "region" | "depart
 
       {last && (
         <div className="mt-4 flex items-end gap-3">
-          <span className="text-4xl font-black text-slate-900">{fmt(last.value)}</span>
+          <span className="text-4xl font-black text-foreground">{fmt(last.value)}</span>
           <span className="mb-1 text-sm font-bold text-slate-400">en {last.year}</span>
         </div>
       )}

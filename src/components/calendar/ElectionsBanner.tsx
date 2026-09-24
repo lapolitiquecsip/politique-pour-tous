@@ -51,7 +51,7 @@ export default function ElectionsBanner() {
           <h2 className="text-2xl font-staatliches uppercase tracking-wider text-slate-800 dark:text-slate-200 flex items-center gap-2">
             <Calendar className="w-6 h-6 text-blue-600" /> Prochaines Échéances Électorales
           </h2>
-          <p className="text-sm text-slate-500 dark:text-slate-400 font-medium italic mt-1">
+          <p className="text-sm text-muted-foreground dark:text-slate-400 font-medium italic mt-1">
             Restez informé sur les moments clés de la démocratie française.
           </p>
         </div>
@@ -72,7 +72,7 @@ export default function ElectionsBanner() {
               className="relative group cursor-pointer"
             >
               {/* Cartes compactes sur mobile (padding/icône/texte réduits) → moins encombrant. */}
-              <div className="h-full p-4 md:p-6 bg-white dark:bg-slate-900 rounded-2xl md:rounded-3xl border border-slate-200 dark:border-slate-800 shadow-sm hover:shadow-xl transition-all overflow-hidden">
+              <div className="h-full p-4 md:p-6 bg-card dark:bg-slate-900 rounded-2xl md:rounded-3xl border border-border dark:border-slate-800 shadow-sm hover:shadow-xl transition-all overflow-hidden">
                 {/* Background Accent */}
                 <div className={`absolute top-0 right-0 w-24 h-24 -mr-8 -mt-8 rounded-full opacity-[0.05] group-hover:scale-150 transition-transform duration-500 ${colors.accent}`} />
 
@@ -85,11 +85,11 @@ export default function ElectionsBanner() {
                     {election.type}
                   </span>
 
-                  <h3 className="text-sm md:text-lg font-staatliches uppercase leading-none mb-1.5 md:mb-2 text-slate-900 dark:text-white">
+                  <h3 className="text-sm md:text-lg font-staatliches uppercase leading-none mb-1.5 md:mb-2 text-foreground dark:text-white">
                     {election.date}
                   </h3>
 
-                  <p className="text-[11px] md:text-xs text-slate-500 dark:text-slate-400 line-clamp-2 md:mb-4 leading-relaxed">
+                  <p className="text-[11px] md:text-xs text-muted-foreground dark:text-slate-400 line-clamp-2 md:mb-4 leading-relaxed">
                     {wrapWithGlossary(election.description)}
                   </p>
 
@@ -111,11 +111,11 @@ export default function ElectionsBanner() {
               initial={{ opacity: 0, scale: 0.9, y: 20 }}
               animate={{ opacity: 1, scale: 1, y: 0 }}
               exit={{ opacity: 0, scale: 0.9, y: 20 }}
-              className="relative w-full max-w-lg bg-white rounded-[2.5rem] shadow-2xl overflow-hidden"
+              className="relative w-full max-w-lg bg-card rounded-[2.5rem] shadow-2xl overflow-hidden"
             >
               <button 
                 onClick={() => setSelectedElection(null)}
-                className="absolute top-6 right-6 p-2 rounded-full bg-slate-100 text-slate-500 hover:bg-slate-200 transition-colors z-20"
+                className="absolute top-6 right-6 p-2 rounded-full bg-slate-100 text-muted-foreground hover:bg-slate-200 transition-colors z-20"
               >
                 <X size={20} />
               </button>
@@ -132,7 +132,7 @@ export default function ElectionsBanner() {
                   <span className="text-[11px] font-black uppercase tracking-[0.3em] text-slate-400 mb-2 block">
                     Focus sur les {selectedElection.type}
                   </span>
-                  <h2 className="text-3xl font-staatliches uppercase leading-tight text-slate-900">
+                  <h2 className="text-3xl font-staatliches uppercase leading-tight text-foreground">
                     {selectedElection.title}
                   </h2>
                   <div className="h-1 w-12 bg-blue-600 mt-2 rounded-full" />
@@ -150,7 +150,7 @@ export default function ElectionsBanner() {
                     <h4 className="text-[10px] font-black uppercase tracking-widest text-slate-400 mb-2 flex items-center gap-2">
                       <Info size={14} /> Fonctionnement
                     </h4>
-                    <div className="text-slate-600 leading-relaxed text-sm">
+                    <div className="text-muted-foreground leading-relaxed text-sm">
                       {wrapWithGlossary(selectedElection.howItWorks)}
                     </div>
                   </div>

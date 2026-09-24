@@ -142,7 +142,7 @@ function Hemicycle({ title, total, groups }: { title: string; total: number; gro
               {g.label} <span className="text-slate-400">· {g.seats}</span>
             </>
           );
-          const cls = "inline-flex items-center gap-1.5 text-[11px] font-bold text-slate-600 dark:text-slate-300 transition-all";
+          const cls = "inline-flex items-center gap-1.5 text-[11px] font-bold text-muted-foreground dark:text-slate-300 transition-all";
           const style = { opacity: dim ? 0.4 : 1, transform: isH ? "scale(1.08)" : "scale(1)" };
           const link = linkOf(g);
           return link ? (
@@ -214,10 +214,10 @@ export default function HemicycleChart({ chamber = "both", title, subtitle }: { 
 
   return (
     <section className="mx-auto max-w-7xl px-4">
-      <div className="rounded-[2.5rem] border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900 p-6 md:p-10 shadow-sm">
+      <div className="rounded-[2.5rem] border border-border dark:border-slate-800 bg-card dark:bg-slate-900 p-6 md:p-10 shadow-sm">
         <div className="mb-6 text-center">
           <p className="text-[11px] font-black uppercase tracking-[0.25em] text-red-600">{subtitle || "Composition du Parlement"}</p>
-          <h2 className="mt-1 text-3xl font-staatliches uppercase tracking-tight text-slate-900 dark:text-white md:text-4xl">
+          <h2 className="mt-1 text-3xl font-staatliches uppercase tracking-tight text-foreground dark:text-white md:text-4xl">
             {title || "Qui siège à l'Assemblée et au Sénat"}
           </h2>
         </div>

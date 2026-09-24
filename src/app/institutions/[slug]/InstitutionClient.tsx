@@ -21,7 +21,7 @@ export default function InstitutionGuidePage() {
   }
 
   return (
-    <main className="min-h-screen bg-slate-50">
+    <main className="min-h-screen bg-muted">
       {/* Hero Section */}
       <div className="relative h-[60vh] overflow-hidden">
         <div 
@@ -70,7 +70,7 @@ export default function InstitutionGuidePage() {
             </p>
           </section>
 
-          <hr className="border-slate-200" />
+          <hr className="border-border" />
 
           {/* Section: Histoire */}
           <section className="space-y-6">
@@ -80,9 +80,9 @@ export default function InstitutionGuidePage() {
               </div>
               <h2 className="text-sm font-black uppercase tracking-[0.3em] text-slate-400">Un peu d'histoire</h2>
             </div>
-            <div className="bg-white p-8 md:p-12 rounded-[2rem] shadow-sm border border-slate-200 relative overflow-hidden">
+            <div className="bg-card p-8 md:p-12 rounded-[2rem] shadow-sm border border-border relative overflow-hidden">
                <div className="absolute top-0 right-0 w-32 h-32 bg-amber-50/50 rounded-full -mr-10 -mt-10" />
-               <p className="text-lg leading-relaxed text-slate-600 relative z-10">
+               <p className="text-lg leading-relaxed text-muted-foreground relative z-10">
                  {guide.history}
                </p>
             </div>
@@ -119,7 +119,7 @@ export default function InstitutionGuidePage() {
           </section>
         </div>
 
-        <div className="mt-20 pt-10 border-t border-slate-200 text-center">
+        <div className="mt-20 pt-10 border-t border-border text-center">
            <Link href="/" className="inline-flex items-center gap-3 bg-slate-900 text-white px-10 py-5 rounded-full font-bold hover:bg-blue-600 transition-colors shadow-xl">
              Retourner à la réalité politique <Landmark size={20} />
            </Link>

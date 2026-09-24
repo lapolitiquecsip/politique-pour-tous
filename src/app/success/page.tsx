@@ -4,7 +4,7 @@ import { CheckCircle, ArrowRight, Star } from 'lucide-react';
 export default function SuccessPage() {
   return (
     <div className="min-h-[70vh] flex flex-col items-center justify-center p-4">
-      <div className="max-w-md w-full bg-white dark:bg-slate-900 border border-border rounded-[2rem] p-8 md:p-12 text-center shadow-2xl relative overflow-hidden">
+      <div className="max-w-md w-full bg-card dark:bg-slate-900 border border-border rounded-[2rem] p-8 md:p-12 text-center shadow-2xl relative overflow-hidden">
         
         {/* Glow effect */}
         <div className="absolute -top-24 -right-24 w-48 h-48 bg-amber-400/20 blur-[80px] rounded-full pointer-events-none" />
@@ -19,7 +19,7 @@ export default function SuccessPage() {
             Paiement Réussi !
           </h1>
           
-          <p className="text-slate-600 dark:text-slate-400 mb-8 text-lg leading-relaxed">
+          <p className="text-muted-foreground dark:text-slate-400 mb-8 text-lg leading-relaxed">
             Merci pour votre confiance. Votre compte est désormais <strong className="text-amber-500">Premium</strong>, vous avez accès à toutes les analyses approfondies.
           </p>
 

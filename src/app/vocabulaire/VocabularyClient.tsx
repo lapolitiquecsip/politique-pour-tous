@@ -33,13 +33,13 @@ export default function VocabularyClient({ initialTerms }: { initialTerms: Vocab
       <div className="mb-20">
         <div className="relative mb-10 text-center">
           <h1 className="text-5xl md:text-7xl font-staatliches uppercase tracking-tighter leading-none relative z-10">
-            <span className="text-slate-900 opacity-[0.08] absolute -top-8 left-1/2 -translate-x-1/2 select-none hidden md:block whitespace-nowrap">
+            <span className="text-foreground opacity-[0.08] absolute -top-8 left-1/2 -translate-x-1/2 select-none hidden md:block whitespace-nowrap">
               DÉCODEZ • LEXIQUE
             </span>
             Vocabulaire <span className="bg-gradient-to-r from-blue-600 via-red-600 to-blue-600 bg-clip-text text-transparent">Politique</span>
           </h1>
           <div className="h-1.5 w-32 bg-gradient-to-r from-blue-600 to-red-600 mt-6 rounded-full mx-auto" />
-          <p className="text-xl md:text-2xl font-staatliches italic tracking-tight text-slate-500 mt-8 max-w-2xl mx-auto">
+          <p className="text-xl md:text-2xl font-staatliches italic tracking-tight text-muted-foreground mt-8 max-w-2xl mx-auto">
             Un dictionnaire interactif pour comprendre le jargon politique.
           </p>
         </div>
@@ -60,7 +60,7 @@ export default function VocabularyClient({ initialTerms }: { initialTerms: Vocab
           ))}
         </div>
       ) : (
-        <div className="text-center py-12 bg-white rounded-xl border border-dashed">
+        <div className="text-center py-12 bg-card rounded-xl border border-dashed">
           <p className="text-gray-500">Aucun terme trouvé.</p>
         </div>
       )}

@@ -20,7 +20,7 @@ const getVoteDisplay = (position: string) => {
     case 'ABSTENTION':
       return { label: 'ABSTENTION', color: 'text-amber-600', bg: 'bg-amber-50 dark:bg-amber-500/10', icon: MinusCircle };
     default:
-      return { label: 'NON VOTANT', color: 'text-slate-400', bg: 'bg-slate-50 dark:bg-slate-500/10', icon: AlertCircle };
+      return { label: 'NON VOTANT', color: 'text-slate-400', bg: 'bg-muted dark:bg-slate-500/10', icon: AlertCircle };
   }
 };
 
@@ -63,7 +63,7 @@ const VoteDetailsModal: React.FC<VoteDetailsModalProps> = ({ vote, onClose }) =>
           initial={{ opacity: 0, scale: 0.9, y: 20 }}
           animate={{ opacity: 1, scale: 1, y: 0 }}
           exit={{ opacity: 0, scale: 0.9, y: 20 }}
-          className="relative w-full max-w-2xl max-h-[90vh] bg-white dark:bg-slate-900 rounded-[2.5rem] shadow-2xl border border-slate-200 dark:border-slate-800 overflow-y-auto scrollbar-hide"
+          className="relative w-full max-w-2xl max-h-[90vh] bg-card dark:bg-slate-900 rounded-[2.5rem] shadow-2xl border border-border dark:border-slate-800 overflow-y-auto scrollbar-hide"
         >
           {/* Header Image/Pattern */}
           <div className="h-32 bg-gradient-to-r from-red-600 to-red-800 relative">
@@ -73,7 +73,7 @@ const VoteDetailsModal: React.FC<VoteDetailsModalProps> = ({ vote, onClose }) =>
             >
               <X className="w-5 h-5" />
             </button>
-            <div className="absolute -bottom-8 left-10 w-16 h-16 rounded-2xl bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 flex items-center justify-center shadow-lg">
+            <div className="absolute -bottom-8 left-10 w-16 h-16 rounded-2xl bg-card dark:bg-slate-900 border border-border dark:border-slate-800 flex items-center justify-center shadow-lg">
               <Landmark className="w-8 h-8 text-red-600" />
             </div>
           </div>
@@ -88,7 +88,7 @@ const VoteDetailsModal: React.FC<VoteDetailsModalProps> = ({ vote, onClose }) =>
               </span>
             </div>
 
-            <h2 className="text-2xl font-black text-slate-900 dark:text-white mb-6 leading-tight">
+            <h2 className="text-2xl font-black text-foreground dark:text-white mb-6 leading-tight">
               {title}
             </h2>
 
@@ -96,13 +96,13 @@ const VoteDetailsModal: React.FC<VoteDetailsModalProps> = ({ vote, onClose }) =>
               {/* Summary Section */}
               {s.summary && (
                 <div className="space-y-3">
-                  <div className="flex items-center gap-2 text-slate-900 dark:text-white">
+                  <div className="flex items-center gap-2 text-foreground dark:text-white">
                     <div className="w-8 h-8 rounded-lg bg-red-500/10 flex items-center justify-center">
                       <Info className="w-4 h-4 text-red-500" />
                     </div>
                     <h3 className="font-bold text-lg">Résumé de la loi</h3>
                   </div>
-                  <p className="text-slate-600 dark:text-slate-400 leading-relaxed italic">
+                  <p className="text-muted-foreground dark:text-slate-400 leading-relaxed italic">
                     {s.summary}
                   </p>
                 </div>
@@ -110,12 +110,12 @@ const VoteDetailsModal: React.FC<VoteDetailsModalProps> = ({ vote, onClose }) =>
 
               {/* Why it matters */}
               {mattersPart && (
-                <div className="space-y-3 p-6 bg-slate-50 dark:bg-slate-800/50 rounded-2xl border border-slate-100 dark:border-slate-800">
-                  <h3 className="font-bold text-slate-900 dark:text-white flex items-center gap-2">
+                <div className="space-y-3 p-6 bg-muted dark:bg-slate-800/50 rounded-2xl border border-border dark:border-slate-800">
+                  <h3 className="font-bold text-foreground dark:text-white flex items-center gap-2">
                     <span className="w-2 h-6 bg-red-500 rounded-full" />
                     L'enjeu principal
                   </h3>
-                  <p className="text-sm text-slate-600 dark:text-slate-400">
+                  <p className="text-sm text-muted-foreground dark:text-slate-400">
                     {mattersPart}
                   </p>
                 </div>
@@ -124,7 +124,7 @@ const VoteDetailsModal: React.FC<VoteDetailsModalProps> = ({ vote, onClose }) =>
               {/* Premium Detailed Summary */}
               {detailedPart && (
                 <div className="space-y-3 p-6 bg-amber-50 dark:bg-amber-900/10 rounded-2xl border border-amber-100 dark:border-amber-900/30 relative overflow-hidden">
-                  <h3 className="font-bold text-slate-900 dark:text-white flex items-center gap-2">
+                  <h3 className="font-bold text-foreground dark:text-white flex items-center gap-2">
                     <Star className="w-4 h-4 text-amber-500" />
                     Ce que propose concrètement la loi
                   </h3>
@@ -152,7 +152,7 @@ const VoteDetailsModal: React.FC<VoteDetailsModalProps> = ({ vote, onClose }) =>
               {/* Vote Info Card */}
               <div className={`p-6 rounded-3xl ${voteInfo.bg} flex items-center justify-between border border-transparent`}>
                 <div className="space-y-1">
-                  <span className="text-[10px] font-black text-slate-500 uppercase tracking-widest">Position globale</span>
+                  <span className="text-[10px] font-black text-muted-foreground uppercase tracking-widest">Position globale</span>
                   <div className={`flex items-center gap-2 ${voteInfo.color} font-black text-xl italic uppercase`}>
                     <voteInfo.icon className="w-6 h-6" />
                     {voteInfo.label}
@@ -163,7 +163,7 @@ const VoteDetailsModal: React.FC<VoteDetailsModalProps> = ({ vote, onClose }) =>
                     href={s.dossier_url}
                     target="_blank"
                     rel="noopener noreferrer"
-                    className="flex items-center gap-2 px-6 py-3 bg-white dark:bg-slate-900 rounded-xl text-xs font-bold text-slate-900 dark:text-white shadow-sm hover:shadow-md transition-all border border-slate-200 dark:border-slate-800"
+                    className="flex items-center gap-2 px-6 py-3 bg-card dark:bg-slate-900 rounded-xl text-xs font-bold text-foreground dark:text-white shadow-sm hover:shadow-md transition-all border border-border dark:border-slate-800"
                   >
                     Dossier Officiel <ExternalLink className="w-4 h-4" />
                   </a>
@@ -179,7 +179,7 @@ const VoteDetailsModal: React.FC<VoteDetailsModalProps> = ({ vote, onClose }) =>
                   .sort((a: any, b: any) => b.total - a.total);
                 return (
                   <div className="space-y-4 pt-4">
-                    <div className="flex items-center gap-2 text-slate-900 dark:text-white">
+                    <div className="flex items-center gap-2 text-foreground dark:text-white">
                       <Landmark className="w-5 h-5 text-blue-500" />
                       <h3 className="font-bold text-lg">Comment a voté chaque groupe</h3>
                     </div>
@@ -188,7 +188,7 @@ const VoteDetailsModal: React.FC<VoteDetailsModalProps> = ({ vote, onClose }) =>
                         const pour = g.pour || 0, contre = g.contre || 0, abst = g.abstention || 0;
                         const denom = pour + contre + abst || 1;
                         return (
-                          <div key={g.group_id} className="rounded-2xl border border-slate-100 dark:border-slate-800 bg-white dark:bg-slate-800/50 p-3">
+                          <div key={g.group_id} className="rounded-2xl border border-border dark:border-slate-800 bg-card dark:bg-slate-800/50 p-3">
                             <div className="mb-1.5 flex items-center justify-between gap-2">
                               <span className="truncate text-xs font-black text-slate-800 dark:text-slate-200">{g.name}</span>
                               <span className="shrink-0 text-[10px] font-bold text-slate-400">{g.total} votant{g.total > 1 ? "s" : ""}</span>
@@ -215,7 +215,7 @@ const VoteDetailsModal: React.FC<VoteDetailsModalProps> = ({ vote, onClose }) =>
               {/* Sub-votes breakdown */}
               {subVotes.length > 0 && (
                 <div className="space-y-4 pt-4">
-                  <div className="flex items-center gap-2 text-slate-900 dark:text-white">
+                  <div className="flex items-center gap-2 text-foreground dark:text-white">
                      <Layers className="w-5 h-5 text-blue-500" />
                      <h3 className="font-bold text-lg">Détail par article</h3>
                   </div>
@@ -223,7 +223,7 @@ const VoteDetailsModal: React.FC<VoteDetailsModalProps> = ({ vote, onClose }) =>
                     {subVotes.map((sv: any) => {
                       const svDisplay = getVoteDisplay(sv.position);
                       return (
-                        <div key={sv.id} className="flex flex-col p-4 rounded-2xl bg-white dark:bg-slate-800 border border-slate-100 dark:border-slate-700">
+                        <div key={sv.id} className="flex flex-col p-4 rounded-2xl bg-card dark:bg-slate-800 border border-border dark:border-slate-700">
                            <div className="flex items-center justify-between">
                              <span className="text-sm font-bold text-slate-700 dark:text-slate-300">Article {sv.articleLabel}</span>
                              <div className={`flex items-center gap-1.5 px-3 py-1 rounded-full ${svDisplay.bg} ${svDisplay.color} text-[10px] font-black`}>
@@ -232,7 +232,7 @@ const VoteDetailsModal: React.FC<VoteDetailsModalProps> = ({ vote, onClose }) =>
                              </div>
                            </div>
                            {sv.scrutins?.summary && (
-                             <p className="text-xs text-slate-500 dark:text-slate-400 italic mt-2 leading-relaxed">
+                             <p className="text-xs text-muted-foreground dark:text-slate-400 italic mt-2 leading-relaxed">
                                {sv.scrutins.summary}
                              </p>
                            )}

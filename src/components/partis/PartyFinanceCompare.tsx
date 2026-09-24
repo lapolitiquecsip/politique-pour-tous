@@ -22,13 +22,13 @@ function Ranking({ rows, currentSlug, format, accent }: {
       {rows.map((r, i) => {
         const me = r.slug === currentSlug;
         return (
-          <div key={r.slug} className={`flex items-center gap-3 rounded-xl px-2 py-1.5 transition ${me ? "bg-slate-50 ring-2" : ""}`} style={me ? { boxShadow: `0 0 0 2px ${accent}55, 0 6px 18px ${accent}22` } : undefined}>
+          <div key={r.slug} className={`flex items-center gap-3 rounded-xl px-2 py-1.5 transition ${me ? "bg-muted ring-2" : ""}`} style={me ? { boxShadow: `0 0 0 2px ${accent}55, 0 6px 18px ${accent}22` } : undefined}>
             <span className={`w-6 shrink-0 text-right font-black tabular-nums ${me ? "text-[13px]" : "text-[11px] text-slate-400"}`} style={me ? { color: accent } : undefined}>{i + 1}</span>
-            <span className={`w-16 shrink-0 truncate uppercase ${me ? "text-[13px] font-black text-slate-900" : "text-xs font-black text-slate-500"}`} title={r.label}>{r.label}</span>
+            <span className={`w-16 shrink-0 truncate uppercase ${me ? "text-[13px] font-black text-foreground" : "text-xs font-black text-muted-foreground"}`} title={r.label}>{r.label}</span>
             <div className="h-3.5 flex-1 overflow-hidden rounded-full bg-slate-100">
               <div className={`h-full overflow-hidden rounded-full ${me ? "bar-shine" : ""}`} style={{ width: `${(r.value / max) * 100}%`, background: me ? accent : `${r.color || "#94a3b8"}`, opacity: me ? 1 : 0.5, boxShadow: me ? `0 0 12px ${accent}` : undefined }} />
             </div>
-            <span className={`shrink-0 text-right tabular-nums ${me ? "w-24 text-base font-black" : "w-20 text-xs font-black text-slate-500"}`} style={me ? { color: accent } : undefined}>{r.display}</span>
+            <span className={`shrink-0 text-right tabular-nums ${me ? "w-24 text-base font-black" : "w-20 text-xs font-black text-muted-foreground"}`} style={me ? { color: accent } : undefined}>{r.display}</span>
           </div>
         );
       })}
@@ -56,7 +56,7 @@ export default function PartyFinanceCompare({ currentSlug }: { currentSlug: stri
   if (subv.length < 2 && dette.length < 2) return null;
 
   return (
-    <div className="mt-5 border-t border-slate-100 pt-5">
+    <div className="mt-5 border-t border-border pt-5">
       <p className="mb-4 text-[11px] font-black uppercase tracking-widest text-slate-400">Comparaison avec les autres partis</p>
       <div className="grid grid-cols-1 gap-6 lg:grid-cols-2">
         {subv.length >= 2 && (

@@ -8,7 +8,7 @@ export const metadata: Metadata = {
 
 export default function Page() {
   return (
-    <main className="min-h-screen bg-white">
+    <main className="min-h-screen bg-card">
       <section className="bg-gradient-to-br from-slate-950 via-slate-900 to-slate-950 px-4 py-14 text-center text-white">
         <p className="text-[11px] font-black uppercase tracking-[0.3em] text-red-400">Outil</p>
         <h1 className="mx-auto mt-3 max-w-3xl font-staatliches text-5xl uppercase leading-none md:text-7xl">

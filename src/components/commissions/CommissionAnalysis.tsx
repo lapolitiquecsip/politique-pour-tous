@@ -41,11 +41,11 @@ export function CommissionAnalysis({ m, accent, sombre = false }: {
 }) {
   // Couleurs de texte explicites, sans s'en remettre au thème du site.
   const corps = sombre ? "text-white/80" : "text-slate-700 dark:text-slate-300";
-  const appui = sombre ? "text-white/60" : "text-slate-600 dark:text-slate-400";
-  const fort = sombre ? "text-white" : "text-slate-900 dark:text-white";
+  const appui = sombre ? "text-white/60" : "text-muted-foreground dark:text-slate-400";
+  const fort = sombre ? "text-white" : "text-foreground dark:text-white";
   const bloc = sombre
     ? "rounded-2xl border border-white/10 bg-white/[0.05] p-3"
-    : "rounded-2xl border border-slate-100 bg-slate-50/70 p-3 dark:border-slate-800 dark:bg-slate-800/40";
+    : "rounded-2xl border border-border bg-slate-50/70 p-3 dark:border-slate-800 dark:bg-slate-800/40";
   const a = m.analysis || {};
   const hasStructured =
     !!(a.contexte || a.points_cles?.length || a.chiffres?.length || a.positions?.length || a.suites?.length || a.citations?.length);
@@ -116,12 +116,12 @@ export function CommissionAnalysis({ m, accent, sombre = false }: {
 
       {!!a.citations?.length && (
         <div>
-          <p className="mb-2 flex items-center gap-1.5 text-[10px] font-black uppercase tracking-widest text-slate-500">
+          <p className="mb-2 flex items-center gap-1.5 text-[10px] font-black uppercase tracking-widest text-muted-foreground">
             <Quote size={12} /> Verbatim
           </p>
           <div className="space-y-2">
             {a.citations.map((c, i) => (
-              <blockquote key={i} className="border-l-4 border-slate-200 pl-3 dark:border-slate-700">
+              <blockquote key={i} className="border-l-4 border-border pl-3 dark:border-slate-700">
                 <p className={`text-sm italic leading-snug ${corps}`}>« {c.texte} »</p>
                 <p className="mt-0.5 text-[11px] font-bold text-slate-400">— {c.orateur}</p>
               </blockquote>

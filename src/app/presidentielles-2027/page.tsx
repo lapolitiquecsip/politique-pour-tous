@@ -87,7 +87,7 @@ function NumHighlight({ text }: { text: string }) {
     <>
       {parts.map((part, i) =>
         i % 2 === 1
-          ? <span key={i} className="font-bold text-slate-900 underline decoration-red-500 decoration-solid decoration-[3px] underline-offset-[3px]">{part}</span>
+          ? <span key={i} className="font-bold text-foreground underline decoration-red-500 decoration-solid decoration-[3px] underline-offset-[3px]">{part}</span>
           : <span key={i}>{part}</span>
       )}
     </>
@@ -103,7 +103,7 @@ function Timeline({ points }: { points: string[] }) {
         const date = idx > 0 ? p.slice(0, idx) : "";
         const desc = idx > 0 ? p.slice(idx + 3) : p;
         return (
-          <div key={i} className="relative w-[220px] shrink-0 rounded-2xl border border-slate-100 bg-slate-50 p-4">
+          <div key={i} className="relative w-[220px] shrink-0 rounded-2xl border border-border bg-muted p-4">
             <div className="mb-2 h-1 w-8 rounded-full bg-red-500" />
             {date && <p className="font-staatliches text-2xl uppercase leading-none text-red-600">{date}</p>}
             <p className="mt-2 text-sm leading-6 text-slate-700"><NumHighlight text={desc} /></p>
@@ -135,7 +135,7 @@ function FactChips({ candidate }: { candidate: Candidate }) {
   const side = sideOf(candidate);
   const chips: React.ReactNode[] = [];
 
-  if (age !== null) chips.push(<Chip key="age"><span className="font-black text-slate-900 underline decoration-red-500 decoration-solid decoration-[3px] underline-offset-[3px]">{age}</span> ans</Chip>);
+  if (age !== null) chips.push(<Chip key="age"><span className="font-black text-foreground underline decoration-red-500 decoration-solid decoration-[3px] underline-offset-[3px]">{age}</span> ans</Chip>);
   if (n?.ville) chips.push(<Chip key="lieu">{n.pays_code && (
     // eslint-disable-next-line @next/next/no-img-element
     <img src={`https://flagcdn.com/${String(n.pays_code).toLowerCase()}.svg`} alt={n.pays || ""} className="h-4 w-6 rounded-sm object-cover shadow-sm" />
@@ -184,7 +184,7 @@ function themeStyle(name: string): { Icon: any; c: string; bg: string; dot: stri
   if (/europ|internation/.test(h)) return { Icon: Flag, c: "text-blue-600", bg: "bg-blue-50", dot: "bg-blue-500" };
   if (/économ|econom|ambition|prosp|emploi|travail/.test(h)) return { Icon: TrendingUp, c: "text-violet-600", bg: "bg-violet-50", dot: "bg-violet-500" };
   if (/institution|destin|civique|démocr|democr|maître|maitre|renouveau/.test(h)) return { Icon: Landmark, c: "text-indigo-600", bg: "bg-indigo-50", dot: "bg-indigo-500" };
-  return { Icon: FileText, c: "text-slate-600", bg: "bg-slate-50", dot: "bg-slate-400" };
+  return { Icon: FileText, c: "text-muted-foreground", bg: "bg-muted", dot: "bg-slate-400" };
 }
 
 function CandidateModal({ candidate, onClose }: { candidate: Candidate; onClose: () => void }) {
@@ -234,7 +234,7 @@ function CandidateModal({ candidate, onClose }: { candidate: Candidate; onClose:
       : (issues.toLowerCase().includes("aucune") || issues.toLowerCase().includes("casier vierge")) ? "clean"
       : "flagged";
   const legalStyle = {
-    unknown: { dot: "bg-slate-400", text: "text-slate-500", label: "Vérification en cours", bar: "bg-slate-300", btn: "border-slate-300/40 bg-slate-500/10 text-slate-600 hover:bg-slate-600 hover:text-white" },
+    unknown: { dot: "bg-slate-400", text: "text-muted-foreground", label: "Vérification en cours", bar: "bg-slate-300", btn: "border-slate-300/40 bg-slate-500/10 text-muted-foreground hover:bg-slate-600 hover:text-white" },
     clean: { dot: "bg-emerald-500", text: "text-emerald-600", label: "Dossier vierge", bar: "bg-emerald-500", btn: "border-emerald-500/20 bg-emerald-500/10 text-emerald-600 hover:bg-emerald-500 hover:text-white" },
     flagged: { dot: "bg-amber-500", text: "text-amber-600", label: "Affaires à consulter", bar: "bg-amber-500", btn: "border-amber-500/20 bg-amber-500/10 text-amber-600 hover:bg-amber-500 hover:text-white" },
   }[legalState];
@@ -244,7 +244,7 @@ function CandidateModal({ candidate, onClose }: { candidate: Candidate; onClose:
   return (
     <>
     <div className="fixed inset-0 z-50 overflow-y-auto bg-slate-950/70 p-4 md:p-10" role="dialog" aria-modal="true" onClick={onClose}>
-      <div className="mx-auto max-w-4xl overflow-hidden rounded-[2rem] bg-white shadow-2xl" onClick={e => e.stopPropagation()}>
+      <div className="mx-auto max-w-4xl overflow-hidden rounded-[2rem] bg-card shadow-2xl" onClick={e => e.stopPropagation()}>
         {/* En-tête coloré */}
         <div className={`relative bg-gradient-to-br ${side.from} ${side.to} p-6 md:p-8`}>
           <button onClick={onClose} className="absolute right-4 top-4 rounded-full bg-white/20 p-2 text-white transition hover:bg-white/30" aria-label="Fermer"><X /></button>
@@ -266,7 +266,7 @@ function CandidateModal({ candidate, onClose }: { candidate: Candidate; onClose:
               {/* Cloche dorée : suivre ce candidat (membres premium) → son fil arrive sur le profil. */}
               <button onClick={onToggleFollow}
                 title={following ? "Ne plus suivre" : "Suivre ce candidat"}
-                className={`mt-4 inline-flex items-center gap-2 rounded-full px-5 py-2.5 text-xs font-black uppercase tracking-widest transition ${following ? "bg-amber-400 text-slate-900 shadow-lg shadow-amber-500/30" : "bg-white/15 text-white ring-1 ring-white/40 hover:bg-white/25"}`}>
+                className={`mt-4 inline-flex items-center gap-2 rounded-full px-5 py-2.5 text-xs font-black uppercase tracking-widest transition ${following ? "bg-amber-400 text-foreground shadow-lg shadow-amber-500/30" : "bg-white/15 text-white ring-1 ring-white/40 hover:bg-white/25"}`}>
                 <Bell size={15} className={following ? "fill-slate-900" : ""} />
                 {following ? "Suivi ✓" : isPremium ? "Suivre ce candidat" : "Suivre (Premium)"}
               </button>
@@ -280,7 +280,7 @@ function CandidateModal({ candidate, onClose }: { candidate: Candidate; onClose:
           {/* Fil conducteur : fiche du parti */}
           {partyLink && (
             <Link href={`/partis/${partyLink.slug}`}
-              className="mb-4 flex items-center justify-between gap-3 rounded-2xl border border-slate-200 bg-slate-50 px-5 py-3 text-slate-800 transition hover:border-slate-300 hover:bg-slate-100">
+              className="mb-4 flex items-center justify-between gap-3 rounded-2xl border border-border bg-muted px-5 py-3 text-slate-800 transition hover:border-slate-300 hover:bg-slate-100">
               <span className="flex items-center gap-2 text-sm font-bold"><Landmark size={17} /> Voir la fiche du parti — {partyLink.name}</span>
               <ArrowRight size={17} />
             </Link>
@@ -303,12 +303,12 @@ function CandidateModal({ candidate, onClose }: { candidate: Candidate; onClose:
           <FactChips candidate={candidate} />
 
           {/* Situation juridique — suivi en temps réel des affaires judiciaires */}
-          <div className="mb-6 rounded-3xl border border-slate-200 bg-white p-5 shadow-sm relative overflow-hidden">
+          <div className="mb-6 rounded-3xl border border-border bg-card p-5 shadow-sm relative overflow-hidden">
             <div className={`absolute top-0 left-0 h-full w-2 ${legalStyle.bar}`} />
             <div className="flex items-center justify-between gap-4 pl-2">
               <div className="min-w-0">
                 <p className="text-[9px] font-black uppercase tracking-[0.2em] text-slate-400">Intégrité &amp; Transparence</p>
-                <h3 className="text-lg font-bold text-slate-900">Situation judiciaire</h3>
+                <h3 className="text-lg font-bold text-foreground">Situation judiciaire</h3>
                 <div className="mt-1 flex items-center gap-2">
                   <span className={`h-1.5 w-1.5 animate-pulse rounded-full ${legalStyle.dot}`} />
                   <span className={`text-[10px] font-black uppercase tracking-widest ${legalStyle.text}`}>
@@ -335,7 +335,7 @@ function CandidateModal({ candidate, onClose }: { candidate: Candidate; onClose:
               const color = FIELD_COLORS[key];
               const isOpen = openPanels.has(key);
               return (
-                <div key={key} className={`min-w-0 self-start overflow-hidden rounded-3xl border border-slate-100 bg-white shadow-sm ${wide}`}>
+                <div key={key} className={`min-w-0 self-start overflow-hidden rounded-3xl border border-border bg-card shadow-sm ${wide}`}>
                   {/* En-tête cliquable : déplie/replie le panneau (gain de place). */}
                   <button onClick={() => togglePanel(key)} aria-expanded={isOpen}
                     className="flex w-full items-center justify-between gap-3 p-5 text-left">
@@ -388,17 +388,17 @@ function CandidateModal({ candidate, onClose }: { candidate: Candidate; onClose:
             return (
               <section className="mt-8">
                 <h3 className="text-2xl font-staatliches uppercase text-slate-950">Son programme</h3>
-                <p className="mt-1 text-xs text-slate-500">Toutes ses idées, par thème — issues du programme officiel. Cliquez sur <HelpCircle size={12} className="inline -mt-0.5" /> pour comprendre pourquoi.</p>
+                <p className="mt-1 text-xs text-muted-foreground">Toutes ses idées, par thème — issues du programme officiel. Cliquez sur <HelpCircle size={12} className="inline -mt-0.5" /> pour comprendre pourquoi.</p>
                 <div className="mt-4 space-y-4">
                   {Object.entries(groups).map(([theme, g]) => {
                     const { Icon, c, bg, dot } = themeStyle(theme);
                     const isOpen = openTheme.has(theme);
                     return (
-                      <div key={theme} className="overflow-hidden rounded-2xl border border-slate-200">
+                      <div key={theme} className="overflow-hidden rounded-2xl border border-border">
                         {/* En-tête cliquable : ouvre/ferme les propositions du thème (fermé par défaut). */}
                         <button onClick={() => toggleTheme(theme)} aria-expanded={isOpen}
                           className={`flex w-full items-center gap-2.5 ${bg} px-4 py-3 text-left transition hover:brightness-95`}>
-                          <span className={`flex h-8 w-8 shrink-0 items-center justify-center rounded-xl bg-white ${c} shadow-sm`}><Icon size={16} /></span>
+                          <span className={`flex h-8 w-8 shrink-0 items-center justify-center rounded-xl bg-card ${c} shadow-sm`}><Icon size={16} /></span>
                           <p className={`text-sm font-black uppercase tracking-widest ${c}`}>{theme}</p>
                           <span className="text-[10px] font-black text-slate-400">· {g.items.length}</span>
                           <ChevronDown size={18} className={`ml-auto shrink-0 ${c} transition-transform ${isOpen ? "rotate-180" : ""}`} />
@@ -406,8 +406,8 @@ function CandidateModal({ candidate, onClose }: { candidate: Candidate; onClose:
                         <AnimatePresence initial={false}>
                           {isOpen && (
                             <motion.div initial={{ height: 0, opacity: 0 }} animate={{ height: "auto", opacity: 1 }} exit={{ height: 0, opacity: 0 }} className="overflow-hidden">
-                              {g.ctx && <p className="border-b border-slate-100 bg-slate-50 px-4 py-3 text-sm italic leading-6 text-slate-600">💡 {g.ctx}</p>}
-                              <ul className="divide-y divide-slate-50 bg-white">
+                              {g.ctx && <p className="border-b border-border bg-muted px-4 py-3 text-sm italic leading-6 text-muted-foreground">💡 {g.ctx}</p>}
+                              <ul className="divide-y divide-slate-50 bg-card">
                                 {g.items.map((p, i) => {
                                   const exKey = `${theme}#${i}`;
                                   const exOpen = openExpl.has(exKey);
@@ -418,7 +418,7 @@ function CandidateModal({ candidate, onClose }: { candidate: Candidate; onClose:
                                         <span className="flex-1">{p.text}</span>
                                         {p.explanation && (
                                           <button onClick={() => toggleExpl(exKey)} title="Comprendre cette proposition"
-                                            className={`mt-0.5 flex h-6 w-6 shrink-0 items-center justify-center rounded-full border transition ${exOpen ? "border-violet-300 bg-violet-100 text-violet-700" : "border-violet-200 bg-white text-violet-500 hover:bg-violet-50"}`}>
+                                            className={`mt-0.5 flex h-6 w-6 shrink-0 items-center justify-center rounded-full border transition ${exOpen ? "border-violet-300 bg-violet-100 text-violet-700" : "border-violet-200 bg-card text-violet-500 hover:bg-violet-50"}`}>
                                             <HelpCircle size={14} />
                                           </button>
                                         )}
@@ -426,7 +426,7 @@ function CandidateModal({ candidate, onClose }: { candidate: Candidate; onClose:
                                       <AnimatePresence initial={false}>
                                         {exOpen && p.explanation && (
                                           <motion.div initial={{ height: 0, opacity: 0 }} animate={{ height: "auto", opacity: 1 }} exit={{ height: 0, opacity: 0 }} className="overflow-hidden">
-                                            <p className="ml-4 mt-2 rounded-xl border-l-2 border-violet-300 bg-violet-50/70 px-3 py-2.5 text-[13px] leading-6 text-slate-600">{p.explanation}</p>
+                                            <p className="ml-4 mt-2 rounded-xl border-l-2 border-violet-300 bg-violet-50/70 px-3 py-2.5 text-[13px] leading-6 text-muted-foreground">{p.explanation}</p>
                                           </motion.div>
                                         )}
                                       </AnimatePresence>
@@ -456,35 +456,35 @@ function CandidateModal({ candidate, onClose }: { candidate: Candidate; onClose:
             return (
               <section className="mt-8">
                 <h3 className="text-2xl font-staatliches uppercase text-slate-950">Actualités &amp; <span className="text-amber-600">vidéos</span></h3>
-                <p className="mt-1 text-xs text-slate-500">Le fil du candidat — articles de presse et vidéos de sa chaîne YouTube officielle, réunis et actualisés chaque jour. Faites défiler →</p>
+                <p className="mt-1 text-xs text-muted-foreground">Le fil du candidat — articles de presse et vidéos de sa chaîne YouTube officielle, réunis et actualisés chaque jour. Faites défiler →</p>
                 {news === null ? (
                   <p className="mt-3 text-sm text-slate-400">Chargement…</p>
                 ) : feed.length === 0 ? (
-                  <p className="mt-3 text-sm text-slate-500">Aucune actualité ni vidéo recensée pour l'instant — le fil se met à jour chaque jour.</p>
+                  <p className="mt-3 text-sm text-muted-foreground">Aucune actualité ni vidéo recensée pour l'instant — le fil se met à jour chaque jour.</p>
                 ) : (
                   <div className="mt-4 flex gap-3 overflow-x-auto pb-3 snap-x snap-mandatory [scrollbar-width:thin]">
                     {feed.map(it => it.kind === "video" ? (
-                      <button key={`v${it.data.video_id}`} onClick={() => setSelectedVideo(it.data)} className="group flex w-[280px] shrink-0 snap-start flex-col overflow-hidden rounded-2xl border border-slate-200 text-left transition hover:border-slate-300 hover:shadow-sm">
+                      <button key={`v${it.data.video_id}`} onClick={() => setSelectedVideo(it.data)} className="group flex w-[280px] shrink-0 snap-start flex-col overflow-hidden rounded-2xl border border-border text-left transition hover:border-slate-300 hover:shadow-sm">
                         <div className="relative aspect-video overflow-hidden bg-slate-900">
                           {/* eslint-disable-next-line @next/next/no-img-element */}
                           {it.data.thumbnail_url && <img src={it.data.thumbnail_url} alt={it.data.title} loading="lazy" className="h-full w-full object-cover transition group-hover:scale-105" />}
-                          <span className="absolute inset-0 flex items-center justify-center"><span className="flex h-11 w-11 items-center justify-center rounded-full bg-white/90 text-slate-900 shadow-lg"><Play size={20} className="ml-0.5 fill-current" /></span></span>
+                          <span className="absolute inset-0 flex items-center justify-center"><span className="flex h-11 w-11 items-center justify-center rounded-full bg-white/90 text-foreground shadow-lg"><Play size={20} className="ml-0.5 fill-current" /></span></span>
                           <span className="absolute left-2 top-2 inline-flex items-center gap-1 rounded-full bg-red-600 px-2 py-0.5 text-[9px] font-black uppercase tracking-widest text-white"><Play size={10} className="fill-current" /> Vidéo</span>
                         </div>
                         <div className="flex flex-1 flex-col p-4">
                           <span className="text-xs font-bold text-slate-400"><CalendarDays className="mr-1 inline" size={13} />{formatDate(it.data.published_at)}</span>
-                          <p className="mt-1.5 font-bold text-slate-900 line-clamp-2">{it.data.title}</p>
+                          <p className="mt-1.5 font-bold text-foreground line-clamp-2">{it.data.title}</p>
                           <span className="mt-auto pt-2 text-xs font-bold text-slate-400">YouTube</span>
                         </div>
                       </button>
                     ) : (
-                      <button key={`n${it.data.id}`} onClick={() => setSelectedNews(it.data)} className="flex w-[280px] shrink-0 snap-start flex-col rounded-2xl border border-slate-200 p-4 text-left transition hover:border-slate-300 hover:shadow-sm">
+                      <button key={`n${it.data.id}`} onClick={() => setSelectedNews(it.data)} className="flex w-[280px] shrink-0 snap-start flex-col rounded-2xl border border-border p-4 text-left transition hover:border-slate-300 hover:shadow-sm">
                         <div className="flex items-center justify-between gap-3 text-xs font-bold text-slate-400">
                           <span className="rounded-full bg-slate-100 px-2 py-0.5 uppercase tracking-widest">{it.data.news_type || "actu"}</span>
                           <span><CalendarDays className="mr-1 inline" size={13} />{formatDate(it.data.date)}</span>
                         </div>
-                        <p className="mt-2 font-bold text-slate-900 line-clamp-2">{it.data.title}</p>
-                        {it.data.summary && <p className="mt-1 text-sm leading-6 text-slate-600 line-clamp-3">{it.data.summary}</p>}
+                        <p className="mt-2 font-bold text-foreground line-clamp-2">{it.data.title}</p>
+                        {it.data.summary && <p className="mt-1 text-sm leading-6 text-muted-foreground line-clamp-3">{it.data.summary}</p>}
                         {it.data.source_name && <p className="mt-auto pt-2 text-xs font-bold text-slate-400">{it.data.source_name}</p>}
                       </button>
                     ))}
@@ -508,16 +508,16 @@ function CandidateModal({ candidate, onClose }: { candidate: Candidate; onClose:
                   initial={{ y: 40, opacity: 0 }} animate={{ y: 0, opacity: 1 }} exit={{ y: 40, opacity: 0 }}
                   transition={{ type: "spring", damping: 28, stiffness: 320 }}
                   onClick={e => e.stopPropagation()}
-                  className="max-h-[85vh] w-full max-w-lg overflow-y-auto rounded-t-[2rem] bg-white p-6 shadow-2xl sm:rounded-[2rem]"
+                  className="max-h-[85vh] w-full max-w-lg overflow-y-auto rounded-t-[2rem] bg-card p-6 shadow-2xl sm:rounded-[2rem]"
                 >
                   <div className="mb-3 flex items-center justify-between gap-3">
-                    <span className="inline-flex items-center rounded-full bg-slate-100 px-3 py-1 text-[10px] font-black uppercase tracking-widest text-slate-500">{selectedNews.news_type || "actu"}</span>
-                    <button onClick={() => setSelectedNews(null)} className="rounded-full bg-slate-100 p-2 text-slate-500 transition hover:bg-slate-200"><X size={18} /></button>
+                    <span className="inline-flex items-center rounded-full bg-slate-100 px-3 py-1 text-[10px] font-black uppercase tracking-widest text-muted-foreground">{selectedNews.news_type || "actu"}</span>
+                    <button onClick={() => setSelectedNews(null)} className="rounded-full bg-slate-100 p-2 text-muted-foreground transition hover:bg-slate-200"><X size={18} /></button>
                   </div>
                   <p className="text-[11px] font-bold uppercase tracking-widest text-slate-400">{formatDate(selectedNews.date)}</p>
-                  <h3 className="mt-1 text-xl font-black leading-snug text-slate-900">{selectedNews.title}</h3>
-                  {selectedNews.summary && <p className="mt-3 leading-7 text-slate-600">{selectedNews.summary}</p>}
-                  <div className="mt-5 flex items-center justify-between gap-3 border-t border-slate-100 pt-4">
+                  <h3 className="mt-1 text-xl font-black leading-snug text-foreground">{selectedNews.title}</h3>
+                  {selectedNews.summary && <p className="mt-3 leading-7 text-muted-foreground">{selectedNews.summary}</p>}
+                  <div className="mt-5 flex items-center justify-between gap-3 border-t border-border pt-4">
                     <span className="text-[11px] font-bold uppercase tracking-widest text-slate-400">Source : {selectedNews.source_name || "—"}</span>
                     {selectedNews.source_url && (
                       <a href={selectedNews.source_url} target="_blank" rel="noopener noreferrer" className="inline-flex items-center gap-1.5 rounded-full bg-slate-950 px-4 py-2 text-[11px] font-black uppercase tracking-widest text-white transition hover:bg-slate-700">
@@ -603,11 +603,11 @@ function PositionsView({ candidates }: { candidates: Candidate[] }) {
   }, [issues]);
 
   if (loading) return <div className="flex justify-center py-24 text-slate-400"><Loader2 className="h-10 w-10 animate-spin" /></div>;
-  if (issues.length === 0) return <div className="mx-auto max-w-3xl px-4 pb-24 text-center text-slate-500">Les positions seront disponibles très bientôt.</div>;
+  if (issues.length === 0) return <div className="mx-auto max-w-3xl px-4 pb-24 text-center text-muted-foreground">Les positions seront disponibles très bientôt.</div>;
 
   return (
     <div className="mx-auto max-w-6xl px-4 pb-24">
-      <p className="mb-8 text-center text-sm text-slate-500">Position de chaque candidat sur les grands enjeux — cliquez sur un candidat pour le détail et la source.</p>
+      <p className="mb-8 text-center text-sm text-muted-foreground">Position de chaque candidat sur les grands enjeux — cliquez sur un candidat pour le détail et la source.</p>
       {categories.map(({ cat, items }) => (
         <div key={cat} className="mb-12">
           <h2 className="mb-5 text-xl font-staatliches uppercase tracking-wide text-slate-800">{cat}</h2>
@@ -619,9 +619,9 @@ function PositionsView({ candidates }: { candidates: Candidate[] }) {
                 if (p && groups[p.stance]) groups[p.stance].push(c);
               }
               return (
-                <div key={issue.slug} className="rounded-3xl border border-slate-200 bg-white p-5 shadow-sm">
+                <div key={issue.slug} className="rounded-3xl border border-border bg-card p-5 shadow-sm">
                   <p className="text-[10px] font-black uppercase tracking-widest text-slate-400">{issue.title}</p>
-                  <h3 className="mb-4 text-lg font-bold text-slate-900">{issue.proposition} ?</h3>
+                  <h3 className="mb-4 text-lg font-bold text-foreground">{issue.proposition} ?</h3>
                   <div className="grid gap-4 md:grid-cols-3">
                     {(["pour", "nuance", "contre"] as const).map(stance => (
                       <div key={stance}>
@@ -632,7 +632,7 @@ function PositionsView({ candidates }: { candidates: Candidate[] }) {
                         <div className="flex flex-wrap gap-2">
                           {groups[stance].length === 0 ? <span className="text-xs text-slate-300">—</span> : groups[stance].map(c => (
                             <button key={c.slug} onClick={() => setDetail({ c, issue, pos: posMap.get(`${c.slug}|${issue.slug}`) })}
-                              className={`inline-flex items-center gap-2 rounded-full bg-slate-50 py-1 pl-1 pr-3 ring-1 ${STANCE_META[stance].ring} transition hover:bg-slate-100`}>
+                              className={`inline-flex items-center gap-2 rounded-full bg-muted py-1 pl-1 pr-3 ring-1 ${STANCE_META[stance].ring} transition hover:bg-slate-100`}>
                               <CandidateAvatar c={c} className="h-6 w-6 rounded-full text-[9px]" />
                               <span className="text-xs font-bold text-slate-800">{c.full_name}</span>
                             </button>
@@ -650,12 +650,12 @@ function PositionsView({ candidates }: { candidates: Candidate[] }) {
 
       {detail && (
         <div className="fixed inset-0 z-50 flex items-center justify-center bg-slate-950/80 p-4" onClick={() => setDetail(null)}>
-          <div className="w-full max-w-lg rounded-3xl bg-white p-6 shadow-2xl" onClick={e => e.stopPropagation()}>
+          <div className="w-full max-w-lg rounded-3xl bg-card p-6 shadow-2xl" onClick={e => e.stopPropagation()}>
             <div className="mb-4 flex items-center gap-3">
               <CandidateAvatar c={detail.c} className="h-12 w-12 rounded-full text-sm" />
               <div>
-                <p className="font-black text-slate-900">{detail.c.full_name}</p>
-                <p className="text-xs font-bold text-slate-500">{detail.issue.title}</p>
+                <p className="font-black text-foreground">{detail.c.full_name}</p>
+                <p className="text-xs font-bold text-muted-foreground">{detail.issue.title}</p>
               </div>
               <button onClick={() => setDetail(null)} className="ml-auto rounded-full bg-slate-100 p-2"><X size={18} /></button>
             </div>
@@ -754,16 +754,16 @@ function CandidatesContent() {
         <div className="absolute left-1/4 top-0 h-96 w-96 -translate-x-1/2 rounded-full bg-blue-500/10 blur-[120px]" />
         <div className="absolute right-1/4 top-10 h-96 w-96 translate-x-1/2 rounded-full bg-red-500/10 blur-[120px]" />
         <div className="relative mx-auto max-w-5xl">
-          <span className="rounded-full border border-slate-200 bg-white px-4 py-1.5 text-[11px] font-black uppercase tracking-[0.25em] text-slate-500 shadow-sm">Mis à jour chaque jour</span>
-          <h1 className="mt-6 text-6xl font-staatliches uppercase leading-none tracking-tight text-slate-900 md:text-8xl">
+          <span className="rounded-full border border-border bg-card px-4 py-1.5 text-[11px] font-black uppercase tracking-[0.25em] text-muted-foreground shadow-sm">Mis à jour chaque jour</span>
+          <h1 className="mt-6 text-6xl font-staatliches uppercase leading-none tracking-tight text-foreground md:text-8xl">
             Présidentielles <span className="bg-gradient-to-r from-blue-600 to-red-600 bg-clip-text text-transparent">2027</span>
           </h1>
           <div className="mx-auto mt-6 h-1.5 w-40 rounded-full bg-gradient-to-r from-blue-600 to-red-600" />
-          <p className="mx-auto mt-6 max-w-2xl text-lg font-medium italic tracking-tight text-slate-500 md:text-xl">
+          <p className="mx-auto mt-6 max-w-2xl text-lg font-medium italic tracking-tight text-muted-foreground md:text-xl">
             Tous les candidats officiellement déclarés, leur parcours détaillé et l'actualité de la campagne, actualisés automatiquement.
           </p>
           {/* Onglets Candidats / Positions */}
-          <div className="mt-8 inline-flex rounded-full border border-slate-200 bg-white p-1 shadow-sm">
+          <div className="mt-8 inline-flex rounded-full border border-border bg-card p-1 shadow-sm">
             {([["candidats", "Candidats"], ["positions", "Positions"], ["enjeux", "Enjeux"], ["dynamiques", "Dynamiques"]] as const).map(([key, label]) => (
               // « Dynamiques » est un outil de l'abonnement Pro : il porte donc les
               // couleurs du Pro, actif comme inactif, pour se distinguer des autres onglets.
@@ -775,7 +775,7 @@ function CandidatesContent() {
                       : "text-fuchsia-600 hover:bg-fuchsia-50"
                     : view === key
                       ? "bg-slate-900 text-white"
-                      : "text-slate-500 hover:text-slate-900"
+                      : "text-muted-foreground hover:text-foreground"
                 }`}>
                 {label}
               </button>
@@ -797,7 +797,7 @@ function CandidatesContent() {
           <div className="flex flex-wrap gap-2">
             {sideTabs.map(tab => (
               <button key={tab} onClick={() => setSide(tab)}
-                className={`rounded-full px-4 py-2 text-sm font-bold transition ${side === tab ? "bg-slate-900 text-white" : "border border-slate-200 bg-white text-slate-600 hover:bg-slate-100"}`}>
+                className={`rounded-full px-4 py-2 text-sm font-bold transition ${side === tab ? "bg-slate-900 text-white" : "border border-border bg-card text-muted-foreground hover:bg-slate-100"}`}>
                 {tab === "Tous" ? "Tous" : SIDES[tab].label}
               </button>
             ))}
@@ -805,14 +805,14 @@ function CandidatesContent() {
           <div className="relative w-full md:w-72">
             <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-5 w-5 text-slate-400" />
             <input value={search} onChange={e => setSearch(e.target.value)} placeholder="Rechercher un candidat…"
-              className="w-full rounded-full border border-slate-200 bg-white py-3 pl-10 pr-4 text-slate-900 shadow-sm placeholder:text-slate-400 focus:outline-none focus:ring-2 focus:ring-blue-500/40" />
+              className="w-full rounded-full border border-border bg-card py-3 pl-10 pr-4 text-foreground shadow-sm placeholder:text-slate-400 focus:outline-none focus:ring-2 focus:ring-blue-500/40" />
           </div>
         </div>
 
         {loading ? (
           <div className="flex flex-col items-center py-24 text-slate-400"><Loader2 className="mb-4 h-12 w-12 animate-spin" /><p>Chargement des candidats…</p></div>
         ) : filtered.length === 0 ? (
-          <div className="rounded-3xl border border-slate-200 bg-white py-20 text-center text-slate-500">
+          <div className="rounded-3xl border border-border bg-card py-20 text-center text-muted-foreground">
             <div className="mb-3 text-5xl">🗳️</div>
             <p className="text-lg font-bold">Aucun candidat pour ce filtre.</p>
             <p className="mt-1 text-sm">Les nouveaux candidats déclarés sont ajoutés automatiquement chaque jour.</p>
@@ -835,7 +835,7 @@ function CandidatesContent() {
                     rotate: { duration: 4 + (i % 5) * 0.5, repeat: Infinity, ease: "easeInOut", delay: (i % 6) * 0.25 },
                   } : { opacity: { duration: 0.4, delay: (i % 12) * 0.05 }, y: { duration: 0.4, delay: (i % 12) * 0.05 } }}
                   whileHover={{ scale: 1.05, rotate: 0, transition: { duration: 0.2 } }}
-                  className={`group overflow-hidden rounded-2xl border-b-4 bg-white text-left shadow-lg shadow-slate-900/10 ring-1 ring-slate-200 transition-shadow hover:shadow-xl ${s.borderb}`}
+                  className={`group overflow-hidden rounded-2xl border-b-4 bg-card text-left shadow-lg shadow-slate-900/10 ring-1 ring-slate-200 transition-shadow hover:shadow-xl ${s.borderb}`}
                 >
                   <div className="relative">
                     {/* Photo claire, sans voile sombre, cadrage portrait centré sur le visage. */}
@@ -853,7 +853,7 @@ function CandidatesContent() {
                     {c.party && <p className="mt-0.5 text-xs font-bold text-white/85">{c.party}</p>}
                   </div>
                   <div className="p-3.5">
-                    {c.summary && <p className="line-clamp-2 text-xs leading-5 text-slate-600">{c.summary}</p>}
+                    {c.summary && <p className="line-clamp-2 text-xs leading-5 text-muted-foreground">{c.summary}</p>}
                     <span className={`mt-3 inline-flex items-center gap-1 rounded-full bg-gradient-to-r ${s.from} ${s.to} px-3 py-1.5 text-[10px] font-black uppercase tracking-widest text-white shadow-md transition-transform group-hover:translate-x-0.5`}>Voir la fiche →</span>
                   </div>
                 </motion.button>
@@ -871,7 +871,7 @@ function CandidatesContent() {
 
 export default function Presidentielles2027Page() {
   return (
-    <Suspense fallback={<div className="min-h-screen bg-slate-50" />}>
+    <Suspense fallback={<div className="min-h-screen bg-muted" />}>
       <CandidatesContent />
     </Suspense>
   );

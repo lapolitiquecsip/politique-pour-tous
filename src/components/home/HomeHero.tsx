@@ -16,7 +16,7 @@ const CARDS = [
 
 export default function HomeHero() {
   return (
-    <div className="relative flex flex-col items-center justify-center pt-8 pb-4 w-full bg-white dark:bg-slate-900/10">
+    <div className="relative flex flex-col items-center justify-center pt-8 pb-4 w-full bg-card dark:bg-slate-900/10">
       <main className="w-full max-w-5xl mx-auto flex flex-col items-center justify-center px-4 mt-6">
 
         {/* Titre */}
@@ -27,7 +27,7 @@ export default function HomeHero() {
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.8, delay: i * 0.1 }}
-              className="text-[clamp(3rem,8vw,120px)] text-slate-900 dark:text-white leading-[0.85] tracking-tight m-0 uppercase"
+              className="text-[clamp(3rem,8vw,120px)] text-foreground dark:text-white leading-[0.85] tracking-tight m-0 uppercase"
               style={{ fontFamily: '"Staatliches", "Arial Black", Impact, sans-serif' }}
             >
               {word}
@@ -56,7 +56,7 @@ export default function HomeHero() {
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
           transition={{ duration: 0.8, delay: 0.4 }}
-          className="max-w-xl text-center text-sm md:text-base text-slate-500 dark:text-slate-400 leading-relaxed mb-10"
+          className="max-w-xl text-center text-sm md:text-base text-muted-foreground dark:text-slate-400 leading-relaxed mb-10"
         >
           Contrôlez l'activité des politiques et décryptez les lois, en temps réel.
         </motion.p>
@@ -72,15 +72,15 @@ export default function HomeHero() {
               animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.6, delay: 0.5 + i * 0.1 }}
               whileHover={{ y: -4 }}
-              className="group flex flex-col items-center text-center gap-1.5 md:gap-3 rounded-xl md:rounded-2xl border border-slate-200/70 dark:border-slate-800 bg-white dark:bg-slate-900/40 px-2 pt-3 pb-3 md:px-5 md:pt-5 md:pb-7 transition-shadow hover:border-slate-300 hover:shadow-lg dark:hover:border-slate-700"
+              className="group flex flex-col items-center text-center gap-1.5 md:gap-3 rounded-xl md:rounded-2xl border border-border/70 dark:border-slate-800 bg-card dark:bg-slate-900/40 px-2 pt-3 pb-3 md:px-5 md:pt-5 md:pb-7 transition-shadow hover:border-slate-300 hover:shadow-lg dark:hover:border-slate-700"
             >
               <div className="w-full mx-auto overflow-hidden rounded-lg md:rounded-xl">
                 <div className="aspect-[320/150] w-full transition-transform duration-500 group-hover:scale-[1.04]">
                   <HomeCardArt kind={card.art} />
                 </div>
               </div>
-              <h3 className="mt-0.5 md:mt-1 text-[11px] leading-tight md:text-base font-bold text-slate-900 dark:text-white group-hover:text-red-600 transition-colors">{card.title}</h3>
-              <p className="hidden md:block text-sm leading-relaxed text-slate-500 dark:text-slate-400">{card.text}</p>
+              <h3 className="mt-0.5 md:mt-1 text-[11px] leading-tight md:text-base font-bold text-foreground dark:text-white group-hover:text-red-600 transition-colors">{card.title}</h3>
+              <p className="hidden md:block text-sm leading-relaxed text-muted-foreground dark:text-slate-400">{card.text}</p>
             </MotionLink>
           ))}
         </div>
@@ -90,7 +90,7 @@ export default function HomeHero() {
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
           transition={{ duration: 0.8, delay: 0.9 }}
-          className="text-xs md:text-sm font-staatliches uppercase tracking-[0.15em] text-slate-900 dark:text-white mb-2"
+          className="text-xs md:text-sm font-staatliches uppercase tracking-[0.15em] text-foreground dark:text-white mb-2"
         >
           Faites-vous votre propre avis
         </motion.p>

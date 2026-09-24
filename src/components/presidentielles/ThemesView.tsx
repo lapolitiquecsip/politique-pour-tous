@@ -68,13 +68,13 @@ function ThemeCard({ theme, index }: { theme: CampaignTheme; index: number }) {
     >
       <button onClick={() => setOpen(o => !o)} className="flex w-full items-center gap-5 px-6 py-5 text-left sm:px-8">
         {/* Numéro d'ordre, ton éditorial */}
-        <span className="hidden shrink-0 font-staatliches text-4xl leading-none text-slate-900/10 sm:block">{num}</span>
+        <span className="hidden shrink-0 font-staatliches text-4xl leading-none text-foreground/10 sm:block">{num}</span>
         <span className="flex h-11 w-11 shrink-0 items-center justify-center rounded-xl ring-1" style={{ backgroundColor: `${theme.accent}1f`, color: theme.accent, boxShadow: `inset 0 0 0 1px ${theme.accent}40` }}>
           <ThemeIcon name={theme.icon} className="h-5 w-5" />
         </span>
         <div className="min-w-0 flex-1">
-          <h3 className="font-staatliches text-2xl uppercase leading-none tracking-wide text-slate-900 md:text-3xl">{theme.title}</h3>
-          <p className="mt-1.5 text-sm text-slate-500">{theme.summary}</p>
+          <h3 className="font-staatliches text-2xl uppercase leading-none tracking-wide text-foreground md:text-3xl">{theme.title}</h3>
+          <p className="mt-1.5 text-sm text-muted-foreground">{theme.summary}</p>
         </div>
         {/* Chiffre phare, aligné à droite */}
         {head && (
@@ -90,15 +90,15 @@ function ThemeCard({ theme, index }: { theme: CampaignTheme; index: number }) {
 
       {open && (
         <div className="bg-white/60 px-6 pb-7 sm:px-8 sm:pl-24">
-          <div className="divide-y divide-slate-200 border-t border-slate-200">
+          <div className="divide-y divide-slate-200 border-t border-border">
             {theme.stats.map((s) => (
               <div key={s.label} className="flex flex-col gap-3 py-4 sm:flex-row sm:items-center sm:justify-between">
                 <div className="min-w-0">
                   <div className="flex items-baseline gap-2">
-                    <span className="font-staatliches text-3xl leading-none tabular-nums text-slate-900">{s.value}</span>
-                    <span className="text-sm font-bold text-slate-600">{s.label}</span>
+                    <span className="font-staatliches text-3xl leading-none tabular-nums text-foreground">{s.value}</span>
+                    <span className="text-sm font-bold text-muted-foreground">{s.label}</span>
                   </div>
-                  {s.sub && <p className="mt-1 text-xs leading-snug text-slate-500">{s.sub}</p>}
+                  {s.sub && <p className="mt-1 text-xs leading-snug text-muted-foreground">{s.sub}</p>}
                   <a
                     href={s.url} target="_blank" rel="noreferrer"
                     className="mt-1.5 inline-flex items-center gap-1 text-[10px] font-black uppercase tracking-widest text-slate-400 hover:text-slate-700"
@@ -111,9 +111,9 @@ function ThemeCard({ theme, index }: { theme: CampaignTheme; index: number }) {
             ))}
           </div>
           {theme.perspective && (
-            <div className="mt-5 flex gap-3 rounded-xl bg-slate-50 p-4 ring-1 ring-slate-100">
+            <div className="mt-5 flex gap-3 rounded-xl bg-muted p-4 ring-1 ring-slate-100">
               <span className="mt-0.5 font-staatliches text-lg uppercase tracking-widest" style={{ color: theme.accent }}>À venir</span>
-              <p className="text-sm leading-relaxed text-slate-600">{theme.perspective}</p>
+              <p className="text-sm leading-relaxed text-muted-foreground">{theme.perspective}</p>
             </div>
           )}
         </div>
@@ -194,7 +194,7 @@ export default function ThemesView() {
   return (
     <div className="mx-auto max-w-4xl px-4 pb-24">
       <div className="mb-8 text-center">
-        <p className="mx-auto max-w-2xl text-sm leading-relaxed text-slate-500">
+        <p className="mx-auto max-w-2xl text-sm leading-relaxed text-muted-foreground">
           Les grands enjeux de la campagne, éclairés par des <span className="font-bold text-slate-800">données strictement officielles</span> — INSEE, RTE, COR, SSMSI, ministères, Commission européenne. Chaque chiffre est daté et sourcé. Dépliez un thème pour l&apos;évolution et les sources.
         </p>
         {freshest && (

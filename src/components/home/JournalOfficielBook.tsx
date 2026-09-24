@@ -107,7 +107,7 @@ export default function JournalOfficielBook() {
 
           {/* Page droite — la loi (se tourne). Swipe horizontal (mobile) pour feuilleter. */}
           <motion.div
-            className="relative min-h-[440px] touch-pan-y bg-white dark:bg-slate-900"
+            className="relative min-h-[440px] touch-pan-y bg-card dark:bg-slate-900"
             drag="x"
             dragConstraints={{ left: 0, right: 0 }}
             dragElastic={0.18}
@@ -135,8 +135,8 @@ export default function JournalOfficielBook() {
                   <span className="text-[11px] font-bold text-slate-400 md:hidden">{date ? `${date.jour} ${date.mois} ${date.annee}` : ""}</span>
                   {law.nor && <span className="hidden font-mono text-[11px] text-slate-400 md:inline">NOR : {law.nor}</span>}
                 </div>
-                <h3 className="font-staatliches text-3xl uppercase leading-tight text-slate-900 dark:text-white md:text-4xl">{(law as any).display_title || law.title}</h3>
-                <p className="mt-4 flex-1 overflow-hidden text-[15px] leading-7 text-slate-600 dark:text-slate-300 line-clamp-[8]">{(law as any).impact || law.summary || "Texte promulgué et publié au Journal officiel."}</p>
+                <h3 className="font-staatliches text-3xl uppercase leading-tight text-foreground dark:text-white md:text-4xl">{(law as any).display_title || law.title}</h3>
+                <p className="mt-4 flex-1 overflow-hidden text-[15px] leading-7 text-muted-foreground dark:text-slate-300 line-clamp-[8]">{(law as any).impact || law.summary || "Texte promulgué et publié au Journal officiel."}</p>
                 <button type="button" onClick={() => openDossier(law)} className="mt-4 inline-flex items-center gap-2 self-start rounded-full bg-gradient-to-r from-red-600 to-fuchsia-600 px-5 py-2.5 text-[11px] font-black uppercase tracking-widest text-white shadow-lg shadow-rose-500/30 transition hover:shadow-rose-500/50">
                   Lire la loi & son parcours <ArrowRight size={14} />
                 </button>
@@ -148,9 +148,9 @@ export default function JournalOfficielBook() {
 
       {/* Commandes de feuilletage. */}
       <div className="mt-6 flex items-center justify-center gap-6">
-        <button onClick={() => go(-1)} disabled={i === 0} className="flex h-12 w-12 items-center justify-center rounded-full border border-slate-200 bg-white text-slate-700 shadow-sm transition hover:border-red-300 hover:text-red-600 disabled:opacity-40 dark:bg-slate-900 dark:border-slate-700 dark:text-slate-200"><ChevronLeft /></button>
-        <span className="text-sm font-black uppercase tracking-widest text-slate-500">Loi {i + 1} / {laws.length}{hasMore ? "+" : ""}</span>
-        <button onClick={() => go(1)} disabled={i === laws.length - 1 && !hasMore} className="flex h-12 w-12 items-center justify-center rounded-full border border-slate-200 bg-white text-slate-700 shadow-sm transition hover:border-red-300 hover:text-red-600 disabled:opacity-40 dark:bg-slate-900 dark:border-slate-700 dark:text-slate-200">{loadingMore && i >= laws.length - 1 ? <Loader2 size={18} className="animate-spin" /> : <ChevronRight />}</button>
+        <button onClick={() => go(-1)} disabled={i === 0} className="flex h-12 w-12 items-center justify-center rounded-full border border-border bg-card text-slate-700 shadow-sm transition hover:border-red-300 hover:text-red-600 disabled:opacity-40 dark:bg-slate-900 dark:border-slate-700 dark:text-slate-200"><ChevronLeft /></button>
+        <span className="text-sm font-black uppercase tracking-widest text-muted-foreground">Loi {i + 1} / {laws.length}{hasMore ? "+" : ""}</span>
+        <button onClick={() => go(1)} disabled={i === laws.length - 1 && !hasMore} className="flex h-12 w-12 items-center justify-center rounded-full border border-border bg-card text-slate-700 shadow-sm transition hover:border-red-300 hover:text-red-600 disabled:opacity-40 dark:bg-slate-900 dark:border-slate-700 dark:text-slate-200">{loadingMore && i >= laws.length - 1 ? <Loader2 size={18} className="animate-spin" /> : <ChevronRight />}</button>
       </div>
 
       {/* Fiche complète de la loi, ouverte EN PANNEAU sur la home (fermable). */}

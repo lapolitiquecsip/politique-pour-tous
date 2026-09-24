@@ -17,7 +17,7 @@ export function themeStyle(name: string): { Icon: any; c: string; bg: string; do
   if (/europ|internation/.test(h)) return { Icon: Flag, c: "text-blue-600", bg: "bg-blue-50", dot: "bg-blue-500" };
   if (/économ|econom|ambition|prosp|emploi|travail/.test(h)) return { Icon: TrendingUp, c: "text-violet-600", bg: "bg-violet-50", dot: "bg-violet-500" };
   if (/institution|destin|civique|démocr|democr|maître|maitre|renouveau/.test(h)) return { Icon: Landmark, c: "text-indigo-600", bg: "bg-indigo-50", dot: "bg-indigo-500" };
-  return { Icon: FileText, c: "text-slate-600", bg: "bg-slate-50", dot: "bg-slate-400" };
+  return { Icon: FileText, c: "text-muted-foreground", bg: "bg-muted", dot: "bg-slate-400" };
 }
 
 // Programme d'un candidat, groupé par thème, avec le contexte « ? » par thème et l'explication
@@ -49,20 +49,20 @@ export default function CandidateProgram({ candidateId, title = true, heading, c
   return (
     <div className={className}>
       {heading && <h3 className="mb-1 text-2xl font-staatliches uppercase text-slate-950">{heading}</h3>}
-      {title && <p className="mb-3 text-xs text-slate-500">Toutes ses idées, par thème — issues du programme officiel. Cliquez sur <HelpCircle size={12} className="inline -mt-0.5" /> pour comprendre pourquoi.</p>}
+      {title && <p className="mb-3 text-xs text-muted-foreground">Toutes ses idées, par thème — issues du programme officiel. Cliquez sur <HelpCircle size={12} className="inline -mt-0.5" /> pour comprendre pourquoi.</p>}
       <div className="space-y-4">
         {Object.entries(groups).map(([theme, g]) => {
           const { Icon, c, bg, dot } = themeStyle(theme);
           const ctxOpen = openContext.has(theme);
           return (
-            <div key={theme} className="overflow-hidden rounded-2xl border border-slate-200">
+            <div key={theme} className="overflow-hidden rounded-2xl border border-border">
               <div className={`flex items-center gap-2.5 ${bg} px-4 py-3`}>
-                <span className={`flex h-8 w-8 shrink-0 items-center justify-center rounded-xl bg-white ${c} shadow-sm`}><Icon size={16} /></span>
+                <span className={`flex h-8 w-8 shrink-0 items-center justify-center rounded-xl bg-card ${c} shadow-sm`}><Icon size={16} /></span>
                 <p className={`text-sm font-black uppercase tracking-widest ${c}`}>{theme}</p>
                 <span className="text-[10px] font-black text-slate-400">· {g.items.length}</span>
                 {g.ctx && (
                   <button onClick={() => toggleContext(theme)} title="Pourquoi ?"
-                    className={`ml-auto flex h-7 w-7 shrink-0 items-center justify-center rounded-full bg-white ${c} shadow-sm transition ${ctxOpen ? "ring-2 ring-current" : ""}`}>
+                    className={`ml-auto flex h-7 w-7 shrink-0 items-center justify-center rounded-full bg-card ${c} shadow-sm transition ${ctxOpen ? "ring-2 ring-current" : ""}`}>
                     <HelpCircle size={15} />
                   </button>
                 )}
@@ -70,11 +70,11 @@ export default function CandidateProgram({ candidateId, title = true, heading, c
               <AnimatePresence initial={false}>
                 {ctxOpen && g.ctx && (
                   <motion.div initial={{ height: 0, opacity: 0 }} animate={{ height: "auto", opacity: 1 }} exit={{ height: 0, opacity: 0 }} className="overflow-hidden">
-                    <p className="border-b border-slate-100 bg-slate-50 px-4 py-3 text-sm italic leading-6 text-slate-600">💡 {g.ctx}</p>
+                    <p className="border-b border-border bg-muted px-4 py-3 text-sm italic leading-6 text-muted-foreground">💡 {g.ctx}</p>
                   </motion.div>
                 )}
               </AnimatePresence>
-              <ul className="divide-y divide-slate-50 bg-white">
+              <ul className="divide-y divide-slate-50 bg-card">
                 {g.items.map((p, i) => {
                   const exKey = `${theme}#${i}`;
                   const exOpen = openExpl.has(exKey);
@@ -85,7 +85,7 @@ export default function CandidateProgram({ candidateId, title = true, heading, c
                         <span className="flex-1">{p.text}</span>
                         {p.explanation && (
                           <button onClick={() => toggleExpl(exKey)} title="Comprendre cette proposition"
-                            className={`mt-0.5 flex h-6 w-6 shrink-0 items-center justify-center rounded-full border transition ${exOpen ? "border-violet-300 bg-violet-100 text-violet-700" : "border-violet-200 bg-white text-violet-500 hover:bg-violet-50"}`}>
+                            className={`mt-0.5 flex h-6 w-6 shrink-0 items-center justify-center rounded-full border transition ${exOpen ? "border-violet-300 bg-violet-100 text-violet-700" : "border-violet-200 bg-card text-violet-500 hover:bg-violet-50"}`}>
                             <HelpCircle size={14} />
                           </button>
                         )}
@@ -93,7 +93,7 @@ export default function CandidateProgram({ candidateId, title = true, heading, c
                       <AnimatePresence initial={false}>
                         {exOpen && p.explanation && (
                           <motion.div initial={{ height: 0, opacity: 0 }} animate={{ height: "auto", opacity: 1 }} exit={{ height: 0, opacity: 0 }} className="overflow-hidden">
-                            <p className="ml-4 mt-2 rounded-xl border-l-2 border-violet-300 bg-violet-50/70 px-3 py-2.5 text-[13px] leading-6 text-slate-600">{p.explanation}</p>
+                            <p className="ml-4 mt-2 rounded-xl border-l-2 border-violet-300 bg-violet-50/70 px-3 py-2.5 text-[13px] leading-6 text-muted-foreground">{p.explanation}</p>
                           </motion.div>
                         )}
                       </AnimatePresence>

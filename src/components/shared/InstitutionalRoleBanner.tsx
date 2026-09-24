@@ -17,7 +17,7 @@ export default function InstitutionalRoleBanner({ fullName, bio }: { fullName: s
         <span className="flex h-11 w-11 shrink-0 items-center justify-center rounded-2xl bg-amber-500 text-white shadow-lg shadow-amber-500/30"><Landmark size={20} /></span>
         <div className="min-w-0 flex-1">
           <p className="text-[10px] font-black uppercase tracking-widest text-amber-600">Fonction institutionnelle{role.since ? ` · depuis ${role.since}` : ""}</p>
-          <p className="text-lg font-black leading-tight text-slate-900 dark:text-white">{role.role}</p>
+          <p className="text-lg font-black leading-tight text-foreground dark:text-white">{role.role}</p>
         </div>
         <ChevronDown size={18} className={`shrink-0 text-amber-500 transition-transform ${open ? "rotate-180" : ""}`} />
       </button>

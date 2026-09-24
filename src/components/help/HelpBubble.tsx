@@ -139,7 +139,7 @@ export default function HelpBubble() {
             onClick={() => setOpen(false)}
           >
             <motion.div
-              className="flex max-h-[88vh] w-full max-w-lg flex-col overflow-hidden rounded-t-[2rem] sm:rounded-[2rem] bg-white dark:bg-slate-900 shadow-2xl"
+              className="flex max-h-[88vh] w-full max-w-lg flex-col overflow-hidden rounded-t-[2rem] sm:rounded-[2rem] bg-card dark:bg-slate-900 shadow-2xl"
               initial={{ y: 40, opacity: 0 }} animate={{ y: 0, opacity: 1 }} exit={{ y: 40, opacity: 0 }}
               transition={{ type: "spring", damping: 26, stiffness: 300 }}
               onClick={e => e.stopPropagation()}
@@ -179,13 +179,13 @@ export default function HelpBubble() {
               </div>
 
               {/* Recherche */}
-              <div className="shrink-0 border-b border-slate-100 dark:border-slate-800 p-4">
+              <div className="shrink-0 border-b border-border dark:border-slate-800 p-4">
                 <div className="relative">
                   <Search className="absolute left-3 top-1/2 -translate-y-1/2 text-slate-400" size={15} />
                   <input
                     value={q} onChange={e => setQ(e.target.value)}
                     placeholder="Chercher un mot (49-3, épargne brute, EPCI…)"
-                    className="w-full rounded-xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-900 py-2.5 pl-9 pr-3 text-sm text-slate-900 dark:text-white outline-none focus:border-sky-300"
+                    className="w-full rounded-xl border border-border dark:border-slate-700 bg-card dark:bg-slate-900 py-2.5 pl-9 pr-3 text-sm text-foreground dark:text-white outline-none focus:border-sky-300"
                   />
                 </div>
               </div>
@@ -229,9 +229,9 @@ export default function HelpBubble() {
                             {st.emoji}
                             <span className={`absolute -bottom-1.5 -right-1.5 flex h-6 w-6 items-center justify-center rounded-full bg-gradient-to-br ${th.num} text-[11px] font-black text-white ring-2 ring-white dark:ring-slate-900`}>{i + 1}</span>
                           </div>
-                          <div className="flex-1 rounded-2xl border border-slate-100 bg-white p-4 shadow-sm transition hover:shadow-md dark:border-slate-800 dark:bg-slate-900">
-                            <h4 className="font-staatliches text-lg uppercase leading-none tracking-wide text-slate-900 dark:text-white">{st.title}</h4>
-                            <p className="mt-1.5 text-[13px] leading-relaxed text-slate-600 dark:text-slate-300">{st.text}</p>
+                          <div className="flex-1 rounded-2xl border border-border bg-card p-4 shadow-sm transition hover:shadow-md dark:border-slate-800 dark:bg-slate-900">
+                            <h4 className="font-staatliches text-lg uppercase leading-none tracking-wide text-foreground dark:text-white">{st.title}</h4>
+                            <p className="mt-1.5 text-[13px] leading-relaxed text-muted-foreground dark:text-slate-300">{st.text}</p>
                             {st.diagram && <HelpDiagram name={st.diagram} />}
                           </div>
                         </li>
@@ -239,11 +239,11 @@ export default function HelpBubble() {
                     </ol>
                     <div className={`mt-5 flex items-center gap-3 rounded-2xl bg-gradient-to-br ${th.tip} p-4`}>
                       <Search size={18} className={`shrink-0 ${th.tipIcon}`} />
-                      <p className="text-[12px] leading-snug text-slate-600 dark:text-slate-300">Un mot vous échappe ? Cherchez-le dans la barre ci-dessus (49-3, épargne brute, navette, EPCI…) — le lexique complet est à portée de clic.</p>
+                      <p className="text-[12px] leading-snug text-muted-foreground dark:text-slate-300">Un mot vous échappe ? Cherchez-le dans la barre ci-dessus (49-3, épargne brute, navette, EPCI…) — le lexique complet est à portée de clic.</p>
                     </div>
                   </>
                 ) : (
-                  <p className="py-8 text-center text-sm text-slate-500">
+                  <p className="py-8 text-center text-sm text-muted-foreground">
                     Utilisez la recherche ci-dessus pour comprendre un terme précis.
                   </p>
                 )}

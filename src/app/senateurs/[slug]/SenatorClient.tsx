@@ -91,7 +91,7 @@ export default function SenatorClient({ senator, embedded }: { senator: any; emb
     return normTxt(i.title).includes(n) || (i.keywords || []).some((k: string) => normTxt(k).includes(n));
   };
   const issueChip = (active: boolean) =>
-    `px-4 py-2 rounded-xl text-[10px] font-black uppercase tracking-widest transition-all border ${active ? "bg-amber-600 text-white border-amber-600 shadow-lg" : "bg-white dark:bg-slate-900 text-slate-500 border-slate-200 dark:border-slate-800 hover:border-amber-500"}`;
+    `px-4 py-2 rounded-xl text-[10px] font-black uppercase tracking-widest transition-all border ${active ? "bg-amber-600 text-white border-amber-600 shadow-lg" : "bg-card dark:bg-slate-900 text-muted-foreground border-border dark:border-slate-800 hover:border-amber-500"}`;
   const presentIssues = useMemo(() => {
     const count: Record<string, number> = {};
     for (const v of votes) for (const s of scrutinIssues[String(v.scrutin_id)] || []) count[s] = (count[s] || 0) + 1;
@@ -111,14 +111,14 @@ export default function SenatorClient({ senator, embedded }: { senator: any; emb
   }, [presentIssues, positions, autoPicked]);
 
   return (
-    <div className="min-h-screen bg-slate-50 dark:bg-slate-950 pb-20">
+    <div className="min-h-screen bg-muted dark:bg-slate-950 pb-20">
       {/* Header Navigation */}
       {!embedded && (
       <div className="bg-white/80 dark:bg-slate-900/80 backdrop-blur-md border-b border-amber-200 sticky top-0 z-50">
         <div className="container mx-auto px-4 h-16 flex items-center justify-between">
           <Link
             href="/senateurs"
-            className="flex items-center gap-2 text-sm font-semibold text-slate-600 dark:text-slate-400 hover:text-amber-600 transition-colors group"
+            className="flex items-center gap-2 text-sm font-semibold text-muted-foreground dark:text-slate-400 hover:text-amber-600 transition-colors group"
           >
             <ChevronLeft className="w-4 h-4 group-hover:-translate-x-1 transition-transform" />
             Retour au Sénat
@@ -140,7 +140,7 @@ export default function SenatorClient({ senator, embedded }: { senator: any; emb
             animate={{ opacity: 1, x: 0 }}
             className="lg:col-span-1 space-y-4 md:space-y-6"
           >
-            <div className="bg-white dark:bg-slate-900 rounded-3xl md:rounded-[2.5rem] border border-amber-200 dark:border-slate-800 overflow-hidden shadow-xl md:shadow-2xl relative">
+            <div className="bg-card dark:bg-slate-900 rounded-3xl md:rounded-[2.5rem] border border-amber-200 dark:border-slate-800 overflow-hidden shadow-xl md:shadow-2xl relative">
               <div className="absolute top-4 right-4 z-10 hidden md:block">
                  <div className="bg-amber-600 text-white px-3 py-1 rounded-full text-[10px] font-black uppercase tracking-tighter shadow-lg">Premium Exclusive</div>
               </div>
@@ -153,11 +153,11 @@ export default function SenatorClient({ senator, embedded }: { senator: any; emb
                   className="h-20 w-20 shrink-0 rounded-full object-cover object-top ring-2 ring-amber-300 dark:ring-slate-700"
                 />
                 <div className="min-w-0">
-                  <h1 className="text-2xl font-staatliches uppercase leading-none tracking-tight text-slate-900 dark:text-white">{name}</h1>
+                  <h1 className="text-2xl font-staatliches uppercase leading-none tracking-tight text-foreground dark:text-white">{name}</h1>
                   <p className="mt-1.5 inline-flex items-center gap-1.5 text-[10px] font-bold uppercase tracking-widest text-amber-600">
                     <Landmark className="w-3 h-3" /> Membre du Sénat
                   </p>
-                  {headerMeta && <p className="mt-1 text-[11px] leading-snug text-slate-500 dark:text-slate-400 first-letter:uppercase">{headerMeta}</p>}
+                  {headerMeta && <p className="mt-1 text-[11px] leading-snug text-muted-foreground dark:text-slate-400 first-letter:uppercase">{headerMeta}</p>}
                 </div>
               </div>
 
@@ -187,7 +187,7 @@ export default function SenatorClient({ senator, embedded }: { senator: any; emb
                      <>
                        {partyLink?.logo_url ? (
                          // eslint-disable-next-line @next/next/no-img-element
-                         <img src={partyLink.logo_url} alt={partyLink.name} className="w-12 h-12 rounded-2xl object-contain bg-white p-1 shrink-0 shadow-lg ring-1 ring-slate-200 dark:ring-slate-700" />
+                         <img src={partyLink.logo_url} alt={partyLink.name} className="w-12 h-12 rounded-2xl object-contain bg-card p-1 shrink-0 shadow-lg ring-1 ring-slate-200 dark:ring-slate-700" />
                        ) : (
                          <div className="w-12 h-12 rounded-2xl bg-amber-600 flex items-center justify-center text-white shrink-0 shadow-lg shadow-amber-500/20">
                            <Users className="w-6 h-6" />
@@ -195,7 +195,7 @@ export default function SenatorClient({ senator, embedded }: { senator: any; emb
                        )}
                        <div className="min-w-0">
                          <p className="text-[10px] font-black text-slate-400 uppercase tracking-wider">Groupe Politique</p>
-                         <p className="font-bold text-slate-900 dark:text-white truncate">
+                         <p className="font-bold text-foreground dark:text-white truncate">
                            {getFullPartyName(senator.party)}
                          </p>
                          {partyLink && (
@@ -217,13 +217,13 @@ export default function SenatorClient({ senator, embedded }: { senator: any; emb
 
                 <RemunerationInfo mode="parlementaire" />
 
-                <div className="flex items-center gap-3 md:gap-4 p-3 md:p-4 rounded-2xl md:rounded-3xl bg-slate-50 dark:bg-slate-800/50 border border-slate-100 dark:border-slate-700">
+                <div className="flex items-center gap-3 md:gap-4 p-3 md:p-4 rounded-2xl md:rounded-3xl bg-muted dark:bg-slate-800/50 border border-border dark:border-slate-700">
                    <div className="w-9 h-9 md:w-12 md:h-12 rounded-xl md:rounded-2xl bg-blue-500 flex items-center justify-center text-white shrink-0 shadow-lg shadow-blue-500/20">
                      <MapPin className="w-[18px] h-[18px] md:w-6 md:h-6" />
                    </div>
                    <div className="min-w-0">
                      <p className="text-[10px] font-black text-slate-400 uppercase tracking-wider">Représentation</p>
-                     <p className="font-bold text-slate-900 dark:text-white truncate">
+                     <p className="font-bold text-foreground dark:text-white truncate">
                        {senator.department}
                      </p>
                    </div>
@@ -249,13 +249,13 @@ export default function SenatorClient({ senator, embedded }: { senator: any; emb
             {/* Integrity Badge Section */}
             <motion.div
               whileHover={{ y: -4 }}
-              className="bg-white dark:bg-slate-900 rounded-2xl md:rounded-[2rem] p-4 md:p-6 border border-slate-200 dark:border-slate-800 shadow-xl relative overflow-hidden group transition-all duration-500"
+              className="bg-card dark:bg-slate-900 rounded-2xl md:rounded-[2rem] p-4 md:p-6 border border-border dark:border-slate-800 shadow-xl relative overflow-hidden group transition-all duration-500"
             >
                <div className={`absolute top-0 left-0 w-1.5 md:w-2 h-full transition-colors duration-500 ${isLegalClean ? 'bg-emerald-500' : 'bg-amber-500'}`} />
                <div className="flex items-center justify-between gap-4">
                   <div className="min-w-0">
                     <p className="text-[9px] font-black text-slate-400 uppercase tracking-[0.2em] mb-1">Intégrité & Transparence</p>
-                    <h4 className="text-lg font-bold text-slate-900 dark:text-white truncate">Historique Juridique</h4>
+                    <h4 className="text-lg font-bold text-foreground dark:text-white truncate">Historique Juridique</h4>
                     <div className="flex items-center gap-2 mt-1">
                       <div className={`w-1.5 h-1.5 rounded-full animate-pulse ${isLegalClean ? 'bg-emerald-500' : 'bg-amber-500'}`} />
                       <span className={`text-[10px] font-black uppercase tracking-widest ${isLegalClean ? 'text-emerald-600' : 'text-amber-600'}`}>
@@ -293,7 +293,7 @@ export default function SenatorClient({ senator, embedded }: { senator: any; emb
                   <p className="text-sm opacity-90 leading-relaxed mb-6">
                     Vous pouvez contacter ce sénateur pour toute question relative à l&apos;activité législative.
                   </p>
-                  <a href={contactHref} {...(ext ? { target: "_blank", rel: "noopener noreferrer" } : {})} className="w-full py-4 rounded-2xl bg-white text-amber-600 font-bold text-sm flex items-center justify-center gap-2 hover:bg-slate-100 transition-colors">
+                  <a href={contactHref} {...(ext ? { target: "_blank", rel: "noopener noreferrer" } : {})} className="w-full py-4 rounded-2xl bg-card text-amber-600 font-bold text-sm flex items-center justify-center gap-2 hover:bg-slate-100 transition-colors">
                     {ext ? <ExternalLink className="w-4 h-4" /> : <Mail className="w-4 h-4" />}
                     {ext ? "Sa fiche au Sénat" : "Envoyer un message"}
                   </a>
@@ -330,7 +330,7 @@ export default function SenatorClient({ senator, embedded }: { senator: any; emb
             />
 
             {/* Biography Section */}
-            <div className="bg-white dark:bg-slate-900 rounded-3xl md:rounded-[3rem] border border-slate-200 dark:border-slate-800 shadow-xl relative overflow-hidden group pb-2">
+            <div className="bg-card dark:bg-slate-900 rounded-3xl md:rounded-[3rem] border border-border dark:border-slate-800 shadow-xl relative overflow-hidden group pb-2">
               <button
                 onClick={() => setIsBioExpanded(!isBioExpanded)}
                 className="w-full text-left p-5 md:px-12 md:py-10 relative z-10 flex items-center justify-between"
@@ -340,7 +340,7 @@ export default function SenatorClient({ senator, embedded }: { senator: any; emb
                     <Quote className="w-6 h-6 opacity-50" />
                   </div>
                   <div>
-                    <h3 className="text-3xl font-staatliches uppercase tracking-tight text-slate-900 dark:text-white leading-none">
+                    <h3 className="text-3xl font-staatliches uppercase tracking-tight text-foreground dark:text-white leading-none">
                       Portrait & <span className="text-amber-600">Engagement</span>
                     </h3>
                   </div>
@@ -370,9 +370,9 @@ export default function SenatorClient({ senator, embedded }: { senator: any; emb
                           <p className="text-[10px] font-black uppercase tracking-widest text-slate-400 mb-3">Repères officiels</p>
                           <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
                             {items.map((i, k) => (
-                              <div key={k} className="rounded-2xl border border-slate-100 bg-white dark:bg-slate-900 dark:border-slate-800 p-4">
+                              <div key={k} className="rounded-2xl border border-border bg-card dark:bg-slate-900 dark:border-slate-800 p-4">
                                 <p className="text-[9px] font-black uppercase tracking-widest text-slate-400">{i.k}</p>
-                                <p className="mt-0.5 text-sm font-bold text-slate-900 dark:text-white capitalize">{i.v}</p>
+                                <p className="mt-0.5 text-sm font-bold text-foreground dark:text-white capitalize">{i.v}</p>
                               </div>
                             ))}
                           </div>
@@ -390,7 +390,7 @@ export default function SenatorClient({ senator, embedded }: { senator: any; emb
 
             {/* Votes Section */}
             <div>
-              <h2 className="text-4xl font-staatliches uppercase tracking-tight text-slate-900 dark:text-white mb-6">
+              <h2 className="text-4xl font-staatliches uppercase tracking-tight text-foreground dark:text-white mb-6">
                 <span className="text-amber-600">Votes</span>
               </h2>
 
@@ -404,7 +404,7 @@ export default function SenatorClient({ senator, embedded }: { senator: any; emb
                       value={issueQuery}
                       onChange={(e) => setIssueQuery(e.target.value)}
                       placeholder="Filtrer les votes par sujet (retraites, ukraine, climat…)"
-                      className="w-full pl-10 pr-4 py-3 rounded-2xl bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 focus:ring-2 focus:ring-amber-500 outline-none text-sm text-slate-900 dark:text-white"
+                      className="w-full pl-10 pr-4 py-3 rounded-2xl bg-card dark:bg-slate-900 border border-border dark:border-slate-800 focus:ring-2 focus:ring-amber-500 outline-none text-sm text-foreground dark:text-white"
                     />
                   </div>
                   <div className="flex flex-wrap gap-2">
@@ -426,11 +426,11 @@ export default function SenatorClient({ senator, embedded }: { senator: any; emb
                   pour: { txt: "Plutôt favorable", cls: "bg-emerald-100 text-emerald-700" },
                   contre: { txt: "Plutôt opposé", cls: "bg-red-100 text-red-700" },
                   nuance: { txt: "Position nuancée", cls: "bg-amber-100 text-amber-700" },
-                  inconnu: { txt: "Position non tranchée", cls: "bg-slate-100 text-slate-600" },
+                  inconnu: { txt: "Position non tranchée", cls: "bg-slate-100 text-muted-foreground" },
                 };
                 const st = STANCE[pos?.stance] || STANCE.inconnu;
                 return (
-                  <div className="mb-8 rounded-[2rem] border border-slate-200 bg-white p-6 dark:border-slate-800 dark:bg-slate-900">
+                  <div className="mb-8 rounded-[2rem] border border-border bg-card p-6 dark:border-slate-800 dark:bg-slate-900">
                     <div className="mb-3 flex flex-wrap items-center gap-3">
                       <span className="flex items-center gap-2 text-[11px] font-black uppercase tracking-widest text-amber-600"><Quote className="h-4 w-4" /> Ce qu'il·elle dit — {label}</span>
                       {pos && <span className={`rounded-full px-3 py-1 text-[10px] font-black uppercase tracking-widest ${st.cls}`}>{st.txt}</span>}
@@ -441,7 +441,7 @@ export default function SenatorClient({ senator, embedded }: { senator: any; emb
                         {Array.isArray(pos.evidence) && pos.evidence.length > 0 && (
                           <ul className={`${pos.summary ? "mt-3" : ""} space-y-1.5`}>
                             {pos.evidence.slice(0, 6).map((e: any, i: number) => (
-                              <li key={i} className="flex gap-2 text-xs text-slate-600 dark:text-slate-400">
+                              <li key={i} className="flex gap-2 text-xs text-muted-foreground dark:text-slate-400">
                                 <span className="mt-1.5 h-1.5 w-1.5 shrink-0 rounded-full bg-amber-400" />
                                 {/* Extrait lisible directement sur le site (pas de lien sortant). */}
                                 <span>{cleanExcerpt(e.excerpt)}</span>
@@ -452,7 +452,7 @@ export default function SenatorClient({ senator, embedded }: { senator: any; emb
                         <p className="mt-3 text-[10px] font-bold uppercase tracking-widest text-slate-400">Source : questions écrites (open data Sénat)</p>
                       </>
                     ) : (
-                      <p className="text-sm italic text-slate-500">Aucune prise de parole recensée sur ce sujet (questions écrites, 12 derniers mois). Son <span className="font-bold">action</span> reste visible ci-dessous via ses votes.</p>
+                      <p className="text-sm italic text-muted-foreground">Aucune prise de parole recensée sur ce sujet (questions écrites, 12 derniers mois). Son <span className="font-bold">action</span> reste visible ci-dessous via ses votes.</p>
                     )}
                   </div>
                 );
@@ -460,17 +460,17 @@ export default function SenatorClient({ senator, embedded }: { senator: any; emb
 
               <div className="space-y-4">
                 {votes.length === 0 && (
-                  <div className="rounded-[2rem] border border-dashed border-slate-200 bg-white p-8 text-center text-sm italic text-slate-400">
+                  <div className="rounded-[2rem] border border-dashed border-border bg-card p-8 text-center text-sm italic text-slate-400">
                     Aucun scrutin public récent au Sénat pour cet élu, ou vote non encore synchronisé.
                   </div>
                 )}
                 {votes.length > 0 && filteredVotes.length === 0 && (
-                  <div className="rounded-[2rem] border border-slate-200 bg-white p-8 text-center text-sm text-slate-500">Aucun vote sur ce sujet.</div>
+                  <div className="rounded-[2rem] border border-border bg-card p-8 text-center text-sm text-muted-foreground">Aucun vote sur ce sujet.</div>
                 )}
                 {filteredVotes.map((vote: any) => (
                   <div
                     key={vote.id}
-                    className="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-[2rem] p-6 group hover:border-amber-500 transition-all"
+                    className="bg-card dark:bg-slate-900 border border-border dark:border-slate-800 rounded-[2rem] p-6 group hover:border-amber-500 transition-all"
                   >
                     <div className="flex flex-col md:flex-row items-center gap-6">
                       <div className="flex-1 flex items-center gap-6">
@@ -488,9 +488,9 @@ export default function SenatorClient({ senator, embedded }: { senator: any; emb
                     </div>
                     {/* Résumé DeepSeek : de quoi parle le texte, pour comprendre le vote. */}
                     {vote.explanation && (
-                      <div className="mt-4 rounded-2xl bg-slate-50 dark:bg-slate-800/60 border border-slate-100 dark:border-slate-800 p-4 md:ml-20">
+                      <div className="mt-4 rounded-2xl bg-muted dark:bg-slate-800/60 border border-border dark:border-slate-800 p-4 md:ml-20">
                         <p className="text-[10px] font-black uppercase tracking-widest text-amber-600 mb-1">En clair</p>
-                        <p className="text-sm leading-relaxed text-slate-600 dark:text-slate-300">{vote.explanation}</p>
+                        <p className="text-sm leading-relaxed text-muted-foreground dark:text-slate-300">{vote.explanation}</p>
                       </div>
                     )}
                   </div>

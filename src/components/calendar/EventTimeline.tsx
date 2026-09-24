@@ -10,7 +10,7 @@ export default function EventTimeline({ events }: EventTimelineProps) {
 
   if (sortedEvents.length === 0) {
     return (
-      <div className="text-center py-12 border border-dashed rounded-xl bg-white">
+      <div className="text-center py-12 border border-dashed rounded-xl bg-card">
         <p className="text-gray-500">Aucun événement prévu pour le moment.</p>
       </div>
     );

@@ -20,10 +20,10 @@ export default function ComparateurConcept() {
   }, [isPremium, loading, router]);
 
   return (
-    <main className="min-h-screen bg-white">
+    <main className="min-h-screen bg-card">
       {/* 1. Header Navigation */}
       <div className="container mx-auto max-w-6xl px-4 py-8">
-        <Link href="/local" className="inline-flex items-center gap-2 text-slate-400 hover:text-slate-900 transition-colors font-bold text-xs uppercase tracking-widest">
+        <Link href="/local" className="inline-flex items-center gap-2 text-slate-400 hover:text-foreground transition-colors font-bold text-xs uppercase tracking-widest">
           <ChevronLeft size={16} /> Retour au portail local
         </Link>
       </div>
@@ -44,7 +44,7 @@ export default function ComparateurConcept() {
               Le Comparateur <span className="text-amber-500 italic">Territorial</span>
             </h1>
 
-            <p className="text-xl md:text-2xl text-slate-500 font-medium italic leading-relaxed max-w-2xl">
+            <p className="text-xl md:text-2xl text-muted-foreground font-medium italic leading-relaxed max-w-2xl">
               Comparez deux <strong>Communes</strong>, deux <strong>Départements</strong> ou deux <strong>Régions</strong> entre eux pour comprendre les différences de gestion et de qualité de vie.
             </p>
 
@@ -62,29 +62,29 @@ export default function ComparateurConcept() {
       </section>
 
       {/* 3. Value Propositions */}
-      <section className="py-24 bg-slate-50 border-y border-slate-100">
+      <section className="py-24 bg-muted border-y border-border">
         <div className="container mx-auto max-w-6xl px-4">
           <div className="grid grid-cols-1 md:grid-cols-3 gap-12">
             <div className="space-y-4">
-              <div className="w-12 h-12 bg-white rounded-2xl flex items-center justify-center text-amber-500 shadow-xl border border-slate-100">
+              <div className="w-12 h-12 bg-card rounded-2xl flex items-center justify-center text-amber-500 shadow-xl border border-border">
                 <Globe size={24} />
               </div>
-              <h3 className="text-2xl font-staatliches uppercase tracking-wide text-slate-900">Analyse Multicritères</h3>
-              <p className="text-slate-500 leading-relaxed font-medium">Comparez deux zones sur la sécurité, le taux de chômage, l'offre de soins et la performance des écoles locales.</p>
+              <h3 className="text-2xl font-staatliches uppercase tracking-wide text-foreground">Analyse Multicritères</h3>
+              <p className="text-muted-foreground leading-relaxed font-medium">Comparez deux zones sur la sécurité, le taux de chômage, l'offre de soins et la performance des écoles locales.</p>
             </div>
             <div className="space-y-4">
-              <div className="w-12 h-12 bg-white rounded-2xl flex items-center justify-center text-blue-500 shadow-xl border border-slate-100">
+              <div className="w-12 h-12 bg-card rounded-2xl flex items-center justify-center text-blue-500 shadow-xl border border-border">
                 <Zap size={24} />
               </div>
-              <h3 className="text-2xl font-staatliches uppercase tracking-wide text-slate-900">Fiscalité Décryptée</h3>
-              <p className="text-slate-500 leading-relaxed font-medium">Visualisez l'évolution de la taxe foncière et des dépenses publiques pour comprendre la gestion de votre commune.</p>
+              <h3 className="text-2xl font-staatliches uppercase tracking-wide text-foreground">Fiscalité Décryptée</h3>
+              <p className="text-muted-foreground leading-relaxed font-medium">Visualisez l'évolution de la taxe foncière et des dépenses publiques pour comprendre la gestion de votre commune.</p>
             </div>
             <div className="space-y-4">
-              <div className="w-12 h-12 bg-white rounded-2xl flex items-center justify-center text-emerald-500 shadow-xl border border-slate-100">
+              <div className="w-12 h-12 bg-card rounded-2xl flex items-center justify-center text-emerald-500 shadow-xl border border-border">
                 <ShieldCheck size={24} />
               </div>
-              <h3 className="text-2xl font-staatliches uppercase tracking-wide text-slate-900">Données Certifiées</h3>
-              <p className="text-slate-500 leading-relaxed font-medium">Accédez à des données officielles (INSEE, Ministères) traitées et mises en forme pour être compréhensibles par tous.</p>
+              <h3 className="text-2xl font-staatliches uppercase tracking-wide text-foreground">Données Certifiées</h3>
+              <p className="text-muted-foreground leading-relaxed font-medium">Accédez à des données officielles (INSEE, Ministères) traitées et mises en forme pour être compréhensibles par tous.</p>
             </div>
           </div>
         </div>
@@ -114,7 +114,7 @@ export default function ComparateurConcept() {
             <div className="flex flex-col md:flex-row items-center justify-center gap-6">
               <Link
                 href={getPremiumUrl(userId)}
-                className="w-full md:w-auto px-12 py-6 bg-white text-slate-900 font-black rounded-[2rem] hover:bg-amber-400 transition-all text-xl flex items-center justify-center gap-4 group shadow-2xl shadow-white/10"
+                className="w-full md:w-auto px-12 py-6 bg-card text-foreground font-black rounded-[2rem] hover:bg-amber-400 transition-all text-xl flex items-center justify-center gap-4 group shadow-2xl shadow-white/10"
               >
                 Activer mon accès
                 <ArrowRight className="w-6 h-6 group-hover:translate-x-2 transition-transform" />

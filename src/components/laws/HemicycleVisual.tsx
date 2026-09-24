@@ -235,8 +235,8 @@ export default function HemicycleVisual({ groups }: HemicycleVisualProps) {
                   <span className="text-xs font-black font-mono">{hoveredGroupData.abstention}</span>
                 </div>
                 <div className="flex justify-between items-center border-t border-white/5 pt-2 mt-2">
-                  <span className="text-[10px] text-slate-500 font-bold tracking-widest">NON-VOTANTS</span>
-                  <span className="text-xs font-black font-mono text-slate-500">{nonVotants}</span>
+                  <span className="text-[10px] text-muted-foreground font-bold tracking-widest">NON-VOTANTS</span>
+                  <span className="text-xs font-black font-mono text-muted-foreground">{nonVotants}</span>
                 </div>
                 <div className="flex justify-between items-center pt-2 mt-2 border-t border-white/10">
                   <span className="text-[10px] text-blue-400 font-black uppercase">TOTAL GROUPE</span>
@@ -248,20 +248,20 @@ export default function HemicycleVisual({ groups }: HemicycleVisualProps) {
         </AnimatePresence>
       </div>
 
-      <div className="flex flex-wrap justify-center gap-x-6 gap-y-2 mt-6 px-8 py-4 bg-white border border-slate-100 rounded-full shadow-sm">
+      <div className="flex flex-wrap justify-center gap-x-6 gap-y-2 mt-6 px-8 py-4 bg-card border border-border rounded-full shadow-sm">
         <div className="flex items-center gap-2">
           <div className="w-3 h-3 rounded-full bg-emerald-500 shadow-lg shadow-emerald-500/20" />
-          <span className="text-[10px] font-black uppercase tracking-widest text-slate-600">Pour</span>
+          <span className="text-[10px] font-black uppercase tracking-widest text-muted-foreground">Pour</span>
         </div>
-        <div className="flex items-center gap-2 border-l border-slate-100 pl-6">
+        <div className="flex items-center gap-2 border-l border-border pl-6">
           <div className="w-3 h-3 rounded-full bg-red-500 shadow-lg shadow-red-500/20" />
-          <span className="text-[10px] font-black uppercase tracking-widest text-slate-600">Contre</span>
+          <span className="text-[10px] font-black uppercase tracking-widest text-muted-foreground">Contre</span>
         </div>
-        <div className="flex items-center gap-2 border-l border-slate-100 pl-6">
+        <div className="flex items-center gap-2 border-l border-border pl-6">
           <div className="w-3 h-3 rounded-full bg-slate-500 shadow-lg shadow-slate-500/20" />
-          <span className="text-[10px] font-black uppercase tracking-widest text-slate-600">Abs</span>
+          <span className="text-[10px] font-black uppercase tracking-widest text-muted-foreground">Abs</span>
         </div>
-        <div className="flex items-center gap-2 border-l border-slate-100 pl-6">
+        <div className="flex items-center gap-2 border-l border-border pl-6">
           <div className="w-3 h-3 rounded-full bg-slate-200" />
           <span className="text-[10px] font-black uppercase tracking-widest text-slate-300">Absent</span>
         </div>

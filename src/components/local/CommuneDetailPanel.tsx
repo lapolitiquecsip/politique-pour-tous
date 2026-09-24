@@ -307,11 +307,11 @@ const renderComparison = (val: any, metricKey: string, inverse?: boolean) => {
 
     return (
       <div className="flex justify-between items-center text-[9px] mt-1 font-medium leading-none">
-        <span className="text-slate-400">Moy. nationale : <span className="font-bold text-slate-500">{nat.format(nat.value)}</span></span>
+        <span className="text-slate-400">Moy. nationale : <span className="font-bold text-muted-foreground">{nat.format(nat.value)}</span></span>
         {isSame ? (
-          <span className="text-slate-500 font-semibold">Identique à la moyenne</span>
+          <span className="text-muted-foreground font-semibold">Identique à la moyenne</span>
         ) : isNeutral ? (
-          <span className="text-slate-500 font-semibold">Écart : {diffStr}</span>
+          <span className="text-muted-foreground font-semibold">Écart : {diffStr}</span>
         ) : (
           <span className={`${isBetter ? 'text-emerald-600' : 'text-rose-600'} font-semibold flex items-center gap-0.5`}>
             {isBetter ? 'Plus favorable' : 'Moins favorable'} ({diffStr})
@@ -323,8 +323,8 @@ const renderComparison = (val: any, metricKey: string, inverse?: boolean) => {
     const isSame = val.toLowerCase() === nat.value.toLowerCase();
     return (
       <div className="flex justify-between items-center text-[9px] mt-1 font-medium leading-none">
-        <span className="text-slate-400">Moy. nationale : <span className="font-bold text-slate-500">{nat.value}</span></span>
-        <span className="text-slate-500 font-semibold">{isSame ? 'Identique' : `Ville : ${val}`}</span>
+        <span className="text-slate-400">Moy. nationale : <span className="font-bold text-muted-foreground">{nat.value}</span></span>
+        <span className="text-muted-foreground font-semibold">{isSame ? 'Identique' : `Ville : ${val}`}</span>
       </div>
     );
   }
@@ -507,7 +507,7 @@ export default function CommuneDetailPanel({
               animate={{ opacity: 1, scale: 1, y: 0 }}
               exit={{ opacity: 0, scale: 0.9, y: 20 }}
               transition={{ type: "spring", damping: 25, stiffness: 300 }}
-              className="relative w-full max-w-2xl bg-white rounded-[3rem] shadow-2xl pointer-events-auto overflow-hidden max-h-[90vh] flex flex-col"
+              className="relative w-full max-w-2xl bg-card rounded-[3rem] shadow-2xl pointer-events-auto overflow-hidden max-h-[90vh] flex flex-col"
             >
               {/* Header */}
               <div className="relative bg-gradient-to-br from-rose-600 via-fuchsia-600 to-rose-700 p-8 pb-12 shrink-0">
@@ -517,7 +517,7 @@ export default function CommuneDetailPanel({
                     disabled={loadingSave}
                     className={`w-10 h-10 rounded-full backdrop-blur-md flex items-center justify-center transition-all ${
                       isSaved 
-                        ? "bg-amber-400 text-slate-900 shadow-lg shadow-amber-400/20" 
+                        ? "bg-amber-400 text-foreground shadow-lg shadow-amber-400/20" 
                         : "bg-white/20 text-white hover:bg-white/30"
                     } ${!isPremium ? "opacity-70" : ""}`}
                   >
@@ -568,7 +568,7 @@ export default function CommuneDetailPanel({
                     >
                       <Coins size={12} />
                       <span>Budget Municipal</span>
-                      {!isPremium && <Lock size={10} className="text-slate-900/80" />}
+                      {!isPremium && <Lock size={10} className="text-foreground/80" />}
                     </button>
                   </div>
                 </div>
@@ -581,7 +581,7 @@ export default function CommuneDetailPanel({
                   initial={{ opacity: 0, y: 20 }}
                   animate={{ opacity: 1, y: 0 }}
                   transition={{ delay: 0.15 }}
-                  className="bg-white rounded-3xl border border-slate-200 shadow-xl shadow-slate-200/50 p-6 space-y-5"
+                  className="bg-card rounded-3xl border border-border shadow-xl shadow-slate-200/50 p-6 space-y-5"
                 >
                   {(() => {
                     const mayorName = communeData?.rne?.maire
@@ -601,7 +601,7 @@ export default function CommuneDetailPanel({
                           <p className="text-[9px] font-black uppercase tracking-widest text-slate-400">
                             Mairie &amp; Élus Municipaux (Source : RNE)
                           </p>
-                          <h3 className="text-xl font-bold text-slate-900 group-hover:text-rose-600 transition-colors flex items-center gap-1.5">
+                          <h3 className="text-xl font-bold text-foreground group-hover:text-rose-600 transition-colors flex items-center gap-1.5">
                             {mayorName}
                             {mayorFiche && <ArrowRight size={15} className="opacity-0 -translate-x-1 group-hover:opacity-100 group-hover:translate-x-0 transition-all text-rose-500" />}
                           </h3>
@@ -621,24 +621,24 @@ export default function CommuneDetailPanel({
                   {(communeData?.rne?.maire || mayor) && (
                     <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                       {/* Party */}
-                      <div className="p-4 rounded-2xl bg-slate-50 space-y-2">
+                      <div className="p-4 rounded-2xl bg-muted space-y-2">
                         <p className="text-[9px] font-black uppercase tracking-widest text-slate-400">
                           Parti politique
                         </p>
                         <div className="flex items-center gap-2">
                           <div className={`w-3 h-3 rounded-full ${partyColor}`} />
-                          <span className="text-sm font-bold text-slate-900">
+                          <span className="text-sm font-bold text-foreground">
                             {communeData?.party || mayor?.p || "Non renseigné"}
                           </span>
                         </div>
                       </div>
 
                       {/* Mandate */}
-                      <div className="p-4 rounded-2xl bg-slate-50 space-y-2">
+                      <div className="p-4 rounded-2xl bg-muted space-y-2">
                         <p className="text-[9px] font-black uppercase tracking-widest text-slate-400 flex items-center gap-1">
                           <Calendar size={10} /> Mandat depuis
                         </p>
-                        <span className="text-sm font-bold text-slate-900">
+                        <span className="text-sm font-bold text-foreground">
                           {communeData?.rne?.maire?.dateDebutMandat 
                             ? formatDate(communeData.rne.maire.dateDebutMandat) 
                             : mayor ? formatDate(mayor.d) : "Non disponible"}
@@ -651,14 +651,14 @@ export default function CommuneDetailPanel({
                   <RemunerationInfo mode="maire" population={commune.population} />
 
                   {communeData?.rne && (
-                    <div className="pt-4 border-t border-slate-100 space-y-4">
+                    <div className="pt-4 border-t border-border space-y-4">
                       {communeData.rne.adjoints && communeData.rne.adjoints.length > 0 && (
                         <div className="space-y-2">
                           <p className="text-[9px] font-black uppercase tracking-widest text-slate-400">Adjoints au Maire</p>
                           <div className="grid grid-cols-1 md:grid-cols-2 gap-2">
                             {communeData.rne.adjoints.slice(0, 8).map((adj: any, idx: number) => (
-                              <div key={idx} className="p-3 rounded-xl bg-slate-50 border border-slate-100 flex flex-col justify-center">
-                                <span className="text-xs font-bold text-slate-900">{adj.prenom} {adj.nom}</span>
+                              <div key={idx} className="p-3 rounded-xl bg-muted border border-border flex flex-col justify-center">
+                                <span className="text-xs font-bold text-foreground">{adj.prenom} {adj.nom}</span>
                                 <span className="text-[9px] text-slate-400 italic mt-0.5">{adj.fonction}</span>
                               </div>
                             ))}
@@ -685,7 +685,7 @@ export default function CommuneDetailPanel({
                               className="grid grid-cols-1 md:grid-cols-2 gap-2 max-h-48 overflow-y-auto pr-1 custom-scrollbar pt-1"
                             >
                               {communeData.rne.conseillers.map((cons: any, idx: number) => (
-                                <div key={idx} className="p-2.5 rounded-xl bg-slate-50/50 border border-slate-100/50 flex items-center justify-between">
+                                <div key={idx} className="p-2.5 rounded-xl bg-slate-50/50 border border-border/50 flex items-center justify-between">
                                   <span className="text-xs font-semibold text-slate-700">{cons.prenom} {cons.nom}</span>
                                 </div>
                               ))}
@@ -705,7 +705,7 @@ export default function CommuneDetailPanel({
                   initial={{ opacity: 0, y: 20 }}
                   animate={{ opacity: 1, y: 0 }}
                   transition={{ delay: 0.25 }}
-                  className="bg-white rounded-3xl border border-slate-200 shadow-xl shadow-slate-200/50 p-6 space-y-6"
+                  className="bg-card rounded-3xl border border-border shadow-xl shadow-slate-200/50 p-6 space-y-6"
                 >
                   <div className="flex items-center justify-between">
                     <div className="flex items-center gap-3">
@@ -716,7 +716,7 @@ export default function CommuneDetailPanel({
                         <p className="text-[9px] font-black uppercase tracking-widest text-slate-400">
                           Résultats Municipales
                         </p>
-                        <h3 className="text-lg font-bold text-slate-900">
+                        <h3 className="text-lg font-bold text-foreground">
                           Mars 2026
                         </h3>
                       </div>
@@ -737,7 +737,7 @@ export default function CommuneDetailPanel({
                     <div className="space-y-4">
                       {/* Mayor Progress Bar */}
                       <div className="space-y-1.5">
-                        <div className="flex justify-between text-[10px] font-bold uppercase tracking-wider text-slate-500">
+                        <div className="flex justify-between text-[10px] font-bold uppercase tracking-wider text-muted-foreground">
                           <span>{mayor?.n || "Maire sortant"}</span>
                           <span>{electionData.m_score?.toFixed(2)}%</span>
                         </div>
@@ -758,7 +758,7 @@ export default function CommuneDetailPanel({
                           </p>
                           <div className="grid grid-cols-1 gap-2">
                             {electionData.comp.slice(0, 3).map((comp, idx) => (
-                              <div key={idx} className="flex items-center justify-between p-3 rounded-2xl bg-slate-50 border border-slate-100 transition-hover hover:border-slate-200">
+                              <div key={idx} className="flex items-center justify-between p-3 rounded-2xl bg-muted border border-border transition-hover hover:border-border">
                                 <div className="flex items-center gap-3">
                                   <div className={`w-2 h-2 rounded-full ${PARTY_COLORS[comp.p] || "bg-slate-300"}`} />
                                   <span className="text-xs font-bold text-slate-700">
@@ -775,8 +775,8 @@ export default function CommuneDetailPanel({
                       )}
                     </div>
                   ) : (
-                    <div className="p-4 rounded-2xl bg-slate-50 border border-slate-100 text-center">
-                      <p className="text-xs text-slate-500 font-medium italic">
+                    <div className="p-4 rounded-2xl bg-muted border border-border text-center">
+                      <p className="text-xs text-muted-foreground font-medium italic">
                         Les données détaillées du scrutin ne sont pas disponibles pour cette commune.
                       </p>
                     </div>
@@ -814,12 +814,12 @@ export default function CommuneDetailPanel({
                             </div>
                             <h3 className={`text-xl font-staatliches uppercase tracking-wide ${cat.textClass}`}>{cat.title}</h3>
                           </div>
-                          <div className={`grid grid-cols-1 md:grid-cols-2 gap-x-12 gap-y-6 rounded-[2rem] p-8 border ${cat.bgClass} ${cat.borderClass} bg-white`}>
+                          <div className={`grid grid-cols-1 md:grid-cols-2 gap-x-12 gap-y-6 rounded-[2rem] p-8 border ${cat.bgClass} ${cat.borderClass} bg-card`}>
                             {metrics.map((m: any, i: number) => (
                               <div key={`m${i}`} className="space-y-2">
                                 <div className="flex justify-between text-[10px] font-black uppercase tracking-widest text-slate-400">
                                   <span>{m.label}</span>
-                                  <span className="text-slate-900 font-bold">{m.display}</span>
+                                  <span className="text-foreground font-bold">{m.display}</span>
                                 </div>
                                 {m.help && <div className="text-[10px] text-slate-400 font-medium normal-case leading-relaxed -mt-1">{m.help}</div>}
                                 <div className="h-2 w-full bg-slate-200/60 rounded-full overflow-hidden">
@@ -832,7 +832,7 @@ export default function CommuneDetailPanel({
                               <div key={`e${i}`} className="space-y-2">
                                 <div className="flex justify-between text-[10px] font-black uppercase tracking-widest text-slate-400">
                                   <span>{c.label}</span>
-                                  <span className="text-slate-900 font-bold">{c.display}</span>
+                                  <span className="text-foreground font-bold">{c.display}</span>
                                 </div>
                                 {c.pct != null && (
                                   <div className="h-2 w-full bg-slate-200/60 rounded-full overflow-hidden">
@@ -858,12 +858,12 @@ export default function CommuneDetailPanel({
                             </div>
                             <h3 className={`text-xl font-staatliches uppercase tracking-wide ${cat.textClass}`}>{cat.title}</h3>
                           </div>
-                          <div className={`grid grid-cols-1 md:grid-cols-2 gap-x-12 gap-y-6 rounded-[2rem] p-8 border ${cat.bgClass} ${cat.borderClass} bg-white`}>
+                          <div className={`grid grid-cols-1 md:grid-cols-2 gap-x-12 gap-y-6 rounded-[2rem] p-8 border ${cat.bgClass} ${cat.borderClass} bg-card`}>
                             {extra.map((c, i) => (
                               <div key={i} className="space-y-2">
                                 <div className="flex justify-between text-[10px] font-black uppercase tracking-widest text-slate-400">
                                   <span>{c.label}</span>
-                                  <span className="text-slate-900 font-bold">{c.display}</span>
+                                  <span className="text-foreground font-bold">{c.display}</span>
                                 </div>
                                 {c.pct != null && (
                                   <div className="h-2 w-full bg-slate-200/60 rounded-full overflow-hidden">
@@ -879,7 +879,7 @@ export default function CommuneDetailPanel({
 
                     {/* Sources */}
                     {communeData.sources && (
-                      <div className="text-center text-[10px] text-slate-400/80 italic pt-6 border-t border-slate-100 mt-6">
+                      <div className="text-center text-[10px] text-slate-400/80 italic pt-6 border-t border-border mt-6">
                         Source(s) de données : {communeData.sources}
                       </div>
                     )}
@@ -893,19 +893,19 @@ export default function CommuneDetailPanel({
                       transition={{ delay: 0.35 }}
                       className="grid grid-cols-2 gap-4"
                     >
-                      <div className="p-5 rounded-3xl bg-white border border-slate-200 shadow-lg shadow-slate-200/30 text-center space-y-2">
+                      <div className="p-5 rounded-3xl bg-card border border-border shadow-lg shadow-slate-200/30 text-center space-y-2">
                         <p className="text-[9px] font-black uppercase tracking-widest text-slate-400">
                           Population
                         </p>
-                        <p className="text-2xl font-black text-slate-900">
+                        <p className="text-2xl font-black text-foreground">
                           {commune.population?.toLocaleString("fr-FR") || "N/A"}
                         </p>
                       </div>
-                      <div className="p-5 rounded-3xl bg-white border border-slate-200 shadow-lg shadow-slate-200/30 text-center space-y-2">
+                      <div className="p-5 rounded-3xl bg-card border border-border shadow-lg shadow-slate-200/30 text-center space-y-2">
                         <p className="text-[9px] font-black uppercase tracking-widest text-slate-400">
                           Code INSEE
                         </p>
-                        <p className="text-2xl font-black text-slate-900">
+                        <p className="text-2xl font-black text-foreground">
                           {commune.code}
                         </p>
                       </div>

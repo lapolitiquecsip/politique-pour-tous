@@ -54,7 +54,7 @@ export const DeputyCard = memo(function DeputyCard({ deputy }: { deputy: Deputy 
   return (
     <Link 
       href={`/deputes/${slug}`}
-      className="bg-card border border-slate-200 shadow-sm rounded-2xl p-6 flex flex-col items-center hover:shadow-lg hover:border-slate-300 transition-all text-center relative overflow-hidden group cursor-pointer"
+      className="bg-card border border-border shadow-sm rounded-2xl p-6 flex flex-col items-center hover:shadow-lg hover:border-slate-300 transition-all text-center relative overflow-hidden group cursor-pointer"
     >
       <div className="tricolor-band"><span></span><span></span><span></span></div>
 
@@ -66,9 +66,9 @@ export const DeputyCard = memo(function DeputyCard({ deputy }: { deputy: Deputy 
               src={sources[srcIndex]}
               alt={deputy.lastName}
               onError={handleImgError}
-              className="w-24 h-24 rounded-full object-cover object-top border-[3px] border-slate-200 shadow-md transform group-hover:scale-110 transition-transform duration-500"
+              className="w-24 h-24 rounded-full object-cover object-top border-[3px] border-border shadow-md transform group-hover:scale-110 transition-transform duration-500"
             />
-            <div className="absolute -bottom-2 -right-2 w-8 h-8 bg-white dark:bg-slate-800 rounded-xl shadow-lg border border-slate-100 dark:border-slate-700 flex items-center justify-center text-xs font-black text-slate-500">
+            <div className="absolute -bottom-2 -right-2 w-8 h-8 bg-card dark:bg-slate-800 rounded-xl shadow-lg border border-border dark:border-slate-700 flex items-center justify-center text-xs font-black text-muted-foreground">
               {deputy.constituencyNumber}
             </div>
           </div>

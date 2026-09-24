@@ -52,7 +52,7 @@ export default function CalendarClient({ initialEvents }: { initialEvents: Calen
           
           <div className="relative">
             <h1 className="text-5xl md:text-7xl font-staatliches uppercase tracking-tighter leading-none relative z-10 inline-flex items-center gap-2 md:gap-3 flex-wrap">
-              <span className="text-slate-900 dark:text-slate-100 opacity-[0.08] absolute -top-8 left-0 select-none hidden md:block whitespace-nowrap">
+              <span className="text-foreground dark:text-slate-100 opacity-[0.08] absolute -top-8 left-0 select-none hidden md:block whitespace-nowrap">
                 DIRECT • AGENDA
               </span>
               <span className="text-black dark:text-white">Calendrier</span>
@@ -61,7 +61,7 @@ export default function CalendarClient({ initialEvents }: { initialEvents: Calen
             <div className="h-1.5 w-32 bg-gradient-to-r from-blue-600 to-red-600 mt-6 rounded-full" />
           </div>
 
-          <p className="text-xl md:text-2xl font-staatliches italic tracking-tight text-slate-500 mt-8 max-w-2xl leading-relaxed">
+          <p className="text-xl md:text-2xl font-staatliches italic tracking-tight text-muted-foreground mt-8 max-w-2xl leading-relaxed">
             Visualisez les débats, votes et auditions clés au cœur de la vie politique.
           </p>
         </div>
@@ -72,7 +72,7 @@ export default function CalendarClient({ initialEvents }: { initialEvents: Calen
 
       {/* Légende / Filtres Express */}
       <div className="flex flex-col lg:flex-row lg:items-center justify-between gap-6 mb-8">
-        <div className="flex flex-wrap gap-6 p-5 bg-white/50 backdrop-blur-md rounded-3xl border border-slate-200">
+        <div className="flex flex-wrap gap-6 p-5 bg-white/50 backdrop-blur-md rounded-3xl border border-border">
           <div className="flex items-center gap-3">
             <div className="w-3 h-3 rounded-full bg-blue-500 shadow-[0_0_10px_rgba(59,130,246,0.6)]" />
             <span className="text-[10px] font-black text-slate-700 uppercase tracking-widest">Assemblée Nationale</span>
@@ -87,15 +87,15 @@ export default function CalendarClient({ initialEvents }: { initialEvents: Calen
           </div>
         </div>
 
-        <div className="flex bg-slate-100 p-1 rounded-2xl border border-slate-200 self-start lg:self-auto">
+        <div className="flex bg-slate-100 p-1 rounded-2xl border border-border self-start lg:self-auto">
           {["Tous", "Assemblée", "Sénat", "Élysée", "Élection"].map((f) => (
             <button
               key={f}
               onClick={() => setActiveFilter(f === "Assemblée" ? "Assemblée nationale" : f)}
               className={`px-5 py-2 rounded-xl text-[10px] font-black uppercase tracking-widest transition-all ${
                 (activeFilter === f || (f === "Assemblée" && activeFilter === "Assemblée nationale"))
-                  ? "bg-white text-slate-900 shadow-lg"
-                  : "text-slate-400 hover:text-slate-600"
+                  ? "bg-card text-foreground shadow-lg"
+                  : "text-slate-400 hover:text-muted-foreground"
               }`}
             >
               {f === "Élection" ? "Élections" : f}

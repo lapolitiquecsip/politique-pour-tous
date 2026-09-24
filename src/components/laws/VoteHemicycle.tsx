@@ -86,7 +86,7 @@ export default function VoteHemicycle({ pour, contre, abstention, total, showLab
 
         {/* Center Labels */}
         <div className="absolute bottom-0 left-0 right-0 flex flex-col items-center">
-          <span className="text-3xl font-black text-slate-900 leading-none">{pour}</span>
+          <span className="text-3xl font-black text-foreground leading-none">{pour}</span>
           <span className="text-[10px] font-bold text-emerald-600 uppercase tracking-tighter">Pour</span>
         </div>
       </div>
@@ -95,15 +95,15 @@ export default function VoteHemicycle({ pour, contre, abstention, total, showLab
         <div className="flex gap-4 mt-4 w-full justify-center">
           <div className="flex items-center gap-1.5">
             <div className="w-2 h-2 rounded-full bg-emerald-500" />
-            <span className="text-[10px] font-black uppercase text-slate-500">{pour}</span>
+            <span className="text-[10px] font-black uppercase text-muted-foreground">{pour}</span>
           </div>
           <div className="flex items-center gap-1.5">
             <div className="w-2 h-2 rounded-full bg-red-500" />
-            <span className="text-[10px] font-black uppercase text-slate-500">{contre}</span>
+            <span className="text-[10px] font-black uppercase text-muted-foreground">{contre}</span>
           </div>
           <div className="flex items-center gap-1.5">
             <div className="w-2 h-2 rounded-full bg-slate-400" />
-            <span className="text-[10px] font-black uppercase text-slate-500">{abstention}</span>
+            <span className="text-[10px] font-black uppercase text-muted-foreground">{abstention}</span>
           </div>
         </div>
       )}

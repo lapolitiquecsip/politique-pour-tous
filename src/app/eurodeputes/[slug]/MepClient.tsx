@@ -30,7 +30,7 @@ const NUM_RE = /(\d+(?:[.,]\d+)?\s?%|\d[\d .]*\s?(?:€|milliards?|millions?|Md�
 function NumHighlight({ text }: { text: string }) {
   const parts = text.split(NUM_RE);
   return <>{parts.map((p, i) => i % 2 === 1
-    ? <span key={i} className="font-bold text-slate-900 dark:text-white underline decoration-sky-500 decoration-[3px] underline-offset-2">{p}</span>
+    ? <span key={i} className="font-bold text-foreground dark:text-white underline decoration-sky-500 decoration-[3px] underline-offset-2">{p}</span>
     : <span key={i}>{p}</span>)}</>;
 }
 const toPoints = (v: any): string[] => (!v ? [] : (Array.isArray(v) ? v : [v]).filter(Boolean));
@@ -119,11 +119,11 @@ export default function MepClient({ mep, initialVotes, embedded }: { mep: any; i
   const legalPerson = { first_name: mep.full_name, last_name: "", legal_issues: mep.legal_issues, an_id: null, hatvp_url: null };
 
   return (
-    <main className="min-h-screen bg-slate-50 dark:bg-slate-950 pb-20">
+    <main className="min-h-screen bg-muted dark:bg-slate-950 pb-20">
       {!embedded && (
       <div className="bg-white/80 dark:bg-slate-900/80 backdrop-blur-md border-b border-amber-200 dark:border-slate-800 sticky top-0 z-40">
         <div className="container mx-auto px-4 h-16 flex items-center">
-          <Link href="/deputes?mode=meps" className="inline-flex items-center gap-2 text-xs font-black uppercase tracking-widest text-slate-500 hover:text-amber-600">
+          <Link href="/deputes?mode=meps" className="inline-flex items-center gap-2 text-xs font-black uppercase tracking-widest text-muted-foreground hover:text-amber-600">
             <ArrowLeft size={14} /> Tous les eurodéputés
           </Link>
         </div>
@@ -139,7 +139,7 @@ export default function MepClient({ mep, initialVotes, embedded }: { mep: any; i
         <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
           {/* Colonne identité */}
           <div className="md:col-span-1">
-            <div className="rounded-[2.5rem] overflow-hidden border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900 shadow-xl">
+            <div className="rounded-[2.5rem] overflow-hidden border border-border dark:border-slate-800 bg-card dark:bg-slate-900 shadow-xl">
               <div className={`relative h-64 bg-gradient-to-b ${grad} flex items-end`}>
                 {/* eslint-disable-next-line @next/next/no-img-element */}
                 <img
@@ -157,7 +157,7 @@ export default function MepClient({ mep, initialVotes, embedded }: { mep: any; i
                 <p className="text-amber-600 font-black text-[10px] uppercase tracking-widest flex items-center gap-1.5">
                   <Star size={11} className="fill-current" /> Membre du Parlement européen
                 </p>
-                <h1 className="mt-1 text-2xl font-staatliches uppercase tracking-wide text-slate-900 dark:text-white leading-tight">
+                <h1 className="mt-1 text-2xl font-staatliches uppercase tracking-wide text-foreground dark:text-white leading-tight">
                   {mep.full_name}
                 </h1>
                 <div className="mt-4 space-y-3 text-sm">
@@ -165,17 +165,17 @@ export default function MepClient({ mep, initialVotes, embedded }: { mep: any; i
                     <p className="text-[9px] font-black uppercase tracking-widest text-slate-400">Groupe au Parlement européen</p>
                     {groupByCode(mep.ep_group_code) ? (
                       <Link href={`/groupes-europeens/${groupByCode(mep.ep_group_code)!.slug}`}
-                        className="group/link inline-flex items-start gap-1 font-bold text-slate-900 dark:text-white hover:text-sky-600 dark:hover:text-sky-400 transition-colors">
+                        className="group/link inline-flex items-start gap-1 font-bold text-foreground dark:text-white hover:text-sky-600 dark:hover:text-sky-400 transition-colors">
                         <span className="underline decoration-sky-500/40 decoration-2 underline-offset-2 group-hover/link:decoration-sky-500">{mep.ep_group || "—"}</span>
                         <ExternalLink size={12} className="mt-1 shrink-0 opacity-50" />
                       </Link>
                     ) : (
-                      <p className="font-bold text-slate-900 dark:text-white">{mep.ep_group || "—"}</p>
+                      <p className="font-bold text-foreground dark:text-white">{mep.ep_group || "—"}</p>
                     )}
                   </div>
                   <div>
                     <p className="text-[9px] font-black uppercase tracking-widest text-slate-400">Parti national</p>
-                    <p className="font-bold text-slate-900 dark:text-white">{mep.national_party || "—"}</p>
+                    <p className="font-bold text-foreground dark:text-white">{mep.national_party || "—"}</p>
                   </div>
                 </div>
                 <a
@@ -195,16 +195,16 @@ export default function MepClient({ mep, initialVotes, embedded }: { mep: any; i
             <section className="space-y-4">
               {(bio.profession || bio.formation || bio.enfants) && (
                 <div className="flex flex-wrap gap-2">
-                  {bio.profession && <span className="inline-flex items-center gap-2 rounded-full bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 px-4 py-2 text-sm font-bold text-slate-700 dark:text-slate-200"><Briefcase size={15} className="text-slate-400" />{bio.profession}</span>}
-                  {bio.formation && <span className="inline-flex items-center gap-2 rounded-full bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 px-4 py-2 text-sm font-bold text-slate-700 dark:text-slate-200"><GraduationCap size={16} className="text-slate-400" />{bio.formation}</span>}
-                  {bio.enfants && <span className="inline-flex items-center gap-2 rounded-full bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 px-4 py-2 text-sm font-bold text-slate-700 dark:text-slate-200"><Users size={15} className="text-slate-400" />{bio.enfants}</span>}
+                  {bio.profession && <span className="inline-flex items-center gap-2 rounded-full bg-card dark:bg-slate-900 border border-border dark:border-slate-800 px-4 py-2 text-sm font-bold text-slate-700 dark:text-slate-200"><Briefcase size={15} className="text-slate-400" />{bio.profession}</span>}
+                  {bio.formation && <span className="inline-flex items-center gap-2 rounded-full bg-card dark:bg-slate-900 border border-border dark:border-slate-800 px-4 py-2 text-sm font-bold text-slate-700 dark:text-slate-200"><GraduationCap size={16} className="text-slate-400" />{bio.formation}</span>}
+                  {bio.enfants && <span className="inline-flex items-center gap-2 rounded-full bg-card dark:bg-slate-900 border border-border dark:border-slate-800 px-4 py-2 text-sm font-bold text-slate-700 dark:text-slate-200"><Users size={15} className="text-slate-400" />{bio.enfants}</span>}
                 </div>
               )}
 
-              <div className="flex items-center justify-between gap-4 rounded-3xl border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900 p-5">
+              <div className="flex items-center justify-between gap-4 rounded-3xl border border-border dark:border-slate-800 bg-card dark:bg-slate-900 p-5">
                 <div>
                   <p className="text-[9px] font-black uppercase tracking-widest text-slate-400">Intégrité &amp; Transparence</p>
-                  <h3 className="text-lg font-bold text-slate-900 dark:text-white">Situation judiciaire</h3>
+                  <h3 className="text-lg font-bold text-foreground dark:text-white">Situation judiciaire</h3>
                   <span className={`text-[10px] font-black uppercase tracking-widest ${legalClean ? "text-emerald-600" : "text-amber-600"}`}>{legalClean ? "Dossier vierge" : "Affaires à consulter"}</span>
                 </div>
                 <button onClick={() => setShowLegal(true)} className={`inline-flex items-center gap-2 rounded-2xl border px-5 py-3 text-[10px] font-black uppercase tracking-widest ${legalClean ? "border-emerald-500/20 bg-emerald-500/10 text-emerald-600" : "border-amber-500/20 bg-amber-500/10 text-amber-600"}`}>
@@ -225,16 +225,16 @@ export default function MepClient({ mep, initialVotes, embedded }: { mep: any; i
 
             {/* Portrait — menu déroulant (ouvrir/fermer), comme les fiches député/sénateur. */}
             {hasPortrait && (
-            <section className="rounded-[2.5rem] border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900 overflow-hidden">
+            <section className="rounded-[2.5rem] border border-border dark:border-slate-800 bg-card dark:bg-slate-900 overflow-hidden">
               <button
                 onClick={() => setBioOpen(o => !o)}
                 aria-expanded={bioOpen}
                 className="w-full text-left p-8 flex items-center justify-between gap-4 group/header"
               >
-                <h2 className="text-3xl font-staatliches uppercase tracking-tight text-slate-900 dark:text-white">
+                <h2 className="text-3xl font-staatliches uppercase tracking-tight text-foreground dark:text-white">
                   Portrait & <span className="text-sky-600">Engagement</span>
                 </h2>
-                <div className={`w-10 h-10 shrink-0 rounded-full bg-slate-100 dark:bg-slate-800 flex items-center justify-center text-slate-500 transition-transform duration-500 ${bioOpen ? "rotate-180" : ""}`}>
+                <div className={`w-10 h-10 shrink-0 rounded-full bg-slate-100 dark:bg-slate-800 flex items-center justify-center text-muted-foreground transition-transform duration-500 ${bioOpen ? "rotate-180" : ""}`}>
                   <ChevronDown className="w-5 h-5" />
                 </div>
               </button>
@@ -249,7 +249,7 @@ export default function MepClient({ mep, initialVotes, embedded }: { mep: any; i
                     className="overflow-hidden"
                   >
                     <div className="px-8 pb-8">
-                      {bio.summary && <p className="mb-6 text-[15px] leading-relaxed text-slate-600 dark:text-slate-300">{bio.summary}</p>}
+                      {bio.summary && <p className="mb-6 text-[15px] leading-relaxed text-muted-foreground dark:text-slate-300">{bio.summary}</p>}
 
                       {hasStructured ? (
                         <div className="grid items-start gap-4 sm:grid-cols-2">
@@ -258,7 +258,7 @@ export default function MepClient({ mep, initialVotes, embedded }: { mep: any; i
                             if (points.length === 0) return null;
                             const wide = key === "parcours" || key === "chronologie" || key === "realisations" ? "sm:col-span-2" : "";
                             return (
-                              <div key={key} className={`rounded-3xl border border-slate-100 dark:border-slate-800 bg-slate-50/60 dark:bg-slate-800/40 p-5 ${wide}`}>
+                              <div key={key} className={`rounded-3xl border border-border dark:border-slate-800 bg-slate-50/60 dark:bg-slate-800/40 p-5 ${wide}`}>
                                 <h3 className={`font-staatliches text-2xl uppercase leading-none ${color}`}>{label}</h3>
                                 <div className={`mb-3 mt-1.5 h-1 w-12 rounded-full ${color.replace("text-", "bg-")}`} />
                                 <ul className="list-disc space-y-1.5 pl-4 text-sm leading-6 text-slate-700 dark:text-slate-300 marker:text-slate-300">
@@ -281,17 +281,17 @@ export default function MepClient({ mep, initialVotes, embedded }: { mep: any; i
             )}
 
             {/* VOTES — principaux par défaut, bascule « tous », pagination. */}
-            <section className="rounded-[2.5rem] border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900 p-8">
+            <section className="rounded-[2.5rem] border border-border dark:border-slate-800 bg-card dark:bg-slate-900 p-8">
               <div className="flex flex-wrap items-center justify-between gap-3 mb-6">
                 <div className="flex items-center gap-3">
                   <Building2 className="text-amber-600" size={22} />
-                  <h2 className="text-3xl font-staatliches uppercase tracking-tight text-slate-900 dark:text-white">
+                  <h2 className="text-3xl font-staatliches uppercase tracking-tight text-foreground dark:text-white">
                     Votes au <span className="text-amber-600">Parlement européen</span>
                   </h2>
                 </div>
-                <div className="inline-flex rounded-xl border border-slate-200 dark:border-slate-700 p-1">
-                  <button onClick={() => reload(true)} className={`rounded-lg px-3 py-1.5 text-[10px] font-black uppercase tracking-widest transition ${onlyMain ? "bg-slate-900 text-white" : "text-slate-500"}`}>Principaux</button>
-                  <button onClick={() => reload(false)} className={`rounded-lg px-3 py-1.5 text-[10px] font-black uppercase tracking-widest transition ${!onlyMain ? "bg-slate-900 text-white" : "text-slate-500"}`}>Tous</button>
+                <div className="inline-flex rounded-xl border border-border dark:border-slate-700 p-1">
+                  <button onClick={() => reload(true)} className={`rounded-lg px-3 py-1.5 text-[10px] font-black uppercase tracking-widest transition ${onlyMain ? "bg-slate-900 text-white" : "text-muted-foreground"}`}>Principaux</button>
+                  <button onClick={() => reload(false)} className={`rounded-lg px-3 py-1.5 text-[10px] font-black uppercase tracking-widest transition ${!onlyMain ? "bg-slate-900 text-white" : "text-muted-foreground"}`}>Tous</button>
                 </div>
               </div>
 
@@ -299,12 +299,12 @@ export default function MepClient({ mep, initialVotes, embedded }: { mep: any; i
               {cats.length > 1 && (
                 <div className="mb-6 flex flex-wrap gap-2">
                   <button onClick={() => selectCat(null)}
-                    className={`rounded-full px-3.5 py-1.5 text-[11px] font-black uppercase tracking-wide transition ${category === null ? "bg-amber-600 text-white shadow" : "bg-slate-100 dark:bg-slate-800 text-slate-500 hover:text-amber-600"}`}>
+                    className={`rounded-full px-3.5 py-1.5 text-[11px] font-black uppercase tracking-wide transition ${category === null ? "bg-amber-600 text-white shadow" : "bg-slate-100 dark:bg-slate-800 text-muted-foreground hover:text-amber-600"}`}>
                     Tous les domaines
                   </button>
                   {cats.map(c => (
                     <button key={c.category} onClick={() => selectCat(c.category)}
-                      className={`rounded-full px-3.5 py-1.5 text-[11px] font-bold transition ${category === c.category ? "bg-amber-600 text-white shadow" : "bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-300 hover:text-amber-600"}`}>
+                      className={`rounded-full px-3.5 py-1.5 text-[11px] font-bold transition ${category === c.category ? "bg-amber-600 text-white shadow" : "bg-slate-100 dark:bg-slate-800 text-muted-foreground dark:text-slate-300 hover:text-amber-600"}`}>
                       {c.category} <span className="opacity-60">· {c.count}</span>
                     </button>
                   ))}
@@ -312,7 +312,7 @@ export default function MepClient({ mep, initialVotes, embedded }: { mep: any; i
               )}
 
               {votes.length === 0 ? (
-                <p className="rounded-2xl border border-dashed border-slate-200 dark:border-slate-700 p-6 text-center text-sm italic text-slate-400">
+                <p className="rounded-2xl border border-dashed border-border dark:border-slate-700 p-6 text-center text-sm italic text-slate-400">
                   Aucun vote synchronisé pour l'instant.
                 </p>
               ) : (
@@ -321,23 +321,23 @@ export default function MepClient({ mep, initialVotes, embedded }: { mep: any; i
                     <button
                       key={v.vote_id}
                       onClick={() => openExplanation(v)}
-                      className="flex w-full items-center gap-4 rounded-2xl border border-slate-100 dark:border-slate-800 bg-slate-50/60 dark:bg-slate-800/40 p-4 text-left transition hover:border-amber-300 hover:bg-amber-50/40 dark:hover:bg-slate-800"
+                      className="flex w-full items-center gap-4 rounded-2xl border border-border dark:border-slate-800 bg-slate-50/60 dark:bg-slate-800/40 p-4 text-left transition hover:border-amber-300 hover:bg-amber-50/40 dark:hover:bg-slate-800"
                     >
                       <BallotBox vote={POS[v.position] || "ABSTENTION"} size={32} />
                       <div className="min-w-0 flex-1">
                         <p className="text-[10px] font-black uppercase tracking-widest text-slate-400">
                           {fmtDate(v.voted_at)}{v.reference ? ` · ${v.reference}` : ""}
                         </p>
-                        <p className="text-sm font-bold leading-snug text-slate-900 dark:text-white line-clamp-2">{v.title}</p>
+                        <p className="text-sm font-bold leading-snug text-foreground dark:text-white line-clamp-2">{v.title}</p>
                         {v.category && v.category !== "Autres" && (
-                          <span className="mt-1 mr-2 inline-block rounded-full bg-slate-100 dark:bg-slate-700 px-2 py-0.5 text-[9px] font-black uppercase tracking-wide text-slate-500 dark:text-slate-300">{v.category}</span>
+                          <span className="mt-1 mr-2 inline-block rounded-full bg-slate-100 dark:bg-slate-700 px-2 py-0.5 text-[9px] font-black uppercase tracking-wide text-muted-foreground dark:text-slate-300">{v.category}</span>
                         )}
                         <span className="mt-1 inline-flex items-center gap-1 text-[10px] font-black uppercase tracking-widest text-amber-600">
                           <Sparkles size={11} /> Comprendre ce vote
                         </span>
                       </div>
                       <div className="shrink-0 flex flex-col items-end gap-1.5">
-                        <span className={`text-[11px] font-black uppercase tracking-widest ${posColor[v.position] || "text-slate-500"}`}>
+                        <span className={`text-[11px] font-black uppercase tracking-widest ${posColor[v.position] || "text-muted-foreground"}`}>
                           {posLabel[v.position] || v.position}
                         </span>
                         {v.result && (
@@ -359,7 +359,7 @@ export default function MepClient({ mep, initialVotes, embedded }: { mep: any; i
                 <button
                   onClick={loadMore}
                   disabled={loading}
-                  className="mt-5 inline-flex items-center gap-2 rounded-xl border border-slate-200 dark:border-slate-700 px-4 py-2.5 text-[10px] font-black uppercase tracking-widest text-slate-500 transition hover:border-amber-300 hover:text-amber-600 disabled:opacity-50"
+                  className="mt-5 inline-flex items-center gap-2 rounded-xl border border-border dark:border-slate-700 px-4 py-2.5 text-[10px] font-black uppercase tracking-widest text-muted-foreground transition hover:border-amber-300 hover:text-amber-600 disabled:opacity-50"
                 >
                   {loading ? "Chargement…" : "Voir plus de votes"} <ChevronDown size={14} />
                 </button>
@@ -376,7 +376,7 @@ export default function MepClient({ mep, initialVotes, embedded }: { mep: any; i
       {/* Explication IA d'un vote */}
       {openVote && (
         <div className="fixed inset-0 z-[60] flex items-end justify-center bg-slate-950/70 p-0 backdrop-blur-sm sm:items-center sm:p-6" onClick={() => setOpenVote(null)}>
-          <div className="relative w-full max-w-2xl overflow-hidden rounded-t-[2rem] bg-white shadow-2xl dark:bg-slate-900 sm:rounded-[2rem] max-h-[90vh] flex flex-col" onClick={e => e.stopPropagation()}>
+          <div className="relative w-full max-w-2xl overflow-hidden rounded-t-[2rem] bg-card shadow-2xl dark:bg-slate-900 sm:rounded-[2rem] max-h-[90vh] flex flex-col" onClick={e => e.stopPropagation()}>
             <div className="relative bg-gradient-to-br from-amber-500 to-orange-600 p-6 pr-14 text-white shrink-0">
               <button onClick={() => setOpenVote(null)} className="absolute right-4 top-4 rounded-full bg-white/20 p-2 transition hover:bg-white/30" aria-label="Fermer"><X size={18} /></button>
               <p className="flex items-center gap-1.5 text-[10px] font-black uppercase tracking-widest text-white/80">
@@ -393,7 +393,7 @@ export default function MepClient({ mep, initialVotes, embedded }: { mep: any; i
               {exp === undefined ? (
                 <div className="flex items-center justify-center gap-2 py-10 text-slate-400"><Loader2 className="animate-spin" size={18} /> Chargement de l'explication…</div>
               ) : exp === null ? (
-                <div className="rounded-2xl border border-dashed border-slate-200 dark:border-slate-700 p-6 text-center text-sm text-slate-500 dark:text-slate-400">
+                <div className="rounded-2xl border border-dashed border-border dark:border-slate-700 p-6 text-center text-sm text-muted-foreground dark:text-slate-400">
                   <Info className="mx-auto mb-2 text-slate-400" size={20} />
                   L'explication de ce vote est en cours de génération et sera disponible très prochainement.
                 </div>
@@ -402,7 +402,7 @@ export default function MepClient({ mep, initialVotes, embedded }: { mep: any; i
                   {exp.subject && (
                     <div>
                       <p className="text-[10px] font-black uppercase tracking-widest text-amber-600">Le sujet</p>
-                      <p className="mt-1 text-[15px] font-bold leading-relaxed text-slate-900 dark:text-white">{exp.subject}</p>
+                      <p className="mt-1 text-[15px] font-bold leading-relaxed text-foreground dark:text-white">{exp.subject}</p>
                     </div>
                   )}
                   {exp.explanation && (

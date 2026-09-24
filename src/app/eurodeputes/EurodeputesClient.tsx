@@ -78,7 +78,7 @@ export default function EurodeputesClient({ meps }: { meps: any[] }) {
             <input
               value={q} onChange={e => setQ(e.target.value)}
               placeholder="Rechercher un nom, un parti…"
-              className="w-full rounded-2xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-900 py-3 pl-11 pr-4 text-sm text-slate-900 dark:text-white outline-none focus:border-[#003399]"
+              className="w-full rounded-2xl border border-border dark:border-slate-700 bg-card dark:bg-slate-900 py-3 pl-11 pr-4 text-sm text-foreground dark:text-white outline-none focus:border-[#003399]"
             />
           </div>
         </div>
@@ -91,7 +91,7 @@ export default function EurodeputesClient({ meps }: { meps: any[] }) {
             <p className="text-[10px] font-black uppercase tracking-widest text-slate-400">Les groupes du Parlement européen</p>
             <button
               onClick={() => setGroup(null)}
-              className={`rounded-full border px-3.5 py-1.5 text-[10px] font-black uppercase tracking-widest transition ${group === null ? "bg-[#003399] text-white border-[#003399] shadow-md" : "bg-white dark:bg-slate-900 text-slate-500 border-slate-200 dark:border-slate-700 hover:border-slate-300"}`}
+              className={`rounded-full border px-3.5 py-1.5 text-[10px] font-black uppercase tracking-widest transition ${group === null ? "bg-[#003399] text-white border-[#003399] shadow-md" : "bg-card dark:bg-slate-900 text-muted-foreground border-border dark:border-slate-700 hover:border-slate-300"}`}
             >
               Tous ({meps.length})
             </button>
@@ -104,14 +104,14 @@ export default function EurodeputesClient({ meps }: { meps: any[] }) {
                   key={g}
                   onClick={() => setGroup(actif ? null : g)}
                   style={actif ? { background: `linear-gradient(135deg, ${grad(g)[0]}, ${grad(g)[1]})`, boxShadow: `0 4px 12px ${grad(g)[0]}55` } : undefined}
-                  className={`flex items-center gap-2.5 rounded-xl border px-3 py-2.5 text-left transition ${actif ? "border-transparent text-white" : "border-slate-200 bg-white text-slate-600 hover:border-slate-300 dark:border-slate-700 dark:bg-slate-900"}`}
+                  className={`flex items-center gap-2.5 rounded-xl border px-3 py-2.5 text-left transition ${actif ? "border-transparent text-white" : "border-border bg-card text-muted-foreground hover:border-slate-300 dark:border-slate-700 dark:bg-slate-900"}`}
                 >
                   <span className="h-2.5 w-2.5 shrink-0 rounded-sm" style={{ background: actif ? "rgba(255,255,255,0.9)" : grad(g)[0] }} />
                   <span className="min-w-0">
                     <span className="block text-[11px] font-black uppercase tracking-widest">
                       {g} <span className={actif ? "text-white/70" : "text-slate-400"}>· {n}</span>
                     </span>
-                    <span className={`block text-[11px] leading-snug ${actif ? "text-white/85" : "text-slate-500 dark:text-slate-400"}`}>{groupName(g)}</span>
+                    <span className={`block text-[11px] leading-snug ${actif ? "text-white/85" : "text-muted-foreground dark:text-slate-400"}`}>{groupName(g)}</span>
                   </span>
                 </button>
               );
@@ -151,8 +151,8 @@ export default function EurodeputesClient({ meps }: { meps: any[] }) {
               <div className="p-3">
                 {/* Nom TOUJOURS lisible (blanc en sombre) — l'ancienne couleur de groupe le rendait
                     illisible pour les groupes foncés (PFE, ECR…). La couleur du groupe reste sur le badge. */}
-                <p className="text-sm font-bold leading-tight text-slate-900 dark:text-white line-clamp-2">{m.full_name}</p>
-                <p className="mt-0.5 text-[11px] font-medium text-slate-600 dark:text-slate-300 line-clamp-1">{m.national_party}</p>
+                <p className="text-sm font-bold leading-tight text-foreground dark:text-white line-clamp-2">{m.full_name}</p>
+                <p className="mt-0.5 text-[11px] font-medium text-muted-foreground dark:text-slate-300 line-clamp-1">{m.national_party}</p>
               </div>
             </Link>
             );

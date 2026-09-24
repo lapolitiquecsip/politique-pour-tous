@@ -57,20 +57,20 @@ export default function FranceRnMap() {
   const top = Object.entries(m.data).sort((a, b) => b[1] - a[1]).slice(0, 5);
 
   return (
-    <div className="mt-6 rounded-3xl border border-slate-200 bg-white p-6">
+    <div className="mt-6 rounded-3xl border border-border bg-card p-6">
       <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
-        <h2 className="text-lg font-black uppercase tracking-widest text-slate-900">Où le RN a fait ses meilleurs scores</h2>
+        <h2 className="text-lg font-black uppercase tracking-widest text-foreground">Où le RN a fait ses meilleurs scores</h2>
         {/* Sélecteur d'élection */}
-        <div className="inline-flex rounded-full border border-slate-200 bg-slate-50 p-1">
+        <div className="inline-flex rounded-full border border-border bg-muted p-1">
           {MAPS.map(x => (
             <button key={x.key} onClick={() => { setTab(x.key as any); setHover(null); }}
-              className={`rounded-full px-4 py-1.5 text-xs font-black uppercase tracking-widest transition ${tab === x.key ? "bg-rose-600 text-white shadow-sm" : "text-slate-500 hover:text-slate-800"}`}>
+              className={`rounded-full px-4 py-1.5 text-xs font-black uppercase tracking-widest transition ${tab === x.key ? "bg-rose-600 text-white shadow-sm" : "text-muted-foreground hover:text-slate-800"}`}>
               {x.tab}
             </button>
           ))}
         </div>
       </div>
-      <p className="mt-1 text-sm text-slate-500">{m.subtitle} (national : {m.national.toLocaleString("fr-FR")} %).</p>
+      <p className="mt-1 text-sm text-muted-foreground">{m.subtitle} (national : {m.national.toLocaleString("fr-FR")} %).</p>
 
       <div className="mt-4 grid gap-6 md:grid-cols-[1.4fr_1fr] md:items-center">
         <div className="relative">
@@ -97,7 +97,7 @@ export default function FranceRnMap() {
           <p className="mb-2 text-[10px] font-black uppercase tracking-widest text-slate-400">Part des voix</p>
           <div className="flex flex-col gap-1.5">
             {m.scale.map(s => (
-              <div key={s.min} className="flex items-center gap-2 text-xs text-slate-600">
+              <div key={s.min} className="flex items-center gap-2 text-xs text-muted-foreground">
                 <span className="h-3.5 w-6 rounded" style={{ background: s.color }} /> {s.label}
               </div>
             ))}

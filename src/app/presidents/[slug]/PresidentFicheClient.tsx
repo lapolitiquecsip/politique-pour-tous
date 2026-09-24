@@ -28,7 +28,7 @@ export default function PresidentFicheClient({ params }: { params: Promise<{ slu
   const initials = (p.full_name || "").split(" ").map((w: string) => w[0]).slice(0, 2).join("").toUpperCase();
 
   return (
-    <main className="min-h-screen bg-slate-50 pb-20 dark:bg-slate-950">
+    <main className="min-h-screen bg-muted pb-20 dark:bg-slate-950">
       {/* Héro */}
       <div className="relative overflow-hidden bg-gradient-to-br from-slate-900 via-slate-900 to-blue-950 px-4 pb-16 pt-24 text-white">
         <div className="absolute right-0 top-0 h-full w-1/3 bg-gradient-to-l from-blue-600/10 to-transparent" />
@@ -50,11 +50,11 @@ export default function PresidentFicheClient({ params }: { params: Promise<{ slu
       </div>
 
       <div className="mx-auto max-w-4xl px-4">
-        <Link href="/executif" className="mt-6 inline-flex items-center gap-1.5 text-sm font-bold text-slate-500 hover:text-blue-600"><ChevronLeft size={16} /> Exécutif</Link>
+        <Link href="/executif" className="mt-6 inline-flex items-center gap-1.5 text-sm font-bold text-muted-foreground hover:text-blue-600"><ChevronLeft size={16} /> Exécutif</Link>
 
         {/* Bio détaillée — même composant et même degré de précision que les élus. */}
-        <div className="mt-6 rounded-[2rem] border border-slate-200 bg-white p-6 shadow-sm dark:border-slate-800 dark:bg-slate-900 md:p-10">
-          <h2 className="mb-6 font-staatliches text-3xl uppercase tracking-tight text-slate-900 dark:text-white">Portrait & <span className="text-blue-600">parcours</span></h2>
+        <div className="mt-6 rounded-[2rem] border border-border bg-card p-6 shadow-sm dark:border-slate-800 dark:bg-slate-900 md:p-10">
+          <h2 className="mb-6 font-staatliches text-3xl uppercase tracking-tight text-foreground dark:text-white">Portrait & <span className="text-blue-600">parcours</span></h2>
           <StructuredBio bio={p.bio} fallbackText={p.summary} />
         </div>
 

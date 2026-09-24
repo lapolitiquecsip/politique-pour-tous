@@ -60,7 +60,7 @@ export default function SaveLawButton({ itemId }: { itemId: string }) {
       className={`absolute right-4 top-4 z-20 flex h-9 w-9 items-center justify-center rounded-full border shadow-sm transition ${
         saved
           ? "border-amber-300 bg-amber-500 text-white shadow-amber-500/30"
-          : "border-slate-200 bg-white/90 text-slate-400 hover:border-amber-300 hover:text-amber-500 dark:border-slate-700 dark:bg-slate-800/90"
+          : "border-border bg-white/90 text-slate-400 hover:border-amber-300 hover:text-amber-500 dark:border-slate-700 dark:bg-slate-800/90"
       }`}
     >
       {busy ? <Loader2 size={15} className="animate-spin" /> : <Bookmark size={15} className={saved ? "fill-current" : ""} />}

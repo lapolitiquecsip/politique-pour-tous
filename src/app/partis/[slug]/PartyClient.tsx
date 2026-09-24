@@ -63,11 +63,11 @@ function recentMembers(m?: string | null): string | null {
 function InfoRow({ icon: Icon, label, value }: { icon: any; label: string; value: string | null }) {
   if (!value) return null;
   return (
-    <div className="flex items-start gap-3 rounded-2xl border border-slate-200 bg-white p-4">
-      <div className="flex h-9 w-9 shrink-0 items-center justify-center rounded-xl bg-slate-100 text-slate-600"><Icon className="h-4 w-4" /></div>
+    <div className="flex items-start gap-3 rounded-2xl border border-border bg-card p-4">
+      <div className="flex h-9 w-9 shrink-0 items-center justify-center rounded-xl bg-slate-100 text-muted-foreground"><Icon className="h-4 w-4" /></div>
       <div className="min-w-0">
         <p className="text-[10px] font-black uppercase tracking-widest text-slate-400">{label}</p>
-        <p className="font-bold text-slate-900">{value}</p>
+        <p className="font-bold text-foreground">{value}</p>
       </div>
     </div>
   );
@@ -87,13 +87,13 @@ function LeaderRow({ value }: { value: string | null }) {
   }, [cleanName]);
   if (!value) return null;
   const inner = (
-    <div className={`flex items-start gap-3 rounded-2xl border p-4 transition ${href ? "border-indigo-200 bg-white hover:border-indigo-400 hover:shadow-md cursor-pointer group" : "border-slate-200 bg-white"}`}>
+    <div className={`flex items-start gap-3 rounded-2xl border p-4 transition ${href ? "border-indigo-200 bg-card hover:border-indigo-400 hover:shadow-md cursor-pointer group" : "border-border bg-card"}`}>
       {photo && imgOk
         ? <img src={photo} alt={cleanName} onError={() => setImgOk(false)} className="h-10 w-10 shrink-0 rounded-xl object-cover object-top ring-1 ring-slate-200" />
-        : <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-slate-100 text-slate-600"><UserCircle className="h-5 w-5" /></div>}
+        : <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-slate-100 text-muted-foreground"><UserCircle className="h-5 w-5" /></div>}
       <div className="min-w-0">
         <p className="text-[10px] font-black uppercase tracking-widest text-slate-400">Dirigeant·e</p>
-        <p className="font-bold text-slate-900 group-hover:text-indigo-600 transition-colors inline-flex items-center gap-1">
+        <p className="font-bold text-foreground group-hover:text-indigo-600 transition-colors inline-flex items-center gap-1">
           {value}{href && <ArrowRight className="h-3.5 w-3.5 opacity-0 -translate-x-1 group-hover:opacity-100 group-hover:translate-x-0 transition-all" />}
         </p>
         {href && <p className="text-[10px] font-black uppercase tracking-widest text-indigo-400">Voir la fiche →</p>}
@@ -148,7 +148,7 @@ export default function PartyClient({ params }: { params: Promise<{ slug: string
   const hasDatan = party.effectif != null;
 
   return (
-    <div className="min-h-screen bg-slate-50 pb-20">
+    <div className="min-h-screen bg-muted pb-20">
       {/* En-tête coloré */}
       <div className="relative overflow-hidden px-4 py-16 text-white" style={{ background: `linear-gradient(135deg, ${color} 0%, #0f172a 130%)` }}>
         <div className="mx-auto max-w-5xl">
@@ -156,7 +156,7 @@ export default function PartyClient({ params }: { params: Promise<{ slug: string
             <ChevronLeft className="h-4 w-4" /> Retour
           </button>
           <div className="flex flex-col items-start gap-6 md:flex-row md:items-center">
-            <div className="flex h-24 w-24 shrink-0 items-center justify-center overflow-hidden rounded-3xl bg-white p-1.5 shadow-lg">
+            <div className="flex h-24 w-24 shrink-0 items-center justify-center overflow-hidden rounded-3xl bg-card p-1.5 shadow-lg">
               {party.logo_url
                 // eslint-disable-next-line @next/next/no-img-element
                 ? <img src={party.logo_url} alt={party.name} className="h-full w-full object-contain" />
@@ -205,8 +205,8 @@ export default function PartyClient({ params }: { params: Promise<{ slug: string
 
         {/* Idéologie & valeurs — courants revendiqués par le parti (puces à sa couleur). */}
         {party.ideology && party.ideology.length > 0 && (
-          <div className="mt-6 rounded-3xl border border-slate-200 bg-white p-6">
-            <h2 className="text-lg font-black uppercase tracking-widest text-slate-900">Idéologie &amp; valeurs</h2>
+          <div className="mt-6 rounded-3xl border border-border bg-card p-6">
+            <h2 className="text-lg font-black uppercase tracking-widest text-foreground">Idéologie &amp; valeurs</h2>
             <div className="mt-3 flex flex-wrap gap-2">
               {party.ideology.map((id, i) => (
                 <span key={i} className="rounded-full px-3.5 py-1.5 text-sm font-bold text-white shadow-sm" style={{ background: color }}>{id}</span>
@@ -220,8 +220,8 @@ export default function PartyClient({ params }: { params: Promise<{ slug: string
           const taux = party.dettes_eur != null && party.produits_eur ? Math.round((party.dettes_eur / party.produits_eur) * 100) : null;
           const src = party.subventions_source || party.comptes_source;
           return (
-            <div className="mt-6 rounded-3xl border border-slate-200 bg-white p-6">
-              <h2 className="text-lg font-black uppercase tracking-widest text-slate-900">Finances du parti</h2>
+            <div className="mt-6 rounded-3xl border border-border bg-card p-6">
+              <h2 className="text-lg font-black uppercase tracking-widest text-foreground">Finances du parti</h2>
               {/* Classements comparatifs (subventions + endettement) — les montants du parti y figurent, surlignés. */}
               <PartyFinanceCompare currentSlug={party.slug} />
               {src && <p className="mt-4 text-[11px] text-slate-400">Source : {src}</p>}
@@ -264,9 +264,9 @@ export default function PartyClient({ params }: { params: Promise<{ slug: string
             <button
               key={x.key}
               onClick={() => setTab(x.key)}
-              className={`rounded-2xl border bg-white p-3 md:p-4 text-center transition ${tab === x.key ? `border-transparent ring-2 ${x.ring} shadow-md` : "border-slate-200 hover:border-slate-300 hover:shadow-sm"}`}
+              className={`rounded-2xl border bg-card p-3 md:p-4 text-center transition ${tab === x.key ? `border-transparent ring-2 ${x.ring} shadow-md` : "border-border hover:border-slate-300 hover:shadow-sm"}`}
             >
-              <p className="text-2xl md:text-3xl font-black text-slate-900">{x.n}</p>
+              <p className="text-2xl md:text-3xl font-black text-foreground">{x.n}</p>
               <p className="mt-1 text-[9px] md:text-[10px] font-black uppercase leading-tight tracking-tight text-slate-400 break-words">{x.label}</p>
             </button>
           ))}
@@ -277,14 +277,14 @@ export default function PartyClient({ params }: { params: Promise<{ slug: string
         <section className="mt-6 max-h-[26rem] overflow-y-auto rounded-2xl pr-1">
           {tab === "deputies" && (
             members.deputies.length === 0
-              ? <p className="text-sm text-slate-500">Aucun·e député·e pour ce parti.</p>
+              ? <p className="text-sm text-muted-foreground">Aucun·e député·e pour ce parti.</p>
               : <div className="grid grid-cols-1 gap-3 sm:grid-cols-2 lg:grid-cols-3">
                   {members.deputies.map((d: any) => (
-                    <Link key={d.slug} href={`/deputes/${d.slug}`} className="flex items-center gap-3 rounded-2xl border border-slate-200 bg-white p-3 transition hover:border-red-300 group">
+                    <Link key={d.slug} href={`/deputes/${d.slug}`} className="flex items-center gap-3 rounded-2xl border border-border bg-card p-3 transition hover:border-red-300 group">
                       <Avatar name={`${d.first_name} ${d.last_name}`} anId={d.an_id} photo={d.photo_url} color={color} />
                       <div className="min-w-0">
-                        <p className="truncate font-bold text-slate-900">{d.first_name} {d.last_name}</p>
-                        <p className="truncate text-[11px] font-bold text-slate-500">{d.department || ""}</p>
+                        <p className="truncate font-bold text-foreground">{d.first_name} {d.last_name}</p>
+                        <p className="truncate text-[11px] font-bold text-muted-foreground">{d.department || ""}</p>
                       </div>
                       <ArrowRight className="ml-auto h-4 w-4 shrink-0 text-slate-300 group-hover:text-red-500" />
                     </Link>
@@ -293,12 +293,12 @@ export default function PartyClient({ params }: { params: Promise<{ slug: string
           )}
           {tab === "senators" && (
             members.senators.length === 0
-              ? <p className="text-sm text-slate-500">Aucun·e sénateur·rice pour ce parti.</p>
+              ? <p className="text-sm text-muted-foreground">Aucun·e sénateur·rice pour ce parti.</p>
               : <div className="grid grid-cols-1 gap-3 sm:grid-cols-2 lg:grid-cols-3">
                   {members.senators.map((s: any) => (
-                    <Link key={s.slug} href={`/senateurs/${s.slug}`} className="flex items-center gap-3 rounded-2xl border border-slate-200 bg-white p-3 transition hover:border-amber-300 group">
+                    <Link key={s.slug} href={`/senateurs/${s.slug}`} className="flex items-center gap-3 rounded-2xl border border-border bg-card p-3 transition hover:border-amber-300 group">
                       <Avatar name={`${s.first_name} ${s.last_name}`} photo={s.photo_url} color={color} />
-                      <span className="truncate font-bold text-slate-900">{s.first_name} {s.last_name}</span>
+                      <span className="truncate font-bold text-foreground">{s.first_name} {s.last_name}</span>
                       <ArrowRight className="ml-auto h-4 w-4 shrink-0 text-slate-300 group-hover:text-amber-500" />
                     </Link>
                   ))}
@@ -306,12 +306,12 @@ export default function PartyClient({ params }: { params: Promise<{ slug: string
           )}
           {tab === "meps" && (
             members.meps.length === 0
-              ? <p className="text-sm text-slate-500">Aucun·e député·e européen·ne pour ce parti.</p>
+              ? <p className="text-sm text-muted-foreground">Aucun·e député·e européen·ne pour ce parti.</p>
               : <div className="grid grid-cols-1 gap-3 sm:grid-cols-2 lg:grid-cols-3">
                   {members.meps.map((m: any) => (
-                    <div key={m.id} className="flex items-center gap-3 rounded-2xl border border-slate-200 bg-white p-3">
+                    <div key={m.id} className="flex items-center gap-3 rounded-2xl border border-border bg-card p-3">
                       <Avatar name={m.full_name} color={color} />
-                      <span className="truncate font-bold text-slate-900">{m.full_name}</span>
+                      <span className="truncate font-bold text-foreground">{m.full_name}</span>
                     </div>
                   ))}
                 </div>
@@ -321,15 +321,15 @@ export default function PartyClient({ params }: { params: Promise<{ slug: string
         {/* Candidat·e·s à la présidentielle */}
         {members.candidates.length > 0 && (
           <section className="mt-12">
-            <h2 className="mb-4 text-2xl font-staatliches uppercase text-slate-900">Candidat·e·s à la présidentielle</h2>
+            <h2 className="mb-4 text-2xl font-staatliches uppercase text-foreground">Candidat·e·s à la présidentielle</h2>
             <div className="space-y-3">
               {members.candidates.map((c: any) => {
                 const progOpen = openProgram.has(c.slug);
                 return (
-                  <div key={c.slug} className="overflow-hidden rounded-2xl border border-slate-200 bg-white">
+                  <div key={c.slug} className="overflow-hidden rounded-2xl border border-border bg-card">
                     <div className="flex items-center gap-3 p-3">
                       <Avatar name={c.full_name} photo={c.photo_url} color={color} />
-                      <Link href={`/presidentielles-2027/?candidat=${c.slug}`} className="font-bold text-slate-900 transition hover:text-blue-600">{c.full_name}</Link>
+                      <Link href={`/presidentielles-2027/?candidat=${c.slug}`} className="font-bold text-foreground transition hover:text-blue-600">{c.full_name}</Link>
                       {c.id && (
                         <button onClick={() => toggleProgram(c.slug)}
                           className={`ml-auto inline-flex items-center gap-1.5 rounded-full px-3.5 py-2 text-[11px] font-black uppercase tracking-widest transition ${progOpen ? "bg-blue-600 text-white" : "bg-blue-50 text-blue-700 hover:bg-blue-100"}`}>
@@ -340,7 +340,7 @@ export default function PartyClient({ params }: { params: Promise<{ slug: string
                     <AnimatePresence initial={false}>
                       {progOpen && c.id && (
                         <motion.div initial={{ height: 0, opacity: 0 }} animate={{ height: "auto", opacity: 1 }} exit={{ height: 0, opacity: 0 }} className="overflow-hidden">
-                          <div className="border-t border-slate-100 bg-slate-50/40 p-4">
+                          <div className="border-t border-border bg-slate-50/40 p-4">
                             <CandidateProgram candidateId={c.id} emptyMessage="Programme pas encore disponible pour ce candidat·e." />
                           </div>
                         </motion.div>
@@ -362,10 +362,10 @@ export default function PartyClient({ params }: { params: Promise<{ slug: string
           if (!showElec) return null;
           return (
             <section className="mt-14">
-              <h2 className="mb-6 text-2xl font-staatliches uppercase text-slate-900">Évolution</h2>
+              <h2 className="mb-6 text-2xl font-staatliches uppercase text-foreground">Évolution</h2>
 
               {(
-                <div className="rounded-3xl border border-slate-200 bg-white p-6">
+                <div className="rounded-3xl border border-border bg-card p-6">
                   <p className="mb-4 text-sm font-black uppercase tracking-widest text-slate-400">Résultats électoraux (% des voix)</p>
                   <div className="space-y-4">
                     {elecKinds.map(([k, label]) => {
@@ -377,8 +377,8 @@ export default function PartyClient({ params }: { params: Promise<{ slug: string
                           <div className="flex flex-wrap gap-2">
                             {pts.map((p, i) => (
                               <span key={i} className={`rounded-xl px-3 py-1.5 text-sm ${p.source?.startsWith("officiel") ? "bg-emerald-50 ring-1 ring-emerald-200" : "bg-slate-100"}`}>
-                                <span className="font-black text-slate-900">{Number(p.value).toLocaleString("fr-FR", { maximumFractionDigits: 1 })}%</span>
-                                <span className="ml-1.5 text-xs font-bold text-slate-500">{p.year}{p.label ? ` · ${p.label}` : ""}</span>
+                                <span className="font-black text-foreground">{Number(p.value).toLocaleString("fr-FR", { maximumFractionDigits: 1 })}%</span>
+                                <span className="ml-1.5 text-xs font-bold text-muted-foreground">{p.year}{p.label ? ` · ${p.label}` : ""}</span>
                                 {p.source?.startsWith("officiel") && <span className="ml-1.5 text-[9px] font-black uppercase tracking-widest text-emerald-600">officiel</span>}
                               </span>
                             ))}
@@ -402,9 +402,9 @@ export default function PartyClient({ params }: { params: Promise<{ slug: string
         <AllPartiesNav currentSlug={party.slug} />
 
         {/* Sources */}
-        <div className="mt-12 flex flex-wrap items-center gap-4 border-t border-slate-200 pt-6 text-xs text-slate-400">
-          {hasDatan && <span>Statistiques : <a href="https://datan.fr" target="_blank" rel="noreferrer" className="font-bold text-slate-600 hover:underline">datan.fr</a>{party.datan_updated_at ? ` (MAJ ${party.datan_updated_at})` : ""}</span>}
-          {party.source_url && <span>Infos parti : <a href={party.source_url} target="_blank" rel="noreferrer" className="font-bold text-slate-600 hover:underline">Wikipédia</a> — résumé généré automatiquement</span>}
+        <div className="mt-12 flex flex-wrap items-center gap-4 border-t border-border pt-6 text-xs text-slate-400">
+          {hasDatan && <span>Statistiques : <a href="https://datan.fr" target="_blank" rel="noreferrer" className="font-bold text-muted-foreground hover:underline">datan.fr</a>{party.datan_updated_at ? ` (MAJ ${party.datan_updated_at})` : ""}</span>}
+          {party.source_url && <span>Infos parti : <a href={party.source_url} target="_blank" rel="noreferrer" className="font-bold text-muted-foreground hover:underline">Wikipédia</a> — résumé généré automatiquement</span>}
         </div>
       </div>
     </div>

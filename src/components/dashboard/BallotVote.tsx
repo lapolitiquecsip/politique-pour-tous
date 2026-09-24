@@ -37,7 +37,7 @@ export const VOTE_STYLES: Record<string, Style> = {
   ABSTENTION: {
     label: "Abstention",
     env: "#cbd5e1", envStroke: "#94a3b8",
-    chip: "bg-slate-100 text-slate-600 border-slate-200",
+    chip: "bg-slate-100 text-muted-foreground border-border",
     urn: "#475569",
   },
 };

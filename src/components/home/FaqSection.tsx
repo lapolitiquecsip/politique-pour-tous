@@ -22,7 +22,7 @@ const BUBBLE_COLORS: Record<BubbleColor, { bubble: string; tail: string }> = {
   green: { bubble: "bg-emerald-600/95 text-white border-emerald-500", tail: "border-t-emerald-600" },
   amber: { bubble: "bg-amber-500/95 text-white border-amber-400", tail: "border-t-amber-500" },
   violet: { bubble: "bg-violet-600/95 text-white border-violet-500", tail: "border-t-violet-600" },
-  white: { bubble: "bg-white/95 text-slate-900 border-slate-200", tail: "border-t-white" },
+  white: { bubble: "bg-white/95 text-foreground border-border", tail: "border-t-white" },
 };
 
 const faqData: FaqItem[] = [
@@ -80,7 +80,7 @@ export default function FaqSection() {
   const [selectedId, setSelectedId] = useState<number | null>(null);
 
   return (
-    <section id="faq" className="relative py-32 px-4 bg-slate-50 overflow-hidden group border-t border-slate-200">
+    <section id="faq" className="relative py-32 px-4 bg-muted overflow-hidden group border-t border-border">
       {/* Decorative background elements (subtle for light mode) */}
       <div className="absolute -top-40 -right-40 w-96 h-96 bg-red-600/5 rounded-full blur-[60px] z-10" />
       <div className="absolute top-40 -left-10 w-96 h-96 bg-blue-600/10 rounded-full blur-[60px] z-10" />
@@ -92,11 +92,11 @@ export default function FaqSection() {
         {/* Poster Title (CLEAN BLACK STYLE) */}
         <div className="relative mb-24 text-center">
           <div className="relative z-10">
-            <span className="text-slate-900 opacity-[0.06] absolute -top-12 left-1/2 -translate-x-1/2 select-none hidden md:block whitespace-nowrap text-9xl font-staatliches tracking-widest leading-none">
+            <span className="text-foreground opacity-[0.06] absolute -top-12 left-1/2 -translate-x-1/2 select-none hidden md:block whitespace-nowrap text-9xl font-staatliches tracking-widest leading-none">
               QUESTIONS • RÉPONSES
             </span>
             
-            <h2 className="text-7xl md:text-9xl font-staatliches uppercase tracking-tighter leading-none text-slate-900">
+            <h2 className="text-7xl md:text-9xl font-staatliches uppercase tracking-tighter leading-none text-foreground">
               F.A.Q.
             </h2>
           </div>
@@ -153,13 +153,13 @@ export default function FaqSection() {
                 exit={{ opacity: 0, scale: 0.9, y: 20 }}
                 className="absolute inset-0 flex items-center justify-center z-50 pointer-events-none"
               >
-                <div className="bg-white p-8 md:p-12 rounded-[2.5rem] shadow-2xl max-w-xl mx-4 pointer-events-auto border border-blue-100 relative group overflow-hidden">
+                <div className="bg-card p-8 md:p-12 rounded-[2.5rem] shadow-2xl max-w-xl mx-4 pointer-events-auto border border-blue-100 relative group overflow-hidden">
                    {/* Decorative corner */}
                   <div className="absolute top-0 right-0 w-24 h-24 bg-gradient-to-bl from-blue-50 to-transparent -mr-12 -mt-12 rounded-full" />
                   
                   <button 
                     onClick={() => setSelectedId(null)}
-                    className="absolute top-6 right-6 p-2 hover:bg-slate-100 rounded-full transition-colors text-slate-400 hover:text-slate-900"
+                    className="absolute top-6 right-6 p-2 hover:bg-slate-100 rounded-full transition-colors text-slate-400 hover:text-foreground"
                   >
                     <X size={24} />
                   </button>
@@ -168,10 +168,10 @@ export default function FaqSection() {
                     <div className="w-16 h-16 bg-blue-600 text-white rounded-2xl flex items-center justify-center mb-6 shadow-lg shadow-blue-200">
                       <HelpCircle size={32} />
                     </div>
-                    <h3 className="text-3xl font-staatliches uppercase tracking-tight text-slate-900 mb-4 leading-none">
+                    <h3 className="text-3xl font-staatliches uppercase tracking-tight text-foreground mb-4 leading-none">
                       {faqData.find(f => f.id === selectedId)?.question}
                     </h3>
-                    <p className="text-xl text-slate-600 leading-relaxed font-medium italic">
+                    <p className="text-xl text-muted-foreground leading-relaxed font-medium italic">
                       &quot;{faqData.find(f => f.id === selectedId)?.answer}&quot;
                     </p>
                   </div>

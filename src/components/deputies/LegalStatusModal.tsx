@@ -70,27 +70,27 @@ export default function LegalStatusModal({ isOpen, onClose, deputy }: LegalStatu
             initial={{ opacity: 0, scale: 0.9, y: 20 }}
             animate={{ opacity: 1, scale: 1, y: 0 }}
             exit={{ opacity: 0, scale: 0.9, y: 20 }}
-            className="relative w-full max-w-2xl bg-white dark:bg-slate-900 rounded-[3rem] shadow-2xl overflow-hidden border border-slate-200 dark:border-slate-800 flex flex-col max-h-[85vh]"
+            className="relative w-full max-w-2xl bg-card dark:bg-slate-900 rounded-[3rem] shadow-2xl overflow-hidden border border-border dark:border-slate-800 flex flex-col max-h-[85vh]"
           >
             {/* Folder Tab Effect */}
             <div className="absolute top-0 left-12 w-32 h-2 bg-emerald-500 rounded-b-full shadow-lg shadow-emerald-500/20" />
 
             {/* Header */}
-            <div className="p-8 pb-6 flex items-start justify-between bg-slate-50/50 dark:bg-slate-800/30 border-b border-slate-100 dark:border-slate-800">
+            <div className="p-8 pb-6 flex items-start justify-between bg-slate-50/50 dark:bg-slate-800/30 border-b border-border dark:border-slate-800">
               <div className="flex items-center gap-5">
                 <div className={`w-14 h-14 rounded-2xl flex items-center justify-center text-white shadow-xl ${isClean ? 'bg-emerald-500 shadow-emerald-500/20' : 'bg-amber-500 shadow-amber-500/20'}`}>
                   {isClean ? <ShieldCheck size={32} /> : <Gavel size={32} />}
                 </div>
                 <div>
                   <p className="text-[10px] font-black text-slate-400 uppercase tracking-[0.3em] mb-1">Dossier Numérisé n°{deputy?.an_id || '---'}</p>
-                  <h3 className="text-3xl font-staatliches uppercase tracking-tight text-slate-900 dark:text-white leading-none">
+                  <h3 className="text-3xl font-staatliches uppercase tracking-tight text-foreground dark:text-white leading-none">
                     Historique <span className={isClean ? 'text-emerald-600' : 'text-amber-600'}>Juridique</span>
                   </h3>
                 </div>
               </div>
               <button 
                 onClick={onClose}
-                className="p-3 bg-white dark:bg-slate-800 rounded-full shadow-sm border border-slate-100 dark:border-slate-700 hover:rotate-90 transition-transform"
+                className="p-3 bg-card dark:bg-slate-800 rounded-full shadow-sm border border-border dark:border-slate-700 hover:rotate-90 transition-transform"
               >
                 <X className="w-6 h-6 text-slate-400" />
               </button>
@@ -112,7 +112,7 @@ export default function LegalStatusModal({ isOpen, onClose, deputy }: LegalStatu
                      </span>
                      <span className="text-[10px] font-bold text-slate-400 uppercase tracking-widest">Mise à jour : {new Date().toLocaleDateString('fr-FR')}</span>
                    </div>
-                   <h4 className="text-xl font-bold text-slate-900 dark:text-white mb-4 italic leading-tight">
+                   <h4 className="text-xl font-bold text-foreground dark:text-white mb-4 italic leading-tight">
                      {isClean 
                        ? `Le dossier de ${deputy?.first_name} ${deputy?.last_name} ne présente aucune mention judiciaire.`
                        : `Des éléments juridiques ont été relevés concernant ${deputy?.first_name} ${deputy?.last_name}.`}
@@ -137,12 +137,12 @@ export default function LegalStatusModal({ isOpen, onClose, deputy }: LegalStatu
                               className="w-full text-left bg-white/60 dark:bg-slate-900/40 backdrop-blur-sm p-5 rounded-2xl border border-white dark:border-white/5 shadow-sm hover:shadow-md hover:border-amber-200 dark:hover:border-amber-500/30 transition-all cursor-pointer"
                             >
                               <div className="flex items-start justify-between gap-3">
-                                <h5 className="text-xs font-black text-slate-900 dark:text-white uppercase tracking-tight mb-2 leading-tight">
+                                <h5 className="text-xs font-black text-foreground dark:text-white uppercase tracking-tight mb-2 leading-tight">
                                   {title}
                                 </h5>
                                 <ChevronDown size={18} className={`shrink-0 text-amber-500 transition-transform duration-300 ${isOpen2 ? 'rotate-180' : ''}`} />
                               </div>
-                              <div className="text-[10px] text-slate-500 dark:text-slate-400 font-bold uppercase tracking-wider leading-relaxed">
+                              <div className="text-[10px] text-muted-foreground dark:text-slate-400 font-bold uppercase tracking-wider leading-relaxed">
                                 {details}
                               </div>
 
@@ -156,7 +156,7 @@ export default function LegalStatusModal({ isOpen, onClose, deputy }: LegalStatu
                                     transition={{ duration: 0.28, ease: 'easeInOut' }}
                                     className="overflow-hidden"
                                   >
-                                    <div className="mt-3 border-t border-slate-100 dark:border-white/5 pt-3">
+                                    <div className="mt-3 border-t border-border dark:border-white/5 pt-3">
                                       {explanation ? (
                                         <>
                                           <p className="flex gap-2 text-[12px] leading-relaxed text-slate-700 dark:text-slate-200 normal-case font-medium">
@@ -165,7 +165,7 @@ export default function LegalStatusModal({ isOpen, onClose, deputy }: LegalStatu
                                           </p>
                                         </>
                                       ) : (
-                                        <p className="flex gap-2 text-[12px] leading-relaxed text-slate-500 dark:text-slate-400 normal-case italic">
+                                        <p className="flex gap-2 text-[12px] leading-relaxed text-muted-foreground dark:text-slate-400 normal-case italic">
                                           <span className="not-italic shrink-0">💡</span>
                                           <span>{loadingExpl ? 'Chargement des précisions…' : "Le détail de cette affaire n'est pas encore disponible. Les infractions et peines retenues sont indiquées ci-dessus."}</span>
                                         </p>
@@ -187,7 +187,7 @@ export default function LegalStatusModal({ isOpen, onClose, deputy }: LegalStatu
                       })}
                     </div>
                    ) : (
-                    <div className="text-slate-600 dark:text-slate-400 text-sm leading-relaxed bg-white/50 dark:bg-slate-900/50 p-6 rounded-2xl border border-white/50 dark:border-white/5 shadow-inner font-medium italic whitespace-pre-line">
+                    <div className="text-muted-foreground dark:text-slate-400 text-sm leading-relaxed bg-white/50 dark:bg-slate-900/50 p-6 rounded-2xl border border-white/50 dark:border-white/5 shadow-inner font-medium italic whitespace-pre-line">
                       {rawIssues}
                     </div>
                    )}
@@ -200,7 +200,7 @@ export default function LegalStatusModal({ isOpen, onClose, deputy }: LegalStatu
                   href="https://casier-politique.fr/"
                   target="_blank"
                   rel="noopener noreferrer"
-                  className="p-5 rounded-2xl bg-slate-50 dark:bg-slate-800 border border-slate-100 dark:border-slate-700 flex items-center gap-4 group hover:bg-white dark:hover:bg-slate-700 transition-all"
+                  className="p-5 rounded-2xl bg-muted dark:bg-slate-800 border border-border dark:border-slate-700 flex items-center gap-4 group hover:bg-card dark:hover:bg-slate-700 transition-all"
                 >
                   <div className="w-10 h-10 rounded-xl bg-blue-100 dark:bg-blue-500/20 flex items-center justify-center text-blue-600">
                     <Search size={20} />
@@ -210,7 +210,7 @@ export default function LegalStatusModal({ isOpen, onClose, deputy }: LegalStatu
                     <p className="text-xs font-bold text-slate-700 dark:text-slate-300 flex items-center gap-1 group-hover:text-blue-600">casier-politique.fr <ExternalLink size={12} /></p>
                   </div>
                 </a>
-                <div className="p-5 rounded-2xl bg-slate-50 dark:bg-slate-800 border border-slate-100 dark:border-slate-700 flex items-center gap-4">
+                <div className="p-5 rounded-2xl bg-muted dark:bg-slate-800 border border-border dark:border-slate-700 flex items-center gap-4">
                   <div className="w-10 h-10 rounded-xl bg-purple-100 dark:bg-purple-500/20 flex items-center justify-center text-purple-600">
                     <FileText size={20} />
                   </div>
@@ -234,7 +234,7 @@ export default function LegalStatusModal({ isOpen, onClose, deputy }: LegalStatu
             </div>
 
             {/* Actions */}
-            <div className="p-8 bg-slate-50 dark:bg-slate-800/30 border-t border-slate-100 dark:border-slate-800 flex items-center gap-4">
+            <div className="p-8 bg-muted dark:bg-slate-800/30 border-t border-border dark:border-slate-800 flex items-center gap-4">
               <button 
                 onClick={onClose}
                 className="flex-1 py-4 rounded-2xl bg-slate-900 dark:bg-white text-white dark:text-slate-900 font-bold text-sm shadow-xl hover:shadow-slate-900/20 transition-all active:scale-[0.98]"
@@ -246,7 +246,7 @@ export default function LegalStatusModal({ isOpen, onClose, deputy }: LegalStatu
                   href={deputy.hatvp_url}
                   target="_blank"
                   rel="noopener noreferrer"
-                  className="p-4 rounded-2xl bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 text-slate-600 dark:text-slate-300 hover:text-blue-600 transition-colors shadow-sm"
+                  className="p-4 rounded-2xl bg-card dark:bg-slate-800 border border-border dark:border-slate-700 text-muted-foreground dark:text-slate-300 hover:text-blue-600 transition-colors shadow-sm"
                 >
                   <ExternalLink size={20} />
                 </a>

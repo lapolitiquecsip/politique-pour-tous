@@ -46,11 +46,11 @@ export default function InitiativeRank({
 
   const Wrapper: any = embedded ? "div" : "section";
   return (
-    <Wrapper className={embedded ? "" : "rounded-[2.5rem] border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900 p-8"}>
+    <Wrapper className={embedded ? "" : "rounded-[2.5rem] border border-border dark:border-slate-800 bg-card dark:bg-slate-900 p-8"}>
       {!embedded && (
         <div className="flex items-center gap-3 mb-4">
           <FileText className="text-orange-500" size={22} />
-          <h2 className="text-3xl font-staatliches uppercase tracking-tight text-slate-900 dark:text-white">
+          <h2 className="text-3xl font-staatliches uppercase tracking-tight text-foreground dark:text-white">
             Initiatives <span className="text-orange-500">législatives</span>
           </h2>
         </div>
@@ -62,7 +62,7 @@ export default function InitiativeRank({
           <p className="text-sm font-bold text-slate-700 dark:text-slate-200">
             {p === 0 ? "Aucun texte déposé en tant qu'auteur·rice principal·e" : <>Texte{p > 1 ? "s" : ""} <strong>déposé{p > 1 ? "s" : ""}</strong> en tant qu'auteur·rice principal·e</>}
           </p>
-          {co > 0 && <p className="text-xs text-slate-500 dark:text-slate-400">+ {co} texte{co > 1 ? "s" : ""} co-signé{co > 1 ? "s" : ""}</p>}
+          {co > 0 && <p className="text-xs text-muted-foreground dark:text-slate-400">+ {co} texte{co > 1 ? "s" : ""} co-signé{co > 1 ? "s" : ""}</p>}
           {/* Barre relative au plus prolifique de la chambre. */}
           <div className="mt-2 h-3 w-full overflow-hidden rounded-full bg-slate-100 dark:bg-slate-800">
             <div className="h-full rounded-full bg-orange-500" style={{ width: `${Math.round((p / max) * 100)}%` }} />
@@ -78,7 +78,7 @@ export default function InitiativeRank({
         )}
         {pct != null && (
           pct >= 50 ? (
-            <span className="inline-flex items-center rounded-full bg-slate-100 dark:bg-slate-800 px-4 py-2 text-sm font-bold text-slate-600 dark:text-slate-300">Dépose plus que {pct}% des {peerLabel}</span>
+            <span className="inline-flex items-center rounded-full bg-slate-100 dark:bg-slate-800 px-4 py-2 text-sm font-bold text-muted-foreground dark:text-slate-300">Dépose plus que {pct}% des {peerLabel}</span>
           ) : (
             <span className="inline-flex items-center rounded-full bg-rose-500/10 px-4 py-2 text-sm font-bold text-rose-700 dark:text-rose-300">Dépose moins que {100 - pct}% des {peerLabel}</span>
           )

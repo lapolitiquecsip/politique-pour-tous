@@ -45,11 +45,11 @@ export default function PublicFinancePanel() {
   return (
     <section className="mx-auto max-w-5xl px-4">
       <div className="mb-5">
-        <h2 className="font-staatliches text-2xl uppercase tracking-tight text-slate-900 dark:text-white md:text-3xl">
+        <h2 className="font-staatliches text-2xl uppercase tracking-tight text-foreground dark:text-white md:text-3xl">
           Dette & <span className="text-rose-600">dépenses publiques</span>
         </h2>
-        <p className="mt-0.5 text-sm text-slate-500">La situation des comptes de l'État, en direct et sourcée (INSEE).</p>
-        <p className="mt-1 inline-flex items-center gap-1 rounded-full bg-slate-100 px-2.5 py-0.5 text-[10px] font-black uppercase tracking-widest text-slate-500 dark:bg-slate-800 dark:text-slate-400">
+        <p className="mt-0.5 text-sm text-muted-foreground">La situation des comptes de l'État, en direct et sourcée (INSEE).</p>
+        <p className="mt-1 inline-flex items-center gap-1 rounded-full bg-slate-100 px-2.5 py-0.5 text-[10px] font-black uppercase tracking-widest text-muted-foreground dark:bg-slate-800 dark:text-slate-400">
           Données vérifiées · {FINANCE_LAST_VERIFIED}
         </p>
       </div>
@@ -61,7 +61,7 @@ export default function PublicFinancePanel() {
             <span className="relative flex h-2 w-2"><span className="absolute inline-flex h-full w-full animate-ping rounded-full bg-rose-400 opacity-75" /><span className="relative inline-flex h-2 w-2 rounded-full bg-rose-500" /></span>
             Dette publique · en direct
           </div>
-          <p className="mt-1.5 font-staatliches text-3xl tabular-nums leading-none text-slate-900 dark:text-white md:text-4xl">{eur0(debt)}</p>
+          <p className="mt-1.5 font-staatliches text-3xl tabular-nums leading-none text-foreground dark:text-white md:text-4xl">{eur0(debt)}</p>
           <div className="mt-3 flex flex-wrap gap-x-6 gap-y-2">
             <div><p className="text-lg font-black tabular-nums text-rose-700 dark:text-rose-300">{eur0(perHab)}</p><p className="text-[10px] font-black uppercase tracking-widest text-slate-400">par habitant</p></div>
             <div><p className="text-lg font-black tabular-nums text-rose-700 dark:text-rose-300">{DEBT_RATIO_GDP.toLocaleString("fr-FR")} %</p><p className="text-[10px] font-black uppercase tracking-widest text-slate-400">du PIB (2025)</p></div>
@@ -73,18 +73,18 @@ export default function PublicFinancePanel() {
         {/* Dépenses publiques */}
         <div className="rounded-2xl border border-amber-200 bg-amber-50/40 p-5 dark:border-amber-500/20 dark:bg-amber-950/10">
           <p className="flex items-center gap-1.5 text-[10px] font-black uppercase tracking-widest text-amber-600"><Wallet size={13} /> Dépenses publiques</p>
-          <p className="mt-1.5 font-staatliches text-3xl text-slate-900 dark:text-white md:text-4xl">{PUBLIC_SPENDING.ratioGdp.toLocaleString("fr-FR")} %</p>
-          <p className="text-sm text-slate-500">du PIB en 2025 (≈ {fmtMd(PUBLIC_SPENDING.approxEur)}) — parmi les plus élevées de l'UE.</p>
+          <p className="mt-1.5 font-staatliches text-3xl text-foreground dark:text-white md:text-4xl">{PUBLIC_SPENDING.ratioGdp.toLocaleString("fr-FR")} %</p>
+          <p className="text-sm text-muted-foreground">du PIB en 2025 (≈ {fmtMd(PUBLIC_SPENDING.approxEur)}) — parmi les plus élevées de l'UE.</p>
           <div className="mt-2.5 flex items-center gap-2 rounded-xl bg-white/70 p-2.5 dark:bg-white/[0.03]">
             <Coins size={15} className="shrink-0 text-amber-500" />
-            <p className="text-sm text-slate-600 dark:text-slate-300"><span className="font-black text-slate-900 dark:text-white">{fmtMd(PUBLIC_SPENDING.deficitEur)}</span> de déficit public (2025)</p>
+            <p className="text-sm text-muted-foreground dark:text-slate-300"><span className="font-black text-foreground dark:text-white">{fmtMd(PUBLIC_SPENDING.deficitEur)}</span> de déficit public (2025)</p>
           </div>
         </div>
       </div>
 
       {/* Taux d'emprunt de l'État — comparaison européenne (tâche 1) */}
-      <div className="mt-3 rounded-2xl border border-slate-200 bg-white p-5 dark:border-slate-800 dark:bg-slate-900">
-        <p className="flex flex-wrap items-center gap-1.5 text-[10px] font-black uppercase tracking-widest text-slate-500">
+      <div className="mt-3 rounded-2xl border border-border bg-card p-5 dark:border-slate-800 dark:bg-slate-900">
+        <p className="flex flex-wrap items-center gap-1.5 text-[10px] font-black uppercase tracking-widest text-muted-foreground">
           <Percent size={13} /> À quel taux la France emprunte-t-elle ?
           <span className="font-medium normal-case tracking-normal text-slate-400">· obligations d'État à 10 ans</span>
           <span className="inline-flex items-center gap-1 rounded-full bg-emerald-50 px-2 py-0.5 text-[9px] font-black uppercase tracking-wider text-emerald-600 dark:bg-emerald-500/10 dark:text-emerald-400">
@@ -95,7 +95,7 @@ export default function PublicFinancePanel() {
         <div className="mt-4 space-y-2">
           {(() => { const max = Math.max(...rates.rows.map(r => r.pct)); return rates.rows.map(r => (
             <div key={r.label} className="flex items-center gap-3">
-              <span className={`w-24 shrink-0 text-xs ${r.self ? "font-black text-rose-700 dark:text-rose-300" : r.avg ? "font-bold italic text-slate-500" : "font-bold text-slate-600 dark:text-slate-300"}`}>{r.label}</span>
+              <span className={`w-24 shrink-0 text-xs ${r.self ? "font-black text-rose-700 dark:text-rose-300" : r.avg ? "font-bold italic text-muted-foreground" : "font-bold text-muted-foreground dark:text-slate-300"}`}>{r.label}</span>
               <div className="h-2.5 flex-1 overflow-hidden rounded-full bg-slate-100 dark:bg-white/5">
                 <div className="h-full rounded-full" style={{ width: `${(r.pct / max) * 100}%`, background: r.self ? "#e11d48" : r.avg ? "#94a3b8" : "#60a5fa" }} />
               </div>
@@ -108,7 +108,7 @@ export default function PublicFinancePanel() {
           const de = rates.rows.find(r => r.label === "Allemagne")?.pct;
           const spread = fr != null && de != null ? Math.round((fr - de) * 100) : null;
           return (
-            <p className="mt-3 text-[11px] leading-snug text-slate-500 dark:text-slate-400">
+            <p className="mt-3 text-[11px] leading-snug text-muted-foreground dark:text-slate-400">
               {fr != null && <>La France emprunte à <span className="font-bold text-rose-700 dark:text-rose-300">{fr.toLocaleString("fr-FR", { minimumFractionDigits: 2 })} %</span>. </>}
               {spread != null && spread > 0 && <>L'écart avec l'Allemagne — le « <span className="font-bold text-slate-700 dark:text-slate-200">spread</span> » que surveillent les marchés — est de <span className="font-bold text-slate-700 dark:text-slate-200">{spread} points de base</span>. </>}
               Plus le taux est élevé, plus la charge de la dette pèsera lourd les prochaines années.
@@ -119,8 +119,8 @@ export default function PublicFinancePanel() {
       </div>
 
       {/* Où va la dépense publique (toutes administrations, COFOG) — (tâche 2) */}
-      <div className="mt-3 rounded-2xl border border-slate-200 bg-white p-5 dark:border-slate-800 dark:bg-slate-900">
-        <p className="flex flex-wrap items-center gap-1.5 text-[10px] font-black uppercase tracking-widest text-slate-500">
+      <div className="mt-3 rounded-2xl border border-border bg-card p-5 dark:border-slate-800 dark:bg-slate-900">
+        <p className="flex flex-wrap items-center gap-1.5 text-[10px] font-black uppercase tracking-widest text-muted-foreground">
           <Wallet size={13} /> Où va la dépense publique ?
           <span className="font-medium normal-case tracking-normal text-slate-400">· toutes administrations, {SPENDING_BREAKDOWN.year} · total {fmtMd(SPENDING_BREAKDOWN.totalEur)}</span>
         </p>
@@ -135,7 +135,7 @@ export default function PublicFinancePanel() {
                 <span className="text-xs font-bold text-slate-800 dark:text-slate-200">{it.label}</span>
                 {it.sub && <span className="ml-1 text-[11px] text-slate-400">— {it.sub}</span>}
               </div>
-              <span className="w-20 shrink-0 text-right text-xs font-black tabular-nums text-slate-900 dark:text-white">{fmtMd(it.eur)}</span>
+              <span className="w-20 shrink-0 text-right text-xs font-black tabular-nums text-foreground dark:text-white">{fmtMd(it.eur)}</span>
               <span className="w-9 shrink-0 text-right text-[11px] tabular-nums text-slate-400">{Math.round((it.eur / SPENDING_BREAKDOWN.totalEur) * 100)} %</span>
             </div>
           ))}
@@ -145,8 +145,8 @@ export default function PublicFinancePanel() {
       </div>
 
       {/* Hausse de la dette par président */}
-      <div className="mt-3 rounded-2xl border border-slate-200 bg-white p-5 dark:border-slate-800 dark:bg-slate-900">
-        <p className="flex items-center gap-1.5 text-[10px] font-black uppercase tracking-widest text-slate-500"><TrendingUp size={13} /> Hausse de la dette par président</p>
+      <div className="mt-3 rounded-2xl border border-border bg-card p-5 dark:border-slate-800 dark:bg-slate-900">
+        <p className="flex items-center gap-1.5 text-[10px] font-black uppercase tracking-widest text-muted-foreground"><TrendingUp size={13} /> Hausse de la dette par président</p>
         <div className="mt-4 space-y-3.5">
           {DEBT_BY_PRESIDENT.map(p => (
             <div key={p.slug}>
@@ -158,7 +158,7 @@ export default function PublicFinancePanel() {
                 <Link href={`/presidents/${p.slug}`} className="group flex min-w-0 flex-1 items-center gap-2.5">
                   <PresAvatar name={p.name} photo={photos[p.slug]} color={p.color} />
                   <span className="min-w-0">
-                    <span className="block truncate text-sm font-black text-slate-900 group-hover:underline dark:text-white" style={{ textDecorationColor: p.color }}>{p.name}</span>
+                    <span className="block truncate text-sm font-black text-foreground group-hover:underline dark:text-white" style={{ textDecorationColor: p.color }}>{p.name}</span>
                     <span className="block text-[10px] font-bold text-slate-400">{p.years}</span>
                   </span>
                 </Link>
@@ -181,12 +181,12 @@ export default function PublicFinancePanel() {
       {/* État & fonction publique */}
       <div className="mt-3 grid gap-3 sm:grid-cols-2">
         {GOVERNANCE.map((g, i) => (
-          <div key={g.label} className="rounded-2xl border border-slate-200 bg-white p-4 dark:border-slate-800 dark:bg-slate-900">
+          <div key={g.label} className="rounded-2xl border border-border bg-card p-4 dark:border-slate-800 dark:bg-slate-900">
             <span className="flex h-8 w-8 items-center justify-center rounded-xl bg-blue-50 text-blue-600 dark:bg-blue-500/15">
               {i === 0 ? <Users size={15} /> : i === 1 ? <TrendingUp size={15} /> : <Landmark size={15} />}
             </span>
-            <p className="mt-2 text-xl font-black tabular-nums text-slate-900 dark:text-white">{g.value}</p>
-            <p className="text-xs font-bold text-slate-600 dark:text-slate-300">{g.label}</p>
+            <p className="mt-2 text-xl font-black tabular-nums text-foreground dark:text-white">{g.value}</p>
+            <p className="text-xs font-bold text-muted-foreground dark:text-slate-300">{g.label}</p>
             <p className="mt-0.5 text-[11px] leading-snug text-slate-400">{g.sub}</p>
             <a href={g.url} target="_blank" rel="noopener noreferrer" className="mt-1.5 inline-flex items-center gap-1 text-[9px] font-black uppercase tracking-widest text-slate-400 hover:text-blue-600">{g.year} · {g.source} <ExternalLink size={9} /></a>
           </div>

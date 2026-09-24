@@ -54,7 +54,7 @@ function AmendmentsSection({ dossierId, total = 0, initial }: { dossierId: strin
     return (
       <section className="mt-10">
         <h3 className="text-2xl font-staatliches uppercase text-slate-950">Amendements</h3>
-        <p className="mt-4 text-slate-500">Aucun amendement rattaché.</p>
+        <p className="mt-4 text-muted-foreground">Aucun amendement rattaché.</p>
       </section>
     );
   }
@@ -77,12 +77,12 @@ function AmendmentsSection({ dossierId, total = 0, initial }: { dossierId: strin
       {truncated && show && <p className="mt-3 text-xs italic text-slate-400">Les {shown.length} amendements les plus récents sont affichés (sur {total}).</p>}
       {show && (
         <>
-          {loading && <div className="mt-4 flex items-center gap-2 text-slate-500"><Loader2 size={16} className="animate-spin" /> Chargement…</div>}
+          {loading && <div className="mt-4 flex items-center gap-2 text-muted-foreground"><Loader2 size={16} className="animate-spin" /> Chargement…</div>}
           <div className="mt-4 grid gap-3">
             {current.map(amendment => (
-              <div key={amendment.official_id} className="rounded-2xl border border-slate-200 p-5 text-slate-900">
+              <div key={amendment.official_id} className="rounded-2xl border border-border p-5 text-foreground">
                 <div className="flex justify-between gap-4"><strong>Amendement {amendment.number}</strong><span>{formatAmendmentOutcome(amendment.outcome_label)}</span></div>
-                <p className="mt-2 text-sm text-slate-600">{cleanHtmlText(amendment.subject) || cleanHtmlText(amendment.body) || "Contenu disponible à la source."}</p>
+                <p className="mt-2 text-sm text-muted-foreground">{cleanHtmlText(amendment.subject) || cleanHtmlText(amendment.body) || "Contenu disponible à la source."}</p>
               </div>
             ))}
           </div>
@@ -91,7 +91,7 @@ function AmendmentsSection({ dossierId, total = 0, initial }: { dossierId: strin
               <button onClick={() => setPage(p => Math.max(0, p - 1))} disabled={page === 0} className="inline-flex items-center gap-1 rounded-full bg-slate-100 px-4 py-2 text-sm font-bold text-slate-700 transition hover:bg-slate-200 disabled:cursor-not-allowed disabled:opacity-40">
                 <ChevronLeft size={16} />Précédent
               </button>
-              <span className="text-sm font-bold text-slate-500">Page {page + 1} / {pageCount}</span>
+              <span className="text-sm font-bold text-muted-foreground">Page {page + 1} / {pageCount}</span>
               <button onClick={() => setPage(p => Math.min(pageCount - 1, p + 1))} disabled={page >= pageCount - 1} className="inline-flex items-center gap-1 rounded-full bg-slate-100 px-4 py-2 text-sm font-bold text-slate-700 transition hover:bg-slate-200 disabled:cursor-not-allowed disabled:opacity-40">
                 Suivant<ChevronRight size={16} />
               </button>
@@ -121,7 +121,7 @@ function HL({ text }: { text: string }) {
 function sectionStyle(header: string) {
   const h = header.toLowerCase();
   if (/vote|scrutin/.test(h)) return { Icon: Vote, c: "text-emerald-600", bg: "bg-emerald-50", ring: "ring-emerald-100" };
-  if (/limite|réserve|reserve/.test(h)) return { Icon: AlertTriangle, c: "text-slate-500", bg: "bg-slate-50", ring: "ring-slate-100" };
+  if (/limite|réserve|reserve/.test(h)) return { Icon: AlertTriangle, c: "text-muted-foreground", bg: "bg-muted", ring: "ring-slate-100" };
   if (/contexte|objectif|objet|mesure|dispositif/.test(h)) return { Icon: Target, c: "text-amber-600", bg: "bg-amber-50", ring: "ring-amber-100" };
   if (/procédure|procedure|navette|étape|etape|calendrier|adoption/.test(h)) return { Icon: GitBranch, c: "text-blue-600", bg: "bg-blue-50", ring: "ring-blue-100" };
   if (/amendement/.test(h)) return { Icon: Pencil, c: "text-fuchsia-600", bg: "bg-fuchsia-50", ring: "ring-fuchsia-100" };
@@ -159,7 +159,7 @@ function PremiumAnalysis({ raw }: { raw: string }) {
         const { Icon, c, bg, ring } = sectionStyle(s.header);
         const wide = /vote|scrutin|contexte|objectif|objet/i.test(s.header) ? "sm:col-span-2" : "";
         return (
-          <div key={i} className={`rounded-2xl border border-slate-100 bg-white p-5 shadow-sm ${wide}`}>
+          <div key={i} className={`rounded-2xl border border-border bg-card p-5 shadow-sm ${wide}`}>
             <div className="mb-2 flex items-center gap-2">
               <span className={`flex h-8 w-8 items-center justify-center rounded-xl ${bg} ${c} ring-1 ${ring}`}><Icon size={16} /></span>
               <h4 className={`text-[11px] font-black uppercase tracking-widest ${c}`}>{s.header}</h4>
@@ -238,7 +238,7 @@ function ScrutinsSection({ dossierId, total = 0, initial }: { dossierId: string;
     return (
       <section className="mt-10">
         <h3 className="text-2xl font-staatliches uppercase text-slate-950">Scrutins</h3>
-        <p className="mt-4 text-slate-500">Aucun scrutin rattaché.</p>
+        <p className="mt-4 text-muted-foreground">Aucun scrutin rattaché.</p>
       </section>
     );
   }
@@ -260,7 +260,7 @@ function ScrutinsSection({ dossierId, total = 0, initial }: { dossierId: string;
       {truncated && show && <p className="mt-3 text-xs italic text-slate-400">Les {shown.length} scrutins les plus récents sont affichés (sur {total}).</p>}
       {show && (
         <>
-          {loading && <div className="mt-4 flex items-center gap-2 text-slate-500"><Loader2 size={16} className="animate-spin" /> Chargement…</div>}
+          {loading && <div className="mt-4 flex items-center gap-2 text-muted-foreground"><Loader2 size={16} className="animate-spin" /> Chargement…</div>}
           <div className="mt-4 grid gap-3">
             {current.map(scrutin => <ScrutinCard key={scrutin.official_id} scrutin={scrutin} />)}
           </div>
@@ -269,7 +269,7 @@ function ScrutinsSection({ dossierId, total = 0, initial }: { dossierId: string;
               <button onClick={() => setPage(p => Math.max(0, p - 1))} disabled={page === 0} className="inline-flex items-center gap-1 rounded-full bg-slate-100 px-4 py-2 text-sm font-bold text-slate-700 transition hover:bg-slate-200 disabled:cursor-not-allowed disabled:opacity-40">
                 <ChevronLeft size={16} />Précédent
               </button>
-              <span className="text-sm font-bold text-slate-500">Page {page + 1} / {pageCount}</span>
+              <span className="text-sm font-bold text-muted-foreground">Page {page + 1} / {pageCount}</span>
               <button onClick={() => setPage(p => Math.min(pageCount - 1, p + 1))} disabled={page >= pageCount - 1} className="inline-flex items-center gap-1 rounded-full bg-slate-100 px-4 py-2 text-sm font-bold text-slate-700 transition hover:bg-slate-200 disabled:cursor-not-allowed disabled:opacity-40">
                 Suivant<ChevronRight size={16} />
               </button>
@@ -292,7 +292,7 @@ function InitiatorAvatar({ person }: { person: InitiatorPerson }) {
       src={person.photoSources[index]}
       alt=""
       onError={() => setIndex(i => i + 1)}
-      className="h-8 w-8 rounded-full border border-slate-200 object-cover object-top"
+      className="h-8 w-8 rounded-full border border-border object-cover object-top"
     />
   );
 }
@@ -355,8 +355,8 @@ function NavetteSection({ steps }: { steps: any[] }) {
       </div>
       {show && (
         <ol className="mt-4 border-l-2 border-red-200 pl-6">
-          {steps.map(step => <li key={step.official_id} className="relative mb-6"><span className="absolute -left-[31px] top-1 h-3 w-3 rounded-full bg-red-600" /><p className="font-black text-slate-900">{step.step_label}</p><p className="text-sm text-slate-500">{step.chamber} · {formatDate(step.occurred_at)}</p></li>)}
-          {!steps.length && <li className="text-slate-500">Aucune étape publiée.</li>}
+          {steps.map(step => <li key={step.official_id} className="relative mb-6"><span className="absolute -left-[31px] top-1 h-3 w-3 rounded-full bg-red-600" /><p className="font-black text-foreground">{step.step_label}</p><p className="text-sm text-muted-foreground">{step.chamber} · {formatDate(step.occurred_at)}</p></li>)}
+          {!steps.length && <li className="text-muted-foreground">Aucune étape publiée.</li>}
         </ol>
       )}
     </section>
@@ -429,7 +429,7 @@ export default function DossierModal({
           if (Math.abs(dx) < 70 || Math.abs(dx) < Math.abs(dy) * 1.5) return;
           allerA(dx < 0 ? 1 : -1);
         }}
-        className="relative mx-auto flex max-h-[calc(100dvh-2rem)] w-full max-w-5xl flex-col overflow-hidden rounded-[2rem] bg-white text-slate-900 shadow-2xl md:max-h-[calc(100dvh-5rem)]"
+        className="relative mx-auto flex max-h-[calc(100dvh-2rem)] w-full max-w-5xl flex-col overflow-hidden rounded-[2rem] bg-card text-foreground shadow-2xl md:max-h-[calc(100dvh-5rem)]"
       >
         {/* Bouton fermer flottant (coin) — plus de bande blanche sticky qui recouvre le contenu au scroll */}
         <button onClick={onClose} className="absolute right-4 top-4 z-20 rounded-full bg-slate-100 p-3 shadow-sm transition hover:bg-slate-200" aria-label="Fermer"><X /></button>
@@ -494,11 +494,11 @@ export default function DossierModal({
                   {promulgated && (
                     <div className="mt-6 rounded-3xl border border-emerald-200 bg-emerald-50 p-5">
                       <p className="text-[10px] font-black uppercase tracking-widest text-emerald-600">Statut</p>
-                      <span className="mt-1 inline-block rounded-full border border-emerald-200 bg-white px-4 py-1.5 text-sm font-black text-emerald-700">Promulguée au Journal officiel</span>
-                      <p className="mt-3 text-sm font-bold text-slate-600">Publiée au Journal officiel le {formatDate(f.promulgated_at)}{f.nor ? ` · NOR ${f.nor}` : ""}</p>
+                      <span className="mt-1 inline-block rounded-full border border-emerald-200 bg-card px-4 py-1.5 text-sm font-black text-emerald-700">Promulguée au Journal officiel</span>
+                      <p className="mt-3 text-sm font-bold text-muted-foreground">Publiée au Journal officiel le {formatDate(f.promulgated_at)}{f.nor ? ` · NOR ${f.nor}` : ""}</p>
                     </div>
                   )}
-                  <p className="mt-6 leading-7 text-slate-600">Le détail complet de ce texte (résumé, navette parlementaire, amendements) est en cours de consolidation.{jo ? " En attendant, vous pouvez lire le texte officiel tel que publié au Journal officiel :" : ""}</p>
+                  <p className="mt-6 leading-7 text-muted-foreground">Le détail complet de ce texte (résumé, navette parlementaire, amendements) est en cours de consolidation.{jo ? " En attendant, vous pouvez lire le texte officiel tel que publié au Journal officiel :" : ""}</p>
                   {jo && <a href={jo} target="_blank" rel="noreferrer" className="mt-4 inline-flex items-center gap-2 rounded-full bg-slate-950 px-5 py-3 text-sm font-black text-white transition hover:bg-slate-700">Lire le texte au Journal officiel <ExternalLink size={15} /></a>}
                 </>
               );
@@ -522,17 +522,17 @@ export default function DossierModal({
               const tl = typeLabel(detail.dossier.text_type);
               const promulgated = !!detail.promulgation;
               return (
-                <div className="mt-6 flex flex-wrap items-center gap-3 rounded-3xl border border-slate-200 bg-slate-50 p-5">
+                <div className="mt-6 flex flex-wrap items-center gap-3 rounded-3xl border border-border bg-muted p-5">
                   <div>
                     <p className="text-[10px] font-black uppercase tracking-widest text-slate-400">{promulgated ? "Statut" : "Actuellement examiné par"}</p>
                     <span className={`mt-1 inline-block rounded-full border px-4 py-1.5 text-sm font-black ${promulgated ? "bg-emerald-50 text-emerald-700 border-emerald-200" : ch.cls}`}>
                       {promulgated ? "Promulguée au Journal officiel" : ch.label}
                     </span>
                   </div>
-                  {tl && <div><p className="text-[10px] font-black uppercase tracking-widest text-slate-400">Type</p><span className="mt-1 inline-block rounded-full bg-white border border-slate-200 px-4 py-1.5 text-sm font-black text-slate-700">{tl}</span></div>}
+                  {tl && <div><p className="text-[10px] font-black uppercase tracking-widest text-slate-400">Type</p><span className="mt-1 inline-block rounded-full bg-card border border-border px-4 py-1.5 text-sm font-black text-slate-700">{tl}</span></div>}
                   {/* On masque l'« étape » de navette quand la loi est promulguée : le statut ci-dessus
                       suffit, et le libellé de navette peut être périmé (resynchronisé côté backend). */}
-                  {!promulgated && <div><p className="text-[10px] font-black uppercase tracking-widest text-slate-400">Étape</p><span className="mt-1 inline-block rounded-full bg-white border border-slate-200 px-4 py-1.5 text-sm font-black text-slate-700">{detail.dossier.status_label}</span></div>}
+                  {!promulgated && <div><p className="text-[10px] font-black uppercase tracking-widest text-slate-400">Étape</p><span className="mt-1 inline-block rounded-full bg-card border border-border px-4 py-1.5 text-sm font-black text-slate-700">{detail.dossier.status_label}</span></div>}
                 </div>
               );
             })()}
@@ -566,7 +566,7 @@ export default function DossierModal({
         {/* Sur téléphone, les flèches flottantes des bords sont hors de portée du pouce
             et masqueraient le texte : elles deviennent une barre fixe en bas. */}
         {(onPrev || onNext) && (
-          <div className="flex shrink-0 items-stretch gap-2 border-t border-slate-100 bg-white p-3 md:hidden">
+          <div className="flex shrink-0 items-stretch gap-2 border-t border-border bg-card p-3 md:hidden">
             <button
               onClick={() => allerA(-1)} disabled={!onPrev}
               className="flex flex-1 items-center justify-center gap-1.5 rounded-2xl bg-slate-100 py-3 text-[11px] font-black uppercase tracking-widest text-slate-700 transition active:scale-95 disabled:opacity-35"

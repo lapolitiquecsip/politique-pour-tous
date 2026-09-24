@@ -32,7 +32,7 @@ export default async function DeputesPage() {
   }));
 
   return (
-    <div className="min-h-screen bg-white dark:bg-slate-950">
+    <div className="min-h-screen bg-card dark:bg-slate-950">
       <ChamberHero
         color="green"
         image="/images/assemblee_nationale_premium.jpg"
@@ -54,21 +54,21 @@ export default async function DeputesPage() {
           <PresidentPhoto src="https://www.assemblee-nationale.fr/dyn/static/tribun/17/photos/carre/721908.jpg" alt="Yaël Braun-Pivet" ring="ring-emerald-300" gradient="from-emerald-500 to-teal-600" />
           <div className="min-w-0">
             <p className="text-[10px] font-black uppercase tracking-widest text-emerald-600">Présidente de l'Assemblée nationale</p>
-            <p className="text-xl font-bold text-slate-900 dark:text-white group-hover:text-emerald-700 transition-colors">Yaël Braun-Pivet</p>
-            <p className="text-sm text-slate-500">Quatrième personnage de l'État — voir sa fiche</p>
+            <p className="text-xl font-bold text-foreground dark:text-white group-hover:text-emerald-700 transition-colors">Yaël Braun-Pivet</p>
+            <p className="text-sm text-muted-foreground">Quatrième personnage de l'État — voir sa fiche</p>
           </div>
           <ChevronRight className="ml-auto text-slate-300 group-hover:text-emerald-500 transition-colors" />
         </Link>
       </div>
       {/* Outil interactif : comparateur de parlementaires. */}
       <div className="mx-auto mt-4 max-w-6xl px-4">
-        <Link href="/comparateur-parlementaires" className="group flex items-center gap-3 rounded-3xl border border-slate-200 bg-white p-5 transition hover:border-slate-400 hover:shadow-md dark:border-slate-800 dark:bg-slate-900">
+        <Link href="/comparateur-parlementaires" className="group flex items-center gap-3 rounded-3xl border border-border bg-card p-5 transition hover:border-slate-400 hover:shadow-md dark:border-slate-800 dark:bg-slate-900">
           <span className="text-3xl">⚖️</span>
           <div className="min-w-0">
-            <p className="font-black text-slate-900 dark:text-white">Comparer deux parlementaires</p>
-            <p className="text-sm text-slate-500">Participation, amendements, loyauté — côte à côte</p>
+            <p className="font-black text-foreground dark:text-white">Comparer deux parlementaires</p>
+            <p className="text-sm text-muted-foreground">Participation, amendements, loyauté — côte à côte</p>
           </div>
-          <ChevronRight className="ml-auto shrink-0 text-slate-300 transition-colors group-hover:text-slate-600" />
+          <ChevronRight className="ml-auto shrink-0 text-slate-300 transition-colors group-hover:text-muted-foreground" />
         </Link>
       </div>
       <section id="composition" className="scroll-mt-24 pt-4 pb-8">

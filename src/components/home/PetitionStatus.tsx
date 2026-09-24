@@ -20,7 +20,7 @@ export function petitionStatusInfo(status: string | null, signatures: number, th
     return {
       label: "Examinée puis classée",
       explain: "Une commission de l'Assemblée a examiné la pétition et décidé de la classer : pas de suite législative directe à ce stade.",
-      cls: "bg-slate-100 text-slate-600 border-slate-200",
+      cls: "bg-slate-100 text-muted-foreground border-border",
       Icon: Archive,
     };
   }
@@ -44,7 +44,7 @@ export function petitionStatusInfo(status: string | null, signatures: number, th
     return {
       label: "Clôturée",
       explain: "La période de recueil des signatures est terminée.",
-      cls: "bg-slate-100 text-slate-500 border-slate-200",
+      cls: "bg-slate-100 text-muted-foreground border-border",
       Icon: Archive,
     };
   }
@@ -62,7 +62,7 @@ export function petitionStatusInfo(status: string | null, signatures: number, th
   return {
     label: "En recueil de signatures",
     explain: `Encore ${manque.toLocaleString("fr-FR")} signature${manque > 1 ? "s" : ""} avant le seuil de 100 000 qui ouvre un examen possible par l'Assemblée.`,
-    cls: "bg-slate-50 text-slate-500 border-slate-200",
+    cls: "bg-muted text-muted-foreground border-border",
     Icon: Clock,
   };
 }

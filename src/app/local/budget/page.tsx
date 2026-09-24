@@ -31,7 +31,7 @@ const getMonthValue = (dateStr: string): number => {
 
 export default function LocalBudgetPage() {
   return (
-    <Suspense fallback={<div className="min-h-screen bg-slate-50 flex items-center justify-center"><Loader2 className="animate-spin text-rose-600" size={40} /></div>}>
+    <Suspense fallback={<div className="min-h-screen bg-muted flex items-center justify-center"><Loader2 className="animate-spin text-rose-600" size={40} /></div>}>
       <LocalBudgetContent />
     </Suspense>
   );
@@ -75,7 +75,7 @@ function LocalBudgetContent() {
 
   if (pLoading || loadingData) {
     return (
-      <div className="min-h-screen bg-slate-50 flex flex-col items-center justify-center gap-4">
+      <div className="min-h-screen bg-muted flex flex-col items-center justify-center gap-4">
         <Loader2 className="animate-spin text-rose-600" size={40} />
         <p className="text-sm font-bold text-slate-400 uppercase tracking-widest">Chargement du budget municipal...</p>
       </div>
@@ -218,13 +218,13 @@ function LocalBudgetContent() {
   const activeAmount = activeSection === "fonctionnement" ? operatingBudget : investmentBudget;
 
   return (
-    <main className="min-h-screen bg-slate-50 pb-20">
+    <main className="min-h-screen bg-muted pb-20">
       {/* Navbar / Header */}
-      <div className="bg-white border-b border-slate-200 sticky top-0 z-40 px-4 py-5 shadow-sm">
+      <div className="bg-card border-b border-border sticky top-0 z-40 px-4 py-5 shadow-sm">
         <div className="container mx-auto max-w-5xl flex items-center justify-between">
           <button 
             onClick={() => router.back()}
-            className="flex items-center gap-2 text-slate-500 hover:text-slate-900 transition-colors font-bold text-xs uppercase tracking-widest"
+            className="flex items-center gap-2 text-muted-foreground hover:text-foreground transition-colors font-bold text-xs uppercase tracking-widest"
           >
             <ArrowLeft size={16} />
             Retour à la ville
@@ -289,13 +289,13 @@ function LocalBudgetContent() {
           <div className="lg:col-span-8 space-y-6">
             
             {/* Toggles */}
-            <div className="bg-white p-2 rounded-[2rem] border border-slate-200 shadow-sm flex gap-2">
+            <div className="bg-card p-2 rounded-[2rem] border border-border shadow-sm flex gap-2">
               <button
                 onClick={() => setActiveSection("fonctionnement")}
                 className={`flex-1 py-4 px-6 rounded-[1.5rem] font-staatliches text-lg uppercase tracking-wider transition-all flex items-center justify-center gap-2 ${
                   activeSection === "fonctionnement" 
                     ? "bg-rose-50 text-rose-600 shadow-inner" 
-                    : "text-slate-400 hover:text-slate-600 hover:bg-slate-50"
+                    : "text-slate-400 hover:text-muted-foreground hover:bg-muted"
                 }`}
               >
                 <Wallet size={18} />
@@ -306,7 +306,7 @@ function LocalBudgetContent() {
                 className={`flex-1 py-4 px-6 rounded-[1.5rem] font-staatliches text-lg uppercase tracking-wider transition-all flex items-center justify-center gap-2 ${
                   activeSection === "investissement" 
                     ? "bg-rose-50 text-rose-600 shadow-inner" 
-                    : "text-slate-400 hover:text-slate-600 hover:bg-slate-50"
+                    : "text-slate-400 hover:text-muted-foreground hover:bg-muted"
                 }`}
               >
                 <Landmark size={18} />
@@ -315,10 +315,10 @@ function LocalBudgetContent() {
             </div>
 
             {/* List breakdown */}
-            <div className="bg-white rounded-[2.5rem] border border-slate-200 p-8 space-y-6 shadow-sm">
-              <div className="flex items-center justify-between pb-4 border-b border-slate-100">
+            <div className="bg-card rounded-[2.5rem] border border-border p-8 space-y-6 shadow-sm">
+              <div className="flex items-center justify-between pb-4 border-b border-border">
                 <div className="space-y-1">
-                  <h3 className="text-2xl font-staatliches uppercase tracking-wide text-slate-900">
+                  <h3 className="text-2xl font-staatliches uppercase tracking-wide text-foreground">
                     {activeSection === "fonctionnement" ? "Dépenses de Fonctionnement" : "Dépenses d'Investissement"}
                   </h3>
                   <p className="text-xs text-slate-400">
@@ -339,7 +339,7 @@ function LocalBudgetContent() {
                   const isH = hovItem === idx, dim = hovItem !== null && !isH;
                   return (
                     <div key={idx} onMouseEnter={() => setHovItem(idx)} onMouseLeave={() => setHovItem(null)}
-                      className="space-y-3 group p-4 hover:bg-slate-50/50 rounded-2xl transition-all duration-200 border border-transparent hover:border-slate-100"
+                      className="space-y-3 group p-4 hover:bg-slate-50/50 rounded-2xl transition-all duration-200 border border-transparent hover:border-border"
                       style={{ opacity: dim ? 0.4 : 1, transform: isH ? "translateX(6px)" : "translateX(0)" }}>
                       <div className="flex items-start justify-between gap-4">
                         <div className="flex gap-3">
@@ -347,12 +347,12 @@ function LocalBudgetContent() {
                             <item.icon size={18} />
                           </div>
                           <div>
-                            <p className="font-extrabold text-slate-900 text-sm">{item.label}</p>
-                            <p className="text-xs text-slate-500 max-w-md">{item.desc}</p>
+                            <p className="font-extrabold text-foreground text-sm">{item.label}</p>
+                            <p className="text-xs text-muted-foreground max-w-md">{item.desc}</p>
                           </div>
                         </div>
                         <div className="text-right shrink-0">
-                          <p className="font-black text-slate-900 text-sm">{item.percent}%</p>
+                          <p className="font-black text-foreground text-sm">{item.percent}%</p>
                           <p className="text-[10px] font-black text-slate-400 uppercase tracking-tight">
                             {(amount / 1000000).toFixed(2)} M€
                           </p>
@@ -377,14 +377,14 @@ function LocalBudgetContent() {
           {/* RIGHT: Ratios & Explanations */}
           <div className="lg:col-span-4 space-y-6">
             {/* Financial Health ratios */}
-            <div className="bg-white rounded-[2.5rem] border border-slate-200 p-8 space-y-6 shadow-sm">
-              <h3 className="text-2xl font-staatliches uppercase tracking-wide text-slate-900">Ratios Budgétaires</h3>
+            <div className="bg-card rounded-[2.5rem] border border-border p-8 space-y-6 shadow-sm">
+              <h3 className="text-2xl font-staatliches uppercase tracking-wide text-foreground">Ratios Budgétaires</h3>
               
               <div className="space-y-5">
                 <div className="space-y-2 border-b border-slate-50 pb-4">
-                  <div className="flex justify-between text-xs font-extrabold text-slate-900">
+                  <div className="flex justify-between text-xs font-extrabold text-foreground">
                     <span>Taux d'endettement</span>
-                    <span className={debtRate > 100 ? "text-rose-600" : "text-slate-900"}>{debtRate}%</span>
+                    <span className={debtRate > 100 ? "text-rose-600" : "text-foreground"}>{debtRate}%</span>
                   </div>
                   <p className="text-[10px] text-slate-400 leading-normal">
                     La moyenne nationale est de **73.6%**. {debtRate > 100 ? "⚠️ La commune est plus endettée que la moyenne." : "✅ Le niveau d'endettement est sous contrôle."}
@@ -392,7 +392,7 @@ function LocalBudgetContent() {
                 </div>
 
                 <div className="space-y-2 border-b border-slate-50 pb-4">
-                  <div className="flex justify-between text-xs font-extrabold text-slate-900">
+                  <div className="flex justify-between text-xs font-extrabold text-foreground">
                     <span>Effort d'investissement</span>
                     <span>{investRate}%</span>
                   </div>
@@ -402,7 +402,7 @@ function LocalBudgetContent() {
                 </div>
 
                 <div className="space-y-2">
-                  <div className="flex justify-between text-xs font-extrabold text-slate-900">
+                  <div className="flex justify-between text-xs font-extrabold text-foreground">
                     <span>Dépenses réelles / hab.</span>
                     <span>{budgetHab} €</span>
                   </div>
@@ -428,11 +428,11 @@ function LocalBudgetContent() {
             </div>
             
             {/* Certification Badge */}
-            <div className="p-6 rounded-[2rem] border border-slate-200/80 bg-white/50 text-slate-500 text-center text-[10px] italic leading-relaxed space-y-2">
+            <div className="p-6 rounded-[2rem] border border-border/80 bg-white/50 text-muted-foreground text-center text-[10px] italic leading-relaxed space-y-2">
               <p>
                 Les chiffres de cette analyse sont issus des rapports officiels consolidés de la Direction Générale des Finances Publiques (DGFiP) et de l'OFGL (Observatoire des Finances et de la Gestion Locale) pour le compte administratif de la commune.
               </p>
-              <p className="font-bold text-slate-900 not-italic">
+              <p className="font-bold text-foreground not-italic">
                 © La Politique Locale - Tous droits réservés
               </p>
             </div>
@@ -446,7 +446,7 @@ function LocalBudgetContent() {
               <Wrench size={20} className="text-amber-700" />
             </div>
             <div>
-              <h2 className="text-3xl font-staatliches uppercase tracking-wide text-slate-900 leading-none">
+              <h2 className="text-3xl font-staatliches uppercase tracking-wide text-foreground leading-none">
                 🏗️ Grands Chantiers & Investissements
               </h2>
               <p className="text-[9px] text-slate-400 font-bold uppercase tracking-wider italic mt-1">
@@ -463,7 +463,7 @@ function LocalBudgetContent() {
                   initial={{ opacity: 0, y: 15 }}
                   animate={{ opacity: 1, y: 0 }}
                   transition={{ delay: idx * 0.1 }}
-                  className="bg-white border border-slate-200/85 rounded-[2rem] p-6 shadow-sm flex flex-col justify-between hover:shadow-md hover:border-slate-300 transition-all group"
+                  className="bg-card border border-border/85 rounded-[2rem] p-6 shadow-sm flex flex-col justify-between hover:shadow-md hover:border-slate-300 transition-all group"
                 >
                   <div className="space-y-3">
                     <div className="flex justify-between items-start">
@@ -480,12 +480,12 @@ function LocalBudgetContent() {
                     <h3 className="font-staatliches text-xl text-slate-800 uppercase tracking-wide group-hover:text-rose-600 transition-colors">
                       {proj.title}
                     </h3>
-                    <p className="text-xs text-slate-500 leading-relaxed">
+                    <p className="text-xs text-muted-foreground leading-relaxed">
                       {proj.desc}
                     </p>
                   </div>
                   
-                  <div className="mt-6 pt-4 border-t border-slate-100 flex justify-between items-center">
+                  <div className="mt-6 pt-4 border-t border-border flex justify-between items-center">
                     <span className="text-[10px] font-bold text-slate-400 uppercase tracking-wider">
                       Budget alloué / estimé
                     </span>
@@ -497,7 +497,7 @@ function LocalBudgetContent() {
               ))}
             </div>
           ) : (
-            <div className="bg-white border border-dashed border-slate-350 rounded-[2rem] p-12 text-center text-slate-400 shadow-sm">
+            <div className="bg-card border border-dashed border-slate-350 rounded-[2rem] p-12 text-center text-slate-400 shadow-sm">
               <p className="text-sm font-bold">Aucun projet renseigné — contribuez !</p>
             </div>
           )}
@@ -510,7 +510,7 @@ function LocalBudgetContent() {
               <Calendar size={20} className="text-fuchsia-700" />
             </div>
             <div>
-              <h2 className="text-3xl font-staatliches uppercase tracking-wide text-slate-900 leading-none">
+              <h2 className="text-3xl font-staatliches uppercase tracking-wide text-foreground leading-none">
                 📅 Événements Majeurs & Animation Locale
               </h2>
               <p className="text-[9px] text-slate-400 font-bold uppercase tracking-wider italic mt-1">
@@ -534,7 +534,7 @@ function LocalBudgetContent() {
                     Culture: "bg-fuchsia-50 text-fuchsia-700 border-fuchsia-200",
                     Festivités: "bg-sky-50 text-sky-700 border-sky-200"
                   };
-                  const colClass = catColors[evt.category] || "bg-slate-50 text-slate-700 border-slate-200";
+                  const colClass = catColors[evt.category] || "bg-muted text-slate-700 border-border";
                   
                   return (
                     <motion.div
@@ -542,7 +542,7 @@ function LocalBudgetContent() {
                       initial={{ opacity: 0, y: 15 }}
                       animate={{ opacity: 1, y: 0 }}
                       transition={{ delay: idx * 0.1 }}
-                      className="bg-white border border-slate-200/85 rounded-3xl p-5 shadow-sm hover:scale-[1.02] hover:border-slate-300 transition-all flex flex-col justify-between"
+                      className="bg-card border border-border/85 rounded-3xl p-5 shadow-sm hover:scale-[1.02] hover:border-slate-300 transition-all flex flex-col justify-between"
                     >
                       <div className="space-y-3">
                         <div className="flex justify-between items-center gap-2">
@@ -566,7 +566,7 @@ function LocalBudgetContent() {
               </div>
             );
           })() : (
-            <div className="bg-white border border-dashed border-slate-350 rounded-[2rem] p-12 text-center text-slate-400 shadow-sm">
+            <div className="bg-card border border-dashed border-slate-350 rounded-[2rem] p-12 text-center text-slate-400 shadow-sm">
               <p className="text-sm font-bold">Aucun événement renseigné — contribuez !</p>
             </div>
           )}

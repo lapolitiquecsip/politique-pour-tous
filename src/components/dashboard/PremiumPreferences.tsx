@@ -124,7 +124,7 @@ export default function PremiumPreferences({ userId }: { userId: string }) {
                 const d = interestByCode(code); if (!d) return null;
                 return (
                   <span key={code} style={{ backgroundColor: d.color }}
-                    className="inline-flex items-center gap-1.5 rounded-full px-3.5 py-1.5 text-xs font-bold text-slate-900 shadow-sm">
+                    className="inline-flex items-center gap-1.5 rounded-full px-3.5 py-1.5 text-xs font-bold text-foreground shadow-sm">
                     <span className="h-1.5 w-1.5 rounded-full bg-black/40" /> {d.label}
                   </span>
                 );
@@ -149,7 +149,7 @@ export default function PremiumPreferences({ userId }: { userId: string }) {
       {!open && !hasData && !loading && (
         <div className="px-6 md:px-8 pb-8 -mt-1">
           <button onClick={() => setOpen(true)}
-            className="inline-flex items-center gap-2 rounded-xl bg-gradient-to-r from-amber-400 to-yellow-500 px-5 py-3 text-[11px] font-black uppercase tracking-widest text-slate-900 shadow-lg shadow-amber-500/20 transition hover:brightness-110">
+            className="inline-flex items-center gap-2 rounded-xl bg-gradient-to-r from-amber-400 to-yellow-500 px-5 py-3 text-[11px] font-black uppercase tracking-widest text-foreground shadow-lg shadow-amber-500/20 transition hover:brightness-110">
             <Sparkles size={14} /> Compléter mon profil
           </button>
         </div>
@@ -171,7 +171,7 @@ export default function PremiumPreferences({ userId }: { userId: string }) {
                     const on = interests.includes(d.code);
                     return (
                       <button key={d.code} onClick={() => toggle(d.code)} type="button"
-                        className={`inline-flex items-center gap-2 rounded-full px-4 py-2 text-sm font-bold transition-all ${on ? "text-slate-900 shadow-lg" : "bg-white/5 text-slate-300 hover:bg-white/10 ring-1 ring-white/10"}`}
+                        className={`inline-flex items-center gap-2 rounded-full px-4 py-2 text-sm font-bold transition-all ${on ? "text-foreground shadow-lg" : "bg-white/5 text-slate-300 hover:bg-white/10 ring-1 ring-white/10"}`}
                         style={on ? { backgroundColor: d.color } : undefined}>
                         <span className="h-2 w-2 rounded-full" style={{ backgroundColor: on ? "rgba(0,0,0,0.4)" : d.color }} />
                         {d.label}
@@ -191,7 +191,7 @@ export default function PremiumPreferences({ userId }: { userId: string }) {
                       <option value="">Non renseignée</option>
                       {AGES.map(([v, l]) => <option key={v} value={v} className="bg-slate-900">{l}</option>)}
                     </select>
-                    <ChevronDown size={16} className="pointer-events-none absolute right-4 top-1/2 -translate-y-1/2 text-slate-500" />
+                    <ChevronDown size={16} className="pointer-events-none absolute right-4 top-1/2 -translate-y-1/2 text-muted-foreground" />
                   </div>
                 </div>
                 <div>
@@ -201,7 +201,7 @@ export default function PremiumPreferences({ userId }: { userId: string }) {
                       <option value="">Non renseignée</option>
                       {PROFESSIONS.map(([v, l]) => <option key={v} value={v} className="bg-slate-900">{l}</option>)}
                     </select>
-                    <ChevronDown size={16} className="pointer-events-none absolute right-4 top-1/2 -translate-y-1/2 text-slate-500" />
+                    <ChevronDown size={16} className="pointer-events-none absolute right-4 top-1/2 -translate-y-1/2 text-muted-foreground" />
                   </div>
                 </div>
               </div>
@@ -215,7 +215,7 @@ export default function PremiumPreferences({ userId }: { userId: string }) {
                       <option value="">Ma région…</option>
                       {REGIONS.map(r => <option key={r} value={r} className="bg-slate-900">{r}</option>)}
                     </select>
-                    <ChevronDown size={16} className="pointer-events-none absolute right-4 top-1/2 -translate-y-1/2 text-slate-500" />
+                    <ChevronDown size={16} className="pointer-events-none absolute right-4 top-1/2 -translate-y-1/2 text-muted-foreground" />
                   </div>
                   <input value={department} onChange={e => setDepartment(e.target.value)} placeholder="Département (ex. Rhône)" className={fieldCls} />
                   <input value={city} onChange={e => setCity(e.target.value)} placeholder="Ma ville" className={fieldCls} />
@@ -238,9 +238,9 @@ export default function PremiumPreferences({ userId }: { userId: string }) {
                       <select value={minImportance} onChange={e => setMinImportance(Number(e.target.value))} className={fieldCls}>
                         {IMPORTANCE.map(([v, l]) => <option key={v} value={v} className="bg-slate-900">{l}</option>)}
                       </select>
-                      <ChevronDown size={16} className="pointer-events-none absolute right-4 top-1/2 -translate-y-1/2 text-slate-500" />
+                      <ChevronDown size={16} className="pointer-events-none absolute right-4 top-1/2 -translate-y-1/2 text-muted-foreground" />
                     </div>
-                    <p className="mt-2 text-[11px] italic text-slate-500">Toutes les notifications restent visibles ici, dans votre fil. Seules celles au niveau choisi (et au-dessus) partent aussi par e-mail.</p>
+                    <p className="mt-2 text-[11px] italic text-muted-foreground">Toutes les notifications restent visibles ici, dans votre fil. Seules celles au niveau choisi (et au-dessus) partent aussi par e-mail.</p>
                   </div>
                 )}
               </div>
@@ -248,7 +248,7 @@ export default function PremiumPreferences({ userId }: { userId: string }) {
               {/* Enregistrer */}
               <div className="flex items-center gap-4">
                 <button onClick={save} disabled={saving}
-                  className="inline-flex items-center gap-2 rounded-2xl bg-gradient-to-r from-amber-400 to-yellow-500 px-6 py-3 text-sm font-black uppercase tracking-widest text-slate-900 shadow-lg shadow-amber-500/20 transition hover:brightness-110 disabled:opacity-60">
+                  className="inline-flex items-center gap-2 rounded-2xl bg-gradient-to-r from-amber-400 to-yellow-500 px-6 py-3 text-sm font-black uppercase tracking-widest text-foreground shadow-lg shadow-amber-500/20 transition hover:brightness-110 disabled:opacity-60">
                   {saving ? <Loader2 size={16} className="animate-spin" /> : <Check size={16} />}
                   {saving ? "Enregistrement…" : "Enregistrer mon profil"}
                 </button>

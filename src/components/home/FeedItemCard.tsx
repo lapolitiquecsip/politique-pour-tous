@@ -96,7 +96,7 @@ export default function FeedItemCard({ item, colorIndex }: { item: ContentItem; 
   const relativeDate = getRelativeDate(item.date_publication);
 
   return (
-    <div className="group relative flex h-full flex-col overflow-hidden rounded-[2rem] border border-slate-200/70 bg-white shadow-sm transition-all duration-300 hover:-translate-y-1 hover:shadow-2xl hover:shadow-slate-900/10 dark:border-slate-800 dark:bg-slate-900 dark:hover:shadow-black/40">
+    <div className="group relative flex h-full flex-col overflow-hidden rounded-[2rem] border border-border/70 bg-card shadow-sm transition-all duration-300 hover:-translate-y-1 hover:shadow-2xl hover:shadow-slate-900/10 dark:border-slate-800 dark:bg-slate-900 dark:hover:shadow-black/40">
       {/* Barre d'accent en dégradé (identité de l'institution) */}
       <div className={`h-1.5 w-full bg-gradient-to-r ${config.grad}`} />
 
@@ -112,19 +112,19 @@ export default function FeedItemCard({ item, colorIndex }: { item: ContentItem; 
           <span className="text-[10px] font-black uppercase tracking-widest text-slate-400 dark:text-slate-500">{relativeDate}</span>
         </div>
 
-        <h3 className="mb-3 shrink-0 text-lg font-black leading-snug tracking-tight text-slate-900 line-clamp-3 transition-colors dark:text-white">
+        <h3 className="mb-3 shrink-0 text-lg font-black leading-snug tracking-tight text-foreground line-clamp-3 transition-colors dark:text-white">
           <GlossaryText>{item.titre_simplifie}</GlossaryText>
         </h3>
 
         {/* Le résumé remplit l'espace restant et se coupe proprement (fondu) au lieu de déborder. */}
         <div className="relative mb-4 min-h-0 flex-1 overflow-hidden">
-          <p className="text-[13.5px] font-medium leading-relaxed text-slate-500 dark:text-slate-400">
+          <p className="text-[13.5px] font-medium leading-relaxed text-muted-foreground dark:text-slate-400">
             <GlossaryText>{item.resume_flash}</GlossaryText>
           </p>
           <div className="pointer-events-none absolute inset-x-0 bottom-0 h-9 bg-gradient-to-t from-white to-transparent dark:from-slate-900" />
         </div>
 
-      <div className="mt-auto shrink-0 border-t border-slate-100 pt-3 dark:border-slate-800">
+      <div className="mt-auto shrink-0 border-t border-border pt-3 dark:border-slate-800">
         {item.source_url || item.source_name ? (
           <div className="flex items-center justify-between">
             {item.source_url ? (
@@ -132,7 +132,7 @@ export default function FeedItemCard({ item, colorIndex }: { item: ContentItem; 
                 href={item.source_url}
                 target="_blank"
                 rel="noopener noreferrer"
-                className="text-xs font-semibold text-slate-500 hover:text-slate-900 dark:text-slate-400 dark:hover:text-white transition-colors flex items-center gap-2 group/link"
+                className="text-xs font-semibold text-muted-foreground hover:text-foreground dark:text-slate-400 dark:hover:text-white transition-colors flex items-center gap-2 group/link"
               >
                 <div className="flex items-center">
                   <AvatarGroup members={getAvatarMembers(item.source_name || "Source officielle")} size={22} limit={4} />
@@ -145,7 +145,7 @@ export default function FeedItemCard({ item, colorIndex }: { item: ContentItem; 
                 </svg>
               </a>
             ) : (
-              <div className="text-xs font-semibold text-slate-500 dark:text-slate-400 flex items-center gap-2 group w-full overflow-hidden">
+              <div className="text-xs font-semibold text-muted-foreground dark:text-slate-400 flex items-center gap-2 group w-full overflow-hidden">
                 <div className="flex items-center shrink-0">
                   <AvatarGroup members={getAvatarMembers(item.source_name || "Source officielle")} size={22} limit={4} />
                 </div>

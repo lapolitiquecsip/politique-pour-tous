@@ -66,7 +66,7 @@ export default function RegionFinancesChart({ regionCode }: { regionCode: string
   const isRatio = meta.unit === "ans";
 
   if (rows === null) return <p className="mt-3 text-sm text-slate-400">Chargement des finances…</p>;
-  if (series.length === 0) return <p className="mt-3 text-sm text-slate-500">Données financières indisponibles pour cette région.</p>;
+  if (series.length === 0) return <p className="mt-3 text-sm text-muted-foreground">Données financières indisponibles pour cette région.</p>;
 
   // Géométrie du graphique
   const W = 600, H = 240, padL = 46, padR = 16, padT = 16, padB = 30;
@@ -94,7 +94,7 @@ export default function RegionFinancesChart({ regionCode }: { regionCode: string
         <select
           value={indicator}
           onChange={e => setIndicator(e.target.value)}
-          className="rounded-full border border-slate-200 bg-white px-4 py-2 text-sm font-bold text-slate-800 shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500/40"
+          className="rounded-full border border-border bg-card px-4 py-2 text-sm font-bold text-slate-800 shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500/40"
         >
           {INDICATORS.map(i => <option key={i.code} value={i.code}>{i.label}</option>)}
         </select>
@@ -102,7 +102,7 @@ export default function RegionFinancesChart({ regionCode }: { regionCode: string
           <div className="inline-flex rounded-full bg-slate-100 p-0.5 text-xs font-bold">
             {(["hab", "total"] as const).map(m => (
               <button key={m} onClick={() => setMode(m)}
-                className={`rounded-full px-3 py-1.5 transition ${mode === m ? "bg-white text-slate-900 shadow-sm" : "text-slate-500"}`}>
+                className={`rounded-full px-3 py-1.5 transition ${mode === m ? "bg-card text-foreground shadow-sm" : "text-muted-foreground"}`}>
                 {m === "hab" ? "€ / habitant" : "Total"}
               </button>
             ))}
@@ -113,7 +113,7 @@ export default function RegionFinancesChart({ regionCode }: { regionCode: string
 
       {/* Valeur la plus récente + tendance */}
       <div className="mt-4 flex flex-wrap items-end gap-3">
-        <span className="text-4xl font-black text-slate-900">{format(last.value, meta.unit, mode)}</span>
+        <span className="text-4xl font-black text-foreground">{format(last.value, meta.unit, mode)}</span>
         <span className={`mb-1 inline-flex items-center gap-1 text-sm font-bold ${trendColor}`}>
           <TrendingUp size={16} className={up ? "" : "rotate-180"} />
           {format(delta, meta.unit, mode, true)} depuis {first.year}

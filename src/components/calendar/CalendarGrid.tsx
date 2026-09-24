@@ -87,22 +87,22 @@ export default function CalendarGrid({
   };
 
   return (
-    <div className="bg-white rounded-[2.5rem] p-6 shadow-xl border border-slate-100 overflow-hidden">
+    <div className="bg-card rounded-[2.5rem] p-6 shadow-xl border border-border overflow-hidden">
       {/* Header Interne Navigation */}
       <div className="flex items-center justify-between mb-8">
-        <h2 className="text-2xl font-black text-slate-900 capitalize">
+        <h2 className="text-2xl font-black text-foreground capitalize">
           {new Intl.DateTimeFormat('fr-FR', { month: 'long', year: 'numeric' }).format(viewDate)}
         </h2>
         <div className="flex gap-2">
           <button 
             onClick={onPrevMonth}
-            className="p-2 rounded-xl bg-slate-50 hover:bg-slate-200 text-slate-600 transition-colors"
+            className="p-2 rounded-xl bg-muted hover:bg-slate-200 text-muted-foreground transition-colors"
           >
             <ChevronLeft className="w-5 h-5" />
           </button>
           <button 
             onClick={onNextMonth}
-            className="p-2 rounded-xl bg-slate-50 hover:bg-slate-200 text-slate-600 transition-colors"
+            className="p-2 rounded-xl bg-muted hover:bg-slate-200 text-muted-foreground transition-colors"
           >
             <ChevronRight className="w-5 h-5" />
           </button>
@@ -134,12 +134,12 @@ export default function CalendarGrid({
               onClick={() => onSelectDate(dayObj.date)}
               className={`
                 relative overflow-hidden h-20 md:h-28 p-2 rounded-2xl transition-all border-2 flex flex-col items-start gap-1
-                ${current ? 'bg-white' : 'bg-slate-50/50 opacity-40'}
-                ${active ? 'border-blue-500 shadow-lg z-10' : 'border-transparent hover:border-slate-200'}
+                ${current ? 'bg-card' : 'bg-slate-50/50 opacity-40'}
+                ${active ? 'border-blue-500 shadow-lg z-10' : 'border-transparent hover:border-border'}
                 ${today ? 'bg-blue-50/50' : ''}
               `}
             >
-              <span className={`text-sm font-black ${today ? 'text-blue-600' : 'text-slate-900'}`}>
+              <span className={`text-sm font-black ${today ? 'text-blue-600' : 'text-foreground'}`}>
                 {dayObj.date.getDate()}
               </span>
               

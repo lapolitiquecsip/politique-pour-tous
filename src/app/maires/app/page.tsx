@@ -26,7 +26,7 @@ const NUM_RE = /(\d+(?:[.,]\d+)?\s?%|\d[\d .]*\s?(?:€|milliards?|millions?|Md�
 function NumHighlight({ text }: { text: string }) {
   const parts = text.split(NUM_RE);
   return <>{parts.map((p, i) => i % 2 === 1
-    ? <span key={i} className="font-bold text-slate-900 dark:text-white underline decoration-rose-500 decoration-[3px] underline-offset-2">{p}</span>
+    ? <span key={i} className="font-bold text-foreground dark:text-white underline decoration-rose-500 decoration-[3px] underline-offset-2">{p}</span>
     : <span key={i}>{p}</span>)}</>;
 }
 const toPoints = (v: any): string[] => (!v ? [] : (Array.isArray(v) ? v : [v]).filter(Boolean));
@@ -54,7 +54,7 @@ function MayorContent() {
   );
   if (p === null) return (
     <div className="min-h-screen flex flex-col items-center justify-center gap-4 p-4">
-      <h1 className="text-3xl font-staatliches uppercase text-slate-900 dark:text-white">Maire introuvable</h1>
+      <h1 className="text-3xl font-staatliches uppercase text-foreground dark:text-white">Maire introuvable</h1>
       <Link href="/local" className="text-rose-600 font-bold text-sm">← Retour aux territoires</Link>
     </div>
   );
@@ -67,10 +67,10 @@ function MayorContent() {
   const initials = `${(p.first_name?.[0] || "")}${(p.last_name?.[0] || "")}`.toUpperCase();
 
   return (
-    <main className="min-h-screen bg-slate-50 dark:bg-slate-950 pb-20">
+    <main className="min-h-screen bg-muted dark:bg-slate-950 pb-20">
       <div className="bg-white/80 dark:bg-slate-900/80 backdrop-blur-md border-b border-rose-200 dark:border-slate-800 sticky top-0 z-40">
         <div className="container mx-auto px-4 h-16 flex items-center">
-          <Link href="/local" className="inline-flex items-center gap-2 text-xs font-black uppercase tracking-widest text-slate-500 hover:text-rose-600">
+          <Link href="/local" className="inline-flex items-center gap-2 text-xs font-black uppercase tracking-widest text-muted-foreground hover:text-rose-600">
             <ArrowLeft size={14} /> Territoires
           </Link>
         </div>
@@ -79,7 +79,7 @@ function MayorContent() {
       <div className="container mx-auto max-w-5xl px-4 pt-10">
         <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
           <div className="md:col-span-1">
-            <div className="rounded-[2.5rem] overflow-hidden border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900 shadow-xl">
+            <div className="rounded-[2.5rem] overflow-hidden border border-border dark:border-slate-800 bg-card dark:bg-slate-900 shadow-xl">
               <div className="relative h-64 bg-gradient-to-b from-rose-400 to-pink-600 flex items-end">
                 {p.photo_url
                   // eslint-disable-next-line @next/next/no-img-element
@@ -90,14 +90,14 @@ function MayorContent() {
                 <p className="text-rose-600 font-black text-[10px] uppercase tracking-widest flex items-center gap-1.5">
                   <Star size={11} className="fill-current" /> Maire
                 </p>
-                <h1 className="mt-1 text-2xl font-staatliches uppercase tracking-wide text-slate-900 dark:text-white leading-tight">{p.full_name}</h1>
-                <p className="mt-2 flex items-center gap-1.5 text-sm font-bold text-slate-600 dark:text-slate-300"><MapPin size={14} className="text-rose-500" />{p.commune_name}</p>
+                <h1 className="mt-1 text-2xl font-staatliches uppercase tracking-wide text-foreground dark:text-white leading-tight">{p.full_name}</h1>
+                <p className="mt-2 flex items-center gap-1.5 text-sm font-bold text-muted-foreground dark:text-slate-300"><MapPin size={14} className="text-rose-500" />{p.commune_name}</p>
 
                 <div className="mt-4 space-y-3 text-sm">
-                  {p.party && <div><p className="text-[9px] font-black uppercase tracking-widest text-slate-400">Étiquette</p><p className="font-bold text-slate-900 dark:text-white">{p.party}</p></div>}
-                  {p.mandate_since && <div><p className="text-[9px] font-black uppercase tracking-widest text-slate-400">Maire depuis</p><p className="font-bold text-slate-900 dark:text-white">{frDate(p.mandate_since)}</p></div>}
-                  {bio.profession && <div><p className="text-[9px] font-black uppercase tracking-widest text-slate-400">Profession</p><p className="font-bold text-slate-900 dark:text-white capitalize">{bio.profession}</p></div>}
-                  {p.birth_date && <div><p className="text-[9px] font-black uppercase tracking-widest text-slate-400">Né·e le</p><p className="font-bold text-slate-900 dark:text-white">{frDate(p.birth_date)}</p></div>}
+                  {p.party && <div><p className="text-[9px] font-black uppercase tracking-widest text-slate-400">Étiquette</p><p className="font-bold text-foreground dark:text-white">{p.party}</p></div>}
+                  {p.mandate_since && <div><p className="text-[9px] font-black uppercase tracking-widest text-slate-400">Maire depuis</p><p className="font-bold text-foreground dark:text-white">{frDate(p.mandate_since)}</p></div>}
+                  {bio.profession && <div><p className="text-[9px] font-black uppercase tracking-widest text-slate-400">Profession</p><p className="font-bold text-foreground dark:text-white capitalize">{bio.profession}</p></div>}
+                  {p.birth_date && <div><p className="text-[9px] font-black uppercase tracking-widest text-slate-400">Né·e le</p><p className="font-bold text-foreground dark:text-white">{frDate(p.birth_date)}</p></div>}
                 </div>
                 <RemunerationInfo mode="maire" population={p.population} className="mt-4" />
                 <p className="mt-4 text-[10px] italic text-slate-400">Source : RNE (Répertoire National des Élus).</p>
@@ -112,14 +112,14 @@ function MayorContent() {
             <section className="space-y-4">
               {(bio.formation || bio.enfants) && (
                 <div className="flex flex-wrap gap-2">
-                  {bio.formation && <span className="inline-flex items-center gap-2 rounded-full bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 px-4 py-2 text-sm font-bold text-slate-700 dark:text-slate-200"><GraduationCap size={16} className="text-slate-400" />{bio.formation}</span>}
-                  {bio.enfants && <span className="inline-flex items-center gap-2 rounded-full bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 px-4 py-2 text-sm font-bold text-slate-700 dark:text-slate-200"><Users size={15} className="text-slate-400" />{bio.enfants}</span>}
+                  {bio.formation && <span className="inline-flex items-center gap-2 rounded-full bg-card dark:bg-slate-900 border border-border dark:border-slate-800 px-4 py-2 text-sm font-bold text-slate-700 dark:text-slate-200"><GraduationCap size={16} className="text-slate-400" />{bio.formation}</span>}
+                  {bio.enfants && <span className="inline-flex items-center gap-2 rounded-full bg-card dark:bg-slate-900 border border-border dark:border-slate-800 px-4 py-2 text-sm font-bold text-slate-700 dark:text-slate-200"><Users size={15} className="text-slate-400" />{bio.enfants}</span>}
                 </div>
               )}
-              <div className="flex items-center justify-between gap-4 rounded-3xl border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900 p-5">
+              <div className="flex items-center justify-between gap-4 rounded-3xl border border-border dark:border-slate-800 bg-card dark:bg-slate-900 p-5">
                 <div>
                   <p className="text-[9px] font-black uppercase tracking-widest text-slate-400">Intégrité &amp; Transparence</p>
-                  <h3 className="text-lg font-bold text-slate-900 dark:text-white">Situation judiciaire</h3>
+                  <h3 className="text-lg font-bold text-foreground dark:text-white">Situation judiciaire</h3>
                   <span className={`text-[10px] font-black uppercase tracking-widest ${legalClean ? "text-emerald-600" : "text-amber-600"}`}>{legalClean ? "Dossier vierge" : "Affaires à consulter"}</span>
                 </div>
                 <button onClick={() => setShowLegal(true)} className={`inline-flex items-center gap-2 rounded-2xl border px-5 py-3 text-[10px] font-black uppercase tracking-widest ${legalClean ? "border-emerald-500/20 bg-emerald-500/10 text-emerald-600" : "border-amber-500/20 bg-amber-500/10 text-amber-600"}`}>
@@ -128,11 +128,11 @@ function MayorContent() {
               </div>
             </section>
 
-            <section className="rounded-[2.5rem] border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900 p-8">
-              <h2 className="text-3xl font-staatliches uppercase tracking-tight text-slate-900 dark:text-white mb-2">
+            <section className="rounded-[2.5rem] border border-border dark:border-slate-800 bg-card dark:bg-slate-900 p-8">
+              <h2 className="text-3xl font-staatliches uppercase tracking-tight text-foreground dark:text-white mb-2">
                 Portrait & <span className="text-rose-600">Engagement</span>
               </h2>
-              {bio.summary && <p className="mb-6 text-[15px] leading-relaxed text-slate-600 dark:text-slate-300">{bio.summary}</p>}
+              {bio.summary && <p className="mb-6 text-[15px] leading-relaxed text-muted-foreground dark:text-slate-300">{bio.summary}</p>}
               {hasStructured ? (
                 <div className="grid items-start gap-4 sm:grid-cols-2">
                   {BIO_FIELDS.map(([key, label, color]) => {
@@ -140,7 +140,7 @@ function MayorContent() {
                     if (points.length === 0) return null;
                     const wide = key === "parcours" || key === "chronologie" || key === "realisations" ? "sm:col-span-2" : "";
                     return (
-                      <div key={key} className={`rounded-3xl border border-slate-100 dark:border-slate-800 bg-slate-50/60 dark:bg-slate-800/40 p-5 ${wide}`}>
+                      <div key={key} className={`rounded-3xl border border-border dark:border-slate-800 bg-slate-50/60 dark:bg-slate-800/40 p-5 ${wide}`}>
                         <h3 className={`font-staatliches text-2xl uppercase leading-none ${color}`}>{label}</h3>
                         <div className={`mb-3 mt-1.5 h-1 w-12 rounded-full ${color.replace("text-", "bg-")}`} />
                         <ul className="list-disc space-y-1.5 pl-4 text-sm leading-6 text-slate-700 dark:text-slate-300 marker:text-slate-300">

@@ -220,7 +220,7 @@ export default function DeputyDetailPage({ params, embedded }: { params: Promise
     return normTxt(i.title).includes(n) || (i.keywords || []).some((k: string) => normTxt(k).includes(n));
   };
   const issueChip = (active: boolean) =>
-    `px-4 py-2 rounded-xl text-[10px] font-black uppercase tracking-widest transition-all border ${active ? "bg-red-600 text-white border-red-600 shadow-lg" : "bg-white dark:bg-slate-900 text-slate-500 border-slate-200 dark:border-slate-800 hover:border-red-500"}`;
+    `px-4 py-2 rounded-xl text-[10px] font-black uppercase tracking-widest transition-all border ${active ? "bg-red-600 text-white border-red-600 shadow-lg" : "bg-card dark:bg-slate-900 text-muted-foreground border-border dark:border-slate-800 hover:border-red-500"}`;
 
   // Load real deputy and follow status
   useEffect(() => {
@@ -345,14 +345,14 @@ export default function DeputyDetailPage({ params, embedded }: { params: Promise
   // const votes = getMockVotes(); -- REMOVED
 
   return (
-    <div className="min-h-screen bg-slate-50 dark:bg-slate-950 pb-20">
+    <div className="min-h-screen bg-muted dark:bg-slate-950 pb-20">
       {/* 1. Header Navigation */}
       {!embedded && (
-      <div className="bg-white/80 dark:bg-slate-900/80 backdrop-blur-md border-b border-slate-200 dark:border-slate-800 sticky top-0 z-50">
+      <div className="bg-white/80 dark:bg-slate-900/80 backdrop-blur-md border-b border-border dark:border-slate-800 sticky top-0 z-50">
         <div className="container mx-auto px-4 h-16 flex items-center justify-between">
           <Link
             href="/deputes"
-            className="flex items-center gap-2 text-sm font-semibold text-slate-600 dark:text-slate-400 hover:text-red-500 transition-colors group"
+            className="flex items-center gap-2 text-sm font-semibold text-muted-foreground dark:text-slate-400 hover:text-red-500 transition-colors group"
           >
             <ChevronLeft className="w-4 h-4 group-hover:-translate-x-1 transition-transform" />
             Retour à la carte
@@ -374,7 +374,7 @@ export default function DeputyDetailPage({ params, embedded }: { params: Promise
             animate={{ opacity: 1, x: 0 }}
             className="lg:col-span-1 space-y-4 md:space-y-6"
           >
-            <div className="bg-white dark:bg-slate-900 rounded-3xl md:rounded-[2.5rem] border border-slate-200 dark:border-slate-800 overflow-hidden shadow-xl md:shadow-2xl">
+            <div className="bg-card dark:bg-slate-900 rounded-3xl md:rounded-[2.5rem] border border-border dark:border-slate-800 overflow-hidden shadow-xl md:shadow-2xl">
               {/* MOBILE : photo ronde compacte cadrée sur le visage + nom. */}
               <div className="flex items-center gap-4 p-5 md:hidden">
                 {!imgError ? (
@@ -385,11 +385,11 @@ export default function DeputyDetailPage({ params, embedded }: { params: Promise
                   </div>
                 )}
                 <div className="min-w-0">
-                  <h1 className="text-2xl font-staatliches uppercase leading-none tracking-tight text-slate-900 dark:text-white">{name}</h1>
+                  <h1 className="text-2xl font-staatliches uppercase leading-none tracking-tight text-foreground dark:text-white">{name}</h1>
                   <p className="mt-1.5 inline-flex items-center gap-1.5 text-[10px] font-bold uppercase tracking-widest text-red-500">
                     {deputy?.biography?.includes('**Ministre**') ? <><ShieldCheck className="w-3 h-3" /> Membre du Gouvernement</> : "Député de la Nation"}
                   </p>
-                  {headerMeta && <p className="mt-1 text-[11px] leading-snug text-slate-500 dark:text-slate-400 first-letter:uppercase">{headerMeta}</p>}
+                  {headerMeta && <p className="mt-1 text-[11px] leading-snug text-muted-foreground dark:text-slate-400 first-letter:uppercase">{headerMeta}</p>}
                 </div>
               </div>
               {/* DESKTOP : grande photo immersive (inchangée). */}
@@ -431,7 +431,7 @@ export default function DeputyDetailPage({ params, embedded }: { params: Promise
                     <>
                       {partyLink?.logo_url ? (
                         // eslint-disable-next-line @next/next/no-img-element
-                        <img src={partyLink.logo_url} alt={partyLink.name} className="w-12 h-12 rounded-2xl object-contain bg-white p-1 shrink-0 shadow-lg ring-1 ring-slate-200 dark:ring-slate-700" />
+                        <img src={partyLink.logo_url} alt={partyLink.name} className="w-12 h-12 rounded-2xl object-contain bg-card p-1 shrink-0 shadow-lg ring-1 ring-slate-200 dark:ring-slate-700" />
                       ) : (
                         <div className="w-12 h-12 rounded-2xl bg-red-500 flex items-center justify-center text-white shrink-0 shadow-lg shadow-red-500/20">
                           <Landmark className="w-6 h-6" />
@@ -439,10 +439,10 @@ export default function DeputyDetailPage({ params, embedded }: { params: Promise
                       )}
                       <div className="min-w-0">
                         <p className="text-[10px] font-black text-slate-400 uppercase tracking-wider">Groupe Politique</p>
-                        <p className="font-bold text-slate-900 dark:text-white truncate">
+                        <p className="font-bold text-foreground dark:text-white truncate">
                           {deputy?.party || (slug === 'gabriel-attal' ? 'EPR' : 'NI')}
                         </p>
-                        <p className="text-[10px] font-medium text-slate-500 uppercase tracking-wider mt-0.5 whitespace-normal break-words">
+                        <p className="text-[10px] font-medium text-muted-foreground uppercase tracking-wider mt-0.5 whitespace-normal break-words">
                           {groupFullName}
                         </p>
                         {partyLink && (
@@ -452,11 +452,11 @@ export default function DeputyDetailPage({ params, embedded }: { params: Promise
                     </>
                   );
                   return partyLink ? (
-                    <Link href={`/partis/${partyLink.slug}`} className="flex items-center gap-4 p-4 rounded-3xl bg-slate-50 dark:bg-slate-800/50 border border-slate-100 dark:border-slate-700 transition hover:border-red-400 hover:bg-red-50/40 group/party">
+                    <Link href={`/partis/${partyLink.slug}`} className="flex items-center gap-4 p-4 rounded-3xl bg-muted dark:bg-slate-800/50 border border-border dark:border-slate-700 transition hover:border-red-400 hover:bg-red-50/40 group/party">
                       {inner}
                     </Link>
                   ) : (
-                    <div className="flex items-center gap-4 p-4 rounded-3xl bg-slate-50 dark:bg-slate-800/50 border border-slate-100 dark:border-slate-700">
+                    <div className="flex items-center gap-4 p-4 rounded-3xl bg-muted dark:bg-slate-800/50 border border-border dark:border-slate-700">
                       {inner}
                     </div>
                   );
@@ -466,26 +466,26 @@ export default function DeputyDetailPage({ params, embedded }: { params: Promise
 
                 {deputy?.department ? (
                   <Link href={`/local/?type=department&code=${encodeURIComponent(deputy.department)}`}
-                    className="flex items-center gap-4 p-4 rounded-3xl bg-slate-50 dark:bg-slate-800/50 border border-slate-100 dark:border-slate-700 transition hover:border-blue-400 hover:bg-blue-50/50 group">
+                    className="flex items-center gap-4 p-4 rounded-3xl bg-muted dark:bg-slate-800/50 border border-border dark:border-slate-700 transition hover:border-blue-400 hover:bg-blue-50/50 group">
                      <div className="w-12 h-12 rounded-2xl bg-blue-500 flex items-center justify-center text-white shrink-0 shadow-lg shadow-blue-500/20">
                        <MapPin className="w-6 h-6" />
                      </div>
                      <div className="min-w-0">
                        <p className="text-[10px] font-black text-slate-400 uppercase tracking-wider">Circonscription</p>
-                       <p className="font-bold text-slate-900 dark:text-white">
+                       <p className="font-bold text-foreground dark:text-white">
                          {deputy.department} {deputy?.constituency_number ? `- ${deputy.constituency_number}ème` : ''}
                        </p>
                        <span className="text-[10px] font-black uppercase tracking-widest text-blue-600 inline-flex items-center gap-1 mt-0.5 opacity-0 group-hover:opacity-100 transition-opacity">Voir la politique locale <ArrowRight className="w-3 h-3" /></span>
                      </div>
                   </Link>
                 ) : (
-                  <div className="flex items-center gap-4 p-4 rounded-3xl bg-slate-50 dark:bg-slate-800/50 border border-slate-100 dark:border-slate-700">
+                  <div className="flex items-center gap-4 p-4 rounded-3xl bg-muted dark:bg-slate-800/50 border border-border dark:border-slate-700">
                      <div className="w-12 h-12 rounded-2xl bg-blue-500 flex items-center justify-center text-white shrink-0 shadow-lg shadow-blue-500/20">
                        <MapPin className="w-6 h-6" />
                      </div>
                      <div>
                        <p className="text-[10px] font-black text-slate-400 uppercase tracking-wider">Circonscription</p>
-                       <p className="font-bold text-slate-900 dark:text-white">...</p>
+                       <p className="font-bold text-foreground dark:text-white">...</p>
                      </div>
                   </div>
                 )}
@@ -510,13 +510,13 @@ export default function DeputyDetailPage({ params, embedded }: { params: Promise
             {/* NEW: Integrity Badge Section (Bento Style) */}
             <motion.div
               whileHover={{ y: -4 }}
-              className="bg-white dark:bg-slate-900 rounded-2xl md:rounded-[2rem] p-4 md:p-6 border border-slate-200 dark:border-slate-800 shadow-xl relative overflow-hidden group transition-all duration-500"
+              className="bg-card dark:bg-slate-900 rounded-2xl md:rounded-[2rem] p-4 md:p-6 border border-border dark:border-slate-800 shadow-xl relative overflow-hidden group transition-all duration-500"
             >
                <div className={`absolute top-0 left-0 w-2 h-full transition-colors duration-500 ${isLegalClean ? 'bg-emerald-500' : 'bg-amber-500'}`} />
                <div className="flex items-center justify-between gap-4">
                   <div className="min-w-0">
                     <p className="text-[9px] font-black text-slate-400 uppercase tracking-[0.2em] mb-1">Intégrité & Transparence</p>
-                    <h4 className="text-lg font-bold text-slate-900 dark:text-white truncate">Situation Juridique</h4>
+                    <h4 className="text-lg font-bold text-foreground dark:text-white truncate">Situation Juridique</h4>
                     <div className="flex items-center gap-2 mt-1">
                       <div className={`w-1.5 h-1.5 rounded-full animate-pulse ${isLegalClean ? 'bg-emerald-500' : 'bg-amber-500'}`} />
                       <span className={`text-[10px] font-black uppercase tracking-widest ${isLegalClean ? 'text-emerald-600' : 'text-amber-600'}`}>
@@ -554,7 +554,7 @@ export default function DeputyDetailPage({ params, embedded }: { params: Promise
                   <p className="text-sm opacity-90 leading-relaxed mb-6">
                     Vous pouvez contacter ce député pour toute question relative à l&apos;activité législative.
                   </p>
-                  <a href={contactHref} {...(ext ? { target: "_blank", rel: "noopener noreferrer" } : {})} className="w-full py-4 rounded-2xl bg-white text-red-600 font-bold text-sm flex items-center justify-center gap-2 hover:bg-slate-100 transition-colors">
+                  <a href={contactHref} {...(ext ? { target: "_blank", rel: "noopener noreferrer" } : {})} className="w-full py-4 rounded-2xl bg-card text-red-600 font-bold text-sm flex items-center justify-center gap-2 hover:bg-slate-100 transition-colors">
                     {ext ? <ExternalLink className="w-4 h-4" /> : <Mail className="w-4 h-4" />}
                     {ext ? "Voir sa fiche à l'Assemblée" : "Envoyer un message"}
                   </a>
@@ -586,7 +586,7 @@ export default function DeputyDetailPage({ params, embedded }: { params: Promise
 
             {/* NEW: Biography / Background Section (Collapsible Editorial Style) */}
             {(deputy?.biography || hasStructuredBio(deputy?.bio)) && (
-              <div className="bg-white dark:bg-slate-900 rounded-[3rem] border border-slate-200 dark:border-slate-800 shadow-xl relative overflow-hidden group pb-2">
+              <div className="bg-card dark:bg-slate-900 rounded-[3rem] border border-border dark:border-slate-800 shadow-xl relative overflow-hidden group pb-2">
                 {(() => {
                   const displayBio = (deputy?.biography || "").split('<!-- INTEGRITY_START -->')[0] || '';
                   return (
@@ -603,12 +603,12 @@ export default function DeputyDetailPage({ params, embedded }: { params: Promise
                             <Quote className="w-6 h-6 opacity-50" />
                           </div>
                           <div className="flex flex-col">
-                            <h3 className="text-3xl font-staatliches uppercase tracking-tight text-slate-900 dark:text-white leading-none">
+                            <h3 className="text-3xl font-staatliches uppercase tracking-tight text-foreground dark:text-white leading-none">
                               Portrait & <span className="text-blue-600">Parcours</span>
                             </h3>
                           </div>
                         </div>
-                        <div className={`w-10 h-10 rounded-full bg-slate-100 dark:bg-slate-800 flex items-center justify-center text-slate-500 transition-transform duration-500 ${isBioExpanded ? 'rotate-180' : ''}`}>
+                        <div className={`w-10 h-10 rounded-full bg-slate-100 dark:bg-slate-800 flex items-center justify-center text-muted-foreground transition-transform duration-500 ${isBioExpanded ? 'rotate-180' : ''}`}>
                           <ChevronDown className="w-5 h-5" />
                         </div>
                       </button>
@@ -638,15 +638,15 @@ export default function DeputyDetailPage({ params, embedded }: { params: Promise
                                 return (
                                   <div 
                                     key={pIdx}
-                                    className="flex gap-4 items-start bg-slate-50/50 dark:bg-slate-800/20 p-4 rounded-2xl border border-slate-100/50 dark:border-slate-800/50 group/item hover:bg-white dark:hover:bg-slate-800 transition-colors"
+                                    className="flex gap-4 items-start bg-slate-50/50 dark:bg-slate-800/20 p-4 rounded-2xl border border-border/50 dark:border-slate-800/50 group/item hover:bg-card dark:hover:bg-slate-800 transition-colors"
                                   >
-                                    <div className="w-10 h-10 rounded-xl bg-white dark:bg-slate-700 flex items-center justify-center text-blue-600 shadow-sm shrink-0 group-hover/item:scale-110 transition-transform">
+                                    <div className="w-10 h-10 rounded-xl bg-card dark:bg-slate-700 flex items-center justify-center text-blue-600 shadow-sm shrink-0 group-hover/item:scale-110 transition-transform">
                                       <Icon className="w-5 h-5" />
                                     </div>
                                     <div className="font-playfair text-base md:text-lg text-slate-700 dark:text-slate-300 leading-relaxed italic pt-1">
                                       {paragraph.split(/(\*\*.*?\*\*)/).map((part: string, i: number) => 
                                         part.startsWith('**') && part.endsWith('**') 
-                                          ? <strong key={i} className="font-bold text-slate-900 dark:text-white not-italic bg-blue-500/10 px-1.5 py-0.5 rounded-md mx-0.5">{part.slice(2, -2)}</strong>
+                                          ? <strong key={i} className="font-bold text-foreground dark:text-white not-italic bg-blue-500/10 px-1.5 py-0.5 rounded-md mx-0.5">{part.slice(2, -2)}</strong>
                                           : wrapWithGlossary(part)
                                       )}
                                     </div>
@@ -655,7 +655,7 @@ export default function DeputyDetailPage({ params, embedded }: { params: Promise
                               })}
                               
                               {/* Bottom Signature Decor */}
-                              <div className="mt-8 pt-6 border-t border-slate-100 dark:border-slate-800 flex items-center justify-between opacity-50">
+                              <div className="mt-8 pt-6 border-t border-border dark:border-slate-800 flex items-center justify-between opacity-50">
                                 <p className="text-[10px] font-black uppercase tracking-widest text-slate-400">Dossier Certifié Assemblée Nationale</p>
                                 <div className="h-px w-24 bg-gradient-to-r from-transparent to-slate-200 dark:to-slate-700" />
                               </div>
@@ -680,7 +680,7 @@ export default function DeputyDetailPage({ params, embedded }: { params: Promise
 
             {/* Loyauté au groupe — déplacée ici (auparavant dans le panneau « Activité parlementaire »). */}
             {deputy?.group_loyalty != null && (
-              <div className="rounded-[2rem] border border-slate-200 bg-white p-6 shadow-sm dark:border-slate-800 dark:bg-slate-900 md:p-8">
+              <div className="rounded-[2rem] border border-border bg-card p-6 shadow-sm dark:border-slate-800 dark:bg-slate-900 md:p-8">
                 <div className="flex items-center justify-between gap-4">
                   <div className="flex items-center gap-3">
                     <span className="flex h-11 w-11 shrink-0 items-center justify-center rounded-2xl bg-emerald-50 text-emerald-600 dark:bg-emerald-500/15">
@@ -688,7 +688,7 @@ export default function DeputyDetailPage({ params, embedded }: { params: Promise
                     </span>
                     <div>
                       <p className="text-[10px] font-black uppercase tracking-widest text-slate-400">Loyauté au groupe</p>
-                      <p className="text-sm text-slate-500">Votes alignés sur la position de son groupe.</p>
+                      <p className="text-sm text-muted-foreground">Votes alignés sur la position de son groupe.</p>
                     </div>
                   </div>
                   <span className="font-staatliches text-4xl leading-none text-emerald-600">{deputy.group_loyalty}%</span>
@@ -701,17 +701,17 @@ export default function DeputyDetailPage({ params, embedded }: { params: Promise
 
             {/* Initiatives législatives : classement (déposés/co-signés + rang) PUIS la liste des textes. */}
             <div className="pt-4 mb-10">
-              <h2 className="text-4xl font-staatliches uppercase tracking-tight text-slate-900 dark:text-white mb-6">
+              <h2 className="text-4xl font-staatliches uppercase tracking-tight text-foreground dark:text-white mb-6">
                 Initiatives <span className="text-amber-500">Législatives</span>
               </h2>
 
               {deputy && (
-                <div className="mb-8 rounded-[2rem] border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900 p-6 md:p-8">
+                <div className="mb-8 rounded-[2rem] border border-border dark:border-slate-800 bg-card dark:bg-slate-900 p-6 md:p-8">
                   <InitiativeRank kind="deputy" selfId={String(deputy.id)} primary={deputy.initiative_primary_count} cosigned={deputy.initiative_count} peerLabel="députés" embedded />
                 </div>
               )}
 
-              <p className="text-slate-500 font-medium max-w-xl mb-8">
+              <p className="text-muted-foreground font-medium max-w-xl mb-8">
                 Retrouvez les propositions de loi portées par cet élu.
               </p>
 
@@ -721,7 +721,7 @@ export default function DeputyDetailPage({ params, embedded }: { params: Promise
                     <Link 
                       key={law.id}
                       href={`/lois/?dossier=${law.id}`}
-                      className="min-w-[300px] md:min-w-[350px] bg-white dark:bg-slate-900 rounded-[2rem] p-8 border border-slate-200 dark:border-slate-800 shadow-xl hover:border-amber-400 hover:shadow-amber-400/5 transition-all group"
+                      className="min-w-[300px] md:min-w-[350px] bg-card dark:bg-slate-900 rounded-[2rem] p-8 border border-border dark:border-slate-800 shadow-xl hover:border-amber-400 hover:shadow-amber-400/5 transition-all group"
                     >
                       <div className="flex items-center gap-3 mb-6">
                         <div className="w-10 h-10 rounded-xl bg-amber-400/10 text-amber-600 flex items-center justify-center group-hover:bg-amber-400 group-hover:text-slate-950 transition-colors">
@@ -731,20 +731,20 @@ export default function DeputyDetailPage({ params, embedded }: { params: Promise
                           Proposition de loi
                         </span>
                       </div>
-                      <h3 className="text-xl font-bold text-slate-900 dark:text-white mb-4 line-clamp-3 group-hover:text-amber-600 transition-colors">
+                      <h3 className="text-xl font-bold text-foreground dark:text-white mb-4 line-clamp-3 group-hover:text-amber-600 transition-colors">
                         {law.title}
                       </h3>
                       <div className="flex items-center gap-2">
                         <div className={`w-2 h-2 rounded-full ${law.timeline?.includes('Adopté') ? 'bg-green-500' : 'bg-slate-300'}`} />
-                        <span className="text-xs font-bold text-slate-500">{law.timeline || "En cours d'examen"}</span>
+                        <span className="text-xs font-bold text-muted-foreground">{law.timeline || "En cours d'examen"}</span>
                       </div>
                     </Link>
                   ))}
                 </div>
               ) : (
-                <div className="bg-slate-50 dark:bg-slate-800/50 rounded-[2rem] p-8 border border-dashed border-slate-200 dark:border-slate-700 text-center">
+                <div className="bg-muted dark:bg-slate-800/50 rounded-[2rem] p-8 border border-dashed border-border dark:border-slate-700 text-center">
                   <FileText className="w-8 h-8 text-slate-300 mx-auto mb-4" />
-                  <p className="text-slate-500 text-sm italic">
+                  <p className="text-muted-foreground text-sm italic">
                     Aucune proposition de loi n&apos;a été répertoriée pour ce député pour le moment.
                   </p>
                 </div>
@@ -753,10 +753,10 @@ export default function DeputyDetailPage({ params, embedded }: { params: Promise
 
             {/* REORDERED: Positions sur les scrutins Section (moved here) */}
             <div className="pt-8">
-              <h2 className="text-4xl font-staatliches uppercase tracking-tight text-slate-900 dark:text-white mb-4">
+              <h2 className="text-4xl font-staatliches uppercase tracking-tight text-foreground dark:text-white mb-4">
                 <span className="text-red-600">Votes</span>
               </h2>
-              <p className="text-slate-500 font-medium max-w-xl mb-8">
+              <p className="text-muted-foreground font-medium max-w-xl mb-8">
                 Retrouvez comment cet élu s&apos;est positionné sur l&apos;intégralité des textes législatifs de la législature actuelle.
               </p>
 
@@ -770,7 +770,7 @@ export default function DeputyDetailPage({ params, embedded }: { params: Promise
                       value={issueQuery}
                       onChange={(e) => setIssueQuery(e.target.value)}
                       placeholder="Filtrer les votes par sujet (retraites, ukraine, climat…)"
-                      className="w-full pl-10 pr-4 py-3 rounded-2xl bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 focus:ring-2 focus:ring-red-500 outline-none text-sm text-slate-900 dark:text-white"
+                      className="w-full pl-10 pr-4 py-3 rounded-2xl bg-card dark:bg-slate-900 border border-border dark:border-slate-800 focus:ring-2 focus:ring-red-500 outline-none text-sm text-foreground dark:text-white"
                     />
                   </div>
                   <div className="flex flex-wrap gap-2">
@@ -796,11 +796,11 @@ export default function DeputyDetailPage({ params, embedded }: { params: Promise
                   pour: { txt: "Plutôt favorable", cls: "bg-emerald-100 text-emerald-700" },
                   contre: { txt: "Plutôt opposé", cls: "bg-red-100 text-red-700" },
                   nuance: { txt: "Position nuancée", cls: "bg-amber-100 text-amber-700" },
-                  inconnu: { txt: "Position non tranchée", cls: "bg-slate-100 text-slate-600" },
+                  inconnu: { txt: "Position non tranchée", cls: "bg-slate-100 text-muted-foreground" },
                 };
                 const st = STANCE[pos?.stance] || STANCE.inconnu;
                 return (
-                  <div className="mb-8 rounded-[2rem] border border-slate-200 bg-white p-6 dark:border-slate-800 dark:bg-slate-900">
+                  <div className="mb-8 rounded-[2rem] border border-border bg-card p-6 dark:border-slate-800 dark:bg-slate-900">
                     <div className="mb-3 flex flex-wrap items-center gap-3">
                       <span className="flex items-center gap-2 text-[11px] font-black uppercase tracking-widest text-red-600"><Quote className="h-4 w-4" /> Ce qu'il·elle dit — {label}</span>
                       {pos && <span className={`rounded-full px-3 py-1 text-[10px] font-black uppercase tracking-widest ${st.cls}`}>{st.txt}</span>}
@@ -811,7 +811,7 @@ export default function DeputyDetailPage({ params, embedded }: { params: Promise
                         {Array.isArray(pos.evidence) && pos.evidence.length > 0 && (
                           <ul className={`${pos.summary ? "mt-3" : ""} space-y-1.5`}>
                             {pos.evidence.slice(0, 6).map((e: any, i: number) => (
-                              <li key={i} className="flex gap-2 text-xs text-slate-600 dark:text-slate-400">
+                              <li key={i} className="flex gap-2 text-xs text-muted-foreground dark:text-slate-400">
                                 <span className="mt-1.5 h-1.5 w-1.5 shrink-0 rounded-full bg-red-400" />
                                 {/* Extrait lisible DIRECTEMENT sur le site (pas de lien sortant vers la
                                     question écrite). La provenance officielle est indiquée sous la liste. */}
@@ -823,7 +823,7 @@ export default function DeputyDetailPage({ params, embedded }: { params: Promise
                         <p className="mt-3 text-[10px] font-bold uppercase tracking-widest text-slate-400">Source : questions écrites &amp; amendements (open data Assemblée nationale)</p>
                       </>
                     ) : (
-                      <p className="text-sm italic text-slate-500">Aucune prise de parole recensée sur ce sujet (questions écrites). Son <span className="font-bold">action</span> reste visible ci-dessous via ses votes.</p>
+                      <p className="text-sm italic text-muted-foreground">Aucune prise de parole recensée sur ce sujet (questions écrites). Son <span className="font-bold">action</span> reste visible ci-dessous via ses votes.</p>
                     )}
                   </div>
                 );
@@ -839,9 +839,9 @@ export default function DeputyDetailPage({ params, embedded }: { params: Promise
               )}
 
               {filteredVotes.length === 0 && !loadingVotes && (
-                <div className="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-[2rem] p-12 text-center">
+                <div className="bg-card dark:bg-slate-900 border border-border dark:border-slate-800 rounded-[2rem] p-12 text-center">
                   <Vote className="w-12 h-12 mx-auto text-slate-300 mb-4" />
-                  <p className="text-slate-500 font-bold">
+                  <p className="text-muted-foreground font-bold">
                     {votes.length === 0 
                       ? "Aucun scrutin législatif enregistré pour l'instant."
                       : "Aucune loi ne correspond à cette thématique."}
@@ -868,10 +868,10 @@ export default function DeputyDetailPage({ params, embedded }: { params: Promise
                       exit={{ opacity: 0, scale: 0.95 }}
                       transition={{ delay: idx * 0.05 }}
                       onClick={() => setSelectedVoteForModal({ ...v, subVotes: group.subVotes, cleanedTitle: group.title })}
-                      className="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-[2rem] p-6 flex flex-col md:flex-row items-center gap-6 group hover:border-red-500 hover:shadow-2xl hover:shadow-red-500/10 cursor-pointer transition-all duration-300 transform hover:-translate-y-1 mb-4"
+                      className="bg-card dark:bg-slate-900 border border-border dark:border-slate-800 rounded-[2rem] p-6 flex flex-col md:flex-row items-center gap-6 group hover:border-red-500 hover:shadow-2xl hover:shadow-red-500/10 cursor-pointer transition-all duration-300 transform hover:-translate-y-1 mb-4"
                     >
                       <div className="flex-1 flex items-center gap-6 min-w-0 w-full">
-                        <div className="w-14 h-14 rounded-2xl bg-slate-50 dark:bg-slate-800 flex items-center justify-center text-slate-400 group-hover:text-red-500 transition-colors shrink-0">
+                        <div className="w-14 h-14 rounded-2xl bg-muted dark:bg-slate-800 flex items-center justify-center text-slate-400 group-hover:text-red-500 transition-colors shrink-0">
                           <Landmark className="w-6 h-6" />
                         </div>
                         <div className="min-w-0 flex-1">
@@ -882,11 +882,11 @@ export default function DeputyDetailPage({ params, embedded }: { params: Promise
                             <span className={`text-[9px] font-black px-2 py-0.5 rounded-md uppercase tracking-tighter bg-blue-500/10 text-blue-600`}>
                               LOI
                             </span>
-                            <span className="text-[9px] font-black px-2 py-0.5 rounded-md uppercase tracking-tighter bg-slate-100 dark:bg-slate-800 text-slate-500">
+                            <span className="text-[9px] font-black px-2 py-0.5 rounded-md uppercase tracking-tighter bg-slate-100 dark:bg-slate-800 text-muted-foreground">
                               {category}
                             </span>
                           </div>
-                          <h3 className="text-xl font-bold text-slate-900 dark:text-white group-hover:text-red-600 transition-colors line-clamp-2">
+                          <h3 className="text-xl font-bold text-foreground dark:text-white group-hover:text-red-600 transition-colors line-clamp-2">
                             {group.title}
                           </h3>
                         </div>
@@ -922,7 +922,7 @@ export default function DeputyDetailPage({ params, embedded }: { params: Promise
               <div className="w-12 h-12 rounded-full bg-slate-200 dark:bg-slate-800 flex items-center justify-center text-slate-400">
                 <Landmark className="w-5 h-5" />
               </div>
-              <p className="text-sm text-slate-500 leading-relaxed italic">
+              <p className="text-sm text-muted-foreground leading-relaxed italic">
                 Les données de vote sont issues des scrutins publics de l&apos;Assemblée nationale. 
                 Une absence de vote peut être due à une délégation de vote ou un congé maladie.
               </p>

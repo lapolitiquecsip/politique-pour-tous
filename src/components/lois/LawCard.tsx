@@ -38,7 +38,7 @@ const TONE: Record<LawCardStatus["tone"], string> = {
 };
 
 export const CARD_CLASS =
-  "group flex h-full w-full flex-col rounded-[2rem] border border-slate-200 bg-white p-6 text-left shadow-sm transition hover:-translate-y-1 hover:shadow-xl dark:border-slate-800 dark:bg-slate-900";
+  "group flex h-full w-full flex-col rounded-[2rem] border border-border bg-card p-6 text-left shadow-sm transition hover:-translate-y-1 hover:shadow-xl dark:border-slate-800 dark:bg-slate-900";
 
 export function LawCardBody({
   title, date, status, category, type,
@@ -66,7 +66,7 @@ export function LawCardBody({
           <meta.Icon size={12} strokeWidth={2.5} /> {meta.label}
         </span>
       )}
-      <h3 className="mt-3 line-clamp-4 text-lg font-bold leading-snug text-slate-900 transition-colors group-hover:text-red-600 dark:text-white">
+      <h3 className="mt-3 line-clamp-4 text-lg font-bold leading-snug text-foreground transition-colors group-hover:text-red-600 dark:text-white">
         {title}
       </h3>
       <div className="mt-auto flex items-end justify-between gap-3 pt-5">

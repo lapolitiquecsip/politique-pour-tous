@@ -58,8 +58,8 @@ export default function LocalFinancesSection({ finances, label }: { finances: Lo
   return (
     <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.4 }} className="space-y-4">
       <div className="flex items-center gap-2">
-        <Landmark size={16} className="text-slate-900" />
-        <h4 className="text-sm font-black uppercase tracking-widest text-slate-900">
+        <Landmark size={16} className="text-foreground" />
+        <h4 className="text-sm font-black uppercase tracking-widest text-foreground">
           {label} {finances.year}
         </h4>
       </div>
@@ -70,11 +70,11 @@ export default function LocalFinancesSection({ finances, label }: { finances: Lo
       )}
       <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
         {rows.map((r, i) => (
-          <div key={i} className="p-4 rounded-3xl bg-white border border-slate-200 shadow-sm space-y-1" title={r.hint}>
+          <div key={i} className="p-4 rounded-3xl bg-card border border-border shadow-sm space-y-1" title={r.hint}>
             <p className="text-[9px] font-black uppercase tracking-widest text-slate-400">{r.label}</p>
             <p className={`text-xl font-black ${r.accent}`}>{fmt(r.value)}</p>
             {perHab(r.hab) && <p className="text-[10px] font-bold text-slate-400">{perHab(r.hab)}</p>}
-            {r.note && <p className="mt-1.5 text-[10px] leading-snug text-slate-500 italic">{r.note}</p>}
+            {r.note && <p className="mt-1.5 text-[10px] leading-snug text-muted-foreground italic">{r.note}</p>}
           </div>
         ))}
       </div>
@@ -85,9 +85,9 @@ export default function LocalFinancesSection({ finances, label }: { finances: Lo
           </p>
           <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
             {social.map((r, i) => (
-              <div key={i} className="p-4 rounded-3xl bg-slate-50 border border-slate-100 space-y-1" title={r.hint}>
+              <div key={i} className="p-4 rounded-3xl bg-muted border border-border space-y-1" title={r.hint}>
                 <p className="text-[9px] font-black uppercase tracking-widest text-slate-400">{r.label}</p>
-                <p className="text-lg font-black text-slate-900">{fmt(r.value)}</p>
+                <p className="text-lg font-black text-foreground">{fmt(r.value)}</p>
                 {perHab(r.hab) && <p className="text-[10px] font-bold text-slate-400">{perHab(r.hab)}</p>}
               </div>
             ))}
@@ -95,12 +95,12 @@ export default function LocalFinancesSection({ finances, label }: { finances: Lo
         </div>
       )}
       {/* Aide à la lecture, directement sur la fiche (demandé) : que signifient ces chiffres ? */}
-      <details className="group rounded-2xl border border-slate-100 bg-slate-50/60 p-3">
-        <summary className="flex cursor-pointer list-none items-center gap-2 text-[11px] font-black uppercase tracking-widest text-slate-500">
+      <details className="group rounded-2xl border border-border bg-slate-50/60 p-3">
+        <summary className="flex cursor-pointer list-none items-center gap-2 text-[11px] font-black uppercase tracking-widest text-muted-foreground">
           <HelpCircle size={13} className="text-sky-500" /> Comment lire ces chiffres ?
           <span className="ml-auto text-sky-500 transition-transform group-open:rotate-45 text-base leading-none">+</span>
         </summary>
-        <ul className="mt-2 space-y-1.5 text-[12px] leading-relaxed text-slate-600">
+        <ul className="mt-2 space-y-1.5 text-[12px] leading-relaxed text-muted-foreground">
           <li><strong>Recettes / dépenses de fonctionnement</strong> : ce que la collectivité encaisse et dépense pour son activité courante (salaires, services…).</li>
           <li><strong>Épargne brute</strong> : recettes − dépenses de fonctionnement. C'est ce qui reste pour investir et rembourser la dette. Plus elle est élevée, plus la collectivité a de marge.</li>
           <li><strong>Dépenses d'investissement</strong> : les dépenses durables (travaux, équipements, bâtiments).</li>

@@ -28,7 +28,7 @@ const NUM_RE = /(\d+(?:[.,]\d+)?\s?%|\d[\d .]*\s?(?:â‚¬|milliards?|millions?|Mdâ
 function NumHighlight({ text }: { text: string }) {
   const parts = text.split(NUM_RE);
   return <>{parts.map((p, i) => i % 2 === 1
-    ? <span key={i} className="font-bold text-slate-900 dark:text-white underline decoration-sky-500 decoration-[3px] underline-offset-2">{p}</span>
+    ? <span key={i} className="font-bold text-foreground dark:text-white underline decoration-sky-500 decoration-[3px] underline-offset-2">{p}</span>
     : <span key={i}>{p}</span>)}</>;
 }
 
@@ -54,7 +54,7 @@ function PointsList({ points, sectionKey, recentYear }: { points: string[]; sect
         return (
           <li key={i} className={recent ? "marker:text-yellow-500" : ""}>
             {recent
-              ? <mark className="rounded bg-yellow-200 px-1 py-0.5 font-medium text-slate-900 dark:bg-yellow-400/30 dark:text-yellow-50"><NumHighlight text={p} /></mark>
+              ? <mark className="rounded bg-yellow-200 px-1 py-0.5 font-medium text-foreground dark:bg-yellow-400/30 dark:text-yellow-50"><NumHighlight text={p} /></mark>
               : <NumHighlight text={p} />}
           </li>
         );
@@ -81,7 +81,7 @@ export default function StructuredBio({ bio, fallbackText }: { bio: any; fallbac
             const isOpen = open.has(key);
             const bar = color.replace(/text-/g, "bg-").split(" ")[0];
             return (
-              <div key={key} className="overflow-hidden rounded-2xl border border-slate-100 bg-slate-50/60 dark:border-slate-800 dark:bg-slate-800/40">
+              <div key={key} className="overflow-hidden rounded-2xl border border-border bg-slate-50/60 dark:border-slate-800 dark:bg-slate-800/40">
                 <button onClick={() => toggle(key)} className="flex w-full items-center justify-between gap-3 p-4 text-left" aria-expanded={isOpen}>
                   <span className="flex items-center gap-2.5 min-w-0">
                     <span className={`h-5 w-1 shrink-0 rounded-full ${bar}`} />
@@ -101,7 +101,7 @@ export default function StructuredBio({ bio, fallbackText }: { bio: any; fallbac
           {sections.map(({ key, label, color, points }) => {
             const wide = key === "parcours" || key === "chronologie" || key === "realisations" ? "sm:col-span-2" : "";
             return (
-              <div key={key} className={`rounded-3xl border border-slate-100 dark:border-slate-800 bg-slate-50/60 dark:bg-slate-800/40 p-5 ${wide}`}>
+              <div key={key} className={`rounded-3xl border border-border dark:border-slate-800 bg-slate-50/60 dark:bg-slate-800/40 p-5 ${wide}`}>
                 <h3 className={`font-staatliches text-2xl uppercase leading-none ${color}`}>{label}</h3>
                 <div className={`mb-3 mt-1.5 h-1 w-12 rounded-full ${color.replace(/text-/g, "bg-").split(" ")[0]}`} />
                 <PointsList points={points} sectionKey={key} recentYear={recentYear} />

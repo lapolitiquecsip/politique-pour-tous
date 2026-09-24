@@ -109,7 +109,7 @@ export default function LawsGrid({ onSelectLaw, categoryFilter }: { onSelectLaw?
           placeholder="Rechercher un projet ou une proposition de loi..."
           value={search}
           onChange={(e) => setSearch(e.target.value)}
-          className="w-full pl-14 pr-8 py-5 rounded-[2rem] bg-white border border-slate-200 shadow-sm focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all outline-none text-slate-900 font-medium"
+          className="w-full pl-14 pr-8 py-5 rounded-[2rem] bg-card border border-border shadow-sm focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all outline-none text-foreground font-medium"
         />
       </div>
 
@@ -128,11 +128,11 @@ export default function LawsGrid({ onSelectLaw, categoryFilter }: { onSelectLaw?
                 initial={{ opacity: 0, y: 20 }}
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ delay: index * 0.05 }}
-                className="group bg-white p-8 rounded-[2.5rem] border border-slate-200 shadow-sm hover:shadow-xl transition-all duration-500 flex flex-col justify-between"
+                className="group bg-card p-8 rounded-[2.5rem] border border-border shadow-sm hover:shadow-xl transition-all duration-500 flex flex-col justify-between"
               >
                 <div>
                   <div className="flex items-start justify-between mb-6">
-                    <span className="px-4 py-2 bg-slate-50 text-slate-600 rounded-full text-xs font-black uppercase tracking-widest border border-slate-200">
+                    <span className="px-4 py-2 bg-muted text-muted-foreground rounded-full text-xs font-black uppercase tracking-widest border border-border">
                       {law.category}
                     </span>
                     {law.status && (
@@ -142,11 +142,11 @@ export default function LawsGrid({ onSelectLaw, categoryFilter }: { onSelectLaw?
                     )}
                   </div>
                   
-                  <h3 className="text-xl md:text-2xl font-bold text-slate-900 mb-4 leading-tight group-hover:text-blue-600 transition-colors">
+                  <h3 className="text-xl md:text-2xl font-bold text-foreground mb-4 leading-tight group-hover:text-blue-600 transition-colors">
                     {law.title}
                   </h3>
                   
-                  <p className="text-slate-600 text-sm leading-relaxed mb-6 line-clamp-3">
+                  <p className="text-muted-foreground text-sm leading-relaxed mb-6 line-clamp-3">
                     {law.summary}
                   </p>
                 </div>
@@ -154,8 +154,8 @@ export default function LawsGrid({ onSelectLaw, categoryFilter }: { onSelectLaw?
                 {(() => {
                   const deputy = findDeputy(law.author);
                   const content = (
-                    <div className={`flex items-center gap-4 p-4 rounded-2xl mb-6 ${deputy ? 'bg-blue-50/50 group-hover:bg-blue-50 transition-colors' : 'bg-slate-50'}`}>
-                      <div className={`w-10 h-10 rounded-full flex items-center justify-center shrink-0 overflow-hidden ${deputy ? 'bg-blue-100 text-blue-600' : 'bg-slate-200 text-slate-500'}`}>
+                    <div className={`flex items-center gap-4 p-4 rounded-2xl mb-6 ${deputy ? 'bg-blue-50/50 group-hover:bg-blue-50 transition-colors' : 'bg-muted'}`}>
+                      <div className={`w-10 h-10 rounded-full flex items-center justify-center shrink-0 overflow-hidden ${deputy ? 'bg-blue-100 text-blue-600' : 'bg-slate-200 text-muted-foreground'}`}>
                         {deputy ? (
                           <img 
                             src={deputy.photo_url || deputy.image_url} 
@@ -188,14 +188,14 @@ export default function LawsGrid({ onSelectLaw, categoryFilter }: { onSelectLaw?
                   ) : content;
                 })()}
 
-                <div className="flex items-center justify-between pt-6 border-t border-slate-100 mt-auto">
+                <div className="flex items-center justify-between pt-6 border-t border-border mt-auto">
                   <div className="flex items-center gap-2 text-slate-400 text-xs">
                     <Calendar size={14} />
                     <span>{law.context?.replace(/\[.*?\]\s*/, "") || "Dossier en cours"}</span>
                   </div>
                   <button 
                     onClick={() => onSelectLaw ? onSelectLaw(law) : null}
-                    className="flex items-center gap-2 text-xs font-black uppercase tracking-widest text-slate-900 hover:text-blue-600 transition-colors"
+                    className="flex items-center gap-2 text-xs font-black uppercase tracking-widest text-foreground hover:text-blue-600 transition-colors"
                   >
                     Détails du dossier <ChevronRight size={14} />
                   </button>
@@ -213,7 +213,7 @@ export default function LawsGrid({ onSelectLaw, categoryFilter }: { onSelectLaw?
                     window.scrollTo({ top: 400, behavior: 'smooth' });
                   }}
                   disabled={currentPage === 1}
-                  className="px-4 py-2 rounded-xl border border-slate-200 bg-white text-slate-700 font-bold disabled:opacity-50 disabled:cursor-not-allowed hover:bg-slate-50 transition-colors"
+                  className="px-4 py-2 rounded-xl border border-border bg-card text-slate-700 font-bold disabled:opacity-50 disabled:cursor-not-allowed hover:bg-muted transition-colors"
                 >
                   Précédent
                 </button>
@@ -229,7 +229,7 @@ export default function LawsGrid({ onSelectLaw, categoryFilter }: { onSelectLaw?
                             setCurrentPage(page);
                             window.scrollTo({ top: 400, behavior: 'smooth' });
                           }}
-                          className={`w-10 h-10 shrink-0 rounded-xl font-bold text-sm transition-colors ${currentPage === page ? 'bg-blue-600 text-white' : 'bg-white border border-slate-200 text-slate-600 hover:bg-slate-50'}`}
+                          className={`w-10 h-10 shrink-0 rounded-xl font-bold text-sm transition-colors ${currentPage === page ? 'bg-blue-600 text-white' : 'bg-card border border-border text-muted-foreground hover:bg-muted'}`}
                         >
                           {page}
                         </button>
@@ -248,7 +248,7 @@ export default function LawsGrid({ onSelectLaw, categoryFilter }: { onSelectLaw?
                     window.scrollTo({ top: 400, behavior: 'smooth' });
                   }}
                   disabled={currentPage === totalPages}
-                  className="px-4 py-2 rounded-xl border border-slate-200 bg-white text-slate-700 font-bold disabled:opacity-50 disabled:cursor-not-allowed hover:bg-slate-50 transition-colors"
+                  className="px-4 py-2 rounded-xl border border-border bg-card text-slate-700 font-bold disabled:opacity-50 disabled:cursor-not-allowed hover:bg-muted transition-colors"
                 >
                   Suivant
                 </button>
@@ -258,10 +258,10 @@ export default function LawsGrid({ onSelectLaw, categoryFilter }: { onSelectLaw?
           )}
         </>
       ) : (
-        <div className="text-center py-20 bg-slate-50 rounded-[3rem] border-2 border-dashed border-slate-200">
+        <div className="text-center py-20 bg-muted rounded-[3rem] border-2 border-dashed border-border">
           <FileText className="mx-auto text-slate-300 w-16 h-16 mb-4" />
-          <h3 className="text-xl font-bold text-slate-900">Aucun dossier trouvé</h3>
-          <p className="text-slate-500">Essayez d'ajuster votre recherche.</p>
+          <h3 className="text-xl font-bold text-foreground">Aucun dossier trouvé</h3>
+          <p className="text-muted-foreground">Essayez d'ajuster votre recherche.</p>
         </div>
       )}
     </div>

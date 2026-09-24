@@ -70,7 +70,7 @@ export default function SenatorClient() {
       {/* Header & Search */}
       <div className="bg-card rounded-3xl p-8 shadow-sm border border-border flex flex-col md:flex-row gap-6 items-end">
         <div className="flex-1 w-full space-y-4">
-          <label className="text-sm font-semibold text-slate-500 flex items-center gap-2">
+          <label className="text-sm font-semibold text-muted-foreground flex items-center gap-2">
             <Search className="w-4 h-4" /> RECHERCHER UN SÉNATEUR
           </label>
           <input
@@ -85,7 +85,7 @@ export default function SenatorClient() {
         <div className="flex gap-2">
            <button 
              onClick={() => setSelectedDept(null)}
-             className={`px-6 py-4 rounded-2xl font-semibold transition-all ${!selectedDept ? 'bg-amber-600 text-white shadow-lg' : 'bg-slate-100 text-slate-600 hover:bg-slate-200'}`}
+             className={`px-6 py-4 rounded-2xl font-semibold transition-all ${!selectedDept ? 'bg-amber-600 text-white shadow-lg' : 'bg-slate-100 text-muted-foreground hover:bg-slate-200'}`}
            >
              Tous
            </button>
@@ -94,7 +94,7 @@ export default function SenatorClient() {
 
       {/* Map Section */}
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 items-start relative">
-        <div className="bg-white rounded-3xl p-6 shadow-sm border border-slate-100 h-full min-h-[500px] relative overflow-hidden">
+        <div className="bg-card rounded-3xl p-6 shadow-sm border border-border h-full min-h-[500px] relative overflow-hidden">
           <div className="flex justify-between items-center mb-6">
             <h2 className="text-xl font-bold flex items-center gap-3">
               <MapIcon className="w-6 h-6 text-amber-600" />
@@ -122,8 +122,8 @@ export default function SenatorClient() {
                 <div className="bg-amber-600 p-4 rounded-full shadow-2xl mb-4">
                     <Lock className="w-8 h-8 text-white" />
                 </div>
-                <h3 className="text-2xl font-bold text-slate-900 dark:text-white mb-2">Carte des Sénateurs</h3>
-                <p className="text-slate-600 dark:text-slate-300 max-w-xs mb-6">
+                <h3 className="text-2xl font-bold text-foreground dark:text-white mb-2">Carte des Sénateurs</h3>
+                <p className="text-muted-foreground dark:text-slate-300 max-w-xs mb-6">
                     Connectez-vous à votre compte <strong>Premium</strong> pour accéder à la carte interactive du Sénat.
                 </p>
                 <AwardBadge

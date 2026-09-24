@@ -33,7 +33,7 @@ export default function ContactPage() {
   };
 
   return (
-    <div className="min-h-screen bg-white">
+    <div className="min-h-screen bg-card">
       {/* ── HEADER IMMERSIF ── */}
       <section className="relative bg-slate-950 py-24 md:py-32 overflow-hidden">
         <div className="absolute inset-0 bg-[url('https://www.elysee.fr/theme/front/dist/assets/images/elysee-social.jpg')] bg-cover bg-center opacity-10 saturate-0 scale-110" />
@@ -62,7 +62,7 @@ export default function ContactPage() {
       <section className="container mx-auto px-6 max-w-4xl -mt-16 pb-32 relative z-20">
         <div className="flex justify-center">
           {/* Main Form Card */}
-          <div className="w-full bg-white rounded-[3.5rem] p-8 md:p-16 border border-slate-200 shadow-2xl overflow-hidden relative">
+          <div className="w-full bg-card rounded-[3.5rem] p-8 md:p-16 border border-border shadow-2xl overflow-hidden relative">
             <AnimatePresence mode="wait">
               {!isSubmitted ? (
                 <motion.form 
@@ -82,7 +82,7 @@ export default function ContactPage() {
                           required
                           type="text"
                           placeholder="Jean Dupont"
-                          className="w-full pl-16 pr-8 py-5 bg-slate-50 border-none rounded-2xl focus:ring-2 focus:ring-red-500 transition-all font-bold text-slate-900"
+                          className="w-full pl-16 pr-8 py-5 bg-muted border-none rounded-2xl focus:ring-2 focus:ring-red-500 transition-all font-bold text-foreground"
                           value={formData.name}
                           onChange={(e) => setFormData({...formData, name: e.target.value})}
                         />
@@ -96,7 +96,7 @@ export default function ContactPage() {
                           required
                           type="email"
                           placeholder="jean@exemple.fr"
-                          className="w-full pl-16 pr-8 py-5 bg-slate-50 border-none rounded-2xl focus:ring-2 focus:ring-red-500 transition-all font-bold text-slate-900"
+                          className="w-full pl-16 pr-8 py-5 bg-muted border-none rounded-2xl focus:ring-2 focus:ring-red-500 transition-all font-bold text-foreground"
                           value={formData.email}
                           onChange={(e) => setFormData({...formData, email: e.target.value})}
                         />
@@ -107,7 +107,7 @@ export default function ContactPage() {
                   <div className="space-y-2">
                     <label className="text-xs font-black uppercase tracking-widest text-slate-400 pl-4">Objet du message</label>
                     <select 
-                      className="w-full px-8 py-5 bg-slate-50 border-none rounded-2xl focus:ring-2 focus:ring-red-500 transition-all font-bold text-slate-900 appearance-none"
+                      className="w-full px-8 py-5 bg-muted border-none rounded-2xl focus:ring-2 focus:ring-red-500 transition-all font-bold text-foreground appearance-none"
                       value={formData.subject}
                       onChange={(e) => setFormData({...formData, subject: e.target.value})}
                     >
@@ -124,7 +124,7 @@ export default function ContactPage() {
                       required
                       placeholder="Comment pouvons-nous vous aider ?"
                       rows={5}
-                      className="w-full px-8 py-6 bg-slate-50 border-none rounded-[2rem] focus:ring-2 focus:ring-red-500 transition-all font-bold text-slate-900"
+                      className="w-full px-8 py-6 bg-muted border-none rounded-[2rem] focus:ring-2 focus:ring-red-500 transition-all font-bold text-foreground"
                       value={formData.message}
                       onChange={(e) => setFormData({...formData, message: e.target.value})}
                     />
@@ -160,7 +160,7 @@ export default function ContactPage() {
                     <CheckCircle2 className="w-12 h-12" />
                   </div>
                   <h2 className="text-4xl font-black text-slate-950 uppercase tracking-tighter mb-4">Message Envoyé !</h2>
-                  <p className="text-slate-500 font-medium mb-12 max-w-sm">
+                  <p className="text-muted-foreground font-medium mb-12 max-w-sm">
                     Votre demande a été transmise avec succès. Notre équipe reviendra vers vous sous peu.
                   </p>
                   <button 

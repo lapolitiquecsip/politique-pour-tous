@@ -36,7 +36,7 @@ function MeetingCard({ m, accent }: { m: CommissionMeeting; accent: typeof ACCEN
     : extractPeople(decode(m.title || ""));
 
   return (
-    <div className={`overflow-hidden rounded-3xl border border-slate-200 bg-white transition-all ${accent.ring} hover:shadow-lg dark:border-slate-800 dark:bg-slate-900`}>
+    <div className={`overflow-hidden rounded-3xl border border-border bg-card transition-all ${accent.ring} hover:shadow-lg dark:border-slate-800 dark:bg-slate-900`}>
       <button onClick={() => setOpen(o => !o)} className="flex w-full items-start gap-4 p-5 text-left" aria-expanded={open}>
         <span className={`flex h-11 w-11 shrink-0 items-center justify-center rounded-2xl ${accent.bg} ${accent.text}`}>
           <Mic size={18} />
@@ -45,11 +45,11 @@ function MeetingCard({ m, accent }: { m: CommissionMeeting; accent: typeof ACCEN
           <p className={`flex flex-wrap items-center gap-x-2 text-[10px] font-black uppercase tracking-widest ${accent.text}`}>
             <span>{fmtMeetingDate(m.meeting_date)}</span>
             <span className="text-slate-300">·</span>
-            <span className="text-slate-500">{commission}</span>
+            <span className="text-muted-foreground">{commission}</span>
           </p>
-          <p className="mt-1 text-sm font-bold leading-snug text-slate-900 dark:text-white line-clamp-2">{title}</p>
+          <p className="mt-1 text-sm font-bold leading-snug text-foreground dark:text-white line-clamp-2">{title}</p>
           {people.length > 0 && (
-            <p className="mt-1.5 flex items-center gap-1.5 text-[11px] font-semibold text-slate-500 dark:text-slate-400">
+            <p className="mt-1.5 flex items-center gap-1.5 text-[11px] font-semibold text-muted-foreground dark:text-slate-400">
               <Users size={12} className={`shrink-0 ${accent.text}`} />
               <span className="truncate">Avec {people.join(", ")}</span>
             </p>
@@ -59,21 +59,21 @@ function MeetingCard({ m, accent }: { m: CommissionMeeting; accent: typeof ACCEN
       </button>
 
       {open && (
-        <div className="border-t border-slate-100 px-5 py-4 dark:border-slate-800">
+        <div className="border-t border-border px-5 py-4 dark:border-slate-800">
           {/* La carte n'est atteinte que par un abonné Pro : la liste entière est
               derrière la porte, il n'y a plus d'aperçu à flouter. */}
           <Analysis m={m} accent={accent} />
 
-          <div className="mt-5 flex flex-wrap gap-3 border-t border-slate-100 pt-3 dark:border-slate-800">
+          <div className="mt-5 flex flex-wrap gap-3 border-t border-border pt-3 dark:border-slate-800">
             {m.cr_url && (
               <a href={m.cr_url} target="_blank" rel="noopener noreferrer"
-                className={`inline-flex items-center gap-1.5 text-[10px] font-black uppercase tracking-widest text-slate-500 ${accent.hover}`}>
+                className={`inline-flex items-center gap-1.5 text-[10px] font-black uppercase tracking-widest text-muted-foreground ${accent.hover}`}>
                 <ExternalLink size={12} /> Compte rendu officiel
               </a>
             )}
             {m.video_url && (
               <a href={m.video_url} target="_blank" rel="noopener noreferrer"
-                className={`inline-flex items-center gap-1.5 text-[10px] font-black uppercase tracking-widest text-slate-500 ${accent.hover}`}>
+                className={`inline-flex items-center gap-1.5 text-[10px] font-black uppercase tracking-widest text-muted-foreground ${accent.hover}`}>
                 <ExternalLink size={12} /> Vidéo de la réunion
               </a>
             )}
@@ -176,19 +176,19 @@ export default function CommissionTracker({ chamber, chamberLabel, accent = "eme
         </span>
         <div className="min-w-0 flex-1">
           <div className="flex flex-wrap items-center gap-2">
-            <h3 className="font-staatliches text-3xl uppercase tracking-tight text-slate-900 dark:text-white">
+            <h3 className="font-staatliches text-3xl uppercase tracking-tight text-foreground dark:text-white">
               Suivi des <span className={a.text}>commissions</span>
             </h3>
             <span className="rounded-full bg-gradient-to-r from-fuchsia-500 to-purple-600 px-2.5 py-1 text-[9px] font-black uppercase tracking-widest text-white shadow">Pro</span>
           </div>
-          <p className="mt-0.5 text-sm text-slate-500">
+          <p className="mt-0.5 text-sm text-muted-foreground">
             Ce qui s&apos;est dit dans chaque commission {chamberLabel === "Sénat" ? "du" : "de l'"}{chamberLabel}, réunion par réunion.
             {total > 0 && <> {total.toLocaleString("fr-FR")} réunions indexées.</>}
           </p>
         </div>
         {isPro && meetings?.length ? (
           <button onClick={exportCsv}
-            className="inline-flex shrink-0 items-center gap-1.5 rounded-xl border border-slate-200 px-3.5 py-2 text-[10px] font-black uppercase tracking-widest text-slate-600 transition hover:border-slate-400 dark:border-slate-700 dark:text-slate-300">
+            className="inline-flex shrink-0 items-center gap-1.5 rounded-xl border border-border px-3.5 py-2 text-[10px] font-black uppercase tracking-widest text-muted-foreground transition hover:border-slate-400 dark:border-slate-700 dark:text-slate-300">
             <Download size={13} /> Export CSV
           </button>
         ) : null}
@@ -224,7 +224,7 @@ export default function CommissionTracker({ chamber, chamberLabel, accent = "eme
           value={search}
           onChange={e => setSearch(e.target.value)}
           placeholder="Chercher un sujet, une personne auditionnée, un chiffre…"
-          className="w-full rounded-2xl border border-slate-200 bg-white py-3 pl-11 pr-10 text-sm text-slate-900 outline-none transition focus:border-slate-400 dark:border-slate-800 dark:bg-slate-900 dark:text-white"
+          className="w-full rounded-2xl border border-border bg-card py-3 pl-11 pr-10 text-sm text-foreground outline-none transition focus:border-slate-400 dark:border-slate-800 dark:bg-slate-900 dark:text-white"
         />
         {search && (
           <button onClick={() => setSearch("")} aria-label="Effacer la recherche"
@@ -238,13 +238,13 @@ export default function CommissionTracker({ chamber, chamberLabel, accent = "eme
       {commissions.length > 0 && (
         <div className="mb-5 flex gap-2 overflow-x-auto pb-1 -mx-4 px-4 [scrollbar-width:none] [&::-webkit-scrollbar]:hidden sm:mx-0 sm:flex-wrap sm:overflow-visible sm:px-0">
           <button onClick={() => setSelected(null)}
-            className={`shrink-0 rounded-full px-3.5 py-1.5 text-[11px] font-black uppercase tracking-wider transition ${selected === null ? a.chip : "bg-slate-100 text-slate-600 hover:bg-slate-200 dark:bg-slate-800 dark:text-slate-300"}`}>
+            className={`shrink-0 rounded-full px-3.5 py-1.5 text-[11px] font-black uppercase tracking-wider transition ${selected === null ? a.chip : "bg-slate-100 text-muted-foreground hover:bg-slate-200 dark:bg-slate-800 dark:text-slate-300"}`}>
             Toutes
           </button>
           {commissions.slice(0, 10).map(c => (
             <button key={c.name} onClick={() => setSelected(c.name === selected ? null : c.name)}
               title={decode(c.name)}
-              className={`shrink-0 whitespace-nowrap rounded-full px-3.5 py-1.5 text-[11px] font-black uppercase tracking-wider transition ${selected === c.name ? a.chip : "bg-slate-100 text-slate-600 hover:bg-slate-200 dark:bg-slate-800 dark:text-slate-300"}`}>
+              className={`shrink-0 whitespace-nowrap rounded-full px-3.5 py-1.5 text-[11px] font-black uppercase tracking-wider transition ${selected === c.name ? a.chip : "bg-slate-100 text-muted-foreground hover:bg-slate-200 dark:bg-slate-800 dark:text-slate-300"}`}>
               {shortCommission(c.name)} <span className="opacity-50">{c.count}</span>
             </button>
           ))}
@@ -255,9 +255,9 @@ export default function CommissionTracker({ chamber, chamberLabel, accent = "eme
       {meetings === null ? (
         <div className="flex justify-center py-10"><Loader2 className={`animate-spin ${a.text}`} /></div>
       ) : meetings.length === 0 ? (
-        <div className="rounded-3xl border border-dashed border-slate-200 py-12 text-center dark:border-slate-800">
+        <div className="rounded-3xl border border-dashed border-border py-12 text-center dark:border-slate-800">
           <CalendarDays size={28} className="mx-auto mb-3 text-slate-300" />
-          <p className="text-sm font-bold text-slate-500">
+          <p className="text-sm font-bold text-muted-foreground">
             {debounced ? `Aucune réunion ne correspond à « ${debounced} ».` : "Aucune réunion indexée pour l'instant."}
           </p>
           {!debounced && (
@@ -276,7 +276,7 @@ export default function CommissionTracker({ chamber, chamberLabel, accent = "eme
           {!exhausted && (
             <div className="mt-6 flex justify-center">
               <button onClick={loadMore} disabled={loadingMore}
-                className="inline-flex items-center gap-2 rounded-2xl border border-slate-200 px-6 py-3 text-[11px] font-black uppercase tracking-widest text-slate-600 transition hover:border-slate-400 disabled:opacity-50 dark:border-slate-700 dark:text-slate-300">
+                className="inline-flex items-center gap-2 rounded-2xl border border-border px-6 py-3 text-[11px] font-black uppercase tracking-widest text-muted-foreground transition hover:border-slate-400 disabled:opacity-50 dark:border-slate-700 dark:text-slate-300">
                 {loadingMore ? <Loader2 size={14} className="animate-spin" /> : <ChevronDown size={14} />}
                 Charger plus de réunions
               </button>

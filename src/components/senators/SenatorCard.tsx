@@ -43,7 +43,7 @@ export const SenatorCard = memo(function SenatorCard({
 
   return (
     <div 
-      className={`bg-white border border-slate-200 shadow-sm rounded-2xl p-6 flex flex-col items-center transition-all text-center relative group ${
+      className={`bg-card border border-border shadow-sm rounded-2xl p-6 flex flex-col items-center transition-all text-center relative group ${
         isBlurred ? "pointer-events-none" : "hover:shadow-lg hover:border-slate-300 cursor-pointer"
       }`}
     >
@@ -84,18 +84,18 @@ function SenatorContent({ senator, isBlurred, imgError, setImgError, initials, c
             <img
               src={senator.photo_url}
               alt={senator.last_name}
-              className="w-24 h-24 rounded-full object-cover object-top border-[3px] border-slate-200 shadow-md transform group-hover/photo:scale-110 transition-transform duration-500"
+              className="w-24 h-24 rounded-full object-cover object-top border-[3px] border-border shadow-md transform group-hover/photo:scale-110 transition-transform duration-500"
               onError={() => setImgError(true)}
             />
           ) : (
-            <div className="w-24 h-24 rounded-full bg-gradient-to-br from-slate-400 to-slate-600 border-[3px] border-slate-200 shadow-md flex items-center justify-center text-white text-2xl font-black">
+            <div className="w-24 h-24 rounded-full bg-gradient-to-br from-slate-400 to-slate-600 border-[3px] border-border shadow-md flex items-center justify-center text-white text-2xl font-black">
               {initials}
             </div>
           )}
         </div>
       </div>
       
-      <h3 className="text-xl font-bold text-slate-900 mb-2 group-hover:text-amber-700 transition-colors mt-12">
+      <h3 className="text-xl font-bold text-foreground mb-2 group-hover:text-amber-700 transition-colors mt-12">
         {senator.first_name} {senator.last_name}
       </h3>
       
@@ -103,7 +103,7 @@ function SenatorContent({ senator, isBlurred, imgError, setImgError, initials, c
         {getFullPartyName(senator.party)}
       </span>
       
-      <p className="text-slate-500 text-sm">
+      <p className="text-muted-foreground text-sm">
         Sénat • {senator.department}
       </p>
     </div>

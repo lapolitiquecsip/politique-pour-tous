@@ -109,10 +109,10 @@ export default function Senatoriales2026() {
               )}
             </div>
 
-            <h2 className="mt-3 text-2xl md:text-4xl font-staatliches uppercase leading-[1.05] tracking-tight text-slate-900 dark:text-white">
+            <h2 className="mt-3 text-2xl md:text-4xl font-staatliches uppercase leading-[1.05] tracking-tight text-foreground dark:text-white">
               Les départements qui votent le <span className="text-red-600">27 septembre</span>
             </h2>
-            <p className="mt-2 text-sm leading-6 text-slate-600 dark:text-slate-300">
+            <p className="mt-2 text-sm leading-6 text-muted-foreground dark:text-slate-300">
               Le Sénat renouvelle la moitié de ses sièges. Cette fois, c'est la <strong>série 2</strong> :
               une partie des sénateurs actuels sera remplacée par de nouveaux élus.
             </p>
@@ -121,24 +121,24 @@ export default function Senatoriales2026() {
             <div className="mt-4 grid grid-cols-3 gap-2 text-center">
               {[["178", "sièges en jeu"], ["≈ 63", "départements"], ["6 ans", "de mandat"]].map(([n, l]) => (
                 <div key={l} className="rounded-2xl bg-white/70 p-2.5 dark:bg-slate-800/50">
-                  <p className="text-lg font-black text-slate-900 dark:text-white">{n}</p>
-                  <p className="text-[10px] font-bold uppercase tracking-wide text-slate-500">{l}</p>
+                  <p className="text-lg font-black text-foreground dark:text-white">{n}</p>
+                  <p className="text-[10px] font-bold uppercase tracking-wide text-muted-foreground">{l}</p>
                 </div>
               ))}
             </div>
 
             {/* ⭐ Vérificateur : mon département est-il concerné ? */}
             <div className="mt-5">
-              <label className="text-xs font-black uppercase tracking-widest text-slate-500">Votre département vote‑t‑il ?</label>
+              <label className="text-xs font-black uppercase tracking-widest text-muted-foreground">Votre département vote‑t‑il ?</label>
               <div className="mt-2 flex gap-2">
-                <div className="flex flex-1 items-center gap-2 rounded-2xl border border-slate-200 bg-white px-3 dark:border-slate-700 dark:bg-slate-900">
+                <div className="flex flex-1 items-center gap-2 rounded-2xl border border-border bg-card px-3 dark:border-slate-700 dark:bg-slate-900">
                   <MapPin size={16} className="shrink-0 text-slate-400" />
                   <input
                     value={query}
                     onChange={e => { setQuery(e.target.value); setChecked(null); }}
                     onKeyDown={e => { if (e.key === "Enter") check(); }}
                     placeholder="N° ou nom (ex. 33, Gironde)"
-                    className="w-full bg-transparent py-3 text-sm text-slate-900 outline-none placeholder:text-slate-400 dark:text-white [color-scheme:light] dark:[color-scheme:dark]"
+                    className="w-full bg-transparent py-3 text-sm text-foreground outline-none placeholder:text-slate-400 dark:text-white [color-scheme:light] dark:[color-scheme:dark]"
                   />
                 </div>
                 <button onClick={check} className="inline-flex items-center gap-1.5 rounded-2xl bg-slate-950 px-4 text-sm font-black text-white transition hover:bg-red-600 dark:bg-white dark:text-slate-900">
@@ -147,18 +147,18 @@ export default function Senatoriales2026() {
               </div>
 
               {checked && (
-                <div className={`mt-3 flex items-start gap-3 rounded-2xl border p-3.5 ${checked.concerned ? "border-emerald-200 bg-emerald-50 dark:border-emerald-500/30 dark:bg-emerald-500/10" : "border-slate-200 bg-slate-50 dark:border-slate-700 dark:bg-slate-800/50"}`}>
+                <div className={`mt-3 flex items-start gap-3 rounded-2xl border p-3.5 ${checked.concerned ? "border-emerald-200 bg-emerald-50 dark:border-emerald-500/30 dark:bg-emerald-500/10" : "border-border bg-muted dark:border-slate-700 dark:bg-slate-800/50"}`}>
                   {checked.concerned
                     ? <CheckCircle2 className="mt-0.5 shrink-0 text-emerald-600" size={20} />
                     : <XCircle className="mt-0.5 shrink-0 text-slate-400" size={20} />}
                   <div className="text-sm">
-                    <p className="font-black text-slate-900 dark:text-white">{checked.name} ({checked.code})</p>
+                    <p className="font-black text-foreground dark:text-white">{checked.name} ({checked.code})</p>
                     {checked.concerned ? (
                       <p className="text-emerald-700 dark:text-emerald-400">
                         <strong>Concerné</strong> — vos sénateurs sont renouvelés le 27 septembre 2026.
                       </p>
                     ) : (
-                      <p className="text-slate-600 dark:text-slate-400">
+                      <p className="text-muted-foreground dark:text-slate-400">
                         Non concerné cette fois (série 1) — prochain renouvellement en 2029.
                       </p>
                     )}
@@ -204,8 +204,8 @@ export default function Senatoriales2026() {
               })}
             </svg>
             <div className="pointer-events-none absolute bottom-3 left-1/2 flex -translate-x-1/2 items-center gap-3 rounded-full bg-white/85 px-3 py-1.5 text-[10px] font-bold shadow-sm backdrop-blur-sm dark:bg-slate-800/85">
-              <span className="flex items-center gap-1.5 text-slate-600 dark:text-slate-300"><span className="h-2.5 w-2.5 rounded-sm bg-amber-500" /> Vote en 2026</span>
-              <span className="flex items-center gap-1.5 text-slate-500"><span className="h-2.5 w-2.5 rounded-sm bg-slate-200" /> En 2029</span>
+              <span className="flex items-center gap-1.5 text-muted-foreground dark:text-slate-300"><span className="h-2.5 w-2.5 rounded-sm bg-amber-500" /> Vote en 2026</span>
+              <span className="flex items-center gap-1.5 text-muted-foreground"><span className="h-2.5 w-2.5 rounded-sm bg-slate-200" /> En 2029</span>
             </div>
           </div>
         </div>

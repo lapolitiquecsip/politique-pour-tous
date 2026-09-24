@@ -24,8 +24,8 @@ export default function PromiseItem({ promise }: { promise: PromiseData }) {
   });
 
   return (
-    <div className="bg-card border border-slate-200 shadow-sm rounded-[2.5rem] hover:shadow-xl transition-all duration-300 group bg-white relative overflow-hidden flex flex-col">
-      <div className="absolute top-0 right-0 w-32 h-32 bg-slate-50 rounded-bl-full -mr-16 -mt-16 transition-all group-hover:scale-110 pointer-events-none" />
+    <div className="bg-card border border-border shadow-sm rounded-[2.5rem] hover:shadow-xl transition-all duration-300 group bg-card relative overflow-hidden flex flex-col">
+      <div className="absolute top-0 right-0 w-32 h-32 bg-muted rounded-bl-full -mr-16 -mt-16 transition-all group-hover:scale-110 pointer-events-none" />
       
       {/* Upper Content */}
       <div className="p-8 pb-4 relative z-10">
@@ -40,7 +40,7 @@ export default function PromiseItem({ promise }: { promise: PromiseData }) {
                 Déclaration du {dateStr}
               </span>
             </div>
-            <blockquote className="text-3xl md:text-4xl font-staatliches text-slate-900 italic mb-4 leading-tight border-l-4 border-blue-600/30 pl-6 py-2">
+            <blockquote className="text-3xl md:text-4xl font-staatliches text-foreground italic mb-4 leading-tight border-l-4 border-blue-600/30 pl-6 py-2">
               « {promise.citation} »
             </blockquote>
           </div>
@@ -70,7 +70,7 @@ export default function PromiseItem({ promise }: { promise: PromiseData }) {
             className={`inline-flex items-center gap-2 px-5 py-2.5 text-xs font-bold rounded-xl transition-all border ${
               isOpen 
                 ? "bg-blue-50 text-blue-600 border-blue-200" 
-                : "bg-white text-slate-600 border-slate-200 hover:bg-slate-50"
+                : "bg-card text-muted-foreground border-border hover:bg-muted"
             }`}
           >
             {isOpen ? "Fermer l'analyse" : "Consulter le détail"}
@@ -95,7 +95,7 @@ export default function PromiseItem({ promise }: { promise: PromiseData }) {
             transition={{ duration: 0.4, ease: [0.04, 0.62, 0.23, 0.98] }}
             className="overflow-hidden"
           >
-            <div className="px-8 pb-8 pt-4 border-t border-slate-100 bg-slate-50/50">
+            <div className="px-8 pb-8 pt-4 border-t border-border bg-slate-50/50">
               <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
                 {/* 1. Bilan Concret */}
                 <div className="space-y-4">
@@ -105,7 +105,7 @@ export default function PromiseItem({ promise }: { promise: PromiseData }) {
                   </div>
                   <ul className="space-y-3">
                     {promise.actions?.map((action, idx) => (
-                      <li key={idx} className="flex items-start gap-3 text-sm text-slate-600 group/item">
+                      <li key={idx} className="flex items-start gap-3 text-sm text-muted-foreground group/item">
                         <CheckCircle2 className="w-4 h-4 text-slate-300 mt-0.5 group-hover/item:text-blue-500 transition-colors" />
                         <span>{action}</span>
                       </li>
@@ -122,8 +122,8 @@ export default function PromiseItem({ promise }: { promise: PromiseData }) {
                     <AlertCircle className="w-5 h-5" />
                     <h4 className="text-sm font-black uppercase tracking-widest">Justification du Score</h4>
                   </div>
-                  <div className="p-4 bg-white rounded-2xl border border-slate-100 shadow-inner">
-                    <p className="text-sm text-slate-600 leading-relaxed italic">
+                  <div className="p-4 bg-card rounded-2xl border border-border shadow-inner">
+                    <p className="text-sm text-muted-foreground leading-relaxed italic">
                       « {promise.justification || "L'analyse détaillée de cet engagement est en cours de rédaction par nos équipes."} »
                     </p>
                   </div>

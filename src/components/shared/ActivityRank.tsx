@@ -53,10 +53,10 @@ export default function ActivityRank({
   const bottomDecile = rank != null && count != null && rank > count - Math.max(1, Math.ceil(count * 0.1)) && r < 75;
 
   return (
-    <section className="rounded-[2.5rem] border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900 p-8">
+    <section className="rounded-[2.5rem] border border-border dark:border-slate-800 bg-card dark:bg-slate-900 p-8">
       <div className="flex items-center gap-3 mb-4">
         <Activity className="text-sky-600" size={22} />
-        <h2 className="text-3xl font-staatliches uppercase tracking-tight text-slate-900 dark:text-white">
+        <h2 className="text-3xl font-staatliches uppercase tracking-tight text-foreground dark:text-white">
           Présence aux <span className="text-sky-600">votes</span>
         </h2>
       </div>
@@ -72,7 +72,7 @@ export default function ActivityRank({
             )}
           </div>
           {participated != null && total != null && (
-            <p className="mt-2 text-sm text-slate-600 dark:text-slate-300">
+            <p className="mt-2 text-sm text-muted-foreground dark:text-slate-300">
               A pris part à <strong>{participated.toLocaleString("fr-FR")}</strong> des <strong>{total.toLocaleString("fr-FR")}</strong> scrutins.
             </p>
           )}
@@ -95,7 +95,7 @@ export default function ActivityRank({
         )}
         {pct != null && (
           pct >= 50 ? (
-            <span className="inline-flex items-center rounded-full bg-slate-100 dark:bg-slate-800 px-4 py-2 text-sm font-bold text-slate-600 dark:text-slate-300">
+            <span className="inline-flex items-center rounded-full bg-slate-100 dark:bg-slate-800 px-4 py-2 text-sm font-bold text-muted-foreground dark:text-slate-300">
               Plus assidu·e que {pct}% des {peerLabel}
             </span>
           ) : (

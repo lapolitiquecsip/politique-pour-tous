@@ -302,14 +302,14 @@ export default function TerritoryDetailPanel({ territory, onClose, onNavigate }:
                 <button
                   onClick={() => goTo(-1)}
                   aria-label={territory.type === 'region' ? 'Région précédente' : 'Département précédent'}
-                  className="pointer-events-auto absolute left-2 top-1/2 z-[55] flex h-12 w-12 -translate-y-1/2 items-center justify-center rounded-full bg-white/90 text-slate-900 shadow-xl backdrop-blur transition hover:bg-white md:left-6"
+                  className="pointer-events-auto absolute left-2 top-1/2 z-[55] flex h-12 w-12 -translate-y-1/2 items-center justify-center rounded-full bg-white/90 text-foreground shadow-xl backdrop-blur transition hover:bg-card md:left-6"
                 >
                   <ChevronLeft size={26} />
                 </button>
                 <button
                   onClick={() => goTo(1)}
                   aria-label={territory.type === 'region' ? 'Région suivante' : 'Département suivant'}
-                  className="pointer-events-auto absolute right-2 top-1/2 z-[55] flex h-12 w-12 -translate-y-1/2 items-center justify-center rounded-full bg-white/90 text-slate-900 shadow-xl backdrop-blur transition hover:bg-white md:right-6"
+                  className="pointer-events-auto absolute right-2 top-1/2 z-[55] flex h-12 w-12 -translate-y-1/2 items-center justify-center rounded-full bg-white/90 text-foreground shadow-xl backdrop-blur transition hover:bg-card md:right-6"
                 >
                   <ChevronRight size={26} />
                 </button>
@@ -320,7 +320,7 @@ export default function TerritoryDetailPanel({ territory, onClose, onNavigate }:
               animate={{ opacity: 1, scale: 1, y: 0 }}
               exit={{ opacity: 0, scale: 0.9, y: 20 }}
               transition={{ type: "spring", damping: 25, stiffness: 300 }}
-              className="relative w-full max-w-3xl bg-white rounded-[3rem] shadow-2xl pointer-events-auto overflow-hidden max-h-[90vh] flex flex-col"
+              className="relative w-full max-w-3xl bg-card rounded-[3rem] shadow-2xl pointer-events-auto overflow-hidden max-h-[90vh] flex flex-col"
             >
               {/* Header */}
               <div className="relative bg-slate-900 p-8 pb-12 shrink-0 overflow-hidden">
@@ -333,7 +333,7 @@ export default function TerritoryDetailPanel({ territory, onClose, onNavigate }:
                     disabled={loadingSave}
                     className={`w-10 h-10 rounded-full backdrop-blur-md flex items-center justify-center transition-all cursor-pointer ${
                       isSaved 
-                        ? "bg-amber-400 text-slate-900 shadow-lg shadow-amber-400/20" 
+                        ? "bg-amber-400 text-foreground shadow-lg shadow-amber-400/20" 
                         : "bg-white/10 text-white hover:bg-white/20"
                     }`}
                   >
@@ -565,7 +565,7 @@ export default function TerritoryDetailPanel({ territory, onClose, onNavigate }:
                               <div key={`m${i}`} className="space-y-2">
                                 <div className="flex justify-between text-[10px] font-black uppercase tracking-widest text-slate-400">
                                   <span>{m.label}</span>
-                                  <span className="text-slate-900 font-bold">{m.display}</span>
+                                  <span className="text-foreground font-bold">{m.display}</span>
                                 </div>
                                 {m.help && <div className="text-[10px] text-slate-400 font-medium normal-case leading-relaxed -mt-1">{m.help}</div>}
                                 <div className="h-2 w-full bg-slate-200/60 rounded-full overflow-hidden">
@@ -577,7 +577,7 @@ export default function TerritoryDetailPanel({ territory, onClose, onNavigate }:
                               <div key={`e${i}`} className="space-y-2">
                                 <div className="flex justify-between text-[10px] font-black uppercase tracking-widest text-slate-400">
                                   <span>{c.label}</span>
-                                  <span className="text-slate-900 font-bold">{c.display}</span>
+                                  <span className="text-foreground font-bold">{c.display}</span>
                                 </div>
                                 {c.pct != null && (
                                   <div className="h-2 w-full bg-slate-200/60 rounded-full overflow-hidden">
@@ -605,12 +605,12 @@ export default function TerritoryDetailPanel({ territory, onClose, onNavigate }:
                         <div className="space-y-3">
                           {localNews.map((n: any) => (
                             <a key={n.id || n.url} href={n.url || '#'} target="_blank" rel="noopener noreferrer"
-                              className="block rounded-2xl border border-slate-100 bg-slate-50/60 p-4 transition hover:border-amber-300 hover:bg-amber-50/40 group">
+                              className="block rounded-2xl border border-border bg-slate-50/60 p-4 transition hover:border-amber-300 hover:bg-amber-50/40 group">
                               <div className="flex items-start justify-between gap-3">
-                                <p className="font-bold text-slate-900 leading-snug">{n.title}</p>
+                                <p className="font-bold text-foreground leading-snug">{n.title}</p>
                                 <ExternalLink className="mt-0.5 h-4 w-4 shrink-0 text-slate-300 group-hover:text-amber-500 transition-colors" />
                               </div>
-                              {n.summary && <p className="mt-1.5 text-sm leading-6 text-slate-600 [overflow-wrap:anywhere]">{n.summary}</p>}
+                              {n.summary && <p className="mt-1.5 text-sm leading-6 text-muted-foreground [overflow-wrap:anywhere]">{n.summary}</p>}
                               <div className="mt-2 flex items-center gap-2 text-[10px] font-black uppercase tracking-widest text-slate-400">
                                 {n.news_type && <span className="rounded-full bg-amber-100 px-2 py-0.5 text-amber-700">{n.news_type}</span>}
                                 {n.published_at && <span>{new Date(n.published_at).toLocaleDateString('fr-FR', { day: 'numeric', month: 'short', year: 'numeric' })}</span>}
@@ -634,7 +634,7 @@ export default function TerritoryDetailPanel({ territory, onClose, onNavigate }:
                         <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
                           {localDeputies.map((dep) => (
                             <Link key={dep.slug} href={`/deputes/${dep.slug}`}
-                              className="flex items-center gap-3 rounded-2xl border border-slate-100 bg-slate-50/60 p-3 transition hover:border-red-300 hover:bg-red-50/50 group">
+                              className="flex items-center gap-3 rounded-2xl border border-border bg-slate-50/60 p-3 transition hover:border-red-300 hover:bg-red-50/50 group">
                               {(() => {
                                 // Repli : avatar initiales si la photo est absente ou ne charge pas.
                                 const initialsAvatar = `https://ui-avatars.com/api/?name=${encodeURIComponent(`${dep.first_name || ''} ${dep.last_name || ''}`.trim())}&background=ef4444&color=fff&size=128&bold=true`;
@@ -650,8 +650,8 @@ export default function TerritoryDetailPanel({ territory, onClose, onNavigate }:
                                 );
                               })()}
                               <div className="min-w-0">
-                                <p className="font-bold text-slate-900 truncate">{dep.first_name} {dep.last_name}</p>
-                                <p className="text-[11px] font-bold text-slate-500 truncate">{dep.party || '—'}{dep.constituency_number ? ` · ${dep.constituency_number}${dep.constituency_number === 1 ? 'ère' : 'ème'} circ.` : ''}</p>
+                                <p className="font-bold text-foreground truncate">{dep.first_name} {dep.last_name}</p>
+                                <p className="text-[11px] font-bold text-muted-foreground truncate">{dep.party || '—'}{dep.constituency_number ? ` · ${dep.constituency_number}${dep.constituency_number === 1 ? 'ère' : 'ème'} circ.` : ''}</p>
                               </div>
                               <ArrowRight className="ml-auto w-4 h-4 text-slate-300 group-hover:text-red-500 transition-colors" />
                             </Link>
@@ -669,7 +669,7 @@ export default function TerritoryDetailPanel({ territory, onClose, onNavigate }:
                           </div>
                           <h3 className="text-xl font-staatliches uppercase tracking-wide text-blue-600">Finances 2012-2024</h3>
                         </div>
-                        <div className="rounded-[2rem] p-6 md:p-8 border bg-slate-50/60 border-slate-100">
+                        <div className="rounded-[2rem] p-6 md:p-8 border bg-slate-50/60 border-border">
                           <RegionFinancesChart regionCode={territory.id} />
                         </div>
                       </div>
@@ -700,7 +700,7 @@ export default function TerritoryDetailPanel({ territory, onClose, onNavigate }:
                               <div key={i} className="space-y-2">
                                 <div className="flex justify-between text-[10px] font-black uppercase tracking-widest text-slate-400">
                                   <span>{c.label}</span>
-                                  <span className="text-slate-900 font-bold">{c.display}</span>
+                                  <span className="text-foreground font-bold">{c.display}</span>
                                 </div>
                                 {c.pct != null && (
                                   <div className="h-2 w-full bg-slate-200/60 rounded-full overflow-hidden">
@@ -739,7 +739,7 @@ export default function TerritoryDetailPanel({ territory, onClose, onNavigate }:
 
                     {/* Sources (if available) */}
                     {data?.sources && (
-                      <div className="text-center text-[10px] text-slate-400/80 italic pt-6 border-t border-slate-100 mt-6">
+                      <div className="text-center text-[10px] text-slate-400/80 italic pt-6 border-t border-border mt-6">
                         Source(s) de données : {data.sources}
                       </div>
                     )}

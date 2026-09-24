@@ -79,7 +79,7 @@ export default function Header() {
 
   return (
     <>
-    <header className="fixed top-0 left-0 w-full z-40 bg-white/80 backdrop-blur-md border-b border-slate-100">
+    <header className="fixed top-0 left-0 w-full z-40 bg-white/80 backdrop-blur-md border-b border-border">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="flex justify-between items-center h-16">
           
@@ -93,9 +93,9 @@ export default function Header() {
               <Landmark size={20} />
             </div>
             <div className="flex flex-col justify-center">
-              <span className="text-slate-900 font-sans font-black text-[15px] sm:text-[16px] tracking-tight uppercase leading-none">La politique,</span>
+              <span className="text-foreground font-sans font-black text-[15px] sm:text-[16px] tracking-tight uppercase leading-none">La politique,</span>
               <span className="font-sans font-black tracking-tight uppercase leading-none pt-0.5 flex items-center gap-1">
-                <span className="text-slate-900 text-[13px] sm:text-[14px]">c'est</span>
+                <span className="text-foreground text-[13px] sm:text-[14px]">c'est</span>
                 <span className="bg-[#0bb274] text-white px-1.5 py-0.5 rounded-[4px] text-[11px] sm:text-[12px] leading-none">
                   Simple.
                 </span>
@@ -131,7 +131,7 @@ export default function Header() {
             })}
             
             <button onClick={() => setSearchOpen(true)} title="Rechercher (élu, territoire, loi…)" aria-label="Rechercher"
-              className="flex items-center justify-center w-9 h-9 rounded-full border border-slate-200 text-slate-500 hover:border-slate-400 hover:text-slate-900 transition">
+              className="flex items-center justify-center w-9 h-9 rounded-full border border-border text-muted-foreground hover:border-slate-400 hover:text-foreground transition">
               <Search size={18} />
             </button>
 
@@ -176,10 +176,10 @@ export default function Header() {
 
           {/* Mobile : loupe + menu */}
           <div className="lg:hidden flex items-center gap-3">
-            <button className="text-slate-600" onClick={() => setSearchOpen(true)} aria-label="Rechercher">
+            <button className="text-muted-foreground" onClick={() => setSearchOpen(true)} aria-label="Rechercher">
               <Search size={22} />
             </button>
-            <button className="text-slate-600" onClick={() => setIsMenuOpen(!isMenuOpen)}>
+            <button className="text-muted-foreground" onClick={() => setIsMenuOpen(!isMenuOpen)}>
               {isMenuOpen ? <X size={24} /> : <Menu size={24} />}
             </button>
           </div>
@@ -191,7 +191,7 @@ export default function Header() {
         <motion.div
           initial={{ opacity: 0, y: -20 }}
           animate={{ opacity: 1, y: 0 }}
-          className="lg:hidden max-h-[calc(100dvh-4rem)] overflow-y-auto overscroll-contain bg-white border-b border-slate-100 px-4 py-6 space-y-4 shadow-xl"
+          className="lg:hidden max-h-[calc(100dvh-4rem)] overflow-y-auto overscroll-contain bg-card border-b border-border px-4 py-6 space-y-4 shadow-xl"
         >
           {navLinks.map((link) => {
             const Icon = link.icon;

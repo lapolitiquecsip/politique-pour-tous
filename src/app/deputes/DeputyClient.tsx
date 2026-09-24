@@ -118,11 +118,11 @@ export default function DeputyClient({ initialDeputies }: { initialDeputies: Dep
                   </span>
                 )}
                 {searchQuery && (
-                  <span className="inline-flex items-center gap-1.5 px-3 py-1 bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-400 rounded-full text-xs font-bold border border-border">
+                  <span className="inline-flex items-center gap-1.5 px-3 py-1 bg-slate-100 dark:bg-slate-800 text-muted-foreground dark:text-slate-400 rounded-full text-xs font-bold border border-border">
                     Recherche: {searchQuery}
                     <button 
                       onClick={() => setSearchQuery("")}
-                      className="hover:text-slate-900 dark:hover:text-white transition-colors"
+                      className="hover:text-foreground dark:hover:text-white transition-colors"
                     >
                       <X className="w-3 h-3" />
                     </button>
@@ -179,17 +179,17 @@ export default function DeputyClient({ initialDeputies }: { initialDeputies: Dep
                   transition={{ duration: 0.4, type: "spring", bounce: 0.2 }}
                   className="w-full lg:max-w-md shrink-0"
                 >
-                  <div className="bg-white dark:bg-slate-900 border border-border shadow-2xl rounded-3xl overflow-hidden flex flex-col max-h-[600px]">
+                  <div className="bg-card dark:bg-slate-900 border border-border shadow-2xl rounded-3xl overflow-hidden flex flex-col max-h-[600px]">
                     
                     {/* Panel Header */}
-                    <div className="bg-slate-50 dark:bg-slate-800 p-6 border-b border-border">
+                    <div className="bg-muted dark:bg-slate-800 p-6 border-b border-border">
                       <div className="flex items-center justify-between">
                         <div>
-                          <h3 className="text-2xl font-black text-slate-900 dark:text-white flex items-center gap-2">
+                          <h3 className="text-2xl font-black text-foreground dark:text-white flex items-center gap-2">
                             <Landmark className="w-6 h-6 text-red-500" />
                             {getDepartmentName(selectedDepartment)}
                           </h3>
-                          <p className="text-sm font-semibold text-slate-500 mt-1 uppercase tracking-widest">
+                          <p className="text-sm font-semibold text-muted-foreground mt-1 uppercase tracking-widest">
                             {filteredDeputies.length} circonscription{filteredDeputies.length > 1 ? "s" : ""}
                           </p>
                         </div>
@@ -206,7 +206,7 @@ export default function DeputyClient({ initialDeputies }: { initialDeputies: Dep
 
                       {filteredDeputies.length === 0 && (
                         <div className="text-center py-12 px-4">
-                          <p className="text-slate-500 font-medium">Aucun député trouvé pour ce département.</p>
+                          <p className="text-muted-foreground font-medium">Aucun député trouvé pour ce département.</p>
                         </div>
                       )}
                     </div>
@@ -259,7 +259,7 @@ function SidebarDeputyItem({ deputy, router }: { deputy: Deputy; router: any }) 
 
   return (
     <div 
-      className="bg-white dark:bg-slate-900 rounded-2xl p-3 border border-slate-100 dark:border-slate-800 shadow-sm hover:shadow-md transition-all flex items-center gap-4 group"
+      className="bg-card dark:bg-slate-900 rounded-2xl p-3 border border-border dark:border-slate-800 shadow-sm hover:shadow-md transition-all flex items-center gap-4 group"
     >
       <div className="relative shrink-0">
         {!imgError ? (
@@ -267,30 +267,30 @@ function SidebarDeputyItem({ deputy, router }: { deputy: Deputy; router: any }) 
             src={sources[srcIndex]}
             alt={deputy.lastName}
             onError={handleImgError}
-            className="w-14 h-14 rounded-xl object-cover border border-slate-100 dark:border-slate-800 shadow-md"
+            className="w-14 h-14 rounded-xl object-cover border border-border dark:border-slate-800 shadow-md"
           />
         ) : (
           <div className={`w-14 h-14 rounded-xl flex items-center justify-center text-white font-bold shadow-md ${partyColorClass}`}>
             {initials}
           </div>
         )}
-        <div className="absolute -bottom-1 -right-1 w-6 h-6 bg-white dark:bg-slate-800 rounded-lg shadow-sm border border-slate-100 dark:border-slate-700 flex items-center justify-center text-[10px] font-black text-slate-500">
+        <div className="absolute -bottom-1 -right-1 w-6 h-6 bg-card dark:bg-slate-800 rounded-lg shadow-sm border border-border dark:border-slate-700 flex items-center justify-center text-[10px] font-black text-muted-foreground">
           {deputy.constituencyNumber}
         </div>
       </div>
       
       <div className="flex-1 min-w-0">
-        <p className="font-bold text-slate-900 dark:text-white truncate leading-tight">
+        <p className="font-bold text-foreground dark:text-white truncate leading-tight">
           {deputy.firstName} {deputy.lastName}
         </p>
-        <p className="text-xs font-semibold text-slate-500 truncate mt-0.5">
+        <p className="text-xs font-semibold text-muted-foreground truncate mt-0.5">
           {deputy.party}
         </p>
       </div>
 
       <button 
         onClick={() => router.push(`/deputes/${slug}`)}
-        className="w-8 h-8 rounded-full bg-slate-50 dark:bg-slate-800 flex items-center justify-center text-slate-400 hover:text-red-500 hover:bg-red-50 transition-colors shrink-0"
+        className="w-8 h-8 rounded-full bg-muted dark:bg-slate-800 flex items-center justify-center text-slate-400 hover:text-red-500 hover:bg-red-50 transition-colors shrink-0"
       >
         <ChevronRight className="w-4 h-4" />
       </button>

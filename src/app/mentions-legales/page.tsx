@@ -5,7 +5,7 @@ import { Landmark } from "lucide-react";
 
 export default function MentionsLegales() {
   return (
-    <div className="min-h-screen bg-white">
+    <div className="min-h-screen bg-card">
       {/* Header "Poster" Section */}
       <div className="relative bg-slate-950 py-24 md:py-32 overflow-hidden">
         <div className="absolute inset-0 opacity-10">
@@ -39,7 +39,7 @@ export default function MentionsLegales() {
             <p className="leading-relaxed font-medium">
               Le site <strong>La Politique, C’est Simple</strong> est édité par :
             </p>
-            <ul className="list-none space-y-2 mt-4 p-6 bg-slate-50 rounded-2xl border border-slate-100">
+            <ul className="list-none space-y-2 mt-4 p-6 bg-muted rounded-2xl border border-border">
               <li><strong>Raison sociale :</strong> [NOM DE VOTRE ENTREPRISE / VOTRE NOM]</li>
               <li><strong>Forme juridique :</strong> [EX: SAS, Auto-entrepreneur]</li>
               <li><strong>Siège social :</strong> [VOTRE ADRESSE]</li>
@@ -56,7 +56,7 @@ export default function MentionsLegales() {
             <p className="leading-relaxed">
               Le site est hébergé par :
             </p>
-            <ul className="list-none space-y-2 mt-4 p-6 bg-slate-50 rounded-2xl border border-slate-100">
+            <ul className="list-none space-y-2 mt-4 p-6 bg-muted rounded-2xl border border-border">
               <li><strong>Hébergeur :</strong> Vercel Inc.</li>
               <li><strong>Adresse :</strong> 340 S Lemon Ave #4133 Walnut, CA 91789, USA</li>
               <li><strong>Site web :</strong> https://vercel.com</li>
@@ -70,7 +70,7 @@ export default function MentionsLegales() {
             <p className="leading-relaxed">
               L'ensemble de ce site relève de la législation française et internationale sur le droit d'auteur et la propriété intellectuelle. Tous les droits de reproduction sont réservés, y compris pour les documents téléchargeables et les représentations iconographiques et photographiques.
             </p>
-            <p className="mt-4 italic text-slate-500">
+            <p className="mt-4 italic text-muted-foreground">
               La reproduction de tout ou partie de ce site sur un support électronique quel qu'il soit est formellement interdite sauf autorisation expresse du directeur de la publication.
             </p>
           </section>

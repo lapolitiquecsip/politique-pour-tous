@@ -62,7 +62,7 @@ export default function MepsList({ meps: initial }: { meps?: any[] }) {
         <input
           value={q} onChange={e => setQ(e.target.value)}
           placeholder="Rechercher un nom, un parti…"
-          className="w-full rounded-2xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-900 py-3 pl-11 pr-4 text-sm text-slate-900 dark:text-white outline-none focus:border-sky-300"
+          className="w-full rounded-2xl border border-border dark:border-slate-700 bg-card dark:bg-slate-900 py-3 pl-11 pr-4 text-sm text-foreground dark:text-white outline-none focus:border-sky-300"
         />
       </div>
 
@@ -70,7 +70,7 @@ export default function MepsList({ meps: initial }: { meps?: any[] }) {
       <div className="flex flex-wrap gap-2 justify-center">
         <button
           onClick={() => setGroup(null)}
-          className={`rounded-xl border px-3 py-2 text-[10px] font-black uppercase tracking-widest transition ${group === null ? "bg-slate-900 text-white border-slate-900" : "bg-white dark:bg-slate-900 text-slate-500 border-slate-200 dark:border-slate-700"}`}
+          className={`rounded-xl border px-3 py-2 text-[10px] font-black uppercase tracking-widest transition ${group === null ? "bg-slate-900 text-white border-slate-900" : "bg-card dark:bg-slate-900 text-muted-foreground border-border dark:border-slate-700"}`}
         >
           Tous ({meps.length})
         </button>
@@ -79,7 +79,7 @@ export default function MepsList({ meps: initial }: { meps?: any[] }) {
             key={g}
             onClick={() => setGroup(group === g ? null : g)}
             title={grp(g).name}
-            className={`flex items-center gap-1.5 rounded-xl border px-3 py-2 text-[10px] font-black uppercase tracking-widest transition ${group === g ? "text-white border-transparent " + grp(g).clr : "bg-white dark:bg-slate-900 text-slate-500 border-slate-200 dark:border-slate-700"}`}
+            className={`flex items-center gap-1.5 rounded-xl border px-3 py-2 text-[10px] font-black uppercase tracking-widest transition ${group === g ? "text-white border-transparent " + grp(g).clr : "bg-card dark:bg-slate-900 text-muted-foreground border-border dark:border-slate-700"}`}
           >
             <span className={`h-2 w-2 rounded-full ${group === g ? "bg-white/80" : grp(g).clr}`} />
             {g} ({n})
@@ -89,7 +89,7 @@ export default function MepsList({ meps: initial }: { meps?: any[] }) {
 
       {/* Légende des groupes, pour lever l'ambiguïté des sigles. */}
       {group && (
-        <p className="flex items-center justify-center gap-2 text-xs text-slate-500">
+        <p className="flex items-center justify-center gap-2 text-xs text-muted-foreground">
           <Info size={13} /> <strong>{group}</strong> — {grp(group).name}
         </p>
       )}
@@ -103,7 +103,7 @@ export default function MepsList({ meps: initial }: { meps?: any[] }) {
             <Link
               key={m.id}
               href={`/eurodeputes/${m.slug}`}
-              className="group relative flex flex-col items-center rounded-2xl border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900 px-4 pt-14 pb-5 text-center transition hover:shadow-lg hover:border-sky-300"
+              className="group relative flex flex-col items-center rounded-2xl border border-border dark:border-slate-800 bg-card dark:bg-slate-900 px-4 pt-14 pb-5 text-center transition hover:shadow-lg hover:border-sky-300"
             >
               <div className={`absolute top-0 left-0 h-1 w-full rounded-t-2xl ${g.clr} opacity-70`} />
               <div className="absolute -top-9">
@@ -116,8 +116,8 @@ export default function MepsList({ meps: initial }: { meps?: any[] }) {
                   onError={(e) => { (e.currentTarget as HTMLImageElement).src = `https://ui-avatars.com/api/?name=${encodeURIComponent(m.full_name)}&background=0284c7&color=fff&size=160`; }}
                 />
               </div>
-              <p className="text-sm font-bold leading-tight text-slate-900 dark:text-white line-clamp-2 group-hover:text-sky-600 transition-colors">{m.full_name}</p>
-              <p className="mt-1 text-[11px] text-slate-500 line-clamp-1">{m.national_party}</p>
+              <p className="text-sm font-bold leading-tight text-foreground dark:text-white line-clamp-2 group-hover:text-sky-600 transition-colors">{m.full_name}</p>
+              <p className="mt-1 text-[11px] text-muted-foreground line-clamp-1">{m.national_party}</p>
               <span className={`mt-2 inline-flex items-center gap-1 rounded-full px-2 py-0.5 text-[9px] font-black uppercase tracking-widest text-white ${g.clr}`}>
                 {m.ep_group_code}
               </span>

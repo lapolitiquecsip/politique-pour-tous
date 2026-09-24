@@ -19,7 +19,7 @@ export default function EducationLawPage() {
   );
 
   return (
-    <div className="min-h-screen bg-slate-50 pb-24">
+    <div className="min-h-screen bg-muted pb-24">
       {/* HEADER SECTION */}
       <div className="relative pt-32 pb-20 px-4 bg-slate-950 overflow-hidden">
         {/* Background elements */}
@@ -53,31 +53,31 @@ export default function EducationLawPage() {
         
         {/* Key Indicators */}
         <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.6, delay: 0.2 }} className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-12">
-          <div className="bg-white rounded-2xl p-6 shadow-xl shadow-slate-200/50 border border-slate-100 flex items-center gap-4">
+          <div className="bg-card rounded-2xl p-6 shadow-xl shadow-slate-200/50 border border-border flex items-center gap-4">
             <div className="w-12 h-12 rounded-full bg-emerald-100 flex items-center justify-center text-emerald-600">
               <CheckCircle2 className="w-6 h-6" />
             </div>
             <div>
-              <p className="text-sm font-bold text-slate-500 uppercase tracking-wider">Statut</p>
-              <p className="text-lg font-black text-slate-900">En application</p>
+              <p className="text-sm font-bold text-muted-foreground uppercase tracking-wider">Statut</p>
+              <p className="text-lg font-black text-foreground">En application</p>
             </div>
           </div>
-          <div className="bg-white rounded-2xl p-6 shadow-xl shadow-slate-200/50 border border-slate-100 flex items-center gap-4">
+          <div className="bg-card rounded-2xl p-6 shadow-xl shadow-slate-200/50 border border-border flex items-center gap-4">
             <div className="w-12 h-12 rounded-full bg-amber-100 flex items-center justify-center text-amber-600">
               <Calendar className="w-6 h-6" />
             </div>
             <div>
-              <p className="text-sm font-bold text-slate-500 uppercase tracking-wider">Entrée en vigueur</p>
-              <p className="text-lg font-black text-slate-900">Septembre 2026</p>
+              <p className="text-sm font-bold text-muted-foreground uppercase tracking-wider">Entrée en vigueur</p>
+              <p className="text-lg font-black text-foreground">Septembre 2026</p>
             </div>
           </div>
-          <div className="bg-white rounded-2xl p-6 shadow-xl shadow-slate-200/50 border border-slate-100 flex items-center gap-4">
+          <div className="bg-card rounded-2xl p-6 shadow-xl shadow-slate-200/50 border border-border flex items-center gap-4">
             <div className="w-12 h-12 rounded-full bg-blue-100 flex items-center justify-center text-blue-600">
               <BookOpen className="w-6 h-6" />
             </div>
             <div>
-              <p className="text-sm font-bold text-slate-500 uppercase tracking-wider">Concernés</p>
-              <p className="text-lg font-black text-slate-900">12M d'élèves</p>
+              <p className="text-sm font-bold text-muted-foreground uppercase tracking-wider">Concernés</p>
+              <p className="text-lg font-black text-foreground">12M d'élèves</p>
             </div>
           </div>
         </motion.div>
@@ -87,8 +87,8 @@ export default function EducationLawPage() {
           {/* Main Context */}
           <div className="w-full space-y-12">
             
-            <section className="bg-white p-8 md:p-10 rounded-3xl shadow-sm border border-slate-200">
-              <h2 className="text-2xl font-black text-slate-900 mb-6 flex items-center gap-3">
+            <section className="bg-card p-8 md:p-10 rounded-3xl shadow-sm border border-border">
+              <h2 className="text-2xl font-black text-foreground mb-6 flex items-center gap-3">
                 <Sparkles className="w-6 h-6 text-indigo-500" /> Ce que ça change pour vous
               </h2>
               
@@ -98,8 +98,8 @@ export default function EducationLawPage() {
                     <span className="text-indigo-600 font-bold">1</span>
                   </div>
                   <div>
-                    <h3 className="text-lg font-bold text-slate-900 mb-2">Expérimentation de la tenue unique</h3>
-                    <p className="text-slate-600 leading-relaxed">Le port d'une tenue vestimentaire unique devient obligatoire dans 100 collèges pilotes dès la rentrée. L'objectif est de réduire les inégalités sociales et de renforcer la cohésion scolaire. L'État finance à 50% l'achat des trousseaux.</p>
+                    <h3 className="text-lg font-bold text-foreground mb-2">Expérimentation de la tenue unique</h3>
+                    <p className="text-muted-foreground leading-relaxed">Le port d'une tenue vestimentaire unique devient obligatoire dans 100 collèges pilotes dès la rentrée. L'objectif est de réduire les inégalités sociales et de renforcer la cohésion scolaire. L'État finance à 50% l'achat des trousseaux.</p>
                   </div>
                 </div>
                 
@@ -108,8 +108,8 @@ export default function EducationLawPage() {
                     <span className="text-indigo-600 font-bold">2</span>
                   </div>
                   <div>
-                    <h3 className="text-lg font-bold text-slate-900 mb-2">Un Brevet des collèges couperet</h3>
-                    <p className="text-slate-600 leading-relaxed">Le DNB (Diplôme National du Brevet) devient obligatoire pour passer au lycée. Les élèves échouant à l'examen devront intégrer une classe de "prépa-lycée" sur une durée d'un an pour consolider leurs acquis de base.</p>
+                    <h3 className="text-lg font-bold text-foreground mb-2">Un Brevet des collèges couperet</h3>
+                    <p className="text-muted-foreground leading-relaxed">Le DNB (Diplôme National du Brevet) devient obligatoire pour passer au lycée. Les élèves échouant à l'examen devront intégrer une classe de "prépa-lycée" sur une durée d'un an pour consolider leurs acquis de base.</p>
                   </div>
                 </div>
 
@@ -118,8 +118,8 @@ export default function EducationLawPage() {
                     <span className="text-indigo-600 font-bold">3</span>
                   </div>
                   <div>
-                    <h3 className="text-lg font-bold text-slate-900 mb-2">Revalorisation salariale des enseignants</h3>
-                    <p className="text-slate-600 leading-relaxed">Augmentation inconditionnelle de 10% de la rémunération nette pour l'ensemble du corps professoral, couplée à des primes complémentaires pour les remplacements de courte durée (Pacte Enseignant).</p>
+                    <h3 className="text-lg font-bold text-foreground mb-2">Revalorisation salariale des enseignants</h3>
+                    <p className="text-muted-foreground leading-relaxed">Augmentation inconditionnelle de 10% de la rémunération nette pour l'ensemble du corps professoral, couplée à des primes complémentaires pour les remplacements de courte durée (Pacte Enseignant).</p>
                   </div>
                 </div>
               </div>
@@ -154,40 +154,40 @@ export default function EducationLawPage() {
 
           {/* Bottom Feed / Timeline */}
           <div className="w-full space-y-6">
-            <div className="bg-white p-8 md:p-12 rounded-[3.5rem] border border-slate-200 shadow-xl">
-              <h3 className="text-lg font-black text-slate-900 uppercase tracking-widest mb-6 flex items-center gap-2">
+            <div className="bg-card p-8 md:p-12 rounded-[3.5rem] border border-border shadow-xl">
+              <h3 className="text-lg font-black text-foreground uppercase tracking-widest mb-6 flex items-center gap-2">
                 <Calendar className="w-5 h-5 text-indigo-500" /> Calendrier
               </h3>
               
               <div className="space-y-6 relative before:absolute before:inset-0 before:ml-[11px] before:-translate-x-px md:before:mx-auto md:before:translate-x-0 before:h-full before:w-0.5 before:bg-gradient-to-b before:from-transparent before:via-slate-300 before:to-transparent">
                 
                 <div className="relative flex items-center justify-between md:justify-normal md:odd:flex-row-reverse group is-active">
-                  <div className="flex items-center justify-center w-6 h-6 rounded-full border-4 border-white bg-indigo-500 text-slate-500 shadow shrink-0 md:order-1 md:group-odd:-translate-x-1/2 md:group-even:translate-x-1/2 z-10" />
-                  <div className="w-[calc(100%-2.5rem)] md:w-[calc(50%-2.5rem)] p-4 rounded-xl border border-slate-200 bg-white shadow-sm">
+                  <div className="flex items-center justify-center w-6 h-6 rounded-full border-4 border-white bg-indigo-500 text-muted-foreground shadow shrink-0 md:order-1 md:group-odd:-translate-x-1/2 md:group-even:translate-x-1/2 z-10" />
+                  <div className="w-[calc(100%-2.5rem)] md:w-[calc(50%-2.5rem)] p-4 rounded-xl border border-border bg-card shadow-sm">
                     <div className="flex items-center justify-between space-x-2 mb-1">
-                      <div className="font-bold text-slate-900 text-sm">Fév. 2026</div>
+                      <div className="font-bold text-foreground text-sm">Fév. 2026</div>
                     </div>
-                    <div className="text-slate-600 text-xs">Adoption de loi au Parlement</div>
+                    <div className="text-muted-foreground text-xs">Adoption de loi au Parlement</div>
                   </div>
                 </div>
 
                 <div className="relative flex items-center justify-between md:justify-normal md:odd:flex-row-reverse group">
-                  <div className="flex items-center justify-center w-6 h-6 rounded-full border-4 border-white bg-emerald-500 text-slate-500 shadow shrink-0 md:order-1 md:group-odd:-translate-x-1/2 md:group-even:translate-x-1/2 z-10" />
-                  <div className="w-[calc(100%-2.5rem)] md:w-[calc(50%-2.5rem)] p-4 rounded-xl border border-slate-200 bg-white shadow-sm ring-2 ring-emerald-500/20">
+                  <div className="flex items-center justify-center w-6 h-6 rounded-full border-4 border-white bg-emerald-500 text-muted-foreground shadow shrink-0 md:order-1 md:group-odd:-translate-x-1/2 md:group-even:translate-x-1/2 z-10" />
+                  <div className="w-[calc(100%-2.5rem)] md:w-[calc(50%-2.5rem)] p-4 rounded-xl border border-border bg-card shadow-sm ring-2 ring-emerald-500/20">
                     <div className="flex items-center justify-between space-x-2 mb-1">
-                      <div className="font-bold text-slate-900 text-sm">Aujourd'hui</div>
+                      <div className="font-bold text-foreground text-sm">Aujourd'hui</div>
                     </div>
-                    <div className="text-slate-600 text-xs text-emerald-600 font-semibold">Décrets d'application</div>
+                    <div className="text-muted-foreground text-xs text-emerald-600 font-semibold">Décrets d'application</div>
                   </div>
                 </div>
 
                 <div className="relative flex items-center justify-between md:justify-normal md:odd:flex-row-reverse group">
-                  <div className="flex items-center justify-center w-6 h-6 rounded-full border-4 border-white bg-slate-300 text-slate-500 shadow shrink-0 md:order-1 md:group-odd:-translate-x-1/2 md:group-even:translate-x-1/2 z-10" />
-                  <div className="w-[calc(100%-2.5rem)] md:w-[calc(50%-2.5rem)] p-4 rounded-xl border border-slate-200 bg-white shadow-sm opacity-60">
+                  <div className="flex items-center justify-center w-6 h-6 rounded-full border-4 border-white bg-slate-300 text-muted-foreground shadow shrink-0 md:order-1 md:group-odd:-translate-x-1/2 md:group-even:translate-x-1/2 z-10" />
+                  <div className="w-[calc(100%-2.5rem)] md:w-[calc(50%-2.5rem)] p-4 rounded-xl border border-border bg-card shadow-sm opacity-60">
                     <div className="flex items-center justify-between space-x-2 mb-1">
-                      <div className="font-bold text-slate-900 text-sm">Sept. 2026</div>
+                      <div className="font-bold text-foreground text-sm">Sept. 2026</div>
                     </div>
-                    <div className="text-slate-600 text-xs">Entrée en vigueur dans les écoles</div>
+                    <div className="text-muted-foreground text-xs">Entrée en vigueur dans les écoles</div>
                   </div>
                 </div>
 
@@ -202,7 +202,7 @@ export default function EducationLawPage() {
                 <p className="text-amber-50 text-sm leading-relaxed mb-6">
                   Cet exemple de dossier législatif vous est offert. Pour accéder aux autres lois décryptées, souscrivez au Premium.
                 </p>
-                <Link href={getPremiumUrl(userId)} className="block text-center bg-white text-orange-600 font-bold py-3 rounded-xl hover:shadow-lg transition-all w-full">
+                <Link href={getPremiumUrl(userId)} className="block text-center bg-card text-orange-600 font-bold py-3 rounded-xl hover:shadow-lg transition-all w-full">
                   S&apos;abonner (3€/mois)
                 </Link>
               </div>

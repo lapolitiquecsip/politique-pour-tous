@@ -92,7 +92,7 @@ export default function GlobalSearch({ variant = "desktop", onNavigate }: { vari
           onFocus={() => setOpen(true)}
           autoFocus={variant === "mobile"}
           placeholder="Rechercher un élu, un territoire, une loi…"
-          className="w-full rounded-full border border-slate-200 bg-slate-50 py-2.5 pl-10 pr-9 text-sm text-slate-900 outline-none transition focus:border-slate-400 focus:bg-white dark:border-slate-700 dark:bg-slate-800 dark:text-white"
+          className="w-full rounded-full border border-border bg-muted py-2.5 pl-10 pr-9 text-sm text-foreground outline-none transition focus:border-slate-400 focus:bg-card dark:border-slate-700 dark:bg-slate-800 dark:text-white"
         />
         {q && (
           <button onClick={() => { setQ(""); setGroups([]); }} className="absolute right-2.5 top-1/2 -translate-y-1/2 rounded-full p-1 text-slate-400 hover:bg-slate-100 dark:hover:bg-slate-700">
@@ -102,7 +102,7 @@ export default function GlobalSearch({ variant = "desktop", onNavigate }: { vari
       </div>
 
       {open && q.trim().length >= 2 && (
-        <div className="absolute left-0 right-0 z-50 mt-2 max-h-[70vh] overflow-y-auto rounded-2xl border border-slate-200 bg-white p-2 shadow-2xl dark:border-slate-700 dark:bg-slate-900">
+        <div className="absolute left-0 right-0 z-50 mt-2 max-h-[70vh] overflow-y-auto rounded-2xl border border-border bg-card p-2 shadow-2xl dark:border-slate-700 dark:bg-slate-900">
           {loading && total === 0 ? (
             <div className="flex items-center gap-2 px-3 py-6 text-sm text-slate-400"><Loader2 size={16} className="animate-spin" /> Recherche…</div>
           ) : total === 0 ? (
@@ -121,10 +121,10 @@ export default function GlobalSearch({ variant = "desktop", onNavigate }: { vari
                         <img src={it.img} alt="" loading="lazy" className="h-9 w-9 shrink-0 rounded-lg object-cover object-top ring-1 ring-slate-200 dark:ring-slate-700"
                           onError={e => { (e.currentTarget as HTMLImageElement).style.display = "none"; }} />
                       ) : (
-                        <span className="flex h-9 w-9 shrink-0 items-center justify-center rounded-lg bg-slate-100 text-slate-500 dark:bg-slate-800 dark:text-slate-300"><Icon size={15} /></span>
+                        <span className="flex h-9 w-9 shrink-0 items-center justify-center rounded-lg bg-slate-100 text-muted-foreground dark:bg-slate-800 dark:text-slate-300"><Icon size={15} /></span>
                       )}
                       <span className="min-w-0 flex-1">
-                        <span className="block truncate text-sm font-bold text-slate-900 dark:text-white">{it.label}</span>
+                        <span className="block truncate text-sm font-bold text-foreground dark:text-white">{it.label}</span>
                         {it.sub && <span className="block truncate text-[11px] text-slate-400">{it.sub}</span>}
                       </span>
                     </button>

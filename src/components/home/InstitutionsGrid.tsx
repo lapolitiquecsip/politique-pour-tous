@@ -102,7 +102,7 @@ const InstitutionCard = memo(({ inst, index, onClick }: { inst: Institution, ind
         <div className="flex items-center gap-3 mb-3">
 
           <div className="flex items-center gap-2 px-2.5 py-1 bg-red-500 rounded-full shadow-[0_0_15px_rgba(239,68,68,0.4)] animate-pulse">
-            <div className="h-1.5 w-1.5 rounded-full bg-white" />
+            <div className="h-1.5 w-1.5 rounded-full bg-card" />
             <p className="text-white font-black text-[9px] uppercase tracking-widest">En Direct</p>
           </div>
         </div>
@@ -338,7 +338,7 @@ export default function InstitutionsGrid() {
               {/* Bouton Fermer */}
               <button
                 onClick={() => setSelectedInst(null)}
-                className="absolute top-6 right-6 z-50 p-2 rounded-full bg-white/20 text-white md:text-slate-900 md:bg-slate-100 hover:bg-amber-500 hover:text-white transition-all backdrop-blur-md border border-black/5 md:border-slate-200 group"
+                className="absolute top-6 right-6 z-50 p-2 rounded-full bg-white/20 text-white md:text-foreground md:bg-slate-100 hover:bg-amber-500 hover:text-white transition-all backdrop-blur-md border border-black/5 md:border-border group"
               >
                 <X className="w-6 h-6 group-hover:rotate-90 transition-transform" />
               </button>
@@ -376,7 +376,7 @@ export default function InstitutionsGrid() {
                   </div>
                   
                   {(dailySummary || selectedInst.summary) && (
-                    <p className="text-slate-600 dark:text-slate-300 text-sm md:text-base leading-relaxed font-medium italic text-pretty opacity-80">
+                    <p className="text-muted-foreground dark:text-slate-300 text-sm md:text-base leading-relaxed font-medium italic text-pretty opacity-80">
                       &ldquo;{dailySummary || selectedInst.summary}&rdquo;
                     </p>
                   )}
@@ -389,14 +389,14 @@ export default function InstitutionsGrid() {
                       <div className="w-8 h-8 bg-blue-100 dark:bg-blue-900/30 text-blue-600 dark:text-blue-400 rounded-lg flex items-center justify-center">
                         <CalendarDays size={18} />
                       </div>
-                      <p className="text-slate-900 dark:text-white text-sm font-black uppercase tracking-widest">En Direct aujourd'hui</p>
+                      <p className="text-foreground dark:text-white text-sm font-black uppercase tracking-widest">En Direct aujourd'hui</p>
                     </div>
                   </div>
 
                   <div className="grid grid-cols-1 gap-4">
                     {loading ? (
                       Array(3).fill(0).map((_, i) => (
-                        <div key={i} className="h-20 bg-slate-100 dark:bg-slate-800 animate-pulse rounded-2xl border border-slate-200 dark:border-slate-700" />
+                        <div key={i} className="h-20 bg-slate-100 dark:bg-slate-800 animate-pulse rounded-2xl border border-border dark:border-slate-700" />
                       ))
                     ) : events.length > 0 ? (
                       events.map((event, i) => {
@@ -418,11 +418,11 @@ export default function InstitutionsGrid() {
                                <Landmark size={14} />
                             </div>
                             <div className="flex-1">
-                              <span className="text-slate-900 dark:text-white font-bold text-sm leading-tight block mb-1">
+                              <span className="text-foreground dark:text-white font-bold text-sm leading-tight block mb-1">
                                 {displayTitle}
                               </span>
                               {displayDescription && (
-                                <span className="text-slate-500 dark:text-slate-400 text-[11px] font-medium leading-relaxed line-clamp-2">
+                                <span className="text-muted-foreground dark:text-slate-400 text-[11px] font-medium leading-relaxed line-clamp-2">
                                   {displayDescription}
                                 </span>
                               )}
@@ -437,16 +437,16 @@ export default function InstitutionsGrid() {
                         <motion.div
                           initial={{ opacity: 0, y: 10 }}
                           animate={{ opacity: 1, y: 0 }}
-                          className="flex items-center gap-5 p-6 rounded-2xl bg-slate-50 dark:bg-slate-800/50 border border-slate-200 dark:border-slate-700/50"
+                          className="flex items-center gap-5 p-6 rounded-2xl bg-muted dark:bg-slate-800/50 border border-border dark:border-slate-700/50"
                         >
-                          <div className="flex-shrink-0 w-12 h-12 rounded-xl bg-slate-200 dark:bg-slate-800 flex items-center justify-center text-slate-500 dark:text-slate-400">
+                          <div className="flex-shrink-0 w-12 h-12 rounded-xl bg-slate-200 dark:bg-slate-800 flex items-center justify-center text-muted-foreground dark:text-slate-400">
                              <Landmark size={20} />
                           </div>
                           <div className="flex-1">
-                            <p className="text-slate-900 dark:text-white font-bold text-sm">
+                            <p className="text-foreground dark:text-white font-bold text-sm">
                               {selectedInst.id === 'gouvernement' ? "Aucune activité publique prévue" : "Aucune séance prévue aujourd'hui"}
                             </p>
-                            <p className="text-slate-500 dark:text-slate-400 text-xs mt-0.5">
+                            <p className="text-muted-foreground dark:text-slate-400 text-xs mt-0.5">
                               {selectedInst.id === 'gouvernement' 
                                 ? "L'agenda de l'exécutif ne mentionne pas de rendez-vous public pour ce jour." 
                                 : "Le calendrier de l'institution ne prévoit pas d'activité publique ce jour."}
@@ -525,7 +525,7 @@ export default function InstitutionsGrid() {
               {/* Pager mobile : montre l'institution courante (1/3) et rend le swipe évident. */}
               <div className="pointer-events-none absolute bottom-3 left-1/2 z-50 flex -translate-x-1/2 items-center gap-1.5 rounded-full bg-slate-900/70 px-3 py-1.5 backdrop-blur-md md:hidden">
                 {INSTITUTIONS.map(i => (
-                  <span key={i.id} className={`h-1.5 rounded-full transition-all ${i.id === selectedInst.id ? "w-5 bg-white" : "w-1.5 bg-white/40"}`} />
+                  <span key={i.id} className={`h-1.5 rounded-full transition-all ${i.id === selectedInst.id ? "w-5 bg-card" : "w-1.5 bg-white/40"}`} />
                 ))}
               </div>
             </motion.div>
@@ -545,7 +545,7 @@ export default function InstitutionsGrid() {
                     animate={{ scale: 1, y: 0 }}
                     exit={{ scale: 0.9, y: 20 }}
                     onClick={(e) => e.stopPropagation()}
-                    className="bg-white dark:bg-slate-900 w-full max-w-2xl rounded-[2rem] shadow-2xl overflow-hidden border border-slate-200 dark:border-slate-800"
+                    className="bg-card dark:bg-slate-900 w-full max-w-2xl rounded-[2rem] shadow-2xl overflow-hidden border border-border dark:border-slate-800"
                   >
                     <div className="p-8 md:p-12">
                       <div className="flex items-center justify-between mb-8">
@@ -555,20 +555,20 @@ export default function InstitutionsGrid() {
                           </div>
                           <div>
                             <p className="text-[10px] font-black uppercase tracking-widest text-slate-400 dark:text-slate-500">Horaire prévu</p>
-                            <p className="text-slate-900 dark:text-white font-bold">
+                            <p className="text-foreground dark:text-white font-bold">
                               {extractTime(selectedEvent.title) || selectedEvent.time || 'Non spécifié'}
                             </p>
                           </div>
                         </div>
                         <button 
                           onClick={() => setSelectedEvent(null)}
-                          className="w-10 h-10 rounded-full bg-slate-100 dark:bg-slate-800 flex items-center justify-center text-slate-500 dark:text-slate-400 hover:bg-rose-500 hover:text-white transition-all"
+                          className="w-10 h-10 rounded-full bg-slate-100 dark:bg-slate-800 flex items-center justify-center text-muted-foreground dark:text-slate-400 hover:bg-rose-500 hover:text-white transition-all"
                         >
                           <X size={20} />
                         </button>
                       </div>
 
-                      <h4 className="text-2xl md:text-3xl font-bold text-slate-900 dark:text-white mb-6 leading-tight">
+                      <h4 className="text-2xl md:text-3xl font-bold text-foreground dark:text-white mb-6 leading-tight">
                         {cleanTitle(selectedEvent.title)}
                       </h4>
 
@@ -577,7 +577,7 @@ export default function InstitutionsGrid() {
                       <div className="space-y-4 max-h-[40vh] overflow-y-auto pr-4 custom-scrollbar-blue">
                         {selectedEvent.short_summary ? (
                           <div className="mb-6">
-                            <p className="text-slate-900 dark:text-white text-xl font-semibold leading-relaxed italic">
+                            <p className="text-foreground dark:text-white text-xl font-semibold leading-relaxed italic">
                               &ldquo;{selectedEvent.short_summary}&rdquo;
                             </p>
                             
@@ -587,7 +587,7 @@ export default function InstitutionsGrid() {
                                 <ChevronRight size={12} className="group-open:rotate-90 transition-transform" />
                                 Voir le texte original
                               </summary>
-                              <div className="mt-4 p-6 rounded-2xl bg-slate-50 dark:bg-slate-800/50 border border-slate-100 dark:border-slate-800 text-slate-600 dark:text-slate-300 text-sm leading-relaxed whitespace-pre-wrap">
+                              <div className="mt-4 p-6 rounded-2xl bg-muted dark:bg-slate-800/50 border border-border dark:border-slate-800 text-muted-foreground dark:text-slate-300 text-sm leading-relaxed whitespace-pre-wrap">
                                 {cleanDescription(selectedEvent.description) || "Aucune information supplémentaire."}
                               </div>
                             </details>
@@ -595,14 +595,14 @@ export default function InstitutionsGrid() {
                         ) : (
                           <>
                             <p className="text-[10px] font-black uppercase tracking-[0.2em] text-slate-400 dark:text-slate-500 mb-2">Détails de l'événement</p>
-                            <div className="text-slate-600 dark:text-slate-300 text-base leading-relaxed whitespace-pre-wrap">
+                            <div className="text-muted-foreground dark:text-slate-300 text-base leading-relaxed whitespace-pre-wrap">
                               {cleanDescription(selectedEvent.description) || "Aucune description détaillée disponible."}
                             </div>
                           </>
                         )}
                       </div>
 
-                      <div className="mt-10 pt-8 border-t border-slate-100 dark:border-slate-800 flex items-center justify-between gap-4">
+                      <div className="mt-10 pt-8 border-t border-border dark:border-slate-800 flex items-center justify-between gap-4">
                         {/* Lien propre vers la page officielle (quand ce n'est pas l'agenda générique). */}
                         {selectedEvent.source_url && !/\/agenda\/?$/.test(selectedEvent.source_url) ? (
                           <a

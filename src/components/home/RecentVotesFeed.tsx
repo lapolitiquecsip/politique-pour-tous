@@ -47,14 +47,14 @@ export default function RecentVotesFeed() {
           const adopted = isAdopted(v.resultat);
           return (
             <button key={v.id} onClick={() => setOpen(v)}
-              className="group w-[300px] shrink-0 snap-start rounded-[2rem] border border-slate-200 bg-white p-6 text-left shadow-sm transition hover:-translate-y-1 hover:shadow-xl dark:border-slate-800 dark:bg-slate-900">
+              className="group w-[300px] shrink-0 snap-start rounded-[2rem] border border-border bg-card p-6 text-left shadow-sm transition hover:-translate-y-1 hover:shadow-xl dark:border-slate-800 dark:bg-slate-900">
               <div className="flex items-start justify-between gap-3">
                 <span className="text-xs font-bold text-slate-400">{frDate(v.date_scrutin)}</span>
                 <span className={`inline-flex items-center gap-1 rounded-full px-3 py-1 text-[10px] font-black uppercase tracking-widest text-white ${adopted ? "bg-emerald-500" : "bg-rose-500"}`}>
                   {adopted ? <CheckCircle2 size={12} /> : <XCircle size={12} />}{adopted ? "Adopté" : "Rejeté"}
                 </span>
               </div>
-              <h3 className="mt-4 line-clamp-4 text-lg font-bold leading-snug text-slate-900 group-hover:text-red-600 dark:text-white">{cleanTitle(v)}</h3>
+              <h3 className="mt-4 line-clamp-4 text-lg font-bold leading-snug text-foreground group-hover:text-red-600 dark:text-white">{cleanTitle(v)}</h3>
               {v.category && <span className="mt-4 inline-block rounded-full bg-gradient-to-r from-red-600 to-fuchsia-600 px-3 py-1 text-[10px] font-black uppercase tracking-widest text-white">{v.category}</span>}
             </button>
           );
@@ -62,9 +62,9 @@ export default function RecentVotesFeed() {
       </div>
 
       <div className="mt-6 flex items-center justify-center gap-4">
-        <button onClick={() => scroll(-1)} className="flex h-11 w-11 items-center justify-center rounded-full border border-slate-200 bg-white text-slate-600 shadow-sm transition hover:border-red-300 hover:text-red-600 dark:border-slate-700 dark:bg-slate-900"><ChevronLeft /></button>
+        <button onClick={() => scroll(-1)} className="flex h-11 w-11 items-center justify-center rounded-full border border-border bg-card text-muted-foreground shadow-sm transition hover:border-red-300 hover:text-red-600 dark:border-slate-700 dark:bg-slate-900"><ChevronLeft /></button>
         <span className="text-[11px] font-black uppercase tracking-widest text-slate-400">Votes solennels · Assemblée nationale</span>
-        <button onClick={() => scroll(1)} className="flex h-11 w-11 items-center justify-center rounded-full border border-slate-200 bg-white text-slate-600 shadow-sm transition hover:border-red-300 hover:text-red-600 dark:border-slate-700 dark:bg-slate-900"><ChevronRight /></button>
+        <button onClick={() => scroll(1)} className="flex h-11 w-11 items-center justify-center rounded-full border border-border bg-card text-muted-foreground shadow-sm transition hover:border-red-300 hover:text-red-600 dark:border-slate-700 dark:bg-slate-900"><ChevronRight /></button>
       </div>
 
       {/* Décryptage au clic. */}
@@ -72,7 +72,7 @@ export default function RecentVotesFeed() {
         {open && (
           <motion.div className="fixed inset-0 z-[70] flex items-end justify-center bg-slate-950/70 p-0 backdrop-blur-sm sm:items-center sm:p-6"
             initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} onClick={() => setOpen(null)}>
-            <motion.div className="relative flex max-h-[88vh] w-full max-w-2xl flex-col overflow-hidden rounded-t-[2rem] bg-white shadow-2xl dark:bg-slate-900 sm:rounded-[2rem]"
+            <motion.div className="relative flex max-h-[88vh] w-full max-w-2xl flex-col overflow-hidden rounded-t-[2rem] bg-card shadow-2xl dark:bg-slate-900 sm:rounded-[2rem]"
               initial={{ y: 40, opacity: 0 }} animate={{ y: 0, opacity: 1 }} exit={{ y: 40, opacity: 0 }} onClick={e => e.stopPropagation()}>
               <div className={`relative p-6 pr-14 text-white ${isAdopted(open.resultat) ? "bg-gradient-to-br from-emerald-600 to-teal-700" : "bg-gradient-to-br from-rose-600 to-red-700"}`}>
                 <button onClick={() => setOpen(null)} className="absolute right-4 top-4 rounded-full bg-white/20 p-2 transition hover:bg-white/30"><X size={18} /></button>
@@ -92,7 +92,7 @@ export default function RecentVotesFeed() {
                       {open.summary && <div><p className="text-[10px] font-black uppercase tracking-widest text-slate-400">De quoi s'agit-il</p><p className="mt-1 text-[15px] leading-relaxed text-slate-700 dark:text-slate-300">{open.summary}</p></div>}
                       {why && <div className="rounded-2xl bg-red-50/60 p-4 dark:bg-slate-800/60"><p className="text-[10px] font-black uppercase tracking-widest text-red-600">Pourquoi c'est important</p><p className="mt-1 text-[15px] leading-relaxed text-slate-700 dark:text-slate-300">{why}</p></div>}
                       {detailed && detailed !== "Détails supplémentaires non disponibles." && <div><p className="text-[10px] font-black uppercase tracking-widest text-slate-400">En détail</p><p className="mt-1 text-[15px] leading-relaxed text-slate-700 dark:text-slate-300">{detailed}</p></div>}
-                      {!hasContent && <p className="rounded-2xl bg-slate-50 p-4 text-[14px] italic leading-relaxed text-slate-500 dark:bg-slate-800/60">Le décryptage de ce vote est en cours de génération. Revenez bientôt pour l'explication complète.</p>}
+                      {!hasContent && <p className="rounded-2xl bg-muted p-4 text-[14px] italic leading-relaxed text-muted-foreground dark:bg-slate-800/60">Le décryptage de ce vote est en cours de génération. Revenez bientôt pour l'explication complète.</p>}
                     </>
                   );
                 })()}

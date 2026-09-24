@@ -377,25 +377,25 @@ const PM_TIMELINE = [
 function CollapsibleSection({ title, subtitle, icon, color = "from-amber-500 to-orange-500", defaultOpen = false, children }: { title: string; subtitle?: string; icon?: React.ReactNode; color?: string; defaultOpen?: boolean; children: React.ReactNode }) {
   const [open, setOpen] = useState(defaultOpen);
   return (
-    <section className="overflow-hidden rounded-[2rem] border border-slate-200 bg-white">
+    <section className="overflow-hidden rounded-[2rem] border border-border bg-card">
       <button
         onClick={() => setOpen(o => !o)}
-        className="flex w-full items-center justify-between gap-4 p-6 text-left transition-colors hover:bg-slate-50"
+        className="flex w-full items-center justify-between gap-4 p-6 text-left transition-colors hover:bg-muted"
         aria-expanded={open}
       >
         <div className="flex items-center gap-4">
           {icon && <span className={`flex h-12 w-12 shrink-0 items-center justify-center rounded-2xl bg-gradient-to-br ${color} text-white shadow-md`}>{icon}</span>}
           <div>
-            <h2 className="text-2xl font-staatliches uppercase tracking-tight text-slate-900">{title}</h2>
-            {subtitle && <p className="mt-0.5 text-sm text-slate-500">{subtitle}</p>}
+            <h2 className="text-2xl font-staatliches uppercase tracking-tight text-foreground">{title}</h2>
+            {subtitle && <p className="mt-0.5 text-sm text-muted-foreground">{subtitle}</p>}
           </div>
         </div>
-        <span className={`flex h-9 w-9 shrink-0 items-center justify-center rounded-full bg-slate-100 text-slate-500 transition-transform ${open ? "rotate-180" : ""}`}>
+        <span className={`flex h-9 w-9 shrink-0 items-center justify-center rounded-full bg-slate-100 text-muted-foreground transition-transform ${open ? "rotate-180" : ""}`}>
           <ChevronDown size={18} />
         </span>
       </button>
       <motion.div initial={false} animate={{ height: open ? "auto" : 0, opacity: open ? 1 : 0 }} transition={{ duration: 0.25, ease: "circOut" }} className="overflow-hidden">
-        <div className="border-t border-slate-100 p-5 md:p-6">{children}</div>
+        <div className="border-t border-border p-5 md:p-6">{children}</div>
       </motion.div>
     </section>
   );
@@ -495,9 +495,9 @@ export default function ExecutifPage() {
   );
 
   return (
-    <main className="min-h-screen bg-slate-50 pb-20">
+    <main className="min-h-screen bg-muted pb-20">
       {/* 1. HERO SECTION (POSTER IMPACT STYLE) */}
-      <section className="relative pt-32 pb-24 px-4 overflow-hidden bg-white">
+      <section className="relative pt-32 pb-24 px-4 overflow-hidden bg-card">
         <div className="absolute top-0 left-0 w-full h-full opacity-[0.03] pointer-events-none select-none">
           <span className="absolute top-10 left-10 text-[15rem] font-staatliches leading-none rotate-12">GOUVERNEMENT</span>
           <span className="absolute bottom-10 right-10 text-[15rem] font-staatliches leading-none -rotate-12">EXÉCUTIF</span>
@@ -517,11 +517,11 @@ export default function ExecutifPage() {
               <span className="text-xs font-black uppercase tracking-widest text-orange-600">Pouvoir Exécutif</span>
             </div>
 
-            <h1 className="text-6xl md:text-8xl font-staatliches uppercase tracking-tighter leading-none mb-8 text-slate-900">
+            <h1 className="text-6xl md:text-8xl font-staatliches uppercase tracking-tighter leading-none mb-8 text-foreground">
               Le <span className="bg-gradient-to-r from-amber-500 via-orange-500 to-yellow-500 bg-clip-text text-transparent">Gouvernement</span>
             </h1>
             
-            <p className="text-xl md:text-2xl text-slate-500 font-medium italic leading-relaxed max-w-3xl mx-auto">
+            <p className="text-xl md:text-2xl text-muted-foreground font-medium italic leading-relaxed max-w-3xl mx-auto">
               <GlossaryText>
                 Comprendre l'action ministérielle, les budgets alloués et les décisions réglementaires qui façonnent la France au quotidien.
               </GlossaryText>
@@ -568,7 +568,7 @@ export default function ExecutifPage() {
                     placeholder="Rechercher un ministère..."
                     value={search}
                     onChange={(e) => setSearch(e.target.value)}
-                    className="w-full pl-10 pr-4 py-3 rounded-2xl bg-white border border-slate-200 focus:ring-2 focus:ring-blue-500 outline-none transition-all shadow-sm text-sm text-slate-900"
+                    className="w-full pl-10 pr-4 py-3 rounded-2xl bg-card border border-border focus:ring-2 focus:ring-blue-500 outline-none transition-all shadow-sm text-sm text-foreground"
                   />
                 </div>
                 <MinisterStagger items={filteredMinisters} />
@@ -582,7 +582,7 @@ export default function ExecutifPage() {
                   <Link
                     key={pm.slug}
                     href={`/executif/ministre/${pm.slug}`}
-                    className="group flex items-center gap-4 rounded-2xl border border-slate-200 bg-slate-50/60 p-4 transition hover:border-amber-300 hover:bg-amber-50/40"
+                    className="group flex items-center gap-4 rounded-2xl border border-border bg-slate-50/60 p-4 transition hover:border-amber-300 hover:bg-amber-50/40"
                   >
                     <div className="relative h-12 w-12 shrink-0 rounded-full overflow-hidden border-2 border-amber-100 bg-amber-500/10">
                       <MinisterImage
@@ -593,8 +593,8 @@ export default function ExecutifPage() {
                       />
                     </div>
                     <div className="min-w-0">
-                      <p className="font-bold text-slate-900 group-hover:text-amber-600 transition-colors truncate">{pm.name}</p>
-                      <p className="text-[11px] font-bold text-slate-500">{pm.period}</p>
+                      <p className="font-bold text-foreground group-hover:text-amber-600 transition-colors truncate">{pm.name}</p>
+                      <p className="text-[11px] font-bold text-muted-foreground">{pm.period}</p>
                     </div>
                     <ChevronRight size={16} className="ml-auto text-slate-300 group-hover:text-amber-500 transition-colors" />
                   </Link>
@@ -632,11 +632,11 @@ export default function ExecutifPage() {
             <motion.div 
               initial={{ opacity: 0, x: 20 }}
               whileInView={{ opacity: 1, x: 0 }}
-              className="bg-white p-8 rounded-[2.5rem] border border-slate-200 shadow-xl shadow-slate-200/20"
+              className="bg-card p-8 rounded-[2.5rem] border border-border shadow-xl shadow-slate-200/20"
             >
               <div className="flex items-center justify-between mb-8">
                 <div className="space-y-1">
-                  <h3 className="text-xl font-bold text-slate-900">Budgets de l'État</h3>
+                  <h3 className="text-xl font-bold text-foreground">Budgets de l'État</h3>
                   <p className="text-[10px] text-slate-400 font-black uppercase tracking-widest">PLF 2026 · missions (officiel)</p>
                 </div>
                 <div className="w-12 h-12 bg-emerald-50 text-emerald-600 rounded-2xl flex items-center justify-center">
@@ -645,7 +645,7 @@ export default function ExecutifPage() {
               </div>
 
               {/* Hover Explanation Box - Moved to top */}
-              <div className="mb-8 min-h-[90px] flex items-center justify-center bg-slate-50 rounded-3xl p-4 border border-slate-100">
+              <div className="mb-8 min-h-[90px] flex items-center justify-center bg-muted rounded-3xl p-4 border border-border">
                 {hoveredBudget ? (
                   <motion.div 
                     initial={{ opacity: 0, scale: 0.95 }}
@@ -653,7 +653,7 @@ export default function ExecutifPage() {
                     className="w-full"
                   >
                     <p className="text-[9px] font-black text-blue-600 uppercase tracking-widest mb-1">Détails de la mission</p>
-                    <p className="text-[11px] text-slate-600 leading-relaxed italic font-medium">
+                    <p className="text-[11px] text-muted-foreground leading-relaxed italic font-medium">
                       {hoveredBudget.desc}
                     </p>
                   </motion.div>
@@ -676,8 +676,8 @@ export default function ExecutifPage() {
                       onMouseLeave={() => setHoveredBudget(null)}
                     >
                       <div className="flex justify-between items-end">
-                        <span className="text-[11px] font-bold text-slate-600 leading-tight pr-4">{item.label}</span>
-                        <span className="text-xs font-black text-slate-900 whitespace-nowrap">{item.amount} Md€</span>
+                        <span className="text-[11px] font-bold text-muted-foreground leading-tight pr-4">{item.label}</span>
+                        <span className="text-xs font-black text-foreground whitespace-nowrap">{item.amount} Md€</span>
                       </div>
                       
                       <div className="h-2 bg-slate-100 rounded-full overflow-hidden">
@@ -765,7 +765,7 @@ export default function ExecutifPage() {
       {/* Modale décret : résumé + source officielle */}
       {openDecree && (
         <div className="fixed inset-0 z-[100] flex items-center justify-center bg-slate-950/80 p-4" onClick={() => setOpenDecree(null)}>
-          <div className="w-full max-w-lg rounded-3xl bg-white p-7 shadow-2xl" onClick={e => e.stopPropagation()}>
+          <div className="w-full max-w-lg rounded-3xl bg-card p-7 shadow-2xl" onClick={e => e.stopPropagation()}>
             <div className="flex items-start justify-between gap-4">
               <div>
                 <span className="text-[9px] font-black uppercase tracking-widest text-blue-600">{openDecree.decree_type}</span>
@@ -773,11 +773,11 @@ export default function ExecutifPage() {
                   Publié au JO le {new Date(openDecree.date_publi).toLocaleDateString('fr-FR', { day: 'numeric', month: 'long', year: 'numeric' })}
                 </p>
               </div>
-              <button onClick={() => setOpenDecree(null)} className="rounded-full bg-slate-100 p-2 text-slate-500 hover:bg-slate-200"><X size={18} /></button>
+              <button onClick={() => setOpenDecree(null)} className="rounded-full bg-slate-100 p-2 text-muted-foreground hover:bg-slate-200"><X size={18} /></button>
             </div>
-            <h3 className="mt-3 text-lg font-bold leading-snug text-slate-900">{openDecree.display_title || openDecree.title}</h3>
+            <h3 className="mt-3 text-lg font-bold leading-snug text-foreground">{openDecree.display_title || openDecree.title}</h3>
             {openDecree.display_title && <p className="mt-1 text-[11px] leading-snug text-slate-400">{openDecree.title}</p>}
-            <div className="mt-4 rounded-2xl bg-slate-50 p-4">
+            <div className="mt-4 rounded-2xl bg-muted p-4">
               <p className="text-[9px] font-black uppercase tracking-widest text-slate-400 mb-1">Ce que ça implique</p>
               <p className="text-sm leading-relaxed text-slate-700">
                 {openDecree.summary || "Résumé en cours de génération — consultez le texte officiel pour le détail."}

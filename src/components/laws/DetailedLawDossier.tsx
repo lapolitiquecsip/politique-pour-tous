@@ -165,12 +165,12 @@ export default function DetailedLawDossier({ law }: DetailedLawDossierProps) {
         <>
           {/* Bottom Sheet */}
           <div 
-            className="absolute inset-0 bg-[#f8fafc] rounded-[1.5rem] transition-all duration-500 origin-bottom-right rotate-2 translate-y-1 group-hover:rotate-[5deg] group-hover:translate-x-3 group-hover:translate-y-2 border border-slate-200 shadow-[2px_2px_8px_rgba(0,0,0,0.05)]"
+            className="absolute inset-0 bg-[#f8fafc] rounded-[1.5rem] transition-all duration-500 origin-bottom-right rotate-2 translate-y-1 group-hover:rotate-[5deg] group-hover:translate-x-3 group-hover:translate-y-2 border border-border shadow-[2px_2px_8px_rgba(0,0,0,0.05)]"
             style={{ backgroundImage: 'repeating-linear-gradient(transparent, transparent 27px, #cbd5e1 27px, #cbd5e1 28px)', backgroundPosition: '0 14px' }}
           />
           {/* Middle Sheet */}
           <div 
-            className="absolute inset-0 bg-white rounded-[1.5rem] transition-all duration-500 origin-bottom-left -rotate-1 translate-y-0.5 group-hover:-rotate-[3deg] group-hover:-translate-x-2 group-hover:translate-y-1 border border-slate-200 shadow-[2px_2px_8px_rgba(0,0,0,0.05)]"
+            className="absolute inset-0 bg-card rounded-[1.5rem] transition-all duration-500 origin-bottom-left -rotate-1 translate-y-0.5 group-hover:-rotate-[3deg] group-hover:-translate-x-2 group-hover:translate-y-1 border border-border shadow-[2px_2px_8px_rgba(0,0,0,0.05)]"
             style={{ backgroundImage: 'repeating-linear-gradient(transparent, transparent 27px, #cbd5e1 27px, #cbd5e1 28px)', backgroundPosition: '0 14px' }}
           />
         </>
@@ -276,7 +276,7 @@ export default function DetailedLawDossier({ law }: DetailedLawDossierProps) {
                           dotBg = "bg-amber-400";
                           ring = "ring-[3px] ring-amber-400/40 scale-110";
                         } else if (step.done) {
-                          dotBg = "bg-white";
+                          dotBg = "bg-card";
                         }
                         
                         return (
@@ -305,7 +305,7 @@ export default function DetailedLawDossier({ law }: DetailedLawDossierProps) {
                 const pctPour = total > 0 ? Math.round((law.voteData.pour / total) * 100) : 0;
                 const pctContre = total > 0 ? Math.round((law.voteData.contre / total) * 100) : 0;
                 return (
-                  <div className="space-y-1.5 bg-white rounded-xl p-2.5 shadow-[0_2px_8px_rgba(0,0,0,0.08)] select-none">
+                  <div className="space-y-1.5 bg-card rounded-xl p-2.5 shadow-[0_2px_8px_rgba(0,0,0,0.08)] select-none">
                     <div className="flex justify-between items-center text-[8px] md:text-[9px] font-black uppercase tracking-wider text-slate-800">
                       <span className="opacity-75">🗳️ Vote Assemblée</span>
                       <span className="text-emerald-600 font-extrabold">{pctPour}% POUR</span>
@@ -349,25 +349,25 @@ export default function DetailedLawDossier({ law }: DetailedLawDossierProps) {
         }}
         className="overflow-hidden transform-gpu will-change-[height,opacity]"
       >
-        <div className="relative z-10 px-6 md:px-8 pb-8 pt-8 bg-white text-slate-800 rounded-[1.5rem] mx-2 mb-2 shadow-inner">
+        <div className="relative z-10 px-6 md:px-8 pb-8 pt-8 bg-card text-slate-800 rounded-[1.5rem] mx-2 mb-2 shadow-inner">
 
           <div className="grid grid-cols-1 lg:grid-cols-[2fr_1fr] gap-8 mb-12">
             {/* Left column */}
             <div className="space-y-8 flex flex-col justify-center">
               {/* Résumé de la loi */}
               <div>
-                <h4 className="text-base font-bold flex items-center gap-2 text-slate-900 mb-4">
+                <h4 className="text-base font-bold flex items-center gap-2 text-foreground mb-4">
                   <FileText className="w-5 h-5 text-blue-600" />
                   Résumé de la loi
                 </h4>
-                <div className="p-6 bg-slate-50 text-slate-700 text-base italic leading-relaxed rounded-2xl border border-slate-100">
+                <div className="p-6 bg-muted text-slate-700 text-base italic leading-relaxed rounded-2xl border border-border">
                   {wrapWithGlossary(law.summary)}
                 </div>
               </div>
 
               {/* État d'avancement */}
               <div>
-                <h4 className="text-base font-bold flex items-center gap-2 text-slate-900 mb-4">
+                <h4 className="text-base font-bold flex items-center gap-2 text-foreground mb-4">
                   <CheckCircle2 className="w-5 h-5 text-green-500" />
                   État d'avancement
                 </h4>
@@ -384,17 +384,17 @@ export default function DetailedLawDossier({ law }: DetailedLawDossierProps) {
             {/* Right column */}
             <div className="space-y-6">
               {/* Initiateur du texte */}
-              <div className="bg-slate-50 rounded-[2rem] p-6 border border-slate-100 flex flex-col justify-center min-h-[120px]">
+              <div className="bg-muted rounded-[2rem] p-6 border border-border flex flex-col justify-center min-h-[120px]">
                 <span className="text-[10px] font-black uppercase tracking-widest text-slate-400 mb-4">INITIATEUR DU TEXTE</span>
                 <div className="flex items-center gap-4">
-                  <div className="w-12 h-12 bg-white rounded-2xl flex items-center justify-center shadow-sm border border-slate-100 shrink-0">
+                  <div className="w-12 h-12 bg-card rounded-2xl flex items-center justify-center shadow-sm border border-border shrink-0">
                     <UserCheck className="w-6 h-6 text-blue-500" />
                   </div>
                   <div className="flex flex-col">
-                    <span className="font-bold text-slate-900 text-lg leading-tight">
+                    <span className="font-bold text-foreground text-lg leading-tight">
                       {law.author && law.author !== 'Non spécifié' ? law.author : 'Non spécifié'}
                     </span>
-                    <span className="text-[10px] font-bold text-slate-500 uppercase tracking-wider leading-tight mt-1">
+                    <span className="text-[10px] font-bold text-muted-foreground uppercase tracking-wider leading-tight mt-1">
                       {law.category}
                     </span>
                   </div>
@@ -422,19 +422,19 @@ export default function DetailedLawDossier({ law }: DetailedLawDossierProps) {
               <div className="grid grid-cols-1 lg:grid-cols-2 gap-12">
                 {/* Voting Results (Educational & Collapsible) */}
                 {law.voteData && (
-                  <div className="col-span-1 lg:col-span-2 bg-amber-50 rounded-[2rem] text-slate-900 relative overflow-hidden shadow-[8px_8px_0px_0px_rgba(0,0,0,0.05)] border-2 border-slate-900">
+                  <div className="col-span-1 lg:col-span-2 bg-amber-50 rounded-[2rem] text-foreground relative overflow-hidden shadow-[8px_8px_0px_0px_rgba(0,0,0,0.05)] border-2 border-slate-900">
                     <button 
                       onClick={() => setIsVoteOpen(!isVoteOpen)}
                       className="w-full p-6 md:p-8 flex flex-col md:flex-row md:items-center justify-between gap-6 text-left hover:bg-amber-100/50 transition-colors group/vote-btn"
                     >
                       <div>
-                        <h4 className="text-3xl font-staatliches uppercase tracking-tight text-slate-900 mb-2 flex items-center gap-3">
+                        <h4 className="text-3xl font-staatliches uppercase tracking-tight text-foreground mb-2 flex items-center gap-3">
                           <div className={`p-2 rounded-xl rotate-3 shadow-md transition-colors ${isVoteOpen ? 'bg-blue-600' : 'bg-blue-500'}`}>
                             <Vote className="w-6 h-6 text-white" />
                           </div>
                           Le verdict de l'Assemblée
                         </h4>
-                        <p className="text-slate-500 font-bold italic text-sm">Cliquez pour voir comment vos députés ont tranché</p>
+                        <p className="text-muted-foreground font-bold italic text-sm">Cliquez pour voir comment vos députés ont tranché</p>
                       </div>
                       
                       <div className="flex items-center gap-4">
@@ -443,7 +443,7 @@ export default function DetailedLawDossier({ law }: DetailedLawDossierProps) {
                         </div>
                         <motion.div
                           animate={{ rotate: isVoteOpen ? 180 : 0 }}
-                          className="p-3 bg-white border-2 border-slate-900 rounded-xl"
+                          className="p-3 bg-card border-2 border-slate-900 rounded-xl"
                         >
                           <ChevronDown className="w-6 h-6" />
                         </motion.div>
@@ -457,7 +457,7 @@ export default function DetailedLawDossier({ law }: DetailedLawDossierProps) {
                     >
                       <div className="px-6 md:px-8 pb-8">
                         <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-8">
-                          <div className="bg-white p-4 rounded-2xl border-2 border-slate-900 shadow-[4px_4px_0px_0px_rgba(0,0,0,0.1)] flex flex-col items-center text-center">
+                          <div className="bg-card p-4 rounded-2xl border-2 border-slate-900 shadow-[4px_4px_0px_0px_rgba(0,0,0,0.1)] flex flex-col items-center text-center">
                             <div className="w-10 h-10 bg-green-100 rounded-full flex items-center justify-center mb-2 border-2 border-green-500">
                               <CheckCircle2 className="w-5 h-5 text-green-600" />
                             </div>
@@ -465,7 +465,7 @@ export default function DetailedLawDossier({ law }: DetailedLawDossierProps) {
                             <span className="text-[10px] font-bold uppercase tracking-widest text-slate-400">Pour la loi</span>
                           </div>
                           
-                          <div className="bg-white p-4 rounded-2xl border-2 border-slate-900 shadow-[4px_4px_0px_0px_rgba(0,0,0,0.1)] flex flex-col items-center text-center">
+                          <div className="bg-card p-4 rounded-2xl border-2 border-slate-900 shadow-[4px_4px_0px_0px_rgba(0,0,0,0.1)] flex flex-col items-center text-center">
                             <div className="w-10 h-10 bg-red-100 rounded-full flex items-center justify-center mb-2 border-2 border-red-500">
                               <XCircle className="w-5 h-5 text-red-600" />
                             </div>
@@ -473,11 +473,11 @@ export default function DetailedLawDossier({ law }: DetailedLawDossierProps) {
                             <span className="text-[10px] font-bold uppercase tracking-widest text-slate-400">Contre la loi</span>
                           </div>
 
-                          <div className="bg-white p-4 rounded-2xl border-2 border-slate-900 shadow-[4px_4px_0px_0px_rgba(0,0,0,0.1)] flex flex-col items-center text-center">
+                          <div className="bg-card p-4 rounded-2xl border-2 border-slate-900 shadow-[4px_4px_0px_0px_rgba(0,0,0,0.1)] flex flex-col items-center text-center">
                             <div className="w-10 h-10 bg-slate-100 rounded-full flex items-center justify-center mb-2 border-2 border-slate-400">
-                              <MinusCircle className="w-5 h-5 text-slate-500" />
+                              <MinusCircle className="w-5 h-5 text-muted-foreground" />
                             </div>
-                            <span className="text-3xl font-black text-slate-500 font-staatliches">{law.voteData.abstention}</span>
+                            <span className="text-3xl font-black text-muted-foreground font-staatliches">{law.voteData.abstention}</span>
                             <span className="text-[10px] font-bold uppercase tracking-widest text-slate-400">Abstentions</span>
                           </div>
                         </div>
@@ -515,7 +515,7 @@ export default function DetailedLawDossier({ law }: DetailedLawDossierProps) {
                                   ? 'bg-green-100 border-green-500 text-green-700' 
                                   : isContre 
                                     ? 'bg-red-100 border-red-500 text-red-700' 
-                                    : 'bg-slate-100 border-slate-400 text-slate-600';
+                                    : 'bg-slate-100 border-slate-400 text-muted-foreground';
                                 
                                 return (
                                   <div 
@@ -546,13 +546,13 @@ export default function DetailedLawDossier({ law }: DetailedLawDossierProps) {
 
                 {/* Impacts */}
                 <div className="space-y-4">
-                  <h4 className="text-base font-bold flex items-center gap-2 text-slate-900 uppercase tracking-wider mb-4">
+                  <h4 className="text-base font-bold flex items-center gap-2 text-foreground uppercase tracking-wider mb-4">
                     <CheckCircle2 className="w-4 h-4 text-primary" />
                     Décryptage : ce que ça change
                   </h4>
                   <div className="space-y-3">
                     {law.impacts.map((impact, idx) => (
-                      <div key={idx} className="flex gap-3 items-start p-4 bg-slate-50/80 rounded-xl border border-slate-200/60 shadow-sm">
+                      <div key={idx} className="flex gap-3 items-start p-4 bg-slate-50/80 rounded-xl border border-border/60 shadow-sm">
                         <div className="w-1.5 h-1.5 rounded-full bg-primary mt-2 shrink-0" />
                         <div className="text-slate-700 text-sm font-medium leading-relaxed">{wrapWithGlossary(impact)}</div>
                       </div>
@@ -563,11 +563,11 @@ export default function DetailedLawDossier({ law }: DetailedLawDossierProps) {
               {/* Timeline & Analysis */}
               <div className="space-y-8">
                 <div>
-                  <h4 className="text-base font-bold flex items-center gap-2 text-slate-900 uppercase tracking-wider mb-4">
+                  <h4 className="text-base font-bold flex items-center gap-2 text-foreground uppercase tracking-wider mb-4">
                     <Calendar className="w-4 h-4 text-primary" />
                     Calendrier législatif
                   </h4>
-                  <div className="space-y-5 pl-5 border-l-2 border-slate-200 ml-2">
+                  <div className="space-y-5 pl-5 border-l-2 border-border ml-2">
                     {law.calendar.map((item, idx) => (
                       <div key={idx} className="relative">
                         <div className="absolute -left-[27px] top-1.5 w-3 h-3 rounded-full bg-card border-2 border-primary" />
@@ -583,7 +583,7 @@ export default function DetailedLawDossier({ law }: DetailedLawDossierProps) {
             {/* Analyse Détaillée Premium Block */}
               {isPremium ? (
                 <div className="mt-12 p-8 bg-gradient-to-br from-amber-50 to-orange-50 border border-amber-200 rounded-[2rem] shadow-sm">
-                  <h4 className="text-slate-900 font-bold text-lg uppercase tracking-wider flex items-center gap-2 mb-6">
+                  <h4 className="text-foreground font-bold text-lg uppercase tracking-wider flex items-center gap-2 mb-6">
                     <Zap className="w-6 h-6 text-amber-500" fill="currentColor" />
                     Analyse Détaillée
                   </h4>
@@ -620,7 +620,7 @@ export default function DetailedLawDossier({ law }: DetailedLawDossierProps) {
 
               {/* 3. MODULE DE VOTE CITOYEN */}
               {userId && (
-                <div className="mt-10 pt-10 border-t border-slate-100">
+                <div className="mt-10 pt-10 border-t border-border">
                   <div className={`p-6 md:p-8 rounded-[2rem] text-white shadow-xl relative overflow-hidden border ${isPremium ? "bg-slate-950 border-slate-800" : "bg-slate-900 border-slate-700"}`}>
                     <div className="absolute top-0 right-0 w-1/2 h-full bg-gradient-to-l from-amber-500/5 to-transparent pointer-events-none" />
                     
@@ -683,7 +683,7 @@ export default function DetailedLawDossier({ law }: DetailedLawDossierProps) {
                             <h5 className="font-staatliches text-xl italic tracking-wide text-amber-500">
                               Résultats de la Communauté
                             </h5>
-                            <span className="text-[10px] font-bold text-slate-500 uppercase tracking-widest">
+                            <span className="text-[10px] font-bold text-muted-foreground uppercase tracking-widest">
                               {communityStats.total} votes cumulés
                             </span>
                           </div>

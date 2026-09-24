@@ -26,7 +26,7 @@ export default function GroupClient({ params }: { params: Promise<{ slug: string
 
   if (!group) {
     return (
-      <main className="min-h-screen bg-slate-50 dark:bg-slate-950 flex items-center justify-center p-8">
+      <main className="min-h-screen bg-muted dark:bg-slate-950 flex items-center justify-center p-8">
         <div className="text-center">
           <p className="text-lg font-bold text-slate-700 dark:text-slate-200">Groupe introuvable.</p>
           <Link href="/deputes?mode=meps" className="mt-4 inline-flex items-center gap-2 text-sm font-black uppercase tracking-widest text-amber-600">
@@ -47,11 +47,11 @@ export default function GroupClient({ params }: { params: Promise<{ slug: string
   ).sort((a, b) => b[1] - a[1]);
 
   return (
-    <main className="min-h-screen bg-slate-50 dark:bg-slate-950 pb-20">
+    <main className="min-h-screen bg-muted dark:bg-slate-950 pb-20">
       {/* Bandeau retour */}
       <div className="bg-white/80 dark:bg-slate-900/80 backdrop-blur-md border-b border-amber-200 dark:border-slate-800 sticky top-0 z-40">
         <div className="container mx-auto px-4 h-16 flex items-center">
-          <Link href="/deputes?mode=meps" className="inline-flex items-center gap-2 text-xs font-black uppercase tracking-widest text-slate-500 hover:text-amber-600">
+          <Link href="/deputes?mode=meps" className="inline-flex items-center gap-2 text-xs font-black uppercase tracking-widest text-muted-foreground hover:text-amber-600">
             <ArrowLeft size={14} /> Tous les eurodéputés
           </Link>
         </div>
@@ -59,7 +59,7 @@ export default function GroupClient({ params }: { params: Promise<{ slug: string
 
       <div className="container mx-auto max-w-5xl px-4 pt-10 space-y-8">
         {/* En-tête du groupe */}
-        <div className="rounded-[2.5rem] overflow-hidden border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900 shadow-xl">
+        <div className="rounded-[2.5rem] overflow-hidden border border-border dark:border-slate-800 bg-card dark:bg-slate-900 shadow-xl">
           <div className={`relative bg-gradient-to-br ${group.gradient} p-8 md:p-10 text-white`}>
             <p className="text-[10px] font-black uppercase tracking-[0.3em] text-white/80">Groupe au Parlement européen</p>
             <div className="mt-2 flex items-center gap-4">
@@ -79,7 +79,7 @@ export default function GroupClient({ params }: { params: Promise<{ slug: string
         </div>
 
         {/* Positionnement gauche-droite */}
-        <section className="rounded-[2rem] border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900 p-6">
+        <section className="rounded-[2rem] border border-border dark:border-slate-800 bg-card dark:bg-slate-900 p-6">
           <p className="text-[10px] font-black uppercase tracking-widest text-slate-400 mb-3">Positionnement politique</p>
           <div className="relative h-3 rounded-full bg-gradient-to-r from-rose-500 via-amber-300 to-blue-600">
             <div
@@ -93,16 +93,16 @@ export default function GroupClient({ params }: { params: Promise<{ slug: string
         </section>
 
         {/* Ce qu'est le groupe */}
-        <section className="rounded-[2.5rem] border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900 p-8">
-          <h2 className="text-3xl font-staatliches uppercase tracking-tight text-slate-900 dark:text-white mb-3">
+        <section className="rounded-[2.5rem] border border-border dark:border-slate-800 bg-card dark:bg-slate-900 p-8">
+          <h2 className="text-3xl font-staatliches uppercase tracking-tight text-foreground dark:text-white mb-3">
             Le groupe <span style={{ color: group.color }}>expliqué</span>
           </h2>
-          <p className="text-[15px] leading-relaxed text-slate-600 dark:text-slate-300">{group.summary}</p>
+          <p className="text-[15px] leading-relaxed text-muted-foreground dark:text-slate-300">{group.summary}</p>
 
           <h3 className="mt-6 text-[10px] font-black uppercase tracking-widest text-slate-400 mb-2">Ce qu'il défend</h3>
           <ul className="grid gap-2 sm:grid-cols-2">
             {group.ideology.map((pt, i) => (
-              <li key={i} className="flex gap-2 rounded-2xl border border-slate-100 dark:border-slate-800 bg-slate-50/60 dark:bg-slate-800/40 p-3 text-sm text-slate-700 dark:text-slate-300">
+              <li key={i} className="flex gap-2 rounded-2xl border border-border dark:border-slate-800 bg-slate-50/60 dark:bg-slate-800/40 p-3 text-sm text-slate-700 dark:text-slate-300">
                 <span className="mt-1 h-1.5 w-1.5 shrink-0 rounded-full" style={{ backgroundColor: group.color }} />
                 <span>{pt}</span>
               </li>
@@ -119,11 +119,11 @@ export default function GroupClient({ params }: { params: Promise<{ slug: string
 
         {/* Partis français membres */}
         {parties.length > 0 && (
-          <section className="rounded-[2.5rem] border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900 p-8">
-            <h2 className="text-2xl font-staatliches uppercase tracking-tight text-slate-900 dark:text-white mb-4">Partis français dans ce groupe</h2>
+          <section className="rounded-[2.5rem] border border-border dark:border-slate-800 bg-card dark:bg-slate-900 p-8">
+            <h2 className="text-2xl font-staatliches uppercase tracking-tight text-foreground dark:text-white mb-4">Partis français dans ce groupe</h2>
             <div className="flex flex-wrap gap-2">
               {parties.map(([p, n]) => (
-                <span key={p} className="inline-flex items-center gap-2 rounded-full border border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-800 px-4 py-2 text-sm font-bold text-slate-700 dark:text-slate-200">
+                <span key={p} className="inline-flex items-center gap-2 rounded-full border border-border dark:border-slate-700 bg-muted dark:bg-slate-800 px-4 py-2 text-sm font-bold text-slate-700 dark:text-slate-200">
                   {p} <span className="text-[11px] font-black text-slate-400">· {n}</span>
                 </span>
               ))}
@@ -132,10 +132,10 @@ export default function GroupClient({ params }: { params: Promise<{ slug: string
         )}
 
         {/* Eurodéputés français du groupe */}
-        <section className="rounded-[2.5rem] border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900 p-8">
+        <section className="rounded-[2.5rem] border border-border dark:border-slate-800 bg-card dark:bg-slate-900 p-8">
           <div className="flex items-center gap-3 mb-6">
             <Star className="text-amber-600 fill-current" size={20} />
-            <h2 className="text-2xl font-staatliches uppercase tracking-tight text-slate-900 dark:text-white">
+            <h2 className="text-2xl font-staatliches uppercase tracking-tight text-foreground dark:text-white">
               Les {loading ? "" : meps.length} eurodéputé·es français
             </h2>
           </div>
@@ -147,13 +147,13 @@ export default function GroupClient({ params }: { params: Promise<{ slug: string
             <div className="grid gap-3 sm:grid-cols-2">
               {meps.map((m) => (
                 <Link key={m.id} href={`/eurodeputes/${m.slug}`}
-                  className="flex items-center gap-4 rounded-2xl border border-slate-100 dark:border-slate-800 bg-slate-50/60 dark:bg-slate-800/40 p-3 transition hover:border-amber-300 hover:bg-amber-50/40 dark:hover:bg-slate-800">
+                  className="flex items-center gap-4 rounded-2xl border border-border dark:border-slate-800 bg-slate-50/60 dark:bg-slate-800/40 p-3 transition hover:border-amber-300 hover:bg-amber-50/40 dark:hover:bg-slate-800">
                   {/* eslint-disable-next-line @next/next/no-img-element */}
                   <img src={m.photo_url} alt={m.full_name}
                     className="h-12 w-12 shrink-0 rounded-full object-cover object-top bg-slate-200 dark:bg-slate-700"
                     onError={(e) => { (e.currentTarget as HTMLImageElement).style.visibility = "hidden"; }} />
                   <div className="min-w-0">
-                    <p className="truncate text-sm font-bold text-slate-900 dark:text-white">{m.full_name}</p>
+                    <p className="truncate text-sm font-bold text-foreground dark:text-white">{m.full_name}</p>
                     <p className="truncate text-[11px] font-bold text-slate-400">{m.national_party || "—"}</p>
                   </div>
                 </Link>
@@ -174,7 +174,7 @@ function Stat({ icon, label, value, sub, small }: { icon: React.ReactNode; label
   return (
     <div className="p-5">
       <p className="flex items-center gap-1.5 text-[9px] font-black uppercase tracking-widest text-slate-400">{icon}{label}</p>
-      <p className={`mt-1 font-staatliches uppercase tracking-wide text-slate-900 dark:text-white ${small ? "text-lg" : "text-3xl"}`}>{value}</p>
+      <p className={`mt-1 font-staatliches uppercase tracking-wide text-foreground dark:text-white ${small ? "text-lg" : "text-3xl"}`}>{value}</p>
       {sub && <p className="text-[10px] font-bold text-slate-400 leading-tight">{sub}</p>}
     </div>
   );

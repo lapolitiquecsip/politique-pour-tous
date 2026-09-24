@@ -53,7 +53,7 @@ export default function Footer() {
               <li>
                 <Link 
                   href="/contact" 
-                  className="inline-flex items-center gap-2 px-6 py-3 bg-white text-slate-950 font-black rounded-xl hover:bg-red-500 hover:text-white transition-all text-xs uppercase tracking-widest shadow-xl shadow-white/5"
+                  className="inline-flex items-center gap-2 px-6 py-3 bg-card text-slate-950 font-black rounded-xl hover:bg-red-500 hover:text-white transition-all text-xs uppercase tracking-widest shadow-xl shadow-white/5"
                 >
                   Contactez-nous
                 </Link>
@@ -63,7 +63,7 @@ export default function Footer() {
                   FAQ — Questions fréquentes
                 </Link>
               </li>
-              <li className="text-slate-500 text-[10px] uppercase tracking-widest font-bold pt-4">
+              <li className="text-muted-foreground text-[10px] uppercase tracking-widest font-bold pt-4">
                 © {currentYear} La Politique Simple Media
               </li>
             </ul>
@@ -76,7 +76,7 @@ export default function Footer() {
              <span className="text-[10px] font-black text-white/20 uppercase tracking-[0.4em]">Égalité</span>
              <span className="text-[10px] font-black text-white/20 uppercase tracking-[0.4em]">Fraternité</span>
           </div>
-          <div className="text-[10px] text-slate-500 font-medium">
+          <div className="text-[10px] text-muted-foreground font-medium">
             Made with passion for Democracy 🇫🇷
           </div>
         </div>

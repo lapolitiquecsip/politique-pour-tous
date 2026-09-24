@@ -47,16 +47,16 @@ export default function VideoFeed({ source = "elysee", candidateId }: { source?:
   if (videos.length === 0) return null;
 
   return (
-    <section className="p-8 md:p-10 rounded-[3rem] border space-y-6 bg-white dark:bg-slate-900 border-slate-200 dark:border-slate-800">
+    <section className="p-8 md:p-10 rounded-[3rem] border space-y-6 bg-card dark:bg-slate-900 border-border dark:border-slate-800">
       <div className="flex items-center gap-3">
         <div className={`w-10 h-10 rounded-2xl flex items-center justify-center ${cfg.icon}`}>
           <Video size={20} />
         </div>
         <div>
-          <h2 className="text-2xl md:text-3xl font-staatliches uppercase tracking-tight text-slate-900 dark:text-white">
+          <h2 className="text-2xl md:text-3xl font-staatliches uppercase tracking-tight text-foreground dark:text-white">
             {cfg.pre}<span className={`text-transparent bg-clip-text bg-gradient-to-r ${cfg.grad}`}>{cfg.accent}</span>
           </h2>
-          <p className="text-xs text-slate-500">{cfg.sub}</p>
+          <p className="text-xs text-muted-foreground">{cfg.sub}</p>
         </div>
       </div>
 
@@ -78,18 +78,18 @@ export default function VideoFeed({ source = "elysee", candidateId }: { source?:
                 )}
                 <div className="absolute inset-0 bg-slate-950/20 transition group-hover:bg-slate-950/40" />
                 <div className="absolute inset-0 flex items-center justify-center">
-                  <span className="flex h-12 w-12 items-center justify-center rounded-full bg-white/90 text-slate-900 shadow-lg transition group-hover:bg-slate-900 group-hover:text-white">
+                  <span className="flex h-12 w-12 items-center justify-center rounded-full bg-white/90 text-foreground shadow-lg transition group-hover:bg-slate-900 group-hover:text-white">
                     {cfg.external ? <ExternalLink size={17} /> : <Play size={18} className="ml-0.5" fill="currentColor" />}
                   </span>
                 </div>
               </div>
               <div className="p-3">
                 <p className="text-[10px] font-black uppercase tracking-widest text-slate-400">{fmtDate(v.published_at)}{v.description && cfg.external ? ` · ${v.description}` : ""}</p>
-                <p className="mt-0.5 text-sm font-bold leading-snug text-slate-900 dark:text-white line-clamp-2 transition-colors">{v.title}</p>
+                <p className="mt-0.5 text-sm font-bold leading-snug text-foreground dark:text-white line-clamp-2 transition-colors">{v.title}</p>
               </div>
             </>
           );
-          const cls = "group w-[78vw] shrink-0 snap-center sm:w-auto sm:shrink text-left rounded-2xl overflow-hidden border border-slate-100 dark:border-slate-800 bg-slate-50/60 dark:bg-slate-800/40 transition hover:shadow-lg";
+          const cls = "group w-[78vw] shrink-0 snap-center sm:w-auto sm:shrink text-left rounded-2xl overflow-hidden border border-border dark:border-slate-800 bg-slate-50/60 dark:bg-slate-800/40 transition hover:shadow-lg";
           return cfg.external ? (
             <a key={v.video_id} href={v.url} target="_blank" rel="noopener noreferrer" className={cls}>{media}</a>
           ) : (
@@ -99,7 +99,7 @@ export default function VideoFeed({ source = "elysee", candidateId }: { source?:
       </div>
       </div>
 
-      <p className="text-[10px] text-slate-400/80 italic border-t border-slate-100 dark:border-slate-800 pt-4">{cfg.note}</p>
+      <p className="text-[10px] text-slate-400/80 italic border-t border-border dark:border-slate-800 pt-4">{cfg.note}</p>
 
       {/* Lecteur monté seulement au clic. */}
       {open && (

@@ -68,10 +68,10 @@ export default function ChamberLegislation({ chamber, chamberLabel }: { chamber:
   return (
     <section className="mx-auto max-w-7xl px-4 pb-16">
       <div className="mb-6">
-        <h2 className="text-3xl font-staatliches uppercase tracking-tight text-slate-900 dark:text-white md:text-4xl">
+        <h2 className="text-3xl font-staatliches uppercase tracking-tight text-foreground dark:text-white md:text-4xl">
           Textes législatifs — <span className="text-red-600">{chamberLabel}</span>
         </h2>
-        <p className="mt-1 text-slate-500">Textes actuellement examinés par {chamberLabel === "Assemblée nationale" ? "l'Assemblée" : "le Sénat"}, avec leur type et leur étape.</p>
+        <p className="mt-1 text-muted-foreground">Textes actuellement examinés par {chamberLabel === "Assemblée nationale" ? "l'Assemblée" : "le Sénat"}, avec leur type et leur étape.</p>
       </div>
 
       <div className="mb-6 flex flex-col gap-3 sm:flex-row sm:gap-8">
@@ -79,7 +79,7 @@ export default function ChamberLegislation({ chamber, chamberLabel }: { chamber:
           <p className="mb-2 text-[10px] font-black uppercase tracking-widest text-slate-400">Type</p>
           <div className="flex gap-2 overflow-x-auto pb-1 -mx-4 px-4 [scrollbar-width:none] [&::-webkit-scrollbar]:hidden sm:mx-0 sm:inline-flex sm:flex-wrap sm:overflow-visible sm:px-0">
             {TYPES.map(t => (
-              <button key={t.label} onClick={() => setTextType(t.value)} className={`shrink-0 whitespace-nowrap rounded-full px-4 py-2 text-[11px] font-black uppercase tracking-wide transition ${textType === t.value ? "bg-red-600 text-white shadow" : "bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-700 text-slate-600 hover:border-red-300"}`}>{t.label}</button>
+              <button key={t.label} onClick={() => setTextType(t.value)} className={`shrink-0 whitespace-nowrap rounded-full px-4 py-2 text-[11px] font-black uppercase tracking-wide transition ${textType === t.value ? "bg-red-600 text-white shadow" : "bg-card dark:bg-slate-900 border border-border dark:border-slate-700 text-muted-foreground hover:border-red-300"}`}>{t.label}</button>
             ))}
           </div>
         </div>
@@ -87,7 +87,7 @@ export default function ChamberLegislation({ chamber, chamberLabel }: { chamber:
           <p className="mb-2 text-[10px] font-black uppercase tracking-widest text-slate-400">Étape</p>
           <div className="flex gap-2 overflow-x-auto pb-1 -mx-4 px-4 [scrollbar-width:none] [&::-webkit-scrollbar]:hidden sm:mx-0 sm:inline-flex sm:flex-wrap sm:overflow-visible sm:px-0">
             {STAGES.map(s => (
-              <button key={s.label} onClick={() => setStage(s.value)} className={`shrink-0 whitespace-nowrap rounded-full px-4 py-2 text-[11px] font-black uppercase tracking-wide transition ${stage === s.value ? "bg-amber-500 text-white shadow" : "bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-700 text-slate-600 hover:border-amber-300"}`}>{s.label}</button>
+              <button key={s.label} onClick={() => setStage(s.value)} className={`shrink-0 whitespace-nowrap rounded-full px-4 py-2 text-[11px] font-black uppercase tracking-wide transition ${stage === s.value ? "bg-amber-500 text-white shadow" : "bg-card dark:bg-slate-900 border border-border dark:border-slate-700 text-muted-foreground hover:border-amber-300"}`}>{s.label}</button>
             ))}
           </div>
         </div>
@@ -96,7 +96,7 @@ export default function ChamberLegislation({ chamber, chamberLabel }: { chamber:
       {loading && items.length === 0 ? (
         <div className="flex justify-center py-20"><Loader2 className="animate-spin text-red-600" /></div>
       ) : visible.length === 0 ? (
-        <div className="py-16 text-center text-slate-500">Aucun texte ne correspond à ces filtres pour cette chambre.</div>
+        <div className="py-16 text-center text-muted-foreground">Aucun texte ne correspond à ces filtres pour cette chambre.</div>
       ) : (
         <div className="relative">
         <SwipeArrow color="#dc2626" />

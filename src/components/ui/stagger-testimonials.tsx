@@ -64,8 +64,8 @@ const TestimonialCard: React.FC<TestimonialCardProps> = ({
       className={cn(
         "absolute left-1/2 top-1/2 cursor-pointer border-2 transition-all duration-500 ease-in-out overflow-hidden flex flex-col",
         isCenter 
-          ? "z-10 bg-white border-rose-600 shadow-2xl" 
-          : "z-0 bg-white border-slate-200 hover:border-rose-400 opacity-60 hover:opacity-100"
+          ? "z-10 bg-card border-rose-600 shadow-2xl" 
+          : "z-0 bg-card border-border hover:border-rose-400 opacity-60 hover:opacity-100"
       )}
       style={{
         width: cardSize,
@@ -92,7 +92,7 @@ const TestimonialCard: React.FC<TestimonialCardProps> = ({
       />
       
       {/* Top Banner with Image or SVG Map */}
-      <div className={cn("relative h-40 shrink-0 w-full flex items-center justify-between overflow-hidden border-b border-slate-100 px-6", theme.lightBg)}>
+      <div className={cn("relative h-40 shrink-0 w-full flex items-center justify-between overflow-hidden border-b border-border px-6", theme.lightBg)}>
         {/* Subtle background glow */}
         <div className="absolute inset-0 bg-[radial-gradient(circle_at_20%_20%,rgba(255,255,255,0.4),transparent_70%)]" />
         
@@ -101,11 +101,11 @@ const TestimonialCard: React.FC<TestimonialCardProps> = ({
           <p className={cn("font-black text-[9px] uppercase tracking-widest mb-1.5", theme.text)}>
             {item.type === 'region' ? 'Région' : 'Département'}
           </p>
-          <h4 className="text-slate-900 font-extrabold text-xl leading-tight line-clamp-2">{item.name}</h4>
+          <h4 className="text-foreground font-extrabold text-xl leading-tight line-clamp-2">{item.name}</h4>
         </div>
 
         {/* Right Side: Map illustration container */}
-        <div className="relative w-24 h-24 shrink-0 flex items-center justify-center rounded-2xl bg-white/95 border border-slate-100/80 shadow-md p-2 transition-transform hover:scale-105 z-10">
+        <div className="relative w-24 h-24 shrink-0 flex items-center justify-center rounded-2xl bg-white/95 border border-border/80 shadow-md p-2 transition-transform hover:scale-105 z-10">
           {item.type === 'region' && regionPaths[item.id] && (
             <svg 
               viewBox="0 0 250 250" 
@@ -151,7 +151,7 @@ const TestimonialCard: React.FC<TestimonialCardProps> = ({
       </div>
 
       {/* Content */}
-      <div className="p-6 flex-1 flex flex-col justify-between bg-white relative z-10">
+      <div className="p-6 flex-1 flex flex-col justify-between bg-card relative z-10">
         <div className="space-y-4">
           <div className="flex items-center gap-3">
             <div className={cn("w-10 h-10 rounded-xl flex items-center justify-center shrink-0", theme.lightBg, theme.text)}>
@@ -159,7 +159,7 @@ const TestimonialCard: React.FC<TestimonialCardProps> = ({
             </div>
             <div className="min-w-0">
               <p className="text-[9px] font-black uppercase tracking-widest text-slate-400">Président</p>
-              <p className="font-bold text-slate-900 text-sm truncate">{item.president}</p>
+              <p className="font-bold text-foreground text-sm truncate">{item.president}</p>
             </div>
           </div>
           <div className="flex items-center gap-3">
@@ -168,7 +168,7 @@ const TestimonialCard: React.FC<TestimonialCardProps> = ({
             </div>
             <div className="min-w-0">
               <p className="text-[9px] font-black uppercase tracking-widest text-slate-400">Parti Majoritaire</p>
-              <p className="font-bold text-slate-900 text-sm truncate">{item.party}</p>
+              <p className="font-bold text-foreground text-sm truncate">{item.party}</p>
             </div>
           </div>
           {item.budget2026 && (
@@ -178,14 +178,14 @@ const TestimonialCard: React.FC<TestimonialCardProps> = ({
               </div>
               <div className="min-w-0">
                 <p className="text-[9px] font-black uppercase tracking-widest text-slate-400">Budget 2026</p>
-                <p className="font-bold text-slate-900 text-sm truncate">{item.budget2026}</p>
+                <p className="font-bold text-foreground text-sm truncate">{item.budget2026}</p>
               </div>
             </div>
           )}
         </div>
 
         {isCenter && (
-          <div className="mt-4 pt-4 border-t border-slate-100">
+          <div className="mt-4 pt-4 border-t border-border">
             <span className={cn("w-full flex items-center justify-center gap-2 font-bold text-xs uppercase tracking-widest transition-colors", theme.text, `hover:opacity-80`)}>
               Analyser <ArrowRight size={14} />
             </span>
@@ -251,7 +251,7 @@ export const StaggerTestimonials: React.FC<{ items: Territory[], onSelect: (t: T
 
   return (
     <div
-      className="relative w-full overflow-hidden rounded-[2.5rem] bg-slate-50 border border-slate-200/60"
+      className="relative w-full overflow-hidden rounded-[2.5rem] bg-muted border border-border/60"
       style={{ height: 600 }}
     >
       <div className="absolute inset-0 bg-[radial-gradient(circle_at_center,rgba(225,29,72,0.03)_0%,transparent_70%)]" />
@@ -281,7 +281,7 @@ export const StaggerTestimonials: React.FC<{ items: Territory[], onSelect: (t: T
           onClick={() => handleMove(-1)}
           className={cn(
             "flex h-14 w-14 items-center justify-center text-2xl transition-all rounded-full shadow-lg",
-            "bg-white border-2 border-slate-200 text-slate-600 hover:border-rose-600 hover:text-rose-600 hover:scale-105 active:scale-95",
+            "bg-card border-2 border-border text-muted-foreground hover:border-rose-600 hover:text-rose-600 hover:scale-105 active:scale-95",
             "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-rose-500 focus-visible:ring-offset-2"
           )}
           aria-label="Région précédente"
@@ -292,7 +292,7 @@ export const StaggerTestimonials: React.FC<{ items: Territory[], onSelect: (t: T
           onClick={() => handleMove(1)}
           className={cn(
             "flex h-14 w-14 items-center justify-center text-2xl transition-all rounded-full shadow-lg",
-            "bg-white border-2 border-slate-200 text-slate-600 hover:border-rose-600 hover:text-rose-600 hover:scale-105 active:scale-95",
+            "bg-card border-2 border-border text-muted-foreground hover:border-rose-600 hover:text-rose-600 hover:scale-105 active:scale-95",
             "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-rose-500 focus-visible:ring-offset-2"
           )}
           aria-label="Région suivante"

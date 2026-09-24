@@ -46,7 +46,7 @@ export default function EventItem({ event }: { event: CalendarEvent }) {
       <div className="absolute left-[-4px] sm:left-[92px] top-7.5 w-2.5 h-2.5 rounded-full bg-deep-blue ring-4 ring-cream"></div>
 
       {/* Content */}
-      <div className="bg-white border border-border rounded-xl p-5 shadow-sm hover:shadow-md transition-shadow">
+      <div className="bg-card border border-border rounded-xl p-5 shadow-sm hover:shadow-md transition-shadow">
         <div className="sm:hidden flex items-center justify-between mb-2">
           <span className="text-sm font-bold text-deep-blue capitalize">{dateFormatted} à {timeFormatted}</span>
           <span className={`px-2 py-0.5 text-[10px] font-bold uppercase tracking-wider rounded-md ${badgeColor}`}>

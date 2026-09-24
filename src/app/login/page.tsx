@@ -66,7 +66,7 @@ export default function LoginPage() {
       <motion.div 
         initial={{ opacity: 0, y: 20 }}
         animate={{ opacity: 1, y: 0 }}
-        className="max-w-md w-full bg-white border border-slate-200 p-8 rounded-[32px] shadow-2xl relative z-10"
+        className="max-w-md w-full bg-card border border-border p-8 rounded-[32px] shadow-2xl relative z-10"
       >
         {/* Logo/Icon */}
         <div className="flex justify-center mb-8">
@@ -76,10 +76,10 @@ export default function LoginPage() {
         </div>
 
         <div className="text-center mb-8">
-          <h1 className="text-3xl font-extrabold text-slate-900 mb-2">
+          <h1 className="text-3xl font-extrabold text-foreground mb-2">
             {success ? "Vérifiez vos mails !" : (isLogin ? "Bon retour !" : "Rejoignez-nous")}
           </h1>
-          <p className="text-slate-500">
+          <p className="text-muted-foreground">
             {success 
               ? "Un lien de confirmation vous a été envoyé." 
               : "Accédez à votre espace Politique, C'est Simple."}
@@ -107,7 +107,7 @@ export default function LoginPage() {
           <form onSubmit={handleSubmit} className="space-y-5">
             {/* Email Field */}
             <div className="space-y-2">
-              <label className="text-xs font-bold text-slate-500 uppercase tracking-wider ml-1">Adresse E-mail</label>
+              <label className="text-xs font-bold text-muted-foreground uppercase tracking-wider ml-1">Adresse E-mail</label>
               <div className="relative group">
                 <div className="absolute left-4 top-1/2 -translate-y-1/2 text-slate-400 group-focus-within:text-rose-500 transition-colors">
                   <Mail size={18} />
@@ -118,14 +118,14 @@ export default function LoginPage() {
                   placeholder="exemple@mail.com"
                   value={email}
                   onChange={(e) => setEmail(e.target.value)}
-                  className="w-full bg-slate-50 border border-slate-200 rounded-2xl py-4 pl-12 pr-4 text-slate-900 placeholder:text-slate-400 focus:outline-none focus:ring-2 focus:ring-rose-500/40 focus:border-rose-500 transition-all font-medium"
+                  className="w-full bg-muted border border-border rounded-2xl py-4 pl-12 pr-4 text-foreground placeholder:text-slate-400 focus:outline-none focus:ring-2 focus:ring-rose-500/40 focus:border-rose-500 transition-all font-medium"
                 />
               </div>
             </div>
 
             {/* Password Field */}
             <div className="space-y-2">
-              <label className="text-xs font-bold text-slate-500 uppercase tracking-wider ml-1">Mot de passe</label>
+              <label className="text-xs font-bold text-muted-foreground uppercase tracking-wider ml-1">Mot de passe</label>
               <div className="relative group">
                 <div className="absolute left-4 top-1/2 -translate-y-1/2 text-slate-400 group-focus-within:text-rose-500 transition-colors">
                   <Lock size={18} />
@@ -136,7 +136,7 @@ export default function LoginPage() {
                   placeholder="••••••••"
                   value={password}
                   onChange={(e) => setPassword(e.target.value)}
-                  className="w-full bg-slate-50 border border-slate-200 rounded-2xl py-4 pl-12 pr-4 text-slate-900 placeholder:text-slate-400 focus:outline-none focus:ring-2 focus:ring-rose-500/40 focus:border-rose-500 transition-all font-medium"
+                  className="w-full bg-muted border border-border rounded-2xl py-4 pl-12 pr-4 text-foreground placeholder:text-slate-400 focus:outline-none focus:ring-2 focus:ring-rose-500/40 focus:border-rose-500 transition-all font-medium"
                 />
               </div>
             </div>
@@ -183,7 +183,7 @@ export default function LoginPage() {
         )}
 
         {/* Footer info */}
-        <div className="mt-10 pt-6 border-t border-white/5 flex items-center justify-center gap-2 text-xs text-slate-500">
+        <div className="mt-10 pt-6 border-t border-white/5 flex items-center justify-center gap-2 text-xs text-muted-foreground">
           <Star className="w-3 h-3 text-amber-500" />
           <span>Accès premium sécurisé par Supabase</span>
         </div>
@@ -192,7 +192,7 @@ export default function LoginPage() {
       {/* Return Home */}
       <Link 
         href="/"
-        className="absolute top-8 left-8 text-slate-500 hover:text-white transition-colors flex items-center gap-2 text-sm font-medium"
+        className="absolute top-8 left-8 text-muted-foreground hover:text-white transition-colors flex items-center gap-2 text-sm font-medium"
       >
         <ArrowRight className="w-4 h-4 rotate-180" />
         Retour à l'accueil

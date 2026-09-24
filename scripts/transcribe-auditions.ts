@@ -30,6 +30,7 @@ import { promisify } from "node:util";
 import { mkdtemp, readFile, rm, stat } from "node:fs/promises";
 import { tmpdir } from "node:os";
 import { join } from "node:path";
+import { request as requeteHttps } from "node:https";
 import { SYSTEM, SHAPE, dropInventedQuotes, type Analysis } from "./lib/commission-prompt";
 
 const execFileP = promisify(execFile);
@@ -87,9 +88,40 @@ async function lienVideo(crUrl: string): Promise<string | null> {
   return t.match(/https:\/\/assnat\.fr\/\w+/)?.[0] ?? null;
 }
 
+/**
+ * Lit l'adresse vers laquelle pointe le lien court, sans vérifier son certificat.
+ *
+ * assnat.fr ne présente que son certificat final, sans l'intermédiaire qui permettrait
+ * de remonter à une autorité de confiance. Les navigateurs réparent la chaîne toute
+ * seule en allant chercher le maillon manquant ; ni Node ni OpenSSL ne le font, et la
+ * lecture échouait sur « unable to verify the first certificate » pour chaque audition.
+ *
+ * On relâche donc la vérification POUR CETTE SEULE REQUÊTE, qui ne transporte aucun
+ * secret et dont on ne lit qu'un en-tête Location — et l'adresse obtenue est ensuite
+ * contrôlée : elle doit mener à l'Assemblée nationale. Tout ce qu'on consomme
+ * réellement, page vidéo et fichier, passe par des connexions vérifiées.
+ */
+function suivreLienCourt(url: string): Promise<string | null> {
+  return new Promise(resolve => {
+    const r = requeteHttps(url, { method: "HEAD", rejectUnauthorized: false, headers: { "User-Agent": UA } }, res => {
+      res.resume();
+      resolve(typeof res.headers.location === "string" ? res.headers.location : null);
+    });
+    r.on("error", () => resolve(null));
+    r.end();
+  });
+}
+
 /** Suit le lien court, puis lit la page vidéo pour en extraire le fichier MP4. */
 async function fichierMp4(lienCourt: string): Promise<string | null> {
-  const redirection = await fetch(lienCourt, { redirect: "follow", headers: { "User-Agent": UA } });
+  const page = await suivreLienCourt(lienCourt);
+  if (!page) throw new Error("le lien court ne mène nulle part");
+  // Garde-fou : on n'ira lire que chez l'Assemblée nationale.
+  if (!/^https:\/\/[\w.-]*\.?assemblee-nationale\.fr\//.test(page)) {
+    throw new Error(`redirection inattendue vers ${page.slice(0, 60)}`);
+  }
+
+  const redirection = await fetch(page, { headers: { "User-Agent": UA } });
   if (!redirection.ok) throw new Error(`page vidéo : HTTP ${redirection.status}`);
   const html = await redirection.text();
   const mp4 = html.match(/https?:\/\/[^"'\s]+\.mp4[^"'\s]*/)?.[0];

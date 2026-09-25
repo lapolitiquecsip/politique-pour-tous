@@ -3,7 +3,7 @@
 import { useEffect, useMemo, useState } from "react";
 import { usePathname } from "next/navigation";
 import { motion, AnimatePresence } from "framer-motion";
-import { X, Search, Lightbulb, GraduationCap } from "lucide-react";
+import { X, Search, GraduationCap } from "lucide-react";
 import { NOTIONS } from "@/lib/help-notions";
 import { parcoursForPath } from "@/lib/help-parcours";
 import HelpDiagram from "@/components/help/HelpDiagram";
@@ -44,8 +44,8 @@ export default function HelpBubble() {
   // Sur la page Europe, la bulle d'aide prend les couleurs du drapeau de l'UE (bleu + or).
   const eu = pathname.startsWith("/eurodeputes");
   const th = eu
-    ? { cloud: "from-[#003399] to-[#001f5c]", ring: "bg-[#FFCC00]/40", header: "from-[#003399] via-[#002a7a] to-[#003399]", eyebrow: "text-[#FFD54A]", badge: "from-[#003399]/10 to-[#FFCC00]/25", num: "from-[#003399] to-[#001f5c]", line: "from-[#FFCC00] dark:from-[#b8940a]", tip: "from-[#003399]/10 to-[#FFCC00]/15 dark:from-slate-800/50 dark:to-slate-800/50", tipIcon: "text-[#003399] dark:text-[#FFD54A]", teaser: "text-[#FFD54A]", teaserRing: "ring-[#FFCC00]/40" }
-    : { cloud: "from-sky-400 to-blue-600", ring: "bg-sky-400/30", header: "from-blue-600 via-indigo-600 to-sky-500", eyebrow: "text-white/70", badge: "from-sky-100 to-indigo-100 dark:from-slate-800 dark:to-slate-800", num: "from-blue-600 to-indigo-600", line: "from-sky-300 dark:from-sky-700", tip: "from-sky-50 to-indigo-50 dark:from-slate-800/50 dark:to-slate-800/50", tipIcon: "text-sky-500", teaser: "text-sky-300", teaserRing: "ring-sky-400/30" };
+    ? { cloud: "from-[#0047b3] via-[#003399] to-[#001f5c]", bulle: "from-[#0047b3] to-[#002a7a]", ring: "bg-[#FFCC00]/40", header: "from-[#003399] via-[#002a7a] to-[#003399]", eyebrow: "text-[#FFD54A]", badge: "from-[#003399]/10 to-[#FFCC00]/25", num: "from-[#003399] to-[#001f5c]", line: "from-[#FFCC00] dark:from-[#b8940a]", tip: "from-[#003399]/10 to-[#FFCC00]/15 dark:from-slate-800/50 dark:to-slate-800/50", tipIcon: "text-[#003399] dark:text-[#FFD54A]", teaser: "text-[#FFD54A]", teaserRing: "ring-[#FFCC00]/40" }
+    : { cloud: "from-sky-400 via-blue-500 to-indigo-600", bulle: "from-sky-400 to-blue-500", ring: "bg-sky-400/30", header: "from-blue-600 via-indigo-600 to-sky-500", eyebrow: "text-white/70", badge: "from-sky-100 to-indigo-100 dark:from-slate-800 dark:to-slate-800", num: "from-blue-600 to-indigo-600", line: "from-sky-300 dark:from-sky-700", tip: "from-sky-50 to-indigo-50 dark:from-slate-800/50 dark:to-slate-800/50", tipIcon: "text-sky-500", teaser: "text-sky-300", teaserRing: "ring-sky-400/30" };
 
   // À chaque changement de page : le bouton « pope » et une bulle incite à cliquer pour
   // comprendre le fonctionnement de l'organe/de la page. Disparaît après quelques secondes.
@@ -109,21 +109,21 @@ export default function HelpBubble() {
           transition={{ type: "spring", stiffness: 320, damping: 11 }}
           className={`relative flex h-14 w-20 items-center justify-center rounded-[50%] bg-gradient-to-br ${th.cloud} text-white shadow-xl shadow-sky-500/40`}
         >
-          {eu ? (
-            <>
-              <span className="absolute -top-2 left-4 h-6 w-6 rounded-full bg-[#003399]" />
-              <span className="absolute -top-3 left-8 h-8 w-8 rounded-full bg-[#00297a]" />
-              <span className="absolute -top-2 right-4 h-6 w-6 rounded-full bg-[#002a7a]" />
-              <span className="relative z-10 text-lg">🇪🇺</span>
-            </>
-          ) : (
-            <>
-              <span className="absolute -top-2 left-4 h-6 w-6 rounded-full bg-sky-400" />
-              <span className="absolute -top-3 left-8 h-8 w-8 rounded-full bg-sky-500" />
-              <span className="absolute -top-2 right-4 h-6 w-6 rounded-full bg-blue-500" />
-              <Lightbulb size={20} className="relative z-10" />
-            </>
-          )}
+          {/* Les trois bulles qui donnent au nuage sa silhouette. Elles portent le
+              même dégradé que le corps, sans quoi on verrait trois pastilles
+              posées dessus plutôt qu'un seul volume. */}
+          <span className={`absolute -top-2 left-4 h-6 w-6 rounded-full bg-gradient-to-br ${th.bulle}`} />
+          <span className={`absolute -top-3 left-8 h-8 w-8 rounded-full bg-gradient-to-br ${th.bulle}`} />
+          <span className={`absolute -top-2 right-4 h-6 w-6 rounded-full bg-gradient-to-br ${th.bulle}`} />
+          {/* Un point d'interrogation, plutôt qu'une ampoule ou un drapeau.
+              L'ampoule disait « idée » là où le bouton répond à une question ; et
+              le drapeau 🇪🇺 ne s'affiche pas sous Windows, qui ne dessine pas les
+              indicateurs régionaux et retombe sur les deux lettres « EU ». La
+              page Europe montrait donc une pastille bleue marquée EU, dont
+              personne ne pouvait deviner l'usage. */}
+          <span className="relative z-10 select-none font-staatliches text-[28px] leading-none text-white drop-shadow-[0_2px_4px_rgba(0,0,0,0.4)]">
+            ?
+          </span>
         </motion.span>
         <span className="pointer-events-none absolute -top-9 left-1/2 -translate-x-1/2 whitespace-nowrap rounded-full bg-slate-900 px-2.5 py-1 text-[10px] font-black uppercase tracking-widest text-white opacity-0 shadow-lg transition-opacity duration-200 group-hover:opacity-100">
           Comprendre cette page

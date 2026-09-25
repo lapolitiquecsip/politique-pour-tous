@@ -1,6 +1,6 @@
 "use client";
 
-import { useCallback, useEffect, useRef, useState } from "react";
+import { Children, useCallback, useEffect, useRef, useState } from "react";
 import { ChevronLeft, ChevronRight } from "lucide-react";
 
 /**
@@ -73,16 +73,33 @@ export default function DragScroller({
     setADroite(el.scrollLeft < el.scrollWidth - el.clientWidth - 4);
   }, []);
 
+  // L'observateur est monté UNE fois. La version précédente avait `children`
+  // dans ses dépendances : comme c'est un tableau neuf à chaque rendu, elle
+  // détruisait et recréait l'observateur à chaque rendu. Posée dans le panneau
+  // du Journal officiel, dont l'ouverture anime une mise à l'échelle, elle
+  // fabriquait soixante observateurs par seconde — chacun se déclenchant dès
+  // qu'on l'attachait, donc un nouveau rendu, donc un nouvel observateur.
+  // L'onglet finissait par tomber.
   useEffect(() => {
-    majFleches();
     const el = piste.current;
     if (!el) return;
-    // ResizeObserver plutôt que l'événement resize : le rail change aussi de
-    // taille quand ses cartes arrivent, sans que la fenêtre ne bouge.
-    const ro = new ResizeObserver(majFleches);
+    // Le rappel passe par une image d'animation : c'est ce que demande la
+    // spécification pour ne pas relancer l'observateur depuis son propre
+    // rappel, et cela suffit à éteindre l'avertissement « ResizeObserver loop ».
+    let demande: number | null = null;
+    const ro = new ResizeObserver(() => {
+      if (demande !== null) return;
+      demande = requestAnimationFrame(() => { demande = null; majFleches(); });
+    });
     ro.observe(el);
-    return () => ro.disconnect();
-  }, [majFleches, children]);
+    return () => { ro.disconnect(); if (demande !== null) cancelAnimationFrame(demande); };
+  }, [majFleches]);
+
+  // L'arrivée des cartes change la largeur du contenu sans changer celle du
+  // rail : on remesure quand leur nombre bouge, ce qui est une valeur simple et
+  // ne relance donc rien d'autre.
+  const nbEnfants = Children.count(children);
+  useEffect(() => { majFleches(); }, [majFleches, nbEnfants]);
 
   const stopperInertie = () => {
     if (inertie.current !== null) {

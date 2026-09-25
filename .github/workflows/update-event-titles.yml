@@ -1,0 +1,57 @@
+name: Agenda — titres courts
+
+# Réécrit les intitulés de l'agenda parlementaire en titres lisibles.
+#
+# Les agendas de l'Assemblée et du Sénat sont des convocations, pas des textes à
+# lire : on y trouve des intitulés de plus de quatre cents caractères où l'objet
+# de la réunion arrive après l'heure, le tiret, l'organisme et deux parenthèses.
+# Sur la page d'accueil, ils débordaient de leur carte.
+#
+# Les évènements eux-mêmes sont ingérés par le dépôt backend, pas ici : ce cron
+# passe APRÈS, plusieurs fois par jour, pour rattraper ce qui vient d'arriver.
+# Il ne traite que les entrées encore dépourvues de titre court, donc il ne coûte
+# rien quand il n'y a rien de neuf.
+#
+# LLM_FREE_API_KEY : clé Google AI Studio (gratuite). Sans elle, rien n'est
+# réécrit et le front retombe sur l'intitulé brut nettoyé — dégradé, pas cassé.
+# Voir scripts/update-event-titles.ts
+
+on:
+  schedule:
+    - cron: '20 5 * * *'     # 07h20 Paris — après l'ingestion nocturne
+    - cron: '20 11 * * *'    # 13h20 Paris — les ajouts de la matinée
+    - cron: '20 16 * * *'    # 18h20 Paris — l'agenda du lendemain
+  workflow_dispatch:
+    inputs:
+      days:
+        description: "Fenêtre en jours, avant et après aujourd'hui"
+        required: false
+        default: '21'
+
+concurrency:
+  group: event-titles
+  cancel-in-progress: false
+
+jobs:
+  titres:
+    runs-on: ubuntu-latest
+    timeout-minutes: 25
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+          cache: 'npm'
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Titres courts de l'agenda
+        env:
+          NEXT_PUBLIC_SUPABASE_URL: ${{ secrets.NEXT_PUBLIC_SUPABASE_URL }}
+          SUPABASE_SERVICE_ROLE_KEY: ${{ secrets.SUPABASE_SERVICE_ROLE_KEY }}
+          LLM_FREE_API_KEY: ${{ secrets.LLM_FREE_API_KEY }}
+        run: npx --yes tsx scripts/update-event-titles.ts --days=${{ github.event.inputs.days || '21' }}

@@ -257,7 +257,10 @@ export default function JournalOfficielDuJour() {
             date={edition.date}
             num={edition.num}
             textCount={edition.text_count}
+            editions={editions}
+            indexCourant={choisi}
             onOuvrir={() => setOuvert(true)}
+            onChoisir={(i) => { setChoisi(i); setFiltre(null); setOuvert(true); }}
           />
         </motion.div>
       ) : (

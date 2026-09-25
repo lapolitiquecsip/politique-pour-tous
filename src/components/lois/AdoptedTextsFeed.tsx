@@ -3,8 +3,9 @@
 import { useEffect, useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import SwipeArrow from "@/components/ui/SwipeArrow";
-import { CheckCircle2, XCircle, X, ExternalLink, Loader2, ArrowRight, Landmark, Info, HelpCircle, FileText, Target, AlertTriangle, GitBranch, Pencil } from "lucide-react";
+import { CheckCircle2, XCircle, X, ExternalLink, Loader2, ArrowRight, Landmark, Info, HelpCircle, FileText, Target, AlertTriangle, GitBranch, Pencil, CalendarClock } from "lucide-react";
 import { api } from "@/lib/api";
+import DragScroller from "@/components/ui/DragScroller";
 
 // Surligne les chiffres (%, €, quantités, votes, dates) dans un texte d'analyse.
 const NUM_RE = /(\d[\d  .]*\s?(?:%|€|Md€|M€|milliards?|millions?)|\d{1,4}\s?(?:pour|contre|abstentions?|voix|sièges)|\d+(?:[.,]\d+)?)/gi;
@@ -103,6 +104,12 @@ export default function AdoptedTextsFeed() {
   if (!items) return <div className="flex justify-center py-16"><Loader2 className="animate-spin text-blue-600" /></div>;
   if (items.length === 0) return null;
 
+  // Trois semaines sans vote ne s'expliquent que par l'intersession : la seule
+  // autre cause serait une ingestion en panne, et on preferera toujours dire
+  // pourquoi une date est vieille plutot que de la laisser semer le doute.
+  const joursDepuis = Math.floor((Date.now() - new Date(items[0].date_scrutin).getTime()) / 864e5);
+  const horsSession = joursDepuis > 21;
+
   return (
     <section className="mx-auto max-w-7xl px-4">
       <div className="mb-6">
@@ -110,20 +117,34 @@ export default function AdoptedTextsFeed() {
           Derniers textes <span className="text-blue-600">adoptés par l'Assemblée</span>
         </h2>
         <p className="mt-1 text-muted-foreground">Chaque vote solennel sur l'ensemble d'un texte : l'issue, le vote de chaque parti, et ce qui se passe ensuite.</p>
+        {horsSession && (
+          // Sans cette phrase, une date vieille de deux mois passe pour une
+          // panne d'alimentation. Elle n'en est pas une : l'Assemblee ne tient
+          // pas de seance publique hors session, et ne vote donc pas. La regle
+          // citee est constitutionnelle (article 28) : elle ne se perimera pas.
+          <p className="mt-3 flex flex-wrap items-start gap-2 rounded-2xl bg-blue-50 px-4 py-2.5 text-[13px] font-medium leading-snug text-blue-900 dark:bg-blue-500/10 dark:text-blue-200">
+            <CalendarClock size={15} className="mt-0.5 shrink-0" />
+            <span>
+              Aucun vote depuis le <strong>{frDate(items[0].date_scrutin)}</strong> : c&apos;est
+              l&apos;intersession. La session ordinaire court du 1<sup>er</sup> octobre au 30 juin,
+              et l&apos;Assemblee ne siege pas en seance publique entre deux sessions.
+            </span>
+          </p>
+        )}
       </div>
 
       {/* Mobile : rail horizontal. Une carte par rangée pleine hauteur obligeait à
           faire défiler très longtemps avant d'atteindre la suite de la page. */}
       <div className="relative">
       <SwipeArrow color="#2563eb" />
-      <div className="flex snap-x snap-mandatory gap-4 overflow-x-auto overscroll-x-contain pb-3 -mx-4 px-4 [scrollbar-width:none] [&::-webkit-scrollbar]:hidden sm:mx-0 sm:grid sm:grid-cols-2 sm:gap-5 sm:overflow-visible sm:px-0 sm:pb-0 lg:grid-cols-3">
+      <DragScroller ariaLabel="Derniers textes adoptes par l'Assemblee">
         {items.map(v => {
           const adopted = isAdopted(v.resultat);
           const nav = v.navette;
           const groups = (v.group_results || []).filter((g: any) => (g.pour + g.contre + g.abstention) > 0);
           return (
             <button key={v.id} onClick={() => setOpen(v)}
-              className="group w-[85vw] shrink-0 snap-center sm:w-auto sm:shrink flex flex-col rounded-[2rem] border border-border bg-card p-6 text-left shadow-sm transition hover:-translate-y-1 hover:shadow-xl dark:border-slate-800 dark:bg-slate-900">
+              className="group flex w-[82vw] shrink-0 flex-col rounded-[2rem] border border-border bg-card p-6 text-left shadow-sm transition hover:-translate-y-1 hover:shadow-xl dark:border-slate-800 dark:bg-slate-900 sm:w-[23rem]">
               <div className="flex items-start justify-between gap-3">
                 <span className="text-xs font-bold text-slate-400">{frDate(v.date_scrutin)}</span>
                 <span className={`inline-flex items-center gap-1 rounded-full px-3 py-1 text-[10px] font-black uppercase tracking-widest text-white ${adopted ? "bg-emerald-500" : "bg-rose-500"}`}>
@@ -155,7 +176,7 @@ export default function AdoptedTextsFeed() {
             </button>
           );
         })}
-      </div>
+      </DragScroller>
       </div>
 
       {/* Détail : décryptage + vote de chaque parti. */}

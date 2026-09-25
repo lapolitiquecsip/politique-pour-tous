@@ -19,8 +19,6 @@ import InstitutionsGrid from "@/components/home/InstitutionsGrid";
 import StatsPanel from "@/components/home/StatsPanel";
 import HomeHero from "@/components/home/HomeHero";
 import JournalOfficielBook from "@/components/home/JournalOfficielBook";
-import JournalOfficielDuJour from "@/components/home/JournalOfficielDuJour";
-import CommissionsRegistre from "@/components/home/CommissionsRegistre";
 import NewsletterBanner from "@/components/home/NewsletterBanner";
 import PetitionsSection from "@/components/home/PetitionsSection";
 import { VerticalImageStack } from "@/components/ui/vertical-image-stack";
@@ -90,15 +88,12 @@ export default function Home() {
             </p>
           </div>
 
-          <JournalOfficielDuJour />
-
-          {/* Le travail des commissions, ou le droit se fabrique vraiment :
-              un texte y est reecrit article par article et des dirigeants y sont
-              entendus, sans que rien n en sorte dans la presse. Meme dispositif
-              que le Journal officiel, pour la meme raison. */}
-          <CommissionsRegistre />
-
-          <div className="mt-20 mb-10 text-center">
+          {/* Le Journal officiel integral et le suivi des commissions sont
+              reserves a l abonnement Pro : ils vivent dans l espace de l abonne,
+              pas ici. Les laisser sur l accueil obligeait chaque visiteur a
+              defiler devant deux panneaux verrouilles avant d atteindre le livre
+              des lois, qui est ouvert a tous. */}
+          <div className="mb-10 text-center">
             <h3 className="text-3xl md:text-4xl font-staatliches uppercase tracking-tight text-foreground dark:text-white">Les lois promulguées</h3>
             <p className="mt-2 text-muted-foreground max-w-2xl mx-auto">Feuilletez les dernières lois — une page par jour et par texte. Cliquez pour voir le parcours complet de chaque loi.</p>
             <p className="mx-auto mt-4 max-w-md rounded-2xl bg-emerald-50 px-4 py-2.5 text-center text-sm font-bold leading-6 text-emerald-700 dark:bg-emerald-500/10 dark:text-emerald-400">

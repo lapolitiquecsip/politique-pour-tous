@@ -2,7 +2,7 @@
 
 import { useEffect, useMemo, useState } from "react";
 import { usePathname } from "next/navigation";
-import { motion, AnimatePresence } from "framer-motion";
+import { motion, AnimatePresence, useDragControls } from "framer-motion";
 import { X, Search, GraduationCap } from "lucide-react";
 import { NOTIONS } from "@/lib/help-notions";
 import { parcoursForPath } from "@/lib/help-parcours";
@@ -21,6 +21,8 @@ export default function HelpBubble() {
   const [open, setOpen] = useState(false);
   const [q, setQ] = useState("");
   const [teaser, setTeaser] = useState(false);
+  // Le glisser de la feuille ne part que de sa poignée (voir plus bas).
+  const poignee = useDragControls();
 
   // Masquée sur la page Premium (vitrine) ET sur les FICHES individuelles (élus, partis) : la bulle
   // flottante recouvre le contenu détaillé et gêne la lecture. Elle reste sur les pages de liste et
@@ -143,16 +145,33 @@ export default function HelpBubble() {
               initial={{ y: 40, opacity: 0 }} animate={{ y: 0, opacity: 1 }} exit={{ y: 40, opacity: 0 }}
               transition={{ type: "spring", damping: 26, stiffness: 300 }}
               onClick={e => e.stopPropagation()}
-              // Feuille que l'on chasse vers le bas au doigt, comme partout ailleurs sur
-              // téléphone. Le seuil évite qu'un défilement un peu vif la referme.
+              // Feuille que l'on chasse vers le bas au doigt, comme partout ailleurs
+              // sur téléphone. Le seuil évite qu'un défilement un peu vif la referme.
+              //
+              // `dragListener={false}` est ESSENTIEL et n'est pas un détail de
+              // réglage : sans lui, le glisser écoute toute la surface de la
+              // feuille et avale l'appui sur ce qu'elle contient. La croix ne
+              // fermait donc rien — ni au doigt, ni à la souris — parce que le
+              // geste commençait avant que le clic n'ait lieu. Le glisser ne part
+              // plus que de la poignée, ci-dessous, qui est là pour ça.
               drag="y"
+              dragListener={false}
+              dragControls={poignee}
               dragDirectionLock
               dragConstraints={{ top: 0, bottom: 0 }}
               dragElastic={{ top: 0, bottom: 0.4 }}
               onDragEnd={(_, info) => { if (info.offset.y > 120 || info.velocity.y > 700) setOpen(false); }}
             >
-              {/* Poignée : dit sans mot que la feuille se chasse vers le bas. */}
-              <span aria-hidden className="mx-auto mt-2 h-1.5 w-10 shrink-0 rounded-full bg-white/40 sm:hidden" />
+              {/* Poignée : dit sans mot que la feuille se chasse vers le bas, et
+                  c'est désormais le seul endroit d'où le geste peut partir. Elle
+                  n'existe que sur téléphone ; sur ordinateur, la feuille ne se
+                  glisse pas du tout, ce qui rend le texte sélectionnable. */}
+              <span
+                aria-hidden
+                onPointerDown={e => poignee.start(e)}
+                style={{ touchAction: "none" }}
+                className="mx-auto mt-2 h-1.5 w-10 shrink-0 cursor-grab rounded-full bg-white/40 active:cursor-grabbing sm:hidden"
+              />
               {/* En-tête — richement mis en page, ton pédagogique. */}
               {/* shrink-0 indispensable : en colonne flexible, la liste d'étapes
                   comprimait l'en-tête et coupait la deuxième ligne du titre. */}

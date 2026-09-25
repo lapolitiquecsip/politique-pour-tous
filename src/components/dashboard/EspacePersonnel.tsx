@@ -11,7 +11,7 @@ import NotificationsFeed from "@/components/dashboard/NotificationsFeed";
 import PremiumPreferences from "@/components/dashboard/PremiumPreferences";
 import CommuneFeedCard from "@/components/dashboard/CommuneFeedCard";
 import CandidatesFollowFeed from "@/components/dashboard/CandidatesFollowFeed";
-import CommissionsProFeed from "@/components/dashboard/CommissionsProFeed";
+import CommissionsRegistre from "@/components/home/CommissionsRegistre";
 import JournalOfficielDuJour from "@/components/home/JournalOfficielDuJour";
 import ParametresCompte from "@/components/dashboard/ParametresCompte";
 import { usePremium } from "@/lib/hooks/usePremium";
@@ -344,7 +344,12 @@ export default function EspacePersonnel({ mode = "tout" }: { mode?: ModeEspace }
           <NotificationsFeed userId={userId} />
           {/* Tout ce qui relève de l'offre Pro est rassemblé ici : le professionnel
               ouvre son espace et trouve la journée complète, sans chercher ailleurs. */}
-          {proVerifie && <CommissionsProFeed />}
+          {/* Le registre remplace l ancien fil des commissions : les deux
+              montraient la meme matiere dans le meme ecran, et deux panneaux
+              jumeaux ont deja seme la confusion pour le Journal officiel. Le
+              registre y ajoute la navigation par journee, les deux chambres et
+              la recherche. */}
+          {proVerifie && <CommissionsRegistre />}
           {proVerifie && <JournalOfficielDuJour />}
           <CandidatesFollowFeed />
           <CommuneFeedCard />

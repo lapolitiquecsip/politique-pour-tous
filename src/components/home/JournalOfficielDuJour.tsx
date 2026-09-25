@@ -9,6 +9,7 @@ import { usePremium } from "@/lib/hooks/usePremium";
 import JorfSearch from "@/components/home/JorfSearch";
 import JournalCouverture from "@/components/home/JournalCouverture";
 import Garde from "@/components/ui/Garde";
+import DragScroller from "@/components/ui/DragScroller";
 
 /**
  * Le Journal officiel du jour, réservé aux abonnés Pro.

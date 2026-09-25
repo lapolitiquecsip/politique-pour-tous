@@ -1,0 +1,55 @@
+name: Renouvellement du Sénat (série 2)
+
+# Suit le renouvellement du Sénat du 27 septembre 2026 à partir de l'open data
+# du Sénat (ODSEN, Licence Ouverte) : liste des sénateurs en fonction, sièges
+# remis en jeu, puis élus siège par siège. Aucune clé d'API n'est nécessaire.
+# Voir scripts/update-senate-election.ts pour le détail de la méthode.
+#
+# Deux rythmes, parce que l'enjeu n'est pas le même selon le moment :
+#   · en temps ordinaire, un passage par jour suffit (entrées, départs,
+#     changements de groupe) ;
+#   · autour du scrutin, toutes les deux heures, pour que le site suive la
+#     proclamation des résultats et la prise de fonctions du 1er octobre sans
+#     que personne n'ait à intervenir un dimanche soir.
+#
+# Le script est idempotent : il compare une empreinte de la liste officielle et
+# n'écrit rien tant qu'elle n'a pas bougé.
+
+on:
+  schedule:
+    - cron: '20 4 * * *'          # 06h20 Paris — marche courante
+    - cron: '0 */2 27-30 9 *'     # toutes les 2 h du 27 au 30 septembre
+    - cron: '0 */2 1-8 10 *'      # toutes les 2 h du 1er au 8 octobre
+  workflow_dispatch:
+    inputs:
+      dry_run:
+        description: "Diagnostic seul, sans rien écrire"
+        type: boolean
+        default: false
+
+concurrency:
+  group: senate-election
+  cancel-in-progress: false
+
+jobs:
+  senate-election:
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+          cache: 'npm'
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Liste officielle, instantané et résultats
+        env:
+          NEXT_PUBLIC_SUPABASE_URL: ${{ secrets.NEXT_PUBLIC_SUPABASE_URL }}
+          SUPABASE_SERVICE_ROLE_KEY: ${{ secrets.SUPABASE_SERVICE_ROLE_KEY }}
+        run: npx --yes tsx scripts/update-senate-election.ts ${{ github.event.inputs.dry_run == 'true' && '--dry-run' || '' }}

@@ -2057,6 +2057,38 @@ export const api = {
     payload.source_urls = [...new Set(payload.source_urls)];
     payload.sources = payload.source_urls.join(' | ');
     return payload;
+  },
+
+  /**
+   * Le renouvellement du Sénat : où en est-on, et qui a été élu.
+   *
+   * Une seule ligne d'état est lue d'abord — elle dit la phase, les
+   * circonscriptions qui votent et le solde des groupes. Le détail siège par
+   * siège n'est demandé que si le scrutin a rendu son verdict : avant, il
+   * n'existe pas, et le télécharger serait un aller-retour pour rien.
+   *
+   * Tout est alimenté par scripts/update-senate-election.ts depuis l'open data
+   * du Sénat. La page n'a donc rien d'écrit en dur : elle affiche ce que la
+   * liste officielle dit au moment où on la consulte.
+   */
+  getSenateElection: async (electionDate = '2026-09-27') => {
+    const { data: status, error } = await supabase
+      .from('senate_election_status')
+      .select('*')
+      .eq('election_date', electionDate)
+      .maybeSingle();
+    // Tant que la migration n'est pas appliquée, la page doit rester lisible :
+    // elle retombe alors sur son affichage d'avant-scrutin.
+    if (error || !status) return { status: null as any, results: [] as any[] };
+
+    if (status.phase !== 'resultats') return { status, results: [] as any[] };
+
+    const { data: results } = await supabase
+      .from('senate_election_results')
+      .select('matricule, first_name, last_name, slug, photo_url, constituency, dept_code, political_group, outcome, seats')
+      .eq('election_date', electionDate)
+      .order('last_name');
+    return { status, results: (results || []) as any[] };
   }
 
 };

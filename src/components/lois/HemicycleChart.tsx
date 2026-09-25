@@ -6,6 +6,7 @@ import { useRouter } from "next/navigation";
 import { MousePointerClick } from "lucide-react";
 import { api } from "@/lib/api";
 import { groupByCode } from "@/lib/data/epGroups";
+import { SENATE_GROUPS } from "@/lib/senate-groups";
 
 // Hémicycles de l'Assemblée nationale et du Sénat (façon Datan, plus moderne).
 // Couleurs = couleurs politiques (identité) ; structure = guide dataviz (légende + labels
@@ -32,19 +33,9 @@ const EU_GROUPS: Record<string, { label: string; color: string; order: number }>
   NI: { label: "Non inscrits", color: "#8D949A", order: 9 },
 };
 
-// Groupes du Sénat → couleur moderne (par famille) + ordre gauche→droite + fiche du parti
-// correspondant (slug de political_parties, via les alias : chaque groupe a une fiche).
-const SENATE: Record<string, { label: string; color: string; order: number; slug?: string }> = {
-  "CRCE-K": { label: "CRCE-K", color: "#B01A2E", order: 0, slug: "parti-communiste-francais" },
-  GEST: { label: "Écologiste", color: "#4CA85F", order: 1, slug: "les-ecologistes" },
-  SER: { label: "Socialiste (SER)", color: "#E24E8B", order: 2, slug: "parti-socialiste" },
-  RDSE: { label: "RDSE", color: "#E0A02E", order: 3, slug: "rdse" },
-  RDPI: { label: "RDPI", color: "#8B5CF6", order: 4, slug: "renaissance" },
-  UC: { label: "Union Centriste", color: "#F2960F", order: 5, slug: "union-centriste" },
-  "Les Indépendants": { label: "Les Indépendants", color: "#5B9BD5", order: 6, slug: "les-independants" },
-  "Les Républicains": { label: "Les Républicains", color: "#2E5AAC", order: 7, slug: "les-republicains" },
-  NI: { label: "Non inscrits", color: "#8D949A", order: 9, slug: "non-inscrits" },
-};
+// Groupes du Sénat : la table est partagée avec la page du renouvellement, qui
+// colore la carte des départements avec les mêmes couleurs. Voir src/lib/senate-groups.ts.
+const SENATE = SENATE_GROUPS;
 
 function polar(cx: number, cy: number, r: number, deg: number) {
   const a = (deg * Math.PI) / 180;

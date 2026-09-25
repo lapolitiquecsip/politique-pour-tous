@@ -34,6 +34,11 @@ jobs:
       # exports incomplets (seules les routes modifiées sont ré-émises). Build propre à chaque fois.
       - name: Install dependencies
         run: npm ci
+      # next.config porte `typescript.ignoreBuildErrors: true` : le build ne
+      # vérifie donc RIEN. Un composant utilisé sans être importé est ainsi parti
+      # en production sans que rien ne s'allume. tsc passe ici avant le build.
+      - name: Vérification des types
+        run: npm run typecheck
       - name: Clean previous build output
         run: rm -rf .next out
       - name: Build with Next.js

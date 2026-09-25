@@ -20,6 +20,7 @@ import StatsPanel from "@/components/home/StatsPanel";
 import HomeHero from "@/components/home/HomeHero";
 import JournalOfficielBook from "@/components/home/JournalOfficielBook";
 import JournalOfficielDuJour from "@/components/home/JournalOfficielDuJour";
+import CommissionsRegistre from "@/components/home/CommissionsRegistre";
 import NewsletterBanner from "@/components/home/NewsletterBanner";
 import PetitionsSection from "@/components/home/PetitionsSection";
 import { VerticalImageStack } from "@/components/ui/vertical-image-stack";
@@ -90,6 +91,12 @@ export default function Home() {
           </div>
 
           <JournalOfficielDuJour />
+
+          {/* Le travail des commissions, ou le droit se fabrique vraiment :
+              un texte y est reecrit article par article et des dirigeants y sont
+              entendus, sans que rien n en sorte dans la presse. Meme dispositif
+              que le Journal officiel, pour la meme raison. */}
+          <CommissionsRegistre />
 
           <div className="mt-20 mb-10 text-center">
             <h3 className="text-3xl md:text-4xl font-staatliches uppercase tracking-tight text-foreground dark:text-white">Les lois promulguées</h3>

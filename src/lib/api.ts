@@ -792,6 +792,48 @@ export const api = {
    * Renvoie aussi le résumé, qui sert de repli quand l'analyse structurée n'a pas
    * encore été produite.
    */
+  /**
+   * Les journées où des commissions ont siégé, de la plus récente à la plus ancienne.
+   *
+   * Deux colonnes seulement, et un plafond : à quarante octets la ligne, trois
+   * cents réunions tiennent en douze kilo-octets et couvrent une trentaine de
+   * jours de séance — la profondeur utile pour un suivi d'accueil. La liste
+   * complète en pèse trente et un, ce qu'on ne fait pas payer à une rubrique
+   * qu'on n'ouvrira pas forcément.
+   *
+   * Le regroupement se fait ici, faute de mieux : l'agrégation SQL est refusée
+   * par PostgREST sur ce projet (« Use of aggregate functions is not allowed »).
+   */
+  getCommissionDays: async (limit = 300) => {
+    const { data, error } = await supabase
+      .from('commission_reports')
+      .select('meeting_date, chamber')
+      .order('meeting_date', { ascending: false })
+      .limit(limit);
+    if (error) return [];
+    const par = new Map<string, { date: string; total: number; an: number; senat: number }>();
+    for (const r of (data ?? []) as any[]) {
+      const d = String(r.meeting_date ?? '').slice(0, 10);
+      if (!d) continue;
+      if (!par.has(d)) par.set(d, { date: d, total: 0, an: 0, senat: 0 });
+      const j = par.get(d)!;
+      j.total++;
+      if (r.chamber === 'SENAT') j.senat++; else j.an++;
+    }
+    return [...par.values()].sort((a, b) => b.date.localeCompare(a.date));
+  },
+
+  /** Les réunions d'une journée, sans leur analyse — elle est lue au dépliage. */
+  getCommissionsOfDay: async (date: string) => {
+    const { data, error } = await supabase
+      .from('commission_reports')
+      .select('ref, chamber, commission, title, meeting_date, cr_url, video_url, analyzed_at')
+      .eq('meeting_date', date)
+      .order('commission', { ascending: true });
+    if (error) return [];
+    return data ?? [];
+  },
+
   getCommissionAnalysis: async (ref: string) => {
     const { data, error } = await supabase
       .from('commission_reports')

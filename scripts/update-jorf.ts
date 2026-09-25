@@ -536,8 +536,18 @@ async function main() {
   console.log(`  éditions retenues : à partir du ${DEPUIS}`);
 
   // Éditions déjà résumées : on ne repaie pas un résumé pour rien.
-  const { data: connues } = await supabase.from("jorf_editions").select("date, digest");
+  const { data: connues } = await supabase.from("jorf_editions").select("date, digest, digest_at");
   const dejaResumee = new Set((connues ?? []).filter(r => r.digest).map(r => r.date));
+  /**
+   * Résumés déjà écrits, à reporter tels quels dans l'enregistrement.
+   *
+   * L'upsert de PostgREST écrit la ligne entière : une colonne absente du corps
+   * envoyé revient à sa valeur par défaut, donc à NULL. Omettre `digest` parce
+   * qu'on n'en a pas produit de nouveau EFFAÇAIT celui qui existait — et comme
+   * le cron réingère les dix derniers jours chaque nuit, il effaçait puis
+   * réécrivait dix résumés, différents à chaque fois, pour les mêmes éditions.
+   */
+  const digestConnu = new Map((connues ?? []).map((r: any) => [r.date, { digest: r.digest, digest_at: r.digest_at }]));
 
   // Explications déjà écrites, pour ne pas les refaire — ni, surtout, les
   // remplacer par de moins bonnes. Voir le commentaire d'expliquerTextes.
@@ -644,7 +654,12 @@ async function main() {
     lignes.push({
       date: e.date, num: e.num, title: e.title, eli_url: e.eli_url,
       text_count: e.text_count, counts: e.counts, sections: e.sections,
-      ...(digest ? { digest, digest_at: new Date().toISOString() } : {}),
+      // Le nouveau résumé s'il vient d'être écrit, sinon celui d'avant, jamais rien.
+      ...(digest
+        ? { digest, digest_at: new Date().toISOString() }
+        : digestConnu.get(e.date)?.digest
+          ? digestConnu.get(e.date)
+          : {}),
       source_file: e.source_file, published_at: e.published_at,
       updated_at: new Date().toISOString(),
     });

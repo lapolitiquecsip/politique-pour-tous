@@ -8,6 +8,7 @@ import { api } from "@/lib/api";
 import { usePremium } from "@/lib/hooks/usePremium";
 import JorfSearch from "@/components/home/JorfSearch";
 import JournalCouverture from "@/components/home/JournalCouverture";
+import Garde from "@/components/ui/Garde";
 
 /**
  * Le Journal officiel du jour, réservé aux abonnés Pro.
@@ -248,10 +249,17 @@ export default function JournalOfficielDuJour() {
     // plus ce qui s'ouvre.
     <AnimatePresence mode="wait" initial={false}>
       {!ouvert ? (
+        /* Sortie en fondu, sans rotation 3D.
+           La première version faisait pivoter la couverture sur sa reliure, ce
+           qui était joli et coûtait cher : une couche en perspective contenant
+           un dégradé animé découpé au texte, que le navigateur devait repeindre
+           à chaque image de la rotation. L'onglet tombait. Un fondu qui monte
+           légèrement raconte la même chose et n'engage que le compositeur.
+           (Commentaire JavaScript et non JSX : on est ici dans une branche de
+           ternaire, qui attend une expression, pas des enfants.) */
         <motion.div
           key="couverture"
-          exit={reduce ? { opacity: 0 } : { rotateY: -92, opacity: 0, transition: { duration: 0.5, ease: "easeIn" } }}
-          style={{ transformOrigin: "left center", transformPerspective: 1600 }}
+          exit={reduce ? { opacity: 0 } : { opacity: 0, y: -12, scale: 0.98, transition: { duration: 0.28, ease: "easeIn" } }}
         >
           <JournalCouverture
             date={edition.date}
@@ -270,6 +278,7 @@ export default function JournalOfficielDuJour() {
           animate={{ opacity: 1, y: 0, scale: 1 }}
           transition={{ duration: 0.4, ease: "easeOut" }}
         >
+    <Garde quoi="Le Journal officiel">
     <div className="mb-10 overflow-hidden rounded-[2rem] border-2 border-fuchsia-400/40 bg-gradient-to-br from-slate-950 via-slate-900 to-purple-950 text-white shadow-xl">
       <div className="border-b border-white/10 p-5 sm:p-7">
         <div className="flex flex-wrap items-center gap-x-3 gap-y-2">
@@ -474,6 +483,7 @@ export default function JournalOfficielDuJour() {
         </p>
       </div>
     </div>
+    </Garde>
         </motion.div>
       )}
     </AnimatePresence>

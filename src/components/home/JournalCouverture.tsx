@@ -1,7 +1,7 @@
 "use client";
 
 import { motion, useReducedMotion } from "framer-motion";
-import { Newspaper, ArrowRight, Zap } from "lucide-react";
+import { Newspaper, ArrowRight } from "lucide-react";
 import DragScroller from "@/components/ui/DragScroller";
 
 /**
@@ -127,23 +127,25 @@ export default function JournalCouverture({
           <div className="mt-3 h-px bg-white/20" />
           <div className="mt-[3px] h-px bg-white/10" />
 
-          {/* Le titre, et le reflet qui le traverse. On superpose deux copies : la
-              première porte la couleur, la seconde le reflet, découpé au texte par
-              bg-clip-text. Un seul élément ne peut pas faire les deux. */}
-          <h3 className="relative mt-5 select-none font-staatliches text-[2.7rem] uppercase leading-[0.85] tracking-tight sm:text-7xl">
+          {/* Le titre, et le reflet qui le traverse.
+              La première version découpait un dégradé animé AU TEXTE
+              (bg-clip-text) en déplaçant sa background-position soixante fois
+              par seconde. Cela force le navigateur à re-rastériser les glyphes à
+              chaque image, et quand la couverture partait ensuite en rotation 3D
+              à l'ouverture, cette rastérisation se faisait dans une couche
+              transformée : l'onglet tombait. Le reflet est maintenant une bande
+              qui TRAVERSE, animée par translation seule — le compositeur s'en
+              charge, sans repeindre une seule lettre. */}
+          <h3 className="relative mt-5 select-none overflow-hidden font-staatliches text-[2.7rem] uppercase leading-[0.85] tracking-tight sm:text-7xl">
             <span className="block">Journal</span>
             <span className="block text-fuchsia-300">Officiel</span>
             {!reduce && (
               <motion.span
                 aria-hidden
-                className="pointer-events-none absolute inset-0 block bg-gradient-to-r from-transparent via-white to-transparent bg-clip-text text-transparent"
-                style={{ backgroundSize: "55% 100%", backgroundRepeat: "no-repeat" }}
-                animate={{ backgroundPosition: ["-60% 0%", "160% 0%"] }}
-                transition={{ duration: 3.4, repeat: Infinity, repeatDelay: 2.6, ease: "easeInOut" }}
-              >
-                <span className="block">Journal</span>
-                <span className="block">Officiel</span>
-              </motion.span>
+                className="pointer-events-none absolute inset-y-0 -left-1/3 w-1/3 bg-gradient-to-r from-transparent via-white/25 to-transparent"
+                animate={{ x: ["0%", "500%"] }}
+                transition={{ duration: 2.8, repeat: Infinity, repeatDelay: 3.2, ease: "easeInOut" }}
+              />
             )}
           </h3>
 
@@ -158,10 +160,6 @@ export default function JournalCouverture({
               phrase, classé par ministère, et renvoie à Légifrance.
             </span>
           </p>
-
-          <div className="mt-4 inline-flex items-center gap-1.5 rounded-full bg-fuchsia-500/15 px-3 py-1 text-[10px] font-black uppercase tracking-widest text-fuchsia-200 ring-1 ring-fuchsia-400/30">
-            <Zap size={11} /> Mis à jour dès la parution
-          </div>
 
           <div className="mt-5 h-px bg-white/20" />
 

@@ -4,6 +4,7 @@ import * as cheerio from 'cheerio';
 import Anthropic from '@anthropic-ai/sdk';
 import { sendCronAlert } from '@/lib/cron-alert';
 
+import { CLAUDE_MODEL } from '@/lib/ai-model';
 // Vercel Cron : appelée toutes les 2h — "0 */2 * * *"
 // Scrape l'Assemblée Nationale pour les projets et propositions de loi,
 // génère une analyse via Claude, et insère dans la table `laws`.
@@ -53,7 +54,7 @@ Réponds UNIQUEMENT avec le JSON.`;
 
   try {
     const response = await anthropic.messages.create({
-      model: 'claude-3-5-sonnet-latest',
+      model: CLAUDE_MODEL,
       max_tokens: 1500,
       messages: [{ role: 'user', content: prompt }],
     });

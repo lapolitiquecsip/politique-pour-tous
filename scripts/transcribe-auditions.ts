@@ -32,6 +32,7 @@ import { tmpdir } from "node:os";
 import { join } from "node:path";
 import { request as requeteHttps } from "node:https";
 import { SYSTEM, SHAPE, dropInventedQuotes, type Analysis } from "./lib/commission-prompt";
+import { demanderJSON, llmDisponible, llmVoie } from "./lib/llm";
 
 const execFileP = promisify(execFile);
 
@@ -187,25 +188,14 @@ N'attribue une position ou une citation que si le nom de l'orateur est clairemen
 Ne reprends un chiffre que s'il est énoncé sans ambiguïté.`;
 
 async function analyser(texte: string, titre: string, date: string): Promise<{ analysis: Analysis; dropped: number }> {
-  if (!LLM_KEY) throw new Error("DEEPSEEK_API_KEY absente");
-  const r = await fetch(`${LLM_URL}chat/completions`, {
-    method: "POST",
-    headers: { "Content-Type": "application/json", Authorization: `Bearer ${LLM_KEY}` },
-    body: JSON.stringify({
-      model: LLM_MODEL,
-      messages: [
-        { role: "system", content: `${SYSTEM}\n\n${SHAPE}\n${AVERTISSEMENT}` },
-        { role: "user", content: `Audition du ${date}.\nObjet : ${titre}\n\n--- TRANSCRIPTION AUTOMATIQUE ---\n${texte}` },
-      ],
-      response_format: { type: "json_object" },
-      max_tokens: 16000,
-    }),
-  });
-  const body: any = await r.json();
-  if (!r.ok) throw new Error(`analyse : HTTP ${r.status} — ${JSON.stringify(body).slice(0, 160)}`);
-  const brut = body.choices?.[0]?.message?.content ?? "";
-  if (!brut.trim()) throw new Error("analyse vide");
-  const parsed: Analysis = JSON.parse(brut.replace(/^```json\s*|\s*```$/g, ""));
+  // Même voie que les comptes rendus écrits : Google AI Studio d'abord, DeepSeek
+  // en secours seulement. Le compte DeepSeek est à découvert, et cette étape
+  // échouait donc à chaque passage.
+  const parsed = await demanderJSON<Analysis>(
+    `${SYSTEM}\n\n${SHAPE}\n${AVERTISSEMENT}`,
+    `Audition du ${date}.\nObjet : ${titre}\n\n--- TRANSCRIPTION AUTOMATIQUE ---\n${texte}`,
+    { maxJetons: 16000 },
+  );
   return dropInventedQuotes(parsed, texte);
 }
 
@@ -219,11 +209,22 @@ async function main() {
     process.exit(1);
   }
   if (!ASR_KEY) {
-    // Bruyant : sans clé, ces auditions resteraient indéfiniment sans contenu.
-    console.error("❌ ASR_API_KEY absente : aucune audition ne peut être transcrite.");
-    console.error("   Clé gratuite : console.groq.com → API Keys, puis secret GitHub ASR_API_KEY.");
-    process.exit(1);
+    // La transcription est une option qui n'a jamais été activée : aucune clé ASR
+    // n'existe. Échouer chaque jour pour cela noyait les vraies pannes sous des
+    // courriels d'alerte identiques — on sort donc en succès, avec un
+    // avertissement que GitHub affiche en clair sur le passage.
+    console.log("::warning title=Transcription des auditions désactivée::ASR_API_KEY absente : "
+      + "aucune audition n'est transcrite. Clé gratuite sur console.groq.com → API Keys, "
+      + "puis secret GitHub ASR_API_KEY.");
+    console.log("⏭  Rien à faire sans clé de transcription.");
+    return;
   }
+  if (!llmDisponible()) {
+    console.log("::warning title=Analyse des auditions indisponible::Aucune clé LLM "
+      + "(LLM_FREE_API_KEY). Clé gratuite sur https://aistudio.google.com/apikey.");
+    return;
+  }
+  console.log(`   Analyse via ${llmVoie()}`);
   const supabase = createClient(url, key);
 
   console.log("=== Auditions sans compte rendu écrit ===");

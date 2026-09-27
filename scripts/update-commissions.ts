@@ -38,6 +38,7 @@
  */
 import { createClient } from "@supabase/supabase-js";
 import { SYSTEM, SHAPE, dropInventedQuotes, type Analysis } from "./lib/commission-prompt";
+import { demanderJSON, llmDisponible, llmVoie } from "./lib/llm";
 
 const UA = "Mozilla/5.0 (compatible; lapolitiquecestsimple/1.0; +https://lapolitiquecestsimple.fr)";
 const SENAT = "https://www.senat.fr";
@@ -341,35 +342,21 @@ async function analyseOne(supabase: any, row: any) {
   const transcript = await loadTranscript(row);
   if (!transcript) return { ok: false, reason: "verbatim introuvable", dropped: 0, inTok: 0, outTok: 0 };
 
-  // DeepSeek abaisse la concurrence autorisée à mesure que le solde baisse : les 429
-  // arrivent alors en rafale. On patiente plutôt que de perdre la réunion.
-  let res!: Response, body: any;
-  for (let attempt = 1; ; attempt++) {
-    res = await fetch(`${LLM_BASE_URL}chat/completions`, {
-      method: "POST",
-      headers: { "Content-Type": "application/json", Authorization: `Bearer ${LLM_API_KEY}` },
-      body: JSON.stringify({
-        model: MODEL,
-        messages: [
-          { role: "system", content: `${SYSTEM}\n\n${SHAPE}` },
-          {
-            role: "user",
-            content: `Compte rendu de la ${row.commission ?? "commission"} — séance du ${row.meeting_date}.\nObjet : ${row.title ?? "(non précisé)"}\n\n--- COMPTE RENDU INTÉGRAL ---\n${transcript}`,
-          },
-        ],
-        response_format: { type: "json_object" },
-        max_tokens: 16000,
-      }),
-    });
-    body = await res.json();
-    if (res.status !== 429 || attempt >= 4) break;
-    await sleep(attempt * 15000);
-  }
-  if (!res.ok) throw new Error(`HTTP ${res.status} — ${JSON.stringify(body).slice(0, 160)}`);
+  // L'appel passe par le client « gratuit d'abord » (scripts/lib/llm.ts) : Google
+  // AI Studio en premier, DeepSeek seulement en secours. C'est ce qui remet ce
+  // cron au vert — le compte DeepSeek est passé à découvert (-0,50 $), et
+  // l'intégralité des analyses échouait depuis, plusieurs fois par jour.
+  const parsed = await demanderJSON<Analysis>(
+    `${SYSTEM}
 
-  const raw = body.choices?.[0]?.message?.content ?? "";
-  if (!raw.trim()) throw new Error("réponse vide (plafond de jetons trop bas ?)");
-  const parsed: Analysis = JSON.parse(raw.replace(/^```json\s*|\s*```$/g, ""));
+${SHAPE}`,
+    `Compte rendu de la ${row.commission ?? "commission"} — séance du ${row.meeting_date}.
+Objet : ${row.title ?? "(non précisé)"}
+
+--- COMPTE RENDU INTÉGRAL ---
+${transcript}`,
+    { maxJetons: 16000 },
+  );
 
   const { analysis, dropped } = dropInventedQuotes(parsed, transcript);
   const points = analysis.points_cles ?? [];
@@ -383,9 +370,9 @@ async function analyseOne(supabase: any, row: any) {
   if (error) throw new Error(error.message);
 
   return {
-    ok: true, dropped,
-    inTok: body.usage?.prompt_tokens ?? 0,
-    outTok: body.usage?.completion_tokens ?? 0,
+    // Le palier gratuit ne facture pas et ne renvoie pas d'usage : le comptage
+    // de jetons ne sert plus qu’au repli payant, où il reste à zéro.
+    ok: true, dropped, inTok: 0, outTok: 0,
     points: points.length,
     chiffres: (analysis.chiffres ?? []).length,
     citations: (analysis.citations ?? []).length,
@@ -397,34 +384,38 @@ async function analyseMeetings(
   limit: number,
   opts: { concurrency: number; minBalance: number; offPeakOnly: boolean },
 ) {
-  console.log(`\n🧠 Analyse détaillée — jusqu'à ${limit} réunion(s), modèle ${MODEL}`);
-  if (!LLM_API_KEY) {
+  console.log(`\n🧠 Analyse détaillée — jusqu'à ${limit} réunion(s), via ${llmVoie()}`);
+  if (!llmDisponible()) {
     // Échec bruyant, et non simple avertissement : sans clé, l'ingestion continuait
     // de tourner au vert pendant que plus aucune analyse n'était produite. Dix jours
-    // ont passé avant qu'on s'en aperçoive, à l'il, sur le site.
-    console.error("❌ DEEPSEEK_API_KEY absente : aucune analyse ne peut être produite.");
-    console.error("   Dépôt GitHub → Settings → Secrets and variables → Actions → DEEPSEEK_API_KEY.");
+    // ont passé avant qu'on s'en aperçoive, à l'œil, sur le site.
+    console.error("❌ Aucune clé LLM : aucune analyse ne peut être produite.");
+    console.error("   Dépôt GitHub → Settings → Secrets and variables → Actions → LLM_FREE_API_KEY");
+    console.error("   (clé gratuite : https://aistudio.google.com/apikey).");
     process.exitCode = 1;
     return;
   }
 
-  if (opts.offPeakOnly && !isOffPeak()) {
-    console.log("  ⏸ Heures pleines DeepSeek (tarif double) : analyses reportées au prochain passage.");
-    return;
-  }
+  // Le palier gratuit n'a ni tarif de pointe ni solde à surveiller : les deux
+  // garde-fous ci-dessous ne concernent que le repli payant. Les appliquer au
+  // gratuit revenait à refuser de travailler pour protéger un budget inexistant.
+  const surPayant = !process.env.LLM_FREE_API_KEY && !process.env.GEMINI_API_KEY;
+  let startBalance: number | null = null;
 
-  const startBalance = await readBalance();
-  if (startBalance !== null) {
-    console.log(`  Solde DeepSeek : ${startBalance.toFixed(2)} $${isOffPeak() ? " (heures creuses, tarif réduit)" : " (heures pleines)"}`);
-    if (startBalance <= opts.minBalance) {
-      // Échec bruyant, comme pour une clé absente. Le cas s'est produit : la clé était
-      // bien en place, le solde à zéro, le script prévenait puis rendait la main — le
-      // workflow passait au vert et onze jours ont passé avant qu'on remarque, à l'il
-      // sur le site, que plus aucune réunion n'était analysée.
-      console.error(`❌ Solde DeepSeek insuffisant : ${startBalance.toFixed(2)} $ pour un plancher de ${opts.minBalance} $.`);
-      console.error("   Rechargez le compte sur platform.deepseek.com ; aucune analyse n'est produite d'ici là.");
-      process.exitCode = 1;
+  if (surPayant) {
+    if (opts.offPeakOnly && !isOffPeak()) {
+      console.log("  ⏸ Heures pleines DeepSeek (tarif double) : analyses reportées au prochain passage.");
       return;
+    }
+    startBalance = await readBalance();
+    if (startBalance !== null) {
+      console.log(`  Solde DeepSeek : ${startBalance.toFixed(2)} $${isOffPeak() ? " (heures creuses)" : " (heures pleines)"}`);
+      if (startBalance <= opts.minBalance) {
+        console.error(`❌ Solde DeepSeek insuffisant : ${startBalance.toFixed(2)} $ pour un plancher de ${opts.minBalance} $.`);
+        console.error("   Renseignez plutôt LLM_FREE_API_KEY (gratuit) plutôt que de recharger le compte.");
+        process.exitCode = 1;
+        return;
+      }
     }
   }
 
@@ -485,8 +476,10 @@ async function analyseMeetings(
   console.log(`  → ${tokensIn} jetons entrants, ${tokensOut} sortants`);
   console.log(`  → plafond de dépense ${spent.toFixed(2)} $ (${done ? (spent / done).toFixed(4) : "—"} $/analyse au tarif haut ; la facture réelle est plus basse)`);
   // Le solde annoncé se met à jour avec du retard : indicatif seulement.
-  const endBalance = await readBalance();
-  if (endBalance !== null) console.log(`  → solde annoncé par DeepSeek : ${endBalance.toFixed(2)} $ (facturation différée)`);
+  if (surPayant) {
+    const endBalance = await readBalance();
+    if (endBalance !== null) console.log(`  → solde annoncé par DeepSeek : ${endBalance.toFixed(2)} $ (facturation différée)`);
+  }
 }
 
 /* ───────────────────────────────── Entrée ───────────────────────────────── */

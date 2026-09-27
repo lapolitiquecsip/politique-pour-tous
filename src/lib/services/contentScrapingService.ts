@@ -2,6 +2,7 @@ import { createClient } from '@supabase/supabase-js';
 import { XMLParser } from 'fast-xml-parser';
 import Anthropic from '@anthropic-ai/sdk';
 
+import { CLAUDE_MODEL } from '@/lib/ai-model';
 // --- Configuration ---
 // On instanciera Supabase et Anthropic à l'intérieur des fonctions pour s'assurer que les variables d'environnement sont chargées.
 
@@ -290,7 +291,7 @@ URL : ${a.link}
 
     try {
       const response = await anthropic.messages.create({
-        model: 'claude-3-5-sonnet-latest',
+        model: CLAUDE_MODEL,
         max_tokens: 4000,
         temperature: 0.2,
         messages: [

@@ -407,8 +407,35 @@ async function ecrireParLots<T>(table: string, lignes: T[], conflit: string) {
   }
 }
 
+/**
+ * Les trois tables existent-elles ?
+ *
+ * Sans elles, le script échouait sur une trace d'appel PostgREST illisible, et
+ * le cron passait au rouge toutes les deux heures sans dire quoi faire. On
+ * vérifie donc d'emblée, et on sort en disant la seule chose à faire. L'échec
+ * reste un échec (rouge) : à la veille d'un scrutin, c'est une action requise,
+ * pas une option.
+ */
+async function migrationAppliquee(): Promise<boolean> {
+  const { error } = await supabase.from("senate_election_status").select("election_date").limit(1);
+  if (!error) return true;
+  if (!/does not exist|schema cache|PGRST205|42P01/i.test(`${error.code} ${error.message}`)) return true;
+  console.error("=".repeat(76));
+  console.error("❌ Migration non appliquée : les tables du renouvellement n'existent pas.");
+  console.error("   → Supabase → SQL Editor → coller supabase/migrations/2026092601_senate_election.sql");
+  console.error("");
+  console.error("   À FAIRE AVANT LE SCRUTIN : l'instantané d'avant-vote ne peut plus être pris");
+  console.error("   une fois la liste du Sénat renouvelée, et sans lui « réélu » et « nouveau »");
+  console.error("   deviennent incalculables.");
+  console.error("=".repeat(76));
+  return false;
+}
+
 async function main() {
   console.log(`--- RENOUVELLEMENT DU SÉNAT — scrutin du ${DATE_SCRUTIN} ---`);
+  // process.exitCode plutôt que process.exit : sur Windows, une sortie brutale
+  // pendant que des sockets se ferment déclenche une assertion libuv.
+  if (!(await migrationAppliquee())) { process.exitCode = 1; return; }
   const officiels = await listeOfficielle();
   if (officiels.length < 300) throw new Error(`liste officielle suspecte (${officiels.length} sénateurs) — on n'écrit rien`);
   const sansCode = officiels.filter(s => !s.code);

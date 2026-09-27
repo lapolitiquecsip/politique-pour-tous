@@ -2,6 +2,7 @@ import { createClient } from '@supabase/supabase-js';
 import * as cheerio from 'cheerio';
 import Anthropic from '@anthropic-ai/sdk';
 
+import { CLAUDE_MODEL } from '@/lib/ai-model';
 // Initialiser Supabase et Claude
 const supabase = createClient(
   process.env.NEXT_PUBLIC_SUPABASE_URL!,
@@ -61,7 +62,7 @@ Renvoie UNIQUEMENT un tableau JSON valide contenant ces objets, sans aucun autre
 
   try {
     const response = await anthropic.messages.create({
-      model: 'claude-3-5-sonnet-latest',
+      model: CLAUDE_MODEL,
       max_tokens: 1500,
       messages: [{ role: 'user', content: prompt }],
     });

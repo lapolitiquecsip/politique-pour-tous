@@ -2085,7 +2085,7 @@ export const api = {
 
     const { data: results } = await supabase
       .from('senate_election_results')
-      .select('matricule, first_name, last_name, slug, photo_url, constituency, dept_code, political_group, outcome, seats')
+      .select('dept_code, constituency, full_name, first_name, last_name, slug, photo_url, nuance, nuance_color, outcome, seats, electors, ballot')
       .eq('election_date', electionDate)
       .order('last_name');
     return { status, results: (results || []) as any[] };

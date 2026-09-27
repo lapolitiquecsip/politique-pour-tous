@@ -14,23 +14,20 @@ import { api } from "@/lib/api";
 /**
  * Le renouvellement du Sénat, avant et après.
  *
- * Trois états, et le composant choisit celui qu'il faut sans qu'on ait à
- * redéployer quoi que ce soit :
+ * Trois états, choisis d'après les données et non d'après le calendrier :
  *
  *   · AVANT      — qui vote le 27 septembre, et combien de sièges sont en jeu.
- *   · ATTENTE    — le scrutin a eu lieu, le Sénat n'a pas encore publié sa
- *                  nouvelle liste officielle. On le dit, plutôt que d'afficher
- *                  un résultat vide ou, pire, l'ancien Sénat comme s'il était
- *                  le nouveau.
- *   · RÉSULTATS  — les élus, circonscription par circonscription, ce que chaque
- *                  groupe gagne ou perd, et les nouveaux visages.
+ *   · ATTENTE    — le scrutin a eu lieu, aucun résultat n'est encore publié.
+ *   · RÉSULTATS  — les élus, circonscription par circonscription, leur nuance
+ *                  politique, et les nouveaux visages.
  *
- * Rien n'est écrit en dur ici : la liste des circonscriptions qui votent, le
- * nombre de sièges et les élus viennent de la base, alimentée par
- * scripts/update-senate-election.ts depuis l'open data du Sénat. Les constantes
- * qui subsistent plus bas ne servent que de filet, le temps que la première
- * synchronisation passe — et elles ont été vérifiées contre les données du
- * Sénat, pas devinées.
+ * Tout vient de la base, alimentée par scripts/update-senate-election.ts depuis
+ * le site officiel du scrutin. Les couleurs des nuances sont celles que le Sénat
+ * publie : en inventer d'autres ferait dire deux choses différentes à la même
+ * information sur la même page.
+ *
+ * Les quelques constantes qui subsistent ne servent que de filet, le temps de la
+ * première synchronisation.
  */
 
 const ELECTION_ISO = "2026-09-27";
@@ -58,29 +55,30 @@ const DEPT_NAMES: Record<string, string> = {
   "971": "Guadeloupe", "972": "Martinique", "973": "Guyane", "974": "La Réunion",
   "975": "Saint-Pierre-et-Miquelon", "976": "Mayotte", "977": "Saint-Barthélemy", "978": "Saint-Martin",
   "986": "Wallis-et-Futuna", "987": "Polynésie française", "988": "Nouvelle-Calédonie",
-  "099": "Français établis hors de France",
+  ZZ: "Français établis hors de France",
 };
 
 /**
- * Filet de secours : les 63 circonscriptions de la série renouvelée en 2026.
+ * Filet de secours : les 64 circonscriptions renouvelées en 2026, 178 sièges.
  *
- * Établie à partir des données du Sénat — les circonscriptions dont les
- * sénateurs élus au renouvellement du 27 septembre 2020 siègent encore. La
- * version précédente de ce fichier déduisait la série des numéros de
- * département, et cette règle de pouce OUBLIAIT LA GUYANE : un Guyanais à qui
- * on répondait « votre département ne vote pas cette fois » était mal informé.
- * Dès la première synchronisation, cette liste est remplacée par celle de la
- * base, qui vient du Sénat lui-même.
+ * Deux erreurs ont été commises ici avant d'aller lire la source. La première
+ * version déduisait la série des numéros de département et OUBLIAIT LA GUYANE :
+ * un Guyanais lisait « votre département ne vote pas cette fois ». La correction
+ * suivante a rétabli la Guyane mais retiré les SIX SIÈGES DES FRANÇAIS DE
+ * L'ÉTRANGER, ramenant le total de 178 à 172 — une autre erreur, dans l'autre
+ * sens. Le Sénat annonce lui-même « 63 départements et six sièges de sénateur
+ * représentant les Français établis hors de France ».
+ *
+ * D'où la règle, désormais : cette liste ne sert que tant que la base est vide,
+ * et la base répète ce que le Sénat publie.
  */
-const SERIE_2_REPLI = [
+const REPLI_CIRCOS = [
   "01", "02", "03", "04", "05", "06", "07", "08", "09", "10", "11", "12", "13", "14", "15", "16", "17",
   "18", "19", "2A", "2B", "21", "22", "23", "24", "25", "26", "27", "28", "29", "30", "31", "32", "33",
   "34", "35", "36", "67", "68", "69", "70", "71", "72", "73", "74", "76", "79", "80", "81", "82", "83",
-  "84", "85", "86", "87", "88", "89", "90", "973", "977", "978", "986", "987",
+  "84", "85", "86", "87", "88", "89", "90", "973", "977", "978", "986", "987", "ZZ",
 ];
-// Sièges remis en jeu, relevés dans la liste officielle du Sénat le 25/09/2026.
-// Affiché tant que la base n'a pas donné le chiffre du jour.
-const SIEGES_REPLI = 172;
+const REPLI_SIEGES = 178;
 
 const norm = (s: string) =>
   s.toLowerCase().normalize("NFD").replace(/[̀-ͯ]/g, "").replace(/[^a-z0-9]/g, "");
@@ -112,19 +110,25 @@ const MAP_VIEWBOX = (() => {
 })();
 
 type Phase = "avant" | "attente" | "resultats";
-type Circo = { code: string; label: string; seats: number };
+type Circo = { code: string; label: string; seats: number; known?: number };
+type Nuance = { count: number; color: string | null };
 type Statut = {
   phase: Phase; constituencies_total: number | null; seats_total: number | null;
-  seats_confirmed: number | null; renewable: Circo[] | null;
+  seats_known: number | null; new_count: number | null; reelected_count: number | null;
+  renewable: Circo[] | null; nuances: Record<string, Nuance> | null;
   groups_before: Record<string, number> | null; groups_after: Record<string, number> | null;
   updated_at: string | null;
 };
 type Elu = {
-  matricule: string; first_name: string; last_name: string; slug: string | null;
-  photo_url: string | null; constituency: string; dept_code: string | null;
-  political_group: string | null; outcome: "reelu" | "nouveau"; seats: number | null;
+  dept_code: string | null; constituency: string; full_name: string;
+  first_name: string | null; last_name: string | null;
+  slug: string | null; photo_url: string | null;
+  nuance: string | null; nuance_color: string | null;
+  outcome: "reelu" | "nouveau"; seats: number | null; electors: number | null;
+  ballot: "proportionnel" | "majoritaire" | null;
 };
 
+const GRIS = "#8D949A";
 const joursAvant = (d: Date) => Math.max(0, Math.ceil((d.getTime() - Date.now()) / 86400000));
 
 const dateLongue = (iso: string) => {
@@ -146,7 +150,7 @@ export default function Senatoriales2026() {
     let vivant = true;
     api.getSenateElection(ELECTION_ISO)
       .then(r => { if (!vivant) return; setStatut(r.status as Statut | null); setElus((r.results || []) as Elu[]); })
-      .catch(() => { /* la page reste utilisable sur son affichage d'avant-scrutin */ });
+      .catch(() => { /* la page reste lisible sur son affichage d'avant-scrutin */ });
     return () => { vivant = false; };
   }, []);
 
@@ -154,15 +158,17 @@ export default function Senatoriales2026() {
   const phase: Phase = statut?.phase ?? (scrutinPasse ? "attente" : "avant");
   const jMinus = useMemo(() => joursAvant(ELECTION_DATE), []);
 
-  // Les circonscriptions qui votent : celles de la base, sinon le filet.
   const circos: Circo[] = useMemo(() => {
     if (statut?.renewable?.length) return statut.renewable;
-    return SERIE_2_REPLI.map(code => ({ code, label: DEPT_NAMES[code] || code, seats: 0 }));
+    return REPLI_CIRCOS.map(code => ({ code, label: DEPT_NAMES[code] || code, seats: 0 }));
   }, [statut]);
   const enJeu = useMemo(() => new Set(circos.map(c => c.code)), [circos]);
-  const siegesTotal = statut?.seats_total || SIEGES_REPLI;
+  const siegesTotal = statut?.seats_total || REPLI_SIEGES;
+  const siegesConnus = statut?.seats_known ?? elus.length;
+  const nouveaux = useMemo(() => elus.filter(e => e.outcome === "nouveau"), [elus]);
+  const reelus = statut?.reelected_count ?? (elus.length - nouveaux.length);
+  const enAttente = siegesTotal - siegesConnus;
 
-  // Les élus, rangés par circonscription.
   const parDept = useMemo(() => {
     const m = new Map<string, Elu[]>();
     for (const e of elus) {
@@ -172,27 +178,35 @@ export default function Senatoriales2026() {
     return m;
   }, [elus]);
 
-  // Couleur d'un département sur la carte : le groupe qui y emporte le plus de
-  // sièges. À égalité, le premier dans l'ordre de l'hémicycle — arbitraire mais
-  // stable, ce qui vaut mieux qu'une couleur qui saute d'un affichage à l'autre.
+  // Couleur d'une circonscription : la nuance qui y emporte le plus de sièges.
+  // À égalité, la première par ordre alphabétique — arbitraire, mais stable, ce
+  // qui vaut mieux qu'une carte dont les couleurs changent à chaque affichage.
   const couleurDe = (code: string): string | null => {
     const l = parDept.get(code);
     if (!l?.length) return null;
-    const t = new Map<string, number>();
-    for (const e of l) { const g = e.political_group || "NI"; t.set(g, (t.get(g) || 0) + 1); }
-    const meilleur = [...t.entries()].sort((a, b) =>
-      b[1] - a[1] || groupeSenat(a[0]).order - groupeSenat(b[0]).order)[0];
-    return groupeSenat(meilleur[0]).color;
+    const t = new Map<string, { n: number; c: string | null }>();
+    for (const e of l) {
+      const k = e.nuance || "Sans nuance";
+      t.set(k, { n: (t.get(k)?.n || 0) + 1, c: t.get(k)?.c || e.nuance_color });
+    }
+    const meilleur = [...t.entries()].sort((a, b) => b[1].n - a[1].n || a[0].localeCompare(b[0], "fr"))[0];
+    return meilleur[1].c || GRIS;
   };
 
-  const nouveaux = useMemo(() => elus.filter(e => e.outcome === "nouveau"), [elus]);
-  const reelus = elus.length - nouveaux.length;
+  // Les nuances, classées par nombre d'élus : c'est la légende de la carte.
+  const nuances = useMemo(() => {
+    const src = statut?.nuances;
+    if (!src) return [] as { nom: string; count: number; color: string }[];
+    return Object.entries(src)
+      .map(([nom, v]) => ({ nom, count: v.count, color: v.color || GRIS }))
+      .sort((a, b) => b.count - a.count || a.nom.localeCompare(b.nom, "fr"));
+  }, [statut]);
 
-  // Ce que chaque groupe gagne ou perd sur l'ensemble du Sénat.
+  // Solde par groupe du Sénat : n'a de sens qu'une fois les nouveaux élus
+  // rattachés à un groupe, ce qui suit la prise de fonctions.
   const solde = useMemo(() => {
-    if (!statut?.groups_after) return [];
-    const avant = statut.groups_before || {};
-    const apres = statut.groups_after;
+    if (!statut?.groups_after || !statut.groups_before) return [];
+    const avant = statut.groups_before, apres = statut.groups_after;
     return [...new Set([...Object.keys(avant), ...Object.keys(apres)])]
       .map(code => ({ code, avant: avant[code] || 0, apres: apres[code] || 0, ...groupeSenat(code) }))
       .filter(g => g.avant || g.apres)
@@ -202,9 +216,10 @@ export default function Senatoriales2026() {
   const chercher = () => setChoisi(resolveDept(query));
   const deptChoisi = choisi ? { code: choisi, name: DEPT_NAMES[choisi] || choisi, concerne: enJeu.has(choisi) } : null;
   const elusDuDept = choisi ? parDept.get(choisi) || [] : [];
+  const circoChoisie = choisi ? circos.find(c => c.code === choisi) : undefined;
 
-  // Les circonscriptions hors métropole : absentes du fond de carte, elles
-  // seraient invisibles alors qu'elles votent bel et bien.
+  // Les circonscriptions absentes du fond de carte métropolitain — outre-mer et
+  // Français de l'étranger — seraient invisibles alors qu'elles votent.
   const horsMetropole = circos.filter(c => !METRO.includes(c.code));
 
   const accent = phase === "resultats"
@@ -247,20 +262,20 @@ export default function Senatoriales2026() {
             <p className="mt-2 text-sm leading-6 text-muted-foreground dark:text-slate-300">
               {phase === "resultats" ? (
                 <>
-                  Le Sénat a renouvelé la moitié de ses sièges — la <strong>série 2</strong>.
+                  La moitié des sièges a été renouvelée.
                   {" "}<strong>{nouveaux.length}</strong> nouveaux sénateurs entrent au Palais du Luxembourg,
-                  {" "}<strong>{reelus}</strong> sont reconduits.
+                  {" "}<strong>{reelus}</strong> sont reconduits. Ils prennent leurs fonctions
+                  le 1<sup>er</sup> octobre.
                 </>
               ) : phase === "attente" ? (
                 <>
-                  Le scrutin s&apos;est tenu le {dateLongue(ELECTION_ISO)}. Les élus prennent leurs fonctions
-                  au début de la session, le 1<sup>er</sup> octobre : cette page se remplira d&apos;elle‑même
-                  dès que le Sénat aura publié sa liste officielle.
+                  Le scrutin s&apos;est tenu le {dateLongue(ELECTION_ISO)}. Cette page se remplira
+                  d&apos;elle‑même dès que le Sénat aura publié ses résultats.
                 </>
               ) : (
                 <>
                   Le Sénat renouvelle la moitié de ses sièges. Cette fois, c&apos;est la <strong>série 2</strong> :
-                  une partie des sénateurs actuels sera remplacée par de nouveaux élus.
+                  63 départements et collectivités, plus six sièges des Français établis hors de France.
                 </>
               )}
             </p>
@@ -269,7 +284,7 @@ export default function Senatoriales2026() {
             <div className="mt-4 grid grid-cols-3 gap-2 text-center">
               {(phase === "resultats"
                 ? [
-                    [String(elus.length), "sièges renouvelés"],
+                    [String(siegesConnus), `sièges sur ${siegesTotal}`],
                     [String(nouveaux.length), "nouveaux visages"],
                     [String(reelus), "réélus"],
                   ]
@@ -286,7 +301,17 @@ export default function Senatoriales2026() {
               ))}
             </div>
 
-            {/* ── Vérificateur / consultation par département ────────────── */}
+            {/* Les sièges encore en attente : le dire, plutôt que laisser croire
+                que le compte est clos. */}
+            {phase === "resultats" && enAttente > 0 && (
+              <p className="mt-2 rounded-2xl bg-amber-50 px-3 py-2 text-[12px] font-bold leading-5 text-amber-700 dark:bg-amber-500/10 dark:text-amber-400">
+                {enAttente} siège{enAttente > 1 ? "s" : ""} en attente de proclamation
+                {" — "}
+                {circos.filter(c => (c.known ?? c.seats) < c.seats).map(c => c.label).join(", ")}.
+              </p>
+            )}
+
+            {/* ── Vérificateur / consultation par circonscription ────────── */}
             <div className="mt-5">
               <label className="text-xs font-black uppercase tracking-widest text-muted-foreground">
                 {phase === "resultats" ? "Qui a été élu chez vous ?" : "Votre département vote‑t‑il ?"}
@@ -304,7 +329,7 @@ export default function Senatoriales2026() {
                 </div>
                 <button
                   onClick={chercher}
-                  aria-label="Chercher ce département"
+                  aria-label="Chercher cette circonscription"
                   className="inline-flex items-center gap-1.5 rounded-2xl bg-slate-950 px-4 text-sm font-black text-white transition hover:bg-red-600 dark:bg-white dark:text-slate-900"
                 >
                   <Search size={16} />
@@ -321,16 +346,19 @@ export default function Senatoriales2026() {
                       : <XCircle className="mt-0.5 shrink-0 text-slate-400" size={20} />}
                     <div className="min-w-0 text-sm">
                       <p className="font-black text-foreground dark:text-white">
-                        {deptChoisi.name}{deptChoisi.code !== "099" ? ` (${deptChoisi.code})` : ""}
+                        {deptChoisi.name}{deptChoisi.code !== "ZZ" ? ` (${deptChoisi.code})` : ""}
                       </p>
                       {deptChoisi.concerne ? (
                         elusDuDept.length ? (
                           <p className="text-emerald-700 dark:text-emerald-400">
-                            {elusDuDept.length} siège{elusDuDept.length > 1 ? "s" : ""} renouvelé{elusDuDept.length > 1 ? "s" : ""} le 27 septembre 2026.
+                            {elusDuDept.length} siège{elusDuDept.length > 1 ? "s" : ""} pourvu{elusDuDept.length > 1 ? "s" : ""}
+                            {circoChoisie?.seats ? ` sur ${circoChoisie.seats}` : ""} le 27 septembre 2026.
                           </p>
                         ) : (
                           <p className="text-emerald-700 dark:text-emerald-400">
-                            <strong>Concerné</strong> — vos sénateurs sont renouvelés le 27 septembre 2026.
+                            <strong>Concerné</strong> — {phase === "resultats"
+                              ? "résultat en attente de proclamation."
+                              : "vos sénateurs sont renouvelés le 27 septembre 2026."}
                           </p>
                         )
                       ) : (
@@ -341,10 +369,9 @@ export default function Senatoriales2026() {
                     </div>
                   </div>
 
-                  {/* Les élus du département, quand ils sont connus. */}
                   {elusDuDept.length > 0 && (
                     <ul className="mt-3 space-y-1.5 border-t border-emerald-200/70 pt-3 dark:border-emerald-500/20">
-                      {elusDuDept.map(e => <EluLigne key={e.matricule} elu={e} />)}
+                      {elusDuDept.map(e => <EluLigne key={e.full_name} elu={e} />)}
                     </ul>
                   )}
                 </div>
@@ -360,8 +387,6 @@ export default function Senatoriales2026() {
               <Link href="#membres" className="inline-flex items-center gap-2 rounded-full bg-red-600 px-5 py-3 text-xs font-black uppercase tracking-widest text-white transition hover:bg-red-700">
                 <Users size={15} /> {phase === "resultats" ? "Voir tous les sénateurs" : "Voir les sénateurs actuels"} <ArrowRight size={14} />
               </Link>
-              {/* Le lien pointait vers une page du Sénat qui n'existe plus (404).
-                  Le Sénat a ouvert un site dédié à ce scrutin. */}
               <a
                 href="https://senatoriales2026.senat.fr/"
                 target="_blank" rel="noopener noreferrer"
@@ -379,7 +404,7 @@ export default function Senatoriales2026() {
               className="h-auto max-h-[240px] w-full md:max-h-[340px]"
               role="img"
               aria-label={phase === "resultats"
-                ? "Carte des départements renouvelés, colorés par groupe majoritaire"
+                ? "Carte des circonscriptions renouvelées, colorées par nuance politique majoritaire"
                 : "Carte des départements qui votent en 2026"}
             >
               {METRO.map(code => {
@@ -406,7 +431,7 @@ export default function Senatoriales2026() {
                       {DEPT_NAMES[code] || code}
                       {vote
                         ? phase === "resultats"
-                          ? ` — ${(parDept.get(code) || []).map(e => `${e.first_name} ${e.last_name} (${e.political_group || "SG"})`).join(", ") || "renouvelé"}`
+                          ? ` — ${(parDept.get(code) || []).map(e => `${e.full_name} (${e.nuance || "sans nuance"})`).join(", ") || "en attente"}`
                           : " — vote en 2026"
                         : " — non concerné"}
                     </title>
@@ -416,15 +441,16 @@ export default function Senatoriales2026() {
             </svg>
 
             {/* Légende : elle change avec la phase, sinon elle ment. */}
-            {phase === "resultats" ? (
+            {phase === "resultats" && nuances.length > 0 ? (
               <div className="mt-3 flex max-w-full flex-wrap items-center justify-center gap-x-3 gap-y-1.5 px-1 text-[10px] font-bold">
-                {solde.filter(g => g.apres > 0).map(g => (
-                  <span key={g.code} className="flex items-center gap-1.5 text-muted-foreground dark:text-slate-300">
-                    <span className="h-2.5 w-2.5 rounded-sm" style={{ background: g.color }} /> {g.label}
+                {nuances.slice(0, 8).map(n => (
+                  <span key={n.nom} className="flex items-center gap-1.5 text-muted-foreground dark:text-slate-300">
+                    <span className="h-2.5 w-2.5 rounded-sm" style={{ background: n.color }} />
+                    {n.nom} <span className="tabular-nums opacity-70">{n.count}</span>
                   </span>
                 ))}
               </div>
-            ) : (
+            ) : phase !== "resultats" ? (
               <div className="pointer-events-none absolute bottom-3 left-1/2 flex -translate-x-1/2 items-center gap-3 rounded-full bg-white/85 px-3 py-1.5 text-[10px] font-bold shadow-sm backdrop-blur-sm dark:bg-slate-800/85">
                 <span className="flex items-center gap-1.5 text-muted-foreground dark:text-slate-300">
                   <span className="h-2.5 w-2.5 rounded-sm bg-amber-500" /> Vote en 2026
@@ -433,10 +459,10 @@ export default function Senatoriales2026() {
                   <span className="h-2.5 w-2.5 rounded-sm bg-slate-200" /> En 2029
                 </span>
               </div>
-            )}
+            ) : null}
 
-            {/* L'outre-mer ne figure pas sur le fond de carte métropolitain : il
-                est rappelé ici pour ne pas disparaître du scrutin. */}
+            {/* L'outre-mer et les Français de l'étranger ne figurent pas sur le
+                fond de carte métropolitain : ils sont rappelés ici. */}
             {horsMetropole.length > 0 && (
               <div className="mt-3 flex flex-wrap items-center justify-center gap-1.5">
                 {horsMetropole.map(c => {
@@ -446,7 +472,7 @@ export default function Senatoriales2026() {
                       key={c.code}
                       type="button"
                       onClick={() => { setQuery(c.label); setChoisi(c.code); }}
-                      title={l.length ? l.map(e => `${e.first_name} ${e.last_name}`).join(", ") : `${c.label} — vote en 2026`}
+                      title={l.length ? l.map(e => e.full_name).join(", ") : `${c.label} — vote en 2026`}
                       className="rounded-full bg-white/70 px-2.5 py-1 text-[10px] font-bold text-muted-foreground transition hover:bg-red-600 hover:text-white dark:bg-slate-800/60 dark:text-slate-300"
                     >
                       {c.label}
@@ -458,7 +484,19 @@ export default function Senatoriales2026() {
           </div>
         </div>
 
-        {/* ── Après le scrutin : le solde des groupes ──────────────────── */}
+        {/* ── Les nouveaux visages ─────────────────────────────────────── */}
+        {phase === "resultats" && nouveaux.length > 0 && (
+          <div className="border-t border-border/60 px-5 py-5 dark:border-slate-700/50 md:px-8">
+            <p className="flex items-center gap-1.5 text-[10px] font-black uppercase tracking-[0.2em] text-muted-foreground">
+              <Sparkles size={12} className="text-amber-500" /> Ils entrent au Sénat — {nouveaux.length} nouveaux élus
+            </p>
+            <DragScroller ariaLabel="Les nouveaux sénateurs" className="mt-3 gap-3 pb-2">
+              {nouveaux.map(e => <CarteElu key={e.full_name} elu={e} />)}
+            </DragScroller>
+          </div>
+        )}
+
+        {/* ── Le solde par groupe, une fois les groupes constitués ──────── */}
         {phase === "resultats" && solde.length > 0 && (
           <div className="border-t border-border/60 px-5 py-5 dark:border-slate-700/50 md:px-8">
             <p className="text-[10px] font-black uppercase tracking-[0.2em] text-muted-foreground">
@@ -486,26 +524,14 @@ export default function Senatoriales2026() {
           </div>
         )}
 
-        {/* ── Après le scrutin : les nouveaux visages ──────────────────── */}
-        {phase === "resultats" && nouveaux.length > 0 && (
-          <div className="border-t border-border/60 px-5 py-5 dark:border-slate-700/50 md:px-8">
-            <p className="flex items-center gap-1.5 text-[10px] font-black uppercase tracking-[0.2em] text-muted-foreground">
-              <Sparkles size={12} className="text-amber-500" /> Ils entrent au Sénat — {nouveaux.length} nouveaux élus
-            </p>
-            <DragScroller ariaLabel="Les nouveaux sénateurs" className="mt-3 gap-3 pb-2">
-              {nouveaux.map(e => <CarteElu key={e.matricule} elu={e} />)}
-            </DragScroller>
-          </div>
-        )}
-
         {/* ── Pendant l'attente : dire ce qui se passe ─────────────────── */}
         {phase === "attente" && (
           <div className="flex items-start gap-3 border-t border-border/60 px-5 py-4 text-sm dark:border-slate-700/50 md:px-8">
             <RefreshCw size={16} className="mt-0.5 shrink-0 animate-spin text-amber-500" style={{ animationDuration: "3s" }} />
             <p className="text-muted-foreground dark:text-slate-300">
-              Le Sénat publie la liste de ses membres dans son open data, et c&apos;est elle qui fait foi.
-              Nous la relisons plusieurs fois par jour : dès qu&apos;elle change, les élus, la carte et
-              la composition de l&apos;hémicycle se mettent à jour ici sans intervention.
+              Le Sénat publie les résultats circonscription par circonscription. Nous les relisons
+              plusieurs fois par jour : dès qu&apos;ils paraissent, les élus, la carte et la
+              composition de l&apos;hémicycle se mettent à jour ici sans intervention.
             </p>
           </div>
         )}
@@ -513,7 +539,8 @@ export default function Senatoriales2026() {
         {/* Provenance : un résultat d'élection sans source n'est qu'une rumeur. */}
         {statut?.updated_at && (
           <p className="border-t border-border/60 px-5 py-2.5 text-[10px] font-bold uppercase tracking-widest text-slate-400 dark:border-slate-700/50 md:px-8">
-            Données du Sénat (open data ODSEN) — relevé du {dateLongue(statut.updated_at.slice(0, 10))}
+            Résultats officiels du Sénat — nuances attribuées par le ministère de l&apos;Intérieur ·
+            relevé du {dateLongue(statut.updated_at.slice(0, 10))}
           </p>
         )}
       </div>
@@ -521,16 +548,13 @@ export default function Senatoriales2026() {
   );
 }
 
-/** Une ligne « élu » compacte, sous le résultat d'un département. */
+/** Une ligne « élu » compacte, sous le résultat d'une circonscription. */
 function EluLigne({ elu }: { elu: Elu }) {
-  const g = groupeSenat(elu.political_group);
   const contenu = (
     <>
-      <span className="h-2 w-2 shrink-0 rounded-full" style={{ background: g.color }} />
-      <span className="truncate font-bold text-foreground dark:text-white">
-        {elu.first_name} {elu.last_name}
-      </span>
-      <span className="shrink-0 text-[11px] font-bold text-muted-foreground">{g.label}</span>
+      <span className="h-2 w-2 shrink-0 rounded-full" style={{ background: elu.nuance_color || GRIS }} />
+      <span className="truncate font-bold text-foreground dark:text-white">{elu.full_name}</span>
+      <span className="shrink-0 text-[11px] font-bold text-muted-foreground">{elu.nuance}</span>
       {elu.outcome === "nouveau" && (
         <span className="shrink-0 rounded-full bg-amber-500/15 px-1.5 py-0.5 text-[9px] font-black uppercase tracking-wider text-amber-700 dark:text-amber-400">
           Nouveau
@@ -549,31 +573,32 @@ function EluLigne({ elu }: { elu: Elu }) {
 
 /** Une carte de nouvel élu, dans le rail horizontal. */
 function CarteElu({ elu }: { elu: Elu }) {
-  const g = groupeSenat(elu.political_group);
+  const couleur = elu.nuance_color || GRIS;
+  const initiales = (elu.first_name?.charAt(0) || "") + (elu.last_name?.charAt(0) || elu.full_name.charAt(0));
   const corps = (
     <>
       <span
         className="mx-auto block h-14 w-14 shrink-0 overflow-hidden rounded-full bg-slate-100 dark:bg-slate-700"
-        style={{ boxShadow: `0 0 0 2px ${g.color}55` }}
+        style={{ boxShadow: `0 0 0 2px ${couleur}55` }}
       >
         {elu.photo_url
           /* Photo hébergée par le Sénat : la balise native évite d'ajouter ce
-             domaine à la configuration des images, pour une vignette de 56 px. */
+             domaine à la configuration des images pour une vignette de 56 px. */
           // eslint-disable-next-line @next/next/no-img-element
           ? <img src={elu.photo_url} alt="" loading="lazy" className="h-full w-full object-cover" />
           : <span className="flex h-full w-full items-center justify-center text-lg font-black text-slate-400">
-              {elu.first_name.charAt(0)}{elu.last_name.charAt(0)}
+              {initiales}
             </span>}
       </span>
       <span className="mt-2 block truncate text-center text-sm font-black text-foreground dark:text-white">
-        {elu.first_name} {elu.last_name}
+        {elu.full_name}
       </span>
       <span className="mt-0.5 block truncate text-center text-[11px] text-muted-foreground">{elu.constituency}</span>
       <span
-        className="mx-auto mt-1.5 block w-fit rounded-full px-2 py-0.5 text-[9px] font-black uppercase tracking-wider text-white"
-        style={{ background: g.color }}
+        className="mx-auto mt-1.5 block w-fit max-w-full truncate rounded-full px-2 py-0.5 text-[9px] font-black uppercase tracking-wider text-white"
+        style={{ background: couleur }}
       >
-        {g.label}
+        {elu.nuance || "Sans nuance"}
       </span>
     </>
   );

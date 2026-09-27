@@ -3,9 +3,10 @@
 import { useEffect, useMemo, useState } from "react";
 import Link from "next/link";
 import { motion, AnimatePresence } from "framer-motion";
-import { Mic2, CalendarDays, Play, ChevronDown, Loader2, Lock, ExternalLink, Vote } from "lucide-react";
+import { Mic2, CalendarDays, Play, Loader2, Lock, ExternalLink, Vote, X } from "lucide-react";
 import { api } from "@/lib/api";
 import { usePremium } from "@/lib/hooks/usePremium";
+import DragScroller from "@/components/ui/DragScroller";
 
 /**
  * Les débats et votes des primaires.
@@ -14,6 +15,13 @@ import { usePremium } from "@/lib/hooks/usePremium";
  * novembre sur LCI » — et la retransmission est retrouvée toute seule après coup.
  * Un rendez-vous à venir s'affiche donc sans vidéo, ce qui est normal et non une
  * donnée manquante : l'interface le dit plutôt que de laisser un trou.
+ *
+ * MISE EN PAGE — les rendez-vous se parcourent à l'horizontale, d'un geste, au
+ * lieu d'empiler des bandeaux sur toute la hauteur de la page. Le détail ne
+ * s'ouvre donc plus DANS la carte : une carte qui se déplierait pour loger une
+ * vidéo de seize neuvièmes ferait bondir la hauteur du rail et casserait le
+ * défilement qu'on vient de lancer. Il s'ouvre SOUS le rail, à place fixe, et la
+ * carte choisie reste visible et marquée.
  *
  * Le résumé écrit est réservé à l'offre Pro. Il n'existe que si l'on a pu obtenir
  * le son par une voie légitime : les conditions de YouTube interdisent d'extraire
@@ -49,6 +57,17 @@ function jourLong(iso: string): string {
   return `${semaine} ${+m[3]} ${MOIS[+m[2] - 1]} ${m[1]}`;
 }
 
+/** Version courte pour la carte, où la place manque : « jeu. 1er oct. ». */
+function jourCourt(iso: string): string {
+  const m = String(iso).match(/^(\d{4})-(\d{2})-(\d{2})/);
+  if (!m) return iso;
+  const d = new Date(Date.UTC(+m[1], +m[2] - 1, +m[3]));
+  const semaine = ["dim.", "lun.", "mar.", "mer.", "jeu.", "ven.", "sam."][d.getUTCDay()];
+  const abrege = ["janv.", "févr.", "mars", "avr.", "mai", "juin",
+    "juil.", "août", "sept.", "oct.", "nov.", "déc."][+m[2] - 1];
+  return `${semaine} ${+m[3] === 1 ? "1er" : +m[3]} ${abrege}`;
+}
+
 /** Teinte par camp. La couleur ne porte jamais seule : le camp est toujours écrit. */
 const CAMPS: Record<string, string> = {
   droite: "bg-blue-100 text-blue-700 dark:bg-blue-500/15 dark:text-blue-300",
@@ -57,138 +76,175 @@ const CAMPS: Record<string, string> = {
   centre: "bg-amber-100 text-amber-700 dark:bg-amber-500/15 dark:text-amber-300",
 };
 
-function Ligne({ e, isPro, noms }: { e: Evenement; isPro: boolean; noms: Map<string, string> }) {
-  const [ouvert, setOuvert] = useState(false);
+/** Un scrutin s'étale : « du vendredi 9 octobre 8h au samedi 10 octobre 20h »
+ *  dit déjà le jour, et le faire précéder de la date le répéterait. */
+const estIntervalle = (e: Evenement) => /^du\s/i.test(e.heure ?? "");
+
+/* ─────────────────────────────── La carte ──────────────────────────────── */
+
+function Carte({
+  e, actif, onChoisir, noms,
+}: { e: Evenement; actif: boolean; onChoisir: () => void; noms: Map<string, string> }) {
   const passe = e.statut === "diffuse";
   const vote = e.type === "vote";
   const Icone = vote ? Vote : Mic2;
-  // Un scrutin s'étale : « du vendredi 9 octobre 8h au samedi 10 octobre 20h » dit
-  // déjà le jour, et le faire précéder de la date le répéterait.
-  const intervalle = /^du\s/i.test(e.heure ?? "");
-  const quand = intervalle
-    ? String(e.heure)
-    : `${jourLong(e.date_prevue)}${e.heure ? ` · ${e.heure}` : ""}`;
+  const quand = estIntervalle(e) ? String(e.heure) : `${jourCourt(e.date_prevue)}${e.heure ? ` · ${e.heure}` : ""}`;
 
   return (
-    <div className="overflow-hidden rounded-3xl border border-border bg-card transition hover:shadow-lg">
-      <button
-        onClick={() => setOuvert(o => !o)} aria-expanded={ouvert}
-        className="flex w-full items-start gap-4 p-5 text-left"
-      >
-        <span className={`flex h-11 w-11 shrink-0 items-center justify-center rounded-2xl ${CAMPS[e.camp ?? ""] ?? "bg-muted text-muted-foreground"}`}>
-          <Icone size={18} />
+    <button
+      type="button"
+      onClick={onChoisir}
+      aria-pressed={actif}
+      className={`flex w-[82vw] shrink-0 flex-col rounded-3xl border p-4 text-left transition sm:w-[22rem] ${
+        actif
+          ? "border-fuchsia-400 bg-fuchsia-50/60 shadow-lg dark:border-fuchsia-500/50 dark:bg-fuchsia-500/10"
+          : "border-border bg-card hover:border-fuchsia-200 hover:shadow-md dark:hover:border-fuchsia-500/30"
+      }`}
+    >
+      <span className="flex items-start gap-3">
+        <span className={`flex h-10 w-10 shrink-0 items-center justify-center rounded-2xl ${CAMPS[e.camp ?? ""] ?? "bg-muted text-muted-foreground"}`}>
+          <Icone size={17} />
         </span>
-
         <span className="min-w-0 flex-1">
-          <span className="flex flex-wrap items-center gap-x-2 gap-y-1 text-[10px] font-black uppercase tracking-widest">
+          <span className="flex flex-wrap items-center gap-x-1.5 gap-y-1 text-[9px] font-black uppercase tracking-widest">
             <span className={`rounded-full px-2 py-0.5 ${CAMPS[e.camp ?? ""] ?? "bg-muted text-muted-foreground"}`}>{e.primaire}</span>
-            <span className="text-muted-foreground">{quand}</span>
             {!passe && (
               <span className="rounded-full bg-fuchsia-100 px-2 py-0.5 text-fuchsia-700 dark:bg-fuchsia-500/20 dark:text-fuchsia-300">
                 À venir
               </span>
             )}
           </span>
-          <span className="mt-1 block text-sm font-bold leading-snug text-foreground">{e.titre}</span>
-          {e.diffuseur && <span className="mt-0.5 block text-[11px] text-muted-foreground">Sur {e.diffuseur}</span>}
-          {!!e.participants?.length && (
-            <span className="mt-1.5 block text-[11px] text-muted-foreground">
-              Avec {e.participants.map(s => noms.get(s) ?? s).join(", ")}
-            </span>
-          )}
+          <span className="mt-1 block text-[10px] font-bold uppercase tracking-wide text-muted-foreground">{quand}</span>
         </span>
+      </span>
 
-        {e.video_id && (
-          <span className="hidden shrink-0 items-center gap-1.5 rounded-full bg-red-600 px-3 py-1.5 text-[10px] font-black uppercase tracking-widest text-white sm:inline-flex">
+      {/* Deux lignes au plus : au-delà, les cartes n'ont plus la même hauteur et
+          le rail se met à onduler d'une carte à l'autre. */}
+      <span className="mt-2.5 line-clamp-2 block text-sm font-bold leading-snug text-foreground">{e.titre}</span>
+      {e.diffuseur && <span className="mt-0.5 block truncate text-[11px] text-muted-foreground">Sur {e.diffuseur}</span>}
+      {!!e.participants?.length && (
+        <span className="mt-1.5 line-clamp-2 block text-[11px] leading-snug text-muted-foreground">
+          Avec {e.participants.map(s => noms.get(s) ?? s).join(", ")}
+        </span>
+      )}
+
+      <span className="mt-auto flex items-center gap-2 pt-3">
+        {e.video_id ? (
+          <span className="inline-flex items-center gap-1.5 rounded-full bg-red-600 px-3 py-1.5 text-[10px] font-black uppercase tracking-widest text-white">
             <Play size={11} fill="currentColor" /> Revoir
           </span>
+        ) : (
+          <span className="inline-flex items-center gap-1.5 rounded-full bg-muted px-3 py-1.5 text-[10px] font-black uppercase tracking-widest text-muted-foreground">
+            <CalendarDays size={11} /> {passe ? "Détails" : "Le rendez-vous"}
+          </span>
         )}
-        <ChevronDown size={18} className={`mt-1 shrink-0 text-muted-foreground transition-transform ${ouvert ? "rotate-180" : ""}`} />
-      </button>
+        {actif && (
+          <span className="text-[10px] font-black uppercase tracking-widest text-fuchsia-600 dark:text-fuchsia-300">
+            Affiché
+          </span>
+        )}
+      </span>
+    </button>
+  );
+}
 
-      <AnimatePresence initial={false}>
-        {ouvert && (
-          <motion.div
-            initial={{ height: 0, opacity: 0 }} animate={{ height: "auto", opacity: 1 }} exit={{ height: 0, opacity: 0 }}
-            transition={{ duration: 0.18, ease: "easeOut" }}
-            className="overflow-hidden"
-          >
-            <div className="border-t border-border px-5 py-4">
-              {e.video_id ? (
-                <div className="overflow-hidden rounded-2xl bg-black" style={{ aspectRatio: "16 / 9" }}>
-                  <iframe
-                    src={`https://www.youtube-nocookie.com/embed/${e.video_id}`}
-                    title={e.video_title ?? e.titre}
-                    allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
-                    allowFullScreen
-                    loading="lazy"
-                    className="h-full w-full border-0"
-                  />
-                </div>
-              ) : passe ? (
-                <p className="text-sm italic text-muted-foreground">
-                  {vote
-                    ? "Aucune vidéo du dépouillement n’a encore été trouvée. Elle s’affichera ici dès qu’elle sera en ligne."
-                    : "La retransmission n’a pas encore été retrouvée. Elle s’affichera ici dès qu’elle sera mise en ligne."}
-                </p>
-              ) : (
-                <p className="flex items-center gap-2 text-sm text-muted-foreground">
-                  <CalendarDays size={15} />
-                  {intervalle
-                    ? `Scrutin ouvert ${e.heure}, en ligne.`
-                    : `Rendez-vous le ${jourLong(e.date_prevue)}${e.heure ? ` à ${e.heure}` : ""}${e.diffuseur ? `, sur ${e.diffuseur}` : ""}.`}
-                </p>
-              )}
+/* ────────────────────────── Le détail, sous le rail ─────────────────────── */
 
-              {/* Résumé écrit : réservé à l'offre Pro, et propre aux débats — un
-                  scrutin n'a pas de compte rendu, il a un résultat. */}
-              {passe && !vote && (
-                <div className="mt-4">
-                  {!isPro ? (
-                    <div className="flex flex-wrap items-center gap-3 rounded-2xl border border-fuchsia-200 bg-fuchsia-50/60 p-4 dark:border-fuchsia-500/30 dark:bg-fuchsia-500/10">
-                      <Lock size={16} className="shrink-0 text-fuchsia-600 dark:text-fuchsia-300" />
-                      <p className="min-w-0 flex-1 text-[13px] leading-snug text-muted-foreground">
-                        Le compte rendu écrit de ce débat est réservé à l&apos;abonnement Pro.
-                      </p>
-                      <Link href="/premium"
-                        className="shrink-0 rounded-xl bg-gradient-to-r from-fuchsia-500 to-purple-600 px-4 py-2 text-[10px] font-black uppercase tracking-widest text-white">
-                        Découvrir le Pro
-                      </Link>
-                    </div>
-                  ) : e.resume ? (
-                    <div className="rounded-2xl bg-muted p-4">
-                      <p className="mb-2 text-[10px] font-black uppercase tracking-widest text-fuchsia-600 dark:text-fuchsia-300">Ce qui s&apos;est dit</p>
-                      <p className="whitespace-pre-line text-sm leading-relaxed text-foreground">{e.resume}</p>
-                    </div>
-                  ) : (
-                    <p className="text-[13px] italic leading-snug text-muted-foreground">
-                      Aucun compte rendu écrit pour ce débat : il n&apos;est disponible qu&apos;en vidéo,
-                      et les conditions d&apos;utilisation de la plateforme de diffusion interdisent
-                      d&apos;en extraire le son pour le transcrire.
-                    </p>
-                  )}
-                </div>
-              )}
+function Detail({ e, isPro, onFermer }: { e: Evenement; isPro: boolean; onFermer: () => void }) {
+  const passe = e.statut === "diffuse";
+  const vote = e.type === "vote";
 
-              {e.source_url && (
-                <a href={e.source_url} target="_blank" rel="noopener noreferrer"
-                  className="mt-4 inline-flex items-center gap-1.5 text-[10px] font-black uppercase tracking-widest text-muted-foreground hover:text-foreground">
-                  <ExternalLink size={12} /> Annonce officielle
-                </a>
-              )}
+  return (
+    <div className="rounded-3xl border border-border bg-card p-5">
+      <div className="mb-4 flex items-start gap-3">
+        <div className="min-w-0 flex-1">
+          <p className="text-[10px] font-black uppercase tracking-widest text-muted-foreground">
+            {estIntervalle(e) ? e.heure : `${jourLong(e.date_prevue)}${e.heure ? ` · ${e.heure}` : ""}`}
+          </p>
+          <h3 className="mt-0.5 text-base font-bold leading-snug text-foreground">{e.titre}</h3>
+        </div>
+        <button
+          type="button" onClick={onFermer} aria-label="Fermer le détail"
+          className="shrink-0 rounded-full p-1.5 text-muted-foreground transition hover:bg-muted hover:text-foreground"
+        >
+          <X size={16} />
+        </button>
+      </div>
+
+      {e.video_id ? (
+        <div className="overflow-hidden rounded-2xl bg-black" style={{ aspectRatio: "16 / 9" }}>
+          <iframe
+            src={`https://www.youtube-nocookie.com/embed/${e.video_id}`}
+            title={e.video_title ?? e.titre}
+            allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+            allowFullScreen
+            loading="lazy"
+            className="h-full w-full border-0"
+          />
+        </div>
+      ) : passe ? (
+        <p className="text-sm italic text-muted-foreground">
+          {vote
+            ? "Aucune vidéo du dépouillement n’a encore été trouvée. Elle s’affichera ici dès qu’elle sera en ligne."
+            : "La retransmission n’a pas encore été retrouvée. Elle s’affichera ici dès qu’elle sera mise en ligne."}
+        </p>
+      ) : (
+        <p className="flex items-center gap-2 text-sm text-muted-foreground">
+          <CalendarDays size={15} />
+          {estIntervalle(e)
+            ? `Scrutin ouvert ${e.heure}, en ligne.`
+            : `Rendez-vous le ${jourLong(e.date_prevue)}${e.heure ? ` à ${e.heure}` : ""}${e.diffuseur ? `, sur ${e.diffuseur}` : ""}.`}
+        </p>
+      )}
+
+      {/* Résumé écrit : réservé à l'offre Pro, et propre aux débats — un scrutin
+          n'a pas de compte rendu, il a un résultat. */}
+      {passe && !vote && (
+        <div className="mt-4">
+          {!isPro ? (
+            <div className="flex flex-wrap items-center gap-3 rounded-2xl border border-fuchsia-200 bg-fuchsia-50/60 p-4 dark:border-fuchsia-500/30 dark:bg-fuchsia-500/10">
+              <Lock size={16} className="shrink-0 text-fuchsia-600 dark:text-fuchsia-300" />
+              <p className="min-w-0 flex-1 text-[13px] leading-snug text-muted-foreground">
+                Le compte rendu écrit de ce débat est réservé à l&apos;abonnement Pro.
+              </p>
+              <Link href="/premium"
+                className="shrink-0 rounded-xl bg-gradient-to-r from-fuchsia-500 to-purple-600 px-4 py-2 text-[10px] font-black uppercase tracking-widest text-white">
+                Découvrir le Pro
+              </Link>
             </div>
-          </motion.div>
-        )}
-      </AnimatePresence>
+          ) : e.resume ? (
+            <div className="rounded-2xl bg-muted p-4">
+              <p className="mb-2 text-[10px] font-black uppercase tracking-widest text-fuchsia-600 dark:text-fuchsia-300">Ce qui s&apos;est dit</p>
+              <p className="whitespace-pre-line text-sm leading-relaxed text-foreground">{e.resume}</p>
+            </div>
+          ) : (
+            <p className="text-[13px] italic leading-snug text-muted-foreground">
+              Aucun compte rendu écrit pour ce débat : il n&apos;est disponible qu&apos;en vidéo,
+              et les conditions d&apos;utilisation de la plateforme de diffusion interdisent
+              d&apos;en extraire le son pour le transcrire.
+            </p>
+          )}
+        </div>
+      )}
+
+      {e.source_url && (
+        <a href={e.source_url} target="_blank" rel="noopener noreferrer"
+          className="mt-4 inline-flex items-center gap-1.5 text-[10px] font-black uppercase tracking-widest text-muted-foreground hover:text-foreground">
+          <ExternalLink size={12} /> Annonce officielle
+        </a>
+      )}
     </div>
   );
 }
+
+/* ───────────────────────────────── Section ──────────────────────────────── */
 
 export default function PrimaryDebates({ candidateSlug }: { candidateSlug?: string }) {
   const { isPro } = usePremium();
   const [events, setEvents] = useState<Evenement[] | null>(null);
   const [noms, setNoms] = useState<Map<string, string>>(new Map());
   const [primaire, setPrimaire] = useState<string | null>(null);
+  const [choisi, setChoisi] = useState<string | null>(null);
 
   useEffect(() => {
     let vivant = true;
@@ -219,6 +275,9 @@ export default function PrimaryDebates({ candidateSlug }: { candidateSlug?: stri
   }, [events, candidateSlug]);
   const primaires = useMemo(() => [...new Set(siens.map(e => e.primaire))], [siens]);
   const visibles = primaire ? siens.filter(e => e.primaire === primaire) : siens;
+  // Le détail suit le filtre : garder ouvert un rendez-vous que le filtre vient
+  // de masquer laisserait un panneau sans carte correspondante.
+  const actif = visibles.find(e => e.id === choisi) ?? null;
 
   if (events === null) {
     return <div className="flex justify-center py-10"><Loader2 className="animate-spin text-fuchsia-500" /></div>;
@@ -260,9 +319,30 @@ export default function PrimaryDebates({ candidateSlug }: { candidateSlug?: stri
         </div>
       )}
 
-      <div className="space-y-3">
-        {visibles.map(e => <Ligne key={e.id} e={e} isPro={isPro} noms={noms} />)}
-      </div>
+      <DragScroller ariaLabel="Débats et votes des primaires" className="gap-3 pb-2">
+        {visibles.map(e => (
+          <Carte
+            key={e.id} e={e} noms={noms}
+            actif={actif?.id === e.id}
+            onChoisir={() => setChoisi(c => (c === e.id ? null : e.id))}
+          />
+        ))}
+      </DragScroller>
+
+      <AnimatePresence initial={false} mode="wait">
+        {actif && (
+          <motion.div
+            key={actif.id}
+            initial={{ opacity: 0, y: -8 }}
+            animate={{ opacity: 1, y: 0 }}
+            exit={{ opacity: 0, y: -8 }}
+            transition={{ duration: 0.18, ease: "easeOut" }}
+            className="mt-4"
+          >
+            <Detail e={actif} isPro={isPro} onFermer={() => setChoisi(null)} />
+          </motion.div>
+        )}
+      </AnimatePresence>
     </section>
   );
 }

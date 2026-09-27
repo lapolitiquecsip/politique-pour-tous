@@ -193,13 +193,30 @@ export default function Senatoriales2026() {
     return meilleur[1].c || GRIS;
   };
 
-  // Les nuances, classées par nombre d'élus : c'est la légende de la carte.
-  const nuances = useMemo(() => {
+  /**
+   * La légende, regroupée par couleur.
+   *
+   * Le Sénat compte vingt-et-une nuances mais ne leur donne que SIX couleurs :
+   * il colore par famille, pas par nuance. « Divers droite » et « Les
+   * Républicains » partagent donc le même bleu. Les lister séparément produirait
+   * une légende où la même pastille apparaît trois fois, ce qui la rend
+   * illisible et donne l'impression d'un bug. On regroupe par couleur, en
+   * nommant la famille par les nuances qui la composent — les mots restent ceux
+   * de la source, seul le rangement est de nous.
+   */
+  const familles = useMemo(() => {
     const src = statut?.nuances;
-    if (!src) return [] as { nom: string; count: number; color: string }[];
-    return Object.entries(src)
-      .map(([nom, v]) => ({ nom, count: v.count, color: v.color || GRIS }))
-      .sort((a, b) => b.count - a.count || a.nom.localeCompare(b.nom, "fr"));
+    if (!src) return [] as { color: string; total: number; nuances: [string, number][] }[];
+    const parCouleur = new Map<string, { color: string; total: number; nuances: [string, number][] }>();
+    for (const [nom, v] of Object.entries(src)) {
+      const couleur = v.color || GRIS;
+      const f = parCouleur.get(couleur) ?? { color: couleur, total: 0, nuances: [] };
+      f.total += v.count;
+      f.nuances.push([nom, v.count]);
+      parCouleur.set(couleur, f);
+    }
+    for (const f of parCouleur.values()) f.nuances.sort((a, b) => b[1] - a[1]);
+    return [...parCouleur.values()].sort((a, b) => b.total - a.total);
   }, [statut]);
 
   // Solde par groupe du Sénat : n'a de sens qu'une fois les nouveaux élus
@@ -420,7 +437,11 @@ export default function Senatoriales2026() {
                     d={departmentPaths[code].d}
                     fill={remplissage}
                     fillOpacity={couleur && !survol ? 0.9 : 1}
-                    stroke="#ffffff"
+                    // Le Sénat colore en blanc la famille « Divers / Régionaliste ».
+                    // Séparer ces départements par un trait blanc les effacerait
+                    // purement et simplement : le contour se fonce dès qu'une
+                    // couleur de nuance est posée.
+                    stroke={couleur ? "rgba(15,23,42,0.25)" : "#ffffff"}
                     strokeWidth={0.8}
                     className="cursor-pointer transition-colors"
                     onMouseEnter={() => setHover(code)}
@@ -441,12 +462,22 @@ export default function Senatoriales2026() {
             </svg>
 
             {/* Légende : elle change avec la phase, sinon elle ment. */}
-            {phase === "resultats" && nuances.length > 0 ? (
+            {phase === "resultats" && familles.length > 0 ? (
               <div className="mt-3 flex max-w-full flex-wrap items-center justify-center gap-x-3 gap-y-1.5 px-1 text-[10px] font-bold">
-                {nuances.slice(0, 8).map(n => (
-                  <span key={n.nom} className="flex items-center gap-1.5 text-muted-foreground dark:text-slate-300">
-                    <span className="h-2.5 w-2.5 rounded-sm" style={{ background: n.color }} />
-                    {n.nom} <span className="tabular-nums opacity-70">{n.count}</span>
+                {familles.map(f => (
+                  <span
+                    key={f.color}
+                    // Le détail complet au survol : la légende reste courte sans
+                    // rien cacher de ce qu'elle recouvre.
+                    title={f.nuances.map(([n, c]) => `${n} : ${c}`).join(" · ")}
+                    className="flex items-center gap-1.5 text-muted-foreground dark:text-slate-300"
+                  >
+                    {/* Une des six couleurs est le blanc : sans cet anneau, la
+                        pastille disparaîtrait sur la carte comme sur le fond. */}
+                    <span className="h-2.5 w-2.5 rounded-sm ring-1 ring-slate-900/15" style={{ background: f.color }} />
+                    {f.nuances[0][0]}
+                    {f.nuances.length > 1 && <span className="opacity-60">+{f.nuances.length - 1}</span>}
+                    <span className="tabular-nums opacity-70">{f.total}</span>
                   </span>
                 ))}
               </div>

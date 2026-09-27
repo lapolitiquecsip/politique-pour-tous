@@ -208,7 +208,13 @@ function lireCirconscription(brut: string, code: string, label: string, url: str
     if (!brutNom) continue;
     const nomComplet = sansBalises(brutNom);
     const nuance = sansBalises(bloc.match(/class="senator-group">([^<]*)</)?.[1] || "");
-    const couleur = decodeHtml(bloc.match(/--senator-color:\s*([^;"]+)/)?.[1] || "").trim() || null;
+    // Le dièse de la couleur est échappé en « &#x23; » — une entité qui contient
+    // elle-même un point-virgule. Découper la déclaration CSS avant de décoder
+    // s'arrêtait donc sur ce point-virgule et ne gardait que « &#x23 », perdant
+    // les six chiffres de la couleur. On décode le style d'abord, on découpe
+    // ensuite.
+    const style = decodeHtml(bloc.match(/class="senator-color"[^>]*style="([^"]*)"/)?.[1] || "");
+    const couleur = style.match(/--senator-color:\s*([^;]+)/)?.[1]?.trim() || null;
     const { prenom, nom } = separerNom(nomComplet);
     elus.push({
       code, circonscription: label, nomComplet, prenom, nom,

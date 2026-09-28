@@ -1962,7 +1962,13 @@ export const api = {
     // 'scrutins!inner' allows filtering on the related table
     const { data, error } = await supabase
       .from('deputy_votes')
-      .select('*, scrutins!inner(id, numero, date_scrutin, objet, resultat, type, category, summary, why_it_matters, group_results, dossier_url)')
+      // Mesuré : avec `group_results`, cette requête transférait 894 Ko et mettait
+      // 7,3 s ; sans, 182 Ko et 3,6 s. Le détail par groupe, le résumé et l'analyse
+      // ne servent QUE dans la fenêtre d'un scrutin : les charger pour mille votes
+      // d'avance alourdissait chaque fiche de député. Ils sont demandés à
+      // l'ouverture, par getScrutinDetail. Les quatre compteurs, eux, restent :
+      // ce sont des entiers, et la liste peut vouloir les montrer.
+      .select('*, scrutins!inner(id, numero, date_scrutin, objet, resultat, type, category, dossier_url, pour, contre, abstention, non_votant)')
       .eq('deputy_an_id', anId)
       .in('scrutins.type', ['LOI', 'ARTICLE'])
       .order('date_scrutin', { ascending: false })
@@ -1974,6 +1980,22 @@ export const api = {
     }
 
     return data || [];
+  },
+
+  /**
+   * Les parties lourdes d'un scrutin : résumé, analyse, détail par groupe.
+   *
+   * Séparées de la liste à dessein — voir getVotesByDeputy. Un seul scrutin à la
+   * fois, au moment où on l'ouvre.
+   */
+  getScrutinDetail: async (scrutinId: string) => {
+    const { data, error } = await supabase
+      .from('scrutins')
+      .select('id, summary, why_it_matters, group_results')
+      .eq('id', scrutinId)
+      .maybeSingle();
+    if (error) { console.warn('getScrutinDetail:', error.message); return null; }
+    return data;
   },
 
   getUserSavedItems: async (userId: string) => {

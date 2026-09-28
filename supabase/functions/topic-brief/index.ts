@@ -124,101 +124,234 @@ type Source = { kind: string; title: string; date: string | null; url: string | 
 /** Échappe ce qui a un sens pour PostgREST dans un motif `ilike`. */
 const motif = (q: string) => `%${q.replace(/[%,()]/g, " ").trim()}%`;
 
+const sansAccent = (x: string) =>
+  (x || "").normalize("NFD").replace(/[\u0300-\u036f]/g, "").toLowerCase();
+
 /**
- * Rassemble la matière dans les corpus du site.
+ * Découpe le sujet en mots cherchables, pluriel ôté.
  *
- * Les cinq requêtes partent ENSEMBLE : enchaînées, elles ajoutaient deux
- * secondes à une attente déjà dominée par le modèle.
+ * C'est la correction la plus importante de cette collecte. Chercher
+ * l'expression exacte « panneau solaire » ne trouvait RIEN : les textes écrivent
+ * « panneaux solaires ». Mesuré sur la base : zéro document par expression
+ * exacte, dix-neuf par mots. Le « s » et le « x » finaux tombent (panneaux →
+ * panneau, travaux → travau) et le motif devient un fragment, qui retrouve aussi
+ * bien le singulier que le pluriel.
+ */
+function motsCles(q: string): string[] {
+  return sansAccent(q).split(/[^a-z0-9]+/)
+    .filter(m => m.length > 3)
+    .map(m => (/[sx]$/.test(m) ? m.slice(0, -1) : m));
+}
+
+type Source = { kind: string; title: string; date: string | null; url: string | null; note?: string | null };
+
+/**
+ * Rassemble la matière dans TOUS les corpus du site.
  *
- * Le texte intégral des articles (`content.raw_text`) est volontairement écarté :
- * un `ilike` dessus n'a aucun index à sa disposition et balaie toute la table,
- * ce qui prenait plusieurs minutes — assez pour faire expirer la fonction. Les
- * titres et les résumés suffisent à repérer un sujet.
+ * Une requête par corpus, toutes lancées ensemble, et CHACUNE ISOLÉE : un corpus
+ * lent ou en échec rend une liste vide au lieu de faire tomber la synthèse
+ * entière. Le cas est réel — les amendements, trente-cinq mille textes sans index
+ * de recherche, dépassent parfois le délai maximum d'une requête.
+ *
+ * On filtre sur le mot le plus long (le plus sélectif), puis on écarte en mémoire
+ * ce qui ne contient pas TOUS les mots : une seule requête par table, et la
+ * précision d'une recherche multi-mots.
+ *
+ * Le texte intégral des articles de presse (`content.raw_text`) reste écarté :
+ * un `ilike` dessus balaie la table et prenait plusieurs minutes.
  */
 async function rassembler(admin: ReturnType<typeof createClient>, mot: string) {
+  const mots = motsCles(mot);
+  const pivot = [...mots].sort((a, b) => b.length - a.length)[0] || sansAccent(mot);
+  const L = motif(pivot);
   const like = motif(mot);
 
-  const [jorfFts, lois, dossiers, actus, commissions, profondeur] = await Promise.all([
-    admin.from("jorf_texts")
+  /** Isole un corpus : son échec ne coûte que son propre contenu. */
+  const sur = async <T>(nom: string, p: PromiseLike<{ data: T[] | null; error: unknown }>): Promise<T[]> => {
+    try {
+      const r = await p;
+      if (r.error) { console.warn(`corpus ${nom} :`, (r.error as { message?: string }).message); return []; }
+      return r.data ?? [];
+    } catch (e) {
+      console.warn(`corpus ${nom} :`, (e as Error).message);
+      return [];
+    }
+  };
+
+  /** Ne garde que ce qui contient tous les mots du sujet. */
+  const tousLesMots = (champs: unknown[]) => {
+    const texte = sansAccent(champs.filter(Boolean).join(" "));
+    return mots.every(m => texte.includes(m));
+  };
+
+  const ou = (colonnes: string[]) => colonnes.map(c => `${c}.ilike.${L}`).join(",");
+
+  const [
+    jorfFts, laws, legacy, decrets, analyses, dossiers, scrutins,
+    scrutinsSenat, explications, commissions, actus, petitions, europe, amendements, profondeur,
+  ] = await Promise.all([
+    sur("jorf", admin.from("jorf_texts")
       .select("id, edition_date, titre, explication")
       .textSearch("recherche", mot, { type: "websearch", config: "french" })
-      .order("edition_date", { ascending: false }).limit(40),
-    admin.from("promulgated_laws")
-      .select("id, title, promulgated_at, eli_url, source_url")
-      .ilike("title", like).order("promulgated_at", { ascending: false }).limit(15),
-    admin.from("legislative_dossiers")
+      .order("edition_date", { ascending: false }).limit(40)),
+    sur("laws", admin.from("laws")
+      .select("id, title, summary, content, context, category, date_adopted, source_urls")
+      .or(ou(["title", "summary", "content"])).limit(40)),
+    sur("legacy_laws", admin.from("legacy_laws")
+      .select("id, title, summary, category, date_adopted, source_urls")
+      .or(ou(["title", "summary"])).limit(25)),
+    sur("decrees", admin.from("decrees")
+      .select("jorf_id, title, display_title, summary, nature, date_publi, source_url")
+      .or(ou(["title", "display_title", "summary"])).limit(30)),
+    sur("analyses", admin.from("legislative_analyses")
+      .select("id, dossier_id, summary, audience, generated_at, source_urls")
+      .ilike("summary", L).limit(25)),
+    sur("dossiers", admin.from("legislative_dossiers")
       .select("id, title, short_title, status_label, latest_step_at, source_urls")
-      .or(`title.ilike.${like},short_title.ilike.${like}`)
-      .order("latest_step_at", { ascending: false }).limit(15),
-    admin.from("content")
-      .select("id, titre_simplifie, resume_flash, date_publication, source_url")
-      .or(`titre_simplifie.ilike.${like},resume_flash.ilike.${like},resume_detaille.ilike.${like}`)
-      .order("date_publication", { ascending: false }).limit(12),
-    admin.from("commission_reports")
+      .or(ou(["title", "short_title"])).limit(20)),
+    sur("scrutins", admin.from("scrutins")
+      .select("id, objet, summary, resultat, date_scrutin, pour, contre, abstention, dossier_url")
+      .or(ou(["objet", "summary"])).limit(20)),
+    sur("scrutins_senat", admin.from("legislative_scrutins")
+      .select("id, title, explanation, result_label, source_url")
+      .or(ou(["title", "explanation"])).limit(15)),
+    sur("vote_explanations", admin.from("vote_explanations")
+      .select("vote_id, title, subject, stakes, explanation")
+      .or(ou(["title", "subject", "stakes"])).limit(15)),
+    sur("commissions", admin.from("commission_reports")
       .select("ref, title, commission, chamber, meeting_date, summary, cr_url")
-      .or(`title.ilike.${like},summary.ilike.${like}`)
-      .order("meeting_date", { ascending: false }).limit(12),
-    // Jusqu'où remonte le Journal officiel conservé : la synthèse doit pouvoir
-    // dire sur quelle période elle s'appuie, sinon « la réglementation » laisse
-    // croire à un état complet du droit.
-    admin.from("jorf_texts").select("edition_date").order("edition_date").limit(1),
+      .or(ou(["title", "summary"])).limit(12)),
+    sur("content", admin.from("content")
+      .select("id, titre_simplifie, resume_flash, resume_detaille, date_publication, source_url")
+      .or(ou(["titre_simplifie", "resume_flash", "resume_detaille"])).limit(15)),
+    sur("petitions", admin.from("petitions")
+      .select("id, title, description, signatures, status, url, created_at")
+      .or(ou(["title", "description"])).limit(10)),
+    sur("europe", admin.from("eu_france_decisions")
+      .select("id, title, summary, institution, published_at, url")
+      .or(ou(["title", "summary"])).limit(10)),
+    sur("amendements", admin.from("legislative_amendments")
+      .select("id, subject, outcome_label, chamber, voted_at, source_url")
+      .ilike("subject", L).limit(15)),
+    sur("profondeur", admin.from("jorf_texts").select("edition_date").order("edition_date").limit(1)),
   ]);
 
   const sources: Source[] = [];
   const counts: Record<string, number> = {};
+  const poser = (kind: string, cle: string, lignes: unknown[], f: (r: never) => Source | null) => {
+    let n = 0;
+    for (const r of lignes) {
+      const src = f(r as never);
+      if (src) { sources.push({ ...src, kind }); n++; }
+    }
+    counts[cle] = n;
+  };
 
-  // Le Journal officiel est là où vivent décrets et arrêtés, donc la règle
-  // applicable. La table porte un index plein texte français ; quand il ne rend
-  // rien (mot composé, orthographe inhabituelle), on retombe sur une
-  // correspondance simple.
-  let jorf = jorfFts;
-  if (jorf.error || !jorf.data?.length) {
-    jorf = await admin.from("jorf_texts")
+  // Le Journal officiel : décrets et arrêtés du jour, donc la règle applicable.
+  // Sa table porte un index plein texte français, qui gère déjà le pluriel ; on ne
+  // retombe sur le motif que s'il ne rend rien.
+  let jorf = jorfFts as { id: string; edition_date: string; titre: string; explication: string }[];
+  if (!jorf.length) {
+    jorf = await sur("jorf_ilike", admin.from("jorf_texts")
       .select("id, edition_date, titre, explication")
-      .or(`titre.ilike.${like},explication.ilike.${like}`)
-      .order("edition_date", { ascending: false }).limit(40);
+      .or(`titre.ilike.${L},explication.ilike.${L}`)
+      .order("edition_date", { ascending: false }).limit(40)) as typeof jorf;
+    jorf = jorf.filter(t => tousLesMots([t.titre, t.explication]));
   }
-  for (const t of jorf.data ?? []) {
-    sources.push({
-      kind: "Journal officiel", title: t.titre, date: t.edition_date,
-      url: `https://www.legifrance.gouv.fr/jorf/id/${t.id}`, note: t.explication,
-    });
-  }
-  counts.jorf = jorf.data?.length ?? 0;
+  poser("Journal officiel", "jorf", jorf, (t: { id: string; edition_date: string; titre: string; explication: string }) => ({
+    kind: "", title: t.titre, date: t.edition_date,
+    url: `https://www.legifrance.gouv.fr/jorf/id/${t.id}`, note: t.explication,
+  }));
 
-  for (const l of lois.data ?? []) {
-    sources.push({ kind: "Loi promulguée", title: l.title, date: l.promulgated_at, url: l.eli_url || l.source_url });
-  }
-  counts.lois = lois.data?.length ?? 0;
+  const premiereUrl = (u: unknown) => (Array.isArray(u) ? (u[0] as string) ?? null : (u as string) ?? null);
 
-  for (const d of dossiers.data ?? []) {
-    sources.push({
-      kind: "Texte en cours", title: d.short_title || d.title, date: d.latest_step_at,
-      url: Array.isArray(d.source_urls) ? d.source_urls[0] ?? null : null, note: d.status_label,
-    });
-  }
-  counts.dossiers = dossiers.data?.length ?? 0;
+  poser("Loi", "lois", (laws as never[]).filter((l: never) =>
+    tousLesMots([(l as { title: string }).title, (l as { summary: string }).summary, (l as { content: string }).content])),
+    (l: { id: string; title: string; summary: string; context: string; date_adopted: string; source_urls: unknown }) => ({
+      kind: "", title: l.title, date: l.date_adopted, url: premiereUrl(l.source_urls),
+      note: l.summary || l.context,
+    }));
 
-  for (const c of commissions.data ?? []) {
-    sources.push({
-      kind: `Commission (${c.chamber === "SENAT" ? "Sénat" : "Assemblée"})`,
-      title: `${c.commission ? c.commission + " — " : ""}${c.title}`,
+  poser("Loi (antérieure)", "lois_anciennes", (legacy as never[]).filter((l: never) =>
+    tousLesMots([(l as { title: string }).title, (l as { summary: string }).summary])),
+    (l: { title: string; summary: string; date_adopted: string; source_urls: unknown }) => ({
+      kind: "", title: l.title, date: l.date_adopted, url: premiereUrl(l.source_urls), note: l.summary,
+    }));
+
+  poser("Décret / arrêté", "decrets", (decrets as never[]).filter((d: never) =>
+    tousLesMots([(d as { title: string }).title, (d as { display_title: string }).display_title, (d as { summary: string }).summary])),
+    (d: { title: string; display_title: string; summary: string; date_publi: string; source_url: string }) => ({
+      kind: "", title: d.display_title || d.title, date: d.date_publi, url: d.source_url, note: d.summary,
+    }));
+
+  poser("Analyse de texte", "analyses", (analyses as never[]).filter((a: never) =>
+    tousLesMots([(a as { summary: string }).summary])),
+    (a: { summary: string; generated_at: string; source_urls: unknown }) => ({
+      kind: "", title: String(a.summary).slice(0, 120), date: a.generated_at,
+      url: premiereUrl(a.source_urls), note: a.summary,
+    }));
+
+  poser("Texte en cours", "dossiers", (dossiers as never[]).filter((d: never) =>
+    tousLesMots([(d as { title: string }).title, (d as { short_title: string }).short_title])),
+    (d: { title: string; short_title: string; status_label: string; latest_step_at: string; source_urls: unknown }) => ({
+      kind: "", title: d.short_title || d.title, date: d.latest_step_at,
+      url: premiereUrl(d.source_urls), note: d.status_label,
+    }));
+
+  poser("Vote à l'Assemblée", "scrutins", (scrutins as never[]).filter((v: never) =>
+    tousLesMots([(v as { objet: string }).objet, (v as { summary: string }).summary])),
+    (v: { objet: string; summary: string; resultat: string; date_scrutin: string; pour: number; contre: number; abstention: number; dossier_url: string }) => ({
+      kind: "", title: v.objet, date: v.date_scrutin, url: v.dossier_url,
+      note: `${v.resultat ?? ""} (${v.pour ?? 0} pour, ${v.contre ?? 0} contre, ${v.abstention ?? 0} abstentions). ${v.summary ?? ""}`.trim(),
+    }));
+
+  poser("Vote au Sénat", "scrutins_senat", (scrutinsSenat as never[]).filter((v: never) =>
+    tousLesMots([(v as { title: string }).title, (v as { explanation: string }).explanation])),
+    (v: { title: string; explanation: string; result_label: string; source_url: string }) => ({
+      kind: "", title: v.title, date: null, url: v.source_url, note: v.explanation || v.result_label,
+    }));
+
+  poser("Enjeu d'un vote", "explications", (explications as never[]).filter((e: never) =>
+    tousLesMots([(e as { title: string }).title, (e as { subject: string }).subject, (e as { stakes: string }).stakes])),
+    (e: { title: string; subject: string; stakes: string }) => ({
+      kind: "", title: e.title || e.subject, date: null, url: null, note: e.stakes,
+    }));
+
+  poser("Commission", "commissions", (commissions as never[]).filter((c: never) =>
+    tousLesMots([(c as { title: string }).title, (c as { summary: string }).summary])),
+    (c: { title: string; commission: string; chamber: string; meeting_date: string; summary: string; cr_url: string }) => ({
+      kind: "", title: `${c.commission ? c.commission + " — " : ""}${c.title}`,
       date: c.meeting_date, url: c.cr_url, note: c.summary,
-    });
-  }
-  counts.commissions = commissions.data?.length ?? 0;
+    }));
 
-  // L'actualité donne le contexte, jamais la règle.
-  for (const a of actus.data ?? []) {
-    sources.push({
-      kind: "Actualité", title: a.titre_simplifie, date: a.date_publication,
-      url: a.source_url, note: a.resume_flash,
-    });
-  }
-  counts.actus = actus.data?.length ?? 0;
+  poser("Amendement", "amendements", (amendements as never[]).filter((a: never) =>
+    tousLesMots([(a as { subject: string }).subject])),
+    (a: { subject: string; outcome_label: string; voted_at: string; source_url: string }) => ({
+      kind: "", title: a.subject, date: a.voted_at, url: a.source_url, note: a.outcome_label,
+    }));
 
-  const depuis = profondeur.data?.[0]?.edition_date ?? null;
-  return { sources, counts, coverage: { jorf_depuis: depuis } };
+  poser("Pétition", "petitions", (petitions as never[]).filter((x: never) =>
+    tousLesMots([(x as { title: string }).title, (x as { description: string }).description])),
+    (x: { title: string; description: string; signatures: number; url: string; created_at: string }) => ({
+      kind: "", title: x.title, date: x.created_at, url: x.url,
+      note: `${x.signatures ?? 0} signatures. ${x.description ?? ""}`.trim(),
+    }));
+
+  poser("Décision européenne", "europe", (europe as never[]).filter((e: never) =>
+    tousLesMots([(e as { title: string }).title, (e as { summary: string }).summary])),
+    (e: { title: string; summary: string; published_at: string; url: string }) => ({
+      kind: "", title: e.title, date: e.published_at, url: e.url, note: e.summary,
+    }));
+
+  // L'actualité donne le contexte, jamais la règle : elle ferme la liste.
+  poser("Actualité", "actus", (actus as never[]).filter((a: never) =>
+    tousLesMots([(a as { titre_simplifie: string }).titre_simplifie, (a as { resume_flash: string }).resume_flash])),
+    (a: { titre_simplifie: string; resume_flash: string; date_publication: string; source_url: string }) => ({
+      kind: "", title: a.titre_simplifie, date: a.date_publication, url: a.source_url, note: a.resume_flash,
+    }));
+
+  const depuis = (profondeur as { edition_date: string }[])[0]?.edition_date ?? null;
+  return { sources, counts, coverage: { jorf_depuis: depuis }, mots, pivot, like };
 }
 
 /* ──────────────────────────────── La consigne ────────────────────────────── */
@@ -293,9 +426,15 @@ serve(async (req) => {
       });
     }
 
+    // Quatorze corpus peuvent rendre plusieurs centaines de notices : on plafonne
+    // ce qui part au modèle. L'ordre de `sources` n'est pas un hasard — Journal
+    // officiel, lois, décrets, puis les textes en cours, et l'actualité en
+    // dernier : couper par la fin écarte d'abord le contexte, jamais la règle.
+    const retenues = sources.slice(0, 80);
+
     // Numérotés pour que le modèle puisse y renvoyer, et tronqués pour tenir
     // dans une requête : quarante notices entières dépassent le raisonnable.
-    const dossier = sources.map((s, i) =>
+    const dossier = retenues.map((s, i) =>
       `[${i + 1}] (${s.kind}${s.date ? `, ${String(s.date).slice(0, 10)}` : ""}) ${s.title}`
       + (s.note ? `\n    ${String(s.note).slice(0, 400)}` : ""),
     ).join("\n");
@@ -305,7 +444,7 @@ serve(async (req) => {
       `Sujet demandé : « ${mot} »\n`
       + `\nPérimètre : le Journal officiel conservé ici commence le ${coverage.jorf_depuis ?? "?"}. `
       + `Une règle antérieure à cette date peut donc être absente : ne présente jamais ces documents comme l'état complet du droit.\n`
-      + `\nDOCUMENTS DISPONIBLES (${sources.length}) :\n${dossier}`,
+      + `\nDOCUMENTS DISPONIBLES (${retenues.length} sur ${sources.length} trouvés) :\n${dossier}`,
     );
 
     let brief: unknown;
@@ -316,7 +455,8 @@ serve(async (req) => {
     }
 
     const ligne = {
-      slug, keyword: mot, brief, sources, counts: { ...counts, ...coverage }, model: modele,
+      slug, keyword: mot, brief, sources: retenues, model: modele,
+      counts: { ...counts, ...coverage, total_trouves: sources.length },
       generated_at: new Date().toISOString(), hits: (connu?.hits ?? 0) + 1,
     };
     const { error: errEcriture } = await admin.from("topic_briefs").upsert(ligne, { onConflict: "slug" });

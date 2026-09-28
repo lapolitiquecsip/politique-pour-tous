@@ -1,9 +1,10 @@
 
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { X, Landmark, ExternalLink, Info, CheckCircle2, XCircle, MinusCircle, AlertCircle, Layers, Lock, Star } from 'lucide-react';
 import { usePremium } from "@/lib/hooks/usePremium";
 import { groupLabel } from "@/lib/legislative-groups";
+import { api } from "@/lib/api";
 import Link from 'next/link';
 
 interface VoteDetailsModalProps {
@@ -26,9 +27,32 @@ const getVoteDisplay = (position: string) => {
 
 const VoteDetailsModal: React.FC<VoteDetailsModalProps> = ({ vote, onClose }) => {
   const { isPremium } = usePremium();
+  /**
+   * Le résumé, l'analyse et le détail par groupe sont demandés ICI, à l'ouverture.
+   *
+   * Ils représentaient 712 Ko des 894 Ko chargés d'avance par la fiche du député,
+   * pour mille scrutins dont on n'en ouvre qu'un. Le hook est placé avant toute
+   * sortie anticipée : un hook appelé conditionnellement casserait le rendu au
+   * premier scrutin sans données.
+   */
+  const [detail, setDetail] = useState<any | null>(null);
+  const scrutinId = vote?.scrutins?.id ?? null;
+
+  useEffect(() => {
+    setDetail(null);
+    if (!scrutinId) return;
+    let vivant = true;
+    api.getScrutinDetail(String(scrutinId))
+      .then(d => { if (vivant) setDetail(d); })
+      .catch(() => { /* la fenêtre reste lisible sans le détail */ });
+    return () => { vivant = false; };
+  }, [scrutinId]);
+
   if (!vote) return null;
 
-  const s = vote.scrutins;
+  // Le scrutin de la liste, complété dès que le détail arrive.
+  const s = { ...(vote.scrutins ?? {}), ...(detail ?? {}) };
+  const detailEnCours = Boolean(scrutinId) && detail === null;
   const voteInfo = getVoteDisplay(vote.position);
   const dateStr = s?.date_scrutin 
     ? new Date(s.date_scrutin).toLocaleDateString('fr-FR', { day: 'numeric', month: 'long', year: 'numeric' })
@@ -170,6 +194,63 @@ const VoteDetailsModal: React.FC<VoteDetailsModalProps> = ({ vote, onClose }) =>
                 )}
               </div>
 
+              {/* RÉSULTAT DU SCRUTIN, tous groupes confondus.
+                  Le détail par groupe répondait à « qui a voté quoi » sans jamais
+                  répondre à « combien » : il manquait le chiffre que tout le monde
+                  cherche d'abord. Il ne se calcule pas en additionnant les groupes
+                  — leur ligne porte l'effectif du groupe, pas le nombre de votants
+                  — mais se lit directement dans le scrutin officiel. */}
+              {(() => {
+                const pour = Number(s?.pour ?? 0);
+                const contre = Number(s?.contre ?? 0);
+                const abst = Number(s?.abstention ?? 0);
+                const nonVotants = Number(s?.non_votant ?? 0);
+                const exprimes = pour + contre + abst;
+                if (!exprimes) return null;
+                const part = (n: number) => `${((n / exprimes) * 100).toFixed(0)} %`;
+                return (
+                  <div className="space-y-3 pt-4">
+                    <div className="flex items-center gap-2 text-foreground dark:text-white">
+                      <Landmark className="w-5 h-5 text-slate-400" />
+                      <h3 className="font-bold text-lg">Résultat du scrutin</h3>
+                    </div>
+                    <div className="rounded-2xl border border-border dark:border-slate-800 bg-card dark:bg-slate-800/50 p-4">
+                      <div className="grid grid-cols-3 gap-2 text-center">
+                        {[
+                          ["Pour", pour, "text-emerald-600"],
+                          ["Contre", contre, "text-rose-600"],
+                          ["Abstentions", abst, "text-amber-600"],
+                        ].map(([libelle, n, teinte]) => (
+                          <div key={libelle as string}>
+                            <p className={`text-2xl font-black tabular-nums ${teinte}`}>{n as number}</p>
+                            <p className="text-[10px] font-black uppercase tracking-widest text-muted-foreground">
+                              {libelle as string}
+                            </p>
+                            <p className="text-[10px] font-bold text-slate-400">{part(n as number)}</p>
+                          </div>
+                        ))}
+                      </div>
+                      <div className="mt-3 flex h-3 w-full overflow-hidden rounded-full bg-slate-100 dark:bg-white/5">
+                        <div className="h-full bg-emerald-500" style={{ width: `${(pour / exprimes) * 100}%` }} />
+                        <div className="h-full bg-rose-500" style={{ width: `${(contre / exprimes) * 100}%` }} />
+                        <div className="h-full bg-amber-400" style={{ width: `${(abst / exprimes) * 100}%` }} />
+                      </div>
+                      <p className="mt-2.5 text-[11px] text-muted-foreground">
+                        <strong className="text-foreground dark:text-white">{exprimes}</strong> suffrages exprimés
+                        {nonVotants > 0 && <> · {nonVotants} non‑votant{nonVotants > 1 ? "s" : ""}</>}
+                        {s?.resultat && <> — <span className="italic">{s.resultat}</span></>}
+                      </p>
+                    </div>
+                  </div>
+                );
+              })()}
+
+              {detailEnCours && (
+                <p className="pt-4 text-xs font-bold uppercase tracking-widest text-slate-400">
+                  Chargement du détail par groupe…
+                </p>
+              )}
+
               {/* Détail par GROUPE politique : comment chaque groupe a voté sur ce scrutin.
                   Permet de situer le vote de l'élu par rapport aux autres groupes. */}
               {Array.isArray(s?.group_results) && s.group_results.length > 0 && (() => {
@@ -186,12 +267,19 @@ const VoteDetailsModal: React.FC<VoteDetailsModalProps> = ({ vote, onClose }) =>
                     <div className="space-y-2.5">
                       {groups.map((g: any) => {
                         const pour = g.pour || 0, contre = g.contre || 0, abst = g.abstention || 0;
-                        const denom = pour + contre + abst || 1;
+                        const denom0 = pour + contre + abst;
+                        const denom = denom0 || 1;
                         return (
                           <div key={g.group_id} className="rounded-2xl border border-border dark:border-slate-800 bg-card dark:bg-slate-800/50 p-3">
                             <div className="mb-1.5 flex items-center justify-between gap-2">
                               <span className="truncate text-xs font-black text-slate-800 dark:text-slate-200">{g.name}</span>
-                              <span className="shrink-0 text-[10px] font-bold text-slate-400">{g.total} votant{g.total > 1 ? "s" : ""}</span>
+                              {/* `total` est l'EFFECTIF du groupe, pas son nombre de
+                                  votants : l'étiquette « 122 votants » en face de
+                                  « 0 pour, 2 contre, 14 abst. » était fausse, et le
+                                  lecteur pouvait en conclure à une erreur de données. */}
+                              <span className="shrink-0 text-[10px] font-bold text-slate-400">
+                                {denom0} vot{denom0 > 1 ? "ants" : "ant"}{g.total ? ` sur ${g.total}` : ""}
+                              </span>
                             </div>
                             <div className="flex h-2.5 w-full overflow-hidden rounded-full bg-slate-100 dark:bg-white/5">
                               <div className="h-full bg-emerald-500" style={{ width: `${(pour / denom) * 100}%` }} title={`${pour} pour`} />

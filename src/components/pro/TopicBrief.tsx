@@ -42,6 +42,24 @@ type Reponse = {
 
 const EXEMPLES = ["panneau solaire", "logement étudiant", "zone à faibles émissions", "apprentissage", "eau potable"];
 
+/** Noms lisibles des corpus interrogés — les clés viennent de la fonction Edge. */
+const CORPUS: Record<string, string> = {
+  jorf: "Journal officiel",
+  lois: "Lois",
+  lois_anciennes: "Lois antérieures",
+  decrets: "Décrets & arrêtés",
+  analyses: "Analyses de textes",
+  dossiers: "Textes en cours",
+  scrutins: "Votes Assemblée",
+  scrutins_senat: "Votes Sénat",
+  explications: "Enjeux de votes",
+  commissions: "Commissions",
+  amendements: "Amendements",
+  petitions: "Pétitions",
+  europe: "Europe",
+  actus: "Actualité",
+};
+
 const dateCourte = (iso?: string | null) => {
   const m = String(iso ?? "").match(/^(\d{4})-(\d{2})-(\d{2})/);
   if (!m) return null;
@@ -122,11 +140,18 @@ export default function TopicBrief() {
 
   const brief = res?.brief;
   const sources = res?.sources ?? [];
-  // `counts` porte aussi la profondeur du corpus, qui n'est pas un nombre de
-  // documents : on somme les seules valeurs numériques des corpus.
-  const total = Object.entries(res?.counts ?? {})
-    .filter(([k, v]) => k !== "jorf_depuis" && typeof v === "number")
-    .reduce((a, [, v]) => a + (v as number), 0);
+  // `counts` mélange trois choses : le compte par corpus, la profondeur du
+  // Journal officiel (une date) et le total trouvé. Sommer naïvement comptait
+  // donc les documents deux fois.
+  const HORS_COMPTE = new Set(["jorf_depuis", "total_trouves"]);
+  const total = Number(res?.counts?.total_trouves)
+    || Object.entries(res?.counts ?? {})
+      .filter(([k, v]) => !HORS_COMPTE.has(k) && typeof v === "number")
+      .reduce((a, [, v]) => a + (v as number), 0);
+  // Les corpus effectivement mobilisés, pour montrer l'étendue de la recherche.
+  const parCorpus = Object.entries(res?.counts ?? {})
+    .filter(([k, v]) => !HORS_COMPTE.has(k) && typeof v === "number" && (v as number) > 0)
+    .sort((a, b) => (b[1] as number) - (a[1] as number));
   const jorfDepuis = dateCourte(res?.counts?.jorf_depuis as unknown as string);
 
   return (
@@ -221,10 +246,23 @@ export default function TopicBrief() {
                       {brief?.sujet || res.keyword}
                     </h3>
                     <p className="text-[10px] font-black uppercase tracking-widest text-white/35">
-                      {total} document{total > 1 ? "s" : ""} retenu{total > 1 ? "s" : ""}
+                      {total} document{total > 1 ? "s" : ""} trouvé{total > 1 ? "s" : ""}
                       {res.cached && res.generated_at && ` · synthèse du ${dateCourte(res.generated_at)}`}
                     </p>
                   </div>
+
+                  {/* Où la recherche est allée chercher. Le lecteur voit d'un coup
+                      d'œil que ce n'est pas qu'un dépouillement du Journal officiel,
+                      mais toute la matière législative conservée. */}
+                  {parCorpus.length > 0 && (
+                    <div className="mt-2.5 flex flex-wrap gap-1.5">
+                      {parCorpus.map(([cle, n]) => (
+                        <span key={cle} className="rounded-full bg-white/[0.06] px-2.5 py-1 text-[10px] font-bold text-white/50">
+                          {CORPUS[cle] ?? cle} <span className="tabular-nums text-white/75">{n as number}</span>
+                        </span>
+                      ))}
+                    </div>
+                  )}
 
                   {brief?.en_bref && (
                     <p className="mt-3 rounded-2xl bg-gradient-to-r from-violet-500/15 to-fuchsia-500/10 p-4 text-[15px] font-medium leading-relaxed text-white/90">
@@ -262,6 +300,7 @@ export default function TopicBrief() {
                     <div className="mt-6">
                       <p className="text-[11px] font-black uppercase tracking-[0.2em] text-white/40">
                         Les {sources.length} documents utilisés
+                        {total > sources.length && <span className="ml-1.5 font-bold text-white/25">sur {total} trouvés</span>}
                       </p>
                       <ol className="mt-2.5 space-y-1.5">
                         {sources.map((s, i) => (

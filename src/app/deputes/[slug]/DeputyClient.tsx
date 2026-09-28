@@ -1,6 +1,6 @@
 "use client";
 
-import { use, useState, useEffect, useMemo } from "react";
+import { use, useState, useEffect, useMemo, useRef } from "react";
 import Link from "next/link";
 import { 
   ChevronLeft, 
@@ -94,6 +94,17 @@ export default function DeputyDetailPage({ params, embedded }: { params: Promise
   const [loadingAuthoredLaws, setLoadingAuthoredLaws] = useState(true);
   const [selectedVoteForModal, setSelectedVoteForModal] = useState<any | null>(null);
   const [isVotesExpanded, setIsVotesExpanded] = useState(false);
+  /**
+   * Nombre de lois réellement rendues une fois la liste dépliée.
+   *
+   * « Voir l'intégralité » posait d'un coup plusieurs centaines de cartes dans le
+   * document, chacune animée et mesurée par framer-motion : le défilement devenait
+   * poussif sur ordinateur et franchement saccadé sur téléphone. On en révèle
+   * vingt-quatre à la fois, la suite arrivant quand le bas de liste approche.
+   */
+  const PAS_VOTES = 24;
+  const [nbVotesVisibles, setNbVotesVisibles] = useState(PAS_VOTES);
+  const sentinelleVotes = useRef<HTMLDivElement>(null);
   // Brique #3 — filtre thématique des votes ("ce qu'il fait" par enjeu).
   const [issues, setIssues] = useState<any[]>([]);
   const [scrutinIssues, setScrutinIssues] = useState<Record<string, string[]>>({});
@@ -343,6 +354,25 @@ export default function DeputyDetailPage({ params, embedded }: { params: Promise
   };
 
   // const votes = getMockVotes(); -- REMOVED
+
+  // Dévoile la suite des votes quand le bas de la liste approche. L'observateur
+  // ne coûte rien tant qu'on ne l'atteint pas, contrairement à un écouteur de
+  // défilement qui se déclenche à chaque image.
+  useEffect(() => {
+    if (!isVotesExpanded) return;
+    const cible = sentinelleVotes.current;
+    if (!cible) return;
+    const obs = new IntersectionObserver(
+      entrees => { if (entrees[0]?.isIntersecting) setNbVotesVisibles(n => n + PAS_VOTES); },
+      { rootMargin: "600px" },
+    );
+    obs.observe(cible);
+    return () => obs.disconnect();
+  }, [isVotesExpanded, nbVotesVisibles]);
+
+  // Un changement de thématique repart du début : garder un compteur élevé
+  // ferait rendre d'un coup toute une liste fraîchement filtrée.
+  useEffect(() => { setNbVotesVisibles(PAS_VOTES); }, [selectedIssue]);
 
   return (
     <div className="min-h-screen bg-muted dark:bg-slate-950 pb-20">
@@ -850,7 +880,7 @@ export default function DeputyDetailPage({ params, embedded }: { params: Promise
               )}
 
               <AnimatePresence mode="popLayout">
-                {filteredVotes.slice(0, isVotesExpanded ? undefined : 5).map((group: any, idx) => {
+                {filteredVotes.slice(0, isVotesExpanded ? nbVotesVisibles : 5).map((group: any, idx) => {
                   const v = group.representative;
                   const voteInfo = getVoteDisplay(v.position);
                   const dateStr = group.date 
@@ -862,13 +892,21 @@ export default function DeputyDetailPage({ params, embedded }: { params: Promise
                   return (
                     <motion.div 
                       key={group.id}
-                      layout
-                      initial={{ opacity: 0, scale: 0.95 }}
+                      /* `layout` retiré : il faisait mesurer et animer la position de
+                         CHAQUE carte à chaque rendu. Rien ne se réordonne ici, la liste
+                         est seulement filtrée — le coût était payé pour rien.
+                         Le décalage d'apparition est plafonné : à 0,05 s par carte, la
+                         trois-centième serait apparue quinze secondes plus tard.
+                         `content-visibility` laisse enfin le navigateur ignorer ce qui est
+                         hors de l'écran, avec une hauteur annoncée pour que la barre de
+                         défilement ne saute pas. */
+                      initial={{ opacity: 0, scale: 0.98 }}
                       animate={{ opacity: 1, scale: 1 }}
-                      exit={{ opacity: 0, scale: 0.95 }}
-                      transition={{ delay: idx * 0.05 }}
+                      exit={{ opacity: 0 }}
+                      transition={{ duration: 0.18, delay: Math.min(idx, 6) * 0.04 }}
+                      style={{ contentVisibility: "auto", containIntrinsicSize: "auto 220px" }}
                       onClick={() => setSelectedVoteForModal({ ...v, subVotes: group.subVotes, cleanedTitle: group.title })}
-                      className="bg-card dark:bg-slate-900 border border-border dark:border-slate-800 rounded-[2rem] p-6 flex flex-col md:flex-row items-center gap-6 group hover:border-red-500 hover:shadow-2xl hover:shadow-red-500/10 cursor-pointer transition-all duration-300 transform hover:-translate-y-1 mb-4"
+                      className="bg-card dark:bg-slate-900 border border-border dark:border-slate-800 rounded-[2rem] p-6 flex flex-col md:flex-row items-center gap-6 group hover:border-red-500 hover:shadow-2xl hover:shadow-red-500/10 cursor-pointer transition-[transform,box-shadow,border-color] duration-300 hover:-translate-y-1 mb-4"
                     >
                       <div className="flex-1 flex items-center gap-6 min-w-0 w-full">
                         <div className="w-14 h-14 rounded-2xl bg-muted dark:bg-slate-800 flex items-center justify-center text-slate-400 group-hover:text-red-500 transition-colors shrink-0">
@@ -900,6 +938,11 @@ export default function DeputyDetailPage({ params, embedded }: { params: Promise
                   );
                 })}
               </AnimatePresence>
+
+              {/* Repère invisible : quand il entre dans le champ, la suite se rend. */}
+              {isVotesExpanded && nbVotesVisibles < filteredVotes.length && (
+                <div ref={sentinelleVotes} aria-hidden className="h-8" />
+              )}
 
               {filteredVotes.length > 5 && (
                 <motion.button

@@ -276,6 +276,19 @@
    chaque changement de page. Le libellé et l'icône suivent la même règle, pour que
    rien ne saute. Habillage seulement : l'accès aux rubriques réservées reste décidé
    par la vérification côté base. */
+/* Connecte ou non : DÉCIDÉ EN CSS, pas en React.
+   L'en-tete rend TOUJOURS les deux versions — le bouton du tableau de bord et
+   l'invitation à se connecter — et celle-ci en masque une. Le choix se faisait
+   jusqu'ici sur un etat React alimenté par Supabase, qui restaure la session de
+   facon asynchrone : pendant une seconde, à CHAQUE changement de page, un abonné
+   lisait « Se connecter ». Ici l'attribut est posé sur <html> par le petit script
+   du gabarit, donc avant le premier rendu, et rien ne clignote.
+   Habillage seulement : aucun accès n'en dépend. */
+.auth-connecte             { display: none; }
+.auth-anonyme              { display: inline-flex; }
+html[data-connecte="1"] .auth-connecte { display: flex; }
+html[data-connecte="1"] .auth-anonyme  { display: none; }
+
 .btn-tdb             { background: #f8fafc; border-color: #f1f5f9; }
 .btn-tdb:hover       { background: #f1f5f9; }
 .btn-tdb .tdb-ico    { background: #dbeafe; color: #2563eb; }

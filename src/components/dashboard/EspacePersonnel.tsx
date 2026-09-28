@@ -13,6 +13,7 @@ import CommuneFeedCard from "@/components/dashboard/CommuneFeedCard";
 import CandidatesFollowFeed from "@/components/dashboard/CandidatesFollowFeed";
 import CommissionsRegistre from "@/components/home/CommissionsRegistre";
 import JournalOfficielDuJour from "@/components/home/JournalOfficielDuJour";
+import TopicBrief from "@/components/pro/TopicBrief";
 import ParametresCompte from "@/components/dashboard/ParametresCompte";
 import { usePremium } from "@/lib/hooks/usePremium";
 import { departmentPaths } from "@/lib/data/departmentPaths";
@@ -342,6 +343,11 @@ export default function EspacePersonnel({ mode = "tout" }: { mode?: ModeEspace }
         // recouvre le haut de la carte et intercepte le clic sur « Tout marquer lu ».
         <div className="relative z-20 container mx-auto max-w-6xl px-4 -mt-16 mb-6 space-y-6">
           <NotificationsFeed userId={userId} />
+          {/* Ouvert aux deux offres, Premium comme Pro : cette rubrique répond à
+              une question que tout abonné se pose (« que dit la loi sur X ? »),
+              là où le Journal officiel et les commissions s’adressent à un usage
+              professionnel quotidien. */}
+          <TopicBrief />
           {/* Tout ce qui relève de l'offre Pro est rassemblé ici : le professionnel
               ouvre son espace et trouve la journée complète, sans chercher ailleurs. */}
           {/* Le registre remplace l ancien fil des commissions : les deux

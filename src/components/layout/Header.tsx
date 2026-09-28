@@ -137,8 +137,11 @@ export default function Header() {
 
             <div className="h-6 w-[1px] bg-slate-200 mx-1" />
 
-            {(user || connecteMemorise) ? (
-              <div className="flex items-center gap-4">
+            {/* Les DEUX versions sont rendues, et globals.css en masque une d'après
+                l'attribut posé sur <html> avant le premier rendu. Choisir ici, en
+                React, revenait à attendre que Supabase ait restauré la session :
+                un abonné lisait « Se connecter » une seconde à chaque page. */}
+            <div className="auth-connecte items-center gap-4">
                 {/* Habillage entièrement en CSS (voir globals.css) : la couleur, l'icône
                     et le libellé se décident depuis l'attribut posé sur <html> avant le
                     premier rendu, ce qui évite le gris qui vire à l'or à chaque page. */}
@@ -162,16 +165,14 @@ export default function Header() {
                 >
                   <LogOut size={20} />
                 </button>
-              </div>
-            ) : (
-              <Link 
-                href="/login"
-                className="inline-flex items-center gap-2 px-5 py-2 bg-slate-900 text-white rounded-xl text-sm font-bold hover:bg-gradient-to-r hover:from-blue-600 hover:to-rose-600 transition-all shadow-lg shadow-slate-900/10"
-              >
-                <LogIn size={16} />
-                Se connecter
-              </Link>
-            )}
+            </div>
+            <Link
+              href="/login"
+              className="auth-anonyme items-center gap-2 px-5 py-2 bg-slate-900 text-white rounded-xl text-sm font-bold hover:bg-gradient-to-r hover:from-blue-600 hover:to-rose-600 transition-all shadow-lg shadow-slate-900/10"
+            >
+              <LogIn size={16} />
+              Se connecter
+            </Link>
           </div>
 
           {/* Mobile : loupe + menu */}
@@ -217,7 +218,7 @@ export default function Header() {
           })}
           
           <div className="pt-2">
-            <Link href={user ? "/dashboard" : "/login"} className="flex items-center gap-3 text-lg font-bold text-rose-600 hover:text-blue-600 transition-colors" onClick={() => setIsMenuOpen(false)}>
+            <Link href={(user || connecteMemorise) ? "/dashboard" : "/login"} className="flex items-center gap-3 text-lg font-bold text-rose-600 hover:text-blue-600 transition-colors" onClick={() => setIsMenuOpen(false)}>
               <User size={20} /> Mon Compte
             </Link>
           </div>

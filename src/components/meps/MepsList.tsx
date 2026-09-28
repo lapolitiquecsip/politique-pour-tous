@@ -4,6 +4,7 @@ import { useEffect, useMemo, useState } from "react";
 import Link from "next/link";
 import { Search, Loader2, Info } from "lucide-react";
 import { api } from "@/lib/api";
+import DragScroller from "@/components/ui/DragScroller";
 
 // Groupes politiques du Parlement européen : code court → { couleur, nom lisible }.
 export const EP_GROUPS: Record<string, { clr: string; name: string }> = {
@@ -94,37 +95,51 @@ export default function MepsList({ meps: initial }: { meps?: any[] }) {
         </p>
       )}
 
-      {/* Grille de cartes compactes (avatar circulaire, comme les sénateurs). */}
-      <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-5 pt-4">
-        {shown.map(m => {
-          const g = grp(m.ep_group_code);
-          const initials = `${(m.first_name?.[0] || "")}${(m.last_name?.[0] || "")}`.toUpperCase();
-          return (
-            <Link
-              key={m.id}
-              href={`/eurodeputes/${m.slug}`}
-              className="group relative flex flex-col items-center rounded-2xl border border-border dark:border-slate-800 bg-card dark:bg-slate-900 px-4 pt-14 pb-5 text-center transition hover:shadow-lg hover:border-sky-300"
-            >
-              <div className={`absolute top-0 left-0 h-1 w-full rounded-t-2xl ${g.clr} opacity-70`} />
-              <div className="absolute -top-9">
+      {/* Un rail horizontal sur deux rangées, et non une grille qui descend.
+          À quatre colonnes, les quatre-vingts eurodéputés occupaient vingt et une
+          rangées : plusieurs écrans à faire défiler avant d'atteindre la suite de
+          la page, sur téléphone comme sur ordinateur. Ici la rubrique tient en
+          une hauteur fixe et se parcourt d'un geste.
+
+          Le rail est en `flex` : on lui donne donc UN enfant, lui-même en
+          grille à remplissage par colonnes. Poser `grid` sur la piste elle-même
+          reviendrait à se battre avec son `flex` à coups de priorité CSS.
+
+          La photo est à l'intérieur de la carte, et non plus débordante par le
+          haut : entre deux rangées, un débordement recouvrirait la carte du
+          dessus. */}
+      <DragScroller ariaLabel="Les eurodéputés français" className="pt-2">
+        <div className="grid grid-flow-col grid-rows-2 gap-4">
+          {shown.map(m => {
+            const g = grp(m.ep_group_code);
+            return (
+              <Link
+                key={m.id}
+                href={`/eurodeputes/${m.slug}`}
+                className="group relative flex w-[9.5rem] shrink-0 flex-col items-center overflow-hidden rounded-2xl border border-border bg-card px-3 pb-4 pt-5 text-center transition hover:border-sky-300 hover:shadow-lg dark:border-slate-800 dark:bg-slate-900"
+              >
+                <span className={`absolute left-0 top-0 h-1 w-full ${g.clr} opacity-70`} />
                 {/* eslint-disable-next-line @next/next/no-img-element */}
                 <img
                   src={m.photo_url}
-                  alt={m.full_name}
+                  alt=""
                   loading="lazy"
-                  className="h-20 w-20 rounded-full object-cover object-top border-4 border-white dark:border-slate-900 shadow-md transition group-hover:scale-105"
+                  className="h-16 w-16 rounded-full border-2 border-white object-cover object-top shadow-md transition group-hover:scale-105 dark:border-slate-800"
                   onError={(e) => { (e.currentTarget as HTMLImageElement).src = `https://ui-avatars.com/api/?name=${encodeURIComponent(m.full_name)}&background=0284c7&color=fff&size=160`; }}
                 />
-              </div>
-              <p className="text-sm font-bold leading-tight text-foreground dark:text-white line-clamp-2 group-hover:text-sky-600 transition-colors">{m.full_name}</p>
-              <p className="mt-1 text-[11px] text-muted-foreground line-clamp-1">{m.national_party}</p>
-              <span className={`mt-2 inline-flex items-center gap-1 rounded-full px-2 py-0.5 text-[9px] font-black uppercase tracking-widest text-white ${g.clr}`}>
-                {m.ep_group_code}
-              </span>
-            </Link>
-          );
-        })}
-      </div>
+                <p className="mt-2 line-clamp-2 text-[13px] font-bold leading-tight text-foreground transition-colors group-hover:text-sky-600 dark:text-white">
+                  {m.full_name}
+                </p>
+                <p className="mt-0.5 line-clamp-1 text-[10px] text-muted-foreground">{m.national_party}</p>
+                <span className={`mt-1.5 inline-flex items-center rounded-full px-2 py-0.5 text-[9px] font-black uppercase tracking-widest text-white ${g.clr}`}>
+                  {m.ep_group_code}
+                </span>
+              </Link>
+            );
+          })}
+        </div>
+      </DragScroller>
+
       {shown.length === 0 && <p className="py-12 text-center text-sm italic text-slate-400">Aucun eurodéputé ne correspond.</p>}
     </div>
   );

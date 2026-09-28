@@ -68,6 +68,29 @@ function jourCourt(iso: string): string {
   return `${semaine} ${+m[3] === 1 ? "1er" : +m[3]} ${abrege}`;
 }
 
+/**
+ * Dans combien de temps, dit en français.
+ *
+ * « J‑10 » parle aux habitués des campagnes, pas au lecteur qui passe. On écrit
+ * donc « aujourd'hui », « demain », « dans 3 jours », et la semaine au-delà.
+ * Le calcul se fait en jours de calendrier, pas en heures : un débat ce soir à
+ * 21 h est « aujourd'hui », même s'il reste moins de vingt-quatre heures.
+ */
+function dansCombien(iso: string): { texte: string; imminent: boolean } | null {
+  const m = String(iso).match(/^(\d{4})-(\d{2})-(\d{2})/);
+  if (!m) return null;
+  const cible = Date.UTC(+m[1], +m[2] - 1, +m[3]);
+  const now = new Date();
+  const aujourdhui = Date.UTC(now.getFullYear(), now.getMonth(), now.getDate());
+  const jours = Math.round((cible - aujourdhui) / 86400000);
+  if (jours < 0) return null;
+  if (jours === 0) return { texte: "aujourd'hui", imminent: true };
+  if (jours === 1) return { texte: "demain", imminent: true };
+  if (jours < 7) return { texte: `dans ${jours} jours`, imminent: jours <= 3 };
+  const semaines = Math.round(jours / 7);
+  return { texte: semaines <= 1 ? "dans une semaine" : `dans ${semaines} semaines`, imminent: false };
+}
+
 /** Teinte par camp. La couleur ne porte jamais seule : le camp est toujours écrit. */
 const CAMPS: Record<string, string> = {
   droite: "bg-blue-100 text-blue-700 dark:bg-blue-500/15 dark:text-blue-300",
@@ -89,6 +112,7 @@ function Carte({
   const vote = e.type === "vote";
   const Icone = vote ? Vote : Mic2;
   const quand = estIntervalle(e) ? String(e.heure) : `${jourCourt(e.date_prevue)}${e.heure ? ` · ${e.heure}` : ""}`;
+  const compte = passe ? null : dansCombien(e.date_prevue);
 
   return (
     <button
@@ -98,9 +122,36 @@ function Carte({
       className={`flex w-[82vw] shrink-0 flex-col rounded-3xl border p-4 text-left transition sm:w-[22rem] ${
         actif
           ? "border-fuchsia-400 bg-fuchsia-50/60 shadow-lg dark:border-fuchsia-500/50 dark:bg-fuchsia-500/10"
-          : "border-border bg-card hover:border-fuchsia-200 hover:shadow-md dark:hover:border-fuchsia-500/30"
+          : passe
+            ? "border-border bg-card hover:border-fuchsia-200 hover:shadow-md dark:hover:border-fuchsia-500/30"
+            : "border-fuchsia-200 bg-card shadow-sm hover:border-fuchsia-300 hover:shadow-md dark:border-fuchsia-500/30"
       }`}
     >
+      {/* Le « à venir » tenait dans une pastille pâle, perdue au milieu de trois
+          autres étiquettes : c'est pourtant la seule information qui dit au
+          lecteur s'il doit noter la date. Il prend désormais toute la largeur,
+          en couleur pleine, et annonce l'échéance en clair. Le point qui bat est
+          réservé à ce qui arrive sous trois jours — sinon il bat pour rien et
+          on cesse de le voir. */}
+      {!passe && (
+        <span className="mb-3 -mt-0.5 flex items-center justify-between gap-2 rounded-2xl bg-gradient-to-r from-fuchsia-500 to-purple-600 px-3 py-1.5 text-white shadow-sm shadow-fuchsia-500/30">
+          <span className="flex items-center gap-1.5 text-[10px] font-black uppercase tracking-widest">
+            {compte?.imminent && (
+              <span className="relative flex h-2 w-2">
+                <span className="absolute inline-flex h-full w-full animate-ping rounded-full bg-white opacity-75" />
+                <span className="relative inline-flex h-2 w-2 rounded-full bg-white" />
+              </span>
+            )}
+            À venir
+          </span>
+          {compte && (
+            <span className="truncate text-[10px] font-black uppercase tracking-widest text-white/90">
+              {compte.texte}
+            </span>
+          )}
+        </span>
+      )}
+
       <span className="flex items-start gap-3">
         <span className={`flex h-10 w-10 shrink-0 items-center justify-center rounded-2xl ${CAMPS[e.camp ?? ""] ?? "bg-muted text-muted-foreground"}`}>
           <Icone size={17} />
@@ -108,11 +159,6 @@ function Carte({
         <span className="min-w-0 flex-1">
           <span className="flex flex-wrap items-center gap-x-1.5 gap-y-1 text-[9px] font-black uppercase tracking-widest">
             <span className={`rounded-full px-2 py-0.5 ${CAMPS[e.camp ?? ""] ?? "bg-muted text-muted-foreground"}`}>{e.primaire}</span>
-            {!passe && (
-              <span className="rounded-full bg-fuchsia-100 px-2 py-0.5 text-fuchsia-700 dark:bg-fuchsia-500/20 dark:text-fuchsia-300">
-                À venir
-              </span>
-            )}
           </span>
           <span className="mt-1 block text-[10px] font-bold uppercase tracking-wide text-muted-foreground">{quand}</span>
         </span>

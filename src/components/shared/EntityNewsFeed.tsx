@@ -1,9 +1,10 @@
 "use client";
 
-import { useEffect, useMemo, useRef, useState } from "react";
-import { Newspaper, ChevronDown, ChevronLeft, ChevronRight, ExternalLink, Loader2, X } from "lucide-react";
+import { useEffect, useMemo, useState } from "react";
+import { Newspaper, ChevronDown, ExternalLink, Loader2, X } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
 import { api } from "@/lib/api";
+import DragScroller from "@/components/ui/DragScroller";
 
 // Libellés lisibles des types d'actu (badges + puces de filtre).
 const TYPE_LABEL: Record<string, string> = {
@@ -30,13 +31,16 @@ const fmt = (d: string | null) =>
 // Fil d'actualité générique d'une entité (ministère, département…). Sources gratuites résumées
 // par IA (titre + résumé court + lien). Masqué tant qu'il n'y a pas d'actu.
 export default function EntityNewsFeed({
-  entityType, entityId, defaultOpen = false, horizontal = false,
-}: { entityType: string; entityId: string; defaultOpen?: boolean; horizontal?: boolean }) {
+  entityType, entityId, defaultOpen = false,
+}: {
+  entityType: string; entityId: string; defaultOpen?: boolean;
+  /** Ancienne option : le fil est désormais toujours un rail horizontal. */
+  horizontal?: boolean;
+}) {
   const [items, setItems] = useState<FeedItem[] | null>(null);
   const [open, setOpen] = useState(defaultOpen);
   const [filter, setFilter] = useState<string | null>(null); // null = tous les types
   const [selected, setSelected] = useState<FeedItem | null>(null); // récap ouvert EN SITE (modale)
-  const scrollerRef = useRef<HTMLUListElement>(null); // conteneur de défilement (mode horizontal)
 
   useEffect(() => {
     let active = true;
@@ -45,27 +49,6 @@ export default function EntityNewsFeed({
       .catch(() => { if (active) setItems([]); });
     return () => { active = false; };
   }, [entityType, entityId]);
-
-  // PC : la molette VERTICALE fait défiler à l'HORIZONTAL (listener natif non-passif pour
-  // pouvoir preventDefault — l'onWheel de React est passif). Actif seulement en mode horizontal.
-  useEffect(() => {
-    const el = scrollerRef.current;
-    if (!horizontal || !open || !el) return;
-    const onWheel = (e: WheelEvent) => {
-      if (Math.abs(e.deltaY) <= Math.abs(e.deltaX)) return;      // geste déjà horizontal → on laisse
-      if (el.scrollWidth <= el.clientWidth) return;               // rien à faire défiler
-      el.scrollLeft += e.deltaY;
-      e.preventDefault();
-    };
-    el.addEventListener("wheel", onWheel, { passive: false });
-    return () => el.removeEventListener("wheel", onWheel);
-  }, [horizontal, open, items]);
-
-  // Flèches PC : défile d'environ une largeur visible.
-  const scrollByCards = (dir: 1 | -1) => {
-    const el = scrollerRef.current;
-    if (el) el.scrollBy({ left: dir * Math.round(el.clientWidth * 0.85), behavior: "smooth" });
-  };
 
   // Types présents (avec compte), pour les puces de filtre.
   const types = useMemo(() => {
@@ -108,59 +91,37 @@ export default function EntityNewsFeed({
           ) : (
             <>
             {types.length > 1 && (
-              <div className="mb-4 flex flex-wrap gap-2">
+              <div className="-mx-4 mb-3 flex gap-2 overflow-x-auto px-4 pb-1 [scrollbar-width:none] sm:-mx-5 sm:px-5 [&::-webkit-scrollbar]:hidden">
                 {[["", items.length] as [string, number], ...types].map(([t, n]) => {
                   const active = (filter || "") === t;
                   return (
                     <button key={t || "all"} onClick={() => setFilter(t || null)}
-                      className={`rounded-full px-3 py-1.5 text-[10px] font-black uppercase tracking-widest transition border ${active ? "bg-blue-600 text-white border-blue-600" : "bg-card dark:bg-slate-900 text-muted-foreground border-border dark:border-slate-800 hover:border-blue-400"}`}>
+                      className={`shrink-0 whitespace-nowrap rounded-full px-3 py-1.5 text-[10px] font-black uppercase tracking-widest transition border ${active ? "bg-blue-600 text-white border-blue-600" : "bg-card dark:bg-slate-900 text-muted-foreground border-border dark:border-slate-800 hover:border-blue-400"}`}>
                       {t ? typeLabel(t) : "Tout"} <span className="opacity-60">· {n}</span>
                     </button>
                   );
                 })}
               </div>
             )}
-            {/* Deux dispositions : grille (défaut) ou défilement HORIZONTAL (mobile-first) —
-                cartes qui « snappent » ; sur PC : flèches ◀ ▶ + molette→horizontal. */}
-            <div className={horizontal ? "relative" : ""}>
-            {horizontal && visible.length > 1 && (
-              <>
-                <button type="button" aria-label="Actualités précédentes" onClick={() => scrollByCards(-1)}
-                  className="absolute left-0 top-1/2 z-10 hidden h-10 w-10 -translate-y-1/2 items-center justify-center rounded-full border border-border bg-white/95 text-muted-foreground shadow-lg transition hover:bg-blue-600 hover:text-white md:flex dark:border-slate-700 dark:bg-slate-800/95 dark:text-slate-200">
-                  <ChevronLeft size={20} />
-                </button>
-                <button type="button" aria-label="Actualités suivantes" onClick={() => scrollByCards(1)}
-                  className="absolute right-0 top-1/2 z-10 hidden h-10 w-10 -translate-y-1/2 items-center justify-center rounded-full border border-border bg-white/95 text-muted-foreground shadow-lg transition hover:bg-blue-600 hover:text-white md:flex dark:border-slate-700 dark:bg-slate-800/95 dark:text-slate-200">
-                  <ChevronRight size={20} />
-                </button>
-              </>
-            )}
-            <ul ref={horizontal ? scrollerRef : undefined} className={horizontal
-              ? "-mx-1 flex snap-x snap-mandatory gap-3 overflow-x-auto px-1 pb-2 [-ms-overflow-style:none] [scrollbar-width:none] [&::-webkit-scrollbar]:hidden"
-              : "grid grid-cols-1 gap-3 md:grid-cols-2"}>
+            {/* Un rail horizontal, partout : au doigt le défilement natif du téléphone
+                (inertie, rebond), à la souris le glisser et les flèches du rail. Une
+                grille de 40 cartes faisait descendre d'un écran entier avant la suite. */}
+            <DragScroller ariaLabel="Fil d'actualité" className="!gap-3 md:!gap-4">
               {visible.map(it => (
-                <li key={it.id} className={horizontal ? "shrink-0 snap-start basis-[82%] sm:basis-[320px]" : ""}>
-                  <button onClick={() => setSelected(it)}
-                    className="flex h-full w-full flex-col rounded-2xl border border-border bg-card p-4 text-left transition hover:border-blue-300 hover:shadow-md dark:border-slate-800 dark:bg-slate-900">
-                    <div className="mb-1.5 flex items-center justify-between gap-2">
-                      <span className="text-[10px] font-black uppercase tracking-widest text-blue-600">{typeLabel(it.news_type)}</span>
-                      <span className="shrink-0 text-[10px] font-bold text-slate-400">{fmt(it.published_at)}</span>
-                    </div>
-                    <p className="text-sm font-bold leading-snug text-foreground dark:text-white">{it.title}</p>
-                    {it.summary && <p className="mt-1 line-clamp-3 text-xs leading-5 text-muted-foreground dark:text-slate-300">{it.summary}</p>}
-                    <span className="mt-auto pt-2 inline-flex items-center gap-1 text-[10px] font-bold uppercase tracking-widest text-slate-400">
-                      {it.source_name}
-                    </span>
-                  </button>
-                </li>
+                <button key={it.id} onClick={() => setSelected(it)}
+                  className="flex w-[78vw] max-w-[20rem] shrink-0 flex-col rounded-2xl border border-border bg-card p-4 text-left transition hover:-translate-y-0.5 hover:border-blue-300 hover:shadow-md dark:border-slate-800 dark:bg-slate-900 sm:w-[18.5rem]">
+                  <div className="mb-1.5 flex items-center justify-between gap-2">
+                    <span className="text-[10px] font-black uppercase tracking-widest text-blue-600">{typeLabel(it.news_type)}</span>
+                    <span className="shrink-0 text-[10px] font-bold text-slate-400">{fmt(it.published_at)}</span>
+                  </div>
+                  <p className="line-clamp-3 text-sm font-bold leading-snug text-foreground dark:text-white">{it.title}</p>
+                  {it.summary && <p className="mt-1 line-clamp-3 text-xs leading-5 text-muted-foreground dark:text-slate-300">{it.summary}</p>}
+                  <span className="mt-auto inline-flex items-center gap-1 pt-2 text-[10px] font-bold uppercase tracking-widest text-slate-400">
+                    {it.source_name}
+                  </span>
+                </button>
               ))}
-            </ul>
-            </div>
-            {horizontal && visible.length > 1 && (
-              <p className="mt-1 flex items-center gap-1 text-[10px] font-bold uppercase tracking-widest text-slate-400 md:hidden">
-                <span aria-hidden>←</span> Faites défiler <span aria-hidden>→</span>
-              </p>
-            )}
+            </DragScroller>
             </>
           )}
         </div>

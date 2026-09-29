@@ -3,7 +3,7 @@
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import {
   Loader2, Search, ChevronDown, Users, ExternalLink, Download,
-  Mic, Target, Quote, ListChecks, ArrowRight, Briefcase, X, CalendarDays,
+  Mic, Target, Quote, ListChecks, ArrowRight, Briefcase, X, CalendarDays, Crown, Sparkles,
 } from "lucide-react";
 import { api } from "@/lib/api";
 import { usePremium } from "@/lib/hooks/usePremium";
@@ -184,21 +184,38 @@ export default function CommissionTracker({ chamber, chamberLabel, accent = "eme
   const total = useMemo(() => commissions.reduce((n, c) => n + c.count, 0), [commissions]);
 
   return (
-    <div id="commissions" className="scroll-mt-24 mt-16">
+    // Le cadre de l'offre Pro : une bordure violette dont le dégradé tourne lentement,
+    // un halo, et un bandeau « Espace Pro ». Sans lui, la section se lisait comme
+    // n'importe quelle liste du site — rien ne disait qu'on était dans l'offre Pro.
+    <div id="commissions" className="scroll-mt-24 mt-16 relative overflow-hidden rounded-[2.5rem] p-[2px] shadow-[0_24px_80px_-30px_rgba(168,85,247,0.65)]">
+      <span aria-hidden className="pointer-events-none absolute left-1/2 top-1/2 aspect-square w-[260%] -translate-x-1/2 -translate-y-1/2 bg-[conic-gradient(from_0deg,transparent_0deg,#a855f7_50deg,#f0abfc_90deg,transparent_150deg,transparent_190deg,#7c3aed_240deg,#e879f9_290deg,transparent_350deg)] motion-safe:animate-[spin_9s_linear_infinite]" />
+      <div className="relative rounded-[calc(2.5rem-2px)] bg-card p-5 dark:bg-slate-950 md:p-8">
+      <div aria-hidden className="pointer-events-none absolute inset-x-0 top-0 h-48 rounded-t-[inherit] bg-gradient-to-b from-violet-500/[0.09] via-fuchsia-500/[0.03] to-transparent" />
+
+      {/* Bandeau de l'offre */}
+      <div className="relative mb-5 flex flex-wrap items-center gap-x-3 gap-y-2">
+        <span className="sword-shine inline-flex items-center gap-1.5 rounded-full bg-gradient-to-r from-violet-600 via-fuchsia-500 to-violet-600 px-3.5 py-1.5 text-[10px] font-black uppercase tracking-[0.22em] text-white shadow-[0_0_28px_rgba(168,85,247,0.55)]">
+          <Crown size={13} strokeWidth={2.5} /> Espace Pro
+        </span>
+        <span className="flex items-center gap-1.5 text-[11px] font-bold uppercase tracking-widest text-violet-600 dark:text-violet-300">
+          <Sparkles size={13} /> Réservé aux membres Pro
+        </span>
+      </div>
+
       {/* En-tête */}
-      <div className="mb-6 flex flex-wrap items-start gap-4">
-        <span className={`flex h-12 w-12 shrink-0 items-center justify-center rounded-2xl bg-gradient-to-br ${a.grad} text-white shadow-lg`}>
-          <Briefcase size={22} />
+      <div className="relative mb-6 flex flex-wrap items-start gap-4">
+        <span className="relative flex h-14 w-14 shrink-0 items-center justify-center rounded-2xl bg-gradient-to-br from-violet-600 to-fuchsia-500 text-white shadow-[0_10px_30px_-8px_rgba(168,85,247,0.7)]">
+          <Briefcase size={24} />
+          <span className="absolute -right-1.5 -top-1.5 flex h-6 w-6 items-center justify-center rounded-full border-2 border-card bg-amber-400 text-slate-950 dark:border-slate-950">
+            <Crown size={12} strokeWidth={2.8} />
+          </span>
         </span>
         <div className="min-w-0 flex-1">
-          <div className="flex flex-wrap items-center gap-2">
-            <h3 className="font-staatliches text-3xl uppercase tracking-tight text-foreground dark:text-white">
-              Suivi des <span className={a.text}>commissions</span>
-            </h3>
-            <span className="rounded-full bg-gradient-to-r from-fuchsia-500 to-purple-600 px-2.5 py-1 text-[9px] font-black uppercase tracking-widest text-white shadow">Pro</span>
-          </div>
-          <p className="mt-0.5 text-sm text-muted-foreground">
-            Ce qui s&apos;est dit dans chaque commission {chamberLabel === "Sénat" ? "du" : "de l'"}{chamberLabel}, réunion par réunion.
+          <h3 className="font-staatliches text-4xl uppercase leading-none tracking-tight text-foreground dark:text-white md:text-5xl">
+            Suivi des <span className="bg-gradient-to-r from-violet-600 to-fuchsia-500 bg-clip-text text-transparent">commissions</span>
+          </h3>
+          <p className="mt-2 text-sm text-muted-foreground">
+            Ce qui s&apos;est dit dans chaque commission {chamberLabel === "Sénat" ? "du " : "de l'"}<span className={`font-bold ${a.text}`}>{chamberLabel}</span>, réunion par réunion.
             {total > 0 && <> {total.toLocaleString("fr-FR")} réunions indexées.</>}
           </p>
         </div>
@@ -254,13 +271,13 @@ export default function CommissionTracker({ chamber, chamberLabel, accent = "eme
       {commissions.length > 0 && (
         <div className="mb-5 flex gap-2 overflow-x-auto pb-1 -mx-4 px-4 [scrollbar-width:none] [&::-webkit-scrollbar]:hidden sm:mx-0 sm:flex-wrap sm:overflow-visible sm:px-0">
           <button onClick={() => setSelected(null)}
-            className={`shrink-0 rounded-full px-3.5 py-1.5 text-[11px] font-black uppercase tracking-wider transition ${selected === null ? a.chip : "bg-slate-100 text-muted-foreground hover:bg-slate-200 dark:bg-slate-800 dark:text-slate-300"}`}>
+            className={`shrink-0 rounded-full px-3.5 py-1.5 text-[11px] font-black uppercase tracking-wider transition ${selected === null ? "bg-gradient-to-r from-violet-600 to-fuchsia-500 text-white shadow-[0_6px_18px_-6px_rgba(168,85,247,0.7)]" : "bg-slate-100 text-muted-foreground hover:bg-slate-200 dark:bg-slate-800 dark:text-slate-300"}`}>
             Toutes
           </button>
           {commissions.slice(0, 10).map(c => (
             <button key={c.name} onClick={() => setSelected(c.name === selected ? null : c.name)}
               title={decode(c.name)}
-              className={`shrink-0 whitespace-nowrap rounded-full px-3.5 py-1.5 text-[11px] font-black uppercase tracking-wider transition ${selected === c.name ? a.chip : "bg-slate-100 text-muted-foreground hover:bg-slate-200 dark:bg-slate-800 dark:text-slate-300"}`}>
+              className={`shrink-0 whitespace-nowrap rounded-full px-3.5 py-1.5 text-[11px] font-black uppercase tracking-wider transition ${selected === c.name ? "bg-gradient-to-r from-violet-600 to-fuchsia-500 text-white shadow-[0_6px_18px_-6px_rgba(168,85,247,0.7)]" : "bg-slate-100 text-muted-foreground hover:bg-slate-200 dark:bg-slate-800 dark:text-slate-300"}`}>
               {shortCommission(c.name)} <span className="opacity-50">{c.count}</span>
             </button>
           ))}
@@ -302,6 +319,7 @@ export default function CommissionTracker({ chamber, chamberLabel, accent = "eme
       )}
       </>
       )}
+      </div>
     </div>
   );
 }

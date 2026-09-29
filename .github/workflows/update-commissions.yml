@@ -8,17 +8,15 @@ name: Suivi des commissions parlementaires
 
 on:
   schedule:
-    # QUATRE passages par jour, pour qu'une nouvelle commission soit analysée dans les
-    # heures qui suivent sa publication plutôt que le lendemain.
-    #
-    # Tous les créneaux sont en HEURES CREUSES DeepSeek (tarif moitié prix). Ses heures
-    # pleines sont 01h-04h et 06h-10h UTC, du lundi au vendredi : 04h40 tombe dans le
-    # creux entre les deux fenêtres, les trois autres sont largement hors pointe.
-    # Le script refuse de toute façon d'analyser en heures pleines (--offpeak-only).
-    - cron: '40 4 * * *'    # 06h40 Paris
-    - cron: '0 12 * * *'    # 14h00 Paris
-    - cron: '0 18 * * *'    # 20h00 Paris
-    - cron: '0 22 * * *'    # 00h00 Paris
+    # QUATRE passages par jour, groupés APRÈS 07h00 UTC : c'est l'heure où le quota
+    # gratuit Gemini (500 requêtes par modèle et par jour) se remet à zéro. Les anciens
+    # créneaux, calés sur les heures creuses DeepSeek (04h40, 18h, 22h), tombaient sur
+    # un quota déjà vidé par les autres tâches : des réunions restaient des semaines
+    # sans analyse (« Analyse en cours de génération »).
+    - cron: '30 7 * * *'    # 09h30 Paris
+    - cron: '0 10 * * *'    # 12h00 Paris
+    - cron: '0 13 * * *'    # 15h00 Paris
+    - cron: '0 16 * * *'    # 18h00 Paris
   workflow_dispatch:
     inputs:
       weeks:
@@ -28,7 +26,7 @@ on:
       analyses:
         description: "Nombre maximum d'analyses IA à générer sur ce passage"
         required: false
-        default: "30"
+        default: "40"
 
 # Deux exécutions simultanées analyseraient les mêmes réunions deux fois.
 concurrency:
@@ -63,6 +61,6 @@ jobs:
         run: >
           npx --yes tsx scripts/update-commissions.ts
           --weeks=${{ github.event.inputs.weeks || '3' }}
-          --analyses=${{ github.event.inputs.analyses || '30' }}
+          --analyses=${{ github.event.inputs.analyses || '40' }}
           --concurrency=4
           --offpeak-only

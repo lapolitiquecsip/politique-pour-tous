@@ -54,7 +54,19 @@ export function CommissionAnalysis({ m, accent, sombre = false }: {
   if (!hasStructured) {
     return m.summary
       ? <p className={`whitespace-pre-line text-sm leading-relaxed ${corps}`}>{m.summary}</p>
-      : <p className="text-sm italic text-slate-400">Analyse en cours de génération…</p>;
+      : (
+        <div className={bloc}>
+          <p className={`flex items-center gap-2 text-sm font-bold ${fort}`}>
+            <span className={`h-2 w-2 shrink-0 animate-pulse rounded-full ${accent.dot}`} />
+            Analyse en préparation
+          </p>
+          <p className={`mt-1 text-[13px] leading-relaxed ${appui}`}>
+            Le compte rendu officiel de cette réunion est publié ; son analyse (ce qui s&apos;est dit,
+            positions, chiffres, verbatim vérifié) est rédigée dans les heures qui viennent. En
+            attendant, le compte rendu intégral est accessible ci-dessous.
+          </p>
+        </div>
+      );
   }
 
   return (

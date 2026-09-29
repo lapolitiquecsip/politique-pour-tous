@@ -1,7 +1,7 @@
 "use client";
 
 import { motion, AnimatePresence } from "framer-motion";
-import { X, Users, MapPin, Building2, TrendingUp, Star, Loader2, ArrowRight, Shield, Heart, GraduationCap, Home, Landmark, TreePine, Briefcase, ChevronLeft, ChevronRight, Newspaper, ExternalLink } from "lucide-react";
+import { X, Users, MapPin, Building2, TrendingUp, Star, Loader2, ArrowRight, Shield, Heart, GraduationCap, Home, Landmark, TreePine, Briefcase, ChevronLeft, ChevronRight } from "lucide-react";
 import RegionFinancesChart from "./RegionFinancesChart";
 import LocalFinancesSection from "./LocalFinancesSection";
 import MinisterImage from "@/components/executif/MinisterImage";
@@ -10,6 +10,7 @@ import { REGIONS, DEPARTMENTS } from "@/lib/data/territories";
 import { useState, useEffect } from "react";
 import { usePremium } from "@/lib/hooks/usePremium";
 import { api } from "@/lib/api";
+import EntityNewsFeed from "@/components/shared/EntityNewsFeed";
 import Link from "next/link";
 import { AwardBadge } from "@/components/ui/award-badge";
 import { departmentPaths } from "@/lib/data/departmentPaths";
@@ -165,7 +166,6 @@ export default function TerritoryDetailPanel({ territory, onClose, onNavigate }:
   const [localDeputies, setLocalDeputies] = useState<any[]>([]);
   const [finances, setFinances] = useState<any | null>(null);
   const [deptPres, setDeptPres] = useState<any | null>(null);
-  const [localNews, setLocalNews] = useState<any[]>([]);   // actus de la collectivité (région/département)
 
   // Finances réelles (OFGL), même synthèse pour les départements et les régions.
   // Les régions gardent en plus leur graphe historique (RegionFinancesChart).
@@ -188,16 +188,6 @@ export default function TerritoryDetailPanel({ territory, onClose, onNavigate }:
     api.getItddIndicators(level, territory.id)
       .then(rows => { if (active) setItddCards(buildItddCards(rows as any, level)); })
       .catch(() => { if (active) setItddCards([]); });
-    return () => { active = false; };
-  }, [territory]);
-
-  // Fil d'actualité de la collectivité (région / département) — entity_feed, sources officielles.
-  useEffect(() => {
-    if (!territory || (territory.type !== 'region' && territory.type !== 'department')) { setLocalNews([]); return; }
-    let active = true;
-    api.getEntityFeed(territory.type, territory.id, 8)
-      .then(rows => { if (active) setLocalNews(rows as any[]); })
-      .catch(() => { if (active) setLocalNews([]); });
     return () => { active = false; };
   }, [territory]);
 
@@ -591,35 +581,10 @@ export default function TerritoryDetailPanel({ territory, onClose, onNavigate }:
                       );
                     })}
 
-                    {/* Fil d'actualité de la collectivité (région / département) — sources officielles */}
-                    {localNews.length > 0 && (
-                      <div className="space-y-4">
-                        <div className="flex items-center gap-3">
-                          <div className="w-10 h-10 rounded-2xl flex items-center justify-center bg-amber-100 dark:bg-amber-500/10 text-amber-600 dark:text-amber-300">
-                            <Newspaper size={20} />
-                          </div>
-                          <h3 className="text-xl font-staatliches uppercase tracking-wide text-amber-600">
-                            Actualité {territory.type === 'region' ? 'de la région' : 'du département'}
-                          </h3>
-                        </div>
-                        <div className="space-y-3">
-                          {localNews.map((n: any) => (
-                            <a key={n.id || n.url} href={n.url || '#'} target="_blank" rel="noopener noreferrer"
-                              className="block rounded-2xl border border-border bg-slate-50/60 dark:bg-slate-500/10 p-4 transition hover:border-amber-300 hover:bg-amber-50/40 group">
-                              <div className="flex items-start justify-between gap-3">
-                                <p className="font-bold text-foreground leading-snug">{n.title}</p>
-                                <ExternalLink className="mt-0.5 h-4 w-4 shrink-0 text-slate-300 group-hover:text-amber-500 transition-colors" />
-                              </div>
-                              {n.summary && <p className="mt-1.5 text-sm leading-6 text-muted-foreground [overflow-wrap:anywhere]">{n.summary}</p>}
-                              <div className="mt-2 flex items-center gap-2 text-[10px] font-black uppercase tracking-widest text-slate-400">
-                                {n.news_type && <span className="rounded-full bg-amber-100 dark:bg-amber-500/10 px-2 py-0.5 text-amber-700 dark:text-amber-300">{n.news_type}</span>}
-                                {n.published_at && <span>{new Date(n.published_at).toLocaleDateString('fr-FR', { day: 'numeric', month: 'short', year: 'numeric' })}</span>}
-                                {n.source_name && <span className="text-slate-300">· {n.source_name}</span>}
-                              </div>
-                            </a>
-                          ))}
-                        </div>
-                      </div>
+                    {/* Fil d'actualité de la collectivité (région / département) : le même rail que
+                        les communes, masqué tant qu'il n'y a rien. */}
+                    {(territory.type === 'region' || territory.type === 'department') && (
+                      <EntityNewsFeed key={`${territory.type}-${territory.id}`} entityType={territory.type} entityId={territory.id} defaultOpen />
                     )}
 
                     {/* Fil conducteur : les député·e·s de ce département */}

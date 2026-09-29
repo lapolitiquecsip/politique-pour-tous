@@ -1274,8 +1274,35 @@ export const api = {
     return (data as any)?.visual || null;
   },
 
+  // Analyse approfondie d'un texte (chaque mesure, avant/après, chiffres, cadre
+  // existant). Réservée aux abonnés PAR LA BASE (RLS) : null pour les autres.
+  getAnalyseApprofondie: async (dossierId: string) => {
+    const { data, error } = await supabase.from('dossier_analyses_approfondies')
+      .select('analyse_loi, cadre, sources, texte_version, generated_at').eq('dossier_id', dossierId).maybeSingle();
+    if (error) return null;
+    return data as { analyse_loi: any; cadre: any; sources: { titre: string; url: string }[]; texte_version: string | null; generated_at: string } | null;
+  },
+  // Ce qu'un non-abonné peut en savoir : qu'elle existe et son ampleur, jamais son contenu.
+  getAnalyseApercu: async (dossierId: string) => {
+    const { data, error } = await supabase.rpc('public_analyse_apercu', { p_dossier_id: dossierId });
+    if (error) return null;
+    return data as { mesures: number; chiffres: number; cadre: boolean; generated_at: string } | null;
+  },
+  // Le dossier législatif d'un vote de l'Assemblée (VTANR5L17V…).
+  getDossierDuScrutin: async (scrutinId: string) => {
+    const { data, error } = await supabase.rpc('public_dossier_du_scrutin', { p_scrutin: scrutinId });
+    if (error) return null;
+    return (data as string | null) || null;
+  },
+
   getLegislativeDossier: async (id: string) => {
-    const { data, error } = await supabase.rpc('public_legislative_dossier', { p_id: id });
+    // Un second essai : sous charge, la base peut refuser un appel isolé, et la
+    // fiche passerait à tort pour « en cours de consolidation ».
+    let { data, error } = await supabase.rpc('public_legislative_dossier', { p_id: id });
+    if (error) {
+      await new Promise(r => setTimeout(r, 1200));
+      ({ data, error } = await supabase.rpc('public_legislative_dossier', { p_id: id }));
+    }
     if (error) throw error;
     const detail = data as LegislativeDossierDetail | null;
     // Enrichit la fiche avec la chambre saisie, le type et l'étape (non portés par le RPC).

@@ -4,6 +4,7 @@ import { useEffect, useRef, useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { ChevronLeft, ChevronRight, X, ExternalLink, CheckCircle2, XCircle, Loader2 } from "lucide-react";
 import { api } from "@/lib/api";
+import AnalyseApprofondie from "@/components/lois/AnalyseApprofondie";
 
 // Fil chronologique « Derniers votes décryptés » (façon Datan) : les votes solennels de
 // l'Assemblée, avec Adopté/Rejeté, catégorie et décryptage au clic. 100 % données réelles.
@@ -87,11 +88,17 @@ export default function RecentVotesFeed() {
                   // Le champ why_it_matters encode « pourquoi|||DETAILED|||détails » : on sépare proprement.
                   const [why, detailed] = String(open.why_it_matters || "").split("|||DETAILED|||").map(s => s.trim());
                   const hasContent = open.summary || why || detailed;
+                  const enDetail = detailed && detailed !== "Détails supplémentaires non disponibles."
+                    ? <div><p className="text-[10px] font-black uppercase tracking-widest text-slate-400">En détail</p><p className="mt-1 text-[15px] leading-relaxed text-slate-700 dark:text-slate-300">{detailed}</p></div>
+                    : null;
+                  // Un vote sur l'ensemble d'un texte a son analyse détaillée (abonnés) ;
+                  // les autres votes solennels (motions…) gardent leur « En détail ».
+                  const surUnTexte = /^l['’]ensemble/i.test(open.title || "");
                   return (
                     <>
                       {open.summary && <div><p className="text-[10px] font-black uppercase tracking-widest text-slate-400">De quoi s'agit-il</p><p className="mt-1 text-[15px] leading-relaxed text-slate-700 dark:text-slate-300">{open.summary}</p></div>}
                       {why && <div className="rounded-2xl bg-red-50/60 p-4 dark:bg-slate-800/60"><p className="text-[10px] font-black uppercase tracking-widest text-red-600">Pourquoi c'est important</p><p className="mt-1 text-[15px] leading-relaxed text-slate-700 dark:text-slate-300">{why}</p></div>}
-                      {detailed && detailed !== "Détails supplémentaires non disponibles." && <div><p className="text-[10px] font-black uppercase tracking-widest text-slate-400">En détail</p><p className="mt-1 text-[15px] leading-relaxed text-slate-700 dark:text-slate-300">{detailed}</p></div>}
+                      {surUnTexte ? <AnalyseApprofondie scrutinId={open.id} sujet={cleanTitle(open)} repli={enDetail || undefined} /> : enDetail}
                       {!hasContent && <p className="rounded-2xl bg-muted p-4 text-[14px] italic leading-relaxed text-muted-foreground dark:bg-slate-800/60">Le décryptage de ce vote est en cours de génération. Revenez bientôt pour l'explication complète.</p>}
                     </>
                   );

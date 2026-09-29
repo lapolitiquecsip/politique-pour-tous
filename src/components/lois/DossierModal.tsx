@@ -4,17 +4,16 @@ import { useEffect, useRef, useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import Link from "next/link";
 import {
-  ExternalLink, FileText, Loader2, Scale, X, Lock, ChevronDown, ChevronLeft, ChevronRight,
+  ExternalLink, FileText, Loader2, Scale, X, ChevronDown, ChevronLeft, ChevronRight,
   AlertTriangle, Target, Vote, GitBranch, Pencil, HelpCircle,
 } from "lucide-react";
 import { api } from "@/lib/api";
 import { cleanHtmlText, formatAmendmentOutcome } from "@/lib/html";
-import { usePremium } from "@/lib/hooks/usePremium";
 import { groupLabel } from "@/lib/legislative-groups";
 import { parseInitiators, loadPeopleIndex, personHref, normalizeName, type InitiatorPerson } from "@/lib/initiators";
-import { AwardBadge } from "@/components/ui/award-badge";
 import { categoryLabel, type LegislativeDossierDetail } from "@/lib/legislative";
 import { lockScroll, unlockScroll } from "@/lib/scroll-lock";
+import AnalyseApprofondie from "@/components/lois/AnalyseApprofondie";
 
 // Panneau de détail d'une loi (fiche complète : résumé, analyse premium, navette, amendements,
 // scrutins, sources). Partagé entre la page « Lois » et la home (livre du Journal Officiel).
@@ -373,7 +372,7 @@ export type DossierFallback = {
 };
 
 export default function DossierModal({
-  detail, loading, onClose, fallback, onPrev, onNext, prevTitle, nextTitle,
+  detail: detailRecu, loading, onClose, fallback, onPrev, onNext, prevTitle, nextTitle,
 }: {
   detail: LegislativeDossierDetail | null;
   loading: boolean;
@@ -385,7 +384,27 @@ export default function DossierModal({
   prevTitle?: string | null;
   nextTitle?: string | null;
 }) {
-  const { isPremium } = usePremium();
+  // Reprise : quand la page n'a rien obtenu (appel refusé sous charge), la fiche
+  // retente d'elle-même. Elle affichait sinon « en cours de consolidation » pour
+  // un texte parfaitement consolidé, ce qui était faux.
+  const [repris, setRepris] = useState<LegislativeDossierDetail | null>(null);
+  const [reprise, setReprise] = useState<"attente" | "en_cours" | "echec" | "vide">("attente");
+  const detail = detailRecu ?? (repris && repris.dossier?.id === fallback?.id ? repris : null);
+  const reprendre = async () => {
+    const id = fallback?.id;
+    if (!id) { setReprise("vide"); return; }
+    setReprise("en_cours");
+    try {
+      const d = await api.getLegislativeDossier(id);
+      if (d?.dossier) { setRepris(d); setReprise("attente"); } else setReprise("vide");
+    } catch { setReprise("echec"); }
+  };
+  const aReprendre = !loading && !detail && !!fallback;
+  useEffect(() => { setRepris(null); setReprise("attente"); }, [fallback?.id]);
+  useEffect(() => {
+    if (aReprendre && reprise === "attente") reprendre();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [aReprendre, reprise]);
   // Sens du dernier changement, pour que le contenu entre du bon côté.
   const [sens, setSens] = useState<1 | -1>(1);
   const allerA = (direction: 1 | -1) => {
@@ -498,7 +517,17 @@ export default function DossierModal({
                       <p className="mt-3 text-sm font-bold text-muted-foreground">Publiée au Journal officiel le {formatDate(f.promulgated_at)}{f.nor ? ` · NOR ${f.nor}` : ""}</p>
                     </div>
                   )}
-                  <p className="mt-6 leading-7 text-muted-foreground">Le détail complet de ce texte (résumé, navette parlementaire, amendements) est en cours de consolidation.{jo ? " En attendant, vous pouvez lire le texte officiel tel que publié au Journal officiel :" : ""}</p>
+                  {reprise === "echec" ? (
+                    <div className="mt-6 rounded-3xl border border-rose-200 bg-rose-50 p-5 dark:border-rose-500/25 dark:bg-rose-500/10">
+                      <p className="flex items-center gap-2 font-bold text-rose-700 dark:text-rose-300"><AlertTriangle size={17} /> La fiche n&apos;a pas pu être chargée.</p>
+                      <p className="mt-1 text-sm leading-6 text-muted-foreground">Le serveur n&apos;a pas répondu à temps (connexion instable ou forte affluence). La fiche existe : réessayez.</p>
+                      <button onClick={reprendre} className="mt-4 inline-flex items-center gap-2 rounded-full bg-slate-950 px-5 py-2.5 text-sm font-black text-white transition hover:bg-slate-700 dark:bg-white dark:text-slate-950 dark:hover:bg-slate-200">Réessayer</button>
+                    </div>
+                  ) : reprise === "vide" ? (
+                    <p className="mt-6 leading-7 text-muted-foreground">Le parcours parlementaire de ce texte (résumé, navette, amendements) n&apos;est pas encore relié à nos données.{jo ? " Vous pouvez lire le texte officiel tel que publié au Journal officiel :" : ""}</p>
+                  ) : (
+                    <p className="mt-8 flex items-center gap-2 text-sm font-bold text-slate-400"><Loader2 size={16} className="animate-spin text-red-600" /> Chargement du parcours législatif…</p>
+                  )}
                   {jo && <a href={jo} target="_blank" rel="noreferrer" className="mt-4 inline-flex items-center gap-2 rounded-full bg-slate-950 px-5 py-3 text-sm font-black text-white transition hover:bg-slate-700">Lire le texte au Journal officiel <ExternalLink size={15} /></a>}
                 </>
               );
@@ -538,21 +567,24 @@ export default function DossierModal({
             })()}
 
             <section className="mt-10"><h3 className="text-2xl font-staatliches uppercase text-foreground">Résumé</h3><p className="mt-3 leading-7 text-slate-700">{detail.summary?.summary || "Analyse indisponible."}</p></section>
-            {detail.premium_analysis ? (
-              <section className="mt-10 rounded-[2rem] border border-amber-200 bg-gradient-to-b from-amber-50/70 to-white p-6 md:p-8">
-                <div className="flex items-center gap-2 mb-5">
-                  <span className="flex h-9 w-9 items-center justify-center rounded-xl bg-gradient-to-br from-amber-300 to-amber-500 text-white shadow"><Scale size={18} /></span>
-                  <h3 className="text-2xl font-staatliches uppercase text-amber-900">Analyse détaillée</h3>
-                </div>
-                <PremiumAnalysis raw={detail.premium_analysis.summary} />
-              </section>
-            ) : !isPremium ? (
-              <section className="mt-10 rounded-3xl border border-amber-200 dark:border-amber-500/25 bg-amber-50 dark:bg-amber-500/10 p-6">
-                <div className="flex items-center gap-2 text-amber-900"><Lock size={18} /><h3 className="text-2xl font-staatliches uppercase">Analyse détaillée</h3></div>
-                <p className="mt-2 max-w-2xl text-sm leading-6 text-amber-800">Analyse approfondie de cette loi (enjeux, portée, points clés), réservée aux membres premium.</p>
-                <div className="mt-4"><AwardBadge titleText="Analyse détaillée" link="/premium" /></div>
-              </section>
-            ) : null}
+            {/* Analyse détaillée : l'analyse approfondie écrite d'après le texte (abonnés),
+                ou à défaut l'ancienne analyse ; un compte classique voit le cadenas doré. */}
+            <div className="mt-10">
+              <AnalyseApprofondie
+                key={`a-${detail.dossier.id}`}
+                dossierId={detail.dossier.id}
+                sujet={detail.dossier.title}
+                repli={detail.premium_analysis ? (
+                  <section className="rounded-[2rem] border border-amber-200 bg-gradient-to-b from-amber-50/70 to-white p-6 dark:border-amber-500/25 dark:from-amber-500/10 dark:to-transparent md:p-8">
+                    <div className="flex items-center gap-2 mb-5">
+                      <span className="flex h-9 w-9 items-center justify-center rounded-xl bg-gradient-to-br from-amber-300 to-amber-500 text-white shadow"><Scale size={18} /></span>
+                      <h3 className="text-2xl font-staatliches uppercase text-amber-900 dark:text-amber-300">Analyse détaillée</h3>
+                    </div>
+                    <PremiumAnalysis raw={detail.premium_analysis.summary} />
+                  </section>
+                ) : undefined}
+              />
+            </div>
             <NavetteSection steps={detail.steps} />
             <AmendmentsSection key={detail.dossier.id} dossierId={detail.dossier.id} total={(detail as any).amendments_total} initial={detail.amendments} />
             <ScrutinsSection key={`s-${detail.dossier.id}`} dossierId={detail.dossier.id} total={(detail as any).scrutins_total} initial={detail.scrutins} />

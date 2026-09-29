@@ -6,6 +6,7 @@ import SwipeArrow from "@/components/ui/SwipeArrow";
 import { CheckCircle2, XCircle, X, ExternalLink, Loader2, ArrowRight, Landmark, Info, HelpCircle, FileText, Target, AlertTriangle, GitBranch, Pencil, CalendarClock } from "lucide-react";
 import { api } from "@/lib/api";
 import DragScroller from "@/components/ui/DragScroller";
+import AnalyseApprofondie from "@/components/lois/AnalyseApprofondie";
 
 // Surligne les chiffres (%, €, quantités, votes, dates) dans un texte d'analyse.
 const NUM_RE = /(\d[\d  .]*\s?(?:%|€|Md€|M€|milliards?|millions?)|\d{1,4}\s?(?:pour|contre|abstentions?|voix|sièges)|\d+(?:[.,]\d+)?)/gi;
@@ -204,10 +205,13 @@ export default function AdoptedTextsFeed() {
                   // why_it_matters encode « pourquoi|||DETAILED|||détails » : on sépare proprement.
                   const [why, detailed] = String(open.why_it_matters || "").split("|||DETAILED|||").map((s: string) => s.trim());
                   const hasDetail = detailed && detailed !== "Détails supplémentaires non disponibles.";
+                  // L'analyse détaillée est l'offre des abonnés : l'analyse approfondie,
+                  // ou à défaut l'ancien « En détail » ; un compte classique voit le cadenas.
                   return (
                     <>
                       {why && <SecCard header="Pourquoi c'est important" body={why} />}
-                      {hasDetail && toSections(detailed, "En détail").map((s, i) => <SecCard key={i} header={s.header} body={s.body} />)}
+                      <AnalyseApprofondie scrutinId={open.id} sujet={cleanTitle(open)}
+                        repli={hasDetail ? <>{toSections(detailed, "En détail").map((s, i) => <SecCard key={i} header={s.header} body={s.body} />)}</> : undefined} />
                     </>
                   );
                 })()}

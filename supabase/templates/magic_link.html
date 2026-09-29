@@ -1,0 +1,78 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<meta name="color-scheme" content="light only">
+<meta name="supported-color-schemes" content="light">
+<title>Votre lien de connexion</title>
+</head>
+<body style="margin:0;padding:0;background:#f5f3ec;-webkit-text-size-adjust:100%;">
+<div style="display:none;max-height:0;overflow:hidden;opacity:0;mso-hide:all;">Connectez-vous en un clic, sans mot de passe.</div>
+<table role="presentation" width="100%" cellpadding="0" cellspacing="0" border="0" style="background:#f5f3ec;">
+  <tr>
+    <td align="center" style="padding:36px 16px 40px;">
+      <table role="presentation" width="100%" cellpadding="0" cellspacing="0" border="0" style="max-width:560px;">
+
+        <!-- La marque -->
+        <tr>
+          <td align="center" style="padding:0 0 24px;">
+            <a href="https://lapolitiquecestsimple.fr" style="text-decoration:none;">
+              <table role="presentation" cellpadding="0" cellspacing="0" border="0">
+                <tr>
+                  <td style="padding-right:12px;vertical-align:middle;">
+                    <img src="https://lapolitiquecestsimple.fr/icons/icon-192.png" width="52" height="52" alt="La Politique, C'est Simple" style="display:block;border:0;outline:none;border-radius:14px;">
+                  </td>
+                  <td style="vertical-align:middle;font-family:'Arial Black',Arial,Helvetica,sans-serif;font-size:15px;line-height:19px;font-weight:900;color:#0f172a;letter-spacing:0.3px;text-align:left;">
+                    LA POLITIQUE,<br>C'EST <span style="background:#10b981;color:#ffffff;padding:1px 6px;border-radius:5px;">SIMPLE.</span>
+                  </td>
+                </tr>
+              </table>
+            </a>
+          </td>
+        </tr>
+
+        <!-- La carte -->
+        <tr>
+          <td style="background:#ffffff;border-radius:24px;border:1px solid #ece8dc;overflow:hidden;">
+            <table role="presentation" width="100%" cellpadding="0" cellspacing="0" border="0">
+              <tr><td style="height:6px;line-height:6px;font-size:0;background:#e11d74;background-image:linear-gradient(90deg,#f43f5e 0%,#d946ef 55%,#a855f7 100%);border-radius:24px 24px 0 0;">&nbsp;</td></tr>
+              <tr>
+                <td style="padding:40px 40px 36px;font-family:Arial,Helvetica,sans-serif;">
+                  <p style="margin:0 0 10px;font-size:12px;line-height:16px;font-weight:700;letter-spacing:2px;text-transform:uppercase;color:#c026d3;">Connexion</p>
+                  <h1 style="margin:0 0 16px;font-size:26px;line-height:33px;font-weight:800;color:#0f172a;">Votre lien de connexion</h1>
+                  <p style="margin:0 0 30px;font-size:16px;line-height:26px;color:#475569;">Cliquez sur le bouton ci-dessous pour vous connecter. Ce lien est personnel et ne sert qu'une fois.</p>
+
+                  <!-- Bouton (couleur pleine en secours, dégradé là où il est lu) -->
+                  <table role="presentation" cellpadding="0" cellspacing="0" border="0">
+                    <tr>
+                      <td align="center" bgcolor="#e11d74" style="border-radius:14px;background:#e11d74;background-image:linear-gradient(90deg,#f43f5e 0%,#d946ef 55%,#a855f7 100%);">
+                        <a href="{{ .ConfirmationURL }}" style="display:inline-block;padding:16px 34px;font-family:Arial,Helvetica,sans-serif;font-size:16px;line-height:20px;font-weight:700;color:#ffffff;text-decoration:none;border-radius:14px;">Me connecter&nbsp;&nbsp;→</a>
+                      </td>
+                    </tr>
+                  </table>
+
+                  <p style="margin:30px 0 0;padding-top:22px;border-top:1px solid #f1efe7;font-size:13px;line-height:20px;color:#94a3b8;">
+                    Le bouton ne fonctionne pas ? Copiez ce lien dans votre navigateur :<br>
+                    <a href="{{ .ConfirmationURL }}" style="color:#c026d3;word-break:break-all;">{{ .ConfirmationURL }}</a>
+                  </p>
+                </td>
+              </tr>
+            </table>
+          </td>
+        </tr>
+
+        <!-- Le pied -->
+        <tr>
+          <td align="center" style="padding:26px 24px 0;font-family:Arial,Helvetica,sans-serif;font-size:12px;line-height:19px;color:#94a3b8;">
+            Vous n'avez pas demandé à vous connecter ? Ignorez ce message.<br>
+            <a href="https://lapolitiquecestsimple.fr" style="color:#64748b;font-weight:700;text-decoration:none;">lapolitiquecestsimple.fr</a> · La vie politique, expliquée simplement.
+          </td>
+        </tr>
+
+      </table>
+    </td>
+  </tr>
+</table>
+</body>
+</html>

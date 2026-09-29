@@ -27,6 +27,8 @@ export default function LoginPage() {
   // que de laisser le membre bloqué devant « Email not confirmed ».
   const [nonConfirme, setNonConfirme] = useState(false);
   const [renvoi, setRenvoi] = useState<"" | "envoi" | "ok" | "attendre">("");
+  const [dejaInscrit, setDejaInscrit] = useState(false);
+  const [reinit, setReinit] = useState<"" | "envoi" | "ok" | "attendre">("");
   const router = useRouter();
 
   const retour = () => `${window.location.origin}/auth/callback`;
@@ -50,12 +52,23 @@ export default function LoginPage() {
     setRenvoi(e ? "attendre" : "ok");
   };
 
+  /** Mot de passe oublié : lien de réinitialisation, qui ramène sur /auth/callback. */
+  const reinitialiser = async () => {
+    if (!email) { setError("Indiquez d'abord votre adresse e-mail ci-dessus."); return; }
+    if (reinit === "envoi") return;
+    setReinit("envoi");
+    const { error: e } = await supabase.auth.resetPasswordForEmail(email, { redirectTo: retour() });
+    setReinit(e ? "attendre" : "ok");
+  };
+
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setLoading(true);
     setError("");
     setNonConfirme(false);
+    setDejaInscrit(false);
     setRenvoi("");
+    setReinit("");
 
     try {
       if (isLogin) {
@@ -67,7 +80,7 @@ export default function LoginPage() {
         router.push("/");
         router.refresh();
       } else {
-        const { error: signUpError } = await supabase.auth.signUp({
+        const { data: inscrit, error: signUpError } = await supabase.auth.signUp({
           email,
           password,
           options: {
@@ -75,6 +88,16 @@ export default function LoginPage() {
           },
         });
         if (signUpError) throw signUpError;
+        // Adresse DÉJÀ inscrite et confirmée : Supabase répond « succès » par
+        // discrétion (pour ne pas révéler qui a un compte) mais n'envoie AUCUN
+        // e-mail — on affichait « Vérifiez vos mails » et rien n'arrivait jamais.
+        // On le reconnaît à la liste d'identités vide.
+        if (inscrit.user && (inscrit.user.identities ?? []).length === 0) {
+          setIsLogin(true);
+          setDejaInscrit(true);
+          setError("Un compte existe déjà avec cette adresse. Connectez-vous — ou, si vous avez oublié votre mot de passe, recevez un lien pour en choisir un nouveau.");
+          return;
+        }
         setSuccess(true);
       }
     } catch (err: any) {
@@ -98,6 +121,20 @@ export default function LoginPage() {
         : renvoi === "ok" ? "Nouveau lien envoyé ✓ (pensez aux courriers indésirables)"
         : renvoi === "attendre" ? "Patientez une minute, puis réessayez"
         : "Je n'ai rien reçu : renvoyer l'e-mail"}
+    </button>
+  );
+
+  const boutonReinit = (
+    <button
+      type="button"
+      onClick={reinitialiser}
+      disabled={reinit === "envoi" || reinit === "ok"}
+      className="mt-3 text-sm font-bold text-amber-600 hover:underline disabled:cursor-default disabled:no-underline disabled:opacity-70"
+    >
+      {reinit === "envoi" ? "Envoi…"
+        : reinit === "ok" ? "Lien envoyé ✓ — consultez votre boîte (et les courriers indésirables)"
+        : reinit === "attendre" ? "Patientez une minute, puis réessayez"
+        : "Mot de passe oublié ? Recevoir un lien"}
     </button>
   );
 
@@ -198,6 +235,7 @@ export default function LoginPage() {
                 <div>
                   <p className="text-red-200 text-xs font-medium leading-tight">{error}</p>
                   {nonConfirme && boutonRenvoi}
+                  {(dejaInscrit || /incorrect/.test(error)) && <div>{boutonReinit}</div>}
                 </div>
               </motion.div>
             )}
@@ -217,6 +255,11 @@ export default function LoginPage() {
                 </>
               )}
             </button>
+
+            {/* Mot de passe oublié : il n'existait aucun moyen de le réinitialiser. */}
+            {isLogin && !dejaInscrit && !/incorrect/.test(error) && (
+              <div className="text-center">{boutonReinit}</div>
+            )}
 
             {/* Switch Mode */}
             <div className="text-center pt-4">

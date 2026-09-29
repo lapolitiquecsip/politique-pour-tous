@@ -70,7 +70,7 @@ export default function LawDetailModal({ law, isOpen, onClose, onNext, onPreviou
             className="relative w-full max-w-5xl bg-card rounded-[3rem] shadow-2xl overflow-hidden flex flex-col max-h-[90vh] z-[105]"
           >
             {/* Header (Sticky) */}
-            <div className="p-8 border-b border-border flex justify-between items-start bg-slate-50/50 sticky top-0 z-[60] backdrop-blur-md">
+            <div className="p-8 border-b border-border flex justify-between items-start bg-slate-50/50 dark:bg-slate-500/10 sticky top-0 z-[60] backdrop-blur-md">
               <div className="flex-1 pr-8">
                 <div className="flex items-center gap-3 mb-3">
                   <span className="px-3 py-1 bg-blue-600 text-white text-[9px] font-black uppercase tracking-widest rounded-lg">
@@ -121,7 +121,7 @@ export default function LawDetailModal({ law, isOpen, onClose, onNext, onPreviou
                     <div className="w-1.5 h-8 bg-slate-900 rounded-full" />
                     <h3 className="text-xl font-black uppercase tracking-tighter italic">Répartition des sièges</h3>
                   </div>
-                  <div className="bg-slate-50/50 rounded-[2rem] p-4 border border-border">
+                  <div className="bg-slate-50/50 dark:bg-slate-500/10 rounded-[2rem] p-4 border border-border">
                     <HemicycleVisual groups={law.group_results || []} />
                   </div>
                 </div>
@@ -173,7 +173,7 @@ export default function LawDetailModal({ law, isOpen, onClose, onNext, onPreviou
                                <span className="text-[10px] font-black text-red-600">{group.contre} <span className="text-[8px] font-bold text-slate-300">C</span></span>
                             </div>
                           </div>
-                          <div className="h-1.5 w-full bg-slate-100 rounded-full overflow-hidden flex">
+                          <div className="h-1.5 w-full bg-slate-100 dark:bg-slate-500/10 rounded-full overflow-hidden flex">
                             <div className="bg-emerald-500 h-full" style={{ width: `${(group.pour / total) * 100}%` }} />
                             <div className="bg-red-500 h-full" style={{ width: `${(group.contre / total) * 100}%` }} />
                             <div className="bg-slate-400 h-full" style={{ width: `${(group.abstention / total) * 100}%` }} />

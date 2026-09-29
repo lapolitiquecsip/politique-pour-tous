@@ -136,17 +136,17 @@ function CardContent({ data }: { data: CardData }) {
                     : 'border-amber-500'
               } flex flex-col justify-center`}>
                 <div className="flex items-center justify-between mb-1.5">
-                  <span className="text-[10px] font-extrabold uppercase tracking-wider bg-emerald-100 text-emerald-800 px-2 py-0.5 rounded">
+                  <span className="text-[10px] font-extrabold uppercase tracking-wider bg-emerald-100 dark:bg-emerald-500/10 text-emerald-800 dark:text-emerald-300 px-2 py-0.5 rounded">
                     RÉALITÉ
                   </span>
                   
                   {verdict && (
                     <span className={`text-[10px] font-black uppercase px-2 py-0.5 rounded flex items-center gap-1 ${
                       isFaux 
-                        ? 'bg-rose-100 text-rose-800' 
+                        ? 'bg-rose-100 dark:bg-rose-500/10 text-rose-800 dark:text-rose-300' 
                         : isVrai 
-                          ? 'bg-emerald-100 text-emerald-800' 
-                          : 'bg-amber-100 text-amber-800'
+                          ? 'bg-emerald-100 dark:bg-emerald-500/10 text-emerald-800 dark:text-emerald-300' 
+                          : 'bg-amber-100 dark:bg-amber-500/10 text-amber-800 dark:text-amber-300'
                     }`}>
                       {isFaux && (
                         <svg className="w-3 h-3 text-rose-600" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={3}>

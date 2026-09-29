@@ -83,13 +83,13 @@ function ThemeCard({ theme, index }: { theme: CampaignTheme; index: number }) {
             <div className="mt-1 text-[10px] font-black uppercase tracking-widest text-slate-400">{head.label} · {head.year}</div>
           </div>
         )}
-        <span className="flex h-8 w-8 shrink-0 items-center justify-center rounded-full bg-white/70 ring-1 ring-slate-200 text-slate-400 transition-all group-hover:ring-slate-300" style={{ transform: open ? "rotate(45deg)" : "none" }}>
+        <span className="flex h-8 w-8 shrink-0 items-center justify-center rounded-full bg-white/70 dark:bg-white/10 ring-1 ring-slate-200 dark:ring-slate-700 text-slate-400 transition-all group-hover:ring-slate-300" style={{ transform: open ? "rotate(45deg)" : "none" }}>
           <Plus className="h-4 w-4" />
         </span>
       </button>
 
       {open && (
-        <div className="bg-white/60 px-6 pb-7 sm:px-8 sm:pl-24">
+        <div className="bg-white/60 dark:bg-white/[0.03] px-6 pb-7 sm:px-8 sm:pl-24">
           <div className="divide-y divide-slate-200 border-t border-border">
             {theme.stats.map((s) => (
               <div key={s.label} className="flex flex-col gap-3 py-4 sm:flex-row sm:items-center sm:justify-between">
@@ -198,7 +198,7 @@ export default function ThemesView() {
           Les grands enjeux de la campagne, éclairés par des <span className="font-bold text-foreground">données strictement officielles</span> — INSEE, RTE, COR, SSMSI, ministères, Commission européenne. Chaque chiffre est daté et sourcé. Dépliez un thème pour l&apos;évolution et les sources.
         </p>
         {freshest && (
-          <p className="mt-3 inline-flex items-center gap-2 rounded-full bg-emerald-50 px-3 py-1.5 text-[11px] font-black uppercase tracking-widest text-emerald-700">
+          <p className="mt-3 inline-flex items-center gap-2 rounded-full bg-emerald-50 dark:bg-emerald-500/10 px-3 py-1.5 text-[11px] font-black uppercase tracking-widest text-emerald-700 dark:text-emerald-300">
             <span className="h-1.5 w-1.5 rounded-full bg-emerald-500" />
             Dernière publication officielle reprise : {new Date(freshest).toLocaleDateString("fr-FR", { day: "numeric", month: "long", year: "numeric" })}
           </p>

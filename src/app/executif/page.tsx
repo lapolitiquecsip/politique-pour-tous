@@ -390,7 +390,7 @@ function CollapsibleSection({ title, subtitle, icon, color = "from-amber-500 to-
             {subtitle && <p className="mt-0.5 text-sm text-muted-foreground">{subtitle}</p>}
           </div>
         </div>
-        <span className={`flex h-9 w-9 shrink-0 items-center justify-center rounded-full bg-slate-100 text-muted-foreground transition-transform ${open ? "rotate-180" : ""}`}>
+        <span className={`flex h-9 w-9 shrink-0 items-center justify-center rounded-full bg-slate-100 dark:bg-slate-500/10 text-muted-foreground transition-transform ${open ? "rotate-180" : ""}`}>
           <ChevronDown size={18} />
         </span>
       </button>
@@ -582,7 +582,7 @@ export default function ExecutifPage() {
                   <Link
                     key={pm.slug}
                     href={`/executif/ministre/${pm.slug}`}
-                    className="group flex items-center gap-4 rounded-2xl border border-border bg-slate-50/60 p-4 transition hover:border-amber-300 hover:bg-amber-50/40"
+                    className="group flex items-center gap-4 rounded-2xl border border-border bg-slate-50/60 dark:bg-slate-500/10 p-4 transition hover:border-amber-300 hover:bg-amber-50/40"
                   >
                     <div className="relative h-12 w-12 shrink-0 rounded-full overflow-hidden border-2 border-amber-100 bg-amber-500/10">
                       <MinisterImage
@@ -639,7 +639,7 @@ export default function ExecutifPage() {
                   <h3 className="text-xl font-bold text-foreground">Budgets de l'État</h3>
                   <p className="text-[10px] text-slate-400 font-black uppercase tracking-widest">PLF 2026 · missions (officiel)</p>
                 </div>
-                <div className="w-12 h-12 bg-emerald-50 text-emerald-600 rounded-2xl flex items-center justify-center">
+                <div className="w-12 h-12 bg-emerald-50 dark:bg-emerald-500/10 text-emerald-600 dark:text-emerald-300 rounded-2xl flex items-center justify-center">
                   <CircleDollarSign size={24} />
                 </div>
               </div>
@@ -680,7 +680,7 @@ export default function ExecutifPage() {
                         <span className="text-xs font-black text-foreground whitespace-nowrap">{item.amount} Md€</span>
                       </div>
                       
-                      <div className="h-2 bg-slate-100 rounded-full overflow-hidden">
+                      <div className="h-2 bg-slate-100 dark:bg-slate-500/10 rounded-full overflow-hidden">
                         <motion.div 
                           initial={{ width: 0 }}
                           whileInView={{ width: `${(item.amount / (budgets[0]?.amount || item.amount)) * 100}%` }}
@@ -773,7 +773,7 @@ export default function ExecutifPage() {
                   Publié au JO le {new Date(openDecree.date_publi).toLocaleDateString('fr-FR', { day: 'numeric', month: 'long', year: 'numeric' })}
                 </p>
               </div>
-              <button onClick={() => setOpenDecree(null)} className="rounded-full bg-slate-100 p-2 text-muted-foreground hover:bg-slate-200"><X size={18} /></button>
+              <button onClick={() => setOpenDecree(null)} className="rounded-full bg-slate-100 dark:bg-slate-500/10 p-2 text-muted-foreground hover:bg-slate-200"><X size={18} /></button>
             </div>
             <h3 className="mt-3 text-lg font-bold leading-snug text-foreground">{openDecree.display_title || openDecree.title}</h3>
             {openDecree.display_title && <p className="mt-1 text-[11px] leading-snug text-slate-400">{openDecree.title}</p>}

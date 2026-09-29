@@ -64,7 +64,7 @@ function InfoRow({ icon: Icon, label, value }: { icon: any; label: string; value
   if (!value) return null;
   return (
     <div className="flex items-start gap-3 rounded-2xl border border-border bg-card p-4">
-      <div className="flex h-9 w-9 shrink-0 items-center justify-center rounded-xl bg-slate-100 text-muted-foreground"><Icon className="h-4 w-4" /></div>
+      <div className="flex h-9 w-9 shrink-0 items-center justify-center rounded-xl bg-slate-100 dark:bg-slate-500/10 text-muted-foreground"><Icon className="h-4 w-4" /></div>
       <div className="min-w-0">
         <p className="text-[10px] font-black uppercase tracking-widest text-slate-400">{label}</p>
         <p className="font-bold text-foreground">{value}</p>
@@ -90,7 +90,7 @@ function LeaderRow({ value }: { value: string | null }) {
     <div className={`flex items-start gap-3 rounded-2xl border p-4 transition ${href ? "border-indigo-200 bg-card hover:border-indigo-400 hover:shadow-md cursor-pointer group" : "border-border bg-card"}`}>
       {photo && imgOk
         ? <img src={photo} alt={cleanName} onError={() => setImgOk(false)} className="h-10 w-10 shrink-0 rounded-xl object-cover object-top ring-1 ring-slate-200" />
-        : <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-slate-100 text-muted-foreground"><UserCircle className="h-5 w-5" /></div>}
+        : <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-slate-100 dark:bg-slate-500/10 text-muted-foreground"><UserCircle className="h-5 w-5" /></div>}
       <div className="min-w-0">
         <p className="text-[10px] font-black uppercase tracking-widest text-slate-400">Dirigeant·e</p>
         <p className="font-bold text-foreground group-hover:text-indigo-600 transition-colors inline-flex items-center gap-1">
@@ -156,7 +156,7 @@ export default function PartyClient({ params }: { params: Promise<{ slug: string
             <ChevronLeft className="h-4 w-4" /> Retour
           </button>
           <div className="flex flex-col items-start gap-6 md:flex-row md:items-center">
-            <div className="flex h-24 w-24 shrink-0 items-center justify-center overflow-hidden rounded-3xl bg-card p-1.5 shadow-lg">
+            <div className="flex h-24 w-24 shrink-0 items-center justify-center overflow-hidden rounded-3xl bg-white p-1.5 shadow-lg">
               {party.logo_url
                 // eslint-disable-next-line @next/next/no-img-element
                 ? <img src={party.logo_url} alt={party.name} className="h-full w-full object-contain" />
@@ -332,7 +332,7 @@ export default function PartyClient({ params }: { params: Promise<{ slug: string
                       <Link href={`/presidentielles-2027/?candidat=${c.slug}`} className="font-bold text-foreground transition hover:text-blue-600">{c.full_name}</Link>
                       {c.id && (
                         <button onClick={() => toggleProgram(c.slug)}
-                          className={`ml-auto inline-flex items-center gap-1.5 rounded-full px-3.5 py-2 text-[11px] font-black uppercase tracking-widest transition ${progOpen ? "bg-blue-600 text-white" : "bg-blue-50 text-blue-700 hover:bg-blue-100"}`}>
+                          className={`ml-auto inline-flex items-center gap-1.5 rounded-full px-3.5 py-2 text-[11px] font-black uppercase tracking-widest transition ${progOpen ? "bg-blue-600 text-white" : "bg-blue-50 dark:bg-blue-500/10 text-blue-700 dark:text-blue-300 hover:bg-blue-100"}`}>
                           {progOpen ? "Masquer" : "Voir le programme"} <ChevronDown size={14} className={`transition-transform ${progOpen ? "rotate-180" : ""}`} />
                         </button>
                       )}
@@ -340,7 +340,7 @@ export default function PartyClient({ params }: { params: Promise<{ slug: string
                     <AnimatePresence initial={false}>
                       {progOpen && c.id && (
                         <motion.div initial={{ height: 0, opacity: 0 }} animate={{ height: "auto", opacity: 1 }} exit={{ height: 0, opacity: 0 }} className="overflow-hidden">
-                          <div className="border-t border-border bg-slate-50/40 p-4">
+                          <div className="border-t border-border bg-slate-50/40 dark:bg-slate-500/10 p-4">
                             <CandidateProgram candidateId={c.id} emptyMessage="Programme pas encore disponible pour ce candidat·e." />
                           </div>
                         </motion.div>
@@ -376,7 +376,7 @@ export default function PartyClient({ params }: { params: Promise<{ slug: string
                           <p className="mb-2 text-xs font-black uppercase tracking-widest" style={{ color }}>{label}</p>
                           <div className="flex flex-wrap gap-2">
                             {pts.map((p, i) => (
-                              <span key={i} className={`rounded-xl px-3 py-1.5 text-sm ${p.source?.startsWith("officiel") ? "bg-emerald-50 ring-1 ring-emerald-200" : "bg-slate-100"}`}>
+                              <span key={i} className={`rounded-xl px-3 py-1.5 text-sm ${p.source?.startsWith("officiel") ? "bg-emerald-50 dark:bg-emerald-500/10 ring-1 ring-emerald-200" : "bg-slate-100 dark:bg-slate-500/10"}`}>
                                 <span className="font-black text-foreground">{Number(p.value).toLocaleString("fr-FR", { maximumFractionDigits: 1 })}%</span>
                                 <span className="ml-1.5 text-xs font-bold text-muted-foreground">{p.year}{p.label ? ` · ${p.label}` : ""}</span>
                                 {p.source?.startsWith("officiel") && <span className="ml-1.5 text-[9px] font-black uppercase tracking-widest text-emerald-600">officiel</span>}

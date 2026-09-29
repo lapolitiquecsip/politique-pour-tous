@@ -4,6 +4,7 @@ import { motion } from "framer-motion";
 import { MarkerHighlight } from "@/components/ui/marker-highlight";
 import HomeCardArt from "@/components/home/HomeCardArt";
 import Link from "next/link";
+import { useTheme } from "@/components/providers";
 
 const MotionLink = motion(Link);
 
@@ -15,6 +16,9 @@ const CARDS = [
 ];
 
 export default function HomeHero() {
+  // Entre deux passages du marqueur, « simple. » reprend sa couleur de base : un
+  // bleu nuit fixe le rendait invisible sur le fond du thème sombre.
+  const { resolvedTheme } = useTheme();
   return (
     <div className="relative flex flex-col items-center justify-center pt-8 pb-4 w-full bg-card dark:bg-slate-900/10">
       <main className="w-full max-w-5xl mx-auto flex flex-col items-center justify-center px-4 mt-6">
@@ -44,7 +48,7 @@ export default function HomeHero() {
               highlight="simple."
               markerColor="#3b82f6"
               colorList={["#3b82f6", "#f43f5e", "#10b981", "#f59e0b", "#8b5cf6"]}
-              baseColor="#0f172a"
+              baseColor={resolvedTheme === "dark" ? "#ffffff" : "#0f172a"}
               highlightedTextColor="#ffffff"
               delay={0.4}
             />

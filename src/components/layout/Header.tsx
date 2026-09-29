@@ -79,7 +79,7 @@ export default function Header() {
 
   return (
     <>
-    <header className="fixed top-0 left-0 w-full z-40 bg-white/80 backdrop-blur-md border-b border-border">
+    <header className="fixed top-0 left-0 w-full z-40 bg-white/80 backdrop-blur-md border-b border-border dark:bg-slate-950/85 dark:border-slate-800">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="flex justify-between items-center h-16">
           

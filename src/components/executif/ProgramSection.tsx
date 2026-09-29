@@ -14,29 +14,29 @@ type Item = {
 };
 
 const STATUS: Record<string, { label: string; chip: string; dot: string; bar: string }> = {
-  tenu:          { label: "Tenu",          chip: "bg-emerald-50 text-emerald-700 border-emerald-200", dot: "bg-emerald-500", bar: "bg-emerald-500" },
-  en_cours:      { label: "En cours",      chip: "bg-blue-50 text-blue-700 border-blue-200",          dot: "bg-blue-500",    bar: "bg-blue-500" },
-  partiel:       { label: "Partiel",       chip: "bg-amber-50 text-amber-700 border-amber-200",       dot: "bg-amber-500",   bar: "bg-amber-500" },
-  abandonne:     { label: "Abandonné",     chip: "bg-rose-50 text-rose-700 border-rose-200",          dot: "bg-rose-500",    bar: "bg-rose-500" },
-  non_evaluable: { label: "Faites-vous votre propre avis", chip: "bg-slate-100 text-muted-foreground border-border",      dot: "bg-slate-400",   bar: "bg-slate-300" },
-  non_verifie:   { label: "Faites-vous votre propre avis", chip: "bg-slate-100 text-muted-foreground border-border",      dot: "bg-slate-300",   bar: "bg-slate-200" },
+  tenu:          { label: "Tenu",          chip: "bg-emerald-50 dark:bg-emerald-500/10 text-emerald-700 dark:text-emerald-300 border-emerald-200 dark:border-emerald-500/25", dot: "bg-emerald-500", bar: "bg-emerald-500" },
+  en_cours:      { label: "En cours",      chip: "bg-blue-50 dark:bg-blue-500/10 text-blue-700 dark:text-blue-300 border-blue-200 dark:border-blue-500/25",          dot: "bg-blue-500",    bar: "bg-blue-500" },
+  partiel:       { label: "Partiel",       chip: "bg-amber-50 dark:bg-amber-500/10 text-amber-700 dark:text-amber-300 border-amber-200 dark:border-amber-500/25",       dot: "bg-amber-500",   bar: "bg-amber-500" },
+  abandonne:     { label: "Abandonné",     chip: "bg-rose-50 dark:bg-rose-500/10 text-rose-700 dark:text-rose-300 border-rose-200 dark:border-rose-500/25",          dot: "bg-rose-500",    bar: "bg-rose-500" },
+  non_evaluable: { label: "Faites-vous votre propre avis", chip: "bg-slate-100 dark:bg-slate-500/10 text-muted-foreground border-border",      dot: "bg-slate-400",   bar: "bg-slate-300" },
+  non_verifie:   { label: "Faites-vous votre propre avis", chip: "bg-slate-100 dark:bg-slate-500/10 text-muted-foreground border-border",      dot: "bg-slate-300",   bar: "bg-slate-200" },
 };
 const ORDER = ["tenu", "en_cours", "partiel", "abandonne", "non_evaluable", "non_verifie"];
 
 // Niveau de confiance de la synthèse IA → pastille colorée (au lieu d'un gris terne).
 const CONF: Record<string, { label: string; cls: string }> = {
-  faible:  { label: "Confiance faible",  cls: "bg-rose-50 text-rose-600 border-rose-200" },
-  moyenne: { label: "Confiance moyenne", cls: "bg-amber-50 text-amber-700 border-amber-200" },
-  forte:   { label: "Confiance élevée",  cls: "bg-emerald-50 text-emerald-700 border-emerald-200" },
-  elevee:  { label: "Confiance élevée",  cls: "bg-emerald-50 text-emerald-700 border-emerald-200" },
+  faible:  { label: "Confiance faible",  cls: "bg-rose-50 dark:bg-rose-500/10 text-rose-600 dark:text-rose-300 border-rose-200 dark:border-rose-500/25" },
+  moyenne: { label: "Confiance moyenne", cls: "bg-amber-50 dark:bg-amber-500/10 text-amber-700 dark:text-amber-300 border-amber-200 dark:border-amber-500/25" },
+  forte:   { label: "Confiance élevée",  cls: "bg-emerald-50 dark:bg-emerald-500/10 text-emerald-700 dark:text-emerald-300 border-emerald-200 dark:border-emerald-500/25" },
+  elevee:  { label: "Confiance élevée",  cls: "bg-emerald-50 dark:bg-emerald-500/10 text-emerald-700 dark:text-emerald-300 border-emerald-200 dark:border-emerald-500/25" },
 };
 const confStyle = (c?: string | null) => CONF[(c || "").normalize("NFD").replace(/[̀-ͯ]/g, "").toLowerCase()] || { label: `Confiance ${c}`, cls: "bg-muted text-muted-foreground border-border" };
 
 // Type de preuve → pastille colorée + icône, pour repérer la nature de la source d'un coup d'œil.
 const EVT: Record<string, { label: string; cls: string; Icon: any }> = {
-  scrutin: { label: "Vote AN",  cls: "bg-indigo-50 text-indigo-600", Icon: Landmark },
-  web:     { label: "Web",      cls: "bg-sky-50 text-sky-600",       Icon: Globe },
-  dossier: { label: "Dossier",  cls: "bg-slate-100 text-muted-foreground",  Icon: FileText },
+  scrutin: { label: "Vote AN",  cls: "bg-indigo-50 dark:bg-indigo-500/10 text-indigo-600 dark:text-indigo-300", Icon: Landmark },
+  web:     { label: "Web",      cls: "bg-sky-50 dark:bg-sky-500/10 text-sky-600 dark:text-sky-300",       Icon: Globe },
+  dossier: { label: "Dossier",  cls: "bg-slate-100 dark:bg-slate-500/10 text-muted-foreground",  Icon: FileText },
 };
 const evStyle = (t: string) => EVT[t] || EVT.dossier;
 
@@ -97,7 +97,7 @@ export default function ProgramSection() {
 
       {/* Synthèse visuelle : l'essentiel se lit d'un coup d'œil, sans dérouler la liste. */}
       <div className="space-y-2">
-        <div className="flex h-3 w-full overflow-hidden rounded-full bg-slate-100">
+        <div className="flex h-3 w-full overflow-hidden rounded-full bg-slate-100 dark:bg-slate-500/10">
           {ORDER.filter(s => counts[s]).map(s => (
             <div key={s} className={STATUS[s].bar} style={{ width: `${(counts[s] / total) * 100}%` }} title={`${STATUS[s].label} : ${counts[s]}`} />
           ))}
@@ -113,7 +113,7 @@ export default function ProgramSection() {
       </div>
 
       {/* Avertissement : le lecteur doit distinguer le fait de l'appréciation. */}
-      <div className="flex items-start gap-3 rounded-2xl border border-amber-200 bg-amber-50/60 p-3.5">
+      <div className="flex items-start gap-3 rounded-2xl border border-amber-200 dark:border-amber-500/25 bg-amber-50/60 dark:bg-amber-500/10 p-3.5">
         <Sparkles size={15} className="mt-0.5 shrink-0 text-amber-600" />
         <p className="text-[11px] leading-relaxed text-amber-900">
           <strong>Les engagements sont des faits</strong>, repris du programme officiel de campagne.
@@ -167,7 +167,7 @@ export default function ProgramSection() {
             const isOpen = open === i.id;
             const evs = i.evidence ?? [];
             return (
-              <div key={i.id} className="rounded-2xl border border-border bg-slate-50/60 overflow-hidden">
+              <div key={i.id} className="rounded-2xl border border-border bg-slate-50/60 dark:bg-slate-500/10 overflow-hidden">
                 <button
                   onClick={() => setOpen(isOpen ? null : i.id)}
                   className="w-full flex items-start gap-3 p-3.5 text-left transition hover:bg-muted"
@@ -219,13 +219,13 @@ export default function ProgramSection() {
                       {(i.arguments_pour || i.arguments_contre) && (
                         <div className="grid grid-cols-1 gap-2.5 sm:grid-cols-2">
                           {i.arguments_pour && (
-                            <div className="rounded-xl border-l-4 border-emerald-400 bg-emerald-50/60 p-3">
+                            <div className="rounded-xl border-l-4 border-emerald-400 bg-emerald-50/60 dark:bg-emerald-500/10 p-3">
                               <p className="flex items-center gap-1.5 text-[10px] font-black uppercase tracking-widest text-emerald-700"><ThumbsUp size={12} /> Plaide pour</p>
                               <p className="mt-1 text-[11px] leading-relaxed text-slate-700">{i.arguments_pour}</p>
                             </div>
                           )}
                           {i.arguments_contre && (
-                            <div className="rounded-xl border-l-4 border-rose-400 bg-rose-50/60 p-3">
+                            <div className="rounded-xl border-l-4 border-rose-400 bg-rose-50/60 dark:bg-rose-500/10 p-3">
                               <p className="flex items-center gap-1.5 text-[10px] font-black uppercase tracking-widest text-rose-700"><ThumbsDown size={12} /> Plaide contre</p>
                               <p className="mt-1 text-[11px] leading-relaxed text-slate-700">{i.arguments_contre}</p>
                             </div>
@@ -249,7 +249,7 @@ export default function ProgramSection() {
                             {evs.map((e, k) => {
                               const t = evStyle(e.type);
                               return (
-                                <li key={k} className="flex items-start gap-2 rounded-lg border border-border bg-slate-50/70 px-2.5 py-2">
+                                <li key={k} className="flex items-start gap-2 rounded-lg border border-border bg-slate-50/70 dark:bg-slate-500/10 px-2.5 py-2">
                                   <span className={`mt-0.5 flex shrink-0 items-center gap-1 rounded px-1.5 py-0.5 text-[8px] font-black uppercase tracking-widest ${t.cls}`}>
                                     <t.Icon size={9} /> {t.label}
                                   </span>

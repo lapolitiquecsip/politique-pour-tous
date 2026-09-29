@@ -17,7 +17,7 @@ export default function AllPartiesNav({ currentSlug }: { currentSlug: string }) 
   if (!parties || parties.length === 0) return null;
 
   return (
-    <div className="mt-10 rounded-3xl border border-border bg-slate-50/60 p-6">
+    <div className="mt-10 rounded-3xl border border-border bg-slate-50/60 p-6 dark:border-slate-800 dark:bg-slate-900/60">
       <h2 className="text-lg font-black uppercase tracking-widest text-foreground">Tous les partis</h2>
       <p className="mt-0.5 text-sm text-muted-foreground">Accédez à la fiche de chaque parti politique.</p>
       <div className="mt-4 flex flex-wrap gap-2.5">
@@ -29,14 +29,14 @@ export default function AllPartiesNav({ currentSlug }: { currentSlug: string }) 
               key={p.slug}
               href={`/partis/${p.slug}`}
               aria-current={me ? "page" : undefined}
-              className={`group inline-flex items-center gap-2 rounded-full border px-3.5 py-2 text-sm font-bold transition ${me ? "cursor-default border-transparent text-white shadow-sm" : "border-border bg-card text-slate-700 hover:border-slate-300 hover:shadow-md"}`}
+              className={`group inline-flex items-center gap-2 rounded-full border px-3.5 py-2 text-sm font-bold transition ${me ? "cursor-default border-transparent text-white shadow-sm" : "border-border bg-card text-slate-700 hover:border-slate-300 hover:shadow-md dark:border-slate-700 dark:bg-slate-800 dark:text-slate-100 dark:hover:border-slate-500"}`}
               style={me ? { background: color } : undefined}
             >
               {p.logo_url
-                ? <img src={p.logo_url} alt="" className="h-5 w-5 shrink-0 rounded-full bg-card object-contain ring-1 ring-black/5" />
+                ? <img src={p.logo_url} alt="" className="h-5 w-5 shrink-0 rounded-full bg-white object-contain ring-1 ring-black/5" />
                 : <span className="h-3 w-3 shrink-0 rounded-full" style={{ background: color }} />}
               <span className="whitespace-nowrap">{p.abbrev || p.name}</span>
-              {!me && <ArrowRight className="h-3.5 w-3.5 text-slate-300 transition-all group-hover:translate-x-0.5 group-hover:text-muted-foreground" />}
+              {!me && <ArrowRight className="h-3.5 w-3.5 text-slate-300 transition-all group-hover:translate-x-0.5 group-hover:text-muted-foreground dark:text-slate-500" />}
             </Link>
           );
         })}

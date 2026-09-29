@@ -100,7 +100,7 @@ export const AvatarGroup = ({ members, size = 24, limit = 3 }: AvatarGroupProps)
           title={`${members.length - limit + 1} autres sources`}
         >
           <span
-            className="rounded-full overflow-hidden border-2 border-white bg-slate-100 duration-200 flex justify-center items-center text-slate-800 text-[10px] font-bold shadow-sm"
+            className="rounded-full overflow-hidden border-2 border-white bg-slate-100 dark:bg-slate-500/10 duration-200 flex justify-center items-center text-slate-800 dark:text-slate-200 text-[10px] font-bold shadow-sm"
             style={{ width: size, height: size }}
           >
             +{members.length - limit + 1}

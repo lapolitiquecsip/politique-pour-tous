@@ -25,7 +25,7 @@ function Ranking({ rows, currentSlug, format, accent }: {
           <div key={r.slug} className={`flex items-center gap-3 rounded-xl px-2 py-1.5 transition ${me ? "bg-muted ring-2" : ""}`} style={me ? { boxShadow: `0 0 0 2px ${accent}55, 0 6px 18px ${accent}22` } : undefined}>
             <span className={`w-6 shrink-0 text-right font-black tabular-nums ${me ? "text-[13px]" : "text-[11px] text-slate-400"}`} style={me ? { color: accent } : undefined}>{i + 1}</span>
             <span className={`w-16 shrink-0 truncate uppercase ${me ? "text-[13px] font-black text-foreground" : "text-xs font-black text-muted-foreground"}`} title={r.label}>{r.label}</span>
-            <div className="h-3.5 flex-1 overflow-hidden rounded-full bg-slate-100">
+            <div className="h-3.5 flex-1 overflow-hidden rounded-full bg-slate-100 dark:bg-slate-500/10">
               <div className={`h-full overflow-hidden rounded-full ${me ? "bar-shine" : ""}`} style={{ width: `${(r.value / max) * 100}%`, background: me ? accent : `${r.color || "#94a3b8"}`, opacity: me ? 1 : 0.5, boxShadow: me ? `0 0 12px ${accent}` : undefined }} />
             </div>
             <span className={`shrink-0 text-right tabular-nums ${me ? "w-24 text-base font-black" : "w-20 text-xs font-black text-muted-foreground"}`} style={me ? { color: accent } : undefined}>{r.display}</span>

@@ -32,7 +32,7 @@ export default function PromiseItem({ promise }: { promise: PromiseData }) {
         <div className="flex flex-col md:flex-row justify-between items-start mb-6 gap-6">
           <div className="flex-1">
             <div className="flex items-center gap-3 mb-4">
-              <span className="px-3 py-1 bg-blue-50 text-blue-600 text-[10px] font-black uppercase tracking-widest rounded-lg border border-blue-100">
+              <span className="px-3 py-1 bg-blue-50 dark:bg-blue-500/10 text-blue-600 dark:text-blue-300 text-[10px] font-black uppercase tracking-widest rounded-lg border border-blue-100 dark:border-blue-500/25">
                 {promise.category || "Engagement"}
               </span>
               <span className="text-slate-300">•</span>
@@ -69,7 +69,7 @@ export default function PromiseItem({ promise }: { promise: PromiseData }) {
             onClick={() => setIsOpen(!isOpen)}
             className={`inline-flex items-center gap-2 px-5 py-2.5 text-xs font-bold rounded-xl transition-all border ${
               isOpen 
-                ? "bg-blue-50 text-blue-600 border-blue-200" 
+                ? "bg-blue-50 dark:bg-blue-500/10 text-blue-600 dark:text-blue-300 border-blue-200 dark:border-blue-500/25" 
                 : "bg-card text-muted-foreground border-border hover:bg-muted"
             }`}
           >
@@ -95,7 +95,7 @@ export default function PromiseItem({ promise }: { promise: PromiseData }) {
             transition={{ duration: 0.4, ease: [0.04, 0.62, 0.23, 0.98] }}
             className="overflow-hidden"
           >
-            <div className="px-8 pb-8 pt-4 border-t border-border bg-slate-50/50">
+            <div className="px-8 pb-8 pt-4 border-t border-border bg-slate-50/50 dark:bg-slate-500/10">
               <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
                 {/* 1. Bilan Concret */}
                 <div className="space-y-4">

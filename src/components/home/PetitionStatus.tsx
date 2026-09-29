@@ -20,7 +20,7 @@ export function petitionStatusInfo(status: string | null, signatures: number, th
     return {
       label: "Examinée puis classée",
       explain: "Une commission de l'Assemblée a examiné la pétition et décidé de la classer : pas de suite législative directe à ce stade.",
-      cls: "bg-slate-100 text-muted-foreground border-border",
+      cls: "bg-slate-100 dark:bg-slate-500/10 text-muted-foreground border-border",
       Icon: Archive,
     };
   }
@@ -28,7 +28,7 @@ export function petitionStatusInfo(status: string | null, signatures: number, th
     return {
       label: "Transmise à une commission",
       explain: "Le seuil requis a été franchi : une commission de l'Assemblée est saisie et doit décider de la suite (rapport, débat, ou classement).",
-      cls: "bg-blue-50 text-blue-700 border-blue-200",
+      cls: "bg-blue-50 dark:bg-blue-500/10 text-blue-700 dark:text-blue-300 border-blue-200 dark:border-blue-500/25",
       Icon: Send,
     };
   }
@@ -36,7 +36,7 @@ export function petitionStatusInfo(status: string | null, signatures: number, th
     return {
       label: "Vers un débat en séance",
       explain: "La pétition a franchi les étapes menant à une possible inscription à l'ordre du jour de l'Assemblée.",
-      cls: "bg-violet-50 text-violet-700 border-violet-200",
+      cls: "bg-violet-50 dark:bg-violet-500/10 text-violet-700 dark:text-violet-300 border-violet-200 dark:border-violet-500/25",
       Icon: Gavel,
     };
   }
@@ -44,7 +44,7 @@ export function petitionStatusInfo(status: string | null, signatures: number, th
     return {
       label: "Clôturée",
       explain: "La période de recueil des signatures est terminée.",
-      cls: "bg-slate-100 text-muted-foreground border-border",
+      cls: "bg-slate-100 dark:bg-slate-500/10 text-muted-foreground border-border",
       Icon: Archive,
     };
   }
@@ -54,7 +54,7 @@ export function petitionStatusInfo(status: string | null, signatures: number, th
     return {
       label: "Seuil des 100 000 franchi",
       explain: "La pétition peut désormais être transmise à la Conférence des présidents de l'Assemblée, qui décide de la suite : examen en commission, débat, ou classement.",
-      cls: "bg-amber-50 text-amber-700 border-amber-200",
+      cls: "bg-amber-50 dark:bg-amber-500/10 text-amber-700 dark:text-amber-300 border-amber-200 dark:border-amber-500/25",
       Icon: CheckCircle2,
     };
   }

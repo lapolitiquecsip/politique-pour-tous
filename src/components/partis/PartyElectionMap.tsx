@@ -86,7 +86,7 @@ export default function PartyElectionMap({ slug, color, name }: { slug: string; 
       <div className="mt-4 flex flex-wrap items-baseline gap-x-3 gap-y-1">
         <span className="text-4xl font-black leading-none tabular-nums" style={{ color }}>{serie.national.toLocaleString("fr-FR", { maximumFractionDigits: 1 })} %</span>
         <span className="text-sm font-bold text-muted-foreground">à l&apos;échelle nationale · {el.label}</span>
-        <span className="rounded-full bg-emerald-50 px-2 py-0.5 text-[9px] font-black uppercase tracking-widest text-emerald-600 ring-1 ring-emerald-200">Officiel</span>
+        <span className="rounded-full bg-emerald-50 dark:bg-emerald-500/10 px-2 py-0.5 text-[9px] font-black uppercase tracking-widest text-emerald-600 dark:text-emerald-300 ring-1 ring-emerald-200">Officiel</span>
       </div>
       <p className="mt-1.5 text-sm text-muted-foreground">{el.desc} — survolez une collectivité pour voir son score.</p>
 

@@ -72,22 +72,22 @@ export default function CalendarClient({ initialEvents }: { initialEvents: Calen
 
       {/* Légende / Filtres Express */}
       <div className="flex flex-col lg:flex-row lg:items-center justify-between gap-6 mb-8">
-        <div className="flex flex-wrap gap-6 p-5 bg-white/50 backdrop-blur-md rounded-3xl border border-border">
+        <div className="flex flex-wrap gap-6 p-5 bg-white/50 dark:bg-white/[0.04] backdrop-blur-md rounded-3xl border border-border">
           <div className="flex items-center gap-3">
             <div className="w-3 h-3 rounded-full bg-blue-500 shadow-[0_0_10px_rgba(59,130,246,0.6)]" />
-            <span className="text-[10px] font-black text-slate-700 uppercase tracking-widest">Assemblée Nationale</span>
+            <span className="text-[10px] font-black text-slate-700 dark:text-slate-200 uppercase tracking-widest">Assemblée Nationale</span>
           </div>
           <div className="flex items-center gap-3">
             <div className="w-3 h-3 rounded-full bg-indigo-500 shadow-[0_0_10px_rgba(129,140,248,0.6)]" />
-            <span className="text-[10px] font-black text-slate-700 uppercase tracking-widest">Sénat</span>
+            <span className="text-[10px] font-black text-slate-700 dark:text-slate-200 uppercase tracking-widest">Sénat</span>
           </div>
           <div className="flex items-center gap-3">
             <div className="w-3 h-3 rounded-full bg-amber-500 shadow-[0_0_10px_rgba(245,158,11,0.6)]" />
-            <span className="text-[10px] font-black text-slate-700 uppercase tracking-widest">Élysée</span>
+            <span className="text-[10px] font-black text-slate-700 dark:text-slate-200 uppercase tracking-widest">Élysée</span>
           </div>
         </div>
 
-        <div className="flex bg-slate-100 p-1 rounded-2xl border border-border self-start lg:self-auto">
+        <div className="flex bg-slate-100 dark:bg-slate-500/10 p-1 rounded-2xl border border-border self-start lg:self-auto">
           {["Tous", "Assemblée", "Sénat", "Élysée", "Élection"].map((f) => (
             <button
               key={f}

@@ -96,8 +96,8 @@ export default function MinisterFicheClient({ params, embedded }: { params: Prom
 
         {/* Cabinet de Matignon — uniquement sur la fiche du Premier ministre. */}
         {/premier\s*ministre/i.test(m.title || "") && (
-          <div className="mt-8 flex items-start gap-4 rounded-3xl border border-blue-100 bg-blue-50/50 p-5">
-            <span className="flex h-11 w-11 shrink-0 items-center justify-center rounded-2xl bg-blue-100 text-blue-600"><Landmark size={20} /></span>
+          <div className="mt-8 flex items-start gap-4 rounded-3xl border border-blue-100 dark:border-blue-500/25 bg-blue-50/50 dark:bg-blue-500/10 p-5">
+            <span className="flex h-11 w-11 shrink-0 items-center justify-center rounded-2xl bg-blue-100 dark:bg-blue-500/10 text-blue-600 dark:text-blue-300"><Landmark size={20} /></span>
             <div className="min-w-0">
               <p className="text-[10px] font-black uppercase tracking-widest text-blue-600">Cabinet de Matignon</p>
               <p className="mt-0.5 text-2xl font-black text-foreground">{PM_CABINET.value} <span className="text-base font-bold text-muted-foreground">conseillers</span></p>

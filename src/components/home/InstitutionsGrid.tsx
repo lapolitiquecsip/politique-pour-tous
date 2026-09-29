@@ -368,7 +368,7 @@ export default function InstitutionsGrid() {
               <div className="flex-1 p-8 md:p-12 flex flex-col justify-start bg-background overflow-y-auto custom-scrollbar-blue">
                 <div className="mb-10">
                   <div className="flex items-center gap-2 mb-6">
-                    <span className="px-4 py-1.5 rounded-full text-[10px] font-black uppercase tracking-[0.2em] bg-blue-100 text-blue-700 border border-blue-200 inline-block">
+                    <span className="px-4 py-1.5 rounded-full text-[10px] font-black uppercase tracking-[0.2em] bg-blue-100 dark:bg-blue-500/10 text-blue-700 dark:text-blue-300 border border-blue-200 dark:border-blue-500/25 inline-block">
                       Institution Officielle
                     </span>
                     <div className="h-1.5 w-1.5 rounded-full bg-red-500 animate-pulse" />

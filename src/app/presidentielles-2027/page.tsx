@@ -129,7 +129,7 @@ function computeAge(date?: string): number | null {
 
 // Vignettes de faits-clés illustrées (âge, naissance+drapeau, parti, profession…).
 function Chip({ children }: { children: React.ReactNode }) {
-  return <span className="inline-flex items-center gap-2 rounded-full bg-slate-100 px-3.5 py-1.5 text-sm font-bold text-slate-700">{children}</span>;
+  return <span className="inline-flex items-center gap-2 rounded-full bg-slate-100 dark:bg-slate-500/10 px-3.5 py-1.5 text-sm font-bold text-slate-700 dark:text-slate-200">{children}</span>;
 }
 
 function FactChips({ candidate }: { candidate: Candidate }) {
@@ -179,15 +179,15 @@ function formatDate(value?: string | null) {
 // Icône + couleur d'un thème de programme (différenciation visuelle).
 function themeStyle(name: string): { Icon: any; c: string; bg: string; dot: string } {
   const h = (name || "").toLowerCase();
-  if (/immigr/.test(h)) return { Icon: Globe2, c: "text-amber-600", bg: "bg-amber-50", dot: "bg-amber-500" };
-  if (/éduc|educ|école|ecole/.test(h)) return { Icon: GraduationCap, c: "text-sky-600", bg: "bg-sky-50", dot: "bg-sky-500" };
-  if (/sécur|secur|justice/.test(h)) return { Icon: ShieldCheck, c: "text-rose-600", bg: "bg-rose-50", dot: "bg-rose-500" };
-  if (/santé|sante/.test(h)) return { Icon: HeartPulse, c: "text-pink-600", bg: "bg-pink-50", dot: "bg-pink-500" };
-  if (/agricult|rural/.test(h)) return { Icon: Wheat, c: "text-lime-700", bg: "bg-lime-50", dot: "bg-lime-500" };
-  if (/écolog|ecolog|énerg|energ|environ/.test(h)) return { Icon: Leaf, c: "text-emerald-600", bg: "bg-emerald-50", dot: "bg-emerald-500" };
-  if (/europ|internation/.test(h)) return { Icon: Flag, c: "text-blue-600", bg: "bg-blue-50", dot: "bg-blue-500" };
-  if (/économ|econom|ambition|prosp|emploi|travail/.test(h)) return { Icon: TrendingUp, c: "text-violet-600", bg: "bg-violet-50", dot: "bg-violet-500" };
-  if (/institution|destin|civique|démocr|democr|maître|maitre|renouveau/.test(h)) return { Icon: Landmark, c: "text-indigo-600", bg: "bg-indigo-50", dot: "bg-indigo-500" };
+  if (/immigr/.test(h)) return { Icon: Globe2, c: "text-amber-600 dark:text-amber-300", bg: "bg-amber-50 dark:bg-amber-500/10", dot: "bg-amber-500" };
+  if (/éduc|educ|école|ecole/.test(h)) return { Icon: GraduationCap, c: "text-sky-600 dark:text-sky-300", bg: "bg-sky-50 dark:bg-sky-500/10", dot: "bg-sky-500" };
+  if (/sécur|secur|justice/.test(h)) return { Icon: ShieldCheck, c: "text-rose-600 dark:text-rose-300", bg: "bg-rose-50 dark:bg-rose-500/10", dot: "bg-rose-500" };
+  if (/santé|sante/.test(h)) return { Icon: HeartPulse, c: "text-pink-600 dark:text-pink-300", bg: "bg-pink-50 dark:bg-pink-500/10", dot: "bg-pink-500" };
+  if (/agricult|rural/.test(h)) return { Icon: Wheat, c: "text-lime-700 dark:text-lime-300", bg: "bg-lime-50 dark:bg-lime-500/10", dot: "bg-lime-500" };
+  if (/écolog|ecolog|énerg|energ|environ/.test(h)) return { Icon: Leaf, c: "text-emerald-600 dark:text-emerald-300", bg: "bg-emerald-50 dark:bg-emerald-500/10", dot: "bg-emerald-500" };
+  if (/europ|internation/.test(h)) return { Icon: Flag, c: "text-blue-600 dark:text-blue-300", bg: "bg-blue-50 dark:bg-blue-500/10", dot: "bg-blue-500" };
+  if (/économ|econom|ambition|prosp|emploi|travail/.test(h)) return { Icon: TrendingUp, c: "text-violet-600 dark:text-violet-300", bg: "bg-violet-50 dark:bg-violet-500/10", dot: "bg-violet-500" };
+  if (/institution|destin|civique|démocr|democr|maître|maitre|renouveau/.test(h)) return { Icon: Landmark, c: "text-indigo-600 dark:text-indigo-300", bg: "bg-indigo-50 dark:bg-indigo-500/10", dot: "bg-indigo-500" };
   return { Icon: FileText, c: "text-muted-foreground", bg: "bg-muted", dot: "bg-slate-400" };
 }
 
@@ -294,7 +294,7 @@ function CandidateModal({ candidate, onClose }: { candidate: Candidate; onClose:
           {mandate && (
             <Link
               href={`/${mandate.type === "senateur" ? "senateurs" : "deputes"}/${mandate.slug}/`}
-              className="mb-4 flex items-center justify-between gap-3 rounded-2xl border border-blue-200 bg-blue-50 px-5 py-3 text-blue-800 transition hover:border-blue-300 hover:bg-blue-100"
+              className="mb-4 flex items-center justify-between gap-3 rounded-2xl border border-blue-200 dark:border-blue-500/25 bg-blue-50 dark:bg-blue-500/10 px-5 py-3 text-blue-800 dark:text-blue-300 transition hover:border-blue-300 hover:bg-blue-100"
             >
               <span className="flex items-center gap-2 text-sm font-bold">
                 <Landmark size={17} />
@@ -374,7 +374,7 @@ function CandidateModal({ candidate, onClose }: { candidate: Candidate; onClose:
           </div>
 
           {candidate.program && (
-            <section className="mt-6 rounded-2xl border border-amber-200 bg-amber-50 p-5">
+            <section className="mt-6 rounded-2xl border border-amber-200 dark:border-amber-500/25 bg-amber-50 dark:bg-amber-500/10 p-5">
               <h3 className="text-sm font-black uppercase tracking-widest text-amber-800">Programme</h3>
               <p className="mt-2 whitespace-pre-line text-sm leading-6 text-amber-950">{candidate.program}</p>
             </section>
@@ -422,7 +422,7 @@ function CandidateModal({ candidate, onClose }: { candidate: Candidate; onClose:
                                         <span className="flex-1">{p.text}</span>
                                         {p.explanation && (
                                           <button onClick={() => toggleExpl(exKey)} title="Comprendre cette proposition"
-                                            className={`mt-0.5 flex h-6 w-6 shrink-0 items-center justify-center rounded-full border transition ${exOpen ? "border-violet-300 bg-violet-100 text-violet-700" : "border-violet-200 bg-card text-violet-500 hover:bg-violet-50"}`}>
+                                            className={`mt-0.5 flex h-6 w-6 shrink-0 items-center justify-center rounded-full border transition ${exOpen ? "border-violet-300 bg-violet-100 dark:bg-violet-500/10 text-violet-700 dark:text-violet-300" : "border-violet-200 dark:border-violet-500/25 bg-card text-violet-500 hover:bg-violet-50"}`}>
                                             <HelpCircle size={14} />
                                           </button>
                                         )}
@@ -430,7 +430,7 @@ function CandidateModal({ candidate, onClose }: { candidate: Candidate; onClose:
                                       <AnimatePresence initial={false}>
                                         {exOpen && p.explanation && (
                                           <motion.div initial={{ height: 0, opacity: 0 }} animate={{ height: "auto", opacity: 1 }} exit={{ height: 0, opacity: 0 }} className="overflow-hidden">
-                                            <p className="ml-4 mt-2 rounded-xl border-l-2 border-violet-300 bg-violet-50/70 px-3 py-2.5 text-[13px] leading-6 text-muted-foreground">{p.explanation}</p>
+                                            <p className="ml-4 mt-2 rounded-xl border-l-2 border-violet-300 bg-violet-50/70 dark:bg-violet-500/10 px-3 py-2.5 text-[13px] leading-6 text-muted-foreground">{p.explanation}</p>
                                           </motion.div>
                                         )}
                                       </AnimatePresence>
@@ -493,7 +493,7 @@ function CandidateModal({ candidate, onClose }: { candidate: Candidate; onClose:
                     ) : (
                       <button key={`n${it.data.id}`} onClick={() => setSelectedNews(it.data)} className="flex w-[280px] shrink-0 select-none flex-col rounded-2xl border border-border p-4 text-left transition hover:border-slate-300 hover:shadow-sm">
                         <div className="flex items-center justify-between gap-3 text-xs font-bold text-slate-400">
-                          <span className="rounded-full bg-slate-100 px-2 py-0.5 uppercase tracking-widest">{it.data.news_type || "actu"}</span>
+                          <span className="rounded-full bg-slate-100 dark:bg-slate-500/10 px-2 py-0.5 uppercase tracking-widest">{it.data.news_type || "actu"}</span>
                           <span><CalendarDays className="mr-1 inline" size={13} />{formatDate(it.data.date)}</span>
                         </div>
                         <p className="mt-2 font-bold text-foreground line-clamp-2">{it.data.title}</p>
@@ -525,8 +525,8 @@ function CandidateModal({ candidate, onClose }: { candidate: Candidate; onClose:
                   className="max-h-[85vh] w-full max-w-lg overflow-y-auto rounded-t-[2rem] bg-card p-6 shadow-2xl sm:rounded-[2rem]"
                 >
                   <div className="mb-3 flex items-center justify-between gap-3">
-                    <span className="inline-flex items-center rounded-full bg-slate-100 px-3 py-1 text-[10px] font-black uppercase tracking-widest text-muted-foreground">{selectedNews.news_type || "actu"}</span>
-                    <button onClick={() => setSelectedNews(null)} className="rounded-full bg-slate-100 p-2 text-muted-foreground transition hover:bg-slate-200"><X size={18} /></button>
+                    <span className="inline-flex items-center rounded-full bg-slate-100 dark:bg-slate-500/10 px-3 py-1 text-[10px] font-black uppercase tracking-widest text-muted-foreground">{selectedNews.news_type || "actu"}</span>
+                    <button onClick={() => setSelectedNews(null)} className="rounded-full bg-slate-100 dark:bg-slate-500/10 p-2 text-muted-foreground transition hover:bg-slate-200"><X size={18} /></button>
                   </div>
                   <p className="text-[11px] font-bold uppercase tracking-widest text-slate-400">{formatDate(selectedNews.date)}</p>
                   <h3 className="mt-1 text-xl font-black leading-snug text-foreground">{selectedNews.title}</h3>
@@ -671,9 +671,9 @@ function PositionsView({ candidates }: { candidates: Candidate[] }) {
                 <p className="font-black text-foreground">{detail.c.full_name}</p>
                 <p className="text-xs font-bold text-muted-foreground">{detail.issue.title}</p>
               </div>
-              <button onClick={() => setDetail(null)} className="ml-auto rounded-full bg-slate-100 p-2"><X size={18} /></button>
+              <button onClick={() => setDetail(null)} className="ml-auto rounded-full bg-slate-100 dark:bg-slate-500/10 p-2"><X size={18} /></button>
             </div>
-            <span className={`inline-flex items-center gap-2 rounded-full px-3 py-1 text-xs font-black uppercase tracking-widest ${detail.pos?.stance === "pour" ? "bg-emerald-100 text-emerald-700" : detail.pos?.stance === "contre" ? "bg-rose-100 text-rose-700" : "bg-amber-100 text-amber-700"}`}>
+            <span className={`inline-flex items-center gap-2 rounded-full px-3 py-1 text-xs font-black uppercase tracking-widest ${detail.pos?.stance === "pour" ? "bg-emerald-100 dark:bg-emerald-500/10 text-emerald-700 dark:text-emerald-300" : detail.pos?.stance === "contre" ? "bg-rose-100 dark:bg-rose-500/10 text-rose-700 dark:text-rose-300" : "bg-amber-100 dark:bg-amber-500/10 text-amber-700 dark:text-amber-300"}`}>
               {STANCE_META[detail.pos?.stance]?.label ?? "—"} · {detail.issue.proposition}
             </span>
             <p className="mt-4 text-sm leading-6 text-slate-700">{detail.pos?.summary || "Position non détaillée."}</p>

@@ -36,7 +36,7 @@ export default function ComparateurConcept() {
             animate={{ opacity: 1, y: 0 }}
             className="flex flex-col items-center gap-8"
           >
-            <div className="w-20 h-20 bg-amber-100 text-amber-600 rounded-[2rem] flex items-center justify-center shadow-2xl shadow-amber-500/20">
+            <div className="w-20 h-20 bg-amber-100 dark:bg-amber-500/10 text-amber-600 dark:text-amber-300 rounded-[2rem] flex items-center justify-center shadow-2xl shadow-amber-500/20">
               <Map size={40} />
             </div>
 
@@ -50,7 +50,7 @@ export default function ComparateurConcept() {
 
             <div className="grid grid-cols-1 md:grid-cols-3 gap-4 w-full max-w-2xl mt-4">
                {["Villes vs Villes", "Dépts vs Dépts", "Régions vs Régions"].map((text) => (
-                 <div key={text} className="px-4 py-2 bg-amber-50 text-amber-700 rounded-full text-[10px] font-black uppercase tracking-widest border border-amber-100">
+                 <div key={text} className="px-4 py-2 bg-amber-50 dark:bg-amber-500/10 text-amber-700 dark:text-amber-300 rounded-full text-[10px] font-black uppercase tracking-widest border border-amber-100 dark:border-amber-500/25">
                    {text}
                  </div>
                ))}

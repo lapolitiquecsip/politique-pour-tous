@@ -33,7 +33,7 @@ export default async function SenateursPage() {
       <Senatoriales2026 />
       {/* Président du Sénat — cliquable vers sa fiche */}
       <div className="mx-auto max-w-6xl px-4 pt-6">
-        <Link href="/senateurs/gerard-larcher" className="group flex items-center gap-4 rounded-3xl border border-amber-200 bg-amber-50/60 p-5 transition hover:border-amber-300 hover:bg-amber-50">
+        <Link href="/senateurs/gerard-larcher" className="group flex items-center gap-4 rounded-3xl border border-amber-200 bg-amber-50/60 p-5 transition hover:border-amber-300 hover:bg-amber-50 dark:border-amber-500/30 dark:bg-amber-500/[0.08] dark:hover:border-amber-400/60 dark:hover:bg-amber-500/[0.12]">
           <PresidentPhoto src="https://www.senat.fr/senimg/larcher_gerard86034e.jpg" alt="Gérard Larcher" ring="ring-amber-300" gradient="from-amber-500 to-orange-500" />
           <div className="min-w-0">
             <p className="text-[10px] font-black uppercase tracking-widest text-amber-600">Président du Sénat</p>

@@ -55,7 +55,7 @@ function PubList({ items, accent, empty, onSelect }: { items: Pub[]; accent: str
         );
         // Mobile : on limite à 3 éléments par bloc (les suivants n'apparaissent qu'à partir de sm)
         // pour que la section président ne mange pas tout l'écran avant le reste de l'exécutif.
-        const cls = `group w-full items-start gap-3 rounded-2xl border border-border bg-slate-50/60 p-3 text-left transition hover:border-amber-300 hover:bg-amber-50/40 ${i < 3 ? "flex" : "hidden sm:flex"}`;
+        const cls = `group w-full items-start gap-3 rounded-2xl border border-border bg-slate-50/60 dark:bg-slate-500/10 p-3 text-left transition hover:border-amber-300 hover:bg-amber-50/40 ${i < 3 ? "flex" : "hidden sm:flex"}`;
         // Conseils des ministres : on ouvre le résumé SUR le site plutôt que d'envoyer
         // l'utilisateur déchiffrer le compte rendu officiel sur elysee.fr.
         return onSelect
@@ -95,16 +95,16 @@ export default function PresidentSection({ photoUrl }: { photoUrl?: string }) {
   const fallback = `https://ui-avatars.com/api/?name=Emmanuel+Macron&background=f59e0b&color=fff&size=512&bold=true`;
 
   const blocks: Array<{ key: string; icon: any; title: string; accent: string; iconBg: string; items: Pub[]; empty: string }> = [
-    { key: "cdm", icon: ScrollText, title: "Conseils des ministres", accent: "text-amber-600", iconBg: "bg-amber-50 text-amber-600", items: conseils, empty: "Aucun compte rendu disponible." },
-    { key: "dis", icon: Mic, title: "Discours & déclarations", accent: "text-orange-600", iconBg: "bg-orange-50 text-orange-600", items: discours, empty: "Aucun discours récent." },
-    { key: "dep", icon: Plane, title: "Déplacements officiels", accent: "text-yellow-600", iconBg: "bg-yellow-50 text-yellow-600", items: deplacements, empty: "Aucun déplacement récent." },
+    { key: "cdm", icon: ScrollText, title: "Conseils des ministres", accent: "text-amber-600 dark:text-amber-300", iconBg: "bg-amber-50 dark:bg-amber-500/10 text-amber-600 dark:text-amber-300", items: conseils, empty: "Aucun compte rendu disponible." },
+    { key: "dis", icon: Mic, title: "Discours & déclarations", accent: "text-orange-600 dark:text-orange-300", iconBg: "bg-orange-50 dark:bg-orange-500/10 text-orange-600 dark:text-orange-300", items: discours, empty: "Aucun discours récent." },
+    { key: "dep", icon: Plane, title: "Déplacements officiels", accent: "text-yellow-600 dark:text-yellow-300", iconBg: "bg-yellow-50 dark:bg-yellow-500/10 text-yellow-600 dark:text-yellow-300", items: deplacements, empty: "Aucun déplacement récent." },
   ];
 
   return (
     <section className="bg-card p-5 md:p-12 rounded-[2rem] md:rounded-[3rem] border border-border space-y-6 md:space-y-8">
       {/* En-tête président */}
       <div className="flex flex-col sm:flex-row items-center gap-4 md:gap-6">
-        <div className="w-20 h-20 md:w-24 md:h-24 shrink-0 rounded-full overflow-hidden border-4 border-amber-50 shadow-md bg-slate-100">
+        <div className="w-20 h-20 md:w-24 md:h-24 shrink-0 rounded-full overflow-hidden border-4 border-amber-50 shadow-md bg-slate-100 dark:bg-slate-500/10">
           <MinisterImage
             src={photoUrl || fallback}
             fallbackSrc={fallback}
@@ -160,7 +160,7 @@ export default function PresidentSection({ photoUrl }: { photoUrl?: string }) {
                 <p className="text-[10px] font-black uppercase tracking-widest text-amber-600">Conseil des ministres</p>
                 <p className="mt-0.5 text-[11px] font-bold uppercase tracking-widest text-slate-400">{fmtDate(openCdm.published_at)}</p>
               </div>
-              <button onClick={() => setOpenCdm(null)} className="rounded-full bg-slate-100 p-2 text-muted-foreground transition hover:bg-slate-200">
+              <button onClick={() => setOpenCdm(null)} className="rounded-full bg-slate-100 dark:bg-slate-500/10 p-2 text-muted-foreground transition hover:bg-slate-200">
                 <X size={18} />
               </button>
             </div>

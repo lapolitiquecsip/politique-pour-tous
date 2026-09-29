@@ -22,7 +22,7 @@ function AccordionSection({
 }) {
   const [isOpen, setIsOpen] = useState(false);
 
-  const bgClass = colorScheme === "green" ? "bg-green-50/50 border-green-100" : "bg-red-50/50 border-red-100";
+  const bgClass = colorScheme === "green" ? "bg-green-50/50 dark:bg-green-500/10 border-green-100 dark:border-green-500/25" : "bg-red-50/50 dark:bg-red-500/10 border-red-100 dark:border-red-500/25";
   const hoverClass = colorScheme === "green" ? "hover:bg-green-50" : "hover:bg-red-50";
 
   return (

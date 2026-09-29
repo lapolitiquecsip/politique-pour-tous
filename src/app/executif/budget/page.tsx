@@ -819,7 +819,7 @@ export default function DetailedBudgetPage() {
               </h1>
               
               {lastUpdate && (
-                <div className="flex items-center gap-3 bg-green-50 border border-green-100 px-4 py-2 rounded-full w-fit">
+                <div className="flex items-center gap-3 bg-green-50 dark:bg-green-500/10 border border-green-100 dark:border-green-500/25 px-4 py-2 rounded-full w-fit">
                   <div className="relative flex h-3 w-3">
                     <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-green-400 opacity-75"></span>
                     <span className="relative inline-flex rounded-full h-3 w-3 bg-green-500"></span>
@@ -879,7 +879,7 @@ export default function DetailedBudgetPage() {
               <div className="lg:col-span-7 space-y-12">
                 <div className="space-y-4">
                   <div className="flex items-center gap-4">
-                    <div className="w-12 h-12 bg-blue-50 text-blue-600 rounded-2xl flex items-center justify-center shadow-sm">
+                    <div className="w-12 h-12 bg-blue-50 dark:bg-blue-500/10 text-blue-600 dark:text-blue-300 rounded-2xl flex items-center justify-center shadow-sm">
                         <PieChart size={24} />
                     </div>
                     <h2 className="text-4xl font-staatliches uppercase tracking-wider text-foreground">
@@ -1067,8 +1067,8 @@ export default function DetailedBudgetPage() {
                   
                   <div className="flex justify-between items-start mb-8">
                      <div className={`px-4 py-1.5 rounded-full text-[10px] font-black uppercase tracking-widest ${
-                       mission.impact === 'Critique' ? 'bg-red-100 text-red-600' : 
-                       mission.impact === 'Prioritaire' ? 'bg-blue-100 text-blue-600' : 'bg-slate-100 text-muted-foreground'
+                       mission.impact === 'Critique' ? 'bg-red-100 dark:bg-red-500/10 text-red-600 dark:text-red-300' : 
+                       mission.impact === 'Prioritaire' ? 'bg-blue-100 dark:bg-blue-500/10 text-blue-600 dark:text-blue-300' : 'bg-slate-100 dark:bg-slate-500/10 text-muted-foreground'
                      }`}>
                         Impact : {mission.impact}
                      </div>
@@ -1269,7 +1269,7 @@ export default function DetailedBudgetPage() {
                         <h3 className="text-xl font-bold text-foreground">Évolution de la Dette</h3>
                         <p className="text-xs text-slate-400 font-medium uppercase tracking-widest mt-1">En % du PIB (1980 - 2026)</p>
                      </div>
-                     <div className="flex items-center gap-2 px-4 py-2 bg-rose-50 rounded-xl border border-rose-100">
+                     <div className="flex items-center gap-2 px-4 py-2 bg-rose-50 dark:bg-rose-500/10 rounded-xl border border-rose-100 dark:border-rose-500/25">
                         <TrendingUp size={16} className="text-rose-600" />
                         <span className="text-sm font-black text-rose-700">Dernier relevé : 115,6%</span>
                      </div>
@@ -1390,7 +1390,7 @@ export default function DetailedBudgetPage() {
                   <div className="bg-muted border border-border rounded-[2.5rem] p-8 space-y-6">
                      <div className="flex items-center justify-between">
                         <h4 className="text-sm font-black text-foreground uppercase tracking-widest">Dernières Actualités</h4>
-                        <div className="flex items-center gap-1.5 px-2 py-1 bg-blue-100 rounded-full">
+                        <div className="flex items-center gap-1.5 px-2 py-1 bg-blue-100 dark:bg-blue-500/10 rounded-full">
                            <div className="w-1.5 h-1.5 rounded-full bg-blue-600 animate-pulse" />
                            <span className="text-[8px] font-black text-blue-700 uppercase">Live INSEE</span>
                         </div>
@@ -1449,12 +1449,12 @@ export default function DetailedBudgetPage() {
                            <span className="text-sm font-medium text-muted-foreground">Maturité moyenne</span>
                            <span className="text-sm font-black text-foreground">8 ans & 2 mois</span>
                         </div>
-                        <div className="w-full h-px bg-slate-100" />
+                        <div className="w-full h-px bg-slate-100 dark:bg-slate-500/10" />
                         <div className="flex justify-between items-center">
                            <span className="text-sm font-medium text-muted-foreground">Taux moyen (Stock)</span>
                            <span className="text-sm font-black text-foreground">1.8%</span>
                         </div>
-                        <div className="w-full h-px bg-slate-100" />
+                        <div className="w-full h-px bg-slate-100 dark:bg-slate-500/10" />
                         <div className="flex justify-between items-center">
                            <span className="text-sm font-medium text-muted-foreground">Taux actuel (Refi)</span>
                            <span className="text-sm font-black text-rose-600">~3.4%</span>
@@ -1520,7 +1520,7 @@ export default function DetailedBudgetPage() {
                </div>
             </div>
 
-            <div className="max-w-3xl mx-auto bg-blue-50 border border-blue-100 p-8 rounded-[2.5rem] flex items-start gap-6">
+            <div className="max-w-3xl mx-auto bg-blue-50 dark:bg-blue-500/10 border border-blue-100 dark:border-blue-500/25 p-8 rounded-[2.5rem] flex items-start gap-6">
                <div className="w-12 h-12 rounded-2xl bg-blue-600 text-white flex items-center justify-center shrink-0">
                   <Zap size={24} />
                </div>
@@ -1886,7 +1886,7 @@ export default function DetailedBudgetPage() {
                                 <h3 className="text-xs font-black text-slate-400 uppercase tracking-widest">Mesures Phares 2026</h3>
                                 <div className="space-y-4">
                                     {selectedMissionData.measures?.map((m: any, i: number) => (
-                                       <div key={i} className="flex items-start gap-4 p-4 bg-emerald-50 rounded-2xl border border-emerald-100">
+                                       <div key={i} className="flex items-start gap-4 p-4 bg-emerald-50 dark:bg-emerald-500/10 rounded-2xl border border-emerald-100 dark:border-emerald-500/25">
                                           <div className="w-6 h-6 rounded-full bg-emerald-500 text-white flex items-center justify-center shrink-0">
                                              <CheckCircle2 size={14} />
                                           </div>
@@ -1917,7 +1917,7 @@ export default function DetailedBudgetPage() {
                                          <p className="text-2xl font-staatliches text-blue-600">{selectedMissionData.split?.investment}%</p>
                                       </div>
                                    </div>
-                                   <div className="w-full h-4 bg-slate-100 rounded-full overflow-hidden flex">
+                                   <div className="w-full h-4 bg-slate-100 dark:bg-slate-500/10 rounded-full overflow-hidden flex">
                                       <motion.div 
                                         initial={{ width: 0 }}
                                         animate={{ width: `${selectedMissionData.split?.functioning}%` }}

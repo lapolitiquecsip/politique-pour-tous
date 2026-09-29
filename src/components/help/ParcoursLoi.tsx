@@ -24,12 +24,12 @@ type Etape = {
 };
 
 const TONS: Record<Etape["ton"], { pastille: string; puce: string; barre: string }> = {
-  gris:    { pastille: "bg-slate-200 text-slate-700",  puce: "bg-slate-100 text-muted-foreground",   barre: "bg-slate-300" },
-  bleu:    { pastille: "bg-blue-600 text-white",       puce: "bg-blue-50 text-blue-700",      barre: "bg-blue-300" },
-  rouge:   { pastille: "bg-rose-600 text-white",       puce: "bg-rose-50 text-rose-700",      barre: "bg-rose-300" },
-  violet:  { pastille: "bg-violet-600 text-white",     puce: "bg-violet-50 text-violet-700",  barre: "bg-violet-300" },
-  ardoise: { pastille: "bg-slate-700 text-white",      puce: "bg-slate-100 text-slate-700",   barre: "bg-slate-400" },
-  vert:    { pastille: "bg-emerald-600 text-white",    puce: "bg-emerald-50 text-emerald-700", barre: "bg-emerald-300" },
+  gris:    { pastille: "bg-slate-200 text-slate-700 dark:text-slate-200",  puce: "bg-slate-100 dark:bg-slate-500/10 text-muted-foreground",   barre: "bg-slate-300" },
+  bleu:    { pastille: "bg-blue-600 text-white",       puce: "bg-blue-50 dark:bg-blue-500/10 text-blue-700 dark:text-blue-300",      barre: "bg-blue-300" },
+  rouge:   { pastille: "bg-rose-600 text-white",       puce: "bg-rose-50 dark:bg-rose-500/10 text-rose-700 dark:text-rose-300",      barre: "bg-rose-300" },
+  violet:  { pastille: "bg-violet-600 text-white",     puce: "bg-violet-50 dark:bg-violet-500/10 text-violet-700 dark:text-violet-300",  barre: "bg-violet-300" },
+  ardoise: { pastille: "bg-slate-700 text-white",      puce: "bg-slate-100 dark:bg-slate-500/10 text-slate-700 dark:text-slate-200",   barre: "bg-slate-400" },
+  vert:    { pastille: "bg-emerald-600 text-white",    puce: "bg-emerald-50 dark:bg-emerald-500/10 text-emerald-700 dark:text-emerald-300", barre: "bg-emerald-300" },
 };
 
 const ETAPES: Etape[] = [

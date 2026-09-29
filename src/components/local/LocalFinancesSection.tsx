@@ -64,7 +64,7 @@ export default function LocalFinancesSection({ finances, label }: { finances: Lo
         </h4>
       </div>
       {finances.entity_note && (
-        <p className="text-[10px] font-bold text-amber-700 bg-amber-50 border border-amber-100 rounded-2xl px-3 py-2">
+        <p className="text-[10px] font-bold text-amber-700 dark:text-amber-300 bg-amber-50 dark:bg-amber-500/10 border border-amber-100 dark:border-amber-500/25 rounded-2xl px-3 py-2">
           Budget de la {finances.entity_note} — l'entité qui exerce les compétences départementales sur ce territoire.
         </p>
       )}
@@ -95,7 +95,7 @@ export default function LocalFinancesSection({ finances, label }: { finances: Lo
         </div>
       )}
       {/* Aide à la lecture, directement sur la fiche (demandé) : que signifient ces chiffres ? */}
-      <details className="group rounded-2xl border border-border bg-slate-50/60 p-3">
+      <details className="group rounded-2xl border border-border bg-slate-50/60 dark:bg-slate-500/10 p-3">
         <summary className="flex cursor-pointer list-none items-center gap-2 text-[11px] font-black uppercase tracking-widest text-muted-foreground">
           <HelpCircle size={13} className="text-sky-500" /> Comment lire ces chiffres ?
           <span className="ml-auto text-sky-500 transition-transform group-open:rotate-45 text-base leading-none">+</span>

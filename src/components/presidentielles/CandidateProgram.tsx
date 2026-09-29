@@ -8,15 +8,15 @@ import { Globe2, GraduationCap, ShieldCheck, HeartPulse, Wheat, Leaf, Flag, Tren
 // Style (icône + couleurs) par thème du programme. Partagé entre la fiche candidat et la fiche parti.
 export function themeStyle(name: string): { Icon: any; c: string; bg: string; dot: string } {
   const h = (name || "").toLowerCase();
-  if (/immigr/.test(h)) return { Icon: Globe2, c: "text-amber-600", bg: "bg-amber-50", dot: "bg-amber-500" };
-  if (/éduc|educ|école|ecole/.test(h)) return { Icon: GraduationCap, c: "text-sky-600", bg: "bg-sky-50", dot: "bg-sky-500" };
-  if (/sécur|secur|justice/.test(h)) return { Icon: ShieldCheck, c: "text-rose-600", bg: "bg-rose-50", dot: "bg-rose-500" };
-  if (/santé|sante/.test(h)) return { Icon: HeartPulse, c: "text-pink-600", bg: "bg-pink-50", dot: "bg-pink-500" };
-  if (/agricult|rural/.test(h)) return { Icon: Wheat, c: "text-lime-700", bg: "bg-lime-50", dot: "bg-lime-500" };
-  if (/écolog|ecolog|énerg|energ|environ/.test(h)) return { Icon: Leaf, c: "text-emerald-600", bg: "bg-emerald-50", dot: "bg-emerald-500" };
-  if (/europ|internation/.test(h)) return { Icon: Flag, c: "text-blue-600", bg: "bg-blue-50", dot: "bg-blue-500" };
-  if (/économ|econom|ambition|prosp|emploi|travail/.test(h)) return { Icon: TrendingUp, c: "text-violet-600", bg: "bg-violet-50", dot: "bg-violet-500" };
-  if (/institution|destin|civique|démocr|democr|maître|maitre|renouveau/.test(h)) return { Icon: Landmark, c: "text-indigo-600", bg: "bg-indigo-50", dot: "bg-indigo-500" };
+  if (/immigr/.test(h)) return { Icon: Globe2, c: "text-amber-600 dark:text-amber-300", bg: "bg-amber-50 dark:bg-amber-500/10", dot: "bg-amber-500" };
+  if (/éduc|educ|école|ecole/.test(h)) return { Icon: GraduationCap, c: "text-sky-600 dark:text-sky-300", bg: "bg-sky-50 dark:bg-sky-500/10", dot: "bg-sky-500" };
+  if (/sécur|secur|justice/.test(h)) return { Icon: ShieldCheck, c: "text-rose-600 dark:text-rose-300", bg: "bg-rose-50 dark:bg-rose-500/10", dot: "bg-rose-500" };
+  if (/santé|sante/.test(h)) return { Icon: HeartPulse, c: "text-pink-600 dark:text-pink-300", bg: "bg-pink-50 dark:bg-pink-500/10", dot: "bg-pink-500" };
+  if (/agricult|rural/.test(h)) return { Icon: Wheat, c: "text-lime-700 dark:text-lime-300", bg: "bg-lime-50 dark:bg-lime-500/10", dot: "bg-lime-500" };
+  if (/écolog|ecolog|énerg|energ|environ/.test(h)) return { Icon: Leaf, c: "text-emerald-600 dark:text-emerald-300", bg: "bg-emerald-50 dark:bg-emerald-500/10", dot: "bg-emerald-500" };
+  if (/europ|internation/.test(h)) return { Icon: Flag, c: "text-blue-600 dark:text-blue-300", bg: "bg-blue-50 dark:bg-blue-500/10", dot: "bg-blue-500" };
+  if (/économ|econom|ambition|prosp|emploi|travail/.test(h)) return { Icon: TrendingUp, c: "text-violet-600 dark:text-violet-300", bg: "bg-violet-50 dark:bg-violet-500/10", dot: "bg-violet-500" };
+  if (/institution|destin|civique|démocr|democr|maître|maitre|renouveau/.test(h)) return { Icon: Landmark, c: "text-indigo-600 dark:text-indigo-300", bg: "bg-indigo-50 dark:bg-indigo-500/10", dot: "bg-indigo-500" };
   return { Icon: FileText, c: "text-muted-foreground", bg: "bg-muted", dot: "bg-slate-400" };
 }
 
@@ -85,7 +85,7 @@ export default function CandidateProgram({ candidateId, title = true, heading, c
                         <span className="flex-1">{p.text}</span>
                         {p.explanation && (
                           <button onClick={() => toggleExpl(exKey)} title="Comprendre cette proposition"
-                            className={`mt-0.5 flex h-6 w-6 shrink-0 items-center justify-center rounded-full border transition ${exOpen ? "border-violet-300 bg-violet-100 text-violet-700" : "border-violet-200 bg-card text-violet-500 hover:bg-violet-50"}`}>
+                            className={`mt-0.5 flex h-6 w-6 shrink-0 items-center justify-center rounded-full border transition ${exOpen ? "border-violet-300 bg-violet-100 dark:bg-violet-500/10 text-violet-700 dark:text-violet-300" : "border-violet-200 dark:border-violet-500/25 bg-card text-violet-500 hover:bg-violet-50"}`}>
                             <HelpCircle size={14} />
                           </button>
                         )}
@@ -93,7 +93,7 @@ export default function CandidateProgram({ candidateId, title = true, heading, c
                       <AnimatePresence initial={false}>
                         {exOpen && p.explanation && (
                           <motion.div initial={{ height: 0, opacity: 0 }} animate={{ height: "auto", opacity: 1 }} exit={{ height: 0, opacity: 0 }} className="overflow-hidden">
-                            <p className="ml-4 mt-2 rounded-xl border-l-2 border-violet-300 bg-violet-50/70 px-3 py-2.5 text-[13px] leading-6 text-muted-foreground">{p.explanation}</p>
+                            <p className="ml-4 mt-2 rounded-xl border-l-2 border-violet-300 bg-violet-50/70 dark:bg-violet-500/10 px-3 py-2.5 text-[13px] leading-6 text-muted-foreground">{p.explanation}</p>
                           </motion.div>
                         )}
                       </AnimatePresence>

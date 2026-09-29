@@ -21,10 +21,10 @@ import { lockScroll, unlockScroll } from "@/lib/scroll-lock";
 
 // Chambre où le texte est ACTUELLEMENT examiné → libellé + couleur du badge.
 const chamberStyle = (c?: string | null) =>
-  c === "AN" ? { label: "Assemblée nationale", cls: "bg-blue-50 text-blue-700 border-blue-200" }
-  : c === "SENAT" ? { label: "Sénat", cls: "bg-rose-50 text-rose-700 border-rose-200" }
-  : c === "CC" ? { label: "Conseil constitutionnel", cls: "bg-purple-50 text-purple-700 border-purple-200" }
-  : { label: "Journal officiel", cls: "bg-emerald-50 text-emerald-700 border-emerald-200" };
+  c === "AN" ? { label: "Assemblée nationale", cls: "bg-blue-50 dark:bg-blue-500/10 text-blue-700 dark:text-blue-300 border-blue-200 dark:border-blue-500/25" }
+  : c === "SENAT" ? { label: "Sénat", cls: "bg-rose-50 dark:bg-rose-500/10 text-rose-700 dark:text-rose-300 border-rose-200 dark:border-rose-500/25" }
+  : c === "CC" ? { label: "Conseil constitutionnel", cls: "bg-purple-50 dark:bg-purple-500/10 text-purple-700 dark:text-purple-300 border-purple-200 dark:border-purple-500/25" }
+  : { label: "Journal officiel", cls: "bg-emerald-50 dark:bg-emerald-500/10 text-emerald-700 dark:text-emerald-300 border-emerald-200 dark:border-emerald-500/25" };
 // Type de texte : qui en est à l'origine.
 const typeLabel = (t?: string | null) => t === "bill" ? "Projet de loi" : t === "proposal" ? "Proposition de loi" : null;
 
@@ -69,7 +69,7 @@ function AmendmentsSection({ dossierId, total = 0, initial }: { dossierId: strin
     <section className="mt-10">
       <div className="flex flex-wrap items-center justify-between gap-3">
         <h3 className="text-2xl font-staatliches uppercase text-foreground">Amendements <span className="text-slate-400">({total || shown.length})</span></h3>
-        <button onClick={toggle} className="inline-flex items-center gap-2 rounded-full bg-slate-100 px-4 py-2 text-sm font-bold text-slate-700 transition hover:bg-slate-200">
+        <button onClick={toggle} className="inline-flex items-center gap-2 rounded-full bg-slate-100 dark:bg-slate-500/10 px-4 py-2 text-sm font-bold text-slate-700 dark:text-slate-200 transition hover:bg-slate-200">
           {show ? "Masquer les amendements" : "Voir les amendements"}
           <ChevronDown size={16} className={`transition-transform ${show ? "rotate-180" : ""}`} />
         </button>
@@ -88,11 +88,11 @@ function AmendmentsSection({ dossierId, total = 0, initial }: { dossierId: strin
           </div>
           {pageCount > 1 && (
             <div className="mt-5 flex items-center justify-center gap-4">
-              <button onClick={() => setPage(p => Math.max(0, p - 1))} disabled={page === 0} className="inline-flex items-center gap-1 rounded-full bg-slate-100 px-4 py-2 text-sm font-bold text-slate-700 transition hover:bg-slate-200 disabled:cursor-not-allowed disabled:opacity-40">
+              <button onClick={() => setPage(p => Math.max(0, p - 1))} disabled={page === 0} className="inline-flex items-center gap-1 rounded-full bg-slate-100 dark:bg-slate-500/10 px-4 py-2 text-sm font-bold text-slate-700 dark:text-slate-200 transition hover:bg-slate-200 disabled:cursor-not-allowed disabled:opacity-40">
                 <ChevronLeft size={16} />Précédent
               </button>
               <span className="text-sm font-bold text-muted-foreground">Page {page + 1} / {pageCount}</span>
-              <button onClick={() => setPage(p => Math.min(pageCount - 1, p + 1))} disabled={page >= pageCount - 1} className="inline-flex items-center gap-1 rounded-full bg-slate-100 px-4 py-2 text-sm font-bold text-slate-700 transition hover:bg-slate-200 disabled:cursor-not-allowed disabled:opacity-40">
+              <button onClick={() => setPage(p => Math.min(pageCount - 1, p + 1))} disabled={page >= pageCount - 1} className="inline-flex items-center gap-1 rounded-full bg-slate-100 dark:bg-slate-500/10 px-4 py-2 text-sm font-bold text-slate-700 dark:text-slate-200 transition hover:bg-slate-200 disabled:cursor-not-allowed disabled:opacity-40">
                 Suivant<ChevronRight size={16} />
               </button>
             </div>
@@ -120,13 +120,13 @@ function HL({ text }: { text: string }) {
 // Icône + couleur d'accent d'une section, d'après son intitulé.
 function sectionStyle(header: string) {
   const h = header.toLowerCase();
-  if (/vote|scrutin/.test(h)) return { Icon: Vote, c: "text-emerald-600", bg: "bg-emerald-50", ring: "ring-emerald-100" };
+  if (/vote|scrutin/.test(h)) return { Icon: Vote, c: "text-emerald-600 dark:text-emerald-300", bg: "bg-emerald-50 dark:bg-emerald-500/10", ring: "ring-emerald-100" };
   if (/limite|réserve|reserve/.test(h)) return { Icon: AlertTriangle, c: "text-muted-foreground", bg: "bg-muted", ring: "ring-slate-100" };
-  if (/contexte|objectif|objet|mesure|dispositif/.test(h)) return { Icon: Target, c: "text-amber-600", bg: "bg-amber-50", ring: "ring-amber-100" };
-  if (/procédure|procedure|navette|étape|etape|calendrier|adoption/.test(h)) return { Icon: GitBranch, c: "text-blue-600", bg: "bg-blue-50", ring: "ring-blue-100" };
-  if (/amendement/.test(h)) return { Icon: Pencil, c: "text-fuchsia-600", bg: "bg-fuchsia-50", ring: "ring-fuchsia-100" };
-  if (/problème|probleme|enjeu|pourquoi/.test(h)) return { Icon: HelpCircle, c: "text-rose-600", bg: "bg-rose-50", ring: "ring-rose-100" };
-  return { Icon: FileText, c: "text-amber-600", bg: "bg-amber-50", ring: "ring-amber-100" };
+  if (/contexte|objectif|objet|mesure|dispositif/.test(h)) return { Icon: Target, c: "text-amber-600 dark:text-amber-300", bg: "bg-amber-50 dark:bg-amber-500/10", ring: "ring-amber-100" };
+  if (/procédure|procedure|navette|étape|etape|calendrier|adoption/.test(h)) return { Icon: GitBranch, c: "text-blue-600 dark:text-blue-300", bg: "bg-blue-50 dark:bg-blue-500/10", ring: "ring-blue-100" };
+  if (/amendement/.test(h)) return { Icon: Pencil, c: "text-fuchsia-600 dark:text-fuchsia-300", bg: "bg-fuchsia-50 dark:bg-fuchsia-500/10", ring: "ring-fuchsia-100" };
+  if (/problème|probleme|enjeu|pourquoi/.test(h)) return { Icon: HelpCircle, c: "text-rose-600 dark:text-rose-300", bg: "bg-rose-50 dark:bg-rose-500/10", ring: "ring-rose-100" };
+  return { Icon: FileText, c: "text-amber-600 dark:text-amber-300", bg: "bg-amber-50 dark:bg-amber-500/10", ring: "ring-amber-100" };
 }
 
 // Découpe le texte d'analyse en sections « **En-tête** : contenu » (aucun besoin d'IA).
@@ -252,7 +252,7 @@ function ScrutinsSection({ dossierId, total = 0, initial }: { dossierId: string;
     <section className="mt-10">
       <div className="flex flex-wrap items-center justify-between gap-3">
         <h3 className="text-2xl font-staatliches uppercase text-foreground">Scrutins <span className="text-slate-400">({total || shown.length})</span></h3>
-        <button onClick={toggle} className="inline-flex items-center gap-2 rounded-full bg-slate-100 px-4 py-2 text-sm font-bold text-slate-700 transition hover:bg-slate-200">
+        <button onClick={toggle} className="inline-flex items-center gap-2 rounded-full bg-slate-100 dark:bg-slate-500/10 px-4 py-2 text-sm font-bold text-slate-700 dark:text-slate-200 transition hover:bg-slate-200">
           {show ? "Masquer les scrutins" : "Voir les scrutins"}
           <ChevronDown size={16} className={`transition-transform ${show ? "rotate-180" : ""}`} />
         </button>
@@ -266,11 +266,11 @@ function ScrutinsSection({ dossierId, total = 0, initial }: { dossierId: string;
           </div>
           {pageCount > 1 && (
             <div className="mt-5 flex items-center justify-center gap-4">
-              <button onClick={() => setPage(p => Math.max(0, p - 1))} disabled={page === 0} className="inline-flex items-center gap-1 rounded-full bg-slate-100 px-4 py-2 text-sm font-bold text-slate-700 transition hover:bg-slate-200 disabled:cursor-not-allowed disabled:opacity-40">
+              <button onClick={() => setPage(p => Math.max(0, p - 1))} disabled={page === 0} className="inline-flex items-center gap-1 rounded-full bg-slate-100 dark:bg-slate-500/10 px-4 py-2 text-sm font-bold text-slate-700 dark:text-slate-200 transition hover:bg-slate-200 disabled:cursor-not-allowed disabled:opacity-40">
                 <ChevronLeft size={16} />Précédent
               </button>
               <span className="text-sm font-bold text-muted-foreground">Page {page + 1} / {pageCount}</span>
-              <button onClick={() => setPage(p => Math.min(pageCount - 1, p + 1))} disabled={page >= pageCount - 1} className="inline-flex items-center gap-1 rounded-full bg-slate-100 px-4 py-2 text-sm font-bold text-slate-700 transition hover:bg-slate-200 disabled:cursor-not-allowed disabled:opacity-40">
+              <button onClick={() => setPage(p => Math.min(pageCount - 1, p + 1))} disabled={page >= pageCount - 1} className="inline-flex items-center gap-1 rounded-full bg-slate-100 dark:bg-slate-500/10 px-4 py-2 text-sm font-bold text-slate-700 dark:text-slate-200 transition hover:bg-slate-200 disabled:cursor-not-allowed disabled:opacity-40">
                 Suivant<ChevronRight size={16} />
               </button>
             </div>
@@ -328,13 +328,13 @@ function InitiatorField({ authorName }: { authorName: string | null }) {
         const person = people?.get(normalizeName(name));
         if (person) {
           return (
-            <Link key={index} href={personHref(person)} className="inline-flex items-center gap-2 rounded-full bg-slate-100 py-1 pl-1 pr-3.5 transition hover:bg-slate-200">
+            <Link key={index} href={personHref(person)} className="inline-flex items-center gap-2 rounded-full bg-slate-100 dark:bg-slate-500/10 py-1 pl-1 pr-3.5 transition hover:bg-slate-200">
               <InitiatorAvatar person={person} />
               <span>{person.display}</span>
             </Link>
           );
         }
-        return <span key={index} className="rounded-full bg-slate-100 px-3.5 py-1.5">{name}</span>;
+        return <span key={index} className="rounded-full bg-slate-100 dark:bg-slate-500/10 px-3.5 py-1.5">{name}</span>;
       })}
     </div>
   );
@@ -348,7 +348,7 @@ function NavetteSection({ steps }: { steps: any[] }) {
     <section className="mt-10">
       <div className="flex flex-wrap items-center justify-between gap-3">
         <h3 className="text-2xl font-staatliches uppercase text-foreground">Navette parlementaire {steps.length > 0 && <span className="text-slate-400">({steps.length})</span>}</h3>
-        <button onClick={() => setShow(s => !s)} className="inline-flex items-center gap-2 rounded-full bg-slate-100 px-4 py-2 text-sm font-bold text-slate-700 transition hover:bg-slate-200">
+        <button onClick={() => setShow(s => !s)} className="inline-flex items-center gap-2 rounded-full bg-slate-100 dark:bg-slate-500/10 px-4 py-2 text-sm font-bold text-slate-700 dark:text-slate-200 transition hover:bg-slate-200">
           {show ? "Masquer le parcours" : "Voir le parcours"}
           <ChevronDown size={16} className={`transition-transform ${show ? "rotate-180" : ""}`} />
         </button>
@@ -432,7 +432,7 @@ export default function DossierModal({
         className="relative mx-auto flex max-h-[calc(100dvh-2rem)] w-full max-w-5xl flex-col overflow-hidden rounded-[2rem] bg-card text-foreground shadow-2xl md:max-h-[calc(100dvh-5rem)]"
       >
         {/* Bouton fermer flottant (coin) — plus de bande blanche sticky qui recouvre le contenu au scroll */}
-        <button onClick={onClose} className="absolute right-4 top-4 z-20 rounded-full bg-slate-100 p-3 shadow-sm transition hover:bg-slate-200" aria-label="Fermer"><X /></button>
+        <button onClick={onClose} className="absolute right-4 top-4 z-20 rounded-full bg-slate-100 dark:bg-slate-500/10 p-3 shadow-sm transition hover:bg-slate-200" aria-label="Fermer"><X /></button>
 
         {/* Navigation entre textes. Sur grand écran les flèches flottent sur les bords ;
             sur téléphone elles forment une barre en bas, atteignable au pouce, doublée
@@ -492,7 +492,7 @@ export default function DossierModal({
                   {f.category && <div className="mb-3 text-xs font-black uppercase tracking-[0.2em] text-red-600">{categoryLabel(f.category as any)}</div>}
                   <h2 className="text-4xl font-staatliches uppercase leading-none text-foreground md:text-6xl">{f.display_title || f.title}</h2>
                   {promulgated && (
-                    <div className="mt-6 rounded-3xl border border-emerald-200 bg-emerald-50 p-5">
+                    <div className="mt-6 rounded-3xl border border-emerald-200 dark:border-emerald-500/25 bg-emerald-50 dark:bg-emerald-500/10 p-5">
                       <p className="text-[10px] font-black uppercase tracking-widest text-emerald-600">Statut</p>
                       <span className="mt-1 inline-block rounded-full border border-emerald-200 bg-card px-4 py-1.5 text-sm font-black text-emerald-700">Promulguée au Journal officiel</span>
                       <p className="mt-3 text-sm font-bold text-muted-foreground">Publiée au Journal officiel le {formatDate(f.promulgated_at)}{f.nor ? ` · NOR ${f.nor}` : ""}</p>
@@ -525,7 +525,7 @@ export default function DossierModal({
                 <div className="mt-6 flex flex-wrap items-center gap-3 rounded-3xl border border-border bg-muted p-5">
                   <div>
                     <p className="text-[10px] font-black uppercase tracking-widest text-slate-400">{promulgated ? "Statut" : "Actuellement examiné par"}</p>
-                    <span className={`mt-1 inline-block rounded-full border px-4 py-1.5 text-sm font-black ${promulgated ? "bg-emerald-50 text-emerald-700 border-emerald-200" : ch.cls}`}>
+                    <span className={`mt-1 inline-block rounded-full border px-4 py-1.5 text-sm font-black ${promulgated ? "bg-emerald-50 dark:bg-emerald-500/10 text-emerald-700 dark:text-emerald-300 border-emerald-200 dark:border-emerald-500/25" : ch.cls}`}>
                       {promulgated ? "Promulguée au Journal officiel" : ch.label}
                     </span>
                   </div>
@@ -547,7 +547,7 @@ export default function DossierModal({
                 <PremiumAnalysis raw={detail.premium_analysis.summary} />
               </section>
             ) : !isPremium ? (
-              <section className="mt-10 rounded-3xl border border-amber-200 bg-amber-50 p-6">
+              <section className="mt-10 rounded-3xl border border-amber-200 dark:border-amber-500/25 bg-amber-50 dark:bg-amber-500/10 p-6">
                 <div className="flex items-center gap-2 text-amber-900"><Lock size={18} /><h3 className="text-2xl font-staatliches uppercase">Analyse détaillée</h3></div>
                 <p className="mt-2 max-w-2xl text-sm leading-6 text-amber-800">Analyse approfondie de cette loi (enjeux, portée, points clés), réservée aux membres premium.</p>
                 <div className="mt-4"><AwardBadge titleText="Analyse détaillée" link="/premium" /></div>
@@ -569,7 +569,7 @@ export default function DossierModal({
           <div className="flex shrink-0 items-stretch gap-2 border-t border-border bg-card p-3 md:hidden">
             <button
               onClick={() => allerA(-1)} disabled={!onPrev}
-              className="flex flex-1 items-center justify-center gap-1.5 rounded-2xl bg-slate-100 py-3 text-[11px] font-black uppercase tracking-widest text-slate-700 transition active:scale-95 disabled:opacity-35"
+              className="flex flex-1 items-center justify-center gap-1.5 rounded-2xl bg-slate-100 dark:bg-slate-500/10 py-3 text-[11px] font-black uppercase tracking-widest text-slate-700 dark:text-slate-200 transition active:scale-95 disabled:opacity-35"
             >
               <ChevronLeft size={16} /> Précédent
             </button>

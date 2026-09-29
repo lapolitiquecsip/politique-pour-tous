@@ -100,14 +100,14 @@ const getPartyTheme = (party: string) => {
 };
 
 const cardColors = [
-  { text: 'text-pink-500', bg: 'bg-pink-500', lightBg: 'bg-pink-50' },
-  { text: 'text-emerald-500', bg: 'bg-emerald-500', lightBg: 'bg-emerald-50' },
-  { text: 'text-blue-500', bg: 'bg-blue-500', lightBg: 'bg-blue-50' },
-  { text: 'text-purple-500', bg: 'bg-purple-500', lightBg: 'bg-purple-50' },
-  { text: 'text-amber-500', bg: 'bg-amber-500', lightBg: 'bg-amber-50' },
-  { text: 'text-rose-500', bg: 'bg-rose-500', lightBg: 'bg-rose-50' },
-  { text: 'text-indigo-500', bg: 'bg-indigo-500', lightBg: 'bg-indigo-50' },
-  { text: 'text-cyan-500', bg: 'bg-cyan-500', lightBg: 'bg-cyan-50' },
+  { text: 'text-pink-500', bg: 'bg-pink-500', lightBg: 'bg-pink-50 dark:bg-pink-500/10' },
+  { text: 'text-emerald-500', bg: 'bg-emerald-500', lightBg: 'bg-emerald-50 dark:bg-emerald-500/10' },
+  { text: 'text-blue-500', bg: 'bg-blue-500', lightBg: 'bg-blue-50 dark:bg-blue-500/10' },
+  { text: 'text-purple-500', bg: 'bg-purple-500', lightBg: 'bg-purple-50 dark:bg-purple-500/10' },
+  { text: 'text-amber-500', bg: 'bg-amber-500', lightBg: 'bg-amber-50 dark:bg-amber-500/10' },
+  { text: 'text-rose-500', bg: 'bg-rose-500', lightBg: 'bg-rose-50 dark:bg-rose-500/10' },
+  { text: 'text-indigo-500', bg: 'bg-indigo-500', lightBg: 'bg-indigo-50 dark:bg-indigo-500/10' },
+  { text: 'text-cyan-500', bg: 'bg-cyan-500', lightBg: 'bg-cyan-50 dark:bg-cyan-500/10' },
 ];
 
 const DepartmentGridCard: React.FC<{
@@ -489,9 +489,9 @@ function LocalPoliticsContent() {
           <div className="bg-card p-2 rounded-[2.5rem] border border-border shadow-2xl shadow-slate-200/50 flex flex-col md:flex-row gap-2">
             {[
               // Chaque échelon a SA couleur d'état actif (classes littérales pour Tailwind JIT).
-              { id: "region", label: "La Région", icon: Map, active: "bg-sky-50 text-sky-600 shadow-inner", iconOn: "bg-sky-100", dot: "bg-sky-600" },
-              { id: "departement", label: "Le Département", icon: Layers, active: "bg-rose-50 text-rose-600 shadow-inner", iconOn: "bg-rose-100", dot: "bg-rose-600" },
-              { id: "commune", label: "La Commune", icon: LayoutGrid, active: "bg-emerald-50 text-emerald-600 shadow-inner", iconOn: "bg-emerald-100", dot: "bg-emerald-600" }
+              { id: "region", label: "La Région", icon: Map, active: "bg-sky-50 dark:bg-sky-500/10 text-sky-600 dark:text-sky-300 shadow-inner", iconOn: "bg-sky-100 dark:bg-sky-500/10", dot: "bg-sky-600" },
+              { id: "departement", label: "Le Département", icon: Layers, active: "bg-rose-50 dark:bg-rose-500/10 text-rose-600 dark:text-rose-300 shadow-inner", iconOn: "bg-rose-100 dark:bg-rose-500/10", dot: "bg-rose-600" },
+              { id: "commune", label: "La Commune", icon: LayoutGrid, active: "bg-emerald-50 dark:bg-emerald-500/10 text-emerald-600 dark:text-emerald-300 shadow-inner", iconOn: "bg-emerald-100 dark:bg-emerald-500/10", dot: "bg-emerald-600" }
             ].map((tab) => {
               const isActive = activeTab === tab.id;
               const Icon = tab.icon;
@@ -504,7 +504,7 @@ function LocalPoliticsContent() {
                     ${isActive ? tab.active : "text-slate-400 hover:text-muted-foreground hover:bg-muted"}
                   `}
                 >
-                  <div className={`p-3 rounded-2xl transition-colors ${isActive ? tab.iconOn : "bg-slate-100 group-hover:bg-slate-200"}`}>
+                  <div className={`p-3 rounded-2xl transition-colors ${isActive ? tab.iconOn : "bg-slate-100 dark:bg-slate-500/10 group-hover:bg-slate-200"}`}>
                     <Icon size={24} strokeWidth={isActive ? 2.5 : 2} />
                   </div>
                   <div className="text-left">

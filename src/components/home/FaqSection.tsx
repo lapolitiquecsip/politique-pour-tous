@@ -22,7 +22,7 @@ const BUBBLE_COLORS: Record<BubbleColor, { bubble: string; tail: string }> = {
   green: { bubble: "bg-emerald-600/95 text-white border-emerald-500", tail: "border-t-emerald-600" },
   amber: { bubble: "bg-amber-500/95 text-white border-amber-400", tail: "border-t-amber-500" },
   violet: { bubble: "bg-violet-600/95 text-white border-violet-500", tail: "border-t-violet-600" },
-  white: { bubble: "bg-white/95 text-foreground border-border", tail: "border-t-white" },
+  white: { bubble: "bg-white/95 text-slate-900 border-border", tail: "border-t-white" },
 };
 
 const faqData: FaqItem[] = [

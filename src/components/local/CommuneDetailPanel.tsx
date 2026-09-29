@@ -89,9 +89,9 @@ const COMMUNE_CATEGORIES = [
     id: 'demographie', 
     title: 'Démographie', 
     icon: Users,
-    bgClass: 'bg-blue-50/40',
+    bgClass: 'bg-blue-50/40 dark:bg-blue-500/10',
     borderClass: 'border-blue-100/50',
-    iconClass: 'bg-blue-100 text-blue-900',
+    iconClass: 'bg-blue-100 dark:bg-blue-500/10 text-blue-900 dark:text-blue-300',
     textClass: 'text-blue-800',
     progressClass: 'bg-blue-600',
     metrics: [
@@ -106,9 +106,9 @@ const COMMUNE_CATEGORIES = [
     id: 'economie', 
     title: 'Économie & Emploi', 
     icon: Briefcase,
-    bgClass: 'bg-emerald-50/40',
+    bgClass: 'bg-emerald-50/40 dark:bg-emerald-500/10',
     borderClass: 'border-emerald-100/50',
-    iconClass: 'bg-emerald-100 text-emerald-900',
+    iconClass: 'bg-emerald-100 dark:bg-emerald-500/10 text-emerald-900 dark:text-emerald-300',
     textClass: 'text-emerald-800',
     progressClass: 'bg-emerald-600',
     metrics: [
@@ -121,9 +121,9 @@ const COMMUNE_CATEGORIES = [
     id: 'logement',
     title: 'Logement',
     icon: Home,
-    bgClass: 'bg-cyan-50/40',
+    bgClass: 'bg-cyan-50/40 dark:bg-cyan-500/10',
     borderClass: 'border-cyan-100/50',
-    iconClass: 'bg-cyan-100 text-cyan-900',
+    iconClass: 'bg-cyan-100 dark:bg-cyan-500/10 text-cyan-900 dark:text-cyan-300',
     textClass: 'text-cyan-800',
     progressClass: 'bg-cyan-600',
     metrics: [
@@ -136,9 +136,9 @@ const COMMUNE_CATEGORIES = [
     id: 'finances',
     title: 'Finances Municipales',
     icon: Landmark,
-    bgClass: 'bg-pink-50/40',
+    bgClass: 'bg-pink-50/40 dark:bg-pink-500/10',
     borderClass: 'border-pink-100/50',
-    iconClass: 'bg-pink-100 text-pink-900',
+    iconClass: 'bg-pink-100 dark:bg-pink-500/10 text-pink-900 dark:text-pink-300',
     textClass: 'text-pink-800',
     progressClass: 'bg-pink-600',
     metrics: [
@@ -153,9 +153,9 @@ const COMMUNE_CATEGORIES = [
     id: 'fiscalite',
     title: 'Fiscalité Locale',
     icon: Coins,
-    bgClass: 'bg-amber-50/40',
+    bgClass: 'bg-amber-50/40 dark:bg-amber-500/10',
     borderClass: 'border-amber-100/50',
-    iconClass: 'bg-amber-100 text-amber-900',
+    iconClass: 'bg-amber-100 dark:bg-amber-500/10 text-amber-900 dark:text-amber-300',
     textClass: 'text-amber-800',
     progressClass: 'bg-amber-600',
     metrics: [
@@ -167,9 +167,9 @@ const COMMUNE_CATEGORIES = [
     id: 'securite',
     title: 'Sécurité',
     icon: Shield,
-    bgClass: 'bg-purple-50/40',
+    bgClass: 'bg-purple-50/40 dark:bg-purple-500/10',
     borderClass: 'border-purple-100/50',
-    iconClass: 'bg-purple-100 text-purple-900',
+    iconClass: 'bg-purple-100 dark:bg-purple-500/10 text-purple-900 dark:text-purple-300',
     textClass: 'text-purple-800',
     progressClass: 'bg-purple-600',
     metrics: [
@@ -181,9 +181,9 @@ const COMMUNE_CATEGORIES = [
     id: 'sante',
     title: 'Santé',
     icon: Heart,
-    bgClass: 'bg-rose-50/40',
+    bgClass: 'bg-rose-50/40 dark:bg-rose-500/10',
     borderClass: 'border-rose-100/50',
-    iconClass: 'bg-rose-100 text-rose-900',
+    iconClass: 'bg-rose-100 dark:bg-rose-500/10 text-rose-900 dark:text-rose-300',
     textClass: 'text-rose-800',
     progressClass: 'bg-rose-600',
     metrics: [
@@ -196,9 +196,9 @@ const COMMUNE_CATEGORIES = [
     id: 'education',
     title: 'Éducation',
     icon: GraduationCap,
-    bgClass: 'bg-indigo-50/40',
+    bgClass: 'bg-indigo-50/40 dark:bg-indigo-500/10',
     borderClass: 'border-indigo-100/50',
-    iconClass: 'bg-indigo-100 text-indigo-900',
+    iconClass: 'bg-indigo-100 dark:bg-indigo-500/10 text-indigo-900 dark:text-indigo-300',
     textClass: 'text-indigo-800',
     progressClass: 'bg-indigo-600',
     metrics: [
@@ -211,9 +211,9 @@ const COMMUNE_CATEGORIES = [
     id: 'environnement',
     title: 'Environnement',
     icon: TreePine,
-    bgClass: 'bg-purple-50/40',
+    bgClass: 'bg-purple-50/40 dark:bg-purple-500/10',
     borderClass: 'border-purple-100/50',
-    iconClass: 'bg-purple-100 text-purple-900',
+    iconClass: 'bg-purple-100 dark:bg-purple-500/10 text-purple-900 dark:text-purple-300',
     textClass: 'text-purple-800',
     progressClass: 'bg-purple-600',
     metrics: [
@@ -589,7 +589,7 @@ export default function CommuneDetailPanel({
                       : mayor ? mayor.n : "Données non disponibles";
                     const inner = (
                       <>
-                        <div className="w-12 h-12 rounded-2xl overflow-hidden bg-rose-100 flex items-center justify-center text-rose-600 shrink-0 ring-2 ring-transparent group-hover:ring-rose-300 transition">
+                        <div className="w-12 h-12 rounded-2xl overflow-hidden bg-rose-100 dark:bg-rose-500/10 flex items-center justify-center text-rose-600 dark:text-rose-300 shrink-0 ring-2 ring-transparent group-hover:ring-rose-300 transition">
                           {mayorFiche?.photo_url ? (
                             // eslint-disable-next-line @next/next/no-img-element
                             <img src={mayorFiche.photo_url} alt={mayorName} className="w-full h-full object-cover object-top" />
@@ -685,7 +685,7 @@ export default function CommuneDetailPanel({
                               className="grid grid-cols-1 md:grid-cols-2 gap-2 max-h-48 overflow-y-auto pr-1 custom-scrollbar pt-1"
                             >
                               {communeData.rne.conseillers.map((cons: any, idx: number) => (
-                                <div key={idx} className="p-2.5 rounded-xl bg-slate-50/50 border border-border/50 flex items-center justify-between">
+                                <div key={idx} className="p-2.5 rounded-xl bg-slate-50/50 dark:bg-slate-500/10 border border-border/50 flex items-center justify-between">
                                   <span className="text-xs font-semibold text-slate-700">{cons.prenom} {cons.nom}</span>
                                 </div>
                               ))}
@@ -709,7 +709,7 @@ export default function CommuneDetailPanel({
                 >
                   <div className="flex items-center justify-between">
                     <div className="flex items-center gap-3">
-                      <div className="w-10 h-10 rounded-2xl bg-fuchsia-100 flex items-center justify-center text-fuchsia-600">
+                      <div className="w-10 h-10 rounded-2xl bg-fuchsia-100 dark:bg-fuchsia-500/10 flex items-center justify-center text-fuchsia-600 dark:text-fuchsia-300">
                         <TrendingUp size={20} />
                       </div>
                       <div>
@@ -741,7 +741,7 @@ export default function CommuneDetailPanel({
                           <span>{mayor?.n || "Maire sortant"}</span>
                           <span>{electionData.m_score?.toFixed(2)}%</span>
                         </div>
-                        <div className="h-3 w-full bg-slate-100 rounded-full overflow-hidden">
+                        <div className="h-3 w-full bg-slate-100 dark:bg-slate-500/10 rounded-full overflow-hidden">
                           <motion.div
                             initial={{ width: 0 }}
                             animate={{ width: `${electionData.m_score}%` }}

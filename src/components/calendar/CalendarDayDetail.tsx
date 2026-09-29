@@ -134,7 +134,7 @@ function InstitutionSection({
 export default function CalendarDayDetail({ selectedDate, events }: CalendarDayDetailProps) {
   if (!selectedDate) {
     return (
-      <div className="h-full flex flex-col items-center justify-center p-8 text-center bg-slate-50/50 rounded-[2.5rem] border-2 border-dashed border-border">
+      <div className="h-full flex flex-col items-center justify-center p-8 text-center bg-slate-50/50 dark:bg-slate-500/10 rounded-[2.5rem] border-2 border-dashed border-border">
         <div className="w-16 h-16 rounded-full bg-slate-200/50 flex items-center justify-center mb-4">
           <Calendar className="w-8 h-8 text-slate-400" />
         </div>

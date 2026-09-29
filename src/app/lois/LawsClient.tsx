@@ -189,7 +189,7 @@ function LawsContent() {
       {tab === "enjeux" ? <IssuesVotesView /> : (<>
       <div className="mt-10"><h2 className="text-4xl font-staatliches uppercase md:text-6xl text-foreground">{tab === "promulgated" ? "Publiées au Journal officiel" : "Dans la navette parlementaire"}</h2><p className="mt-2 text-muted-foreground">{tab === "promulgated" ? "Seule une publication JORF peut faire apparaître un texte ici." : "Suivez chaque texte : la chambre qui l'examine, son type et son étape."}</p></div>
       {loading && <div className="flex justify-center py-24"><Loader2 className="animate-spin text-red-600" /></div>}
-      {error && <div className="mt-8 rounded-2xl bg-red-50 p-5 font-bold text-red-800">{error}</div>}
+      {error && <div className="mt-8 rounded-2xl bg-red-50 dark:bg-red-500/10 p-5 font-bold text-red-800 dark:text-red-300">{error}</div>}
       {!loading && !error && <div className="mt-8 grid gap-5 sm:grid-cols-2 lg:grid-cols-3">{visibleItems.map(item => {
         const status: LawCardStatus | null = tab === "promulgated"
           ? { label: "Promulguée", tone: "green" }

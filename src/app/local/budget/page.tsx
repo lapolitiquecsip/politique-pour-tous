@@ -230,7 +230,7 @@ function LocalBudgetContent() {
             Retour à la ville
           </button>
           
-          <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-emerald-50 text-[9px] font-black uppercase tracking-widest text-emerald-800 border border-emerald-100">
+          <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-emerald-50 dark:bg-emerald-500/10 text-[9px] font-black uppercase tracking-widest text-emerald-800 dark:text-emerald-300 border border-emerald-100 dark:border-emerald-500/25">
             <ShieldCheck size={12} className="fill-emerald-800/10" />
             Espace premium
           </div>
@@ -294,7 +294,7 @@ function LocalBudgetContent() {
                 onClick={() => setActiveSection("fonctionnement")}
                 className={`flex-1 py-4 px-6 rounded-[1.5rem] font-staatliches text-lg uppercase tracking-wider transition-all flex items-center justify-center gap-2 ${
                   activeSection === "fonctionnement" 
-                    ? "bg-rose-50 text-rose-600 shadow-inner" 
+                    ? "bg-rose-50 dark:bg-rose-500/10 text-rose-600 dark:text-rose-300 shadow-inner" 
                     : "text-slate-400 hover:text-muted-foreground hover:bg-muted"
                 }`}
               >
@@ -305,7 +305,7 @@ function LocalBudgetContent() {
                 onClick={() => setActiveSection("investissement")}
                 className={`flex-1 py-4 px-6 rounded-[1.5rem] font-staatliches text-lg uppercase tracking-wider transition-all flex items-center justify-center gap-2 ${
                   activeSection === "investissement" 
-                    ? "bg-rose-50 text-rose-600 shadow-inner" 
+                    ? "bg-rose-50 dark:bg-rose-500/10 text-rose-600 dark:text-rose-300 shadow-inner" 
                     : "text-slate-400 hover:text-muted-foreground hover:bg-muted"
                 }`}
               >
@@ -358,7 +358,7 @@ function LocalBudgetContent() {
                           </p>
                         </div>
                       </div>
-                      <div className="h-2 w-full bg-slate-100 rounded-full overflow-hidden">
+                      <div className="h-2 w-full bg-slate-100 dark:bg-slate-500/10 rounded-full overflow-hidden">
                         <motion.div
                           initial={{ width: 0 }}
                           animate={{ width: `${item.percent}%` }}
@@ -428,7 +428,7 @@ function LocalBudgetContent() {
             </div>
             
             {/* Certification Badge */}
-            <div className="p-6 rounded-[2rem] border border-border/80 bg-white/50 text-muted-foreground text-center text-[10px] italic leading-relaxed space-y-2">
+            <div className="p-6 rounded-[2rem] border border-border/80 bg-white/50 dark:bg-white/[0.04] text-muted-foreground text-center text-[10px] italic leading-relaxed space-y-2">
               <p>
                 Les chiffres de cette analyse sont issus des rapports officiels consolidés de la Direction Générale des Finances Publiques (DGFiP) et de l'OFGL (Observatoire des Finances et de la Gestion Locale) pour le compte administratif de la commune.
               </p>
@@ -442,7 +442,7 @@ function LocalBudgetContent() {
         {/* Grands chantiers section */}
         <div className="space-y-6 pt-4">
           <div className="flex items-center gap-3">
-            <div className="w-10 h-10 rounded-2xl bg-amber-100 flex items-center justify-center text-amber-750 shadow-sm shrink-0">
+            <div className="w-10 h-10 rounded-2xl bg-amber-100 dark:bg-amber-500/10 flex items-center justify-center text-amber-750 shadow-sm shrink-0">
               <Wrench size={20} className="text-amber-700" />
             </div>
             <div>
@@ -469,10 +469,10 @@ function LocalBudgetContent() {
                     <div className="flex justify-between items-start">
                       <span className={`px-2.5 py-1 text-[9px] font-black uppercase tracking-wider rounded-full border ${
                         proj.status === "Finalisation" 
-                          ? "bg-emerald-50 text-emerald-700 border-emerald-250" 
+                          ? "bg-emerald-50 dark:bg-emerald-500/10 text-emerald-700 dark:text-emerald-300 border-emerald-250" 
                           : proj.status === "En cours" 
-                          ? "bg-blue-50 text-blue-700 border-blue-250" 
-                          : "bg-amber-50 text-amber-700 border-amber-250"
+                          ? "bg-blue-50 dark:bg-blue-500/10 text-blue-700 dark:text-blue-300 border-blue-250" 
+                          : "bg-amber-50 dark:bg-amber-500/10 text-amber-700 dark:text-amber-300 border-amber-250"
                       }`}>
                         {proj.status}
                       </span>
@@ -506,7 +506,7 @@ function LocalBudgetContent() {
         {/* Événements section */}
         <div className="space-y-6 pt-4">
           <div className="flex items-center gap-3">
-            <div className="w-10 h-10 rounded-2xl bg-fuchsia-100 flex items-center justify-center text-fuchsia-750 shadow-sm shrink-0">
+            <div className="w-10 h-10 rounded-2xl bg-fuchsia-100 dark:bg-fuchsia-500/10 flex items-center justify-center text-fuchsia-750 shadow-sm shrink-0">
               <Calendar size={20} className="text-fuchsia-700" />
             </div>
             <div>
@@ -528,11 +528,11 @@ function LocalBudgetContent() {
               <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
                 {sortedEvents.map((evt: any, idx: number) => {
                   const catColors: Record<string, string> = {
-                    Tradition: "bg-orange-50 text-orange-700 border-orange-200",
-                    Musique: "bg-violet-50 text-violet-750 border-violet-200",
-                    Sport: "bg-emerald-50 text-emerald-700 border-emerald-200",
-                    Culture: "bg-fuchsia-50 text-fuchsia-700 border-fuchsia-200",
-                    Festivités: "bg-sky-50 text-sky-700 border-sky-200"
+                    Tradition: "bg-orange-50 dark:bg-orange-500/10 text-orange-700 dark:text-orange-300 border-orange-200 dark:border-orange-500/25",
+                    Musique: "bg-violet-50 dark:bg-violet-500/10 text-violet-750 border-violet-200 dark:border-violet-500/25",
+                    Sport: "bg-emerald-50 dark:bg-emerald-500/10 text-emerald-700 dark:text-emerald-300 border-emerald-200 dark:border-emerald-500/25",
+                    Culture: "bg-fuchsia-50 dark:bg-fuchsia-500/10 text-fuchsia-700 dark:text-fuchsia-300 border-fuchsia-200 dark:border-fuchsia-500/25",
+                    Festivités: "bg-sky-50 dark:bg-sky-500/10 text-sky-700 dark:text-sky-300 border-sky-200 dark:border-sky-500/25"
                   };
                   const colClass = catColors[evt.category] || "bg-muted text-slate-700 border-border";
                   

@@ -26,9 +26,9 @@ const CATEGORIES = [
     id: 'demographie', 
     title: 'Démographie', 
     icon: Users,
-    bgClass: 'bg-blue-50/40',
+    bgClass: 'bg-blue-50/40 dark:bg-blue-500/10',
     borderClass: 'border-blue-100/50',
-    iconClass: 'bg-blue-100 text-blue-900',
+    iconClass: 'bg-blue-100 dark:bg-blue-500/10 text-blue-900 dark:text-blue-300',
     textClass: 'text-blue-800',
     progressClass: 'bg-blue-600',
     metrics: [
@@ -43,9 +43,9 @@ const CATEGORIES = [
     id: 'economie', 
     title: 'Économie & Emploi', 
     icon: Briefcase,
-    bgClass: 'bg-emerald-50/40',
+    bgClass: 'bg-emerald-50/40 dark:bg-emerald-500/10',
     borderClass: 'border-emerald-100/50',
-    iconClass: 'bg-emerald-100 text-emerald-900',
+    iconClass: 'bg-emerald-100 dark:bg-emerald-500/10 text-emerald-900 dark:text-emerald-300',
     textClass: 'text-emerald-800',
     progressClass: 'bg-emerald-600',
     metrics: [
@@ -58,9 +58,9 @@ const CATEGORIES = [
     id: 'education',
     title: 'Éducation',
     icon: GraduationCap,
-    bgClass: 'bg-indigo-50/40',
+    bgClass: 'bg-indigo-50/40 dark:bg-indigo-500/10',
     borderClass: 'border-indigo-100/50',
-    iconClass: 'bg-indigo-100 text-indigo-900',
+    iconClass: 'bg-indigo-100 dark:bg-indigo-500/10 text-indigo-900 dark:text-indigo-300',
     textClass: 'text-indigo-800',
     progressClass: 'bg-indigo-600',
     metrics: [
@@ -73,9 +73,9 @@ const CATEGORIES = [
     id: 'sante',
     title: 'Santé',
     icon: Heart,
-    bgClass: 'bg-rose-50/40',
+    bgClass: 'bg-rose-50/40 dark:bg-rose-500/10',
     borderClass: 'border-rose-100/50',
-    iconClass: 'bg-rose-100 text-rose-900',
+    iconClass: 'bg-rose-100 dark:bg-rose-500/10 text-rose-900 dark:text-rose-300',
     textClass: 'text-rose-800',
     progressClass: 'bg-rose-600',
     metrics: [
@@ -88,9 +88,9 @@ const CATEGORIES = [
     id: 'securite',
     title: 'Sécurité',
     icon: Shield,
-    bgClass: 'bg-amber-50/40',
+    bgClass: 'bg-amber-50/40 dark:bg-amber-500/10',
     borderClass: 'border-amber-100/50',
-    iconClass: 'bg-amber-100 text-amber-900',
+    iconClass: 'bg-amber-100 dark:bg-amber-500/10 text-amber-900 dark:text-amber-300',
     textClass: 'text-amber-800',
     progressClass: 'bg-amber-600',
     metrics: [
@@ -102,9 +102,9 @@ const CATEGORIES = [
     id: 'logement',
     title: 'Logement',
     icon: Home,
-    bgClass: 'bg-cyan-50/40',
+    bgClass: 'bg-cyan-50/40 dark:bg-cyan-500/10',
     borderClass: 'border-cyan-100/50',
-    iconClass: 'bg-cyan-100 text-cyan-900',
+    iconClass: 'bg-cyan-100 dark:bg-cyan-500/10 text-cyan-900 dark:text-cyan-300',
     textClass: 'text-cyan-800',
     progressClass: 'bg-cyan-600',
     metrics: [
@@ -117,9 +117,9 @@ const CATEGORIES = [
     id: 'finances',
     title: 'Finances',
     icon: Landmark,
-    bgClass: 'bg-pink-50/40',
+    bgClass: 'bg-pink-50/40 dark:bg-pink-500/10',
     borderClass: 'border-pink-100/50',
-    iconClass: 'bg-pink-100 text-pink-900',
+    iconClass: 'bg-pink-100 dark:bg-pink-500/10 text-pink-900 dark:text-pink-300',
     textClass: 'text-pink-800',
     progressClass: 'bg-pink-600',
     metrics: [
@@ -132,9 +132,9 @@ const CATEGORIES = [
     id: 'environnement',
     title: 'Environnement',
     icon: TreePine,
-    bgClass: 'bg-purple-50/40',
+    bgClass: 'bg-purple-50/40 dark:bg-purple-500/10',
     borderClass: 'border-purple-100/50',
-    iconClass: 'bg-purple-100 text-purple-900',
+    iconClass: 'bg-purple-100 dark:bg-purple-500/10 text-purple-900 dark:text-purple-300',
     textClass: 'text-purple-800',
     progressClass: 'bg-purple-600',
     metrics: [
@@ -595,7 +595,7 @@ export default function TerritoryDetailPanel({ territory, onClose, onNavigate }:
                     {localNews.length > 0 && (
                       <div className="space-y-4">
                         <div className="flex items-center gap-3">
-                          <div className="w-10 h-10 rounded-2xl flex items-center justify-center bg-amber-100 text-amber-600">
+                          <div className="w-10 h-10 rounded-2xl flex items-center justify-center bg-amber-100 dark:bg-amber-500/10 text-amber-600 dark:text-amber-300">
                             <Newspaper size={20} />
                           </div>
                           <h3 className="text-xl font-staatliches uppercase tracking-wide text-amber-600">
@@ -605,14 +605,14 @@ export default function TerritoryDetailPanel({ territory, onClose, onNavigate }:
                         <div className="space-y-3">
                           {localNews.map((n: any) => (
                             <a key={n.id || n.url} href={n.url || '#'} target="_blank" rel="noopener noreferrer"
-                              className="block rounded-2xl border border-border bg-slate-50/60 p-4 transition hover:border-amber-300 hover:bg-amber-50/40 group">
+                              className="block rounded-2xl border border-border bg-slate-50/60 dark:bg-slate-500/10 p-4 transition hover:border-amber-300 hover:bg-amber-50/40 group">
                               <div className="flex items-start justify-between gap-3">
                                 <p className="font-bold text-foreground leading-snug">{n.title}</p>
                                 <ExternalLink className="mt-0.5 h-4 w-4 shrink-0 text-slate-300 group-hover:text-amber-500 transition-colors" />
                               </div>
                               {n.summary && <p className="mt-1.5 text-sm leading-6 text-muted-foreground [overflow-wrap:anywhere]">{n.summary}</p>}
                               <div className="mt-2 flex items-center gap-2 text-[10px] font-black uppercase tracking-widest text-slate-400">
-                                {n.news_type && <span className="rounded-full bg-amber-100 px-2 py-0.5 text-amber-700">{n.news_type}</span>}
+                                {n.news_type && <span className="rounded-full bg-amber-100 dark:bg-amber-500/10 px-2 py-0.5 text-amber-700 dark:text-amber-300">{n.news_type}</span>}
                                 {n.published_at && <span>{new Date(n.published_at).toLocaleDateString('fr-FR', { day: 'numeric', month: 'short', year: 'numeric' })}</span>}
                                 {n.source_name && <span className="text-slate-300">· {n.source_name}</span>}
                               </div>
@@ -626,7 +626,7 @@ export default function TerritoryDetailPanel({ territory, onClose, onNavigate }:
                     {territory.type === 'department' && localDeputies.length > 0 && (
                       <div className="space-y-6">
                         <div className="flex items-center gap-3">
-                          <div className="w-10 h-10 rounded-2xl flex items-center justify-center bg-red-100 text-red-600">
+                          <div className="w-10 h-10 rounded-2xl flex items-center justify-center bg-red-100 dark:bg-red-500/10 text-red-600 dark:text-red-300">
                             <Landmark size={20} />
                           </div>
                           <h3 className="text-xl font-staatliches uppercase tracking-wide text-red-600">Les député·e·s du département</h3>
@@ -634,7 +634,7 @@ export default function TerritoryDetailPanel({ territory, onClose, onNavigate }:
                         <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
                           {localDeputies.map((dep) => (
                             <Link key={dep.slug} href={`/deputes/${dep.slug}`}
-                              className="flex items-center gap-3 rounded-2xl border border-border bg-slate-50/60 p-3 transition hover:border-red-300 hover:bg-red-50/50 group">
+                              className="flex items-center gap-3 rounded-2xl border border-border bg-slate-50/60 dark:bg-slate-500/10 p-3 transition hover:border-red-300 hover:bg-red-50/50 group">
                               {(() => {
                                 // Repli : avatar initiales si la photo est absente ou ne charge pas.
                                 const initialsAvatar = `https://ui-avatars.com/api/?name=${encodeURIComponent(`${dep.first_name || ''} ${dep.last_name || ''}`.trim())}&background=ef4444&color=fff&size=128&bold=true`;
@@ -664,12 +664,12 @@ export default function TerritoryDetailPanel({ territory, onClose, onNavigate }:
                     {territory.type === 'region' && (
                       <div className="space-y-6">
                         <div className="flex items-center gap-3">
-                          <div className="w-10 h-10 rounded-2xl flex items-center justify-center bg-blue-100 text-blue-600">
+                          <div className="w-10 h-10 rounded-2xl flex items-center justify-center bg-blue-100 dark:bg-blue-500/10 text-blue-600 dark:text-blue-300">
                             <TrendingUp size={20} />
                           </div>
                           <h3 className="text-xl font-staatliches uppercase tracking-wide text-blue-600">Finances 2012-2024</h3>
                         </div>
-                        <div className="rounded-[2rem] p-6 md:p-8 border bg-slate-50/60 border-border">
+                        <div className="rounded-[2rem] p-6 md:p-8 border bg-slate-50/60 dark:bg-slate-500/10 border-border">
                           <RegionFinancesChart regionCode={territory.id} />
                         </div>
                       </div>
@@ -725,7 +725,7 @@ export default function TerritoryDetailPanel({ territory, onClose, onNavigate }:
                           <ArrowRight size={24} />
                         </Link>
                       ) : (
-                        <div className="p-8 rounded-[2rem] bg-amber-50 border border-amber-100 text-center space-y-4 flex flex-col items-center">
+                        <div className="p-8 rounded-[2rem] bg-amber-50 dark:bg-amber-500/10 border border-amber-100 dark:border-amber-500/25 text-center space-y-4 flex flex-col items-center">
                           <p className="font-bold text-amber-900 uppercase tracking-widest text-xs">Fonctionnalité Premium</p>
                           <p className="text-sm text-amber-800 mb-2">Passez à l'offre <strong>Premium</strong> pour comparer les performances de ce territoire avec n'importe quel autre en France.</p>
                           <AwardBadge 

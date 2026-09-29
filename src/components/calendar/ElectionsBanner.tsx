@@ -15,25 +15,25 @@ const iconMap: Record<string, LucideIcon> = {
 
 const colorMap: Record<string, { bg: string, text: string, accent: string, gradient: string }> = {
   indigo: { 
-    bg: 'bg-indigo-50', 
+    bg: 'bg-indigo-50 dark:bg-indigo-500/10', 
     text: 'text-indigo-600', 
     accent: 'bg-indigo-600',
     gradient: 'from-indigo-600 to-indigo-400'
   },
   blue: { 
-    bg: 'bg-blue-50', 
+    bg: 'bg-blue-50 dark:bg-blue-500/10', 
     text: 'text-blue-600', 
     accent: 'bg-blue-600',
     gradient: 'from-blue-600 to-blue-400'
   },
   red: { 
-    bg: 'bg-red-50', 
+    bg: 'bg-red-50 dark:bg-red-500/10', 
     text: 'text-red-600', 
     accent: 'bg-red-600',
     gradient: 'from-red-600 to-red-400'
   },
   'blue-800': { 
-    bg: 'bg-blue-50', 
+    bg: 'bg-blue-50 dark:bg-blue-500/10', 
     text: 'text-blue-800', 
     accent: 'bg-blue-800',
     gradient: 'from-blue-800 to-blue-600'
@@ -115,7 +115,7 @@ export default function ElectionsBanner() {
             >
               <button 
                 onClick={() => setSelectedElection(null)}
-                className="absolute top-6 right-6 p-2 rounded-full bg-slate-100 text-muted-foreground hover:bg-slate-200 transition-colors z-20"
+                className="absolute top-6 right-6 p-2 rounded-full bg-slate-100 dark:bg-slate-500/10 text-muted-foreground hover:bg-slate-200 transition-colors z-20"
               >
                 <X size={20} />
               </button>

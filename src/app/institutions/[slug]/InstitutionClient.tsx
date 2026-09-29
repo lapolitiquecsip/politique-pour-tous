@@ -60,7 +60,7 @@ export default function InstitutionGuidePage() {
           {/* Section: Le Rôle */}
           <section className="space-y-6">
             <div className="flex items-center gap-4">
-              <div className="w-10 h-10 rounded-full bg-blue-100 flex items-center justify-center text-blue-600">
+              <div className="w-10 h-10 rounded-full bg-blue-100 dark:bg-blue-500/10 flex items-center justify-center text-blue-600 dark:text-blue-300">
                 <Landmark size={20} />
               </div>
               <h2 className="text-sm font-black uppercase tracking-[0.3em] text-slate-400">Son Rôle Principal</h2>
@@ -75,13 +75,13 @@ export default function InstitutionGuidePage() {
           {/* Section: Histoire */}
           <section className="space-y-6">
             <div className="flex items-center gap-4">
-              <div className="w-10 h-10 rounded-full bg-amber-100 flex items-center justify-center text-amber-600">
+              <div className="w-10 h-10 rounded-full bg-amber-100 dark:bg-amber-500/10 flex items-center justify-center text-amber-600 dark:text-amber-300">
                 <History size={20} />
               </div>
               <h2 className="text-sm font-black uppercase tracking-[0.3em] text-slate-400">Un peu d'histoire</h2>
             </div>
             <div className="bg-card p-8 md:p-12 rounded-[2rem] shadow-sm border border-border relative overflow-hidden">
-               <div className="absolute top-0 right-0 w-32 h-32 bg-amber-50/50 rounded-full -mr-10 -mt-10" />
+               <div className="absolute top-0 right-0 w-32 h-32 bg-amber-50/50 dark:bg-amber-500/10 rounded-full -mr-10 -mt-10" />
                <p className="text-lg leading-relaxed text-muted-foreground relative z-10">
                  {guide.history}
                </p>
@@ -91,7 +91,7 @@ export default function InstitutionGuidePage() {
           {/* Section: Pouvoirs Clés */}
           <section className="space-y-12">
             <div className="flex items-center gap-4">
-              <div className="w-10 h-10 rounded-full bg-red-100 flex items-center justify-center text-red-600">
+              <div className="w-10 h-10 rounded-full bg-red-100 dark:bg-red-500/10 flex items-center justify-center text-red-600 dark:text-red-300">
                 <Zap size={20} />
               </div>
               <h2 className="text-sm font-black uppercase tracking-[0.3em] text-slate-400">Ses Pouvoirs Clés</h2>

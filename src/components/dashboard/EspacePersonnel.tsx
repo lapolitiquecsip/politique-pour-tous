@@ -3,7 +3,7 @@
 import { useState, useEffect, useTransition } from "react";
 import Link from "next/link";
 // ... (imports lucide-react)
-import { User, Star, Vote, Users, ChevronRight, Bell, MapPin, CheckCircle2, XCircle, MinusCircle, Loader2, Calendar, LayoutDashboard, LogOut, Settings, ArrowRight, Bookmark, FileText, Search, Clock, Globe, Layers, UserMinus, Building2, Scale } from "lucide-react";
+import { User, Star, Vote, Users, ChevronRight, Bell, MapPin, Lock, CheckCircle2, XCircle, MinusCircle, Loader2, Calendar, LayoutDashboard, LogOut, Settings, ArrowRight, Bookmark, FileText, Search, Clock, Globe, Layers, UserMinus, Building2, Scale } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
 import { api } from "@/lib/api";
 import { BallotBox, BallotChip } from "@/components/dashboard/BallotVote";
@@ -14,6 +14,8 @@ import CandidatesFollowFeed from "@/components/dashboard/CandidatesFollowFeed";
 import CommissionsRegistre from "@/components/home/CommissionsRegistre";
 import JournalOfficielDuJour from "@/components/home/JournalOfficielDuJour";
 import TopicBrief from "@/components/pro/TopicBrief";
+import EncartPremium from "@/components/dashboard/EncartPremium";
+import IdentifiantsForm from "@/components/dashboard/IdentifiantsForm";
 import ParametresCompte from "@/components/dashboard/ParametresCompte";
 import { usePremium } from "@/lib/hooks/usePremium";
 import { departmentPaths } from "@/lib/data/departmentPaths";
@@ -73,7 +75,55 @@ const ONGLETS = [
     actif: "bg-gradient-to-br from-fuchsia-500 to-pink-600 shadow-fuchsia-500/50",
     repos: "bg-gradient-to-br from-fuchsia-500 to-pink-700 hover:from-fuchsia-400 hover:to-pink-600",
   },
+  {
+    // Adresse e-mail et mot de passe, modifiables ici pour tous.
+    id: "compte", label: "Mon compte", icone: Settings, premium: false,
+    actif: "bg-gradient-to-br from-sky-400 to-sky-600 shadow-sky-500/50",
+    repos: "bg-gradient-to-br from-sky-500 to-sky-700 hover:from-sky-400 hover:to-sky-600",
+  },
 ] as const;
+
+type IdOnglet = (typeof ONGLETS)[number]["id"] | `verrou-${string}`;
+
+/**
+ * Ce qu'un membre n'a pas encore, montré à côté de ce qu'il a : flouté, sous un
+ * cadenas doré, et ouvert sur un aperçu au clic. Le compte classique voit ce que
+ * Premium ajoute ; le Premium, ce que Pro ajoute.
+ */
+type Verrou = {
+  id: string; label: string; icone: typeof Vote; offre: "premium" | "pro";
+  titre: string; texte: string; benefices: string[]; apercu: string[];
+};
+const VERROUS: Verrou[] = [
+  {
+    id: "saved", label: "Lois favorites", icone: Bookmark, offre: "premium",
+    titre: "Vos lois favorites",
+    texte: "Gardez sous la main les textes qui vous concernent et suivez-les jusqu'à leur promulgation.",
+    benefices: ["Enregistrez lois et propositions en un clic", "Retrouvez-les ici, classées et datées", "Suivez leur parcours jusqu'au Journal officiel"],
+    apercu: ["Réforme de l'assurance chômage", "Protection des mineurs en ligne", "Loi de finances 2027", "Logement étudiant"],
+  },
+  {
+    id: "geos", label: "Territoires", icone: MapPin, offre: "premium",
+    titre: "Vos territoires",
+    texte: "Votre commune, votre département, votre région : leurs décisions et leurs chiffres, au même endroit.",
+    benefices: ["Suivez les communes et départements qui comptent pour vous", "Budget, dette et indicateurs à jour", "L'actualité locale, triée pour vous"],
+    apercu: ["Nantes", "Loire-Atlantique", "Pays de la Loire", "Saint-Nazaire"],
+  },
+  {
+    id: "alertes", label: "Mes alertes", icone: Bell, offre: "premium",
+    titre: "Vos alertes",
+    texte: "Chaque vote de vos élus et chaque décision près de chez vous, sans avoir à les chercher.",
+    benefices: ["Le vote de vos députés, sénateurs et eurodéputés, expliqué", "Les décisions de votre commune et de votre département", "Par e-mail si vous le souhaitez"],
+    apercu: ["Votre député a voté pour", "Travaux sur la rocade", "Le Département vote son budget", "Votre sénatrice a voté contre"],
+  },
+  {
+    id: "pro", label: "Outils Pro", icone: Layers, offre: "pro",
+    titre: "Les outils Pro",
+    texte: "Pour un usage professionnel : la loi applicable sur n'importe quel sujet, le Journal officiel et les commissions au jour le jour.",
+    benefices: ["« Tout sur un sujet » : montants en vigueur et textes précis", "Le Journal officiel du jour, expliqué", "Les commissions de l'Assemblée et du Sénat, réunion par réunion"],
+    apercu: ["Apprentissage : aides en vigueur", "Journal officiel du 29 septembre", "Commission des finances", "Panneaux solaires : les textes"],
+  },
+];
 
 // Renvoie null si la date est absente/illisible, au lieu de produire « INVALID DATE ».
 function formatDateSafe(value: any): string | null {
@@ -117,7 +167,10 @@ export default function EspacePersonnel({ mode = "tout" }: { mode?: ModeEspace }
   const [userVotes, setUserVotes] = useState<any[]>([]);
   const [followedDeputies, setFollowedDeputies] = useState<any[]>([]);
   const [savedItems, setSavedItems] = useState<any[]>([]);
-  const [activeTab, setActiveTab] = useState<"votes" | "deputies" | "saved" | "geos">("votes");
+  const [activeTab, setActiveTab] = useState<IdOnglet>("votes");
+  // Compte classique : tout ce que Premium et Pro ajoutent. Premium : ce que Pro ajoute.
+  const verrousVisibles = isPro ? [] : isPremium ? VERROUS.filter(v => v.offre === "pro") : VERROUS;
+  const verrouActif = VERROUS.find(v => activeTab === `verrou-${v.id}`);
   const [isPending, startTransition] = useTransition();
 
   useEffect(() => {
@@ -302,13 +355,23 @@ export default function EspacePersonnel({ mode = "tout" }: { mode?: ModeEspace }
     <div data-offre={isPro ? "pro" : undefined} className="dark min-h-screen bg-gradient-to-b from-[#0b1020] via-[#0a0e1c] to-[#070a14] pb-20 text-white">
       {/* 1. Dashboard Header */}
       <section className="border-b border-white/5 pt-28 pb-20 px-4 relative overflow-hidden">
-        {/* Halos dorés premium */}
-        <div className="absolute inset-0 pointer-events-none">
-          <div className="absolute top-12 left-[8%] w-80 h-80 bg-amber-500/20 rounded-full blur-[120px] animate-pulse" />
-          <div className="absolute bottom-0 right-[12%] w-72 h-72 bg-yellow-600/15 rounded-full blur-[100px]" />
-          <div className="absolute inset-0 bg-[radial-gradient(circle_at_top,rgb(var(--lueur-offre)/0.08),transparent_60%)]" />
-        </div>
-        <div className="absolute top-0 right-0 w-1/3 h-full bg-gradient-to-l from-amber-500/10 to-transparent pointer-events-none" />
+        {/* Halos : dorés (ou violets) pour un abonné ; bleus, sans pulsation, pour un
+            compte classique — l'or est la couleur de l'offre, pas celle du site. */}
+        {isPremium ? (
+          <>
+            <div className="absolute inset-0 pointer-events-none">
+              <div className="absolute top-12 left-[8%] w-80 h-80 bg-amber-500/20 rounded-full blur-[120px] animate-pulse" />
+              <div className="absolute bottom-0 right-[12%] w-72 h-72 bg-yellow-600/15 rounded-full blur-[100px]" />
+              <div className="absolute inset-0 bg-[radial-gradient(circle_at_top,rgb(var(--lueur-offre)/0.08),transparent_60%)]" />
+            </div>
+            <div className="absolute top-0 right-0 w-1/3 h-full bg-gradient-to-l from-amber-500/10 to-transparent pointer-events-none" />
+          </>
+        ) : (
+          <div className="absolute inset-0 pointer-events-none">
+            <div className="absolute top-12 left-[8%] w-80 h-80 bg-sky-500/10 rounded-full blur-[120px]" />
+            <div className="absolute bottom-0 right-[12%] w-72 h-72 bg-blue-600/10 rounded-full blur-[100px]" />
+          </div>
+        )}
         <div className="container mx-auto max-w-6xl relative z-10">
           <div className="flex flex-col sm:flex-row items-center sm:items-start gap-6 text-center sm:text-left">
              <div className={`w-20 h-20 rounded-full border-2 p-1 flex items-center justify-center transition-all duration-300 ${isPremium ? 'border-amber-400 bg-gradient-to-br from-amber-400/20 to-yellow-600/10 shadow-[0_0_30px_rgb(var(--lueur-offre)/0.35)] text-amber-300' : 'border-white/20 bg-white/5 text-slate-300'}`}>
@@ -321,9 +384,17 @@ export default function EspacePersonnel({ mode = "tout" }: { mode?: ModeEspace }
                 </div>
                 <h1 className="text-5xl md:text-7xl font-staatliches uppercase tracking-tighter leading-none inline-flex items-center gap-2 md:gap-3 flex-wrap">
                   <span className="text-white drop-shadow-[0_2px_20px_rgba(255,255,255,0.15)]">{mode === "compte" ? "Mon" : "Mon Espace"}</span>{" "}
-                  <span className="sword-shine bg-gradient-to-r from-amber-300 via-amber-500 to-yellow-600 text-white px-4 pt-1.5 pb-0.5 md:pt-3 md:pb-1 rounded-xl md:rounded-2xl shadow-[0_8px_30px_rgb(var(--lueur-offre)/0.4)]">
-                    {mode === "compte" ? "Compte" : mode === "espace" ? "Pro" : "Personnel"}
-                  </span>
+                  {isPremium ? (
+                    <span className="sword-shine bg-gradient-to-r from-amber-300 via-amber-500 to-yellow-600 text-white px-4 pt-1.5 pb-0.5 md:pt-3 md:pb-1 rounded-xl md:rounded-2xl shadow-[0_8px_30px_rgb(var(--lueur-offre)/0.4)]">
+                      {mode === "compte" ? "Compte" : mode === "espace" ? "Pro" : "Personnel"}
+                    </span>
+                  ) : (
+                    // Compte classique : un bleu clair tout simple, sans éclat ni lueur.
+                    // Le doré et son animation restent l'habillage des abonnés.
+                    <span className="bg-sky-400 text-slate-950 px-4 pt-1.5 pb-0.5 md:pt-3 md:pb-1 rounded-xl md:rounded-2xl">
+                      {mode === "compte" ? "Compte" : "Personnel"}
+                    </span>
+                  )}
                 </h1>
                 <p className="text-slate-400 text-sm mt-3 font-medium">
                   {mode === "compte"
@@ -332,7 +403,21 @@ export default function EspacePersonnel({ mode = "tout" }: { mode?: ModeEspace }
                       ? "Le Journal officiel, les commissions et vos alertes, au même endroit."
                       : "Gérez votre activité citoyenne et vos députés favoris."}
                 </p>
-                <div className={`h-[1px] w-32 mt-6 rounded-full ${isPremium ? 'bg-gradient-to-r from-amber-400/70 to-transparent' : 'bg-gradient-to-r from-blue-500/50 to-transparent'}`} />
+                {/* Le niveau du compte, dit clairement, avec la porte de sortie vers les offres. */}
+                {!isPremium && !authLoading && (
+                  <div className="mt-5 inline-flex flex-wrap items-center justify-center gap-3 rounded-2xl border border-white/10 bg-white/[0.04] py-2 pl-4 pr-2 sm:justify-start">
+                    <span className="text-[13px] text-slate-300">
+                      Vous avez un <strong className="font-bold text-white">compte classique</strong>, gratuit.
+                    </span>
+                    <Link
+                      href="/premium"
+                      className="inline-flex items-center gap-1.5 rounded-xl bg-white px-3.5 py-2 font-staatliches text-base uppercase leading-none tracking-wide text-slate-950 transition hover:bg-sky-100"
+                    >
+                      Changer d&apos;abonnement <ArrowRight size={14} />
+                    </Link>
+                  </div>
+                )}
+                <div className={`h-[1px] w-32 mt-6 rounded-full ${isPremium ? 'bg-gradient-to-r from-amber-400/70 to-transparent' : 'bg-gradient-to-r from-sky-400/60 to-transparent'}`} />
              </div>
           </div>
         </div>
@@ -381,7 +466,7 @@ export default function EspacePersonnel({ mode = "tout" }: { mode?: ModeEspace }
                 une transformation en ligne qui écrasait la première : l'onglet actif
                 perdait son agrandissement après le premier clic. L'effet de pression est
                 maintenant en CSS pur, et il n'y a plus qu'une seule échelle. */}
-          <div className="grid grid-cols-2 md:flex border-b border-white/10">
+          <div className="flex flex-wrap border-b border-white/10 md:flex-nowrap">
             {ONGLETS.filter(o => !o.premium || isPremium).map(o => {
               const actif = activeTab === o.id;
               const Icone = o.icone;
@@ -390,7 +475,7 @@ export default function EspacePersonnel({ mode = "tout" }: { mode?: ModeEspace }
                   key={o.id}
                   onClick={() => startTransition(() => setActiveTab(o.id))}
                   aria-current={actif ? "page" : undefined}
-                  className={`relative flex-1 py-4 md:py-6 px-2 font-bold text-[11px] md:text-sm uppercase tracking-widest flex items-center justify-center gap-2 md:gap-3 border-r border-b md:border-b-0 border-white/30 md:last:border-r-0 transition-[transform,box-shadow,color] duration-200 active:scale-[0.98] ${
+                  className={`relative basis-1/3 md:basis-0 flex-1 py-4 md:py-6 px-2 font-bold text-[11px] md:text-sm uppercase tracking-widest flex items-center justify-center gap-2 md:gap-3 border-r border-b md:border-b-0 border-white/30 md:last:border-r-0 transition-[transform,box-shadow,color] duration-200 active:scale-[0.98] ${
                     actif
                       ? `${o.actif} text-white shadow-lg z-20 scale-[1.04] ring-2 ring-white/70 ring-inset`
                       : `${o.repos} text-white/85 hover:text-white z-10`
@@ -407,6 +492,32 @@ export default function EspacePersonnel({ mode = "tout" }: { mode?: ModeEspace }
                       transition={{ type: "spring", stiffness: 380, damping: 30 }}
                     />
                   )}
+                </button>
+              );
+            })}
+            {/* Ce que l'offre supérieure ajoute : compact, flouté, sous un cadenas doré
+                qu'un reflet traverse de temps en temps. Un clic ouvre l'aperçu. */}
+            {verrousVisibles.map(v => {
+              const actif = activeTab === `verrou-${v.id}`;
+              const Icone = v.icone;
+              return (
+                <button
+                  key={v.id}
+                  onClick={() => startTransition(() => setActiveTab(`verrou-${v.id}`))}
+                  aria-current={actif ? "page" : undefined}
+                  title={`Réservé aux membres ${v.offre === "pro" ? "Pro" : "Premium"}`}
+                  className={`group relative basis-1/4 md:basis-auto md:flex-none overflow-hidden px-2 md:px-5 py-4 md:py-6 flex flex-col md:flex-row items-center justify-center gap-2 border-r border-b md:border-b-0 border-white/10 md:last:border-r-0 text-[10px] md:text-[11px] font-bold uppercase tracking-widest transition-colors duration-200 ${
+                    actif ? "bg-amber-400/10 text-amber-200" : "bg-white/[0.02] text-white/55 hover:bg-amber-400/[0.06] hover:text-white"
+                  }`}
+                >
+                  <span className="relative">
+                    <Icone size={16} className="opacity-60 blur-[1.5px]" />
+                    <span className="absolute -right-2.5 -top-2 flex h-4 w-4 items-center justify-center rounded-full bg-gradient-to-br from-amber-200 to-amber-500 text-slate-950 shadow-[0_0_10px_rgba(251,191,36,0.7)]">
+                      <Lock size={9} strokeWidth={3} />
+                    </span>
+                  </span>
+                  <span className="whitespace-nowrap blur-[0.7px] transition group-hover:blur-0">{v.label}</span>
+                  <span aria-hidden className="verrou-reflet pointer-events-none absolute inset-y-0 -left-1/2 w-1/2 bg-gradient-to-r from-transparent via-amber-200/20 to-transparent" />
                 </button>
               );
             })}
@@ -489,18 +600,12 @@ export default function EspacePersonnel({ mode = "tout" }: { mode?: ModeEspace }
                     className="grid grid-cols-1 md:grid-cols-2 gap-6"
                   >
                     {!isPremium ? (
-                      <div className="col-span-full text-center py-20 bg-amber-400/[0.06] rounded-[2.5rem] border-2 border-dashed border-amber-400/30">
-                        <div className="w-16 h-16 bg-amber-100 rounded-full flex items-center justify-center text-amber-600 mx-auto mb-6">
-                            <Star size={32} className="fill-current" />
-                        </div>
-                        <h3 className="text-2xl font-bold uppercase mb-2">Suivi Député Réservé Premium</h3>
-                        <p className="text-slate-400 mb-8 max-w-sm mx-auto">
-                          Suivez vos députés favoris et recevez leurs derniers votes directement ici en passant Premium.
-                        </p>
-                        <Link href="/premium" className="inline-flex items-center gap-2 px-8 py-4 bg-gradient-to-r from-amber-400 to-yellow-600 text-slate-950 rounded-2xl font-black hover:brightness-110 transition-all shadow-[0_8px_30px_rgb(var(--lueur-offre)/0.35)]">
-                          Devenir Premium
-                        </Link>
-                      </div>
+                      <EncartPremium
+                        titre="Suivez vos élus"
+                        texte="Chaque vote de vos députés, sénateurs et eurodéputés favoris, expliqué et réuni ici."
+                        benefices={["Leurs votes dès qu'ils ont lieu, avec leur explication", "Députés, sénateurs et eurodéputés", "Une alerte à chaque vote, par e-mail si vous le souhaitez"]}
+                        apercu={["Votre député a voté pour", "Votre sénatrice s'est abstenue", "Votre eurodéputé a voté contre", "Réforme des retraites : leur vote"]}
+                      />
                     ) : followedDeputies.length === 0 ? (
                       <div className="col-span-full text-center py-20 bg-white/[0.03] rounded-[2rem] border border-dashed border-white/15">
                         <Users className="mx-auto mb-4 text-white/25" size={48} />
@@ -733,6 +838,17 @@ export default function EspacePersonnel({ mode = "tout" }: { mode?: ModeEspace }
                         </Link>
                       ))
                     )}
+                  </motion.div>
+                ) : activeTab === "compte" ? (
+                  <motion.div key="compte" initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: -10 }}>
+                    <IdentifiantsForm adresseModifiable={!isPremium} />
+                  </motion.div>
+                ) : verrouActif ? (
+                  <motion.div key={activeTab} initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: -10 }}>
+                    <EncartPremium
+                      offre={verrouActif.offre} titre={verrouActif.titre} texte={verrouActif.texte}
+                      benefices={verrouActif.benefices} apercu={verrouActif.apercu}
+                    />
                   </motion.div>
                 ) : null}
               </AnimatePresence>

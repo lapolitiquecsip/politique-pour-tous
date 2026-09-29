@@ -293,7 +293,7 @@ export default function CandidateSocialTracker({ candidates }: { candidates: Can
 
                   {r.candidate.photo_url
                     ? <img src={r.candidate.photo_url} alt="" className="h-11 w-11 shrink-0 rounded-full object-cover" />
-                    : <span className="flex h-11 w-11 shrink-0 items-center justify-center rounded-full bg-slate-100 text-sm font-black text-slate-400">{r.candidate.full_name.charAt(0)}</span>}
+                    : <span className="flex h-11 w-11 shrink-0 items-center justify-center rounded-full bg-slate-100 dark:bg-slate-500/10 text-sm font-black text-slate-400">{r.candidate.full_name.charAt(0)}</span>}
 
                   <span className="min-w-0 flex-1">
                     <span className="block truncate text-sm font-black text-foreground">{r.candidate.full_name}</span>

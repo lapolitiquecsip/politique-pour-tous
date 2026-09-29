@@ -12,7 +12,7 @@ export default function CGU() {
           <motion.div
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
-            className="inline-flex items-center gap-3 px-4 py-2 rounded-full bg-slate-100 border border-border mb-8"
+            className="inline-flex items-center gap-3 px-4 py-2 rounded-full bg-slate-100 dark:bg-slate-500/10 border border-border mb-8"
           >
             <ShieldCheck className="w-4 h-4 text-blue-600" />
             <span className="text-[10px] font-black text-muted-foreground uppercase tracking-[0.3em]">Protection de l'Utilisateur</span>

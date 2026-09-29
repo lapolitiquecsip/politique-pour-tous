@@ -99,7 +99,7 @@ export default function RegionFinancesChart({ regionCode }: { regionCode: string
           {INDICATORS.map(i => <option key={i.code} value={i.code}>{i.label}</option>)}
         </select>
         {!isRatio && (
-          <div className="inline-flex rounded-full bg-slate-100 p-0.5 text-xs font-bold">
+          <div className="inline-flex rounded-full bg-slate-100 dark:bg-slate-500/10 p-0.5 text-xs font-bold">
             {(["hab", "total"] as const).map(m => (
               <button key={m} onClick={() => setMode(m)}
                 className={`rounded-full px-3 py-1.5 transition ${mode === m ? "bg-card text-foreground shadow-sm" : "text-muted-foreground"}`}>

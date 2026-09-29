@@ -114,7 +114,7 @@ export default async function MinistryPage({ params }: { params: Promise<{ slug:
           className="group block bg-card rounded-[2.5rem] p-6 md:p-8 border border-border shadow-xl shadow-slate-200/50 transition hover:border-amber-300 hover:shadow-amber-200/40"
         >
           <div className="flex flex-col sm:flex-row items-center gap-6">
-            <div className="w-28 h-28 shrink-0 rounded-full border-4 border-amber-50 overflow-hidden shadow-md bg-slate-100">
+            <div className="w-28 h-28 shrink-0 rounded-full border-4 border-amber-50 overflow-hidden shadow-md bg-slate-100 dark:bg-slate-500/10">
               <MinisterImage
                 src={profile?.photo_url || bioData?.image || `https://ui-avatars.com/api/?name=${encodeURIComponent(ministryData.ministerName)}&background=f59e0b&color=fff&size=512`}
                 fallbackSrc={`https://ui-avatars.com/api/?name=${encodeURIComponent(ministryData.ministerName)}&background=f59e0b&color=fff&size=512`}
@@ -140,7 +140,7 @@ export default async function MinistryPage({ params }: { params: Promise<{ slug:
         {ministryBudget && (
           <div className="bg-card rounded-[2.5rem] p-8 md:p-10 border border-border shadow-sm">
             <div className="flex items-center gap-3 border-b border-border pb-6 mb-6">
-              <div className="w-10 h-10 bg-amber-50 text-amber-600 rounded-xl flex items-center justify-center">
+              <div className="w-10 h-10 bg-amber-50 dark:bg-amber-500/10 text-amber-600 dark:text-amber-300 rounded-xl flex items-center justify-center">
                 <CircleDollarSign size={20} />
               </div>
               <h3 className="text-2xl font-staatliches uppercase tracking-wider text-foreground">Budget du ministère</h3>
@@ -174,7 +174,7 @@ export default async function MinistryPage({ params }: { params: Promise<{ slug:
                             <span className="font-medium text-slate-700 leading-tight">{p.programme_name}</span>
                             <span className="font-black text-foreground whitespace-nowrap">{(Number(p.amount_2026) / 1e9).toLocaleString('fr-FR', { maximumFractionDigits: 2 })} Md€</span>
                           </div>
-                          <div className="mt-1 h-1.5 w-full rounded-full bg-slate-100 overflow-hidden">
+                          <div className="mt-1 h-1.5 w-full rounded-full bg-slate-100 dark:bg-slate-500/10 overflow-hidden">
                             <div className="h-full rounded-full bg-amber-500" style={{ width: `${Math.max(pct, 1)}%` }} />
                           </div>
                         </div>
@@ -193,7 +193,7 @@ export default async function MinistryPage({ params }: { params: Promise<{ slug:
         {/* NEWS FEED */}
         <div className="bg-card rounded-[2.5rem] p-8 md:p-12 border border-border shadow-sm mb-20">
            <div className="flex items-center gap-3 border-b border-border pb-6 mb-6">
-             <div className="w-10 h-10 bg-amber-50 text-amber-600 rounded-xl flex items-center justify-center">
+             <div className="w-10 h-10 bg-amber-50 dark:bg-amber-500/10 text-amber-600 dark:text-amber-300 rounded-xl flex items-center justify-center">
                <BookOpen size={20} />
              </div>
              <h3 className="text-2xl font-staatliches uppercase tracking-wider text-foreground">

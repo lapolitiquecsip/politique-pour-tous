@@ -116,7 +116,7 @@ export default function LawsGrid({ onSelectLaw, categoryFilter }: { onSelectLaw?
       {loading ? (
         <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
           {[1, 2, 3, 4].map(i => (
-            <div key={i} className="h-48 bg-slate-100 animate-pulse rounded-[2rem]" />
+            <div key={i} className="h-48 bg-slate-100 dark:bg-slate-500/10 animate-pulse rounded-[2rem]" />
           ))}
         </div>
       ) : paginatedLaws.length > 0 ? (
@@ -136,7 +136,7 @@ export default function LawsGrid({ onSelectLaw, categoryFilter }: { onSelectLaw?
                       {law.category}
                     </span>
                     {law.status && (
-                      <span className="px-3 py-1.5 bg-blue-50 text-blue-700 rounded-full text-[10px] font-bold uppercase tracking-wider">
+                      <span className="px-3 py-1.5 bg-blue-50 dark:bg-blue-500/10 text-blue-700 dark:text-blue-300 rounded-full text-[10px] font-bold uppercase tracking-wider">
                         {law.status}
                       </span>
                     )}
@@ -154,8 +154,8 @@ export default function LawsGrid({ onSelectLaw, categoryFilter }: { onSelectLaw?
                 {(() => {
                   const deputy = findDeputy(law.author);
                   const content = (
-                    <div className={`flex items-center gap-4 p-4 rounded-2xl mb-6 ${deputy ? 'bg-blue-50/50 group-hover:bg-blue-50 transition-colors' : 'bg-muted'}`}>
-                      <div className={`w-10 h-10 rounded-full flex items-center justify-center shrink-0 overflow-hidden ${deputy ? 'bg-blue-100 text-blue-600' : 'bg-slate-200 text-muted-foreground'}`}>
+                    <div className={`flex items-center gap-4 p-4 rounded-2xl mb-6 ${deputy ? 'bg-blue-50/50 dark:bg-blue-500/10 group-hover:bg-blue-50 transition-colors' : 'bg-muted'}`}>
+                      <div className={`w-10 h-10 rounded-full flex items-center justify-center shrink-0 overflow-hidden ${deputy ? 'bg-blue-100 dark:bg-blue-500/10 text-blue-600 dark:text-blue-300' : 'bg-slate-200 text-muted-foreground'}`}>
                         {deputy ? (
                           <img 
                             src={deputy.photo_url || deputy.image_url} 

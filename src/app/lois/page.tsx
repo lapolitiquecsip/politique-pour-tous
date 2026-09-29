@@ -23,10 +23,10 @@ export default function LawsPage() {
 
         {/* Background Large Text (Faded) */}
         <div className="absolute inset-0 z-0 pointer-events-none flex flex-col justify-center items-center overflow-hidden select-none">
-          <h2 className="text-[15rem] md:text-[25rem] font-black text-slate-50/80 leading-none uppercase tracking-tighter -rotate-6">
+          <h2 className="text-[15rem] md:text-[25rem] font-black text-slate-50/80 dark:text-white/[0.03] leading-none uppercase tracking-tighter -rotate-6">
             LÉGISLATION
           </h2>
-          <h2 className="text-[15rem] md:text-[25rem] font-black text-slate-50/80 leading-none uppercase tracking-tighter rotate-3 -mt-20 md:-mt-40">
+          <h2 className="text-[15rem] md:text-[25rem] font-black text-slate-50/80 dark:text-white/[0.03] leading-none uppercase tracking-tighter rotate-3 -mt-20 md:-mt-40">
             PARLEMENT
           </h2>
         </div>

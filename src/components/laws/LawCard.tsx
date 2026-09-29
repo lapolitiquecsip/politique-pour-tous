@@ -14,17 +14,17 @@ interface Law {
 
 export default function LawCard({ law }: { law: Law }) {
   // Determine status style and icon
-  let statusColor = "bg-gray-100 text-gray-800 border-gray-200";
+  let statusColor = "bg-gray-100 dark:bg-gray-500/10 text-gray-800 dark:text-slate-200 border-gray-200 dark:border-gray-500/25";
   let StatusIcon = Clock;
   
   if (law.vote_result?.toLowerCase() === "adoptée") {
-    statusColor = "bg-green-100 text-green-800 border-green-200";
+    statusColor = "bg-green-100 dark:bg-green-500/10 text-green-800 dark:text-green-300 border-green-200 dark:border-green-500/25";
     StatusIcon = CheckCircle2;
   } else if (law.vote_result?.toLowerCase() === "rejetée") {
-    statusColor = "bg-red-100 text-red-800 border-red-200";
+    statusColor = "bg-red-100 dark:bg-red-500/10 text-red-800 dark:text-red-300 border-red-200 dark:border-red-500/25";
     StatusIcon = XCircle;
   } else if (law.vote_result?.toLowerCase() === "en cours") {
-    statusColor = "bg-yellow-100 text-yellow-800 border-yellow-200";
+    statusColor = "bg-yellow-100 dark:bg-yellow-500/10 text-yellow-800 dark:text-yellow-300 border-yellow-200 dark:border-yellow-500/25";
   }
 
   const dateStr = law.date_adopted 

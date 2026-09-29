@@ -119,7 +119,7 @@ export default function ItddSection({ level, code }: { level: "region" | "depart
           <div className="inline-flex flex-wrap gap-1">
             {subFields.map(s => (
               <button key={s} onClick={() => setSub(s)}
-                className={`rounded-full px-3 py-1.5 text-xs font-bold transition ${sub === s ? "bg-emerald-600 text-white" : "bg-slate-100 text-muted-foreground hover:bg-slate-200"}`}>
+                className={`rounded-full px-3 py-1.5 text-xs font-bold transition ${sub === s ? "bg-emerald-600 text-white" : "bg-slate-100 dark:bg-slate-500/10 text-muted-foreground hover:bg-slate-200"}`}>
                 {s || "total"}
               </button>
             ))}

@@ -310,7 +310,7 @@ export default function DetailedLawDossier({ law }: DetailedLawDossierProps) {
                       <span className="opacity-75">🗳️ Vote Assemblée</span>
                       <span className="text-emerald-600 font-extrabold">{pctPour}% POUR</span>
                     </div>
-                    <div className="h-1.5 bg-slate-100 rounded-full overflow-hidden flex">
+                    <div className="h-1.5 bg-slate-100 dark:bg-slate-500/10 rounded-full overflow-hidden flex">
                       <div className="h-full bg-emerald-500" style={{ width: `${pctPour}%` }} />
                       <div className="h-full bg-red-500" style={{ width: `${pctContre}%` }} />
                       <div className="h-full bg-slate-300" style={{ width: `${100 - pctPour - pctContre}%` }} />
@@ -422,7 +422,7 @@ export default function DetailedLawDossier({ law }: DetailedLawDossierProps) {
               <div className="grid grid-cols-1 lg:grid-cols-2 gap-12">
                 {/* Voting Results (Educational & Collapsible) */}
                 {law.voteData && (
-                  <div className="col-span-1 lg:col-span-2 bg-amber-50 rounded-[2rem] text-foreground relative overflow-hidden shadow-[8px_8px_0px_0px_rgba(0,0,0,0.05)] border-2 border-slate-900">
+                  <div className="col-span-1 lg:col-span-2 bg-amber-50 dark:bg-amber-500/10 rounded-[2rem] text-foreground relative overflow-hidden shadow-[8px_8px_0px_0px_rgba(0,0,0,0.05)] border-2 border-slate-900">
                     <button 
                       onClick={() => setIsVoteOpen(!isVoteOpen)}
                       className="w-full p-6 md:p-8 flex flex-col md:flex-row md:items-center justify-between gap-6 text-left hover:bg-amber-100/50 transition-colors group/vote-btn"
@@ -458,7 +458,7 @@ export default function DetailedLawDossier({ law }: DetailedLawDossierProps) {
                       <div className="px-6 md:px-8 pb-8">
                         <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-8">
                           <div className="bg-card p-4 rounded-2xl border-2 border-slate-900 shadow-[4px_4px_0px_0px_rgba(0,0,0,0.1)] flex flex-col items-center text-center">
-                            <div className="w-10 h-10 bg-green-100 rounded-full flex items-center justify-center mb-2 border-2 border-green-500">
+                            <div className="w-10 h-10 bg-green-100 dark:bg-green-500/10 rounded-full flex items-center justify-center mb-2 border-2 border-green-500">
                               <CheckCircle2 className="w-5 h-5 text-green-600" />
                             </div>
                             <span className="text-3xl font-black text-green-600 font-staatliches">{law.voteData.pour}</span>
@@ -466,7 +466,7 @@ export default function DetailedLawDossier({ law }: DetailedLawDossierProps) {
                           </div>
                           
                           <div className="bg-card p-4 rounded-2xl border-2 border-slate-900 shadow-[4px_4px_0px_0px_rgba(0,0,0,0.1)] flex flex-col items-center text-center">
-                            <div className="w-10 h-10 bg-red-100 rounded-full flex items-center justify-center mb-2 border-2 border-red-500">
+                            <div className="w-10 h-10 bg-red-100 dark:bg-red-500/10 rounded-full flex items-center justify-center mb-2 border-2 border-red-500">
                               <XCircle className="w-5 h-5 text-red-600" />
                             </div>
                             <span className="text-3xl font-black text-red-600 font-staatliches">{law.voteData.contre}</span>
@@ -474,7 +474,7 @@ export default function DetailedLawDossier({ law }: DetailedLawDossierProps) {
                           </div>
 
                           <div className="bg-card p-4 rounded-2xl border-2 border-slate-900 shadow-[4px_4px_0px_0px_rgba(0,0,0,0.1)] flex flex-col items-center text-center">
-                            <div className="w-10 h-10 bg-slate-100 rounded-full flex items-center justify-center mb-2 border-2 border-slate-400">
+                            <div className="w-10 h-10 bg-slate-100 dark:bg-slate-500/10 rounded-full flex items-center justify-center mb-2 border-2 border-slate-400">
                               <MinusCircle className="w-5 h-5 text-muted-foreground" />
                             </div>
                             <span className="text-3xl font-black text-muted-foreground font-staatliches">{law.voteData.abstention}</span>
@@ -512,10 +512,10 @@ export default function DetailedLawDossier({ law }: DetailedLawDossierProps) {
                                 const isContre = group.contre > group.pour && group.contre > group.abstention;
                                 
                                 const groupStyle = isPour 
-                                  ? 'bg-green-100 border-green-500 text-green-700' 
+                                  ? 'bg-green-100 dark:bg-green-500/10 border-green-500 text-green-700 dark:text-green-300' 
                                   : isContre 
-                                    ? 'bg-red-100 border-red-500 text-red-700' 
-                                    : 'bg-slate-100 border-slate-400 text-muted-foreground';
+                                    ? 'bg-red-100 dark:bg-red-500/10 border-red-500 text-red-700 dark:text-red-300' 
+                                    : 'bg-slate-100 dark:bg-slate-500/10 border-slate-400 text-muted-foreground';
                                 
                                 return (
                                   <div 
@@ -552,7 +552,7 @@ export default function DetailedLawDossier({ law }: DetailedLawDossierProps) {
                   </h4>
                   <div className="space-y-3">
                     {law.impacts.map((impact, idx) => (
-                      <div key={idx} className="flex gap-3 items-start p-4 bg-slate-50/80 rounded-xl border border-border/60 shadow-sm">
+                      <div key={idx} className="flex gap-3 items-start p-4 bg-slate-50/80 dark:bg-slate-500/10 rounded-xl border border-border/60 shadow-sm">
                         <div className="w-1.5 h-1.5 rounded-full bg-primary mt-2 shrink-0" />
                         <div className="text-slate-700 text-sm font-medium leading-relaxed">{wrapWithGlossary(impact)}</div>
                       </div>

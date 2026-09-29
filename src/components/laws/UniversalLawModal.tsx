@@ -103,8 +103,8 @@ export default function UniversalLawModal({ law, isOpen, onClose, onNext, onPrev
                   disabled={saving}
                   className={`p-2.5 rounded-full transition-all flex items-center gap-2 group shadow-sm ${
                     isSaved 
-                      ? "bg-amber-100 text-amber-600 hover:bg-amber-200" 
-                      : "bg-slate-100 text-muted-foreground hover:bg-slate-200 hover:text-foreground"
+                      ? "bg-amber-100 dark:bg-amber-500/10 text-amber-600 dark:text-amber-300 hover:bg-amber-200" 
+                      : "bg-slate-100 dark:bg-slate-500/10 text-muted-foreground hover:bg-slate-200 hover:text-foreground"
                   }`}
                   title={isSaved ? "Retirer des favoris" : "Enregistrer dans mes favoris"}
                 >
@@ -122,7 +122,7 @@ export default function UniversalLawModal({ law, isOpen, onClose, onNext, onPrev
               )}
               <button 
                 onClick={onClose}
-                className="p-2.5 rounded-full bg-slate-100 text-muted-foreground hover:bg-slate-200 hover:text-foreground transition-all shadow-sm"
+                className="p-2.5 rounded-full bg-slate-100 dark:bg-slate-500/10 text-muted-foreground hover:bg-slate-200 hover:text-foreground transition-all shadow-sm"
               >
                 <X size={20} />
               </button>
@@ -132,7 +132,7 @@ export default function UniversalLawModal({ law, isOpen, onClose, onNext, onPrev
               {isScrutin ? (
                 // --- VOTED LAW (SCRUTIN) UI ---
                 <div className="p-8 md:p-12">
-                   <div className="p-8 border-b border-border flex justify-between items-start bg-slate-50/50 -mx-12 -mt-12 mb-12">
+                   <div className="p-8 border-b border-border flex justify-between items-start bg-slate-50/50 dark:bg-slate-500/10 -mx-12 -mt-12 mb-12">
                     <div className="flex-1 pr-8">
                       <div className="flex items-center gap-3 mb-3">
                         <span className="px-3 py-1 bg-blue-600 text-white text-[9px] font-black uppercase tracking-widest rounded-lg">
@@ -154,7 +154,7 @@ export default function UniversalLawModal({ law, isOpen, onClose, onNext, onPrev
                         <div className="w-1.5 h-8 bg-slate-900 rounded-full" />
                         <h3 className="text-xl font-black uppercase tracking-tighter italic">Répartition des sièges</h3>
                       </div>
-                      <div className="bg-slate-50/50 rounded-[2rem] p-4 border border-border">
+                      <div className="bg-slate-50/50 dark:bg-slate-500/10 rounded-[2rem] p-4 border border-border">
                         <HemicycleVisual groups={law.group_results || []} />
                       </div>
 
@@ -180,7 +180,7 @@ export default function UniversalLawModal({ law, isOpen, onClose, onNext, onPrev
                                 <h3 className="text-lg font-bold text-foreground mb-4 flex items-center gap-2">
                                   <FileText className="text-blue-500" size={20} /> Pourquoi c'est important ?
                                 </h3>
-                                <p className="text-muted-foreground leading-relaxed bg-blue-50/50 p-6 rounded-3xl border border-blue-100 italic">
+                                <p className="text-muted-foreground leading-relaxed bg-blue-50/50 dark:bg-blue-500/10 p-6 rounded-3xl border border-blue-100 dark:border-blue-500/25 italic">
                                   {whyItMatters}
                                 </p>
                               </section>
@@ -268,10 +268,10 @@ export default function UniversalLawModal({ law, isOpen, onClose, onNext, onPrev
                 // --- PROPOSAL / BILL (LAW) UI ---
                 <div className="p-8 md:p-12">
                   <div className="flex items-center gap-2 mb-6">
-                    <span className="px-4 py-1.5 rounded-full bg-blue-100 text-blue-600 text-[10px] font-black uppercase tracking-widest">
+                    <span className="px-4 py-1.5 rounded-full bg-blue-100 dark:bg-blue-500/10 text-blue-600 dark:text-blue-300 text-[10px] font-black uppercase tracking-widest">
                       {law.category || 'Législation'}
                     </span>
-                    <span className="flex items-center gap-1 px-4 py-1.5 rounded-full bg-slate-100 text-muted-foreground text-[10px] font-black uppercase tracking-widest">
+                    <span className="flex items-center gap-1 px-4 py-1.5 rounded-full bg-slate-100 dark:bg-slate-500/10 text-muted-foreground text-[10px] font-black uppercase tracking-widest">
                       <Calendar size={12} /> {law.context?.replace(/\[.*?\]\s*/, "") || "En cours"}
                     </span>
                   </div>

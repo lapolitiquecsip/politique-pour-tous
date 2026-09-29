@@ -9,14 +9,14 @@ import { departmentPaths } from '@/lib/data/departmentPaths';
 const SQRT_5000 = Math.sqrt(5000);
 
 const cardColors = [
-  { text: 'text-pink-500', bg: 'bg-pink-500', lightBg: 'bg-pink-50' },
-  { text: 'text-emerald-500', bg: 'bg-emerald-500', lightBg: 'bg-emerald-50' },
-  { text: 'text-blue-500', bg: 'bg-blue-500', lightBg: 'bg-blue-50' },
-  { text: 'text-purple-500', bg: 'bg-purple-500', lightBg: 'bg-purple-50' },
-  { text: 'text-amber-500', bg: 'bg-amber-500', lightBg: 'bg-amber-50' },
-  { text: 'text-rose-500', bg: 'bg-rose-500', lightBg: 'bg-rose-50' },
-  { text: 'text-indigo-500', bg: 'bg-indigo-500', lightBg: 'bg-indigo-50' },
-  { text: 'text-cyan-500', bg: 'bg-cyan-500', lightBg: 'bg-cyan-50' },
+  { text: 'text-pink-500', bg: 'bg-pink-500', lightBg: 'bg-pink-50 dark:bg-pink-500/10' },
+  { text: 'text-emerald-500', bg: 'bg-emerald-500', lightBg: 'bg-emerald-50 dark:bg-emerald-500/10' },
+  { text: 'text-blue-500', bg: 'bg-blue-500', lightBg: 'bg-blue-50 dark:bg-blue-500/10' },
+  { text: 'text-purple-500', bg: 'bg-purple-500', lightBg: 'bg-purple-50 dark:bg-purple-500/10' },
+  { text: 'text-amber-500', bg: 'bg-amber-500', lightBg: 'bg-amber-50 dark:bg-amber-500/10' },
+  { text: 'text-rose-500', bg: 'bg-rose-500', lightBg: 'bg-rose-50 dark:bg-rose-500/10' },
+  { text: 'text-indigo-500', bg: 'bg-indigo-500', lightBg: 'bg-indigo-50 dark:bg-indigo-500/10' },
+  { text: 'text-cyan-500', bg: 'bg-cyan-500', lightBg: 'bg-cyan-50 dark:bg-cyan-500/10' },
 ];
 
 interface Territory {

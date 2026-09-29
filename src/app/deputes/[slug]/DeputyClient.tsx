@@ -70,7 +70,7 @@ const getVoteDisplay = (position: string) => {
     case 'ABSTENTION':
       return { label: 'ABSTENTION', color: "text-amber-500", bg: "bg-amber-500/10", icon: MinusCircle };
     default:
-      return { label: 'NON VOTANT', color: "text-slate-400", bg: "bg-slate-100", icon: Vote };
+      return { label: 'NON VOTANT', color: "text-slate-400", bg: "bg-slate-100 dark:bg-slate-500/10", icon: Vote };
   }
 };
 
@@ -470,7 +470,7 @@ export default function DeputyDetailPage({ params, embedded }: { params: Promise
                     <>
                       {partyLink?.logo_url ? (
                         // eslint-disable-next-line @next/next/no-img-element
-                        <img src={partyLink.logo_url} alt={partyLink.name} className="w-12 h-12 rounded-2xl object-contain bg-card p-1 shrink-0 shadow-lg ring-1 ring-slate-200 dark:ring-slate-700" />
+                        <img src={partyLink.logo_url} alt={partyLink.name} className="w-12 h-12 rounded-2xl object-contain bg-white p-1 shrink-0 shadow-lg ring-1 ring-slate-200 dark:ring-slate-700" />
                       ) : (
                         <div className="w-12 h-12 rounded-2xl bg-red-500 flex items-center justify-center text-white shrink-0 shadow-lg shadow-red-500/20">
                           <Landmark className="w-6 h-6" />
@@ -485,7 +485,7 @@ export default function DeputyDetailPage({ params, embedded }: { params: Promise
                           {groupFullName}
                         </p>
                         {partyLink && (
-                          <span className="text-[10px] font-black uppercase tracking-widest text-red-600 inline-flex items-center gap-1 mt-1.5 bg-red-50 px-2 py-1 rounded-lg group-hover/party:bg-red-100 transition-colors">Voir la fiche du parti <ArrowRight className="w-3 h-3" /></span>
+                          <span className="text-[10px] font-black uppercase tracking-widest text-red-600 dark:text-red-300 inline-flex items-center gap-1 mt-1.5 bg-red-50 dark:bg-red-500/10 px-2 py-1 rounded-lg group-hover/party:bg-red-100 transition-colors">Voir la fiche du parti <ArrowRight className="w-3 h-3" /></span>
                         )}
                       </div>
                     </>
@@ -832,10 +832,10 @@ export default function DeputyDetailPage({ params, embedded }: { params: Promise
                 const pos = positions[selectedIssue];
                 const label = (issues.find(i => i.slug === selectedIssue)?.title) || "ce sujet";
                 const STANCE: Record<string, { txt: string; cls: string }> = {
-                  pour: { txt: "Plutôt favorable", cls: "bg-emerald-100 text-emerald-700" },
-                  contre: { txt: "Plutôt opposé", cls: "bg-red-100 text-red-700" },
-                  nuance: { txt: "Position nuancée", cls: "bg-amber-100 text-amber-700" },
-                  inconnu: { txt: "Position non tranchée", cls: "bg-slate-100 text-muted-foreground" },
+                  pour: { txt: "Plutôt favorable", cls: "bg-emerald-100 dark:bg-emerald-500/10 text-emerald-700 dark:text-emerald-300" },
+                  contre: { txt: "Plutôt opposé", cls: "bg-red-100 dark:bg-red-500/10 text-red-700 dark:text-red-300" },
+                  nuance: { txt: "Position nuancée", cls: "bg-amber-100 dark:bg-amber-500/10 text-amber-700 dark:text-amber-300" },
+                  inconnu: { txt: "Position non tranchée", cls: "bg-slate-100 dark:bg-slate-500/10 text-muted-foreground" },
                 };
                 const st = STANCE[pos?.stance] || STANCE.inconnu;
                 return (

@@ -85,7 +85,7 @@ export default function SenatorClient() {
         <div className="flex gap-2">
            <button 
              onClick={() => setSelectedDept(null)}
-             className={`px-6 py-4 rounded-2xl font-semibold transition-all ${!selectedDept ? 'bg-amber-600 text-white shadow-lg' : 'bg-slate-100 text-muted-foreground hover:bg-slate-200'}`}
+             className={`px-6 py-4 rounded-2xl font-semibold transition-all ${!selectedDept ? 'bg-amber-600 text-white shadow-lg' : 'bg-slate-100 dark:bg-slate-500/10 text-muted-foreground hover:bg-slate-200'}`}
            >
              Tous
            </button>
@@ -101,7 +101,7 @@ export default function SenatorClient() {
               Répartition par département
             </h2>
             {selectedDept && (
-              <span className="bg-amber-100 text-amber-700 px-3 py-1 rounded-full text-xs font-bold">
+              <span className="bg-amber-100 dark:bg-amber-500/10 text-amber-700 dark:text-amber-300 px-3 py-1 rounded-full text-xs font-bold">
                 {selectedDept}
               </span>
             )}
@@ -147,7 +147,7 @@ export default function SenatorClient() {
           <div className={`grid grid-cols-1 sm:grid-cols-2 gap-x-4 gap-y-16 mt-12 ${!isPremium ? "max-h-[820px] overflow-hidden" : ""}`}>
             {loading ? (
               Array(6).fill(0).map((_, i) => (
-                <div key={i} className="h-48 bg-slate-100 animate-pulse rounded-2xl" />
+                <div key={i} className="h-48 bg-slate-100 dark:bg-slate-500/10 animate-pulse rounded-2xl" />
               ))
             ) : (
               /* Non-premium : on ne rend qu'un PETIT aperçu flouté (6 cartes). Rendre les 352

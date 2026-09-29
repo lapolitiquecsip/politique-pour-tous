@@ -54,7 +54,7 @@ export default function EducationLawPage() {
         {/* Key Indicators */}
         <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.6, delay: 0.2 }} className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-12">
           <div className="bg-card rounded-2xl p-6 shadow-xl shadow-slate-200/50 border border-border flex items-center gap-4">
-            <div className="w-12 h-12 rounded-full bg-emerald-100 flex items-center justify-center text-emerald-600">
+            <div className="w-12 h-12 rounded-full bg-emerald-100 dark:bg-emerald-500/10 flex items-center justify-center text-emerald-600 dark:text-emerald-300">
               <CheckCircle2 className="w-6 h-6" />
             </div>
             <div>
@@ -63,7 +63,7 @@ export default function EducationLawPage() {
             </div>
           </div>
           <div className="bg-card rounded-2xl p-6 shadow-xl shadow-slate-200/50 border border-border flex items-center gap-4">
-            <div className="w-12 h-12 rounded-full bg-amber-100 flex items-center justify-center text-amber-600">
+            <div className="w-12 h-12 rounded-full bg-amber-100 dark:bg-amber-500/10 flex items-center justify-center text-amber-600 dark:text-amber-300">
               <Calendar className="w-6 h-6" />
             </div>
             <div>
@@ -72,7 +72,7 @@ export default function EducationLawPage() {
             </div>
           </div>
           <div className="bg-card rounded-2xl p-6 shadow-xl shadow-slate-200/50 border border-border flex items-center gap-4">
-            <div className="w-12 h-12 rounded-full bg-blue-100 flex items-center justify-center text-blue-600">
+            <div className="w-12 h-12 rounded-full bg-blue-100 dark:bg-blue-500/10 flex items-center justify-center text-blue-600 dark:text-blue-300">
               <BookOpen className="w-6 h-6" />
             </div>
             <div>
@@ -94,7 +94,7 @@ export default function EducationLawPage() {
               
               <div className="space-y-6">
                 <div className="flex gap-4">
-                  <div className="mt-1 w-8 h-8 rounded-full bg-indigo-100 flex items-center justify-center shrink-0">
+                  <div className="mt-1 w-8 h-8 rounded-full bg-indigo-100 dark:bg-indigo-500/10 flex items-center justify-center shrink-0">
                     <span className="text-indigo-600 font-bold">1</span>
                   </div>
                   <div>
@@ -104,7 +104,7 @@ export default function EducationLawPage() {
                 </div>
                 
                 <div className="flex gap-4">
-                  <div className="mt-1 w-8 h-8 rounded-full bg-indigo-100 flex items-center justify-center shrink-0">
+                  <div className="mt-1 w-8 h-8 rounded-full bg-indigo-100 dark:bg-indigo-500/10 flex items-center justify-center shrink-0">
                     <span className="text-indigo-600 font-bold">2</span>
                   </div>
                   <div>
@@ -114,7 +114,7 @@ export default function EducationLawPage() {
                 </div>
 
                 <div className="flex gap-4">
-                  <div className="mt-1 w-8 h-8 rounded-full bg-indigo-100 flex items-center justify-center shrink-0">
+                  <div className="mt-1 w-8 h-8 rounded-full bg-indigo-100 dark:bg-indigo-500/10 flex items-center justify-center shrink-0">
                     <span className="text-indigo-600 font-bold">3</span>
                   </div>
                   <div>

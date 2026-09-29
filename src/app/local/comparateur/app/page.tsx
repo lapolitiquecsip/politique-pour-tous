@@ -219,7 +219,7 @@ function ComparateurContent() {
               <h1 className="text-4xl font-staatliches uppercase tracking-tight text-foreground">Le Comparateur <span className="text-amber-500">Premium</span></h1>
               <p className="text-muted-foreground font-medium italic">Analysez et comparez les territoires de France en temps réel.</p>
             </div>
-            <div className="flex items-center gap-3 px-6 py-3 bg-amber-50 text-amber-600 rounded-2xl border border-amber-100 font-black text-xs uppercase tracking-widest">
+            <div className="flex items-center gap-3 px-6 py-3 bg-amber-50 dark:bg-amber-500/10 text-amber-600 dark:text-amber-300 rounded-2xl border border-amber-100 dark:border-amber-500/25 font-black text-xs uppercase tracking-widest">
               <Star className="w-4 h-4 fill-current" />
               Accès Élite Activé
             </div>
@@ -312,7 +312,7 @@ function ComparateurContent() {
                        {/* Communes */}
                        {(!allowedType || allowedType === 'commune') && searchA.results.map(c => (
                          <button key={c.code} onClick={() => handleSelect('A', c, 'commune')} className="w-full px-8 py-4 flex items-center gap-4 hover:bg-muted transition-colors border-b border-slate-50 text-left">
-                           <div className="w-10 h-10 rounded-lg overflow-hidden shrink-0 bg-slate-100 flex items-center justify-center text-slate-400">
+                           <div className="w-10 h-10 rounded-lg overflow-hidden shrink-0 bg-slate-100 dark:bg-slate-500/10 flex items-center justify-center text-slate-400">
                              <MapPin size={20} />
                            </div>
                            <div className="flex-1">
@@ -480,7 +480,7 @@ function ComparateurContent() {
                        ))}
                        {(!allowedType || allowedType === 'commune') && searchB.results.map(c => (
                          <button key={c.code} onClick={() => handleSelect('B', c, 'commune')} className="w-full px-8 py-4 flex items-center gap-4 hover:bg-muted transition-colors border-b border-slate-50 text-left">
-                           <div className="w-10 h-10 rounded-lg overflow-hidden shrink-0 bg-slate-100 flex items-center justify-center text-slate-400">
+                           <div className="w-10 h-10 rounded-lg overflow-hidden shrink-0 bg-slate-100 dark:bg-slate-500/10 flex items-center justify-center text-slate-400">
                              <MapPin size={20} />
                            </div>
                            <div className="flex-1">
@@ -570,7 +570,7 @@ function ComparateurContent() {
           </div>
 
           {/* Metrics Section */}
-          <div className="bg-slate-50/50 border-t border-border p-12 md:p-16 text-foreground overflow-hidden relative">
+          <div className="bg-slate-50/50 dark:bg-slate-500/10 border-t border-border p-12 md:p-16 text-foreground overflow-hidden relative">
             <div className="absolute top-0 left-1/2 -translate-x-1/2 w-px h-full bg-slate-200/60 hidden lg:block" />
             
             <div className="relative z-10">
@@ -718,7 +718,7 @@ function ComparateurContent() {
                         <div className="text-center font-staatliches uppercase tracking-wider text-xl text-rose-600 mb-6 flex flex-col items-center gap-2">
                           <span>{sideA?.name || "Territoire A"}</span>
                           {sideA?.data.isEstimated && (
-                            <span className="px-3 py-1 bg-amber-50 text-amber-600 text-[9px] uppercase tracking-widest rounded-full border border-amber-200">
+                            <span className="px-3 py-1 bg-amber-50 dark:bg-amber-500/10 text-amber-600 dark:text-amber-300 text-[9px] uppercase tracking-widest rounded-full border border-amber-200 dark:border-amber-500/25">
                               Données estimées
                             </span>
                           )}
@@ -748,7 +748,7 @@ function ComparateurContent() {
                         <div className="text-center font-staatliches uppercase tracking-wider text-xl text-fuchsia-600 mb-6 flex flex-col items-center gap-2">
                           <span>{sideB?.name || "Territoire B"}</span>
                           {sideB?.data.isEstimated && (
-                            <span className="px-3 py-1 bg-amber-50 text-amber-600 text-[9px] uppercase tracking-widest rounded-full border border-amber-200">
+                            <span className="px-3 py-1 bg-amber-50 dark:bg-amber-500/10 text-amber-600 dark:text-amber-300 text-[9px] uppercase tracking-widest rounded-full border border-amber-200 dark:border-amber-500/25">
                               Données estimées
                             </span>
                           )}

@@ -175,7 +175,7 @@ export default function LoginPage() {
           <motion.div 
             initial={{ scale: 0.9, opacity: 0 }}
             animate={{ scale: 1, opacity: 1 }}
-            className="bg-emerald-50 border border-emerald-100 p-6 rounded-2xl text-center"
+            className="bg-emerald-50 dark:bg-emerald-500/10 border border-emerald-100 dark:border-emerald-500/25 p-6 rounded-2xl text-center"
           >
             <CheckCircle2 className="w-12 h-12 text-emerald-500 mx-auto mb-4" />
             <p className="text-emerald-900 text-sm leading-relaxed">

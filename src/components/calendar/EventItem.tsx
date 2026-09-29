@@ -73,7 +73,7 @@ export default function EventItem({ event }: { event: CalendarEvent }) {
         </p>
 
         {event.category && (
-          <div className="mt-3 inline-block px-3 py-1 bg-gray-100 text-gray-600 rounded-full text-xs font-medium">
+          <div className="mt-3 inline-block px-3 py-1 bg-gray-100 dark:bg-gray-500/10 text-gray-600 dark:text-slate-200 rounded-full text-xs font-medium">
             {event.category}
           </div>
         )}

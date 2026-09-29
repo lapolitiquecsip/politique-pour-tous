@@ -120,7 +120,7 @@ export default function Home() {
           {loading ? (
             <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-6">
               {Array(3).fill(0).map((_, i) => (
-                <div key={i} className="h-64 bg-slate-100 animate-pulse rounded-3xl" />
+                <div key={i} className="h-64 bg-slate-100 dark:bg-slate-500/10 animate-pulse rounded-3xl" />
               ))}
             </div>
           ) : !latestContent || latestContent.length === 0 ? (

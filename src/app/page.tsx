@@ -135,13 +135,13 @@ export default function Home() {
           ) : (
             <VerticalImageStack
               items={latestContent}
-              height="h-[600px]"
+              // Carte de 360 × 500 : le titre et le résumé tiennent en entier (résumés
+              // de 500 caractères au plus). À 280 × 420, la moitié étaient coupés.
+              height="h-[680px] md:h-[660px]"
               renderCard={(item, isCurrent, index) => (
                 <div
-                  className={`h-[420px] w-[280px] rounded-3xl overflow-hidden transition-all duration-300 ${
-                    isCurrent
-                      ? "shadow-2xl shadow-slate-900/15 ring-1 ring-slate-900/5 scale-100"
-                      : "shadow-md ring-1 ring-slate-900/5 opacity-80 scale-95"
+                  className={`h-[520px] w-full rounded-[2rem] transition-shadow duration-300 md:h-[500px] ${
+                    isCurrent ? "shadow-2xl shadow-slate-900/10" : "shadow-sm"
                   }`}
                 >
                   <FeedItemCard item={item} colorIndex={index} />

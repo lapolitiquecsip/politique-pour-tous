@@ -39,6 +39,10 @@ export default function LoginPage() {
     if (/invalid login credentials/i.test(m)) return "Adresse ou mot de passe incorrect.";
     if (/already registered|already exists/i.test(m)) return "Un compte existe déjà avec cette adresse. Connectez-vous.";
     if (/password should be at least|weak password/i.test(m)) return "Mot de passe trop court : 6 caractères au minimum.";
+    // Deux limites distinctes : « email rate limit exceeded » est le plafond HORAIRE
+    // d'envois de tout le site, pas une faute du visiteur ; « for security purposes…
+    // after N seconds » est le délai d'une minute entre deux demandes d'une même adresse.
+    if (/email rate limit exceeded/i.test(m)) return "Le service d'envoi des e-mails est momentanément saturé. Réessayez dans un moment — votre adresse n'est pas en cause.";
     if (/rate limit|too many|for security purposes/i.test(m)) return "Trop de tentatives rapprochées. Patientez une minute avant de réessayer.";
     if (/invalid email|unable to validate email/i.test(m)) return "Cette adresse e-mail n'est pas valide.";
     return m || "Une erreur est survenue.";

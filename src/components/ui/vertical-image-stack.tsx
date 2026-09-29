@@ -257,37 +257,24 @@ export function VerticalImageStack({
   const getCardStyle = (diff: number) => {
     // Sur mobile : AUCUNE rotation 3D (rotateX), écarts un peu plus courts → 2 transforms simples
     // (y + scale) au lieu d'un rendu 3D coûteux à composer.
+    // Un « paquet de cartes » : les voisines ne dépassent que de quelques pixels
+    // derrière la carte lue, au lieu de s'étaler dessous et de chevaucher les
+    // commandes. Aucune rotation : l'effet 3D alourdissait sans rien apporter.
     const rx = (v: number) => (isMobile ? 0 : v)
     if (diff === 0) {
       return { y: 0, scale: 1, opacity: 1, zIndex: 5, rotateX: 0 }
     } else if (diff === -1) {
-      return { y: isMobile ? -118 : -130, scale: 0.85, opacity: 0.65, zIndex: 4, rotateX: rx(8) }
+      return { y: isMobile ? -118 : -22, scale: 0.94, opacity: 0.7, zIndex: 4, rotateX: 0 }
     } else if (diff === -2) {
-      return { y: -230, scale: 0.72, opacity: 0.35, zIndex: 3, rotateX: rx(15) }
+      return { y: -40, scale: 0.88, opacity: 0.35, zIndex: 3, rotateX: 0 }
     } else if (diff === 1) {
-      return { y: isMobile ? 118 : 130, scale: 0.85, opacity: 0.65, zIndex: 4, rotateX: rx(-8) }
+      return { y: isMobile ? 118 : 22, scale: 0.94, opacity: 0.7, zIndex: 4, rotateX: 0 }
     } else if (diff === 2) {
-      return { y: 230, scale: 0.72, opacity: 0.35, zIndex: 3, rotateX: rx(-15) }
+      return { y: 40, scale: 0.88, opacity: 0.35, zIndex: 3, rotateX: 0 }
     } else {
-      return { y: diff > 0 ? 350 : -350, scale: 0.6, opacity: 0, zIndex: 0, rotateX: rx(diff > 0 ? -20 : 20) }
+      return { y: diff > 0 ? 60 : -60, scale: 0.82, opacity: 0, zIndex: 0, rotateX: rx(0) }
     }
   }
-
-  const bgColors = {
-    blue: "bg-blue-50/10 dark:bg-blue-950/20 border-blue-100/20 dark:border-blue-900/30",
-    purple: "bg-purple-50/10 dark:bg-purple-950/20 border-purple-100/20 dark:border-purple-900/30",
-    red: "bg-rose-50/10 dark:bg-rose-950/20 border-rose-100/20 dark:border-rose-900/30",
-    amber: "bg-amber-50/10 dark:bg-amber-950/20 border-amber-100/20 dark:border-amber-900/30",
-    emerald: "bg-emerald-50/10 dark:bg-emerald-950/20 border-emerald-100/20 dark:border-emerald-900/30",
-  }[theme] || "bg-slate-50/10 dark:bg-slate-950/20 border-border/20 dark:border-slate-900/30"
-
-  const glowColors = {
-    blue: "bg-blue-500/10 dark:bg-blue-500/15",
-    purple: "bg-purple-500/10 dark:bg-purple-500/15",
-    red: "bg-red-500/10 dark:bg-red-500/15",
-    amber: "bg-amber-500/10 dark:bg-amber-500/15",
-    emerald: "bg-emerald-500/10 dark:bg-emerald-500/15",
-  }[theme] || "bg-slate-900/[0.01] dark:bg-slate-100/[0.02]"
 
   // Mobile : 3 cartes (courante + voisines) au lieu de 5 → 40 % d'éléments animés en moins.
   const relativePositions = isMobile ? [-1, 0, 1] : [-2, -1, 0, 1, 2]
@@ -302,9 +289,11 @@ export function VerticalImageStack({
   };
 
   return (
-    <div 
+    // Posé directement sur le fond du site : ni cadre, ni fond, ni ombre — c'est ce
+    // cadre qui dessinait un « rectangle » autour du fil.
+    <div
       ref={containerRef}
-      className={`relative flex ${height} w-full items-center justify-center overflow-hidden transition-all duration-500 rounded-[3rem] border shadow-inner ${bgColors}`}
+      className={`relative flex ${height} w-full items-center justify-center overflow-hidden`}
     >
       {/* Halo ambiant VIF derrière la pile — change de couleur à chaque scroll. Sur mobile : plus
           petit, flou plus léger, et SANS transition de couleur (la ré-rastérisation d'un gros flou
@@ -312,7 +301,7 @@ export function VerticalImageStack({
       <div className="pointer-events-none absolute inset-0">
         <div
           className={`absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 rounded-full ${isMobile ? "h-[320px] w-[320px] blur-2xl" : "h-[550px] w-[550px] blur-3xl transition-colors duration-500"}`}
-          style={{ backgroundColor: vividAt(currentIndex), opacity: 0.16 }}
+          style={{ backgroundColor: vividAt(currentIndex), opacity: 0.09 }}
         />
       </div>
 
@@ -375,7 +364,7 @@ export function VerticalImageStack({
       {isMobile ? (
         // MOBILE : UNE seule carte, transition très douce (fondu + léger glissement, ~10px). Aucune
         // carte voisine qui bouge/scale → lecture confortable, pas de « trop-plein » de mouvement.
-        <div className="relative flex h-[480px] w-[300px] items-center justify-center overflow-hidden">
+        <div className="relative flex h-full w-full max-w-[400px] items-center justify-center overflow-hidden">
           <AnimatePresence initial={false} custom={dir}>
             <motion.div
               key={currentIndex}
@@ -384,7 +373,7 @@ export function VerticalImageStack({
               initial="enter"
               animate="center"
               exit="exit"
-              className="absolute w-[280px] cursor-grab active:cursor-grabbing touch-pan-x"
+              className="absolute w-[min(90vw,360px)] cursor-grab active:cursor-grabbing touch-pan-x"
               transition={{ duration: 0.3, ease: [0.33, 1, 0.68, 1] }}
               drag="y"
               dragConstraints={{ top: 0, bottom: 0 }}
@@ -397,7 +386,7 @@ export function VerticalImageStack({
           </AnimatePresence>
         </div>
       ) : (
-      <div className="relative flex h-[480px] w-[340px] items-center justify-center" style={{ perspective: "1200px" }}>
+      <div className="relative -mt-6 flex h-[560px] w-[380px] items-center justify-center">
         {relativePositions.map((rel) => {
           const style = getCardStyle(rel)
           const isCurrent = rel === 0
@@ -412,7 +401,7 @@ export function VerticalImageStack({
           return (
             <motion.div
               key={absoluteIndex}
-              className="absolute cursor-grab active:cursor-grabbing w-[280px]"
+              className="absolute cursor-grab active:cursor-grabbing w-[360px]"
               animate={{ y: style.y, scale: style.scale, opacity: style.opacity, rotateX: style.rotateX, zIndex: style.zIndex }}
               transition={{ type: "spring", stiffness: 380, damping: 30, mass: 0.7 }}
               drag={isCurrent ? "y" : false}
@@ -430,13 +419,13 @@ export function VerticalImageStack({
       )}
 
       {/* Instruction hint / Tinder-style Controls merged */}
-      <div className="absolute bottom-6 left-1/2 -translate-x-1/2 z-30 flex items-center gap-6 select-none bg-white/80 dark:bg-slate-900/80 backdrop-blur-md px-5 py-2.5 rounded-full border border-border dark:border-slate-800 shadow-md">
+      <div className="absolute bottom-4 left-1/2 z-30 flex -translate-x-1/2 select-none items-center gap-4">
         <motion.button
           whileHover={{ scale: 1.15 }}
           whileTap={{ scale: 0.9 }}
           onClick={() => navigate(-1)}
           disabled={currentIndex === 0}
-          className={`w-9 h-9 flex items-center justify-center rounded-full bg-muted dark:bg-slate-800 border border-border dark:border-slate-700 text-muted-foreground dark:text-slate-400 hover:text-slate-800 dark:hover:text-slate-200 disabled:opacity-30 disabled:cursor-not-allowed transition-all shadow-sm`}
+          className="flex h-10 w-10 items-center justify-center rounded-full bg-card text-muted-foreground shadow-md ring-1 ring-border transition-all hover:text-foreground disabled:cursor-not-allowed disabled:opacity-30 dark:bg-slate-900 dark:ring-slate-800"
           title="Précédent"
         >
           <svg className="w-5 h-5 stroke-[2.5]" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -444,20 +433,16 @@ export function VerticalImageStack({
           </svg>
         </motion.button>
 
-        <motion.span
-          animate={{ opacity: [0.5, 1, 0.5] }}
-          transition={{ duration: 2, repeat: Infinity, ease: "easeInOut" }}
-          className="text-[10px] font-black tracking-widest uppercase text-amber-500 select-none"
-        >
-          GLISSER / DÉFILER
-        </motion.span>
+        <span className="select-none text-[10px] font-bold uppercase tracking-[0.2em] text-muted-foreground/70 tabular-nums">
+          {currentIndex + 1} / {items.length}
+        </span>
 
         <motion.button
           whileHover={{ scale: 1.15 }}
           whileTap={{ scale: 0.9 }}
           onClick={() => navigate(1)}
           disabled={currentIndex === items.length - 1}
-          className={`w-9 h-9 flex items-center justify-center rounded-full bg-muted dark:bg-slate-800 border border-border dark:border-slate-700 text-muted-foreground dark:text-slate-400 hover:text-slate-800 dark:hover:text-slate-200 disabled:opacity-30 disabled:cursor-not-allowed transition-all shadow-sm`}
+          className="flex h-10 w-10 items-center justify-center rounded-full bg-card text-muted-foreground shadow-md ring-1 ring-border transition-all hover:text-foreground disabled:cursor-not-allowed disabled:opacity-30 dark:bg-slate-900 dark:ring-slate-800"
           title="Suivant"
         >
           <svg className="w-5 h-5 stroke-[2.5]" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -474,7 +459,7 @@ export function VerticalImageStack({
           key={combo}
           animate={combo > 0 ? { scale: [1, 1.06, 1] } : {}}
           transition={{ duration: 0.35, ease: "easeOut" }}
-          className="flex flex-col items-center gap-2 rounded-3xl border border-border/60 bg-white/90 px-4 py-4 text-center shadow-xl shadow-amber-500/5 backdrop-blur-md dark:border-slate-800/60 dark:bg-slate-900/90"
+          className="flex flex-col items-center gap-2 px-2 text-center"
         >
           <span className="flex items-center gap-1 text-[9px] font-black uppercase tracking-widest text-amber-500">
             Combo {combo > 0 ? "🔥" : "💤"}

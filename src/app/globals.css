@@ -353,6 +353,11 @@ html[data-abonnement="pro"] .lbl-offre { display: none; }
   --color-amber-500: #a855f7;
   --color-amber-600: #9333ea;
   --color-amber-700: #7e22ce;
+  /* Les tons profonds servent aux fonds de cartes (« to-amber-950/70 ») : sans eux,
+     une carte d'abonné Pro gardait un fond brun doré sous un habillage violet. */
+  --color-amber-800: #6b21a8;
+  --color-amber-900: #581c87;
+  --color-amber-950: #3b0764;
   /* Le second ton des dégradés « doré → jaune » devient « violet → fuchsia ». */
   --color-yellow-300: #f0abfc;
   --color-yellow-400: #e879f9;

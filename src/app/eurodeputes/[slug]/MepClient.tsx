@@ -108,6 +108,22 @@ export default function MepClient({ mep, initialVotes, embedded }: { mep: any; i
     setExp(e ?? null); setGroupsVote(g);
   };
 
+  // Arrivée depuis une alerte de vote (« ?vote=196483 ») : la fenêtre du vote
+  // expliqué s'ouvre d'elle-même. Le vote est cherché dans la liste, sinon lu
+  // directement — il peut dater d'avant la première page.
+  useEffect(() => {
+    const voulu = new URLSearchParams(window.location.search).get("vote");
+    if (!voulu) return;
+    let actif = true;
+    (async () => {
+      const v = initialVotes.find(x => String(x.vote_id) === voulu) ?? await api.getMepVote(String(mep.id), voulu).catch(() => null);
+      if (actif && v) openExplanation(v);
+    })();
+    return () => { actif = false; };
+    // Une seule fois, à l'arrivée sur la fiche.
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [mep.id]);
+
   // Bio structurée + situation judiciaire.
   const bio = mep.bio || {};
   const hasStructured = BIO_FIELDS.some(([k]) => toPoints(bio[k]).length > 0);

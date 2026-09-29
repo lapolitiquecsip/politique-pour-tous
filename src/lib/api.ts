@@ -1,6 +1,6 @@
 import { supabase } from "./supabase";
 import type { LegislativeCategory, LegislativeDossierDetail, LegislativeListItem } from "./legislative";
-import { parseInitiators, normalizeName } from "./initiators";
+import { parseInitiators, normalizeName, deputyPhotoSources } from "./initiators";
 
 /**
  * API Client — FULL SUPABASE MIGRATION (SERVERLESS)
@@ -116,6 +116,16 @@ export const api = {
     return data;
   },
   // Historique de votes d'un eurodéputé (votes principaux du Parlement européen).
+  // Un vote précis d'un eurodéputé, pour l'ouvrir depuis une alerte même s'il ne
+  // figure pas dans la première page de la liste.
+  getMepVote: async (mepId: string, voteId: string) => {
+    if (!mepId || !voteId) return null;
+    const { data } = await supabase
+      .from('mep_votes')
+      .select('vote_id, title, reference, voted_at, position, result, url, is_main, category')
+      .eq('mep_id', mepId).eq('vote_id', voteId).maybeSingle();
+    return data;
+  },
   getMepVotes: async (mepId: string, opts?: { limit?: number; offset?: number; onlyMain?: boolean; category?: string }) => {
     if (!mepId) return [];
     const limit = opts?.limit ?? 20;
@@ -528,7 +538,7 @@ export const api = {
   getSenatorVotes: async (matricule: string | null, firstName?: string, lastName?: string, limit = 500) => {
     let base = supabase
       .from('legislative_votes')
-      .select('id, position, legislative_scrutins!inner(id, title, explanation, voted_at, chamber)')
+      .select('id, position, legislative_scrutins!inner(id, official_id, title, explanation, voted_at, chamber)')
       .eq('legislative_scrutins.chamber', 'SENAT')
       .limit(1000);
     let data: any[] | null = null;
@@ -540,7 +550,7 @@ export const api = {
       const name = `${firstName || ''} ${lastName || ''}`.trim();
       const res = await supabase
         .from('legislative_votes')
-        .select('id, position, legislative_scrutins!inner(id, title, explanation, voted_at, chamber)')
+        .select('id, position, legislative_scrutins!inner(id, official_id, title, explanation, voted_at, chamber)')
         .ilike('voter_name', name)
         .eq('legislative_scrutins.chamber', 'SENAT')
         .limit(1000);
@@ -561,6 +571,8 @@ export const api = {
         return {
           id: r.id,
           scrutin_id: sc.id || null,
+          // L'alerte désigne le scrutin par son numéro officiel quand il existe.
+          official_id: sc.official_id || null,
           title: sc.title || 'Scrutin',
           explanation: sc.explanation || null,
           _ts: d ? d.getTime() : 0,
@@ -915,7 +927,7 @@ export const api = {
   },
 
   getNotifications: async (userId: string, limit = 50) => {
-    const base = 'id, type, title, detail, position, domain, url, importance, event_at, read, created_at, deputy_id, senator_id';
+    const base = 'id, type, title, detail, position, domain, url, importance, event_at, read, created_at, deputy_id, senator_id, scrutin_id';
     // Tri par DATE DU VOTE (event_at) décroissante — le vote le plus récent en haut, tous élus
     // confondus. created_at en second critère pour les rares notifs sans date d'événement.
     const ord = (q: any) => q.order('event_at', { ascending: false, nullsFirst: false }).order('created_at', { ascending: false });
@@ -927,7 +939,51 @@ export const api = {
       res = await ord(supabase.from('user_notifications').select(base).eq('user_id', userId)).limit(limit);
     }
     if (res.error) { console.error(res.error); return []; }
-    return res.data || [];
+    const rows: any[] = res.data || [];
+
+    // Une alerte de vote se lit d'abord par QUI a voté : on y joint l'élu (nom,
+    // photo, parti) et l'adresse de sa fiche, ouverte directement sur le vote
+    // expliqué. Trois petites requêtes par identifiants, plutôt qu'une jointure :
+    // `mep_id` n'est pas une clé étrangère.
+    const ids = (k: string) => [...new Set(rows.map(r => r[k]).filter(Boolean))];
+    const depIds = ids('deputy_id'), senIds = ids('senator_id'), mepIds = ids('mep_id');
+    const mepVotes = [...new Set(rows.filter(r => r.mep_id && r.scrutin_id).map(r => String(r.scrutin_id)))];
+    const vide = Promise.resolve({ data: [] as any[] });
+    const [deps, sens, meps, expl] = await Promise.all([
+      depIds.length ? supabase.from('deputies').select('id, slug, first_name, last_name, photo_url, an_id, party, party_color').in('id', depIds) : vide,
+      senIds.length ? supabase.from('senators').select('id, slug, first_name, last_name, photo_url, party, party_color').in('id', senIds) : vide,
+      mepIds.length ? supabase.from('meps').select('id, slug, full_name, first_name, last_name, photo_url, ep_group_code, national_party').in('id', mepIds) : vide,
+      // Les votes européens portent un intitulé officiel en anglais (« Objection
+      // pursuant to Rule 115… ») : le résumé français de l'explication le remplace.
+      mepVotes.length ? supabase.from('vote_explanations').select('vote_id, subject').in('vote_id', mepVotes) : vide,
+    ]);
+    const parId = (r: any) => new Map(((r as any).data || []).map((x: any) => [String(x.id ?? x.vote_id), x]));
+    const D = parId(deps), S = parId(sens), M = parId(meps), E = parId(expl);
+    const avecVote = (chemin: string, slug: string | null, scrutin: unknown) =>
+      slug ? `${chemin}/${slug}${scrutin ? `?vote=${encodeURIComponent(String(scrutin))}` : ''}` : null;
+
+    for (const r of rows) {
+      if (r.type !== 'vote') continue;
+      const d: any = r.deputy_id && D.get(String(r.deputy_id));
+      const s: any = r.senator_id && S.get(String(r.senator_id));
+      const m: any = r.mep_id && M.get(String(r.mep_id));
+      if (d) r.elu = {
+        chambre: 'Assemblée nationale', nom: `${d.first_name} ${d.last_name}`.trim(), parti: d.party, couleur: d.party_color,
+        photos: deputyPhotoSources(d.an_id, d.slug, d.photo_url), href: avecVote('/deputes', d.slug, r.scrutin_id),
+      };
+      else if (s) r.elu = {
+        chambre: 'Sénat', nom: `${s.first_name} ${s.last_name}`.trim(), parti: s.party, couleur: s.party_color,
+        photos: [s.photo_url].filter(Boolean), href: avecVote('/senateurs', s.slug, r.scrutin_id),
+      };
+      else if (m) r.elu = {
+        chambre: 'Parlement européen', nom: m.full_name || `${m.first_name} ${m.last_name}`.trim(),
+        parti: m.national_party || m.ep_group_code, couleur: null,
+        photos: [m.photo_url].filter(Boolean), href: avecVote('/eurodeputes', m.slug, r.scrutin_id),
+      };
+      const fr: any = r.mep_id && r.scrutin_id && E.get(String(r.scrutin_id));
+      if (fr?.subject) r.resume = fr.subject;
+    }
+    return rows;
   },
   getUnreadNotificationCount: async (userId: string) => {
     const { count, error } = await supabase
@@ -1960,6 +2016,16 @@ export const api = {
   },
 
 
+  // Un vote précis d'un député, pour l'ouvrir depuis une alerte même quand il
+  // n'est pas dans la liste (qui ne garde que les lois et articles).
+  getDeputyVote: async (anId: string, scrutinId: string) => {
+    if (!anId || !scrutinId) return null;
+    const { data } = await supabase
+      .from('deputy_votes')
+      .select('*, scrutins!inner(id, numero, date_scrutin, objet, resultat, type, category, dossier_url, pour, contre, abstention, non_votant)')
+      .eq('deputy_an_id', anId).eq('scrutin_id', scrutinId).maybeSingle();
+    return data;
+  },
   getVotesByDeputy: async (anId: string) => {
     // Note: We filter for type 'LOI' as requested, to avoid useless amendment noise.
     // 'scrutins!inner' allows filtering on the related table

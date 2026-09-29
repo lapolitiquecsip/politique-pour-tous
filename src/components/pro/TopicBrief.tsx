@@ -4,7 +4,7 @@ import { useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import {
   Search, Loader2, Sparkles, Scale, HandCoins, Hourglass, Info, ExternalLink, AlertTriangle, RotateCw,
-  Crown, Landmark, Calculator, ChevronDown, Lightbulb,
+  Crown, Landmark, Calculator, ChevronDown, Lightbulb, ShieldCheck,
 } from "lucide-react";
 import { supabase } from "@/lib/supabase";
 
@@ -49,10 +49,14 @@ type Brief = {
 };
 type Source = {
   kind: string; groupe?: string; title: string; date: string | null; url: string | null; note?: string | null;
+  /** Le lien mène à la version consolidée, à jour de toutes ses modifications. */
+  en_vigueur?: boolean;
 };
 type Reponse = {
   slug?: string; keyword?: string; brief?: Brief; sources?: Source[];
   counts?: Record<string, number | string | null>; generated_at?: string; cached?: boolean;
+  /** Moment où les sources ont été revérifiées — à chaque demande, cache ou non. */
+  verifie_le?: string;
   empty?: boolean; message?: string; error?: string;
 };
 
@@ -95,6 +99,12 @@ const dateCourte = (iso?: string | null) => {
   if (!m) return null;
   const mois = ["janv.", "févr.", "mars", "avr.", "mai", "juin", "juil.", "août", "sept.", "oct.", "nov.", "déc."];
   return `${+m[3]} ${mois[+m[2] - 1]} ${m[1]}`;
+};
+
+/** L'heure d'un horodatage ISO, à la française : « 12 h 26 ». */
+const heure = (iso?: string | null) => {
+  const d = new Date(String(iso ?? ""));
+  return Number.isNaN(d.getTime()) ? "" : `${d.getHours()} h ${String(d.getMinutes()).padStart(2, "0")}`;
 };
 
 /** Le nom du site d'un lien, pour que le lecteur sache où il va avant de cliquer. */
@@ -276,7 +286,7 @@ export default function TopicBrief() {
   // `counts` mélange trois choses : le compte par corpus, la profondeur du
   // Journal officiel (une date) et le total trouvé. Sommer naïvement comptait
   // donc les documents deux fois.
-  const HORS_COMPTE = new Set(["jorf_depuis", "total_trouves"]);
+  const HORS_COMPTE = new Set(["jorf_depuis", "total_trouves", "empreinte"]);
   const total = Number(res?.counts?.total_trouves)
     || Object.entries(res?.counts ?? {})
       .filter(([k, v]) => !HORS_COMPTE.has(k) && typeof v === "number")
@@ -395,6 +405,16 @@ export default function TopicBrief() {
                     )}
                   </div>
 
+                  {/* La garantie de fraîcheur, dite au lecteur : les sources sont
+                      revérifiées à chaque demande, et la synthèse est refaite dès
+                      qu'une fiche, un décret ou une loi a bougé. */}
+                  {res.verifie_le && (
+                    <p className="mt-2 inline-flex items-center gap-1.5 rounded-full bg-emerald-400/10 px-3 py-1 text-[11px] font-bold text-emerald-200 ring-1 ring-inset ring-emerald-400/20">
+                      <ShieldCheck size={12} className="shrink-0" />
+                      Droit en vigueur vérifié le {dateCourte(res.verifie_le)} à {heure(res.verifie_le)}
+                    </p>
+                  )}
+
                   {brief?.en_bref && (
                     <p className="mt-3 rounded-2xl bg-gradient-to-r from-violet-500/15 to-fuchsia-500/10 p-4 text-[15px] font-medium leading-relaxed text-white/90">
                       {brief.en_bref}
@@ -439,6 +459,11 @@ export default function TopicBrief() {
                               )}
                               {(role || s.note) && (
                                 <span className="mt-0.5 block text-[12px] leading-snug text-white/55">{role || s.note}</span>
+                              )}
+                              {s.en_vigueur && (
+                                <span className="mt-1 inline-flex items-center gap-1 text-[10px] font-bold text-emerald-300/80">
+                                  <ShieldCheck size={10} /> Lien vers la version en vigueur
+                                </span>
                               )}
                             </span>
                             {s.url && (
@@ -557,7 +582,7 @@ export default function TopicBrief() {
                                   ) : (
                                     <span className="text-white/75">{s.title}</span>
                                   )}
-                                  {s.date && <span className="ml-1.5 text-white/35">{dateCourte(s.date)}</span>}
+                                  {s.date && <span className="ml-1.5 text-white/35">{s.groupe === "fiche" ? "mise à jour le " : ""}{dateCourte(s.date)}</span>}
                                 </span>
                               </li>
                             ))}
@@ -577,7 +602,7 @@ export default function TopicBrief() {
                     {/* Le périmètre réel, dit sans détour. */}
                     <p className="text-[11px] leading-snug text-white/35">
                       Synthèse produite à partir des seuls documents listés : fiches de service-public.gouv.fr
-                      (droit en vigueur), textes de Légifrance, débats parlementaires
+                      (droit en vigueur, relues chaque jour), textes de Légifrance en version consolidée, débats parlementaires
                       {jorfDepuis && <> et Journal officiel conservé depuis le {jorfDepuis}</>}.
                       Elle n&apos;a pas valeur de conseil : pour une situation précise, les textes eux-mêmes font foi.
                     </p>

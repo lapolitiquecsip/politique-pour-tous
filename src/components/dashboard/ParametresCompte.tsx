@@ -105,23 +105,23 @@ export default function ParametresCompte() {
           de l'offre, un halo qui respire, et surtout une sortie claire vers la gestion
           de l'abonnement. Un abonné qui ne trouve pas comment changer de formule finit
           par écrire, ou par partir. */}
-      <div className="relative overflow-hidden rounded-3xl border-2 border-fuchsia-400/40 bg-gradient-to-br from-slate-950 via-slate-900 to-purple-950 p-6 shadow-xl">
+      <div className="relative overflow-hidden rounded-3xl border-2 border-amber-400/40 bg-gradient-to-br from-slate-950 via-slate-900 to-amber-950/80 p-6 shadow-xl">
         <motion.div
           aria-hidden
-          className="pointer-events-none absolute -right-16 -top-16 h-48 w-48 rounded-full bg-fuchsia-500/25 blur-3xl"
+          className="pointer-events-none absolute -right-16 -top-16 h-48 w-48 rounded-full bg-amber-500/25 blur-3xl"
           animate={reduce ? undefined : { scale: [1, 1.18, 1], opacity: [0.45, 0.85, 0.45] }}
           transition={{ duration: 5, repeat: Infinity, ease: "easeInOut" }}
         />
 
         <div className="relative">
-          <p className="flex items-center gap-2 text-[10px] font-black uppercase tracking-widest text-fuchsia-300">
+          <p className="flex items-center gap-2 text-[10px] font-black uppercase tracking-widest text-amber-300">
             <ShieldCheck size={13} /> Abonnement
           </p>
 
           <div className="mt-2 flex flex-wrap items-center gap-x-3 gap-y-1">
             <span className="font-staatliches text-4xl uppercase leading-none tracking-tight text-white">{niveau.nom}</span>
             {niveau.prix && (
-              <span className="rounded-full bg-gradient-to-r from-fuchsia-500 to-purple-600 px-3 py-1 text-[11px] font-black uppercase tracking-widest text-white shadow-lg shadow-fuchsia-500/30">
+              <span className="rounded-full bg-gradient-to-r from-amber-400 to-yellow-600 px-3 py-1 text-[11px] font-black uppercase tracking-widest text-white shadow-[0_8px_24px_rgb(var(--lueur-offre)/0.35)]">
                 {niveau.prix}
               </span>
             )}
@@ -132,14 +132,14 @@ export default function ParametresCompte() {
             {STRIPE_PORTAL_URL ? (
               <a
                 href={STRIPE_PORTAL_URL} target="_blank" rel="noopener noreferrer"
-                className="inline-flex items-center justify-center gap-2 rounded-2xl bg-gradient-to-r from-fuchsia-500 to-purple-600 px-5 py-3 text-[11px] font-black uppercase tracking-widest text-white shadow-lg shadow-fuchsia-500/30 transition hover:brightness-110"
+                className="inline-flex items-center justify-center gap-2 rounded-2xl bg-gradient-to-r from-amber-400 to-yellow-600 px-5 py-3 text-[11px] font-black uppercase tracking-widest text-white shadow-[0_8px_24px_rgb(var(--lueur-offre)/0.35)] transition hover:brightness-110"
               >
                 <CreditCard size={15} /> Gérer mon abonnement <ArrowUpRight size={14} />
               </a>
             ) : (
               <a
                 href={`mailto:${CONTACT_EMAIL}?subject=${encodeURIComponent("Changement d'abonnement")}&body=${encodeURIComponent(`Bonjour,\n\nJe souhaite modifier mon abonnement (actuellement : ${niveau.nom}).\n\nCompte : ${courriel ?? ""}\n`)}`}
-                className="inline-flex items-center justify-center gap-2 rounded-2xl bg-gradient-to-r from-fuchsia-500 to-purple-600 px-5 py-3 text-[11px] font-black uppercase tracking-widest text-white shadow-lg shadow-fuchsia-500/30 transition hover:brightness-110"
+                className="inline-flex items-center justify-center gap-2 rounded-2xl bg-gradient-to-r from-amber-400 to-yellow-600 px-5 py-3 text-[11px] font-black uppercase tracking-widest text-white shadow-[0_8px_24px_rgb(var(--lueur-offre)/0.35)] transition hover:brightness-110"
               >
                 <CreditCard size={15} /> Changer ou résilier
               </a>

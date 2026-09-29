@@ -253,6 +253,15 @@ export default function DeputyDetailPage({ params, embedded }: { params: Promise
         const realVotes = await api.getVotesByDeputy(dbDeputy.an_id);
         setVotes(realVotes);
         setLoadingVotes(false);
+        // Arrivée depuis une alerte de vote (« ?vote=… ») : la fenêtre qui explique
+        // ce vote s'ouvre d'elle-même. Hors de la liste (qui ne garde que lois et
+        // articles), le vote est lu directement.
+        const voulu = new URLSearchParams(window.location.search).get("vote");
+        if (voulu) {
+          const v = realVotes.find((x: any) => String(x.scrutin_id) === voulu || String(x.scrutins?.id) === voulu)
+            ?? await api.getDeputyVote(dbDeputy.an_id, voulu).catch(() => null);
+          if (v) setSelectedVoteForModal(v);
+        }
         // Tags d'enjeux des scrutins votés (les "actes" par sujet) + référentiel des enjeux.
         const ids = realVotes.map((v: any) => v?.scrutins?.id).filter(Boolean);
         api.getScrutinIssues(ids).then(setScrutinIssues).catch(() => {});

@@ -50,8 +50,12 @@ const json = (corps: unknown, status = 200) =>
     headers: { ...CORS, "Content-Type": "application/json" },
   });
 
-/** Durée au-delà de laquelle une synthèse est recalculée : la matière bouge. */
-const FRAICHEUR_JOURS = 14;
+/**
+ * Âge maximal d'une synthèse, même si sa matière n'a pas bougé. Le vrai garde-fou
+ * est l'empreinte (voir plus bas), vérifiée à chaque demande ; cette borne ne sert
+ * qu'à rattraper ce que l'empreinte ne voit pas — une fiche réécrite à longueur égale.
+ */
+const FRAICHEUR_JOURS = 7;
 
 /**
  * Version du format de la synthèse. Une synthèse en cache d'un autre format est
@@ -169,6 +173,8 @@ type Groupe = "fiche" | "texte" | "jo" | "loi" | "debat" | "actu";
 type Source = {
   kind: string; groupe: Groupe; title: string; date: string | null; url: string | null;
   note?: string | null;
+  /** Le lien mène à la version consolidée, à jour de toutes ses modifications. */
+  en_vigueur?: boolean;
 };
 
 type Ref = { titre: string; url: string | null; complement?: string };
@@ -217,6 +223,20 @@ function natureTexte(titre: string): string {
 }
 
 /**
+ * Le lien Légifrance de la version EN VIGUEUR d'une loi, d'un décret ou d'un arrêté.
+ *
+ * Les fiches citent souvent un texte par son lien au Journal officiel
+ * (`/jorf/id/JORFTEXT…`) : c'est le texte tel qu'il a été PUBLIÉ, sans les
+ * modifications intervenues depuis. Le même identifiant sous `/loda/id/` ouvre la
+ * version consolidée, à jour — la DILA emploie elle-même cette forme dans ses
+ * fiches. Les liens vers les codes (`/codes/…`) mènent déjà à la version en vigueur.
+ */
+function versionEnVigueur(url: string | null): string | null {
+  if (!url) return url;
+  return url.replace(/^https?:\/\/(www\.)?legifrance\.gouv\.fr\/jorf\/id\/(JORFTEXT\d+)\/?$/i, "https://www.legifrance.gouv.fr/loda/id/$2/");
+}
+
+/**
  * Rassemble la matière : les fiches pratiques d'abord, puis TOUS les corpus du
  * site.
  *
@@ -249,16 +269,30 @@ async function rassembler(admin: ReturnType<typeof createClient>, mot: string) {
     }
   };
 
+  // Un sigle (RSA, TVA, APL, PTZ, CSG…) ne peut pas se chercher comme un fragment :
+  // « %rsa% » ramène « universalité » et « conversation ». On le cherche alors comme
+  // un mot entier, avec les bornes de mot de PostgreSQL.
+  const court = pivot.length <= 3;
+  const motsTest = mots.length ? mots : [pivot];
+
   /** Ne garde que ce qui contient tous les mots du sujet. */
   const tousLesMots = (champs: unknown[]) => {
     const texte = sansAccent(champs.filter(Boolean).join(" "));
-    return mots.every(m => texte.includes(m));
+    return motsTest.every(m => (m.length <= 3 ? new RegExp(`\\b${m}\\b`).test(texte) : texte.includes(m)));
   };
 
-  const ou = (colonnes: string[]) => colonnes.map(c => `${c}.ilike.${L}`).join(",");
+  const ou = (colonnes: string[]) => colonnes
+    .map(c => (court ? `${c}.imatch.[[:<:]]${pivot.replace(/[^a-z0-9]/g, "")}[[:>:]]` : `${c}.ilike.${L}`))
+    .join(",");
+
+  // Chaque corpus est TRIÉ par date décroissante avant d'être borné. Sans tri, une
+  // recherche par mot renvoie les lignes dans l'ordre où la base les trouve, et la
+  // borne gardait trente textes au hasard — parfois des lois anciennes à la place
+  // de la plus récente. Sur un sujet juridique, le plus récent doit toujours passer.
+  const recent = { ascending: false, nullsFirst: false } as const;
 
   const [
-    fiches, jorfFts, laws, legacy, decrets, analyses, dossiers, scrutins,
+    fichesEt, jorfFts, laws, legacy, decrets, analyses, dossiers, scrutins,
     scrutinsSenat, explications, commissions, actus, petitions, europe, amendements, profondeur,
   ] = await Promise.all([
     // Recherche plein texte insensible aux accents, classée côté base (le titre
@@ -267,48 +301,58 @@ async function rassembler(admin: ReturnType<typeof createClient>, mot: string) {
     sur("jorf", admin.from("jorf_texts")
       .select("id, edition_date, titre, explication")
       .textSearch("recherche", mot, { type: "websearch", config: "french" })
-      .order("edition_date", { ascending: false }).limit(30)),
+      .order("edition_date", recent).limit(30)),
     sur("laws", admin.from("laws")
       .select("id, title, summary, impact, context, category, date_adopted, source_urls")
-      .or(ou(["title", "summary"])).limit(30)),
+      .or(ou(["title", "summary"])).order("date_adopted", recent).limit(30)),
     sur("legacy_laws", admin.from("legacy_laws")
       .select("id, title, summary, category, date_adopted, source_urls")
-      .or(ou(["title", "summary"])).limit(20)),
+      .or(ou(["title", "summary"])).order("date_adopted", recent).limit(20)),
     sur("decrees", admin.from("decrees")
       .select("jorf_id, title, display_title, summary, nature, date_publi, source_url")
-      .or(ou(["title", "display_title", "summary"])).limit(25)),
+      .or(ou(["title", "display_title", "summary"])).order("date_publi", recent).limit(25)),
     sur("analyses", admin.from("legislative_analyses")
       .select("id, dossier_id, summary, audience, generated_at, source_urls")
-      .ilike("summary", L).limit(15)),
+      .or(ou(["summary"])).order("generated_at", recent).limit(15)),
     sur("dossiers", admin.from("legislative_dossiers")
       .select("id, title, short_title, status_label, latest_step_at, source_urls")
-      .or(ou(["title", "short_title"])).limit(15)),
+      .or(ou(["title", "short_title"])).order("latest_step_at", recent).limit(15)),
     sur("scrutins", admin.from("scrutins")
       .select("id, objet, summary, resultat, date_scrutin, pour, contre, abstention, dossier_url")
-      .or(ou(["objet", "summary"])).limit(12)),
+      .or(ou(["objet", "summary"])).order("date_scrutin", recent).limit(12)),
     sur("scrutins_senat", admin.from("legislative_scrutins")
-      .select("id, title, explanation, result_label, source_url")
-      .or(ou(["title", "explanation"])).limit(10)),
+      .select("id, title, explanation, result_label, source_url, voted_at")
+      .or(ou(["title", "explanation"])).order("voted_at", recent).limit(10)),
     sur("vote_explanations", admin.from("vote_explanations")
       .select("vote_id, title, subject, stakes, explanation")
       .or(ou(["title", "subject", "stakes"])).limit(10)),
     sur("commissions", admin.from("commission_reports")
       .select("ref, title, commission, chamber, meeting_date, summary, cr_url")
-      .or(ou(["title", "summary"])).limit(8)),
+      .or(ou(["title", "summary"])).order("meeting_date", recent).limit(8)),
     sur("content", admin.from("content")
       .select("id, titre_simplifie, resume_flash, resume_detaille, date_publication, source_url")
-      .or(ou(["titre_simplifie", "resume_flash", "resume_detaille"])).limit(10)),
+      .or(ou(["titre_simplifie", "resume_flash", "resume_detaille"])).order("date_publication", recent).limit(10)),
     sur("petitions", admin.from("petitions")
       .select("id, title, description, signatures, status, url, created_at")
-      .or(ou(["title", "description"])).limit(6)),
+      .or(ou(["title", "description"])).order("created_at", recent).limit(6)),
     sur("europe", admin.from("eu_france_decisions")
       .select("id, title, summary, institution, published_at, url")
-      .or(ou(["title", "summary"])).limit(8)),
+      .or(ou(["title", "summary"])).order("published_at", recent).limit(8)),
     sur("amendements", admin.from("legislative_amendments")
       .select("id, subject, outcome_label, chamber, voted_at, source_url")
-      .ilike("subject", L).limit(10)),
+      .or(ou(["subject"])).order("voted_at", recent).limit(10)),
     sur("profondeur", admin.from("jorf_texts").select("edition_date").order("edition_date").limit(1)),
   ]);
+
+  // Peu de fiches pour l'expression entière (« loi climat résilience ») : on
+  // complète par une recherche sur l'un OU l'autre des mots, pour que chaque sujet
+  // tapé retrouve au moins les fiches qui en traitent.
+  let fiches = fichesEt as Fiche[];
+  if (fiches.length < 3 && mots.length > 1) {
+    const plus = await sur<Fiche>("fiches_ou", admin.rpc("search_fiches_pratiques", { q: mots.join(" or "), lim: 8 }) as never);
+    const deja = new Set(fiches.map(f => f.id));
+    fiches = [...fiches, ...plus.filter(f => !deja.has(f.id))].slice(0, 8);
+  }
 
   const sources: Source[] = [];
   const counts: Record<string, number> = {};
@@ -323,7 +367,7 @@ async function rassembler(admin: ReturnType<typeof createClient>, mot: string) {
 
   // 1. Les fiches pratiques : l'état du droit applicable, montants compris.
   poser("Fiche pratique", "fiche", "fiches", fiches, (f: Fiche) => ({
-    title: f.title, date: f.modified_at, url: f.url,
+    title: f.title, date: f.modified_at, url: f.url, en_vigueur: true,
     note: [f.description, f.body].filter(Boolean).join("\n"),
   }));
 
@@ -340,8 +384,10 @@ async function rassembler(admin: ReturnType<typeof createClient>, mot: string) {
       if (vus.has(cle)) continue;
       if (pris >= 25 || textes.length >= 45) break;
       vus.add(cle); pris++;
+      const lien = versionEnVigueur(r.url);
       textes.push({
-        kind: natureTexte(r.titre), groupe: "texte", title: r.titre, date: null, url: r.url,
+        kind: natureTexte(r.titre), groupe: "texte", title: r.titre, date: null, url: lien,
+        en_vigueur: /legifrance\.gouv\.fr\/(codes|loda)\//.test(lien ?? ""),
         note: [r.complement, `cité par la fiche « ${f.title} »`].filter(Boolean).join(" — "),
       });
     }
@@ -488,6 +534,12 @@ RÈGLES ABSOLUES
 - Les fiches pratiques (service-public.gouv.fr) décrivent le droit EN VIGUEUR. Quand une fiche distingue plusieurs périodes (« Depuis le 8 mars 2026 », « Entre le 1er janvier et le 7 mars 2026 »), retiens celle qui couvre la DATE DU JOUR donnée plus bas, et signale une date de fin si le dispositif est temporaire.
 - Les documents « Code », « Loi », « Décret », « Arrêté » sont les textes de référence cités par les fiches : ce sont les lois précises qui fondent la règle.
 - Les amendements, votes, pétitions, analyses et textes en discussion NE SONT PAS le droit en vigueur : ils ne vont que dans « en_cours », jamais dans « regles » ni « aides ».
+
+LE DROIT LE PLUS RÉCENT L'EMPORTE
+- La date de chaque document est entre parenthèses. Si deux documents se contredisent, le plus RÉCENT l'emporte, et tu ne reprends jamais le chiffre périmé.
+- Un texte du Journal officiel ou un décret DATÉ APRÈS la mise à jour d'une fiche, et portant sur le même point, a pu la modifier : dis-le dans « a_savoir » (« Un décret du … modifie … ; la fiche service-public peut ne pas l'avoir encore intégré »).
+- Les documents « Loi » et « Loi (antérieure) » décrivent un texte tel qu'il a été VOTÉ : ses dispositions ont pu être modifiées depuis. Pour l'état actuel du droit, les fiches pratiques et les codes font foi.
+- Un dispositif dont la date de fin est passée n'est plus présenté comme en vigueur.
 - Moins de rubriques, mais pleines : mieux vaut trois points précis que huit généralités.
 
 FORMAT — un objet JSON, rien d'autre :
@@ -502,8 +554,8 @@ FORMAT — un objet JSON, rien d'autre :
   "a_savoir": ["…"],
   "limites": "ce que ces documents ne couvrent pas, en une phrase"
 }
-Bornes : chiffres_cles 3 à 6 ; textes_cles 3 à 10, choisis parmi les documents Code/Loi/Décret/Arrêté/Ordonnance/Journal officiel, les plus centraux d'abord ; regles 5 au plus ; aides 4 au plus ; en_cours 4 au plus, sans lister les amendements un par un ; a_savoir 4 au plus.
-Les tableaux peuvent être vides. Ne remplis jamais une rubrique pour ne pas la laisser vide.`;
+Bornes : chiffres_cles 3 à 6 ; textes_cles 3 à 10, choisis parmi les documents Code/Loi/Décret/Arrêté/Ordonnance/Journal officiel, les plus centraux d'abord ; regles 2 à 5 dès que les documents décrivent des conditions, obligations, durées ou interdictions ; aides 4 au plus ; en_cours 1 à 4 dès qu'un « Texte en discussion » ou un vote récent est fourni, sans lister les amendements un par un ; a_savoir 4 au plus.
+Une rubrique reste vide seulement si AUCUN document n'en traite : ne comble jamais un vide par une généralité, mais n'omets pas une rubrique que les documents nourrissent.`;
 
 /**
  * Longueur des extraits envoyés au modèle, par document.
@@ -572,6 +624,18 @@ function elaguerPeriodes(corps: string, aujourdhui: string): string {
   return sortie.join("\n");
 }
 
+/** Empreinte courte d'une liste de documents : identité, date, et taille du texte d'une fiche. */
+async function empreinteDe(docs: Source[]): Promise<string> {
+  // Seul ce qui fait le droit compte : fiches, textes de référence, Journal
+  // officiel, lois, et l'avancement des textes en discussion. Les amendements,
+  // votes et actualités en sont exclus — le corpus des amendements expire une
+  // fois sur deux (0 ou 10 résultats pour la même demande), et l'empreinte
+  // changeait à chaque appel, refaisant la synthèse pour rien.
+  const matiere = docs.filter(d => d.groupe !== "debat" && d.groupe !== "actu" || d.kind === "Texte en discussion").map(d => [d.groupe, d.title, d.date ?? "", d.url ?? "", d.groupe === "fiche" ? String(d.note ?? "").length : ""].join("|")).join("\n");
+  const octets = await crypto.subtle.digest("SHA-1", new TextEncoder().encode(matiere));
+  return [...new Uint8Array(octets)].map(b => b.toString(16).padStart(2, "0")).join("").slice(0, 20);
+}
+
 /** Ne garde, d'une liste de renvois du modèle, que des numéros de documents réels. */
 const renvoisValides = (x: unknown, max: number): number[] =>
   (Array.isArray(x) ? x : [])
@@ -609,21 +673,15 @@ serve(async (req) => {
     const slug = reduire(mot);
     if (!slug) return json({ error: "sujet illisible" }, 400);
 
-    // ── Déjà calculé ? ───────────────────────────────────────────────────────
-    const { data: connu } = await admin.from("topic_briefs").select("*").eq("slug", slug).maybeSingle();
-    const frais = connu &&
-      (connu.brief as { format?: number })?.format === FORMAT &&
-      Date.now() - new Date(connu.generated_at).getTime() < FRAICHEUR_JOURS * 86400000;
-    if (connu && frais && !refresh) {
-      await admin.from("topic_briefs").update({ hits: (connu.hits ?? 0) + 1 }).eq("slug", slug);
-      return json({ ...connu, cached: true });
-    }
-
-    // ── Rassembler la matière ────────────────────────────────────────────────
+    // ── Rassembler la matière — à CHAQUE demande ──────────────────────────────
+    // Même quand une synthèse existe déjà : c'est ce qui permet de savoir si elle
+    // est encore juste. La collecte ne coûte qu'une à trois secondes ; seul le
+    // modèle, lui, n'est rappelé que si la matière a changé.
+    const verifieLe = new Date().toISOString();
     const { sources, counts, coverage, outils } = await rassembler(admin, mot);
     if (!sources.length) {
       return json({
-        slug, keyword: mot, empty: true, counts, coverage,
+        slug, keyword: mot, empty: true, counts, coverage, verifie_le: verifieLe,
         message: "Aucune fiche officielle, aucun texte ni article ne traite de ce sujet dans ce qui est conservé sur le site.",
       });
     }
@@ -638,6 +696,23 @@ serve(async (req) => {
       return parGroupe[s.groupe] <= PLAFOND[s.groupe];
     });
 
+    // L'empreinte de la matière : chaque document retenu, avec sa date — et pour
+    // une fiche, la longueur de son texte, qui bouge dès que l'administration y
+    // change un montant. Une fiche mise à jour, un décret paru au Journal officiel,
+    // un texte qui avance au Parlement : l'empreinte change, la synthèse est refaite.
+    const empreinte = await empreinteDe(retenues);
+
+    // ── Déjà calculé, et toujours juste ? ────────────────────────────────────
+    const { data: connu } = await admin.from("topic_briefs").select("*").eq("slug", slug).maybeSingle();
+    const aJour = connu &&
+      (connu.brief as { format?: number })?.format === FORMAT &&
+      (connu.counts as { empreinte?: string })?.empreinte === empreinte &&
+      Date.now() - new Date(connu.generated_at).getTime() < FRAICHEUR_JOURS * 86400000;
+    if (connu && aJour && !refresh) {
+      await admin.from("topic_briefs").update({ hits: (connu.hits ?? 0) + 1 }).eq("slug", slug);
+      return json({ ...connu, cached: true, verifie_le: verifieLe });
+    }
+
     const aujourdhui = new Date().toISOString().slice(0, 10);
     let rangFiche = -1;
     const dossier = retenues.map((s, i) => {
@@ -645,7 +720,10 @@ serve(async (req) => {
       const budget = budgetNote(s, rangFiche);
       const brute = s.groupe === "fiche" && s.note ? elaguerPeriodes(String(s.note), aujourdhui) : s.note;
       const note = brute ? String(brute).slice(0, budget) : "";
-      const entete = `[${i + 1}] (${s.kind}${s.date ? `, ${String(s.date).slice(0, 10)}` : ""}) ${s.title}`;
+      // La date dit au modèle ce qui est le plus récent ; pour une fiche, c'est sa
+      // dernière mise à jour par l'administration, qu'il compare aux décrets parus.
+      const quand = s.date ? `${s.groupe === "fiche" ? ", mise à jour le " : ", "}${String(s.date).slice(0, 10)}` : "";
+      const entete = `[${i + 1}] (${s.kind}${quand}) ${s.title}`;
       if (!note) return entete;
       return s.groupe === "fiche"
         ? `${entete}\n<<<\n${note}\n>>>`
@@ -706,18 +784,18 @@ serve(async (req) => {
     // dans chaque réponse envoyée au navigateur.
     const sourcesAffichees = retenues.map(s => ({
       kind: s.kind, groupe: s.groupe, title: s.title, date: s.date, url: s.url,
-      note: s.groupe === "texte" ? (s.note ?? null) : null,
+      note: s.groupe === "texte" ? (s.note ?? null) : null, en_vigueur: s.en_vigueur ?? false,
     }));
 
     const ligne = {
       slug, keyword: mot, brief, sources: sourcesAffichees, model: modele,
-      counts: { ...counts, ...coverage, total_trouves: sources.length },
+      counts: { ...counts, ...coverage, total_trouves: sources.length, empreinte },
       generated_at: new Date().toISOString(), hits: (connu?.hits ?? 0) + 1,
     };
     const { error: errEcriture } = await admin.from("topic_briefs").upsert(ligne, { onConflict: "slug" });
     if (errEcriture) console.warn("écriture du récap :", errEcriture.message);
 
-    return json({ ...ligne, cached: false });
+    return json({ ...ligne, cached: false, verifie_le: verifieLe });
   } catch (e) {
     console.error("topic-brief :", (e as Error).message);
     return json({ error: (e as Error).message }, 500);

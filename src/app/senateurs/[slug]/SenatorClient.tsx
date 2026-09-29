@@ -73,11 +73,21 @@ export default function SenatorClient({ senator, embedded }: { senator: any; emb
   const [selectedIssue, setSelectedIssue] = useState<string | null>(null);
   const [issueQuery, setIssueQuery] = useState("");
   const [positions, setPositions] = useState<Record<string, any>>({}); // "ce qu'il dit" par enjeu
+  const [voteCible, setVoteCible] = useState<string | null>(null);     // vote ouvert depuis une alerte
   useEffect(() => {
     api.getSenatorVotes(senator.senate_matricule || null, senator.first_name, senator.last_name, 1000)
       .then((v: any[]) => {
         setVotes(v);
         api.getScrutinIssues(v.map(x => x?.scrutin_id).filter(Boolean)).then(setScrutinIssues).catch(() => {});
+        // Arrivée depuis une alerte de vote (« ?vote=… », numéro officiel ou
+        // identifiant) : on descend jusqu'au vote, dont l'explication est déjà
+        // affichée dans sa carte, et on le met en évidence.
+        const voulu = new URLSearchParams(window.location.search).get("vote");
+        const cible = voulu && v.find(x => String(x.official_id) === voulu || String(x.scrutin_id) === voulu);
+        if (cible) {
+          setVoteCible(String(cible.id));
+          setTimeout(() => document.getElementById(`vote-${cible.id}`)?.scrollIntoView({ behavior: "smooth", block: "center" }), 400);
+        }
       })
       .catch(() => setVotes([]));
     api.getIssues().then(setIssues).catch(() => {});
@@ -470,7 +480,12 @@ export default function SenatorClient({ senator, embedded }: { senator: any; emb
                 {filteredVotes.map((vote: any) => (
                   <div
                     key={vote.id}
-                    className="bg-card dark:bg-slate-900 border border-border dark:border-slate-800 rounded-[2rem] p-6 group hover:border-amber-500 transition-all"
+                    id={`vote-${vote.id}`}
+                    className={`bg-card dark:bg-slate-900 border rounded-[2rem] p-6 group hover:border-amber-500 transition-all scroll-mt-28 ${
+                      voteCible === String(vote.id)
+                        ? "border-amber-500 ring-4 ring-amber-400/30 shadow-2xl shadow-amber-500/20"
+                        : "border-border dark:border-slate-800"
+                    }`}
                   >
                     <div className="flex flex-col md:flex-row items-center gap-6">
                       <div className="flex-1 flex items-center gap-6">

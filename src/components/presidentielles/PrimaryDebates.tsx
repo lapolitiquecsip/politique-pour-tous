@@ -334,7 +334,8 @@ export default function PrimaryDebates({ candidateSlug }: { candidateSlug?: stri
   const aVenir = siens.filter(e => e.statut === "a_venir").length;
 
   return (
-    <section className="mx-auto max-w-6xl px-4 py-10">
+    // Ancre visée par les débats de primaire du fil « Mes candidats suivis ».
+    <section id="primaires" className="mx-auto max-w-6xl scroll-mt-24 px-4 py-10">
       <div className="mb-5 flex flex-wrap items-start gap-4">
         <span className="flex h-12 w-12 shrink-0 items-center justify-center rounded-2xl bg-gradient-to-br from-fuchsia-500 to-purple-600 text-white shadow-lg">
           <Mic2 size={22} />

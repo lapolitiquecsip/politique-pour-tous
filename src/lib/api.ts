@@ -1686,6 +1686,18 @@ export const api = {
     return data;
   },
 
+  // Débats et grands face-à-face d'un candidat (primaires + chaînes et radios),
+  // alimentés chaque jour par scripts/update-candidate-debates.ts.
+  getCandidateDebates: async (candidateId: string) => {
+    const { data, error } = await supabase
+      .from('candidate_debates')
+      .select('source_key, kind, title, broadcaster, date, url, video_id, thumbnail_url, a_venir')
+      .eq('candidate_id', candidateId)
+      .order('date', { ascending: false, nullsFirst: false })
+      .limit(20);
+    if (error) { console.error(error); return []; }
+    return data || [];
+  },
   getCandidateNews: async (candidateId: string) => {
     const { data, error } = await supabase
       .from('candidate_news')
@@ -2124,9 +2136,13 @@ export const api = {
 
   // Formulaire de contact — insert direct Supabase (site statique, pas de backend).
   // RLS autorise l'insert anon uniquement ; pas de .select() (aucune lecture publique).
-  sendContactMessage: async (payload: { name: string; email: string; subject: string; message: string }) => {
-    const { error } = await supabase.from('contact_messages').insert(payload);
-    if (error) { throw new Error(error.message); }
+  // Le message passe par la fonction Edge `contact`, qui l'enregistre ET l'envoie
+  // par e-mail à l'équipe. Écrit directement dans la table, il n'arrivait dans
+  // aucune boîte : personne n'était prévenu.
+  sendContactMessage: async (payload: { name: string; email: string; subject: string; message: string; site_web?: string }) => {
+    const { data, error } = await supabase.functions.invoke<{ ok?: boolean; error?: string }>('contact', { body: payload });
+    if (error) throw new Error(error.message);
+    if (data?.error) throw new Error(data.error);
     return true;
   },
 

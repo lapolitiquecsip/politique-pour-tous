@@ -2,7 +2,7 @@
 
 import { useEffect, useState } from "react";
 import Link from "next/link";
-import { Bell, X, ArrowRight } from "lucide-react";
+import { Bell, X, ArrowRight, Mic, Play } from "lucide-react";
 import { api } from "@/lib/api";
 import DragScroller from "@/components/ui/DragScroller";
 import { getFollowedCandidates, toggleFollowCandidate, CANDIDATE_FOLLOWS_EVENT, type FollowedCandidate } from "@/lib/candidateFollows";
@@ -12,10 +12,58 @@ import { getFollowedCandidates, toggleFollowCandidate, CANDIDATE_FOLLOWS_EVENT, 
 // candidat suivi, ses dernières actualités (fil mis à jour chaque jour côté backend).
 const fmt = (d: string | null) => (!d ? "" : new Date(d).toLocaleDateString("fr-FR", { day: "numeric", month: "long", year: "numeric" }));
 
+const GENRE: Record<string, string> = { debat: "Débat", emission: "Face-à-face", primaire: "Débat de la primaire" };
+
+/**
+ * Un débat ou un face-à-face du candidat, avec l'image de la retransmission.
+ * Les débats de primaire renvoient à la rubrique du site tant qu'ils n'ont pas eu
+ * lieu, puis à leur vidéo.
+ */
+type Debat = {
+  source_key: string; kind: string; title: string; broadcaster: string | null; date: string | null;
+  url: string | null; video_id: string | null; thumbnail_url: string | null; a_venir: boolean;
+};
+
+function CarteDebat({ d }: { d: Debat }) {
+  const interne = typeof d.url === "string" && d.url.startsWith("/");
+  const classes = "group flex w-[250px] shrink-0 select-none flex-col overflow-hidden rounded-xl border border-amber-400/30 bg-amber-400/[0.04] text-left transition hover:border-amber-400/70 hover:shadow-sm";
+  const contenu = (
+    <>
+      <div className="relative aspect-video w-full overflow-hidden bg-slate-900">
+        {d.thumbnail_url
+          // eslint-disable-next-line @next/next/no-img-element
+          ? <img src={d.thumbnail_url} alt="" draggable={false} loading="lazy" className="h-full w-full object-cover transition group-hover:scale-105" />
+          : <span className="flex h-full w-full items-center justify-center text-amber-300/60"><Mic size={28} /></span>}
+        <span className="absolute left-2 top-2 inline-flex items-center gap-1 rounded-full bg-amber-500 px-2 py-0.5 text-[9px] font-black uppercase tracking-widest text-white shadow">
+          <Mic size={10} /> {GENRE[d.kind] ?? "Débat"}
+        </span>
+        {d.a_venir && (
+          <span className="absolute right-2 top-2 rounded-full bg-slate-950/80 px-2 py-0.5 text-[9px] font-black uppercase tracking-widest text-white">À venir</span>
+        )}
+        {d.video_id && !d.a_venir && (
+          <span className="absolute inset-0 flex items-center justify-center">
+            <span className="flex h-9 w-9 items-center justify-center rounded-full bg-white/90 text-slate-900 shadow-lg"><Play size={15} className="ml-0.5 fill-current" /></span>
+          </span>
+        )}
+      </div>
+      <div className="flex flex-1 flex-col p-3">
+        <span className="text-[10px] font-bold uppercase tracking-widest text-slate-400">
+          {fmt(d.date)}{d.broadcaster ? ` · ${d.broadcaster.trim()}` : ""}
+        </span>
+        <p className="mt-1 line-clamp-2 text-[13px] font-bold text-foreground">{d.title}</p>
+      </div>
+    </>
+  );
+  return interne
+    ? <Link href={d.url!} draggable={false} className={classes}>{contenu}</Link>
+    : <a href={d.url || "#"} target="_blank" rel="noopener noreferrer" draggable={false} className={classes}>{contenu}</a>;
+}
+
 export default function CandidatesFollowFeed() {
   const [cands, setCands] = useState<FollowedCandidate[]>([]);
   const [ready, setReady] = useState(false);
   const [news, setNews] = useState<Record<string, any[]>>({});
+  const [debats, setDebats] = useState<Record<string, Debat[]>>({});
 
   // Charge la liste + se resynchronise quand on suit/désuit ailleurs.
   useEffect(() => {
@@ -30,8 +78,15 @@ export default function CandidatesFollowFeed() {
     let active = true;
     (async () => {
       const map: Record<string, any[]> = {};
-      for (const c of cands) { try { map[c.id] = await api.getCandidateNews(c.id); } catch { map[c.id] = []; } }
-      if (active) setNews(map);
+      const deb: Record<string, Debat[]> = {};
+      await Promise.all(cands.map(async c => {
+        const [n, d] = await Promise.all([
+          api.getCandidateNews(c.id).catch(() => []),
+          api.getCandidateDebates(c.id).catch(() => []),
+        ]);
+        map[c.id] = n; deb[c.id] = d as Debat[];
+      }));
+      if (active) { setNews(map); setDebats(deb); }
     })();
     return () => { active = false; };
   }, [ids]); // eslint-disable-line react-hooks/exhaustive-deps
@@ -77,12 +132,18 @@ export default function CandidatesFollowFeed() {
               <button onClick={() => toggleFollowCandidate(c)} title="Ne plus suivre"
                 className="shrink-0 rounded-full border border-border p-1.5 text-slate-400 transition hover:border-rose-300 hover:text-rose-500"><X size={13} /></button>
             </div>
-            {(news[c.id] || []).length > 0 ? (
+            {(news[c.id] || []).length + (debats[c.id] || []).length > 0 ? (
               // Le rail commun du site, sans barre de défilement : défilement natif
               // au doigt, glisser avec inertie à la souris, flèches sur grand écran.
               // L'ancienne barre grise obligeait à viser un trait de quelques pixels.
               <div className="mt-3">
                 <DragScroller ariaLabel={`Actualité de ${c.name}`} className="gap-2.5 pb-1 pt-0 md:gap-2.5">
+                {/* Les débats d'abord : c'est là qu'on voit un candidat défendre ses
+                    idées face à d'autres. Ceux à venir (primaires) ouvrent la marche. */}
+                {[...(debats[c.id] || [])]
+                  .sort((a, b) => Number(b.a_venir) - Number(a.a_venir) || String(b.date).localeCompare(String(a.date)))
+                  .slice(0, 8)
+                  .map(d => <CarteDebat key={d.source_key} d={d} />)}
                 {(news[c.id] || []).slice(0, 8).map((n: any) => (
                   <a key={n.id} href={n.source_url || "#"} target="_blank" rel="noopener noreferrer" draggable={false}
                     className="flex w-[220px] shrink-0 select-none flex-col rounded-xl border border-border p-3 text-left transition hover:border-slate-300 hover:shadow-sm">

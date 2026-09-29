@@ -41,3 +41,15 @@ jobs:
           SUPABASE_SERVICE_ROLE_KEY: ${{ secrets.SUPABASE_SERVICE_ROLE_KEY }}
           YOUTUBE_API_KEY: ${{ secrets.YOUTUBE_API_KEY }}
         run: npx --yes tsx scripts/update-primary-debates.ts
+
+      # Débats et grands face-à-face de CHAQUE candidat (primaires + chaînes et
+      # radios via YouTube), affichés dans « Mes candidats suivis ». Une fois par
+      # jour seulement, au passage du soir : une recherche YouTube coûte 100
+      # unités de quota par candidat. Voir scripts/update-candidate-debates.ts
+      - name: Débats des candidats
+        if: always() && (github.event.schedule == '0 21 * * *' || github.event_name == 'workflow_dispatch')
+        env:
+          NEXT_PUBLIC_SUPABASE_URL: ${{ secrets.NEXT_PUBLIC_SUPABASE_URL }}
+          SUPABASE_SERVICE_ROLE_KEY: ${{ secrets.SUPABASE_SERVICE_ROLE_KEY }}
+          YOUTUBE_API_KEY: ${{ secrets.YOUTUBE_API_KEY }}
+        run: npx --yes tsx scripts/update-candidate-debates.ts

@@ -13,7 +13,9 @@ export default function ContactPage() {
     name: "",
     email: "",
     subject: "support",
-    message: ""
+    message: "",
+    // Champ piège, caché aux humains : seul un robot le remplit.
+    site_web: ""
   });
 
   const handleSubmit = async (e: React.FormEvent) => {
@@ -129,6 +131,17 @@ export default function ContactPage() {
                       onChange={(e) => setFormData({...formData, message: e.target.value})}
                     />
                   </div>
+
+                  <input
+                    type="text"
+                    name="site_web"
+                    tabIndex={-1}
+                    autoComplete="off"
+                    aria-hidden="true"
+                    className="absolute -left-[9999px] h-0 w-0 opacity-0"
+                    value={formData.site_web}
+                    onChange={(e) => setFormData({...formData, site_web: e.target.value})}
+                  />
 
                   {error && (
                     <div className="rounded-2xl bg-red-50 px-6 py-4 font-bold text-red-700">{error}</div>

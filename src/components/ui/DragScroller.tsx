@@ -60,6 +60,8 @@ export default function DragScroller({
   // État du glisser. Volontairement hors de React : ces valeurs changent à chaque
   // image, et un rendu par image ferait exactement ce qu'on cherche à éviter.
   const glisse = useRef(false);
+  /** Le pointeur n'est capturé qu'une fois le glisser réellement commencé. */
+  const capture = useRef(false);
   const departX = useRef(0);
   const departScroll = useRef(0);
   const parcouru = useRef(0);
@@ -125,7 +127,11 @@ export default function DragScroller({
     departX.current = e.clientX;
     departScroll.current = el.scrollLeft;
     echantillons.current = [{ t: performance.now(), x: e.clientX }];
-    el.setPointerCapture(e.pointerId);
+    // PAS de capture du pointeur ici. Capturé dès l'appui, le pointeur fait
+    // envoyer le clic au RAIL et non à la carte : un simple clic sur un lien ne
+    // menait plus nulle part (alertes de vote, fils d'actualité). La capture
+    // attend qu'un vrai glisser commence, dans onPointerMove.
+    capture.current = false;
   };
 
   const onPointerMove = (e: React.PointerEvent) => {
@@ -134,6 +140,12 @@ export default function DragScroller({
     if (!el) return;
     const dx = e.clientX - departX.current;
     parcouru.current = Math.max(parcouru.current, Math.abs(dx));
+    if (!capture.current) {
+      // En deçà du seuil, c'est encore peut-être un clic : on ne touche à rien.
+      if (Math.abs(dx) <= SEUIL_GLISSER) return;
+      el.setPointerCapture(e.pointerId);
+      capture.current = true;
+    }
     el.scrollLeft = departScroll.current - dx;
     // On ne garde que les cent dernières millisecondes : la vitesse au moment du
     // relâcher, pas la moyenne de tout le geste.
@@ -150,6 +162,9 @@ export default function DragScroller({
     glisse.current = false;
     const el = piste.current;
     if (el?.hasPointerCapture(e.pointerId)) el.releasePointerCapture(e.pointerId);
+    // Un simple clic : ni défilement ni inertie, le lien fait son travail.
+    if (!capture.current) return;
+    capture.current = false;
 
     const ech = echantillons.current;
     const premier = ech[0];
@@ -204,6 +219,9 @@ export default function DragScroller({
         onPointerUp={onPointerUp}
         onPointerCancel={onPointerUp}
         onClickCapture={onClickCapture}
+        // Sans capture dès l'appui, le navigateur tenterait de « déposer » un lien
+        // ou une image attrapés à la souris ; ce glisser-là n'a rien à faire ici.
+        onDragStart={e => e.preventDefault()}
         // Le curseur est laissé à CSS : `glisse` est une référence, la changer ne
         // provoque aucun rendu, et un curseur calculé depuis elle ne bougerait
         // jamais. `active:` fait le travail sans coûter une image.

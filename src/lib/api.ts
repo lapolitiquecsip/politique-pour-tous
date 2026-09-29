@@ -948,14 +948,29 @@ export const api = {
     const ids = (k: string) => [...new Set(rows.map(r => r[k]).filter(Boolean))];
     const depIds = ids('deputy_id'), senIds = ids('senator_id'), mepIds = ids('mep_id');
     const mepVotes = [...new Set(rows.filter(r => r.mep_id && r.scrutin_id).map(r => String(r.scrutin_id)))];
+    const anVotes = [...new Set(rows.filter(r => r.deputy_id && r.scrutin_id).map(r => String(r.scrutin_id)))];
+    const senVotes = [...new Set(rows.filter(r => r.senator_id && r.scrutin_id).map(r => String(r.scrutin_id)))];
     const vide = Promise.resolve({ data: [] as any[] });
+    // Le résumé de chaque texte voté, pour que la carte dise de quoi il s'agit
+    // après l'avoir nommé.
+    const [resAN, resSenat] = await Promise.all([
+      anVotes.length ? supabase.from('scrutins').select('id, summary').in('id', anVotes) : vide,
+      senVotes.length ? supabase.from('legislative_scrutins').select('official_id, explanation').in('official_id', senVotes) : vide,
+    ]);
+    const RA = new Map<string, string>(((resAN as any).data || []).map((x: any) => [String(x.id), x.summary]));
+    const RS = new Map<string, string>(((resSenat as any).data || []).map((x: any) => [String(x.official_id), x.explanation]));
+    const premierePhrase = (t: unknown) => {
+      const s = String(t ?? '').replace(/\s+/g, ' ').trim();
+      const m = s.match(/^.{20,260}?[.!?](\s|$)/);
+      return (m ? m[0] : s.slice(0, 220)).trim() || null;
+    };
     const [deps, sens, meps, expl] = await Promise.all([
       depIds.length ? supabase.from('deputies').select('id, slug, first_name, last_name, photo_url, an_id, party, party_color').in('id', depIds) : vide,
       senIds.length ? supabase.from('senators').select('id, slug, first_name, last_name, photo_url, party, party_color').in('id', senIds) : vide,
       mepIds.length ? supabase.from('meps').select('id, slug, full_name, first_name, last_name, photo_url, ep_group_code, national_party').in('id', mepIds) : vide,
       // Les votes européens portent un intitulé officiel en anglais (« Objection
       // pursuant to Rule 115… ») : le résumé français de l'explication le remplace.
-      mepVotes.length ? supabase.from('vote_explanations').select('vote_id, subject').in('vote_id', mepVotes) : vide,
+      mepVotes.length ? supabase.from('vote_explanations').select('vote_id, subject, title_fr').in('vote_id', mepVotes) : vide,
     ]);
     const parId = (r: any) => new Map(((r as any).data || []).map((x: any) => [String(x.id ?? x.vote_id), x]));
     const D = parId(deps), S = parId(sens), M = parId(meps), E = parId(expl);
@@ -980,8 +995,17 @@ export const api = {
         parti: m.national_party || m.ep_group_code, couleur: null,
         photos: [m.photo_url].filter(Boolean), href: avecVote('/eurodeputes', m.slug, r.scrutin_id),
       };
-      const fr: any = r.mep_id && r.scrutin_id && E.get(String(r.scrutin_id));
-      if (fr?.subject) r.resume = fr.subject;
+      // Le NOM du texte voté, puis ce qu'il contient. Au Parlement européen,
+      // l'intitulé officiel anglais cède la place à sa traduction.
+      if (r.mep_id) {
+        const fr: any = r.scrutin_id && E.get(String(r.scrutin_id));
+        r.texte = fr?.title_fr || r.title;
+        r.resume = fr?.subject || null;
+      } else {
+        r.texte = r.title;
+        const res = r.deputy_id ? RA.get(String(r.scrutin_id)) : RS.get(String(r.scrutin_id));
+        r.resume = res ? premierePhrase(res) : null;
+      }
     }
     return rows;
   },

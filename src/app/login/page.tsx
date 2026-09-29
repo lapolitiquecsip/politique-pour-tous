@@ -23,12 +23,39 @@ export default function LoginPage() {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
   const [success, setSuccess] = useState(false);
+  // Adresse créée mais jamais confirmée : on propose de renvoyer le lien plutôt
+  // que de laisser le membre bloqué devant « Email not confirmed ».
+  const [nonConfirme, setNonConfirme] = useState(false);
+  const [renvoi, setRenvoi] = useState<"" | "envoi" | "ok" | "attendre">("");
   const router = useRouter();
+
+  const retour = () => `${window.location.origin}/auth/callback`;
+
+  /** Les messages de Supabase arrivent en anglais : on les dit en français. */
+  const traduire = (m: string) => {
+    if (/email not confirmed/i.test(m)) return "Votre adresse n'est pas encore confirmée. Cliquez sur le lien reçu par e-mail, ou demandez-en un nouveau ci-dessous.";
+    if (/invalid login credentials/i.test(m)) return "Adresse ou mot de passe incorrect.";
+    if (/already registered|already exists/i.test(m)) return "Un compte existe déjà avec cette adresse. Connectez-vous.";
+    if (/password should be at least|weak password/i.test(m)) return "Mot de passe trop court : 6 caractères au minimum.";
+    if (/rate limit|too many|for security purposes/i.test(m)) return "Trop de tentatives rapprochées. Patientez une minute avant de réessayer.";
+    if (/invalid email|unable to validate email/i.test(m)) return "Cette adresse e-mail n'est pas valide.";
+    return m || "Une erreur est survenue.";
+  };
+
+  const renvoyerConfirmation = async () => {
+    if (!email || renvoi === "envoi") return;
+    setRenvoi("envoi");
+    const { error: e } = await supabase.auth.resend({ type: "signup", email, options: { emailRedirectTo: retour() } });
+    // Supabase limite à un envoi par minute et par adresse.
+    setRenvoi(e ? "attendre" : "ok");
+  };
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setLoading(true);
     setError("");
+    setNonConfirme(false);
+    setRenvoi("");
 
     try {
       if (isLogin) {
@@ -44,18 +71,35 @@ export default function LoginPage() {
           email,
           password,
           options: {
-            emailRedirectTo: `${window.location.origin}/auth/callback`,
+            emailRedirectTo: retour(),
           },
         });
         if (signUpError) throw signUpError;
         setSuccess(true);
       }
     } catch (err: any) {
-      setError(err.message || "Une erreur est survenue.");
+      const m = String(err?.message || "");
+      if (/email not confirmed/i.test(m)) setNonConfirme(true);
+      setError(traduire(m));
     } finally {
       setLoading(false);
     }
   };
+
+  /** Le bouton de renvoi, commun à l'écran de succès et à l'erreur « non confirmé ». */
+  const boutonRenvoi = (
+    <button
+      type="button"
+      onClick={renvoyerConfirmation}
+      disabled={renvoi === "envoi" || renvoi === "ok"}
+      className="mt-3 text-sm font-bold text-amber-600 hover:underline disabled:cursor-default disabled:no-underline disabled:opacity-70"
+    >
+      {renvoi === "envoi" ? "Envoi…"
+        : renvoi === "ok" ? "Nouveau lien envoyé ✓ (pensez aux courriers indésirables)"
+        : renvoi === "attendre" ? "Patientez une minute, puis réessayez"
+        : "Je n'ai rien reçu : renvoyer l'e-mail"}
+    </button>
+  );
 
   return (
     <div className="min-h-screen bg-[slate-950] flex items-center justify-center p-4 relative overflow-hidden">
@@ -95,8 +139,10 @@ export default function LoginPage() {
             <CheckCircle2 className="w-12 h-12 text-emerald-500 mx-auto mb-4" />
             <p className="text-emerald-900 text-sm leading-relaxed">
               Nous avons envoyé un e-mail à <strong>{email}</strong>. Cliquez sur le lien pour valider votre compte.
+              Il peut mettre une minute à arriver ; pensez à regarder dans les courriers indésirables.
             </p>
-            <button 
+            <div>{boutonRenvoi}</div>
+            <button
               onClick={() => setSuccess(false)}
               className="mt-6 text-emerald-600 text-sm font-bold hover:underline"
             >
@@ -149,7 +195,10 @@ export default function LoginPage() {
                 className="bg-red-500/10 border border-red-500/20 p-4 rounded-xl flex items-start gap-3"
               >
                 <AlertCircle className="w-5 h-5 text-red-500 flex-shrink-0" />
-                <p className="text-red-200 text-xs font-medium leading-tight">{error}</p>
+                <div>
+                  <p className="text-red-200 text-xs font-medium leading-tight">{error}</p>
+                  {nonConfirme && boutonRenvoi}
+                </div>
               </motion.div>
             )}
 

@@ -17,7 +17,9 @@ type Notif = {
   event_at: string | null; read: boolean; created_at: string;
   /** Pour un vote : l'élu qui a voté, joint par api.getNotifications. */
   elu?: { chambre: string; nom: string; parti?: string | null; couleur?: string | null; photos: string[]; href: string | null };
-  /** Pour un vote européen : le résumé français qui remplace l'intitulé officiel anglais. */
+  /** Pour un vote : le NOM du texte voté (traduit en français pour le Parlement européen). */
+  texte?: string | null;
+  /** Pour un vote : ce que contient le texte, en une phrase. */
   resume?: string | null;
 };
 
@@ -71,7 +73,10 @@ function Portrait({ photos, nom, className }: { photos: string[]; nom: string; c
 function CarteVote({ n }: { n: Notif }) {
   const p = POSITION[String(n.position || "").toUpperCase()] ?? POSITION.ABSTENTION;
   const elu = n.elu;
-  const sujet = n.resume || n.title;
+  // D'abord le nom du texte voté, ENSUITE ce qu'il contient : « Ce texte vise
+  // à… » ne veut rien dire tant que le texte n'a pas été nommé.
+  const texte = n.texte || n.title;
+  const resume = n.resume && n.resume !== texte ? n.resume : null;
   const contenu = (
     <>
       {/* Halo discret de la position, qui teinte le haut de la carte. */}
@@ -111,7 +116,8 @@ function CarteVote({ n }: { n: Notif }) {
         </div>
       </div>
 
-      <p className="relative mt-3.5 text-[12.5px] leading-snug text-white/75 line-clamp-3">{sujet}</p>
+      <p className="relative mt-3.5 text-[13px] font-bold leading-snug text-white line-clamp-2">{texte}</p>
+      {resume && <p className="relative mt-1 text-[12px] leading-snug text-white/60 line-clamp-2">{resume}</p>}
 
       <div className="relative mt-auto flex items-center justify-between gap-2 pt-3">
         <span className="text-[10px] font-black uppercase tracking-widest text-white/35">{fmtDate(n.event_at || n.created_at)}</span>

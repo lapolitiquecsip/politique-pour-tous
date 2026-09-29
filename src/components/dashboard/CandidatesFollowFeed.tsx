@@ -4,6 +4,7 @@ import { useEffect, useState } from "react";
 import Link from "next/link";
 import { Bell, X, ArrowRight } from "lucide-react";
 import { api } from "@/lib/api";
+import DragScroller from "@/components/ui/DragScroller";
 import { getFollowedCandidates, toggleFollowCandidate, CANDIDATE_FOLLOWS_EVENT, type FollowedCandidate } from "@/lib/candidateFollows";
 
 // Fil des candidats à la présidentielle SUIVIS par le membre premium (cloche dorée sur la
@@ -77,15 +78,20 @@ export default function CandidatesFollowFeed() {
                 className="shrink-0 rounded-full border border-border p-1.5 text-slate-400 transition hover:border-rose-300 hover:text-rose-500"><X size={13} /></button>
             </div>
             {(news[c.id] || []).length > 0 ? (
-              <div className="mt-3 flex gap-2.5 overflow-x-auto pb-1 [scrollbar-width:thin]">
+              // Le rail commun du site, sans barre de défilement : défilement natif
+              // au doigt, glisser avec inertie à la souris, flèches sur grand écran.
+              // L'ancienne barre grise obligeait à viser un trait de quelques pixels.
+              <div className="mt-3">
+                <DragScroller ariaLabel={`Actualité de ${c.name}`} className="gap-2.5 pb-1 pt-0 md:gap-2.5">
                 {(news[c.id] || []).slice(0, 8).map((n: any) => (
-                  <a key={n.id} href={n.source_url || "#"} target="_blank" rel="noopener noreferrer"
-                    className="flex w-[220px] shrink-0 flex-col rounded-xl border border-border p-3 text-left transition hover:border-slate-300 hover:shadow-sm">
+                  <a key={n.id} href={n.source_url || "#"} target="_blank" rel="noopener noreferrer" draggable={false}
+                    className="flex w-[220px] shrink-0 select-none flex-col rounded-xl border border-border p-3 text-left transition hover:border-slate-300 hover:shadow-sm">
                     <span className="text-[10px] font-bold uppercase tracking-widest text-slate-400">{fmt(n.date)}</span>
                     <p className="mt-1 line-clamp-2 text-[13px] font-bold text-foreground">{n.title}</p>
                     {n.source_name && <span className="mt-auto pt-1.5 text-[10px] font-bold text-slate-400">{n.source_name}</span>}
                   </a>
                 ))}
+                </DragScroller>
               </div>
             ) : (
               <p className="mt-2 text-xs italic text-slate-400">Pas encore d'actualité — le fil se met à jour chaque jour.</p>

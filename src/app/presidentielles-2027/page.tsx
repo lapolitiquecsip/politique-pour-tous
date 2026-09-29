@@ -10,6 +10,7 @@ import LegalStatusModal from "@/components/deputies/LegalStatusModal";
 import ThemesView from "@/components/presidentielles/ThemesView";
 import CandidateSocialTracker from "@/components/presidentielles/CandidateSocialTracker";
 import PrimaryDebates from "@/components/presidentielles/PrimaryDebates";
+import DragScroller from "@/components/ui/DragScroller";
 import { usePremium } from "@/lib/hooks/usePremium";
 import { isFollowingCandidate, toggleFollowCandidate } from "@/lib/candidateFollows";
 
@@ -98,7 +99,8 @@ function NumHighlight({ text }: { text: string }) {
 // Frise chronologique HORIZONTALE (scroll latéral) pour ne pas allonger la page.
 function Timeline({ points }: { points: string[] }) {
   return (
-    <div className="mt-4 flex gap-3 overflow-x-auto pb-3 [scrollbar-width:thin]">
+    <div className="mt-4">
+    <DragScroller ariaLabel="Frise chronologique" className="gap-3 pb-3 pt-0 md:gap-3">
       {points.map((p, i) => {
         const idx = p.indexOf(" : ");
         const date = idx > 0 ? p.slice(0, idx) : "";
@@ -111,6 +113,7 @@ function Timeline({ points }: { points: string[] }) {
           </div>
         );
       })}
+    </DragScroller>
     </div>
   );
 }
@@ -470,9 +473,11 @@ function CandidateModal({ candidate, onClose }: { candidate: Candidate; onClose:
                 ) : feed.length === 0 ? (
                   <p className="mt-3 text-sm text-muted-foreground">Aucune actualité ni vidéo recensée pour l'instant — le fil se met à jour chaque jour.</p>
                 ) : (
-                  <div className="mt-4 flex gap-3 overflow-x-auto pb-3 snap-x snap-mandatory [scrollbar-width:thin]">
+                  // Rail commun du site : sans barre grise ni ancrage, glisser au doigt ou à la souris.
+                  <div className="mt-4">
+                  <DragScroller ariaLabel="Actualité et vidéos du candidat" className="gap-3 pb-3 pt-0 md:gap-3">
                     {feed.map(it => it.kind === "video" ? (
-                      <button key={`v${it.data.video_id}`} onClick={() => setSelectedVideo(it.data)} className="group flex w-[280px] shrink-0 snap-start flex-col overflow-hidden rounded-2xl border border-border text-left transition hover:border-slate-300 hover:shadow-sm">
+                      <button key={`v${it.data.video_id}`} onClick={() => setSelectedVideo(it.data)} className="group flex w-[280px] shrink-0 select-none flex-col overflow-hidden rounded-2xl border border-border text-left transition hover:border-slate-300 hover:shadow-sm">
                         <div className="relative aspect-video overflow-hidden bg-slate-900">
                           {/* eslint-disable-next-line @next/next/no-img-element */}
                           {it.data.thumbnail_url && <img src={it.data.thumbnail_url} alt={it.data.title} loading="lazy" className="h-full w-full object-cover transition group-hover:scale-105" />}
@@ -486,7 +491,7 @@ function CandidateModal({ candidate, onClose }: { candidate: Candidate; onClose:
                         </div>
                       </button>
                     ) : (
-                      <button key={`n${it.data.id}`} onClick={() => setSelectedNews(it.data)} className="flex w-[280px] shrink-0 snap-start flex-col rounded-2xl border border-border p-4 text-left transition hover:border-slate-300 hover:shadow-sm">
+                      <button key={`n${it.data.id}`} onClick={() => setSelectedNews(it.data)} className="flex w-[280px] shrink-0 select-none flex-col rounded-2xl border border-border p-4 text-left transition hover:border-slate-300 hover:shadow-sm">
                         <div className="flex items-center justify-between gap-3 text-xs font-bold text-slate-400">
                           <span className="rounded-full bg-slate-100 px-2 py-0.5 uppercase tracking-widest">{it.data.news_type || "actu"}</span>
                           <span><CalendarDays className="mr-1 inline" size={13} />{formatDate(it.data.date)}</span>
@@ -496,6 +501,7 @@ function CandidateModal({ candidate, onClose }: { candidate: Candidate; onClose:
                         {it.data.source_name && <p className="mt-auto pt-2 text-xs font-bold text-slate-400">{it.data.source_name}</p>}
                       </button>
                     ))}
+                  </DragScroller>
                   </div>
                 )}
                 <p className="mt-2 text-[11px] italic leading-snug text-slate-400">Vidéos : chaîne YouTube officielle du candidat. Instagram, TikTok et X ne sont pas repris automatiquement (ces plateformes n'autorisent pas la récupération de leurs contenus).</p>

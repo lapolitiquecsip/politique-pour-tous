@@ -191,6 +191,15 @@ const fmtPrice = (n: number) => `${n.toFixed(2).replace(".", ",").replace(",00",
 /* ── Ce que l'abonnement Pro ajoute par-dessus le Premium. ── */
 const PRO_FEATURES = [
   {
+    icon: Scale,
+    title: "Tout sur un sujet",
+    desc: "Tapez « apprentissage » ou « panneau solaire » : les montants en vigueur, les textes de loi précis avec leur lien Légifrance, le détail des aides et ce qui est en discussion — chaque point sourcé.",
+    color: "from-violet-500 to-fuchsia-600",
+    // L'outil vit dans l'espace Pro, que cette même adresse ouvre pour un abonné.
+    href: "/premium",
+    cta: "Ouvrir mon espace Pro",
+  },
+  {
     icon: Mic,
     title: "Suivi des commissions parlementaires",
     desc: "Assemblée ET Sénat : chaque réunion de commission, avec l'analyse détaillée de ce qui s'y est dit — positions défendues, chiffres avancés, arbitrages, suites annoncées.",

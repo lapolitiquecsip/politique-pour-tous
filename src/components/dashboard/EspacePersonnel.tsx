@@ -343,13 +343,12 @@ export default function EspacePersonnel({ mode = "tout" }: { mode?: ModeEspace }
         // recouvre le haut de la carte et intercepte le clic sur « Tout marquer lu ».
         <div className="relative z-20 container mx-auto max-w-6xl px-4 -mt-16 mb-6 space-y-6">
           <NotificationsFeed userId={userId} />
-          {/* Ouvert aux deux offres, Premium comme Pro : cette rubrique répond à
-              une question que tout abonné se pose (« que dit la loi sur X ? »),
-              là où le Journal officiel et les commissions s’adressent à un usage
-              professionnel quotidien. */}
-          <TopicBrief />
           {/* Tout ce qui relève de l'offre Pro est rassemblé ici : le professionnel
-              ouvre son espace et trouve la journée complète, sans chercher ailleurs. */}
+              ouvre son espace et trouve la journée complète, sans chercher ailleurs.
+              « Tout sur un sujet » en fait partie depuis qu'il donne les montants en
+              vigueur et les textes applicables : c'est un outil de travail, et la
+              fonction Edge qui le sert n'admet plus que le niveau Pro. */}
+          {proVerifie && <TopicBrief />}
           {/* Le registre remplace l ancien fil des commissions : les deux
               montraient la meme matiere dans le meme ecran, et deux panneaux
               jumeaux ont deja seme la confusion pour le Journal officiel. Le

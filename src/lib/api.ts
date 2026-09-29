@@ -919,7 +919,10 @@ export const api = {
     // Tri par DATE DU VOTE (event_at) décroissante — le vote le plus récent en haut, tous élus
     // confondus. created_at en second critère pour les rares notifs sans date d'événement.
     const ord = (q: any) => q.order('event_at', { ascending: false, nullsFirst: false }).order('created_at', { ascending: false });
-    let res: any = await ord(supabase.from('user_notifications').select(`${base}, mep_id`).eq('user_id', userId)).limit(limit);
+    // `place` (lieu de l'actualité) vient de la migration 2026092901 du backend : sans
+    // elle, on retombe sur la sélection précédente plutôt que de vider le fil.
+    let res: any = await ord(supabase.from('user_notifications').select(`${base}, mep_id, place`).eq('user_id', userId)).limit(limit);
+    if (res.error) res = await ord(supabase.from('user_notifications').select(`${base}, mep_id`).eq('user_id', userId)).limit(limit);
     if (res.error) { // colonne mep_id absente (migration non appliquée) → repli
       res = await ord(supabase.from('user_notifications').select(base).eq('user_id', userId)).limit(limit);
     }

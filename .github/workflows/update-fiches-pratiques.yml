@@ -1,0 +1,46 @@
+name: Fiches pratiques service-public (DILA)
+
+# Recopie les fiches pratiques de service-public.gouv.fr (flux « Le Comarquage »
+# de la DILA, public et sans clé) dans la table `fiches_pratiques`.
+#
+# Ce sont elles qui donnent à « Tout sur un sujet » (offre Pro) les montants EN
+# VIGUEUR et la liste exacte des textes de loi, avec leur lien Légifrance —
+# Légifrance lui-même refusant toute lecture automatisée.
+#
+# Quotidien parce que les montants changent à date fixe (1er janvier, 1er avril…)
+# et que l'administration met ses fiches à jour le jour même. Le script n'écrit
+# que les fiches modifiées : un passage ordinaire en réécrit quelques dizaines.
+# Aucun modèle de langage : aucun coût.
+# Voir scripts/update-fiches-pratiques.ts
+
+on:
+  schedule:
+    - cron: '20 3 * * *'   # 05h20 Paris
+  workflow_dispatch:
+
+concurrency:
+  group: fiches-pratiques
+  cancel-in-progress: false
+
+jobs:
+  fiches:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+          cache: 'npm'
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Fiches pratiques
+        env:
+          NEXT_PUBLIC_SUPABASE_URL: ${{ secrets.NEXT_PUBLIC_SUPABASE_URL }}
+          SUPABASE_SERVICE_ROLE_KEY: ${{ secrets.SUPABASE_SERVICE_ROLE_KEY }}
+        run: npx --yes tsx scripts/update-fiches-pratiques.ts

@@ -2,14 +2,17 @@
 
 import { useEffect, useState } from "react";
 import { motion, useReducedMotion } from "framer-motion";
-import { Bell, Check, Vote, Newspaper, ExternalLink } from "lucide-react";
+import { Bell, Check, Newspaper, ExternalLink, MapPin } from "lucide-react";
 import { api } from "@/lib/api";
 import { BallotBox } from "./BallotVote";
 import { interestByCode } from "@/lib/data/interestDomains";
+import DragScroller from "@/components/ui/DragScroller";
 
 type Notif = {
   id: string; type: string; title: string; detail: string | null;
   position: string | null; domain?: string | null; url?: string | null; importance?: number | null;
+  /** Commune, département ou région de l'actualité — sans lui, « la municipalité » ne dit pas laquelle. */
+  place?: string | null;
   event_at: string | null; read: boolean; created_at: string;
 };
 
@@ -109,10 +112,14 @@ export default function NotificationsFeed({ userId }: { userId: string }) {
           </div>
         </div>
 
-        {/* Rail : une alerte par carte, on glisse sur le côté. Les marges négatives
+        {/* Rail : une alerte par carte, on glisse sur le côté — le même rail que
+            partout ailleurs sur le site : défilement natif au doigt, glisser avec
+            inertie à la souris, flèches sur grand écran. L'ancienne version
+            reposait sur l'ancrage (scroll-snap) et sur la barre de défilement,
+            qu'il fallait viser précisément à la souris. Les marges négatives
             laissent les cartes filer jusqu'au bord de l'écran sur téléphone. */}
         <div className="-mx-5 min-w-0 flex-1 sm:mx-0">
-          <div className="flex snap-x snap-mandatory gap-3 overflow-x-auto px-5 pb-2 [scrollbar-width:thin] [touch-action:pan-x] sm:px-0">
+          <DragScroller ariaLabel="Mes alertes" sombre className="gap-3 px-5 pb-2 pt-0 sm:px-0 md:gap-3">
             {items.map((n, i) => {
               const isVote = n.type === "vote";
               const dom = n.domain ? interestByCode(n.domain) : undefined;
@@ -121,21 +128,31 @@ export default function NotificationsFeed({ userId }: { userId: string }) {
               return (
                 <motion.div
                   key={n.id}
-                  className="w-[78vw] max-w-[320px] shrink-0 snap-start sm:w-[290px]"
+                  className="w-[78vw] max-w-[320px] shrink-0 sm:w-[290px]"
                   animate={{ opacity: n.read ? 0.5 : 1 }}
                   transition={{ duration: 0.4, delay: n.read ? Math.min(i, 12) * 0.04 : 0 }}
                 >
                   <Wrapper {...wrapperProps}
-                    className={`flex h-full flex-col rounded-2xl border p-4 transition ${
+                    // Sans cela, la souris « attrape » l'image du lien au lieu de
+                    // faire glisser le rail.
+                    draggable={false}
+                    className={`flex h-full select-none flex-col rounded-2xl border p-4 transition ${
                       n.read ? "border-white/10 bg-white/[0.03]" : "border-fuchsia-400/25 bg-white/[0.07]"
-                    } ${n.url ? "cursor-pointer hover:border-fuchsia-400/60" : ""}`}
+                    } ${n.url ? "hover:border-fuchsia-400/60" : ""}`}
                   >
-                    <div className="mb-2 flex items-center gap-2">
+                    <div className="mb-2 flex min-w-0 items-center gap-2">
                       {isVote
                         ? <BallotBox vote={n.position || "ABSTENTION"} size={26} />
-                        : <span className="flex h-7 w-7 items-center justify-center rounded-lg" style={{ backgroundColor: (dom?.color || "#64748b") + "33", color: dom?.color || "#cbd5e1" }}><Newspaper size={14} /></span>}
-                      {!n.read && <span className="h-2 w-2 rounded-full bg-fuchsia-400" />}
-                      {n.read && <Check size={13} className="text-emerald-400/70" />}
+                        : <span className="flex h-7 w-7 shrink-0 items-center justify-center rounded-lg" style={{ backgroundColor: (dom?.color || "#64748b") + "33", color: dom?.color || "#cbd5e1" }}><Newspaper size={14} /></span>}
+                      {!n.read && <span className="h-2 w-2 shrink-0 rounded-full bg-fuchsia-400" />}
+                      {n.read && <Check size={13} className="shrink-0 text-emerald-400/70" />}
+                      {/* OÙ, avant QUOI : une alerte locale sans lieu ne se rattache à rien. */}
+                      {n.place && (
+                        <span className="ml-auto inline-flex min-w-0 items-center gap-1 rounded-full bg-white/10 px-2 py-0.5 text-[10px] font-bold text-white/85">
+                          <MapPin size={10} className="shrink-0 text-fuchsia-300" />
+                          <span className="truncate">{n.place}</span>
+                        </span>
+                      )}
                     </div>
 
                     {isVote ? (
@@ -159,7 +176,7 @@ export default function NotificationsFeed({ userId }: { userId: string }) {
                 </motion.div>
               );
             })}
-          </div>
+          </DragScroller>
 
           <p className="px-5 pt-1 text-[10px] font-black uppercase tracking-widest text-white/25 sm:hidden">
             Glissez pour voir les suivantes →

@@ -54,7 +54,11 @@ jobs:
         env:
           NEXT_PUBLIC_SUPABASE_URL: ${{ secrets.NEXT_PUBLIC_SUPABASE_URL }}
           SUPABASE_SERVICE_ROLE_KEY: ${{ secrets.SUPABASE_SERVICE_ROLE_KEY }}
-          # Moteur d'analyse : DeepSeek (voir scripts/update-commissions.ts).
+          # Moteur d'analyse : Google AI Studio GRATUIT (scripts/lib/llm.ts). Cette clé
+          # manquait ici : le script retombait sur DeepSeek, compte à découvert, et
+          # chaque passage échouait depuis le 29/09 — réunions laissées sans analyse.
+          LLM_FREE_API_KEY: ${{ secrets.LLM_FREE_API_KEY }}
+          # Secours payant facultatif.
           DEEPSEEK_API_KEY: ${{ secrets.DEEPSEEK_API_KEY }}
           # Facultatif : bascule vers un modèle moins cher (deepseek-flash) sans toucher au code.
           COMMISSION_MODEL: ${{ vars.COMMISSION_MODEL }}

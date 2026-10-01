@@ -697,9 +697,6 @@ function CandidatesContent() {
   const [search, setSearch] = useState("");
   const [side, setSide] = useState<string>("Tous");
   const [view, setView] = useState<"candidats" | "positions" | "enjeux" | "dynamiques">("candidats");
-  // Flottement perpétuel des cartes : uniquement sur grand écran et hors « mouvement réduit ».
-  // Sur mobile, N animations infinies (y + rotate) simultanées saccadent → on les coupe.
-  const [floaty, setFloaty] = useState(false);
 
   useEffect(() => {
     api.getCandidates().then(data => { setCandidates(data as Candidate[]); }).finally(() => setLoading(false));
@@ -722,16 +719,6 @@ function CandidatesContent() {
       document.getElementById(hash.slice(1))?.scrollIntoView({ behavior: "smooth" });
     }, 150);
     return () => clearTimeout(t);
-  }, []);
-
-  useEffect(() => {
-    const check = () => setFloaty(
-      window.matchMedia("(min-width: 768px)").matches &&
-      !window.matchMedia("(prefers-reduced-motion: reduce)").matches,
-    );
-    check();
-    window.addEventListener("resize", check);
-    return () => window.removeEventListener("resize", check);
   }, []);
 
   const sideTabs = ["Tous", ...Object.keys(SIDES)];
@@ -835,23 +822,16 @@ function CandidatesContent() {
           </div>
         ) : (
           <div className="grid grid-cols-2 gap-4 sm:grid-cols-3 lg:grid-cols-4">
-            {filtered.map((c, i) => {
+            {filtered.map(c => {
               const s = sideOf(c);
               return (
-                <motion.button
+                // Cartes immobiles : le flottement perpétuel (une animation JavaScript
+                // infinie par carte, des dizaines à la fois) alourdissait toute la page.
+                // Reste un léger soulèvement au survol, en CSS, qui ne coûte rien au repos.
+                <button
                   key={c.id}
                   onClick={() => open(c)}
-                  // Entrée en cascade ; flottement + balancement perpétuel UNIQUEMENT sur desktop
-                  // (sur mobile, N animations infinies simultanées saccadent → on garde juste l'entrée).
-                  initial={{ opacity: 0, y: 24 }}
-                  animate={floaty ? { opacity: 1, y: [0, -12, 0], rotate: [0, 1.5, -1.5, 0] } : { opacity: 1, y: 0, rotate: 0 }}
-                  transition={floaty ? {
-                    opacity: { duration: 0.4, delay: (i % 12) * 0.05 },
-                    y: { duration: 4 + (i % 5) * 0.5, repeat: Infinity, ease: "easeInOut", delay: (i % 6) * 0.25 },
-                    rotate: { duration: 4 + (i % 5) * 0.5, repeat: Infinity, ease: "easeInOut", delay: (i % 6) * 0.25 },
-                  } : { opacity: { duration: 0.4, delay: (i % 12) * 0.05 }, y: { duration: 0.4, delay: (i % 12) * 0.05 } }}
-                  whileHover={{ scale: 1.05, rotate: 0, transition: { duration: 0.2 } }}
-                  className={`group overflow-hidden rounded-2xl border-b-4 bg-card text-left shadow-lg shadow-slate-900/10 ring-1 ring-slate-200 transition-shadow hover:shadow-xl ${s.borderb}`}
+                  className={`group overflow-hidden rounded-2xl border-b-4 bg-card text-left shadow-lg shadow-slate-900/10 ring-1 ring-slate-200 transition-[transform,box-shadow] duration-200 hover:-translate-y-1 hover:shadow-xl motion-reduce:transition-none motion-reduce:hover:translate-y-0 dark:ring-slate-800 ${s.borderb}`}
                 >
                   <div className="relative">
                     {/* Photo claire, sans voile sombre, cadrage portrait centré sur le visage. */}
@@ -872,7 +852,7 @@ function CandidatesContent() {
                     {c.summary && <p className="line-clamp-2 text-xs leading-5 text-muted-foreground">{c.summary}</p>}
                     <span className={`mt-3 inline-flex items-center gap-1 rounded-full bg-gradient-to-r ${s.from} ${s.to} px-3 py-1.5 text-[10px] font-black uppercase tracking-widest text-white shadow-md transition-transform group-hover:translate-x-0.5`}>Voir la fiche →</span>
                   </div>
-                </motion.button>
+                </button>
               );
             })}
           </div>

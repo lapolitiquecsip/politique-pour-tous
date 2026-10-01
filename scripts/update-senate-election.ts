@@ -261,6 +261,10 @@ type Senateur = {
   matricule: string; nom: string; prenom: string; civilite: string;
   groupe: string; commission: string; circo: string; code: string | null;
   naissance: string | null; profession: string; csp: string; email: string;
+  /** Lu sur senat.fr pour un nouvel élu absent de l'open data : nuance du scrutin, fonctions antérieures. */
+  nuance?: string; anterieur?: string; depuisSite?: boolean;
+  /** Nom de fichier senat.fr exact (« amard_gabriel20684b ») : la photo en dérive sans deviner. */
+  fichier?: string;
 };
 
 function lireCsv(texte: string): string[][] {
@@ -315,18 +319,87 @@ async function listeOfficielle(): Promise<Senateur[]> {
   return out;
 }
 
+/* ──────────── 2 bis. La liste du site senat.fr, en relais de l'open data ────────────
+ * Le 1er octobre, la liste « Vos sénateurs » de senat.fr passe à la nouvelle
+ * assemblée dès la prise de fonctions ; l'open data ODSEN, lui, ne suit que des
+ * jours plus tard. Sans relais, les nouveaux élus restaient sans fiche ni photo
+ * alors que le Sénat les avait déjà publiés. La liste du site dit QUI siège ;
+ * pour ceux qui siégeaient déjà, la ligne ODSEN reste la source (groupe,
+ * commission, profession) ; pour les nouveaux, leur page senat.fr et le
+ * résultat du scrutin donnent l'essentiel, et la synchronisation ODSEN
+ * complètera groupe et commission dès leur constitution.
+ */
+const URL_LISTE_SENAT = "https://www.senat.fr/senateurs/senatl.html";
+const MOIS_FR = ["janvier", "février", "mars", "avril", "mai", "juin", "juillet", "août", "septembre", "octobre", "novembre", "décembre"];
+
+function dateFr(s?: string | null): string | null {
+  const m = (s || "").match(/(\d{1,2})(?:er)?\s+([a-zéû]+)\s+(\d{4})/i);
+  const mois = m ? MOIS_FR.indexOf(m[2].toLowerCase()) : -1;
+  return m && mois >= 0 ? `${m[3]}-${String(mois + 1).padStart(2, "0")}-${m[1].padStart(2, "0")}` : null;
+}
+
+/** « APOURCEAU-POLY » → « Apourceau-Poly », « DE LA PROVÔTÉ » → « de La Provôté ». */
+function casseNom(nom: string): string {
+  return nom.toLocaleLowerCase("fr").split(/(\s+|-|')/).map(p =>
+    /^(\s+|-|')$/.test(p) || /^(de|du|des|d)$/.test(p) ? p : p.charAt(0).toLocaleUpperCase("fr") + p.slice(1),
+  ).join("");
+}
+
+async function listeSiteSenat(odsen: Senateur[], elus: Elu[]): Promise<Senateur[] | null> {
+  const html = await recuperer(URL_LISTE_SENAT);
+  const entrees = [...html.matchAll(/href="\/senateur\/([a-z0-9_]+?)(\d{5}[a-z])\.html"[^>]*>([^<]+)</gi)];
+  if (entrees.length < 300) { console.warn(`  ! senat.fr : ${entrees.length} sénateurs lus — liste écartée`); return null; }
+
+  const odsenParMatricule = new Map(odsen.map(s => [s.matricule.toUpperCase(), s]));
+  const eluParNom = new Map(elus.map(e => [norm(`${e.prenom}${e.nom}`), e]));
+  const out: Senateur[] = [];
+  for (const [, base, mat, libelle] of entrees) {
+    const matricule = mat.toUpperCase();
+    const connu = odsenParMatricule.get(matricule);
+    if (connu) { out.push({ ...connu, fichier: `${base}${mat}` }); continue; }
+
+    const { prenom, nom } = separerNom(decodeHtml(libelle).replace(/ /g, " "));
+    const elu = eluParNom.get(norm(`${prenom}${nom}`));
+    const page = await recuperer(`https://www.senat.fr/senateur/${base}${mat}.html`).catch(() => "");
+    const texte = sansBalises(page);
+    const titre = sansBalises(page.match(/<h1[^>]*>([\s\S]*?)<\/h1>/i)?.[1] || "");
+    const circoPage = texte.match(/Sénat(?:eur|rice) (?:du |de la |de l'|des |de |représentant les )?(.+?) \(/)?.[1] || "";
+    const anterieur = texte.match(/Fonctions antérieures (.+?) Extrait de la/)?.[1]?.replace(/\s+,/g, ",").trim();
+    out.push({
+      matricule, nom: casseNom(nom), prenom, civilite: /^Mme/i.test(titre) ? "Mme" : "M.",
+      groupe: "", commission: "", profession: "", csp: "", email: "",
+      circo: elu?.circonscription || circoPage, code: elu?.code || codeDe(circoPage),
+      naissance: dateFr(texte.match(/Née? le (\d{1,2}(?:er)? [a-zéû]+ \d{4})/i)?.[1]),
+      nuance: elu?.nuance || undefined, anterieur: anterieur || undefined, depuisSite: true, fichier: `${base}${mat}`,
+    });
+    await new Promise(r => setTimeout(r, 300)); // on reste courtois avec senat.fr
+  }
+  return out;
+}
+
 const pourFichier = (s: string) =>
   (s || "").normalize("NFD").replace(/[̀-ͯ]/g, "").toLowerCase()
     .replace(/[^a-z0-9]+/g, "_").replace(/(^_|_$)/g, "");
 
-async function photoOfficielle(nom: string, prenom: string, matricule: string): Promise<string | null> {
-  if (!matricule) return null;
-  const base = `${PHOTOS_SENAT}/${pourFichier(nom)}_${pourFichier(prenom)}${matricule.toLowerCase()}`;
+/**
+ * La photo officielle. Le nom de fichier exact vient de la liste senat.fr quand
+ * on l'a ; sinon il est reconstitué depuis le nom. Vérifiée par GET, avec trois
+ * essais : des HEAD en rafale, juste après la lecture des 348 pages, étaient
+ * refusés, et 24 nouveaux élus s'étaient retrouvés sans photo alors qu'elle existait.
+ */
+async function photoOfficielle(nom: string, prenom: string, matricule: string, fichier?: string): Promise<string | null> {
+  if (!matricule && !fichier) return null;
+  const base = `${PHOTOS_SENAT}/${fichier || `${pourFichier(nom)}_${pourFichier(prenom)}${matricule.toLowerCase()}`}`;
   for (const candidat of [`${base}_carre.jpg`, `${base}.jpg`]) {
-    try {
-      const r = await fetch(candidat, { method: "HEAD", signal: AbortSignal.timeout(12000) });
-      if (r.ok && (r.headers.get("content-type") || "").includes("image")) return candidat;
-    } catch { /* la photo n'est pas indispensable */ }
+    for (let essai = 1; essai <= 3; essai++) {
+      try {
+        const r = await fetch(candidat, { headers: { "User-Agent": UA }, signal: AbortSignal.timeout(15000) });
+        await r.arrayBuffer().catch(() => null);
+        if (r.ok && (r.headers.get("content-type") || "").includes("image")) return candidat;
+        if (r.status === 404) break;   // absente : inutile d'insister
+      } catch { /* réseau : on réessaie */ }
+      await new Promise(res => setTimeout(res, 1500 * essai));
+    }
   }
   return null;
 }
@@ -380,11 +453,15 @@ async function synchroniserSenateurs(officiels: Senateur[]): Promise<EnBase[]> {
     // synchronisation n'a pas à écraser.
     if (!s.party) poser("party", o.groupe);
     if (!s.photo_url) {
-      const p = await photoOfficielle(o.nom, o.prenom, o.matricule);
+      const p = await photoOfficielle(o.nom, o.prenom, o.matricule, o.fichier);
       if (p) { patch.photo_url = p; photos++; }
     }
     if (!Object.keys(patch).length) continue;
-    if (A_BLANC) { maj++; continue; }
+    if (A_BLANC) {
+      // À blanc, on montre quelques changements : c'est ce qu'on vient vérifier.
+      if (maj < 6) console.log(`    · ${s.first_name} ${s.last_name} : ${JSON.stringify(patch).slice(0, 220)}`);
+      maj++; continue;
+    }
     const { error: e } = await supabase.from("senators").update(patch).eq("id", s.id);
     if (e) console.warn(`  ! ${s.last_name} : ${e.message}`);
     else maj++;
@@ -410,12 +487,19 @@ async function synchroniserSenateurs(officiels: Senateur[]): Promise<EnBase[]> {
     const elle = /mme/i.test(o.civilite);
     entrants.push({
       first_name: o.prenom, last_name: o.nom, slug, senate_matricule: o.matricule,
-      photo_url: await photoOfficielle(o.nom, o.prenom, o.matricule),
-      senate_group: o.groupe || null, party: o.groupe || null,
+      photo_url: await photoOfficielle(o.nom, o.prenom, o.matricule, o.fichier),
+      // Nouvel élu lu sur senat.fr : pas encore de groupe (ils se constituent début
+      // octobre) — sa nuance du scrutin en tient lieu jusqu'à la synchro ODSEN.
+      senate_group: o.groupe || null, party: o.groupe || o.nuance || null,
       department: o.circo, department_code: o.code,
       birth_date: o.naissance, profession: o.profession || null, csp: o.csp || null,
       committee: o.commission || null, email: o.email || null, sitting: true,
-      biography: `${o.prenom} ${o.nom} est ${elle ? "sénatrice" : "sénateur"} de la circonscription : ${o.circo}.`
+      biography: o.depuisSite
+        ? `${o.prenom} ${o.nom} est ${elle ? "sénatrice" : "sénateur"} de la circonscription : ${o.circo}, ${elle ? "élue" : "élu"} le ${new Date(DATE_SCRUTIN).toLocaleDateString("fr-FR", { day: "numeric", month: "long", year: "numeric" })}`
+          + (o.nuance ? ` (nuance : ${o.nuance})` : "") + "."
+          + (o.anterieur ? ` Fonctions antérieures : ${o.anterieur}.` : "")
+          + " Son groupe politique et sa commission seront indiqués dès leur constitution. Source : site officiel du Sénat."
+        : `${o.prenom} ${o.nom} est ${elle ? "sénatrice" : "sénateur"} de la circonscription : ${o.circo}.`
         + (o.groupe ? ` ${elle ? "Elle siège" : "Il siège"} au sein du groupe ${o.groupe}.` : "")
         + (o.commission ? ` ${elle ? "Elle est membre" : "Il est membre"} de la ${o.commission}.` : "")
         + (o.profession ? ` Sa profession d'origine est : ${o.profession}.` : "")
@@ -431,6 +515,12 @@ async function synchroniserSenateurs(officiels: Senateur[]): Promise<EnBase[]> {
     }
   };
 
+  // Un renouvellement par moitié fait sortir quelques dizaines de sénateurs. Bien
+  // davantage trahirait une liste mal lue : on ne retire alors personne.
+  if (sortis.length > 120) {
+    console.warn(`  ! ${sortis.length} sortants : liste suspecte, statuts inchangés.`);
+    sortis.length = 0;
+  }
   if (!A_BLANC) {
     await majStatut(enFonction, true);
     await majStatut(sortis, false);
@@ -468,17 +558,32 @@ async function main() {
     if (!A_BLANC) { process.exitCode = 1; return; }
   }
 
-  const officiels = await listeOfficielle();
-  if (officiels.length < 300) throw new Error(`liste officielle suspecte (${officiels.length}) — on n'écrit rien`);
+  const odsen = await listeOfficielle();
+  if (odsen.length < 300) throw new Error(`liste officielle suspecte (${odsen.length}) — on n'écrit rien`);
+  console.log(`> open data : ${odsen.length} sénateurs en fonction.`);
+
+  // Le résultat d'abord : c'est lui qui dit si l'open data décrit déjà la
+  // nouvelle assemblée (un nouvel élu y figure) ou encore l'ancienne.
+  const resultats = SANS_RESULTATS ? null : await lireResultats();
+  const nomsNouveaux = new Set((resultats?.elus || []).filter(e => !e.sortant).map(e => norm(`${e.prenom}${e.nom}`)));
+  const odsenRenouvele = odsen.some(o => nomsNouveaux.has(norm(`${o.prenom}${o.nom}`)));
+
+  let officiels = odsen;
+  if (resultats && nomsNouveaux.size && !odsenRenouvele) {
+    const site = await listeSiteSenat(odsen, resultats.elus).catch(e => { console.warn(`  ! senat.fr : ${e.message}`); return null; });
+    if (site?.some(o => nomsNouveaux.has(norm(`${o.prenom}${o.nom}`)))) {
+      officiels = site;
+      console.log(`> open data pas encore renouvelé : liste de senat.fr retenue (${site.length} en fonction, ${site.filter(s => s.depuisSite).length} nouveaux lus sur leur page).`);
+    }
+  }
   const sansCode = [...new Set(officiels.filter(s => !s.code).map(s => s.circo))];
   if (sansCode.length) console.warn(`  ! circonscription(s) non résolue(s) : ${sansCode.join(", ")}`);
-  console.log(`> open data : ${officiels.length} sénateurs en fonction.`);
 
   const fiches = await synchroniserSenateurs(officiels);
 
-  if (SANS_RESULTATS) { console.log("> résultats ignorés (--skip-results)."); return; }
+  if (!resultats) { console.log("> résultats ignorés (--skip-results)."); return; }
 
-  const { elus, circos } = await lireResultats();
+  const { elus, circos } = resultats;
   const siegesTotal = circos.reduce((n, c) => n + c.seats, 0);
   const nouveaux = elus.filter(e => !e.sortant).length;
   console.log(`> ${elus.length} élus lus sur ${siegesTotal} sièges — ${nouveaux} nouveaux, ${elus.length - nouveaux} réélus.`);
@@ -493,7 +598,10 @@ async function main() {
   for (const f of fiches) parNom.set(norm(`${f.first_name}${f.last_name}`), f);
 
   const lignes = elus.map(e => {
-    const f = parNom.get(norm(`${e.prenom}${e.nom}`));
+    // Repli sur nom de famille + circonscription : le site du scrutin a ses coquilles
+    // (« Chistine BOST »), et un prénom mal tapé ne doit pas priver un élu de sa fiche.
+    const f = parNom.get(norm(`${e.prenom}${e.nom}`))
+      ?? fiches.find(x => norm(x.last_name) === norm(e.nom) && x.department_code === e.code && x.sitting !== false);
     return {
       election_date: DATE_SCRUTIN, dept_code: e.code, constituency: e.circonscription,
       full_name: e.nomComplet, first_name: e.prenom, last_name: e.nom,
@@ -516,8 +624,8 @@ async function main() {
   // décrit encore l'ancienne assemblée tant qu'aucun nouvel élu n'y figure :
   // c'est ce test, et non l'horloge, qui dit lequel des deux on lit. Une fois
   // relevé, l'état d'avant n'est plus jamais réécrit.
-  const nomsNouveaux = new Set(elus.filter(e => !e.sortant).map(e => norm(`${e.prenom}${e.nom}`)));
-  const rosterRenouvele = officiels.some(o => nomsNouveaux.has(norm(`${o.prenom}${o.nom}`)));
+  // Les groupes ne se comptent que sur l'open data : la liste du site ne les donne pas.
+  const rosterRenouvele = odsenRenouvele;
   const { data: statutActuel } = await supabase
     .from("senate_election_status").select("groups_before").eq("election_date", DATE_SCRUTIN).maybeSingle();
 
@@ -531,8 +639,8 @@ async function main() {
     reelected_count: elus.length - nouveaux,
     renewable: circos,
     nuances,
-    groups_before: statutActuel?.groups_before ?? (rosterRenouvele ? null : compterGroupes(officiels)),
-    groups_after: rosterRenouvele ? compterGroupes(officiels) : null,
+    groups_before: statutActuel?.groups_before ?? (rosterRenouvele ? null : compterGroupes(odsen)),
+    groups_after: rosterRenouvele ? compterGroupes(odsen) : null,
     source: "Sénat — résultats officiels du scrutin et open data ODSEN",
     source_url: SITE_SCRUTIN,
     updated_at: new Date().toISOString(),

@@ -16,8 +16,9 @@ import { scrapeAndUpdateContent } from "../src/lib/services/contentScrapingServi
 
 async function main() {
   console.log("=== Ingestion des actualités (fil d'accueil) ===");
-  const missing = ["NEXT_PUBLIC_SUPABASE_URL", "SUPABASE_SERVICE_ROLE_KEY", "ANTHROPIC_API_KEY"]
-    .filter((k) => !process.env[k]);
+  // Une clé d'IA suffit : la gratuite (Google AI Studio) d'abord, Claude en secours.
+  const missing = ["NEXT_PUBLIC_SUPABASE_URL", "SUPABASE_SERVICE_ROLE_KEY"].filter((k) => !process.env[k]);
+  if (!process.env.LLM_FREE_API_KEY && !process.env.ANTHROPIC_API_KEY) missing.push("LLM_FREE_API_KEY (ou ANTHROPIC_API_KEY)");
   if (missing.length) {
     console.error(`❌ Variables manquantes : ${missing.join(", ")}`);
     process.exit(1);

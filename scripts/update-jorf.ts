@@ -822,12 +822,13 @@ async function rattraperExplications(supabase: any): Promise<void> {
       console.log(`  ${fin}/${manquants.length} — ${ecrites + obtenues.size} rédigée(s)`);
     } catch (e) {
       console.warn(`  ⚠ lot ${i + 1}-${i + lot.length} : ${(e as Error).message}`);
+      derniereErreurIA = (e as Error).message;
     }
     if (++depuisVersement >= VERSEMENT) { await verser(obtenues); depuisVersement = 0; }
   }
   await verser(obtenues);
 
-  if (!ecrites) { console.error("❌ Aucune explication obtenue."); process.exitCode = 1; return; }
+  if (!ecrites) { echecIA("Aucune explication obtenue."); return; }
   console.log(`\n  → ${ecrites} explication(s) écrite(s)`);
 }
 
@@ -879,17 +880,33 @@ async function rattraperResumes(supabase: any) {
       reussis++;
     } catch (e) {
       console.warn(`    ⚠ ${row.date} : ${(e as Error).message}`);
+      derniereErreurIA = (e as Error).message;
     }
   }
 
   // Aucun résumé alors qu'il y avait du travail et une clé : le modèle refuse, le
   // solde est à sec, ou l'interface a changé. Dans tous les cas il faut le savoir,
   // plutôt que de voir le passage se terminer au vert sans rien avoir produit.
-  if (!reussis) {
-    console.error("❌ Aucun résumé produit alors que des éditions en attendaient un.");
-    console.error("   Vérifiez le solde DeepSeek sur platform.deepseek.com.");
-    process.exitCode = 1;
+  if (!reussis) echecIA("Aucun résumé produit alors que des éditions en attendaient un.");
+}
+
+/**
+ * Dernière erreur de l'IA, pour qualifier un passage qui n'a rien produit.
+ *
+ * Le passage de nuit (01:45 UTC) tombe en fin de journée du quota gratuit Gemini,
+ * remis à zéro à 07:00 UTC : certains soirs il est déjà vidé par les autres
+ * tâches. Ce n'est pas une panne — le passage du matin rédige ce qui manque —
+ * et l'échec envoyait pour rien un e-mail « Run failed ». Toute autre cause
+ * (clé refusée, interface changée) reste un échec.
+ */
+let derniereErreurIA = "";
+function echecIA(constat: string) {
+  if (/\b429\b|quota|Aucun modèle|aucun modèle/i.test(derniereErreurIA)) {
+    console.log(`::warning::${constat} Quota gratuit du jour épuisé : le prochain passage reprendra.`);
+    return;
   }
+  console.error(`❌ ${constat}${derniereErreurIA ? ` Dernière erreur : ${derniereErreurIA}` : ""}`);
+  process.exitCode = 1;
 }
 
 main().catch(e => { console.error("Erreur fatale :", e); process.exit(1); });

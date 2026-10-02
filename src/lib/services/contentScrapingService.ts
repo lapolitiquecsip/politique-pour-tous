@@ -3,6 +3,7 @@ import { XMLParser } from 'fast-xml-parser';
 import Anthropic from '@anthropic-ai/sdk';
 
 import { CLAUDE_MODEL } from '@/lib/ai-model';
+import { demanderJSON, llmDisponible } from '../../../scripts/lib/llm';
 // --- Configuration ---
 // On instanciera Supabase et Anthropic à l'intérieur des fonctions pour s'assurer que les variables d'environnement sont chargées.
 
@@ -266,6 +267,31 @@ async function processWithClaude(articles: RawArticle[]): Promise<ProcessedArtic
     apiKey: process.env.ANTHROPIC_API_KEY || '',
   });
 
+  // Le modèle : l'IA gratuite (Google AI Studio) d'abord, Claude en secours s'il a
+  // une clé. Ce fil ne tournait plus que sur Claude : le dépôt du site n'en avait
+  // pas la clé (échec en 2 s à chaque passage) et le modèle actuel refuse le
+  // paramètre « temperature » (chaque lot rejeté). Le texte rendu est analysé plus
+  // bas comme avant : on y cherche le tableau JSON des fiches.
+  const synthese = async (prompt: string): Promise<string> => {
+    if (llmDisponible()) {
+      try {
+        const r = await demanderJSON<unknown>(
+          "Tu réponds uniquement en JSON : le tableau des fiches demandé, sans texte autour.",
+          prompt, { maxJetons: 8192 });
+        return JSON.stringify(r);
+      } catch (e: any) {
+        if (!process.env.ANTHROPIC_API_KEY) throw e;
+        console.warn(`[Scraper/IA] Gratuit indisponible (${e.message}) → Claude.`);
+      }
+    }
+    const response = await anthropic.messages.create({
+      model: CLAUDE_MODEL,
+      max_tokens: 4000,
+      messages: [{ role: 'user', content: prompt }],
+    });
+    return response.content[0].type === 'text' ? response.content[0].text : '';
+  };
+
   const allProcessed: ProcessedArticle[] = [];
   const chunkSize = 40; // Traiter par lots de 40 articles pour éviter de saturer Claude et garantir un gros volume de fiches
   
@@ -290,14 +316,7 @@ URL : ${a.link}
 `).join('\n---\n');
 
     try {
-      const response = await anthropic.messages.create({
-        model: CLAUDE_MODEL,
-        max_tokens: 4000,
-        temperature: 0.2,
-        messages: [
-          {
-            role: 'user',
-            content: `Tu es rédacteur en chef d'un fil d'actualité politique française strictement factuel.
+      const responseText = await synthese(`Tu es rédacteur en chef d'un fil d'actualité politique française strictement factuel.
 Ton seul rôle est de SÉLECTIONNER, pas d'écrire des commentaires.
 
 ============================================
@@ -376,12 +395,7 @@ Réponds UNIQUEMENT par un tableau JSON valide, sans texte autour.
 
 Voici le lot d'articles :
 
-${articlesForPrompt}`
-          }
-        ],
-      });
-
-      const responseText = response.content[0].type === 'text' ? response.content[0].text : '';
+${articlesForPrompt}`);
       const jsonMatch = responseText.match(/\[[\s\S]*\]/);
       if (jsonMatch) {
         const parsed = JSON.parse(jsonMatch[0]) as ProcessedArticle[];

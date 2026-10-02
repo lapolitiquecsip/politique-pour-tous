@@ -1,5 +1,6 @@
 "use client";
 
+import RefusMesure from "@/components/analytics/RefusMesure";
 import { motion } from "framer-motion";
 import { Landmark } from "lucide-react";
 
@@ -85,6 +86,10 @@ export default function MentionsLegales() {
             <p className="mt-4">
               Nous utilisons des cookies essentiels pour le fonctionnement du site et la gestion de vos abonnements via Stripe. Aucun cookie publicitaire tiers n'est utilisé sans votre consentement préalable.
             </p>
+            <p className="mt-4">
+              <strong>Mesure d&apos;audience.</strong> Pour connaître la fréquentation du site (pages vues, provenance, type d&apos;appareil, clics vers les offres), nous enregistrons chaque visite avec un identifiant tiré au hasard et gardé dans votre navigateur, qui ne permet pas de vous identifier. Ces données servent uniquement à des statistiques anonymes, ne sont ni croisées avec d&apos;autres ni transmises à des tiers, et sont effacées au bout de 13 mois. Vous pouvez vous y opposer à tout moment :
+            </p>
+            <RefusMesure />
           </section>
 
         </div>

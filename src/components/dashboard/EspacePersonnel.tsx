@@ -3,7 +3,7 @@
 import { useState, useEffect, useTransition } from "react";
 import Link from "next/link";
 // ... (imports lucide-react)
-import { User, Star, Vote, Users, ChevronRight, Bell, MapPin, Lock, CheckCircle2, XCircle, MinusCircle, Loader2, Calendar, LayoutDashboard, LogOut, Settings, ArrowRight, Bookmark, FileText, Search, Clock, Globe, Layers, UserMinus, Building2, Scale } from "lucide-react";
+import { User, Star, Vote, Users, ChevronRight, Bell, MapPin, Lock, CheckCircle2, XCircle, MinusCircle, Loader2, Calendar, LayoutDashboard, LogOut, Settings, ArrowRight, Bookmark, FileText, Search, Clock, Globe, Layers, UserMinus, Building2, Scale, Gift } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
 import { api } from "@/lib/api";
 import { BallotBox, BallotChip } from "@/components/dashboard/BallotVote";
@@ -17,6 +17,7 @@ import TopicBrief from "@/components/pro/TopicBrief";
 import EncartPremium from "@/components/dashboard/EncartPremium";
 import IdentifiantsForm from "@/components/dashboard/IdentifiantsForm";
 import ParametresCompte from "@/components/dashboard/ParametresCompte";
+import Parrainage from "@/components/dashboard/Parrainage";
 import { usePremium } from "@/lib/hooks/usePremium";
 import { departmentPaths } from "@/lib/data/departmentPaths";
 import { useRegionPaths } from "@/lib/data/useRegionPaths";
@@ -74,6 +75,12 @@ const ONGLETS = [
     id: "geos", label: "Territoires", icone: MapPin, premium: true,
     actif: "bg-gradient-to-br from-fuchsia-500 to-pink-600 shadow-fuchsia-500/50",
     repos: "bg-gradient-to-br from-fuchsia-500 to-pink-700 hover:from-fuchsia-400 hover:to-pink-600",
+  },
+  {
+    // Ouvert à tous : on recommande un site parce qu'on s'en sert, pas parce qu'on y paie.
+    id: "parrainage", label: "Parrainage", icone: Gift, premium: false,
+    actif: "bg-gradient-to-br from-teal-400 to-teal-600 shadow-teal-500/50",
+    repos: "bg-gradient-to-br from-teal-500 to-teal-700 hover:from-teal-400 hover:to-teal-600",
   },
   {
     // Adresse e-mail et mot de passe, modifiables ici pour tous.
@@ -838,6 +845,10 @@ export default function EspacePersonnel({ mode = "tout" }: { mode?: ModeEspace }
                         </Link>
                       ))
                     )}
+                  </motion.div>
+                ) : activeTab === "parrainage" ? (
+                  <motion.div key="parrainage" initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: -10 }}>
+                    <Parrainage />
                   </motion.div>
                 ) : activeTab === "compte" ? (
                   <motion.div key="compte" initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: -10 }}>

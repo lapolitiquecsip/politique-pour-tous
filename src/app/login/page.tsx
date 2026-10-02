@@ -15,6 +15,7 @@ import {
 } from "lucide-react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
+import { codeParrain, mesurerAction } from "@/lib/mesure";
 
 export default function LoginPage() {
   const [isLogin, setIsLogin] = useState(true);
@@ -89,6 +90,9 @@ export default function LoginPage() {
           password,
           options: {
             emailRedirectTo: retour(),
+            // Le code de parrainage voyage avec le compte : le lien de confirmation
+            // s'ouvre souvent dans un autre navigateur, qui ne l'a pas mémorisé.
+            ...(codeParrain() ? { data: { parrain: codeParrain() } } : {}),
           },
         });
         if (signUpError) throw signUpError;
@@ -102,6 +106,7 @@ export default function LoginPage() {
           setError("Un compte existe déjà avec cette adresse. Connectez-vous — ou, si vous avez oublié votre mot de passe, recevez un lien pour en choisir un nouveau.");
           return;
         }
+        mesurerAction("inscription");
         setSuccess(true);
       }
     } catch (err: any) {

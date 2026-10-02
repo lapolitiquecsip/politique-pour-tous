@@ -1274,6 +1274,34 @@ export const api = {
     return (data as any)?.visual || null;
   },
 
+  /* ════════ STATISTIQUES DU SITE ET PARRAINAGE ════════ */
+  // Totaux de la mesure d'audience : réservé aux administrateurs (la fonction refuse les autres).
+  getStatistiquesSite: async (jours = 30) => {
+    const { data, error } = await supabase.rpc('statistiques_site', { p_jours: jours });
+    if (error) throw error;
+    return data as any;
+  },
+  // Le tableau de bord de parrainage du membre connecté (crée son code au premier appel).
+  getMonParrainage: async () => {
+    const { data, error } = await supabase.rpc('mon_parrainage');
+    if (error) throw error;
+    return data as {
+      code: string; taux: number; duree_mois: number; delai_validation_jours: number; seuil_versement: number;
+      clics: number; inscrits: number; abonnes: number; en_validation: number; disponible: number; verse: number;
+      historique: { creee_le: string; montant_paye: number; commission: number; statut: string }[];
+    };
+  },
+  getParrainageAdmin: async () => {
+    const { data, error } = await supabase.rpc('parrainage_admin');
+    if (error) throw error;
+    return data as any;
+  },
+  marquerCommissionsVersees: async (parrainId: string) => {
+    const { data, error } = await supabase.rpc('marquer_commissions_versees', { p_parrain: parrainId });
+    if (error) throw error;
+    return data as number;
+  },
+
   // Analyse approfondie d'un texte (chaque mesure, avant/après, chiffres, cadre
   // existant). Réservée aux abonnés PAR LA BASE (RLS) : null pour les autres.
   getAnalyseApprofondie: async (dossierId: string) => {

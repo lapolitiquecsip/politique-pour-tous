@@ -33,6 +33,31 @@ async function resolveTier(session: any): Promise<'elite' | 'pro'> {
   return (session.amount_total ?? 0) >= 1500 ? 'pro' : 'elite'
 }
 
+const admin = () => createClient(
+  Deno.env.get('SUPABASE_URL') ?? '',
+  Deno.env.get('SUPABASE_SERVICE_ROLE_KEY') ?? ''
+)
+
+/** Le membre qui correspond à un client Stripe, mémorisé lors de son premier achat. */
+async function profilDuClient(supabase: any, customer: string | null): Promise<string | null> {
+  if (!customer) return null
+  const { data } = await supabase.from('profiles').select('id').eq('stripe_customer_id', customer).maybeSingle()
+  return data?.id ?? null
+}
+
+/**
+ * Commission de parrainage sur un paiement. Toute la règle (taux, durée, filleul
+ * sans parrain) est dans la fonction SQL ; la facture sert de clé, si bien qu'un
+ * même paiement vu deux fois (achat + facture) ne compte qu'une fois.
+ */
+async function commissionner(supabase: any, filleul: string, facture: string, montant: number) {
+  const { data, error } = await supabase.rpc('enregistrer_commission', {
+    p_filleul: filleul, p_facture: facture, p_montant: montant,
+  })
+  if (error) console.error(`Commission non enregistrée (${facture}) : ${error.message}`)
+  else if (data?.commission) console.log(`Commission enregistrée sur ${facture} (${montant} €).`)
+}
+
 serve(async (req) => {
   const signature = req.headers.get('Stripe-Signature')
 
@@ -101,6 +126,47 @@ serve(async (req) => {
       }
       if (error) throw error
       console.log(`Succès ! Accès ${tier} activé pour ${targetId}`)
+
+      // Le client Stripe, pour reconnaître ce membre dans les événements suivants
+      // (renouvellements, résiliation), qui ne portent plus client_reference_id.
+      if (session.customer) {
+        await supabase.from('profiles').update({ stripe_customer_id: session.customer }).eq('id', targetId)
+      }
+      // Parrainage : commission sur ce premier paiement (une seule par facture).
+      await commissionner(supabase, targetId, session.invoice ?? session.id, (session.amount_total ?? 0) / 100)
+    }
+
+    // Renouvellement (et tout paiement d'abonnement) : commission du parrain.
+    else if (event.type === 'invoice.paid') {
+      const invoice: any = event.data.object
+      const supabase = admin()
+      const profil = await profilDuClient(supabase, invoice.customer)
+      if (profil && (invoice.amount_paid ?? 0) > 0) {
+        await commissionner(supabase, profil, invoice.id, invoice.amount_paid / 100)
+      }
+    }
+
+    // Résiliation effective : l'accès s'arrête — sauf s'il reste un autre abonnement
+    // actif (passage d'Elite à Pro). Jusqu'ici rien ne retirait jamais l'accès.
+    else if (event.type === 'customer.subscription.deleted') {
+      const sub: any = event.data.object
+      const supabase = admin()
+      const profil = await profilDuClient(supabase, sub.customer)
+      if (profil) {
+        const actifs = await stripe.subscriptions.list({ customer: sub.customer, status: 'active', limit: 10 })
+        const montants = actifs.data.flatMap((s: any) => s.items.data.map((i: any) => i.price?.unit_amount ?? 0))
+        const reste: 'free' | 'elite' | 'pro' = !montants.length ? 'free' : Math.max(...montants) >= 1500 ? 'pro' : 'elite'
+        await supabase.from('profiles')
+          .update({ subscription_tier: reste, is_premium: reste !== 'free' })
+          .eq('id', profil)
+        console.log(`Résiliation : ${profil} passe en « ${reste} ».`)
+      }
+    }
+
+    // Remboursement : la commission de la facture tombe (si pas encore versée).
+    else if (event.type === 'charge.refunded') {
+      const charge: any = event.data.object
+      if (charge.invoice) await admin().rpc('annuler_commission', { p_facture: charge.invoice })
     }
 
     return new Response(JSON.stringify({ received: true }), { status: 200 })

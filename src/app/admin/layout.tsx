@@ -1,5 +1,5 @@
 import Link from "next/link";
-import { LayoutDashboard, Users, Webhook, LogOut } from "lucide-react";
+import { LayoutDashboard, Users, Webhook, LogOut, BarChart3 } from "lucide-react";
 
 export default function AdminLayout({ children }: { children: React.ReactNode }) {
   return (
@@ -16,6 +16,10 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
         </div>
         
         <nav className="flex-1 px-4 py-6 space-y-2">
+          <Link href="/admin/statistiques" className="flex items-center gap-3 px-4 py-3 rounded-lg bg-emerald-600 text-white font-medium hover:bg-emerald-500 transition">
+            <BarChart3 className="w-5 h-5" />
+            Statistiques
+          </Link>
           <Link href="/admin/dashboard" className="flex items-center gap-3 px-4 py-3 rounded-lg bg-slate-800 text-white font-medium hover:bg-slate-700 transition">
             <LayoutDashboard className="w-5 h-5" />
             Dashboard

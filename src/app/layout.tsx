@@ -6,6 +6,7 @@ import Footer from "@/components/layout/Footer";
 import { ThemeProvider } from "@/components/providers";
 import PremiumButton from "@/components/premium/PremiumButton";
 import PwaProvider from "@/components/pwa/PwaProvider";
+import Mesure from "@/components/analytics/Mesure";
 
 const dmSans = DM_Sans({
   variable: "--font-dm-sans",
@@ -85,6 +86,7 @@ export default function RootLayout({
             <PremiumButton />
             <HelpBubble />
             <PwaProvider />
+            <Mesure />
           </GlossaryProvider>
         </ThemeProvider>
       </body>

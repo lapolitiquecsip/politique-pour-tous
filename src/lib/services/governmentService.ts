@@ -45,7 +45,8 @@ export async function fetchGovernmentComposition(): Promise<Minister[]> {
     
     // 1. Chercher le dataset Protocole du Gouvernement sur data.gouv.fr
     const catalogRes = await fetch('https://www.data.gouv.fr/api/1/datasets/?q=protocole+du+gouvernement', {
-      next: { revalidate: 86400 } // Cache 24h
+      next: { revalidate: 86400 }, // Cache 24h
+      signal: AbortSignal.timeout(20000),
     });
     
     if (!catalogRes.ok) throw new Error('Impossible de contacter data.gouv.fr');
@@ -62,7 +63,8 @@ export async function fetchGovernmentComposition(): Promise<Minister[]> {
     
     // 3. Télécharger le XML
     const xmlRes = await fetch(xmlResource.url, {
-      next: { revalidate: 86400 }
+      next: { revalidate: 86400 },
+      signal: AbortSignal.timeout(30000),
     });
     if (!xmlRes.ok) throw new Error('Impossible de télécharger le fichier XML');
     
@@ -122,10 +124,51 @@ export async function fetchGovernmentComposition(): Promise<Minister[]> {
     }
     
     console.log(`[Gov API] ✅ ${ministerList.length} ministres associés aux missions.`);
-    return ministerList;
-    
+    if (ministerList.length) return ministerList;
+    return await compositionDepuisLaBase();
+
   } catch (error) {
-    console.error('[Gov API] Erreur lors de la récupération du gouvernement:', error);
+    console.error('[Gov API] Fichier de la DILA indisponible — composition lue dans la base du site.', (error as Error)?.message);
+    return await compositionDepuisLaBase();
+  }
+}
+
+/**
+ * Secours : la composition du gouvernement telle qu'enregistrée dans la base du site
+ * (fonction publique `public_government`, clé publique).
+ *
+ * Les pages des ministères sont générées à la compilation à partir du fichier de la
+ * DILA. Le 2 octobre 2026, son serveur (echanges.dila.gouv.fr) coupait toutes les
+ * connexions : la liste revenait vide, et l'export statique refusait de compiler —
+ * deux déploiements perdus. La base, elle, porte les mêmes noms de ministères que
+ * ceux dont la page Exécutif tire ses liens : les adresses restent donc les bonnes.
+ */
+async function compositionDepuisLaBase(): Promise<Minister[]> {
+  const url = process.env.NEXT_PUBLIC_SUPABASE_URL;
+  const cle = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY;
+  if (!url || !cle) return [];
+  try {
+    const r = await fetch(`${url}/rest/v1/rpc/public_government`, {
+      method: 'POST',
+      headers: { apikey: cle, Authorization: `Bearer ${cle}`, 'Content-Type': 'application/json' },
+      body: JSON.stringify({ p_date: new Date().toISOString().slice(0, 10) }),
+      signal: AbortSignal.timeout(20000),
+    });
+    if (!r.ok) return [];
+    const gouvernement = await r.json();
+    const membres: any[] = gouvernement?.members ?? [];
+    const liste = membres
+      .filter(m => m.ministry_name)
+      .map(m => ({
+        missionId: matchMinistryToMissionId(m.ministry_name) ?? '',
+        ministerName: `${m.first_name ?? ''} ${m.last_name ?? ''}`.trim(),
+        role: m.title ?? '',
+        ministryName: m.ministry_name,
+      }));
+    console.log(`[Gov API] ✅ ${liste.length} ministres lus dans la base (secours).`);
+    return liste;
+  } catch (e) {
+    console.error('[Gov API] Secours indisponible :', (e as Error)?.message);
     return [];
   }
 }

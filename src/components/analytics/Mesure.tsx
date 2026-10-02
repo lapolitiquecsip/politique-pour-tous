@@ -22,12 +22,13 @@ export default function Mesure() {
   // Une page vue à chaque changement d'adresse.
   useEffect(() => {
     if (!chemin) return;
+    // Le code de parrainage d'abord : la première page vue doit déjà le porter.
+    capterParrainage();
     mesurerVue(chemin);
     if (chemin.startsWith("/success")) mesurerAction("paiement_reussi", chemin);
   }, [chemin]);
 
   useEffect(() => {
-    capterParrainage();
     void rattacherParrainSiBesoin();
     const { data } = supabase.auth.onAuthStateChange((evenement) => {
       if (evenement === "SIGNED_IN") void rattacherParrainSiBesoin();

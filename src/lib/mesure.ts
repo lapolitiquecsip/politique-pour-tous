@@ -130,8 +130,12 @@ export async function rattacherParrainSiBesoin() {
     if (typeof meta === "string" && neuf) code = meta;
   }
   if (!code) return;
+  // Pas de compte connecté : on garde le code pour après l'inscription. (Le
+  // supprimer ici faisait perdre le filleul avant même qu'il crée son compte.)
+  const { data: s } = await supabase.auth.getSession();
+  if (!s.session) return;
   const { data, error } = await supabase.rpc("rattacher_parrain", { p_code: code });
-  if (error) return;   // réseau : on retentera à la prochaine connexion
+  if (error || data === "non_connecte") return;   // on retentera à la prochaine connexion
   if (data === "ok") mesurerAction("parrainage_rattache");
   try { window.localStorage.removeItem(CLE_PARRAIN); } catch { /* rien */ }
 }

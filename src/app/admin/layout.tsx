@@ -1,8 +1,10 @@
 import Link from "next/link";
 import { LayoutDashboard, Users, Webhook, LogOut, BarChart3 } from "lucide-react";
+import GardeAdministrateur from "@/components/admin/GardeAdministrateur";
 
 export default function AdminLayout({ children }: { children: React.ReactNode }) {
   return (
+    <GardeAdministrateur>
     <div className="min-h-screen bg-gray-50 flex flex-col md:flex-row font-sans">
       {/* Sidebar */}
       <aside className="w-full md:w-64 bg-slate-900 text-slate-300 md:min-h-screen flex flex-col shadow-xl flex-shrink-0">
@@ -51,5 +53,6 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
         {children}
       </main>
     </div>
+    </GardeAdministrateur>
   );
 }

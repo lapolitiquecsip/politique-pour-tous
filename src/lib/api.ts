@@ -1296,6 +1296,12 @@ export const api = {
     if (error) throw error;
     return data as any;
   },
+  // Créer ou régler le lien d'un influenceur (code, taux négocié, nom). Admin seulement.
+  configurerParrain: async (email: string, code: string, taux: number | null, nom: string) => {
+    const { data, error } = await supabase.rpc('configurer_parrain', { p_email: email, p_code: code, p_taux: taux, p_nom: nom });
+    if (error) throw error;
+    return data as 'ok' | 'compte_introuvable' | 'code_invalide' | 'code_pris' | 'taux_invalide';
+  },
   marquerCommissionsVersees: async (parrainId: string) => {
     const { data, error } = await supabase.rpc('marquer_commissions_versees', { p_parrain: parrainId });
     if (error) throw error;

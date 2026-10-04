@@ -97,6 +97,24 @@ export default function StatistiquesPage() {
   const [majA, setMajA] = useState<number>(0);
   const [, setTic] = useState(0);
   const [versement, setVersement] = useState<string | null>(null);
+  // Formulaire « influenceur » : lien à son nom et taux négocié.
+  const [influ, setInflu] = useState({ email: "", code: "", taux: "", nom: "" });
+  const [influMsg, setInfluMsg] = useState<string | null>(null);
+  const enregistrerInflu = async () => {
+    const taux = influ.taux.trim() === "" ? null : Number(influ.taux.replace(",", ".")) / 100;
+    try {
+      const r = await api.configurerParrain(influ.email, influ.code, taux, influ.nom);
+      const messages: Record<string, string> = {
+        ok: `Enregistré. Son lien : ${typeof window !== "undefined" ? window.location.origin : ""}/?ref=${influ.code.trim().toUpperCase()}`,
+        compte_introuvable: "Aucun compte avec cette adresse : l'influenceur doit d'abord créer un compte gratuit sur le site.",
+        code_invalide: "Code invalide : 3 à 30 lettres, chiffres ou tirets.",
+        code_pris: "Ce code est déjà utilisé par un autre parrain.",
+        taux_invalide: "Taux invalide : entre 0 et 80 %.",
+      };
+      setInfluMsg(messages[r] ?? r);
+      if (r === "ok") void charger();
+    } catch (e: any) { setInfluMsg(e?.message ?? "Erreur"); }
+  };
 
   const charger = useCallback(async () => {
     try {
@@ -289,15 +307,23 @@ export default function StatistiquesPage() {
               <table className="w-full min-w-[720px] text-sm">
                 <thead>
                   <tr className="border-b border-slate-200 text-left text-[10px] font-black uppercase tracking-widest text-slate-400">
-                    <th className="py-2">Parrain</th><th>Code</th><th className="text-right">Clics</th><th className="text-right">Inscrits</th>
+                    <th className="py-2">Parrain</th><th>Code</th><th className="text-right">Taux</th><th className="text-right">Clics</th><th className="text-right">Inscrits</th>
                     <th className="text-right">Abonnés</th><th className="text-right">En validation</th><th className="text-right">À verser</th><th className="text-right">Versé</th><th />
                   </tr>
                 </thead>
                 <tbody className="divide-y divide-slate-100">
                   {parrainage.parrains.map((p: any) => (
                     <tr key={p.user_id}>
-                      <td className="py-2.5 font-semibold text-slate-800">{p.email}</td>
-                      <td className="font-mono text-xs text-slate-500">{p.code}</td>
+                      <td className="py-2.5">
+                        <span className="font-semibold text-slate-800">{p.nom || p.email}</span>
+                        {p.nom && <span className="block text-xs text-slate-400">{p.email}</span>}
+                      </td>
+                      <td className="font-mono text-xs text-slate-500">
+                        {p.code}
+                        <button onClick={() => { setInflu({ email: p.email, code: p.code, taux: p.taux_propre != null ? String(Math.round(p.taux_propre * 100)) : "", nom: p.nom ?? "" }); setInfluMsg(null); }}
+                          className="ml-2 rounded-full border border-slate-200 px-2 py-0.5 font-sans text-[10px] font-bold text-slate-500 hover:bg-slate-50">Régler</button>
+                      </td>
+                      <td className={`text-right tabular-nums ${p.taux_propre != null ? "font-bold text-violet-700" : "text-slate-500"}`}>{Math.round((p.taux ?? 0) * 100)} %</td>
                       <td className="text-right tabular-nums">{nombre(p.clics)}</td>
                       <td className="text-right tabular-nums">{nombre(p.inscrits)}</td>
                       <td className="text-right tabular-nums">{nombre(p.abonnes)}</td>
@@ -326,6 +352,24 @@ export default function StatistiquesPage() {
               </table>
             </div>
           )}
+          {/* Influenceurs : un lien à leur nom, un taux négocié. */}
+          <div className="mt-5 rounded-2xl border border-violet-200 bg-violet-50/60 p-4">
+            <p className="text-[11px] font-black uppercase tracking-widest text-violet-700">Ajouter ou régler un influenceur</p>
+            <p className="mt-1 text-xs text-slate-500">Il crée d&apos;abord un compte gratuit sur le site ; vous lui attribuez ici un lien à son nom et, si vous l&apos;avez négocié, un taux à part (vide = taux général).</p>
+            <div className="mt-3 grid gap-2 sm:grid-cols-[1.4fr_1fr_0.6fr_1fr_auto]">
+              <input value={influ.email} onChange={e => setInflu({ ...influ, email: e.target.value })} placeholder="Adresse e-mail de son compte"
+                className="rounded-xl border border-slate-200 bg-white px-3 py-2 text-sm outline-none focus:border-violet-400" />
+              <input value={influ.code} onChange={e => setInflu({ ...influ, code: e.target.value.toUpperCase() })} placeholder="Code (ex. HUGO)"
+                className="rounded-xl border border-slate-200 bg-white px-3 py-2 font-mono text-sm uppercase outline-none focus:border-violet-400" />
+              <input value={influ.taux} onChange={e => setInflu({ ...influ, taux: e.target.value })} placeholder="Taux %" inputMode="decimal"
+                className="rounded-xl border border-slate-200 bg-white px-3 py-2 text-sm outline-none focus:border-violet-400" />
+              <input value={influ.nom} onChange={e => setInflu({ ...influ, nom: e.target.value })} placeholder="Nom affiché (facultatif)"
+                className="rounded-xl border border-slate-200 bg-white px-3 py-2 text-sm outline-none focus:border-violet-400" />
+              <button onClick={() => void enregistrerInflu()} disabled={!influ.email || !influ.code}
+                className="rounded-xl bg-violet-600 px-4 py-2 text-sm font-black text-white transition hover:bg-violet-500 disabled:opacity-40">Enregistrer</button>
+            </div>
+            {influMsg && <p className="mt-2 break-all text-xs font-semibold text-violet-800">{influMsg}</p>}
+          </div>
           <p className="mt-3 flex items-center gap-1.5 text-[11px] text-slate-400">
             <Sparkles size={12} /> « À verser » : commissions sorties du délai de rétractation. Après votre virement, « Virement fait » les passe en « Versé ».
             <Crown size={12} className="ml-1" />

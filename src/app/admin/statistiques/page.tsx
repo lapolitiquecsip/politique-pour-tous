@@ -161,6 +161,12 @@ export default function StatistiquesPage() {
   const pages: any[] = stats.pages ?? [];
   const sources: any[] = stats.sources ?? [];
   const actions: any[] = stats.actions ?? [];
+  // La mesure a un début : une période plus longue que l'historique compte la même
+  // chose qu'une plus courte. Sans cette mention, 7 j, 30 j et 90 j affichant les
+  // mêmes chiffres passaient pour un bouton qui ne marche pas.
+  const debutMesure = stats.debut_mesure ? new Date(stats.debut_mesure) : null;
+  const periodeDepasse = debutMesure ? Date.now() - debutMesure.getTime() < jours * 864e5 : false;
+  const depuis = debutMesure?.toLocaleDateString("fr-FR", { day: "numeric", month: "long" });
 
   return (
     <div className="mx-auto max-w-7xl space-y-6">
@@ -187,6 +193,13 @@ export default function StatistiquesPage() {
         </div>
       </header>
 
+      {periodeDepasse && (
+        <p className="flex items-start gap-2 rounded-2xl border border-sky-200 bg-sky-50 px-4 py-3 text-sm text-sky-900">
+          <Activity size={16} className="mt-0.5 shrink-0" />
+          <span>La mesure des visites fonctionne depuis le <strong>{depuis}</strong>. Tant que l&apos;historique est plus court que la période choisie, 24 h, 7 j, 30 j et 90 j montrent les mêmes visites : les écarts apparaîtront au fil des jours.</span>
+        </p>
+      )}
+
       {/* Chiffres clés */}
       <div className="grid grid-cols-2 gap-4 lg:grid-cols-4">
         <div className="relative overflow-hidden rounded-3xl bg-gradient-to-br from-emerald-500 to-teal-600 p-5 text-white shadow-lg shadow-emerald-500/20">
@@ -200,11 +213,11 @@ export default function StatistiquesPage() {
           )}
         </div>
         <Carte titre="Aujourd'hui" valeur={nombre(stats.aujourdhui?.vues)} detail={`pages vues · ${nombre(stats.aujourdhui?.visiteurs)} visiteurs`} Icone={Eye} teinte="bg-blue-100 text-blue-600" />
-        <Carte titre={jours === 1 ? "24 dernières heures" : `${jours} derniers jours`} valeur={nombre(periode.visiteurs)}
+        <Carte titre={periodeDepasse ? `Depuis le ${depuis}` : jours === 1 ? "24 dernières heures" : `${jours} derniers jours`} valeur={nombre(periode.visiteurs)}
           detail={`visiteurs · ${nombre(periode.vues)} pages vues · ${periode.sessions ? (periode.vues / periode.sessions).toFixed(1).replace(".", ",") : "0"} pages par visite`}
           Icone={Users} teinte="bg-violet-100 text-violet-600" />
-        <Carte titre="Comptes" valeur={nombre(stats.comptes?.total)}
-          detail={`${nombre(stats.comptes?.premium)} Premium · ${nombre(stats.comptes?.pro)} Pro · ${nombre(stats.comptes?.nouveaux)} nouveaux sur la période`}
+        <Carte titre="Comptes (total)" valeur={nombre(stats.comptes?.total)}
+          detail={`dont ${nombre(stats.comptes?.premium)} Premium et ${nombre(stats.comptes?.pro)} Pro · ${nombre(stats.comptes?.nouveaux)} créés sur la période choisie`}
           Icone={UserPlus} teinte="bg-amber-100 text-amber-600" />
       </div>
 

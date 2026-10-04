@@ -82,7 +82,10 @@ export default function LoginPage() {
           password,
         });
         if (signInError) throw signInError;
-        router.push("/");
+        // « ?suite=/parrainage » : on revient là d'où l'on venait. Chemin interne
+        // seulement (commence par un seul « / »), jamais une adresse extérieure.
+        const suite = new URLSearchParams(window.location.search).get("suite") || "";
+        router.push(/^\/(?!\/)/.test(suite) ? suite : "/");
         router.refresh();
       } else {
         const { data: inscrit, error: signUpError } = await supabase.auth.signUp({

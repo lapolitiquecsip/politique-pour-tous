@@ -467,75 +467,60 @@ export default function EspacePersonnel({ mode = "tout" }: { mode?: ModeEspace }
       <div className={`container mx-auto max-w-6xl px-4 ${isPremium ? "" : "-mt-16"} ${mode === "compte" ? "hidden" : ""}`}>
         <div className="bg-white/[0.03] rounded-[2.5rem] border border-white/10 shadow-2xl shadow-black/40 overflow-hidden min-h-[600px]">
           
-          {/* Onglets — grille 2x2 sur mobile (quatre onglets ne tiennent pas en ligne),
-              rangée unique sur écran large.
-
-              Les quatre boutons étaient écrits à l'identique quatre fois. Ils partagent
-              désormais une définition, ce qui a permis de corriger d'un coup ce qui
-              rendait le changement d'onglet poussif :
-
-              — `transition-all` animait le dégradé de fond, que les navigateurs
-                n'interpolent pas : c'était du calcul pour rien, à chaque survol ;
-              — chaque bouton portait DEUX mises à l'échelle concurrentes, l'une en CSS
-                (scale-[1.04]), l'autre en framer-motion. Le `whileTap` de framer laissait
-                une transformation en ligne qui écrasait la première : l'onglet actif
-                perdait son agrandissement après le premier clic. L'effet de pression est
-                maintenant en CSS pur, et il n'y a plus qu'une seule échelle. */}
-          <div className="flex flex-wrap border-b border-white/10 md:flex-nowrap">
-            {ONGLETS.filter(o => !o.premium || isPremium).map(o => {
-              const actif = activeTab === o.id;
-              const Icone = o.icone;
-              return (
-                <button
-                  key={o.id}
-                  onClick={() => startTransition(() => setActiveTab(o.id))}
-                  aria-current={actif ? "page" : undefined}
-                  className={`relative basis-1/3 md:basis-0 flex-1 py-4 md:py-6 px-2 font-bold text-[11px] md:text-sm uppercase tracking-widest flex items-center justify-center gap-2 md:gap-3 border-r border-b md:border-b-0 border-white/30 md:last:border-r-0 transition-[transform,box-shadow,color] duration-200 active:scale-[0.98] ${
-                    actif
-                      ? `${o.actif} text-white shadow-lg z-20 scale-[1.04] ring-2 ring-white/70 ring-inset`
-                      : `${o.repos} text-white/85 hover:text-white z-10`
-                  }`}
-                >
-                  <span className="flex items-center gap-3">
-                    <Icone size={18} className={isPending && !actif ? "opacity-30" : ""} />
-                    {o.label}
-                  </span>
-                  {actif && (
-                    <motion.div
-                      layoutId="activeTabIndicator"
-                      className="absolute bottom-0 left-0 right-0 h-1.5 bg-white shadow-[0_-2px_10px_rgba(255,255,255,0.6)]"
-                      transition={{ type: "spring", stiffness: 380, damping: 30 }}
-                    />
-                  )}
-                </button>
-              );
-            })}
-            {/* Ce que l'offre supérieure ajoute : compact, flouté, sous un cadenas doré
-                qu'un reflet traverse de temps en temps. Un clic ouvre l'aperçu. */}
-            {verrousVisibles.map(v => {
-              const actif = activeTab === `verrou-${v.id}`;
-              const Icone = v.icone;
-              return (
-                <button
-                  key={v.id}
-                  onClick={() => startTransition(() => setActiveTab(`verrou-${v.id}`))}
-                  aria-current={actif ? "page" : undefined}
-                  title={`Réservé aux membres ${v.offre === "pro" ? "Pro" : "Premium"}`}
-                  className={`group relative basis-1/4 md:basis-auto md:flex-none overflow-hidden px-2 md:px-5 py-4 md:py-6 flex flex-col md:flex-row items-center justify-center gap-2 border-r border-b md:border-b-0 border-white/10 md:last:border-r-0 text-[10px] md:text-[11px] font-bold uppercase tracking-widest transition-colors duration-200 ${
-                    actif ? "bg-amber-400/10 text-amber-200" : "bg-white/[0.02] text-white/55 hover:bg-amber-400/[0.06] hover:text-white"
-                  }`}
-                >
-                  <span className="relative">
-                    <Icone size={16} className="opacity-60 blur-[1.5px]" />
-                    <span className="absolute -right-2.5 -top-2 flex h-4 w-4 items-center justify-center rounded-full bg-gradient-to-br from-amber-200 to-amber-500 text-slate-950 shadow-[0_0_10px_rgba(251,191,36,0.7)]">
-                      <Lock size={9} strokeWidth={3} />
+          {/* Onglets en pastilles, sur une ligne qui défile au doigt sur mobile.
+              Les anciens blocs colorés pleine largeur, en capitales espacées, se
+              serraient sur deux ou trois lignes dès que les onglets étaient nombreux. */}
+          <div className="border-b border-white/10 px-3 pt-4 md:px-6 md:pt-6">
+            <div className="-mx-1 flex gap-2 overflow-x-auto px-1 pb-4 [scrollbar-width:none] md:flex-wrap md:overflow-visible [&::-webkit-scrollbar]:hidden">
+              {ONGLETS.filter(o => !o.premium || isPremium).map(o => {
+                const actif = activeTab === o.id;
+                const Icone = o.icone;
+                return (
+                  <button
+                    key={o.id}
+                    onClick={() => startTransition(() => setActiveTab(o.id))}
+                    aria-current={actif ? "page" : undefined}
+                    className={`group inline-flex shrink-0 items-center gap-2.5 whitespace-nowrap rounded-2xl py-2 pl-2 pr-4 text-sm font-bold transition-[background-color,color,box-shadow,transform] duration-200 active:scale-[0.97] ${
+                      actif
+                        ? `${o.actif} text-white shadow-lg ring-1 ring-white/30`
+                        : "bg-white/[0.04] text-white/70 ring-1 ring-white/10 hover:bg-white/[0.08] hover:text-white"
+                    }`}
+                  >
+                    <span className={`flex h-8 w-8 items-center justify-center rounded-xl transition ${actif ? "bg-white/20" : "bg-white/[0.06] group-hover:bg-white/10"}`}>
+                      <Icone size={16} className={isPending && !actif ? "opacity-40" : ""} />
                     </span>
-                  </span>
-                  <span className="whitespace-nowrap blur-[0.7px] transition group-hover:blur-0">{v.label}</span>
-                  <span aria-hidden className="verrou-reflet pointer-events-none absolute inset-y-0 -left-1/2 w-1/2 bg-gradient-to-r from-transparent via-amber-200/20 to-transparent" />
-                </button>
-              );
-            })}
+                    {o.label}
+                  </button>
+                );
+              })}
+              {verrousVisibles.length > 0 && <span aria-hidden className="mx-1 hidden w-px shrink-0 self-stretch bg-white/10 md:block" />}
+              {/* Ce que l'offre supérieure ajoute : même forme, en retrait, avec un
+                  cadenas doré. Un clic ouvre l'aperçu. */}
+              {verrousVisibles.map(v => {
+                const actif = activeTab === `verrou-${v.id}`;
+                const Icone = v.icone;
+                return (
+                  <button
+                    key={v.id}
+                    onClick={() => startTransition(() => setActiveTab(`verrou-${v.id}`))}
+                    aria-current={actif ? "page" : undefined}
+                    title={`Réservé aux membres ${v.offre === "pro" ? "Pro" : "Premium"}`}
+                    className={`group relative inline-flex shrink-0 items-center gap-2.5 overflow-hidden whitespace-nowrap rounded-2xl py-2 pl-2 pr-4 text-sm font-semibold transition-colors duration-200 ${
+                      actif ? "bg-amber-400/15 text-amber-100 ring-1 ring-amber-300/50" : "text-white/45 ring-1 ring-white/[0.08] hover:bg-amber-400/[0.06] hover:text-white/80"
+                    }`}
+                  >
+                    <span className="relative flex h-8 w-8 items-center justify-center rounded-xl bg-white/[0.04]">
+                      <Icone size={15} className="opacity-50" />
+                      <span className="absolute -right-1 -top-1 flex h-4 w-4 items-center justify-center rounded-full bg-gradient-to-br from-amber-200 to-amber-500 text-slate-950 shadow-[0_0_8px_rgba(251,191,36,0.6)]">
+                        <Lock size={9} strokeWidth={3} />
+                      </span>
+                    </span>
+                    {v.label}
+                    <span aria-hidden className="verrou-reflet pointer-events-none absolute inset-y-0 -left-1/2 w-1/2 bg-gradient-to-r from-transparent via-amber-200/15 to-transparent" />
+                  </button>
+                );
+              })}
+            </div>
           </div>
 
           <div className="p-4 sm:p-6 md:p-12">

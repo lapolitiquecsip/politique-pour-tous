@@ -70,12 +70,13 @@ export default function Parrainage() {
         <span className="inline-flex items-center gap-1.5 rounded-full border border-teal-300/30 bg-teal-400/10 px-3 py-1 text-[10px] font-black uppercase tracking-[0.2em] text-teal-200">
           <Gift size={12} /> Parrainage
         </span>
+        {/* Ton sobre : on recommande un site qu'on utilise, la rétribution vient ensuite. */}
         <h3 className="mt-4 font-staatliches text-4xl uppercase leading-none text-white md:text-5xl">
-          Invitez, gagnez <span className="text-teal-300">{pct} %</span>
+          Partagez le site <span className="text-teal-300">à vos proches</span>
         </h3>
         <p className="mt-3 max-w-2xl text-[15px] leading-relaxed text-white/75">
-          Chaque personne qui s&apos;abonne après avoir suivi votre lien vous rapporte <strong className="text-white">{pct} % de chacun de ses paiements</strong> pendant
-          ses {d.duree_mois} premiers mois. Sur une offre Pro à 24,99 €, cela fait {euros(24.99 * d.taux)} par mois et par filleul.
+          Si quelqu&apos;un s&apos;abonne après avoir suivi votre lien, vous recevez en retour {pct} % de son abonnement,
+          chaque mois pendant {d.duree_mois} mois — par exemple {euros(24.99 * d.taux)} par mois pour un abonnement Pro.
         </p>
 
         <div className="mt-6 flex flex-col gap-2 sm:flex-row">
@@ -136,7 +137,7 @@ export default function Parrainage() {
           {[
             ["Partagez votre lien", "Par message, sur vos réseaux, dans une newsletter. Il reste valable 90 jours sur l'appareil de la personne."],
             ["Elle crée son compte", `Puis s'abonne à Premium ou Pro. Elle est rattachée à vous si elle s'inscrit dans les 90 jours.`],
-            ["Vous touchez " + pct + " %", `Sur chacun de ses paiements pendant ${d.duree_mois} mois, validés après ${d.delai_validation_jours} jours (délai de rétractation), puis versés par virement.`],
+            ["Vous recevez " + pct + " % en retour", `Sur chacun de ses paiements pendant ${d.duree_mois} mois, validés après ${d.delai_validation_jours} jours (délai de rétractation), puis versés par virement.`],
           ].map(([t, x], i) => (
             <li key={t} className="flex gap-3">
               <span className="flex h-8 w-8 shrink-0 items-center justify-center rounded-full bg-teal-400 font-black text-slate-950">{i + 1}</span>

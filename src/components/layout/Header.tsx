@@ -157,7 +157,7 @@ export default function Header() {
                 {/* Parrainage, ouvert à tous les membres. Bouton plein et placé AVANT le
                     tableau de bord : en contour pâle et en bout de ligne, il passait
                     inaperçu, et une adresse e-mail un peu longue le poussait hors de l'écran. */}
-                <Link href="/dashboard#parrainage" title="Parrainage : gagnez 20 % des abonnements de vos filleuls"
+                <Link href="/parrainage" title="Parrainage : partagez le site et suivez vos invitations"
                   className="flex h-9 shrink-0 items-center justify-center gap-1.5 rounded-full bg-gradient-to-br from-teal-400 to-emerald-600 px-2.5 text-white shadow-md shadow-teal-500/30 ring-2 ring-white/60 transition hover:brightness-110 dark:ring-white/10 2xl:px-3.5">
                   <Gift size={17} strokeWidth={2.4} />
                   <span className="hidden text-[11px] font-black uppercase tracking-wider 2xl:inline">Parrainer</span>
@@ -204,7 +204,7 @@ export default function Header() {
           {/* Mobile : loupe + menu */}
           <div className="xl:hidden flex items-center gap-3">
             {/* Le parrainage à portée de pouce, sans ouvrir le menu (membres connectés). */}
-            <Link href="/dashboard#parrainage" aria-label="Parrainage"
+            <Link href="/parrainage" aria-label="Parrainage"
               className="auth-connecte h-9 w-9 items-center justify-center rounded-full bg-gradient-to-br from-teal-400 to-emerald-600 text-white shadow-md shadow-teal-500/30">
               <Gift size={18} strokeWidth={2.4} />
             </Link>
@@ -253,7 +253,7 @@ export default function Header() {
               <User size={20} /> Mon Compte
             </Link>
             {(user || connecteMemorise) && (
-              <Link href="/dashboard#parrainage" className="mt-4 flex items-center gap-3 text-lg font-bold text-teal-600 transition-colors" onClick={() => setIsMenuOpen(false)}>
+              <Link href="/parrainage" className="mt-4 flex items-center gap-3 text-lg font-bold text-teal-600 transition-colors" onClick={() => setIsMenuOpen(false)}>
                 <Gift size={20} /> Parrainage
               </Link>
             )}

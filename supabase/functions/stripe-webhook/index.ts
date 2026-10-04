@@ -166,7 +166,17 @@ serve(async (req) => {
     // Remboursement : la commission de la facture tombe (si pas encore versée).
     else if (event.type === 'charge.refunded') {
       const charge: any = event.data.object
-      if (charge.invoice) await admin().rpc('annuler_commission', { p_facture: charge.invoice })
+      // Depuis 2025, les événements Stripe (version d'API de l'endpoint : dahlia) ne
+      // portent plus la facture sur le paiement. Relu par la bibliothèque, épinglée sur
+      // une version plus ancienne, le paiement la donne encore.
+      let facture: string | null = typeof charge.invoice === 'string' ? charge.invoice : charge.invoice?.id ?? null
+      if (!facture) {
+        try {
+          const relu: any = await stripe.charges.retrieve(charge.id)
+          facture = typeof relu.invoice === 'string' ? relu.invoice : relu.invoice?.id ?? null
+        } catch (e) { console.warn(`Facture du remboursement introuvable : ${e.message}`) }
+      }
+      if (facture) await admin().rpc('annuler_commission', { p_facture: facture })
     }
 
     return new Response(JSON.stringify({ received: true }), { status: 200 })

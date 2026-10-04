@@ -106,7 +106,7 @@ export default function Parrainage() {
         {chiffres.map(c => (
           <div key={c.titre} className="rounded-3xl border border-white/10 bg-white/[0.04] p-5">
             <p className="flex items-center gap-2 text-[11px] font-black uppercase tracking-widest text-white/50"><c.Icone size={14} /> {c.titre}</p>
-            <p className="mt-2 font-staatliches text-4xl leading-none text-white">{c.valeur}</p>
+            <p className="mt-2 text-4xl font-black tabular-nums leading-none tracking-tight text-white">{c.valeur}</p>
           </div>
         ))}
       </div>
@@ -114,7 +114,7 @@ export default function Parrainage() {
         {gains.map(g => (
           <div key={g.titre} className={`rounded-3xl border p-5 ${g.titre === "Disponible" ? "border-teal-300/40 bg-teal-400/[0.08]" : "border-white/10 bg-white/[0.04]"}`}>
             <p className="flex items-center gap-2 text-[11px] font-black uppercase tracking-widest text-white/50"><g.Icone size={14} /> {g.titre}</p>
-            <p className={`mt-2 font-staatliches text-4xl leading-none ${g.teinte}`}>{g.valeur}</p>
+            <p className={`mt-2 text-4xl font-black tabular-nums leading-none tracking-tight ${g.teinte}`}>{g.valeur}</p>
             <p className="mt-1.5 text-xs text-white/50">{g.detail}</p>
           </div>
         ))}

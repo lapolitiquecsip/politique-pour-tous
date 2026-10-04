@@ -54,7 +54,7 @@ function Carte({ titre, valeur, detail, Icone, teinte }: { titre: string; valeur
         <span className={`flex h-10 w-10 items-center justify-center rounded-2xl ${teinte}`}><Icone size={19} /></span>
         <p className="text-[11px] font-black uppercase tracking-widest text-slate-500">{titre}</p>
       </div>
-      <p className="mt-3 font-staatliches text-4xl leading-none text-slate-900">{valeur}</p>
+      <p className="mt-3 text-4xl font-black tabular-nums leading-none tracking-tight text-slate-900">{valeur}</p>
       {detail && <p className="mt-1.5 text-xs text-slate-500">{detail}</p>}
     </div>
   );
@@ -174,6 +174,9 @@ export default function StatistiquesPage() {
             <button onClick={() => void charger()} className="ml-1 rounded-full p-1 text-slate-400 hover:bg-slate-100 hover:text-slate-700" aria-label="Actualiser"><RefreshCw size={14} /></button>
           </p>
         </div>
+        <Link href="/admin/membres" className="inline-flex items-center gap-2 rounded-full bg-violet-600 px-4 py-2 text-sm font-bold text-white shadow-sm hover:bg-violet-500">
+          <Users size={16} /> Membres et abonnés
+        </Link>
         <div className="flex rounded-2xl border border-slate-200 bg-white p-1 shadow-sm">
           {PERIODES.map(p => (
             <button key={p} onClick={() => setJours(p)}
@@ -188,7 +191,7 @@ export default function StatistiquesPage() {
       <div className="grid grid-cols-2 gap-4 lg:grid-cols-4">
         <div className="relative overflow-hidden rounded-3xl bg-gradient-to-br from-emerald-500 to-teal-600 p-5 text-white shadow-lg shadow-emerald-500/20">
           <p className="flex items-center gap-2 text-[11px] font-black uppercase tracking-widest text-white/80"><Activity size={15} /> En ligne maintenant</p>
-          <p className="mt-3 font-staatliches text-6xl leading-none">{nombre(stats.en_ligne)}</p>
+          <p className="mt-3 text-6xl font-black tabular-nums leading-none tracking-tight">{nombre(stats.en_ligne)}</p>
           <p className="mt-1.5 text-xs text-white/80">visiteur{stats.en_ligne > 1 ? "s" : ""} actifs ces 5 dernières minutes</p>
           {!!stats.en_ligne_pages?.length && (
             <div className="mt-3 space-y-0.5 border-t border-white/20 pt-2 text-[11px] text-white/90">

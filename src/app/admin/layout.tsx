@@ -20,6 +20,10 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
             <BarChart3 className="w-5 h-5" />
             Statistiques
           </Link>
+          <Link href="/admin/membres" className="flex items-center gap-3 px-4 py-3 rounded-lg bg-violet-600 text-white font-medium hover:bg-violet-500 transition">
+            <Users className="w-5 h-5" />
+            Membres et abonnés
+          </Link>
           <Link href="/admin/dashboard" className="flex items-center gap-3 px-4 py-3 rounded-lg bg-slate-800 text-white font-medium hover:bg-slate-700 transition">
             <LayoutDashboard className="w-5 h-5" />
             Dashboard

@@ -1291,6 +1291,12 @@ export const api = {
       historique: { creee_le: string; montant_paye: number; commission: number; statut: string }[];
     };
   },
+  // Tous les comptes et abonnés, avec totaux et inscriptions par jour (administrateurs).
+  getMembresAdmin: async () => {
+    const { data, error } = await supabase.rpc('membres_admin');
+    if (error) throw error;
+    return data as any;
+  },
   getParrainageAdmin: async () => {
     const { data, error } = await supabase.rpc('parrainage_admin');
     if (error) throw error;

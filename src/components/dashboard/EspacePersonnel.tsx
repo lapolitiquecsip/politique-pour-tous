@@ -175,6 +175,14 @@ export default function EspacePersonnel({ mode = "tout" }: { mode?: ModeEspace }
   const [followedDeputies, setFollowedDeputies] = useState<any[]>([]);
   const [savedItems, setSavedItems] = useState<any[]>([]);
   const [activeTab, setActiveTab] = useState<IdOnglet>("votes");
+  // Un lien « /dashboard#parrainage » (bouton cadeau de l'en-tête) ouvre directement
+  // l'onglet, y compris quand on est déjà sur la page.
+  useEffect(() => {
+    const appliquer = () => { if (window.location.hash === "#parrainage") setActiveTab("parrainage"); };
+    const premier = setTimeout(appliquer, 0);
+    window.addEventListener("hashchange", appliquer);
+    return () => { clearTimeout(premier); window.removeEventListener("hashchange", appliquer); };
+  }, []);
   // Compte classique : tout ce que Premium et Pro ajoutent. Premium : ce que Pro ajoute.
   const verrousVisibles = isPro ? [] : isPremium ? VERROUS.filter(v => v.offre === "pro") : VERROUS;
   const verrouActif = VERROUS.find(v => activeTab === `verrou-${v.id}`);

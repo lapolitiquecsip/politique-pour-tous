@@ -21,7 +21,9 @@ import {
   Star,
   Landmark,
   MapPin,
-  Search
+  Search,
+  BarChart3,
+  Gift
 } from "lucide-react";
 import EuFlag from "@/components/icons/EuFlag";
 import GlobalSearch from "@/components/layout/GlobalSearch";
@@ -36,6 +38,16 @@ export default function Header() {
   const { connecteMemorise, courrielMemorise } = usePremium();
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const [searchOpen, setSearchOpen] = useState(false);
+  // Administrateur du site : un accès direct aux statistiques. La page vérifie
+  // elle-même les droits ; ce test ne sert qu'à montrer le bouton à qui en a l'usage.
+  const [adminPour, setAdminPour] = useState<string | null>(null);
+  useEffect(() => {
+    if (!user?.id) return;
+    let actif = true;
+    supabase.rpc("est_administrateur").then(({ data }) => { if (actif) setAdminPour(data === true ? user.id : null); });
+    return () => { actif = false; };
+  }, [user?.id]);
+  const estAdmin = !!user?.id && adminPour === user.id;
 
   useEffect(() => {
     // Check initial session
@@ -158,6 +170,17 @@ export default function Header() {
                     <span className="tdb-mail max-w-[120px] truncate text-xs font-bold leading-none">{user?.email ?? courrielMemorise ?? ""}</span>
                   </div>
                 </Link>
+                {/* Parrainage, ouvert à tous les membres : l'onglet de l'espace personnel. */}
+                <Link href="/dashboard#parrainage" title="Parrainage : gagnez 20 % des abonnements de vos filleuls"
+                  className="flex h-9 w-9 items-center justify-center rounded-full border border-teal-300 text-teal-600 transition hover:bg-teal-50 dark:border-teal-500/40 dark:text-teal-300 dark:hover:bg-teal-500/10">
+                  <Gift size={17} />
+                </Link>
+                {estAdmin && (
+                  <Link href="/admin/statistiques" title="Statistiques du site (administrateurs)"
+                    className="flex items-center gap-1.5 rounded-full bg-emerald-600 px-3 py-1.5 text-xs font-black uppercase tracking-wider text-white shadow-sm transition hover:bg-emerald-500">
+                    <BarChart3 size={15} /> Stats
+                  </Link>
+                )}
                 <button 
                   onClick={handleLogout}
                   className="text-slate-400 hover:text-red-500 transition-colors"
@@ -221,6 +244,16 @@ export default function Header() {
             <Link href={(user || connecteMemorise) ? "/dashboard" : "/login"} className="flex items-center gap-3 text-lg font-bold text-rose-600 hover:text-blue-600 transition-colors" onClick={() => setIsMenuOpen(false)}>
               <User size={20} /> Mon Compte
             </Link>
+            {(user || connecteMemorise) && (
+              <Link href="/dashboard#parrainage" className="mt-4 flex items-center gap-3 text-lg font-bold text-teal-600 transition-colors" onClick={() => setIsMenuOpen(false)}>
+                <Gift size={20} /> Parrainage
+              </Link>
+            )}
+            {estAdmin && (
+              <Link href="/admin/statistiques" className="mt-4 flex items-center gap-3 text-lg font-bold text-emerald-600 transition-colors" onClick={() => setIsMenuOpen(false)}>
+                <BarChart3 size={20} /> Statistiques du site
+              </Link>
+            )}
           </div>
         </motion.div>
       )}

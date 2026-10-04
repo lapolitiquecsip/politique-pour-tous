@@ -92,7 +92,7 @@ export default function Header() {
   return (
     <>
     <header className="fixed top-0 left-0 w-full z-40 bg-white/80 backdrop-blur-md border-b border-border dark:bg-slate-950/85 dark:border-slate-800">
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+      <div className="max-w-[1440px] mx-auto px-4 sm:px-6 lg:px-8">
         <div className="flex justify-between items-center h-16">
           
           {/* Logo */}
@@ -116,7 +116,7 @@ export default function Header() {
           </Link>
 
           {/* Desktop Nav */}
-          <div className="hidden lg:flex items-center gap-3">
+          <div className="hidden xl:flex shrink-0 items-center gap-2 2xl:gap-3">
             {navLinks.map((link) => {
               const Icon = link.icon;
               return (
@@ -153,7 +153,15 @@ export default function Header() {
                 l'attribut posé sur <html> avant le premier rendu. Choisir ici, en
                 React, revenait à attendre que Supabase ait restauré la session :
                 un abonné lisait « Se connecter » une seconde à chaque page. */}
-            <div className="auth-connecte items-center gap-4">
+            <div className="auth-connecte items-center gap-3">
+                {/* Parrainage, ouvert à tous les membres. Bouton plein et placé AVANT le
+                    tableau de bord : en contour pâle et en bout de ligne, il passait
+                    inaperçu, et une adresse e-mail un peu longue le poussait hors de l'écran. */}
+                <Link href="/dashboard#parrainage" title="Parrainage : gagnez 20 % des abonnements de vos filleuls"
+                  className="flex h-9 shrink-0 items-center justify-center gap-1.5 rounded-full bg-gradient-to-br from-teal-400 to-emerald-600 px-2.5 text-white shadow-md shadow-teal-500/30 ring-2 ring-white/60 transition hover:brightness-110 dark:ring-white/10 2xl:px-3.5">
+                  <Gift size={17} strokeWidth={2.4} />
+                  <span className="hidden text-[11px] font-black uppercase tracking-wider 2xl:inline">Parrainer</span>
+                </Link>
                 {/* Habillage entièrement en CSS (voir globals.css) : la couleur, l'icône
                     et le libellé se décident depuis l'attribut posé sur <html> avant le
                     premier rendu, ce qui évite le gris qui vire à l'or à chaque page. */}
@@ -163,17 +171,12 @@ export default function Header() {
                     <User size={12} className="tdb-simple" />
                   </div>
                   <div className="flex flex-col">
-                    <span className="tdb-sur mb-0.5 text-[10px] font-black uppercase leading-none">
+                    <span className="tdb-sur text-[10px] font-black uppercase leading-none 2xl:mb-0.5">
                       <span className="tdb-abonne">Tableau de Bord</span>
                       <span className="tdb-simple">Mon Compte</span>
                     </span>
-                    <span className="tdb-mail max-w-[120px] truncate text-xs font-bold leading-none">{user?.email ?? courrielMemorise ?? ""}</span>
+                    <span className="tdb-mail hidden max-w-[140px] truncate text-xs font-bold leading-none 2xl:block">{user?.email ?? courrielMemorise ?? ""}</span>
                   </div>
-                </Link>
-                {/* Parrainage, ouvert à tous les membres : l'onglet de l'espace personnel. */}
-                <Link href="/dashboard#parrainage" title="Parrainage : gagnez 20 % des abonnements de vos filleuls"
-                  className="flex h-9 w-9 items-center justify-center rounded-full border border-teal-300 text-teal-600 transition hover:bg-teal-50 dark:border-teal-500/40 dark:text-teal-300 dark:hover:bg-teal-500/10">
-                  <Gift size={17} />
                 </Link>
                 {estAdmin && (
                   <Link href="/admin/statistiques" title="Statistiques du site (administrateurs)"
@@ -199,7 +202,12 @@ export default function Header() {
           </div>
 
           {/* Mobile : loupe + menu */}
-          <div className="lg:hidden flex items-center gap-3">
+          <div className="xl:hidden flex items-center gap-3">
+            {/* Le parrainage à portée de pouce, sans ouvrir le menu (membres connectés). */}
+            <Link href="/dashboard#parrainage" aria-label="Parrainage"
+              className="auth-connecte h-9 w-9 items-center justify-center rounded-full bg-gradient-to-br from-teal-400 to-emerald-600 text-white shadow-md shadow-teal-500/30">
+              <Gift size={18} strokeWidth={2.4} />
+            </Link>
             <button className="text-muted-foreground" onClick={() => setSearchOpen(true)} aria-label="Rechercher">
               <Search size={22} />
             </button>
@@ -215,7 +223,7 @@ export default function Header() {
         <motion.div
           initial={{ opacity: 0, y: -20 }}
           animate={{ opacity: 1, y: 0 }}
-          className="lg:hidden max-h-[calc(100dvh-4rem)] overflow-y-auto overscroll-contain bg-card border-b border-border px-4 py-6 space-y-4 shadow-xl"
+          className="xl:hidden max-h-[calc(100dvh-4rem)] overflow-y-auto overscroll-contain bg-card border-b border-border px-4 py-6 space-y-4 shadow-xl"
         >
           {navLinks.map((link) => {
             const Icon = link.icon;

@@ -73,6 +73,14 @@ export default function Header() {
     return () => unlockScroll();
   }, [isMenuOpen]);
 
+  // Même verrou pour la recherche : sur iPhone, la page défilait sous la fenêtre et
+  // l'arrivée du clavier la faisait glisser — la recherche « flottait » sous le doigt.
+  useEffect(() => {
+    if (!searchOpen) return;
+    lockScroll();
+    return () => unlockScroll();
+  }, [searchOpen]);
+
   const handleLogout = async () => {
     await supabase.auth.signOut();
     window.location.reload();
@@ -271,8 +279,8 @@ export default function Header() {
     {/* Modale de recherche globale — HORS du header (dont le backdrop-blur casserait le
         positionnement fixed). Toujours centrée en haut, quelle que soit la page. */}
     {searchOpen && (
-      <div className="fixed inset-0 z-[100] bg-slate-950/60 backdrop-blur-sm" onClick={() => setSearchOpen(false)}>
-        <div className="mx-auto mt-24 w-[92%] max-w-2xl" onClick={e => e.stopPropagation()}>
+      <div className="fixed inset-0 z-[100] overflow-hidden overscroll-none bg-slate-950/60 backdrop-blur-sm" onClick={() => setSearchOpen(false)}>
+        <div className="mx-auto mt-20 max-h-[calc(100dvh-6rem)] w-[92%] max-w-2xl overflow-y-auto overscroll-contain sm:mt-24" onClick={e => e.stopPropagation()}>
           <div className="mb-2 flex items-center justify-between">
             <p className="text-[11px] font-black uppercase tracking-widest text-white/70">Recherche sur tout le site</p>
             <button onClick={() => setSearchOpen(false)} className="rounded-full bg-white/10 p-2 text-white hover:bg-white/20"><X size={16} /></button>

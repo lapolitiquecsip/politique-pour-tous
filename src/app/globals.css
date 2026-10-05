@@ -405,3 +405,9 @@ html[data-abonnement="pro"] .lbl-offre { display: none; }
   .ha-sway { transform-box: view-box; transform-origin: 160px 44px; animation: ha-sway 5.5s ease-in-out infinite; }
   .ha-draw { stroke-dasharray: 430; animation: ha-draw 1.9s ease-out forwards; }
 }
+
+/* Aucune page ne doit pouvoir glisser sur le côté sur mobile : un seul élément trop
+   large suffit, sur iPhone, à faire « flotter » toute la page et ses éléments fixes
+   (fenêtre de recherche comprise). `clip` coupe sans créer de zone de défilement,
+   donc les éléments collants (sticky) continuent de fonctionner. */
+html, body { overflow-x: clip; }

@@ -108,6 +108,8 @@ export default function PetitionsSection() {
   const [mobilisees, setMobilisees] = useState<Petition[]>([]);
   const [recentes, setRecentes] = useState<Petition[]>([]);
   const [loading, setLoading] = useState(true);
+  // Mobile : nombre de pétitions montrées par rubrique (liste fixe, « Voir plus »).
+  const [visiblesMobile, setVisiblesMobile] = useState<Record<string, number>>({});
 
   useEffect(() => {
     let vivant = true;
@@ -210,19 +212,31 @@ export default function PetitionsSection() {
                   </h3>
                   <div className="h-px flex-1 bg-slate-200 dark:bg-slate-800" />
                 </div>
-                <DragScroller ariaLabel={rail.titre}>
-                  {rail.liste.map((petition, idx) => (
-                    // Largeur fixe : dans un rail, une carte qui se dimensionne
-                    // sur son contenu donne des colonnes inégales et un
-                    // défilement qui accroche.
-                    <div key={petition.id} className="w-[17.5rem] shrink-0 sm:w-[21rem]">
-                      <PetitionCard petition={petition} idx={idx} />
-                    </div>
+                {/* Ordinateur : un rail. Mobile : une liste fixe, sans rien qui glisse sous
+                    le doigt (le rail « flottait »), trois cartes puis « Voir plus ». */}
+                <div className="hidden md:block">
+                  <DragScroller ariaLabel={rail.titre}>
+                    {rail.liste.map((petition, idx) => (
+                      // Largeur fixe : dans un rail, une carte qui se dimensionne
+                      // sur son contenu donne des colonnes inégales et un
+                      // défilement qui accroche.
+                      <div key={petition.id} className="w-[21rem] shrink-0">
+                        <PetitionCard petition={petition} idx={idx} />
+                      </div>
+                    ))}
+                  </DragScroller>
+                </div>
+                <div className="space-y-4 md:hidden">
+                  {rail.liste.slice(0, visiblesMobile[rail.titre] ?? 3).map((petition, idx) => (
+                    <PetitionCard key={petition.id} petition={petition} idx={idx} />
                   ))}
-                </DragScroller>
-                <p className="mt-1 text-center text-[11px] font-bold uppercase tracking-widest text-slate-400 md:hidden">
-                  Faites glisser pour en voir plus →
-                </p>
+                  {rail.liste.length > (visiblesMobile[rail.titre] ?? 3) && (
+                    <button onClick={() => setVisiblesMobile(v => ({ ...v, [rail.titre]: (v[rail.titre] ?? 3) + 6 }))}
+                      className="w-full rounded-2xl border border-border py-3 text-[11px] font-black uppercase tracking-widest text-muted-foreground transition hover:bg-muted dark:border-slate-800">
+                      Voir plus ({rail.liste.length - (visiblesMobile[rail.titre] ?? 3)} autres)
+                    </button>
+                  )}
+                </div>
               </div>
             ))}
           </div>

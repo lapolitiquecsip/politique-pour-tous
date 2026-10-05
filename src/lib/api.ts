@@ -1986,6 +1986,7 @@ export const api = {
     ];
     for (const s of sources) {
       let q = supabase.from(s.table).select('slug, photo_url, ' + (s.nameCol || 'first_name, last_name'));
+      if (s.table === 'presidential_candidates') q = q.eq('status', 'declared');
       if (s.nameCol) q = q.ilike(s.nameCol, name);
       else { const parts = name.split(/\s+/); q = q.ilike('last_name', parts[parts.length - 1]).ilike('first_name', parts[0]); }
       const { data } = await q.limit(1);
@@ -2056,7 +2057,9 @@ export const api = {
     // est une autre personne). Sans identifiant commun fiable, on ne lie pas vers une fiche maire.
     const [parties, cands, mins, deps, dep2, sen2, mep2] = await Promise.all([
       supabase.from('political_parties').select('slug, name, leader').ilike('leader', name),
-      supabase.from('presidential_candidates').select('slug, full_name, category').ilike('full_name', name),
+      // Candidats DÉCLARÉS seulement : une fiche retirée (pressenti, non-candidat) ne doit
+      // jamais afficher « Candidat·e à la présidentielle » (cas Jordan Bardella, octobre 2026).
+      supabase.from('presidential_candidates').select('slug, full_name, category').eq('status', 'declared').ilike('full_name', name),
       supabase.from('minister_profiles').select('slug, full_name, title, ministry_name').ilike('full_name', name),
       supabase.from('department_presidents').select('slug, full_name, dep_name').ilike('full_name', name),
       supabase.from('deputies').select('slug, first_name, last_name').ilike('last_name', `%${last}%`),

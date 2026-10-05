@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect, useRef } from "react";
+import { useState, useRef } from "react";
 import { motion, AnimatePresence, useInView, useReducedMotion } from "framer-motion";
 import { usePremium } from "@/lib/hooks/usePremium";
 import { getPremiumUrl } from "@/lib/utils";
@@ -15,23 +15,6 @@ import { PLANS, SALES_OPEN } from "@/lib/constants";
 import Link from "next/link";
 import EspacePersonnel from "@/components/dashboard/EspacePersonnel";
 
-/* ── Animated Counter ── */
-function AnimatedCounter({ target, suffix = "" }: { target: number; suffix?: string }) {
-  const [count, setCount] = useState(0);
-  const ref = useRef<HTMLSpanElement>(null);
-  const isInView = useInView(ref, { once: true });
-  useEffect(() => {
-    if (!isInView) return;
-    let start = 0;
-    const inc = target / (2000 / 16);
-    const timer = setInterval(() => {
-      start += inc;
-      if (start >= target) { setCount(target); clearInterval(timer); } else setCount(Math.floor(start));
-    }, 16);
-    return () => clearInterval(timer);
-  }, [isInView, target]);
-  return <span ref={ref} className="tabular-nums">{count.toLocaleString("fr-FR")}{suffix}</span>;
-}
 
 /* ── Fade-in wrapper ── */
 function FadeIn({ children, delay = 0, className = "" }: { children: React.ReactNode; delay?: number; className?: string }) {
@@ -45,11 +28,6 @@ function FadeIn({ children, delay = 0, className = "" }: { children: React.React
   );
 }
 
-const TESTIMONIALS = [
-  { name: "Camille D.", role: "Étudiante en droit, Paris", text: "Enfin un résumé politique que je lis VRAIMENT. C'est clair, pas partisan, et ça me prend 3 minutes." },
-  { name: "Marc T.", role: "Cadre, Lyon", text: "Je n'ai plus besoin de scroller Twitter pour comprendre ce qui se passe. L'essentiel, sans le bruit." },
-  { name: "Sophie L.", role: "Enseignante, Nantes", text: "Mes élèves adorent quand je leur lis les faits de la semaine. Mon outil pédagogique préféré." },
-];
 
 /* ── Avantages premium : chacun renvoie vers la vraie fonctionnalité ; deux ouvrent une démo. ── */
 type Feature = { icon: any; title: string; desc: string; color: string; href: string; demo?: "law" | "notif"; cta: string };
@@ -104,22 +82,6 @@ function FallingParticles() {
   );
 }
 
-/* ── Avis : défilement continu sur mobile, grille classique sur grand écran ── */
-function TestimonialCard({ t }: { t: (typeof TESTIMONIALS)[number] }) {
-  return (
-    <div className="flex h-full flex-col rounded-2xl sm:rounded-3xl border border-slate-100 bg-white p-5 sm:p-8 transition-all hover:shadow-xl dark:border-slate-800 dark:bg-slate-900">
-      <Quote className="mb-3 h-6 w-6 sm:mb-6 sm:h-10 sm:w-10 text-amber-200" />
-      <p className="flex-1 text-[13px] sm:text-lg italic leading-snug sm:leading-relaxed text-slate-700 dark:text-slate-300">&ldquo;{t.text}&rdquo;</p>
-      <div className="mt-4 flex items-center gap-3 border-t border-slate-100 pt-4 sm:mt-8 sm:gap-4 sm:pt-6 dark:border-slate-800">
-        <div className="flex h-9 w-9 sm:h-12 sm:w-12 shrink-0 items-center justify-center rounded-full bg-gradient-to-br from-amber-400 to-yellow-500 text-sm sm:text-base font-bold text-slate-900 shadow-md">{t.name.charAt(0)}</div>
-        <div className="min-w-0">
-          <p className="text-[13px] sm:text-base font-bold text-slate-900 dark:text-white">{t.name}</p>
-          <p className="truncate text-[11px] sm:text-sm text-slate-500">{t.role}</p>
-        </div>
-      </div>
-    </div>
-  );
-}
 
 /**
  * Sur mobile, les avis défilent d'eux-mêmes de droite à gauche.
@@ -132,58 +94,6 @@ function TestimonialCard({ t }: { t: (typeof TESTIMONIALS)[number] }) {
  * reprend deux secondes après qu'il l'a lâché : on n'arrache jamais le geste en cours.
  * Respecte « animations réduites » du système.
  */
-function TestimonialRail() {
-  const railRef = useRef<HTMLDivElement>(null);
-  const paused = useRef(false);
-  const resumeAt = useRef(0);
-
-  useEffect(() => {
-    const el = railRef.current;
-    if (!el) return;
-    if (window.matchMedia("(prefers-reduced-motion: reduce)").matches) return;
-
-    let raf = 0;
-    const step = () => {
-      // scrollWidth > clientWidth n'est vrai que dans la disposition en rail (mobile) :
-      // sur grand écran, la grille ne défile pas et la boucle ne fait rien.
-      if (!paused.current && Date.now() >= resumeAt.current && el.scrollWidth > el.clientWidth + 4) {
-        el.scrollLeft += 0.45;
-        const half = el.scrollWidth / 2;
-        if (el.scrollLeft >= half) el.scrollLeft -= half;
-      }
-      raf = requestAnimationFrame(step);
-    };
-    raf = requestAnimationFrame(step);
-    return () => cancelAnimationFrame(raf);
-  }, []);
-
-  const hold = () => { paused.current = true; };
-  const release = () => { paused.current = false; resumeAt.current = Date.now() + 2000; };
-
-  return (
-    <div
-      ref={railRef}
-      onPointerDown={hold}
-      onPointerUp={release}
-      onPointerCancel={release}
-      onMouseEnter={hold}
-      onMouseLeave={release}
-      className="flex gap-4 overflow-x-auto overscroll-x-contain pb-2 -mx-4 px-4 [scrollbar-width:none] [&::-webkit-scrollbar]:hidden md:mx-0 md:grid md:grid-cols-3 md:gap-8 md:overflow-visible md:px-0"
-    >
-      {TESTIMONIALS.map((t, i) => (
-        <div key={i} className="w-[78vw] max-w-xs shrink-0 md:w-auto md:max-w-none md:shrink">
-          <TestimonialCard t={t} />
-        </div>
-      ))}
-      {/* Doublon masqué sur grand écran : il ne sert qu'à fermer la boucle du rail. */}
-      {TESTIMONIALS.map((t, i) => (
-        <div key={`bis-${i}`} aria-hidden className="w-[78vw] max-w-xs shrink-0 md:hidden">
-          <TestimonialCard t={t} />
-        </div>
-      ))}
-    </div>
-  );
-}
 
 /* ── Prix à la française : 3,99 € ── */
 const fmtPrice = (n: number) => `${n.toFixed(2).replace(".", ",").replace(",00", "")} €`;
@@ -413,28 +323,9 @@ function PageOffre() {
   const [lawOpen, setLawOpen] = useState(false);
   const [notifOpen, setNotifOpen] = useState(false);
 
-  // Rail des offres sur mobile : on suit la carte visible pour allumer la bonne pastille.
-  const offersRef = useRef<HTMLDivElement>(null);
-  const [offerIndex, setOfferIndex] = useState(0);
-  // On mesure les cartes réelles plutôt qu'une fraction de la largeur : le rail a des
-  // marges asymétriques (débord à droite), qu'un simple découpage en deux fausserait.
-  const onOffersScroll = () => {
-    const el = offersRef.current;
-    if (!el) return;
-    const center = el.scrollLeft + el.clientWidth / 2;
-    let best = 0, bestGap = Infinity;
-    Array.from(el.children).forEach((node, i) => {
-      const card = node as HTMLElement;
-      const gap = Math.abs(card.offsetLeft - el.offsetLeft + card.offsetWidth / 2 - center);
-      if (gap < bestGap) { bestGap = gap; best = i; }
-    });
-    setOfferIndex(best);
-  };
-  const scrollToOffer = (i: number) => {
-    const el = offersRef.current;
-    const card = el?.children[i] as HTMLElement | undefined;
-    if (el && card) el.scrollTo({ left: card.offsetLeft - el.offsetLeft, behavior: "smooth" });
-  };
+  // Mobile : un sélecteur fixe choisit l'offre affichée. Le rail glissant d'avant
+  // « flottait » sous le doigt, et l'on ne devinait pas qu'une offre Pro attendait à droite.
+  const [offreMobile, setOffreMobile] = useState<"elite" | "pro">("elite");
 
   const plan = PLANS.elite;
   // Chaque carte lance son propre paiement : le clic porte l'offre choisie.
@@ -466,10 +357,8 @@ function PageOffre() {
             className="inline-flex items-center gap-2 rounded-2xl bg-gradient-to-r from-amber-400 to-yellow-500 px-8 py-4 text-slate-900 font-black uppercase tracking-widest text-sm shadow-[0_10px_40px_rgba(251,191,36,0.35)] hover:brightness-110 transition">
             {SALES_OPEN ? <>Devenir Premium — dès {fmtPrice(plan.monthly)}/mois</> : <>Découvrir les formules</>} <ArrowRight size={18} />
           </motion.button>
-          <div className="mt-12 flex flex-wrap items-center justify-center gap-8 md:gap-14">
-            <div className="text-center"><p className="text-4xl md:text-5xl font-extrabold text-amber-400"><AnimatedCounter target={302} suffix="+" /></p><p className="text-sm text-white/50 mt-1 italic">Citoyens Premium</p></div>
-            <div className="text-center"><p className="text-4xl md:text-5xl font-extrabold text-fuchsia-400"><AnimatedCounter target={47} suffix="+" /></p><p className="text-sm text-white/50 mt-1 italic">Professionnels Pro</p></div>
-          </div>
+          {/* Pas de compteur d'abonnés : les chiffres affichés ici (302 et 47) étaient
+              inventés, alors même que les abonnements ne sont pas ouverts. */}
         </div>
       </section>
 
@@ -485,10 +374,23 @@ function PageOffre() {
               Deux formules, <span className="text-amber-500">un seul site</span>
             </h2>
             <p className="mt-3 text-slate-500 text-lg">Choisissez selon l&apos;usage que vous en faites.</p>
-            <p className="mt-2 text-[11px] font-black uppercase tracking-widest text-slate-400 md:hidden">
-              Faites glisser pour comparer →
-            </p>
           </FadeIn>
+
+          {/* Mobile : les deux offres côte à côte dans un sélecteur fixe, prix compris. */}
+          <div className="mx-auto mb-6 grid max-w-sm grid-cols-2 gap-1 rounded-2xl bg-slate-100 p-1 dark:bg-slate-800 md:hidden">
+            {([["elite", PLANS.elite.name, fmtPrice(PLANS.elite.monthly)], ["pro", PLANS.pro.name, fmtPrice(PLANS.pro.monthly)]] as const).map(([cle, nom, prix]) => {
+              const actif = offreMobile === cle;
+              return (
+                <button key={cle} onClick={() => setOffreMobile(cle)} aria-pressed={actif}
+                  className={`rounded-xl px-3 py-2.5 text-center transition ${actif
+                    ? cle === "pro" ? "bg-gradient-to-br from-fuchsia-500 to-purple-600 text-white shadow-md" : "bg-gradient-to-br from-amber-300 to-yellow-500 text-slate-950 shadow-md"
+                    : "text-slate-500 dark:text-slate-400"}`}>
+                  <span className="block font-staatliches text-xl uppercase leading-none">{nom}</span>
+                  <span className="mt-0.5 block text-[11px] font-bold opacity-80">{prix} / mois</span>
+                </button>
+              );
+            })}
+          </div>
 
           {/*
             Mobile : les deux offres sont côte à côte dans un rail qui défile au doigt,
@@ -496,11 +398,10 @@ function PageOffre() {
             dépasser du bord, ce qui signale qu'il y en a une autre à droite.
             À partir de md, le rail redevient une grille classique à deux colonnes.
           */}
-          <div ref={offersRef} onScroll={onOffersScroll}
-            className="flex snap-x snap-mandatory gap-4 overflow-x-auto overscroll-x-contain scroll-smooth px-1 pb-4 -mx-4 pl-4 pr-10 [scrollbar-width:none] [&::-webkit-scrollbar]:hidden md:mx-0 md:grid md:grid-cols-2 md:gap-8 md:overflow-visible md:px-0 md:pb-0 md:pt-4 items-stretch">
+          <div className="grid items-stretch gap-6 md:grid-cols-2 md:gap-8 md:pt-4">
             {/* ─── Premium ─── */}
-            <FadeIn className="w-[86vw] shrink-0 snap-center md:w-auto md:shrink [&>div]:h-full">
-              <div className="relative flex h-full flex-col rounded-[2.5rem] border-2 border-amber-400 bg-gradient-to-b from-amber-50/60 to-white dark:from-amber-500/5 dark:to-slate-900 p-8 shadow-2xl shadow-amber-500/10">
+            <FadeIn className={`[&>div]:h-full ${offreMobile === "elite" ? "" : "hidden md:block"}`}>
+              <div className="relative flex h-full flex-col rounded-[2.5rem] border-2 border-amber-400 bg-gradient-to-b from-amber-50/60 to-white dark:from-amber-500/5 dark:to-slate-900 p-6 shadow-2xl shadow-amber-500/10 md:p-8">
                 <div className="absolute top-0 left-1/2 -translate-x-1/2 -translate-y-1/2 whitespace-nowrap bg-slate-900 text-white px-4 py-1.5 rounded-full text-[10px] font-black uppercase tracking-widest shadow-lg">Offre la plus populaire</div>
 
                 <p className="text-[10px] font-black uppercase tracking-widest text-amber-600">{PLANS.elite.audience}</p>
@@ -542,7 +443,7 @@ function PageOffre() {
                     <Star size={16} className="fill-current" /> Devenir Premium
                   </button>
                 ) : (
-                  <div className="w-full rounded-2xl border-2 border-dashed border-amber-300 px-6 py-4 text-center text-sm font-black uppercase tracking-widest text-amber-700 dark:text-amber-400">
+                  <div className="mx-auto w-full max-w-xs rounded-xl border border-dashed border-amber-300 px-4 py-2.5 text-center text-xs font-black uppercase tracking-widest text-amber-700 dark:text-amber-400">
                     Bientôt disponible
                   </div>
                 )}
@@ -550,8 +451,8 @@ function PageOffre() {
             </FadeIn>
 
             {/* ─── Pro ─── */}
-            <FadeIn delay={0.1} className="w-[86vw] shrink-0 snap-center md:w-auto md:shrink [&>div]:h-full">
-              <div className="group relative flex h-full flex-col rounded-[2.5rem] border-2 border-fuchsia-400/70 bg-gradient-to-b from-slate-950 to-slate-900 p-8 text-white shadow-[0_0_45px_-8px_rgba(217,70,239,0.55)]">
+            <FadeIn delay={0.1} className={`[&>div]:h-full ${offreMobile === "pro" ? "" : "hidden md:block"}`}>
+              <div className="group relative flex h-full flex-col rounded-[2.5rem] border-2 border-fuchsia-400/70 bg-gradient-to-b from-slate-950 to-slate-900 p-6 text-white md:p-8 shadow-[0_0_45px_-8px_rgba(217,70,239,0.55)]">
                 {/* Halo qui respire le long du contour — l'offre Pro doit accrocher l'œil. */}
                 <motion.div
                   aria-hidden
@@ -617,20 +518,12 @@ function PageOffre() {
                     <LineChart size={16} /> Passer au Pro
                   </button>
                 ) : (
-                  <div className="w-full rounded-2xl border-2 border-dashed border-fuchsia-400/50 px-6 py-4 text-center text-sm font-black uppercase tracking-widest text-fuchsia-300">
+                  <div className="mx-auto w-full max-w-xs rounded-xl border border-dashed border-fuchsia-400/50 px-4 py-2.5 text-center text-xs font-black uppercase tracking-widest text-fuchsia-300">
                     Bientôt disponible
                   </div>
                 )}
               </div>
             </FadeIn>
-          </div>
-
-          {/* Repère de position, pour qu'on sache laquelle des deux offres on regarde. */}
-          <div className="mt-1 flex justify-center gap-2 md:hidden">
-            {[0, 1].map(i => (
-              <button key={i} onClick={() => scrollToOffer(i)} aria-label={`Voir l'offre ${i + 1}`}
-                className={`h-2 rounded-full transition-all ${offerIndex === i ? "w-6 bg-slate-900 dark:bg-white" : "w-2 bg-slate-300 dark:bg-slate-700"}`} />
-            ))}
           </div>
 
           <p className="text-center text-[10px] text-slate-400 font-bold uppercase tracking-widest mt-6 md:mt-8">
@@ -639,16 +532,10 @@ function PageOffre() {
         </div>
       </section>
 
-      {/* ══════ TÉMOIGNAGES ══════ */}
-      <section className="py-24 px-4 bg-slate-50 dark:bg-slate-950">
-        <div className="max-w-6xl mx-auto">
-          <FadeIn className="text-center mb-16">
-            <p className="text-sm font-bold text-amber-500 uppercase tracking-widest mb-4">Expériences</p>
-            <h2 className="text-4xl md:text-6xl font-staatliches uppercase tracking-tighter text-slate-900 dark:text-white">Ils en parlent <span className="text-amber-500">mieux que nous</span></h2>
-          </FadeIn>
-          <TestimonialRail />
-        </div>
-      </section>
+      {/* Section « témoignages » retirée : les trois avis (Camille D., Marc T., Sophie L.)
+          étaient inventés. De faux avis présentés comme réels sont une pratique commerciale
+          trompeuse ; à remplacer par de vrais retours d'abonnés, avec leur accord. */}
+
 
       <LawExampleModal open={lawOpen} onClose={() => setLawOpen(false)} />
       <NotifDemoModal open={notifOpen} onClose={() => setNotifOpen(false)} />

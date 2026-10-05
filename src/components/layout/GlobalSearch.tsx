@@ -102,7 +102,7 @@ export default function GlobalSearch({ variant = "desktop", onNavigate }: { vari
       </div>
 
       {open && q.trim().length >= 2 && (
-        <div className="absolute left-0 right-0 z-50 mt-2 max-h-[70vh] overflow-y-auto rounded-2xl border border-border bg-card p-2 shadow-2xl dark:border-slate-700 dark:bg-slate-900">
+        <div className="absolute left-0 right-0 z-50 mt-2 max-h-[70vh] overflow-y-auto overscroll-contain rounded-2xl border border-border bg-card p-2 shadow-2xl dark:border-slate-700 dark:bg-slate-900">
           {loading && total === 0 ? (
             <div className="flex items-center gap-2 px-3 py-6 text-sm text-slate-400"><Loader2 size={16} className="animate-spin" /> Recherche…</div>
           ) : total === 0 ? (

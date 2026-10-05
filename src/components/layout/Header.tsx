@@ -280,7 +280,7 @@ export default function Header() {
         positionnement fixed). Toujours centrée en haut, quelle que soit la page. */}
     {searchOpen && (
       <div className="fixed inset-0 z-[100] overflow-hidden overscroll-none bg-slate-950/60 backdrop-blur-sm" onClick={() => setSearchOpen(false)}>
-        <div className="mx-auto mt-20 max-h-[calc(100dvh-6rem)] w-[92%] max-w-2xl overflow-y-auto overscroll-contain sm:mt-24" onClick={e => e.stopPropagation()}>
+        <div className="mx-auto mt-20 w-[92%] max-w-2xl sm:mt-24" onClick={e => e.stopPropagation()}>
           <div className="mb-2 flex items-center justify-between">
             <p className="text-[11px] font-black uppercase tracking-widest text-white/70">Recherche sur tout le site</p>
             <button onClick={() => setSearchOpen(false)} className="rounded-full bg-white/10 p-2 text-white hover:bg-white/20"><X size={16} /></button>

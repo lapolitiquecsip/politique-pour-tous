@@ -2008,7 +2008,7 @@ export const api = {
       supabase.from('senators').select('slug, first_name, last_name, party, photo_url').limit(1000),
       supabase.from('meps').select('slug, full_name, ep_group_code, photo_url').limit(1000),
       supabase.from('minister_profiles').select('slug, full_name, title, photo_url').limit(1000),
-      supabase.from('presidential_candidates').select('slug, full_name, photo_url').limit(1000),
+      supabase.from('presidential_candidates').select('slug, full_name, photo_url').eq('status', 'declared').limit(1000),
       supabase.from('political_parties').select('slug, name').limit(1000),
     ]);
     const M = (d: any) => `${d.first_name || ""} ${d.last_name || ""}`.trim();

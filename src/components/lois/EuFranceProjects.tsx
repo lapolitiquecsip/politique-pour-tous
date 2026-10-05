@@ -65,7 +65,7 @@ export default function EuFranceProjects() {
             {[["Toutes", items.length] as [string, number], ...regions].map(([r, n]) => (
               <button key={r} onClick={() => { setRegion(r); setLimit(12); }}
                 className={`rounded-full border px-3.5 py-1.5 text-[11px] font-black uppercase tracking-wider transition ${region === r ? "border-yellow-400 bg-yellow-400 text-blue-950" : "border-white/15 bg-white/5 text-blue-100 hover:border-yellow-400/40"}`}>
-                {r} <span className="opacity-60">{n}</span>
+                {r} <span className="opacity-80">{n}</span>
               </button>
             ))}
           </div>

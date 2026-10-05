@@ -17,7 +17,7 @@ export const DeputyGrid = memo(function DeputyGrid({ deputies }: DeputyGridProps
   if (deputies.length === 0) {
     return (
       <div className="text-center py-20 bg-card rounded-[2.5rem] border border-dashed border-border transition-all flex flex-col items-center">
-        <div className="w-16 h-16 bg-slate-100 dark:bg-slate-800 rounded-2xl flex items-center justify-center text-slate-400 mb-6">
+        <div className="w-16 h-16 bg-slate-100 dark:bg-slate-800 rounded-2xl flex items-center justify-center text-muted-foreground mb-6">
           <Users className="w-8 h-8" />
         </div>
         <p className="text-foreground dark:text-white text-xl font-bold mb-2">Aucun député trouvé</p>

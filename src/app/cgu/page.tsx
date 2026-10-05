@@ -14,12 +14,12 @@ export default function CGU() {
             animate={{ opacity: 1, y: 0 }}
             className="inline-flex items-center gap-3 px-4 py-2 rounded-full bg-slate-100 dark:bg-slate-500/10 border border-border mb-8"
           >
-            <ShieldCheck className="w-4 h-4 text-blue-600" />
+            <ShieldCheck className="w-4 h-4 text-blue-700 dark:text-blue-400" />
             <span className="text-[10px] font-black text-muted-foreground uppercase tracking-[0.3em]">Protection de l'Utilisateur</span>
           </motion.div>
           
           <h1 className="text-6xl md:text-9xl font-staatliches text-foreground leading-none uppercase italic mb-6">
-            Conditions <span className="text-blue-600 font-sans tracking-tighter not-italic">D'Utilisation</span>
+            Conditions <span className="text-blue-700 dark:text-blue-400 font-sans tracking-tighter not-italic">D'Utilisation</span>
           </h1>
           <p className="text-muted-foreground font-medium uppercase tracking-[0.2em] text-xs">
             Dernière mise à jour : {new Date().toLocaleDateString('fr-FR')}
@@ -29,7 +29,7 @@ export default function CGU() {
 
       {/* Content Section */}
       <div className="container mx-auto px-6 max-w-4xl py-20 bg-card shadow-2xl -mt-12 rounded-[3.5rem] relative z-20 border border-border mb-32">
-        <div className="prose prose-slate prose-lg max-w-none space-y-12 text-slate-700 p-8 md:p-12">
+        <div className="prose dark:prose-invert prose-slate prose-lg max-w-none space-y-12 text-slate-700 dark:text-slate-200 p-8 md:p-12">
           
           <section>
             <h2 className="text-3xl font-black text-foreground uppercase tracking-tighter mb-8">

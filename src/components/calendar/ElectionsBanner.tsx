@@ -16,25 +16,25 @@ const iconMap: Record<string, LucideIcon> = {
 const colorMap: Record<string, { bg: string, text: string, accent: string, gradient: string }> = {
   indigo: { 
     bg: 'bg-indigo-50 dark:bg-indigo-500/10', 
-    text: 'text-indigo-600', 
+    text: 'text-indigo-700 dark:text-indigo-400', 
     accent: 'bg-indigo-600',
     gradient: 'from-indigo-600 to-indigo-400'
   },
   blue: { 
     bg: 'bg-blue-50 dark:bg-blue-500/10', 
-    text: 'text-blue-600', 
+    text: 'text-blue-700 dark:text-blue-400', 
     accent: 'bg-blue-600',
     gradient: 'from-blue-600 to-blue-400'
   },
   red: { 
     bg: 'bg-red-50 dark:bg-red-500/10', 
-    text: 'text-red-600', 
+    text: 'text-red-700 dark:text-red-400', 
     accent: 'bg-red-600',
     gradient: 'from-red-600 to-red-400'
   },
   'blue-800': { 
     bg: 'bg-blue-50 dark:bg-blue-500/10', 
-    text: 'text-blue-800', 
+    text: 'text-blue-800 dark:text-blue-300', 
     accent: 'bg-blue-800',
     gradient: 'from-blue-800 to-blue-600'
   },
@@ -49,7 +49,7 @@ export default function ElectionsBanner() {
       <div className="flex items-center justify-between mb-6">
         <div>
           <h2 className="text-2xl font-staatliches uppercase tracking-wider text-slate-800 dark:text-slate-200 flex items-center gap-2">
-            <Calendar className="w-6 h-6 text-blue-600" /> Prochaines Échéances Électorales
+            <Calendar className="w-6 h-6 text-blue-700 dark:text-blue-400" /> Prochaines Échéances Électorales
           </h2>
           <p className="text-sm text-muted-foreground dark:text-slate-400 font-medium italic mt-1">
             Restez informé sur les moments clés de la démocratie française.
@@ -81,7 +81,7 @@ export default function ElectionsBanner() {
                     <Icon className="w-[18px] h-[18px] md:w-6 md:h-6" />
                   </div>
 
-                  <span className="text-[9px] md:text-[10px] font-black uppercase tracking-[0.2em] text-slate-400 dark:text-slate-500 mb-0.5 md:mb-1 block">
+                  <span className="text-[9px] md:text-[10px] font-black uppercase tracking-[0.2em] text-muted-foreground mb-0.5 md:mb-1 block">
                     {election.type}
                   </span>
 
@@ -93,7 +93,7 @@ export default function ElectionsBanner() {
                     {wrapWithGlossary(election.description)}
                   </p>
 
-                  <div className="hidden md:flex items-center gap-1 text-[10px] font-bold text-blue-600 uppercase tracking-wider opacity-0 group-hover:opacity-100 transition-opacity">
+                  <div className="hidden md:flex items-center gap-1 text-[10px] font-bold text-blue-700 dark:text-blue-400 uppercase tracking-wider opacity-0 group-hover:opacity-100 transition-opacity">
                     Comment ça marche ? <ChevronRight size={12} />
                   </div>
                 </div>

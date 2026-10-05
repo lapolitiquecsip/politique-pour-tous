@@ -87,7 +87,7 @@ export default function VoteHemicycle({ pour, contre, abstention, total, showLab
         {/* Center Labels */}
         <div className="absolute bottom-0 left-0 right-0 flex flex-col items-center">
           <span className="text-3xl font-black text-foreground leading-none">{pour}</span>
-          <span className="text-[10px] font-bold text-emerald-600 uppercase tracking-tighter">Pour</span>
+          <span className="text-[10px] font-bold text-emerald-700 dark:text-emerald-400 uppercase tracking-tighter">Pour</span>
         </div>
       </div>
 

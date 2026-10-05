@@ -86,7 +86,7 @@ export default function DeputyClient({ initialDeputies }: { initialDeputies: Dep
           </div>
           
           {isPending && (
-            <div className="flex items-center gap-2 text-blue-600 animate-in fade-in slide-in-from-left-2">
+            <div className="flex items-center gap-2 text-blue-700 dark:text-blue-400 animate-in fade-in slide-in-from-left-2">
               <Loader2 className="w-4 h-4 animate-spin" />
               <span className="text-xs font-bold uppercase tracking-widest">Mise à jour...</span>
             </div>
@@ -106,7 +106,7 @@ export default function DeputyClient({ initialDeputies }: { initialDeputies: Dep
                 className="flex flex-wrap items-center gap-2"
               >
                 {selectedDepartment && (
-                  <span className="inline-flex items-center gap-1.5 px-3 py-1 bg-blue-500/10 text-blue-600 rounded-full text-xs font-bold border border-blue-500/20">
+                  <span className="inline-flex items-center gap-1.5 px-3 py-1 bg-blue-500/10 text-blue-700 dark:text-blue-400 rounded-full text-xs font-bold border border-blue-500/20">
                     <MapPin className="w-3 h-3" />
                     {getDepartmentName(selectedDepartment)}
                     <button 
@@ -134,7 +134,7 @@ export default function DeputyClient({ initialDeputies }: { initialDeputies: Dep
                       setSelectedDepartment(null);
                       setSearchQuery("");
                     }}
-                    className="text-[10px] font-black uppercase tracking-widest text-slate-400 hover:text-red-500 transition-colors ml-2"
+                    className="text-[10px] font-black uppercase tracking-widest text-muted-foreground hover:text-red-500 transition-colors ml-2"
                   >
                     Effacer tout
                   </button>
@@ -290,7 +290,7 @@ function SidebarDeputyItem({ deputy, router }: { deputy: Deputy; router: any }) 
 
       <button 
         onClick={() => router.push(`/deputes/${slug}`)}
-        className="w-8 h-8 rounded-full bg-muted dark:bg-slate-800 flex items-center justify-center text-slate-400 hover:text-red-500 hover:bg-red-50 transition-colors shrink-0"
+        className="w-8 h-8 rounded-full bg-muted dark:bg-slate-800 flex items-center justify-center text-muted-foreground hover:text-red-500 hover:bg-red-50 transition-colors shrink-0"
       >
         <ChevronRight className="w-4 h-4" />
       </button>

@@ -33,11 +33,11 @@ const enterAnimation = {
 }
 
 const VIVID_COLORS = [
-  "bg-pink-500",    // rose
-  "bg-emerald-500", // vert
-  "bg-blue-500",    // bleu
+  "bg-pink-600",    // rose
+  "bg-emerald-700", // vert
+  "bg-blue-600",    // bleu
   "bg-purple-600",  // violet
-  "bg-red-500"      // rouge
+  "bg-red-600"      // rouge
 ];
 
 function CardContent({ data }: { data: CardData }) {
@@ -149,12 +149,12 @@ function CardContent({ data }: { data: CardData }) {
                           : 'bg-amber-100 dark:bg-amber-500/10 text-amber-800 dark:text-amber-300'
                     }`}>
                       {isFaux && (
-                        <svg className="w-3 h-3 text-rose-600" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={3}>
+                        <svg className="w-3 h-3 text-rose-700 dark:text-rose-400" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={3}>
                           <path strokeLinecap="round" strokeLinejoin="round" d="M6 18L18 6M6 6l12 12" />
                         </svg>
                       )}
                       {isVrai && (
-                        <svg className="w-3 h-3 text-emerald-600" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={3}>
+                        <svg className="w-3 h-3 text-emerald-700 dark:text-emerald-400" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={3}>
                           <path strokeLinecap="round" strokeLinejoin="round" d="M5 13l4 4L19 7" />
                         </svg>
                       )}
@@ -162,7 +162,7 @@ function CardContent({ data }: { data: CardData }) {
                     </span>
                   )}
                 </div>
-                <p className="text-xs sm:text-xs text-slate-700 leading-normal font-medium line-clamp-4">
+                <p className="text-xs sm:text-xs text-slate-700 dark:text-slate-200 leading-normal font-medium line-clamp-4">
                   {debunkText}
                 </p>
               </div>

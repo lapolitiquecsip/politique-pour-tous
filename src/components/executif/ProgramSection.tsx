@@ -86,7 +86,7 @@ export default function ProgramSection() {
   return (
     <section className="bg-card p-8 md:p-10 rounded-[3rem] border border-border space-y-5">
       <div>
-        <p className="text-amber-600 font-black text-xs uppercase tracking-widest mb-2">Élection 2022</p>
+        <p className="text-amber-700 dark:text-amber-400 font-black text-xs uppercase tracking-widest mb-2">Élection 2022</p>
         <h2 className="text-3xl md:text-4xl font-staatliches uppercase tracking-tight text-foreground">
           Le <span className="text-transparent bg-clip-text bg-gradient-to-r from-amber-500 via-orange-500 to-yellow-500">programme</span> et son avancement
         </h2>
@@ -114,8 +114,8 @@ export default function ProgramSection() {
 
       {/* Avertissement : le lecteur doit distinguer le fait de l'appréciation. */}
       <div className="flex items-start gap-3 rounded-2xl border border-amber-200 dark:border-amber-500/25 bg-amber-50/60 dark:bg-amber-500/10 p-3.5">
-        <Sparkles size={15} className="mt-0.5 shrink-0 text-amber-600" />
-        <p className="text-[11px] leading-relaxed text-amber-900">
+        <Sparkles size={15} className="mt-0.5 shrink-0 text-amber-700 dark:text-amber-400" />
+        <p className="text-[11px] leading-relaxed text-amber-900 dark:text-amber-300">
           <strong>Les engagements sont des faits</strong>, repris du programme officiel de campagne.
           <strong> L'avancement est instruit à charge et à décharge</strong> à partir des textes
           législatifs, scrutins et sources publiques : chaque engagement indique ce qui est établi,
@@ -174,12 +174,12 @@ export default function ProgramSection() {
                 >
                   <span className={`mt-1.5 h-2 w-2 shrink-0 rounded-full ${st.dot}`} />
                   <span className="min-w-0 flex-1">
-                    {i.theme && <span className="block text-[9px] font-black uppercase tracking-widest text-slate-400 truncate">{i.theme}</span>}
+                    {i.theme && <span className="block text-[9px] font-black uppercase tracking-widest text-muted-foreground truncate">{i.theme}</span>}
                     <span className="mt-0.5 block text-sm font-bold leading-snug text-foreground">{i.engagement}</span>
                   </span>
                   <span className="flex shrink-0 items-center gap-2">
                     {(i.evidence_count ?? 0) > 0 && (
-                      <span className="hidden sm:flex items-center gap-1 text-[9px] font-black text-slate-400" title={`${i.evidence_count} preuve(s)`}>
+                      <span className="hidden sm:flex items-center gap-1 text-[9px] font-black text-muted-foreground" title={`${i.evidence_count} preuve(s)`}>
                         <FileCheck2 size={11} /> {i.evidence_count}
                       </span>
                     )}
@@ -210,7 +210,7 @@ export default function ProgramSection() {
                           <CheckCircle2 size={16} className="mt-0.5 shrink-0 text-muted-foreground" />
                           <div>
                             <p className="text-[10px] font-black uppercase tracking-widest text-muted-foreground">Ce qui est établi</p>
-                            <p className="mt-0.5 text-xs leading-relaxed text-slate-700">{i.certitudes}</p>
+                            <p className="mt-0.5 text-xs leading-relaxed text-slate-700 dark:text-slate-200">{i.certitudes}</p>
                           </div>
                         </div>
                       )}
@@ -220,14 +220,14 @@ export default function ProgramSection() {
                         <div className="grid grid-cols-1 gap-2.5 sm:grid-cols-2">
                           {i.arguments_pour && (
                             <div className="rounded-xl border-l-4 border-emerald-400 bg-emerald-50/60 dark:bg-emerald-500/10 p-3">
-                              <p className="flex items-center gap-1.5 text-[10px] font-black uppercase tracking-widest text-emerald-700"><ThumbsUp size={12} /> Plaide pour</p>
-                              <p className="mt-1 text-[11px] leading-relaxed text-slate-700">{i.arguments_pour}</p>
+                              <p className="flex items-center gap-1.5 text-[10px] font-black uppercase tracking-widest text-emerald-700 dark:text-emerald-300"><ThumbsUp size={12} /> Plaide pour</p>
+                              <p className="mt-1 text-[11px] leading-relaxed text-slate-700 dark:text-slate-200">{i.arguments_pour}</p>
                             </div>
                           )}
                           {i.arguments_contre && (
                             <div className="rounded-xl border-l-4 border-rose-400 bg-rose-50/60 dark:bg-rose-500/10 p-3">
-                              <p className="flex items-center gap-1.5 text-[10px] font-black uppercase tracking-widest text-rose-700"><ThumbsDown size={12} /> Plaide contre</p>
-                              <p className="mt-1 text-[11px] leading-relaxed text-slate-700">{i.arguments_contre}</p>
+                              <p className="flex items-center gap-1.5 text-[10px] font-black uppercase tracking-widest text-rose-700 dark:text-rose-300"><ThumbsDown size={12} /> Plaide contre</p>
+                              <p className="mt-1 text-[11px] leading-relaxed text-slate-700 dark:text-slate-200">{i.arguments_contre}</p>
                             </div>
                           )}
                         </div>
@@ -236,7 +236,7 @@ export default function ProgramSection() {
                       {/* Synthèse IA — encart ambré distinct. */}
                       {i.justification && (
                         <div className="rounded-xl border border-amber-200 bg-gradient-to-br from-amber-50 to-white p-3">
-                          <p className="flex items-center gap-1.5 text-[10px] font-black uppercase tracking-widest text-amber-600"><Sparkles size={12} /> Synthèse</p>
+                          <p className="flex items-center gap-1.5 text-[10px] font-black uppercase tracking-widest text-amber-700 dark:text-amber-400"><Sparkles size={12} /> Synthèse</p>
                           <p className="mt-1 text-xs leading-relaxed text-muted-foreground">{i.justification}</p>
                         </div>
                       )}
@@ -253,7 +253,7 @@ export default function ProgramSection() {
                                   <span className={`mt-0.5 flex shrink-0 items-center gap-1 rounded px-1.5 py-0.5 text-[8px] font-black uppercase tracking-widest ${t.cls}`}>
                                     <t.Icon size={9} /> {t.label}
                                   </span>
-                                  <span className="min-w-0 flex-1 text-[11px] leading-snug text-slate-700">
+                                  <span className="min-w-0 flex-1 text-[11px] leading-snug text-slate-700 dark:text-slate-200">
                                     {e.url ? (
                                       <a href={e.url} target="_blank" rel="noopener noreferrer" className="hover:text-amber-600 hover:underline">{e.title}</a>
                                     ) : e.title}
@@ -283,7 +283,7 @@ export default function ProgramSection() {
         <div className="pointer-events-none absolute bottom-0 left-0 right-2 h-8 bg-gradient-to-t from-background to-transparent rounded-b-2xl" />
       </div>
 
-      <p className="text-[10px] text-slate-400/80 italic border-t border-border pt-4 flex items-start gap-1.5">
+      <p className="text-[10px] text-muted-foreground italic border-t border-border pt-4 flex items-start gap-1.5">
         <ClipboardList size={12} className="mt-0.5 shrink-0" />
         <span>
           Engagements : programme officiel « Emmanuel Macron — Avec Vous » (2022)

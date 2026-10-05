@@ -63,7 +63,7 @@ export default function AdminDashboardPage() {
             <p className="text-sm font-semibold text-muted-foreground uppercase tracking-widest mb-1">Abonnés Newsletter</p>
             <h2 className="text-4xl font-extrabold text-foreground">{subscribersCount ?? 0}</h2>
           </div>
-          <div className="w-14 h-14 rounded-full bg-blue-50 flex items-center justify-center text-blue-600">
+          <div className="w-14 h-14 rounded-full bg-blue-50 dark:bg-blue-500/10 flex items-center justify-center text-blue-700 dark:text-blue-300">
             <Users className="w-7 h-7" />
           </div>
         </div>
@@ -73,7 +73,7 @@ export default function AdminDashboardPage() {
             <p className="text-sm font-semibold text-muted-foreground uppercase tracking-widest mb-1">Politiciens en base</p>
             <h2 className="text-4xl font-extrabold text-foreground">{politiciansCount ?? 0}</h2>
           </div>
-          <div className="w-14 h-14 rounded-full bg-purple-50 flex items-center justify-center text-purple-600">
+          <div className="w-14 h-14 rounded-full bg-purple-50 dark:bg-purple-500/10 flex items-center justify-center text-purple-700 dark:text-purple-300">
             <Webhook className="w-7 h-7" />
           </div>
         </div>
@@ -106,7 +106,7 @@ export default function AdminDashboardPage() {
                 <th className="p-4">Statut</th>
               </tr>
             </thead>
-            <tbody className="divide-y divide-slate-100">
+            <tbody className="divide-y divide-slate-100 dark:divide-slate-800">
               {logs.length === 0 ? (
                 <tr>
                   <td colSpan={4} className="p-6 text-center text-muted-foreground italic">
@@ -128,11 +128,11 @@ export default function AdminDashboardPage() {
                       </td>
                       <td className="p-4">
                         {log.status === 'success' ? (
-                          <span className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-xs font-bold bg-green-100 text-green-700 border border-green-200">
+                          <span className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-xs font-bold bg-green-100 dark:bg-green-500/10 text-green-700 dark:text-green-300 border border-green-200">
                             <CheckCircle2 className="w-3 h-3" /> Succès
                           </span>
                         ) : (
-                          <span className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-xs font-bold bg-red-100 text-red-700 border border-red-200" title={log.log_data ? JSON.stringify(log.log_data) : ''}>
+                          <span className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-xs font-bold bg-red-100 dark:bg-red-500/10 text-red-700 dark:text-red-300 border border-red-200" title={log.log_data ? JSON.stringify(log.log_data) : ''}>
                             <AlertCircle className="w-3 h-3" /> Erreur ({log.errors_count || 0})
                           </span>
                         )}

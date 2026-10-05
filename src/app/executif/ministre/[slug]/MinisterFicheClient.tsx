@@ -10,17 +10,17 @@ import LegalStatusModal from "@/components/deputies/LegalStatusModal";
 import ParallelRoles from "@/components/shared/ParallelRoles";
 
 const BIO_FIELDS: Array<[string, string, string]> = [
-  ["parcours", "Parcours politique", "text-red-600"],
-  ["realisations", "Réalisations concrètes", "text-teal-600"],
-  ["jobs", "Métiers & jobs", "text-cyan-600"],
-  ["etudes", "Études", "text-blue-600"],
-  ["parents", "Parents", "text-amber-600"],
-  ["famille", "Famille", "text-rose-600"],
-  ["positions", "Positions", "text-emerald-600"],
-  ["publications", "Publications & écrits", "text-fuchsia-600"],
-  ["faits_marquants", "Faits marquants", "text-yellow-600"],
-  ["controverses", "Controverses", "text-slate-700"],
-  ["chronologie", "Chronologie", "text-indigo-600"],
+  ["parcours", "Parcours politique", "text-red-700 dark:text-red-400"],
+  ["realisations", "Réalisations concrètes", "text-teal-700 dark:text-teal-400"],
+  ["jobs", "Métiers & jobs", "text-cyan-700 dark:text-cyan-400"],
+  ["etudes", "Études", "text-blue-700 dark:text-blue-400"],
+  ["parents", "Parents", "text-amber-700 dark:text-amber-400"],
+  ["famille", "Famille", "text-rose-700 dark:text-rose-400"],
+  ["positions", "Positions", "text-emerald-700 dark:text-emerald-400"],
+  ["publications", "Publications & écrits", "text-fuchsia-700 dark:text-fuchsia-400"],
+  ["faits_marquants", "Faits marquants", "text-yellow-700 dark:text-yellow-400"],
+  ["controverses", "Controverses", "text-slate-700 dark:text-slate-200"],
+  ["chronologie", "Chronologie", "text-indigo-700 dark:text-indigo-400"],
 ];
 
 const NUM_RE = /(\d+(?:[.,]\d+)?\s?%|\d[\d .]*\s?(?:€|milliards?|millions?|Md€|M€))/gi;
@@ -50,7 +50,7 @@ export default function MinisterFicheClient({ params, embedded }: { params: Prom
   if (!m) return (
     <div className="flex min-h-screen flex-col items-center justify-center gap-4 bg-muted">
       <p className="text-muted-foreground">Fiche ministre introuvable.</p>
-      <Link href="/executif" className="text-blue-600 font-bold hover:underline">← Retour à l'Exécutif</Link>
+      <Link href="/executif" className="text-blue-700 dark:text-blue-400 font-bold hover:underline">← Retour à l'Exécutif</Link>
     </div>
   );
 
@@ -89,9 +89,9 @@ export default function MinisterFicheClient({ params, embedded }: { params: Prom
       <div className="mx-auto max-w-4xl px-4">
         {/* Faits clés */}
         <div className="-mt-6 flex flex-wrap justify-center gap-2 md:justify-start">
-          {bio.profession && <span className="inline-flex items-center gap-2 rounded-full bg-card px-4 py-2 text-sm font-bold text-slate-700 shadow-sm"><Briefcase size={15} className="text-slate-400" />{bio.profession}</span>}
-          {bio.formation && <span className="inline-flex items-center gap-2 rounded-full bg-card px-4 py-2 text-sm font-bold text-slate-700 shadow-sm"><GraduationCap size={16} className="text-slate-400" />{bio.formation}</span>}
-          {bio.enfants && <span className="inline-flex items-center gap-2 rounded-full bg-card px-4 py-2 text-sm font-bold text-slate-700 shadow-sm"><Users size={15} className="text-slate-400" />{bio.enfants}</span>}
+          {bio.profession && <span className="inline-flex items-center gap-2 rounded-full bg-card px-4 py-2 text-sm font-bold text-slate-700 dark:text-slate-200 shadow-sm"><Briefcase size={15} className="text-muted-foreground" />{bio.profession}</span>}
+          {bio.formation && <span className="inline-flex items-center gap-2 rounded-full bg-card px-4 py-2 text-sm font-bold text-slate-700 dark:text-slate-200 shadow-sm"><GraduationCap size={16} className="text-muted-foreground" />{bio.formation}</span>}
+          {bio.enfants && <span className="inline-flex items-center gap-2 rounded-full bg-card px-4 py-2 text-sm font-bold text-slate-700 dark:text-slate-200 shadow-sm"><Users size={15} className="text-muted-foreground" />{bio.enfants}</span>}
         </div>
 
         {/* Cabinet de Matignon — uniquement sur la fiche du Premier ministre. */}
@@ -99,10 +99,10 @@ export default function MinisterFicheClient({ params, embedded }: { params: Prom
           <div className="mt-8 flex items-start gap-4 rounded-3xl border border-blue-100 dark:border-blue-500/25 bg-blue-50/50 dark:bg-blue-500/10 p-5">
             <span className="flex h-11 w-11 shrink-0 items-center justify-center rounded-2xl bg-blue-100 dark:bg-blue-500/10 text-blue-600 dark:text-blue-300"><Landmark size={20} /></span>
             <div className="min-w-0">
-              <p className="text-[10px] font-black uppercase tracking-widest text-blue-600">Cabinet de Matignon</p>
+              <p className="text-[10px] font-black uppercase tracking-widest text-blue-700 dark:text-blue-400">Cabinet de Matignon</p>
               <p className="mt-0.5 text-2xl font-black text-foreground">{PM_CABINET.value} <span className="text-base font-bold text-muted-foreground">conseillers</span></p>
               <p className="mt-0.5 text-sm leading-snug text-muted-foreground">{PM_CABINET.sub}</p>
-              <a href={PM_CABINET.url} target="_blank" rel="noopener noreferrer" className="mt-1.5 inline-flex items-center gap-1 text-[10px] font-black uppercase tracking-widest text-slate-400 hover:text-blue-600">{PM_CABINET.year} · {PM_CABINET.source} <ExternalLink size={10} /></a>
+              <a href={PM_CABINET.url} target="_blank" rel="noopener noreferrer" className="mt-1.5 inline-flex items-center gap-1 text-[10px] font-black uppercase tracking-widest text-muted-foreground hover:text-blue-600">{PM_CABINET.year} · {PM_CABINET.source} <ExternalLink size={10} /></a>
             </div>
           </div>
         )}
@@ -115,11 +115,11 @@ export default function MinisterFicheClient({ params, embedded }: { params: Prom
         {/* Situation judiciaire */}
         <div className="mt-8 flex items-center justify-between gap-4 rounded-3xl border border-border bg-card p-5">
           <div>
-            <p className="text-[9px] font-black uppercase tracking-widest text-slate-400">Intégrité &amp; Transparence</p>
+            <p className="text-[9px] font-black uppercase tracking-widest text-muted-foreground">Intégrité &amp; Transparence</p>
             <h3 className="text-lg font-bold text-foreground">Situation judiciaire</h3>
-            <span className={`text-[10px] font-black uppercase tracking-widest ${legalClean ? "text-emerald-600" : "text-amber-600"}`}>{legalClean ? "Dossier vierge" : "Affaires à consulter"}</span>
+            <span className={`text-[10px] font-black uppercase tracking-widest ${legalClean ? "text-emerald-700 dark:text-emerald-400" : "text-amber-800 dark:text-amber-400"}`}>{legalClean ? "Dossier vierge" : "Affaires à consulter"}</span>
           </div>
-          <button onClick={() => setShowLegal(true)} className={`inline-flex items-center gap-2 rounded-2xl border px-5 py-3 text-[10px] font-black uppercase tracking-widest ${legalClean ? "border-emerald-500/20 bg-emerald-500/10 text-emerald-600" : "border-amber-500/20 bg-amber-500/10 text-amber-600"}`}>
+          <button onClick={() => setShowLegal(true)} className={`inline-flex items-center gap-2 rounded-2xl border px-5 py-3 text-[10px] font-black uppercase tracking-widest ${legalClean ? "border-emerald-500/20 bg-emerald-500/10 text-emerald-700 dark:text-emerald-400" : "border-amber-500/20 bg-amber-500/10 text-amber-800 dark:text-amber-400"}`}>
             <ShieldCheck className="h-3.5 w-3.5" /> Consulter
           </button>
         </div>
@@ -134,7 +134,7 @@ export default function MinisterFicheClient({ params, embedded }: { params: Prom
               <div key={key} className={`rounded-3xl border border-border bg-card p-5 shadow-sm ${wide}`}>
                 <h3 className={`font-staatliches text-2xl uppercase leading-none ${color}`}>{label}</h3>
                 <div className={`mb-3 mt-1.5 h-1 w-12 rounded-full ${color.replace("text-", "bg-")}`} />
-                <ul className="list-disc space-y-1.5 pl-4 text-sm leading-6 text-slate-700 marker:text-slate-300">
+                <ul className="list-disc space-y-1.5 pl-4 text-sm leading-6 text-slate-700 dark:text-slate-200 marker:text-slate-300">
                   {points.map((p, i) => <li key={i}><NumHighlight text={p} /></li>)}
                 </ul>
               </div>
@@ -143,11 +143,11 @@ export default function MinisterFicheClient({ params, embedded }: { params: Prom
         </div>
 
         {m.source_url && (
-          <a href={m.source_url} target="_blank" rel="noreferrer" className="mt-8 inline-flex items-center gap-1.5 text-sm font-bold text-blue-700 hover:underline">
+          <a href={m.source_url} target="_blank" rel="noreferrer" className="mt-8 inline-flex items-center gap-1.5 text-sm font-bold text-blue-700 dark:text-blue-300 hover:underline">
             <ExternalLink size={14} /> Source : Wikipédia
           </a>
         )}
-        <p className="mt-2 text-[11px] italic text-slate-400">Fiche générée automatiquement à partir de Wikipédia — susceptible d'être incomplète.</p>
+        <p className="mt-2 text-[11px] italic text-muted-foreground">Fiche générée automatiquement à partir de Wikipédia — susceptible d'être incomplète.</p>
       </div>
 
       <LegalStatusModal isOpen={showLegal} onClose={() => setShowLegal(false)} deputy={legalPerson} />

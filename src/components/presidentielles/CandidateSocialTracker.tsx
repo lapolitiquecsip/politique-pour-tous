@@ -43,9 +43,9 @@ function Sparkline({ points, color }: { points: number[]; color: string }) {
 /* ── Flèche de tendance ── */
 function Trend({ value }: { value: number | null }) {
   if (value == null) return <span className="text-slate-300"><Minus size={14} /></span>;
-  if (value > 0) return <span className="flex items-center gap-1 text-emerald-600"><TrendingUp size={14} /> {signed(value)}</span>;
-  if (value < 0) return <span className="flex items-center gap-1 text-rose-600"><TrendingDown size={14} /> {signed(value)}</span>;
-  return <span className="flex items-center gap-1 text-slate-400"><Minus size={14} /> 0</span>;
+  if (value > 0) return <span className="flex items-center gap-1 text-emerald-700 dark:text-emerald-400"><TrendingUp size={14} /> {signed(value)}</span>;
+  if (value < 0) return <span className="flex items-center gap-1 text-rose-700 dark:text-rose-400"><TrendingDown size={14} /> {signed(value)}</span>;
+  return <span className="flex items-center gap-1 text-muted-foreground"><Minus size={14} /> 0</span>;
 }
 
 /* ── Chiffre masqué pour les non-Pro ── */
@@ -212,7 +212,7 @@ export default function CandidateSocialTracker({ candidates }: { candidates: Can
         <div className="min-w-0 flex-1">
           <div className="flex flex-wrap items-center gap-2">
             <h2 className="font-staatliches text-3xl uppercase tracking-tight text-foreground">
-              Dynamiques <span className="text-fuchsia-600">réseaux sociaux</span>
+              Dynamiques <span className="text-fuchsia-700 dark:text-fuchsia-400">réseaux sociaux</span>
             </h2>
             <span className="rounded-full bg-gradient-to-r from-fuchsia-500 to-purple-600 px-2.5 py-1 text-[9px] font-black uppercase tracking-widest text-white shadow">Pro</span>
           </div>
@@ -322,7 +322,7 @@ export default function CandidateSocialTracker({ candidates }: { candidates: Can
 
                   <span className="w-[104px] shrink-0 text-right">
                     <span className="block text-[9px] font-black uppercase tracking-wider text-slate-400">Vues {period} j</span>
-                    <span className="flex items-center justify-end gap-1 text-sm font-black tabular-nums text-fuchsia-600">
+                    <span className="flex items-center justify-end gap-1 text-sm font-black tabular-nums text-fuchsia-700 dark:text-fuchsia-400">
                       <Eye size={12} className="text-fuchsia-300" /><Masked isPro={isPro}>{compact(r.views)}</Masked>
                     </span>
                   </span>
@@ -335,7 +335,7 @@ export default function CandidateSocialTracker({ candidates }: { candidates: Can
                     {r.metrics.map(m => <AccountRow key={m.account.id} m={m} period={period} isPro={isPro} />)}
                     {!isPro && (
                       <div className="mt-4 text-center">
-                        <Link href="/premium" className="text-[11px] font-black uppercase tracking-widest text-fuchsia-600 hover:underline">
+                        <Link href="/premium" className="text-[11px] font-black uppercase tracking-widest text-fuchsia-700 dark:text-fuchsia-400 hover:underline">
                           Débloquer les chiffres avec l&apos;abonnement Pro →
                         </Link>
                       </div>

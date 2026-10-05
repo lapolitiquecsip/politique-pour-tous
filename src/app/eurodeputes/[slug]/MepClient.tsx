@@ -10,21 +10,22 @@ import ActivityRank from "@/components/shared/ActivityRank";
 import FollowButton from "@/components/shared/FollowButton";
 import ParallelRoles from "@/components/shared/ParallelRoles";
 import { api } from "@/lib/api";
+import { useBioFraiche } from "@/lib/hooks/useBioFraiche";
 import { groupByCode } from "@/lib/data/epGroups";
 
 // Rubriques de la bio structurée (mêmes que les fiches candidats/ministres).
 const BIO_FIELDS: Array<[string, string, string]> = [
-  ["parcours", "Parcours politique", "text-red-600"],
-  ["realisations", "Réalisations concrètes", "text-teal-600"],
-  ["jobs", "Métiers & jobs", "text-cyan-600"],
-  ["etudes", "Études", "text-blue-600"],
-  ["parents", "Parents", "text-amber-600"],
-  ["famille", "Famille", "text-rose-600"],
-  ["positions", "Positions", "text-emerald-600"],
-  ["publications", "Publications & écrits", "text-fuchsia-600"],
-  ["faits_marquants", "Faits marquants", "text-yellow-600"],
-  ["controverses", "Controverses", "text-slate-700"],
-  ["chronologie", "Chronologie", "text-indigo-600"],
+  ["parcours", "Parcours politique", "text-red-700 dark:text-red-400"],
+  ["realisations", "Réalisations concrètes", "text-teal-700 dark:text-teal-400"],
+  ["jobs", "Métiers & jobs", "text-cyan-700 dark:text-cyan-400"],
+  ["etudes", "Études", "text-blue-700 dark:text-blue-400"],
+  ["parents", "Parents", "text-amber-700 dark:text-amber-400"],
+  ["famille", "Famille", "text-rose-700 dark:text-rose-400"],
+  ["positions", "Positions", "text-emerald-700 dark:text-emerald-400"],
+  ["publications", "Publications & écrits", "text-fuchsia-700 dark:text-fuchsia-400"],
+  ["faits_marquants", "Faits marquants", "text-yellow-700 dark:text-yellow-400"],
+  ["controverses", "Controverses", "text-slate-700 dark:text-slate-200"],
+  ["chronologie", "Chronologie", "text-indigo-700 dark:text-indigo-400"],
 ];
 const NUM_RE = /(\d+(?:[.,]\d+)?\s?%|\d[\d .]*\s?(?:€|milliards?|millions?|Md€|M€))/gi;
 function NumHighlight({ text }: { text: string }) {
@@ -52,7 +53,7 @@ const GROUP_CLR: Record<string, string> = {
 const POS: Record<string, string> = { FOR: "POUR", AGAINST: "CONTRE", ABSTENTION: "ABSTENTION" };
 const posLabel: Record<string, string> = { FOR: "Pour", AGAINST: "Contre", ABSTENTION: "Abstention", DID_NOT_VOTE: "N'a pas voté" };
 // Couleur de la position : vert = POUR, rouge = CONTRE, ambre = abstention, gris = absent.
-const posColor: Record<string, string> = { FOR: "text-emerald-600", AGAINST: "text-rose-600", ABSTENTION: "text-amber-600", DID_NOT_VOTE: "text-slate-400" };
+const posColor: Record<string, string> = { FOR: "text-emerald-700 dark:text-emerald-400", AGAINST: "text-rose-700 dark:text-rose-400", ABSTENTION: "text-amber-700 dark:text-amber-400", DID_NOT_VOTE: "text-muted-foreground" };
 
 // « À contre-courant » : l'eurodéputé a voté à l'inverse du résultat final du scrutin
 // (a voté POUR un texte rejeté, ou CONTRE un texte adopté).
@@ -125,7 +126,7 @@ export default function MepClient({ mep, initialVotes, embedded }: { mep: any; i
   }, [mep.id]);
 
   // Bio structurée + situation judiciaire.
-  const bio = mep.bio || {};
+  const bio = useBioFraiche("meps", mep.slug, mep.bio) || {};
   const hasStructured = BIO_FIELDS.some(([k]) => toPoints(bio[k]).length > 0);
   const hasPortrait = hasStructured || !!mep.biography || !!bio.summary;
   const [bioOpen, setBioOpen] = useState(false);   // repliable comme les fiches député/sénateur
@@ -156,12 +157,12 @@ export default function MepClient({ mep, initialVotes, embedded }: { mep: any; i
           {/* Colonne identité */}
           <div className="md:col-span-1">
             <div className="rounded-[2.5rem] overflow-hidden border border-border dark:border-slate-800 bg-card dark:bg-slate-900 shadow-xl">
-              <div className={`relative h-64 bg-gradient-to-b ${grad} flex items-end`}>
+              <div className={`relative aspect-[4/5] max-h-[28rem] bg-gradient-to-b ${grad} flex items-end`}>
                 {/* eslint-disable-next-line @next/next/no-img-element */}
                 <img
                   src={mep.photo_url}
                   alt={mep.full_name}
-                  className="absolute inset-0 h-full w-full object-cover object-top"
+                  className="absolute inset-0 h-full w-full object-cover object-[50%_20%]"
                   onError={(e) => { (e.currentTarget as HTMLImageElement).style.display = "none"; }}
                 />
                 <div className="absolute top-4 left-4 rounded-full bg-white/90 px-3 py-1 text-[10px] font-black uppercase tracking-widest text-slate-800">
@@ -170,7 +171,7 @@ export default function MepClient({ mep, initialVotes, embedded }: { mep: any; i
                 {!mep.photo_url && <div className="w-full text-center text-white text-5xl font-staatliches pb-8">{initials}</div>}
               </div>
               <div className="p-6">
-                <p className="text-amber-600 font-black text-[10px] uppercase tracking-widest flex items-center gap-1.5">
+                <p className="text-amber-700 dark:text-amber-400 font-black text-[10px] uppercase tracking-widest flex items-center gap-1.5">
                   <Star size={11} className="fill-current" /> Membre du Parlement européen
                 </p>
                 <h1 className="mt-1 text-2xl font-staatliches uppercase tracking-wide text-foreground dark:text-white leading-tight">
@@ -178,7 +179,7 @@ export default function MepClient({ mep, initialVotes, embedded }: { mep: any; i
                 </h1>
                 <div className="mt-4 space-y-3 text-sm">
                   <div>
-                    <p className="text-[9px] font-black uppercase tracking-widest text-slate-400">Groupe au Parlement européen</p>
+                    <p className="text-[9px] font-black uppercase tracking-widest text-muted-foreground">Groupe au Parlement européen</p>
                     {groupByCode(mep.ep_group_code) ? (
                       <Link href={`/groupes-europeens/${groupByCode(mep.ep_group_code)!.slug}`}
                         className="group/link inline-flex items-start gap-1 font-bold text-foreground dark:text-white hover:text-sky-600 dark:hover:text-sky-400 transition-colors">
@@ -190,7 +191,7 @@ export default function MepClient({ mep, initialVotes, embedded }: { mep: any; i
                     )}
                   </div>
                   <div>
-                    <p className="text-[9px] font-black uppercase tracking-widest text-slate-400">Parti national</p>
+                    <p className="text-[9px] font-black uppercase tracking-widest text-muted-foreground">Parti national</p>
                     <p className="font-bold text-foreground dark:text-white">{mep.national_party || "—"}</p>
                   </div>
                 </div>
@@ -211,19 +212,19 @@ export default function MepClient({ mep, initialVotes, embedded }: { mep: any; i
             <section className="space-y-4">
               {(bio.profession || bio.formation || bio.enfants) && (
                 <div className="flex flex-wrap gap-2">
-                  {bio.profession && <span className="inline-flex items-center gap-2 rounded-full bg-card dark:bg-slate-900 border border-border dark:border-slate-800 px-4 py-2 text-sm font-bold text-slate-700 dark:text-slate-200"><Briefcase size={15} className="text-slate-400" />{bio.profession}</span>}
-                  {bio.formation && <span className="inline-flex items-center gap-2 rounded-full bg-card dark:bg-slate-900 border border-border dark:border-slate-800 px-4 py-2 text-sm font-bold text-slate-700 dark:text-slate-200"><GraduationCap size={16} className="text-slate-400" />{bio.formation}</span>}
-                  {bio.enfants && <span className="inline-flex items-center gap-2 rounded-full bg-card dark:bg-slate-900 border border-border dark:border-slate-800 px-4 py-2 text-sm font-bold text-slate-700 dark:text-slate-200"><Users size={15} className="text-slate-400" />{bio.enfants}</span>}
+                  {bio.profession && <span className="inline-flex items-center gap-2 rounded-full bg-card dark:bg-slate-900 border border-border dark:border-slate-800 px-4 py-2 text-sm font-bold text-slate-700 dark:text-slate-200"><Briefcase size={15} className="text-muted-foreground" />{bio.profession}</span>}
+                  {bio.formation && <span className="inline-flex items-center gap-2 rounded-full bg-card dark:bg-slate-900 border border-border dark:border-slate-800 px-4 py-2 text-sm font-bold text-slate-700 dark:text-slate-200"><GraduationCap size={16} className="text-muted-foreground" />{bio.formation}</span>}
+                  {bio.enfants && <span className="inline-flex items-center gap-2 rounded-full bg-card dark:bg-slate-900 border border-border dark:border-slate-800 px-4 py-2 text-sm font-bold text-slate-700 dark:text-slate-200"><Users size={15} className="text-muted-foreground" />{bio.enfants}</span>}
                 </div>
               )}
 
               <div className="flex items-center justify-between gap-4 rounded-3xl border border-border dark:border-slate-800 bg-card dark:bg-slate-900 p-5">
                 <div>
-                  <p className="text-[9px] font-black uppercase tracking-widest text-slate-400">Intégrité &amp; Transparence</p>
+                  <p className="text-[9px] font-black uppercase tracking-widest text-muted-foreground">Intégrité &amp; Transparence</p>
                   <h3 className="text-lg font-bold text-foreground dark:text-white">Situation judiciaire</h3>
-                  <span className={`text-[10px] font-black uppercase tracking-widest ${legalClean ? "text-emerald-600" : "text-amber-600"}`}>{legalClean ? "Dossier vierge" : "Affaires à consulter"}</span>
+                  <span className={`text-[10px] font-black uppercase tracking-widest ${legalClean ? "text-emerald-700 dark:text-emerald-400" : "text-amber-800 dark:text-amber-400"}`}>{legalClean ? "Dossier vierge" : "Affaires à consulter"}</span>
                 </div>
-                <button onClick={() => setShowLegal(true)} className={`inline-flex items-center gap-2 rounded-2xl border px-5 py-3 text-[10px] font-black uppercase tracking-widest ${legalClean ? "border-emerald-500/20 bg-emerald-500/10 text-emerald-600" : "border-amber-500/20 bg-amber-500/10 text-amber-600"}`}>
+                <button onClick={() => setShowLegal(true)} className={`inline-flex items-center gap-2 rounded-2xl border px-5 py-3 text-[10px] font-black uppercase tracking-widest ${legalClean ? "border-emerald-500/20 bg-emerald-500/10 text-emerald-700 dark:text-emerald-400" : "border-amber-500/20 bg-amber-500/10 text-amber-800 dark:text-amber-400"}`}>
                   <ShieldCheck className="h-3.5 w-3.5" /> Consulter
                 </button>
               </div>
@@ -248,7 +249,7 @@ export default function MepClient({ mep, initialVotes, embedded }: { mep: any; i
                 className="w-full text-left p-8 flex items-center justify-between gap-4 group/header"
               >
                 <h2 className="text-3xl font-staatliches uppercase tracking-tight text-foreground dark:text-white">
-                  Portrait & <span className="text-sky-600">Engagement</span>
+                  Portrait & <span className="text-sky-700 dark:text-sky-400">Engagement</span>
                 </h2>
                 <div className={`w-10 h-10 shrink-0 rounded-full bg-slate-100 dark:bg-slate-800 flex items-center justify-center text-muted-foreground transition-transform duration-500 ${bioOpen ? "rotate-180" : ""}`}>
                   <ChevronDown className="w-5 h-5" />
@@ -300,9 +301,9 @@ export default function MepClient({ mep, initialVotes, embedded }: { mep: any; i
             <section className="rounded-[2.5rem] border border-border dark:border-slate-800 bg-card dark:bg-slate-900 p-8">
               <div className="flex flex-wrap items-center justify-between gap-3 mb-6">
                 <div className="flex items-center gap-3">
-                  <Building2 className="text-amber-600" size={22} />
+                  <Building2 className="text-amber-700 dark:text-amber-400" size={22} />
                   <h2 className="text-3xl font-staatliches uppercase tracking-tight text-foreground dark:text-white">
-                    Votes au <span className="text-amber-600">Parlement européen</span>
+                    Votes au <span className="text-amber-700 dark:text-amber-400">Parlement européen</span>
                   </h2>
                 </div>
                 <div className="inline-flex rounded-xl border border-border dark:border-slate-700 p-1">
@@ -315,13 +316,13 @@ export default function MepClient({ mep, initialVotes, embedded }: { mep: any; i
               {cats.length > 1 && (
                 <div className="mb-6 flex flex-wrap gap-2">
                   <button onClick={() => selectCat(null)}
-                    className={`rounded-full px-3.5 py-1.5 text-[11px] font-black uppercase tracking-wide transition ${category === null ? "bg-amber-600 text-white shadow" : "bg-slate-100 dark:bg-slate-800 text-muted-foreground hover:text-amber-600"}`}>
+                    className={`rounded-full px-3.5 py-1.5 text-[11px] font-black uppercase tracking-wide transition ${category === null ? "bg-amber-700 text-white shadow" : "bg-slate-100 dark:bg-slate-800 text-muted-foreground hover:text-amber-600"}`}>
                     Tous les domaines
                   </button>
                   {cats.map(c => (
                     <button key={c.category} onClick={() => selectCat(c.category)}
-                      className={`rounded-full px-3.5 py-1.5 text-[11px] font-bold transition ${category === c.category ? "bg-amber-600 text-white shadow" : "bg-slate-100 dark:bg-slate-800 text-muted-foreground dark:text-slate-300 hover:text-amber-600"}`}>
-                      {c.category} <span className="opacity-60">· {c.count}</span>
+                      className={`rounded-full px-3.5 py-1.5 text-[11px] font-bold transition ${category === c.category ? "bg-amber-700 text-white shadow" : "bg-slate-100 dark:bg-slate-800 text-muted-foreground dark:text-slate-300 hover:text-amber-600"}`}>
+                      {c.category} <span>· {c.count}</span>
                     </button>
                   ))}
                 </div>
@@ -341,14 +342,14 @@ export default function MepClient({ mep, initialVotes, embedded }: { mep: any; i
                     >
                       <BallotBox vote={POS[v.position] || "ABSTENTION"} size={32} />
                       <div className="min-w-0 flex-1">
-                        <p className="text-[10px] font-black uppercase tracking-widest text-slate-400">
+                        <p className="text-[10px] font-black uppercase tracking-widest text-muted-foreground">
                           {fmtDate(v.voted_at)}{v.reference ? ` · ${v.reference}` : ""}
                         </p>
                         <p className="text-sm font-bold leading-snug text-foreground dark:text-white line-clamp-2">{v.title}</p>
                         {v.category && v.category !== "Autres" && (
                           <span className="mt-1 mr-2 inline-block rounded-full bg-slate-100 dark:bg-slate-700 px-2 py-0.5 text-[9px] font-black uppercase tracking-wide text-muted-foreground dark:text-slate-300">{v.category}</span>
                         )}
-                        <span className="mt-1 inline-flex items-center gap-1 text-[10px] font-black uppercase tracking-widest text-amber-600">
+                        <span className="mt-1 inline-flex items-center gap-1 text-[10px] font-black uppercase tracking-widest text-amber-700 dark:text-amber-400">
                           <Sparkles size={11} /> Comprendre ce vote
                         </span>
                       </div>
@@ -357,7 +358,7 @@ export default function MepClient({ mep, initialVotes, embedded }: { mep: any; i
                           {posLabel[v.position] || v.position}
                         </span>
                         {v.result && (
-                          <span className={`inline-flex items-center gap-1 rounded-full px-2 py-0.5 text-[9px] font-black uppercase tracking-wide ${v.result === "ADOPTED" ? "bg-emerald-500/10 text-emerald-600" : "bg-rose-500/10 text-rose-600"}`}>
+                          <span className={`inline-flex items-center gap-1 rounded-full px-2 py-0.5 text-[9px] font-black uppercase tracking-wide ${v.result === "ADOPTED" ? "bg-emerald-500/10 text-emerald-700 dark:text-emerald-400" : "bg-rose-500/10 text-rose-600"}`}>
                             {v.result === "ADOPTED" ? "Adopté" : "Rejeté"}
                           </span>
                         )}
@@ -380,7 +381,7 @@ export default function MepClient({ mep, initialVotes, embedded }: { mep: any; i
                   {loading ? "Chargement…" : "Voir plus de votes"} <ChevronDown size={14} />
                 </button>
               )}
-              <p className="mt-4 text-[10px] italic text-slate-400">
+              <p className="mt-4 text-[10px] italic text-muted-foreground">
                 {onlyMain ? "Votes principaux (scrutins finaux sur les textes)." : "Tous les scrutins nominaux (y compris amendements)."} Source : Parlement européen via HowTheyVote.eu.
               </p>
             </section>
@@ -417,38 +418,38 @@ export default function MepClient({ mep, initialVotes, embedded }: { mep: any; i
                 <>
                   {exp.subject && (
                     <div>
-                      <p className="text-[10px] font-black uppercase tracking-widest text-amber-600">Le sujet</p>
+                      <p className="text-[10px] font-black uppercase tracking-widest text-amber-700 dark:text-amber-400">Le sujet</p>
                       <p className="mt-1 text-[15px] font-bold leading-relaxed text-foreground dark:text-white">{exp.subject}</p>
                     </div>
                   )}
                   {exp.explanation && (
                     <div>
-                      <p className="text-[10px] font-black uppercase tracking-widest text-slate-400">L'enjeu, expliqué</p>
+                      <p className="text-[10px] font-black uppercase tracking-widest text-muted-foreground">L'enjeu, expliqué</p>
                       <p className="mt-1 text-[15px] leading-relaxed text-slate-700 dark:text-slate-300">{exp.explanation}</p>
                     </div>
                   )}
                   {exp.stakes && (
                     <div className="rounded-2xl bg-amber-50/60 dark:bg-slate-800/60 p-4">
-                      <p className="text-[10px] font-black uppercase tracking-widest text-amber-600">Ce que ça change</p>
+                      <p className="text-[10px] font-black uppercase tracking-widest text-amber-700 dark:text-amber-400">Ce que ça change</p>
                       <p className="mt-1 text-[15px] leading-relaxed text-slate-700 dark:text-slate-300">{exp.stakes}</p>
                     </div>
                   )}
-                  <p className="text-[10px] italic text-slate-400">Explication établie à partir des métadonnées officielles du scrutin. Neutre et factuelle.</p>
+                  <p className="text-[10px] italic text-muted-foreground">Explication établie à partir des métadonnées officielles du scrutin. Neutre et factuelle.</p>
                 </>
               )}
 
               {/* Position PAR GROUPE au Parlement européen (données officielles). */}
               {groupsVote && groupsVote.length > 0 && (
                 <div>
-                  <p className="text-[10px] font-black uppercase tracking-widest text-slate-400">Position des groupes</p>
+                  <p className="text-[10px] font-black uppercase tracking-widest text-muted-foreground">Position des groupes</p>
                   <div className="mt-2 space-y-2">
                     {groupsVote.map((g: any, idx: number) => {
                       const total = (g.for || 0) + (g.against || 0) + (g.abstention || 0) + (g.dnv || 0);
                       const pct = (n: number) => total ? `${(n / total) * 100}%` : "0%";
-                      const verdict = g.position === "FOR" ? { l: "Pour", c: "text-emerald-600" }
-                        : g.position === "AGAINST" ? { l: "Contre", c: "text-rose-600" }
-                        : g.position === "ABSTENTION" ? { l: "Abst.", c: "text-amber-600" }
-                        : { l: "Absent", c: "text-slate-400" };
+                      const verdict = g.position === "FOR" ? { l: "Pour", c: "text-emerald-700 dark:text-emerald-400" }
+                        : g.position === "AGAINST" ? { l: "Contre", c: "text-rose-700 dark:text-rose-400" }
+                        : g.position === "ABSTENTION" ? { l: "Abst.", c: "text-amber-700 dark:text-amber-400" }
+                        : { l: "Absent", c: "text-muted-foreground" };
                       return (
                         <div key={idx} className="flex items-center gap-3">
                           <span className="w-14 shrink-0 text-[11px] font-black uppercase tracking-wide text-slate-700 dark:text-slate-200">{g.code}</span>
@@ -474,7 +475,7 @@ export default function MepClient({ mep, initialVotes, embedded }: { mep: any; i
               )}
 
               {openVote.url && (
-                <a href={openVote.url} target="_blank" rel="noopener noreferrer" className="inline-flex items-center gap-1.5 text-[11px] font-black uppercase tracking-widest text-sky-600 hover:text-sky-500">
+                <a href={openVote.url} target="_blank" rel="noopener noreferrer" className="inline-flex items-center gap-1.5 text-[11px] font-black uppercase tracking-widest text-sky-700 dark:text-sky-400 hover:text-sky-500">
                   <ExternalLink size={13} /> Voir le détail officiel du scrutin
                 </a>
               )}

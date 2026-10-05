@@ -25,7 +25,7 @@ const fmtDate = (d: string | null) =>
 // source = "elysee" (présidence) | "an" (Assemblée via LCP) | "senat" (Public Sénat).
 const CFG = {
   elysee: { fetch: (n: number) => api.getElyseeVideos(n), icon: "bg-rose-50 dark:bg-rose-500/10 text-rose-600 dark:text-rose-300", grad: "from-amber-500 via-orange-500 to-yellow-500", pre: "En ", accent: "vidéo", sub: "Interventions et déclarations du président", external: false, note: "Source : chaîne YouTube officielle de la présidence de la République. Lecture via le lecteur YouTube ; aucune vidéo n'est copiée. Mise à jour quotidienne." },
-  an: { fetch: (n: number) => api.getAnVideos(n), icon: "bg-emerald-50 dark:bg-emerald-500/10 text-emerald-600 dark:text-emerald-300", grad: "from-emerald-500 to-teal-500", pre: "Séances & ", accent: "auditions", sub: "Débats, questions au Gouvernement et auditions — chaîne officielle LCP · Assemblée nationale", external: false, note: "Source : chaîne YouTube officielle LCP · Assemblée nationale. Mise à jour quotidienne." },
+  an: { fetch: (n: number) => api.getAnVideos(n), icon: "bg-emerald-50 dark:bg-emerald-500/10 text-emerald-700 dark:text-emerald-300", grad: "from-emerald-500 to-teal-500", pre: "Séances & ", accent: "auditions", sub: "Débats, questions au Gouvernement et auditions — chaîne officielle LCP · Assemblée nationale", external: false, note: "Source : chaîne YouTube officielle LCP · Assemblée nationale. Mise à jour quotidienne." },
   senat: { fetch: (n: number) => api.getSenatVideos(n), icon: "bg-rose-50 dark:bg-rose-500/10 text-rose-600 dark:text-rose-300", grad: "from-rose-500 to-red-500", pre: "Séances & ", accent: "auditions", sub: "Séances publiques, auditions et travaux de commission — portail officiel videos.senat.fr", external: true, note: "Source : portail officiel videos.senat.fr (séances publiques, auditions, travaux de commission). La vidéo s'ouvre sur le site du Sénat." },
   candidate: { fetch: (_n: number) => Promise.resolve([] as Vid[]), icon: "bg-amber-50 dark:bg-amber-500/10 text-amber-600 dark:text-amber-300", grad: "from-amber-500 to-yellow-500", pre: "Discours & ", accent: "vidéos", sub: "Discours, débats et interviews — chaîne YouTube officielle du candidat", external: false, note: "Source : chaîne YouTube officielle du candidat. Lecture via le lecteur YouTube ; aucune vidéo n'est copiée." },
 } as const;
@@ -84,7 +84,7 @@ export default function VideoFeed({ source = "elysee", candidateId }: { source?:
                 </div>
               </div>
               <div className="p-3">
-                <p className="text-[10px] font-black uppercase tracking-widest text-slate-400">{fmtDate(v.published_at)}{v.description && cfg.external ? ` · ${v.description}` : ""}</p>
+                <p className="text-[10px] font-black uppercase tracking-widest text-muted-foreground">{fmtDate(v.published_at)}{v.description && cfg.external ? ` · ${v.description}` : ""}</p>
                 <p className="mt-0.5 text-sm font-bold leading-snug text-foreground dark:text-white line-clamp-2 transition-colors">{v.title}</p>
               </div>
             </>
@@ -99,7 +99,7 @@ export default function VideoFeed({ source = "elysee", candidateId }: { source?:
       </div>
       </div>
 
-      <p className="text-[10px] text-slate-400/80 italic border-t border-border dark:border-slate-800 pt-4">{cfg.note}</p>
+      <p className="text-[10px] text-muted-foreground italic border-t border-border dark:border-slate-800 pt-4">{cfg.note}</p>
 
       {/* Lecteur monté seulement au clic. */}
       {open && (

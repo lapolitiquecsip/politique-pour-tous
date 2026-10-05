@@ -84,7 +84,7 @@ export default function LegalStatusModal({ isOpen, onClose, deputy }: LegalStatu
                 <div>
                   <p className="text-[10px] font-black text-slate-400 uppercase tracking-[0.3em] mb-1">Dossier Numérisé n°{deputy?.an_id || '---'}</p>
                   <h3 className="text-3xl font-staatliches uppercase tracking-tight text-foreground dark:text-white leading-none">
-                    Historique <span className={isClean ? 'text-emerald-600' : 'text-amber-600'}>Juridique</span>
+                    Historique <span className={isClean ? 'text-emerald-700 dark:text-emerald-400' : 'text-amber-700 dark:text-amber-400'}>Juridique</span>
                   </h3>
                 </div>
               </div>
@@ -110,7 +110,7 @@ export default function LegalStatusModal({ isOpen, onClose, deputy }: LegalStatu
                      <span className={`px-3 py-1 rounded-full text-[10px] font-black uppercase tracking-widest ${isClean ? 'bg-emerald-500 text-white' : 'bg-amber-500 text-white'}`}>
                        {isClean ? 'Vérifié : RAS' : 'Vérifié : À consulter'}
                      </span>
-                     <span className="text-[10px] font-bold text-slate-400 uppercase tracking-widest">Mise à jour : {new Date().toLocaleDateString('fr-FR')}</span>
+                     <span className="text-[10px] font-bold text-muted-foreground uppercase tracking-widest">Mise à jour : {new Date().toLocaleDateString('fr-FR')}</span>
                    </div>
                    <h4 className="text-xl font-bold text-foreground dark:text-white mb-4 italic leading-tight">
                      {isClean 
@@ -177,7 +177,7 @@ export default function LegalStatusModal({ isOpen, onClose, deputy }: LegalStatu
 
                               {/* Invitation au clic (repliée) */}
                               {!isOpen2 && (
-                                <p className="mt-3 text-[10px] font-black uppercase tracking-widest text-amber-600 dark:text-amber-400 flex items-center gap-1">
+                                <p className="mt-3 text-[10px] font-black uppercase tracking-widest text-amber-700 dark:text-amber-400 flex items-center gap-1">
                                   Comprendre cette affaire
                                 </p>
                               )}
@@ -206,7 +206,7 @@ export default function LegalStatusModal({ isOpen, onClose, deputy }: LegalStatu
                     <Search size={20} />
                   </div>
                   <div className="min-w-0">
-                    <p className="text-[10px] font-black text-slate-400 uppercase tracking-widest">Source</p>
+                    <p className="text-[10px] font-black text-muted-foreground uppercase tracking-widest">Source</p>
                     <p className="text-xs font-bold text-slate-700 dark:text-slate-300 flex items-center gap-1 group-hover:text-blue-600">casier-politique.fr <ExternalLink size={12} /></p>
                   </div>
                 </a>
@@ -215,7 +215,7 @@ export default function LegalStatusModal({ isOpen, onClose, deputy }: LegalStatu
                     <FileText size={20} />
                   </div>
                   <div>
-                    <p className="text-[10px] font-black text-slate-400 uppercase tracking-widest">Mise à jour</p>
+                    <p className="text-[10px] font-black text-muted-foreground uppercase tracking-widest">Mise à jour</p>
                     <p className="text-xs font-bold text-slate-700 dark:text-slate-300">Quotidienne, automatique</p>
                   </div>
                 </div>

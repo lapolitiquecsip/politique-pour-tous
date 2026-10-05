@@ -93,7 +93,7 @@ export const DeputyCard = memo(function DeputyCard({ deputy }: { deputy: Deputy 
         {deputy.department} • {deputy.constituencyNumber}ème circ.
       </p>
       
-      <div className="absolute top-4 right-4 text-slate-300 opacity-0 group-hover:opacity-100 group-hover:text-blue-500 transition-all transform translate-x-2 group-hover:translate-x-0">
+      <div className="absolute top-4 right-4 text-muted-foreground opacity-0 group-hover:opacity-100 group-hover:text-blue-500 transition-all transform translate-x-2 group-hover:translate-x-0">
         <ChevronRight className="w-6 h-6" />
       </div>
     </Link>

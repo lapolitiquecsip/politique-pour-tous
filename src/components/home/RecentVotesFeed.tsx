@@ -36,7 +36,7 @@ export default function RecentVotesFeed() {
     return () => { active = false; };
   }, []);
 
-  if (!votes) return <div className="flex justify-center py-12"><Loader2 className="animate-spin text-red-600" /></div>;
+  if (!votes) return <div className="flex justify-center py-12"><Loader2 className="animate-spin text-red-700 dark:text-red-400" /></div>;
   if (votes.length === 0) return null;
 
   const scroll = (dir: number) => scroller.current?.scrollBy({ left: dir * 340, behavior: "smooth" });
@@ -50,8 +50,8 @@ export default function RecentVotesFeed() {
             <button key={v.id} onClick={() => setOpen(v)}
               className="group w-[300px] shrink-0 snap-start rounded-[2rem] border border-border bg-card p-6 text-left shadow-sm transition hover:-translate-y-1 hover:shadow-xl dark:border-slate-800 dark:bg-slate-900">
               <div className="flex items-start justify-between gap-3">
-                <span className="text-xs font-bold text-slate-400">{frDate(v.date_scrutin)}</span>
-                <span className={`inline-flex items-center gap-1 rounded-full px-3 py-1 text-[10px] font-black uppercase tracking-widest text-white ${adopted ? "bg-emerald-500" : "bg-rose-500"}`}>
+                <span className="text-xs font-bold text-muted-foreground">{frDate(v.date_scrutin)}</span>
+                <span className={`inline-flex items-center gap-1 rounded-full px-3 py-1 text-[10px] font-black uppercase tracking-widest text-white ${adopted ? "bg-emerald-700" : "bg-rose-600"}`}>
                   {adopted ? <CheckCircle2 size={12} /> : <XCircle size={12} />}{adopted ? "Adopté" : "Rejeté"}
                 </span>
               </div>
@@ -64,7 +64,7 @@ export default function RecentVotesFeed() {
 
       <div className="mt-6 flex items-center justify-center gap-4">
         <button onClick={() => scroll(-1)} className="flex h-11 w-11 items-center justify-center rounded-full border border-border bg-card text-muted-foreground shadow-sm transition hover:border-red-300 hover:text-red-600 dark:border-slate-700 dark:bg-slate-900"><ChevronLeft /></button>
-        <span className="text-[11px] font-black uppercase tracking-widest text-slate-400">Votes solennels · Assemblée nationale</span>
+        <span className="text-[11px] font-black uppercase tracking-widest text-muted-foreground">Votes solennels · Assemblée nationale</span>
         <button onClick={() => scroll(1)} className="flex h-11 w-11 items-center justify-center rounded-full border border-border bg-card text-muted-foreground shadow-sm transition hover:border-red-300 hover:text-red-600 dark:border-slate-700 dark:bg-slate-900"><ChevronRight /></button>
       </div>
 
@@ -89,21 +89,21 @@ export default function RecentVotesFeed() {
                   const [why, detailed] = String(open.why_it_matters || "").split("|||DETAILED|||").map(s => s.trim());
                   const hasContent = open.summary || why || detailed;
                   const enDetail = detailed && detailed !== "Détails supplémentaires non disponibles."
-                    ? <div><p className="text-[10px] font-black uppercase tracking-widest text-slate-400">En détail</p><p className="mt-1 text-[15px] leading-relaxed text-slate-700 dark:text-slate-300">{detailed}</p></div>
+                    ? <div><p className="text-[10px] font-black uppercase tracking-widest text-muted-foreground">En détail</p><p className="mt-1 text-[15px] leading-relaxed text-slate-700 dark:text-slate-300">{detailed}</p></div>
                     : null;
                   // Un vote sur l'ensemble d'un texte a son analyse détaillée (abonnés) ;
                   // les autres votes solennels (motions…) gardent leur « En détail ».
                   const surUnTexte = /^l['’]ensemble/i.test(open.title || "");
                   return (
                     <>
-                      {open.summary && <div><p className="text-[10px] font-black uppercase tracking-widest text-slate-400">De quoi s'agit-il</p><p className="mt-1 text-[15px] leading-relaxed text-slate-700 dark:text-slate-300">{open.summary}</p></div>}
-                      {why && <div className="rounded-2xl bg-red-50/60 p-4 dark:bg-slate-800/60"><p className="text-[10px] font-black uppercase tracking-widest text-red-600">Pourquoi c'est important</p><p className="mt-1 text-[15px] leading-relaxed text-slate-700 dark:text-slate-300">{why}</p></div>}
+                      {open.summary && <div><p className="text-[10px] font-black uppercase tracking-widest text-muted-foreground">De quoi s'agit-il</p><p className="mt-1 text-[15px] leading-relaxed text-slate-700 dark:text-slate-300">{open.summary}</p></div>}
+                      {why && <div className="rounded-2xl bg-red-50/60 p-4 dark:bg-slate-800/60"><p className="text-[10px] font-black uppercase tracking-widest text-red-700 dark:text-red-400">Pourquoi c'est important</p><p className="mt-1 text-[15px] leading-relaxed text-slate-700 dark:text-slate-300">{why}</p></div>}
                       {surUnTexte ? <AnalyseApprofondie scrutinId={open.id} sujet={cleanTitle(open)} repli={enDetail || undefined} /> : enDetail}
                       {!hasContent && <p className="rounded-2xl bg-muted p-4 text-[14px] italic leading-relaxed text-muted-foreground dark:bg-slate-800/60">Le décryptage de ce vote est en cours de génération. Revenez bientôt pour l'explication complète.</p>}
                     </>
                   );
                 })()}
-                {open.dossier_url && <a href={open.dossier_url} target="_blank" rel="noopener noreferrer" className="inline-flex items-center gap-1.5 text-[11px] font-black uppercase tracking-widest text-red-600 hover:text-red-500"><ExternalLink size={13} /> Voir le scrutin officiel</a>}
+                {open.dossier_url && <a href={open.dossier_url} target="_blank" rel="noopener noreferrer" className="inline-flex items-center gap-1.5 text-[11px] font-black uppercase tracking-widest text-red-700 dark:text-red-400 hover:text-red-500"><ExternalLink size={13} /> Voir le scrutin officiel</a>}
               </div>
             </motion.div>
           </motion.div>

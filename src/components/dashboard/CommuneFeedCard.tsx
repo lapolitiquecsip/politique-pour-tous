@@ -93,7 +93,7 @@ export default function CommuneFeedCard() {
       <div className="space-y-3">
         <div className="flex items-center justify-between gap-3 rounded-[2rem] border border-border bg-card p-5">
           <div className="flex min-w-0 items-center gap-3">
-            <span className="flex h-11 w-11 shrink-0 items-center justify-center rounded-2xl bg-blue-50 text-blue-600">
+            <span className="flex h-11 w-11 shrink-0 items-center justify-center rounded-2xl bg-blue-50 dark:bg-blue-500/10 text-blue-700 dark:text-blue-300">
               <MapPin size={20} />
             </span>
             <div className="min-w-0">

@@ -10,18 +10,18 @@ import { useState } from "react";
 import { ChevronDown } from "lucide-react";
 
 const BIO_FIELDS: Array<[string, string, string]> = [
-  ["parcours", "Parcours politique", "text-red-600"],
-  ["realisations", "Réalisations concrètes", "text-teal-600"],
-  ["jobs", "Métiers & jobs", "text-cyan-600"],
-  ["etudes", "Études", "text-blue-600"],
-  ["parents", "Parents", "text-amber-600"],
-  ["famille", "Famille", "text-rose-600"],
-  ["positions", "Positions", "text-emerald-600"],
-  ["publications", "Publications & écrits", "text-fuchsia-600"],
-  ["passions", "Passions", "text-lime-600"],
-  ["faits_marquants", "Faits marquants", "text-yellow-600"],
+  ["parcours", "Parcours politique", "text-red-700 dark:text-red-400"],
+  ["realisations", "Réalisations concrètes", "text-teal-700 dark:text-teal-400"],
+  ["jobs", "Métiers & jobs", "text-cyan-700 dark:text-cyan-400"],
+  ["etudes", "Études", "text-blue-700 dark:text-blue-400"],
+  ["parents", "Parents", "text-amber-700 dark:text-amber-400"],
+  ["famille", "Famille", "text-rose-700 dark:text-rose-400"],
+  ["positions", "Positions", "text-emerald-700 dark:text-emerald-400"],
+  ["publications", "Publications & écrits", "text-fuchsia-700 dark:text-fuchsia-400"],
+  ["passions", "Passions", "text-lime-700 dark:text-lime-400"],
+  ["faits_marquants", "Faits marquants", "text-yellow-700 dark:text-yellow-400"],
   ["controverses", "Controverses", "text-slate-700 dark:text-slate-300"],
-  ["chronologie", "Chronologie", "text-indigo-600"],
+  ["chronologie", "Chronologie", "text-indigo-700 dark:text-indigo-400"],
 ];
 
 const NUM_RE = /(\d+(?:[.,]\d+)?\s?%|\d[\d .]*\s?(?:€|milliards?|millions?|Md€|M€))/gi;
@@ -86,9 +86,9 @@ export default function StructuredBio({ bio, fallbackText }: { bio: any; fallbac
                   <span className="flex items-center gap-2.5 min-w-0">
                     <span className={`h-5 w-1 shrink-0 rounded-full ${bar}`} />
                     <span className={`font-staatliches text-lg uppercase leading-none ${color}`}>{label}</span>
-                    <span className="text-[11px] font-bold text-slate-400">({points.length})</span>
+                    <span className="text-[11px] font-bold text-muted-foreground">({points.length})</span>
                   </span>
-                  <ChevronDown size={18} className={`shrink-0 text-slate-400 transition-transform ${isOpen ? "rotate-180" : ""}`} />
+                  <ChevronDown size={18} className={`shrink-0 text-muted-foreground transition-transform ${isOpen ? "rotate-180" : ""}`} />
                 </button>
                 {isOpen && <div className="px-4 pb-4"><PointsList points={points} sectionKey={key} recentYear={recentYear} /></div>}
               </div>
@@ -119,5 +119,5 @@ export default function StructuredBio({ bio, fallbackText }: { bio: any; fallbac
       </div>
     );
   }
-  return <p className="text-sm italic text-slate-400">Biographie détaillée en cours de rédaction.</p>;
+  return <p className="text-sm italic text-muted-foreground">Biographie détaillée en cours de rédaction.</p>;
 }

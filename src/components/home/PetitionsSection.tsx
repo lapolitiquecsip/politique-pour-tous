@@ -68,10 +68,10 @@ function PetitionCard({ petition, idx }: { petition: Petition, idx: number }) {
         <div className="space-y-3 sm:space-y-4 mt-auto">
           <div className="flex justify-between text-[11px] font-black uppercase tracking-wider mb-2">
             <div className="flex items-center gap-2">
-              <Users size={14} className="text-slate-400" />
+              <Users size={14} className="text-muted-foreground" />
               <span>{petition.signatures.toLocaleString()} Votants</span>
             </div>
-            <span className="text-blue-600 dark:text-blue-400">{cappedPercentage}% du palier</span>
+            <span className="text-blue-700 dark:text-blue-400">{cappedPercentage}% du palier</span>
           </div>
 
           <div className="h-2 bg-slate-100 dark:bg-slate-800 rounded-full overflow-hidden">
@@ -148,7 +148,7 @@ export default function PetitionsSection() {
                 <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-blue-400 opacity-75"></span>
                 <span className="relative inline-flex rounded-full h-2 w-2 bg-blue-500"></span>
               </span>
-              <span className="text-xs font-black uppercase tracking-widest text-blue-600 dark:text-blue-400">Démocratie Participative</span>
+              <span className="text-xs font-black uppercase tracking-widest text-blue-700 dark:text-blue-400">Démocratie Participative</span>
             </div>
             <h2 className="text-5xl md:text-7xl font-staatliches uppercase tracking-tighter leading-none mb-6">
               Le pouvoir <span className="bg-gradient-to-r from-blue-600 to-indigo-600 bg-clip-text text-transparent">citoyen</span>
@@ -164,14 +164,14 @@ export default function PetitionsSection() {
             whileInView={{ opacity: 1, x: 0 }}
             className="bg-card dark:bg-slate-900 p-6 rounded-[2rem] border border-blue-100 dark:border-slate-800 shadow-xl shadow-blue-500/5 dark:shadow-none max-w-sm"
           >
-            <div className="flex items-center gap-3 mb-4 text-blue-600 dark:text-blue-400">
+            <div className="flex items-center gap-3 mb-4 text-blue-700 dark:text-blue-400">
               <Info size={20} />
               <h4 className="text-sm font-black uppercase tracking-widest">Comment ça marche ?</h4>
             </div>
             <ul className="space-y-4">
               <li className="flex gap-3 items-start">
                 <div className="w-5 h-5 rounded-full bg-blue-100 dark:bg-blue-950/50 flex items-center justify-center shrink-0 mt-0.5">
-                  <CheckCircle2 size={12} className="text-blue-600 dark:text-blue-400" />
+                  <CheckCircle2 size={12} className="text-blue-700 dark:text-blue-400" />
                 </div>
                 <p className="text-xs text-muted-foreground dark:text-slate-400 leading-relaxed font-semibold">
                   <span className="text-foreground dark:text-slate-100 font-black">100 000 signatures :</span> La pétition est examinée par une commission de l&apos;Assemblée.
@@ -179,7 +179,7 @@ export default function PetitionsSection() {
               </li>
               <li className="flex gap-3 items-start">
                 <div className="w-5 h-5 rounded-full bg-indigo-100 dark:bg-indigo-950/50 flex items-center justify-center shrink-0 mt-0.5">
-                  <AlertCircle size={12} className="text-indigo-600 dark:text-indigo-400" />
+                  <AlertCircle size={12} className="text-indigo-700 dark:text-indigo-400" />
                 </div>
                 <p className="text-xs text-muted-foreground dark:text-slate-400 leading-relaxed font-semibold">
                   <span className="text-foreground dark:text-slate-100 font-black">500 000 signatures :</span> Elle peut faire l&apos;objet d&apos;un débat obligatoire au Parlement.
@@ -193,13 +193,13 @@ export default function PetitionsSection() {
         {loading ? (
           <div className="flex flex-col items-center justify-center py-20 gap-4">
             <Loader2 className="animate-spin text-blue-500 dark:text-blue-400" size={40} />
-            <p className="text-sm font-black uppercase tracking-widest text-slate-400 dark:text-slate-500">Récupération des pétitions en cours...</p>
+            <p className="text-sm font-black uppercase tracking-widest text-slate-400 dark:text-slate-400">Récupération des pétitions en cours...</p>
           </div>
         ) : (
           <div className="space-y-16">
             {[
-              { titre: "Les plus mobilisées", teinte: "text-blue-600 dark:text-blue-400", liste: mobilisees },
-              { titre: "Dernières déposées par les citoyens", teinte: "text-indigo-600 dark:text-indigo-400", liste: recentes },
+              { titre: "Les plus mobilisées", teinte: "text-blue-700 dark:text-blue-400", liste: mobilisees },
+              { titre: "Dernières déposées par les citoyens", teinte: "text-indigo-700 dark:text-indigo-400", liste: recentes },
             ].map(rail => (
               <div key={rail.titre}>
                 <div className="flex items-center gap-4 mb-8">
@@ -207,7 +207,7 @@ export default function PetitionsSection() {
                   <h3 className={`text-center text-xl font-staatliches uppercase tracking-widest italic ${rail.teinte}`}>
                     {rail.titre}
                     {rail.liste.length > 0 && (
-                      <span className="ml-2 not-italic opacity-50">({rail.liste.length})</span>
+                      <span className="ml-2 not-italic opacity-75">({rail.liste.length})</span>
                     )}
                   </h3>
                   <div className="h-px flex-1 bg-slate-200 dark:bg-slate-800" />
@@ -243,7 +243,7 @@ export default function PetitionsSection() {
       )}
 
         <div className="mt-16 text-center">
-          <p className="text-xs font-bold text-slate-400 uppercase tracking-widest mb-4">Portail Officiel</p>
+          <p className="text-xs font-bold text-muted-foreground uppercase tracking-widest mb-4">Portail Officiel</p>
           <a 
             href="https://petitions.assemblee-nationale.fr/initiatives"
             target="_blank"

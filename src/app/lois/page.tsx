@@ -16,7 +16,7 @@ export default function LawsPage() {
         
         {/* Law-themed Icon (Faded Gavel) */}
         <div className="absolute top-1/2 right-[10%] -translate-y-1/2 z-0 opacity-[0.03] select-none pointer-events-none">
-          <svg viewBox="0 0 24 24" className="w-[500px] h-[500px] text-red-900 fill-current">
+          <svg viewBox="0 0 24 24" className="w-[500px] h-[500px] text-red-900 dark:text-red-300 fill-current">
             <path d="M7 21q-.825 0-1.412-.587Q5 19.825 5 19V6q0-.825.588-1.412Q6.175 4 7 4h10q.825 0 1.413.588Q19 5.175 19 6v13q0 .825-.587 1.413Q17.825 21 17 21Zm0-2h10V6H7v13Zm2-10h6V7H9Zm0 4h6v-2H9Zm0 4h6v-2H9ZM7 19V6v13Z"/>
           </svg>
         </div>
@@ -41,7 +41,7 @@ export default function LawsPage() {
             {/* Action Badge */}
             <div className="flex items-center gap-3 mb-10 px-6 py-2 bg-muted border border-border rounded-full shadow-sm">
               <div className="w-2.5 h-2.5 bg-red-600 rounded-full animate-pulse" />
-              <span className="text-[10px] font-black uppercase tracking-[0.2em] text-red-600">Action Législative</span>
+              <span className="text-[10px] font-black uppercase tracking-[0.2em] text-red-700 dark:text-red-400">Action Législative</span>
             </div>
 
             <h1 className="text-6xl md:text-[8.5rem] font-staatliches uppercase tracking-tight leading-none mb-10">

@@ -18,13 +18,13 @@ function HL({ text }: { text: string }) {
 }
 function secStyle(header: string) {
   const h = header.toLowerCase();
-  if (/vote|scrutin/.test(h)) return { Icon: CheckCircle2, c: "text-emerald-600", bg: "bg-emerald-50 dark:bg-emerald-500/10" };
+  if (/vote|scrutin/.test(h)) return { Icon: CheckCircle2, c: "text-emerald-700 dark:text-emerald-400", bg: "bg-emerald-50 dark:bg-emerald-500/10" };
   if (/limite|réserve/.test(h)) return { Icon: AlertTriangle, c: "text-muted-foreground", bg: "bg-muted dark:bg-slate-800" };
-  if (/contexte|objectif|objet|mesure|s'agit/.test(h)) return { Icon: Target, c: "text-amber-600", bg: "bg-amber-50 dark:bg-amber-500/10" };
-  if (/procédure|navette|étape|calendrier/.test(h)) return { Icon: GitBranch, c: "text-blue-600", bg: "bg-blue-50 dark:bg-blue-500/10" };
-  if (/amendement/.test(h)) return { Icon: Pencil, c: "text-fuchsia-600", bg: "bg-fuchsia-50 dark:bg-fuchsia-500/10" };
-  if (/important|pourquoi|enjeu/.test(h)) return { Icon: HelpCircle, c: "text-blue-600", bg: "bg-blue-50 dark:bg-blue-500/10" };
-  if (/détail|detail/.test(h)) return { Icon: FileText, c: "text-amber-600", bg: "bg-amber-50 dark:bg-amber-500/10" };
+  if (/contexte|objectif|objet|mesure|s'agit/.test(h)) return { Icon: Target, c: "text-amber-700 dark:text-amber-400", bg: "bg-amber-50 dark:bg-amber-500/10" };
+  if (/procédure|navette|étape|calendrier/.test(h)) return { Icon: GitBranch, c: "text-blue-700 dark:text-blue-400", bg: "bg-blue-50 dark:bg-blue-500/10" };
+  if (/amendement/.test(h)) return { Icon: Pencil, c: "text-fuchsia-700 dark:text-fuchsia-400", bg: "bg-fuchsia-50 dark:bg-fuchsia-500/10" };
+  if (/important|pourquoi|enjeu/.test(h)) return { Icon: HelpCircle, c: "text-blue-700 dark:text-blue-400", bg: "bg-blue-50 dark:bg-blue-500/10" };
+  if (/détail|detail/.test(h)) return { Icon: FileText, c: "text-amber-700 dark:text-amber-400", bg: "bg-amber-50 dark:bg-amber-500/10" };
   return { Icon: Info, c: "text-muted-foreground", bg: "bg-muted dark:bg-slate-800" };
 }
 // Carte de section : icône + en-tête + corps avec chiffres surlignés.
@@ -102,7 +102,7 @@ export default function AdoptedTextsFeed() {
     return () => { active = false; };
   }, []);
 
-  if (!items) return <div className="flex justify-center py-16"><Loader2 className="animate-spin text-blue-600" /></div>;
+  if (!items) return <div className="flex justify-center py-16"><Loader2 className="animate-spin text-blue-700 dark:text-blue-400" /></div>;
   if (items.length === 0) return null;
 
   // Trois semaines sans vote ne s'expliquent que par l'intersession : la seule
@@ -115,7 +115,7 @@ export default function AdoptedTextsFeed() {
     <section className="mx-auto max-w-7xl px-4">
       <div className="mb-6">
         <h2 className="text-3xl font-staatliches uppercase tracking-tight text-foreground dark:text-white md:text-4xl">
-          Derniers textes <span className="text-blue-600">adoptés par l'Assemblée</span>
+          Derniers textes <span className="text-blue-700 dark:text-blue-400">adoptés par l'Assemblée</span>
         </h2>
         <p className="mt-1 text-muted-foreground">Chaque vote solennel sur l'ensemble d'un texte : l'issue, le vote de chaque parti, et ce qui se passe ensuite.</p>
         {horsSession && (
@@ -147,8 +147,8 @@ export default function AdoptedTextsFeed() {
             <button key={v.id} onClick={() => setOpen(v)}
               className="group flex w-[82vw] shrink-0 flex-col rounded-[2rem] border border-border bg-card p-6 text-left shadow-sm transition hover:-translate-y-1 hover:shadow-xl dark:border-slate-800 dark:bg-slate-900 sm:w-[23rem]">
               <div className="flex items-start justify-between gap-3">
-                <span className="text-xs font-bold text-slate-400">{frDate(v.date_scrutin)}</span>
-                <span className={`inline-flex items-center gap-1 rounded-full px-3 py-1 text-[10px] font-black uppercase tracking-widest text-white ${adopted ? "bg-emerald-500" : "bg-rose-500"}`}>
+                <span className="text-xs font-bold text-muted-foreground">{frDate(v.date_scrutin)}</span>
+                <span className={`inline-flex items-center gap-1 rounded-full px-3 py-1 text-[10px] font-black uppercase tracking-widest text-white ${adopted ? "bg-emerald-700" : "bg-rose-600"}`}>
                   {adopted ? <CheckCircle2 size={12} /> : <XCircle size={12} />}{adopted ? "Adopté" : "Rejeté"}
                 </span>
               </div>
@@ -166,13 +166,13 @@ export default function AdoptedTextsFeed() {
               <div className="mt-4">
                 <VoteBar pour={v.pour || 0} contre={v.contre || 0} abst={v.abstention || 0} />
                 <div className="mt-1.5 flex justify-between text-[11px] font-bold">
-                  <span className="text-emerald-600">{v.pour ?? 0} pour</span>
-                  <span className="text-rose-600">{v.contre ?? 0} contre</span>
-                  <span className="text-slate-400">{v.abstention ?? 0} abst.</span>
+                  <span className="text-emerald-700 dark:text-emerald-400">{v.pour ?? 0} pour</span>
+                  <span className="text-rose-700 dark:text-rose-400">{v.contre ?? 0} contre</span>
+                  <span className="text-muted-foreground">{v.abstention ?? 0} abst.</span>
                 </div>
               </div>
               {groups.length > 0 && (
-                <span className="mt-4 text-[11px] font-black uppercase tracking-widest text-blue-600">Voir le vote des {groups.length} partis →</span>
+                <span className="mt-4 text-[11px] font-black uppercase tracking-widest text-blue-700 dark:text-blue-400">Voir le vote des {groups.length} partis →</span>
               )}
             </button>
           );
@@ -217,26 +217,26 @@ export default function AdoptedTextsFeed() {
                 })()}
 
                 <div className="pt-2">
-                  <p className="text-[10px] font-black uppercase tracking-widest text-slate-400">Le vote de chaque parti</p>
+                  <p className="text-[10px] font-black uppercase tracking-widest text-muted-foreground">Le vote de chaque parti</p>
                   <div className="mt-3 space-y-2.5">
                     {(open.group_results || []).slice().sort((a: any, b: any) => (b.total || 0) - (a.total || 0)).map((g: any) => (
                       <div key={g.group_id} className="flex items-center gap-3">
                         <span className="w-32 shrink-0 truncate text-sm font-bold text-slate-700 dark:text-slate-200" title={g.group_label}>{g.group_label}</span>
                         <VoteBar pour={g.pour} contre={g.contre} abst={g.abstention} className="flex-1" />
                         <span className="w-24 shrink-0 text-right text-[11px] font-bold tabular-nums">
-                          <span className="text-emerald-600">{g.pour}</span> · <span className="text-rose-600">{g.contre}</span> · <span className="text-slate-400">{g.abstention}</span>
+                          <span className="text-emerald-700 dark:text-emerald-400">{g.pour}</span> · <span className="text-rose-700 dark:text-rose-400">{g.contre}</span> · <span className="text-muted-foreground">{g.abstention}</span>
                         </span>
                       </div>
                     ))}
                   </div>
-                  <div className="mt-3 flex gap-4 text-[10px] font-black uppercase tracking-widest text-slate-400">
+                  <div className="mt-3 flex gap-4 text-[10px] font-black uppercase tracking-widest text-muted-foreground">
                     <span className="flex items-center gap-1"><span className="h-2 w-2 rounded-full bg-emerald-500" />Pour</span>
                     <span className="flex items-center gap-1"><span className="h-2 w-2 rounded-full bg-rose-500" />Contre</span>
                     <span className="flex items-center gap-1"><span className="h-2 w-2 rounded-full bg-slate-300 dark:bg-slate-600" />Abstention</span>
                   </div>
                 </div>
 
-                {open.dossier_url && <a href={open.dossier_url} target="_blank" rel="noopener noreferrer" className="inline-flex items-center gap-1.5 text-[11px] font-black uppercase tracking-widest text-blue-600 hover:text-blue-500"><ExternalLink size={13} /> Voir le scrutin officiel</a>}
+                {open.dossier_url && <a href={open.dossier_url} target="_blank" rel="noopener noreferrer" className="inline-flex items-center gap-1.5 text-[11px] font-black uppercase tracking-widest text-blue-700 dark:text-blue-400 hover:text-blue-500"><ExternalLink size={13} /> Voir le scrutin officiel</a>}
               </div>
             </motion.div>
           </motion.div>

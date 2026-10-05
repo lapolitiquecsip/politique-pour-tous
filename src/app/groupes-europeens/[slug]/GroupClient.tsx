@@ -29,7 +29,7 @@ export default function GroupClient({ params }: { params: Promise<{ slug: string
       <main className="min-h-screen bg-muted dark:bg-slate-950 flex items-center justify-center p-8">
         <div className="text-center">
           <p className="text-lg font-bold text-slate-700 dark:text-slate-200">Groupe introuvable.</p>
-          <Link href="/deputes?mode=meps" className="mt-4 inline-flex items-center gap-2 text-sm font-black uppercase tracking-widest text-amber-600">
+          <Link href="/deputes?mode=meps" className="mt-4 inline-flex items-center gap-2 text-sm font-black uppercase tracking-widest text-amber-700 dark:text-amber-400">
             <ArrowLeft size={14} /> Voir les eurodéputés
           </Link>
         </div>
@@ -80,7 +80,7 @@ export default function GroupClient({ params }: { params: Promise<{ slug: string
 
         {/* Positionnement gauche-droite */}
         <section className="rounded-[2rem] border border-border dark:border-slate-800 bg-card dark:bg-slate-900 p-6">
-          <p className="text-[10px] font-black uppercase tracking-widest text-slate-400 mb-3">Positionnement politique</p>
+          <p className="text-[10px] font-black uppercase tracking-widest text-muted-foreground mb-3">Positionnement politique</p>
           <div className="relative h-3 rounded-full bg-gradient-to-r from-rose-500 via-amber-300 to-blue-600">
             <div
               className="absolute -top-1.5 h-6 w-6 -translate-x-1/2 rounded-full border-4 border-white dark:border-slate-900 shadow-lg"
@@ -124,7 +124,7 @@ export default function GroupClient({ params }: { params: Promise<{ slug: string
             <div className="flex flex-wrap gap-2">
               {parties.map(([p, n]) => (
                 <span key={p} className="inline-flex items-center gap-2 rounded-full border border-border dark:border-slate-700 bg-muted dark:bg-slate-800 px-4 py-2 text-sm font-bold text-slate-700 dark:text-slate-200">
-                  {p} <span className="text-[11px] font-black text-slate-400">· {n}</span>
+                  {p} <span className="text-[11px] font-black text-muted-foreground">· {n}</span>
                 </span>
               ))}
             </div>
@@ -134,7 +134,7 @@ export default function GroupClient({ params }: { params: Promise<{ slug: string
         {/* Eurodéputés français du groupe */}
         <section className="rounded-[2.5rem] border border-border dark:border-slate-800 bg-card dark:bg-slate-900 p-8">
           <div className="flex items-center gap-3 mb-6">
-            <Star className="text-amber-600 fill-current" size={20} />
+            <Star className="text-amber-700 dark:text-amber-400 fill-current" size={20} />
             <h2 className="text-2xl font-staatliches uppercase tracking-tight text-foreground dark:text-white">
               Les {loading ? "" : meps.length} eurodéputé·es français
             </h2>
@@ -175,7 +175,7 @@ function Stat({ icon, label, value, sub, small }: { icon: React.ReactNode; label
     <div className="p-5">
       <p className="flex items-center gap-1.5 text-[9px] font-black uppercase tracking-widest text-slate-400">{icon}{label}</p>
       <p className={`mt-1 font-staatliches uppercase tracking-wide text-foreground dark:text-white ${small ? "text-lg" : "text-3xl"}`}>{value}</p>
-      {sub && <p className="text-[10px] font-bold text-slate-400 leading-tight">{sub}</p>}
+      {sub && <p className="text-[10px] font-bold text-muted-foreground leading-tight">{sub}</p>}
     </div>
   );
 }

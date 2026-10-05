@@ -85,7 +85,7 @@ export default function SenatorClient() {
         <div className="flex gap-2">
            <button 
              onClick={() => setSelectedDept(null)}
-             className={`px-6 py-4 rounded-2xl font-semibold transition-all ${!selectedDept ? 'bg-amber-600 text-white shadow-lg' : 'bg-slate-100 dark:bg-slate-500/10 text-muted-foreground hover:bg-slate-200'}`}
+             className={`px-6 py-4 rounded-2xl font-semibold transition-all ${!selectedDept ? 'bg-amber-700 text-white shadow-lg' : 'bg-slate-100 dark:bg-slate-500/10 text-muted-foreground hover:bg-slate-200'}`}
            >
              Tous
            </button>
@@ -97,7 +97,7 @@ export default function SenatorClient() {
         <div className="bg-card rounded-3xl p-6 shadow-sm border border-border h-full min-h-[500px] relative overflow-hidden">
           <div className="flex justify-between items-center mb-6">
             <h2 className="text-xl font-bold flex items-center gap-3">
-              <MapIcon className="w-6 h-6 text-amber-600" />
+              <MapIcon className="w-6 h-6 text-amber-700 dark:text-amber-400" />
               Répartition par département
             </h2>
             {selectedDept && (
@@ -139,7 +139,7 @@ export default function SenatorClient() {
         <div className="space-y-6 relative min-h-[600px]">
           <div className="flex items-center justify-between mb-2 px-2">
             <h2 className="text-xl font-bold flex items-center gap-3">
-              <Users className="w-6 h-6 text-amber-600" />
+              <Users className="w-6 h-6 text-amber-700 dark:text-amber-400" />
               {filteredSenators.length} Sénateurs trouvés
             </h2>
           </div>

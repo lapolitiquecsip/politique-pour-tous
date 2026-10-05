@@ -82,7 +82,7 @@ const ETAPES: Etape[] = [
 export default function ParcoursLoi() {
   return (
     <div className="mt-3 rounded-xl border border-border bg-slate-50/70 p-3 dark:border-slate-800 dark:bg-slate-800/40">
-      <p className="mb-3 text-[10px] font-black uppercase tracking-widest text-slate-400">
+      <p className="mb-3 text-[10px] font-black uppercase tracking-widest text-muted-foreground">
         Le chemin complet d&apos;une loi
       </p>
 

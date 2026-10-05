@@ -21,9 +21,9 @@ export default function RemunerationInfo({
         <div className="flex items-center gap-2 text-[10px] font-black uppercase tracking-widest text-amber-700 dark:text-amber-300">
           <Wallet size={13} /> Rémunération du maire
         </div>
-        <p className="mt-1.5 text-2xl font-black text-foreground dark:text-white">{fmtEurMonth(r.gross)} <span className="text-sm font-bold text-slate-400">brut</span></p>
+        <p className="mt-1.5 text-2xl font-black text-foreground dark:text-white">{fmtEurMonth(r.gross)} <span className="text-sm font-bold text-muted-foreground">brut</span></p>
         <p className="mt-0.5 text-[11px] font-bold text-muted-foreground">Indemnité de fonction, versée chaque mois.</p>
-        <a href={MAYOR_INDEMNITY_SOURCE_URL} target="_blank" rel="noopener noreferrer" className="mt-2 inline-flex items-center gap-1 text-[9px] font-black uppercase tracking-widest text-amber-600 hover:text-amber-700">
+        <a href={MAYOR_INDEMNITY_SOURCE_URL} target="_blank" rel="noopener noreferrer" className="mt-2 inline-flex items-center gap-1 text-[9px] font-black uppercase tracking-widest text-amber-700 dark:text-amber-400 hover:text-amber-700">
           Source officielle <ExternalLink size={9} />
         </a>
       </div>
@@ -35,9 +35,9 @@ export default function RemunerationInfo({
       <div className="flex items-center gap-2 text-[10px] font-black uppercase tracking-widest text-muted-foreground">
         <Wallet size={13} /> Rémunération
       </div>
-      <p className="mt-1 md:mt-1.5 text-lg md:text-2xl font-black text-foreground dark:text-white">{fmtEurMonth(p.gross)} <span className="text-sm font-bold text-slate-400">brut</span></p>
+      <p className="mt-1 md:mt-1.5 text-lg md:text-2xl font-black text-foreground dark:text-white">{fmtEurMonth(p.gross)} <span className="text-sm font-bold text-muted-foreground">brut</span></p>
       <p className="mt-0.5 text-[11px] font-bold text-muted-foreground">≈ {fmtEurMonth(p.net)} net avant impôt.</p>
-      <a href={p.sourceUrl} target="_blank" rel="noopener noreferrer" className="mt-2 inline-flex items-center gap-1 text-[9px] font-black uppercase tracking-widest text-slate-400 hover:text-muted-foreground">
+      <a href={p.sourceUrl} target="_blank" rel="noopener noreferrer" className="mt-2 inline-flex items-center gap-1 text-[9px] font-black uppercase tracking-widest text-muted-foreground hover:text-muted-foreground">
         Source officielle <ExternalLink size={9} />
       </a>
     </div>

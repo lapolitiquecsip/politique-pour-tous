@@ -209,14 +209,14 @@ function ComparateurContent() {
   return (
     <main className="min-h-screen bg-muted pb-20">
       <div className="container mx-auto max-w-6xl px-4 py-8">
-        <Link href="/local" className="inline-flex items-center gap-2 text-slate-400 hover:text-foreground transition-colors font-bold text-xs uppercase tracking-widest mb-8">
+        <Link href="/local" className="inline-flex items-center gap-2 text-muted-foreground hover:text-foreground transition-colors font-bold text-xs uppercase tracking-widest mb-8">
           <ChevronLeft size={16} /> Retour au portail
         </Link>
 
         <div className="bg-card rounded-[3rem] shadow-2xl border border-border overflow-hidden">
           <div className="p-12 border-b border-border flex flex-col md:flex-row justify-between items-center gap-8">
             <div className="space-y-2">
-              <h1 className="text-4xl font-staatliches uppercase tracking-tight text-foreground">Le Comparateur <span className="text-amber-500">Premium</span></h1>
+              <h1 className="text-4xl font-staatliches uppercase tracking-tight text-foreground">Le Comparateur <span className="text-amber-700 dark:text-amber-400">Premium</span></h1>
               <p className="text-muted-foreground font-medium italic">Analysez et comparez les territoires de France en temps réel.</p>
             </div>
             <div className="flex items-center gap-3 px-6 py-3 bg-amber-50 dark:bg-amber-500/10 text-amber-600 dark:text-amber-300 rounded-2xl border border-amber-100 dark:border-amber-500/25 font-black text-xs uppercase tracking-widest">
@@ -233,7 +233,7 @@ function ComparateurContent() {
             {/* Entity A */}
             <div className="space-y-8 relative z-10">
               <div ref={containerRefA} className="relative">
-                <Search className="absolute left-6 top-1/2 -translate-y-1/2 text-slate-400" size={20} />
+                <Search className="absolute left-6 top-1/2 -translate-y-1/2 text-muted-foreground" size={20} />
                 <input 
                   type="text" 
                   value={searchA.query}
@@ -270,14 +270,14 @@ function ComparateurContent() {
                                  />
                                </svg>
                              ) : (
-                               <Map size={20} className="text-slate-400" />
+                               <Map size={20} className="text-muted-foreground" />
                              )}
                            </div>
                            <div className="flex-1">
                              <p className="font-bold text-foreground">{r.name}</p>
                              <p className="text-[10px] font-black uppercase text-amber-500 tracking-widest">Région</p>
                            </div>
-                           <ArrowRight size={16} className="text-slate-300" />
+                           <ArrowRight size={16} className="text-muted-foreground" />
                          </button>
                        ))}
                        {/* Departments */}
@@ -306,20 +306,20 @@ function ComparateurContent() {
                              <p className="font-bold text-foreground">{d.name}</p>
                              <p className="text-[10px] font-black uppercase text-blue-500 tracking-widest">Département</p>
                            </div>
-                           <ArrowRight size={16} className="text-slate-300" />
+                           <ArrowRight size={16} className="text-muted-foreground" />
                          </button>
                        ))}
                        {/* Communes */}
                        {(!allowedType || allowedType === 'commune') && searchA.results.map(c => (
                          <button key={c.code} onClick={() => handleSelect('A', c, 'commune')} className="w-full px-8 py-4 flex items-center gap-4 hover:bg-muted transition-colors border-b border-slate-50 text-left">
-                           <div className="w-10 h-10 rounded-lg overflow-hidden shrink-0 bg-slate-100 dark:bg-slate-500/10 flex items-center justify-center text-slate-400">
+                           <div className="w-10 h-10 rounded-lg overflow-hidden shrink-0 bg-slate-100 dark:bg-slate-500/10 flex items-center justify-center text-muted-foreground">
                              <MapPin size={20} />
                            </div>
                            <div className="flex-1">
                              <p className="font-bold text-foreground">{c.nom}</p>
-                             <p className="text-[10px] font-black uppercase text-slate-400 tracking-widest">{c.departement.nom} ({c.departement.code})</p>
+                             <p className="text-[10px] font-black uppercase text-muted-foreground tracking-widest">{c.departement.nom} ({c.departement.code})</p>
                            </div>
-                           <ArrowRight size={16} className="text-slate-300" />
+                           <ArrowRight size={16} className="text-muted-foreground" />
                          </button>
                        ))}
                     </motion.div>
@@ -333,11 +333,11 @@ function ComparateurContent() {
                   animate={{ opacity: 1, scale: 1 }}
                   className="bg-muted rounded-[2.5rem] p-8 border border-border relative overflow-hidden group"
                 >
-                  <button onClick={() => setSideA(null)} className="absolute top-4 right-4 p-2 bg-card rounded-full text-slate-400 hover:text-red-500 transition-colors shadow-sm z-10">
+                  <button onClick={() => setSideA(null)} className="absolute top-4 right-4 p-2 bg-card rounded-full text-muted-foreground hover:text-red-500 transition-colors shadow-sm z-10">
                     <X size={16} />
                   </button>
                   <div className="flex items-center gap-6 mb-8">
-                    <div className="w-16 h-16 rounded-2xl bg-card shadow-lg flex items-center justify-center text-slate-400 overflow-hidden shrink-0 p-2">
+                    <div className="w-16 h-16 rounded-2xl bg-card shadow-lg flex items-center justify-center text-muted-foreground overflow-hidden shrink-0 p-2">
                       {sideA.type === 'region' && regionPaths[sideA.id] ? (
                         <svg 
                           viewBox="0 0 250 250" 
@@ -376,24 +376,24 @@ function ComparateurContent() {
                     </div>
                     <div>
                       <h3 className="text-2xl font-black text-foreground leading-tight">{sideA.name}</h3>
-                      <p className="text-[10px] font-black uppercase tracking-[0.2em] text-slate-400">
+                      <p className="text-[10px] font-black uppercase tracking-[0.2em] text-muted-foreground">
                         {sideA.type === 'commune' ? sideA.data.departement?.nom || 'Commune' : sideA.type === 'region' ? 'Région' : 'Département'}
                       </p>
                     </div>
                   </div>
                   <div className="grid grid-cols-2 gap-4">
                     <div className="bg-card p-4 rounded-2xl border border-border">
-                      <p className="text-[10px] font-black text-slate-400 uppercase mb-1">Population</p>
+                      <p className="text-[10px] font-black text-muted-foreground uppercase mb-1">Population</p>
                       <p className="text-lg font-bold text-foreground">{(sideA.data.demographie?.populationTotal || sideA.data.population)?.toLocaleString() || 'NC'}</p>
                     </div>
                     <div className="bg-card p-4 rounded-2xl border border-border">
-                      <p className="text-[10px] font-black text-slate-400 uppercase mb-1">Responsable</p>
+                      <p className="text-[10px] font-black text-muted-foreground uppercase mb-1">Responsable</p>
                       <p className="text-lg font-bold text-foreground truncate">{sideA.data.president || sideA.data.politique?.elu || sideA.data.mayor || 'NC'}</p>
                     </div>
                   </div>
                 </motion.div>
               ) : (
-                <div className="h-64 rounded-[2.5rem] border-2 border-dashed border-border flex flex-col items-center justify-center text-slate-300 gap-4">
+                <div className="h-64 rounded-[2.5rem] border-2 border-dashed border-border flex flex-col items-center justify-center text-muted-foreground gap-4">
                   <MapPin size={40} className="opacity-20" />
                   <p className="font-bold italic">En attente de sélection...</p>
                 </div>
@@ -403,7 +403,7 @@ function ComparateurContent() {
             {/* Entity B */}
             <div className="space-y-8 relative z-10">
               <div ref={containerRefB} className="relative">
-                <Search className="absolute left-6 top-1/2 -translate-y-1/2 text-slate-400" size={20} />
+                <Search className="absolute left-6 top-1/2 -translate-y-1/2 text-muted-foreground" size={20} />
                 <input 
                   type="text" 
                   value={searchB.query}
@@ -439,14 +439,14 @@ function ComparateurContent() {
                                  />
                                </svg>
                              ) : (
-                               <Map size={20} className="text-slate-400" />
+                               <Map size={20} className="text-muted-foreground" />
                              )}
                            </div>
                            <div className="flex-1">
                              <p className="font-bold text-foreground">{r.name}</p>
                              <p className="text-[10px] font-black uppercase text-amber-500 tracking-widest">Région</p>
                            </div>
-                           <ArrowRight size={16} className="text-slate-300" />
+                           <ArrowRight size={16} className="text-muted-foreground" />
                          </button>
                        ))}
                        {/* Departments */}
@@ -475,19 +475,19 @@ function ComparateurContent() {
                              <p className="font-bold text-foreground">{d.name}</p>
                              <p className="text-[10px] font-black uppercase text-blue-500 tracking-widest">Département</p>
                            </div>
-                           <ArrowRight size={16} className="text-slate-300" />
+                           <ArrowRight size={16} className="text-muted-foreground" />
                          </button>
                        ))}
                        {(!allowedType || allowedType === 'commune') && searchB.results.map(c => (
                          <button key={c.code} onClick={() => handleSelect('B', c, 'commune')} className="w-full px-8 py-4 flex items-center gap-4 hover:bg-muted transition-colors border-b border-slate-50 text-left">
-                           <div className="w-10 h-10 rounded-lg overflow-hidden shrink-0 bg-slate-100 dark:bg-slate-500/10 flex items-center justify-center text-slate-400">
+                           <div className="w-10 h-10 rounded-lg overflow-hidden shrink-0 bg-slate-100 dark:bg-slate-500/10 flex items-center justify-center text-muted-foreground">
                              <MapPin size={20} />
                            </div>
                            <div className="flex-1">
                              <p className="font-bold text-foreground">{c.nom}</p>
-                             <p className="text-[10px] font-black uppercase text-slate-400 tracking-widest">{c.departement.nom} ({c.departement.code})</p>
+                             <p className="text-[10px] font-black uppercase text-muted-foreground tracking-widest">{c.departement.nom} ({c.departement.code})</p>
                            </div>
-                           <ArrowRight size={16} className="text-slate-300" />
+                           <ArrowRight size={16} className="text-muted-foreground" />
                          </button>
                        ))}
                     </motion.div>
@@ -501,11 +501,11 @@ function ComparateurContent() {
                   animate={{ opacity: 1, scale: 1 }}
                   className="bg-muted rounded-[2.5rem] p-8 border border-border relative overflow-hidden group"
                 >
-                  <button onClick={() => setSideB(null)} className="absolute top-4 right-4 p-2 bg-card rounded-full text-slate-400 hover:text-red-500 transition-colors shadow-sm z-10">
+                  <button onClick={() => setSideB(null)} className="absolute top-4 right-4 p-2 bg-card rounded-full text-muted-foreground hover:text-red-500 transition-colors shadow-sm z-10">
                     <X size={16} />
                   </button>
                   <div className="flex items-center gap-6 mb-8">
-                    <div className="w-16 h-16 rounded-2xl bg-card shadow-lg flex items-center justify-center text-slate-400 overflow-hidden shrink-0 p-2">
+                    <div className="w-16 h-16 rounded-2xl bg-card shadow-lg flex items-center justify-center text-muted-foreground overflow-hidden shrink-0 p-2">
                       {sideB.type === 'region' && regionPaths[sideB.id] ? (
                         <svg 
                           viewBox="0 0 250 250" 
@@ -544,24 +544,24 @@ function ComparateurContent() {
                     </div>
                     <div>
                       <h3 className="text-2xl font-black text-foreground leading-tight">{sideB.name}</h3>
-                      <p className="text-[10px] font-black uppercase tracking-[0.2em] text-slate-400">
+                      <p className="text-[10px] font-black uppercase tracking-[0.2em] text-muted-foreground">
                         {sideB.type === 'commune' ? sideB.data.departement?.nom || 'Commune' : sideB.type === 'region' ? 'Région' : 'Département'}
                       </p>
                     </div>
                   </div>
                   <div className="grid grid-cols-2 gap-4">
                     <div className="bg-card p-4 rounded-2xl border border-border">
-                      <p className="text-[10px] font-black text-slate-400 uppercase mb-1">Population</p>
+                      <p className="text-[10px] font-black text-muted-foreground uppercase mb-1">Population</p>
                       <p className="text-lg font-bold text-foreground">{(sideB.data.demographie?.populationTotal || sideB.data.population)?.toLocaleString() || 'NC'}</p>
                     </div>
                     <div className="bg-card p-4 rounded-2xl border border-border">
-                      <p className="text-[10px] font-black text-slate-400 uppercase mb-1">Responsable</p>
+                      <p className="text-[10px] font-black text-muted-foreground uppercase mb-1">Responsable</p>
                       <p className="text-lg font-bold text-foreground truncate">{sideB.data.president || sideB.data.politique?.elu || sideB.data.mayor || 'NC'}</p>
                     </div>
                   </div>
                 </motion.div>
               ) : (
-                <div className="h-64 rounded-[2.5rem] border-2 border-dashed border-border flex flex-col items-center justify-center text-slate-300 gap-4">
+                <div className="h-64 rounded-[2.5rem] border-2 border-dashed border-border flex flex-col items-center justify-center text-muted-foreground gap-4">
                   <MapPin size={40} className="opacity-20" />
                   <p className="font-bold italic">En attente de sélection...</p>
                 </div>
@@ -577,7 +577,7 @@ function ComparateurContent() {
               <h3 className="text-3xl font-staatliches uppercase tracking-widest mb-16 text-center bg-gradient-to-r from-rose-600 via-fuchsia-600 to-rose-600 bg-clip-text text-transparent">Indicateurs de Performance Comparative</h3>
               
               {!sideA && !sideB ? (
-                <div className="mt-12 text-center text-slate-400 font-bold italic uppercase tracking-widest text-xs">
+                <div className="mt-12 text-center text-muted-foreground font-bold italic uppercase tracking-widest text-xs">
                   Sélectionnez deux territoires pour activer la comparaison
                 </div>
               ) : (
@@ -619,8 +619,8 @@ function ComparateurContent() {
                     {
                       title: "Sécurité",
                       metrics: [
-                        { key: "securite.atteintesPersonnes", label: "Atteintes personnes / 1000", color: "text-amber-500", format: (v: any) => v ? v : 'NC', max: 50, inverse: true },
-                        { key: "securite.atteintesBiens", label: "Atteintes biens / 1000", color: "text-amber-500", format: (v: any) => v ? v : 'NC', max: 100, inverse: true },
+                        { key: "securite.atteintesPersonnes", label: "Atteintes personnes / 1000", color: "text-amber-700 dark:text-amber-400", format: (v: any) => v ? v : 'NC', max: 50, inverse: true },
+                        { key: "securite.atteintesBiens", label: "Atteintes biens / 1000", color: "text-amber-700 dark:text-amber-400", format: (v: any) => v ? v : 'NC', max: 100, inverse: true },
                       ]
                     },
                     {
@@ -681,13 +681,13 @@ function ComparateurContent() {
                           return (
                             <div key={mIdx} className="space-y-2">
                               <div className="flex items-center justify-between text-xs">
-                                <div className={`flex-1 text-right font-extrabold text-sm ${winner === 'A' ? 'text-emerald-600' : 'text-slate-400'}`}>
+                                <div className={`flex-1 text-right font-extrabold text-sm ${winner === 'A' ? 'text-emerald-700 dark:text-emerald-400' : 'text-muted-foreground'}`}>
                                   {metric.format(valA)}
                                 </div>
                                 <div className={`flex-[2] text-center font-black uppercase text-[10px] tracking-widest text-muted-foreground ${metric.color}`}>
                                   {metric.label}
                                 </div>
-                                <div className={`flex-1 text-left font-extrabold text-sm ${winner === 'B' ? 'text-emerald-600' : 'text-slate-400'}`}>
+                                <div className={`flex-1 text-left font-extrabold text-sm ${winner === 'B' ? 'text-emerald-700 dark:text-emerald-400' : 'text-muted-foreground'}`}>
                                   {metric.format(valB)}
                                 </div>
                               </div>
@@ -715,7 +715,7 @@ function ComparateurContent() {
                     <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
                       {/* Side A */}
                       <div className="bg-muted border border-border rounded-[2.5rem] p-8 space-y-6 shadow-sm">
-                        <div className="text-center font-staatliches uppercase tracking-wider text-xl text-rose-600 mb-6 flex flex-col items-center gap-2">
+                        <div className="text-center font-staatliches uppercase tracking-wider text-xl text-rose-700 dark:text-rose-400 mb-6 flex flex-col items-center gap-2">
                           <span>{sideA?.name || "Territoire A"}</span>
                           {sideA?.data.isEstimated && (
                             <span className="px-3 py-1 bg-amber-50 dark:bg-amber-500/10 text-amber-600 dark:text-amber-300 text-[9px] uppercase tracking-widest rounded-full border border-amber-200 dark:border-amber-500/25">
@@ -726,26 +726,26 @@ function ComparateurContent() {
                         {sideA?.data.politique ? (
                           <>
                             <div className="bg-card p-4 rounded-2xl border border-border/80">
-                              <div className="text-[10px] font-black uppercase text-slate-400 tracking-wider mb-1">Présidentielle 2022 (T1)</div>
+                              <div className="text-[10px] font-black uppercase text-muted-foreground tracking-wider mb-1">Présidentielle 2022 (T1)</div>
                               <div className="text-sm font-bold text-foreground">{sideA.data.politique.pres2022T1}</div>
                             </div>
                             <div className="bg-card p-4 rounded-2xl border border-border/80">
-                              <div className="text-[10px] font-black uppercase text-slate-400 tracking-wider mb-1">Présidentielle 2022 (T2)</div>
+                              <div className="text-[10px] font-black uppercase text-muted-foreground tracking-wider mb-1">Présidentielle 2022 (T2)</div>
                               <div className="text-sm font-bold text-foreground">{sideA.data.politique.pres2022T2}</div>
                             </div>
                             <div className="bg-card p-4 rounded-2xl border border-border/80">
-                              <div className="text-[10px] font-black uppercase text-slate-400 tracking-wider mb-1">Élu en place</div>
+                              <div className="text-[10px] font-black uppercase text-muted-foreground tracking-wider mb-1">Élu en place</div>
                               <div className="text-sm font-bold text-foreground">{sideA.data.politique.elu} {sideA.data.politique.eluDepuis && `(depuis ${sideA.data.politique.eluDepuis})`}</div>
                             </div>
                           </>
                         ) : (
-                          <div className="text-center text-slate-400 italic text-sm py-4">Données non disponibles</div>
+                          <div className="text-center text-muted-foreground italic text-sm py-4">Données non disponibles</div>
                         )}
                       </div>
                       
                       {/* Side B */}
                       <div className="bg-muted border border-border rounded-[2.5rem] p-8 space-y-6 shadow-sm">
-                        <div className="text-center font-staatliches uppercase tracking-wider text-xl text-fuchsia-600 mb-6 flex flex-col items-center gap-2">
+                        <div className="text-center font-staatliches uppercase tracking-wider text-xl text-fuchsia-700 dark:text-fuchsia-400 mb-6 flex flex-col items-center gap-2">
                           <span>{sideB?.name || "Territoire B"}</span>
                           {sideB?.data.isEstimated && (
                             <span className="px-3 py-1 bg-amber-50 dark:bg-amber-500/10 text-amber-600 dark:text-amber-300 text-[9px] uppercase tracking-widest rounded-full border border-amber-200 dark:border-amber-500/25">
@@ -756,20 +756,20 @@ function ComparateurContent() {
                         {sideB?.data.politique ? (
                           <>
                             <div className="bg-card p-4 rounded-2xl border border-border/80">
-                              <div className="text-[10px] font-black uppercase text-slate-400 tracking-wider mb-1">Présidentielle 2022 (T1)</div>
+                              <div className="text-[10px] font-black uppercase text-muted-foreground tracking-wider mb-1">Présidentielle 2022 (T1)</div>
                               <div className="text-sm font-bold text-foreground">{sideB.data.politique.pres2022T1}</div>
                             </div>
                             <div className="bg-card p-4 rounded-2xl border border-border/80">
-                              <div className="text-[10px] font-black uppercase text-slate-400 tracking-wider mb-1">Présidentielle 2022 (T2)</div>
+                              <div className="text-[10px] font-black uppercase text-muted-foreground tracking-wider mb-1">Présidentielle 2022 (T2)</div>
                               <div className="text-sm font-bold text-foreground">{sideB.data.politique.pres2022T2}</div>
                             </div>
                             <div className="bg-card p-4 rounded-2xl border border-border/80">
-                              <div className="text-[10px] font-black uppercase text-slate-400 tracking-wider mb-1">Élu en place</div>
+                              <div className="text-[10px] font-black uppercase text-muted-foreground tracking-wider mb-1">Élu en place</div>
                               <div className="text-sm font-bold text-foreground">{sideB.data.politique.elu} {sideB.data.politique.eluDepuis && `(depuis ${sideB.data.politique.eluDepuis})`}</div>
                             </div>
                           </>
                         ) : (
-                          <div className="text-center text-slate-400 italic text-sm py-4">Données non disponibles</div>
+                          <div className="text-center text-muted-foreground italic text-sm py-4">Données non disponibles</div>
                         )}
                       </div>
                     </div>

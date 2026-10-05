@@ -99,7 +99,7 @@ export default function PromiseItem({ promise }: { promise: PromiseData }) {
               <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
                 {/* 1. Bilan Concret */}
                 <div className="space-y-4">
-                  <div className="flex items-center gap-2 text-blue-600">
+                  <div className="flex items-center gap-2 text-blue-700 dark:text-blue-400">
                     <History className="w-5 h-5" />
                     <h4 className="text-sm font-black uppercase tracking-widest">Bilan Concret</h4>
                   </div>
@@ -118,7 +118,7 @@ export default function PromiseItem({ promise }: { promise: PromiseData }) {
 
                 {/* 2. Analyse de la Rédaction */}
                 <div className="space-y-4">
-                  <div className="flex items-center gap-2 text-amber-600">
+                  <div className="flex items-center gap-2 text-amber-700 dark:text-amber-400">
                     <AlertCircle className="w-5 h-5" />
                     <h4 className="text-sm font-black uppercase tracking-widest">Justification du Score</h4>
                   </div>

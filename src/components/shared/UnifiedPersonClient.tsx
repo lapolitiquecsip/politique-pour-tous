@@ -106,7 +106,7 @@ export default function UnifiedPersonClient({ entryType, slug }: { entryType: st
                     className={`group inline-flex shrink-0 items-center gap-2 rounded-full px-4 py-2 text-[11px] font-black uppercase tracking-wide transition ${
                       on ? "bg-slate-900 text-white shadow-md dark:bg-white dark:text-slate-900"
                          : "border border-border bg-card text-muted-foreground hover:border-slate-400 hover:text-foreground dark:border-slate-700 dark:bg-slate-900 dark:text-slate-300 dark:hover:text-white"}`}>
-                    <Icon size={14} className={on ? "" : "text-slate-400"} /> {r.kind}
+                    <Icon size={14} className={on ? "" : "text-muted-foreground"} /> {r.kind}
                   </button>
                 );
               })}

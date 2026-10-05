@@ -49,15 +49,15 @@ export default function InitiativeRank({
     <Wrapper className={embedded ? "" : "rounded-[2.5rem] border border-border dark:border-slate-800 bg-card dark:bg-slate-900 p-8"}>
       {!embedded && (
         <div className="flex items-center gap-3 mb-4">
-          <FileText className="text-orange-500" size={22} />
+          <FileText className="text-orange-700 dark:text-orange-400" size={22} />
           <h2 className="text-3xl font-staatliches uppercase tracking-tight text-foreground dark:text-white">
-            Initiatives <span className="text-orange-500">législatives</span>
+            Initiatives <span className="text-orange-700 dark:text-orange-400">législatives</span>
           </h2>
         </div>
       )}
 
       <div className="flex items-center gap-6">
-        <p className="text-5xl font-black text-orange-500">{p}</p>
+        <p className="text-5xl font-black text-orange-700 dark:text-orange-400">{p}</p>
         <div className="flex-1">
           <p className="text-sm font-bold text-slate-700 dark:text-slate-200">
             {p === 0 ? "Aucun texte déposé en tant qu'auteur·rice principal·e" : <>Texte{p > 1 ? "s" : ""} <strong>déposé{p > 1 ? "s" : ""}</strong> en tant qu'auteur·rice principal·e</>}
@@ -95,7 +95,7 @@ export default function InitiativeRank({
         )}
       </div>
 
-      <p className="mt-4 text-[11px] leading-snug italic text-slate-400">
+      <p className="mt-4 text-[11px] leading-snug italic text-muted-foreground">
         Nombre de propositions de loi déposées comme auteur·rice principal·e (1er signataire du texte officiel).
         Comparaison entre {peerLabel}. Source : dossiers législatifs officiels (Assemblée nationale / Sénat).
       </p>

@@ -88,7 +88,7 @@ export default function EurodeputesClient({ meps }: { meps: any[] }) {
             l'utilisateur devait faire l'aller-retour pour savoir ce que « PfE » désigne. */}
         <div>
           <div className="mb-2.5 flex flex-wrap items-center justify-between gap-2">
-            <p className="text-[10px] font-black uppercase tracking-widest text-slate-400">Les groupes du Parlement européen</p>
+            <p className="text-[10px] font-black uppercase tracking-widest text-muted-foreground">Les groupes du Parlement européen</p>
             <button
               onClick={() => setGroup(null)}
               className={`rounded-full border px-3.5 py-1.5 text-[10px] font-black uppercase tracking-widest transition ${group === null ? "bg-[#003399] text-white border-[#003399] shadow-md" : "bg-card dark:bg-slate-900 text-muted-foreground border-border dark:border-slate-700 hover:border-slate-300"}`}
@@ -109,7 +109,7 @@ export default function EurodeputesClient({ meps }: { meps: any[] }) {
                   <span className="h-2.5 w-2.5 shrink-0 rounded-sm" style={{ background: actif ? "rgba(255,255,255,0.9)" : grad(g)[0] }} />
                   <span className="min-w-0">
                     <span className="block text-[11px] font-black uppercase tracking-widest">
-                      {g} <span className={actif ? "text-white/70" : "text-slate-400"}>· {n}</span>
+                      {g} <span className={actif ? "text-white/70" : "text-muted-foreground"}>· {n}</span>
                     </span>
                     <span className={`block text-[11px] leading-snug ${actif ? "text-white/85" : "text-muted-foreground dark:text-slate-400"}`}>{groupName(g)}</span>
                   </span>

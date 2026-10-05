@@ -92,7 +92,7 @@ const COMMUNE_CATEGORIES = [
     bgClass: 'bg-blue-50/40 dark:bg-blue-500/10',
     borderClass: 'border-blue-100/50',
     iconClass: 'bg-blue-100 dark:bg-blue-500/10 text-blue-900 dark:text-blue-300',
-    textClass: 'text-blue-800',
+    textClass: 'text-blue-800 dark:text-blue-300',
     progressClass: 'bg-blue-600',
     metrics: [
       { key: 'demographie.populationTotal', label: 'Population totale', format: (v: any) => v?.toLocaleString() + ' hab.', help: "Nombre total d'habitants résidents." },
@@ -109,7 +109,7 @@ const COMMUNE_CATEGORIES = [
     bgClass: 'bg-emerald-50/40 dark:bg-emerald-500/10',
     borderClass: 'border-emerald-100/50',
     iconClass: 'bg-emerald-100 dark:bg-emerald-500/10 text-emerald-900 dark:text-emerald-300',
-    textClass: 'text-emerald-800',
+    textClass: 'text-emerald-800 dark:text-emerald-300',
     progressClass: 'bg-emerald-600',
     metrics: [
       { key: 'economie.chomage', label: 'Taux de chômage', format: (v: any) => v + '%', inverse: true, help: "Taux de chômage localisé." },
@@ -124,7 +124,7 @@ const COMMUNE_CATEGORIES = [
     bgClass: 'bg-cyan-50/40 dark:bg-cyan-500/10',
     borderClass: 'border-cyan-100/50',
     iconClass: 'bg-cyan-100 dark:bg-cyan-500/10 text-cyan-900 dark:text-cyan-300',
-    textClass: 'text-cyan-800',
+    textClass: 'text-cyan-800 dark:text-cyan-300',
     progressClass: 'bg-cyan-600',
     metrics: [
       { key: 'logement.prixM2', label: 'Prix moyen m²', format: (v: any) => v?.toLocaleString() + ' €', help: "Prix de vente moyen estimé du m²." },
@@ -139,7 +139,7 @@ const COMMUNE_CATEGORIES = [
     bgClass: 'bg-pink-50/40 dark:bg-pink-500/10',
     borderClass: 'border-pink-100/50',
     iconClass: 'bg-pink-100 dark:bg-pink-500/10 text-pink-900 dark:text-pink-300',
-    textClass: 'text-pink-800',
+    textClass: 'text-pink-800 dark:text-pink-300',
     progressClass: 'bg-pink-600',
     metrics: [
       { key: 'finances.budgetHabitant', label: 'Budget / hab.', format: (v: any) => v?.toLocaleString() + ' €', help: "Dépenses réelles de fonctionnement municipal par habitant." },
@@ -156,7 +156,7 @@ const COMMUNE_CATEGORIES = [
     bgClass: 'bg-amber-50/40 dark:bg-amber-500/10',
     borderClass: 'border-amber-100/50',
     iconClass: 'bg-amber-100 dark:bg-amber-500/10 text-amber-900 dark:text-amber-300',
-    textClass: 'text-amber-800',
+    textClass: 'text-amber-800 dark:text-amber-300',
     progressClass: 'bg-amber-600',
     metrics: [
       { key: 'fiscalite.tauxTF', label: 'Taux Taxe Foncière', format: (v: any) => v + '%', inverse: true, help: "Taux communal de la taxe foncière sur les propriétés bâties (2023/2024)." },
@@ -170,7 +170,7 @@ const COMMUNE_CATEGORIES = [
     bgClass: 'bg-purple-50/40 dark:bg-purple-500/10',
     borderClass: 'border-purple-100/50',
     iconClass: 'bg-purple-100 dark:bg-purple-500/10 text-purple-900 dark:text-purple-300',
-    textClass: 'text-purple-800',
+    textClass: 'text-purple-800 dark:text-purple-300',
     progressClass: 'bg-purple-600',
     metrics: [
       { key: 'securite.atteintesPersonnes', label: 'Violences / 1k hab.', format: (v: any) => v, inverse: true, help: "Violences physiques enregistrées pour 1000 hab." },
@@ -184,7 +184,7 @@ const COMMUNE_CATEGORIES = [
     bgClass: 'bg-rose-50/40 dark:bg-rose-500/10',
     borderClass: 'border-rose-100/50',
     iconClass: 'bg-rose-100 dark:bg-rose-500/10 text-rose-900 dark:text-rose-300',
-    textClass: 'text-rose-800',
+    textClass: 'text-rose-800 dark:text-rose-300',
     progressClass: 'bg-rose-600',
     metrics: [
       { key: 'sante.medecins10k', label: 'Médecins / 10k hab.', format: (v: any) => v, help: "Nombre de médecins pour 10 000 habitants." },
@@ -199,7 +199,7 @@ const COMMUNE_CATEGORIES = [
     bgClass: 'bg-indigo-50/40 dark:bg-indigo-500/10',
     borderClass: 'border-indigo-100/50',
     iconClass: 'bg-indigo-100 dark:bg-indigo-500/10 text-indigo-900 dark:text-indigo-300',
-    textClass: 'text-indigo-800',
+    textClass: 'text-indigo-800 dark:text-indigo-300',
     progressClass: 'bg-indigo-600',
     metrics: [
       { key: 'education.bac', label: 'Réussite au Bac', format: (v: any) => v + '%', help: "Taux de réussite au baccalauréat moyen des lycées de la ville." },
@@ -214,7 +214,7 @@ const COMMUNE_CATEGORIES = [
     bgClass: 'bg-purple-50/40 dark:bg-purple-500/10',
     borderClass: 'border-purple-100/50',
     iconClass: 'bg-purple-100 dark:bg-purple-500/10 text-purple-900 dark:text-purple-300',
-    textClass: 'text-purple-800',
+    textClass: 'text-purple-800 dark:text-purple-300',
     progressClass: 'bg-purple-600',
     metrics: [
       { key: 'environnement.qualiteAir', label: 'Indice ATMO moyen', format: (v: any) => v + '/6', inverse: true, help: "Moyenne des indices ATMO quotidiens officiels ; 1 est bon et 6 extrêmement mauvais." },
@@ -307,13 +307,13 @@ const renderComparison = (val: any, metricKey: string, inverse?: boolean) => {
 
     return (
       <div className="flex justify-between items-center text-[9px] mt-1 font-medium leading-none">
-        <span className="text-slate-400">Moy. nationale : <span className="font-bold text-muted-foreground">{nat.format(nat.value)}</span></span>
+        <span className="text-muted-foreground">Moy. nationale : <span className="font-bold text-muted-foreground">{nat.format(nat.value)}</span></span>
         {isSame ? (
           <span className="text-muted-foreground font-semibold">Identique à la moyenne</span>
         ) : isNeutral ? (
           <span className="text-muted-foreground font-semibold">Écart : {diffStr}</span>
         ) : (
-          <span className={`${isBetter ? 'text-emerald-600' : 'text-rose-600'} font-semibold flex items-center gap-0.5`}>
+          <span className={`${isBetter ? 'text-emerald-700 dark:text-emerald-400' : 'text-rose-600'} font-semibold flex items-center gap-0.5`}>
             {isBetter ? 'Plus favorable' : 'Moins favorable'} ({diffStr})
           </span>
         )}
@@ -323,7 +323,7 @@ const renderComparison = (val: any, metricKey: string, inverse?: boolean) => {
     const isSame = val.toLowerCase() === nat.value.toLowerCase();
     return (
       <div className="flex justify-between items-center text-[9px] mt-1 font-medium leading-none">
-        <span className="text-slate-400">Moy. nationale : <span className="font-bold text-muted-foreground">{nat.value}</span></span>
+        <span className="text-muted-foreground">Moy. nationale : <span className="font-bold text-muted-foreground">{nat.value}</span></span>
         <span className="text-muted-foreground font-semibold">{isSame ? 'Identique' : `Ville : ${val}`}</span>
       </div>
     );
@@ -518,7 +518,7 @@ export default function CommuneDetailPanel({
                     className={`w-10 h-10 rounded-full backdrop-blur-md flex items-center justify-center transition-all ${
                       isSaved 
                         ? "bg-amber-400 text-foreground shadow-lg shadow-amber-400/20" 
-                        : "bg-white/20 text-white hover:bg-white/30"
+                        : "bg-white/20 text-slate-950 hover:bg-white/30"
                     } ${!isPremium ? "opacity-70" : ""}`}
                   >
                     {loadingSave ? (
@@ -598,7 +598,7 @@ export default function CommuneDetailPanel({
                           )}
                         </div>
                         <div>
-                          <p className="text-[9px] font-black uppercase tracking-widest text-slate-400">
+                          <p className="text-[9px] font-black uppercase tracking-widest text-muted-foreground">
                             Mairie &amp; Élus Municipaux (Source : RNE)
                           </p>
                           <h3 className="text-xl font-bold text-foreground group-hover:text-rose-600 transition-colors flex items-center gap-1.5">
@@ -622,7 +622,7 @@ export default function CommuneDetailPanel({
                     <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                       {/* Party */}
                       <div className="p-4 rounded-2xl bg-muted space-y-2">
-                        <p className="text-[9px] font-black uppercase tracking-widest text-slate-400">
+                        <p className="text-[9px] font-black uppercase tracking-widest text-muted-foreground">
                           Parti politique
                         </p>
                         <div className="flex items-center gap-2">
@@ -635,7 +635,7 @@ export default function CommuneDetailPanel({
 
                       {/* Mandate */}
                       <div className="p-4 rounded-2xl bg-muted space-y-2">
-                        <p className="text-[9px] font-black uppercase tracking-widest text-slate-400 flex items-center gap-1">
+                        <p className="text-[9px] font-black uppercase tracking-widest text-muted-foreground flex items-center gap-1">
                           <Calendar size={10} /> Mandat depuis
                         </p>
                         <span className="text-sm font-bold text-foreground">
@@ -654,7 +654,7 @@ export default function CommuneDetailPanel({
                     <div className="pt-4 border-t border-border space-y-4">
                       {communeData.rne.adjoints && communeData.rne.adjoints.length > 0 && (
                         <div className="space-y-2">
-                          <p className="text-[9px] font-black uppercase tracking-widest text-slate-400">Adjoints au Maire</p>
+                          <p className="text-[9px] font-black uppercase tracking-widest text-muted-foreground">Adjoints au Maire</p>
                           <div className="grid grid-cols-1 md:grid-cols-2 gap-2">
                             {communeData.rne.adjoints.slice(0, 8).map((adj: any, idx: number) => (
                               <div key={idx} className="p-3 rounded-xl bg-muted border border-border flex flex-col justify-center">
@@ -669,10 +669,10 @@ export default function CommuneDetailPanel({
                       {communeData.rne.conseillers && communeData.rne.conseillers.length > 0 && (
                         <div className="space-y-2">
                           <div className="flex justify-between items-center">
-                            <p className="text-[9px] font-black uppercase tracking-widest text-slate-400">Conseillers Municipaux ({communeData.rne.conseillers.length})</p>
+                            <p className="text-[9px] font-black uppercase tracking-widest text-muted-foreground">Conseillers Municipaux ({communeData.rne.conseillers.length})</p>
                             <button 
                               onClick={() => setShowAllElus(!showAllElus)}
-                              className="text-[10px] font-bold text-rose-600 hover:text-rose-500 transition-colors"
+                              className="text-[10px] font-bold text-rose-700 dark:text-rose-400 hover:text-rose-500 transition-colors"
                             >
                               {showAllElus ? "Masquer la liste" : "Afficher la liste"}
                             </button>
@@ -686,7 +686,7 @@ export default function CommuneDetailPanel({
                             >
                               {communeData.rne.conseillers.map((cons: any, idx: number) => (
                                 <div key={idx} className="p-2.5 rounded-xl bg-slate-50/50 dark:bg-slate-500/10 border border-border/50 flex items-center justify-between">
-                                  <span className="text-xs font-semibold text-slate-700">{cons.prenom} {cons.nom}</span>
+                                  <span className="text-xs font-semibold text-slate-700 dark:text-slate-200">{cons.prenom} {cons.nom}</span>
                                 </div>
                               ))}
                             </motion.div>
@@ -713,7 +713,7 @@ export default function CommuneDetailPanel({
                         <TrendingUp size={20} />
                       </div>
                       <div>
-                        <p className="text-[9px] font-black uppercase tracking-widest text-slate-400">
+                        <p className="text-[9px] font-black uppercase tracking-widest text-muted-foreground">
                           Résultats Municipales
                         </p>
                         <h3 className="text-lg font-bold text-foreground">
@@ -723,10 +723,10 @@ export default function CommuneDetailPanel({
                     </div>
                     {electionData?.m_score && (
                       <div className="text-right">
-                        <p className="text-[9px] font-black uppercase tracking-widest text-slate-400">
+                        <p className="text-[9px] font-black uppercase tracking-widest text-muted-foreground">
                           Score de la liste
                         </p>
-                        <p className="text-3xl font-black text-rose-600 leading-none mt-1">
+                        <p className="text-3xl font-black text-rose-700 dark:text-rose-400 leading-none mt-1">
                           {electionData.m_score.toFixed(2)}%
                         </p>
                       </div>
@@ -761,11 +761,11 @@ export default function CommuneDetailPanel({
                               <div key={idx} className="flex items-center justify-between p-3 rounded-2xl bg-muted border border-border transition-hover hover:border-border">
                                 <div className="flex items-center gap-3">
                                   <div className={`w-2 h-2 rounded-full ${PARTY_COLORS[comp.p] || "bg-slate-300"}`} />
-                                  <span className="text-xs font-bold text-slate-700">
+                                  <span className="text-xs font-bold text-slate-700 dark:text-slate-200">
                                     {NUANCE_MAP[comp.p] || comp.p || "Indépendant"}
                                   </span>
                                 </div>
-                                <span className="text-xs font-black text-slate-400">
+                                <span className="text-xs font-black text-muted-foreground">
                                   {comp.s.toFixed(2)}%
                                 </span>
                               </div>
@@ -788,7 +788,7 @@ export default function CommuneDetailPanel({
                 {/* Real indicators or coming soon */}
                 {loadingDetails ? (
                   <div className="flex flex-col items-center justify-center py-12 gap-3">
-                    <Loader2 className="animate-spin text-rose-600" size={24} />
+                    <Loader2 className="animate-spin text-rose-700 dark:text-rose-400" size={24} />
                     <p className="text-slate-400 text-xs font-bold uppercase tracking-wider">Chargement des indicateurs...</p>
                   </div>
                 ) : communeData ? (
@@ -879,7 +879,7 @@ export default function CommuneDetailPanel({
 
                     {/* Sources */}
                     {communeData.sources && (
-                      <div className="text-center text-[10px] text-slate-400/80 italic pt-6 border-t border-border mt-6">
+                      <div className="text-center text-[10px] text-muted-foreground italic pt-6 border-t border-border mt-6">
                         Source(s) de données : {communeData.sources}
                       </div>
                     )}
@@ -894,7 +894,7 @@ export default function CommuneDetailPanel({
                       className="grid grid-cols-2 gap-4"
                     >
                       <div className="p-5 rounded-3xl bg-card border border-border shadow-lg shadow-slate-200/30 text-center space-y-2">
-                        <p className="text-[9px] font-black uppercase tracking-widest text-slate-400">
+                        <p className="text-[9px] font-black uppercase tracking-widest text-muted-foreground">
                           Population
                         </p>
                         <p className="text-2xl font-black text-foreground">
@@ -902,7 +902,7 @@ export default function CommuneDetailPanel({
                         </p>
                       </div>
                       <div className="p-5 rounded-3xl bg-card border border-border shadow-lg shadow-slate-200/30 text-center space-y-2">
-                        <p className="text-[9px] font-black uppercase tracking-widest text-slate-400">
+                        <p className="text-[9px] font-black uppercase tracking-widest text-muted-foreground">
                           Code INSEE
                         </p>
                         <p className="text-2xl font-black text-foreground">
@@ -918,7 +918,7 @@ export default function CommuneDetailPanel({
                       transition={{ delay: 0.45 }}
                       className="p-6 rounded-3xl bg-gradient-to-br from-slate-900 to-slate-800 text-white text-center space-y-3"
                     >
-                      <p className="text-[9px] font-black uppercase tracking-widest text-slate-400">
+                      <p className="text-[9px] font-black uppercase tracking-widest text-muted-foreground">
                         Bientôt disponible
                       </p>
                       <p className="text-lg font-bold">

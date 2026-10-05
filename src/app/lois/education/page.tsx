@@ -95,7 +95,7 @@ export default function EducationLawPage() {
               <div className="space-y-6">
                 <div className="flex gap-4">
                   <div className="mt-1 w-8 h-8 rounded-full bg-indigo-100 dark:bg-indigo-500/10 flex items-center justify-center shrink-0">
-                    <span className="text-indigo-600 font-bold">1</span>
+                    <span className="text-indigo-700 dark:text-indigo-400 font-bold">1</span>
                   </div>
                   <div>
                     <h3 className="text-lg font-bold text-foreground mb-2">Expérimentation de la tenue unique</h3>
@@ -105,7 +105,7 @@ export default function EducationLawPage() {
                 
                 <div className="flex gap-4">
                   <div className="mt-1 w-8 h-8 rounded-full bg-indigo-100 dark:bg-indigo-500/10 flex items-center justify-center shrink-0">
-                    <span className="text-indigo-600 font-bold">2</span>
+                    <span className="text-indigo-700 dark:text-indigo-400 font-bold">2</span>
                   </div>
                   <div>
                     <h3 className="text-lg font-bold text-foreground mb-2">Un Brevet des collèges couperet</h3>
@@ -115,7 +115,7 @@ export default function EducationLawPage() {
 
                 <div className="flex gap-4">
                   <div className="mt-1 w-8 h-8 rounded-full bg-indigo-100 dark:bg-indigo-500/10 flex items-center justify-center shrink-0">
-                    <span className="text-indigo-600 font-bold">3</span>
+                    <span className="text-indigo-700 dark:text-indigo-400 font-bold">3</span>
                   </div>
                   <div>
                     <h3 className="text-lg font-bold text-foreground mb-2">Revalorisation salariale des enseignants</h3>
@@ -177,7 +177,7 @@ export default function EducationLawPage() {
                     <div className="flex items-center justify-between space-x-2 mb-1">
                       <div className="font-bold text-foreground text-sm">Aujourd'hui</div>
                     </div>
-                    <div className="text-muted-foreground text-xs text-emerald-600 font-semibold">Décrets d'application</div>
+                    <div className="text-muted-foreground text-xs text-emerald-700 dark:text-emerald-400 font-semibold">Décrets d'application</div>
                   </div>
                 </div>
 
@@ -202,7 +202,7 @@ export default function EducationLawPage() {
                 <p className="text-amber-50 text-sm leading-relaxed mb-6">
                   Cet exemple de dossier législatif vous est offert. Pour accéder aux autres lois décryptées, souscrivez au Premium.
                 </p>
-                <Link href={getPremiumUrl(userId)} className="block text-center bg-card text-orange-600 font-bold py-3 rounded-xl hover:shadow-lg transition-all w-full">
+                <Link href={getPremiumUrl(userId)} className="block text-center bg-card text-orange-700 dark:text-orange-400 font-bold py-3 rounded-xl hover:shadow-lg transition-all w-full">
                   S&apos;abonner (3€/mois)
                 </Link>
               </div>

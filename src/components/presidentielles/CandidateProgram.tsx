@@ -35,8 +35,8 @@ export default function CandidateProgram({ candidateId, title = true, heading, c
     return () => { active = false; };
   }, [candidateId]);
 
-  if (proposals === null) return <div className="flex justify-center py-8"><Loader2 className="animate-spin text-slate-400" size={22} /></div>;
-  if (proposals.length === 0) return emptyMessage ? <p className="py-4 text-center text-sm italic text-slate-400">{emptyMessage}</p> : null;
+  if (proposals === null) return <div className="flex justify-center py-8"><Loader2 className="animate-spin text-muted-foreground" size={22} /></div>;
+  if (proposals.length === 0) return emptyMessage ? <p className="py-4 text-center text-sm italic text-muted-foreground">{emptyMessage}</p> : null;
 
   const groups: Record<string, { ctx: string | null; items: any[] }> = {};
   for (const p of proposals) {
@@ -59,7 +59,7 @@ export default function CandidateProgram({ candidateId, title = true, heading, c
               <div className={`flex items-center gap-2.5 ${bg} px-4 py-3`}>
                 <span className={`flex h-8 w-8 shrink-0 items-center justify-center rounded-xl bg-card ${c} shadow-sm`}><Icon size={16} /></span>
                 <p className={`text-sm font-black uppercase tracking-widest ${c}`}>{theme}</p>
-                <span className="text-[10px] font-black text-slate-400">· {g.items.length}</span>
+                <span className="text-[10px] font-black text-muted-foreground">· {g.items.length}</span>
                 {g.ctx && (
                   <button onClick={() => toggleContext(theme)} title="Pourquoi ?"
                     className={`ml-auto flex h-7 w-7 shrink-0 items-center justify-center rounded-full bg-card ${c} shadow-sm transition ${ctxOpen ? "ring-2 ring-current" : ""}`}>
@@ -74,12 +74,12 @@ export default function CandidateProgram({ candidateId, title = true, heading, c
                   </motion.div>
                 )}
               </AnimatePresence>
-              <ul className="divide-y divide-slate-50 bg-card">
+              <ul className="divide-y divide-slate-50 dark:divide-slate-800 bg-card">
                 {g.items.map((p, i) => {
                   const exKey = `${theme}#${i}`;
                   const exOpen = openExpl.has(exKey);
                   return (
-                    <li key={i} className="px-4 py-2.5 text-sm leading-6 text-slate-700">
+                    <li key={i} className="px-4 py-2.5 text-sm leading-6 text-slate-700 dark:text-slate-200">
                       <div className="flex items-start gap-2.5">
                         <span className={`mt-2 h-1.5 w-1.5 shrink-0 rounded-full ${dot}`} />
                         <span className="flex-1">{p.text}</span>
@@ -105,7 +105,7 @@ export default function CandidateProgram({ candidateId, title = true, heading, c
           );
         })}
       </div>
-      {src && <a href={src} target="_blank" rel="noreferrer" className="mt-3 inline-flex items-center gap-1.5 text-[11px] font-black uppercase tracking-widest text-blue-700 hover:underline"><ExternalLink size={12} /> Programme officiel</a>}
+      {src && <a href={src} target="_blank" rel="noreferrer" className="mt-3 inline-flex items-center gap-1.5 text-[11px] font-black uppercase tracking-widest text-blue-700 dark:text-blue-300 hover:underline"><ExternalLink size={12} /> Programme officiel</a>}
     </div>
   );
 }

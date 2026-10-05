@@ -64,7 +64,7 @@ export default function ItddSection({ level, code }: { level: "region" | "depart
       .sort((a, b) => a.year - b.year);
   }, [rows, variable, sub]);
 
-  if (rows === null) return <p className="mt-3 text-sm text-slate-400">Chargement des indicateurs…</p>;
+  if (rows === null) return <p className="mt-3 text-sm text-muted-foreground">Chargement des indicateurs…</p>;
   if (variables.length === 0) return <p className="mt-3 text-sm text-muted-foreground">Aucun indicateur de développement durable disponible pour ce territoire.</p>;
 
   const unit = CATALOG[variable]?.unit || (rows.find(r => r.variable === variable)?.unit ?? "");
@@ -130,12 +130,12 @@ export default function ItddSection({ level, code }: { level: "region" | "depart
       {last && (
         <div className="mt-4 flex items-end gap-3">
           <span className="text-4xl font-black text-foreground">{fmt(last.value)}</span>
-          <span className="mb-1 text-sm font-bold text-slate-400">en {last.year}</span>
+          <span className="mb-1 text-sm font-bold text-muted-foreground">en {last.year}</span>
         </div>
       )}
 
       {chart}
-      <p className="mt-1 text-right text-[10px] text-slate-400">Source : Insee/SDES — Indicateurs territoriaux de développement durable</p>
+      <p className="mt-1 text-right text-[10px] text-muted-foreground">Source : Insee/SDES — Indicateurs territoriaux de développement durable</p>
     </div>
   );
 }

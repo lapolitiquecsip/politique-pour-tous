@@ -85,7 +85,7 @@ export default function GlobalSearch({ variant = "desktop", onNavigate }: { vari
   return (
     <div ref={box} className={`relative ${variant === "desktop" ? "w-64 xl:w-80" : "w-full"}`}>
       <div className="relative">
-        <Search size={16} className="pointer-events-none absolute left-3.5 top-1/2 -translate-y-1/2 text-slate-400" />
+        <Search size={16} className="pointer-events-none absolute left-3.5 top-1/2 -translate-y-1/2 text-muted-foreground" />
         <input
           value={q}
           onChange={e => { setQ(e.target.value); setOpen(true); }}
@@ -95,7 +95,7 @@ export default function GlobalSearch({ variant = "desktop", onNavigate }: { vari
           className="w-full rounded-full border border-border bg-muted py-2.5 pl-10 pr-9 text-sm text-foreground outline-none transition focus:border-slate-400 focus:bg-card dark:border-slate-700 dark:bg-slate-800 dark:text-white"
         />
         {q && (
-          <button onClick={() => { setQ(""); setGroups([]); }} className="absolute right-2.5 top-1/2 -translate-y-1/2 rounded-full p-1 text-slate-400 hover:bg-slate-100 dark:hover:bg-slate-700">
+          <button onClick={() => { setQ(""); setGroups([]); }} className="absolute right-2.5 top-1/2 -translate-y-1/2 rounded-full p-1 text-muted-foreground hover:bg-slate-100 dark:hover:bg-slate-700">
             <X size={14} />
           </button>
         )}
@@ -104,13 +104,13 @@ export default function GlobalSearch({ variant = "desktop", onNavigate }: { vari
       {open && q.trim().length >= 2 && (
         <div className="absolute left-0 right-0 z-50 mt-2 max-h-[70vh] overflow-y-auto overscroll-contain rounded-2xl border border-border bg-card p-2 shadow-2xl dark:border-slate-700 dark:bg-slate-900">
           {loading && total === 0 ? (
-            <div className="flex items-center gap-2 px-3 py-6 text-sm text-slate-400"><Loader2 size={16} className="animate-spin" /> Recherche…</div>
+            <div className="flex items-center gap-2 px-3 py-6 text-sm text-muted-foreground"><Loader2 size={16} className="animate-spin" /> Recherche…</div>
           ) : total === 0 ? (
-            <div className="px-3 py-6 text-center text-sm text-slate-400">Aucun résultat pour « {q} ».</div>
+            <div className="px-3 py-6 text-center text-sm text-muted-foreground">Aucun résultat pour « {q} ».</div>
           ) : (
             groups.map(g => (
               <div key={g.category} className="mb-1">
-                <p className="px-3 pb-1 pt-2 text-[10px] font-black uppercase tracking-widest text-slate-400">{g.category}</p>
+                <p className="px-3 pb-1 pt-2 text-[10px] font-black uppercase tracking-widest text-muted-foreground">{g.category}</p>
                 {g.items.map((it, i) => {
                   const Icon = ICON[it.type] || Search;
                   return (
@@ -125,7 +125,7 @@ export default function GlobalSearch({ variant = "desktop", onNavigate }: { vari
                       )}
                       <span className="min-w-0 flex-1">
                         <span className="block truncate text-sm font-bold text-foreground dark:text-white">{it.label}</span>
-                        {it.sub && <span className="block truncate text-[11px] text-slate-400">{it.sub}</span>}
+                        {it.sub && <span className="block truncate text-[11px] text-muted-foreground">{it.sub}</span>}
                       </span>
                     </button>
                   );

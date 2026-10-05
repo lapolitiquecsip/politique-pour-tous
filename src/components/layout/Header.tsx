@@ -87,14 +87,14 @@ export default function Header() {
   };
 
   const navLinks = [
-    { href: "/", label: "Accueil", icon: Home, color: "text-indigo-600", iconColor: "text-indigo-500" },
-    { href: "/deputes", label: "Assemblée", icon: Users, color: "text-blue-600", iconColor: "text-blue-500" },
-    { href: "/senateurs", label: "Sénat", icon: Landmark, color: "text-rose-600", iconColor: "text-rose-500" },
-    { href: "/eurodeputes", label: "Europe", icon: EuFlag, color: "text-sky-600", iconColor: "text-sky-500" },
-    { href: "/local", label: "Local", icon: MapPin, color: "text-rose-600", iconColor: "text-rose-500" },
-    { href: "/executif", label: "Exécutif", icon: ShieldCheck, color: "text-amber-600", iconColor: "text-amber-500" },
-    { href: "/presidentielles-2027", label: "Présidentielles 2027", icon: MessageSquareQuote, color: "text-purple-600", iconColor: "text-purple-500" },
-    { href: "/premium", label: "Premium", icon: Star, color: "text-yellow-600", iconColor: "text-yellow-500", isSpecial: true },
+    { href: "/", label: "Accueil", icon: Home, color: "text-indigo-700 dark:text-indigo-400", iconColor: "text-indigo-500" },
+    { href: "/deputes", label: "Assemblée", icon: Users, color: "text-blue-700 dark:text-blue-400", iconColor: "text-blue-500" },
+    { href: "/senateurs", label: "Sénat", icon: Landmark, color: "text-rose-700 dark:text-rose-400", iconColor: "text-rose-500" },
+    { href: "/eurodeputes", label: "Europe", icon: EuFlag, color: "text-sky-700 dark:text-sky-400", iconColor: "text-sky-500" },
+    { href: "/local", label: "Local", icon: MapPin, color: "text-rose-700 dark:text-rose-400", iconColor: "text-rose-500" },
+    { href: "/executif", label: "Exécutif", icon: ShieldCheck, color: "text-amber-700 dark:text-amber-400", iconColor: "text-amber-500" },
+    { href: "/presidentielles-2027", label: "Présidentielles 2027", icon: MessageSquareQuote, color: "text-purple-700 dark:text-purple-400", iconColor: "text-purple-500" },
+    { href: "/premium", label: "Premium", icon: Star, color: "text-yellow-700 dark:text-yellow-400", iconColor: "text-yellow-500", isSpecial: true },
   ];
 
   return (
@@ -257,16 +257,16 @@ export default function Header() {
           })}
           
           <div className="pt-2">
-            <Link href={(user || connecteMemorise) ? "/dashboard" : "/login"} className="flex items-center gap-3 text-lg font-bold text-rose-600 hover:text-blue-600 transition-colors" onClick={() => setIsMenuOpen(false)}>
+            <Link href={(user || connecteMemorise) ? "/dashboard" : "/login"} className="flex items-center gap-3 text-lg font-bold text-rose-700 dark:text-rose-400 hover:text-blue-600 transition-colors" onClick={() => setIsMenuOpen(false)}>
               <User size={20} /> Mon Compte
             </Link>
             {(user || connecteMemorise) && (
-              <Link href="/parrainage" className="mt-4 flex items-center gap-3 text-lg font-bold text-teal-600 transition-colors" onClick={() => setIsMenuOpen(false)}>
+              <Link href="/parrainage" className="mt-4 flex items-center gap-3 text-lg font-bold text-teal-700 dark:text-teal-400 transition-colors" onClick={() => setIsMenuOpen(false)}>
                 <Gift size={20} /> Parrainage
               </Link>
             )}
             {estAdmin && (
-              <Link href="/admin/statistiques" className="mt-4 flex items-center gap-3 text-lg font-bold text-emerald-600 transition-colors" onClick={() => setIsMenuOpen(false)}>
+              <Link href="/admin/statistiques" className="mt-4 flex items-center gap-3 text-lg font-bold text-emerald-700 dark:text-emerald-400 transition-colors" onClick={() => setIsMenuOpen(false)}>
                 <BarChart3 size={20} /> Statistiques du site
               </Link>
             )}

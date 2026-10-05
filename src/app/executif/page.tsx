@@ -514,7 +514,7 @@ export default function ExecutifPage() {
                 <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-amber-400 opacity-75"></span>
                 <span className="relative inline-flex rounded-full h-3 w-3 bg-orange-500"></span>
               </span>
-              <span className="text-xs font-black uppercase tracking-widest text-orange-600">Pouvoir Exécutif</span>
+              <span className="text-xs font-black uppercase tracking-widest text-orange-700 dark:text-orange-400">Pouvoir Exécutif</span>
             </div>
 
             <h1 className="text-6xl md:text-8xl font-staatliches uppercase tracking-tighter leading-none mb-8 text-foreground">
@@ -637,7 +637,7 @@ export default function ExecutifPage() {
               <div className="flex items-center justify-between mb-8">
                 <div className="space-y-1">
                   <h3 className="text-xl font-bold text-foreground">Budgets de l'État</h3>
-                  <p className="text-[10px] text-slate-400 font-black uppercase tracking-widest">PLF 2026 · missions (officiel)</p>
+                  <p className="text-[10px] text-muted-foreground font-black uppercase tracking-widest">PLF 2026 · missions (officiel)</p>
                 </div>
                 <div className="w-12 h-12 bg-emerald-50 dark:bg-emerald-500/10 text-emerald-600 dark:text-emerald-300 rounded-2xl flex items-center justify-center">
                   <CircleDollarSign size={24} />
@@ -652,14 +652,14 @@ export default function ExecutifPage() {
                     animate={{ opacity: 1, scale: 1 }}
                     className="w-full"
                   >
-                    <p className="text-[9px] font-black text-blue-600 uppercase tracking-widest mb-1">Détails de la mission</p>
+                    <p className="text-[9px] font-black text-blue-700 dark:text-blue-400 uppercase tracking-widest mb-1">Détails de la mission</p>
                     <p className="text-[11px] text-muted-foreground leading-relaxed italic font-medium">
                       {hoveredBudget.desc}
                     </p>
                   </motion.div>
                 ) : (
                   <div className="text-center">
-                    <p className="text-[9px] text-slate-400 font-bold uppercase tracking-widest animate-pulse">
+                    <p className="text-[9px] text-muted-foreground font-bold uppercase tracking-widest animate-pulse">
                       Survolez un budget pour <br /> voir son explication
                     </p>
                   </div>
@@ -695,7 +695,7 @@ export default function ExecutifPage() {
                 {/* Scroll Indicator */}
                 <div className="absolute -bottom-4 left-1/2 -translate-x-1/2 flex flex-col items-center gap-1 opacity-50 animate-bounce pointer-events-none">
                    <span className="text-[8px] font-black uppercase text-slate-400">Scrollez pour voir plus</span>
-                   <ChevronDown size={12} className="text-slate-400" />
+                   <ChevronDown size={12} className="text-muted-foreground" />
                 </div>
               </div>
 
@@ -768,7 +768,7 @@ export default function ExecutifPage() {
           <div className="w-full max-w-lg rounded-3xl bg-card p-7 shadow-2xl" onClick={e => e.stopPropagation()}>
             <div className="flex items-start justify-between gap-4">
               <div>
-                <span className="text-[9px] font-black uppercase tracking-widest text-blue-600">{openDecree.decree_type}</span>
+                <span className="text-[9px] font-black uppercase tracking-widest text-blue-700 dark:text-blue-400">{openDecree.decree_type}</span>
                 <p className="mt-1 text-[10px] font-bold uppercase tracking-widest text-slate-400">
                   Publié au JO le {new Date(openDecree.date_publi).toLocaleDateString('fr-FR', { day: 'numeric', month: 'long', year: 'numeric' })}
                 </p>
@@ -778,8 +778,8 @@ export default function ExecutifPage() {
             <h3 className="mt-3 text-lg font-bold leading-snug text-foreground">{openDecree.display_title || openDecree.title}</h3>
             {openDecree.display_title && <p className="mt-1 text-[11px] leading-snug text-slate-400">{openDecree.title}</p>}
             <div className="mt-4 rounded-2xl bg-muted p-4">
-              <p className="text-[9px] font-black uppercase tracking-widest text-slate-400 mb-1">Ce que ça implique</p>
-              <p className="text-sm leading-relaxed text-slate-700">
+              <p className="text-[9px] font-black uppercase tracking-widest text-muted-foreground mb-1">Ce que ça implique</p>
+              <p className="text-sm leading-relaxed text-slate-700 dark:text-slate-200">
                 {openDecree.summary || "Résumé en cours de génération — consultez le texte officiel pour le détail."}
               </p>
             </div>

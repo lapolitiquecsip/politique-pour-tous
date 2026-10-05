@@ -37,12 +37,12 @@ export default function LocalFinancesSection({ finances, label }: { finances: Lo
   if (!has) return null;
 
   const rows: Array<{ label: string; value: number | null; hab: number | null; accent: string; hint: string; note?: string }> = [
-    { label: "Recettes de fonctionnement", value: finances.recettes, hab: finances.recettes_hab, accent: "text-emerald-600", hint: "Recettes réelles de fonctionnement (retraité OFGL)." },
-    { label: "Dépenses de fonctionnement", value: finances.depenses, hab: finances.depenses_hab, accent: "text-rose-600", hint: "Dépenses réelles de fonctionnement (retraité OFGL)." },
-    { label: "Épargne brute", value: finances.epargne, hab: finances.epargne_hab, accent: (finances.epargne ?? 0) >= 0 ? "text-emerald-600" : "text-rose-600", hint: "Recettes réelles − dépenses réelles de fonctionnement." },
-    { label: "Dépenses d'investissement", value: finances.investissement, hab: finances.investissement_hab, accent: "text-blue-600", hint: "Dépenses réelles d'investissement." },
+    { label: "Recettes de fonctionnement", value: finances.recettes, hab: finances.recettes_hab, accent: "text-emerald-700 dark:text-emerald-400", hint: "Recettes réelles de fonctionnement (retraité OFGL)." },
+    { label: "Dépenses de fonctionnement", value: finances.depenses, hab: finances.depenses_hab, accent: "text-rose-700 dark:text-rose-400", hint: "Dépenses réelles de fonctionnement (retraité OFGL)." },
+    { label: "Épargne brute", value: finances.epargne, hab: finances.epargne_hab, accent: (finances.epargne ?? 0) >= 0 ? "text-emerald-700 dark:text-emerald-400" : "text-rose-700 dark:text-rose-400", hint: "Recettes réelles − dépenses réelles de fonctionnement." },
+    { label: "Dépenses d'investissement", value: finances.investissement, hab: finances.investissement_hab, accent: "text-blue-700 dark:text-blue-400", hint: "Dépenses réelles d'investissement." },
     {
-      label: "Encours de dette", value: finances.encours_dette, hab: finances.encours_dette_hab, accent: "text-amber-600",
+      label: "Encours de dette", value: finances.encours_dette, hab: finances.encours_dette_hab, accent: "text-amber-700 dark:text-amber-400",
       hint: "Dette totale restant à rembourser au 31/12.",
       note: "Le capital qu'il reste à rembourser sur les emprunts déjà contractés, au 31 décembre.",
     },
@@ -71,24 +71,24 @@ export default function LocalFinancesSection({ finances, label }: { finances: Lo
       <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
         {rows.map((r, i) => (
           <div key={i} className="p-4 rounded-3xl bg-card border border-border shadow-sm space-y-1" title={r.hint}>
-            <p className="text-[9px] font-black uppercase tracking-widest text-slate-400">{r.label}</p>
+            <p className="text-[9px] font-black uppercase tracking-widest text-muted-foreground">{r.label}</p>
             <p className={`text-xl font-black ${r.accent}`}>{fmt(r.value)}</p>
-            {perHab(r.hab) && <p className="text-[10px] font-bold text-slate-400">{perHab(r.hab)}</p>}
+            {perHab(r.hab) && <p className="text-[10px] font-bold text-muted-foreground">{perHab(r.hab)}</p>}
             {r.note && <p className="mt-1.5 text-[10px] leading-snug text-muted-foreground italic">{r.note}</p>}
           </div>
         ))}
       </div>
       {social.length > 0 && (
         <div className="pt-2 space-y-3">
-          <p className="text-[9px] font-black uppercase tracking-widest text-slate-400">
+          <p className="text-[9px] font-black uppercase tracking-widest text-muted-foreground">
             Action sociale — compétence du département
           </p>
           <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
             {social.map((r, i) => (
               <div key={i} className="p-4 rounded-3xl bg-muted border border-border space-y-1" title={r.hint}>
-                <p className="text-[9px] font-black uppercase tracking-widest text-slate-400">{r.label}</p>
+                <p className="text-[9px] font-black uppercase tracking-widest text-muted-foreground">{r.label}</p>
                 <p className="text-lg font-black text-foreground">{fmt(r.value)}</p>
-                {perHab(r.hab) && <p className="text-[10px] font-bold text-slate-400">{perHab(r.hab)}</p>}
+                {perHab(r.hab) && <p className="text-[10px] font-bold text-muted-foreground">{perHab(r.hab)}</p>}
               </div>
             ))}
           </div>

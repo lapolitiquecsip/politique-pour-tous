@@ -24,14 +24,14 @@ export default function MentionsLegales() {
           </motion.div>
           
           <h1 className="text-6xl md:text-9xl font-staatliches text-white leading-none uppercase italic mb-6">
-            Mentions <span className="text-red-600 font-sans tracking-tighter not-italic">Légales</span>
+            Mentions <span className="text-red-700 dark:text-red-400 font-sans tracking-tighter not-italic">Légales</span>
           </h1>
         </div>
       </div>
 
       {/* Content Section */}
       <div className="container mx-auto px-6 max-w-4xl py-20">
-        <div className="prose prose-slate prose-lg max-w-none space-y-12 text-slate-700">
+        <div className="prose dark:prose-invert prose-slate prose-lg max-w-none space-y-12 text-slate-700 dark:text-slate-200">
           
           <section>
             <h2 className="text-3xl font-black text-foreground uppercase tracking-tighter mb-6 border-l-4 border-red-600 pl-6">

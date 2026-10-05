@@ -138,7 +138,7 @@ export default function UniversalLawModal({ law, isOpen, onClose, onNext, onPrev
                         <span className="px-3 py-1 bg-blue-600 text-white text-[9px] font-black uppercase tracking-widest rounded-lg">
                           {law.category}
                         </span>
-                        <span className="text-[10px] font-bold text-slate-400 uppercase tracking-widest">
+                        <span className="text-[10px] font-bold text-muted-foreground uppercase tracking-widest">
                           Scrutin public n°{law.numero} — {new Date(law.date_scrutin).toLocaleDateString('fr-FR', { day: 'numeric', month: 'long', year: 'numeric' })}
                         </span>
                       </div>
@@ -219,7 +219,7 @@ export default function UniversalLawModal({ law, isOpen, onClose, onNext, onPrev
                                       </div>
                                       
                                       <div className="space-y-8">
-                                        <div className="prose prose-invert max-w-none">
+                                        <div className="prose dark:prose-invert prose-invert max-w-none">
                                           <div className="text-amber-50/90 leading-relaxed text-lg whitespace-pre-wrap font-medium">
                                             {detailedSummary}
                                           </div>
@@ -239,7 +239,7 @@ export default function UniversalLawModal({ law, isOpen, onClose, onNext, onPrev
                        <div className="bg-muted border border-border p-6 rounded-[2rem] text-center relative overflow-hidden">
                         <div className={`absolute top-0 left-0 w-full h-1.5 ${law.resultat?.includes('adopté') ? 'bg-emerald-500' : 'bg-red-500'}`} />
                         <p className="text-[9px] font-black text-slate-400 uppercase tracking-[0.3em] mb-2">Résultat Final</p>
-                        <p className={`text-2xl font-black italic tracking-tighter ${law.resultat?.includes('adopté') ? 'text-emerald-600' : 'text-red-600'}`}>
+                        <p className={`text-2xl font-black italic tracking-tighter ${law.resultat?.includes('adopté') ? 'text-emerald-700 dark:text-emerald-400' : 'text-red-600'}`}>
                           {law.resultat}
                         </p>
                       </div>
@@ -248,11 +248,11 @@ export default function UniversalLawModal({ law, isOpen, onClose, onNext, onPrev
                         <VoteHemicycle pour={law.pour} contre={law.contre} abstention={law.abstention} />
                         <div className="grid grid-cols-3 gap-2 pt-4 border-t border-border">
                            <div className="text-center">
-                              <p className="text-xl font-black text-emerald-600 leading-none">{law.pour}</p>
+                              <p className="text-xl font-black text-emerald-700 dark:text-emerald-400 leading-none">{law.pour}</p>
                               <p className="text-[8px] font-bold text-slate-400 uppercase">Pour</p>
                            </div>
                            <div className="text-center border-x border-border">
-                              <p className="text-xl font-black text-red-600 leading-none">{law.contre}</p>
+                              <p className="text-xl font-black text-red-700 dark:text-red-400 leading-none">{law.contre}</p>
                               <p className="text-[8px] font-bold text-slate-400 uppercase">Contre</p>
                            </div>
                            <div className="text-center">
@@ -300,7 +300,7 @@ export default function UniversalLawModal({ law, isOpen, onClose, onNext, onPrev
                             <div className="relative">
                               <div className="absolute -left-[31px] top-1 w-4 h-4 rounded-full bg-green-500 ring-4 ring-green-100 shadow-sm" />
                               <div className="flex flex-col">
-                                <span className="text-[10px] font-black uppercase tracking-wider text-green-600 mb-1">Dernière étape franchie</span>
+                                <span className="text-[10px] font-black uppercase tracking-wider text-green-700 dark:text-green-400 mb-1">Dernière étape franchie</span>
                                 <p className="text-foreground font-bold text-lg leading-tight">{law.timeline}</p>
                               </div>
                             </div>
@@ -346,7 +346,7 @@ export default function UniversalLawModal({ law, isOpen, onClose, onNext, onPrev
                                 </div>
                                 
                                 <div className="space-y-8">
-                                  <div className="prose prose-invert max-w-none">
+                                  <div className="prose dark:prose-invert prose-invert max-w-none">
                                     <div className="text-amber-50/90 leading-relaxed text-lg whitespace-pre-wrap font-medium">
                                       {(() => {
                                         let formatted = law.content.replace(
@@ -392,7 +392,7 @@ export default function UniversalLawModal({ law, isOpen, onClose, onNext, onPrev
                           Initiateur du texte
                         </span>
                         <div className="flex items-center gap-4">
-                          <div className="w-12 h-12 rounded-2xl bg-card border border-border flex items-center justify-center text-blue-600 shadow-sm">
+                          <div className="w-12 h-12 rounded-2xl bg-card border border-border flex items-center justify-center text-blue-700 dark:text-blue-400 shadow-sm">
                             <UserCheck size={20} />
                           </div>
                           <div>

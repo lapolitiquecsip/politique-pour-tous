@@ -57,11 +57,11 @@ export default function FiscaliteSection({ fiscalite }: { fiscalite: CommuneFisc
         {rows.map((r, i) => (
           <div key={i} className="p-4 rounded-3xl bg-card border border-border shadow-sm" title={r.hint}>
             <div className="flex items-baseline justify-between gap-3">
-              <p className="text-[10px] font-black uppercase tracking-widest text-slate-400 leading-tight">{r.label}</p>
-              <p className="text-2xl font-black text-amber-600 whitespace-nowrap">{fmtTaux(r.taux)}</p>
+              <p className="text-[10px] font-black uppercase tracking-widest text-muted-foreground leading-tight">{r.label}</p>
+              <p className="text-2xl font-black text-amber-700 dark:text-amber-400 whitespace-nowrap">{fmtTaux(r.taux)}</p>
             </div>
             {fmtEuro(r.produit) && (
-              <p className="mt-1 text-[10px] font-bold text-slate-400">
+              <p className="mt-1 text-[10px] font-bold text-muted-foreground">
                 Rapporte {fmtEuro(r.produit)} à la commune
               </p>
             )}

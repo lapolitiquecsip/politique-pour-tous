@@ -130,7 +130,7 @@ function Hemicycle({ title, total, groups }: { title: string; total: number; gro
           const inner = (
             <>
               <span className="h-2.5 w-2.5 rounded-full" style={{ background: g.color }} />
-              {g.label} <span className="text-slate-400">· {g.seats}</span>
+              {g.label} <span className="text-muted-foreground">· {g.seats}</span>
             </>
           );
           const cls = "inline-flex items-center gap-1.5 text-[11px] font-bold text-muted-foreground dark:text-slate-300 transition-all";
@@ -207,7 +207,7 @@ export default function HemicycleChart({ chamber = "both", title, subtitle }: { 
     <section className="mx-auto max-w-7xl px-4">
       <div className="rounded-[2.5rem] border border-border dark:border-slate-800 bg-card dark:bg-slate-900 p-6 md:p-10 shadow-sm">
         <div className="mb-6 text-center">
-          <p className="text-[11px] font-black uppercase tracking-[0.25em] text-red-600">{subtitle || "Composition du Parlement"}</p>
+          <p className="text-[11px] font-black uppercase tracking-[0.25em] text-red-700 dark:text-red-400">{subtitle || "Composition du Parlement"}</p>
           <h2 className="mt-1 text-3xl font-staatliches uppercase tracking-tight text-foreground dark:text-white md:text-4xl">
             {title || "Qui siège à l'Assemblée et au Sénat"}
           </h2>

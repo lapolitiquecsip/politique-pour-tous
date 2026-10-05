@@ -69,14 +69,14 @@ export default function ChamberLegislation({ chamber, chamberLabel }: { chamber:
     <section className="mx-auto max-w-7xl px-4 pb-16">
       <div className="mb-6">
         <h2 className="text-3xl font-staatliches uppercase tracking-tight text-foreground dark:text-white md:text-4xl">
-          Textes législatifs — <span className="text-red-600">{chamberLabel}</span>
+          Textes législatifs — <span className="text-red-700 dark:text-red-400">{chamberLabel}</span>
         </h2>
         <p className="mt-1 text-muted-foreground">Textes actuellement examinés par {chamberLabel === "Assemblée nationale" ? "l'Assemblée" : "le Sénat"}, avec leur type et leur étape.</p>
       </div>
 
       <div className="mb-6 flex flex-col gap-3 sm:flex-row sm:gap-8">
         <div>
-          <p className="mb-2 text-[10px] font-black uppercase tracking-widest text-slate-400">Type</p>
+          <p className="mb-2 text-[10px] font-black uppercase tracking-widest text-muted-foreground">Type</p>
           <div className="flex gap-2 overflow-x-auto pb-1 -mx-4 px-4 [scrollbar-width:none] [&::-webkit-scrollbar]:hidden sm:mx-0 sm:inline-flex sm:flex-wrap sm:overflow-visible sm:px-0">
             {TYPES.map(t => (
               <button key={t.label} onClick={() => setTextType(t.value)} className={`shrink-0 whitespace-nowrap rounded-full px-4 py-2 text-[11px] font-black uppercase tracking-wide transition ${textType === t.value ? "bg-red-600 text-white shadow" : "bg-card dark:bg-slate-900 border border-border dark:border-slate-700 text-muted-foreground hover:border-red-300"}`}>{t.label}</button>
@@ -84,17 +84,17 @@ export default function ChamberLegislation({ chamber, chamberLabel }: { chamber:
           </div>
         </div>
         <div>
-          <p className="mb-2 text-[10px] font-black uppercase tracking-widest text-slate-400">Étape</p>
+          <p className="mb-2 text-[10px] font-black uppercase tracking-widest text-muted-foreground">Étape</p>
           <div className="flex gap-2 overflow-x-auto pb-1 -mx-4 px-4 [scrollbar-width:none] [&::-webkit-scrollbar]:hidden sm:mx-0 sm:inline-flex sm:flex-wrap sm:overflow-visible sm:px-0">
             {STAGES.map(s => (
-              <button key={s.label} onClick={() => setStage(s.value)} className={`shrink-0 whitespace-nowrap rounded-full px-4 py-2 text-[11px] font-black uppercase tracking-wide transition ${stage === s.value ? "bg-amber-500 text-white shadow" : "bg-card dark:bg-slate-900 border border-border dark:border-slate-700 text-muted-foreground hover:border-amber-300"}`}>{s.label}</button>
+              <button key={s.label} onClick={() => setStage(s.value)} className={`shrink-0 whitespace-nowrap rounded-full px-4 py-2 text-[11px] font-black uppercase tracking-wide transition ${stage === s.value ? "bg-amber-500 text-slate-950 shadow" : "bg-card dark:bg-slate-900 border border-border dark:border-slate-700 text-muted-foreground hover:border-amber-300"}`}>{s.label}</button>
             ))}
           </div>
         </div>
       </div>
 
       {loading && items.length === 0 ? (
-        <div className="flex justify-center py-20"><Loader2 className="animate-spin text-red-600" /></div>
+        <div className="flex justify-center py-20"><Loader2 className="animate-spin text-red-700 dark:text-red-400" /></div>
       ) : visible.length === 0 ? (
         <div className="py-16 text-center text-muted-foreground">Aucun texte ne correspond à ces filtres pour cette chambre.</div>
       ) : (

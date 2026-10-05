@@ -84,9 +84,9 @@ export default function PartyElectionMap({ slug, color, name }: { slug: string; 
       {/* EN TITRE : le score NATIONAL de l'élection sélectionnée (gros chiffre), puis la carte
           permet d'explorer le détail par collectivité. */}
       <div className="mt-4 flex flex-wrap items-baseline gap-x-3 gap-y-1">
-        <span className="text-4xl font-black leading-none tabular-nums" style={{ color }}>{serie.national.toLocaleString("fr-FR", { maximumFractionDigits: 1 })} %</span>
+        <span className="text-4xl font-black leading-none tabular-nums text-foreground">{serie.national.toLocaleString("fr-FR", { maximumFractionDigits: 1 })} %</span>
         <span className="text-sm font-bold text-muted-foreground">à l&apos;échelle nationale · {el.label}</span>
-        <span className="rounded-full bg-emerald-50 dark:bg-emerald-500/10 px-2 py-0.5 text-[9px] font-black uppercase tracking-widest text-emerald-600 dark:text-emerald-300 ring-1 ring-emerald-200">Officiel</span>
+        <span className="rounded-full bg-emerald-50 dark:bg-emerald-500/10 px-2 py-0.5 text-[9px] font-black uppercase tracking-widest text-emerald-700 dark:text-emerald-300 ring-1 ring-emerald-200">Officiel</span>
       </div>
       <p className="mt-1.5 text-sm text-muted-foreground">{el.desc} — survolez une collectivité pour voir son score.</p>
 
@@ -112,7 +112,7 @@ export default function PartyElectionMap({ slug, color, name }: { slug: string; 
         </div>
 
         <div>
-          <p className="mb-2 text-[10px] font-black uppercase tracking-widest text-slate-400">Part des voix</p>
+          <p className="mb-2 text-[10px] font-black uppercase tracking-widest text-muted-foreground">Part des voix</p>
           <div className="flex flex-col gap-1.5">
             {bands.map((s, i) => (
               <div key={i} className="flex items-center gap-2 text-xs text-muted-foreground">
@@ -120,21 +120,21 @@ export default function PartyElectionMap({ slug, color, name }: { slug: string; 
               </div>
             ))}
           </div>
-          <p className="mb-2 mt-5 text-[10px] font-black uppercase tracking-widest text-slate-400">Départements en tête</p>
+          <p className="mb-2 mt-5 text-[10px] font-black uppercase tracking-widest text-muted-foreground">Départements en tête</p>
           <ol className="space-y-1.5">
             {top.map(([code, v], i) => (
               <li key={code} className="flex items-center gap-2 text-sm">
                 <span className="w-5 text-right font-black tabular-nums text-slate-400">{i + 1}</span>
                 <span className="h-3 w-3 rounded-full" style={{ background: colorFor(v) }} />
                 <span className="font-bold text-foreground">{deptLabel(code)}</span>
-                <span className="ml-auto font-black tabular-nums" style={{ color }}>{v.toLocaleString("fr-FR")} %</span>
+                <span className="ml-auto font-black tabular-nums text-foreground">{v.toLocaleString("fr-FR")} %</span>
               </li>
             ))}
           </ol>
         </div>
       </div>
 
-      <a href={el.url} target="_blank" rel="noopener noreferrer" className="mt-4 inline-flex items-start gap-1.5 text-[11px] leading-snug text-slate-400 hover:text-slate-700">
+      <a href={el.url} target="_blank" rel="noopener noreferrer" className="mt-4 inline-flex items-start gap-1.5 text-[11px] leading-snug text-muted-foreground hover:text-slate-700">
         <ExternalLink size={11} className="mt-0.5 shrink-0" /> {el.source}
       </a>
     </div>

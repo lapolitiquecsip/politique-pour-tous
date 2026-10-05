@@ -103,7 +103,7 @@ export default function LawsGrid({ onSelectLaw, categoryFilter }: { onSelectLaw?
     <div className="space-y-8">
       {/* Search Bar */}
       <div className="relative max-w-2xl mx-auto">
-        <Search className="absolute left-6 top-1/2 -translate-y-1/2 text-slate-400 w-5 h-5" />
+        <Search className="absolute left-6 top-1/2 -translate-y-1/2 text-muted-foreground w-5 h-5" />
         <input
           type="text"
           placeholder="Rechercher un projet ou une proposition de loi..."
@@ -171,10 +171,10 @@ export default function LawsGrid({ onSelectLaw, categoryFilter }: { onSelectLaw?
                         )}
                       </div>
                       <div className="flex flex-col">
-                        <span className="text-[10px] font-black uppercase tracking-wider text-slate-400">
+                        <span className="text-[10px] font-black uppercase tracking-wider text-muted-foreground">
                           {law.category === 'Projet de loi' ? 'Initiative' : 'Déposé par'}
                         </span>
-                        <span className={`text-xs font-bold ${deputy ? 'text-blue-700' : 'text-slate-700'}`}>
+                        <span className={`text-xs font-bold ${deputy ? 'text-blue-700 dark:text-blue-300' : 'text-slate-700 dark:text-slate-200'}`}>
                           {law.author}
                         </span>
                       </div>
@@ -189,7 +189,7 @@ export default function LawsGrid({ onSelectLaw, categoryFilter }: { onSelectLaw?
                 })()}
 
                 <div className="flex items-center justify-between pt-6 border-t border-border mt-auto">
-                  <div className="flex items-center gap-2 text-slate-400 text-xs">
+                  <div className="flex items-center gap-2 text-muted-foreground text-xs">
                     <Calendar size={14} />
                     <span>{law.context?.replace(/\[.*?\]\s*/, "") || "Dossier en cours"}</span>
                   </div>
@@ -213,7 +213,7 @@ export default function LawsGrid({ onSelectLaw, categoryFilter }: { onSelectLaw?
                     window.scrollTo({ top: 400, behavior: 'smooth' });
                   }}
                   disabled={currentPage === 1}
-                  className="px-4 py-2 rounded-xl border border-border bg-card text-slate-700 font-bold disabled:opacity-50 disabled:cursor-not-allowed hover:bg-muted transition-colors"
+                  className="px-4 py-2 rounded-xl border border-border bg-card text-slate-700 dark:text-slate-200 font-bold disabled:opacity-50 disabled:cursor-not-allowed hover:bg-muted transition-colors"
                 >
                   Précédent
                 </button>
@@ -236,7 +236,7 @@ export default function LawsGrid({ onSelectLaw, categoryFilter }: { onSelectLaw?
                       );
                     }
                     if (page === currentPage - 2 || page === currentPage + 2) {
-                      return <span key={page} className="w-10 h-10 flex items-center justify-center text-slate-400">...</span>;
+                      return <span key={page} className="w-10 h-10 flex items-center justify-center text-muted-foreground">...</span>;
                     }
                     return null;
                   })}
@@ -248,18 +248,18 @@ export default function LawsGrid({ onSelectLaw, categoryFilter }: { onSelectLaw?
                     window.scrollTo({ top: 400, behavior: 'smooth' });
                   }}
                   disabled={currentPage === totalPages}
-                  className="px-4 py-2 rounded-xl border border-border bg-card text-slate-700 font-bold disabled:opacity-50 disabled:cursor-not-allowed hover:bg-muted transition-colors"
+                  className="px-4 py-2 rounded-xl border border-border bg-card text-slate-700 dark:text-slate-200 font-bold disabled:opacity-50 disabled:cursor-not-allowed hover:bg-muted transition-colors"
                 >
                   Suivant
                 </button>
               </div>
-              <p className="text-slate-400 text-sm font-medium">Page {currentPage} sur {totalPages}</p>
+              <p className="text-muted-foreground text-sm font-medium">Page {currentPage} sur {totalPages}</p>
             </div>
           )}
         </>
       ) : (
         <div className="text-center py-20 bg-muted rounded-[3rem] border-2 border-dashed border-border">
-          <FileText className="mx-auto text-slate-300 w-16 h-16 mb-4" />
+          <FileText className="mx-auto text-muted-foreground w-16 h-16 mb-4" />
           <h3 className="text-xl font-bold text-foreground">Aucun dossier trouvé</h3>
           <p className="text-muted-foreground">Essayez d'ajuster votre recherche.</p>
         </div>

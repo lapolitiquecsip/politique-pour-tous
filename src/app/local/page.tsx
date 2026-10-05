@@ -27,42 +27,42 @@ const getPartyTheme = (party: string) => {
     case "PS":
       return {
         badge: "bg-rose-600 text-white shadow-rose-600/30",
-        text: "text-rose-400",
+        text: "text-rose-700 dark:text-rose-400",
         hoverBg: "group-hover/btn:bg-rose-600",
         hoverText: "group-hover:text-rose-600"
       };
     case "EELV":
       return {
         badge: "bg-emerald-600 text-white shadow-emerald-600/30",
-        text: "text-emerald-400",
+        text: "text-emerald-700 dark:text-emerald-400",
         hoverBg: "group-hover/btn:bg-emerald-600",
         hoverText: "group-hover:text-emerald-600"
       };
     case "LR":
       return {
         badge: "bg-blue-600 text-white shadow-blue-600/30",
-        text: "text-blue-400",
+        text: "text-blue-700 dark:text-blue-400",
         hoverBg: "group-hover/btn:bg-blue-600",
         hoverText: "group-hover:text-blue-600"
       };
     case "Horizons":
       return {
         badge: "bg-cyan-600 text-white shadow-cyan-600/30",
-        text: "text-cyan-400",
+        text: "text-cyan-700 dark:text-cyan-400",
         hoverBg: "group-hover/btn:bg-cyan-600",
         hoverText: "group-hover:text-cyan-600"
       };
     case "MoDem":
       return {
-        badge: "bg-orange-500 text-white shadow-orange-500/30",
+        badge: "bg-orange-700 text-white shadow-orange-500/30",
         text: "text-orange-400",
         hoverBg: "group-hover/btn:bg-orange-500",
         hoverText: "group-hover:text-orange-500"
       };
     case "UDI":
       return {
-        badge: "bg-amber-500 text-white shadow-amber-500/30",
-        text: "text-amber-500",
+        badge: "bg-amber-500 text-slate-950 shadow-amber-500/30",
+        text: "text-amber-700 dark:text-amber-400",
         hoverBg: "group-hover/btn:bg-amber-500",
         hoverText: "group-hover:text-amber-500"
       };
@@ -85,7 +85,7 @@ const getPartyTheme = (party: string) => {
     case "DVD":
       return {
         badge: "bg-indigo-900 text-white shadow-indigo-900/30",
-        text: "text-indigo-400",
+        text: "text-indigo-700 dark:text-indigo-400",
         hoverBg: "group-hover/btn:bg-indigo-900",
         hoverText: "group-hover:text-indigo-900"
       };
@@ -93,7 +93,7 @@ const getPartyTheme = (party: string) => {
     default:
       return {
         badge: "bg-fuchsia-600 text-white shadow-fuchsia-600/30",
-        text: "text-fuchsia-400",
+        text: "text-fuchsia-700 dark:text-fuchsia-400",
         hoverBg: "group-hover/btn:bg-fuchsia-600",
         hoverText: "group-hover:text-fuchsia-600"
       };
@@ -105,7 +105,7 @@ const cardColors = [
   { text: 'text-emerald-500', bg: 'bg-emerald-500', lightBg: 'bg-emerald-50 dark:bg-emerald-500/10' },
   { text: 'text-blue-500', bg: 'bg-blue-500', lightBg: 'bg-blue-50 dark:bg-blue-500/10' },
   { text: 'text-purple-500', bg: 'bg-purple-500', lightBg: 'bg-purple-50 dark:bg-purple-500/10' },
-  { text: 'text-amber-500', bg: 'bg-amber-500', lightBg: 'bg-amber-50 dark:bg-amber-500/10' },
+  { text: 'text-amber-700 dark:text-amber-400', bg: 'bg-amber-500', lightBg: 'bg-amber-50 dark:bg-amber-500/10' },
   { text: 'text-rose-500', bg: 'bg-rose-500', lightBg: 'bg-rose-50 dark:bg-rose-500/10' },
   { text: 'text-indigo-500', bg: 'bg-indigo-500', lightBg: 'bg-indigo-50 dark:bg-indigo-500/10' },
   { text: 'text-cyan-500', bg: 'bg-cyan-500', lightBg: 'bg-cyan-50 dark:bg-cyan-500/10' },
@@ -121,7 +121,7 @@ const DepartmentGridCard: React.FC<{
   
   // Resolve party theme or fall back to standard color index theme
   const partyTheme = getPartyTheme(item.party);
-  const cardTheme = partyTheme.text !== "text-fuchsia-400" ? partyTheme : {
+  const cardTheme = partyTheme.text !== "text-fuchsia-700 dark:text-fuchsia-400" ? partyTheme : {
     badge: `bg-${theme.text.split('-')[1]}-600 text-white shadow-${theme.text.split('-')[1]}-600/30`,
     text: theme.text,
     hoverBg: `group-hover/btn:${theme.bg}`,
@@ -195,7 +195,7 @@ const DepartmentGridCard: React.FC<{
             </div>
             <div className="min-w-0">
               <p className="text-[8px] font-black uppercase tracking-widest text-slate-400">Parti Majoritaire</p>
-              <span className={cn("inline-block font-black text-[9px] px-2 py-0.5 rounded-full mt-0.5 border border-border shadow-sm bg-muted text-slate-700", 
+              <span className={cn("inline-block font-black text-[9px] px-2 py-0.5 rounded-full mt-0.5 border border-border shadow-sm bg-muted text-slate-700 dark:text-slate-200", 
                 item.party !== "N/A" && "font-black"
               )}>
                 {item.party}
@@ -255,8 +255,8 @@ const teaserConfigs = {
     metric1Label: "Sécurité",
     metric1ValA: "7.6 / 10",
     metric1ValB: "8.2 / 10",
-    metric1ColorA: "text-emerald-800",
-    metric1ColorB: "text-emerald-800",
+    metric1ColorA: "text-emerald-800 dark:text-emerald-300",
+    metric1ColorB: "text-emerald-800 dark:text-emerald-300",
     metric2Label: "Éducation",
     metric2ValA: "82 / 100",
     metric2ValB: "88 / 100",
@@ -265,8 +265,8 @@ const teaserConfigs = {
     metric3Label: "Cadre de vie",
     metric3ValA: "Moyen",
     metric3ValB: "Excellent",
-    metric3ColorA: "text-amber-800",
-    metric3ColorB: "text-emerald-800",
+    metric3ColorA: "text-amber-800 dark:text-amber-300",
+    metric3ColorB: "text-emerald-800 dark:text-emerald-300",
   },
   departement: {
     title: "Comparateur de départements",
@@ -278,8 +278,8 @@ const teaserConfigs = {
     metric1Label: "Sécurité",
     metric1ValA: "8.2 / 10",
     metric1ValB: "6.5 / 10",
-    metric1ColorA: "text-emerald-800",
-    metric1ColorB: "text-amber-800",
+    metric1ColorA: "text-emerald-800 dark:text-emerald-300",
+    metric1ColorB: "text-amber-800 dark:text-amber-300",
     metric2Label: "Budget / Hab.",
     metric2ValA: "1 240 €",
     metric2ValB: "980 €",
@@ -288,8 +288,8 @@ const teaserConfigs = {
     metric3Label: "Fiscalité",
     metric3ValA: "Basse",
     metric3ValB: "Élevée",
-    metric3ColorA: "text-emerald-800",
-    metric3ColorB: "text-rose-800",
+    metric3ColorA: "text-emerald-800 dark:text-emerald-300",
+    metric3ColorB: "text-rose-800 dark:text-rose-300",
   },
   region: {
     title: "Comparateur de régions",
@@ -301,8 +301,8 @@ const teaserConfigs = {
     metric1Label: "Transports",
     metric1ValA: "Très dense",
     metric1ValB: "Moyen",
-    metric1ColorA: "text-emerald-800",
-    metric1ColorB: "text-amber-800",
+    metric1ColorA: "text-emerald-800 dark:text-emerald-300",
+    metric1ColorB: "text-amber-800 dark:text-amber-300",
     metric2Label: "Budget Lycées",
     metric2ValA: "680 M€",
     metric2ValB: "310 M€",
@@ -311,14 +311,14 @@ const teaserConfigs = {
     metric3Label: "Développement",
     metric3ValA: "Très élevé",
     metric3ValB: "Élevé",
-    metric3ColorA: "text-emerald-800",
-    metric3ColorB: "text-emerald-800",
+    metric3ColorA: "text-emerald-800 dark:text-emerald-300",
+    metric3ColorB: "text-emerald-800 dark:text-emerald-300",
   }
 };
 
 export default function LocalPoliticsPage() {
   return (
-    <Suspense fallback={<div className="min-h-screen bg-muted flex items-center justify-center"><Loader2 className="animate-spin text-rose-600" size={40} /></div>}>
+    <Suspense fallback={<div className="min-h-screen bg-muted flex items-center justify-center"><Loader2 className="animate-spin text-rose-700 dark:text-rose-400" size={40} /></div>}>
       <LocalPoliticsContent />
     </Suspense>
   );
@@ -468,7 +468,7 @@ function LocalPoliticsContent() {
                 <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-rose-400 opacity-75"></span>
                 <span className="relative inline-flex rounded-full h-3 w-3 bg-rose-600"></span>
               </span>
-              <span className="text-xs font-black uppercase tracking-widest text-rose-600">Action Locale</span>
+              <span className="text-xs font-black uppercase tracking-widest text-rose-700 dark:text-rose-400">Action Locale</span>
             </div>
 
             <h1 className="text-6xl md:text-8xl font-staatliches uppercase tracking-tight leading-tight mb-8 py-4 text-foreground">
@@ -490,9 +490,9 @@ function LocalPoliticsContent() {
           <div className="bg-card p-2 rounded-[2.5rem] border border-border shadow-2xl shadow-slate-200/50 flex flex-col md:flex-row gap-2">
             {[
               // Chaque échelon a SA couleur d'état actif (classes littérales pour Tailwind JIT).
-              { id: "region", label: "La Région", icon: Map, active: "bg-sky-50 dark:bg-sky-500/10 text-sky-600 dark:text-sky-300 shadow-inner", iconOn: "bg-sky-100 dark:bg-sky-500/10", dot: "bg-sky-600" },
-              { id: "departement", label: "Le Département", icon: Layers, active: "bg-rose-50 dark:bg-rose-500/10 text-rose-600 dark:text-rose-300 shadow-inner", iconOn: "bg-rose-100 dark:bg-rose-500/10", dot: "bg-rose-600" },
-              { id: "commune", label: "La Commune", icon: LayoutGrid, active: "bg-emerald-50 dark:bg-emerald-500/10 text-emerald-600 dark:text-emerald-300 shadow-inner", iconOn: "bg-emerald-100 dark:bg-emerald-500/10", dot: "bg-emerald-600" }
+              { id: "region", label: "La Région", icon: Map, active: "bg-sky-50 dark:bg-sky-500/10 text-sky-700 dark:text-sky-300 shadow-inner", iconOn: "bg-sky-100 dark:bg-sky-500/10", dot: "bg-sky-600" },
+              { id: "departement", label: "Le Département", icon: Layers, active: "bg-rose-50 dark:bg-rose-500/10 text-rose-700 dark:text-rose-300 shadow-inner", iconOn: "bg-rose-100 dark:bg-rose-500/10", dot: "bg-rose-600" },
+              { id: "commune", label: "La Commune", icon: LayoutGrid, active: "bg-emerald-50 dark:bg-emerald-500/10 text-emerald-700 dark:text-emerald-300 shadow-inner", iconOn: "bg-emerald-100 dark:bg-emerald-500/10", dot: "bg-emerald-600" }
             ].map((tab) => {
               const isActive = activeTab === tab.id;
               const Icon = tab.icon;
@@ -502,14 +502,14 @@ function LocalPoliticsContent() {
                   onClick={() => setActiveTab(tab.id as any)}
                   className={`
                     flex-1 flex items-center justify-center gap-4 py-6 px-8 rounded-[2rem] transition-all duration-500 group
-                    ${isActive ? tab.active : "text-slate-400 hover:text-muted-foreground hover:bg-muted"}
+                    ${isActive ? tab.active : "text-muted-foreground hover:text-foreground hover:bg-muted"}
                   `}
                 >
                   <div className={`p-3 rounded-2xl transition-colors ${isActive ? tab.iconOn : "bg-slate-100 dark:bg-slate-500/10 group-hover:bg-slate-200"}`}>
                     <Icon size={24} strokeWidth={isActive ? 2.5 : 2} />
                   </div>
                   <div className="text-left">
-                    <p className="text-[10px] font-black uppercase tracking-widest opacity-60">Échelon</p>
+                    <p className="text-[10px] font-black uppercase tracking-widest opacity-80">Échelon</p>
                     <p className="text-lg font-staatliches uppercase tracking-wide">{tab.label}</p>
                   </div>
                   {isActive && (
@@ -590,7 +590,7 @@ function LocalPoliticsContent() {
                     <div className="space-y-8">
                       <div className="flex items-center justify-between">
                         <h3 className="text-2xl font-staatliches uppercase tracking-wide">Villes à la Une</h3>
-                        <div className="flex items-center gap-2 text-rose-600 font-black text-[10px] uppercase tracking-widest">
+                        <div className="flex items-center gap-2 text-rose-700 dark:text-rose-400 font-black text-[10px] uppercase tracking-widest">
                           <span className="w-2 h-2 rounded-full bg-rose-600" />
                           Données officielles
                         </div>
@@ -631,14 +631,14 @@ function LocalPoliticsContent() {
                                     {city.name}
                                   </span>
                                   <p className="text-white font-black text-[9px] uppercase tracking-widest bg-slate-900/60 backdrop-blur-md px-3 py-1 rounded-full border border-white/10">
-                                    {city.mayor} <span className="opacity-60">•</span> <span className={theme.text}>{city.party}</span>
+                                    {city.mayor} <span className="opacity-60">•</span> <span className="text-white/90">{city.party}</span>
                                   </p>
                                 </div>
                               </div>
                               <div className="p-6">
                                 <div className="grid grid-cols-1 gap-6 py-6 border-y border-slate-50">
                                   <div className="space-y-1">
-                                    <span className="text-[9px] font-black uppercase text-slate-400 tracking-widest flex items-center gap-1"><Users size={10} /> Population</span>
+                                    <span className="text-[9px] font-black uppercase text-muted-foreground tracking-widest flex items-center gap-1"><Users size={10} /> Population</span>
                                     <p className="text-sm font-black text-foreground">{city.population}</p>
                                   </div>
                                 </div>
@@ -682,7 +682,7 @@ function LocalPoliticsContent() {
                 <div className="w-full py-4 space-y-8">
                   {filteredItems.length === 0 ? (
                     <div className="text-center py-20 bg-card border border-border/60 rounded-[2.5rem] shadow-sm">
-                      <p className="text-slate-400 font-bold text-sm">Aucun département ne correspond à votre recherche.</p>
+                      <p className="text-muted-foreground font-bold text-sm">Aucun département ne correspond à votre recherche.</p>
                     </div>
                   ) : (
                     <>
@@ -702,7 +702,7 @@ function LocalPoliticsContent() {
                           <button
                             onClick={() => setVisibleCount(prev => prev + 12)}
                             className={cn(
-                              "px-8 py-3.5 bg-card border-2 border-border text-slate-700 font-bold text-xs uppercase tracking-widest rounded-full shadow-md hover:border-rose-600 hover:text-rose-600 transition-all active:scale-95 duration-200 cursor-pointer"
+                              "px-8 py-3.5 bg-card border-2 border-border text-slate-700 dark:text-slate-200 font-bold text-xs uppercase tracking-widest rounded-full shadow-md hover:border-rose-600 hover:text-rose-600 transition-all active:scale-95 duration-200 cursor-pointer"
                             )}
                           >
                             Charger plus de départements
@@ -723,7 +723,7 @@ function LocalPoliticsContent() {
                <div className="absolute top-0 right-0 w-32 h-32 bg-rose-600/20 blur-3xl rounded-full" />
                <div className="relative z-10 space-y-8">
                  <div className="flex items-center gap-3">
-                   <div className="w-10 h-10 rounded-2xl bg-white/10 flex items-center justify-center"><Vote size={20} className="text-rose-400" /></div>
+                   <div className="w-10 h-10 rounded-2xl bg-white/10 flex items-center justify-center"><Vote size={20} className="text-rose-700 dark:text-rose-400" /></div>
                    <h3 className="text-2xl font-staatliches uppercase tracking-wide">Prochaines échéances</h3>
                  </div>
                  
@@ -753,7 +753,7 @@ function LocalPoliticsContent() {
                       const passe = new Date() > e.end;
                       return (
                         <div key={i} className={`bg-white/5 p-5 rounded-2xl border border-white/10 ${passe ? "opacity-70" : ""}`}>
-                          <p className={`font-black text-[9px] uppercase tracking-widest mb-1 flex items-center gap-2 ${passe ? "text-slate-400" : "text-rose-400"}`}>
+                          <p className={`font-black text-[9px] uppercase tracking-widest mb-1 flex items-center gap-2 ${passe ? "text-slate-300" : "text-rose-400"}`}>
                             {passe && <span className="w-1 h-1 rounded-full bg-slate-400" />} {e.periode}
                           </p>
                           <p className="font-bold text-lg mb-1">{e.titre}</p>
@@ -761,7 +761,7 @@ function LocalPoliticsContent() {
                           <span className={`inline-block mb-2 rounded-md px-2 py-0.5 text-[9px] font-black uppercase tracking-widest ${passe ? "bg-emerald-500/15 text-emerald-300" : "bg-rose-500/15 text-rose-300"}`}>
                             {passe ? "✓ Terminé" : "À venir"}
                           </span>
-                          <p className="text-sm text-white/60 leading-relaxed">{e.desc}</p>
+                          <p className="text-sm text-white/80 leading-relaxed">{e.desc}</p>
                         </div>
                       );
                     })}
@@ -775,7 +775,7 @@ function LocalPoliticsContent() {
                 <div className="flex items-center justify-between">
                   <div className="space-y-1">
                     <h3 className="text-2xl font-staatliches uppercase tracking-wide text-foreground dark:text-white">Maires par Étiquette</h3>
-                    <p className="text-[10px] font-black uppercase tracking-widest text-slate-400 dark:text-slate-500">France entière • Mandature 2026 vs 2020</p>
+                    <p className="text-[10px] font-black uppercase tracking-widest text-muted-foreground">France entière • Mandature 2026 vs 2020</p>
                   </div>
                   <div className="w-12 h-12 rounded-2xl bg-muted dark:bg-slate-800 flex items-center justify-center text-foreground dark:text-slate-100 border border-border dark:border-slate-800 shadow-sm">
                     <Building size={22} />
@@ -828,7 +828,7 @@ function LocalPoliticsContent() {
                 </div>
 
                 <div className="pt-4 border-t border-slate-50 dark:border-slate-800/80 space-y-3">
-                  <p className="text-[9px] font-black uppercase tracking-widest text-slate-400 dark:text-slate-500 flex items-center justify-center gap-4">
+                  <p className="text-[9px] font-black uppercase tracking-widest text-muted-foreground flex items-center justify-center gap-4">
                     <span className="flex items-center gap-1.5"><span className="w-1.5 h-1.5 rounded-full bg-emerald-500" /> Progression</span>
                     <span className="flex items-center gap-1.5"><span className="w-1.5 h-1.5 rounded-full bg-rose-500" /> Recul</span>
                   </p>
@@ -880,14 +880,14 @@ function LocalPoliticsContent() {
                         <div className="grid grid-cols-7 items-center gap-1 text-center mb-4">
                           <div className="col-span-3 bg-white/30 rounded-2xl p-2.5 flex flex-col items-center border border-white/10 shadow-sm min-w-0">
                             <span className="text-[10px] font-black uppercase tracking-wider text-foreground truncate max-w-full">{config.entityA}</span>
-                            <span className="text-[9px] font-bold text-slate-700 mt-0.5 truncate max-w-full">{config.subA}</span>
+                            <span className="text-[9px] font-bold text-slate-700 dark:text-slate-200 mt-0.5 truncate max-w-full">{config.subA}</span>
                           </div>
                           <div className="col-span-1 flex justify-center">
                             <span className="w-7 h-7 rounded-full bg-slate-900 text-white font-black text-[10px] flex items-center justify-center shadow-md border border-white/15">VS</span>
                           </div>
                           <div className="col-span-3 bg-white/30 rounded-2xl p-2.5 flex flex-col items-center border border-white/10 shadow-sm min-w-0">
                             <span className="text-[10px] font-black uppercase tracking-wider text-foreground truncate max-w-full">{config.entityB}</span>
-                            <span className="text-[9px] font-bold text-slate-700 mt-0.5 truncate max-w-full">{config.subB}</span>
+                            <span className="text-[9px] font-bold text-slate-700 dark:text-slate-200 mt-0.5 truncate max-w-full">{config.subB}</span>
                           </div>
                         </div>
 
@@ -896,7 +896,7 @@ function LocalPoliticsContent() {
                           {/* Metric 1 */}
                           <div className="grid grid-cols-7 items-center text-xs font-bold text-foreground border-b border-white/10 pb-2">
                             <div className={cn("col-span-2 text-left font-black", config.metric1ColorA)}>{config.metric1ValA}</div>
-                            <div className="col-span-3 text-center text-[8px] uppercase tracking-widest text-slate-700 font-extrabold flex items-center justify-center gap-1">
+                            <div className="col-span-3 text-center text-[8px] uppercase tracking-widest text-slate-700 dark:text-slate-200 font-extrabold flex items-center justify-center gap-1">
                               <Scale size={10} className="opacity-60" /> {config.metric1Label}
                             </div>
                             <div className={cn("col-span-2 text-right font-black", config.metric1ColorB)}>{config.metric1ValB}</div>
@@ -905,7 +905,7 @@ function LocalPoliticsContent() {
                           {/* Metric 2 */}
                           <div className="grid grid-cols-7 items-center text-xs font-bold text-foreground border-b border-white/10 pb-2">
                             <div className={cn("col-span-2 text-left font-black", config.metric2ColorA)}>{config.metric2ValA}</div>
-                            <div className="col-span-3 text-center text-[8px] uppercase tracking-widest text-slate-700 font-extrabold">
+                            <div className="col-span-3 text-center text-[8px] uppercase tracking-widest text-slate-700 dark:text-slate-200 font-extrabold">
                               {config.metric2Label}
                             </div>
                             <div className={cn("col-span-2 text-right font-black", config.metric2ColorB)}>{config.metric2ValB}</div>
@@ -914,7 +914,7 @@ function LocalPoliticsContent() {
                           {/* Metric 3 */}
                           <div className="grid grid-cols-7 items-center text-xs font-bold text-foreground">
                             <div className={cn("col-span-2 text-left font-black", config.metric3ColorA)}>{config.metric3ValA}</div>
-                            <div className="col-span-3 text-center text-[8px] uppercase tracking-widest text-slate-700 font-extrabold">
+                            <div className="col-span-3 text-center text-[8px] uppercase tracking-widest text-slate-700 dark:text-slate-200 font-extrabold">
                               {config.metric3Label}
                             </div>
                             <div className={cn("col-span-2 text-right font-black", config.metric3ColorB)}>{config.metric3ValB}</div>

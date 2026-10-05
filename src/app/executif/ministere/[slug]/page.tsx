@@ -41,7 +41,7 @@ export default async function MinistryPage({ params }: { params: Promise<{ slug:
     return (
       <div className="min-h-screen bg-muted flex flex-col items-center justify-center p-4">
         <h1 className="text-4xl font-staatliches uppercase mb-4">Ministère introuvable</h1>
-        <Link href="/executif" className="text-blue-600 font-bold hover:underline flex items-center gap-2">
+        <Link href="/executif" className="text-blue-700 dark:text-blue-400 font-bold hover:underline flex items-center gap-2">
           <ArrowLeft size={16} /> Retour à l'Exécutif
         </Link>
       </div>
@@ -123,10 +123,10 @@ export default async function MinistryPage({ params }: { params: Promise<{ slug:
               />
             </div>
             <div className="flex-1 text-center sm:text-left">
-              <p className="text-[10px] font-black text-amber-600 uppercase tracking-widest mb-1">Ministre en fonction</p>
+              <p className="text-[10px] font-black text-amber-700 dark:text-amber-400 uppercase tracking-widest mb-1">Ministre en fonction</p>
               <h2 className="text-2xl font-bold text-foreground group-hover:text-amber-600 transition-colors">{ministryData.ministerName}</h2>
               {profile?.summary && <p className="mt-2 text-sm leading-6 text-muted-foreground line-clamp-2">{profile.summary}</p>}
-              <span className="mt-3 inline-flex items-center gap-2 rounded-xl bg-amber-500/10 px-4 py-2 text-[11px] font-black uppercase tracking-widest text-amber-600 group-hover:bg-amber-500 group-hover:text-white transition-colors">
+              <span className="mt-3 inline-flex items-center gap-2 rounded-xl bg-amber-500/10 px-4 py-2 text-[11px] font-black uppercase tracking-widest text-amber-700 dark:text-amber-400 group-hover:bg-amber-500 group-hover:text-white transition-colors">
                 Voir la fiche détaillée du ministre <ChevronRight size={14} />
               </span>
             </div>
@@ -171,7 +171,7 @@ export default async function MinistryPage({ params }: { params: Promise<{ slug:
                       return (
                         <div key={p.programme_num}>
                           <div className="flex justify-between items-baseline gap-3 text-sm">
-                            <span className="font-medium text-slate-700 leading-tight">{p.programme_name}</span>
+                            <span className="font-medium text-slate-700 dark:text-slate-200 leading-tight">{p.programme_name}</span>
                             <span className="font-black text-foreground whitespace-nowrap">{(Number(p.amount_2026) / 1e9).toLocaleString('fr-FR', { maximumFractionDigits: 2 })} Md€</span>
                           </div>
                           <div className="mt-1 h-1.5 w-full rounded-full bg-slate-100 dark:bg-slate-500/10 overflow-hidden">
@@ -184,7 +184,7 @@ export default async function MinistryPage({ params }: { params: Promise<{ slug:
                 </div>
               );
             })()}
-            <p className="mt-4 text-[11px] italic text-slate-400">
+            <p className="mt-4 text-[11px] italic text-muted-foreground">
               Montant de la mission budgétaire principale rattachée à ce ministère (budget de l'État, hors Sécurité sociale). Un ministère peut recouvrir plusieurs missions. Source : PLF 2026 (data.economie.gouv).
             </p>
           </div>
@@ -214,7 +214,7 @@ export default async function MinistryPage({ params }: { params: Promise<{ slug:
            )}
            
            <div className="mt-8 text-center">
-             <Link href="/" className="inline-flex items-center gap-2 text-xs font-black uppercase tracking-widest text-amber-600 hover:text-amber-700 hover:gap-3 transition-all">
+             <Link href="/" className="inline-flex items-center gap-2 text-xs font-black uppercase tracking-widest text-amber-700 dark:text-amber-400 hover:text-amber-700 hover:gap-3 transition-all">
                Voir tout le fil d'actualité <ChevronRight size={14} />
              </Link>
            </div>

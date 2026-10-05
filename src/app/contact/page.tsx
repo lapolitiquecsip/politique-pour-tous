@@ -52,7 +52,7 @@ export default function ContactPage() {
           </motion.div>
           
           <h1 className="text-6xl md:text-9xl font-staatliches text-white leading-none uppercase italic mb-6">
-            Parlons <span className="text-red-600 font-sans tracking-tighter not-italic">Politique</span>
+            Parlons <span className="text-red-700 dark:text-red-400 font-sans tracking-tighter not-italic">Politique</span>
           </h1>
           <p className="text-white/60 text-lg md:text-2xl font-medium max-w-2xl mx-auto leading-relaxed">
             Une question sur votre abonnement ? Une suggestion de dossier ? Notre équipe vous répond sous 24h.
@@ -77,7 +77,7 @@ export default function ContactPage() {
                 >
                   <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
                     <div className="space-y-2">
-                      <label className="text-xs font-black uppercase tracking-widest text-slate-400 pl-4">Nom Complet</label>
+                      <label className="text-xs font-black uppercase tracking-widest text-muted-foreground pl-4">Nom Complet</label>
                       <div className="relative">
                         <User className="absolute left-6 top-1/2 -translate-y-1/2 w-5 h-5 text-slate-300" />
                         <input 
@@ -91,7 +91,7 @@ export default function ContactPage() {
                       </div>
                     </div>
                     <div className="space-y-2">
-                      <label className="text-xs font-black uppercase tracking-widest text-slate-400 pl-4">Votre Email</label>
+                      <label className="text-xs font-black uppercase tracking-widest text-muted-foreground pl-4">Votre Email</label>
                       <div className="relative">
                         <Mail className="absolute left-6 top-1/2 -translate-y-1/2 w-5 h-5 text-slate-300" />
                         <input 
@@ -107,7 +107,7 @@ export default function ContactPage() {
                   </div>
 
                   <div className="space-y-2">
-                    <label className="text-xs font-black uppercase tracking-widest text-slate-400 pl-4">Objet du message</label>
+                    <label className="text-xs font-black uppercase tracking-widest text-muted-foreground pl-4">Objet du message</label>
                     <select 
                       className="w-full px-8 py-5 bg-muted border-none rounded-2xl focus:ring-2 focus:ring-red-500 transition-all font-bold text-foreground appearance-none"
                       value={formData.subject}
@@ -121,7 +121,7 @@ export default function ContactPage() {
                   </div>
 
                   <div className="space-y-2">
-                    <label className="text-xs font-black uppercase tracking-widest text-slate-400 pl-4">Votre Message</label>
+                    <label className="text-xs font-black uppercase tracking-widest text-muted-foreground pl-4">Votre Message</label>
                     <textarea 
                       required
                       placeholder="Comment pouvons-nous vous aider ?"
@@ -169,7 +169,7 @@ export default function ContactPage() {
                   animate={{ opacity: 1, scale: 1 }}
                   className="flex flex-col items-center justify-center py-20 text-center"
                 >
-                  <div className="w-24 h-24 rounded-full bg-emerald-500 flex items-center justify-center text-white mb-8 shadow-2xl shadow-emerald-500/20">
+                  <div className="w-24 h-24 rounded-full bg-emerald-700 flex items-center justify-center text-white mb-8 shadow-2xl shadow-emerald-500/20">
                     <CheckCircle2 className="w-12 h-12" />
                   </div>
                   <h2 className="text-4xl font-black text-foreground uppercase tracking-tighter mb-4">Message Envoyé !</h2>
@@ -178,7 +178,7 @@ export default function ContactPage() {
                   </p>
                   <button 
                     onClick={() => setIsSubmitted(false)}
-                    className="inline-flex items-center gap-2 text-red-600 font-black uppercase tracking-widest hover:gap-4 transition-all"
+                    className="inline-flex items-center gap-2 text-red-700 dark:text-red-400 font-black uppercase tracking-widest hover:gap-4 transition-all"
                   >
                     Envoyer un autre message <ArrowRight className="w-5 h-5" />
                   </button>

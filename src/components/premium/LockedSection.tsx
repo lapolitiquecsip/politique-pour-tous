@@ -51,7 +51,7 @@ export default function LockedSection({
 
       <div className="relative">
         <span className={`inline-flex items-center gap-2 rounded-full px-3 py-1.5 text-[10px] font-black uppercase tracking-widest ${
-          proOnly ? "bg-gradient-to-r from-fuchsia-500 to-purple-600 text-white" : "bg-amber-400 text-slate-950"
+          proOnly ? "bg-gradient-to-r from-fuchsia-500 to-purple-600 text-slate-950" : "bg-amber-400 text-slate-950"
         }`}>
           <Lock size={12} /> {alreadySubscribed
             ? "Votre abonnement Premium ne couvre pas cette rubrique"
@@ -77,7 +77,7 @@ export default function LockedSection({
         <ul className="mt-5 grid gap-2 sm:grid-cols-2">
           {bullets.map(b => (
             <li key={b} className={`flex items-start gap-2 text-[13px] leading-snug ${proOnly ? "text-white/85" : "text-slate-700 dark:text-slate-200"}`}>
-              <Check size={15} className={`mt-0.5 shrink-0 ${proOnly ? "text-fuchsia-400" : "text-emerald-500"}`} />
+              <Check size={15} className={`mt-0.5 shrink-0 ${proOnly ? "text-fuchsia-700 dark:text-fuchsia-400" : "text-emerald-500"}`} />
               {b}
             </li>
           ))}

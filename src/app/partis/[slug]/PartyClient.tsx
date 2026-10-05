@@ -66,7 +66,7 @@ function InfoRow({ icon: Icon, label, value }: { icon: any; label: string; value
     <div className="flex items-start gap-3 rounded-2xl border border-border bg-card p-4">
       <div className="flex h-9 w-9 shrink-0 items-center justify-center rounded-xl bg-slate-100 dark:bg-slate-500/10 text-muted-foreground"><Icon className="h-4 w-4" /></div>
       <div className="min-w-0">
-        <p className="text-[10px] font-black uppercase tracking-widest text-slate-400">{label}</p>
+        <p className="text-[10px] font-black uppercase tracking-widest text-muted-foreground">{label}</p>
         <p className="font-bold text-foreground">{value}</p>
       </div>
     </div>
@@ -92,11 +92,11 @@ function LeaderRow({ value }: { value: string | null }) {
         ? <img src={photo} alt={cleanName} onError={() => setImgOk(false)} className="h-10 w-10 shrink-0 rounded-xl object-cover object-top ring-1 ring-slate-200" />
         : <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-slate-100 dark:bg-slate-500/10 text-muted-foreground"><UserCircle className="h-5 w-5" /></div>}
       <div className="min-w-0">
-        <p className="text-[10px] font-black uppercase tracking-widest text-slate-400">Dirigeant·e</p>
+        <p className="text-[10px] font-black uppercase tracking-widest text-muted-foreground">Dirigeant·e</p>
         <p className="font-bold text-foreground group-hover:text-indigo-600 transition-colors inline-flex items-center gap-1">
           {value}{href && <ArrowRight className="h-3.5 w-3.5 opacity-0 -translate-x-1 group-hover:opacity-100 group-hover:translate-x-0 transition-all" />}
         </p>
-        {href && <p className="text-[10px] font-black uppercase tracking-widest text-indigo-400">Voir la fiche →</p>}
+        {href && <p className="text-[10px] font-black uppercase tracking-widest text-indigo-700 dark:text-indigo-400">Voir la fiche →</p>}
       </div>
     </div>
   );
@@ -160,7 +160,7 @@ export default function PartyClient({ params }: { params: Promise<{ slug: string
               {party.logo_url
                 // eslint-disable-next-line @next/next/no-img-element
                 ? <img src={party.logo_url} alt={party.name} className="h-full w-full object-contain" />
-                : <Landmark className="h-12 w-12 text-slate-700" />}
+                : <Landmark className="h-12 w-12 text-slate-700 dark:text-slate-200" />}
             </div>
             <div>
               {party.abbrev && <span className="rounded-full bg-white/20 px-3 py-1 text-xs font-black uppercase tracking-widest">{party.abbrev}</span>}
@@ -224,7 +224,7 @@ export default function PartyClient({ params }: { params: Promise<{ slug: string
               <h2 className="text-lg font-black uppercase tracking-widest text-foreground">Finances du parti</h2>
               {/* Classements comparatifs (subventions + endettement) — les montants du parti y figurent, surlignés. */}
               <PartyFinanceCompare currentSlug={party.slug} />
-              {src && <p className="mt-4 text-[11px] text-slate-400">Source : {src}</p>}
+              {src && <p className="mt-4 text-[11px] text-muted-foreground">Source : {src}</p>}
             </div>
           );
         })()}
@@ -232,7 +232,7 @@ export default function PartyClient({ params }: { params: Promise<{ slug: string
         {/* Suivre le parti : site officiel + réseaux sociaux (liens directs). */}
         {(party.website || party.twitter || party.facebook || party.instagram || party.youtube || party.tiktok) && (
           <div className="mt-6">
-            <p className="mb-2 text-[10px] font-black uppercase tracking-widest text-slate-400">Suivre le parti</p>
+            <p className="mb-2 text-[10px] font-black uppercase tracking-widest text-muted-foreground">Suivre le parti</p>
             <div className="flex flex-wrap gap-2">
               {party.website && (
                 <a href={party.website.startsWith("http") ? party.website : `https://${party.website}`} target="_blank" rel="noreferrer"
@@ -267,7 +267,7 @@ export default function PartyClient({ params }: { params: Promise<{ slug: string
               className={`rounded-2xl border bg-card p-3 md:p-4 text-center transition ${tab === x.key ? `border-transparent ring-2 ${x.ring} shadow-md` : "border-border hover:border-slate-300 hover:shadow-sm"}`}
             >
               <p className="text-2xl md:text-3xl font-black text-foreground">{x.n}</p>
-              <p className="mt-1 text-[9px] md:text-[10px] font-black uppercase leading-tight tracking-tight text-slate-400 break-words">{x.label}</p>
+              <p className="mt-1 text-[9px] md:text-[10px] font-black uppercase leading-tight tracking-tight text-muted-foreground break-words">{x.label}</p>
             </button>
           ))}
         </div>
@@ -379,7 +379,7 @@ export default function PartyClient({ params }: { params: Promise<{ slug: string
                               <span key={i} className={`rounded-xl px-3 py-1.5 text-sm ${p.source?.startsWith("officiel") ? "bg-emerald-50 dark:bg-emerald-500/10 ring-1 ring-emerald-200" : "bg-slate-100 dark:bg-slate-500/10"}`}>
                                 <span className="font-black text-foreground">{Number(p.value).toLocaleString("fr-FR", { maximumFractionDigits: 1 })}%</span>
                                 <span className="ml-1.5 text-xs font-bold text-muted-foreground">{p.year}{p.label ? ` · ${p.label}` : ""}</span>
-                                {p.source?.startsWith("officiel") && <span className="ml-1.5 text-[9px] font-black uppercase tracking-widest text-emerald-600">officiel</span>}
+                                {p.source?.startsWith("officiel") && <span className="ml-1.5 text-[9px] font-black uppercase tracking-widest text-emerald-700 dark:text-emerald-400">officiel</span>}
                               </span>
                             ))}
                           </div>
@@ -387,7 +387,7 @@ export default function PartyClient({ params }: { params: Promise<{ slug: string
                       );
                     })}
                   </div>
-                  <p className="mt-4 text-[11px] italic text-slate-400">En vert : résultats nationaux officiels (Ministère de l'Intérieur). Autres points : Wikipédia, susceptibles d'être incomplets.</p>
+                  <p className="mt-4 text-[11px] italic text-muted-foreground">En vert : résultats nationaux officiels (Ministère de l'Intérieur). Autres points : Wikipédia, susceptibles d'être incomplets.</p>
                 </div>
               )}
             </section>
@@ -402,7 +402,7 @@ export default function PartyClient({ params }: { params: Promise<{ slug: string
         <AllPartiesNav currentSlug={party.slug} />
 
         {/* Sources */}
-        <div className="mt-12 flex flex-wrap items-center gap-4 border-t border-border pt-6 text-xs text-slate-400">
+        <div className="mt-12 flex flex-wrap items-center gap-4 border-t border-border pt-6 text-xs text-muted-foreground">
           {hasDatan && <span>Statistiques : <a href="https://datan.fr" target="_blank" rel="noreferrer" className="font-bold text-muted-foreground hover:underline">datan.fr</a>{party.datan_updated_at ? ` (MAJ ${party.datan_updated_at})` : ""}</span>}
           {party.source_url && <span>Infos parti : <a href={party.source_url} target="_blank" rel="noreferrer" className="font-bold text-muted-foreground hover:underline">Wikipédia</a> — résumé généré automatiquement</span>}
         </div>

@@ -127,7 +127,7 @@ export default function LoginPage() {
       type="button"
       onClick={renvoyerConfirmation}
       disabled={renvoi === "envoi" || renvoi === "ok"}
-      className="mt-3 text-sm font-bold text-amber-600 hover:underline disabled:cursor-default disabled:no-underline disabled:opacity-70"
+      className="mt-3 text-sm font-bold text-amber-700 dark:text-amber-400 hover:underline disabled:cursor-default disabled:no-underline disabled:opacity-70"
     >
       {renvoi === "envoi" ? "Envoi…"
         : renvoi === "ok" ? "Nouveau lien envoyé ✓ (pensez aux courriers indésirables)"
@@ -141,7 +141,7 @@ export default function LoginPage() {
       type="button"
       onClick={reinitialiser}
       disabled={reinit === "envoi" || reinit === "ok"}
-      className="mt-3 text-sm font-bold text-amber-600 hover:underline disabled:cursor-default disabled:no-underline disabled:opacity-70"
+      className="mt-3 text-sm font-bold text-amber-700 dark:text-amber-400 hover:underline disabled:cursor-default disabled:no-underline disabled:opacity-70"
     >
       {reinit === "envoi" ? "Envoi…"
         : reinit === "ok" ? "Lien envoyé ✓ — consultez votre boîte (et les courriers indésirables)"
@@ -186,14 +186,14 @@ export default function LoginPage() {
             className="bg-emerald-50 dark:bg-emerald-500/10 border border-emerald-100 dark:border-emerald-500/25 p-6 rounded-2xl text-center"
           >
             <CheckCircle2 className="w-12 h-12 text-emerald-500 mx-auto mb-4" />
-            <p className="text-emerald-900 text-sm leading-relaxed">
+            <p className="text-emerald-900 dark:text-emerald-300 text-sm leading-relaxed">
               Nous avons envoyé un e-mail à <strong>{email}</strong>. Cliquez sur le lien pour valider votre compte.
               Il peut mettre une minute à arriver ; pensez à regarder dans les courriers indésirables.
             </p>
             <div>{boutonRenvoi}</div>
             <button
               onClick={() => setSuccess(false)}
-              className="mt-6 text-emerald-600 text-sm font-bold hover:underline"
+              className="mt-6 text-emerald-700 dark:text-emerald-400 text-sm font-bold hover:underline"
             >
               Retour à la connexion
             </button>
@@ -204,7 +204,7 @@ export default function LoginPage() {
             <div className="space-y-2">
               <label className="text-xs font-bold text-muted-foreground uppercase tracking-wider ml-1">Adresse E-mail</label>
               <div className="relative group">
-                <div className="absolute left-4 top-1/2 -translate-y-1/2 text-slate-400 group-focus-within:text-rose-500 transition-colors">
+                <div className="absolute left-4 top-1/2 -translate-y-1/2 text-muted-foreground group-focus-within:text-rose-500 transition-colors">
                   <Mail size={18} />
                 </div>
                 <input 
@@ -222,7 +222,7 @@ export default function LoginPage() {
             <div className="space-y-2">
               <label className="text-xs font-bold text-muted-foreground uppercase tracking-wider ml-1">Mot de passe</label>
               <div className="relative group">
-                <div className="absolute left-4 top-1/2 -translate-y-1/2 text-slate-400 group-focus-within:text-rose-500 transition-colors">
+                <div className="absolute left-4 top-1/2 -translate-y-1/2 text-muted-foreground group-focus-within:text-rose-500 transition-colors">
                   <Lock size={18} />
                 </div>
                 <input 
@@ -278,7 +278,7 @@ export default function LoginPage() {
               <button 
                 type="button"
                 onClick={() => setIsLogin(!isLogin)}
-                className="text-sm text-slate-400 hover:text-white transition-colors"
+                className="text-sm text-muted-foreground hover:text-white transition-colors"
               >
                 {isLogin ? "Pas encore de compte ? S'inscrire" : "Déjà inscrit ? Se connecter"}
               </button>

@@ -461,7 +461,7 @@ export function VerticalImageStack({
           transition={{ duration: 0.35, ease: "easeOut" }}
           className="flex flex-col items-center gap-2 px-2 text-center"
         >
-          <span className="flex items-center gap-1 text-[9px] font-black uppercase tracking-widest text-amber-500">
+          <span className="flex items-center gap-1 text-[9px] font-black uppercase tracking-widest text-amber-700 dark:text-amber-400">
             Combo {combo > 0 ? "🔥" : "💤"}
           </span>
           <span className="bg-gradient-to-b from-amber-500 to-orange-600 bg-clip-text text-5xl font-black leading-none tabular-nums text-transparent">
@@ -477,7 +477,7 @@ export function VerticalImageStack({
                 transition={{ type: "spring", stiffness: 200, damping: 26 }}
               />
             </div>
-            <span className="mt-1 block text-[9px] font-bold uppercase tracking-tight text-slate-400 dark:text-slate-500">
+            <span className="mt-1 block text-[9px] font-bold uppercase tracking-tight text-muted-foreground">
               {combo >= (MILESTONES[MILESTONES.length - 1]) ? "Palier max 👑" : `Palier à ${nextMilestone(combo)}`}
             </span>
           </div>

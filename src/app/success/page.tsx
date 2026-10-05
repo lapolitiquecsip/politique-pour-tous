@@ -20,7 +20,7 @@ export default function SuccessPage() {
           </h1>
           
           <p className="text-muted-foreground dark:text-slate-400 mb-8 text-lg leading-relaxed">
-            Merci pour votre confiance. Votre compte est désormais <strong className="text-amber-500">Premium</strong>, vous avez accès à toutes les analyses approfondies.
+            Merci pour votre confiance. Votre compte est désormais <strong className="text-amber-700 dark:text-amber-400">Premium</strong>, vous avez accès à toutes les analyses approfondies.
           </p>
 
           <div className="inline-flex items-center justify-center gap-2 bg-amber-100 text-amber-700 dark:bg-amber-900/30 dark:text-amber-400 px-4 py-2 rounded-xl mb-10 text-sm font-bold">

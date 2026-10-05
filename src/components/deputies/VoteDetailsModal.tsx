@@ -15,13 +15,13 @@ interface VoteDetailsModalProps {
 const getVoteDisplay = (position: string) => {
   switch (position) {
     case 'POUR':
-      return { label: 'POUR', color: 'text-emerald-600', bg: 'bg-emerald-50 dark:bg-emerald-500/10', icon: CheckCircle2 };
+      return { label: 'POUR', color: 'text-emerald-700 dark:text-emerald-400', bg: 'bg-emerald-50 dark:bg-emerald-500/10', icon: CheckCircle2 };
     case 'CONTRE':
-      return { label: 'CONTRE', color: 'text-rose-600', bg: 'bg-rose-50 dark:bg-rose-500/10', icon: XCircle };
+      return { label: 'CONTRE', color: 'text-rose-700 dark:text-rose-400', bg: 'bg-rose-50 dark:bg-rose-500/10', icon: XCircle };
     case 'ABSTENTION':
-      return { label: 'ABSTENTION', color: 'text-amber-600', bg: 'bg-amber-50 dark:bg-amber-500/10', icon: MinusCircle };
+      return { label: 'ABSTENTION', color: 'text-amber-700 dark:text-amber-400', bg: 'bg-amber-50 dark:bg-amber-500/10', icon: MinusCircle };
     default:
-      return { label: 'NON VOTANT', color: 'text-slate-400', bg: 'bg-muted dark:bg-slate-500/10', icon: AlertCircle };
+      return { label: 'NON VOTANT', color: 'text-muted-foreground', bg: 'bg-muted dark:bg-slate-500/10', icon: AlertCircle };
   }
 };
 
@@ -98,16 +98,16 @@ const VoteDetailsModal: React.FC<VoteDetailsModalProps> = ({ vote, onClose }) =>
               <X className="w-5 h-5" />
             </button>
             <div className="absolute -bottom-8 left-10 w-16 h-16 rounded-2xl bg-card dark:bg-slate-900 border border-border dark:border-slate-800 flex items-center justify-center shadow-lg">
-              <Landmark className="w-8 h-8 text-red-600" />
+              <Landmark className="w-8 h-8 text-red-700 dark:text-red-400" />
             </div>
           </div>
 
           <div className="pt-12 pb-10 px-10">
             <div className="flex items-center gap-3 mb-4">
-              <span className="text-[10px] font-black text-slate-400 uppercase tracking-widest">
+              <span className="text-[10px] font-black text-muted-foreground uppercase tracking-widest">
                 Scrutin n°{s.numero} • {dateStr}
               </span>
-              <span className="bg-blue-500/10 text-blue-600 text-[9px] font-black px-2 py-0.5 rounded-md uppercase tracking-tighter">
+              <span className="bg-blue-500/10 text-blue-700 dark:text-blue-400 text-[9px] font-black px-2 py-0.5 rounded-md uppercase tracking-tighter">
                 LOI
               </span>
             </div>
@@ -211,22 +211,22 @@ const VoteDetailsModal: React.FC<VoteDetailsModalProps> = ({ vote, onClose }) =>
                 return (
                   <div className="space-y-3 pt-4">
                     <div className="flex items-center gap-2 text-foreground dark:text-white">
-                      <Landmark className="w-5 h-5 text-slate-400" />
+                      <Landmark className="w-5 h-5 text-muted-foreground" />
                       <h3 className="font-bold text-lg">Résultat du scrutin</h3>
                     </div>
                     <div className="rounded-2xl border border-border dark:border-slate-800 bg-card dark:bg-slate-800/50 p-4">
                       <div className="grid grid-cols-3 gap-2 text-center">
                         {[
-                          ["Pour", pour, "text-emerald-600"],
-                          ["Contre", contre, "text-rose-600"],
-                          ["Abstentions", abst, "text-amber-600"],
+                          ["Pour", pour, "text-emerald-700 dark:text-emerald-400"],
+                          ["Contre", contre, "text-rose-700 dark:text-rose-400"],
+                          ["Abstentions", abst, "text-amber-700 dark:text-amber-400"],
                         ].map(([libelle, n, teinte]) => (
                           <div key={libelle as string}>
                             <p className={`text-2xl font-black tabular-nums ${teinte}`}>{n as number}</p>
                             <p className="text-[10px] font-black uppercase tracking-widest text-muted-foreground">
                               {libelle as string}
                             </p>
-                            <p className="text-[10px] font-bold text-slate-400">{part(n as number)}</p>
+                            <p className="text-[10px] font-bold text-muted-foreground">{part(n as number)}</p>
                           </div>
                         ))}
                       </div>
@@ -246,7 +246,7 @@ const VoteDetailsModal: React.FC<VoteDetailsModalProps> = ({ vote, onClose }) =>
               })()}
 
               {detailEnCours && (
-                <p className="pt-4 text-xs font-bold uppercase tracking-widest text-slate-400">
+                <p className="pt-4 text-xs font-bold uppercase tracking-widest text-muted-foreground">
                   Chargement du détail par groupe…
                 </p>
               )}
@@ -277,7 +277,7 @@ const VoteDetailsModal: React.FC<VoteDetailsModalProps> = ({ vote, onClose }) =>
                                   votants : l'étiquette « 122 votants » en face de
                                   « 0 pour, 2 contre, 14 abst. » était fausse, et le
                                   lecteur pouvait en conclure à une erreur de données. */}
-                              <span className="shrink-0 text-[10px] font-bold text-slate-400">
+                              <span className="shrink-0 text-[10px] font-bold text-muted-foreground">
                                 {denom0} vot{denom0 > 1 ? "ants" : "ant"}{g.total ? ` sur ${g.total}` : ""}
                               </span>
                             </div>
@@ -287,15 +287,15 @@ const VoteDetailsModal: React.FC<VoteDetailsModalProps> = ({ vote, onClose }) =>
                               <div className="h-full bg-amber-400" style={{ width: `${(abst / denom) * 100}%` }} title={`${abst} abstention`} />
                             </div>
                             <div className="mt-1 flex gap-3 text-[10px] font-bold">
-                              <span className="text-emerald-600">{pour} pour</span>
-                              <span className="text-rose-600">{contre} contre</span>
-                              <span className="text-amber-600">{abst} abst.</span>
+                              <span className="text-emerald-700 dark:text-emerald-400">{pour} pour</span>
+                              <span className="text-rose-700 dark:text-rose-400">{contre} contre</span>
+                              <span className="text-amber-700 dark:text-amber-400">{abst} abst.</span>
                             </div>
                           </div>
                         );
                       })}
                     </div>
-                    <p className="text-[10px] text-slate-400">Résultats officiels par groupe (open data Assemblée nationale).</p>
+                    <p className="text-[10px] text-muted-foreground">Résultats officiels par groupe (open data Assemblée nationale).</p>
                   </div>
                 );
               })()}

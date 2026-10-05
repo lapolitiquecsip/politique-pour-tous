@@ -34,7 +34,7 @@ function CarteDebat({ d }: { d: Debat }) {
           // eslint-disable-next-line @next/next/no-img-element
           ? <img src={d.thumbnail_url} alt="" draggable={false} loading="lazy" className="h-full w-full object-cover transition group-hover:scale-105" />
           : <span className="flex h-full w-full items-center justify-center text-amber-300/60"><Mic size={28} /></span>}
-        <span className="absolute left-2 top-2 inline-flex items-center gap-1 rounded-full bg-amber-500 px-2 py-0.5 text-[9px] font-black uppercase tracking-widest text-white shadow">
+        <span className="absolute left-2 top-2 inline-flex items-center gap-1 rounded-full bg-amber-500 px-2 py-0.5 text-[9px] font-black uppercase tracking-widest text-slate-950 shadow">
           <Mic size={10} /> {GENRE[d.kind] ?? "Débat"}
         </span>
         {d.a_venir && (
@@ -96,7 +96,7 @@ export default function CandidatesFollowFeed() {
   if (cands.length === 0) {
     return (
       <div className="flex items-center gap-4 rounded-[2rem] border border-border bg-card p-6">
-        <span className="flex h-11 w-11 shrink-0 items-center justify-center rounded-2xl bg-amber-50 text-amber-500"><Bell size={20} /></span>
+        <span className="flex h-11 w-11 shrink-0 items-center justify-center rounded-2xl bg-amber-50 dark:bg-amber-500/10 text-amber-500"><Bell size={20} /></span>
         <div className="min-w-0 flex-1">
           <p className="font-black text-foreground">Suivez vos candidats à la présidentielle</p>
           <p className="text-xs text-muted-foreground">Cliquez sur la <strong>cloche dorée</strong> d'un candidat pour recevoir son fil (actus + vidéos) directement ici.</p>
@@ -111,13 +111,13 @@ export default function CandidatesFollowFeed() {
   return (
     <div className="overflow-hidden rounded-[2rem] border border-border bg-card">
       <div className="flex items-center gap-3 border-b border-border p-5">
-        <span className="flex h-11 w-11 shrink-0 items-center justify-center rounded-2xl bg-amber-50 text-amber-500"><Bell size={20} className="fill-amber-400" /></span>
+        <span className="flex h-11 w-11 shrink-0 items-center justify-center rounded-2xl bg-amber-50 dark:bg-amber-500/10 text-amber-500"><Bell size={20} className="fill-amber-400" /></span>
         <div>
           <h3 className="text-sm font-black uppercase tracking-widest text-foreground">Mes candidats suivis</h3>
           <p className="text-[11px] text-muted-foreground">{cands.length} candidat{cands.length > 1 ? "s" : ""} · fil mis à jour chaque jour</p>
         </div>
       </div>
-      <div className="divide-y divide-slate-50">
+      <div className="divide-y divide-slate-50 dark:divide-slate-800">
         {cands.map(c => (
           <div key={c.id} className="p-4">
             <div className="flex items-center gap-3">

@@ -23,7 +23,7 @@ function SummaryBody({ text }: { text: string }) {
         const body = l.replace(/^[-•]\s*/, "");
         const parts = body.split(/\*\*(.+?)\*\*/g);
         return (
-          <li key={i} className="flex gap-2 text-sm leading-relaxed text-slate-700">
+          <li key={i} className="flex gap-2 text-sm leading-relaxed text-slate-700 dark:text-slate-200">
             <span className="mt-1.5 h-1.5 w-1.5 shrink-0 rounded-full bg-amber-500" />
             <span>{parts.map((p, k) => (k % 2 ? <strong key={k} className="text-foreground">{p}</strong> : <span key={k}>{p}</span>))}</span>
           </li>
@@ -43,7 +43,7 @@ function PubList({ items, accent, empty, onSelect }: { items: Pub[]; accent: str
         const inner = (
           <>
             <div className="min-w-0 flex-1">
-              <p className="text-[10px] font-black uppercase tracking-widest text-slate-400">{fmtDate(p.published_at)}</p>
+              <p className="text-[10px] font-black uppercase tracking-widest text-muted-foreground">{fmtDate(p.published_at)}</p>
               <p className="mt-0.5 text-sm font-bold leading-snug text-foreground group-hover:text-amber-600 transition-colors line-clamp-2">
                 {clean(p.title)}
               </p>
@@ -113,7 +113,7 @@ export default function PresidentSection({ photoUrl }: { photoUrl?: string }) {
           />
         </div>
         <div className="flex-1 text-center sm:text-left">
-          <p className="text-amber-600 font-black text-xs uppercase tracking-widest mb-1">Chef de l'État · depuis 2017</p>
+          <p className="text-amber-700 dark:text-amber-400 font-black text-xs uppercase tracking-widest mb-1">Chef de l'État · depuis 2017</p>
           <h2 className="text-3xl md:text-4xl font-staatliches uppercase tracking-tight text-foreground">
             Emmanuel <span className="text-transparent bg-clip-text bg-gradient-to-r from-amber-500 via-orange-500 to-yellow-500">Macron</span>
           </h2>
@@ -146,7 +146,7 @@ export default function PresidentSection({ photoUrl }: { photoUrl?: string }) {
         ))}
       </div>
 
-      <p className="text-[10px] text-slate-400/80 italic border-t border-border pt-4">
+      <p className="text-[10px] text-muted-foreground italic border-t border-border pt-4">
         Source : présidence de la République (elysee.fr) — flux officiel, mis à jour quotidiennement.
         Titres, dates et liens repris tels que publiés.
       </p>
@@ -157,7 +157,7 @@ export default function PresidentSection({ photoUrl }: { photoUrl?: string }) {
           <div className="max-h-[85vh] w-full max-w-2xl overflow-y-auto rounded-3xl bg-card p-7 shadow-2xl" onClick={e => e.stopPropagation()}>
             <div className="flex items-start justify-between gap-4">
               <div>
-                <p className="text-[10px] font-black uppercase tracking-widest text-amber-600">Conseil des ministres</p>
+                <p className="text-[10px] font-black uppercase tracking-widest text-amber-700 dark:text-amber-400">Conseil des ministres</p>
                 <p className="mt-0.5 text-[11px] font-bold uppercase tracking-widest text-slate-400">{fmtDate(openCdm.published_at)}</p>
               </div>
               <button onClick={() => setOpenCdm(null)} className="rounded-full bg-slate-100 dark:bg-slate-500/10 p-2 text-muted-foreground transition hover:bg-slate-200">
@@ -167,7 +167,7 @@ export default function PresidentSection({ photoUrl }: { photoUrl?: string }) {
             <h3 className="mt-3 text-lg font-bold leading-snug text-foreground">{clean(openCdm.title)}</h3>
 
             <div className="mt-5 rounded-2xl bg-muted p-5">
-              <p className="mb-3 flex items-center gap-1.5 text-[9px] font-black uppercase tracking-widest text-amber-600">
+              <p className="mb-3 flex items-center gap-1.5 text-[9px] font-black uppercase tracking-widest text-amber-700 dark:text-amber-400">
                 <Sparkles size={11} /> Ce qui a été décidé — résumé du compte rendu officiel
               </p>
               {openCdm.summary

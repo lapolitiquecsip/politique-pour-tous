@@ -15,7 +15,7 @@ export default function InstitutionGuidePage() {
     return (
       <div className="h-screen flex flex-col items-center justify-center gap-4">
         <h1 className="text-2xl font-bold">Institution non trouvée</h1>
-        <Link href="/" className="text-blue-600 hover:underline">Retour à l'accueil</Link>
+        <Link href="/" className="text-blue-700 dark:text-blue-400 hover:underline">Retour à l'accueil</Link>
       </div>
     );
   }

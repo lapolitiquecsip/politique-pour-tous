@@ -94,7 +94,7 @@ export default function FranceRnMap() {
         </div>
 
         <div>
-          <p className="mb-2 text-[10px] font-black uppercase tracking-widest text-slate-400">Part des voix</p>
+          <p className="mb-2 text-[10px] font-black uppercase tracking-widest text-muted-foreground">Part des voix</p>
           <div className="flex flex-col gap-1.5">
             {m.scale.map(s => (
               <div key={s.min} className="flex items-center gap-2 text-xs text-muted-foreground">
@@ -102,14 +102,14 @@ export default function FranceRnMap() {
               </div>
             ))}
           </div>
-          <p className="mb-2 mt-5 text-[10px] font-black uppercase tracking-widest text-slate-400">Départements en tête</p>
+          <p className="mb-2 mt-5 text-[10px] font-black uppercase tracking-widest text-muted-foreground">Départements en tête</p>
           <ol className="space-y-1.5">
             {top.map(([code, v], i) => (
               <li key={code} className="flex items-center gap-2 text-sm">
                 <span className="w-5 text-right font-black tabular-nums text-slate-400">{i + 1}</span>
                 <span className="h-3 w-3 rounded-full" style={{ background: colorFor(m.scale, v) }} />
                 <span className="font-bold text-foreground">{deptLabel(code)}</span>
-                <span className="ml-auto font-black tabular-nums text-rose-700">{v.toLocaleString("fr-FR")} %</span>
+                <span className="ml-auto font-black tabular-nums text-rose-700 dark:text-rose-300">{v.toLocaleString("fr-FR")} %</span>
               </li>
             ))}
           </ol>

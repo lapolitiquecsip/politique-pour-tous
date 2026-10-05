@@ -20,7 +20,7 @@ const BUBBLE_COLORS: Record<BubbleColor, { bubble: string; tail: string }> = {
   red: { bubble: "bg-red-600/95 text-white border-red-500", tail: "border-t-red-600" },
   blue: { bubble: "bg-blue-600/95 text-white border-blue-500", tail: "border-t-blue-600" },
   green: { bubble: "bg-emerald-600/95 text-white border-emerald-500", tail: "border-t-emerald-600" },
-  amber: { bubble: "bg-amber-500/95 text-white border-amber-400", tail: "border-t-amber-500" },
+  amber: { bubble: "bg-amber-500/95 text-slate-950 border-amber-400", tail: "border-t-amber-500" },
   violet: { bubble: "bg-violet-600/95 text-white border-violet-500", tail: "border-t-violet-600" },
   white: { bubble: "bg-white/95 text-slate-900 border-border", tail: "border-t-white" },
 };
@@ -159,7 +159,7 @@ export default function FaqSection() {
                   
                   <button 
                     onClick={() => setSelectedId(null)}
-                    className="absolute top-6 right-6 p-2 hover:bg-slate-100 rounded-full transition-colors text-slate-400 hover:text-foreground"
+                    className="absolute top-6 right-6 p-2 hover:bg-slate-100 rounded-full transition-colors text-muted-foreground hover:text-foreground"
                   >
                     <X size={24} />
                   </button>

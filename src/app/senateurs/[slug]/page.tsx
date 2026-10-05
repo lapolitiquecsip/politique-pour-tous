@@ -23,7 +23,7 @@ export default async function SenatorDetailPage({ params }: { params: Promise<{ 
     return (
       <div className="min-h-screen flex flex-col items-center justify-center p-4">
         <h1 className="text-2xl font-bold mb-4">Sénateur non trouvé</h1>
-        <Link href="/deputes" className="text-blue-600 underline">Retour à la recherche</Link>
+        <Link href="/deputes" className="text-blue-700 dark:text-blue-400 underline">Retour à la recherche</Link>
       </div>
     );
   }

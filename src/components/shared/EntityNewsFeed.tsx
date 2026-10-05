@@ -97,7 +97,7 @@ export default function EntityNewsFeed({
                   return (
                     <button key={t || "all"} onClick={() => setFilter(t || null)}
                       className={`shrink-0 whitespace-nowrap rounded-full px-3 py-1.5 text-[10px] font-black uppercase tracking-widest transition border ${active ? "bg-blue-600 text-white border-blue-600" : "bg-card dark:bg-slate-900 text-muted-foreground border-border dark:border-slate-800 hover:border-blue-400"}`}>
-                      {t ? typeLabel(t) : "Tout"} <span className="opacity-60">· {n}</span>
+                      {t ? typeLabel(t) : "Tout"} <span>· {n}</span>
                     </button>
                   );
                 })}
@@ -111,12 +111,12 @@ export default function EntityNewsFeed({
                 <button key={it.id} onClick={() => setSelected(it)}
                   className="flex w-[78vw] max-w-[20rem] shrink-0 flex-col rounded-2xl border border-border bg-card p-4 text-left transition hover:-translate-y-0.5 hover:border-blue-300 hover:shadow-md dark:border-slate-800 dark:bg-slate-900 sm:w-[18.5rem]">
                   <div className="mb-1.5 flex items-center justify-between gap-2">
-                    <span className="text-[10px] font-black uppercase tracking-widest text-blue-600">{typeLabel(it.news_type)}</span>
-                    <span className="shrink-0 text-[10px] font-bold text-slate-400">{fmt(it.published_at)}</span>
+                    <span className="text-[10px] font-black uppercase tracking-widest text-blue-700 dark:text-blue-400">{typeLabel(it.news_type)}</span>
+                    <span className="shrink-0 text-[10px] font-bold text-muted-foreground">{fmt(it.published_at)}</span>
                   </div>
                   <p className="line-clamp-3 text-sm font-bold leading-snug text-foreground dark:text-white">{it.title}</p>
                   {it.summary && <p className="mt-1 line-clamp-3 text-xs leading-5 text-muted-foreground dark:text-slate-300">{it.summary}</p>}
-                  <span className="mt-auto inline-flex items-center gap-1 pt-2 text-[10px] font-bold uppercase tracking-widest text-slate-400">
+                  <span className="mt-auto inline-flex items-center gap-1 pt-2 text-[10px] font-bold uppercase tracking-widest text-muted-foreground">
                     {it.source_name}
                   </span>
                 </button>

@@ -17,11 +17,11 @@ export default function PresidentFicheClient({ params }: { params: Promise<{ slu
     return () => { active = false; };
   }, [slug]);
 
-  if (p === undefined) return <div className="flex min-h-[60vh] items-center justify-center"><Loader2 className="animate-spin text-blue-600" size={40} /></div>;
+  if (p === undefined) return <div className="flex min-h-[60vh] items-center justify-center"><Loader2 className="animate-spin text-blue-700 dark:text-blue-400" size={40} /></div>;
   if (!p) return (
     <div className="flex min-h-[60vh] flex-col items-center justify-center gap-4 p-4 text-center">
       <h1 className="font-staatliches text-3xl uppercase">Président introuvable</h1>
-      <Link href="/executif" className="text-blue-600 hover:underline">← Retour à l'exécutif</Link>
+      <Link href="/executif" className="text-blue-700 dark:text-blue-400 hover:underline">← Retour à l'exécutif</Link>
     </div>
   );
 
@@ -54,12 +54,12 @@ export default function PresidentFicheClient({ params }: { params: Promise<{ slu
 
         {/* Bio détaillée — même composant et même degré de précision que les élus. */}
         <div className="mt-6 rounded-[2rem] border border-border bg-card p-6 shadow-sm dark:border-slate-800 dark:bg-slate-900 md:p-10">
-          <h2 className="mb-6 font-staatliches text-3xl uppercase tracking-tight text-foreground dark:text-white">Portrait & <span className="text-blue-600">parcours</span></h2>
+          <h2 className="mb-6 font-staatliches text-3xl uppercase tracking-tight text-foreground dark:text-white">Portrait & <span className="text-blue-700 dark:text-blue-400">parcours</span></h2>
           <StructuredBio bio={p.bio} fallbackText={p.summary} />
         </div>
 
         {p.source_url && (
-          <a href={p.source_url} target="_blank" rel="noopener noreferrer" className="mt-4 inline-flex items-center gap-1.5 text-[11px] font-black uppercase tracking-widest text-slate-400 hover:text-blue-600">
+          <a href={p.source_url} target="_blank" rel="noopener noreferrer" className="mt-4 inline-flex items-center gap-1.5 text-[11px] font-black uppercase tracking-widest text-muted-foreground hover:text-blue-600">
             <ExternalLink size={12} /> Source : Wikipédia
           </a>
         )}

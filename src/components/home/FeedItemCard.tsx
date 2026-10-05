@@ -122,7 +122,7 @@ export default function FeedItemCard({ item, colorIndex }: { item: ContentItem; 
             <span className={`h-1.5 w-1.5 rounded-full ${config.dot}`} />
             {config.label}
           </span>
-          <span className="text-[11px] font-semibold text-slate-400 dark:text-slate-500">{relativeDate}</span>
+          <span className="text-[11px] font-semibold text-muted-foreground">{relativeDate}</span>
         </div>
 
         <h3 className="mb-3 shrink-0 text-[19px] font-black leading-[1.3] tracking-tight text-foreground dark:text-white">
@@ -158,7 +158,7 @@ export default function FeedItemCard({ item, colorIndex }: { item: ContentItem; 
               <span className="min-w-0 flex-1 truncate font-semibold">{libelleSource}</span>
             </div>
           ) : (
-            <span className="text-xs font-semibold text-slate-400">Source interne</span>
+            <span className="text-xs font-semibold text-muted-foreground">Source interne</span>
           )}
         </div>
       </div>

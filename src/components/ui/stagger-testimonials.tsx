@@ -13,7 +13,7 @@ const cardColors = [
   { text: 'text-emerald-500', bg: 'bg-emerald-500', lightBg: 'bg-emerald-50 dark:bg-emerald-500/10' },
   { text: 'text-blue-500', bg: 'bg-blue-500', lightBg: 'bg-blue-50 dark:bg-blue-500/10' },
   { text: 'text-purple-500', bg: 'bg-purple-500', lightBg: 'bg-purple-50 dark:bg-purple-500/10' },
-  { text: 'text-amber-500', bg: 'bg-amber-500', lightBg: 'bg-amber-50 dark:bg-amber-500/10' },
+  { text: 'text-amber-700 dark:text-amber-400', bg: 'bg-amber-500', lightBg: 'bg-amber-50 dark:bg-amber-500/10' },
   { text: 'text-rose-500', bg: 'bg-rose-500', lightBg: 'bg-rose-50 dark:bg-rose-500/10' },
   { text: 'text-indigo-500', bg: 'bg-indigo-500', lightBg: 'bg-indigo-50 dark:bg-indigo-500/10' },
   { text: 'text-cyan-500', bg: 'bg-cyan-500', lightBg: 'bg-cyan-50 dark:bg-cyan-500/10' },
@@ -161,7 +161,7 @@ const TestimonialCard: React.FC<TestimonialCardProps> = ({
               <Users size={16} />
             </div>
             <div className="min-w-0">
-              <p className="text-[9px] font-black uppercase tracking-widest text-slate-400">Président</p>
+              <p className="text-[9px] font-black uppercase tracking-widest text-muted-foreground">Président</p>
               <p className="font-bold text-foreground text-sm truncate">{item.president}</p>
             </div>
           </div>
@@ -170,7 +170,7 @@ const TestimonialCard: React.FC<TestimonialCardProps> = ({
               <Building2 size={16} />
             </div>
             <div className="min-w-0">
-              <p className="text-[9px] font-black uppercase tracking-widest text-slate-400">Parti Majoritaire</p>
+              <p className="text-[9px] font-black uppercase tracking-widest text-muted-foreground">Parti Majoritaire</p>
               <p className="font-bold text-foreground text-sm truncate">{item.party}</p>
             </div>
           </div>
@@ -180,7 +180,7 @@ const TestimonialCard: React.FC<TestimonialCardProps> = ({
                 <Coins size={16} />
               </div>
               <div className="min-w-0">
-                <p className="text-[9px] font-black uppercase tracking-widest text-slate-400">Budget 2026</p>
+                <p className="text-[9px] font-black uppercase tracking-widest text-muted-foreground">Budget 2026</p>
                 <p className="font-bold text-foreground text-sm truncate">{item.budget2026}</p>
               </div>
             </div>
@@ -250,7 +250,7 @@ export const StaggerTestimonials: React.FC<{ items: Territory[], onSelect: (t: T
     return () => window.removeEventListener("resize", updateSize);
   }, []);
 
-  if (territoriesList.length === 0) return <div className="h-[500px] flex items-center justify-center"><Loader2 className="animate-spin text-rose-600" /></div>;
+  if (territoriesList.length === 0) return <div className="h-[500px] flex items-center justify-center"><Loader2 className="animate-spin text-rose-700 dark:text-rose-400" /></div>;
 
   return (
     <div

@@ -36,7 +36,7 @@ export default function AllPartiesNav({ currentSlug }: { currentSlug: string }) 
                 ? <img src={p.logo_url} alt="" className="h-5 w-5 shrink-0 rounded-full bg-white object-contain ring-1 ring-black/5" />
                 : <span className="h-3 w-3 shrink-0 rounded-full" style={{ background: color }} />}
               <span className="whitespace-nowrap">{p.abbrev || p.name}</span>
-              {!me && <ArrowRight className="h-3.5 w-3.5 text-slate-300 transition-all group-hover:translate-x-0.5 group-hover:text-muted-foreground dark:text-slate-500" />}
+              {!me && <ArrowRight className="h-3.5 w-3.5 text-muted-foreground transition-all group-hover:translate-x-0.5 group-hover:text-muted-foreground" />}
             </Link>
           );
         })}

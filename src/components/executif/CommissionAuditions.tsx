@@ -49,7 +49,7 @@ function AuditionCard({ r, isPremium }: { r: Report; isPremium: boolean }) {
           <Mic size={18} />
         </span>
         <div className="min-w-0 flex-1">
-          <p className="text-[10px] font-black uppercase tracking-widest text-emerald-600">{fmtDate(r.meeting_date)}{commission ? ` · ${commission}` : ""}</p>
+          <p className="text-[10px] font-black uppercase tracking-widest text-emerald-700 dark:text-emerald-400">{fmtDate(r.meeting_date)}{commission ? ` · ${commission}` : ""}</p>
           <p className="mt-1 text-sm font-bold leading-snug text-foreground dark:text-white line-clamp-2">{title}</p>
           {people.length > 0 && (
             <p className="mt-1.5 flex items-center gap-1.5 text-[11px] font-semibold text-muted-foreground dark:text-slate-400">
@@ -58,17 +58,17 @@ function AuditionCard({ r, isPremium }: { r: Report; isPremium: boolean }) {
             </p>
           )}
         </div>
-        <ChevronDown size={18} className={`mt-1 shrink-0 text-slate-300 transition-transform ${open ? "rotate-180" : ""}`} />
+        <ChevronDown size={18} className={`mt-1 shrink-0 text-muted-foreground transition-transform ${open ? "rotate-180" : ""}`} />
       </button>
 
       {open && (
         <div className="border-t border-border px-5 py-4 dark:border-slate-800">
-          <p className="mb-2 flex items-center gap-1.5 text-[10px] font-black uppercase tracking-widest text-emerald-600">
+          <p className="mb-2 flex items-center gap-1.5 text-[10px] font-black uppercase tracking-widest text-emerald-700 dark:text-emerald-400">
             <Sparkles size={12} /> Résumé de l'audition
           </p>
           {isPremium ? (
             r.summary ? <SummaryBody text={r.summary} />
-              : <p className="text-sm italic text-slate-400">Résumé en cours de génération…</p>
+              : <p className="text-sm italic text-muted-foreground">Résumé en cours de génération…</p>
           ) : (
             // Aperçu flouté + invitation premium.
             <div className="relative">
@@ -77,7 +77,7 @@ function AuditionCard({ r, isPremium }: { r: Report; isPremium: boolean }) {
               </div>
               <div className="absolute inset-0 flex flex-col items-center justify-center gap-2 text-center">
                 <span className="flex items-center gap-1.5 rounded-full bg-amber-400/90 px-3 py-1 text-[11px] font-black uppercase tracking-widest text-slate-950"><Lock size={12} /> Réservé premium</span>
-                <Link href="/premium" className="text-[11px] font-black uppercase tracking-widest text-amber-600 hover:underline">Débloquer les résumés →</Link>
+                <Link href="/premium" className="text-[11px] font-black uppercase tracking-widest text-amber-700 dark:text-amber-400 hover:underline">Débloquer les résumés →</Link>
               </div>
             </div>
           )}
@@ -129,8 +129,8 @@ export default function CommissionAuditions() {
       <div className="mb-6 flex items-start gap-4">
         <span className="flex h-12 w-12 shrink-0 items-center justify-center rounded-2xl bg-gradient-to-br from-emerald-500 to-teal-500 text-white shadow-lg"><Mic size={22} /></span>
         <div>
-          <h3 className="font-staatliches text-3xl uppercase tracking-tight text-foreground dark:text-white">Auditions de <span className="text-emerald-600">commission</span></h3>
-          <p className="mt-0.5 text-sm text-muted-foreground">Ce qui a été dit lors des auditions, résumé à partir du compte rendu officiel. <span className="font-bold text-amber-600">Résumés réservés aux membres premium.</span></p>
+          <h3 className="font-staatliches text-3xl uppercase tracking-tight text-foreground dark:text-white">Auditions de <span className="text-emerald-700 dark:text-emerald-400">commission</span></h3>
+          <p className="mt-0.5 text-sm text-muted-foreground">Ce qui a été dit lors des auditions, résumé à partir du compte rendu officiel. <span className="font-bold text-amber-700 dark:text-amber-400">Résumés réservés aux membres premium.</span></p>
         </div>
       </div>
       <div className="grid grid-cols-1 gap-3 md:grid-cols-2">

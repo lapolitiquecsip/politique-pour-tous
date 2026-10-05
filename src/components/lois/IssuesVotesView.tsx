@@ -21,7 +21,7 @@ function groupPos(g?: { pour: number; contre: number; abstention: number; total:
   if (g.contre > g.pour) return "contre" as const;
   return "abst" as const;
 }
-const POS_CLS = { pour: "bg-emerald-500 text-white", contre: "bg-rose-500 text-white", abst: "bg-slate-300 text-muted-foreground" };
+const POS_CLS = { pour: "bg-emerald-700 text-white", contre: "bg-rose-600 text-white", abst: "bg-slate-300 text-muted-foreground" };
 
 // Vue ENJEUX : on entre par thème et on voit les VOTES CLÉS (votes solennels) + comment chaque
 // groupe de l'Assemblée a voté. Inspiré de leurs-votes.fr, sur données officielles.
@@ -50,7 +50,7 @@ export default function IssuesVotesView() {
   const filtered = useMemo(() => (votes || []).filter(v => current && v.issues.includes(current)), [votes, current]);
   const currentIssue = activeIssues.find(i => i.slug === current);
 
-  if (!votes) return <div className="flex justify-center py-24"><Loader2 className="animate-spin text-red-600" /></div>;
+  if (!votes) return <div className="flex justify-center py-24"><Loader2 className="animate-spin text-red-700 dark:text-red-400" /></div>;
   if (activeIssues.length === 0) return <div className="mt-8 rounded-2xl bg-muted p-8 text-center text-muted-foreground">Les votes par enjeu seront disponibles très bientôt.</div>;
 
   return (
@@ -65,7 +65,7 @@ export default function IssuesVotesView() {
           return (
             <button key={i.slug} onClick={() => setSel(i.slug)}
               className={`rounded-full px-4 py-2 text-sm font-black transition ${on ? "bg-slate-950 text-white" : "bg-card text-muted-foreground ring-1 ring-slate-200 hover:ring-slate-400"}`}>
-              {i.title} <span className={`ml-1 text-xs ${on ? "text-white/60" : "text-slate-400"}`}>{counts.get(i.slug)}</span>
+              {i.title} <span className={`ml-1 text-xs ${on ? "text-white/60" : "text-muted-foreground"}`}>{counts.get(i.slug)}</span>
             </button>
           );
         })}
@@ -91,7 +91,7 @@ export default function IssuesVotesView() {
           return (
             <div key={v.id} className="rounded-[1.5rem] border border-border bg-card p-5">
               <div className="flex flex-wrap items-center gap-2">
-                <span className="text-xs font-bold text-slate-400">{frDate(v.date)}</span>
+                <span className="text-xs font-bold text-muted-foreground">{frDate(v.date)}</span>
                 <span className={`inline-flex items-center gap-1 rounded-full px-2.5 py-0.5 text-[10px] font-black uppercase tracking-widest ${adopted ? "bg-emerald-500 text-white" : "bg-slate-400 text-white"}`}>
                   {adopted ? <CheckCircle2 size={11} /> : <XCircle size={11} />}{adopted ? "Adopté" : "Rejeté"}
                 </span>

@@ -32,7 +32,7 @@ export default function FollowButton({
   // Non-premium : invite à passer premium.
   if (!isPremium) {
     return (
-      <Link href="/premium" className="inline-flex items-center gap-2 rounded-2xl border border-amber-400/40 bg-amber-400/10 px-5 py-3 text-[11px] font-black uppercase tracking-widest text-amber-600 transition hover:bg-amber-400/20">
+      <Link href="/premium" className="inline-flex items-center gap-2 rounded-2xl border border-amber-400/40 bg-amber-400/10 px-5 py-3 text-[11px] font-black uppercase tracking-widest text-amber-800 dark:text-amber-400 transition hover:bg-amber-400/20">
         <Lock size={14} /> Suivre ({label}) · Premium
       </Link>
     );

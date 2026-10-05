@@ -342,7 +342,7 @@ export default function PrimaryDebates({ candidateSlug }: { candidateSlug?: stri
         </span>
         <div className="min-w-0 flex-1">
           <h2 className="font-staatliches text-3xl uppercase tracking-tight text-foreground">
-            {candidateSlug ? "Ses " : "Les "}<span className="text-fuchsia-600">débats de primaire</span>
+            {candidateSlug ? "Ses " : "Les "}<span className="text-fuchsia-700 dark:text-fuchsia-400">débats de primaire</span>
           </h2>
           <p className="mt-0.5 text-sm text-muted-foreground">
             Débats et votes des primaires, avec la retransmission dès qu&apos;elle est en ligne.

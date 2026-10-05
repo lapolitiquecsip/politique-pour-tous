@@ -157,7 +157,7 @@ function LawsContent() {
         {tab === "ongoing" && (
           <div className="flex flex-col gap-3 border-t border-border pt-4">
             <div>
-              <p className="mb-2 text-[10px] font-black uppercase tracking-widest text-slate-400">Chambre saisie actuellement</p>
+              <p className="mb-2 text-[10px] font-black uppercase tracking-widest text-muted-foreground">Chambre saisie actuellement</p>
               <div className="inline-flex flex-wrap gap-2">
                 {CHAMBERS.map(c => (
                   <button key={c.label} onClick={() => setChamber(c.value)} className={`rounded-full px-4 py-2 text-[11px] font-black uppercase tracking-wide transition ${chamber === c.value ? "bg-slate-950 text-white shadow" : "bg-card border border-border text-muted-foreground hover:border-slate-400"}`}>{c.short}</button>
@@ -166,7 +166,7 @@ function LawsContent() {
             </div>
             <div className="flex flex-col gap-3 sm:flex-row sm:gap-8">
               <div>
-                <p className="mb-2 text-[10px] font-black uppercase tracking-widest text-slate-400">Type de texte</p>
+                <p className="mb-2 text-[10px] font-black uppercase tracking-widest text-muted-foreground">Type de texte</p>
                 <div className="inline-flex flex-wrap gap-2">
                   {TYPES.map(t => (
                     <button key={t.label} onClick={() => setTextType(t.value)} className={`rounded-full px-4 py-2 text-[11px] font-black uppercase tracking-wide transition ${textType === t.value ? "bg-red-600 text-white shadow" : "bg-card border border-border text-muted-foreground hover:border-red-300"}`}>{t.label}</button>
@@ -174,10 +174,10 @@ function LawsContent() {
                 </div>
               </div>
               <div>
-                <p className="mb-2 text-[10px] font-black uppercase tracking-widest text-slate-400">Étape</p>
+                <p className="mb-2 text-[10px] font-black uppercase tracking-widest text-muted-foreground">Étape</p>
                 <div className="inline-flex flex-wrap gap-2">
                   {STAGES.map(s => (
-                    <button key={s.label} onClick={() => setStage(s.value)} className={`rounded-full px-4 py-2 text-[11px] font-black uppercase tracking-wide transition ${stage === s.value ? "bg-amber-500 text-white shadow" : "bg-card border border-border text-muted-foreground hover:border-amber-300"}`}>{s.label}</button>
+                    <button key={s.label} onClick={() => setStage(s.value)} className={`rounded-full px-4 py-2 text-[11px] font-black uppercase tracking-wide transition ${stage === s.value ? "bg-amber-500 text-slate-950 shadow" : "bg-card border border-border text-muted-foreground hover:border-amber-300"}`}>{s.label}</button>
                   ))}
                 </div>
               </div>
@@ -188,7 +188,7 @@ function LawsContent() {
 
       {tab === "enjeux" ? <IssuesVotesView /> : (<>
       <div className="mt-10"><h2 className="text-4xl font-staatliches uppercase md:text-6xl text-foreground">{tab === "promulgated" ? "Publiées au Journal officiel" : "Dans la navette parlementaire"}</h2><p className="mt-2 text-muted-foreground">{tab === "promulgated" ? "Seule une publication JORF peut faire apparaître un texte ici." : "Suivez chaque texte : la chambre qui l'examine, son type et son étape."}</p></div>
-      {loading && <div className="flex justify-center py-24"><Loader2 className="animate-spin text-red-600" /></div>}
+      {loading && <div className="flex justify-center py-24"><Loader2 className="animate-spin text-red-700 dark:text-red-400" /></div>}
       {error && <div className="mt-8 rounded-2xl bg-red-50 dark:bg-red-500/10 p-5 font-bold text-red-800 dark:text-red-300">{error}</div>}
       {!loading && !error && <div className="mt-8 grid gap-5 sm:grid-cols-2 lg:grid-cols-3">{visibleItems.map(item => {
         const status: LawCardStatus | null = tab === "promulgated"
@@ -227,5 +227,5 @@ function LawsContent() {
 }
 
 export default function LawsClient() {
-  return <Suspense fallback={<div className="flex justify-center py-24"><Loader2 className="animate-spin text-red-600" /></div>}><LawsContent /></Suspense>;
+  return <Suspense fallback={<div className="flex justify-center py-24"><Loader2 className="animate-spin text-red-700 dark:text-red-400" /></div>}><LawsContent /></Suspense>;
 }

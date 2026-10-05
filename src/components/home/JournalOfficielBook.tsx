@@ -66,7 +66,7 @@ export default function JournalOfficielBook() {
     } finally { setLoadingMore(false); }
   };
 
-  if (!laws) return <div className="flex justify-center py-20"><Loader2 className="animate-spin text-red-600" /></div>;
+  if (!laws) return <div className="flex justify-center py-20"><Loader2 className="animate-spin text-red-700 dark:text-red-400" /></div>;
   if (laws.length === 0) return null;
 
   const go = (d: number) => {
@@ -132,8 +132,8 @@ export default function JournalOfficielBook() {
               >
                 <div className="mb-4 flex items-center justify-between">
                   <span className="rounded-full bg-gradient-to-r from-red-600 to-fuchsia-600 px-3 py-1 text-[10px] font-black uppercase tracking-widest text-white shadow-sm">{categoryLabel(law.category)}</span>
-                  <span className="text-[11px] font-bold text-slate-400 md:hidden">{date ? `${date.jour} ${date.mois} ${date.annee}` : ""}</span>
-                  {law.nor && <span className="hidden font-mono text-[11px] text-slate-400 md:inline">NOR : {law.nor}</span>}
+                  <span className="text-[11px] font-bold text-muted-foreground md:hidden">{date ? `${date.jour} ${date.mois} ${date.annee}` : ""}</span>
+                  {law.nor && <span className="hidden font-mono text-[11px] text-muted-foreground md:inline">NOR : {law.nor}</span>}
                 </div>
                 <h3 className="font-staatliches text-3xl uppercase leading-tight text-foreground dark:text-white md:text-4xl">{(law as any).display_title || law.title}</h3>
                 <p className="mt-4 flex-1 overflow-hidden text-[15px] leading-7 text-muted-foreground dark:text-slate-300 line-clamp-[8]">{(law as any).impact || law.summary || "Texte promulgué et publié au Journal officiel."}</p>

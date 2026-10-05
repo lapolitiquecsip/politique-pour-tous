@@ -144,12 +144,12 @@ export default function DetailedLawDossier({ law }: DetailedLawDossierProps) {
   };
 
   const bgMap: Record<string, string> = {
-    indigo: "bg-indigo-500 hover:bg-indigo-400 text-white",
-    emerald: "bg-emerald-500 hover:bg-emerald-400 text-white",
-    blue: "bg-blue-500 hover:bg-blue-400 text-white",
+    indigo: "bg-indigo-600 hover:bg-indigo-400 text-white",
+    emerald: "bg-emerald-700 hover:bg-emerald-400 text-white",
+    blue: "bg-blue-600 hover:bg-blue-400 text-white",
     slate: "bg-slate-800 hover:bg-slate-700 text-white",
-    rose: "bg-rose-500 hover:bg-rose-400 text-white",
-    orange: "bg-orange-500 hover:bg-orange-400 text-white",
+    rose: "bg-rose-600 hover:bg-rose-400 text-white",
+    orange: "bg-orange-700 hover:bg-orange-400 text-white",
     violet: "bg-violet-700 hover:bg-violet-600 text-white",
   };
 
@@ -308,7 +308,7 @@ export default function DetailedLawDossier({ law }: DetailedLawDossierProps) {
                   <div className="space-y-1.5 bg-card rounded-xl p-2.5 shadow-[0_2px_8px_rgba(0,0,0,0.08)] select-none">
                     <div className="flex justify-between items-center text-[8px] md:text-[9px] font-black uppercase tracking-wider text-foreground">
                       <span className="opacity-75">🗳️ Vote Assemblée</span>
-                      <span className="text-emerald-600 font-extrabold">{pctPour}% POUR</span>
+                      <span className="text-emerald-700 dark:text-emerald-400 font-extrabold">{pctPour}% POUR</span>
                     </div>
                     <div className="h-1.5 bg-slate-100 dark:bg-slate-500/10 rounded-full overflow-hidden flex">
                       <div className="h-full bg-emerald-500" style={{ width: `${pctPour}%` }} />
@@ -357,10 +357,10 @@ export default function DetailedLawDossier({ law }: DetailedLawDossierProps) {
               {/* Résumé de la loi */}
               <div>
                 <h4 className="text-base font-bold flex items-center gap-2 text-foreground mb-4">
-                  <FileText className="w-5 h-5 text-blue-600" />
+                  <FileText className="w-5 h-5 text-blue-700 dark:text-blue-400" />
                   Résumé de la loi
                 </h4>
-                <div className="p-6 bg-muted text-slate-700 text-base italic leading-relaxed rounded-2xl border border-border">
+                <div className="p-6 bg-muted text-slate-700 dark:text-slate-200 text-base italic leading-relaxed rounded-2xl border border-border">
                   {wrapWithGlossary(law.summary)}
                 </div>
               </div>
@@ -459,18 +459,18 @@ export default function DetailedLawDossier({ law }: DetailedLawDossierProps) {
                         <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-8">
                           <div className="bg-card p-4 rounded-2xl border-2 border-slate-900 shadow-[4px_4px_0px_0px_rgba(0,0,0,0.1)] flex flex-col items-center text-center">
                             <div className="w-10 h-10 bg-green-100 dark:bg-green-500/10 rounded-full flex items-center justify-center mb-2 border-2 border-green-500">
-                              <CheckCircle2 className="w-5 h-5 text-green-600" />
+                              <CheckCircle2 className="w-5 h-5 text-green-700 dark:text-green-400" />
                             </div>
-                            <span className="text-3xl font-black text-green-600 font-staatliches">{law.voteData.pour}</span>
-                            <span className="text-[10px] font-bold uppercase tracking-widest text-slate-400">Pour la loi</span>
+                            <span className="text-3xl font-black text-green-700 dark:text-green-400 font-staatliches">{law.voteData.pour}</span>
+                            <span className="text-[10px] font-bold uppercase tracking-widest text-muted-foreground">Pour la loi</span>
                           </div>
                           
                           <div className="bg-card p-4 rounded-2xl border-2 border-slate-900 shadow-[4px_4px_0px_0px_rgba(0,0,0,0.1)] flex flex-col items-center text-center">
                             <div className="w-10 h-10 bg-red-100 dark:bg-red-500/10 rounded-full flex items-center justify-center mb-2 border-2 border-red-500">
-                              <XCircle className="w-5 h-5 text-red-600" />
+                              <XCircle className="w-5 h-5 text-red-700 dark:text-red-400" />
                             </div>
-                            <span className="text-3xl font-black text-red-600 font-staatliches">{law.voteData.contre}</span>
-                            <span className="text-[10px] font-bold uppercase tracking-widest text-slate-400">Contre la loi</span>
+                            <span className="text-3xl font-black text-red-700 dark:text-red-400 font-staatliches">{law.voteData.contre}</span>
+                            <span className="text-[10px] font-bold uppercase tracking-widest text-muted-foreground">Contre la loi</span>
                           </div>
 
                           <div className="bg-card p-4 rounded-2xl border-2 border-slate-900 shadow-[4px_4px_0px_0px_rgba(0,0,0,0.1)] flex flex-col items-center text-center">
@@ -478,7 +478,7 @@ export default function DetailedLawDossier({ law }: DetailedLawDossierProps) {
                               <MinusCircle className="w-5 h-5 text-muted-foreground" />
                             </div>
                             <span className="text-3xl font-black text-muted-foreground font-staatliches">{law.voteData.abstention}</span>
-                            <span className="text-[10px] font-bold uppercase tracking-widest text-slate-400">Abstentions</span>
+                            <span className="text-[10px] font-bold uppercase tracking-widest text-muted-foreground">Abstentions</span>
                           </div>
                         </div>
                         
@@ -554,7 +554,7 @@ export default function DetailedLawDossier({ law }: DetailedLawDossierProps) {
                     {law.impacts.map((impact, idx) => (
                       <div key={idx} className="flex gap-3 items-start p-4 bg-slate-50/80 dark:bg-slate-500/10 rounded-xl border border-border/60 shadow-sm">
                         <div className="w-1.5 h-1.5 rounded-full bg-primary mt-2 shrink-0" />
-                        <div className="text-slate-700 text-sm font-medium leading-relaxed">{wrapWithGlossary(impact)}</div>
+                        <div className="text-slate-700 dark:text-slate-200 text-sm font-medium leading-relaxed">{wrapWithGlossary(impact)}</div>
                       </div>
                     ))}
                   </div>
@@ -587,7 +587,7 @@ export default function DetailedLawDossier({ law }: DetailedLawDossierProps) {
                     <Zap className="w-6 h-6 text-amber-500" fill="currentColor" />
                     Analyse Détaillée
                   </h4>
-                  <div className="prose prose-slate max-w-none text-foreground space-y-4 whitespace-pre-wrap">
+                  <div className="prose dark:prose-invert prose-slate max-w-none text-foreground space-y-4 whitespace-pre-wrap">
                     {law.content || law.premiumPoints?.join('\n')}
                   </div>
                 </div>
@@ -630,7 +630,7 @@ export default function DetailedLawDossier({ law }: DetailedLawDossierProps) {
                         {isPremium ? "Action Citoyenne Premium" : "Action Citoyenne (Membre)"}
                       </div>
                       <h4 className="text-2xl font-staatliches uppercase mb-3 italic tracking-tight text-white leading-none">
-                        Votre Position <span className={isPremium ? "text-amber-500" : "text-blue-400"}>Citoyenne</span>
+                        Votre Position <span className={isPremium ? "text-amber-700 dark:text-amber-400" : "text-blue-700 dark:text-blue-400"}>Citoyenne</span>
                       </h4>
                       
                       {userVote ? (
@@ -648,8 +648,8 @@ export default function DetailedLawDossier({ law }: DetailedLawDossierProps) {
 
                       <div className="grid grid-cols-1 md:grid-cols-3 gap-3">
                         {[
-                          { label: "POUR", val: "POUR", color: "bg-emerald-500/10 text-emerald-500 border-emerald-500/20 hover:bg-emerald-500 hover:text-white", activeColor: "bg-emerald-500 text-white border-transparent", icon: CheckCircle2 },
-                          { label: "CONTRE", val: "CONTRE", color: "bg-red-500/10 text-red-500 border-red-500/20 hover:bg-red-500 hover:text-white", activeColor: "bg-red-500 text-white border-transparent", icon: XCircle },
+                          { label: "POUR", val: "POUR", color: "bg-emerald-500/10 text-emerald-500 border-emerald-500/20 hover:bg-emerald-500 hover:text-white", activeColor: "bg-emerald-700 text-white border-transparent", icon: CheckCircle2 },
+                          { label: "CONTRE", val: "CONTRE", color: "bg-red-500/10 text-red-500 border-red-500/20 hover:bg-red-500 hover:text-white", activeColor: "bg-red-600 text-white border-transparent", icon: XCircle },
                           { label: "ABSTENTION", val: "ABSTENTION", color: "bg-slate-800 text-slate-400 border-slate-700 hover:bg-slate-700 hover:text-white", activeColor: "bg-slate-700 text-white border-transparent", icon: MinusCircle }
                         ].map((btn) => {
                           const isActive = userVote === btn.val;
@@ -700,7 +700,7 @@ export default function DetailedLawDossier({ law }: DetailedLawDossierProps) {
                               return (
                                 <div key={stat.label} className="space-y-1.5">
                                   <div className="flex justify-between text-[10px] font-black tracking-tighter">
-                                    <span className={userVote === stat.raw ? "text-white" : "text-slate-400"}>
+                                    <span className={userVote === stat.raw ? "text-white" : "text-muted-foreground"}>
                                       {stat.label} {userVote === stat.raw && " (Votre choix)"}
                                     </span>
                                     <span>{percentage}% ({stat.val})</span>

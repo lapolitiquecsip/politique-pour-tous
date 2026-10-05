@@ -10,14 +10,14 @@ import { cleanMinistryName } from "@/lib/executif-utils";
 const SQRT_5000 = Math.sqrt(5000);
 
 const cardColors = [
-  { text: "text-amber-500", bg: "bg-amber-500", lightBg: "bg-amber-50 dark:bg-amber-500/10" },
-  { text: "text-orange-500", bg: "bg-orange-500", lightBg: "bg-orange-50 dark:bg-orange-500/10" },
-  { text: "text-yellow-600 dark:text-yellow-300", bg: "bg-yellow-500", lightBg: "bg-yellow-50 dark:bg-yellow-500/10" },
-  { text: "text-rose-500", bg: "bg-rose-500", lightBg: "bg-rose-50 dark:bg-rose-500/10" },
-  { text: "text-emerald-500", bg: "bg-emerald-500", lightBg: "bg-emerald-50 dark:bg-emerald-500/10" },
-  { text: "text-blue-500", bg: "bg-blue-500", lightBg: "bg-blue-50 dark:bg-blue-500/10" },
-  { text: "text-purple-500", bg: "bg-purple-500", lightBg: "bg-purple-50 dark:bg-purple-500/10" },
-  { text: "text-cyan-500", bg: "bg-cyan-500", lightBg: "bg-cyan-50 dark:bg-cyan-500/10" },
+  { text: "text-amber-700 dark:text-amber-400", bg: "bg-amber-500", lightBg: "bg-amber-50 dark:bg-amber-500/10" },
+  { text: "text-orange-700 dark:text-orange-400", bg: "bg-orange-500", lightBg: "bg-orange-50 dark:bg-orange-500/10" },
+  { text: "text-yellow-700 dark:text-yellow-300", bg: "bg-yellow-500", lightBg: "bg-yellow-50 dark:bg-yellow-500/10" },
+  { text: "text-rose-700 dark:text-rose-300", bg: "bg-rose-500", lightBg: "bg-rose-50 dark:bg-rose-500/10" },
+  { text: "text-emerald-700 dark:text-emerald-300", bg: "bg-emerald-500", lightBg: "bg-emerald-50 dark:bg-emerald-500/10" },
+  { text: "text-blue-700 dark:text-blue-300", bg: "bg-blue-500", lightBg: "bg-blue-50 dark:bg-blue-500/10" },
+  { text: "text-purple-700 dark:text-purple-300", bg: "bg-purple-500", lightBg: "bg-purple-50 dark:bg-purple-500/10" },
+  { text: "text-cyan-700 dark:text-cyan-300", bg: "bg-cyan-500", lightBg: "bg-cyan-50 dark:bg-cyan-500/10" },
 ];
 
 export interface MinisterItem {
@@ -109,7 +109,7 @@ const MinisterCard: React.FC<CardProps> = React.memo(({ position, item, handleMo
               <Users size={16} />
             </div>
             <div className="min-w-0">
-              <p className="text-[9px] font-black uppercase tracking-widest text-slate-400">Ministre</p>
+              <p className="text-[9px] font-black uppercase tracking-widest text-muted-foreground">Ministre</p>
               <p className="font-bold text-foreground text-sm truncate">{item.name}</p>
             </div>
           </div>
@@ -118,7 +118,7 @@ const MinisterCard: React.FC<CardProps> = React.memo(({ position, item, handleMo
               <Building2 size={16} />
             </div>
             <div className="min-w-0">
-              <p className="text-[9px] font-black uppercase tracking-widest text-slate-400">Fonction</p>
+              <p className="text-[9px] font-black uppercase tracking-widest text-muted-foreground">Fonction</p>
               <p className="font-bold text-foreground text-xs leading-snug line-clamp-2">{item.role}</p>
             </div>
           </div>

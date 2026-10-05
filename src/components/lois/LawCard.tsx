@@ -31,10 +31,10 @@ function frDate(d?: string | null) {
 export type LawCardStatus = { label: string; tone: "green" | "amber" | "blue" | "slate" };
 
 const TONE: Record<LawCardStatus["tone"], string> = {
-  green: "bg-emerald-500 text-white",
-  amber: "bg-amber-500 text-white",
-  blue: "bg-blue-500 text-white",
-  slate: "bg-slate-400 text-white",
+  green: "bg-emerald-700 text-white",
+  amber: "bg-amber-500 text-slate-950",
+  blue: "bg-blue-600 text-white",
+  slate: "bg-slate-500 text-white",
 };
 
 export const CARD_CLASS =
@@ -53,7 +53,7 @@ export function LawCardBody({
   return (
     <>
       <div className="flex flex-wrap items-center gap-2 pr-9">
-        <span className="text-xs font-bold text-slate-400">{frDate(date)}</span>
+        <span className="text-xs font-bold text-muted-foreground">{frDate(date)}</span>
         {status && (
           <span className={`inline-flex items-center gap-1 rounded-full px-3 py-1 text-[10px] font-black uppercase tracking-widest ${TONE[status.tone]}`}>
             {status.tone === "green" && <CheckCircle2 size={12} />}{status.label}

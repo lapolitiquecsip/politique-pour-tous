@@ -54,7 +54,7 @@ function MeetingCard({ m, accent }: { m: CommissionMeeting; accent: typeof ACCEN
         <div className="min-w-0 flex-1">
           <p className={`flex flex-wrap items-center gap-x-2 text-[10px] font-black uppercase tracking-widest ${accent.text}`}>
             <span>{fmtMeetingDate(m.meeting_date)}</span>
-            <span className="text-slate-300">·</span>
+            <span className="text-muted-foreground">·</span>
             <span className="text-muted-foreground">{commission}</span>
           </p>
           <p className="mt-1 text-sm font-bold leading-snug text-foreground dark:text-white line-clamp-2">{title}</p>
@@ -65,7 +65,7 @@ function MeetingCard({ m, accent }: { m: CommissionMeeting; accent: typeof ACCEN
             </p>
           )}
         </div>
-        <ChevronDown size={18} className={`mt-1 shrink-0 text-slate-300 transition-transform ${open ? "rotate-180" : ""}`} />
+        <ChevronDown size={18} className={`mt-1 shrink-0 text-muted-foreground transition-transform ${open ? "rotate-180" : ""}`} />
       </button>
 
       {open && (
@@ -251,7 +251,7 @@ export default function CommissionTracker({ chamber, chamberLabel, accent = "eme
       <>
       {/* Recherche plein texte */}
       <div className="relative mb-4">
-        <Search size={16} className="pointer-events-none absolute left-4 top-1/2 -translate-y-1/2 text-slate-400" />
+        <Search size={16} className="pointer-events-none absolute left-4 top-1/2 -translate-y-1/2 text-muted-foreground" />
         <input
           type="search"
           value={search}
@@ -261,7 +261,7 @@ export default function CommissionTracker({ chamber, chamberLabel, accent = "eme
         />
         {search && (
           <button onClick={() => setSearch("")} aria-label="Effacer la recherche"
-            className="absolute right-3 top-1/2 -translate-y-1/2 rounded-full p-1 text-slate-400 hover:bg-slate-100 dark:hover:bg-slate-800">
+            className="absolute right-3 top-1/2 -translate-y-1/2 rounded-full p-1 text-muted-foreground hover:bg-slate-100 dark:hover:bg-slate-800">
             <X size={15} />
           </button>
         )}
@@ -289,12 +289,12 @@ export default function CommissionTracker({ chamber, chamberLabel, accent = "eme
         <div className="flex justify-center py-10"><Loader2 className={`animate-spin ${a.text}`} /></div>
       ) : meetings.length === 0 ? (
         <div className="rounded-3xl border border-dashed border-border py-12 text-center dark:border-slate-800">
-          <CalendarDays size={28} className="mx-auto mb-3 text-slate-300" />
+          <CalendarDays size={28} className="mx-auto mb-3 text-muted-foreground" />
           <p className="text-sm font-bold text-muted-foreground">
             {debounced ? `Aucune réunion ne correspond à « ${debounced} ».` : "Aucune réunion indexée pour l'instant."}
           </p>
           {!debounced && (
-            <p className="mx-auto mt-1 max-w-md text-[13px] text-slate-400">
+            <p className="mx-auto mt-1 max-w-md text-[13px] text-muted-foreground">
               Les comptes rendus sont récupérés chaque nuit depuis les sources officielles.
             </p>
           )}

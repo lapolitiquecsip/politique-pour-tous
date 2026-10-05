@@ -64,13 +64,13 @@ const cleanExcerpt = (t: string) => {
 const getVoteDisplay = (position: string) => {
   switch (position) {
     case 'POUR':
-      return { label: 'POUR', color: "text-emerald-500", bg: "bg-emerald-500/10", icon: CheckCircle2 };
+      return { label: 'POUR', color: "text-emerald-700 dark:text-emerald-400", bg: "bg-emerald-500/10", icon: CheckCircle2 };
     case 'CONTRE':
-      return { label: 'CONTRE', color: "text-red-500", bg: "bg-red-500/10", icon: XCircle };
+      return { label: 'CONTRE', color: "text-red-700 dark:text-red-400", bg: "bg-red-500/10", icon: XCircle };
     case 'ABSTENTION':
-      return { label: 'ABSTENTION', color: "text-amber-500", bg: "bg-amber-500/10", icon: MinusCircle };
+      return { label: 'ABSTENTION', color: "text-amber-700 dark:text-amber-400", bg: "bg-amber-500/10", icon: MinusCircle };
     default:
-      return { label: 'NON VOTANT', color: "text-slate-400", bg: "bg-slate-100 dark:bg-slate-500/10", icon: Vote };
+      return { label: 'NON VOTANT', color: "text-muted-foreground", bg: "bg-slate-100 dark:bg-slate-500/10", icon: Vote };
   }
 };
 
@@ -398,7 +398,7 @@ export default function DeputyDetailPage({ params, embedded }: { params: Promise
           </Link>
           <div className="flex items-center gap-3">
              <div className="h-2 w-2 rounded-full bg-red-500 animate-pulse" />
-             <span className="text-[10px] font-black uppercase tracking-widest text-slate-400">Profil Officiel</span>
+             <span className="text-[10px] font-black uppercase tracking-widest text-muted-foreground">Profil Officiel</span>
           </div>
         </div>
       </div>
@@ -450,7 +450,7 @@ export default function DeputyDetailPage({ params, embedded }: { params: Promise
                   <h1 className="text-4xl font-staatliches text-white tracking-tight uppercase leading-none mb-2">
                     {name}
                   </h1>
-                  <p className="text-red-400 font-bold tracking-widest text-xs uppercase flex items-center gap-2">
+                  <p className="text-red-700 dark:text-red-400 font-bold tracking-widest text-xs uppercase flex items-center gap-2">
                     {deputy?.biography?.includes('**Ministre**') ? (
                       <>
                         <ShieldCheck className="w-3 h-3" />
@@ -472,12 +472,12 @@ export default function DeputyDetailPage({ params, embedded }: { params: Promise
                         // eslint-disable-next-line @next/next/no-img-element
                         <img src={partyLink.logo_url} alt={partyLink.name} className="w-12 h-12 rounded-2xl object-contain bg-white p-1 shrink-0 shadow-lg ring-1 ring-slate-200 dark:ring-slate-700" />
                       ) : (
-                        <div className="w-12 h-12 rounded-2xl bg-red-500 flex items-center justify-center text-white shrink-0 shadow-lg shadow-red-500/20">
+                        <div className="w-12 h-12 rounded-2xl bg-red-600 flex items-center justify-center text-white shrink-0 shadow-lg shadow-red-500/20">
                           <Landmark className="w-6 h-6" />
                         </div>
                       )}
                       <div className="min-w-0">
-                        <p className="text-[10px] font-black text-slate-400 uppercase tracking-wider">Groupe Politique</p>
+                        <p className="text-[10px] font-black text-muted-foreground uppercase tracking-wider">Groupe Politique</p>
                         <p className="font-bold text-foreground dark:text-white truncate">
                           {deputy?.party || (slug === 'gabriel-attal' ? 'EPR' : 'NI')}
                         </p>
@@ -485,7 +485,7 @@ export default function DeputyDetailPage({ params, embedded }: { params: Promise
                           {groupFullName}
                         </p>
                         {partyLink && (
-                          <span className="text-[10px] font-black uppercase tracking-widest text-red-600 dark:text-red-300 inline-flex items-center gap-1 mt-1.5 bg-red-50 dark:bg-red-500/10 px-2 py-1 rounded-lg group-hover/party:bg-red-100 transition-colors">Voir la fiche du parti <ArrowRight className="w-3 h-3" /></span>
+                          <span className="text-[10px] font-black uppercase tracking-widest text-red-700 dark:text-red-300 inline-flex items-center gap-1 mt-1.5 bg-red-50 dark:bg-red-500/10 px-2 py-1 rounded-lg group-hover/party:bg-red-100 transition-colors">Voir la fiche du parti <ArrowRight className="w-3 h-3" /></span>
                         )}
                       </div>
                     </>
@@ -506,24 +506,24 @@ export default function DeputyDetailPage({ params, embedded }: { params: Promise
                 {deputy?.department ? (
                   <Link href={`/local/?type=department&code=${encodeURIComponent(deputy.department)}`}
                     className="flex items-center gap-4 p-4 rounded-3xl bg-muted dark:bg-slate-800/50 border border-border dark:border-slate-700 transition hover:border-blue-400 hover:bg-blue-50/50 group">
-                     <div className="w-12 h-12 rounded-2xl bg-blue-500 flex items-center justify-center text-white shrink-0 shadow-lg shadow-blue-500/20">
+                     <div className="w-12 h-12 rounded-2xl bg-blue-600 flex items-center justify-center text-white shrink-0 shadow-lg shadow-blue-500/20">
                        <MapPin className="w-6 h-6" />
                      </div>
                      <div className="min-w-0">
-                       <p className="text-[10px] font-black text-slate-400 uppercase tracking-wider">Circonscription</p>
+                       <p className="text-[10px] font-black text-muted-foreground uppercase tracking-wider">Circonscription</p>
                        <p className="font-bold text-foreground dark:text-white">
                          {deputy.department} {deputy?.constituency_number ? `- ${deputy.constituency_number}ème` : ''}
                        </p>
-                       <span className="text-[10px] font-black uppercase tracking-widest text-blue-600 inline-flex items-center gap-1 mt-0.5 opacity-0 group-hover:opacity-100 transition-opacity">Voir la politique locale <ArrowRight className="w-3 h-3" /></span>
+                       <span className="text-[10px] font-black uppercase tracking-widest text-blue-700 dark:text-blue-400 inline-flex items-center gap-1 mt-0.5 opacity-0 group-hover:opacity-100 transition-opacity">Voir la politique locale <ArrowRight className="w-3 h-3" /></span>
                      </div>
                   </Link>
                 ) : (
                   <div className="flex items-center gap-4 p-4 rounded-3xl bg-muted dark:bg-slate-800/50 border border-border dark:border-slate-700">
-                     <div className="w-12 h-12 rounded-2xl bg-blue-500 flex items-center justify-center text-white shrink-0 shadow-lg shadow-blue-500/20">
+                     <div className="w-12 h-12 rounded-2xl bg-blue-600 flex items-center justify-center text-white shrink-0 shadow-lg shadow-blue-500/20">
                        <MapPin className="w-6 h-6" />
                      </div>
                      <div>
-                       <p className="text-[10px] font-black text-slate-400 uppercase tracking-wider">Circonscription</p>
+                       <p className="text-[10px] font-black text-muted-foreground uppercase tracking-wider">Circonscription</p>
                        <p className="font-bold text-foreground dark:text-white">...</p>
                      </div>
                   </div>
@@ -554,11 +554,11 @@ export default function DeputyDetailPage({ params, embedded }: { params: Promise
                <div className={`absolute top-0 left-0 w-2 h-full transition-colors duration-500 ${isLegalClean ? 'bg-emerald-500' : 'bg-amber-500'}`} />
                <div className="flex items-center justify-between gap-4">
                   <div className="min-w-0">
-                    <p className="text-[9px] font-black text-slate-400 uppercase tracking-[0.2em] mb-1">Intégrité & Transparence</p>
+                    <p className="text-[9px] font-black text-muted-foreground uppercase tracking-[0.2em] mb-1">Intégrité & Transparence</p>
                     <h4 className="text-lg font-bold text-foreground dark:text-white truncate">Situation Juridique</h4>
                     <div className="flex items-center gap-2 mt-1">
                       <div className={`w-1.5 h-1.5 rounded-full animate-pulse ${isLegalClean ? 'bg-emerald-500' : 'bg-amber-500'}`} />
-                      <span className={`text-[10px] font-black uppercase tracking-widest ${isLegalClean ? 'text-emerald-600' : 'text-amber-600'}`}>
+                      <span className={`text-[10px] font-black uppercase tracking-widest ${isLegalClean ? 'text-emerald-700 dark:text-emerald-400' : 'text-amber-700'}`}>
                         {isLegalClean ? 'Dossier Vierge' : 'Données à consulter'}
                       </span>
                     </div>
@@ -567,8 +567,8 @@ export default function DeputyDetailPage({ params, embedded }: { params: Promise
                     onClick={() => setShowLegalModal(true)}
                     className={`flex items-center gap-2 px-5 py-3 rounded-2xl text-[10px] font-black uppercase tracking-widest transition-all transform active:scale-95 shadow-lg border ${
                       isLegalClean 
-                        ? 'bg-emerald-500/10 text-emerald-600 border-emerald-500/20 hover:bg-emerald-500 hover:text-white shadow-emerald-500/10' 
-                        : 'bg-amber-500/10 text-amber-600 border-amber-500/20 hover:bg-amber-500 hover:text-white shadow-amber-500/10'
+                        ? 'bg-emerald-500/10 text-emerald-700 dark:text-emerald-400 border-emerald-500/20 hover:bg-emerald-500 hover:text-white shadow-emerald-500/10' 
+                        : 'bg-amber-500/10 text-amber-800 dark:text-amber-400 border-amber-500/20 hover:bg-amber-500 hover:text-white shadow-amber-500/10'
                     }`}
                   >
                     <ShieldCheck className="w-3.5 h-3.5" />
@@ -590,10 +590,10 @@ export default function DeputyDetailPage({ params, embedded }: { params: Promise
                 {/* DESKTOP : bloc complet. */}
                 <div className="hidden bg-red-600 rounded-[2rem] p-8 text-white shadow-xl shadow-red-600/20 md:block">
                   <h4 className="text-xl font-staatliches uppercase mb-4 tracking-tight">Contact Parlementaire</h4>
-                  <p className="text-sm opacity-90 leading-relaxed mb-6">
+                  <p className="text-sm leading-relaxed mb-6">
                     Vous pouvez contacter ce député pour toute question relative à l&apos;activité législative.
                   </p>
-                  <a href={contactHref} {...(ext ? { target: "_blank", rel: "noopener noreferrer" } : {})} className="w-full py-4 rounded-2xl bg-card text-red-600 font-bold text-sm flex items-center justify-center gap-2 hover:bg-slate-100 transition-colors">
+                  <a href={contactHref} {...(ext ? { target: "_blank", rel: "noopener noreferrer" } : {})} className="w-full py-4 rounded-2xl bg-card text-red-700 dark:text-red-400 font-bold text-sm flex items-center justify-center gap-2 hover:bg-slate-100 transition-colors">
                     {ext ? <ExternalLink className="w-4 h-4" /> : <Mail className="w-4 h-4" />}
                     {ext ? "Voir sa fiche à l'Assemblée" : "Envoyer un message"}
                   </a>
@@ -643,7 +643,7 @@ export default function DeputyDetailPage({ params, embedded }: { params: Promise
                           </div>
                           <div className="flex flex-col">
                             <h3 className="text-3xl font-staatliches uppercase tracking-tight text-foreground dark:text-white leading-none">
-                              Portrait & <span className="text-blue-600">Parcours</span>
+                              Portrait & <span className="text-blue-700 dark:text-blue-400">Parcours</span>
                             </h3>
                           </div>
                         </div>
@@ -679,7 +679,7 @@ export default function DeputyDetailPage({ params, embedded }: { params: Promise
                                     key={pIdx}
                                     className="flex gap-4 items-start bg-slate-50/50 dark:bg-slate-800/20 p-4 rounded-2xl border border-border/50 dark:border-slate-800/50 group/item hover:bg-card dark:hover:bg-slate-800 transition-colors"
                                   >
-                                    <div className="w-10 h-10 rounded-xl bg-card dark:bg-slate-700 flex items-center justify-center text-blue-600 shadow-sm shrink-0 group-hover/item:scale-110 transition-transform">
+                                    <div className="w-10 h-10 rounded-xl bg-card dark:bg-slate-700 flex items-center justify-center text-blue-700 dark:text-blue-400 shadow-sm shrink-0 group-hover/item:scale-110 transition-transform">
                                       <Icon className="w-5 h-5" />
                                     </div>
                                     <div className="font-playfair text-base md:text-lg text-slate-700 dark:text-slate-300 leading-relaxed italic pt-1">
@@ -695,7 +695,7 @@ export default function DeputyDetailPage({ params, embedded }: { params: Promise
                               
                               {/* Bottom Signature Decor */}
                               <div className="mt-8 pt-6 border-t border-border dark:border-slate-800 flex items-center justify-between opacity-50">
-                                <p className="text-[10px] font-black uppercase tracking-widest text-slate-400">Dossier Certifié Assemblée Nationale</p>
+                                <p className="text-[10px] font-black uppercase tracking-widest text-muted-foreground">Dossier Certifié Assemblée Nationale</p>
                                 <div className="h-px w-24 bg-gradient-to-r from-transparent to-slate-200 dark:to-slate-700" />
                               </div>
                             </div>
@@ -726,11 +726,11 @@ export default function DeputyDetailPage({ params, embedded }: { params: Promise
                       <Users className="h-5 w-5" />
                     </span>
                     <div>
-                      <p className="text-[10px] font-black uppercase tracking-widest text-slate-400">Loyauté au groupe</p>
+                      <p className="text-[10px] font-black uppercase tracking-widest text-muted-foreground">Loyauté au groupe</p>
                       <p className="text-sm text-muted-foreground">Votes alignés sur la position de son groupe.</p>
                     </div>
                   </div>
-                  <span className="font-staatliches text-4xl leading-none text-emerald-600">{deputy.group_loyalty}%</span>
+                  <span className="font-staatliches text-4xl leading-none text-emerald-700 dark:text-emerald-400">{deputy.group_loyalty}%</span>
                 </div>
                 <div className="mt-4 h-3 overflow-hidden rounded-full bg-slate-100 dark:bg-white/5">
                   <div className="h-full rounded-full bg-gradient-to-r from-emerald-400 to-emerald-600" style={{ width: `${deputy.group_loyalty}%` }} />
@@ -741,7 +741,7 @@ export default function DeputyDetailPage({ params, embedded }: { params: Promise
             {/* Initiatives législatives : classement (déposés/co-signés + rang) PUIS la liste des textes. */}
             <div className="pt-4 mb-10">
               <h2 className="text-4xl font-staatliches uppercase tracking-tight text-foreground dark:text-white mb-6">
-                Initiatives <span className="text-amber-500">Législatives</span>
+                Initiatives <span className="text-amber-700 dark:text-amber-400">Législatives</span>
               </h2>
 
               {deputy && (
@@ -763,10 +763,10 @@ export default function DeputyDetailPage({ params, embedded }: { params: Promise
                       className="min-w-[300px] md:min-w-[350px] bg-card dark:bg-slate-900 rounded-[2rem] p-8 border border-border dark:border-slate-800 shadow-xl hover:border-amber-400 hover:shadow-amber-400/5 transition-all group"
                     >
                       <div className="flex items-center gap-3 mb-6">
-                        <div className="w-10 h-10 rounded-xl bg-amber-400/10 text-amber-600 flex items-center justify-center group-hover:bg-amber-400 group-hover:text-slate-950 transition-colors">
+                        <div className="w-10 h-10 rounded-xl bg-amber-400/10 text-amber-700 dark:text-amber-400 flex items-center justify-center group-hover:bg-amber-400 group-hover:text-slate-950 transition-colors">
                           <FileText size={18} />
                         </div>
-                        <span className="text-[10px] font-black uppercase tracking-widest text-slate-400">
+                        <span className="text-[10px] font-black uppercase tracking-widest text-muted-foreground">
                           Proposition de loi
                         </span>
                       </div>
@@ -793,7 +793,7 @@ export default function DeputyDetailPage({ params, embedded }: { params: Promise
             {/* REORDERED: Positions sur les scrutins Section (moved here) */}
             <div className="pt-8">
               <h2 className="text-4xl font-staatliches uppercase tracking-tight text-foreground dark:text-white mb-4">
-                <span className="text-red-600">Votes</span>
+                <span className="text-red-700 dark:text-red-400">Votes</span>
               </h2>
               <p className="text-muted-foreground font-medium max-w-xl mb-8">
                 Retrouvez comment cet élu s&apos;est positionné sur l&apos;intégralité des textes législatifs de la législature actuelle.
@@ -820,7 +820,7 @@ export default function DeputyDetailPage({ params, embedded }: { params: Promise
                         onClick={() => setSelectedIssue(selectedIssue === i.slug ? null : i.slug)}
                         className={issueChip(selectedIssue === i.slug)}
                       >
-                        {i.title} <span className="opacity-60">· {i.count}</span>
+                        {i.title} <span>· {i.count}</span>
                       </button>
                     ))}
                   </div>
@@ -841,7 +841,7 @@ export default function DeputyDetailPage({ params, embedded }: { params: Promise
                 return (
                   <div className="mb-8 rounded-[2rem] border border-border bg-card p-6 dark:border-slate-800 dark:bg-slate-900">
                     <div className="mb-3 flex flex-wrap items-center gap-3">
-                      <span className="flex items-center gap-2 text-[11px] font-black uppercase tracking-widest text-red-600"><Quote className="h-4 w-4" /> Ce qu'il·elle dit — {label}</span>
+                      <span className="flex items-center gap-2 text-[11px] font-black uppercase tracking-widest text-red-700 dark:text-red-400"><Quote className="h-4 w-4" /> Ce qu'il·elle dit — {label}</span>
                       {pos && <span className={`rounded-full px-3 py-1 text-[10px] font-black uppercase tracking-widest ${st.cls}`}>{st.txt}</span>}
                     </div>
                     {pos ? (
@@ -859,7 +859,7 @@ export default function DeputyDetailPage({ params, embedded }: { params: Promise
                             ))}
                           </ul>
                         )}
-                        <p className="mt-3 text-[10px] font-bold uppercase tracking-widest text-slate-400">Source : questions écrites &amp; amendements (open data Assemblée nationale)</p>
+                        <p className="mt-3 text-[10px] font-bold uppercase tracking-widest text-muted-foreground">Source : questions écrites &amp; amendements (open data Assemblée nationale)</p>
                       </>
                     ) : (
                       <p className="text-sm italic text-muted-foreground">Aucune prise de parole recensée sur ce sujet (questions écrites). Son <span className="font-bold">action</span> reste visible ci-dessous via ses votes.</p>
@@ -923,10 +923,10 @@ export default function DeputyDetailPage({ params, embedded }: { params: Promise
                         </div>
                         <div className="min-w-0 flex-1">
                           <div className="flex flex-wrap items-center gap-3 mb-2">
-                            <span className="text-[10px] font-black text-slate-400 uppercase tracking-widest flex items-center gap-1">
+                            <span className="text-[10px] font-black text-muted-foreground uppercase tracking-widest flex items-center gap-1">
                               <Calendar className="w-3 h-3" /> {dateStr}
                             </span>
-                            <span className={`text-[9px] font-black px-2 py-0.5 rounded-md uppercase tracking-tighter bg-blue-500/10 text-blue-600`}>
+                            <span className={`text-[9px] font-black px-2 py-0.5 rounded-md uppercase tracking-tighter bg-blue-500/10 text-blue-700 dark:text-blue-400`}>
                               LOI
                             </span>
                             <span className="text-[9px] font-black px-2 py-0.5 rounded-md uppercase tracking-tighter bg-slate-100 dark:bg-slate-800 text-muted-foreground">

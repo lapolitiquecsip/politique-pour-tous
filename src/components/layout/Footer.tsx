@@ -28,7 +28,7 @@ export default function Footer() {
 
           {/* Site Map */}
           <div>
-            <h4 className="text-xs font-black uppercase tracking-[0.3em] text-white/40 mb-6 font-staatliches">Navigation</h4>
+            <h4 className="text-xs font-black uppercase tracking-[0.3em] text-white/60 mb-6 font-staatliches">Navigation</h4>
             <ul className="space-y-4">
               <li><Link href="/" className="text-slate-300 hover:text-white hover:translate-x-1 transition-all inline-block font-medium">Accueil</Link></li>
               <li><Link href="/deputes" className="text-slate-300 hover:text-white hover:translate-x-1 transition-all inline-block font-medium whitespace-nowrap">Votes des élus</Link></li>
@@ -38,7 +38,7 @@ export default function Footer() {
 
           {/* Legal Section */}
           <div>
-            <h4 className="text-xs font-black uppercase tracking-[0.3em] text-white/40 mb-6 font-staatliches">Légal</h4>
+            <h4 className="text-xs font-black uppercase tracking-[0.3em] text-white/60 mb-6 font-staatliches">Légal</h4>
             <ul className="space-y-4">
               <li><Link href="/mentions-legales" className="text-slate-300 hover:text-white hover:translate-x-1 transition-all inline-block font-medium">Mentions Légales</Link></li>
               <li><Link href="/cgu" className="text-slate-300 hover:text-white hover:translate-x-1 transition-all inline-block font-medium">CGU</Link></li>
@@ -48,7 +48,7 @@ export default function Footer() {
 
           {/* Contact Section */}
           <div>
-            <h4 className="text-xs font-black uppercase tracking-[0.3em] text-white/40 mb-6 font-staatliches">Assistance</h4>
+            <h4 className="text-xs font-black uppercase tracking-[0.3em] text-white/60 mb-6 font-staatliches">Assistance</h4>
             <ul className="space-y-4">
               <li>
                 <Link 
@@ -63,7 +63,7 @@ export default function Footer() {
                   FAQ — Questions fréquentes
                 </Link>
               </li>
-              <li className="text-muted-foreground text-[10px] uppercase tracking-widest font-bold pt-4">
+              <li className="text-slate-400 text-[10px] uppercase tracking-widest font-bold pt-4">
                 © {currentYear} La Politique Simple Media
               </li>
             </ul>
@@ -72,11 +72,11 @@ export default function Footer() {
 
         <div className="pt-8 border-t border-white/5 flex flex-col md:flex-row justify-between items-center gap-6">
           <div className="flex items-center gap-6">
-             <span className="text-[10px] font-black text-white/20 uppercase tracking-[0.4em]">Liberté</span>
-             <span className="text-[10px] font-black text-white/20 uppercase tracking-[0.4em]">Égalité</span>
-             <span className="text-[10px] font-black text-white/20 uppercase tracking-[0.4em]">Fraternité</span>
+             <span className="text-[10px] font-black text-white/50 uppercase tracking-[0.4em]">Liberté</span>
+             <span className="text-[10px] font-black text-white/50 uppercase tracking-[0.4em]">Égalité</span>
+             <span className="text-[10px] font-black text-white/50 uppercase tracking-[0.4em]">Fraternité</span>
           </div>
-          <div className="text-[10px] text-muted-foreground font-medium">
+          <div className="text-[10px] text-slate-400 font-medium">
             Made with passion for Democracy 🇫🇷
           </div>
         </div>

@@ -558,10 +558,10 @@ export const api = {
     }
     if (!data) return [];
     const STYLE: Record<string, { vote: string; color: string; bg: string }> = {
-      for:        { vote: 'POUR',        color: 'text-emerald-600', bg: 'bg-emerald-50' },
-      against:    { vote: 'CONTRE',      color: 'text-red-600',     bg: 'bg-red-50' },
-      abstention: { vote: 'ABSTENTION',  color: 'text-slate-600',   bg: 'bg-slate-100' },
-      non_voting: { vote: "N'a pas voté", color: 'text-slate-400', bg: 'bg-slate-50' },
+      for:        { vote: 'POUR',        color: 'text-emerald-700 dark:text-emerald-300', bg: 'bg-emerald-50 dark:bg-emerald-500/10' },
+      against:    { vote: 'CONTRE',      color: 'text-red-700 dark:text-red-300',     bg: 'bg-red-50 dark:bg-red-500/10' },
+      abstention: { vote: 'ABSTENTION',  color: 'text-slate-700 dark:text-slate-200',   bg: 'bg-slate-100 dark:bg-slate-500/10' },
+      non_voting: { vote: "N'a pas voté", color: 'text-muted-foreground', bg: 'bg-slate-50 dark:bg-slate-500/10' },
     };
     return (data as any[])
       .map(r => {

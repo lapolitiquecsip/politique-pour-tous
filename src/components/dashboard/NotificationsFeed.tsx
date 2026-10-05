@@ -245,7 +245,7 @@ export default function NotificationsFeed({ userId }: { userId: string }) {
           >
             <Bell size={30} className="text-white" fill={unread > 0 ? "currentColor" : "none"} />
             {unread > 0 && (
-              <span className="absolute -right-1.5 -top-1.5 flex h-6 min-w-6 items-center justify-center rounded-full bg-rose-500 px-1.5 text-[11px] font-black text-white ring-2 ring-slate-950">
+              <span className="absolute -right-1.5 -top-1.5 flex h-6 min-w-6 items-center justify-center rounded-full bg-rose-600 px-1.5 text-[11px] font-black text-white ring-2 ring-slate-950">
                 {unread > 9 ? "9+" : unread}
               </span>
             )}

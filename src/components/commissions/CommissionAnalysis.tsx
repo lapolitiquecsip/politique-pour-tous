@@ -13,13 +13,13 @@ import type { CommissionMeeting } from "@/lib/commissions";
 /** Classes explicites — Tailwind ne peut pas deviner une classe construite à la volée. */
 export const ACCENTS = {
   emerald: {
-    text: "text-emerald-600", bg: "bg-emerald-50 dark:bg-emerald-500/15",
+    text: "text-emerald-700 dark:text-emerald-400", bg: "bg-emerald-50 dark:bg-emerald-500/15",
     chip: "bg-emerald-600 text-white", ring: "hover:border-emerald-300",
     grad: "from-emerald-500 to-teal-500", dot: "bg-emerald-500",
     hover: "hover:text-emerald-600",
   },
   red: {
-    text: "text-red-600", bg: "bg-red-50 dark:bg-red-500/15",
+    text: "text-red-700 dark:text-red-400", bg: "bg-red-50 dark:bg-red-500/15",
     chip: "bg-red-600 text-white", ring: "hover:border-red-300",
     grad: "from-red-500 to-rose-600", dot: "bg-red-500",
     hover: "hover:text-red-600",
@@ -97,7 +97,7 @@ export function CommissionAnalysis({ m, accent, sombre = false }: {
 
       {!!a.chiffres?.length && (
         <div>
-          <p className="mb-2 text-[10px] font-black uppercase tracking-widest text-amber-600">Chiffres avancés</p>
+          <p className="mb-2 text-[10px] font-black uppercase tracking-widest text-amber-700 dark:text-amber-400">Chiffres avancés</p>
           <div className="flex flex-wrap gap-2">
             {a.chiffres.map((c, i) => (
               <div key={i} className="rounded-2xl border border-amber-200 bg-amber-50 px-3.5 py-2 dark:border-amber-500/30 dark:bg-amber-500/10">
@@ -111,7 +111,7 @@ export function CommissionAnalysis({ m, accent, sombre = false }: {
 
       {!!a.positions?.length && (
         <div>
-          <p className="mb-2 text-[10px] font-black uppercase tracking-widest text-violet-600">Positions défendues</p>
+          <p className="mb-2 text-[10px] font-black uppercase tracking-widest text-violet-700 dark:text-violet-400">Positions défendues</p>
           <div className="space-y-2">
             {a.positions.map((p, i) => (
               <div key={i} className={bloc}>
@@ -135,7 +135,7 @@ export function CommissionAnalysis({ m, accent, sombre = false }: {
             {a.citations.map((c, i) => (
               <blockquote key={i} className="border-l-4 border-border pl-3 dark:border-slate-700">
                 <p className={`text-sm italic leading-snug ${corps}`}>« {c.texte} »</p>
-                <p className="mt-0.5 text-[11px] font-bold text-slate-400">— {c.orateur}</p>
+                <p className="mt-0.5 text-[11px] font-bold text-muted-foreground">— {c.orateur}</p>
               </blockquote>
             ))}
           </div>
@@ -144,7 +144,7 @@ export function CommissionAnalysis({ m, accent, sombre = false }: {
 
       {!!a.suites?.length && (
         <div>
-          <p className="mb-2 text-[10px] font-black uppercase tracking-widest text-sky-600">Suites annoncées</p>
+          <p className="mb-2 text-[10px] font-black uppercase tracking-widest text-sky-700 dark:text-sky-400">Suites annoncées</p>
           <ul className="space-y-1.5">
             {a.suites.map((p, i) => (
               <li key={i} className={`flex gap-2 text-sm leading-snug ${corps}`}>

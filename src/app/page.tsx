@@ -62,7 +62,7 @@ export default function Home() {
                 </span>
                 
                 <h2 className="text-5xl md:text-7xl font-staatliches uppercase tracking-tighter leading-none inline-flex items-center">
-                  <span className="bg-rose-500 text-white px-6 pt-2 pb-1 md:pt-4 md:pb-2 rounded-2xl md:rounded-3xl shadow-lg">AUJOURD'HUI</span>
+                  <span className="bg-rose-600 text-white px-6 pt-2 pb-1 md:pt-4 md:pb-2 rounded-2xl md:rounded-3xl shadow-lg">AUJOURD'HUI</span>
                 </h2>
               </div>
             </div>
@@ -82,7 +82,7 @@ export default function Home() {
               introduit par un chapeau sur le Journal officiel qui annonçait une
               rubrique absente de cette page. */}
           <div className="mb-12 text-center">
-            <p className="text-[11px] font-black uppercase tracking-[0.25em] text-red-600">Ce que le Parlement a définitivement adopté</p>
+            <p className="text-[11px] font-black uppercase tracking-[0.25em] text-red-700 dark:text-red-400">Ce que le Parlement a définitivement adopté</p>
             <h2 className="mt-2 text-4xl md:text-6xl font-staatliches uppercase tracking-tight text-foreground dark:text-white">Dernières lois promulguées</h2>
             <p className="mt-3 text-muted-foreground max-w-2xl mx-auto">Feuilletez les dernières lois — une page par jour et par texte. Cliquez pour voir le parcours complet de chaque loi.</p>
             <p className="mx-auto mt-4 max-w-md rounded-2xl bg-emerald-50 px-4 py-2.5 text-center text-sm font-bold leading-6 text-emerald-700 dark:bg-emerald-500/10 dark:text-emerald-400">
@@ -172,12 +172,12 @@ export default function Home() {
               <div className="absolute -bottom-12 -right-12 w-48 h-48 bg-blue-500/5 rounded-full blur-3xl" />
 
               <div className="flex flex-col md:flex-row items-center gap-8 relative z-10">
-                <div className="w-20 h-20 bg-amber-500 rounded-3xl flex items-center justify-center text-white shadow-2xl shadow-amber-500/40 rotate-3 group-hover:rotate-0 transition-transform duration-500">
+                <div className="w-20 h-20 bg-amber-500 rounded-3xl flex items-center justify-center text-slate-950 shadow-2xl shadow-amber-500/40 rotate-3 group-hover:rotate-0 transition-transform duration-500">
                   <CalendarDays size={40} />
                 </div>
                 <div className="text-center md:text-left space-y-2">
                   <h3 className="text-3xl md:text-4xl font-staatliches uppercase tracking-tighter leading-none">
-                    L'agenda <span className="text-amber-500">Complet</span> de la république
+                    L'agenda <span className="text-amber-700 dark:text-amber-400">Complet</span> de la république
                   </h3>
                   <p className="text-muted-foreground dark:text-slate-400 font-medium text-lg italic">
                     Découvrez toutes les séances, auditions et événements politiques à venir.
@@ -190,7 +190,7 @@ export default function Home() {
                   Voir le calendrier
                   <ArrowRight size={20} className="group-hover:translate-x-2 transition-transform" />
                 </div>
-                <span className="text-[10px] font-black uppercase tracking-widest text-slate-400">AN • SÉNAT • GOUVERNEMENT</span>
+                <span className="text-[10px] font-black uppercase tracking-widest text-muted-foreground">AN • SÉNAT • GOUVERNEMENT</span>
               </div>
             </motion.div>
           </Link>

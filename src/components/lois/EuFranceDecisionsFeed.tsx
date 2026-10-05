@@ -19,7 +19,7 @@ const CAT_COLOR: Record<string, string> = {
   "Règlement (UE)": "bg-sky-400/15 text-sky-300 border-sky-400/30",
   "Aides d'État": "bg-amber-400/15 text-amber-300 border-amber-400/30",
   "Budget & finances": "bg-emerald-400/15 text-emerald-300 border-emerald-400/30",
-  "Concentrations": "bg-slate-400/15 text-slate-300 border-slate-400/30",
+  "Concentrations": "bg-slate-400/15 text-muted-foreground border-slate-400/30",
   "Infractions": "bg-rose-400/15 text-rose-300 border-rose-400/30",
   "Numérique": "bg-cyan-400/15 text-cyan-300 border-cyan-400/30",
   "Agriculture & pêche": "bg-lime-400/15 text-lime-300 border-lime-400/30",
@@ -86,7 +86,7 @@ export default function EuFranceDecisionsFeed() {
             {[["Tout", items.length] as [string, number], ...cats].map(([c, n]) => (
               <button key={c} onClick={() => { setFilter(c); setLimit(20); }}
                 className={`rounded-full border px-3.5 py-1.5 text-[11px] font-black uppercase tracking-wider transition ${filter === c ? "border-yellow-400 bg-yellow-400 text-blue-950" : "border-white/15 bg-white/5 text-blue-100 hover:border-yellow-400/40"}`}>
-                {c} <span className="opacity-60">{n}</span>
+                {c} <span className="opacity-80">{n}</span>
               </button>
             ))}
           </div>

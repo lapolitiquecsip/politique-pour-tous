@@ -36,11 +36,11 @@ export default async function SenateursPage() {
         <Link href="/senateurs/gerard-larcher" className="group flex items-center gap-4 rounded-3xl border border-amber-200 bg-amber-50/60 p-5 transition hover:border-amber-300 hover:bg-amber-50 dark:border-amber-500/30 dark:bg-amber-500/[0.08] dark:hover:border-amber-400/60 dark:hover:bg-amber-500/[0.12]">
           <PresidentPhoto src="https://www.senat.fr/senimg/larcher_gerard86034e.jpg" alt="Gérard Larcher" ring="ring-amber-300" gradient="from-amber-500 to-orange-500" />
           <div className="min-w-0">
-            <p className="text-[10px] font-black uppercase tracking-widest text-amber-600">Président du Sénat</p>
+            <p className="text-[10px] font-black uppercase tracking-widest text-amber-700 dark:text-amber-400">Président du Sénat</p>
             <p className="text-xl font-bold text-foreground group-hover:text-amber-700 transition-colors">Gérard Larcher</p>
             <p className="text-sm text-muted-foreground">Deuxième personnage de l'État — voir sa fiche</p>
           </div>
-          <ChevronRight className="ml-auto text-slate-300 group-hover:text-amber-500 transition-colors" />
+          <ChevronRight className="ml-auto text-muted-foreground group-hover:text-amber-500 transition-colors" />
         </Link>
       </div>
       <section id="composition" className="scroll-mt-24 pt-4 pb-8">

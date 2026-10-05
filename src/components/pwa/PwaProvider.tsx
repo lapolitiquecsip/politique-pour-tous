@@ -67,7 +67,7 @@ export default function PwaProvider() {
             </button>
           )}
         </div>
-        <button onClick={dismiss} aria-label="Fermer" className="shrink-0 rounded-full p-1 text-slate-400 transition hover:bg-slate-100 dark:hover:bg-slate-800">
+        <button onClick={dismiss} aria-label="Fermer" className="shrink-0 rounded-full p-1 text-muted-foreground transition hover:bg-slate-100 dark:hover:bg-slate-800">
           <X size={16} />
         </button>
       </div>

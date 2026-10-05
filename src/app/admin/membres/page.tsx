@@ -21,8 +21,8 @@ type Membre = {
 
 const NIVEAUX = {
   free: { libelle: "Classique", classe: "bg-slate-100 text-slate-600" },
-  elite: { libelle: "Premium", classe: "bg-amber-100 text-amber-800" },
-  pro: { libelle: "Pro", classe: "bg-violet-100 text-violet-700" },
+  elite: { libelle: "Premium", classe: "bg-amber-100 dark:bg-amber-500/10 text-amber-800" },
+  pro: { libelle: "Pro", classe: "bg-violet-100 dark:bg-violet-500/10 text-violet-700 dark:text-violet-300" },
 } as const;
 
 const date = (d: string | null) => d ? new Date(d).toLocaleDateString("fr-FR", { day: "numeric", month: "short", year: "numeric" }) : "—";
@@ -119,10 +119,10 @@ export default function MembresPage() {
       </header>
 
       <div className="grid grid-cols-2 gap-4 lg:grid-cols-4">
-        <Carte titre="Comptes" valeur={String(t.comptes ?? 0)} detail={`${t.confirmes ?? 0} adresses confirmées · ${t.actifs_7j ?? 0} connectés cette semaine`} Icone={Users} teinte="bg-blue-100 text-blue-600" />
-        <Carte titre="Abonnés" valeur={String((t.premium ?? 0) + (t.pro ?? 0))} detail={`${t.premium ?? 0} Premium · ${t.pro ?? 0} Pro${t.offerts ? ` · dont ${t.offerts} offert${t.offerts > 1 ? "s" : ""}` : ""}`} Icone={Crown} teinte="bg-amber-100 text-amber-600" />
-        <Carte titre="Revenu mensuel" valeur={euros(t.revenu_mensuel_estime ?? 0)} detail="estimé d'après les abonnés actuels (Stripe fait foi)" Icone={Euro} teinte="bg-emerald-100 text-emerald-600" />
-        <Carte titre="Nouveaux" valeur={String(t.nouveaux_7j ?? 0)} detail={`cette semaine · ${t.nouveaux_30j ?? 0} sur 30 jours · ${t.parraines ?? 0} parrainés`} Icone={UserPlus} teinte="bg-violet-100 text-violet-600" />
+        <Carte titre="Comptes" valeur={String(t.comptes ?? 0)} detail={`${t.confirmes ?? 0} adresses confirmées · ${t.actifs_7j ?? 0} connectés cette semaine`} Icone={Users} teinte="bg-blue-100 dark:bg-blue-500/10 text-blue-700 dark:text-blue-300" />
+        <Carte titre="Abonnés" valeur={String((t.premium ?? 0) + (t.pro ?? 0))} detail={`${t.premium ?? 0} Premium · ${t.pro ?? 0} Pro${t.offerts ? ` · dont ${t.offerts} offert${t.offerts > 1 ? "s" : ""}` : ""}`} Icone={Crown} teinte="bg-amber-100 dark:bg-amber-500/10 text-amber-700 dark:text-amber-300" />
+        <Carte titre="Revenu mensuel" valeur={euros(t.revenu_mensuel_estime ?? 0)} detail="estimé d'après les abonnés actuels (Stripe fait foi)" Icone={Euro} teinte="bg-emerald-100 dark:bg-emerald-500/10 text-emerald-700 dark:text-emerald-300" />
+        <Carte titre="Nouveaux" valeur={String(t.nouveaux_7j ?? 0)} detail={`cette semaine · ${t.nouveaux_30j ?? 0} sur 30 jours · ${t.parraines ?? 0} parrainés`} Icone={UserPlus} teinte="bg-violet-100 dark:bg-violet-500/10 text-violet-700 dark:text-violet-300" />
       </div>
 
       <section className="rounded-3xl border border-slate-200 bg-white p-5 shadow-sm">
@@ -157,7 +157,7 @@ export default function MembresPage() {
           </button>
         </div>
 
-        {message && <p className="mb-3 rounded-xl bg-emerald-50 px-3 py-2 text-sm font-semibold text-emerald-800">{message}</p>}
+        {message && <p className="mb-3 rounded-xl bg-emerald-50 dark:bg-emerald-500/10 px-3 py-2 text-sm font-semibold text-emerald-800">{message}</p>}
         <p className="mb-2 text-xs text-slate-400">Cliquez sur le niveau d&apos;un membre pour lui donner ou lui retirer un accès Premium ou Pro. Un accès donné ici est marqué « offert » et ne compte pas dans le revenu.</p>
         <div className="overflow-x-auto">
           <table className="w-full min-w-[820px] text-sm">
@@ -166,13 +166,13 @@ export default function MembresPage() {
                 <th className="py-2">Membre</th><th>Niveau</th><th>Inscription</th><th>Dernière connexion</th><th>Venu par</th><th className="text-right">Filleuls</th>
               </tr>
             </thead>
-            <tbody className="divide-y divide-slate-100">
+            <tbody className="divide-y divide-slate-100 dark:divide-slate-800">
               {visibles.map(m => (
                 <tr key={m.id}>
                   <td className="py-2.5">
                     <span className="font-semibold text-slate-800">{m.email}</span>
-                    {m.administrateur && <span className="ml-2 inline-flex items-center gap-1 rounded-full bg-emerald-100 px-2 py-0.5 text-[10px] font-black text-emerald-700"><ShieldCheck size={11} /> admin</span>}
-                    {!m.confirme && <span className="ml-2 inline-flex items-center gap-1 rounded-full bg-rose-50 px-2 py-0.5 text-[10px] font-bold text-rose-600" title="L'adresse n'a pas encore été confirmée"><MailWarning size={11} /> non confirmée</span>}
+                    {m.administrateur && <span className="ml-2 inline-flex items-center gap-1 rounded-full bg-emerald-100 dark:bg-emerald-500/10 px-2 py-0.5 text-[10px] font-black text-emerald-700 dark:text-emerald-300"><ShieldCheck size={11} /> admin</span>}
+                    {!m.confirme && <span className="ml-2 inline-flex items-center gap-1 rounded-full bg-rose-50 dark:bg-rose-500/10 px-2 py-0.5 text-[10px] font-bold text-rose-700 dark:text-rose-300" title="L'adresse n'a pas encore été confirmée"><MailWarning size={11} /> non confirmée</span>}
                   </td>
                   <td>
                     {modif?.id === m.id ? (
@@ -196,7 +196,7 @@ export default function MembresPage() {
                   </td>
                   <td className="text-slate-600">{date(m.cree_le)}</td>
                   <td className="text-slate-600">{date(m.derniere_connexion)}</td>
-                  <td className="text-slate-600">{m.parrain ? <span className="inline-flex items-center gap-1"><Gift size={12} className="text-teal-600" /> {m.parrain}</span> : <span className="text-slate-300">—</span>}</td>
+                  <td className="text-slate-600">{m.parrain ? <span className="inline-flex items-center gap-1"><Gift size={12} className="text-teal-700 dark:text-teal-400" /> {m.parrain}</span> : <span className="text-slate-300">—</span>}</td>
                   <td className="text-right tabular-nums font-semibold text-slate-700">{m.filleuls || ""}</td>
                 </tr>
               ))}

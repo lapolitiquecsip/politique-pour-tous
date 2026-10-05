@@ -53,11 +53,11 @@ export default async function DeputesPage() {
         <Link href="/deputes/yael-braun-pivet" className="group flex items-center gap-4 rounded-3xl border border-emerald-200 bg-emerald-50/60 p-5 transition hover:border-emerald-300 hover:bg-emerald-50 dark:border-emerald-900/40 dark:bg-emerald-950/20">
           <PresidentPhoto src="https://www.assemblee-nationale.fr/dyn/static/tribun/17/photos/carre/721908.jpg" alt="Yaël Braun-Pivet" ring="ring-emerald-300" gradient="from-emerald-500 to-teal-600" />
           <div className="min-w-0">
-            <p className="text-[10px] font-black uppercase tracking-widest text-emerald-600">Présidente de l'Assemblée nationale</p>
+            <p className="text-[10px] font-black uppercase tracking-widest text-emerald-700 dark:text-emerald-400">Présidente de l'Assemblée nationale</p>
             <p className="text-xl font-bold text-foreground dark:text-white group-hover:text-emerald-700 transition-colors">Yaël Braun-Pivet</p>
             <p className="text-sm text-muted-foreground">Quatrième personnage de l'État — voir sa fiche</p>
           </div>
-          <ChevronRight className="ml-auto text-slate-300 group-hover:text-emerald-500 transition-colors" />
+          <ChevronRight className="ml-auto text-muted-foreground group-hover:text-emerald-500 transition-colors" />
         </Link>
       </div>
       {/* Outil interactif : comparateur de parlementaires. */}
@@ -68,14 +68,14 @@ export default async function DeputesPage() {
             <p className="font-black text-foreground dark:text-white">Comparer deux parlementaires</p>
             <p className="text-sm text-muted-foreground">Participation, amendements, loyauté — côte à côte</p>
           </div>
-          <ChevronRight className="ml-auto shrink-0 text-slate-300 transition-colors group-hover:text-muted-foreground" />
+          <ChevronRight className="ml-auto shrink-0 text-muted-foreground transition-colors group-hover:text-muted-foreground" />
         </Link>
       </div>
       <section id="composition" className="scroll-mt-24 pt-4 pb-8">
         <HemicycleChart chamber="an" subtitle="Assemblée nationale" title="Composition de l'Assemblée" />
       </section>
       <section id="membres" className="scroll-mt-24">
-        <MemberFinderIntro role="député" roleShort="député" accent="text-emerald-600" />
+        <MemberFinderIntro role="député" roleShort="député" accent="text-emerald-700 dark:text-emerald-400" />
         <Suspense fallback={<div className="h-64 flex items-center justify-center">Chargement...</div>}>
           <DiscoveryClient initialDeputies={mappedDeputies} single="deputies" />
         </Suspense>

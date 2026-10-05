@@ -65,7 +65,7 @@ export default function RegionFinancesChart({ regionCode }: { regionCode: string
   const meta = INDICATORS.find(i => i.code === indicator)!;
   const isRatio = meta.unit === "ans";
 
-  if (rows === null) return <p className="mt-3 text-sm text-slate-400">Chargement des finances…</p>;
+  if (rows === null) return <p className="mt-3 text-sm text-muted-foreground">Chargement des finances…</p>;
   if (series.length === 0) return <p className="mt-3 text-sm text-muted-foreground">Données financières indisponibles pour cette région.</p>;
 
   // Géométrie du graphique
@@ -85,7 +85,7 @@ export default function RegionFinancesChart({ regionCode }: { regionCode: string
   const isGood = meta.goodUp ? delta >= 0 : delta <= 0;
   const relMagnitude = Math.abs(delta) / (Math.abs(first.value) || 1);
   // Bon -> vert ; mauvais modéré -> orange ; mauvais énorme (>30%) -> rouge.
-  const trendColor = isGood ? "text-emerald-600" : relMagnitude > 0.3 ? "text-red-600" : "text-orange-500";
+  const trendColor = isGood ? "text-emerald-700 dark:text-emerald-400" : relMagnitude > 0.3 ? "text-red-700 dark:text-red-400" : "text-orange-700 dark:text-orange-400";
 
   return (
     <div>
@@ -109,7 +109,7 @@ export default function RegionFinancesChart({ regionCode }: { regionCode: string
           </div>
         )}
       </div>
-      <p className="mt-1.5 text-xs text-slate-400">{meta.hint}</p>
+      <p className="mt-1.5 text-xs text-muted-foreground">{meta.hint}</p>
 
       {/* Valeur la plus récente + tendance */}
       <div className="mt-4 flex flex-wrap items-end gap-3">
@@ -152,7 +152,7 @@ export default function RegionFinancesChart({ regionCode }: { regionCode: string
           </g>
         ))}
       </svg>
-      <p className="mt-1 text-right text-[10px] text-slate-400">Source : OFGL · budget principal · {isRatio ? "années" : mode === "hab" ? "euros par habitant" : "millions d'euros"}</p>
+      <p className="mt-1 text-right text-[10px] text-muted-foreground">Source : OFGL · budget principal · {isRatio ? "années" : mode === "hab" ? "euros par habitant" : "millions d'euros"}</p>
     </div>
   );
 }

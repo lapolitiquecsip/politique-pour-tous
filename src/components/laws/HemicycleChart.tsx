@@ -107,8 +107,8 @@ export default function HemicycleChart({ groups }: { groups?: GroupVote[] }) {
               className="w-2.5 h-2.5 rounded-full flex-shrink-0"
               style={{ backgroundColor: VOTE_COLORS[group.vote] }}
             ></span>
-            <span className="font-semibold text-slate-700 truncate">{group.name}</span>
-            <span className="text-slate-400 ml-auto">{group.seats}</span>
+            <span className="font-semibold text-slate-700 dark:text-slate-200 truncate">{group.name}</span>
+            <span className="text-muted-foreground ml-auto">{group.seats}</span>
           </div>
         ))}
       </div>

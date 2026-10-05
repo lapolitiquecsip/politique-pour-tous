@@ -34,7 +34,7 @@ type Candidate = {
 const SIDES: Record<string, { label: string; from: string; to: string; badge: string; borderb: string }> = {
   "extreme-gauche": { label: "Extrême gauche", from: "from-rose-500", to: "to-red-600", badge: "bg-red-600", borderb: "border-red-700" },
   gauche: { label: "Gauche", from: "from-pink-500", to: "to-rose-600", badge: "bg-rose-600", borderb: "border-rose-700" },
-  centre: { label: "Centre", from: "from-amber-400", to: "to-orange-500", badge: "bg-orange-500", borderb: "border-orange-600" },
+  centre: { label: "Centre", from: "from-amber-400", to: "to-orange-500", badge: "bg-orange-700", borderb: "border-orange-600" },
   droite: { label: "Droite", from: "from-sky-500", to: "to-blue-600", badge: "bg-blue-600", borderb: "border-blue-700" },
   "extreme-droite": { label: "Extrême droite", from: "from-indigo-500", to: "to-violet-700", badge: "bg-indigo-600", borderb: "border-indigo-700" },
   autre: { label: "Autre", from: "from-slate-500", to: "to-slate-700", badge: "bg-slate-600", borderb: "border-slate-700" },
@@ -61,18 +61,18 @@ const BIO_FIELDS: Array<[string, string]> = [
 
 // Couleur d'accent par rubrique (classes explicites pour ne pas être purgées).
 const FIELD_COLORS: Record<string, { head: string; bar: string }> = {
-  famille: { head: "text-rose-600", bar: "bg-rose-500" },
-  parents: { head: "text-amber-600", bar: "bg-amber-500" },
-  etudes: { head: "text-blue-600", bar: "bg-blue-500" },
-  parcours: { head: "text-violet-600", bar: "bg-violet-500" },
-  jobs: { head: "text-cyan-600", bar: "bg-cyan-500" },
-  passions: { head: "text-fuchsia-600", bar: "bg-fuchsia-500" },
-  positions: { head: "text-emerald-600", bar: "bg-emerald-500" },
-  faits_marquants: { head: "text-yellow-600", bar: "bg-yellow-500" },
-  realisations: { head: "text-teal-600", bar: "bg-teal-500" },
-  publications: { head: "text-red-600", bar: "bg-red-500" },
-  controverses: { head: "text-slate-700", bar: "bg-slate-600" },
-  chronologie: { head: "text-indigo-600", bar: "bg-indigo-500" },
+  famille: { head: "text-rose-700 dark:text-rose-400", bar: "bg-rose-500" },
+  parents: { head: "text-amber-700 dark:text-amber-400", bar: "bg-amber-500" },
+  etudes: { head: "text-blue-700 dark:text-blue-400", bar: "bg-blue-500" },
+  parcours: { head: "text-violet-700 dark:text-violet-400", bar: "bg-violet-500" },
+  jobs: { head: "text-cyan-700 dark:text-cyan-400", bar: "bg-cyan-500" },
+  passions: { head: "text-fuchsia-700 dark:text-fuchsia-400", bar: "bg-fuchsia-500" },
+  positions: { head: "text-emerald-700 dark:text-emerald-400", bar: "bg-emerald-500" },
+  faits_marquants: { head: "text-yellow-700 dark:text-yellow-400", bar: "bg-yellow-500" },
+  realisations: { head: "text-teal-700 dark:text-teal-400", bar: "bg-teal-500" },
+  publications: { head: "text-red-700 dark:text-red-400", bar: "bg-red-500" },
+  controverses: { head: "text-slate-700 dark:text-slate-200", bar: "bg-slate-600" },
+  chronologie: { head: "text-indigo-700 dark:text-indigo-400", bar: "bg-indigo-500" },
 };
 
 function toPoints(value: string | string[] | undefined): string[] {
@@ -108,8 +108,8 @@ function Timeline({ points }: { points: string[] }) {
         return (
           <div key={i} className="relative w-[220px] shrink-0 rounded-2xl border border-border bg-muted p-4">
             <div className="mb-2 h-1 w-8 rounded-full bg-red-500" />
-            {date && <p className="font-staatliches text-2xl uppercase leading-none text-red-600">{date}</p>}
-            <p className="mt-2 text-sm leading-6 text-slate-700"><NumHighlight text={desc} /></p>
+            {date && <p className="font-staatliches text-2xl uppercase leading-none text-red-700 dark:text-red-400">{date}</p>}
+            <p className="mt-2 text-sm leading-6 text-slate-700 dark:text-slate-200"><NumHighlight text={desc} /></p>
           </div>
         );
       })}
@@ -145,9 +145,9 @@ function FactChips({ candidate }: { candidate: Candidate }) {
     <img src={`https://flagcdn.com/${String(n.pays_code).toLowerCase()}.svg`} alt={n.pays || ""} className="h-4 w-6 rounded-sm object-cover shadow-sm" />
   )}Né·e à {n.ville}{n.pays ? `, ${n.pays}` : ""}</Chip>);
   if (candidate.party) chips.push(<Chip key="parti"><span className={`h-2.5 w-2.5 rounded-full ${side.badge}`} />{candidate.party}</Chip>);
-  if (bio?.profession) chips.push(<Chip key="prof"><Briefcase size={15} className="text-slate-400" />{bio.profession}</Chip>);
-  if (bio?.formation) chips.push(<Chip key="form"><GraduationCap size={16} className="text-slate-400" />{bio.formation}</Chip>);
-  if (bio?.enfants) chips.push(<Chip key="enf"><Users size={15} className="text-slate-400" />{bio.enfants}</Chip>);
+  if (bio?.profession) chips.push(<Chip key="prof"><Briefcase size={15} className="text-muted-foreground" />{bio.profession}</Chip>);
+  if (bio?.formation) chips.push(<Chip key="form"><GraduationCap size={16} className="text-muted-foreground" />{bio.formation}</Chip>);
+  if (bio?.enfants) chips.push(<Chip key="enf"><Users size={15} className="text-muted-foreground" />{bio.enfants}</Chip>);
 
   if (chips.length === 0) return null;
   return <div className="mb-6 flex flex-wrap gap-2">{chips}</div>;
@@ -239,8 +239,8 @@ function CandidateModal({ candidate, onClose }: { candidate: Candidate; onClose:
       : "flagged";
   const legalStyle = {
     unknown: { dot: "bg-slate-400", text: "text-muted-foreground", label: "Vérification en cours", bar: "bg-slate-300", btn: "border-slate-300/40 bg-slate-500/10 text-muted-foreground hover:bg-slate-600 hover:text-white" },
-    clean: { dot: "bg-emerald-500", text: "text-emerald-600", label: "Dossier vierge", bar: "bg-emerald-500", btn: "border-emerald-500/20 bg-emerald-500/10 text-emerald-600 hover:bg-emerald-500 hover:text-white" },
-    flagged: { dot: "bg-amber-500", text: "text-amber-600", label: "Affaires à consulter", bar: "bg-amber-500", btn: "border-amber-500/20 bg-amber-500/10 text-amber-600 hover:bg-amber-500 hover:text-white" },
+    clean: { dot: "bg-emerald-500", text: "text-emerald-700 dark:text-emerald-400", label: "Dossier vierge", bar: "bg-emerald-500", btn: "border-emerald-500/20 bg-emerald-500/10 text-emerald-700 dark:text-emerald-400 hover:bg-emerald-500 hover:text-white" },
+    flagged: { dot: "bg-amber-500", text: "text-amber-700 dark:text-amber-400", label: "Affaires à consulter", bar: "bg-amber-500", btn: "border-amber-500/20 bg-amber-500/10 text-amber-800 dark:text-amber-400 hover:bg-amber-500 hover:text-white" },
   }[legalState];
   // Adaptateur pour réutiliser la modale des députés (attend first_name/last_name).
   const legalPerson = { first_name: candidate.full_name, last_name: "", legal_issues: candidate.legal_issues, an_id: null, hatvp_url: null };
@@ -270,7 +270,7 @@ function CandidateModal({ candidate, onClose }: { candidate: Candidate; onClose:
               {/* Cloche dorée : suivre ce candidat (membres premium) → son fil arrive sur le profil. */}
               <button onClick={onToggleFollow}
                 title={following ? "Ne plus suivre" : "Suivre ce candidat"}
-                className={`mt-4 inline-flex items-center gap-2 rounded-full px-5 py-2.5 text-xs font-black uppercase tracking-widest transition ${following ? "bg-amber-400 text-foreground shadow-lg shadow-amber-500/30" : "bg-white/15 text-white ring-1 ring-white/40 hover:bg-white/25"}`}>
+                className={`mt-4 inline-flex items-center gap-2 rounded-full px-5 py-2.5 text-xs font-black uppercase tracking-widest transition ${following ? "bg-amber-400 text-foreground shadow-lg shadow-amber-500/30" : "bg-white/15 text-slate-950 ring-1 ring-white/40 hover:bg-white/25"}`}>
                 <Bell size={15} className={following ? "fill-slate-900" : ""} />
                 {following ? "Suivi ✓" : isPremium ? "Suivre ce candidat" : "Suivre (Premium)"}
               </button>
@@ -279,7 +279,7 @@ function CandidateModal({ candidate, onClose }: { candidate: Candidate; onClose:
         </div>
 
         <div className="p-6 md:p-8">
-          {candidate.summary && <p className="mb-4 text-lg leading-7 text-slate-700">{candidate.summary}</p>}
+          {candidate.summary && <p className="mb-4 text-lg leading-7 text-slate-700 dark:text-slate-200">{candidate.summary}</p>}
 
           {/* Fil conducteur : fiche du parti */}
           {partyLink && (
@@ -311,7 +311,7 @@ function CandidateModal({ candidate, onClose }: { candidate: Candidate; onClose:
             <div className={`absolute top-0 left-0 h-full w-2 ${legalStyle.bar}`} />
             <div className="flex items-center justify-between gap-4 pl-2">
               <div className="min-w-0">
-                <p className="text-[9px] font-black uppercase tracking-[0.2em] text-slate-400">Intégrité &amp; Transparence</p>
+                <p className="text-[9px] font-black uppercase tracking-[0.2em] text-muted-foreground">Intégrité &amp; Transparence</p>
                 <h3 className="text-lg font-bold text-foreground">Situation judiciaire</h3>
                 <div className="mt-1 flex items-center gap-2">
                   <span className={`h-1.5 w-1.5 animate-pulse rounded-full ${legalStyle.dot}`} />
@@ -348,7 +348,7 @@ function CandidateModal({ candidate, onClose }: { candidate: Candidate; onClose:
                       <div className={`mt-1.5 h-1 w-12 rounded-full ${color.bar}`} />
                     </div>
                     <span className="flex items-center gap-2 shrink-0">
-                      <span className="text-[10px] font-black uppercase tracking-widest text-slate-300">{points.length}</span>
+                      <span className="text-[10px] font-black uppercase tracking-widest text-muted-foreground">{points.length}</span>
                       <ChevronDown size={20} className={`text-slate-400 transition-transform duration-300 ${isOpen ? "rotate-180" : ""}`} />
                     </span>
                   </button>
@@ -360,7 +360,7 @@ function CandidateModal({ candidate, onClose }: { candidate: Candidate; onClose:
                           {isTimeline ? (
                             <Timeline points={points} />
                           ) : (
-                            <ul className="list-disc space-y-1.5 pl-4 text-sm leading-6 text-slate-700 marker:text-slate-300">
+                            <ul className="list-disc space-y-1.5 pl-4 text-sm leading-6 text-slate-700 dark:text-slate-200 marker:text-slate-300">
                               {points.map((p, i) => <li key={i} className="break-words [overflow-wrap:anywhere]"><NumHighlight text={p} /></li>)}
                             </ul>
                           )}
@@ -375,7 +375,7 @@ function CandidateModal({ candidate, onClose }: { candidate: Candidate; onClose:
 
           {candidate.program && (
             <section className="mt-6 rounded-2xl border border-amber-200 dark:border-amber-500/25 bg-amber-50 dark:bg-amber-500/10 p-5">
-              <h3 className="text-sm font-black uppercase tracking-widest text-amber-800">Programme</h3>
+              <h3 className="text-sm font-black uppercase tracking-widest text-amber-800 dark:text-amber-300">Programme</h3>
               <p className="mt-2 whitespace-pre-line text-sm leading-6 text-amber-950">{candidate.program}</p>
             </section>
           )}
@@ -404,19 +404,19 @@ function CandidateModal({ candidate, onClose }: { candidate: Candidate; onClose:
                           className={`flex w-full items-center gap-2.5 ${bg} px-4 py-3 text-left transition hover:brightness-95`}>
                           <span className={`flex h-8 w-8 shrink-0 items-center justify-center rounded-xl bg-card ${c} shadow-sm`}><Icon size={16} /></span>
                           <p className={`text-sm font-black uppercase tracking-widest ${c}`}>{theme}</p>
-                          <span className="text-[10px] font-black text-slate-400">· {g.items.length}</span>
+                          <span className="text-[10px] font-black text-muted-foreground">· {g.items.length}</span>
                           <ChevronDown size={18} className={`ml-auto shrink-0 ${c} transition-transform ${isOpen ? "rotate-180" : ""}`} />
                         </button>
                         <AnimatePresence initial={false}>
                           {isOpen && (
                             <motion.div initial={{ height: 0, opacity: 0 }} animate={{ height: "auto", opacity: 1 }} exit={{ height: 0, opacity: 0 }} className="overflow-hidden">
                               {g.ctx && <p className="border-b border-border bg-muted px-4 py-3 text-sm italic leading-6 text-muted-foreground">💡 {g.ctx}</p>}
-                              <ul className="divide-y divide-slate-50 bg-card">
+                              <ul className="divide-y divide-slate-50 dark:divide-slate-800 bg-card">
                                 {g.items.map((p, i) => {
                                   const exKey = `${theme}#${i}`;
                                   const exOpen = openExpl.has(exKey);
                                   return (
-                                    <li key={i} className="px-4 py-2.5 text-sm leading-6 text-slate-700">
+                                    <li key={i} className="px-4 py-2.5 text-sm leading-6 text-slate-700 dark:text-slate-200">
                                       <div className="flex items-start gap-2.5">
                                         <span className={`mt-2 h-1.5 w-1.5 shrink-0 rounded-full ${dot}`} />
                                         <span className="flex-1">{p.text}</span>
@@ -445,7 +445,7 @@ function CandidateModal({ candidate, onClose }: { candidate: Candidate; onClose:
                     );
                   })}
                 </div>
-                {src && <a href={src} target="_blank" rel="noreferrer" className="mt-3 inline-flex items-center gap-1.5 text-[11px] font-black uppercase tracking-widest text-blue-700 hover:underline"><ExternalLink size={12} /> Programme officiel</a>}
+                {src && <a href={src} target="_blank" rel="noreferrer" className="mt-3 inline-flex items-center gap-1.5 text-[11px] font-black uppercase tracking-widest text-blue-700 dark:text-blue-300 hover:underline"><ExternalLink size={12} /> Programme officiel</a>}
               </section>
             );
           })()}
@@ -466,10 +466,10 @@ function CandidateModal({ candidate, onClose }: { candidate: Candidate; onClose:
             ].sort((a, b) => new Date(b.when || 0).getTime() - new Date(a.when || 0).getTime());
             return (
               <section className="mt-8">
-                <h3 className="text-2xl font-staatliches uppercase text-foreground">Actualités &amp; <span className="text-amber-600">vidéos</span></h3>
+                <h3 className="text-2xl font-staatliches uppercase text-foreground">Actualités &amp; <span className="text-amber-700 dark:text-amber-400">vidéos</span></h3>
                 <p className="mt-1 text-xs text-muted-foreground">Le fil du candidat — articles de presse et vidéos de sa chaîne YouTube officielle, réunis et actualisés chaque jour. Faites défiler →</p>
                 {news === null ? (
-                  <p className="mt-3 text-sm text-slate-400">Chargement…</p>
+                  <p className="mt-3 text-sm text-muted-foreground">Chargement…</p>
                 ) : feed.length === 0 ? (
                   <p className="mt-3 text-sm text-muted-foreground">Aucune actualité ni vidéo recensée pour l'instant — le fil se met à jour chaque jour.</p>
                 ) : (
@@ -485,26 +485,26 @@ function CandidateModal({ candidate, onClose }: { candidate: Candidate; onClose:
                           <span className="absolute left-2 top-2 inline-flex items-center gap-1 rounded-full bg-red-600 px-2 py-0.5 text-[9px] font-black uppercase tracking-widest text-white"><Play size={10} className="fill-current" /> Vidéo</span>
                         </div>
                         <div className="flex flex-1 flex-col p-4">
-                          <span className="text-xs font-bold text-slate-400"><CalendarDays className="mr-1 inline" size={13} />{formatDate(it.data.published_at)}</span>
+                          <span className="text-xs font-bold text-muted-foreground"><CalendarDays className="mr-1 inline" size={13} />{formatDate(it.data.published_at)}</span>
                           <p className="mt-1.5 font-bold text-foreground line-clamp-2">{it.data.title}</p>
-                          <span className="mt-auto pt-2 text-xs font-bold text-slate-400">YouTube</span>
+                          <span className="mt-auto pt-2 text-xs font-bold text-muted-foreground">YouTube</span>
                         </div>
                       </button>
                     ) : (
                       <button key={`n${it.data.id}`} onClick={() => setSelectedNews(it.data)} className="flex w-[280px] shrink-0 select-none flex-col rounded-2xl border border-border p-4 text-left transition hover:border-slate-300 hover:shadow-sm">
-                        <div className="flex items-center justify-between gap-3 text-xs font-bold text-slate-400">
+                        <div className="flex items-center justify-between gap-3 text-xs font-bold text-muted-foreground">
                           <span className="rounded-full bg-slate-100 dark:bg-slate-500/10 px-2 py-0.5 uppercase tracking-widest">{it.data.news_type || "actu"}</span>
                           <span><CalendarDays className="mr-1 inline" size={13} />{formatDate(it.data.date)}</span>
                         </div>
                         <p className="mt-2 font-bold text-foreground line-clamp-2">{it.data.title}</p>
                         {it.data.summary && <p className="mt-1 text-sm leading-6 text-muted-foreground line-clamp-3">{it.data.summary}</p>}
-                        {it.data.source_name && <p className="mt-auto pt-2 text-xs font-bold text-slate-400">{it.data.source_name}</p>}
+                        {it.data.source_name && <p className="mt-auto pt-2 text-xs font-bold text-muted-foreground">{it.data.source_name}</p>}
                       </button>
                     ))}
                   </DragScroller>
                   </div>
                 )}
-                <p className="mt-2 text-[11px] italic leading-snug text-slate-400">Vidéos : chaîne YouTube officielle du candidat. Instagram, TikTok et X ne sont pas repris automatiquement (ces plateformes n'autorisent pas la récupération de leurs contenus).</p>
+                <p className="mt-2 text-[11px] italic leading-snug text-muted-foreground">Vidéos : chaîne YouTube officielle du candidat. Instagram, TikTok et X ne sont pas repris automatiquement (ces plateformes n'autorisent pas la récupération de leurs contenus).</p>
               </section>
             );
           })()}
@@ -528,11 +528,11 @@ function CandidateModal({ candidate, onClose }: { candidate: Candidate; onClose:
                     <span className="inline-flex items-center rounded-full bg-slate-100 dark:bg-slate-500/10 px-3 py-1 text-[10px] font-black uppercase tracking-widest text-muted-foreground">{selectedNews.news_type || "actu"}</span>
                     <button onClick={() => setSelectedNews(null)} className="rounded-full bg-slate-100 dark:bg-slate-500/10 p-2 text-muted-foreground transition hover:bg-slate-200"><X size={18} /></button>
                   </div>
-                  <p className="text-[11px] font-bold uppercase tracking-widest text-slate-400">{formatDate(selectedNews.date)}</p>
+                  <p className="text-[11px] font-bold uppercase tracking-widest text-muted-foreground">{formatDate(selectedNews.date)}</p>
                   <h3 className="mt-1 text-xl font-black leading-snug text-foreground">{selectedNews.title}</h3>
                   {selectedNews.summary && <p className="mt-3 leading-7 text-muted-foreground">{selectedNews.summary}</p>}
                   <div className="mt-5 flex items-center justify-between gap-3 border-t border-border pt-4">
-                    <span className="text-[11px] font-bold uppercase tracking-widest text-slate-400">Source : {selectedNews.source_name || "—"}</span>
+                    <span className="text-[11px] font-bold uppercase tracking-widest text-muted-foreground">Source : {selectedNews.source_name || "—"}</span>
                     {selectedNews.source_url && (
                       <a href={selectedNews.source_url} target="_blank" rel="noopener noreferrer" className="inline-flex items-center gap-1.5 rounded-full bg-slate-950 px-4 py-2 text-[11px] font-black uppercase tracking-widest text-white transition hover:bg-slate-700">
                         Lire l&apos;article <ExternalLink size={12} />
@@ -567,10 +567,10 @@ function CandidateModal({ candidate, onClose }: { candidate: Candidate; onClose:
 
           {candidate.source_urls && candidate.source_urls.length > 0 && (
             <section className="mt-8">
-              <h3 className="text-sm font-black uppercase tracking-widest text-slate-400">Sources</h3>
+              <h3 className="text-sm font-black uppercase tracking-widest text-muted-foreground">Sources</h3>
               <div className="mt-2 flex flex-col gap-1">
                 {candidate.source_urls.filter(Boolean).map(url => (
-                  <a key={url} href={url} target="_blank" rel="noreferrer" className="inline-flex items-center gap-1.5 text-sm text-blue-700 hover:underline"><ExternalLink size={13} />{url}</a>
+                  <a key={url} href={url} target="_blank" rel="noreferrer" className="inline-flex items-center gap-1.5 text-sm text-blue-700 dark:text-blue-300 hover:underline"><ExternalLink size={13} />{url}</a>
                 ))}
               </div>
             </section>
@@ -634,7 +634,7 @@ function PositionsView({ candidates }: { candidates: Candidate[] }) {
               }
               return (
                 <div key={issue.slug} className="rounded-3xl border border-border bg-card p-5 shadow-sm">
-                  <p className="text-[10px] font-black uppercase tracking-widest text-slate-400">{issue.title}</p>
+                  <p className="text-[10px] font-black uppercase tracking-widest text-muted-foreground">{issue.title}</p>
                   <h3 className="mb-4 text-lg font-bold text-foreground">{issue.proposition} ?</h3>
                   <div className="grid gap-4 md:grid-cols-3">
                     {(["pour", "nuance", "contre"] as const).map(stance => (
@@ -676,13 +676,13 @@ function PositionsView({ candidates }: { candidates: Candidate[] }) {
             <span className={`inline-flex items-center gap-2 rounded-full px-3 py-1 text-xs font-black uppercase tracking-widest ${detail.pos?.stance === "pour" ? "bg-emerald-100 dark:bg-emerald-500/10 text-emerald-700 dark:text-emerald-300" : detail.pos?.stance === "contre" ? "bg-rose-100 dark:bg-rose-500/10 text-rose-700 dark:text-rose-300" : "bg-amber-100 dark:bg-amber-500/10 text-amber-700 dark:text-amber-300"}`}>
               {STANCE_META[detail.pos?.stance]?.label ?? "—"} · {detail.issue.proposition}
             </span>
-            <p className="mt-4 text-sm leading-6 text-slate-700">{detail.pos?.summary || "Position non détaillée."}</p>
+            <p className="mt-4 text-sm leading-6 text-slate-700 dark:text-slate-200">{detail.pos?.summary || "Position non détaillée."}</p>
             {detail.pos?.source_url && (
-              <a href={detail.pos.source_url} target="_blank" rel="noreferrer" className="mt-4 inline-flex items-center gap-1.5 text-sm font-bold text-blue-700 hover:underline">
+              <a href={detail.pos.source_url} target="_blank" rel="noreferrer" className="mt-4 inline-flex items-center gap-1.5 text-sm font-bold text-blue-700 dark:text-blue-300 hover:underline">
                 <ExternalLink size={14} /> Source ({detail.pos.source_type === "wikipedia" ? "Wikipédia" : detail.pos.source_type === "vote" ? "Vote au Parlement" : detail.pos.source_type === "programme" ? "Programme officiel" : detail.pos.source_type})
               </a>
             )}
-            <p className="mt-3 text-[11px] italic text-slate-400">Position résumée automatiquement à partir de la source. Vérifiez la source pour le détail exact.</p>
+            <p className="mt-3 text-[11px] italic text-muted-foreground">Position résumée automatiquement à partir de la source. Vérifiez la source pour le détail exact.</p>
           </div>
         </div>
       )}
@@ -773,7 +773,7 @@ function CandidatesContent() {
                   key === "dynamiques"
                     ? view === key
                       ? "bg-gradient-to-r from-fuchsia-500 to-purple-600 text-white shadow-[0_0_18px_-2px_rgba(217,70,239,0.7)]"
-                      : "text-fuchsia-600 hover:bg-fuchsia-50"
+                      : "text-fuchsia-700 dark:text-fuchsia-400 hover:bg-fuchsia-50"
                     : view === key
                       ? "bg-slate-900 text-white"
                       : "text-muted-foreground hover:text-foreground"
@@ -813,7 +813,7 @@ function CandidatesContent() {
         </div>
 
         {loading ? (
-          <div className="flex flex-col items-center py-24 text-slate-400"><Loader2 className="mb-4 h-12 w-12 animate-spin" /><p>Chargement des candidats…</p></div>
+          <div className="flex flex-col items-center py-24 text-muted-foreground"><Loader2 className="mb-4 h-12 w-12 animate-spin" /><p>Chargement des candidats…</p></div>
         ) : filtered.length === 0 ? (
           <div className="rounded-3xl border border-border bg-card py-20 text-center text-muted-foreground">
             <div className="mb-3 text-5xl">🗳️</div>

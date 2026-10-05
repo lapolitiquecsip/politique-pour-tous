@@ -75,7 +75,7 @@ export default function PetitionStatus({ status, signatures, threshold }: { stat
         <info.Icon size={13} className="shrink-0" />
         <span className="text-[10px] font-black uppercase tracking-widest">{info.label}</span>
       </div>
-      <p className="mt-1 text-[11px] leading-snug opacity-90">{info.explain}</p>
+      <p className="mt-1 text-[11px] leading-snug">{info.explain}</p>
     </div>
   );
 }

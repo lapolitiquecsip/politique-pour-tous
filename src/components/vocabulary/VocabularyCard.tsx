@@ -15,7 +15,7 @@ const categoryColors: Record<string, string> = {
   "Budget": "bg-green-700 text-white",
   "Assemblée": "bg-blue-600 text-white",
   "Sénat": "bg-purple-800 text-white",
-  "Partis": "bg-orange-600 text-white",
+  "Partis": "bg-orange-700 text-white",
   "Élections": "bg-red-600 text-white",
 };
 

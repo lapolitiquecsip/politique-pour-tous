@@ -29,7 +29,7 @@ export default function CGV() {
 
       {/* Content Section */}
       <div className="container mx-auto px-6 max-w-4xl py-20 bg-slate-900 shadow-2xl -mt-12 rounded-[3.5rem] relative z-20 border border-white/5 mb-32">
-        <div className="prose prose-invert prose-lg max-w-none space-y-12 text-slate-300 p-8 md:p-12">
+        <div className="prose dark:prose-invert prose-invert prose-lg max-w-none space-y-12 text-slate-300 p-8 md:p-12">
           
           <section>
             <h2 className="text-3xl font-black text-white uppercase tracking-tighter mb-8 flex items-center gap-4">

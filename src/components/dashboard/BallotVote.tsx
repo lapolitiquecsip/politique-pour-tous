@@ -25,13 +25,13 @@ export const VOTE_STYLES: Record<string, Style> = {
   POUR: {
     label: "Pour",
     env: "#34d399", envStroke: "#059669",
-    chip: "bg-emerald-50 text-emerald-700 border-emerald-200",
+    chip: "bg-emerald-50 dark:bg-emerald-500/10 text-emerald-700 dark:text-emerald-300 border-emerald-200",
     urn: "#065f46",
   },
   CONTRE: {
     label: "Contre",
     env: "#f87171", envStroke: "#dc2626",
-    chip: "bg-rose-50 text-rose-700 border-rose-200",
+    chip: "bg-rose-50 dark:bg-rose-500/10 text-rose-700 dark:text-rose-300 border-rose-200",
     urn: "#7f1d1d",
   },
   ABSTENTION: {

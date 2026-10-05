@@ -14,7 +14,7 @@ export default function Page() {
         <h1 className="mx-auto mt-3 max-w-3xl font-staatliches text-5xl uppercase leading-none md:text-7xl">
           Comparer deux parlementaires
         </h1>
-        <p className="mx-auto mt-5 max-w-xl text-lg font-medium text-slate-300">
+        <p className="mx-auto mt-5 max-w-xl text-lg font-medium text-muted-foreground">
           Choisissez deux <b className="text-white">député·e·s</b> ou <b className="text-white">sénateur·rice·s</b> et comparez leur activité côte à côte.
         </p>
       </section>

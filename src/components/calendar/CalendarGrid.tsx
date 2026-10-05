@@ -112,7 +112,7 @@ export default function CalendarGrid({
       {/* Jours de la semaine */}
       <div className="grid grid-cols-7 mb-4">
         {DAYS_OF_WEEK.map(day => (
-          <div key={day} className="text-center text-[10px] font-black uppercase tracking-widest text-slate-400 py-2">
+          <div key={day} className="text-center text-[10px] font-black uppercase tracking-widest text-muted-foreground py-2">
             {day}
           </div>
         ))}
@@ -134,12 +134,12 @@ export default function CalendarGrid({
               onClick={() => onSelectDate(dayObj.date)}
               className={`
                 relative overflow-hidden h-20 md:h-28 p-2 rounded-2xl transition-all border-2 flex flex-col items-start gap-1
-                ${current ? 'bg-card' : 'bg-slate-50/50 dark:bg-slate-500/10 opacity-40'}
+                ${current ? 'bg-card' : 'bg-slate-50/50 dark:bg-slate-500/10 opacity-60'}
                 ${active ? 'border-blue-500 shadow-lg z-10' : 'border-transparent hover:border-border'}
                 ${today ? 'bg-blue-50/50 dark:bg-blue-500/10' : ''}
               `}
             >
-              <span className={`text-sm font-black ${today ? 'text-blue-600' : 'text-foreground'}`}>
+              <span className={`text-sm font-black ${today ? 'text-blue-700 dark:text-blue-400' : 'text-foreground'}`}>
                 {dayObj.date.getDate()}
               </span>
               

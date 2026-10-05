@@ -212,7 +212,7 @@ export default function StatistiquesPage() {
       </header>
 
       {periodeDepasse && (
-        <p className="flex items-start gap-2 rounded-2xl border border-sky-200 bg-sky-50 px-4 py-3 text-sm text-sky-900">
+        <p className="flex items-start gap-2 rounded-2xl border border-sky-200 bg-sky-50 dark:bg-sky-500/10 px-4 py-3 text-sm text-sky-900">
           <Activity size={16} className="mt-0.5 shrink-0" />
           <span>La mesure des visites fonctionne depuis le <strong>{depuis}</strong>. Tant que l&apos;historique est plus court que la période choisie, 24 h, 7 j, 30 j et 90 j montrent les mêmes visites : les écarts apparaîtront au fil des jours.</span>
         </p>
@@ -230,13 +230,13 @@ export default function StatistiquesPage() {
             </div>
           )}
         </div>
-        <Carte titre="Aujourd'hui" valeur={nombre(stats.aujourdhui?.vues)} detail={`pages vues · ${nombre(stats.aujourdhui?.visiteurs)} visiteurs`} Icone={Eye} teinte="bg-blue-100 text-blue-600" />
+        <Carte titre="Aujourd'hui" valeur={nombre(stats.aujourdhui?.vues)} detail={`pages vues · ${nombre(stats.aujourdhui?.visiteurs)} visiteurs`} Icone={Eye} teinte="bg-blue-100 dark:bg-blue-500/10 text-blue-700 dark:text-blue-300" />
         <Carte titre={periodeDepasse ? `Depuis le ${depuis}` : jours === 1 ? "24 dernières heures" : `${jours} derniers jours`} valeur={nombre(periode.visiteurs)}
           detail={`visiteurs · ${nombre(periode.vues)} pages vues · ${periode.sessions ? (periode.vues / periode.sessions).toFixed(1).replace(".", ",") : "0"} pages par visite`}
-          Icone={Users} teinte="bg-violet-100 text-violet-600" />
+          Icone={Users} teinte="bg-violet-100 dark:bg-violet-500/10 text-violet-700 dark:text-violet-300" />
         <Carte titre="Comptes (total)" valeur={nombre(stats.comptes?.total)}
           detail={`dont ${nombre(stats.comptes?.premium)} Premium et ${nombre(stats.comptes?.pro)} Pro · ${nombre(stats.comptes?.nouveaux)} créés sur la période choisie`}
-          Icone={UserPlus} teinte="bg-amber-100 text-amber-600" />
+          Icone={UserPlus} teinte="bg-amber-100 dark:bg-amber-500/10 text-amber-700 dark:text-amber-300" />
       </div>
 
       {/* Ce qui intéresse : la part de chaque rubrique et le temps qu'on y passe. */}
@@ -262,7 +262,7 @@ export default function StatistiquesPage() {
                             <th className="pb-2">Rubrique</th><th className="pb-2 text-right">Part</th><th className="pb-2 text-right">Vues</th><th className="pb-2 text-right">Visiteurs</th><th className="pb-2 text-right">Temps moyen par page</th>
                           </tr>
                         </thead>
-                        <tbody className="divide-y divide-slate-100">
+                        <tbody className="divide-y divide-slate-100 dark:divide-slate-800">
                           {rubriques.map((r, i) => (
                             <tr key={r.rubrique}>
                               <td className="py-2"><span className="inline-flex items-center gap-2 font-semibold text-slate-800"><span className={`h-2.5 w-2.5 rounded-full ${TEINTES_RUBRIQUES[i % TEINTES_RUBRIQUES.length]}`} />{r.rubrique}</span></td>
@@ -362,18 +362,18 @@ export default function StatistiquesPage() {
 
       {/* Flux en direct */}
       <Bloc titre="En direct" Icone={Activity}>
-        <div className="max-h-96 divide-y divide-slate-100 overflow-y-auto">
+        <div className="max-h-96 divide-y divide-slate-100 dark:divide-slate-800 overflow-y-auto">
           {(stats.flux ?? []).map((e: any, i: number) => (
             <div key={i} className="flex items-center gap-3 py-2 text-sm">
               <span className={`h-2 w-2 shrink-0 rounded-full ${e.kind === "action" ? "bg-amber-500" : "bg-blue-400"}`} />
               <span className="w-24 shrink-0 text-xs text-slate-400">{ilYa(e.at)}</span>
               <span className="min-w-0 flex-1 truncate text-slate-700">
-                {e.kind === "action" ? <strong className="text-amber-700">{ACTIONS[e.name] ?? e.name}</strong> : (nomPage(e.path) ?? e.path)}
+                {e.kind === "action" ? <strong className="text-amber-700 dark:text-amber-400">{ACTIONS[e.name] ?? e.name}</strong> : (nomPage(e.path) ?? e.path)}
                 {e.kind === "action" && <span className="ml-2 text-xs text-slate-400">{e.path}</span>}
               </span>
               <span className="hidden shrink-0 text-xs capitalize text-slate-400 sm:inline">{e.device}</span>
               {e.niveau && e.niveau !== "anonyme" && (
-                <span className={`shrink-0 rounded-full px-2 py-0.5 text-[10px] font-black uppercase ${e.niveau === "pro" ? "bg-violet-100 text-violet-700" : e.niveau === "elite" ? "bg-amber-100 text-amber-700" : "bg-slate-100 text-slate-500"}`}>
+                <span className={`shrink-0 rounded-full px-2 py-0.5 text-[10px] font-black uppercase ${e.niveau === "pro" ? "bg-violet-100 dark:bg-violet-500/10 text-violet-700 dark:text-violet-300" : e.niveau === "elite" ? "bg-amber-100 text-amber-700" : "bg-slate-100 text-slate-500"}`}>
                   {e.niveau === "elite" ? "Premium" : e.niveau === "pro" ? "Pro" : "Membre"}
                 </span>
               )}
@@ -395,7 +395,7 @@ export default function StatistiquesPage() {
                     <th className="text-right">Abonnés</th><th className="text-right">En validation</th><th className="text-right">À verser</th><th className="text-right">Versé</th><th />
                   </tr>
                 </thead>
-                <tbody className="divide-y divide-slate-100">
+                <tbody className="divide-y divide-slate-100 dark:divide-slate-800">
                   {parrainage.parrains.map((p: any) => (
                     <tr key={p.user_id}>
                       <td className="py-2.5">
@@ -407,12 +407,12 @@ export default function StatistiquesPage() {
                         <button onClick={() => { setInflu({ email: p.email, code: p.code, taux: p.taux_propre != null ? String(Math.round(p.taux_propre * 100)) : "", nom: p.nom ?? "" }); setInfluMsg(null); }}
                           className="ml-2 rounded-full border border-slate-200 px-2 py-0.5 font-sans text-[10px] font-bold text-slate-500 hover:bg-slate-50">Régler</button>
                       </td>
-                      <td className={`text-right tabular-nums ${p.taux_propre != null ? "font-bold text-violet-700" : "text-slate-500"}`}>{Math.round((p.taux ?? 0) * 100)} %</td>
+                      <td className={`text-right tabular-nums ${p.taux_propre != null ? "font-bold text-violet-700 dark:text-violet-400" : "text-slate-500"}`}>{Math.round((p.taux ?? 0) * 100)} %</td>
                       <td className="text-right tabular-nums">{nombre(p.clics)}</td>
                       <td className="text-right tabular-nums">{nombre(p.inscrits)}</td>
                       <td className="text-right tabular-nums">{nombre(p.abonnes)}</td>
                       <td className="text-right tabular-nums text-slate-500">{euros(p.en_validation)}</td>
-                      <td className="text-right font-bold tabular-nums text-emerald-700">{euros(p.disponible)}</td>
+                      <td className="text-right font-bold tabular-nums text-emerald-700 dark:text-emerald-400">{euros(p.disponible)}</td>
                       <td className="text-right tabular-nums text-slate-500">{euros(p.verse)}</td>
                       <td className="pl-3 text-right">
                         {Number(p.disponible) > 0 && (
@@ -424,7 +424,7 @@ export default function StatistiquesPage() {
                             </span>
                           ) : (
                             <button onClick={() => setVersement(p.user_id)}
-                              className="inline-flex items-center gap-1 rounded-full border border-emerald-300 px-3 py-1 text-[11px] font-black text-emerald-700 hover:bg-emerald-50">
+                              className="inline-flex items-center gap-1 rounded-full border border-emerald-300 px-3 py-1 text-[11px] font-black text-emerald-700 dark:text-emerald-400 hover:bg-emerald-50">
                               <CheckCircle2 size={12} /> Virement fait
                             </button>
                           )
@@ -438,7 +438,7 @@ export default function StatistiquesPage() {
           )}
           {/* Influenceurs : un lien à leur nom, un taux négocié. */}
           <div className="mt-5 rounded-2xl border border-violet-200 bg-violet-50/60 p-4">
-            <p className="text-[11px] font-black uppercase tracking-widest text-violet-700">Ajouter ou régler un influenceur</p>
+            <p className="text-[11px] font-black uppercase tracking-widest text-violet-700 dark:text-violet-400">Ajouter ou régler un influenceur</p>
             <p className="mt-1 text-xs text-slate-500">Il crée d&apos;abord un compte gratuit sur le site ; vous lui attribuez ici un lien à son nom et, si vous l&apos;avez négocié, un taux à part (vide = taux général).</p>
             <div className="mt-3 grid gap-2 sm:grid-cols-[1.4fr_1fr_0.6fr_1fr_auto]">
               <input value={influ.email} onChange={e => setInflu({ ...influ, email: e.target.value })} placeholder="Adresse e-mail de son compte"

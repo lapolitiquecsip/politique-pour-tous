@@ -45,7 +45,7 @@ function Sparkline({ history, unit, betterWhen, accent }: {
         <polyline points={line} fill="none" stroke={accent} strokeWidth="1.75" strokeLinejoin="round" strokeLinecap="round" />
         {history.map((h, i) => <circle key={h.year} cx={x(i)} cy={y(h.value)} r={i === history.length - 1 ? 3 : 1.6} fill={i === history.length - 1 ? trendColor : accent} />)}
       </svg>
-      <div className="text-[11px] leading-tight text-slate-400">
+      <div className="text-[11px] leading-tight text-muted-foreground">
         <div className="tabular-nums">{first.year} · {fmt(first.value)}</div>
         <div className="tabular-nums font-black" style={{ color: trendColor }}>{last.year} · {fmt(last.value)}{unit ? ` ${unit}` : ""}</div>
       </div>
@@ -80,7 +80,7 @@ function ThemeCard({ theme, index }: { theme: CampaignTheme; index: number }) {
         {head && (
           <div className="hidden shrink-0 text-right md:block">
             <div className="font-staatliches text-3xl leading-none tabular-nums" style={{ color: theme.accent }}>{head.value}</div>
-            <div className="mt-1 text-[10px] font-black uppercase tracking-widest text-slate-400">{head.label} · {head.year}</div>
+            <div className="mt-1 text-[10px] font-black uppercase tracking-widest text-muted-foreground">{head.label} · {head.year}</div>
           </div>
         )}
         <span className="flex h-8 w-8 shrink-0 items-center justify-center rounded-full bg-white/70 dark:bg-white/10 ring-1 ring-slate-200 dark:ring-slate-700 text-slate-400 transition-all group-hover:ring-slate-300" style={{ transform: open ? "rotate(45deg)" : "none" }}>
@@ -90,7 +90,7 @@ function ThemeCard({ theme, index }: { theme: CampaignTheme; index: number }) {
 
       {open && (
         <div className="bg-white/60 dark:bg-white/[0.03] px-6 pb-7 sm:px-8 sm:pl-24">
-          <div className="divide-y divide-slate-200 border-t border-border">
+          <div className="divide-y divide-slate-200 dark:divide-slate-800 border-t border-border">
             {theme.stats.map((s) => (
               <div key={s.label} className="flex flex-col gap-3 py-4 sm:flex-row sm:items-center sm:justify-between">
                 <div className="min-w-0">
@@ -101,7 +101,7 @@ function ThemeCard({ theme, index }: { theme: CampaignTheme; index: number }) {
                   {s.sub && <p className="mt-1 text-xs leading-snug text-muted-foreground">{s.sub}</p>}
                   <a
                     href={s.url} target="_blank" rel="noreferrer"
-                    className="mt-1.5 inline-flex items-center gap-1 text-[10px] font-black uppercase tracking-widest text-slate-400 hover:text-slate-700"
+                    className="mt-1.5 inline-flex items-center gap-1 text-[10px] font-black uppercase tracking-widest text-muted-foreground hover:text-slate-700"
                   >
                     {s.year} · {s.source} {s.url && <ExternalLink className="h-2.5 w-2.5" />}
                   </a>

@@ -76,7 +76,7 @@ export default function LawDetailModal({ law, isOpen, onClose, onNext, onPreviou
                   <span className="px-3 py-1 bg-blue-600 text-white text-[9px] font-black uppercase tracking-widest rounded-lg">
                     {law.category}
                   </span>
-                  <span className="text-[10px] font-bold text-slate-400 uppercase tracking-widest">
+                  <span className="text-[10px] font-bold text-muted-foreground uppercase tracking-widest">
                     Scrutin public n°{law.numero} — {new Date(law.date_scrutin).toLocaleDateString('fr-FR', { day: 'numeric', month: 'long', year: 'numeric' })}
                   </span>
                 </div>
@@ -136,7 +136,7 @@ export default function LawDetailModal({ law, isOpen, onClose, onNext, onPreviou
                   <div className="bg-muted border border-border p-6 rounded-[2rem] text-center relative overflow-hidden group">
                     <div className={`absolute top-0 left-0 w-full h-1.5 ${law.resultat?.includes('adopté') ? 'bg-emerald-500' : 'bg-red-500'}`} />
                     <p className="text-[9px] font-black text-slate-400 uppercase tracking-[0.3em] mb-2">Résultat Final</p>
-                    <p className={`text-2xl font-black italic tracking-tighter ${law.resultat?.includes('adopté') ? 'text-emerald-600' : 'text-red-600'}`}>
+                    <p className={`text-2xl font-black italic tracking-tighter ${law.resultat?.includes('adopté') ? 'text-emerald-700 dark:text-emerald-400' : 'text-red-600'}`}>
                       {law.resultat}
                     </p>
                   </div>
@@ -169,8 +169,8 @@ export default function LawDetailModal({ law, isOpen, onClose, onNext, onPreviou
                               <span className="text-[10px] font-black text-foreground">{info.name}</span>
                             </div>
                             <div className="flex gap-2">
-                               <span className="text-[10px] font-black text-emerald-600">{group.pour} <span className="text-[8px] font-bold text-slate-300">P</span></span>
-                               <span className="text-[10px] font-black text-red-600">{group.contre} <span className="text-[8px] font-bold text-slate-300">C</span></span>
+                               <span className="text-[10px] font-black text-emerald-700 dark:text-emerald-400">{group.pour} <span className="text-[8px] font-bold text-slate-300">P</span></span>
+                               <span className="text-[10px] font-black text-red-700 dark:text-red-400">{group.contre} <span className="text-[8px] font-bold text-slate-300">C</span></span>
                             </div>
                           </div>
                           <div className="h-1.5 w-full bg-slate-100 dark:bg-slate-500/10 rounded-full overflow-hidden flex">
@@ -186,11 +186,11 @@ export default function LawDetailModal({ law, isOpen, onClose, onNext, onPreviou
                   {/* Compact Global Summary */}
                   <div className="grid grid-cols-3 gap-2 pt-4 border-t border-border">
                      <div className="text-center">
-                        <p className="text-xl font-black text-emerald-600 leading-none">{law.pour}</p>
+                        <p className="text-xl font-black text-emerald-700 dark:text-emerald-400 leading-none">{law.pour}</p>
                         <p className="text-[8px] font-bold text-slate-400 uppercase">Pour</p>
                      </div>
                      <div className="text-center border-x border-border">
-                        <p className="text-xl font-black text-red-600 leading-none">{law.contre}</p>
+                        <p className="text-xl font-black text-red-700 dark:text-red-400 leading-none">{law.contre}</p>
                         <p className="text-[8px] font-bold text-slate-400 uppercase">Contre</p>
                      </div>
                      <div className="text-center">

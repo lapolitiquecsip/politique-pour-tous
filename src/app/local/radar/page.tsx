@@ -89,7 +89,7 @@ export default function RadarConcept() {
           <div className="relative z-10 space-y-10">
             <div className="space-y-4">
               <h2 className="text-4xl md:text-6xl font-staatliches uppercase tracking-tighter leading-none">
-                Passez au <span className="text-amber-600">Premium</span>
+                Passez au <span className="text-amber-700 dark:text-amber-400">Premium</span>
               </h2>
               <p className="text-muted-foreground text-lg font-medium italic">
                 Sachez enfin où va votre argent.
@@ -98,7 +98,7 @@ export default function RadarConcept() {
 
             <div className="inline-flex flex-col items-center gap-2">
               <span className="text-5xl font-black text-foreground">2,99€<span className="text-xl text-slate-400">/mois</span></span>
-              <p className="text-[10px] font-black uppercase tracking-[0.3em] text-amber-600">Offre Élite</p>
+              <p className="text-[10px] font-black uppercase tracking-[0.3em] text-amber-700 dark:text-amber-400">Offre Élite</p>
             </div>
 
             <div className="flex flex-col md:flex-row items-center justify-center gap-6">

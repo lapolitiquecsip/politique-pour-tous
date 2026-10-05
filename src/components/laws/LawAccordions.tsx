@@ -39,7 +39,7 @@ function AccordionSection({
           animate={{ rotate: isOpen ? 90 : 0 }}
           transition={{ duration: 0.2 }}
         >
-          <ChevronRight className="w-5 h-5 text-slate-400" />
+          <ChevronRight className="w-5 h-5 text-muted-foreground" />
         </motion.div>
       </button>
 
@@ -71,7 +71,7 @@ export default function LawAccordions({ pros, cons }: LawAccordionsProps) {
 
       <AccordionSection
         title="Arguments Pour"
-        icon={<ThumbsUp className="w-5 h-5 text-green-600" />}
+        icon={<ThumbsUp className="w-5 h-5 text-green-700 dark:text-green-400" />}
         colorScheme="green"
       >
         <ul className="space-y-3">
@@ -88,7 +88,7 @@ export default function LawAccordions({ pros, cons }: LawAccordionsProps) {
 
       <AccordionSection
         title="Arguments Contre"
-        icon={<ThumbsDown className="w-5 h-5 text-red-600" />}
+        icon={<ThumbsDown className="w-5 h-5 text-red-700 dark:text-red-400" />}
         colorScheme="red"
       >
         <ul className="space-y-3">

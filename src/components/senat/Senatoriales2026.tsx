@@ -139,6 +139,14 @@ const dateLongue = (iso: string) => {
   return `${+m[3]} ${mois[+m[2] - 1]} ${m[1]}`;
 };
 
+/** Texte lisible sur un fond de couleur : foncé sur une couleur claire (le Sénat colore une famille en blanc), blanc sinon. */
+function texteSur(fond: string): string {
+  const h = fond.replace("#", "");
+  if (!/^[0-9a-f]{6}$/i.test(h)) return "#ffffff";
+  const [r, g, b] = [0, 2, 4].map(i => parseInt(h.slice(i, i + 2), 16) / 255).map(v => (v <= 0.03928 ? v / 12.92 : ((v + 0.055) / 1.055) ** 2.4));
+  return 0.2126 * r + 0.7152 * g + 0.0722 * b > 0.18 ? "#0f172a" : "#ffffff";
+}
+
 export default function Senatoriales2026() {
   const [statut, setStatut] = useState<Statut | null>(null);
   const [elus, setElus] = useState<Elu[]>([]);
@@ -272,8 +280,8 @@ export default function Senatoriales2026() {
 
             <h2 className="mt-3 font-staatliches text-2xl uppercase leading-[1.05] tracking-tight text-foreground dark:text-white md:text-4xl">
               {phase === "resultats"
-                ? <>Le nouveau Sénat, élu le <span className="text-red-600">27 septembre</span></>
-                : <>Les départements qui votent le <span className="text-red-600">27 septembre</span></>}
+                ? <>Le nouveau Sénat, élu le <span className="text-red-700 dark:text-red-400">27 septembre</span></>
+                : <>Les départements qui votent le <span className="text-red-700 dark:text-red-400">27 septembre</span></>}
             </h2>
 
             <p className="mt-2 text-sm leading-6 text-muted-foreground dark:text-slate-300">
@@ -335,7 +343,7 @@ export default function Senatoriales2026() {
               </label>
               <div className="mt-2 flex gap-2">
                 <div className="flex flex-1 items-center gap-2 rounded-2xl border border-border bg-card px-3 dark:border-slate-700 dark:bg-slate-900">
-                  <MapPin size={16} className="shrink-0 text-slate-400" />
+                  <MapPin size={16} className="shrink-0 text-muted-foreground" />
                   <input
                     value={query}
                     onChange={e => { setQuery(e.target.value); setChoisi(null); }}
@@ -359,7 +367,7 @@ export default function Senatoriales2026() {
                   : "border-border bg-muted dark:border-slate-700 dark:bg-slate-800/50"}`}>
                   <div className="flex items-start gap-3">
                     {deptChoisi.concerne
-                      ? <CheckCircle2 className="mt-0.5 shrink-0 text-emerald-600" size={20} />
+                      ? <CheckCircle2 className="mt-0.5 shrink-0 text-emerald-700 dark:text-emerald-400" size={20} />
                       : <XCircle className="mt-0.5 shrink-0 text-slate-400" size={20} />}
                     <div className="min-w-0 text-sm">
                       <p className="font-black text-foreground dark:text-white">
@@ -519,7 +527,7 @@ export default function Senatoriales2026() {
         {phase === "resultats" && nouveaux.length > 0 && (
           <div className="border-t border-border/60 px-5 py-5 dark:border-slate-700/50 md:px-8">
             <p className="flex items-center gap-1.5 text-[10px] font-black uppercase tracking-[0.2em] text-muted-foreground">
-              <Sparkles size={12} className="text-amber-500" /> Ils entrent au Sénat — {nouveaux.length} nouveaux élus
+              <Sparkles size={12} className="text-amber-700 dark:text-amber-400" /> Ils entrent au Sénat — {nouveaux.length} nouveaux élus
             </p>
             <DragScroller ariaLabel="Les nouveaux sénateurs" className="mt-3 gap-3 pb-2">
               {nouveaux.map(e => <CarteElu key={e.full_name} elu={e} />)}
@@ -544,7 +552,7 @@ export default function Senatoriales2026() {
                     </div>
                     <div className="mt-1 flex items-baseline gap-2">
                       <span className="text-xl font-black tabular-nums text-foreground dark:text-white">{g.apres}</span>
-                      <span className={`text-xs font-black tabular-nums ${ecart > 0 ? "text-emerald-600" : ecart < 0 ? "text-red-600" : "text-slate-400"}`}>
+                      <span className={`text-xs font-black tabular-nums ${ecart > 0 ? "text-emerald-700 dark:text-emerald-400" : ecart < 0 ? "text-red-700" : "text-muted-foreground"}`}>
                         {ecart > 0 ? `+${ecart}` : ecart < 0 ? ecart : "="}
                       </span>
                     </div>
@@ -626,8 +634,8 @@ function CarteElu({ elu }: { elu: Elu }) {
       </span>
       <span className="mt-0.5 block truncate text-center text-[11px] text-muted-foreground">{elu.constituency}</span>
       <span
-        className="mx-auto mt-1.5 block w-fit max-w-full truncate rounded-full px-2 py-0.5 text-[9px] font-black uppercase tracking-wider text-white"
-        style={{ background: couleur }}
+        className="mx-auto mt-1.5 block w-fit max-w-full truncate rounded-full px-2 py-0.5 text-[9px] font-black uppercase tracking-wider ring-1 ring-slate-900/10"
+        style={{ background: couleur, color: texteSur(couleur) }}
       >
         {elu.nuance || "Sans nuance"}
       </span>

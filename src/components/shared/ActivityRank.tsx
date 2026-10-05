@@ -28,7 +28,7 @@ export default function ActivityRank({
 
   if (rate == null) return null;
   const r = Number(rate);
-  const clr = r >= 90 ? "text-emerald-600" : r >= 70 ? "text-amber-600" : "text-rose-600";
+  const clr = r >= 90 ? "text-emerald-700 dark:text-emerald-400" : r >= 70 ? "text-amber-700 dark:text-amber-400" : "text-rose-700 dark:text-rose-400";
   const barClr = r >= 90 ? "bg-emerald-500" : r >= 70 ? "bg-amber-500" : "bg-rose-500";
 
   // Statistiques comparatives (une fois les pairs chargés).
@@ -55,9 +55,9 @@ export default function ActivityRank({
   return (
     <section className="rounded-[2.5rem] border border-border dark:border-slate-800 bg-card dark:bg-slate-900 p-8">
       <div className="flex items-center gap-3 mb-4">
-        <Activity className="text-sky-600" size={22} />
+        <Activity className="text-sky-700 dark:text-sky-400" size={22} />
         <h2 className="text-3xl font-staatliches uppercase tracking-tight text-foreground dark:text-white">
-          Présence aux <span className="text-sky-600">votes</span>
+          Présence aux <span className="text-sky-700 dark:text-sky-400">votes</span>
         </h2>
       </div>
 
@@ -77,7 +77,7 @@ export default function ActivityRank({
             </p>
           )}
           {median != null && (
-            <p className="mt-0.5 text-[11px] text-slate-400">Trait gris = médiane des {peerLabel} ({median}%).</p>
+            <p className="mt-0.5 text-[11px] text-muted-foreground">Trait gris = médiane des {peerLabel} ({median}%).</p>
           )}
         </div>
       </div>
@@ -89,7 +89,7 @@ export default function ActivityRank({
             <Trophy size={15} /> {rank}ᵉ / {count} {peerLabel}
           </span>
         ) : (
-          <span className="inline-flex items-center gap-2 rounded-full bg-slate-100 dark:bg-slate-800 px-4 py-2 text-sm font-bold text-slate-400">
+          <span className="inline-flex items-center gap-2 rounded-full bg-slate-100 dark:bg-slate-800 px-4 py-2 text-sm font-bold text-muted-foreground">
             <Minus size={15} /> Classement indisponible
           </span>
         )}
@@ -116,7 +116,7 @@ export default function ActivityRank({
         )}
       </div>
 
-      <p className="mt-4 text-[11px] leading-snug italic text-slate-400">
+      <p className="mt-4 text-[11px] leading-snug italic text-muted-foreground">
         {note || "Participation aux votes nominaux (position exprimée). Comparaison entre élu·e·s d'une même chambre pour situer l'assiduité de chacun·e."}
       </p>
     </section>

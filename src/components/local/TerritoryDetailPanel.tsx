@@ -30,7 +30,7 @@ const CATEGORIES = [
     bgClass: 'bg-blue-50/40 dark:bg-blue-500/10',
     borderClass: 'border-blue-100/50',
     iconClass: 'bg-blue-100 dark:bg-blue-500/10 text-blue-900 dark:text-blue-300',
-    textClass: 'text-blue-800',
+    textClass: 'text-blue-800 dark:text-blue-300',
     progressClass: 'bg-blue-600',
     metrics: [
       { key: 'demographie.populationTotal', label: 'Population totale', format: (v: any) => v?.toLocaleString() + ' hab.', help: "Population issue du dernier millésime disponible Insee/SDES." },
@@ -47,7 +47,7 @@ const CATEGORIES = [
     bgClass: 'bg-emerald-50/40 dark:bg-emerald-500/10',
     borderClass: 'border-emerald-100/50',
     iconClass: 'bg-emerald-100 dark:bg-emerald-500/10 text-emerald-900 dark:text-emerald-300',
-    textClass: 'text-emerald-800',
+    textClass: 'text-emerald-800 dark:text-emerald-300',
     progressClass: 'bg-emerald-600',
     metrics: [
       { key: 'economie.chomage', label: 'Taux de chômage', format: (v: any) => v + '%', inverse: true, help: "Taux de chômage au sens du BIT, dernier millésime Insee disponible." },
@@ -62,7 +62,7 @@ const CATEGORIES = [
     bgClass: 'bg-indigo-50/40 dark:bg-indigo-500/10',
     borderClass: 'border-indigo-100/50',
     iconClass: 'bg-indigo-100 dark:bg-indigo-500/10 text-indigo-900 dark:text-indigo-300',
-    textClass: 'text-indigo-800',
+    textClass: 'text-indigo-800 dark:text-indigo-300',
     progressClass: 'bg-indigo-600',
     metrics: [
       { key: 'education.bac', label: 'Réussite au Bac', format: (v: any) => v + '%', help: "Taux de réussite global aux examens du baccalauréat (session 2023)." },
@@ -77,7 +77,7 @@ const CATEGORIES = [
     bgClass: 'bg-rose-50/40 dark:bg-rose-500/10',
     borderClass: 'border-rose-100/50',
     iconClass: 'bg-rose-100 dark:bg-rose-500/10 text-rose-900 dark:text-rose-300',
-    textClass: 'text-rose-800',
+    textClass: 'text-rose-800 dark:text-rose-300',
     progressClass: 'bg-rose-600',
     metrics: [
       { key: 'sante.medecins10k', label: 'Médecins / 10k hab.', format: (v: any) => v, help: "Nombre de médecins généralistes et spécialistes pour 10 000 hab." },
@@ -92,7 +92,7 @@ const CATEGORIES = [
     bgClass: 'bg-amber-50/40 dark:bg-amber-500/10',
     borderClass: 'border-amber-100/50',
     iconClass: 'bg-amber-100 dark:bg-amber-500/10 text-amber-900 dark:text-amber-300',
-    textClass: 'text-amber-800',
+    textClass: 'text-amber-800 dark:text-amber-300',
     progressClass: 'bg-amber-600',
     metrics: [
       { key: 'securite.atteintesPersonnes', label: 'Violences / 1k hab.', format: (v: any) => v, inverse: true, help: "Somme des taux officiels d'homicides et violences enregistrées, dernier millésime SSMSI disponible." },
@@ -106,7 +106,7 @@ const CATEGORIES = [
     bgClass: 'bg-cyan-50/40 dark:bg-cyan-500/10',
     borderClass: 'border-cyan-100/50',
     iconClass: 'bg-cyan-100 dark:bg-cyan-500/10 text-cyan-900 dark:text-cyan-300',
-    textClass: 'text-cyan-800',
+    textClass: 'text-cyan-800 dark:text-cyan-300',
     progressClass: 'bg-cyan-600',
     metrics: [
       { key: 'logement.prixM2', label: 'Prix moyen m²', format: (v: any) => v + ' €', help: "Prix de vente moyen du m² tous logements confondus (Insee 2023)." },
@@ -121,7 +121,7 @@ const CATEGORIES = [
     bgClass: 'bg-pink-50/40 dark:bg-pink-500/10',
     borderClass: 'border-pink-100/50',
     iconClass: 'bg-pink-100 dark:bg-pink-500/10 text-pink-900 dark:text-pink-300',
-    textClass: 'text-pink-800',
+    textClass: 'text-pink-800 dark:text-pink-300',
     progressClass: 'bg-pink-600',
     metrics: [
       { key: 'finances.budgetHabitant', label: 'Budget / hab.', format: (v: any) => v + ' €', help: "Dépenses réelles de fonctionnement et d'investissement par hab." },
@@ -136,7 +136,7 @@ const CATEGORIES = [
     bgClass: 'bg-purple-50/40 dark:bg-purple-500/10',
     borderClass: 'border-purple-100/50',
     iconClass: 'bg-purple-100 dark:bg-purple-500/10 text-purple-900 dark:text-purple-300',
-    textClass: 'text-purple-800',
+    textClass: 'text-purple-800 dark:text-purple-300',
     progressClass: 'bg-purple-600',
     metrics: [
       { key: 'environnement.qualiteAir', label: 'Indice ATMO moyen', format: (v: any) => v + '/6', inverse: true, help: "Moyenne des indices ATMO quotidiens officiels (1 = bon, 6 = extrêmement mauvais), intégrant NO₂, O₃, PM10, PM2.5 et SO₂." },
@@ -324,7 +324,7 @@ export default function TerritoryDetailPanel({ territory, onClose, onNavigate }:
                     className={`w-10 h-10 rounded-full backdrop-blur-md flex items-center justify-center transition-all cursor-pointer ${
                       isSaved 
                         ? "bg-amber-400 text-foreground shadow-lg shadow-amber-400/20" 
-                        : "bg-white/10 text-white hover:bg-white/20"
+                        : "bg-white/10 text-slate-950 hover:bg-white/20"
                     }`}
                   >
                     {loadingSave ? <Loader2 size={18} className="animate-spin" /> : <Star size={18} className={isSaved ? "fill-current" : ""} />}
@@ -530,7 +530,7 @@ export default function TerritoryDetailPanel({ territory, onClose, onNavigate }:
               <div className="p-8 space-y-10 -mt-4 overflow-y-auto custom-scrollbar">
                 {loading ? (
                   <div className="flex flex-col items-center justify-center py-20 gap-4">
-                    <Loader2 className="animate-spin text-rose-600" size={40} />
+                    <Loader2 className="animate-spin text-rose-700 dark:text-rose-400" size={40} />
                     <p className="text-slate-400 font-medium">Chargement des indicateurs...</p>
                   </div>
                 ) : (
@@ -594,7 +594,7 @@ export default function TerritoryDetailPanel({ territory, onClose, onNavigate }:
                           <div className="w-10 h-10 rounded-2xl flex items-center justify-center bg-red-100 dark:bg-red-500/10 text-red-600 dark:text-red-300">
                             <Landmark size={20} />
                           </div>
-                          <h3 className="text-xl font-staatliches uppercase tracking-wide text-red-600">Les député·e·s du département</h3>
+                          <h3 className="text-xl font-staatliches uppercase tracking-wide text-red-700 dark:text-red-400">Les député·e·s du département</h3>
                         </div>
                         <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
                           {localDeputies.map((dep) => (
@@ -632,7 +632,7 @@ export default function TerritoryDetailPanel({ territory, onClose, onNavigate }:
                           <div className="w-10 h-10 rounded-2xl flex items-center justify-center bg-blue-100 dark:bg-blue-500/10 text-blue-600 dark:text-blue-300">
                             <TrendingUp size={20} />
                           </div>
-                          <h3 className="text-xl font-staatliches uppercase tracking-wide text-blue-600">Finances 2012-2024</h3>
+                          <h3 className="text-xl font-staatliches uppercase tracking-wide text-blue-700 dark:text-blue-400">Finances 2012-2024</h3>
                         </div>
                         <div className="rounded-[2rem] p-6 md:p-8 border bg-slate-50/60 dark:bg-slate-500/10 border-border">
                           <RegionFinancesChart regionCode={territory.id} />
@@ -691,8 +691,8 @@ export default function TerritoryDetailPanel({ territory, onClose, onNavigate }:
                         </Link>
                       ) : (
                         <div className="p-8 rounded-[2rem] bg-amber-50 dark:bg-amber-500/10 border border-amber-100 dark:border-amber-500/25 text-center space-y-4 flex flex-col items-center">
-                          <p className="font-bold text-amber-900 uppercase tracking-widest text-xs">Fonctionnalité Premium</p>
-                          <p className="text-sm text-amber-800 mb-2">Passez à l'offre <strong>Premium</strong> pour comparer les performances de ce territoire avec n'importe quel autre en France.</p>
+                          <p className="font-bold text-amber-900 dark:text-amber-300 uppercase tracking-widest text-xs">Fonctionnalité Premium</p>
+                          <p className="text-sm text-amber-800 dark:text-amber-300 mb-2">Passez à l'offre <strong>Premium</strong> pour comparer les performances de ce territoire avec n'importe quel autre en France.</p>
                           <AwardBadge 
                             titleText="Découvrir l'offre Premium"
                             subtitleText="Fonctionnalité Premium"

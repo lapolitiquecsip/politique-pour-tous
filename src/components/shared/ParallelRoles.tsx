@@ -31,7 +31,7 @@ export default function ParallelRoles({ fullName, selfHref }: { fullName: string
           <Link key={i} href={r.href}
             className="group flex items-center gap-3 rounded-2xl border border-indigo-200 bg-card px-4 py-3 transition hover:border-indigo-400 hover:shadow-md dark:border-indigo-800/60 dark:bg-slate-900">
             <div className="min-w-0 flex-1">
-              <span className="block text-[9px] font-black uppercase tracking-widest text-indigo-500">{r.kind}</span>
+              <span className="block text-[9px] font-black uppercase tracking-widest text-indigo-500 dark:text-indigo-400">{r.kind}</span>
               <span className="block truncate text-sm font-bold text-foreground dark:text-white">{r.label}</span>
             </div>
             <ArrowUpRight size={16} className="shrink-0 text-indigo-400 transition-transform group-hover:translate-x-0.5 group-hover:-translate-y-0.5" />

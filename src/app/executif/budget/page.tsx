@@ -54,9 +54,9 @@ const COMPARISON_DATA = [
 ];
 
 const BUDGET_METRICS = [
-  { label: "Dépenses Totales", value: "613.0 Md€", sub: "Autorisations d'Engagement", icon: CircleDollarSign, color: "text-blue-600" },
-  { label: "Part du PIB", value: "55.8 %", sub: "Dépenses Publiques Totales", icon: Landmark, color: "text-red-600" },
-  { label: "Déficit Prévu", value: "4.7 %", sub: "Objectif PLF 2026", icon: TrendingDown, color: "text-amber-600" },
+  { label: "Dépenses Totales", value: "613.0 Md€", sub: "Autorisations d'Engagement", icon: CircleDollarSign, color: "text-blue-700 dark:text-blue-400" },
+  { label: "Part du PIB", value: "55.8 %", sub: "Dépenses Publiques Totales", icon: Landmark, color: "text-red-700 dark:text-red-400" },
+  { label: "Déficit Prévu", value: "4.7 %", sub: "Objectif PLF 2026", icon: TrendingDown, color: "text-amber-700 dark:text-amber-400" },
   { label: "Dette Publique", value: "114 %", sub: "Rapport au PIB", icon: ShieldCheck, color: "text-muted-foreground" },
 ];
 
@@ -815,7 +815,7 @@ export default function DetailedBudgetPage() {
             <div className="space-y-4">
 
               <h1 className="text-5xl md:text-8xl font-staatliches uppercase tracking-tighter leading-none text-foreground">
-                Budget <span className="text-blue-600">2026</span>
+                Budget <span className="text-blue-700 dark:text-blue-400">2026</span>
               </h1>
               
               {lastUpdate && (
@@ -824,7 +824,7 @@ export default function DetailedBudgetPage() {
                     <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-green-400 opacity-75"></span>
                     <span className="relative inline-flex rounded-full h-3 w-3 bg-green-500"></span>
                   </div>
-                  <p className="text-xs font-bold text-green-700 uppercase tracking-widest">
+                  <p className="text-xs font-bold text-green-700 dark:text-green-300 uppercase tracking-widest">
                     Données Officielles (MàJ {lastUpdate.toLocaleDateString('fr-FR')})
                   </p>
                 </div>
@@ -864,7 +864,7 @@ export default function DetailedBudgetPage() {
               <div className={`w-12 h-12 rounded-2xl bg-muted flex items-center justify-center mb-6 ${metric.color}`}>
                 <metric.icon size={24} />
               </div>
-              <h3 className="text-[10px] font-black text-slate-400 uppercase tracking-widest mb-2">{metric.label}</h3>
+              <h3 className="text-[10px] font-black text-muted-foreground uppercase tracking-widest mb-2">{metric.label}</h3>
               <p className="text-4xl font-black text-foreground leading-none mb-2">{metric.value}</p>
               <p className="text-xs text-muted-foreground font-medium italic">{metric.sub}</p>
             </motion.div>
@@ -883,7 +883,7 @@ export default function DetailedBudgetPage() {
                         <PieChart size={24} />
                     </div>
                     <h2 className="text-4xl font-staatliches uppercase tracking-wider text-foreground">
-                        Origine des <span className="text-blue-600">Recettes</span>
+                        Origine des <span className="text-blue-700 dark:text-blue-400">Recettes</span>
                     </h2>
                   </div>
                   <p className="text-lg text-muted-foreground leading-relaxed font-medium italic max-w-2xl">
@@ -1049,7 +1049,7 @@ export default function DetailedBudgetPage() {
 
             <div className="text-center max-w-2xl mx-auto space-y-4 pt-12">
                <h2 className="text-4xl font-staatliches uppercase tracking-wider text-foreground">
-                  Zoom sur les <span className="text-red-600">Points de Vigilance</span>
+                  Zoom sur les <span className="text-red-700 dark:text-red-400">Points de Vigilance</span>
                </h2>
                <p className="text-muted-foreground font-medium italic">
                  Analyse approfondie des piliers du Budget 2026. Cliquez sur "En savoir plus" pour les détails exclusifs.
@@ -1086,7 +1086,7 @@ export default function DetailedBudgetPage() {
                   {mission.minister && (
                     <div className="mt-auto mb-6 p-4 rounded-2xl bg-muted border border-border flex items-center gap-4 transition-colors hover:bg-blue-50/50 hover:border-blue-100">
                       <div className="w-10 h-10 shrink-0 bg-card border border-border rounded-full flex items-center justify-center shadow-sm">
-                        <User size={18} className="text-slate-400" />
+                        <User size={18} className="text-muted-foreground" />
                       </div>
                       <div className="overflow-hidden">
                         <p className="text-[10px] font-black uppercase tracking-widest text-slate-400 mb-0.5">Porté par</p>
@@ -1119,7 +1119,7 @@ export default function DetailedBudgetPage() {
          <section className="py-24 space-y-20 border-t border-border">
             <div className="text-center max-w-3xl mx-auto space-y-4">
               <h2 className="text-5xl font-staatliches uppercase tracking-wider text-foreground">
-                 GUIDE <span className="text-blue-600 italic">PAS À PAS</span> DU BUDGET
+                 GUIDE <span className="text-blue-700 dark:text-blue-400 italic">PAS À PAS</span> DU BUDGET
               </h2>
               <p className="text-muted-foreground font-medium text-lg">
                 Comprendre la mécanique complexe des finances publiques en 5 étapes clés.
@@ -1151,7 +1151,7 @@ export default function DetailedBudgetPage() {
                           <div className="space-y-2">
                              <div className="flex items-center gap-2">
                                 <div className="w-4 h-0.5 bg-blue-600 rounded-full" />
-                                <h4 className="text-[9px] font-black text-blue-600 uppercase tracking-[0.2em]">{step.title}</h4>
+                                <h4 className="text-[9px] font-black text-blue-700 dark:text-blue-400 uppercase tracking-[0.2em]">{step.title}</h4>
                              </div>
                              <h3 className="text-xl font-bold text-foreground leading-tight">{step.subtitle}</h3>
                           </div>
@@ -1254,7 +1254,7 @@ export default function DetailedBudgetPage() {
          <section className="py-24 space-y-16">
             <div className="text-center max-w-3xl mx-auto space-y-4">
               <h2 className="text-5xl font-staatliches uppercase tracking-wider text-foreground">
-                 ANALYSE DE LA <span className="text-amber-600">DETTE</span>
+                 ANALYSE DE LA <span className="text-amber-700 dark:text-amber-400">DETTE</span>
               </h2>
               <p className="text-muted-foreground font-medium text-lg">
                 Comprendre qui détient nos 3 460 Md€ de dette et comment elle a évolué.
@@ -1270,8 +1270,8 @@ export default function DetailedBudgetPage() {
                         <p className="text-xs text-slate-400 font-medium uppercase tracking-widest mt-1">En % du PIB (1980 - 2026)</p>
                      </div>
                      <div className="flex items-center gap-2 px-4 py-2 bg-rose-50 dark:bg-rose-500/10 rounded-xl border border-rose-100 dark:border-rose-500/25">
-                        <TrendingUp size={16} className="text-rose-600" />
-                        <span className="text-sm font-black text-rose-700">Dernier relevé : 115,6%</span>
+                        <TrendingUp size={16} className="text-rose-700 dark:text-rose-400" />
+                        <span className="text-sm font-black text-rose-700 dark:text-rose-300">Dernier relevé : 115,6%</span>
                      </div>
                   </div>
 
@@ -1377,7 +1377,7 @@ export default function DetailedBudgetPage() {
                      {/* Labels */}
                      <div className="flex justify-between mt-4">
                         {DEBT_HISTORY.filter((_, i) => i % 2 === 0 || i === DEBT_HISTORY.length - 1).map((d, i) => (
-                           <span key={i} className="text-[10px] font-bold text-slate-400">{d.year}</span>
+                           <span key={i} className="text-[10px] font-bold text-muted-foreground">{d.year}</span>
                         ))}
                      </div>
                      <p className="text-[9px] font-black text-slate-400 uppercase tracking-widest pt-4 opacity-50">Source : INSEE / Agence France Trésor</p>
@@ -1392,7 +1392,7 @@ export default function DetailedBudgetPage() {
                         <h4 className="text-sm font-black text-foreground uppercase tracking-widest">Dernières Actualités</h4>
                         <div className="flex items-center gap-1.5 px-2 py-1 bg-blue-100 dark:bg-blue-500/10 rounded-full">
                            <div className="w-1.5 h-1.5 rounded-full bg-blue-600 animate-pulse" />
-                           <span className="text-[8px] font-black text-blue-700 uppercase">Live INSEE</span>
+                           <span className="text-[8px] font-black text-blue-700 dark:text-blue-300 uppercase">Live INSEE</span>
                         </div>
                      </div>
                      
@@ -1400,7 +1400,7 @@ export default function DetailedBudgetPage() {
                         {DEBT_NEWS.map((news, i) => (
                            <div key={i} className="p-4 bg-card rounded-2xl border border-border shadow-sm space-y-2 group hover:border-blue-200 transition-colors">
                               <div className="flex justify-between items-start">
-                                 <span className="text-[10px] font-bold text-slate-400">{news.date}</span>
+                                 <span className="text-[10px] font-bold text-muted-foreground">{news.date}</span>
                                  <div className={`w-2 h-2 rounded-full ${news.impact === 'high' ? 'bg-rose-500' : 'bg-amber-500'}`} />
                               </div>
                               <h5 className="text-sm font-bold text-foreground group-hover:text-blue-600 transition-colors">{news.title}</h5>
@@ -1457,7 +1457,7 @@ export default function DetailedBudgetPage() {
                         <div className="w-full h-px bg-slate-100 dark:bg-slate-500/10" />
                         <div className="flex justify-between items-center">
                            <span className="text-sm font-medium text-muted-foreground">Taux actuel (Refi)</span>
-                           <span className="text-sm font-black text-rose-600">~3.4%</span>
+                           <span className="text-sm font-black text-rose-700 dark:text-rose-400">~3.4%</span>
                         </div>
                      </div>
                   </div>
@@ -1469,7 +1469,7 @@ export default function DetailedBudgetPage() {
          <section className="py-24 space-y-16 border-t border-border">
             <div className="text-center max-w-3xl mx-auto space-y-4">
               <h2 className="text-5xl font-staatliches uppercase tracking-wider text-foreground">
-                 CALENDRIER <span className="text-blue-600">LÉGISLATIF</span>
+                 CALENDRIER <span className="text-blue-700 dark:text-blue-400">LÉGISLATIF</span>
               </h2>
               <p className="text-muted-foreground font-medium text-lg">
                  Le marathon budgétaire du PLF 2026 : de la conception au vote final.
@@ -1492,7 +1492,7 @@ export default function DetailedBudgetPage() {
                        <div className="flex-1 text-center md:text-right w-full">
                           {i % 2 === 0 && (
                             <div className="space-y-2">
-                               <span className="text-[10px] font-black text-blue-600 uppercase tracking-widest">{step.date}</span>
+                               <span className="text-[10px] font-black text-blue-700 dark:text-blue-400 uppercase tracking-widest">{step.date}</span>
                                <h3 className="text-xl font-bold text-foreground">{step.label}</h3>
                                <p className="text-sm text-muted-foreground font-medium italic">{step.desc}</p>
                             </div>
@@ -1509,7 +1509,7 @@ export default function DetailedBudgetPage() {
                        <div className="flex-1 text-center md:text-left w-full">
                           {i % 2 !== 0 && (
                              <div className="space-y-2">
-                                <span className="text-[10px] font-black text-blue-600 uppercase tracking-widest">{step.date}</span>
+                                <span className="text-[10px] font-black text-blue-700 dark:text-blue-400 uppercase tracking-widest">{step.date}</span>
                                 <h3 className="text-xl font-bold text-foreground">{step.label}</h3>
                                 <p className="text-sm text-muted-foreground font-medium italic">{step.desc}</p>
                              </div>
@@ -1525,7 +1525,7 @@ export default function DetailedBudgetPage() {
                   <Zap size={24} />
                </div>
                <div className="space-y-2">
-                  <h4 className="font-bold text-blue-900">Le rôle critique du 49.3</h4>
+                  <h4 className="font-bold text-blue-900 dark:text-blue-300">Le rôle critique du 49.3</h4>
                   <p className="text-sm text-blue-800/80 leading-relaxed font-medium italic">
                     Pour le PLF 2026, l'absence de majorité absolue rend probable l'usage de l'article 49.3 de la Constitution. Il permet l'adoption du texte sans vote, sauf si une motion de censure est votée par la majorité des députés.
                   </p>
@@ -1680,7 +1680,7 @@ export default function DetailedBudgetPage() {
 
                           {/* Description */}
                           <div className="space-y-4">
-                             <h3 className="text-xs font-black text-slate-400 uppercase tracking-widest">Contexte Budgétaire</h3>
+                             <h3 className="text-xs font-black text-muted-foreground uppercase tracking-widest">Contexte Budgétaire</h3>
                              <p className="text-muted-foreground leading-relaxed font-medium italic">
                                 {selectedMissionData.details}
                              </p>
@@ -1691,10 +1691,10 @@ export default function DetailedBudgetPage() {
                            {selectedMissionData.id === 'aide-publique-au-developpement' && (
                              <div className="space-y-6">
                                 <div className="flex items-center justify-between">
-                                   <h3 className="text-xs font-black text-slate-400 uppercase tracking-widest">Cartographie des Destinataires 2026</h3>
+                                   <h3 className="text-xs font-black text-muted-foreground uppercase tracking-widest">Cartographie des Destinataires 2026</h3>
                                    <div className="flex items-center gap-2">
                                       <div className="w-2 h-2 rounded-full bg-orange-500 animate-pulse" />
-                                      <span className="text-[10px] font-black text-orange-600 uppercase tracking-widest">Pays Prioritaires</span>
+                                      <span className="text-[10px] font-black text-orange-700 dark:text-orange-400 uppercase tracking-widest">Pays Prioritaires</span>
                                    </div>
                                 </div>
                                 <div className="relative h-[300px] bg-slate-950 rounded-[3rem] border border-white/5 overflow-hidden shadow-2xl">
@@ -1739,7 +1739,7 @@ export default function DetailedBudgetPage() {
                                           className="absolute bottom-8 left-8 right-8 bg-white/95 backdrop-blur-md p-6 rounded-[2rem] shadow-2xl border border-white/20 flex justify-between items-center z-50 pointer-events-none"
                                         >
                                            <div className="flex items-center gap-4">
-                                              <div className="w-12 h-12 rounded-2xl bg-orange-500 flex items-center justify-center text-white font-black text-lg shadow-lg">
+                                              <div className="w-12 h-12 rounded-2xl bg-orange-700 flex items-center justify-center text-white font-black text-lg shadow-lg">
                                                  {hoveredRecipient.id}
                                               </div>
                                               <div>
@@ -1750,9 +1750,9 @@ export default function DetailedBudgetPage() {
                                            <div className="text-right">
                                               <div className="flex items-baseline gap-1 justify-end">
                                                  <span className="text-3xl font-black text-foreground">{hoveredRecipient.amount.split(' ')[0]}</span>
-                                                 <span className="text-sm font-bold text-slate-400">{hoveredRecipient.amount.split(' ')[1]}</span>
+                                                 <span className="text-sm font-bold text-muted-foreground">{hoveredRecipient.amount.split(' ')[1]}</span>
                                               </div>
-                                              <p className="text-[10px] text-slate-400 font-bold uppercase tracking-widest">Dotation APD 2026</p>
+                                              <p className="text-[10px] text-muted-foreground font-bold uppercase tracking-widest">Dotation APD 2026</p>
                                            </div>
                                         </motion.div>
                                       )}
@@ -1768,11 +1768,11 @@ export default function DetailedBudgetPage() {
                           <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
                              {/* Breakdown Chart */}
                              <div className="bg-muted rounded-[2rem] p-8 space-y-6">
-                                <h3 className="text-xs font-black text-slate-400 uppercase tracking-widest">Répartition Interne</h3>
+                                <h3 className="text-xs font-black text-muted-foreground uppercase tracking-widest">Répartition Interne</h3>
                                 <div className="space-y-4">
                                    {selectedMissionData.breakdown?.map((item: any, i: number) => (
                                       <div key={i} className="space-y-2">
-                                         <div className="flex justify-between text-xs font-bold text-slate-700">
+                                         <div className="flex justify-between text-xs font-bold text-slate-700 dark:text-slate-200">
                                             <span>{item.label}</span>
                                             <span>{item.value} Md€</span>
                                          </div>
@@ -1883,15 +1883,15 @@ export default function DetailedBudgetPage() {
                           <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
                              {/* Measures */}
                              <div className="space-y-6">
-                                <h3 className="text-xs font-black text-slate-400 uppercase tracking-widest">Mesures Phares 2026</h3>
+                                <h3 className="text-xs font-black text-muted-foreground uppercase tracking-widest">Mesures Phares 2026</h3>
                                 <div className="space-y-4">
                                     {selectedMissionData.measures?.map((m: any, i: number) => (
                                        <div key={i} className="flex items-start gap-4 p-4 bg-emerald-50 dark:bg-emerald-500/10 rounded-2xl border border-emerald-100 dark:border-emerald-500/25">
-                                          <div className="w-6 h-6 rounded-full bg-emerald-500 text-white flex items-center justify-center shrink-0">
+                                          <div className="w-6 h-6 rounded-full bg-emerald-700 text-white flex items-center justify-center shrink-0">
                                              <CheckCircle2 size={14} />
                                           </div>
                                           <div className="space-y-1">
-                                             <p className="text-xs font-bold text-emerald-900">{typeof m === 'string' ? m : m.title}</p>
+                                             <p className="text-xs font-bold text-emerald-900 dark:text-emerald-300">{typeof m === 'string' ? m : m.title}</p>
                                              {typeof m !== 'string' && m.desc && (
                                                 <p className="text-[10px] text-emerald-800/70 font-medium italic leading-relaxed">
                                                    {m.desc}
@@ -1905,16 +1905,16 @@ export default function DetailedBudgetPage() {
 
                              {/* Functioning vs Investment */}
                              <div className="space-y-6">
-                                <h3 className="text-xs font-black text-slate-400 uppercase tracking-widest">Nature de la dépense</h3>
+                                <h3 className="text-xs font-black text-muted-foreground uppercase tracking-widest">Nature de la dépense</h3>
                                 <div className="p-8 border border-border rounded-[2rem] space-y-6">
                                    <div className="flex justify-between items-end">
                                       <div className="space-y-1">
-                                         <p className="text-[10px] font-black text-slate-400 uppercase">Fonctionnement</p>
+                                         <p className="text-[10px] font-black text-muted-foreground uppercase">Fonctionnement</p>
                                          <p className="text-2xl font-staatliches text-foreground">{selectedMissionData.split?.functioning}%</p>
                                       </div>
                                       <div className="space-y-1 text-right">
-                                         <p className="text-[10px] font-black text-slate-400 uppercase">Investissement</p>
-                                         <p className="text-2xl font-staatliches text-blue-600">{selectedMissionData.split?.investment}%</p>
+                                         <p className="text-[10px] font-black text-muted-foreground uppercase">Investissement</p>
+                                         <p className="text-2xl font-staatliches text-blue-700 dark:text-blue-400">{selectedMissionData.split?.investment}%</p>
                                       </div>
                                    </div>
                                    <div className="w-full h-4 bg-slate-100 dark:bg-slate-500/10 rounded-full overflow-hidden flex">

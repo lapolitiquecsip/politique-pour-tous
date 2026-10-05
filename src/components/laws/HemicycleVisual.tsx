@@ -218,7 +218,7 @@ export default function HemicycleVisual({ groups }: HemicycleVisualProps) {
                 <div className="w-3.5 h-3.5 rounded-full shadow-lg shadow-white/10" style={{ backgroundColor: hoveredGroupInfo.color }} />
                 <span className="text-xs font-black uppercase tracking-widest">{hoveredGroupInfo.short}</span>
               </div>
-              <p className="text-[10px] text-slate-400 font-bold mb-4 leading-tight uppercase tracking-tighter">
+              <p className="text-[10px] text-muted-foreground font-bold mb-4 leading-tight uppercase tracking-tighter">
                 {hoveredGroupInfo.name}
               </p>
               <div className="space-y-2 border-t border-white/10 pt-4">
@@ -231,7 +231,7 @@ export default function HemicycleVisual({ groups }: HemicycleVisualProps) {
                   <span className="text-xs font-black font-mono">{hoveredGroupData.contre}</span>
                 </div>
                 <div className="flex justify-between items-center">
-                  <span className="text-[10px] text-slate-400 font-black tracking-widest">ABSTENTION</span>
+                  <span className="text-[10px] text-muted-foreground font-black tracking-widest">ABSTENTION</span>
                   <span className="text-xs font-black font-mono">{hoveredGroupData.abstention}</span>
                 </div>
                 <div className="flex justify-between items-center border-t border-white/5 pt-2 mt-2">
@@ -263,7 +263,7 @@ export default function HemicycleVisual({ groups }: HemicycleVisualProps) {
         </div>
         <div className="flex items-center gap-2 border-l border-border pl-6">
           <div className="w-3 h-3 rounded-full bg-slate-200" />
-          <span className="text-[10px] font-black uppercase tracking-widest text-slate-300">Absent</span>
+          <span className="text-[10px] font-black uppercase tracking-widest text-muted-foreground">Absent</span>
         </div>
       </div>
     </div>

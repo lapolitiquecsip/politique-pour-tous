@@ -224,7 +224,7 @@ export default function HelpBubble() {
                             <span className="h-4 w-1 rounded-full bg-gradient-to-b from-sky-400 to-blue-600" />
                             {n.term}
                           </span>
-                          <span className="flex h-6 w-6 shrink-0 items-center justify-center rounded-full bg-sky-500 text-white shadow-sm transition-transform group-open:rotate-45 text-lg leading-none" aria-label="Ouvrir ou replier">+</span>
+                          <span className="flex h-6 w-6 shrink-0 items-center justify-center rounded-full bg-sky-700 text-white shadow-sm transition-transform group-open:rotate-45 text-lg leading-none" aria-label="Ouvrir ou replier">+</span>
                         </summary>
                         <div className="border-t border-sky-100/70 px-3 pb-3 pt-2.5 dark:border-slate-700/60">
                           <p className="text-[13px] leading-relaxed text-slate-700 dark:text-slate-300">{n.def}</p>

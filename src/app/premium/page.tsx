@@ -163,13 +163,13 @@ function HL({ text }: { text: string }) {
 }
 function sectionStyle(header: string) {
   const h = header.toLowerCase();
-  if (/vote|scrutin/.test(h)) return { Icon: Vote, c: "text-emerald-600", bg: "bg-emerald-50 dark:bg-emerald-500/10" };
+  if (/vote|scrutin/.test(h)) return { Icon: Vote, c: "text-emerald-700 dark:text-emerald-400", bg: "bg-emerald-50 dark:bg-emerald-500/10" };
   if (/limite|réserve/.test(h)) return { Icon: AlertTriangle, c: "text-slate-500", bg: "bg-slate-50 dark:bg-slate-800" };
-  if (/contexte|objectif|objet|mesure/.test(h)) return { Icon: Target, c: "text-amber-600", bg: "bg-amber-50 dark:bg-amber-500/10" };
-  if (/procédure|navette|étape|calendrier/.test(h)) return { Icon: GitBranch, c: "text-blue-600", bg: "bg-blue-50 dark:bg-blue-500/10" };
-  if (/amendement/.test(h)) return { Icon: Pencil, c: "text-fuchsia-600", bg: "bg-fuchsia-50 dark:bg-fuchsia-500/10" };
-  if (/problème|enjeu|pourquoi/.test(h)) return { Icon: HelpCircle, c: "text-rose-600", bg: "bg-rose-50 dark:bg-rose-500/10" };
-  return { Icon: FileText, c: "text-amber-600", bg: "bg-amber-50 dark:bg-amber-500/10" };
+  if (/contexte|objectif|objet|mesure/.test(h)) return { Icon: Target, c: "text-amber-700 dark:text-amber-400", bg: "bg-amber-50 dark:bg-amber-500/10" };
+  if (/procédure|navette|étape|calendrier/.test(h)) return { Icon: GitBranch, c: "text-blue-700 dark:text-blue-400", bg: "bg-blue-50 dark:bg-blue-500/10" };
+  if (/amendement/.test(h)) return { Icon: Pencil, c: "text-fuchsia-700 dark:text-fuchsia-400", bg: "bg-fuchsia-50 dark:bg-fuchsia-500/10" };
+  if (/problème|enjeu|pourquoi/.test(h)) return { Icon: HelpCircle, c: "text-rose-700 dark:text-rose-400", bg: "bg-rose-50 dark:bg-rose-500/10" };
+  return { Icon: FileText, c: "text-amber-700 dark:text-amber-400", bg: "bg-amber-50 dark:bg-amber-500/10" };
 }
 function parseSections(raw: string) {
   const re = /\*\*(.+?)\*\*\s*:?\s*/g;
@@ -221,7 +221,7 @@ function LawExampleModal({ open, onClose }: { open: boolean; onClose: () => void
                   );
                 })}
               </div>
-              <p className="mt-4 text-[10px] italic text-slate-400">Exemple réel d&apos;un décryptage Premium — le design exact affiché sur chaque loi.</p>
+              <p className="mt-4 text-[10px] italic text-muted-foreground">Exemple réel d&apos;un décryptage Premium — le design exact affiché sur chaque loi.</p>
             </div>
 
             <div className="p-5 border-t border-slate-100 dark:border-slate-800 bg-slate-50 dark:bg-slate-800/30">
@@ -263,7 +263,7 @@ function NotifDemoModal({ open, onClose }: { open: boolean; onClose: () => void 
                   <span className="flex h-8 w-8 items-center justify-center rounded-xl bg-amber-50 dark:bg-amber-500/15 text-amber-600"><BellRing size={15} /></span>
                   <span className="text-xs font-black uppercase tracking-widest text-slate-900 dark:text-white">Mes alertes</span>
                 </div>
-                <span className="rounded-full bg-rose-500 px-2 py-0.5 text-[10px] font-black text-white">4 nouvelles</span>
+                <span className="rounded-full bg-rose-600 px-2 py-0.5 text-[10px] font-black text-white">4 nouvelles</span>
               </div>
               {DEMO_NOTIFS.map((n, i) => (
                 <motion.div key={i} initial={{ opacity: 0, x: -10 }} animate={{ opacity: 1, x: 0 }} transition={{ delay: 0.05 * i }}
@@ -280,7 +280,7 @@ function NotifDemoModal({ open, onClose }: { open: boolean; onClose: () => void 
                     {n.kind === "vote" ? <p className="text-xs text-slate-500 line-clamp-1">« {n.title} »</p> : null}
                     <div className="mt-1 flex items-center gap-2">
                       {n.dom && <span className="rounded-full px-2 py-0.5 text-[9px] font-black uppercase tracking-wider text-white" style={{ backgroundColor: n.color }}>{n.dom}</span>}
-                      <span className="text-[10px] font-black uppercase tracking-widest text-slate-400">{n.when}</span>
+                      <span className="text-[10px] font-black uppercase tracking-widest text-muted-foreground">{n.when}</span>
                     </div>
                   </div>
                   <span className="mt-1.5 h-2 w-2 shrink-0 rounded-full bg-amber-500" />
@@ -371,9 +371,9 @@ function PageOffre() {
         <div className="max-w-5xl mx-auto">
           <FadeIn className="text-center mb-12">
             <h2 className="text-4xl md:text-6xl font-staatliches uppercase tracking-tighter text-slate-900 dark:text-white">
-              Deux formules, <span className="text-amber-500">un seul site</span>
+              Deux formules, <span className="text-amber-700 dark:text-amber-400">un seul site</span>
             </h2>
-            <p className="mt-3 text-slate-500 text-lg">Choisissez selon l&apos;usage que vous en faites.</p>
+            <p className="mt-3 text-slate-500 dark:text-slate-300 text-lg">Choisissez selon l&apos;usage que vous en faites.</p>
           </FadeIn>
 
           {/* Mobile : les deux offres côte à côte dans un sélecteur fixe, prix compris. */}
@@ -404,7 +404,7 @@ function PageOffre() {
               <div className="relative flex h-full flex-col rounded-[2.5rem] border-2 border-amber-400 bg-gradient-to-b from-amber-50/60 to-white dark:from-amber-500/5 dark:to-slate-900 p-6 shadow-2xl shadow-amber-500/10 md:p-8">
                 <div className="absolute top-0 left-1/2 -translate-x-1/2 -translate-y-1/2 whitespace-nowrap bg-slate-900 text-white px-4 py-1.5 rounded-full text-[10px] font-black uppercase tracking-widest shadow-lg">Offre la plus populaire</div>
 
-                <p className="text-[10px] font-black uppercase tracking-widest text-amber-600">{PLANS.elite.audience}</p>
+                <p className="text-[10px] font-black uppercase tracking-widest text-amber-700 dark:text-amber-400">{PLANS.elite.audience}</p>
                 <h3 className="mt-1 font-staatliches text-4xl uppercase tracking-tight text-slate-900 dark:text-white">{PLANS.elite.name}</h3>
                 <p className="mt-1 text-sm text-slate-500">{PLANS.elite.tagline}</p>
 
@@ -479,8 +479,8 @@ function PageOffre() {
                   </button>
                   <span className="text-[11px] font-black uppercase tracking-widest">
                     {billingCycle === "monthly"
-                      ? <span className="text-white/50">Passer à l&apos;annuel <span className="ml-1 rounded-full bg-emerald-500 px-1.5 py-0.5 text-white">-20%</span></span>
-                      : <span className="text-emerald-400">Facturation annuelle</span>}
+                      ? <span className="text-white/50">Passer à l&apos;annuel <span className="ml-1 rounded-full bg-emerald-700 px-1.5 py-0.5 text-white">-20%</span></span>
+                      : <span className="text-emerald-700 dark:text-emerald-400">Facturation annuelle</span>}
                   </span>
                 </div>
 
@@ -526,7 +526,7 @@ function PageOffre() {
             </FadeIn>
           </div>
 
-          <p className="text-center text-[10px] text-slate-400 font-bold uppercase tracking-widest mt-6 md:mt-8">
+          <p className="text-center text-[10px] text-muted-foreground font-bold uppercase tracking-widest mt-6 md:mt-8">
             {SALES_OPEN ? "Sécurisé par Stripe • Résiliable à tout moment" : "Ouverture des abonnements très prochainement"}
           </p>
         </div>

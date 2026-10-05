@@ -50,7 +50,7 @@ function Picker({ people, value, onPick, placeholder }: { people: Person[]; valu
   return (
     <div className="relative">
       <div className="flex items-center gap-2 rounded-2xl border border-border bg-card px-4">
-        <Search size={18} className="text-slate-400" />
+        <Search size={18} className="text-muted-foreground" />
         <input value={q} onChange={e => setQ(e.target.value)} placeholder={placeholder}
           className="w-full bg-transparent py-3.5 text-foreground outline-none placeholder:text-slate-400 [color-scheme:light]" />
       </div>
@@ -83,9 +83,9 @@ function Row({ label, a, b, fmt, higherBetter = true, aRaw, bRaw }: { label: str
   const bWin = aRaw != null && bRaw != null && aRaw !== bRaw && (higherBetter ? bRaw > aRaw : bRaw < aRaw);
   return (
     <div className="grid grid-cols-[1fr_auto_1fr] items-center gap-3 border-b border-border py-3">
-      <p className={`text-right text-lg font-black tabular-nums ${aWin ? "text-emerald-600" : "text-foreground"}`}>{a}{fmt}</p>
+      <p className={`text-right text-lg font-black tabular-nums ${aWin ? "text-emerald-700 dark:text-emerald-400" : "text-foreground"}`}>{a}{fmt}</p>
       <p className="px-2 text-center text-[10px] font-black uppercase tracking-widest text-slate-400">{label}</p>
-      <p className={`text-left text-lg font-black tabular-nums ${bWin ? "text-emerald-600" : "text-foreground"}`}>{b}{fmt}</p>
+      <p className={`text-left text-lg font-black tabular-nums ${bWin ? "text-emerald-700 dark:text-emerald-400" : "text-foreground"}`}>{b}{fmt}</p>
     </div>
   );
 }
@@ -106,7 +106,7 @@ export default function ParliamentComparator() {
     return () => { active = false; };
   }, []);
 
-  if (!people) return <div className="flex justify-center py-32"><Loader2 className="animate-spin text-red-600" /></div>;
+  if (!people) return <div className="flex justify-center py-32"><Loader2 className="animate-spin text-red-700 dark:text-red-400" /></div>;
 
   const bothDeputies = a?.type === "depute" && b?.type === "depute";
   return (
@@ -139,10 +139,10 @@ export default function ParliamentComparator() {
             <Link href={`/${a.type === "depute" ? "deputes" : "senateurs"}/${a.slug}`} className="inline-flex items-center justify-center gap-1.5 rounded-full bg-slate-950 px-4 py-2.5 text-sm font-black text-white transition hover:bg-slate-700">Fiche de {a.name.split(" ")[0]} <ArrowRight size={15} /></Link>
             <Link href={`/${b.type === "depute" ? "deputes" : "senateurs"}/${b.slug}`} className="inline-flex items-center justify-center gap-1.5 rounded-full bg-slate-950 px-4 py-2.5 text-sm font-black text-white transition hover:bg-slate-700">Fiche de {b.name.split(" ")[0]} <ArrowRight size={15} /></Link>
           </div>
-          {!bothDeputies && (a.type !== b.type) && <p className="mt-4 text-[11px] italic text-slate-400">Comparaison député·e ↔ sénateur·rice : certains indicateurs (loyauté, mandats) ne sont pas comparables entre les deux chambres.</p>}
+          {!bothDeputies && (a.type !== b.type) && <p className="mt-4 text-[11px] italic text-muted-foreground">Comparaison député·e ↔ sénateur·rice : certains indicateurs (loyauté, mandats) ne sont pas comparables entre les deux chambres.</p>}
         </div>
       ) : (
-        <p className="mt-12 text-center text-slate-400">Choisissez deux parlementaires pour les comparer côte à côte.</p>
+        <p className="mt-12 text-center text-muted-foreground">Choisissez deux parlementaires pour les comparer côte à côte.</p>
       )}
     </div>
   );

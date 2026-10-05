@@ -46,7 +46,7 @@ export default function CalendarClient({ initialEvents }: { initialEvents: Calen
       {/* 1. SECTION HEADER (POSTER STYLE REBORN) */}
       <div className="flex flex-col lg:flex-row lg:items-end justify-between gap-8 mb-16">
         <div className="relative flex-1">
-          <div className="inline-flex items-center gap-2 px-4 py-1 rounded-full bg-blue-500/10 border border-blue-500/20 text-blue-600 text-xs font-black uppercase mb-6 relative z-20">
+          <div className="inline-flex items-center gap-2 px-4 py-1 rounded-full bg-blue-500/10 border border-blue-500/20 text-blue-700 dark:text-blue-400 text-xs font-black uppercase mb-6 relative z-20">
             <CalendarDays className="w-3 h-3" /> Agenda Parlementaire
           </div>
           
@@ -56,7 +56,7 @@ export default function CalendarClient({ initialEvents }: { initialEvents: Calen
                 DIRECT • AGENDA
               </span>
               <span className="text-black dark:text-white">Calendrier</span>
-              <span className="bg-emerald-500 text-white px-4 pt-1.5 pb-0.5 md:pt-3 md:pb-1 rounded-xl md:rounded-2xl shadow-sm">simplifié</span>
+              <span className="bg-emerald-700 text-white px-4 pt-1.5 pb-0.5 md:pt-3 md:pb-1 rounded-xl md:rounded-2xl shadow-sm">simplifié</span>
             </h1>
             <div className="h-1.5 w-32 bg-gradient-to-r from-blue-600 to-red-600 mt-6 rounded-full" />
           </div>
@@ -95,7 +95,7 @@ export default function CalendarClient({ initialEvents }: { initialEvents: Calen
               className={`px-5 py-2 rounded-xl text-[10px] font-black uppercase tracking-widest transition-all ${
                 (activeFilter === f || (f === "Assemblée" && activeFilter === "Assemblée nationale"))
                   ? "bg-card text-foreground shadow-lg"
-                  : "text-slate-400 hover:text-muted-foreground"
+                  : "text-muted-foreground hover:text-muted-foreground"
               }`}
             >
               {f === "Élection" ? "Élections" : f}

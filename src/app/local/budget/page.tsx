@@ -31,7 +31,7 @@ const getMonthValue = (dateStr: string): number => {
 
 export default function LocalBudgetPage() {
   return (
-    <Suspense fallback={<div className="min-h-screen bg-muted flex items-center justify-center"><Loader2 className="animate-spin text-rose-600" size={40} /></div>}>
+    <Suspense fallback={<div className="min-h-screen bg-muted flex items-center justify-center"><Loader2 className="animate-spin text-rose-700 dark:text-rose-400" size={40} /></div>}>
       <LocalBudgetContent />
     </Suspense>
   );
@@ -76,7 +76,7 @@ function LocalBudgetContent() {
   if (pLoading || loadingData) {
     return (
       <div className="min-h-screen bg-muted flex flex-col items-center justify-center gap-4">
-        <Loader2 className="animate-spin text-rose-600" size={40} />
+        <Loader2 className="animate-spin text-rose-700 dark:text-rose-400" size={40} />
         <p className="text-sm font-bold text-slate-400 uppercase tracking-widest">Chargement du budget municipal...</p>
       </div>
     );
@@ -328,8 +328,8 @@ function LocalBudgetContent() {
                   </p>
                 </div>
                 <div className="text-right shrink-0">
-                  <p className="text-xs font-black uppercase text-slate-400 tracking-widest">Montant réel (2024)</p>
-                  <p className="text-2xl font-black text-rose-600">{(activeAmount / 1000000).toFixed(1)} M€</p>
+                  <p className="text-xs font-black uppercase text-muted-foreground tracking-widest">Montant réel (2024)</p>
+                  <p className="text-2xl font-black text-rose-700 dark:text-rose-400">{(activeAmount / 1000000).toFixed(1)} M€</p>
                 </div>
               </div>
 
@@ -384,7 +384,7 @@ function LocalBudgetContent() {
                 <div className="space-y-2 border-b border-slate-50 pb-4">
                   <div className="flex justify-between text-xs font-extrabold text-foreground">
                     <span>Taux d'endettement</span>
-                    <span className={debtRate > 100 ? "text-rose-600" : "text-foreground"}>{debtRate}%</span>
+                    <span className={debtRate > 100 ? "text-rose-700 dark:text-rose-400" : "text-foreground"}>{debtRate}%</span>
                   </div>
                   <p className="text-[10px] text-slate-400 leading-normal">
                     La moyenne nationale est de **73.6%**. {debtRate > 100 ? "⚠️ La commune est plus endettée que la moyenne." : "✅ Le niveau d'endettement est sous contrôle."}
@@ -443,7 +443,7 @@ function LocalBudgetContent() {
         <div className="space-y-6 pt-4">
           <div className="flex items-center gap-3">
             <div className="w-10 h-10 rounded-2xl bg-amber-100 dark:bg-amber-500/10 flex items-center justify-center text-amber-750 shadow-sm shrink-0">
-              <Wrench size={20} className="text-amber-700" />
+              <Wrench size={20} className="text-amber-700 dark:text-amber-300" />
             </div>
             <div>
               <h2 className="text-3xl font-staatliches uppercase tracking-wide text-foreground leading-none">
@@ -489,7 +489,7 @@ function LocalBudgetContent() {
                     <span className="text-[10px] font-bold text-slate-400 uppercase tracking-wider">
                       Budget alloué / estimé
                     </span>
-                    <span className="font-staatliches text-2xl text-rose-600">
+                    <span className="font-staatliches text-2xl text-rose-700 dark:text-rose-400">
                       {proj.cost}
                     </span>
                   </div>
@@ -507,7 +507,7 @@ function LocalBudgetContent() {
         <div className="space-y-6 pt-4">
           <div className="flex items-center gap-3">
             <div className="w-10 h-10 rounded-2xl bg-fuchsia-100 dark:bg-fuchsia-500/10 flex items-center justify-center text-fuchsia-750 shadow-sm shrink-0">
-              <Calendar size={20} className="text-fuchsia-700" />
+              <Calendar size={20} className="text-fuchsia-700 dark:text-fuchsia-300" />
             </div>
             <div>
               <h2 className="text-3xl font-staatliches uppercase tracking-wide text-foreground leading-none">
@@ -534,7 +534,7 @@ function LocalBudgetContent() {
                     Culture: "bg-fuchsia-50 dark:bg-fuchsia-500/10 text-fuchsia-700 dark:text-fuchsia-300 border-fuchsia-200 dark:border-fuchsia-500/25",
                     Festivités: "bg-sky-50 dark:bg-sky-500/10 text-sky-700 dark:text-sky-300 border-sky-200 dark:border-sky-500/25"
                   };
-                  const colClass = catColors[evt.category] || "bg-muted text-slate-700 border-border";
+                  const colClass = catColors[evt.category] || "bg-muted text-slate-700 dark:text-slate-200 border-border";
                   
                   return (
                     <motion.div
@@ -546,7 +546,7 @@ function LocalBudgetContent() {
                     >
                       <div className="space-y-3">
                         <div className="flex justify-between items-center gap-2">
-                          <span className="text-[10px] font-black text-rose-600 uppercase tracking-widest">
+                          <span className="text-[10px] font-black text-rose-700 dark:text-rose-400 uppercase tracking-widest">
                             {evt.date}
                           </span>
                           <span className={`px-2 py-0.5 text-[8px] font-bold uppercase tracking-wider rounded-full border ${colClass}`}>

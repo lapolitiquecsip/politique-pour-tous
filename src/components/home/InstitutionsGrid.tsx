@@ -101,7 +101,7 @@ const InstitutionCard = memo(({ inst, index, onClick }: { inst: Institution, ind
         
         <div className="flex items-center gap-3 mb-3">
 
-          <div className="flex items-center gap-2 px-2.5 py-1 bg-red-500 rounded-full shadow-[0_0_15px_rgba(239,68,68,0.4)] animate-pulse">
+          <div className="flex items-center gap-2 px-2.5 py-1 bg-red-600 rounded-full shadow-[0_0_15px_rgba(239,68,68,0.4)] animate-pulse">
             <div className="h-1.5 w-1.5 rounded-full bg-card" />
             <p className="text-white font-black text-[9px] uppercase tracking-widest">En Direct</p>
           </div>
@@ -386,7 +386,7 @@ export default function InstitutionsGrid() {
                 <div className="space-y-6">
                   <div className="flex items-center justify-between mb-6">
                     <div className="flex items-center gap-3">
-                      <div className="w-8 h-8 bg-blue-100 dark:bg-blue-900/30 text-blue-600 dark:text-blue-400 rounded-lg flex items-center justify-center">
+                      <div className="w-8 h-8 bg-blue-100 dark:bg-blue-900/30 text-blue-700 dark:text-blue-400 rounded-lg flex items-center justify-center">
                         <CalendarDays size={18} />
                       </div>
                       <p className="text-foreground dark:text-white text-sm font-black uppercase tracking-widest">En Direct aujourd'hui</p>
@@ -413,7 +413,7 @@ export default function InstitutionsGrid() {
                             onClick={() => setSelectedEvent(event)}
                             className="flex items-center gap-5 p-4 rounded-2xl bg-card border border-border/50 hover:border-blue-200 dark:hover:border-blue-500/50 hover:shadow-md transition-all group text-left w-full"
                           >
-                            <div className="flex-shrink-0 w-12 h-12 rounded-xl bg-blue-50 dark:bg-blue-900/20 flex flex-col items-center justify-center text-blue-600 dark:text-blue-400 group-hover:bg-blue-600 group-hover:text-white transition-colors">
+                            <div className="flex-shrink-0 w-12 h-12 rounded-xl bg-blue-50 dark:bg-blue-900/20 flex flex-col items-center justify-center text-blue-700 dark:text-blue-400 group-hover:bg-blue-600 group-hover:text-white transition-colors">
                                <span className="text-[10px] font-black leading-none mb-1">{displayTime}</span>
                                <Landmark size={14} />
                             </div>
@@ -513,7 +513,7 @@ export default function InstitutionsGrid() {
                     </div>
                     <Link 
                       href={selectedInst.directoryUrl}
-                      className="text-xs font-black uppercase tracking-widest text-slate-400 dark:text-slate-500 hover:text-blue-600 dark:hover:text-blue-400 transition-colors flex items-center gap-2"
+                      className="text-xs font-black uppercase tracking-widest text-slate-400 dark:text-slate-400 hover:text-blue-600 dark:hover:text-blue-400 transition-colors flex items-center gap-2"
                     >
                         Explorer l'annuaire <ChevronRight size={14} />
                     </Link>
@@ -550,11 +550,11 @@ export default function InstitutionsGrid() {
                     <div className="p-8 md:p-12">
                       <div className="flex items-center justify-between mb-8">
                         <div className="flex items-center gap-3">
-                          <div className="w-10 h-10 bg-blue-100 dark:bg-blue-900/30 text-blue-600 dark:text-blue-400 rounded-xl flex items-center justify-center">
+                          <div className="w-10 h-10 bg-blue-100 dark:bg-blue-900/30 text-blue-700 dark:text-blue-400 rounded-xl flex items-center justify-center">
                             <Clock size={20} />
                           </div>
                           <div>
-                            <p className="text-[10px] font-black uppercase tracking-widest text-slate-400 dark:text-slate-500">Horaire prévu</p>
+                            <p className="text-[10px] font-black uppercase tracking-widest text-muted-foreground">Horaire prévu</p>
                             <p className="text-foreground dark:text-white font-bold">
                               {extractTime(selectedEvent.title) || selectedEvent.time || 'Non spécifié'}
                             </p>
@@ -583,7 +583,7 @@ export default function InstitutionsGrid() {
                             
                             {/* Optionnel: Bouton pour voir le texte brut s'il est différent/plus long */}
                             <details className="mt-8 group">
-                              <summary className="text-[10px] font-black uppercase tracking-widest text-slate-400 dark:text-slate-500 cursor-pointer hover:text-blue-500 transition-colors list-none flex items-center gap-2">
+                              <summary className="text-[10px] font-black uppercase tracking-widest text-slate-400 dark:text-slate-400 cursor-pointer hover:text-blue-500 transition-colors list-none flex items-center gap-2">
                                 <ChevronRight size={12} className="group-open:rotate-90 transition-transform" />
                                 Voir le texte original
                               </summary>
@@ -594,7 +594,7 @@ export default function InstitutionsGrid() {
                           </div>
                         ) : (
                           <>
-                            <p className="text-[10px] font-black uppercase tracking-[0.2em] text-slate-400 dark:text-slate-500 mb-2">Détails de l'événement</p>
+                            <p className="text-[10px] font-black uppercase tracking-[0.2em] text-slate-400 dark:text-slate-400 mb-2">Détails de l'événement</p>
                             <div className="text-muted-foreground dark:text-slate-300 text-base leading-relaxed whitespace-pre-wrap">
                               {cleanDescription(selectedEvent.description) || "Aucune description détaillée disponible."}
                             </div>

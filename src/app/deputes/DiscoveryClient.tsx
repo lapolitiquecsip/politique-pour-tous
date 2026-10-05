@@ -46,7 +46,7 @@ export default function DiscoveryClient({ initialDeputies, single }: { initialDe
           <div className="h-1.5 w-32 bg-gradient-to-r from-blue-600 to-red-600 mt-6 rounded-full mx-auto" />
           
           {/* Subtitle - Discret mais clair */}
-          <p className="text-slate-400 font-bold uppercase tracking-[0.2em] text-[10px] mt-4">
+          <p className="text-muted-foreground font-bold uppercase tracking-[0.2em] text-[10px] mt-4">
             Assemblée nationale • Sénat • Parlement européen
           </p>
         </div>
@@ -58,8 +58,8 @@ export default function DiscoveryClient({ initialDeputies, single }: { initialDe
               onClick={() => setActiveMode("deputies")}
               className={`flex items-center gap-3 px-10 py-4 rounded-[1.5rem] font-black tracking-tight transition-all duration-300 active:scale-95 ${
                 activeMode === "deputies"
-                  ? "bg-card dark:bg-slate-800 text-blue-600 shadow-2xl shadow-blue-500/10 ring-1 ring-slate-200 dark:ring-slate-700"
-                  : "text-slate-400 hover:text-muted-foreground dark:hover:text-slate-300"
+                  ? "bg-card dark:bg-slate-800 text-blue-700 dark:text-blue-400 shadow-2xl shadow-blue-500/10 ring-1 ring-slate-200 dark:ring-slate-700"
+                  : "text-muted-foreground hover:text-muted-foreground dark:hover:text-slate-300"
               }`}
             >
               <div className={`w-2.5 h-2.5 rounded-full transition-colors ${activeMode === "deputies" ? "bg-blue-600 shadow-[0_0_8px_rgba(37,99,235,0.6)] animate-pulse" : "bg-slate-300"}`} />
@@ -69,8 +69,8 @@ export default function DiscoveryClient({ initialDeputies, single }: { initialDe
               onClick={() => setActiveMode("senators")}
               className={`flex items-center gap-3 px-10 py-4 rounded-[1.5rem] font-black tracking-tight transition-all duration-300 active:scale-95 ${
                 activeMode === "senators"
-                  ? "bg-card dark:bg-slate-800 text-amber-600 shadow-2xl shadow-amber-500/10 ring-1 ring-slate-200 dark:ring-slate-700"
-                  : "text-slate-400 hover:text-muted-foreground dark:hover:text-slate-300"
+                  ? "bg-card dark:bg-slate-800 text-amber-700 dark:text-amber-400 shadow-2xl shadow-amber-500/10 ring-1 ring-slate-200 dark:ring-slate-700"
+                  : "text-muted-foreground hover:text-muted-foreground dark:hover:text-slate-300"
               }`}
             >
               <div className={`w-2.5 h-2.5 rounded-full transition-colors ${activeMode === "senators" ? "bg-amber-600 shadow-[0_0_8px_rgba(217,119,6,0.6)] animate-pulse" : "bg-slate-300"}`} />
@@ -80,8 +80,8 @@ export default function DiscoveryClient({ initialDeputies, single }: { initialDe
               onClick={() => setActiveMode("meps")}
               className={`flex items-center gap-3 px-10 py-4 rounded-[1.5rem] font-black tracking-tight transition-all duration-300 active:scale-95 ${
                 activeMode === "meps"
-                  ? "bg-card dark:bg-slate-800 text-sky-600 shadow-2xl shadow-sky-500/10 ring-1 ring-slate-200 dark:ring-slate-700"
-                  : "text-slate-400 hover:text-muted-foreground dark:hover:text-slate-300"
+                  ? "bg-card dark:bg-slate-800 text-sky-700 dark:text-sky-400 shadow-2xl shadow-sky-500/10 ring-1 ring-slate-200 dark:ring-slate-700"
+                  : "text-muted-foreground hover:text-muted-foreground dark:hover:text-slate-300"
               }`}
             >
               <div className={`w-2.5 h-2.5 rounded-full transition-colors ${activeMode === "meps" ? "bg-sky-600 shadow-[0_0_8px_rgba(2,132,199,0.6)] animate-pulse" : "bg-slate-300"}`} />

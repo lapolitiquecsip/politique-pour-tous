@@ -66,7 +66,7 @@ export default function IncomeChart({ data, totalLabel = "Revenu Mensuel", unit 
         
         {/* Center Label */}
         <div className="absolute inset-0 flex flex-col items-center justify-center pointer-events-none px-4">
-          <span className="text-[10px] font-black text-slate-400 uppercase tracking-widest leading-none mb-1">Total</span>
+          <span className="text-[10px] font-black text-muted-foreground uppercase tracking-widest leading-none mb-1">Total</span>
           {(() => {
             const formattedTotal = new Intl.NumberFormat('fr-FR', { style: 'currency', currency: 'EUR', maximumFractionDigits: 0 }).format(total);
             const fontSize = formattedTotal.length > 10 ? 'text-sm' : formattedTotal.length > 8 ? 'text-base' : 'text-lg';
@@ -94,7 +94,7 @@ export default function IncomeChart({ data, totalLabel = "Revenu Mensuel", unit 
               <span className="text-sm font-black text-foreground dark:text-white">
                 {new Intl.NumberFormat('fr-FR', { style: 'currency', currency: 'EUR', maximumFractionDigits: 0 }).format(item.value)}
               </span>
-              <span className="text-[10px] text-slate-400 block font-bold">
+              <span className="text-[10px] text-muted-foreground block font-bold">
                 {Math.round((item.value / total) * 100)}%
               </span>
             </div>

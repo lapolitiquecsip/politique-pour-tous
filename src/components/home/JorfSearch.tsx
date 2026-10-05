@@ -91,7 +91,7 @@ function Surligne({ texte, mots }: { texte: string; mots: string[] }) {
     <>
       {morceaux.map((m, i) =>
         m.fort
-          ? <mark key={i} className="rounded bg-fuchsia-400/30 px-0.5 text-white">{m.t}</mark>
+          ? <mark key={i} className="rounded bg-fuchsia-600/30 px-0.5 text-white">{m.t}</mark>
           : <span key={i}>{m.t}</span>,
       )}
     </>

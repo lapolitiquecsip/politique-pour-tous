@@ -61,13 +61,13 @@ export const SenatorCard = memo(function SenatorCard({
       {isBlurred && (
         <div className="absolute inset-0 flex items-center justify-center">
           <div className="bg-white/90 p-2 rounded-full shadow-lg border border-amber-200">
-            <Lock className="w-5 h-5 text-amber-600" />
+            <Lock className="w-5 h-5 text-amber-700 dark:text-amber-400" />
           </div>
         </div>
       )}
 
       {!isBlurred && (
-        <div className="absolute top-4 right-4 text-slate-300 opacity-0 group-hover:opacity-100 group-hover:text-amber-600 transition-all transform translate-x-2 group-hover:translate-x-0">
+        <div className="absolute top-4 right-4 text-muted-foreground opacity-0 group-hover:opacity-100 group-hover:text-amber-600 transition-all transform translate-x-2 group-hover:translate-x-0">
           <ChevronRight className="w-6 h-6" />
         </div>
       )}

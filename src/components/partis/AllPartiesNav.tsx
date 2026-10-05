@@ -18,8 +18,8 @@ export default function AllPartiesNav({ currentSlug }: { currentSlug: string }) 
 
   return (
     <div className="mt-10 rounded-3xl border border-border bg-slate-50/60 p-6 dark:border-slate-800 dark:bg-slate-900/60">
-      <h2 className="text-lg font-black uppercase tracking-widest text-foreground">Tous les partis</h2>
-      <p className="mt-0.5 text-sm text-muted-foreground">Accédez à la fiche de chaque parti politique.</p>
+      <h2 className="text-lg font-black uppercase tracking-widest text-foreground">Groupes et partis</h2>
+      <p className="mt-0.5 text-sm text-muted-foreground">Accédez à la fiche de chaque groupe et parti politique.</p>
       <div className="mt-4 flex flex-wrap gap-2.5">
         {parties.map(p => {
           const me = p.slug === currentSlug;

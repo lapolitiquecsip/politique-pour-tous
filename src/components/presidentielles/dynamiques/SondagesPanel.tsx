@@ -214,18 +214,17 @@ export default function SondagesPanel({ candidats }: { candidats: Candidat[] }) 
             {periode(dernier.date_debut, dernier.date_fin)}{dernier.echantillon ? ` · ${dernier.echantillon.toLocaleString("fr-FR")} personnes` : ""}
           </p>
           {dernier.hypotheses.length > 1 && (
-            <div className="mt-4">
-              <p className="text-[11px] leading-snug text-muted-foreground">
-                L&apos;institut a testé {dernier.hypotheses.length} scénarios, selon qui se présente. Choisissez-en un :
-              </p>
-              <div className="mt-2 flex flex-wrap gap-1.5">
-                {scenarios.map((sc, i) => (
-                  <button key={dernier.hypotheses[i].id} onClick={() => setHyp(i)} title={sc.titre}
-                    className={`max-w-full truncate rounded-full border px-3 py-1 text-[11px] font-bold transition ${i === hyp ? "border-indigo-600 bg-indigo-600 text-white" : "border-border bg-background text-muted-foreground hover:border-slate-400 hover:text-foreground"}`}>
-                    {sc.court}
-                  </button>
+            <div className="mt-3">
+              <div className="flex flex-wrap gap-1">
+                {dernier.hypotheses.map((x, i) => (
+                  <button key={x.id} onClick={() => setHyp(i)} title={scenarios[i].titre}
+                    className={`rounded-lg px-2 py-1 text-[10px] font-black uppercase tracking-wider transition ${i === hyp ? "bg-indigo-600 text-white" : "bg-muted text-muted-foreground hover:text-foreground"}`}>H{i + 1}</button>
                 ))}
               </div>
+              {/* Chaque hypothèse = une liste de candidats différente : on dit laquelle. */}
+              <p className="mt-2 truncate text-[11px] text-muted-foreground" title={scenarios[Math.min(hyp, scenarios.length - 1)].titre}>
+                <strong className="font-black text-foreground">Hypothèse {Math.min(hyp, scenarios.length - 1) + 1}</strong> · {scenarios[Math.min(hyp, scenarios.length - 1)].titre}
+              </p>
             </div>
           )}
           <div className="mt-4 space-y-1.5">

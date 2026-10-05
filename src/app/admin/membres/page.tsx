@@ -16,7 +16,7 @@ import { api } from "@/lib/api";
 type Membre = {
   id: string; email: string; cree_le: string; derniere_connexion: string | null; confirme: boolean;
   niveau: "free" | "elite" | "pro"; stripe_customer_id: string | null; parrain: string | null;
-  filleuls: number; administrateur: boolean;
+  filleuls: number; administrateur: boolean; offert?: boolean;
 };
 
 const NIVEAUX = {
@@ -46,6 +46,20 @@ export default function MembresPage() {
   const [refus, setRefus] = useState(false);
   const [filtre, setFiltre] = useState<"tous" | "abonnes" | "elite" | "pro" | "free">("tous");
   const [recherche, setRecherche] = useState("");
+  // Changement de niveau en deux temps (choisir, puis confirmer) : un mauvais clic
+  // dans la liste ne doit pas donner ni retirer un abonnement.
+  const [modif, setModif] = useState<{ id: string; niveau: Membre["niveau"] } | null>(null);
+  const [message, setMessage] = useState<string | null>(null);
+  const recharger = () => api.getMembresAdmin().then(setD).catch(() => setRefus(true));
+  const confirmer = async () => {
+    if (!modif) return;
+    const m = membres.find(x => x.id === modif.id);
+    try {
+      const r = await api.definirNiveau(modif.id, modif.niveau);
+      setMessage(r === "ok" ? `${m?.email} est maintenant ${NIVEAUX[modif.niveau].libelle}${modif.niveau !== "free" ? " (accès offert)" : ""}.` : "Changement impossible.");
+      setModif(null); void recharger();
+    } catch (e: any) { setMessage(e?.message ?? "Erreur"); }
+  };
 
   useEffect(() => {
     api.getMembresAdmin().then(setD).catch(() => setRefus(true));
@@ -106,7 +120,7 @@ export default function MembresPage() {
 
       <div className="grid grid-cols-2 gap-4 lg:grid-cols-4">
         <Carte titre="Comptes" valeur={String(t.comptes ?? 0)} detail={`${t.confirmes ?? 0} adresses confirmées · ${t.actifs_7j ?? 0} connectés cette semaine`} Icone={Users} teinte="bg-blue-100 text-blue-600" />
-        <Carte titre="Abonnés" valeur={String((t.premium ?? 0) + (t.pro ?? 0))} detail={`${t.premium ?? 0} Premium · ${t.pro ?? 0} Pro`} Icone={Crown} teinte="bg-amber-100 text-amber-600" />
+        <Carte titre="Abonnés" valeur={String((t.premium ?? 0) + (t.pro ?? 0))} detail={`${t.premium ?? 0} Premium · ${t.pro ?? 0} Pro${t.offerts ? ` · dont ${t.offerts} offert${t.offerts > 1 ? "s" : ""}` : ""}`} Icone={Crown} teinte="bg-amber-100 text-amber-600" />
         <Carte titre="Revenu mensuel" valeur={euros(t.revenu_mensuel_estime ?? 0)} detail="estimé d'après les abonnés actuels (Stripe fait foi)" Icone={Euro} teinte="bg-emerald-100 text-emerald-600" />
         <Carte titre="Nouveaux" valeur={String(t.nouveaux_7j ?? 0)} detail={`cette semaine · ${t.nouveaux_30j ?? 0} sur 30 jours · ${t.parraines ?? 0} parrainés`} Icone={UserPlus} teinte="bg-violet-100 text-violet-600" />
       </div>
@@ -143,6 +157,8 @@ export default function MembresPage() {
           </button>
         </div>
 
+        {message && <p className="mb-3 rounded-xl bg-emerald-50 px-3 py-2 text-sm font-semibold text-emerald-800">{message}</p>}
+        <p className="mb-2 text-xs text-slate-400">Cliquez sur le niveau d&apos;un membre pour lui donner ou lui retirer un accès Premium ou Pro. Un accès donné ici est marqué « offert » et ne compte pas dans le revenu.</p>
         <div className="overflow-x-auto">
           <table className="w-full min-w-[820px] text-sm">
             <thead>
@@ -159,9 +175,24 @@ export default function MembresPage() {
                     {!m.confirme && <span className="ml-2 inline-flex items-center gap-1 rounded-full bg-rose-50 px-2 py-0.5 text-[10px] font-bold text-rose-600" title="L'adresse n'a pas encore été confirmée"><MailWarning size={11} /> non confirmée</span>}
                   </td>
                   <td>
-                    <span className={`inline-flex items-center gap-1 rounded-full px-2.5 py-0.5 text-[11px] font-black ${NIVEAUX[m.niveau]?.classe ?? ""}`}>
-                      {m.niveau === "pro" ? <Crown size={11} /> : m.niveau === "elite" ? <Star size={11} /> : null}{NIVEAUX[m.niveau]?.libelle ?? m.niveau}
-                    </span>
+                    {modif?.id === m.id ? (
+                      <span className="inline-flex items-center gap-1">
+                        <select value={modif.niveau} onChange={e => setModif({ id: m.id, niveau: e.target.value as Membre["niveau"] })}
+                          className="rounded-lg border border-slate-300 bg-white px-2 py-1 text-xs font-bold">
+                          <option value="free">Classique</option><option value="elite">Premium</option><option value="pro">Pro</option>
+                        </select>
+                        <button onClick={() => void confirmer()} disabled={modif.niveau === m.niveau}
+                          className="rounded-lg bg-slate-900 px-2.5 py-1 text-[11px] font-black text-white disabled:opacity-30">Confirmer</button>
+                        <button onClick={() => setModif(null)} className="px-1.5 text-[11px] font-bold text-slate-400">Annuler</button>
+                      </span>
+                    ) : (
+                      <button onClick={() => { setModif({ id: m.id, niveau: m.niveau }); setMessage(null); }} title="Changer le niveau de ce membre"
+                        className={`inline-flex items-center gap-1 rounded-full px-2.5 py-0.5 text-[11px] font-black ring-1 ring-transparent transition hover:ring-slate-300 ${NIVEAUX[m.niveau]?.classe ?? ""}`}>
+                        {m.niveau === "pro" ? <Crown size={11} /> : m.niveau === "elite" ? <Star size={11} /> : null}{NIVEAUX[m.niveau]?.libelle ?? m.niveau}
+                        {m.offert && m.niveau !== "free" && <span className="ml-1 rounded-full bg-white/70 px-1.5 text-[9px] uppercase">offert</span>}
+                        <span className="ml-0.5 text-[10px] opacity-50">▾</span>
+                      </button>
+                    )}
                   </td>
                   <td className="text-slate-600">{date(m.cree_le)}</td>
                   <td className="text-slate-600">{date(m.derniere_connexion)}</td>

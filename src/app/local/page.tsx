@@ -8,6 +8,7 @@ import {
 import { useSearchParams } from "next/navigation";
 import { useState, useEffect, Suspense } from "react";
 import Link from "next/link";
+import DragScroller from "@/components/ui/DragScroller";
 import GlossaryText from "@/components/ui/GlossaryText";
 import { usePremium } from "@/lib/hooks/usePremium";
 import { api } from "@/lib/api";
@@ -594,7 +595,9 @@ function LocalPoliticsContent() {
                           Données officielles
                         </div>
                       </div>
-                      <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                      {/* Un rail horizontal : la grille faisait descendre toute la page avant
+                          d'atteindre la suite. Glisser au doigt, flèches à la souris. */}
+                      <DragScroller ariaLabel="Grandes villes" className="!gap-4 md:!gap-5">
                         {FEATURED_CITIES.map((city, idx) => {
                           const theme = getPartyTheme(city.party);
                           return (
@@ -618,7 +621,7 @@ function LocalPoliticsContent() {
                                   region: { nom: "" }
                                 } as any);
                               }}
-                              className="group relative bg-card rounded-[2.5rem] border border-border overflow-hidden hover:shadow-2xl transition-all duration-500 text-left"
+                              className="group relative w-[78vw] max-w-[21rem] shrink-0 bg-card rounded-[2.5rem] border border-border overflow-hidden hover:shadow-2xl transition-shadow duration-500 text-left sm:w-[19rem]"
                             >
                               <div className="h-40 overflow-hidden relative">
                                 <img src={city.image.startsWith('/') ? `${process.env.NEXT_PUBLIC_BASE_PATH || ''}${city.image}` : city.image} alt={city.name} className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-700" />
@@ -647,7 +650,7 @@ function LocalPoliticsContent() {
                             </motion.button>
                           );
                         })}
-                      </div>
+                      </DragScroller>
                     </div>
                   ) : (
                     <div className="flex items-center gap-4">

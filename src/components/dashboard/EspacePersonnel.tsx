@@ -464,7 +464,9 @@ export default function EspacePersonnel({ mode = "tout" }: { mode?: ModeEspace }
 
       {mode === "compte" && <ParametresCompte />}
 
-      <div className={`container mx-auto max-w-6xl px-4 ${isPremium ? "" : "-mt-16"} ${mode === "compte" ? "hidden" : ""}`}>
+      {/* relative z-20 : pour un compte classique, ce panneau remonte sous le hero
+          (-mt-16) dont le contenu (z-10) avalait les clics sur les onglets. */}
+      <div className={`relative z-20 container mx-auto max-w-6xl px-4 ${isPremium ? "" : "-mt-16"} ${mode === "compte" ? "hidden" : ""}`}>
         <div className="bg-white/[0.03] rounded-[2.5rem] border border-white/10 shadow-2xl shadow-black/40 overflow-hidden min-h-[600px]">
           
           {/* Onglets en pastilles, sur une ligne qui défile au doigt sur mobile.
@@ -511,7 +513,7 @@ export default function EspacePersonnel({ mode = "tout" }: { mode?: ModeEspace }
                   >
                     <span className="relative flex h-8 w-8 items-center justify-center rounded-xl bg-white/[0.04]">
                       <Icone size={15} className="opacity-50" />
-                      <span className="absolute -right-1 -top-1 flex h-4 w-4 items-center justify-center rounded-full bg-gradient-to-br from-amber-200 to-amber-500 text-slate-950 shadow-[0_0_8px_rgba(251,191,36,0.6)]">
+                      <span className={`absolute -right-1 -top-1 flex h-4 w-4 items-center justify-center rounded-full ${v.offre === "pro" ? "bg-gradient-to-br from-violet-300 to-fuchsia-500 text-white shadow-[0_0_8px_rgba(168,85,247,0.7)]" : "bg-gradient-to-br from-amber-200 to-amber-500 text-slate-950 shadow-[0_0_8px_rgba(251,191,36,0.6)]"}`}>
                         <Lock size={9} strokeWidth={3} />
                       </span>
                     </span>

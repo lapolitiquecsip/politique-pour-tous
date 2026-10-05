@@ -36,6 +36,24 @@ const NOMS_PAGES: [RegExp, string][] = [
 ];
 const nomPage = (p: string) => NOMS_PAGES.find(([r]) => r.test(p))?.[1] ?? null;
 
+/** « /senateurs/gabriel-amard/ » → « Sénateurs › Gabriel Amard » : la page dite en clair. */
+function pageEnClair(p: string): string {
+  const rubrique = nomPage(p);
+  const morceaux = p.split("/").filter(Boolean);
+  if (morceaux.length < 2) return rubrique ?? p;
+  const detail = decodeURIComponent(morceaux[morceaux.length - 1]).replace(/-/g, " ").replace(/(^|\s)(\p{L})/gu, (_m, avant: string, l: string) => avant + l.toUpperCase());
+  return rubrique ? `${rubrique} › ${detail}` : detail;
+}
+
+/** 95 → « 1 min 35 » */
+const duree = (s: number | null | undefined) => {
+  if (!s) return "—";
+  const m = Math.floor(s / 60), r = Math.round(s % 60);
+  return m ? `${m} min${r ? ` ${String(r).padStart(2, "0")}` : ""}` : `${r} s`;
+};
+
+const TEINTES_RUBRIQUES = ["bg-blue-500", "bg-violet-500", "bg-emerald-500", "bg-amber-500", "bg-rose-500", "bg-sky-500", "bg-fuchsia-500", "bg-teal-500"];
+
 const nombre = (n: number | null | undefined) => (n ?? 0).toLocaleString("fr-FR");
 const euros = (n: number | null | undefined) => `${Number(n ?? 0).toLocaleString("fr-FR", { minimumFractionDigits: 2, maximumFractionDigits: 2 })} €`;
 
@@ -221,6 +239,56 @@ export default function StatistiquesPage() {
           Icone={UserPlus} teinte="bg-amber-100 text-amber-600" />
       </div>
 
+      {/* Ce qui intéresse : la part de chaque rubrique et le temps qu'on y passe. */}
+      {(() => {
+        const rubriques: any[] = stats.rubriques ?? [];
+        const total = rubriques.reduce((s, r) => s + Number(r.vues), 0) || 1;
+        const entrees: any[] = stats.entrees ?? [];
+        return (
+          <div className="grid gap-4 lg:grid-cols-3">
+            <div className="lg:col-span-2">
+              <Bloc titre="Ce qui intéresse vos visiteurs" Icone={Sparkles}
+                action={<span className="text-xs text-slate-500">Durée moyenne d&apos;une visite : <strong className="text-slate-800">{duree(stats.duree_moyenne_visite)}</strong></span>}>
+                {!rubriques.length ? <p className="text-sm text-slate-400">Pas encore de visite enregistrée.</p> : (
+                  <>
+                    {/* Barre de répartition : d'un coup d'œil, qui prend la plus grande part. */}
+                    <div className="mb-4 flex h-3 overflow-hidden rounded-full bg-slate-100">
+                      {rubriques.map((r, i) => <div key={r.rubrique} className={TEINTES_RUBRIQUES[i % TEINTES_RUBRIQUES.length]} style={{ width: `${(r.vues / total) * 100}%` }} title={`${r.rubrique} : ${Math.round((r.vues / total) * 100)} %`} />)}
+                    </div>
+                    <div className="overflow-x-auto">
+                      <table className="w-full min-w-[480px] text-sm">
+                        <thead>
+                          <tr className="text-left text-[10px] font-black uppercase tracking-widest text-slate-400">
+                            <th className="pb-2">Rubrique</th><th className="pb-2 text-right">Part</th><th className="pb-2 text-right">Vues</th><th className="pb-2 text-right">Visiteurs</th><th className="pb-2 text-right">Temps moyen par page</th>
+                          </tr>
+                        </thead>
+                        <tbody className="divide-y divide-slate-100">
+                          {rubriques.map((r, i) => (
+                            <tr key={r.rubrique}>
+                              <td className="py-2"><span className="inline-flex items-center gap-2 font-semibold text-slate-800"><span className={`h-2.5 w-2.5 rounded-full ${TEINTES_RUBRIQUES[i % TEINTES_RUBRIQUES.length]}`} />{r.rubrique}</span></td>
+                              <td className="text-right font-black tabular-nums text-slate-900">{Math.round((r.vues / total) * 100)} %</td>
+                              <td className="text-right tabular-nums text-slate-600">{nombre(r.vues)}</td>
+                              <td className="text-right tabular-nums text-slate-600">{nombre(r.visiteurs)}</td>
+                              <td className="text-right tabular-nums text-slate-600">{duree(r.temps_moyen)}</td>
+                            </tr>
+                          ))}
+                        </tbody>
+                      </table>
+                    </div>
+                  </>
+                )}
+              </Bloc>
+            </div>
+            <Bloc titre="Pages d'arrivée" Icone={Globe}>
+              <p className="-mt-2 mb-2 text-xs text-slate-400">La première page vue de chaque visite : par où l&apos;on entre sur le site.</p>
+              {!entrees.length ? <p className="text-sm text-slate-400">—</p> : entrees.map(e => (
+                <Ligne key={e.path} libelle={pageEnClair(e.path)} sous={e.path} valeur={e.n} max={entrees[0].n} teinte="bg-emerald-500" />
+              ))}
+            </Bloc>
+          </div>
+        );
+      })()}
+
       {/* Courbes */}
       <div className="grid gap-4 lg:grid-cols-3">
         <Bloc titre="Fréquentation par jour" Icone={Eye}>
@@ -257,7 +325,7 @@ export default function StatistiquesPage() {
       <div className="grid gap-4 lg:grid-cols-3">
         <Bloc titre="Pages les plus vues" Icone={Eye}>
           {pages.length === 0 ? <p className="text-sm text-slate-400">—</p> : pages.map(p => (
-            <Ligne key={p.path} libelle={nomPage(p.path) ?? p.path} sous={nomPage(p.path) ? p.path : undefined} valeur={p.vues} max={pages[0].vues} />
+            <Ligne key={p.path} libelle={pageEnClair(p.path)} sous={p.path} valeur={p.vues} max={pages[0].vues} />
           ))}
         </Bloc>
         <Bloc titre="D'où viennent les visiteurs" Icone={Globe}>

@@ -1297,6 +1297,12 @@ export const api = {
     if (error) throw error;
     return data as any;
   },
+  // Donner ou retirer un accès Premium / Pro à un membre (administrateur ; marqué « offert »).
+  definirNiveau: async (userId: string, niveau: 'free' | 'elite' | 'pro') => {
+    const { data, error } = await supabase.rpc('definir_niveau', { p_user: userId, p_niveau: niveau });
+    if (error) throw error;
+    return data as 'ok' | 'niveau_invalide' | 'membre_introuvable';
+  },
   getParrainageAdmin: async () => {
     const { data, error } = await supabase.rpc('parrainage_admin');
     if (error) throw error;

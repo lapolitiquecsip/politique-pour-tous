@@ -21,7 +21,8 @@ export default function Mesure() {
 
   // Une page vue à chaque changement d'adresse.
   useEffect(() => {
-    if (!chemin) return;
+    // L'administration n'est pas le site : ses pages fausseraient ce qui intéresse les visiteurs.
+    if (!chemin || chemin.startsWith("/admin")) return;
     // Le code de parrainage d'abord : la première page vue doit déjà le porter.
     capterParrainage();
     mesurerVue(chemin);

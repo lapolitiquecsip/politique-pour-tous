@@ -116,7 +116,7 @@ serve(async (req) => {
       // historiques. subscription_tier distingue Elite de Pro.
       let { error } = await supabase
         .from('profiles')
-        .update({ is_premium: true, subscription_tier: tier })
+        .update({ is_premium: true, subscription_tier: tier, niveau_offert: false })   // payé : plus « offert »
         .eq('id', targetId)
 
       // Repli si la migration ajoutant subscription_tier n'est pas encore appliquée.

@@ -115,7 +115,7 @@ export default function SondagesPanel({ candidats }: { candidats: Candidat[] }) 
   const nbInstituts = new Set(tour1.filter(p => p.t > fin - 90 * JOUR).map(p => p.institut)).size;
 
   return (
-    <section id="sondages" className="scroll-mt-28">
+    <section id="sondages" className="scroll-mt-36">
       <EnTete numero="01" rubrique="Sondages" titre="Les" accent="sondages" degrade="from-indigo-500 to-blue-500"
         chapeau={<>Tous les sondages publiés, relevés automatiquement dès leur parution, et leur moyenne. Dernier en date :{" "}
           <strong className="font-black text-foreground">{dernier.institut}</strong>, {periode(dernier.date_debut, dernier.date_fin)}.</>}

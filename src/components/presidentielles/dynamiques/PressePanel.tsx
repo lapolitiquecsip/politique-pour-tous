@@ -64,7 +64,7 @@ export default function PressePanel({ candidats }: { candidats: Candidat[] }) {
   const premier = d?.totaux[0];
 
   return (
-    <section id="presse" className="scroll-mt-28">
+    <section id="presse" className="scroll-mt-36">
       <EnTete numero="02" rubrique="Presse" pro titre="Exposition" accent="médiatique" degrade="from-amber-500 to-orange-600"
         chapeau={<>Combien d&apos;articles citent chaque candidat, dans un panel fixe de {PANEL}{" "}médias : presse nationale et régionale, radios et chaînes d&apos;information, relus toutes les deux heures.</>}
         actions={reglage} />

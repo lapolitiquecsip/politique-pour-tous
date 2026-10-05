@@ -19,9 +19,11 @@ export const SENATE_GROUPS: Record<string, SenateGroup> = {
   SER: { label: "Socialiste (SER)", color: "#E24E8B", order: 2, slug: "parti-socialiste" },
   RDSE: { label: "RDSE", color: "#E0A02E", order: 3, slug: "rdse" },
   RDPI: { label: "RDPI", color: "#8B5CF6", order: 4, slug: "renaissance" },
-  UC: { label: "Union Centriste", color: "#F2960F", order: 5, slug: "union-centriste" },
+  UC: { label: "Union Centriste et Indép.", color: "#F2960F", order: 5, slug: "union-centriste" },
   "Les Indépendants": { label: "Les Indépendants", color: "#5B9BD5", order: 6, slug: "les-independants" },
   "Les Républicains": { label: "Les Républicains", color: "#2E5AAC", order: 7, slug: "les-republicains" },
+  // Groupe constitué en octobre 2026 autour des sénateurs RN (présidente : Edwige Diaz).
+  UNT: { label: "Union Nationale (RN)", color: "#1F2F7A", order: 8, slug: "rassemblement-national" },
   NI: { label: "Non inscrits", color: "#8D949A", order: 9, slug: "non-inscrits" },
 };
 

@@ -44,7 +44,7 @@ export default function ArcomPanel({ candidats }: { candidats: Candidat[] }) {
   const total = lignes.reduce((a, x) => a + x.secondes, 0);
 
   return (
-    <section id="temps-de-parole" className="scroll-mt-28">
+    <section id="temps-de-parole" className="scroll-mt-36">
       <EnTete numero="03" rubrique="Télé et radio" pro titre="Temps de" accent="parole" degrade="from-sky-500 to-cyan-500"
         chapeau="Chiffres officiels de l'Arcom : le temps pendant lequel chaque candidat a lui-même pris la parole sur une trentaine de chaînes et de radios, mois par mois. L'Arcom les publie avec environ deux mois de décalage." />
 

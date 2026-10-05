@@ -411,7 +411,7 @@ type EnBase = {
 };
 
 const COLONNES_FICHE =
-  "id, first_name, last_name, slug, senate_matricule, photo_url, sitting, senate_group, party, department, department_code";
+  "id, first_name, last_name, slug, senate_matricule, photo_url, sitting, senate_group, committee, party, department, department_code, email, profession, csp, birth_date";
 
 /**
  * Aligne la table `senators` sur la liste officielle : mises à jour, entrées,
@@ -440,8 +440,11 @@ async function synchroniserSenateurs(officiels: Senateur[]): Promise<EnBase[]> {
       if (val !== null && val !== "" && (s as Record<string, unknown>)[champ] !== val) patch[champ] = val;
     };
     poser("senate_matricule", o.matricule);
-    poser("senate_group", o.groupe);
-    poser("committee", o.commission);
+    // ODSEN écrit « Aucun » / « Aucune » tant que le Sénat n'a pas reporté les groupes
+    // et commissions d'un sénateur (après chaque renouvellement) : ce n'est pas une
+    // information, on garde la valeur relevée sur senat.fr (sync-senateurs-senatfr).
+    poser("senate_group", /^aucun/i.test(o.groupe) ? null : o.groupe);
+    poser("committee", /^aucune?/i.test(o.commission) ? null : o.commission);
     poser("department", o.circo);
     poser("department_code", o.code);
     poser("email", o.email);

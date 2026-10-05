@@ -165,7 +165,7 @@ export const api = {
     const col = kind === 'mep' ? 'attendance_rate' : 'participation_rate';
     const rows: { id: string; rate: number }[] = [];
     for (let from = 0; ; from += 1000) {
-      const { data, error } = await supabase.from(table).select(`id, ${col}`).not(col, 'is', null).range(from, from + 999);
+      const { data, error } = await supabase.from(table).select(`id, ${col}`).not(col, 'is', null).neq('sitting', false).range(from, from + 999);
       if (error || !data) break;
       for (const r of data as any[]) rows.push({ id: String(r.id), rate: Number(r[col]) });
       if (data.length < 1000) break;
@@ -178,7 +178,7 @@ export const api = {
     const table = kind === 'deputy' ? 'deputies' : 'senators';
     const rows: { id: string; count: number }[] = [];
     for (let from = 0; ; from += 1000) {
-      const { data, error } = await supabase.from(table).select('id, initiative_primary_count').not('initiative_primary_count', 'is', null).range(from, from + 999);
+      const { data, error } = await supabase.from(table).select('id, initiative_primary_count').not('initiative_primary_count', 'is', null).neq('sitting', false).range(from, from + 999);
       if (error || !data) break;
       for (const r of data as any[]) rows.push({ id: String(r.id), count: Number(r.initiative_primary_count) });
       if (data.length < 1000) break;
@@ -1557,6 +1557,7 @@ export const api = {
       .from('senators')
       .select('slug, first_name, last_name, party')
       .eq('department', departmentName)
+      .neq('sitting', false)
       .order('last_name');
     if (error || !data) return [];
     return data;
@@ -1604,7 +1605,7 @@ export const api = {
   getSenateComposition: async () => {
     const counts = new Map<string, number>();
     for (let from = 0; ; from += 1000) {
-      const { data, error } = await supabase.from('senators').select('senate_group').range(from, from + 999);
+      const { data, error } = await supabase.from('senators').select('senate_group').neq('sitting', false).range(from, from + 999);
       if (error || !data) break;
       for (const r of data as any[]) { const g = (r.senate_group || 'NI').trim(); counts.set(g, (counts.get(g) || 0) + 1); }
       if (data.length < 1000) break;
@@ -1666,8 +1667,8 @@ export const api = {
     if (!aliases?.length) return { deputies: [], senators: [], candidates: [], meps: [] };
     const lower = new Set(aliases.map(a => a.toLowerCase()));
     const [dep, sen, cand, mepsAll] = await Promise.all([
-      supabase.from('deputies').select('slug, first_name, last_name, party, an_id, photo_url, department').in('party', aliases).order('last_name'),
-      supabase.from('senators').select('slug, first_name, last_name, party, photo_url').in('party', aliases).order('last_name'),
+      supabase.from('deputies').select('slug, first_name, last_name, party, an_id, photo_url, department').in('party', aliases).neq('sitting', false).order('last_name'),
+      supabase.from('senators').select('slug, first_name, last_name, party, photo_url').in('party', aliases).neq('sitting', false).order('last_name'),
       supabase.from('presidential_candidates').select('id, slug, full_name, party, photo_url').in('party', aliases).eq('status', 'declared'),
       // Casse variable côté Parlement européen → filtrage insensible à la casse.
       supabase.from('meps').select('id, full_name, national_party, ep_group').order('full_name'),
@@ -2030,8 +2031,8 @@ export const api = {
   // accents et au découpage prénom/nom). Évite la rigidité du ilike serveur.
   getSearchIndex: async () => {
     const [deps, sens, meps, mins, cands, parties] = await Promise.all([
-      supabase.from('deputies').select('slug, first_name, last_name, party, photo_url').limit(1000),
-      supabase.from('senators').select('slug, first_name, last_name, party, photo_url').limit(1000),
+      supabase.from('deputies').select('slug, first_name, last_name, party, photo_url').neq('sitting', false).limit(1000),
+      supabase.from('senators').select('slug, first_name, last_name, party, photo_url').neq('sitting', false).limit(1000),
       supabase.from('meps').select('slug, full_name, ep_group_code, photo_url').limit(1000),
       supabase.from('minister_profiles').select('slug, full_name, title, photo_url').limit(1000),
       supabase.from('presidential_candidates').select('slug, full_name, photo_url').eq('status', 'declared').limit(1000),

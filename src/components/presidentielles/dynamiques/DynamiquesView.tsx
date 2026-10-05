@@ -9,11 +9,12 @@ import CandidateSocialTracker from "../CandidateSocialTracker";
 
 type Candidat = { id: string; slug: string; full_name: string; party: string | null; photo_url: string | null };
 
+// Chaque onglet prend, actif, la couleur de sa section (titres et graphiques).
 const SECTIONS = [
-  { id: "sondages", label: "Sondages", Icone: BarChart3 },
-  { id: "presse", label: "Presse", Icone: Newspaper },
-  { id: "temps-de-parole", label: "Télé & radio", Icone: Tv },
-  { id: "veille", label: "Réseaux sociaux", Icone: Radio },
+  { id: "sondages", label: "Sondages", Icone: BarChart3, actif: "from-indigo-500 to-blue-600 shadow-indigo-500/30" },
+  { id: "presse", label: "Presse", Icone: Newspaper, actif: "from-amber-500 to-orange-600 shadow-orange-500/30" },
+  { id: "temps-de-parole", label: "Télé & radio", Icone: Tv, actif: "from-sky-500 to-cyan-600 shadow-sky-500/30" },
+  { id: "veille", label: "Réseaux sociaux", Icone: Radio, actif: "from-fuchsia-500 to-purple-600 shadow-fuchsia-500/30" },
 ] as const;
 
 /**
@@ -39,15 +40,21 @@ export default function DynamiquesView({ candidates }: { candidates: Candidat[] 
 
   return (
     <div className="pb-24">
-      <nav className="sticky z-30 mb-8 border-b border-border bg-background/85 backdrop-blur-md" style={{ top: "calc(env(safe-area-inset-top, 0px) + 4rem)" }}>
-        <div className="mx-auto flex max-w-6xl gap-1 overflow-x-auto px-4 py-2 [scrollbar-width:none]">
-          {SECTIONS.map(({ id, label, Icone }) => (
-            <a key={id} href={`#${id}`}
-              onClick={e => { e.preventDefault(); document.getElementById(id)?.scrollIntoView({ behavior: "smooth" }); history.replaceState(null, "", `#${id}`); }}
-              className={`inline-flex shrink-0 items-center gap-1.5 rounded-full px-4 py-2 text-[11px] font-black uppercase tracking-widest transition ${actif === id ? "bg-slate-900 text-white dark:bg-white dark:text-slate-900" : "text-muted-foreground hover:bg-muted hover:text-foreground"}`}>
-              <Icone size={13} /> {label}
-            </a>
-          ))}
+      {/* Barre de sections : pastille flottante, centrée, collée sous l'en-tête du site. */}
+      <nav aria-label="Sections de l'onglet" className="pointer-events-none sticky z-30 mb-10 px-4" style={{ top: "calc(env(safe-area-inset-top, 0px) + 4.75rem)" }}>
+        <div className="pointer-events-auto mx-auto flex w-fit max-w-full gap-1 overflow-x-auto rounded-full border border-border bg-card/80 p-1.5 shadow-xl shadow-slate-900/[0.07] backdrop-blur-xl [scrollbar-width:none] dark:shadow-black/40">
+          {SECTIONS.map(({ id, label, Icone, actif: teinte }, i) => {
+            const on = actif === id;
+            return (
+              <a key={id} href={`#${id}`} aria-current={on ? "true" : undefined}
+                onClick={e => { e.preventDefault(); document.getElementById(id)?.scrollIntoView({ behavior: "smooth" }); history.replaceState(null, "", `#${id}`); }}
+                className={`group inline-flex shrink-0 items-center gap-2 rounded-full px-4 py-2.5 text-[13px] font-bold transition-all duration-300 ${on ? `bg-gradient-to-r ${teinte} text-white shadow-lg` : "text-muted-foreground hover:bg-muted hover:text-foreground"}`}>
+                <span className={`hidden text-[10px] font-black tabular-nums sm:inline ${on ? "text-white/70" : "text-muted-foreground/70"}`}>0{i + 1}</span>
+                <Icone size={15} className={on ? "" : "transition-transform group-hover:scale-110"} />
+                {label}
+              </a>
+            );
+          })}
         </div>
       </nav>
 

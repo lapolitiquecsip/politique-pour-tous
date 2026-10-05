@@ -204,7 +204,7 @@ export default function CandidateSocialTracker({ candidates }: { candidates: Can
   };
 
   return (
-    <div id="veille" className="mx-auto max-w-6xl scroll-mt-24 px-4 pb-24">
+    <div id="veille" className="mx-auto max-w-6xl scroll-mt-36 px-4 pb-24">
       <EnTete numero="04" rubrique="Réseaux sociaux" pro titre="Dynamiques" accent="réseaux sociaux" degrade="from-fuchsia-500 to-purple-600"
         chapeau={<>Compte personnel et principal compte de soutien de chaque candidat : audience, publications de la semaine et vues gagnées.
           Mesuré sur YouTube, TikTok et Bluesky — X et Instagram ne publient aucune donnée exploitable sans contrat payant.</>}

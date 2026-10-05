@@ -29,6 +29,7 @@ export default function SenatorClient() {
       const { data, error } = await supabase
         .from("senators")
         .select("id, first_name, last_name, party, department, slug, photo_url")
+        .neq("sitting", false)   // sénateurs en fonction seulement (les sortants gardent leur fiche)
         .order("last_name", { ascending: true });
 
       if (data) setSenators(data as Senator[]);

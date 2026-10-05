@@ -32,6 +32,7 @@ import RemunerationInfo from "@/components/shared/RemunerationInfo";
 import MandateEndedBanner from "@/components/shared/MandateEndedBanner";
 import ParallelRoles from "@/components/shared/ParallelRoles";
 import StructuredBio from "@/components/shared/StructuredBio";
+import { groupeSenat } from "@/lib/senate-groups";
 import InstitutionalRoleBanner from "@/components/shared/InstitutionalRoleBanner";
 import InitiativeRank from "@/components/shared/InitiativeRank";
 
@@ -374,8 +375,11 @@ export default function SenatorClient({ senator, embedded }: { senator: any; emb
                         remontées sous l'en-tête ; ici on garde le groupe et la commission. */}
                     {(senator.senate_group || senator.committee) && (() => {
                       const items: Array<{ k: string; v: string | null }> = [
-                        { k: "Groupe au Sénat", v: senator.senate_group || null },
-                        { k: "Commission", v: senator.committee || null },
+                        // Libellé lisible du groupe (« SER » → « Socialiste (SER) ») ; « NI » = non inscrit.
+                        { k: "Groupe au Sénat", v: senator.senate_group && !/^aucun/i.test(senator.senate_group) ? groupeSenat(senator.senate_group).label : null },
+                        // Après un renouvellement, les commissions sont recomposées quelques jours
+                        // après les groupes : le Sénat publie alors « Aucune » en attendant.
+                        { k: "Commission", v: senator.committee && !/^aucune?$/i.test(senator.committee) ? senator.committee : "Désignation en cours" },
                       ].filter(i => i.v);
                       return (
                         <div className="mt-6">
@@ -388,7 +392,7 @@ export default function SenatorClient({ senator, embedded }: { senator: any; emb
                               </div>
                             ))}
                           </div>
-                          <p className="mt-3 text-[10px] italic text-muted-foreground">Source : Sénat (open data ODSEN).</p>
+                          <p className="mt-3 text-[10px] italic text-muted-foreground">Source : Sénat (fiche officielle senat.fr et open data).</p>
                         </div>
                       );
                     })()}

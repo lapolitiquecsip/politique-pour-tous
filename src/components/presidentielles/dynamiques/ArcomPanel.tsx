@@ -1,10 +1,9 @@
 "use client";
 
 import { useEffect, useMemo, useState } from "react";
-import { Tv, Loader2, ChevronDown, TrendingUp, TrendingDown } from "lucide-react";
+import { Loader2, ChevronDown, TrendingUp, TrendingDown } from "lucide-react";
 import { api } from "@/lib/api";
-import { usePremium } from "@/lib/hooks/usePremium";
-import VerrouPro, { Flou, BadgePro } from "./VerrouPro";
+import { EnTete, ZonePro, Methode } from "./VerrouPro";
 import { couleur, heures } from "@/lib/dynamiques";
 
 type Candidat = { slug: string; full_name: string; photo_url: string | null; party: string | null };
@@ -22,7 +21,6 @@ function Barres({ valeurs, couleur: col }: { valeurs: number[]; couleur: string 
 }
 
 export default function ArcomPanel({ candidats }: { candidats: Candidat[] }) {
-  const { isPro } = usePremium();
   const [rel, setRel] = useState<Releve[] | null>(null);
   const [mois, setMois] = useState<string | null>(null);
   const [ouvert, setOuvert] = useState<string | null>(null);
@@ -47,34 +45,18 @@ export default function ArcomPanel({ candidats }: { candidats: Candidat[] }) {
 
   return (
     <section id="temps-de-parole" className="scroll-mt-28">
-      <div className="mb-6 flex flex-wrap items-start gap-4">
-        <span className="flex h-12 w-12 shrink-0 items-center justify-center rounded-2xl bg-gradient-to-br from-sky-500 to-cyan-600 text-white shadow-lg">
-          <Tv size={22} />
-        </span>
-        <div className="min-w-0 flex-1 basis-64">
-          <div className="flex flex-wrap items-center gap-2">
-            <h2 className="font-staatliches text-3xl uppercase tracking-tight text-foreground">
-              Temps de parole <span className="text-sky-700 dark:text-sky-400">télé et radio</span>
-            </h2>
-            <BadgePro />
-          </div>
-          <p className="mt-0.5 text-sm text-muted-foreground">
-            Chiffres officiels de l&apos;Arcom : le temps pendant lequel chaque candidat a lui-même pris la parole sur une trentaine de chaînes
-            et de radios, mois par mois. L&apos;Arcom les publie avec environ deux mois de décalage.
-          </p>
-        </div>
-      </div>
-
-      {!isPro && <VerrouPro titre="Le temps de parole est réservé à l'abonnement Pro" texte="Heures d'antenne par candidat, évolution mensuelle et détail chaîne par chaîne." />}
+      <EnTete numero="03" rubrique="Télé et radio" pro titre="Temps de" accent="parole" degrade="from-sky-500 to-cyan-500"
+        chapeau="Chiffres officiels de l'Arcom : le temps pendant lequel chaque candidat a lui-même pris la parole sur une trentaine de chaînes et de radios, mois par mois. L'Arcom les publie avec environ deux mois de décalage." />
 
       {!rel ? <div className="flex justify-center py-16"><Loader2 className="animate-spin text-sky-500" /></div>
         : !lignes.length ? <p className="rounded-3xl border border-dashed border-border p-8 text-center text-sm text-muted-foreground">Aucune donnée Arcom disponible pour l&apos;instant.</p>
         : (
-        <div className="rounded-[2rem] border border-border bg-card p-4 md:p-6">
+        <ZonePro titre="Le temps de parole" points={["Heures d'antenne de chaque candidat", "Évolution mois par mois", "Détail chaîne par chaîne"]}>
+        <div className="rounded-[2rem] border border-border bg-card p-5 md:p-6">
           <div className="mb-4 flex flex-wrap items-center justify-between gap-3">
             <div>
               <h3 className="text-sm font-black uppercase tracking-widest text-foreground">{nomMois(courant)}</h3>
-              <p className="text-[11px] text-muted-foreground"><Flou ok={isPro}>{heures(total)}</Flou> de parole au total pour les candidats déclarés</p>
+              <p className="text-[11px] text-muted-foreground">{heures(total)} de parole au total pour les candidats déclarés</p>
             </div>
             <div className="flex flex-wrap gap-1">
               {tousMois.slice(-6).map(m => (
@@ -96,7 +78,7 @@ export default function ArcomPanel({ candidats }: { candidats: Candidat[] }) {
                     <span className="min-w-0 flex-1">
                       <span className="flex items-baseline justify-between gap-2">
                         <span className="truncate text-sm font-black text-foreground">{c.full_name}</span>
-                        <span className="shrink-0 text-xs font-black tabular-nums text-foreground"><Flou ok={isPro}>{heures(l.secondes)} · {Math.round((l.secondes / total) * 100)} %</Flou></span>
+                        <span className="shrink-0 text-xs font-black tabular-nums text-foreground">{heures(l.secondes)} · {Math.round((l.secondes / total) * 100)} %</span>
                       </span>
                       <span className="mt-1 block h-2 overflow-hidden rounded-full bg-slate-100 dark:bg-slate-800">
                         <span className="block h-full rounded-full" style={{ width: `${(l.secondes / lignes[0].secondes) * 100}%`, background: col }} />
@@ -104,12 +86,12 @@ export default function ArcomPanel({ candidats }: { candidats: Candidat[] }) {
                     </span>
                     <span className="hidden sm:block"><Barres valeurs={l.histo} couleur={col} /></span>
                     <span className="hidden w-16 shrink-0 text-right text-[11px] font-black sm:block">
-                      {evol != null && <span className={`inline-flex items-center gap-0.5 ${evol >= 0 ? "text-emerald-700 dark:text-emerald-400" : "text-rose-700 dark:text-rose-400"}`}>{evol >= 0 ? <TrendingUp size={11} /> : <TrendingDown size={11} />}<Flou ok={isPro}>{evol >= 0 ? "+" : ""}{Math.round(evol)} %</Flou></span>}
+                      {evol != null && <span className={`inline-flex items-center gap-0.5 ${evol >= 0 ? "text-emerald-700 dark:text-emerald-400" : "text-rose-700 dark:text-rose-400"}`}>{evol >= 0 ? <TrendingUp size={11} /> : <TrendingDown size={11} />}{evol >= 0 ? "+" : ""}{Math.round(evol)} %</span>}
                     </span>
                     <ChevronDown size={16} className={`shrink-0 text-muted-foreground transition-transform ${open ? "rotate-180" : ""}`} />
                   </button>
                   {open && (
-                    <div className={`grid gap-x-6 gap-y-1.5 px-10 pb-3 sm:grid-cols-2 ${isPro ? "" : "select-none blur-sm"}`}>
+                    <div className={`grid gap-x-6 gap-y-1.5 px-10 pb-3 sm:grid-cols-2`}>
                       {chaines.map(([ch, s]) => (
                         <div key={ch} className="flex items-center gap-2 text-xs">
                           <span className="w-28 shrink-0 truncate font-bold text-foreground">{ch}</span>
@@ -123,12 +105,14 @@ export default function ArcomPanel({ candidats }: { candidats: Candidat[] }) {
               );
             })}
           </div>
-          <p className="mt-4 text-[11px] leading-relaxed text-muted-foreground">
+
+        </div>
+        <Methode>
             Source : Arcom, relevés « hors période électorale » (journaux, magazines et autres émissions). Temps de parole de la personne
             elle-même, hors soutiens. Un candidat sous le seuil de publication de l&apos;Arcom n&apos;apparaît pas. Les barres résument les douze
             derniers mois publiés ; chaque nouvelle publication de l&apos;Arcom est reprise automatiquement.
-          </p>
-        </div>
+        </Methode>
+        </ZonePro>
       )}
     </section>
   );

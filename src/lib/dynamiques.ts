@@ -3,7 +3,7 @@
  * marges d'erreur, couleurs des candidats. Aucun appel réseau ici.
  */
 
-export type Resultat = { nom: string; slug: string | null; pct: number };
+export type Resultat = { nom: string; slug: string | null; pct: number; complet?: string; photo?: string | null };
 export type Sondage = {
   id: number; cle: string; tour: 1 | 2; institut: string; date_debut: string | null; date_fin: string;
   echantillon: number | null; hypothese: number; resultats: Resultat[]; source_url: string | null;

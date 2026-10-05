@@ -1,9 +1,10 @@
 "use client";
 
 import { useEffect, useMemo, useState } from "react";
-import { BarChart3, Loader2, TrendingUp, TrendingDown, Minus, ExternalLink, ChevronDown, Info, Swords } from "lucide-react";
+import { Loader2, TrendingUp, TrendingDown, Minus, ExternalLink, ChevronDown, Info, Swords } from "lucide-react";
 import { api } from "@/lib/api";
 import CourbeMulti, { type Serie } from "./CourbeMulti";
+import { EnTete, Methode } from "./VerrouPro";
 import {
   parSondage, serie, moyenne, couleur, idDe, marge, pct, periode, dateCourte, t, vignette, court,
   type Sondage, type SondageAgrege,
@@ -19,10 +20,10 @@ function Evolution({ v }: { v: number | null }) {
     : <span className="inline-flex items-center gap-0.5 text-[11px] font-black text-rose-700 dark:text-rose-400"><TrendingDown size={12} /> {v.toLocaleString("fr-FR", { maximumFractionDigits: 1 })}</span>;
 }
 
-function Portrait({ c, nom, couleur: col, taille = 36 }: { c?: Candidat; nom: string; couleur: string; taille?: number }) {
-  return c?.photo_url
+function Portrait({ photo, nom, couleur: col, taille = 36 }: { photo?: string | null; nom: string; couleur: string; taille?: number }) {
+  return photo
     // eslint-disable-next-line @next/next/no-img-element
-    ? <img src={vignette(c.photo_url, taille * 2)!} alt="" loading="lazy" style={{ width: taille, height: taille, boxShadow: `0 0 0 2px ${col}` }} className="shrink-0 rounded-full object-cover object-top" />
+    ? <img src={vignette(photo, taille * 2)!} alt="" loading="lazy" style={{ width: taille, height: taille, boxShadow: `0 0 0 2px ${col}` }} className="shrink-0 rounded-full object-cover object-top" />
     : <span style={{ width: taille, height: taille, background: col }} className="flex shrink-0 items-center justify-center rounded-full text-xs font-black text-white">{nom.split(" ").pop()?.charAt(0)}</span>;
 }
 
@@ -37,7 +38,6 @@ export default function SondagesPanel({ candidats }: { candidats: Candidat[] }) 
 
   useEffect(() => { api.getSondages().then(setBrut).catch(() => setErreur(true)); }, []);
 
-  const parSlug = useMemo(() => new Map(candidats.map(c => [c.slug, c])), [candidats]);
   const tour1 = useMemo(() => parSondage((brut || []).filter(s => s.tour === 1)), [brut]);
   const tour2 = useMemo(() => (brut || []).filter(s => s.tour === 2), [brut]);
   const dernier = tour1[0];
@@ -61,7 +61,16 @@ export default function SondagesPanel({ candidats }: { candidats: Candidat[] }) 
     }).filter(r => r.auj != null && r.nbSondages > 0).sort((a, b) => b.auj! - a.auj!);
   }, [tour1, fin]);
 
-  const nomCourt = (id: string, nom: string) => { const c = parSlug.get(id); return c ? c.full_name : nom; };
+  const fiches = useMemo(() => {
+    const m = new Map<string, { complet: string; photo: string | null }>();
+    for (const s of brut || []) for (const r of s.resultats) {
+      const id = idDe(r);
+      if (!m.has(id) && (r.complet || r.photo)) m.set(id, { complet: r.complet || r.nom, photo: r.photo ?? null });
+    }
+    for (const c of candidats) m.set(c.slug, { complet: c.full_name, photo: c.photo_url ?? m.get(c.slug)?.photo ?? null });
+    return m;
+  }, [brut, candidats]);
+  const nomCourt = (id: string, nom: string) => fiches.get(id)?.complet ?? nom;
 
   const series: Serie[] = useMemo(() => classement.slice(0, 9).filter(r => !masques.has(r.id)).map(r => ({
     id: r.id, label: court(nomCourt(r.id, r.nom)),
@@ -95,29 +104,27 @@ export default function SondagesPanel({ candidats }: { candidats: Candidat[] }) 
   if (!dernier) return null;
 
   const h = dernier.hypotheses[Math.min(hyp, dernier.hypotheses.length - 1)];
+  // Un scénario se lit par ses candidats variables : ceux qui ne sont pas testés partout.
+  const communs = dernier.hypotheses.map(x => new Set(x.resultats.map(idDe))).reduce((a, b) => new Set([...a].filter(i => b.has(i))));
+  const scenarios = dernier.hypotheses.map(x => {
+    const variables = x.resultats.filter(r => !communs.has(idDe(r))).map(r => court(nomCourt(idDe(r), r.nom)));
+    return variables.length
+      ? { court: `Avec ${variables.slice(0, 3).join(", ")}${variables.length > 3 ? "…" : ""}`, titre: `Avec ${variables.join(", ")}` }
+      : { court: "Sans candidat variable", titre: "Scénario sans les candidats testés ailleurs" };
+  });
   const nbInstituts = new Set(tour1.filter(p => p.t > fin - 90 * JOUR).map(p => p.institut)).size;
 
   return (
     <section id="sondages" className="scroll-mt-28">
-      {/* En-tête */}
-      <div className="mb-6 flex flex-wrap items-start gap-4">
-        <span className="flex h-12 w-12 shrink-0 items-center justify-center rounded-2xl bg-gradient-to-br from-indigo-500 to-blue-600 text-white shadow-lg">
-          <BarChart3 size={22} />
-        </span>
-        <div className="min-w-0 flex-1 basis-64">
-          <h2 className="font-staatliches text-3xl uppercase tracking-tight text-foreground">
-            Les <span className="text-indigo-700 dark:text-indigo-400">sondages</span>
-          </h2>
-          <p className="mt-0.5 text-sm text-muted-foreground">
-            Tous les sondages publiés, relevés automatiquement dès leur parution, et leur moyenne.
-            Dernier en date : <strong className="font-black text-foreground">{dernier.institut}</strong>, {periode(dernier.date_debut, dernier.date_fin)}.
-          </p>
-        </div>
-        <span className="inline-flex items-center gap-1.5 rounded-full border border-emerald-500/30 bg-emerald-500/10 px-3 py-1 text-[10px] font-black uppercase tracking-widest text-emerald-700 dark:text-emerald-400">
-          <span className="relative flex h-2 w-2"><span className="absolute inline-flex h-full w-full animate-ping rounded-full bg-emerald-500 opacity-60" /><span className="relative inline-flex h-2 w-2 rounded-full bg-emerald-500" /></span>
-          Mise à jour continue
-        </span>
-      </div>
+      <EnTete numero="01" rubrique="Sondages" titre="Les" accent="sondages" degrade="from-indigo-500 to-blue-500"
+        chapeau={<>Tous les sondages publiés, relevés automatiquement dès leur parution, et leur moyenne. Dernier en date :{" "}
+          <strong className="font-black text-foreground">{dernier.institut}</strong>, {periode(dernier.date_debut, dernier.date_fin)}.</>}
+        actions={
+          <span className="inline-flex items-center gap-2 rounded-full border border-emerald-500/30 bg-emerald-500/10 px-3.5 py-1.5 text-[10px] font-black uppercase tracking-widest text-emerald-700 dark:text-emerald-400">
+            <span className="relative flex h-2 w-2"><span className="absolute inline-flex h-full w-full animate-ping rounded-full bg-emerald-500 opacity-60" /><span className="relative inline-flex h-2 w-2 rounded-full bg-emerald-500" /></span>
+            Mise à jour continue
+          </span>
+        } />
 
       {/* Chiffres clés */}
       <div className="mb-5 grid grid-cols-2 gap-3 md:grid-cols-4">
@@ -176,7 +183,7 @@ export default function SondagesPanel({ candidats }: { candidats: Candidat[] }) 
               return (
                 <div key={r.id} className="flex items-center gap-3" onMouseEnter={() => setFocus(r.id)} onMouseLeave={() => setFocus(null)}>
                   <span className="w-5 shrink-0 text-center font-staatliches text-lg text-muted-foreground">{i + 1}</span>
-                  <Portrait c={r.slug ? parSlug.get(r.slug) : undefined} nom={r.nom} couleur={col} />
+                  <Portrait photo={fiches.get(r.id)?.photo} nom={r.nom} couleur={col} />
                   <div className="min-w-0 flex-1">
                     <div className="flex items-baseline justify-between gap-2">
                       <span className="truncate text-sm font-black text-foreground">{nomCourt(r.id, r.nom)}</span>
@@ -207,11 +214,18 @@ export default function SondagesPanel({ candidats }: { candidats: Candidat[] }) 
             {periode(dernier.date_debut, dernier.date_fin)}{dernier.echantillon ? ` · ${dernier.echantillon.toLocaleString("fr-FR")} personnes` : ""}
           </p>
           {dernier.hypotheses.length > 1 && (
-            <div className="mt-3 flex flex-wrap gap-1">
-              {dernier.hypotheses.map((x, i) => (
-                <button key={x.id} onClick={() => setHyp(i)}
-                  className={`rounded-lg px-2 py-1 text-[10px] font-black uppercase tracking-wider transition ${i === hyp ? "bg-indigo-600 text-white" : "bg-muted text-muted-foreground hover:text-foreground"}`}>H{i + 1}</button>
-              ))}
+            <div className="mt-4">
+              <p className="text-[11px] leading-snug text-muted-foreground">
+                L&apos;institut a testé {dernier.hypotheses.length} scénarios, selon qui se présente. Choisissez-en un :
+              </p>
+              <div className="mt-2 flex flex-wrap gap-1.5">
+                {scenarios.map((sc, i) => (
+                  <button key={dernier.hypotheses[i].id} onClick={() => setHyp(i)} title={sc.titre}
+                    className={`max-w-full truncate rounded-full border px-3 py-1 text-[11px] font-bold transition ${i === hyp ? "border-indigo-600 bg-indigo-600 text-white" : "border-border bg-background text-muted-foreground hover:border-slate-400 hover:text-foreground"}`}>
+                    {sc.court}
+                  </button>
+                ))}
+              </div>
             </div>
           )}
           <div className="mt-4 space-y-1.5">
@@ -251,8 +265,8 @@ export default function SondagesPanel({ candidats }: { candidats: Candidat[] }) 
               return (
                 <div key={a.id + b.id} className="rounded-2xl border border-border bg-background p-3.5">
                   <div className="mb-2 flex items-center justify-between gap-2 text-sm font-black">
-                    <span className="flex min-w-0 items-center gap-2 truncate text-foreground"><Portrait c={parSlug.get(a.id)} nom={a.nom} couleur={couleur(a.id)} taille={26} />{nomCourt(a.id, a.nom).split(" ").slice(-2).join(" ")}</span>
-                    <span className="flex min-w-0 items-center gap-2 truncate text-right text-foreground">{nomCourt(b.id, b.nom).split(" ").slice(-2).join(" ")}<Portrait c={parSlug.get(b.id)} nom={b.nom} couleur={couleur(b.id)} taille={26} /></span>
+                    <span className="flex min-w-0 items-center gap-2 truncate text-foreground"><Portrait photo={fiches.get(a.id)?.photo} nom={a.nom} couleur={couleur(a.id)} taille={26} />{nomCourt(a.id, a.nom).split(" ").slice(-2).join(" ")}</span>
+                    <span className="flex min-w-0 items-center gap-2 truncate text-right text-foreground">{nomCourt(b.id, b.nom).split(" ").slice(-2).join(" ")}<Portrait photo={fiches.get(b.id)?.photo} nom={b.nom} couleur={couleur(b.id)} taille={26} /></span>
                   </div>
                   <div className="flex h-7 overflow-hidden rounded-lg text-[11px] font-black text-white">
                     <div className="flex items-center pl-2" style={{ width: `${a.pct}%`, background: couleur(a.id) }}>{pct(a.pct, 0)}</div>
@@ -310,15 +324,15 @@ export default function SondagesPanel({ candidats }: { candidats: Candidat[] }) 
         )}
       </div>
 
-      <p className="mt-4 text-[11px] leading-relaxed text-muted-foreground">
-        <strong className="font-bold">Méthode.</strong> Pour chaque sondage, le score d&apos;un candidat est la moyenne de ses scores dans les
+      <Methode>
+        Pour chaque sondage, le score d&apos;un candidat est la moyenne de ses scores dans les
         hypothèses où il est testé ; la courbe lisse ces scores sur environ trois semaines, en pondérant chaque sondage par la taille
         de son échantillon. Un sondage mesure des intentions à un instant donné : ce n&apos;est pas une prédiction. Résultats relevés
         auprès des instituts via la{" "}
         <a href={brut[0]?.source_url || "#"} target="_blank" rel="noreferrer" className="inline-flex items-center gap-0.5 font-bold underline">
           liste publique des sondages <ExternalLink size={10} />
         </a>, actualisée toutes les deux heures. Notices complètes : Commission des sondages.
-      </p>
+      </Methode>
     </section>
   );
 }

@@ -3,11 +3,12 @@
 import { useEffect, useMemo, useState } from "react";
 import Link from "next/link";
 import {
-  Loader2, Lock, Radio, Download, ChevronDown, TrendingUp, TrendingDown,
+  Loader2, Radio, Download, ChevronDown, TrendingUp, TrendingDown,
   AlertTriangle, ExternalLink, Minus, Eye, Users2, Clapperboard,
 } from "lucide-react";
 import { api } from "@/lib/api";
 import { usePremium } from "@/lib/hooks/usePremium";
+import { EnTete, ZonePro } from "./dynamiques/VerrouPro";
 import {
   computeMetrics, sumMetric, compact, signed, PLATFORM_META,
   type Metrics, type SocialAccount, type Snapshot,
@@ -204,31 +205,15 @@ export default function CandidateSocialTracker({ candidates }: { candidates: Can
 
   return (
     <div id="veille" className="mx-auto max-w-6xl scroll-mt-24 px-4 pb-24">
-      {/* En-tête */}
-      <div className="mb-6 flex flex-wrap items-start gap-4">
-        <span className="flex h-12 w-12 shrink-0 items-center justify-center rounded-2xl bg-gradient-to-br from-fuchsia-500 to-purple-600 text-white shadow-lg">
-          <Radio size={22} />
-        </span>
-        <div className="min-w-0 flex-1">
-          <div className="flex flex-wrap items-center gap-2">
-            <h2 className="font-staatliches text-3xl uppercase tracking-tight text-foreground">
-              Dynamiques <span className="text-fuchsia-700 dark:text-fuchsia-400">réseaux sociaux</span>
-            </h2>
-            <span className="rounded-full bg-gradient-to-r from-fuchsia-500 to-purple-600 px-2.5 py-1 text-[9px] font-black uppercase tracking-widest text-white shadow">Pro</span>
-          </div>
-          <p className="mt-0.5 text-sm text-muted-foreground">
-            Compte personnel et principal compte de soutien de chaque candidat : audience, publications de la
-            semaine et vues gagnées. <strong className="font-bold text-muted-foreground">Mesuré sur YouTube, TikTok et Bluesky</strong> —
-            X et Instagram ne publient aucune donnée exploitable sans contrat payant.
-          </p>
-        </div>
-        {isPro && rows.length > 0 && (
+      <EnTete numero="04" rubrique="Réseaux sociaux" pro titre="Dynamiques" accent="réseaux sociaux" degrade="from-fuchsia-500 to-purple-600"
+        chapeau={<>Compte personnel et principal compte de soutien de chaque candidat : audience, publications de la semaine et vues gagnées.
+          Mesuré sur YouTube, TikTok et Bluesky — X et Instagram ne publient aucune donnée exploitable sans contrat payant.</>}
+        actions={isPro && rows.length > 0 ? (
           <button onClick={exportCsv}
-            className="inline-flex shrink-0 items-center gap-1.5 rounded-xl border border-border px-3.5 py-2 text-[10px] font-black uppercase tracking-widest text-muted-foreground transition hover:border-slate-400">
+            className="inline-flex items-center gap-1.5 rounded-full border border-border bg-card px-4 py-2 text-[10px] font-black uppercase tracking-widest text-muted-foreground shadow-sm transition hover:border-slate-400 hover:text-foreground">
             <Download size={13} /> Export CSV
           </button>
-        )}
-      </div>
+        ) : undefined} />
 
       {/* Réglages */}
       <div className="mb-5 flex flex-wrap items-center gap-3">
@@ -250,26 +235,8 @@ export default function CandidateSocialTracker({ candidates }: { candidates: Can
         </div>
       </div>
 
-      {/* Accroche non-Pro */}
-      {!isPro && (
-        <div className="mb-5 flex flex-wrap items-center gap-4 rounded-3xl border border-fuchsia-200 bg-gradient-to-r from-fuchsia-50 to-purple-50 p-5">
-          <span className="flex h-11 w-11 shrink-0 items-center justify-center rounded-2xl bg-gradient-to-br from-fuchsia-500 to-purple-600 text-white shadow-lg">
-            <Lock size={18} />
-          </span>
-          <div className="min-w-0 flex-1">
-            <p className="text-sm font-black text-foreground">Les chiffres sont réservés à l&apos;abonnement Pro</p>
-            <p className="text-[13px] text-muted-foreground">
-              Vous voyez quels comptes sont suivis. Audience, vues par semaine et tendances : côté Pro.
-            </p>
-          </div>
-          <Link href="/premium"
-            className="shrink-0 rounded-xl bg-gradient-to-r from-fuchsia-500 to-purple-600 px-4 py-2.5 text-[11px] font-black uppercase tracking-widest text-white shadow-lg transition hover:brightness-110">
-            Découvrir le Pro
-          </Link>
-        </div>
-      )}
-
       {/* Contenu */}
+      <ZonePro titre="La veille réseaux sociaux" points={["Audience de chaque candidat, compte par compte", "Vues gagnées sur 7 et 30 jours", "Publications de la semaine et tendances"]}>
       {accounts === null ? (
         <div className="flex justify-center py-16"><Loader2 className="animate-spin text-fuchsia-500" /></div>
       ) : rows.length === 0 ? (
@@ -362,6 +329,7 @@ export default function CandidateSocialTracker({ candidates }: { candidates: Can
           </p>
         </div>
       )}
+      </ZonePro>
     </div>
   );
 }

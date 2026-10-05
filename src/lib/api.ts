@@ -884,6 +884,32 @@ export const api = {
     return [...byName.values()].sort((a, b) => b.count - a.count);
   },
 
+  /* ════════ ONGLET « DYNAMIQUES » : SONDAGES, VEILLE PRESSE, TEMPS DE PAROLE ════════ */
+
+  getSondages: async () => {
+    const { data, error } = await supabase.from('sondages')
+      .select('id, cle, tour, institut, date_debut, date_fin, echantillon, hypothese, resultats, source_url')
+      .order('date_fin', { ascending: false }).limit(2000);
+    if (error) throw error;
+    return (data || []) as import('./dynamiques').Sondage[];
+  },
+  getVeillePresse: async (jours: number) => {
+    const { data, error } = await supabase.rpc('veille_presse', { p_jours: jours });
+    if (error) throw error;
+    return data as {
+      depuis: string | null; medias: number; articles: number;
+      totaux: { slug: string; n: number; nb_medias: number; n_prec: number }[];
+      par_jour: { slug: string; jour: string; n: number }[];
+      par_media: { slug: string; media: string; n: number }[];
+      derniers: { url: string; titre: string; media: string; publie_le: string; candidats: string[] }[];
+    };
+  },
+  getArcomTempsParole: async () => {
+    const { data, error } = await supabase.from('arcom_temps_parole').select('slug, mois, secondes, detail').order('mois');
+    if (error) throw error;
+    return (data || []) as { slug: string; mois: string; secondes: number; detail: Record<string, number> }[];
+  },
+
   /* ════════ VEILLE RÉSEAUX SOCIAUX DES CANDIDATS (abonnement Pro) ════════ */
 
   /** Comptes suivis (officiels et de soutien) d'un candidat, ou de tous si omis. */

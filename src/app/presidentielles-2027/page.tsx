@@ -8,7 +8,7 @@ import { Search, Loader2, X, CalendarDays, ExternalLink, Briefcase, GraduationCa
 import { api } from "@/lib/api";
 import LegalStatusModal from "@/components/deputies/LegalStatusModal";
 import ThemesView from "@/components/presidentielles/ThemesView";
-import CandidateSocialTracker from "@/components/presidentielles/CandidateSocialTracker";
+import DynamiquesView from "@/components/presidentielles/dynamiques/DynamiquesView";
 import PrimaryDebates from "@/components/presidentielles/PrimaryDebates";
 import DragScroller from "@/components/ui/DragScroller";
 import { usePremium } from "@/lib/hooks/usePremium";
@@ -707,7 +707,8 @@ function CandidatesContent() {
   // « Candidats » et l'ancre ne menait nulle part, la section n'étant pas montée.
   useEffect(() => {
     const byHash: Record<string, "positions" | "enjeux" | "dynamiques"> = {
-      "#veille": "dynamiques", "#dynamiques": "dynamiques",
+      "#veille": "dynamiques", "#dynamiques": "dynamiques", "#sondages": "dynamiques",
+      "#presse": "dynamiques", "#temps-de-parole": "dynamiques",
       "#enjeux": "enjeux", "#positions": "positions",
     };
     const hash = window.location.hash;
@@ -717,7 +718,7 @@ function CandidatesContent() {
     // L'onglet doit être monté avant que le navigateur puisse rejoindre l'ancre.
     const t = setTimeout(() => {
       document.getElementById(hash.slice(1))?.scrollIntoView({ behavior: "smooth" });
-    }, 150);
+    }, 900);   // le temps que la section charge ses données
     return () => clearTimeout(t);
   }, []);
 
@@ -786,8 +787,8 @@ function CandidatesContent() {
       </div>
 
       {view === "dynamiques" ? (
-        // Veille réseaux sociaux des candidats — outil de l'abonnement Pro.
-        <CandidateSocialTracker candidates={candidates} />
+        // Sondages (ouverts à tous) puis veille presse, télé-radio et réseaux (Pro).
+        <DynamiquesView candidates={candidates} />
       ) : view === "enjeux" ? (
         <ThemesView />
       ) : view === "positions" ? (

@@ -12,8 +12,16 @@ const TYPE_LABEL: Record<string, string> = {
   budget: "Budget", nomination: "Nominations", lancement: "Lancements", bilan: "Bilans",
   travaux: "Travaux", projet: "Projets", conseil_municipal: "Conseil municipal",
   evenement: "Événements", equipement: "Équipements", arrete: "Arrêtés", actualite: "Autres",
+  // Partis
+  proposition: "Propositions", congres: "Congrès", alliance: "Alliances", campagne: "Campagne", resultat: "Résultats",
+  // Régions
+  "delibération": "Délibérations", deliberation: "Délibérations", aide: "Aides", transport: "Transports",
+  lycee: "Lycées", developpement: "Développement", formation: "Formation",
 };
-const typeLabel = (t: string | null) => (t && TYPE_LABEL[t]) || "Autres";
+// Un type sans libellé rejoint « Autres » : sinon chaque type inconnu faisait sa propre
+// puce « Autres », et la barre de filtres en affichait quatre.
+const typeCle = (t: string | null) => (t && TYPE_LABEL[t] ? t : "actualite");
+const typeLabel = (t: string | null) => TYPE_LABEL[typeCle(t)];
 
 type FeedItem = {
   id: string;
@@ -53,10 +61,10 @@ export default function EntityNewsFeed({
   // Types présents (avec compte), pour les puces de filtre.
   const types = useMemo(() => {
     const c: Record<string, number> = {};
-    for (const it of items || []) { const k = it.news_type || "actualite"; c[k] = (c[k] || 0) + 1; }
+    for (const it of items || []) { const k = typeCle(it.news_type); c[k] = (c[k] || 0) + 1; }
     return Object.entries(c).sort((a, b) => b[1] - a[1]);
   }, [items]);
-  const visible = useMemo(() => (items || []).filter(it => !filter || (it.news_type || "actualite") === filter), [items, filter]);
+  const visible = useMemo(() => (items || []).filter(it => !filter || typeCle(it.news_type) === filter), [items, filter]);
 
   // Rien à afficher (pas encore d'actu) → on ne pollue pas la fiche.
   if (items !== null && items.length === 0) return null;

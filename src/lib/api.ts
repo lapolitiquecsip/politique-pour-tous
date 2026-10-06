@@ -1127,6 +1127,17 @@ export const api = {
     const { error } = await supabase.from('user_votes').delete().eq('user_id', u.user.id);
     if (error) throw error;
   },
+  /** Versements automatiques du parrainage (Stripe Connect). */
+  etatVersements: async () => {
+    const { data, error } = await supabase.functions.invoke<{ relie: boolean; actif: boolean; a_completer?: boolean; en_verification?: boolean; error?: string }>('parrainage-versements', { body: { action: 'etat' } });
+    if (error || !data || data.error) throw new Error(data?.error || 'indisponible');
+    return data;
+  },
+  lienVersements: async (action: 'relier' | 'tableau') => {
+    const { data, error } = await supabase.functions.invoke<{ url?: string; error?: string }>('parrainage-versements', { body: { action } });
+    if (error || !data?.url) throw new Error(data?.error || 'indisponible');
+    return data.url;
+  },
   /** RGPD art. 17. Renvoie « abonnement_actif » s'il faut d'abord résilier. */
   supprimerMonCompte: async () => {
     const { data, error } = await supabase.rpc('supprimer_mon_compte');

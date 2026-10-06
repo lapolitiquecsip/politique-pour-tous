@@ -219,7 +219,14 @@ serve(async (req) => {
           facture = typeof relu.invoice === 'string' ? relu.invoice : relu.invoice?.id ?? null
         } catch (e) { console.warn(`Facture du remboursement introuvable : ${e.message}`) }
       }
-      if (facture) await admin().rpc('annuler_commission', { p_facture: facture })
+      if (facture) {
+        // Commission déjà reversée au parrain : le transfert est repris (versement automatique).
+        const { data: transfert } = await admin().rpc('annuler_commission', { p_facture: facture })
+        if (typeof transfert === 'string' && transfert.startsWith('tr_')) {
+          try { await stripe.transfers.createReversal(transfert) }
+          catch (e) { console.error(`Reprise du transfert ${transfert} impossible : ${e.message}`) }
+        }
+      }
     }
 
     return new Response(JSON.stringify({ received: true }), { status: 200 })

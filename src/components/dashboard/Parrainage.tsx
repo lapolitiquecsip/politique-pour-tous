@@ -1,10 +1,10 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import Link from "next/link";
-import { Gift, Copy, Check, Share2, MousePointerClick, UserPlus, Crown, Hourglass, Wallet, BadgeCheck, Loader2, Mail } from "lucide-react";
+import { Gift, Copy, Check, Share2, MousePointerClick, UserPlus, Crown, Hourglass, Wallet, BadgeCheck, Loader2 } from "lucide-react";
 import { api } from "@/lib/api";
 import { mesurerAction } from "@/lib/mesure";
+import VersementsParrainage from "./VersementsParrainage";
 
 /**
  * Le parrainage, côté membre : son lien, ce qu'il a rapporté, comment c'est payé.
@@ -58,7 +58,7 @@ export default function Parrainage() {
   ];
   const gains = [
     { titre: "En validation", valeur: euros(d.en_validation), detail: `${d.delai_validation_jours} jours après chaque paiement`, Icone: Hourglass, teinte: "text-white/80" },
-    { titre: "Disponible", valeur: euros(d.disponible), detail: `versé par virement dès ${euros(d.seuil_versement)}`, Icone: Wallet, teinte: "text-teal-300" },
+    { titre: "Disponible", valeur: euros(d.disponible), detail: `viré automatiquement dès ${euros(d.seuil_versement)}`, Icone: Wallet, teinte: "text-teal-300" },
     { titre: "Déjà versé", valeur: euros(d.verse), detail: "depuis le début", Icone: BadgeCheck, teinte: "text-white/80" },
   ];
 
@@ -121,14 +121,7 @@ export default function Parrainage() {
         ))}
       </div>
 
-      {d.disponible >= d.seuil_versement && (
-        <div className="flex flex-col items-start gap-3 rounded-3xl border border-teal-300/30 bg-teal-400/[0.07] p-5 sm:flex-row sm:items-center sm:justify-between">
-          <p className="text-sm text-white/85"><strong className="text-white">{euros(d.disponible)} vous attendent.</strong> Demandez votre virement en nous indiquant votre IBAN.</p>
-          <Link href="/contact" className="inline-flex items-center gap-2 rounded-full bg-teal-400 px-5 py-2.5 text-sm font-black text-slate-950 hover:bg-teal-300">
-            <Mail size={15} /> Demander mon versement
-          </Link>
-        </div>
-      )}
+      <VersementsParrainage disponible={d.disponible} seuil={d.seuil_versement} />
 
       {/* Fonctionnement */}
       <section className="rounded-3xl border border-white/10 bg-white/[0.03] p-6">
@@ -137,7 +130,7 @@ export default function Parrainage() {
           {[
             ["Partagez votre lien", "Par message, sur vos réseaux, dans une newsletter. Il reste valable 90 jours sur l'appareil de la personne."],
             ["Elle crée son compte", `Puis s'abonne à Premium ou Pro. Elle est rattachée à vous si elle s'inscrit dans les 90 jours.`],
-            ["Vous recevez " + pct + " % en retour", `Sur chacun de ses paiements pendant ${d.duree_mois} mois, validés après ${d.delai_validation_jours} jours (délai de rétractation), puis versés par virement.`],
+            ["Vous recevez " + pct + " % en retour", `Sur chacun de ses paiements pendant ${d.duree_mois} mois, validés après ${d.delai_validation_jours} jours (délai de rétractation), puis virés automatiquement sur votre compte bancaire.`],
           ].map(([t, x], i) => (
             <li key={t} className="flex gap-3">
               <span className="flex h-8 w-8 shrink-0 items-center justify-center rounded-full bg-teal-400 font-black text-slate-950">{i + 1}</span>

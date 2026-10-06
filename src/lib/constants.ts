@@ -38,14 +38,14 @@ export const CONTACT_EMAIL = "contact@lapolitiquecestsimple.fr";
  * L221-5 et R111-1) : un champ vide s'affiche « à compléter ».
  */
 export const EDITEUR = {
-  nom: "",              // nom et prénom (entrepreneur individuel) ou dénomination sociale
-  forme: "",            // ex. « Entrepreneur individuel (micro-entreprise) », « SAS au capital de … € »
-  adresse: "",          // adresse postale complète
-  siren: "",            // n° SIREN / SIRET
+  nom: "Hippolyte Belyaev",   // nom et prénom (entrepreneur individuel) ou dénomination sociale
+  forme: "entrepreneur individuel",   // ex. « Entrepreneur individuel (micro-entreprise) », « SAS au capital de … € »
+  adresse: "13 rue de Vénus, 44700 Orvault, France",   // adresse postale complète
+  siren: "130 532 989",   // n° SIREN / SIRET
   rcs: "",              // « RCS Paris 123 456 789 », ou « Dispensé d'immatriculation » (micro-entrepreneur non commerçant)
-  tva: "",              // n° TVA intracommunautaire, ou « TVA non applicable, art. 293 B du CGI »
-  telephone: "",        // numéro joignable (exigé pour la vente à distance)
-  directeur: "",        // directeur de la publication (personne physique)
+  tva: "TVA non applicable, art. 293 B du CGI (franchise en base)",   // n° TVA intracommunautaire, ou « TVA non applicable, art. 293 B du CGI »
+  telephone: "07 82 33 94 74",   // numéro joignable (exigé pour la vente à distance)
+  directeur: "Hippolyte Belyaev",   // directeur de la publication (personne physique)
 };
 
 /**

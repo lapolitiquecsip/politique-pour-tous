@@ -78,6 +78,23 @@ export default function CGU() {
           ),
         },
         {
+          id: "parrainage", titre: "Programme de parrainage",
+          contenu: (
+            <>
+              <p>Tout membre peut partager son lien de parrainage. Une personne arrivée par ce lien et inscrite dans les 90 jours lui est
+                rattachée ; sur chacun de ses paiements d&apos;abonnement pendant la durée indiquée dans l&apos;espace « Parrainage », le parrain
+                perçoit la commission affichée (20 % par défaut), calculée sur le montant payé.</p>
+              <p>Une commission devient disponible après le délai de validation affiché (30 jours, qui couvre le délai de rétractation) ;
+                elle est annulée si le paiement est remboursé, et reprise si elle avait déjà été versée. Les commissions disponibles sont
+                virées automatiquement, dès le seuil atteint, sur le compte bancaire que le parrain a renseigné auprès de notre prestataire
+                de paiement Stripe (vérification d&apos;identité exigée par la réglementation ; réservé aux majeurs).</p>
+              <p>Le parrainage doit rester loyal : pas de publicité trompeuse, pas de parrainage de soi-même ou de comptes fictifs, pas de
+                courriels non sollicités. Une fraude entraîne l&apos;annulation des commissions concernées. Les sommes perçues sont des revenus
+                à déclarer par le parrain. L&apos;éditeur peut modifier le taux ou la durée pour l&apos;avenir, sans effet sur les commissions déjà acquises.</p>
+            </>
+          ),
+        },
+        {
           id: "responsabilite", titre: "Responsabilité",
           contenu: (
             <p>L&apos;éditeur met tout en œuvre pour assurer l&apos;accès au site mais ne peut garantir une disponibilité permanente

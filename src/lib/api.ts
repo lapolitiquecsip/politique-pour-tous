@@ -1,4 +1,17 @@
 import { supabase } from "./supabase";
+
+// Commissions permanentes qu'on peut suivre (intitulés tels que dans les comptes rendus).
+const COMMISSIONS_SUIVIES: [string, string][] = [
+  ["AN", "Commission des affaires culturelles et de l'éducation"], ["AN", "Commission des affaires économiques"],
+  ["AN", "Commission des affaires étrangères"], ["AN", "Commission des affaires sociales"],
+  ["AN", "Commission de la défense nationale et des forces armées"], ["AN", "Commission du développement durable et de l'aménagement du territoire"],
+  ["AN", "Commission des finances, de l'économie générale et du contrôle budgétaire"], ["AN", "Commission des lois constitutionnelles, de la législation et de l'administration générale"],
+  ["AN", "Commission des affaires européennes"],
+  ["SENAT", "Commission des affaires économiques"], ["SENAT", "Commission des affaires étrangères, de la défense et des forces armées"],
+  ["SENAT", "Commission des affaires sociales"], ["SENAT", "Commission de l'aménagement du territoire et du développement durable"],
+  ["SENAT", "Commission de la culture, de l'éducation et de la communication"], ["SENAT", "Commission des finances"],
+  ["SENAT", "Commission des lois"], ["SENAT", "Commission des affaires européennes"],
+];
 import type { LegislativeCategory, LegislativeDossierDetail, LegislativeListItem } from "./legislative";
 import { parseInitiators, normalizeName, deputyPhotoSources } from "./initiators";
 
@@ -1060,6 +1073,39 @@ export const api = {
 
   // Préférences / profil du membre premium (base des notifications personnalisées).
   // Renvoie null si le profil n'est pas encore rempli (ou table non migrée).
+  /* ════════ SUIVIS ÉLARGIS (Pro) : partis, ministères, candidats, commissions ════════ */
+  getSuivis: async () => {
+    const { data, error } = await supabase.from('user_suivis').select('id, kind, ref, label').order('cree_le');
+    if (error) throw error;
+    return (data || []) as { id: number; kind: string; ref: string; label: string }[];
+  },
+  ajouterSuivi: async (kind: string, ref: string, label: string) => {
+    const { data: u } = await supabase.auth.getUser();
+    if (!u.user) throw new Error('Connexion requise');
+    const { error } = await supabase.from('user_suivis').upsert({ user_id: u.user.id, kind, ref, label }, { onConflict: 'user_id,kind,ref', ignoreDuplicates: true });
+    if (error) throw error;
+  },
+  retirerSuivi: async (kind: string, ref: string) => {
+    const { error } = await supabase.from('user_suivis').delete().eq('kind', kind).eq('ref', ref);
+    if (error) throw error;
+  },
+  /** Ce qu'on peut suivre, par type (libellé lisible + référence stockée). */
+  getOptionsSuivi: async () => {
+    const slug = (t: string) => t.normalize('NFD').replace(/[̀-ͯ]/g, '').toLowerCase().replace(/[’']/g, ' ').replace(/[^a-z0-9]+/g, '-').replace(/(^-|-$)/g, '');
+    const [partis, ministeres, candidats] = await Promise.all([
+      supabase.from('political_parties').select('slug, name, abbrev').order('name'),
+      supabase.from('ministries').select('name').order('name'),
+      supabase.from('presidential_candidates').select('id, full_name').eq('status', 'declared').order('full_name'),
+    ]);
+    const cap = (t: string) => t.charAt(0).toUpperCase() + t.slice(1);
+    return {
+      parti: (partis.data || []).map((p: any) => ({ ref: p.slug, label: p.abbrev && p.abbrev !== p.name ? `${p.name} (${p.abbrev})` : p.name })),
+      ministere: (ministeres.data || []).map((m: any) => ({ ref: slug(m.name), label: cap(m.name) })),
+      candidat: (candidats.data || []).map((c: any) => ({ ref: String(c.id), label: c.full_name })),
+      commission: COMMISSIONS_SUIVIES.map(([ch, nom]) => ({ ref: `${ch}|${nom}`, label: `${nom} (${ch === 'AN' ? 'Assemblée' : 'Sénat'})` })),
+    };
+  },
+
   getUserPreferences: async (userId: string) => {
     const { data, error } = await supabase.from('user_preferences').select('*').eq('user_id', userId).maybeSingle();
     if (error) { console.warn('API Warning (getUserPreferences):', error.message); return null; }
@@ -1069,6 +1115,7 @@ export const api = {
     age_range?: string | null; profession?: string | null; region?: string | null;
     department?: string | null; city?: string | null; postal_code?: string | null;
     interests?: string[]; notify_email?: boolean; email_min_importance?: number;
+    recap_hebdo?: boolean; perimetre?: string; rythmes?: Record<string, string>;
   }) => {
     const { error } = await supabase.from('user_preferences').upsert(
       { user_id: userId, ...prefs, updated_at: new Date().toISOString() },

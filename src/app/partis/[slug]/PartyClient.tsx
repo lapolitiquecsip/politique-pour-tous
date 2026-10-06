@@ -1,4 +1,5 @@
 "use client";
+import SuivreBouton from "@/components/shared/SuivreBouton";
 
 import { use, useEffect, useState } from "react";
 import Link from "next/link";
@@ -166,6 +167,7 @@ export default function PartyClient({ params }: { params: Promise<{ slug: string
               {party.abbrev && <span className="rounded-full bg-white/20 px-3 py-1 text-xs font-black uppercase tracking-widest">{party.abbrev}</span>}
               <h1 className="mt-2 text-4xl font-staatliches uppercase leading-none md:text-6xl">{party.name}</h1>
               {party.orientation && <p className="mt-2 text-white/80 font-bold">{party.orientation}</p>}
+              <SuivreBouton kind="parti" refId={party.slug} label={party.abbrev && party.abbrev !== party.name ? `${party.name} (${party.abbrev})` : party.name} className="mt-4 !border-white/30 !bg-white/15 !text-white backdrop-blur" />
             </div>
           </div>
           {party.summary && <p className="mt-6 max-w-3xl text-lg leading-relaxed text-white/90">{party.summary}</p>}

@@ -193,12 +193,15 @@ function themeStyle(name: string): { Icon: any; c: string; bg: string; dot: stri
 
 function CandidateModal({ candidate, onClose }: { candidate: Candidate; onClose: () => void }) {
   const side = sideOf(candidate);
-  const { isPremium } = usePremium() || { isPremium: false };
+  const { isPremium, isPro } = usePremium() || { isPremium: false, isPro: false };
   const [following, setFollowing] = useState(false);
   useEffect(() => { setFollowing(isFollowingCandidate(candidate.id)); }, [candidate.id]);
   const onToggleFollow = () => {
     if (!isPremium) { window.location.href = "/premium"; return; }
-    setFollowing(toggleFollowCandidate({ id: candidate.id, slug: (candidate as any).slug, name: candidate.full_name, photo_url: (candidate as any).photo_url, party: candidate.party }));
+    const suit = toggleFollowCandidate({ id: candidate.id, slug: (candidate as any).slug, name: candidate.full_name, photo_url: (candidate as any).photo_url, party: candidate.party });
+    setFollowing(suit);
+    // Membre Pro : le suivi alimente aussi ses alertes e-mail et son récap du samedi.
+    if (isPro) (suit ? api.ajouterSuivi("candidat", String(candidate.id), candidate.full_name) : api.retirerSuivi("candidat", String(candidate.id))).catch(() => {});
   };
   const [news, setNews] = useState<any[] | null>(null);
   const [videos, setVideos] = useState<any[]>([]);              // vidéos YouTube officielles

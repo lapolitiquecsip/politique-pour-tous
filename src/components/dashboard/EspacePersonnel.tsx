@@ -9,6 +9,7 @@ import { api } from "@/lib/api";
 import { BallotBox, BallotChip } from "@/components/dashboard/BallotVote";
 import NotificationsFeed from "@/components/dashboard/NotificationsFeed";
 import PremiumPreferences from "@/components/dashboard/PremiumPreferences";
+import AlertesPro from "@/components/dashboard/AlertesPro";
 import CommuneFeedCard from "@/components/dashboard/CommuneFeedCard";
 import CandidatesFollowFeed from "@/components/dashboard/CandidatesFollowFeed";
 import CommissionsRegistre from "@/components/home/CommissionsRegistre";
@@ -458,7 +459,11 @@ export default function EspacePersonnel({ mode = "tout" }: { mode?: ModeEspace }
           {proVerifie && <JournalOfficielDuJour />}
           <CandidatesFollowFeed />
           <CommuneFeedCard />
-          <PremiumPreferences userId={userId} />
+          {/* Ancre des liens « Modifier mes alertes » des e-mails. */}
+          <div id="preferences" className="scroll-mt-24 space-y-6">
+            <PremiumPreferences userId={userId} />
+            {proVerifie && <AlertesPro userId={userId} />}
+          </div>
         </div>
       )}
 

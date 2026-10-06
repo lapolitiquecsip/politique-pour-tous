@@ -1085,6 +1085,19 @@ export const api = {
     const { error } = await supabase.from('user_suivis').upsert({ user_id: u.user.id, kind, ref, label }, { onConflict: 'user_id,kind,ref', ignoreDuplicates: true });
     if (error) throw error;
   },
+  /** Accord explicite pour suivre partis et candidats (opinion politique : RGPD, art. 9). */
+  consentementSuivis: async (): Promise<string | null> => {
+    const { data: u } = await supabase.auth.getUser();
+    if (!u.user) return null;
+    const { data } = await supabase.from('user_preferences').select('consentement_suivis').eq('user_id', u.user.id).maybeSingle();
+    return data?.consentement_suivis ?? null;
+  },
+  donnerConsentementSuivis: async () => {
+    const { data: u } = await supabase.auth.getUser();
+    if (!u.user) throw new Error('Connexion requise');
+    const { error } = await supabase.from('user_preferences').upsert({ user_id: u.user.id, consentement_suivis: new Date().toISOString(), updated_at: new Date().toISOString() }, { onConflict: 'user_id' });
+    if (error) throw error;
+  },
   retirerSuivi: async (kind: string, ref: string) => {
     const { error } = await supabase.from('user_suivis').delete().eq('kind', kind).eq('ref', ref);
     if (error) throw error;
@@ -1116,6 +1129,7 @@ export const api = {
     department?: string | null; city?: string | null; postal_code?: string | null;
     interests?: string[]; notify_email?: boolean; email_min_importance?: number;
     recap_hebdo?: boolean; perimetre?: string; rythmes?: Record<string, string>;
+    secteur?: string | null; logement?: string | null; enfants?: string | null; alertes_textes?: boolean; consentement_suivis?: string | null;
   }) => {
     const { error } = await supabase.from('user_preferences').upsert(
       { user_id: userId, ...prefs, updated_at: new Date().toISOString() },

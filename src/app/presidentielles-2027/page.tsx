@@ -201,7 +201,12 @@ function CandidateModal({ candidate, onClose }: { candidate: Candidate; onClose:
     const suit = toggleFollowCandidate({ id: candidate.id, slug: (candidate as any).slug, name: candidate.full_name, photo_url: (candidate as any).photo_url, party: candidate.party });
     setFollowing(suit);
     // Membre Pro : le suivi alimente aussi ses alertes e-mail et son récap du samedi.
-    if (isPro) (suit ? api.ajouterSuivi("candidat", String(candidate.id), candidate.full_name) : api.retirerSuivi("candidat", String(candidate.id))).catch(() => {});
+    // (Uniquement après l'accord explicite donné dans l'espace : un suivi de candidat peut
+    // révéler une opinion politique, RGPD art. 9.)
+    if (isPro) {
+      if (!suit) api.retirerSuivi("candidat", String(candidate.id)).catch(() => {});
+      else api.consentementSuivis().then(ok => { if (ok) api.ajouterSuivi("candidat", String(candidate.id), candidate.full_name).catch(() => {}); }).catch(() => {});
+    }
   };
   const [news, setNews] = useState<any[] | null>(null);
   const [videos, setVideos] = useState<any[]>([]);              // vidéos YouTube officielles

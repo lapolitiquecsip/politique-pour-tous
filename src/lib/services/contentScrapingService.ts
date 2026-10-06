@@ -376,6 +376,10 @@ CONTRAT DE RÉDACTION
 Pour chaque fiche retenue, produis EXACTEMENT ces champs en JSON :
 
 - titre_simplifie (≤ 80 caractères)
+  EXACTITUDE DU STADE : un texte déposé n'est pas « examiné » ni « adopté » ; l'adoption d'un article
+  n'est pas l'adoption de la loi ; une première lecture n'est pas une adoption définitive ; la
+  proposition d'un sénateur ou d'un député n'est pas une décision du Sénat ou de l'Assemblée.
+  Le titre doit dire le stade exact (« Dépôt d'une proposition de loi pour… », « Article clé adopté… »).
 - resume_flash (≤ 250 caractères)
   STRUCTURE OBLIGATOIRE : "Selon [Source1] et [Source2], [QUI] a [QUOI] le [QUAND], avec [CHIFFRE ou ACTE]."
 - source_name : liste des médias réellement croisés, séparés par des virgules.

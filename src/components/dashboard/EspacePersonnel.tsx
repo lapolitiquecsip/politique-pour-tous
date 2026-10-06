@@ -513,11 +513,11 @@ export default function EspacePersonnel({ mode = "tout" }: { mode?: ModeEspace }
                     aria-current={actif ? "page" : undefined}
                     title={`Réservé aux membres ${v.offre === "pro" ? "Pro" : "Premium"}`}
                     className={`group relative inline-flex shrink-0 items-center gap-2.5 overflow-hidden whitespace-nowrap rounded-2xl py-2 pl-2 pr-4 text-sm font-semibold transition-colors duration-200 ${
-                      actif ? "bg-amber-400/15 text-amber-100 ring-1 ring-amber-300/50" : "text-slate-950/45 ring-1 ring-white/[0.08] hover:bg-amber-400/[0.06] hover:text-white/80"
+                      actif ? "bg-amber-400/15 text-amber-100 ring-1 ring-amber-300/50" : "text-white/70 ring-1 ring-white/[0.12] hover:bg-amber-400/[0.08] hover:text-white"
                     }`}
                   >
                     <span className="relative flex h-8 w-8 items-center justify-center rounded-xl bg-white/[0.04]">
-                      <Icone size={15} className="opacity-50" />
+                      <Icone size={15} className="opacity-75" />
                       <span className={`absolute -right-1 -top-1 flex h-4 w-4 items-center justify-center rounded-full ${v.offre === "pro" ? "bg-gradient-to-br from-violet-300 to-fuchsia-500 text-white shadow-[0_0_8px_rgba(168,85,247,0.7)]" : "bg-gradient-to-br from-amber-200 to-amber-500 text-slate-950 shadow-[0_0_8px_rgba(251,191,36,0.6)]"}`}>
                         <Lock size={9} strokeWidth={3} />
                       </span>

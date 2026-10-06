@@ -1,5 +1,9 @@
 import { supabase } from "./supabase";
 
+/** Version des CGV acceptée au paiement (à changer à chaque modification des CGV). */
+export const CGV_VERSION = '2026-10-06';
+export type AbonnementEnCours = { id?: string; nom: string; montant: string; periode: string; fin: number; fin_texte: string; resilie?: boolean };
+
 // Commissions permanentes qu'on peut suivre (intitulés tels que dans les comptes rendus).
 const COMMISSIONS_SUIVIES: [string, string][] = [
   ["AN", "Commission des affaires culturelles et de l'éducation"], ["AN", "Commission des affaires économiques"],
@@ -901,7 +905,7 @@ export const api = {
 
   getSondages: async () => {
     const { data, error } = await supabase.from('sondages')
-      .select('id, cle, tour, institut, date_debut, date_fin, echantillon, hypothese, resultats, source_url')
+      .select('id, cle, tour, institut, date_debut, date_fin, echantillon, hypothese, resultats, source_url, notice_url, commanditaire')
       .order('date_fin', { ascending: false }).limit(2000);
     if (error) throw error;
     return (data || []) as import('./dynamiques').Sondage[];
@@ -1097,6 +1101,47 @@ export const api = {
     if (!u.user) throw new Error('Connexion requise');
     const { error } = await supabase.from('user_preferences').upsert({ user_id: u.user.id, consentement_suivis: new Date().toISOString(), updated_at: new Date().toISOString() }, { onConflict: 'user_id' });
     if (error) throw error;
+    // Trace datée de l'accord (RGPD art. 7.1 : pouvoir démontrer le consentement).
+    await supabase.from('preuves_consentement').insert({ user_id: u.user.id, objet: 'suivis_politiques', version: '2026-10', details: { texte: 'Suivre un parti ou un candidat peut laisser deviner une opinion politique ; usage limité à l’envoi des informations qui les concernent.' } });
+  },
+  /** Accord donné juste avant le paiement : CGV acceptées + exécution immédiate demandée (C. conso. L221-25). */
+  enregistrerAccordAchat: async (offre: string, periodicite: string) => {
+    const { data: u } = await supabase.auth.getUser();
+    if (!u.user) throw new Error('Connexion requise');
+    const { error } = await supabase.from('preuves_consentement').insert({
+      user_id: u.user.id, objet: 'achat', version: CGV_VERSION,
+      details: { offre, periodicite, cgv_acceptees: true, execution_immediate_demandee: true },
+    });
+    if (error) throw error;
+  },
+  /** RGPD art. 15 et 20 : toutes les données du compte, en un fichier JSON. */
+  exporterMesDonnees: async () => {
+    const { data, error } = await supabase.rpc('exporter_mes_donnees');
+    if (error) throw error;
+    return data as Record<string, unknown>;
+  },
+  /** Efface toutes ses positions citoyennes sur les lois (retrait du consentement, RGPD art. 7.3). */
+  effacerMesPositions: async () => {
+    const { data: u } = await supabase.auth.getUser();
+    if (!u.user) throw new Error('Connexion requise');
+    const { error } = await supabase.from('user_votes').delete().eq('user_id', u.user.id);
+    if (error) throw error;
+  },
+  /** RGPD art. 17. Renvoie « abonnement_actif » s'il faut d'abord résilier. */
+  supprimerMonCompte: async () => {
+    const { data, error } = await supabase.rpc('supprimer_mon_compte');
+    if (error) throw error;
+    return data as 'supprime' | 'abonnement_actif';
+  },
+  etatAbonnement: async () => {
+    const { data, error } = await supabase.functions.invoke<{ abonnements?: AbonnementEnCours[]; error?: string }>('abonnement', { body: { action: 'etat' } });
+    if (error) throw error;
+    return data?.abonnements ?? [];
+  },
+  resilierAbonnement: async () => {
+    const { data, error } = await supabase.functions.invoke<{ ok?: boolean; resiliations?: AbonnementEnCours[]; error?: string }>('abonnement', { body: { action: 'resilier' } });
+    if (error || !data?.ok) throw new Error(data?.error || 'La résiliation a échoué.');
+    return data.resiliations ?? [];
   },
   retirerSuivi: async (kind: string, ref: string) => {
     const { error } = await supabase.from('user_suivis').delete().eq('kind', kind).eq('ref', ref);
@@ -1972,6 +2017,10 @@ export const api = {
   },
 
   getLawVoteStats: async (lawId: string) => {
+    // Totaux anonymes de tous les membres (fonction SQL) : la table elle-même n'est lisible
+    // que ligne à ligne par son auteur, si bien qu'une lecture directe ne comptait que soi.
+    const agrege = await supabase.rpc('stats_vote_citoyen', { p_law_id: lawId });
+    if (!agrege.error && agrege.data) return agrege.data as { POUR: number; CONTRE: number; ABSTENTION: number; total: number };
     const { data, error } = await supabase
       .from('user_votes')
       .select('vote')

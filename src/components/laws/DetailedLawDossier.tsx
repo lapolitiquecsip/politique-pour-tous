@@ -18,6 +18,7 @@ import { type LawDossier } from "@/data/free-laws-dossiers";
 import { usePremium } from "@/lib/hooks/usePremium";
 import { api } from "@/lib/api";
 import { useGlossary } from "@/components/providers/GlossaryProvider";
+import MentionIA from "@/components/shared/MentionIA";
 
 interface DetailedLawDossierProps {
   law: LawDossier;
@@ -363,6 +364,7 @@ export default function DetailedLawDossier({ law }: DetailedLawDossierProps) {
                 <div className="p-6 bg-muted text-slate-700 dark:text-slate-200 text-base italic leading-relaxed rounded-2xl border border-border">
                   {wrapWithGlossary(law.summary)}
                 </div>
+                <MentionIA />
               </div>
 
               {/* État d'avancement */}
@@ -671,6 +673,12 @@ export default function DetailedLawDossier({ law }: DetailedLawDossierProps) {
                           );
                         })}
                       </div>
+                      {/* RGPD art. 9.2.a : une position sur une loi peut révéler une opinion politique. */}
+                      <p className="mt-3 text-[10px] leading-relaxed text-slate-400">
+                        En cliquant, vous acceptez que votre position soit enregistrée sur votre compte. Elle peut révéler une opinion
+                        politique : visible de vous seul, jamais transmise, elle ne sert qu&apos;à votre historique et aux totaux anonymes.
+                        Vous pouvez l&apos;effacer à tout moment depuis Mon compte → Mes données.
+                      </p>
 
                       {/* RÉSULTATS COMMUNAUTAIRES (VISIBLE APRÈS VOTE) */}
                       {userVote && communityStats && (

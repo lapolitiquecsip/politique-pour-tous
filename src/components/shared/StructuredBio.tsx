@@ -8,6 +8,7 @@
 
 import { useState } from "react";
 import { ChevronDown } from "lucide-react";
+import MentionIA from "./MentionIA";
 
 const BIO_FIELDS: Array<[string, string, string]> = [
   ["parcours", "Parcours politique", "text-red-700 dark:text-red-400"],
@@ -109,6 +110,8 @@ export default function StructuredBio({ bio, fallbackText }: { bio: any; fallbac
             );
           })}
         </div>
+        <MentionIA texte={`Biographie synthétisée par IA à partir de Wikipédia et des sites officiels — signalez toute erreur via la page Contact.${
+          sections.some(x => x.key === "controverses") ? " Toute personne mise en cause dans une procédure est présumée innocente tant qu'une décision de justice définitive n'a pas établi sa culpabilité." : ""}`} />
       </>
     );
   }

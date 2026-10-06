@@ -32,6 +32,31 @@ export const STRIPE_PORTAL_URL = "";
 /** Adresse de repli, quand le portail n'est pas encore configuré. */
 export const CONTACT_EMAIL = "contact@lapolitiquecestsimple.fr";
 
+/**
+ * Identité de l'éditeur, affichée dans les mentions légales, les CGV et la politique de
+ * confidentialité. OBLIGATOIRE dès lors que le site vend (LCEN art. 6-III ; C. conso.
+ * L221-5 et R111-1) : un champ vide s'affiche « à compléter ».
+ */
+export const EDITEUR = {
+  nom: "",              // nom et prénom (entrepreneur individuel) ou dénomination sociale
+  forme: "",            // ex. « Entrepreneur individuel (micro-entreprise) », « SAS au capital de … € »
+  adresse: "",          // adresse postale complète
+  siren: "",            // n° SIREN / SIRET
+  rcs: "",              // « RCS Paris 123 456 789 », ou « Dispensé d'immatriculation » (micro-entrepreneur non commerçant)
+  tva: "",              // n° TVA intracommunautaire, ou « TVA non applicable, art. 293 B du CGI »
+  telephone: "",        // numéro joignable (exigé pour la vente à distance)
+  directeur: "",        // directeur de la publication (personne physique)
+};
+
+/**
+ * Médiateur de la consommation (C. conso. L612-1) : adhésion obligatoire avant de vendre
+ * à des particuliers (ex. CM2C, Medicys, AME Conso…). À renseigner après adhésion.
+ */
+export const MEDIATEUR = { nom: "", site: "", adresse: "" };
+
+/** Dernière mise à jour des textes juridiques (affichée ; ne pas calculer à la volée). */
+export const MAJ_TEXTES_JURIDIQUES = "6 octobre 2026";
+
 export const STRIPE_LINKS: Record<string, { monthly: string; annually?: string }> = {
   student: {
     monthly: "https://buy.stripe.com/test_student_monthly", // 1.99€

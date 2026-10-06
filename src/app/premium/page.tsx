@@ -3,7 +3,8 @@
 import { useState, useRef } from "react";
 import { motion, AnimatePresence, useInView, useReducedMotion } from "framer-motion";
 import { usePremium } from "@/lib/hooks/usePremium";
-import { getPremiumUrl } from "@/lib/utils";
+import { lienPaiementStripe } from "@/lib/utils";
+import AccordAchat from "@/components/premium/AccordAchat";
 import {
   CheckCircle2, Star, FileText, ArrowRight, Quote, Scale,
   LayoutDashboard, BellRing, Bookmark, Building2, Sliders,
@@ -330,12 +331,22 @@ function PageOffre() {
   const plan = PLANS.elite;
   // Chaque carte lance son propre paiement : le clic porte l'offre choisie.
   // Le Premium est mensuel uniquement — seule l'offre Pro suit la bascule de périodicité.
-  const goPremium = (key: "elite" | "pro" = "elite") => {
-    window.location.href = getPremiumUrl(userId, key, key === "pro" ? billingCycle : "monthly");
-  };
+  // Le clic ouvre d'abord le récapitulatif et l'accord (CGV, accès immédiat) ; Stripe ensuite.
+  const [commande, setCommande] = useState<{ key: "elite" | "pro"; cycle: "monthly" | "annually" } | null>(null);
+  const goPremium = (key: "elite" | "pro" = "elite") => setCommande({ key, cycle: key === "pro" ? billingCycle : "monthly" });
 
   return (
     <div className="min-h-screen bg-background pb-20">
+      {commande && (
+        <AccordAchat
+          offre={PLANS[commande.key].name}
+          prix={fmtPrice(commande.cycle === "annually" ? (PLANS[commande.key].annually ?? PLANS[commande.key].monthly) : PLANS[commande.key].monthly)}
+          periode={commande.cycle === "annually" ? "an" : "mois"}
+          userId={userId}
+          onFermer={() => setCommande(null)}
+          onContinuer={() => { window.location.href = lienPaiementStripe(userId, commande.key, commande.cycle); }}
+        />
+      )}
       {/* ══════ HERO ══════ */}
       <section className="relative overflow-hidden bg-gradient-to-br from-slate-950 via-slate-900 to-amber-950 text-white py-28 px-4">
         <div className="absolute inset-0 opacity-20">

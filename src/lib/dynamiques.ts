@@ -7,7 +7,27 @@ export type Resultat = { nom: string; slug: string | null; pct: number; complet?
 export type Sondage = {
   id: number; cle: string; tour: 1 | 2; institut: string; date_debut: string | null; date_fin: string;
   echantillon: number | null; hypothese: number; resultats: Resultat[]; source_url: string | null;
+  /** Notice officielle déposée à la Commission des sondages, et acheteur lu dedans (« — » : non repéré). */
+  notice_url?: string | null; commanditaire?: string | null;
 };
+
+/**
+ * Loi n° 77-808 du 19 juillet 1977, art. 11 : ni publication, ni diffusion, ni commentaire
+ * d'un sondage électoral la veille et le jour de chaque tour. L'outre-mer votant dès le
+ * samedi, le silence court du vendredi 0 h au dimanche 20 h (heure de Paris), comme le
+ * pratique la Commission des sondages. Dates de la présidentielle 2027 à confirmer par
+ * le décret de convocation (attendu au plus tard début février 2027).
+ */
+export const TOURS_PRESIDENTIELLE = ["2027-04-18", "2027-05-02"];
+export function silenceSondages(maintenant = new Date()): string | null {
+  for (const dimanche of TOURS_PRESIDENTIELLE) {
+    const d = new Date(dimanche + "T12:00:00Z");
+    const vendredi = new Date(d.getTime() - 2 * 864e5).toISOString().slice(0, 10);
+    // Avril-mai : heure d'été, Paris = UTC+2.
+    if (maintenant >= new Date(vendredi + "T00:00:00+02:00") && maintenant < new Date(dimanche + "T20:00:00+02:00")) return dimanche;
+  }
+  return null;
+}
 
 /** Identifiant d'un candidat dans les sondages : sa fiche, ou à défaut son nom. */
 export const idDe = (r: Resultat) => r.slug ?? `nom:${r.nom}`;
@@ -80,6 +100,8 @@ export function parSondage(sondages: Sondage[]) {
     const h0 = hyps[0];
     return {
       institut: h0.institut, date_debut: h0.date_debut, date_fin: h0.date_fin, echantillon: h0.echantillon,
+      notice_url: hyps.find(h => h.notice_url)?.notice_url ?? null,
+      commanditaire: hyps.find(h => h.commanditaire && h.commanditaire !== "—")?.commanditaire ?? null,
       t: t(h0.date_fin), hypotheses: hyps.sort((a, b) => a.hypothese - b.hypothese),
       scores: new Map([...scores].map(([id, e]) => [id, { nom: e.nom, slug: e.slug, pct: e.somme / e.n, min: e.min, max: e.max }])),
     };

@@ -58,6 +58,48 @@ async function commissionner(supabase: any, filleul: string, facture: string, mo
   else if (data?.commission) console.log(`Commission enregistrée sur ${facture} (${montant} €).`)
 }
 
+/**
+ * Confirmation du contrat sur support durable (C. conso. L221-13) : l'offre, le prix,
+ * la reconduction, la résiliation, et l'exécution immédiate demandée avant la fin du
+ * délai de rétractation (L221-25 : rétractation possible, au prorata du temps écoulé).
+ */
+async function confirmerCommande(session: any, tier: 'elite' | 'pro') {
+  const cle = Deno.env.get('RESEND_API_KEY')
+  const to = session.customer_details?.email
+  if (!cle || !to) return
+  const montant = ((session.amount_total ?? 0) / 100).toFixed(2).replace('.', ',') + ' €'
+  const annuel = (session.amount_total ?? 0) >= 20000
+  const nom = tier === 'pro' ? 'Pro' : 'Premium'
+  const jour = new Date().toLocaleDateString('fr-FR', { day: 'numeric', month: 'long', year: 'numeric', timeZone: 'Europe/Paris' })
+  const points = [
+    `Offre : ${nom}, ${montant} TTC par ${annuel ? 'an' : 'mois'}, souscrite le ${jour}.`,
+    `Reconduction : l'abonnement se renouvelle automatiquement chaque ${annuel ? 'année' : 'mois'} au même prix, sauf résiliation.`,
+    `Résiliation : à tout moment, en ligne depuis votre espace (« Résilier mon abonnement ») ; elle prend effet à la fin de la période payée.`,
+    `Rétractation : vous avez demandé à accéder à l'offre immédiatement. Vous pouvez toutefois vous rétracter dans les 14 jours suivant la souscription, en nous écrivant via la page Contact ; vous serez remboursé, déduction faite du montant correspondant aux jours déjà écoulés.`,
+  ]
+  try {
+    const r = await fetch('https://api.resend.com/emails', {
+      method: 'POST',
+      headers: { Authorization: `Bearer ${cle}`, 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        from: "La Politique C'est Simple <contact@lapolitiquecestsimple.fr>",
+        to: [to],
+        subject: `Bienvenue dans l'offre ${nom} — confirmation de votre abonnement`,
+        text: `Bonjour,\n\nMerci ! Votre abonnement est actif.\n\n${points.join('\n\n')}\n\nConditions générales de vente : https://lapolitiquecestsimple.fr/cgv\n\nLa Politique C'est Simple`,
+        html: `<div style="font-family:Arial,sans-serif;max-width:600px;color:#0f172a;line-height:1.6">
+  <h2 style="margin:0 0 12px">Votre abonnement ${nom} est actif</h2>
+  ${points.map(p => `<p style="margin:0 0 10px">${p}</p>`).join('')}
+  <p style="font-size:12px;color:#64748b">Conditions générales de vente : <a href="https://lapolitiquecestsimple.fr/cgv">lapolitiquecestsimple.fr/cgv</a>. Conservez cet e-mail : il confirme votre contrat.</p>
+</div>`,
+      }),
+    })
+    if (!r.ok) console.error(`Confirmation de commande non envoyée : HTTP ${r.status}`)
+  } catch (e) {
+    // Jamais bloquant : l'accès est déjà ouvert, Stripe ne doit pas rejouer l'événement pour un e-mail.
+    console.error(`Confirmation de commande non envoyée : ${(e as Error).message}`)
+  }
+}
+
 serve(async (req) => {
   const signature = req.headers.get('Stripe-Signature')
 
@@ -134,6 +176,7 @@ serve(async (req) => {
       }
       // Parrainage : commission sur ce premier paiement (une seule par facture).
       await commissionner(supabase, targetId, session.invoice ?? session.id, (session.amount_total ?? 0) / 100)
+      await confirmerCommande(session, tier)
     }
 
     // Renouvellement (et tout paiement d'abonnement) : commission du parrain.

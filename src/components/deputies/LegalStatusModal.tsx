@@ -98,6 +98,10 @@ export default function LegalStatusModal({ isOpen, onClose, deputy }: LegalStatu
 
             {/* Content */}
             <div className="flex-1 overflow-y-auto p-8 space-y-8 custom-scrollbar">
+              <p className="rounded-xl bg-muted p-3 text-[12px] leading-snug text-muted-foreground">
+                Informations tirées de sources publiques citées. Toute personne mise en cause est présumée innocente tant qu&apos;une
+                décision de justice définitive n&apos;a pas établi sa culpabilité (code civil, art. 9-1).
+              </p>
               
               {/* STATUS CARD */}
               <div className={`p-8 rounded-[2rem] border relative overflow-hidden ${isClean ? 'bg-emerald-50/50 border-emerald-100 dark:bg-emerald-500/5 dark:border-emerald-500/20' : 'bg-amber-50/50 border-amber-100 dark:bg-amber-500/5 dark:border-amber-500/20'}`}>

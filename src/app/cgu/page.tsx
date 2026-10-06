@@ -1,80 +1,103 @@
-"use client";
+import Link from "next/link";
+import PageJuridique, { ou } from "@/components/legal/PageJuridique";
+import { EDITEUR } from "@/lib/constants";
 
-import { motion } from "framer-motion";
-import { ShieldCheck } from "lucide-react";
+export const metadata = {
+  title: "Conditions générales d'utilisation | La Politique, C'est Simple",
+  description: "Règles d'accès et d'utilisation du site et des comptes.",
+};
 
 export default function CGU() {
   return (
-    <div className="min-h-screen bg-muted">
-      {/* Header "Poster" Section */}
-      <div className="relative bg-card py-24 md:py-32 overflow-hidden border-b border-border">
-        <div className="container mx-auto px-6 relative z-10 text-center">
-          <motion.div
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            className="inline-flex items-center gap-3 px-4 py-2 rounded-full bg-slate-100 dark:bg-slate-500/10 border border-border mb-8"
-          >
-            <ShieldCheck className="w-4 h-4 text-blue-700 dark:text-blue-400" />
-            <span className="text-[10px] font-black text-muted-foreground uppercase tracking-[0.3em]">Protection de l'Utilisateur</span>
-          </motion.div>
-          
-          <h1 className="text-6xl md:text-9xl font-staatliches text-foreground leading-none uppercase italic mb-6">
-            Conditions <span className="text-blue-700 dark:text-blue-400 font-sans tracking-tighter not-italic">D'Utilisation</span>
-          </h1>
-          <p className="text-muted-foreground font-medium uppercase tracking-[0.2em] text-xs">
-            Dernière mise à jour : {new Date().toLocaleDateString('fr-FR')}
-          </p>
-        </div>
-      </div>
-
-      {/* Content Section */}
-      <div className="container mx-auto px-6 max-w-4xl py-20 bg-card shadow-2xl -mt-12 rounded-[3.5rem] relative z-20 border border-border mb-32">
-        <div className="prose dark:prose-invert prose-slate prose-lg max-w-none space-y-12 text-slate-700 dark:text-slate-200 p-8 md:p-12">
-          
-          <section>
-            <h2 className="text-3xl font-black text-foreground uppercase tracking-tighter mb-8">
-              ARTICLE 1 : OBJET
-            </h2>
-            <p className="leading-relaxed">
-              Les présentes Conditions Générales d’Utilisation (CGU) déterminent les règles d’accès au site <strong>La Politique, C’est Simple</strong> et ses conditions d’utilisation. En accédant au site, l’utilisateur accepte sans réserve l’intégralité des présentes conditions.
-            </p>
-          </section>
-
-          <section>
-            <h2 className="text-3xl font-black text-foreground uppercase tracking-tighter mb-8">
-              ARTICLE 2 : ACCÈS AU SITE ET SERVICES
-            </h2>
-            <p className="leading-relaxed">
-              Le site est accessible gratuitement à tout utilisateur disposant d'un accès à internet. Tous les coûts afférents à l'accès, qu'il s'agisse de frais matériels, ou d'accès à internet sont exclusivement à la charge de l'utilisateur.
-            </p>
-            <p className="mt-4">
-              Certaines fonctionnalités (analyses expertes, dossiers complets) sont réservées aux membres ayant souscrit à l'offre <strong>Premium</strong>.
-            </p>
-          </section>
-
-          <section>
-            <h2 className="text-3xl font-black text-foreground uppercase tracking-tighter mb-8">
-              ARTICLE 3 : RESPONSABILITÉ DE L'ÉDITEUR
-            </h2>
-            <p className="leading-relaxed">
-              Les informations diffusées sur le site proviennent de sources fiables. Toutefois, l'éditeur ne peut garantir l'exactitude des données transmises, notamment les calendriers législatifs sujets à modification rapide par l'Assemblée Nationale ou le Sénat. 
-            </p>
-            <p className="mt-4 italic">
-              Le contenu est fourni à titre informatif et éducatif uniquement et ne saurait constituer un conseil juridique ou officiel.
-            </p>
-          </section>
-
-          <section>
-            <h2 className="text-3xl font-black text-foreground uppercase tracking-tighter mb-8">
-              ARTICLE 4 : PROPRIÉTÉ INTELLECTUELLE
-            </h2>
-            <p className="leading-relaxed">
-              Les marques, logos, visuels et le design "Poster Impact" sont la propriété exclusive de l'éditeur. Toute reproduction totale ou partielle de ces éléments sans autorisation écrite préalable est constitutive de contrefaçon.
-            </p>
-          </section>
-
-        </div>
-      </div>
-    </div>
+    <PageJuridique
+      surtitre="Conditions générales d'utilisation"
+      titre="CGU"
+      intro={<p>Les présentes conditions encadrent l&apos;utilisation du site <strong>lapolitiquecestsimple.fr</strong>, édité par {ou(EDITEUR.nom)} (voir les{" "}
+        <Link href="/mentions-legales" className="underline">mentions légales</Link>). Utiliser le site, c&apos;est les accepter ; les abonnements payants
+        relèvent en plus des <Link href="/cgv" className="underline">conditions générales de vente</Link>.</p>}
+      sections={[
+        {
+          id: "service", titre: "Le service",
+          contenu: (
+            <>
+              <p>Le site explique la vie politique et législative française et européenne à partir de sources publiques : lois, votes,
+                élus, institutions, Journal officiel, élections. Il est gratuit et accessible sans compte ; certaines fonctions demandent un
+                compte gratuit (suivre des élus, enregistrer des contenus) ou un abonnement payant (offres Premium et Pro).</p>
+              <p>Le site est indépendant de tout parti, élu ou institution. Il présente les positions et les votes de chacun selon les mêmes
+                règles, sans consigne de vote.</p>
+            </>
+          ),
+        },
+        {
+          id: "compte", titre: "Votre compte",
+          contenu: (
+            <>
+              <p>Vous vous engagez à fournir une adresse e-mail valide et à garder votre mot de passe confidentiel. Le compte est personnel.</p>
+              <p>Vous pouvez à tout moment télécharger vos données ou supprimer votre compte depuis <strong>Mon compte → Mes données</strong>.</p>
+              <p>L&apos;éditeur peut suspendre un compte utilisé pour nuire au service (robots, tentatives d&apos;intrusion, revente des contenus),
+                après vous en avoir informé, sauf urgence.</p>
+            </>
+          ),
+        },
+        {
+          id: "mineurs", titre: "Mineurs",
+          contenu: (
+            <p>Le site est ouvert à tous. La création d&apos;un compte est réservée aux personnes de 15 ans et plus ; en dessous, elle demande
+              l&apos;accord d&apos;un titulaire de l&apos;autorité parentale (loi « Informatique et Libertés », art. 45). La souscription d&apos;un abonnement
+              payant est réservée aux majeurs ou se fait avec l&apos;accord d&apos;un parent.</p>
+          ),
+        },
+        {
+          id: "contenus", titre: "Fiabilité des contenus",
+          contenu: (
+            <>
+              <p>Les informations proviennent de sources publiques citées sur chaque page (Assemblée nationale, Sénat, Légifrance, Journal
+                officiel, instituts de sondage…) et sont mises à jour automatiquement. Malgré le soin apporté, elles peuvent comporter des
+                erreurs ou des retards : <strong>seuls les textes officiels font foi</strong>. Le site ne fournit pas de conseil juridique.</p>
+              <p><strong>Intelligence artificielle.</strong>{" "}Des résumés, titres, biographies, analyses et récapitulatifs sont rédigés
+                automatiquement par des modèles d&apos;IA à partir des documents officiels (règlement européen sur l&apos;IA, art. 50). Ils
+                peuvent être inexacts ; les pages renvoient aux documents d&apos;origine.</p>
+              <p><strong>Affaires judiciaires.</strong>{" "}Les procédures mentionnées le sont d&apos;après des sources publiques citées ; toute
+                personne mise en cause est présumée innocente tant qu&apos;une décision de justice définitive n&apos;a pas établi sa culpabilité.</p>
+              <p><strong>Sondages.</strong>{" "}Ils sont publiés avec les mentions prévues par la loi du 19 juillet 1977 et retirés la veille et le
+                jour de chaque tour de scrutin. Un sondage n&apos;est pas une prédiction.</p>
+              <p>Une erreur ? Signalez-la depuis la <Link href="/contact">page Contact</Link> : elle est corrigée, et les personnes citées
+                disposent d&apos;un droit de réponse (voir les mentions légales).</p>
+            </>
+          ),
+        },
+        {
+          id: "usage", titre: "Usages interdits",
+          contenu: (
+            <ul>
+              <li>Extraire massivement les contenus propres au site (aspiration, revente) ; les données publiques d&apos;origine restent
+                réutilisables à leur source, selon leur licence.</li>
+              <li>Tenter d&apos;accéder aux données d&apos;autres membres ou de perturber le fonctionnement du site.</li>
+              <li>Utiliser le formulaire de contact pour du démarchage, des menaces ou des propos illicites.</li>
+            </ul>
+          ),
+        },
+        {
+          id: "responsabilite", titre: "Responsabilité",
+          contenu: (
+            <p>L&apos;éditeur met tout en œuvre pour assurer l&apos;accès au site mais ne peut garantir une disponibilité permanente
+              (maintenance, panne d&apos;un hébergeur ou d&apos;une source officielle). Les liens vers des sites tiers (sources, vidéos) sont fournis
+              pour information ; ces sites relèvent de leurs propres conditions. Rien dans les présentes ne limite les droits que vous tenez de la loi.</p>
+          ),
+        },
+        {
+          id: "donnees", titre: "Données personnelles",
+          contenu: <p>Voir la <Link href="/confidentialite">politique de confidentialité et de cookies</Link>.</p>,
+        },
+        {
+          id: "droit", titre: "Modification et droit applicable",
+          contenu: (
+            <p>Ces conditions peuvent évoluer ; la version en vigueur est celle publiée sur cette page, datée en tête. En cas de changement
+              important, les membres en sont informés par e-mail. Elles sont soumises au droit français. En cas de litige, une solution amiable
+              est recherchée d&apos;abord ; un consommateur peut saisir la juridiction de son domicile.</p>
+          ),
+        },
+      ]}
+    />
   );
 }

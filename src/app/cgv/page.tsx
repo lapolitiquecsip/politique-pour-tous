@@ -1,80 +1,122 @@
-"use client";
+import Link from "next/link";
+import PageJuridique, { ou } from "@/components/legal/PageJuridique";
+import { EDITEUR, MEDIATEUR, CONTACT_EMAIL, PLANS } from "@/lib/constants";
 
-import { motion } from "framer-motion";
-import { CreditCard, Sparkles } from "lucide-react";
+export const metadata = {
+  title: "Conditions générales de vente | La Politique, C'est Simple",
+  description: "Abonnements Premium et Pro : prix, durée, résiliation, rétractation, garanties.",
+};
+
+const euros = (n: number) => `${n.toFixed(2).replace(".", ",")} €`;
 
 export default function CGV() {
   return (
-    <div className="min-h-screen bg-slate-950">
-      {/* Header "Poster" Section */}
-      <div className="relative bg-gradient-to-r from-amber-400 to-amber-600 py-24 md:py-32 overflow-hidden">
-        <div className="container mx-auto px-6 relative z-10 text-center">
-          <motion.div
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            className="inline-flex items-center gap-3 px-4 py-2 rounded-full bg-black/5 border border-black/10 mb-8"
-          >
-            <Sparkles className="w-4 h-4 text-slate-950" />
-            <span className="text-[10px] font-black text-slate-950 uppercase tracking-[0.3em]">Conditions de Vente Premium</span>
-          </motion.div>
-          
-          <h1 className="text-6xl md:text-9xl font-staatliches text-white leading-none uppercase italic mb-6">
-            Conditions <span className="text-slate-950 font-sans tracking-tighter not-italic">De Vente</span>
-          </h1>
-          <p className="text-white/80 font-medium uppercase tracking-[0.2em] text-xs">
-            Dernière mise à jour : {new Date().toLocaleDateString('fr-FR')}
-          </p>
-        </div>
-      </div>
-
-      {/* Content Section */}
-      <div className="container mx-auto px-6 max-w-4xl py-20 bg-slate-900 shadow-2xl -mt-12 rounded-[3.5rem] relative z-20 border border-white/5 mb-32">
-        <div className="prose dark:prose-invert prose-invert prose-lg max-w-none space-y-12 text-slate-300 p-8 md:p-12">
-          
-          <section>
-            <h2 className="text-3xl font-black text-white uppercase tracking-tighter mb-8 flex items-center gap-4">
-              <div className="w-10 h-10 rounded-xl bg-amber-500/10 flex items-center justify-center text-amber-500">
-                <CreditCard className="w-5 h-5" />
+    <PageJuridique
+      surtitre="Conditions générales de vente"
+      titre="CGV"
+      intro={<p>Les présentes conditions s&apos;appliquent aux abonnements payants souscrits sur <strong>lapolitiquecestsimple.fr</strong>{" "}par
+        un consommateur. Elles sont acceptées, avec leur date de version, au moment de la commande.</p>}
+      sections={[
+        {
+          id: "vendeur", titre: "Le vendeur",
+          contenu: (
+            <ul>
+              <li>{ou(EDITEUR.nom)}{EDITEUR.forme ? `, ${EDITEUR.forme}` : ""} — {ou(EDITEUR.adresse)}</li>
+              <li>SIREN / SIRET : {ou(EDITEUR.siren)}{EDITEUR.rcs ? ` — ${EDITEUR.rcs}` : ""} · TVA : {ou(EDITEUR.tva)}</li>
+              <li>Contact : {CONTACT_EMAIL}, <Link href="/contact">formulaire de contact</Link>, téléphone {ou(EDITEUR.telephone)}</li>
+            </ul>
+          ),
+        },
+        {
+          id: "offres", titre: "Les offres et leurs prix",
+          contenu: (
+            <>
+              <ul>
+                <li><strong>Premium</strong> — {euros(PLANS.elite.monthly)} TTC par mois : décryptages complets des lois, suivi de vos élus, alertes personnalisées.</li>
+                <li><strong>Pro</strong> — {euros(PLANS.pro.monthly)} TTC par mois, ou {euros(PLANS.pro.annually!)} TTC par an : en plus, suivi des
+                  commissions, Journal officiel du jour expliqué, alertes sur les textes qui vous concernent, récapitulatif hebdomadaire, veille des candidats.</li>
+              </ul>
+              <p>Le détail de chaque offre figure sur la <Link href="/premium">page des offres</Link>. Les prix sont indiqués en euros, toutes taxes
+                comprises ; ils peuvent évoluer, mais un changement de prix ne s&apos;applique à un abonnement en cours qu&apos;après en avoir
+                informé l&apos;abonné au moins un mois avant l&apos;échéance concernée, l&apos;abonné restant libre de résilier.</p>
+            </>
+          ),
+        },
+        {
+          id: "commande", titre: "Commande et paiement",
+          contenu: (
+            <>
+              <p>La commande se passe depuis un compte connecté : choix de l&apos;offre, récapitulatif, acceptation des présentes CGV et demande
+                d&apos;accès immédiat, puis paiement sur la page sécurisée de notre prestataire <strong>Stripe</strong>{" "}(carte bancaire). Le site ne voit ni
+                ne conserve vos coordonnées bancaires.</p>
+              <p>Le paiement est prélevé à la souscription, puis à chaque échéance. Le contrat est confirmé par un e-mail récapitulant l&apos;offre,
+                son prix, ses conditions de renouvellement, de résiliation et de rétractation. Les factures sont disponibles sur demande.</p>
+            </>
+          ),
+        },
+        {
+          id: "duree", titre: "Durée, renouvellement et résiliation",
+          contenu: (
+            <>
+              <p>L&apos;abonnement est conclu pour un mois (ou un an pour l&apos;offre Pro annuelle) et se renouvelle automatiquement pour la même
+                durée, au même prix, tant qu&apos;il n&apos;est pas résilié. Pour l&apos;abonnement annuel, un e-mail vous rappelle l&apos;échéance et votre
+                faculté de ne pas renouveler, entre trois mois et un mois avant celle-ci (C. conso., art. L215-1).</p>
+              <p><strong>Résiliation en ligne, à tout moment :</strong> <strong>Mon compte → Paramètres → « Résilier mon abonnement »</strong>, puis
+                confirmation. Un e-mail accuse réception et indique la date de fin (C. conso., art. L215-1-1). La résiliation prend effet à la fin de
+                la période déjà payée, jusqu&apos;à laquelle l&apos;accès est conservé ; aucun prélèvement n&apos;a lieu ensuite, sans frais.</p>
+            </>
+          ),
+        },
+        {
+          id: "retractation", titre: "Droit de rétractation",
+          contenu: (
+            <>
+              <p>Vous disposez de <strong>14 jours</strong>{" "}à compter de la souscription pour vous rétracter, sans avoir à donner de motif
+                (C. conso., art. L221-18). Comme vous demandez, lors de la commande, à accéder au service immédiatement, la rétractation reste
+                possible mais vous serez remboursé <strong>déduction faite du montant correspondant aux jours d&apos;accès déjà écoulés</strong>{" "}
+                (art. L221-25). Le remboursement intervient dans les 14 jours, par le moyen de paiement utilisé.</p>
+              <p>Pour vous rétracter, envoyez une déclaration sans ambiguïté via la <Link href="/contact">page Contact</Link>, à {CONTACT_EMAIL}{" "}ou par
+                courrier à l&apos;adresse du vendeur, par exemple avec le modèle ci-dessous.</p>
+              <div className="rounded-2xl border border-border bg-card p-4 text-sm">
+                <p className="font-bold">Formulaire de rétractation (annexe à l&apos;article R221-1 du Code de la consommation)</p>
+                <p className="mt-2">À l&apos;attention de {ou(EDITEUR.nom)}, {ou(EDITEUR.adresse)}, {CONTACT_EMAIL} :</p>
+                <p className="mt-2">Je vous notifie par la présente ma rétractation du contrat portant sur la prestation de services ci-dessous :
+                  [offre souscrite] — commandé le [date] — nom du consommateur : [nom] — adresse e-mail du compte : [e-mail] — adresse : [adresse] —
+                  date : [date] — signature (en cas de courrier papier).</p>
               </div>
-              OBJET DES CONDITIONS DE VENTE
-            </h2>
-            <p className="leading-relaxed">
-              Les présentes CGV s'appliquent sans restriction aux ventes de services et d’abonnements <strong>Premium</strong> conclus via le site par les Clients. La souscription d'un abonnement vaut acceptation sans réserve des CGV en vigueur au jour de la commande.
-            </p>
-          </section>
-
-          <section>
-            <h2 className="text-3xl font-black text-white uppercase tracking-tighter mb-8">
-              PRIX ET PAIEMENT
-            </h2>
-            <p className="leading-relaxed">
-              Les tarifs des abonnements sont indiqués sur le site en Euros et toutes taxes comprises (TTC). Le paiement est exigible immédiatement à la commande. 
-            </p>
-            <p className="mt-4 p-6 bg-white/5 rounded-2xl border border-white/10 font-mono text-sm">
-              Sécurisation : Les transactions sont traitées par le prestataire de paiement <strong>Stripe</strong>. Aucune information bancaire n'est stockée sur nos serveurs.
-            </p>
-          </section>
-
-          <section>
-            <h2 className="text-3xl font-black text-white uppercase tracking-tighter mb-8">
-              DROIT DE RÉTRACTATION
-            </h2>
-            <p className="leading-relaxed">
-              Compte tenu de la nature du contenu numérique fourni dès la validation de l'abonnement et dont l'exécution commence avec l'accord préalable exprès de l'utilisateur, ce dernier renonce expressément à son droit de rétractation (Art. L221-28 du Code de la Consommation).
-            </p>
-          </section>
-
-          <section>
-            <h2 className="text-3xl font-black text-white uppercase tracking-tighter mb-8">
-              RÉSILIATION
-            </h2>
-            <p className="leading-relaxed">
-              L'utilisateur peut résilier son abonnement à tout moment via son espace membre ou le portail de facturation Stripe. La résiliation prendra effet à l'issue de la période d'abonnement en cours.
-            </p>
-          </section>
-
-        </div>
-      </div>
-    </div>
+            </>
+          ),
+        },
+        {
+          id: "garanties", titre: "Garantie légale de conformité",
+          contenu: (
+            <p>Le service numérique fourni doit être conforme au contrat pendant toute la durée de l&apos;abonnement (C. conso., art. L224-25-1 et
+              suivants). En cas de défaut, signalez-le via la <Link href="/contact">page Contact</Link> : nous le corrigeons sans frais dans un délai
+              raisonnable, ou, à défaut, vous pouvez obtenir une réduction du prix ou la résolution du contrat. Les contenus d&apos;information
+              du site, issus de sources publiques et en partie rédigés par intelligence artificielle, restent soumis aux réserves des{" "}
+              <Link href="/cgu">conditions d&apos;utilisation</Link>.</p>
+          ),
+        },
+        {
+          id: "mediation", titre: "Réclamations et médiation",
+          contenu: (
+            <>
+              <p>Adressez d&apos;abord toute réclamation via la <Link href="/contact">page Contact</Link> ; nous répondons sous 15 jours.</p>
+              <p>À défaut d&apos;accord, vous pouvez recourir gratuitement au médiateur de la consommation (C. conso., art. L612-1) :{" "}
+                <strong>{ou(MEDIATEUR.nom)}</strong>{MEDIATEUR.site ? ` — ${MEDIATEUR.site}` : ""}{MEDIATEUR.adresse ? ` — ${MEDIATEUR.adresse}` : ""},
+                dans un délai d&apos;un an à compter de votre réclamation écrite.</p>
+            </>
+          ),
+        },
+        {
+          id: "droit", titre: "Données personnelles et droit applicable",
+          contenu: (
+            <p>Les données liées à la commande sont traitées selon la <Link href="/confidentialite">politique de confidentialité</Link>. Les présentes
+              CGV sont soumises au droit français ; le consommateur peut saisir, à son choix, la juridiction du lieu où il demeurait au moment de
+              la conclusion du contrat ou celle du lieu du fait dommageable.</p>
+          ),
+        },
+      ]}
+    />
   );
 }

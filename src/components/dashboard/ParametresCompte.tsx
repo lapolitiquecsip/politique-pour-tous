@@ -5,10 +5,11 @@ import Link from "next/link";
 import { motion, useReducedMotion } from "framer-motion";
 import { Palette, Sun, Moon, Laptop } from "lucide-react";
 import { Mail, KeyRound, ShieldCheck, LogOut, Loader2, Check, AlertTriangle, CreditCard, ArrowUpRight } from "lucide-react";
-import { STRIPE_PORTAL_URL, CONTACT_EMAIL } from "@/lib/constants";
+import { STRIPE_PORTAL_URL } from "@/lib/constants";
 import { supabase } from "@/lib/supabase";
 import { usePremium } from "@/lib/hooks/usePremium";
 import { useTheme } from "@/components/providers";
+import { ResiliationAbonnement, MesDonnees } from "./DroitsCompte";
 
 /**
  * Les réglages du compte : adresse, mot de passe, abonnement, déconnexion.
@@ -136,14 +137,8 @@ export default function ParametresCompte() {
               >
                 <CreditCard size={15} /> Gérer mon abonnement <ArrowUpRight size={14} />
               </a>
-            ) : (
-              <a
-                href={`mailto:${CONTACT_EMAIL}?subject=${encodeURIComponent("Changement d'abonnement")}&body=${encodeURIComponent(`Bonjour,\n\nJe souhaite modifier mon abonnement (actuellement : ${niveau.nom}).\n\nCompte : ${courriel ?? ""}\n`)}`}
-                className="inline-flex items-center justify-center gap-2 rounded-2xl bg-gradient-to-r from-amber-400 to-yellow-600 px-5 py-3 text-[11px] font-black uppercase tracking-widest text-white shadow-[0_8px_24px_rgb(var(--lueur-offre)/0.35)] transition hover:brightness-110"
-              >
-                <CreditCard size={15} /> Changer ou résilier
-              </a>
-            )}
+            ) : null}
+            {(tier === "elite" || tier === "pro") && <ResiliationAbonnement />}
 
             {tier !== "pro" && (
               <Link href="/premium"
@@ -155,8 +150,8 @@ export default function ParametresCompte() {
 
           <p className="mt-3 text-[11px] leading-snug text-white/35">
             {STRIPE_PORTAL_URL
-              ? "Changement de formule, moyen de paiement, factures et résiliation se font depuis l'espace de facturation sécurisé de Stripe."
-              : "L'espace de facturation en libre-service n'est pas encore ouvert : écrivez-nous et le changement sera fait sous 48 heures."}
+              ? "Moyen de paiement et factures : espace de facturation sécurisé de Stripe. La résiliation prend effet à la fin de la période payée."
+              : "La résiliation prend effet à la fin de la période payée, sans frais ; un e-mail la confirme. Pour changer de formule, écrivez-nous depuis la page Contact."}
           </p>
         </div>
       </div>
@@ -223,6 +218,8 @@ export default function ParametresCompte() {
           Modifier le mot de passe
         </button>
       </form>
+
+      <MesDonnees />
 
       {/* Déconnexion */}
       <div className={carte}>

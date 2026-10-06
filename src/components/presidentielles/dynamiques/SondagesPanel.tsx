@@ -6,7 +6,7 @@ import { api } from "@/lib/api";
 import CourbeMulti, { type Serie } from "./CourbeMulti";
 import { EnTete, Methode } from "./VerrouPro";
 import {
-  parSondage, serie, moyenne, couleur, idDe, marge, pct, periode, dateCourte, t, vignette, court,
+  parSondage, serie, moyenne, couleur, idDe, marge, pct, periode, dateCourte, t, vignette, court, silenceSondages,
   type Sondage, type SondageAgrege,
 } from "@/lib/dynamiques";
 
@@ -99,6 +99,18 @@ export default function SondagesPanel({ candidats }: { candidats: Candidat[] }) 
     }).sort((a, b) => b.dernier.date_fin.localeCompare(a.dernier.date_fin) || b.nb - a.nb);
   }, [tour2, fin]);
 
+  const silence = silenceSondages();
+  if (silence) {
+    return (
+      <section id="sondages" className="scroll-mt-36">
+        <p className="rounded-3xl border border-border bg-card p-6 text-sm leading-relaxed text-muted-foreground">
+          <strong className="font-black text-foreground">Sondages suspendus jusqu&apos;au dimanche {new Date(silence + "T12:00:00Z").toLocaleDateString("fr-FR", { day: "numeric", month: "long" })} à 20 h.</strong>{" "}
+          La loi interdit de publier, de diffuser et de commenter tout sondage électoral la veille et le jour du scrutin
+          (loi n° 77-808 du 19 juillet 1977, art. 11). Ils reviennent à la fermeture des derniers bureaux de vote.
+        </p>
+      </section>
+    );
+  }
   if (erreur) return <p className="rounded-3xl border border-border bg-card p-6 text-sm text-muted-foreground">Les sondages n&apos;ont pas pu être chargés. Réessayez dans un instant.</p>;
   if (!brut) return <div className="flex justify-center py-20"><Loader2 className="animate-spin text-fuchsia-500" /></div>;
   if (!dernier) return null;
@@ -211,7 +223,9 @@ export default function SondagesPanel({ candidats }: { candidats: Candidat[] }) 
           <p className="text-[10px] font-black uppercase tracking-widest text-indigo-700 dark:text-indigo-400">Dernier sondage</p>
           <h3 className="font-staatliches text-2xl uppercase leading-tight text-foreground">{dernier.institut}</h3>
           <p className="text-[11px] text-muted-foreground">
-            {periode(dernier.date_debut, dernier.date_fin)}{dernier.echantillon ? ` · ${dernier.echantillon.toLocaleString("fr-FR")} personnes` : ""}
+            {dernier.commanditaire ? <>Pour <strong className="font-bold text-foreground">{dernier.commanditaire}</strong> · </> : null}
+            Terrain {periode(dernier.date_debut, dernier.date_fin)}{dernier.echantillon ? ` · ${dernier.echantillon.toLocaleString("fr-FR")} personnes interrogées` : ""}
+            {dernier.notice_url && <> · <a href={dernier.notice_url} target="_blank" rel="noreferrer" className="inline-flex items-center gap-0.5 font-bold underline">notice officielle <ExternalLink size={10} /></a></>}
           </p>
           {dernier.hypotheses.length > 1 && (
             <div className="mt-3">
@@ -302,7 +316,10 @@ export default function SondagesPanel({ candidats }: { candidats: Candidat[] }) 
               <tbody className="divide-y divide-border">
                 {tour1.slice(0, 80).map((p: SondageAgrege) => (
                   <tr key={p.institut + p.date_fin}>
-                    <td className="py-2 pr-3 font-black text-foreground">{p.institut}</td>
+                    <td className="py-2 pr-3 font-black text-foreground">
+                      {p.notice_url ? <a href={p.notice_url} target="_blank" rel="noreferrer" className="hover:underline" title="Notice déposée à la Commission des sondages">{p.institut}</a> : p.institut}
+                      {p.commanditaire && <span className="block text-[10px] font-medium text-muted-foreground">pour {p.commanditaire}</span>}
+                    </td>
                     <td className="whitespace-nowrap py-2 pr-3 text-muted-foreground">{periode(p.date_debut, p.date_fin)}</td>
                     <td className="py-2 pr-3 text-right tabular-nums text-muted-foreground">{p.echantillon?.toLocaleString("fr-FR") ?? "—"}</td>
                     <td className="py-2 pr-3 text-center tabular-nums text-muted-foreground">{p.hypotheses.length}</td>
@@ -330,7 +347,11 @@ export default function SondagesPanel({ candidats }: { candidats: Candidat[] }) 
         auprès des instituts via la{" "}
         <a href={brut[0]?.source_url || "#"} target="_blank" rel="noreferrer" className="inline-flex items-center gap-0.5 font-bold underline">
           liste publique des sondages <ExternalLink size={10} />
-        </a>, actualisée toutes les deux heures. Notices complètes : Commission des sondages.
+        </a>, actualisée toutes les deux heures. Chaque sondage est publié avec le nom de son institut, de son acheteur,
+        sa taille d&apos;échantillon et ses dates de terrain ; sa notice détaillée peut être consultée par toute personne auprès de la{" "}
+        <a href="https://www.commission-des-sondages.fr/" target="_blank" rel="noreferrer" className="inline-flex items-center gap-0.5 font-bold underline">
+          Commission des sondages <ExternalLink size={10} />
+        </a> (loi n° 77-808 du 19 juillet 1977). La moyenne affichée n&apos;est pas un sondage.
       </Methode>
     </section>
   );

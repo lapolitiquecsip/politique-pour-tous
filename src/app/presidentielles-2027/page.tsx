@@ -13,6 +13,7 @@ import PrimaryDebates from "@/components/presidentielles/PrimaryDebates";
 import DragScroller from "@/components/ui/DragScroller";
 import { usePremium } from "@/lib/hooks/usePremium";
 import { isFollowingCandidate, toggleFollowCandidate } from "@/lib/candidateFollows";
+import MentionIA from "@/components/shared/MentionIA";
 
 type Candidate = {
   id: string;
@@ -372,6 +373,12 @@ function CandidateModal({ candidate, onClose }: { candidate: Candidate; onClose:
                               {points.map((p, i) => <li key={i} className="break-words [overflow-wrap:anywhere]"><NumHighlight text={p} /></li>)}
                             </ul>
                           )}
+                          {key === "controverses" && (
+                            <p className="mt-3 text-[11px] leading-snug text-muted-foreground">
+                              D&apos;après des sources publiques. Toute personne mise en cause est présumée innocente tant qu&apos;une décision
+                              de justice définitive n&apos;a pas établi sa culpabilité.
+                            </p>
+                          )}
                         </div>
                       </motion.div>
                     )}
@@ -380,6 +387,7 @@ function CandidateModal({ candidate, onClose }: { candidate: Candidate; onClose:
               );
             })}
           </div>
+          <MentionIA texte="Fiche synthétisée par IA à partir de Wikipédia, des sites officiels et de la presse — signalez toute erreur via la page Contact." className="mt-3" />
 
           {candidate.program && (
             <section className="mt-6 rounded-2xl border border-amber-200 dark:border-amber-500/25 bg-amber-50 dark:bg-amber-500/10 p-5">

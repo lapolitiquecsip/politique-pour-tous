@@ -77,9 +77,9 @@ export default function PremiumButton() {
 
     setLoading(true);
 
-    // Redirection directe vers Stripe Checkout (offre Premium par défaut ; la clé
-    // technique reste « elite » côté Stripe et base de données).
-    window.location.href = getPremiumUrl(userId, 'elite', 'monthly');
+    // Jamais de paiement direct : la page des offres recueille d'abord l'accord sur les
+    // CGV et la demande d'accès immédiat (C. conso. L221-25).
+    window.location.href = "/premium#offres";
   };
 
   // Ne pas afficher si :

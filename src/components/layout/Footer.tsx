@@ -43,6 +43,7 @@ export default function Footer() {
               <li><Link href="/mentions-legales" className="text-slate-300 hover:text-white hover:translate-x-1 transition-all inline-block font-medium">Mentions Légales</Link></li>
               <li><Link href="/cgu" className="text-slate-300 hover:text-white hover:translate-x-1 transition-all inline-block font-medium">CGU</Link></li>
               <li><Link href="/cgv" className="text-slate-300 hover:text-white hover:translate-x-1 transition-all inline-block font-medium">CGV</Link></li>
+              <li><Link href="/confidentialite" className="text-slate-300 hover:text-white hover:translate-x-1 transition-all inline-block font-medium">Confidentialité et cookies</Link></li>
             </ul>
           </div>
 
@@ -64,7 +65,7 @@ export default function Footer() {
                 </Link>
               </li>
               <li className="text-slate-400 text-[10px] uppercase tracking-widest font-bold pt-4">
-                © {currentYear} La Politique Simple Media
+                © {currentYear} La Politique, C&apos;est Simple
               </li>
             </ul>
           </div>

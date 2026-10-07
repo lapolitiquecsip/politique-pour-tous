@@ -274,7 +274,7 @@ async function ingestSenate(supabase: any, weeks: number) {
  * ⚠️ max_tokens généreux À DESSEIN : ces modèles raisonnent, et un plafond trop bas
  * renvoie une réponse VIDE sans la moindre erreur — panne silencieuse difficile à voir.
  */
-const MODEL = process.env.COMMISSION_MODEL || "deepseek-v4-pro";
+const MODEL = process.env.COMMISSION_MODEL || "deepseek-v4-flash";   // inutilisé : l'appel passe par scripts/lib/llm.ts
 const LLM_BASE_URL = process.env.COMMISSION_BASE_URL || "https://api.deepseek.com/";
 const LLM_API_KEY = process.env.DEEPSEEK_API_KEY || "";
 

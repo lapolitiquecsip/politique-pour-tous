@@ -61,7 +61,7 @@ const ASR_MODEL = process.env.ASR_MODEL || "whisper-large-v3-turbo";
 const ASR_KEY = process.env.ASR_API_KEY || "";
 
 const LLM_URL = process.env.COMMISSION_BASE_URL || "https://api.deepseek.com/";
-const LLM_MODEL = process.env.COMMISSION_MODEL || "deepseek-v4-pro";
+const LLM_MODEL = process.env.COMMISSION_MODEL || "deepseek-v4-flash";   // inutilisé : l'appel passe par scripts/lib/llm.ts
 const LLM_KEY = process.env.DEEPSEEK_API_KEY || "";
 
 /* ───────────────────────── Trouver la vidéo ───────────────────────── */

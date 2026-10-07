@@ -53,6 +53,7 @@ jobs:
           # DEEPSEEK_API_KEY ne sert plus que de secours si elle est renseignee.
           LLM_FREE_API_KEY: ${{ secrets.LLM_FREE_API_KEY }}
           DEEPSEEK_API_KEY: ${{ secrets.DEEPSEEK_API_KEY }}
+          LLM_SECOURS_PAYANT: ${{ vars.LLM_SECOURS_PAYANT }}   # « 1 » : secours deepseek-v4-flash si Gemini sature
         run: npx --yes tsx scripts/update-jorf.ts --days=${{ github.event.inputs.days || '10' }}
 
       # Filet. L'ingestion ci-dessus explique les textes du jour au fil de leur
@@ -67,6 +68,7 @@ jobs:
           SUPABASE_SERVICE_ROLE_KEY: ${{ secrets.SUPABASE_SERVICE_ROLE_KEY }}
           LLM_FREE_API_KEY: ${{ secrets.LLM_FREE_API_KEY }}
           DEEPSEEK_API_KEY: ${{ secrets.DEEPSEEK_API_KEY }}
+          LLM_SECOURS_PAYANT: ${{ vars.LLM_SECOURS_PAYANT }}   # « 1 » : secours deepseek-v4-flash si Gemini sature
         run: npx --yes tsx scripts/update-jorf.ts --rattraper-explications
 
       # Meme filet pour le resume du jour. Il ne peut pas passer par
@@ -81,4 +83,5 @@ jobs:
           SUPABASE_SERVICE_ROLE_KEY: ${{ secrets.SUPABASE_SERVICE_ROLE_KEY }}
           LLM_FREE_API_KEY: ${{ secrets.LLM_FREE_API_KEY }}
           DEEPSEEK_API_KEY: ${{ secrets.DEEPSEEK_API_KEY }}
+          LLM_SECOURS_PAYANT: ${{ vars.LLM_SECOURS_PAYANT }}   # « 1 » : secours deepseek-v4-flash si Gemini sature
         run: npx --yes tsx scripts/update-jorf.ts --rattraper-resumes --days=35 --catchup=10

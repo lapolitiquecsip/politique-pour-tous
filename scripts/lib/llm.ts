@@ -24,7 +24,9 @@
  *   LLM_FREE_API_KEY   clé Google AI Studio (https://aistudio.google.com/apikey)
  *   LLM_FREE_MODEL     défaut « gemini-2.5-flash »
  *   LLM_FREE_RPM       requêtes par minute tolérées, défaut 10
- *   DEEPSEEK_API_KEY   secours facultatif
+ *   DEEPSEEK_API_KEY   voie payante (seule voie si aucune clé gratuite)
+ *   LLM_SECOURS_PAYANT  « 1 » : secours payant bon marché si le gratuit sature (défaut : non)
+ *   JORF_MODEL         modèle payant, défaut « deepseek-v4-flash » (v4-pro refusé sauf LLM_AUTORISER_PRO=1)
  *
  * Vérification : npx tsx scripts/lib/llm.ts --test
  */
@@ -80,14 +82,35 @@ const RPM = Number(process.env.LLM_FREE_RPM || 10);
 
 const CLE_SECOURS = process.env.DEEPSEEK_API_KEY || "";
 const URL_SECOURS = process.env.JORF_BASE_URL || "https://api.deepseek.com/";
-const MODELE_SECOURS = process.env.JORF_MODEL || "deepseek-v4-pro";
+
+/**
+ * Le modèle payant. Jamais deepseek-v4-pro sans autorisation explicite
+ * (LLM_AUTORISER_PRO=1) : c'était le défaut, si bien qu'un secret LLM_FREE_API_KEY
+ * vidé ou expiré aurait fait passer tout le Journal officiel et les commissions
+ * sur le modèle le plus cher, sans que rien ne le signale.
+ */
+function modeleAutorise(m: string): string {
+  if (/v4-pro/i.test(m) && process.env.LLM_AUTORISER_PRO !== "1") {
+    console.warn(`    ⚠ ${m} refusé en automatique (LLM_AUTORISER_PRO absent) → deepseek-v4-flash`);
+    return "deepseek-v4-flash";
+  }
+  return m;
+}
+const MODELE_SECOURS = modeleAutorise(process.env.JORF_MODEL || "deepseek-v4-flash");
+
+/**
+ * Secours payant bon marché quand le gratuit est saturé ou indisponible
+ * (quota, 5xx). Désactivé par défaut : LLM_SECOURS_PAYANT=1 l'allume, comme côté
+ * scripts de mise à jour. Sans lui, l'appelant publie la source officielle brute.
+ */
+const SECOURS_PAYANT = process.env.LLM_SECOURS_PAYANT === "1" && Boolean(CLE_SECOURS);
 
 /** Vrai si une voie, gratuite ou payante, est configurée. */
 export const llmDisponible = () => Boolean(CLE_GRATUITE || CLE_SECOURS);
 
 /** Nom de la voie retenue, pour que les journaux disent ce qui a servi. */
 export const llmVoie = () =>
-  CLE_GRATUITE ? `Google AI Studio (${modeleRetenu}, gratuit)`
+  CLE_GRATUITE ? `Google AI Studio (${modeleRetenu}, gratuit)${SECOURS_PAYANT ? `, secours ${MODELE_SECOURS}` : ""}`
     : CLE_SECOURS ? `DeepSeek (${MODELE_SECOURS}, payant)`
       : "aucune";
 
@@ -202,6 +225,8 @@ async function appelDeepSeek(systeme: string, utilisateur: string, maxJetons: nu
       messages: [{ role: "system", content: systeme }, { role: "user", content: utilisateur }],
       response_format: { type: "json_object" },
       max_tokens: maxJetons,
+      // Reformulation à partir d'un texte fourni : la réflexion est facturée et n'apporte rien.
+      thinking: { type: "disabled" },
     }),
   });
   const corps: any = await r.json().catch(() => ({}));
@@ -231,9 +256,19 @@ export async function demanderJSON<T = any>(
   let derniere: Error | null = null;
   for (let essai = 1; essai <= essais; essai++) {
     try {
-      const brut = CLE_GRATUITE
-        ? await appelGoogle(systeme, utilisateur, maxJetons)
-        : await appelDeepSeek(systeme, utilisateur, maxJetons);
+      let brut: string;
+      if (!CLE_GRATUITE) brut = await appelDeepSeek(systeme, utilisateur, maxJetons);
+      else {
+        try {
+          brut = await appelGoogle(systeme, utilisateur, maxJetons);
+        } catch (e) {
+          // Seule une saturation ou une panne passe au secours : une requête refusée
+          // pour son contenu le serait aussi ailleurs.
+          if (!(SECOURS_PAYANT && e instanceof ErreurLLM && e.reessayable)) throw e;
+          console.warn(`    ↳ gratuit indisponible (${e.message}) → secours ${MODELE_SECOURS}`);
+          brut = await appelDeepSeek(systeme, utilisateur, maxJetons);
+        }
+      }
       // Certains modèles encadrent malgré tout le JSON d'une clôture Markdown.
       return JSON.parse(brut.replace(/^```(?:json)?\s*|\s*```$/g, ""));
     } catch (e) {

@@ -60,6 +60,7 @@ jobs:
           LLM_FREE_API_KEY: ${{ secrets.LLM_FREE_API_KEY }}
           # Secours payant facultatif.
           DEEPSEEK_API_KEY: ${{ secrets.DEEPSEEK_API_KEY }}
+          LLM_SECOURS_PAYANT: ${{ vars.LLM_SECOURS_PAYANT }}   # « 1 » : secours deepseek-v4-flash si Gemini sature
           # Facultatif : bascule vers un modèle moins cher (deepseek-flash) sans toucher au code.
           COMMISSION_MODEL: ${{ vars.COMMISSION_MODEL }}
         run: >

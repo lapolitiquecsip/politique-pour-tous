@@ -46,6 +46,8 @@ interface ContentItem {
   date_publication: string;
   source_url?: string;
   source_name?: string;
+  /** Égal au titre affiché quand la fiche reprend la source telle quelle, sans IA. */
+  titre_original?: string | null;
 }
 
 type InstCfg = { label: string; dot: string; tintBg: string; tintText: string };
@@ -122,7 +124,9 @@ export default function FeedItemCard({ item, colorIndex }: { item: ContentItem; 
             <span className={`h-1.5 w-1.5 rounded-full ${config.dot}`} />
             {config.label}
           </span>
-          <span className="text-[11px] font-semibold text-muted-foreground">{relativeDate}<span title="Titre et résumé rédigés par IA à partir de la source citée"> · résumé IA</span></span>
+          <span className="text-[11px] font-semibold text-muted-foreground">{relativeDate}{item.titre_original && item.titre_original === item.titre_simplifie
+            ? <span title="Intitulé et chapô repris tels quels de la source officielle"> · texte de la source</span>
+            : <span title="Titre et résumé rédigés par IA à partir de la source citée"> · résumé IA</span>}</span>
         </div>
 
         <h3 className="mb-3 shrink-0 text-[19px] font-black leading-[1.3] tracking-tight text-foreground dark:text-white">

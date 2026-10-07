@@ -37,4 +37,9 @@ jobs:
           # IA gratuite (Google AI Studio) ; Claude seulement en secours, si la clé existe.
           LLM_FREE_API_KEY: ${{ secrets.LLM_FREE_API_KEY }}
           ANTHROPIC_API_KEY: ${{ secrets.ANTHROPIC_API_KEY }}
+          # Secours si Gemini échoue : deepseek-v4-flash si LLM_SECOURS_PAYANT=1, puis
+          # FIL_ACCUEIL_SECOURS (« titres-bruts » par défaut, « aucun », ou « claude » = ancien comportement).
+          DEEPSEEK_API_KEY: ${{ secrets.DEEPSEEK_API_KEY }}
+          LLM_SECOURS_PAYANT: ${{ vars.LLM_SECOURS_PAYANT }}
+          FIL_ACCUEIL_SECOURS: ${{ vars.FIL_ACCUEIL_SECOURS }}
         run: npx --yes tsx scripts/run-content-ingestion.ts

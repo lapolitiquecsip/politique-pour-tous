@@ -138,6 +138,32 @@ interface ProcessedArticle {
   date_publication: string;
   source_url: string;
   source_name: string;
+  /** Intitulé et chapô de la source, publiés tels quels, sans IA. */
+  brut?: boolean;
+}
+
+/** Que faire quand l'IA échoue sur un lot : voir processWithClaude. */
+const SECOURS_FIL = (process.env.FIL_ACCUEIL_SECOURS || 'titres-bruts').toLowerCase();
+
+/**
+ * Secours sans IA : seules les sources officielles (rang 1) passent, avec leur
+ * intitulé et leur chapô tels quels. Un chapô déjà coupé par le flux (« … »,
+ * « [...] ») n'est pas repris : un texte tronqué ne s'explique pas. Les filtres
+ * de validateCard s'appliquent ensuite comme aux fiches rédigées par l'IA.
+ */
+function titresBruts(lot: RawArticle[]): ProcessedArticle[] {
+  return lot.filter(a => a.tier === 1 && a.title).map(a => {
+    const chapo = cleanHtml(a.description || '').trim();
+    return {
+      institution: a.institution,
+      titre_simplifie: cleanHtml(a.title).trim(),
+      resume_flash: /(…|\.\.\.|\[…\]|\[\.\.\.\])\s*$/.test(chapo) ? '' : chapo,
+      date_publication: normalizeDate(a.pubDate),
+      source_url: a.link,
+      source_name: a.source_name,
+      brut: true,
+    };
+  });
 }
 
 // --- Helpers ---
@@ -272,6 +298,12 @@ async function processWithClaude(articles: RawArticle[]): Promise<ProcessedArtic
   // pas la clé (échec en 2 s à chaque passage) et le modèle actuel refuse le
   // paramètre « temperature » (chaque lot rejeté). Le texte rendu est analysé plus
   // bas comme avant : on y cherche le tableau JSON des fiches.
+  //
+  // Quand l'IA échoue (gratuit saturé, puis secours deepseek-v4-flash si
+  // LLM_SECOURS_PAYANT=1 dans scripts/lib/llm.ts), FIL_ACCUEIL_SECOURS décide :
+  //   « titres-bruts » (défaut) : les intitulés des sources officielles (rang 1), sans IA ;
+  //   « aucun »                 : le lot est sauté ;
+  //   « claude »                : ancien comportement, Claude Sonnet (payant, cher).
   const synthese = async (prompt: string): Promise<string> => {
     if (llmDisponible()) {
       try {
@@ -280,9 +312,11 @@ async function processWithClaude(articles: RawArticle[]): Promise<ProcessedArtic
           prompt, { maxJetons: 8192 });
         return JSON.stringify(r);
       } catch (e: any) {
-        if (!process.env.ANTHROPIC_API_KEY) throw e;
+        if (SECOURS_FIL !== 'claude' || !process.env.ANTHROPIC_API_KEY) throw e;
         console.warn(`[Scraper/IA] Gratuit indisponible (${e.message}) → Claude.`);
       }
+    } else if (SECOURS_FIL !== 'claude') {
+      throw new Error('aucune clé LLM');
     }
     const response = await anthropic.messages.create({
       model: CLAUDE_MODEL,
@@ -412,7 +446,12 @@ ${articlesForPrompt}`);
         console.warn(`[Scraper/Claude] Lot ${batchIndex + 1} : Impossible de parser la réponse JSON.`);
       }
     } catch (err: any) {
-      console.error(`[Scraper/Claude] ❌ Erreur Claude sur le lot ${batchIndex + 1}:`, err.message);
+      console.error(`[Scraper/Claude] ❌ Erreur IA sur le lot ${batchIndex + 1}:`, err.message);
+      if (SECOURS_FIL === 'titres-bruts') {
+        const bruts = titresBruts(chunk);
+        allProcessed.push(...bruts);
+        console.warn(`[Scraper/IA] Lot ${batchIndex + 1} : ${bruts.length} intitulé(s) officiel(s) publié(s) sans IA.`);
+      }
     }
   }
 
@@ -476,6 +515,8 @@ async function upsertArticles(articles: ProcessedArticle[]): Promise<{ inserted:
         .from('content')
         .insert({
           institution: mappedInstitution,
+          // Fiche sans IA : titre_original = titre affiché, ce qui retire la mention « résumé IA ».
+          ...(article.brut ? { titre_original: article.titre_simplifie } : {}),
           titre_simplifie: article.titre_simplifie,
           resume_flash: article.resume_flash,
           date_publication: article.date_publication,

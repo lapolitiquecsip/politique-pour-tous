@@ -14,6 +14,7 @@ import DragScroller from "@/components/ui/DragScroller";
 import { usePremium } from "@/lib/hooks/usePremium";
 import { isFollowingCandidate, toggleFollowCandidate } from "@/lib/candidateFollows";
 import MentionIA from "@/components/shared/MentionIA";
+import ProgrammeCandidat, { type SourceProgramme } from "@/components/presidentielles/ProgrammeCandidat";
 
 type Candidate = {
   id: string;
@@ -177,21 +178,6 @@ function formatDate(value?: string | null) {
   return new Intl.DateTimeFormat("fr-FR", { dateStyle: "long" }).format(new Date(value));
 }
 
-// Icône + couleur d'un thème de programme (différenciation visuelle).
-function themeStyle(name: string): { Icon: any; c: string; bg: string; dot: string } {
-  const h = (name || "").toLowerCase();
-  if (/immigr/.test(h)) return { Icon: Globe2, c: "text-amber-600 dark:text-amber-300", bg: "bg-amber-50 dark:bg-amber-500/10", dot: "bg-amber-500" };
-  if (/éduc|educ|école|ecole/.test(h)) return { Icon: GraduationCap, c: "text-sky-600 dark:text-sky-300", bg: "bg-sky-50 dark:bg-sky-500/10", dot: "bg-sky-500" };
-  if (/sécur|secur|justice/.test(h)) return { Icon: ShieldCheck, c: "text-rose-600 dark:text-rose-300", bg: "bg-rose-50 dark:bg-rose-500/10", dot: "bg-rose-500" };
-  if (/santé|sante/.test(h)) return { Icon: HeartPulse, c: "text-pink-600 dark:text-pink-300", bg: "bg-pink-50 dark:bg-pink-500/10", dot: "bg-pink-500" };
-  if (/agricult|rural/.test(h)) return { Icon: Wheat, c: "text-lime-700 dark:text-lime-300", bg: "bg-lime-50 dark:bg-lime-500/10", dot: "bg-lime-500" };
-  if (/écolog|ecolog|énerg|energ|environ/.test(h)) return { Icon: Leaf, c: "text-emerald-600 dark:text-emerald-300", bg: "bg-emerald-50 dark:bg-emerald-500/10", dot: "bg-emerald-500" };
-  if (/europ|internation/.test(h)) return { Icon: Flag, c: "text-blue-600 dark:text-blue-300", bg: "bg-blue-50 dark:bg-blue-500/10", dot: "bg-blue-500" };
-  if (/économ|econom|ambition|prosp|emploi|travail/.test(h)) return { Icon: TrendingUp, c: "text-violet-600 dark:text-violet-300", bg: "bg-violet-50 dark:bg-violet-500/10", dot: "bg-violet-500" };
-  if (/institution|destin|civique|démocr|democr|maître|maitre|renouveau/.test(h)) return { Icon: Landmark, c: "text-indigo-600 dark:text-indigo-300", bg: "bg-indigo-50 dark:bg-indigo-500/10", dot: "bg-indigo-500" };
-  return { Icon: FileText, c: "text-muted-foreground", bg: "bg-muted", dot: "bg-slate-400" };
-}
-
 function CandidateModal({ candidate, onClose }: { candidate: Candidate; onClose: () => void }) {
   const side = sideOf(candidate);
   const { isPremium, isPro } = usePremium() || { isPremium: false, isPro: false };
@@ -213,12 +199,9 @@ function CandidateModal({ candidate, onClose }: { candidate: Candidate; onClose:
   const [videos, setVideos] = useState<any[]>([]);              // vidéos YouTube officielles
   const [selectedVideo, setSelectedVideo] = useState<any | null>(null); // lecteur vidéo ouvert
   const [proposals, setProposals] = useState<any[]>([]);
+  const [sourcesProgramme, setSourcesProgramme] = useState<SourceProgramme[]>([]);
   const [openPanels, setOpenPanels] = useState<Set<string>>(new Set());   // panneaux bio dépliés
   const togglePanel = (k: string) => setOpenPanels(p => { const n = new Set(p); n.has(k) ? n.delete(k) : n.add(k); return n; });
-  const [openExpl, setOpenExpl] = useState<Set<string>>(new Set());         // « ? » explication par proposition
-  const toggleExpl = (k: string) => setOpenExpl(p => { const n = new Set(p); n.has(k) ? n.delete(k) : n.add(k); return n; });
-  const [openTheme, setOpenTheme] = useState<Set<string>>(new Set());       // thèmes de programme dépliés (fermés par défaut)
-  const toggleTheme = (k: string) => setOpenTheme(p => { const n = new Set(p); n.has(k) ? n.delete(k) : n.add(k); return n; });
   const [showLegal, setShowLegal] = useState(false);
   const [selectedNews, setSelectedNews] = useState<any | null>(null); // récap actu ouvert EN SITE
   const [mandate, setMandate] = useState<{ type: string; slug: string } | null>(null);
@@ -228,6 +211,7 @@ function CandidateModal({ candidate, onClose }: { candidate: Candidate; onClose:
     api.getCandidateNews(candidate.id).then(rows => { if (active) setNews(rows); }).catch(() => setNews([]));
     api.getCandidateVideos(candidate.id, 12).then(rows => { if (active) setVideos(rows as any[]); }).catch(() => {});
     api.getCandidateProposals(candidate.id).then(rows => { if (active) setProposals(rows as any[]); }).catch(() => {});
+    api.getSourcesProgramme(candidate.id).then(rows => { if (active) setSourcesProgramme(rows); }).catch(() => {});
     api.findMandateByName(candidate.full_name).then(m => { if (active) setMandate(m); }).catch(() => {});
     api.findPartyByAlias(candidate.party).then(p => { if (active) setPartyLink(p); }).catch(() => {});
     return () => { active = false; };
@@ -396,75 +380,7 @@ function CandidateModal({ candidate, onClose }: { candidate: Candidate; onClose:
             </section>
           )}
 
-          {/* Son programme : toutes les idées par thème + contexte au clic sur « ? » */}
-          {proposals.length > 0 && (() => {
-            const groups: Record<string, { ctx: string | null; items: any[] }> = {};
-            for (const p of proposals) {
-              const k = p.theme || "Propositions";
-              (groups[k] ||= { ctx: null, items: [] });
-              if (p.subsection === "__contexte__") groups[k].ctx = p.text; else groups[k].items.push(p);
-            }
-            const src = proposals.find(p => p.source_url)?.source_url;
-            return (
-              <section className="mt-8">
-                <h3 className="text-2xl font-staatliches uppercase text-foreground">Son programme</h3>
-                <p className="mt-1 text-xs text-muted-foreground">Toutes ses idées, par thème — issues du programme officiel. Cliquez sur <HelpCircle size={12} className="inline -mt-0.5" /> pour comprendre pourquoi.</p>
-                <div className="mt-4 space-y-4">
-                  {Object.entries(groups).map(([theme, g]) => {
-                    const { Icon, c, bg, dot } = themeStyle(theme);
-                    const isOpen = openTheme.has(theme);
-                    return (
-                      <div key={theme} className="overflow-hidden rounded-2xl border border-border">
-                        {/* En-tête cliquable : ouvre/ferme les propositions du thème (fermé par défaut). */}
-                        <button onClick={() => toggleTheme(theme)} aria-expanded={isOpen}
-                          className={`flex w-full items-center gap-2.5 ${bg} px-4 py-3 text-left transition hover:brightness-95`}>
-                          <span className={`flex h-8 w-8 shrink-0 items-center justify-center rounded-xl bg-card ${c} shadow-sm`}><Icon size={16} /></span>
-                          <p className={`text-sm font-black uppercase tracking-widest ${c}`}>{theme}</p>
-                          <span className="text-[10px] font-black text-muted-foreground">· {g.items.length}</span>
-                          <ChevronDown size={18} className={`ml-auto shrink-0 ${c} transition-transform ${isOpen ? "rotate-180" : ""}`} />
-                        </button>
-                        <AnimatePresence initial={false}>
-                          {isOpen && (
-                            <motion.div initial={{ height: 0, opacity: 0 }} animate={{ height: "auto", opacity: 1 }} exit={{ height: 0, opacity: 0 }} className="overflow-hidden">
-                              {g.ctx && <p className="border-b border-border bg-muted px-4 py-3 text-sm italic leading-6 text-muted-foreground">💡 {g.ctx}</p>}
-                              <ul className="divide-y divide-slate-50 dark:divide-slate-800 bg-card">
-                                {g.items.map((p, i) => {
-                                  const exKey = `${theme}#${i}`;
-                                  const exOpen = openExpl.has(exKey);
-                                  return (
-                                    <li key={i} className="px-4 py-2.5 text-sm leading-6 text-slate-700 dark:text-slate-200">
-                                      <div className="flex items-start gap-2.5">
-                                        <span className={`mt-2 h-1.5 w-1.5 shrink-0 rounded-full ${dot}`} />
-                                        <span className="flex-1">{p.text}</span>
-                                        {p.explanation && (
-                                          <button onClick={() => toggleExpl(exKey)} title="Comprendre cette proposition"
-                                            className={`mt-0.5 flex h-6 w-6 shrink-0 items-center justify-center rounded-full border transition ${exOpen ? "border-violet-300 bg-violet-100 dark:bg-violet-500/10 text-violet-700 dark:text-violet-300" : "border-violet-200 dark:border-violet-500/25 bg-card text-violet-500 hover:bg-violet-50"}`}>
-                                            <HelpCircle size={14} />
-                                          </button>
-                                        )}
-                                      </div>
-                                      <AnimatePresence initial={false}>
-                                        {exOpen && p.explanation && (
-                                          <motion.div initial={{ height: 0, opacity: 0 }} animate={{ height: "auto", opacity: 1 }} exit={{ height: 0, opacity: 0 }} className="overflow-hidden">
-                                            <p className="ml-4 mt-2 rounded-xl border-l-2 border-violet-300 bg-violet-50/70 dark:bg-violet-500/10 px-3 py-2.5 text-[13px] leading-6 text-muted-foreground">{p.explanation}</p>
-                                          </motion.div>
-                                        )}
-                                      </AnimatePresence>
-                                    </li>
-                                  );
-                                })}
-                              </ul>
-                            </motion.div>
-                          )}
-                        </AnimatePresence>
-                      </div>
-                    );
-                  })}
-                </div>
-                {src && <a href={src} target="_blank" rel="noreferrer" className="mt-3 inline-flex items-center gap-1.5 text-[11px] font-black uppercase tracking-widest text-blue-700 dark:text-blue-300 hover:underline"><ExternalLink size={12} /> Programme officiel</a>}
-              </section>
-            );
-          })()}
+          <ProgrammeCandidat proposals={proposals} sources={sourcesProgramme} />
 
           {/* Ses débats de primaire — rubrique à part, avant le fil général : un débat
               se cherche, il ne se croise pas au fil du défilement. La rubrique s'efface

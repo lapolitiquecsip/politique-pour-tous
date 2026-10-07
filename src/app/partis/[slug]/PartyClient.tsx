@@ -7,6 +7,7 @@ import PartyFinanceCompare from "@/components/partis/PartyFinanceCompare";
 import AllPartiesNav from "@/components/partis/AllPartiesNav";
 import PartyElectionMap, { hasPartyElectionMap } from "@/components/partis/PartyElectionMap";
 import EntityNewsFeed from "@/components/shared/EntityNewsFeed";
+import ProgrammesDuParti from "@/components/partis/ProgrammesDuParti";
 import CandidateProgram from "@/components/presidentielles/CandidateProgram";
 import { motion, AnimatePresence } from "framer-motion";
 import {
@@ -255,6 +256,9 @@ export default function PartyClient({ params }: { params: Promise<{ slug: string
         <div className="mt-8">
           <EntityNewsFeed entityType="party" entityId={party.slug} defaultOpen />
         </div>
+
+        {/* Programme du ou des candidats du parti à la présidentielle, dès sa publication. */}
+        <ProgrammesDuParti nomParti={party.name} sigle={party.abbrev} />
 
         {/* Représentation — compteurs cliquables (clic = voir les membres) */}
         <div className="mt-8 grid grid-cols-3 gap-3">

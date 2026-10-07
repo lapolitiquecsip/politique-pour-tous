@@ -106,28 +106,28 @@ serve(async (req) => {
       if (action === "verser") return json(await verser());
       if (action === "diagnostic") {
         try {
+          const moi: any = await (stripe.accounts as any).retrieve();
+          const solde = await stripe.balance.retrieve();
+          const ident = { compte: moi.id, nom: moi.settings?.dashboard?.display_name || moi.business_profile?.name || null, pays: moi.country,
+            solde_eur: (solde.available.concat(solde.pending).filter((b: any) => b.currency === "eur").reduce((x: number, b: any) => x + b.amount, 0)) / 100 };
+          try { await stripe.accounts.list({ limit: 1 }); } catch (e) { return json({ connect: false, ...ident, erreur: (e as Error).message.slice(0, 120) }); }
           const l = await stripe.accounts.list({ limit: 3 });
-          return json({ connect: true, mode: (Deno.env.get("STRIPE_SECRET_KEY") ?? "").startsWith("sk_live") ? "live" : "test", comptes: l.data.length });
+          return json({ connect: true, ...ident, mode: (Deno.env.get("STRIPE_SECRET_KEY") ?? "").startsWith("sk_live") ? "live" : "test", comptes: l.data.length });
         } catch (e) { return json({ connect: false, erreur: (e as Error).message }); }
       }
       // Essais de bout en bout, MODE TEST SEULEMENT : un compte de parrain fictif complet
       // (identité et IBAN de test Stripe), et le remboursement d'un paiement.
       if ((Deno.env.get("STRIPE_SECRET_KEY") ?? "").startsWith("sk_test")) {
         if (action === "essai_compte") {
-          const a = await stripe.accounts.create({
-            type: "custom", country: "FR", business_type: "individual", email: "parrain-essai@example.com",
-            capabilities: { transfers: { requested: true } },
-            business_profile: { product_description: "Essai parrainage", url: SITE, mcc: "7399" },
-            individual: {
-              first_name: "Essai", last_name: "Parrain", email: "parrain-essai@example.com", phone: "+33612345678",
-              dob: { day: 1, month: 1, year: 1990 },
-              address: { line1: "1 rue de Rivoli", city: "Paris", postal_code: "75001", country: "FR" },
-            },
-            external_account: { object: "bank_account", country: "FR", currency: "eur", account_number: "FR1420041010050500013M02606" },
-            tos_acceptance: { date: Math.floor(Date.now() / 1000), ip: "8.8.8.8" },
-          });
-          const relu: any = await stripe.accounts.retrieve(a.id);
-          return json({ compte: a.id, pret: pret(relu), transfers: relu.capabilities?.transfers, exigences: relu.requirements?.currently_due });
+          // Compte Express + lien d'inscription hébergé par Stripe (obligatoire pour une plateforme française).
+          const a = await stripe.accounts.create({ type: "express", country: "FR", email: "parrain-essai@example.com", business_type: "individual",
+            capabilities: { transfers: { requested: true } }, business_profile: { product_description: "Essai parrainage", url: SITE, mcc: "7399" } });
+          const lien = await stripe.accountLinks.create({ account: a.id, type: "account_onboarding", refresh_url: `${SITE}/parrainage/`, return_url: `${SITE}/parrainage/?versements=retour` });
+          return json({ compte: a.id, lien: lien.url });
+        }
+        if (action === "essai_etat") {
+          const a: any = await stripe.accounts.retrieve(String(corps.compte));
+          return json({ compte: a.id, pret: pret(a), transfers: a.capabilities?.transfers, exigences: a.requirements?.currently_due });
         }
         if (action === "essai_rembourser") {
           const charge = await paiementDe(String(corps.facture));

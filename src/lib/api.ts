@@ -1239,6 +1239,19 @@ export const api = {
     return data;
   },
 
+  /** D'où vient le programme d'un candidat (présentation vidéo officielle, PDF…). */
+  getSourcesProgramme: async (candidateId: string) => {
+    const { data } = await supabase.from('programmes_sources').select('source_url, titre, traite_le')
+      .eq('candidate_id', candidateId).eq('statut', 'programme').order('traite_le', { ascending: false });
+    return (data || []) as { source_url: string; titre: string | null; traite_le: string }[];
+  },
+  /** Candidats déclarés d'un parti (fiche parti : leur programme y figure aussi). */
+  getCandidatsDuParti: async (nomParti: string, sigle?: string | null) => {
+    const { data } = await supabase.from('presidential_candidates').select('id, full_name, slug, party, photo_url').eq('status', 'declared');
+    const n = (x: string) => (x || '').toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g, '').replace(/[^a-z0-9]+/g, ' ').trim();
+    // « Les Ecologistes » ↔ « Les Écologistes — EELV », « PCF » ↔ sigle du Parti communiste.
+    return (data || []).filter((c: any) => !!n(c.party) && (n(c.party) === n(nomParti) || n(nomParti).startsWith(n(c.party) + ' ') || (!!sigle && n(c.party) === n(sigle))));
+  },
   // Fil vidéo d'un candidat (sa chaîne YouTube officielle). Vide s'il n'a pas de chaîne vérifiée.
   getCandidateVideos: async (candidateId: string, limit = 12) => {
     const { data, error } = await supabase

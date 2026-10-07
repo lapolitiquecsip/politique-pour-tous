@@ -127,7 +127,7 @@ export default function HelpBubble() {
             ?
           </span>
         </motion.span>
-        <span className="pointer-events-none absolute -top-9 left-1/2 -translate-x-1/2 whitespace-nowrap rounded-full bg-slate-900 px-2.5 py-1 text-[10px] font-black uppercase tracking-widest text-white opacity-0 shadow-lg transition-opacity duration-200 group-hover:opacity-100">
+        <span className="pointer-events-none absolute -top-9 left-0 whitespace-nowrap rounded-full bg-slate-900 px-2.5 py-1 text-[10px] font-black uppercase tracking-widest text-white opacity-0 shadow-lg transition-opacity duration-200 group-hover:opacity-100">
           Comprendre cette page
         </span>
       </motion.button>
@@ -178,7 +178,8 @@ export default function HelpBubble() {
               <div className={`relative shrink-0 overflow-hidden bg-gradient-to-br ${th.header} p-6 text-white`}>
                 <div className="pointer-events-none absolute -right-10 -top-10 h-36 w-36 rounded-full bg-white/10 blur-2xl" />
                 <div className="pointer-events-none absolute -bottom-12 left-10 h-28 w-28 rounded-full bg-sky-300/20 blur-2xl" />
-                <button onClick={() => setOpen(false)} className="absolute right-4 top-4 rounded-full bg-white/15 p-2 text-white transition hover:bg-white/25">
+                {/* z-20 : le bloc du titre (relative, placé après) recouvrait la croix et avalait le clic. */}
+                <button type="button" aria-label="Fermer" onClick={() => setOpen(false)} className="absolute right-4 top-4 z-20 rounded-full bg-white/15 p-2 text-white transition hover:bg-white/25">
                   <X size={18} />
                 </button>
                 <div className="relative flex items-start gap-4 pr-10">

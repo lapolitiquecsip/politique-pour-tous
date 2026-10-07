@@ -18,7 +18,8 @@ import { useRouter } from "next/navigation";
 import { codeParrain, mesurerAction } from "@/lib/mesure";
 
 export default function LoginPage() {
-  const [isLogin, setIsLogin] = useState(true);
+  // « ?inscription=1 » (invitation à créer un compte) : le formulaire s'ouvre en mode inscription.
+  const [isLogin, setIsLogin] = useState(() => typeof window === "undefined" || !new URLSearchParams(window.location.search).has("inscription"));
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [loading, setLoading] = useState(false);

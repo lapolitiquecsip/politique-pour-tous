@@ -6,6 +6,7 @@ import Footer from "@/components/layout/Footer";
 import { ThemeProvider } from "@/components/providers";
 import PremiumButton from "@/components/premium/PremiumButton";
 import PwaProvider from "@/components/pwa/PwaProvider";
+import InvitationCompte from "@/components/layout/InvitationCompte";
 import Mesure from "@/components/analytics/Mesure";
 
 const dmSans = DM_Sans({
@@ -87,6 +88,7 @@ export default function RootLayout({
             <HelpBubble />
             <PwaProvider />
             <Mesure />
+            <InvitationCompte />
           </GlossaryProvider>
         </ThemeProvider>
       </body>

@@ -12,7 +12,11 @@ import { SENATE_GROUPS } from "@/lib/senate-groups";
 // Couleurs = couleurs politiques (identité) ; structure = guide dataviz (légende + labels
 // directs, badges contrastés, écart 2px entre secteurs, thème clair/sombre).
 
-type Group = { label: string; seats: number; color: string; order: number; slug?: string | null; href?: string | null };
+type Group = { label: string; seats: number; color: string; order: number; slug?: string | null; href?: string | null; vacant?: boolean };
+
+// Nombre de sièges fixé par la loi : le total affiché est celui des sièges, pas celui des élus
+// en exercice (un siège peut être vacant en attendant une élection partielle).
+const SIEGES = { an: 577, senat: 348 } as const;
 
 // Ordre gauche → droite dans l'hémicycle (rang par sigle) pour l'Assemblée.
 const AN_ORDER: Record<string, number> = {
@@ -57,7 +61,7 @@ function sectorPath(cx: number, cy: number, r0: number, r1: number, degStart: nu
   return `M ${outer.join(" L ")} L ${inner.join(" L ")} Z`;
 }
 
-function Hemicycle({ title, total, groups }: { title: string; total: number; groups: Group[] }) {
+function Hemicycle({ title, total, groups, enExercice }: { title: string; total: number; groups: Group[]; enExercice?: number }) {
   const W = 640, H = 340, cx = W / 2, cy = 300, r0 = 92, r1 = 250, rBadge = r1 + 22;
   const sorted = [...groups].sort((a, b) => a.order - b.order);
   const sum = sorted.reduce((s, g) => s + g.seats, 0) || 1;
@@ -90,11 +94,16 @@ function Hemicycle({ title, total, groups }: { title: string; total: number; gro
   return (
     <figure className="flex flex-col items-center">
       <svg viewBox={`0 0 ${W} ${H}`} className="w-full max-w-[560px]" role="img" aria-label={`${title} : ${total} sièges`}>
+        <defs>
+          <pattern id="hachures-vacant" width="6" height="6" patternUnits="userSpaceOnUse" patternTransform="rotate(45)">
+            <rect width="6" height="6" fill="#e5e7eb" /><line x1="0" y1="0" x2="0" y2="6" stroke="#9ca3af" strokeWidth="2" />
+          </pattern>
+        </defs>
         {arcs.map(({ g, degStart, degEnd, mid }, i) => {
           const isH = hovered === i, dim = hovered !== null && !isH;
           const [dx, dy] = offset(mid);
           return (
-            <path key={i} d={sectorPath(cx, cy, r0, r1, degStart, degEnd)} fill={g.color}
+            <path key={i} d={sectorPath(cx, cy, r0, r1, degStart, degEnd)} fill={g.vacant ? "url(#hachures-vacant)" : g.color}
               onMouseEnter={() => setHovered(i)} onMouseLeave={() => setHovered(null)}
               onClick={() => { const l = linkOf(g); if (l) router.push(l); }}
               className={linkOf(g) ? "cursor-pointer" : ""}
@@ -121,7 +130,7 @@ function Hemicycle({ title, total, groups }: { title: string; total: number; gro
           style={{ fill: hg ? hg.color : undefined }} fillOpacity={1}>
           <tspan className={hg ? "" : "fill-slate-900 dark:fill-white"}>{hg ? hg.seats : total}</tspan>
         </text>
-        <text x={cx} y={cy - 8} textAnchor="middle" className="fill-slate-400 font-black uppercase" fontSize={hg ? 11 : 13} letterSpacing={hg ? 1 : 2}>{hg ? clip(hg.label) : title}</text>
+        <text x={cx} y={cy - 8} textAnchor="middle" className="fill-slate-400 font-black uppercase" fontSize={hg ? 11 : 13} letterSpacing={hg ? 1 : 2}>{hg ? clip(hg.label) : (enExercice != null ? "sièges" : title)}</text>
       </svg>
       {/* Légende (identité jamais portée par la seule couleur) — cliquable vers la fiche du parti. */}
       <div className="mt-2 flex flex-wrap justify-center gap-x-4 gap-y-1.5">
@@ -129,7 +138,7 @@ function Hemicycle({ title, total, groups }: { title: string; total: number; gro
           const isH = hovered === i, dim = hovered !== null && !isH;
           const inner = (
             <>
-              <span className="h-2.5 w-2.5 rounded-full" style={{ background: g.color }} />
+              <span className="h-2.5 w-2.5 rounded-full" style={{ background: g.vacant ? "repeating-linear-gradient(45deg,#e5e7eb 0 2px,#9ca3af 2px 4px)" : g.color }} />
               {g.label} <span className="text-muted-foreground">· {g.seats}</span>
             </>
           );
@@ -143,6 +152,11 @@ function Hemicycle({ title, total, groups }: { title: string; total: number; gro
           );
         })}
       </div>
+      {enExercice != null && (
+        <p className="mt-2 text-center text-[12px] font-bold text-muted-foreground">
+          {total} sièges · {enExercice} {title.toLowerCase()} en exercice{total - enExercice > 0 ? ` · ${total - enExercice} siège${total - enExercice > 1 ? "s" : ""} vacant${total - enExercice > 1 ? "s" : ""}` : ""}
+        </p>
+      )}
       {sorted.some(g => linkOf(g)) && (
         <figcaption className="mt-3 inline-flex items-center gap-1.5 rounded-md bg-yellow-200 px-2.5 py-1 text-[10px] font-bold uppercase tracking-wider text-slate-800 shadow-sm dark:bg-yellow-300 dark:text-slate-900">
           <MousePointerClick className="h-3 w-3" />
@@ -158,6 +172,7 @@ export default function HemicycleChart({ chamber = "both", title, subtitle }: { 
   const [an, setAn] = useState<Group[] | null>(null);
   const [senat, setSenat] = useState<Group[] | null>(null);
   const [eu, setEu] = useState<Group[] | null>(null);
+  const [vacantsAN, setVacantsAN] = useState<{ departement: string; circonscription: number; ancien: string }[]>([]);
 
   useEffect(() => {
     let active = true;
@@ -168,6 +183,7 @@ export default function HemicycleChart({ chamber = "both", title, subtitle }: { 
           label: r.abbrev || r.name, seats: r.effectif, color: r.color || "#8D949A", order: AN_ORDER[r.abbrev] ?? AN_ORDER[r.name] ?? 8, slug: r.slug || null,
         })));
       }).catch(() => setAn([]));
+      api.getSiegesVacantsAN().then(v => { if (active) setVacantsAN(v); }).catch(() => {});
     }
     if (chamber === "both" || chamber === "senat") {
       api.getSenateComposition().then((rows: any[]) => {
@@ -196,8 +212,14 @@ export default function HemicycleChart({ chamber = "both", title, subtitle }: { 
     return () => { active = false; };
   }, [chamber]);
 
-  const anTotal = useMemo(() => (an || []).reduce((s, g) => s + g.seats, 0), [an]);
-  const senTotal = useMemo(() => (senat || []).reduce((s, g) => s + g.seats, 0), [senat]);
+  const anElus = useMemo(() => (an || []).reduce((s, g) => s + g.seats, 0), [an]);
+  const senElus = useMemo(() => (senat || []).reduce((s, g) => s + g.seats, 0), [senat]);
+  // Sièges sans titulaire : secteur hachuré à droite, compté dans le total des sièges.
+  const avecVacants = (groups: Group[] | null, elus: number, sieges: number): Group[] | null =>
+    !groups ? null : elus < sieges ? [...groups, { label: "Sièges vacants", seats: sieges - elus, color: "#d1d5db", order: 99, vacant: true }] : groups;
+  const anG = useMemo(() => avecVacants(an, anElus, SIEGES.an), [an, anElus]);
+  const senG = useMemo(() => avecVacants(senat, senElus, SIEGES.senat), [senat, senElus]);
+  const anTotal = Math.max(SIEGES.an, anElus), senTotal = Math.max(SIEGES.senat, senElus);
   const euTotal = useMemo(() => (eu || []).reduce((s, g) => s + g.seats, 0), [eu]);
 
   const ready = chamber === "both" ? (an && senat) : chamber === "an" ? an : chamber === "senat" ? senat : eu;
@@ -214,15 +236,22 @@ export default function HemicycleChart({ chamber = "both", title, subtitle }: { 
         </div>
         {chamber === "both" ? (
           <div className="grid gap-10 md:grid-cols-2">
-            <Hemicycle title="Députés" total={anTotal} groups={an!} />
-            <Hemicycle title="Sénateurs" total={senTotal} groups={senat!} />
+            <Hemicycle title="Députés" total={anTotal} groups={anG!} enExercice={anElus} />
+            <Hemicycle title="Sénateurs" total={senTotal} groups={senG!} enExercice={senElus} />
           </div>
         ) : (
           <div className="mx-auto max-w-2xl">
-            {chamber === "an" && <Hemicycle title="Députés" total={anTotal} groups={an!} />}
-            {chamber === "senat" && <Hemicycle title="Sénateurs" total={senTotal} groups={senat!} />}
+            {chamber === "an" && <Hemicycle title="Députés" total={anTotal} groups={anG!} enExercice={anElus} />}
+            {chamber === "senat" && <Hemicycle title="Sénateurs" total={senTotal} groups={senG!} enExercice={senElus} />}
             {chamber === "eu" && <Hemicycle title="Eurodéputés FR" total={euTotal} groups={eu!} />}
           </div>
+        )}
+        {(chamber === "an" || chamber === "both") && vacantsAN.length > 0 && anElus < SIEGES.an && (
+          <p className="mx-auto mt-6 max-w-3xl rounded-2xl bg-muted px-4 py-3 text-center text-[12px] leading-relaxed text-muted-foreground">
+            <strong className="text-foreground">{SIEGES.an - anElus} siège{SIEGES.an - anElus > 1 ? "s" : ""} vacant{SIEGES.an - anElus > 1 ? "s" : ""}</strong> en attendant
+            une élection partielle : {vacantsAN.map(v => `${v.departement} (${v.circonscription}${v.circonscription === 1 ? "re" : "e"} circ., ${v.ancien})`).join(", ")}.
+            Un député élu sénateur quitte l&apos;Assemblée et n&apos;est pas remplacé par son suppléant.
+          </p>
         )}
       </div>
     </section>

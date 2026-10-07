@@ -33,10 +33,13 @@ export default function DeputyClient({ initialDeputies }: { initialDeputies: Dep
         (deputy.party && deputy.party.toLowerCase().includes(q));
 
       const deptName = selectedDepartment ? getDepartmentName(selectedDepartment).toLowerCase() : "";
+      // Comparaison sans accents ni tirets : « Saint-Barthélemy et Saint-Martin » répond à la
+      // tuile Saint-Martin comme à celle de Saint-Barthélemy.
+      const sansAccents = (x: string) => x.toLowerCase().normalize("NFD").replace(/[̀-ͯ]/g, "").replace(/[^a-z0-9]+/g, " ").trim();
       const matchesDepartment =
         !selectedDepartment ||
         (deputy.department &&
-          (deputy.department.toLowerCase() === deptName || 
+          (sansAccents(deputy.department).includes(sansAccents(deptName)) ||
            deputy.department.includes(selectedDepartment)));
 
       return matchesSearch && matchesDepartment;

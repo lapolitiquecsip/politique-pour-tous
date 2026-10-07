@@ -103,6 +103,14 @@ export const DEPARTMENTS: Record<string, string> = {
   "973": "Guyane",
   "974": "La Réunion",
   "976": "Mayotte",
+  // Collectivités d'outre-mer et Français de l'étranger (circonscriptions législatives et sénatoriales)
+  "975": "Saint-Pierre-et-Miquelon",
+  "977": "Saint-Barthélemy",
+  "978": "Saint-Martin",
+  "986": "Wallis-et-Futuna",
+  "987": "Polynésie française",
+  "988": "Nouvelle-Calédonie",
+  "ZZ": "Français établis hors de France",
 };
 
 /**

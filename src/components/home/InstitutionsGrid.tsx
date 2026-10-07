@@ -32,7 +32,7 @@ const INSTITUTIONS: Institution[] = [
     summary: "L'hémicycle examine les textes de loi et contrôle le gouvernement.",
     color: "from-blue-600",
     details: [
-      "577 députés siègent au Palais Bourbon",
+      "577 sièges de députés au Palais Bourbon",
       "Examen des projets et propositions de loi",
       "Questions au gouvernement chaque mardi et mercredi",
     ],

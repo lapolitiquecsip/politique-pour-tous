@@ -1724,6 +1724,19 @@ export const api = {
   },
 
   // --- Fiches partis ---
+  /** Circonscriptions sans député en exercice : l'ancien titulaire a quitté l'Assemblée
+   *  (élu sénateur, démission…) et personne n'y siège en attendant l'élection partielle. */
+  getSiegesVacantsAN: async () => {
+    const { data } = await supabase.from('deputies').select('first_name, last_name, department, constituency_number, sitting');
+    const occupes = new Set((data || []).filter((d: any) => d.sitting).map((d: any) => `${d.department}|${d.constituency_number}`));
+    const vus = new Map<string, any>();
+    for (const d of (data || []) as any[]) {
+      const k = `${d.department}|${d.constituency_number}`;
+      if (!d.sitting && d.department && d.constituency_number && !occupes.has(k) && !vus.has(k))
+        vus.set(k, { departement: d.department, circonscription: d.constituency_number, ancien: `${d.first_name} ${d.last_name}` });
+    }
+    return [...vus.values()].sort((x, y) => String(x.departement).localeCompare(String(y.departement), 'fr'));
+  },
   getParties: async () => {
     const { data, error } = await supabase.from('political_parties').select('*').order('effectif', { ascending: false, nullsFirst: false });
     if (error || !data) return [];

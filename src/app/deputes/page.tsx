@@ -37,8 +37,8 @@ export default async function DeputesPage() {
         color="green"
         image="/images/assemblee_nationale_premium.jpg"
         title="ASSEMBLÉE NATIONALE"
-        eyebrow="Assemblée nationale · 577 députés"
-        description="Les 577 députés, élus au suffrage direct dans chaque circonscription, votent la loi, votent le budget, contrôlent le Gouvernement et peuvent le renverser. Sur cette page : trouvez votre député, consultez ses votes, son assiduité et ses initiatives, et suivez les textes examinés par l'Assemblée."
+        eyebrow="Assemblée nationale · 577 sièges"
+        description="Les députés, élus au suffrage direct dans les 577 circonscriptions, votent la loi, votent le budget, contrôlent le Gouvernement et peuvent le renverser. Sur cette page : trouvez votre député, consultez ses votes, son assiduité et ses initiatives, et suivez les textes examinés par l'Assemblée."
         links={[
           { label: "Composition", href: "#composition" },
           { label: "Derniers textes adoptés", href: "#adoptes" },

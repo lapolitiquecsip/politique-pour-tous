@@ -4,6 +4,7 @@ import { useEffect, useMemo, useRef } from "react";
 import { MapPin, X } from "lucide-react";
 import { getDepartmentName } from "@/lib/department-mapping";
 import { departmentPaths } from "@/lib/data/departmentPaths";
+import { ENCARTS_OUTREMER } from "@/lib/data/outremerEncarts";
 
 /**
  * Carte des départements, pour retrouver ses élus.
@@ -50,7 +51,9 @@ const REGION_INDEX: Record<string, number> = Object.fromEntries(
  */
 const REGION_CSS = REGION_GROUPS
   .map((g, i) => `.fm-d.fm-r${i}:hover{fill:${g.color}}`)
-  .join("");
+  .join("") +
+  // Tuiles d'outre-mer : le survol de la tuile entière colore le territoire.
+  `.fm-t:hover .fm-d{fill:${REGION_GROUPS[REGION_INDEX["971"] ?? 0]?.color ?? "#fb7185"}}.fm-t:hover .fm-cadre{stroke-opacity:.9}`;
 
 const CODES = Object.keys(departmentPaths);
 
@@ -62,6 +65,10 @@ const VIEWBOX = (() => {
     if (!vb || vb.length < 4) continue;
     minX = Math.min(minX, vb[0]); minY = Math.min(minY, vb[1]);
     maxX = Math.max(maxX, vb[0] + vb[2]); maxY = Math.max(maxY, vb[1] + vb[3]);
+  }
+  // La rangée de tuiles d'outre-mer, sous la carte (avec la place de leurs noms).
+  for (const e of ENCARTS_OUTREMER) {
+    minX = Math.min(minX, e.box[0]); maxX = Math.max(maxX, e.box[0] + e.box[2]); maxY = Math.max(maxY, e.box[1] + e.box[3] + 16);
   }
   const marge = 6;
   return `${minX - marge} ${minY - marge} ${maxX - minX + marge * 2} ${maxY - minY + marge * 2}`;
@@ -95,7 +102,7 @@ export default function FranceMap({ selectedDepartment, onDepartmentSelect }: Fr
   useEffect(() => { dernier.current = null; afficher(selectedDepartment); }, [selectedDepartment]);
 
   const liste = useMemo(
-    () => CODES.map(c => ({ code: c, nom: getDepartmentName(c) })).sort((a, b) => a.nom.localeCompare(b.nom, "fr")),
+    () => [...CODES, ...ENCARTS_OUTREMER.map(e => e.code)].map(c => ({ code: c, nom: getDepartmentName(c) })).sort((a, b) => a.nom.localeCompare(b.nom, "fr")),
     [],
   );
 
@@ -158,12 +165,12 @@ export default function FranceMap({ selectedDepartment, onDepartmentSelect }: Fr
           // Un seul écouteur pour les cent un tracés, et aucun rendu React déclenché.
           onMouseOver={e => {
             const t = e.target as Element;
-            afficher(t.tagName === "path" ? t.getAttribute("data-code") : selectedDepartment);
+            afficher(t.getAttribute("data-code") || selectedDepartment);
           }}
           onMouseLeave={() => afficher(selectedDepartment)}
           onClick={e => {
             const t = e.target as Element;
-            const code = t.tagName === "path" ? t.getAttribute("data-code") : null;
+            const code = t.getAttribute("data-code");
             onDepartmentSelect(code && code !== selectedDepartment ? code : null);
           }}
         >
@@ -186,6 +193,29 @@ export default function FranceMap({ selectedDepartment, onDepartmentSelect }: Fr
               >
                 <title>{getDepartmentName(code)}</title>
               </path>
+            );
+          })}
+          {/* Collectivités d'outre-mer et Français de l'étranger : une tuile chacun. */}
+          {ENCARTS_OUTREMER.map(e => {
+            const choisi = selectedDepartment === e.code;
+            const [x, y, w, h] = e.box;
+            return (
+              <g key={e.code} className="fm-t cursor-pointer">
+                <rect data-code={e.code} x={x} y={y} width={w} height={h} rx={8}
+                  className={`fm-cadre ${choisi ? "fill-red-500/10" : "fill-slate-100/60 dark:fill-slate-800/60"}`}
+                  stroke="#94a3b8" strokeOpacity={choisi ? 0.9 : 0.45} strokeDasharray="3 3" strokeWidth={0.8}>
+                  <title>{getDepartmentName(e.code)}</title>
+                </rect>
+                <path data-code={e.code} d={e.d}
+                  className={`fm-d transition-[fill] duration-150 ${choisi ? "" : "fill-slate-300 dark:fill-slate-600"}`}
+                  style={choisi ? { fill: "#ef4444" } : undefined}
+                  stroke="currentColor" strokeWidth={0.4} strokeLinejoin="round">
+                  <title>{getDepartmentName(e.code)}</title>
+                </path>
+                {e.deco && <path d={e.deco} fill="none" stroke="currentColor" strokeWidth={1.2} pointerEvents="none" />}
+                <text x={x + w / 2} y={y + h + 11} textAnchor="middle" pointerEvents="none"
+                  className="fill-slate-500 dark:fill-slate-400" fontSize={9} fontWeight={800}>{e.nom.replace("Saint-Pierre-et-Miquelon", "St-Pierre-et-Miq.").replace("Français de l'étranger", "Hors de France")}</text>
+              </g>
             );
           })}
         </svg>

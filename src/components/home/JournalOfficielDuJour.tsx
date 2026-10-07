@@ -10,6 +10,7 @@ import JorfSearch from "@/components/home/JorfSearch";
 import JournalCouverture from "@/components/home/JournalCouverture";
 import Garde from "@/components/ui/Garde";
 import DragScroller from "@/components/ui/DragScroller";
+import MentionIA from "@/components/shared/MentionIA";
 
 /**
  * Le Journal officiel du jour, réservé aux abonnés Pro.
@@ -377,7 +378,10 @@ export default function JournalOfficielDuJour() {
         {edition.digest && (
           <div className="mt-4 flex gap-3 rounded-2xl bg-white/[0.07] p-4 ring-1 ring-white/10">
             <Sparkles size={16} className="mt-0.5 shrink-0 text-fuchsia-300" />
-            <p className="text-[13px] leading-relaxed text-white/85">{edition.digest}</p>
+            <div className="min-w-0">
+              <p className="text-[13px] leading-relaxed text-white/85">{edition.digest}</p>
+              <MentionIA sombre source={{ libelle: "sommaire officiel de l'édition, détaillé ci-dessous" }} />
+            </div>
           </div>
         )}
       </div>
@@ -457,6 +461,10 @@ export default function JournalOfficielDuJour() {
                                             {t.explication}
                                             {t.source_explication === "notice" && (
                                               <span className="ml-1.5 align-middle text-[8px] font-black uppercase tracking-widest text-emerald-300/80">Notice officielle</span>
+                                            )}
+                                            {t.source_explication === "ia" && (
+                                              <span title="Explication générée par IA à partir du texte publié au Journal officiel (lien Légifrance). Seul le texte officiel fait foi."
+                                                className="ml-1.5 align-middle text-[8px] font-black uppercase tracking-widest text-fuchsia-300/70">Explication IA</span>
                                             )}
                                           </span>
                                         )}

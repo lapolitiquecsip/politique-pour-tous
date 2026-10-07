@@ -2,6 +2,7 @@
 
 import { Target, ListChecks, Quote, ArrowRight } from "lucide-react";
 import type { CommissionMeeting } from "@/lib/commissions";
+import MentionIA from "@/components/shared/MentionIA";
 
 /**
  * Rendu d'une analyse de réunion de commission.
@@ -53,7 +54,12 @@ export function CommissionAnalysis({ m, accent, sombre = false }: {
   // Repli : tant que l'analyse structurée n'a pas été générée, on affiche le résumé.
   if (!hasStructured) {
     return m.summary
-      ? <p className={`whitespace-pre-line text-sm leading-relaxed ${corps}`}>{m.summary}</p>
+      ? (
+        <div>
+          <p className={`whitespace-pre-line text-sm leading-relaxed ${corps}`}>{m.summary}</p>
+          <MentionIA sombre={sombre} source={{ libelle: "compte rendu officiel de la réunion", url: m.cr_url }} />
+        </div>
+      )
       : (
         <div className={bloc}>
           <p className={`flex items-center gap-2 text-sm font-bold ${fort}`}>
@@ -154,6 +160,11 @@ export function CommissionAnalysis({ m, accent, sombre = false }: {
           </ul>
         </div>
       )}
+
+      {/* Les citations sont retrouvées mot pour mot dans le verbatim avant publication
+          (dropInventedQuotes, scripts/update-commissions.ts) ; le reste ne l'est pas. */}
+      <MentionIA sombre={sombre} nature="Analyse" source={{ libelle: "compte rendu officiel de la réunion", url: m.cr_url }}
+        verification={a.citations?.length ? "citations vérifiées automatiquement dans le compte rendu" : undefined} />
     </div>
   );
 }

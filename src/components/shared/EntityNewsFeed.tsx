@@ -5,6 +5,7 @@ import { Newspaper, ChevronDown, ExternalLink, Loader2, X } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
 import { api } from "@/lib/api";
 import DragScroller from "@/components/ui/DragScroller";
+import MentionIA from "@/components/shared/MentionIA";
 
 // Libellés lisibles des types d'actu (badges + puces de filtre).
 const TYPE_LABEL: Record<string, string> = {
@@ -160,6 +161,7 @@ export default function EntityNewsFeed({
               <p className="text-[11px] font-bold uppercase tracking-widest text-slate-400">{fmt(selected.published_at)}</p>
               <h3 className="mt-1 text-xl font-black leading-snug text-foreground dark:text-white">{selected.title}</h3>
               {selected.summary && <p className="mt-3 leading-7 text-muted-foreground dark:text-slate-300">{selected.summary}</p>}
+              {selected.summary && <MentionIA source={{ libelle: `l'article de ${selected.source_name || "la source"}`, url: selected.url }} />}
               <div className="mt-5 flex items-center justify-between gap-3 border-t border-border pt-4 dark:border-slate-800">
                 <span className="text-[11px] font-bold uppercase tracking-widest text-slate-400">Source : {selected.source_name}</span>
                 {selected.url && (

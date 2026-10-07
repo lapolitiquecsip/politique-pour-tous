@@ -8,6 +8,7 @@ import {
 } from "lucide-react";
 import { api } from "@/lib/api";
 import { usePremium } from "@/lib/hooks/usePremium";
+import MentionIA from "@/components/shared/MentionIA";
 
 /**
  * L'ANALYSE APPROFONDIE d'un texte de loi, écrite à partir du texte lui-même
@@ -389,6 +390,7 @@ function Complete({ a, pro }: { a: Analyse; pro: boolean }) {
             ))}
           </div>
         )}
+        <MentionIA nature="Analyse" source={{ libelle: "documents officiels listés ci-dessus" }} />
       </div>
     </section>
   );

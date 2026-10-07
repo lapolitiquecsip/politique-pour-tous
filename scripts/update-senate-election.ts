@@ -664,4 +664,14 @@ async function main() {
   console.log("--- TERMINÉ. ---");
 }
 
-main().catch(e => { console.error(e); process.exit(1); });
+main().catch(e => {
+  const msg = String(e?.message || e);
+  // Source officielle (senat.fr, ODSEN) injoignable depuis GitHub ou liste suspecte : rien
+  // n'a été écrit, ce n'est pas une panne du site — avertissement, pas d'e-mail d'échec.
+  if (/HTTP \d{3}|fetch failed|timeout|aborted|ODSEN|liste officielle suspecte|index du scrutin vide|senat\.fr/i.test(msg)) {
+    console.log(`::warning::Source du Sénat indisponible, rien d'écrit : ${msg}`);
+    process.exit(0);
+  }
+  console.log(`::error::${msg}`);
+  console.error(e); process.exit(1);
+});

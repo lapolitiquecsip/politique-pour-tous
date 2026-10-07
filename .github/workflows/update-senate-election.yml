@@ -18,8 +18,7 @@ name: Renouvellement du Sénat (série 2)
 on:
   schedule:
     - cron: '20 4 * * *'          # 06h20 Paris — marche courante
-    - cron: '0 */2 27-30 9 *'     # toutes les 2 h du 27 au 30 septembre
-    - cron: '0 */2 1-8 10 *'      # toutes les 2 h du 1er au 8 octobre
+    # (passages toutes les 2 h retirés après la prise de fonctions du 1er octobre 2026)
   workflow_dispatch:
     inputs:
       dry_run:

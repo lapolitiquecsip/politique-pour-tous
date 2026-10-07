@@ -197,6 +197,7 @@ function CandidateModal({ candidate, onClose }: { candidate: Candidate; onClose:
   };
   const [news, setNews] = useState<any[] | null>(null);
   const [videos, setVideos] = useState<any[]>([]);              // vidéos YouTube officielles
+  const [debatsFil, setDebatsFil] = useState<any[]>([]);         // débats et émissions télé (vidéo jouable)
   const [selectedVideo, setSelectedVideo] = useState<any | null>(null); // lecteur vidéo ouvert
   const [proposals, setProposals] = useState<any[]>([]);
   const [sourcesProgramme, setSourcesProgramme] = useState<SourceProgramme[]>([]);
@@ -209,7 +210,8 @@ function CandidateModal({ candidate, onClose }: { candidate: Candidate; onClose:
   useEffect(() => {
     let active = true;
     api.getCandidateNews(candidate.id).then(rows => { if (active) setNews(rows); }).catch(() => setNews([]));
-    api.getCandidateVideos(candidate.id, 12).then(rows => { if (active) setVideos(rows as any[]); }).catch(() => {});
+    api.getCandidateVideos(candidate.id, 20).then(rows => { if (active) setVideos(rows as any[]); }).catch(() => {});
+    api.getCandidateDebates(candidate.id).then(rows => { if (active) setDebatsFil((rows as any[]).filter(d => d.video_id && !d.a_venir)); }).catch(() => {});
     api.getCandidateProposals(candidate.id).then(rows => { if (active) setProposals(rows as any[]); }).catch(() => {});
     api.getSourcesProgramme(candidate.id).then(rows => { if (active) setSourcesProgramme(rows); }).catch(() => {});
     api.findMandateByName(candidate.full_name).then(m => { if (active) setMandate(m); }).catch(() => {});
@@ -392,14 +394,24 @@ function CandidateModal({ candidate, onClose }: { candidate: Candidate; onClose:
           {/* Fil d'actu quotidien */}
           {/* FIL UNIFIÉ : actualités de presse + vidéos YouTube officielles, en un seul défilement. */}
           {(() => {
-            const feed = [
-              ...(news || []).map((n: any) => ({ kind: "news" as const, when: n.date, data: n })),
+            // Débats et vidéos d'abord visibles : jamais plus de deux articles d'affilée tant
+            // qu'une vidéo attend (sinon la presse, plus abondante, repoussait toutes les vidéos).
+            const parDate = (a: any, b: any) => new Date(b.when || 0).getTime() - new Date(a.when || 0).getTime();
+            const articles = (news || []).map((n: any) => ({ kind: "news" as const, when: n.date, data: n })).sort(parDate);
+            const medias = [
+              ...debatsFil.map((d: any) => ({ kind: "video" as const, when: d.date, data: { ...d, published_at: d.date, debat: true } })),
               ...videos.map((v: any) => ({ kind: "video" as const, when: v.published_at, data: v })),
-            ].sort((a, b) => new Date(b.when || 0).getTime() - new Date(a.when || 0).getTime());
+            ].sort(parDate);
+            const feed: { kind: "news" | "video"; when: any; data: any }[] = [];
+            let suite = 0;
+            while (articles.length || medias.length) {
+              const prendreMedia = medias.length && (!articles.length || suite >= 2 || parDate(medias[0], articles[0]) <= 0);
+              if (prendreMedia) { feed.push(medias.shift()!); suite = 0; } else { feed.push(articles.shift()!); suite++; }
+            }
             return (
               <section className="mt-8">
                 <h3 className="text-2xl font-staatliches uppercase text-foreground">Actualités &amp; <span className="text-amber-700 dark:text-amber-400">vidéos</span></h3>
-                <p className="mt-1 text-xs text-muted-foreground">Le fil du candidat — articles de presse et vidéos de sa chaîne YouTube officielle, réunis et actualisés chaque jour. Faites défiler →</p>
+                <p className="mt-1 text-xs text-muted-foreground">Le fil du candidat — articles de presse, débats télévisés et vidéos de sa chaîne YouTube officielle, lisibles ici, actualisés plusieurs fois par jour. Faites défiler →</p>
                 {news === null ? (
                   <p className="mt-3 text-sm text-muted-foreground">Chargement…</p>
                 ) : feed.length === 0 ? (
@@ -409,17 +421,18 @@ function CandidateModal({ candidate, onClose }: { candidate: Candidate; onClose:
                   <div className="mt-4">
                   <DragScroller ariaLabel="Actualité et vidéos du candidat" className="gap-3 pb-3 pt-0 md:gap-3">
                     {feed.map(it => it.kind === "video" ? (
-                      <button key={`v${it.data.video_id}`} onClick={() => setSelectedVideo(it.data)} className="group flex w-[280px] shrink-0 select-none flex-col overflow-hidden rounded-2xl border border-border text-left transition hover:border-slate-300 hover:shadow-sm">
+                      <button key={`v${it.data.video_id}${it.data.debat ? "d" : ""}`} onClick={() => setSelectedVideo(it.data)} className="group flex w-[280px] shrink-0 select-none flex-col overflow-hidden rounded-2xl border border-border text-left transition hover:border-slate-300 hover:shadow-sm">
                         <div className="relative aspect-video overflow-hidden bg-slate-900">
                           {/* eslint-disable-next-line @next/next/no-img-element */}
                           {it.data.thumbnail_url && <img src={it.data.thumbnail_url} alt={it.data.title} loading="lazy" className="h-full w-full object-cover transition group-hover:scale-105" />}
                           <span className="absolute inset-0 flex items-center justify-center"><span className="flex h-11 w-11 items-center justify-center rounded-full bg-white/90 text-foreground shadow-lg"><Play size={20} className="ml-0.5 fill-current" /></span></span>
-                          <span className="absolute left-2 top-2 inline-flex items-center gap-1 rounded-full bg-red-600 px-2 py-0.5 text-[9px] font-black uppercase tracking-widest text-white"><Play size={10} className="fill-current" /> Vidéo</span>
+                          <span className={`absolute left-2 top-2 inline-flex items-center gap-1 rounded-full px-2 py-0.5 text-[9px] font-black uppercase tracking-widest text-white ${it.data.debat ? "bg-indigo-700" : "bg-red-600"}`}><Play size={10} className="fill-current" /> {it.data.debat ? `Débat${it.data.broadcaster ? ` · ${it.data.broadcaster}` : ""}` : "Vidéo"}</span>
                         </div>
                         <div className="flex flex-1 flex-col p-4">
                           <span className="text-xs font-bold text-muted-foreground"><CalendarDays className="mr-1 inline" size={13} />{formatDate(it.data.published_at)}</span>
                           <p className="mt-1.5 font-bold text-foreground line-clamp-2">{it.data.title}</p>
-                          <span className="mt-auto pt-2 text-xs font-bold text-muted-foreground">YouTube</span>
+                          {it.data.resume_ia && <p className="mt-1 text-[13px] leading-5 text-muted-foreground line-clamp-3">{it.data.resume_ia}</p>}
+                          <span className="mt-auto pt-2 text-xs font-bold text-muted-foreground">{it.data.resume_ia ? "YouTube · résumé IA de ce qui est dit" : "YouTube"}</span>
                         </div>
                       </button>
                     ) : (
@@ -510,7 +523,7 @@ function CandidateModal({ candidate, onClose }: { candidate: Candidate; onClose:
         </div>
       </div>
     </div>
-    <LegalStatusModal isOpen={showLegal} onClose={() => setShowLegal(false)} deputy={legalPerson} />
+    <LegalStatusModal isOpen={showLegal} onClose={() => setShowLegal(false)} deputy={legalPerson} cible={{ type: "candidate", slug: candidate.slug }} />
     </>
   );
 }

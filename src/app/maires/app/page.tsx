@@ -160,7 +160,7 @@ function MayorContent() {
         </div>
       </div>
 
-      <LegalStatusModal isOpen={showLegal} onClose={() => setShowLegal(false)} deputy={legalPerson} />
+      <LegalStatusModal isOpen={showLegal} onClose={() => setShowLegal(false)} deputy={legalPerson} cible={{ type: "mayor", slug: p.slug }} />
     </main>
   );
 }

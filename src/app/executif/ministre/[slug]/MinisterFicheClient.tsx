@@ -150,7 +150,7 @@ export default function MinisterFicheClient({ params, embedded }: { params: Prom
         <p className="mt-2 text-[11px] italic text-muted-foreground">Fiche générée automatiquement à partir de Wikipédia — susceptible d'être incomplète.</p>
       </div>
 
-      <LegalStatusModal isOpen={showLegal} onClose={() => setShowLegal(false)} deputy={legalPerson} />
+      <LegalStatusModal isOpen={showLegal} onClose={() => setShowLegal(false)} deputy={legalPerson} cible={{ type: "minister", slug: m.slug }} />
     </main>
   );
 }

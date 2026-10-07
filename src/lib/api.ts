@@ -1200,7 +1200,7 @@ export const api = {
   getSenatVideos: async (limit = 12) => {
     const { data, error } = await supabase
       .from('senat_videos')
-      .select('video_id, title, published_at, url, thumbnail_url, description')
+      .select('video_id, title, published_at, url, thumbnail_url, description, resume_ia')
       .order('published_at', { ascending: false })
       .limit(limit);
     if (error || !data) return [];
@@ -1211,7 +1211,7 @@ export const api = {
   getAnVideos: async (limit = 12) => {
     const { data, error } = await supabase
       .from('an_videos')
-      .select('video_id, title, published_at, url, thumbnail_url, description')
+      .select('video_id, title, published_at, url, thumbnail_url, description, resume_ia')
       .order('published_at', { ascending: false })
       .limit(limit);
     if (error || !data) return [];
@@ -1221,7 +1221,7 @@ export const api = {
   getElyseeVideos: async (limit = 12) => {
     const { data, error } = await supabase
       .from('elysee_videos')
-      .select('video_id, title, published_at, url, thumbnail_url, description')
+      .select('video_id, title, published_at, url, thumbnail_url, description, resume_ia')
       .order('published_at', { ascending: false })
       .limit(limit);
     if (error || !data) return [];
@@ -1239,6 +1239,14 @@ export const api = {
     return data;
   },
 
+  /** Sanctions du Conseil constitutionnel (juge électoral) rattachées à une fiche. */
+  getSanctionsConstit: async (type: string, slug: string) => {
+    const { data } = await supabase.from('sanctions_constit_elus')
+      .select('sanctions_constit(numero, nature, date_dec, circonscription, sanction, motif, etiquette, url, civilite, prenom, nom)')
+      .eq('entity_type', type).eq('entity_slug', slug);
+    return ((data || []).map((r: any) => r.sanctions_constit).filter(Boolean) as any[])
+      .sort((a, b) => String(b.date_dec).localeCompare(String(a.date_dec)));
+  },
   /** D'où vient le programme d'un candidat (présentation vidéo officielle, PDF…). */
   getSourcesProgramme: async (candidateId: string) => {
     const { data } = await supabase.from('programmes_sources').select('source_url, titre, traite_le')
@@ -1256,7 +1264,7 @@ export const api = {
   getCandidateVideos: async (candidateId: string, limit = 12) => {
     const { data, error } = await supabase
       .from('candidate_videos')
-      .select('video_id, title, published_at, url, thumbnail_url, description')
+      .select('video_id, title, published_at, url, thumbnail_url, description, resume_ia')
       .eq('candidate_id', candidateId)
       .order('published_at', { ascending: false })
       .limit(limit);
@@ -1921,7 +1929,7 @@ export const api = {
   getCandidateDebates: async (candidateId: string) => {
     const { data, error } = await supabase
       .from('candidate_debates')
-      .select('source_key, kind, title, broadcaster, date, url, video_id, thumbnail_url, a_venir')
+      .select('source_key, kind, title, broadcaster, date, url, video_id, thumbnail_url, a_venir, resume_ia')
       .eq('candidate_id', candidateId)
       .order('date', { ascending: false, nullsFirst: false })
       .limit(20);

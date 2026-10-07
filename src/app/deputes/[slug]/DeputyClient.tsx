@@ -322,11 +322,18 @@ export default function DeputyDetailPage({ params, embedded }: { params: Promise
     }
   };
 
+  // Sanctions du Conseil constitutionnel : le badge n'affiche plus « casier vierge » s'il y en a.
+  const [nbSanctionsCC, setNbSanctionsCC] = useState(0);
+  useEffect(() => {
+    if (!deputy?.slug) return;
+    api.getSanctionsConstit("deputy", deputy.slug).then(l => setNbSanctionsCC(l.length)).catch(() => {});
+  }, [deputy?.slug]);
   const isLegalClean = useMemo(() => {
+    if (nbSanctionsCC > 0) return false;
     const issues = deputy?.legal_issues || "";
     if (!issues) return true;
     return issues.toLowerCase().includes("aucune") || issues.toLowerCase().includes("casier vierge");
-  }, [deputy]);
+  }, [deputy, nbSanctionsCC]);
 
   const groupFullName = getFullPartyName(deputy?.party || (slug === 'gabriel-attal' ? 'EPR' : ''));
 
@@ -989,6 +996,7 @@ export default function DeputyDetailPage({ params, embedded }: { params: Promise
         isOpen={showLegalModal} 
         onClose={() => setShowLegalModal(false)} 
         deputy={deputy} 
+        cible={{ type: "deputy", slug: deputy?.slug || slug }}
       />
 
       {/* NEW: Vote Details Modal */}

@@ -388,7 +388,7 @@ export default function MepClient({ mep, initialVotes, embedded }: { mep: any; i
           </div>
         </div>
       </div>
-      <LegalStatusModal isOpen={showLegal} onClose={() => setShowLegal(false)} deputy={legalPerson} />
+      <LegalStatusModal isOpen={showLegal} onClose={() => setShowLegal(false)} deputy={legalPerson} cible={{ type: "mep", slug: mep.slug }} />
 
       {/* Explication IA d'un vote */}
       {openVote && (

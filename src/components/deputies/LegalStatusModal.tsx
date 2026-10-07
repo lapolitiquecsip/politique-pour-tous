@@ -22,6 +22,8 @@ interface LegalStatusModalProps {
   isOpen: boolean;
   onClose: () => void;
   deputy: any;
+  /** Fiche concernée, pour les sanctions du Conseil constitutionnel (type : deputy, senator…). */
+  cible?: { type: string; slug: string | null | undefined };
 }
 
 // Clé d'affaire normalisée — doit correspondre à explain-legal.ts côté backend.
@@ -29,10 +31,17 @@ function caseKey(title: string): string {
   return title.toLowerCase().normalize('NFD').replace(/[̀-ͯ]/g, '').replace(/[^a-z0-9]/g, '');
 }
 
-export default function LegalStatusModal({ isOpen, onClose, deputy }: LegalStatusModalProps) {
+export default function LegalStatusModal({ isOpen, onClose, deputy, cible }: LegalStatusModalProps) {
   // Parsing the legal issues string or using default
   const rawIssues = deputy?.legal_issues || "Aucune affaire judiciaire connue ou signalée à ce jour.";
-  const isClean = rawIssues.toLowerCase().includes("aucune") || rawIssues.toLowerCase().includes("casier vierge");
+  const casierVierge = rawIssues.toLowerCase().includes("aucune") || rawIssues.toLowerCase().includes("casier vierge");
+  // Décisions du Conseil constitutionnel (inéligibilité, démission d'office, déchéance…).
+  const [sanctions, setSanctions] = useState<any[]>([]);
+  useEffect(() => {
+    if (!isOpen || !cible?.slug) return;
+    api.getSanctionsConstit(cible.type, cible.slug).then(setSanctions).catch(() => setSanctions([]));
+  }, [isOpen, cible?.type, cible?.slug]);
+  const isClean = casierVierge && sanctions.length === 0;
 
   // Explications concrètes, affaire par affaire (chargées depuis la base).
   const [explanations, setExplanations] = useState<Record<string, string>>({});
@@ -102,6 +111,30 @@ export default function LegalStatusModal({ isOpen, onClose, deputy }: LegalStatu
                 Informations tirées de sources publiques citées. Toute personne mise en cause est présumée innocente tant qu&apos;une
                 décision de justice définitive n&apos;a pas établi sa culpabilité (code civil, art. 9-1).
               </p>
+
+              {sanctions.length > 0 && (
+                <section className="rounded-[2rem] border border-amber-200 bg-amber-50/60 p-6 dark:border-amber-500/25 dark:bg-amber-500/5">
+                  <p className="text-[10px] font-black uppercase tracking-[0.25em] text-amber-800 dark:text-amber-300">Conseil constitutionnel — juge des élections</p>
+                  <ul className="mt-3 space-y-4">
+                    {sanctions.map((s: any) => (
+                      <li key={s.numero + s.nom} className="text-sm leading-relaxed text-foreground">
+                        <p className="font-bold">{s.sanction}</p>
+                        <p className="text-muted-foreground">
+                          Décision du {new Date(s.date_dec).toLocaleDateString("fr-FR", { day: "numeric", month: "long", year: "numeric" })} — {s.circonscription}
+                          {s.etiquette ? ` (candidat·e ${s.etiquette})` : ""}{s.motif ? `. Motif : ${s.motif.toLowerCase()}.` : "."}
+                        </p>
+                        <a href={s.url} target="_blank" rel="noreferrer" className="mt-1 inline-flex items-center gap-1 text-xs font-bold text-amber-800 underline dark:text-amber-300">
+                          Lire la décision n° {s.numero} <ExternalLink size={12} />
+                        </a>
+                      </li>
+                    ))}
+                  </ul>
+                  <p className="mt-4 text-[11px] leading-snug text-muted-foreground">
+                    Le Conseil constitutionnel juge les élections nationales. Une inéligibilité liée au compte de campagne sanctionne une
+                    irrégularité de financement électoral : ce n&apos;est pas une condamnation pénale. Source : décisions publiées (base CONSTIT, DILA).
+                  </p>
+                </section>
+              )}
               
               {/* STATUS CARD */}
               <div className={`p-8 rounded-[2rem] border relative overflow-hidden ${isClean ? 'bg-emerald-50/50 border-emerald-100 dark:bg-emerald-500/5 dark:border-emerald-500/20' : 'bg-amber-50/50 border-amber-100 dark:bg-amber-500/5 dark:border-amber-500/20'}`}>

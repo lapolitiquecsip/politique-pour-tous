@@ -56,11 +56,18 @@ export default function SenatorClient({ senator, embedded }: { senator: any; emb
     api.findPartyByAlias(senator.party).then(p => setPartyLink(p)).catch(() => {});
   }, [senator.first_name, senator.last_name, senator.party]);
 
+  // Sanctions du Conseil constitutionnel : le badge n'affiche plus « casier vierge » s'il y en a.
+  const [nbSanctionsCC, setNbSanctionsCC] = useState(0);
+  useEffect(() => {
+    if (!senator?.slug) return;
+    api.getSanctionsConstit("senator", senator.slug).then(l => setNbSanctionsCC(l.length)).catch(() => {});
+  }, [senator?.slug]);
   const isLegalClean = useMemo(() => {
+    if (nbSanctionsCC > 0) return false;
     const issues = senator?.legal_issues || "";
     if (!issues) return true;
     return issues.toLowerCase().includes("aucune") || issues.toLowerCase().includes("casier vierge");
-  }, [senator]);
+  }, [senator, nbSanctionsCC]);
 
   const name = `${senator.first_name} ${senator.last_name}`;
   // Repères courts (profession + naissance) affichés juste sous le nom, en petit.
@@ -526,7 +533,8 @@ export default function SenatorClient({ senator, embedded }: { senator: any; emb
       <LegalStatusModal 
         isOpen={showLegalModal} 
         onClose={() => setShowLegalModal(false)} 
-        deputy={senator} 
+        deputy={senator}
+        cible={{ type: "senator", slug: senator?.slug }}
       />
     </div>
   );

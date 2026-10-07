@@ -136,7 +136,7 @@ export default function DeptPresidentClient({ p }: { p: any }) {
         </div>
       )}
 
-      <LegalStatusModal isOpen={showLegal} onClose={() => setShowLegal(false)} deputy={legalPerson} />
+      <LegalStatusModal isOpen={showLegal} onClose={() => setShowLegal(false)} deputy={legalPerson} cible={{ type: "department_president", slug: p.slug }} />
     </main>
   );
 }

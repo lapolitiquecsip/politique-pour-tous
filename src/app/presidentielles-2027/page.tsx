@@ -430,8 +430,8 @@ function CandidateModal({ candidate, onClose }: { candidate: Candidate; onClose:
                         </div>
                         <div className="flex flex-1 flex-col p-4">
                           <span className="text-xs font-bold text-muted-foreground"><CalendarDays className="mr-1 inline" size={13} />{formatDate(it.data.published_at)}</span>
-                          <p className="mt-1.5 font-bold text-foreground line-clamp-2">{it.data.title}</p>
-                          {it.data.resume_ia && <p className="mt-1 text-[13px] leading-5 text-muted-foreground line-clamp-3">{it.data.resume_ia}</p>}
+                          <p className="mt-1.5 font-bold text-foreground">{it.data.title}</p>
+                          {it.data.resume_ia && <p className="mt-1 text-[13px] leading-5 text-muted-foreground">{it.data.resume_ia}</p>}
                           <span className="mt-auto pt-2 text-xs font-bold text-muted-foreground">{it.data.resume_ia ? "YouTube · résumé IA de ce qui est dit" : "YouTube"}</span>
                         </div>
                       </button>
@@ -441,8 +441,8 @@ function CandidateModal({ candidate, onClose }: { candidate: Candidate; onClose:
                           <span className="rounded-full bg-slate-100 dark:bg-slate-500/10 px-2 py-0.5 uppercase tracking-widest">{it.data.news_type || "actu"}</span>
                           <span><CalendarDays className="mr-1 inline" size={13} />{formatDate(it.data.date)}</span>
                         </div>
-                        <p className="mt-2 font-bold text-foreground line-clamp-2">{it.data.title}</p>
-                        {it.data.summary && <p className="mt-1 text-sm leading-6 text-muted-foreground line-clamp-3">{it.data.summary}</p>}
+                        <p className="mt-2 font-bold text-foreground">{it.data.title}</p>
+                        {it.data.summary && <p className="mt-1 text-sm leading-6 text-muted-foreground">{it.data.summary}</p>}
                         {it.data.source_name && <p className="mt-auto pt-2 text-xs font-bold text-muted-foreground">{it.data.source_name}</p>}
                       </button>
                     ))}

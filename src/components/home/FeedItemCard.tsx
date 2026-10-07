@@ -129,13 +129,11 @@ export default function FeedItemCard({ item, colorIndex }: { item: ContentItem; 
           <GlossaryText>{item.titre_simplifie}</GlossaryText>
         </h3>
 
-        <div ref={resume} className="relative min-h-0 flex-1 overflow-hidden">
+        {/* Jamais de texte coupé : un résumé plus long que la carte défile dans la carte. */}
+        <div ref={resume} className="relative min-h-0 flex-1 overflow-y-auto overscroll-contain pr-1">
           <p className="text-[14.5px] leading-[1.6] text-slate-600 dark:text-slate-300">
             <GlossaryText>{item.resume_flash}</GlossaryText>
           </p>
-          {deborde && (
-            <div className="pointer-events-none absolute inset-x-0 bottom-0 h-12 bg-gradient-to-t from-card to-transparent dark:from-slate-900" />
-          )}
         </div>
 
         <div className="mt-4 shrink-0 border-t border-border/60 pt-3.5 dark:border-slate-800">

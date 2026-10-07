@@ -122,8 +122,8 @@ export default function EntityNewsFeed({
                     <span className="text-[10px] font-black uppercase tracking-widest text-blue-700 dark:text-blue-400">{typeLabel(it.news_type)}</span>
                     <span className="shrink-0 text-[10px] font-bold text-muted-foreground">{fmt(it.published_at)}</span>
                   </div>
-                  <p className="line-clamp-3 text-sm font-bold leading-snug text-foreground dark:text-white">{it.title}</p>
-                  {it.summary && <p className="mt-1 line-clamp-3 text-xs leading-5 text-muted-foreground dark:text-slate-300">{it.summary}</p>}
+                  <p className="text-sm font-bold leading-snug text-foreground dark:text-white">{it.title}</p>
+                  {it.summary && <p className="mt-1 text-xs leading-5 text-muted-foreground dark:text-slate-300">{it.summary}</p>}
                   <span className="mt-auto inline-flex items-center gap-1 pt-2 text-[10px] font-bold uppercase tracking-widest text-muted-foreground">
                     {it.source_name}
                   </span>

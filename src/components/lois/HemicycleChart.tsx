@@ -15,7 +15,7 @@ import { SENATE_GROUPS } from "@/lib/senate-groups";
 type Group = { label: string; seats: number; color: string; order: number; slug?: string | null; href?: string | null; vacant?: boolean };
 
 // Nombre de sièges fixé par la loi : le total affiché est celui des sièges, pas celui des élus
-// en exercice (un siège peut être vacant en attendant une élection partielle).
+// en exercice (un siège reste vacant le temps que le remplaçant prenne ses fonctions).
 const SIEGES = { an: 577, senat: 348 } as const;
 
 // Ordre gauche → droite dans l'hémicycle (rang par sigle) pour l'Assemblée.
@@ -249,8 +249,8 @@ export default function HemicycleChart({ chamber = "both", title, subtitle }: { 
         {(chamber === "an" || chamber === "both") && vacantsAN.length > 0 && anElus < SIEGES.an && (
           <p className="mx-auto mt-6 max-w-3xl rounded-2xl bg-muted px-4 py-3 text-center text-[12px] leading-relaxed text-muted-foreground">
             <strong className="text-foreground">{SIEGES.an - anElus} siège{SIEGES.an - anElus > 1 ? "s" : ""} vacant{SIEGES.an - anElus > 1 ? "s" : ""}</strong> en attendant
-            une élection partielle : {vacantsAN.map(v => `${v.departement} (${v.circonscription}${v.circonscription === 1 ? "re" : "e"} circ., ${v.ancien})`).join(", ")}.
-            Un député élu sénateur quitte l&apos;Assemblée et n&apos;est pas remplacé par son suppléant.
+            l&apos;entrée en fonction du remplaçant : {vacantsAN.map(v => `${v.departement} (${v.circonscription}${v.circonscription === 1 ? "re" : "e"} circ., ${v.ancien})`).join(", ")}.
+            Un député qui quitte l&apos;Assemblée (élu sénateur, nommé au Gouvernement, devenu maire…) est en général remplacé par son suppléant ; à défaut, une élection partielle est organisée.
           </p>
         )}
       </div>

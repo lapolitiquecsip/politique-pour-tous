@@ -3,6 +3,10 @@ name: Deploy to GitHub Pages
 on:
   push:
     branches: ["main"]
+  # Chaque nuit, après la mise à jour des élus (parties-sync 22:25 UTC) : les pages des
+  # nouveaux élus (suppléants, élus de partielles) n'existent qu'une fois le site reconstruit.
+  schedule:
+    - cron: "30 4 * * *"
   workflow_dispatch:
 
 permissions:

@@ -33,6 +33,7 @@ import PresidentSection from "@/components/executif/PresidentSection";
 import ProgramSection from "@/components/executif/ProgramSection";
 import VideoFeed from "@/components/executif/VideoFeed";
 import PublicFinancePanel from "@/components/executif/PublicFinancePanel";
+import PlfALaUne from "@/components/executif/plf/PlfALaUne";
 import { cleanMinistryName } from "@/lib/executif-utils";
 import { AwardBadge } from "@/components/ui/award-badge";
 
@@ -533,6 +534,10 @@ export default function ExecutifPage() {
       </section>
 
       <div className="container mx-auto max-w-7xl px-4 mt-12">
+        {/* À LA UNE — le projet de budget de l'année en cours d'examen */}
+        <div className="mb-8">
+          <PlfALaUne />
+        </div>
         <div className="grid grid-cols-1 lg:grid-cols-12 gap-8">
           
           {/* MAIN CONTENT AREA */}

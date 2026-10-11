@@ -15,6 +15,7 @@ import CandidatesFollowFeed from "@/components/dashboard/CandidatesFollowFeed";
 import CommissionsRegistre from "@/components/home/CommissionsRegistre";
 import JournalOfficielDuJour from "@/components/home/JournalOfficielDuJour";
 import TopicBrief from "@/components/pro/TopicBrief";
+import TutorielPro, { tutorielProDejaVu } from "@/components/pro/TutorielPro";
 import EncartPremium from "@/components/dashboard/EncartPremium";
 import IdentifiantsForm from "@/components/dashboard/IdentifiantsForm";
 import ParametresCompte from "@/components/dashboard/ParametresCompte";
@@ -172,6 +173,9 @@ export default function EspacePersonnel({ mode = "tout" }: { mode?: ModeEspace }
   const isPremium = tierAffiche === "elite" || tierAffiche === "pro";
   const isPro = tierAffiche === "pro";
   const [loading, setLoading] = useState(true);
+  // Tutoriel d'accueil Pro : ouvert de lui-même à la première visite de l'espace (ou au
+  // retour du paiement, ?bienvenue=1), puis seulement à la demande.
+  const [tutoriel, setTutoriel] = useState(false);
   const [userVotes, setUserVotes] = useState<any[]>([]);
   const [followedDeputies, setFollowedDeputies] = useState<any[]>([]);
   const [savedItems, setSavedItems] = useState<any[]>([]);
@@ -188,6 +192,11 @@ export default function EspacePersonnel({ mode = "tout" }: { mode?: ModeEspace }
   const verrousVisibles = isPro ? [] : isPremium ? VERROUS.filter(v => v.offre === "pro") : VERROUS;
   const verrouActif = VERROUS.find(v => activeTab === `verrou-${v.id}`);
   const [isPending, startTransition] = useTransition();
+  useEffect(() => {
+    if (mode !== "espace" || !proVerifie || !userId) return;
+    const retourPaiement = new URLSearchParams(window.location.search).has("bienvenue");
+    if (retourPaiement || !tutorielProDejaVu()) setTutoriel(true);
+  }, [mode, proVerifie, userId]);
 
   useEffect(() => {
     // En mode « compte », rien de tout cela n'est affiché : on ne va pas chercher
@@ -433,6 +442,12 @@ export default function EspacePersonnel({ mode = "tout" }: { mode?: ModeEspace }
                     </Link>
                   </div>
                 )}
+                {mode === "espace" && proVerifie && (
+                  <button type="button" onClick={() => setTutoriel(true)}
+                    className="mt-5 inline-flex items-center gap-2 rounded-xl border border-white/15 bg-white/[0.05] px-4 py-2 text-[11px] font-black uppercase tracking-widest text-white/80 transition hover:bg-white/10 hover:text-white">
+                    <Settings size={14} /> Régler mes alertes pas à pas
+                  </button>
+                )}
                 <div className={`h-[1px] w-32 mt-6 rounded-full ${isPremium ? 'bg-gradient-to-r from-amber-400/70 to-transparent' : 'bg-gradient-to-r from-sky-400/60 to-transparent'}`} />
              </div>
           </div>
@@ -449,14 +464,14 @@ export default function EspacePersonnel({ mode = "tout" }: { mode?: ModeEspace }
               « Tout sur un sujet » en fait partie depuis qu'il donne les montants en
               vigueur et les textes applicables : c'est un outil de travail, et la
               fonction Edge qui le sert n'admet plus que le niveau Pro. */}
-          {proVerifie && <TopicBrief />}
+          {proVerifie && <div id="tout-sur-un-sujet" className="scroll-mt-24"><TopicBrief /></div>}
           {/* Le registre remplace l ancien fil des commissions : les deux
               montraient la meme matiere dans le meme ecran, et deux panneaux
               jumeaux ont deja seme la confusion pour le Journal officiel. Le
               registre y ajoute la navigation par journee, les deux chambres et
               la recherche. */}
-          {proVerifie && <CommissionsRegistre />}
-          {proVerifie && <JournalOfficielDuJour />}
+          {proVerifie && <div id="commissions" className="scroll-mt-24"><CommissionsRegistre /></div>}
+          {proVerifie && <div id="journal-officiel" className="scroll-mt-24"><JournalOfficielDuJour /></div>}
           <CandidatesFollowFeed />
           <CommuneFeedCard />
           {/* Ancre des liens « Modifier mes alertes » des e-mails. */}
@@ -468,6 +483,7 @@ export default function EspacePersonnel({ mode = "tout" }: { mode?: ModeEspace }
       )}
 
       {mode === "compte" && <ParametresCompte />}
+      {userId && <TutorielPro userId={userId} ouvert={tutoriel} onFermer={() => setTutoriel(false)} />}
 
       {/* relative z-20 : pour un compte classique, ce panneau remonte sous le hero
           (-mt-16) dont le contenu (z-10) avalait les clics sur les onglets. */}

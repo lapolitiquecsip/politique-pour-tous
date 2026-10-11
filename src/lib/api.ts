@@ -1190,6 +1190,18 @@ export const api = {
     };
   },
 
+  /**
+   * Les textes analysés pour les alertes Pro (« un texte vous concerne ») sur les derniers
+   * jours : sert au tutoriel d'accueil à montrer ce qu'un profil aurait reçu.
+   */
+  getTextesImpacts: async (jours = 14) => {
+    const depuis = new Date(Date.now() - jours * 864e5).toISOString();
+    const { data, error } = await supabase.from('textes_impacts')
+      .select('id, source, titre, explication, extrait, importance, publics, secteurs, domaines, territoire, date_texte, url')
+      .gte('date_texte', depuis.slice(0, 10)).order('date_texte', { ascending: false }).limit(400);
+    if (error) return [];
+    return data ?? [];
+  },
   getUserPreferences: async (userId: string) => {
     const { data, error } = await supabase.from('user_preferences').select('*').eq('user_id', userId).maybeSingle();
     if (error) { console.warn('API Warning (getUserPreferences):', error.message); return null; }
@@ -2045,25 +2057,16 @@ export const api = {
   // --- USER ACTIVITY (VOte & Follow) ---
   
   getUserVotes: async (userId: string) => {
-    try {
-      const { data, error } = await supabase
-        .from('user_votes')
-        .select('*, laws(*), scrutins(*)')
-        .eq('user_id', userId)
-        .order('created_at', { ascending: false });
-      
-      if (error) throw error;
-      return data || [];
-    } catch (e) {
-      console.warn("Retrying getUserVotes without relations...");
-      const { data, error } = await supabase
-        .from('user_votes')
-        .select('*')
-        .eq('user_id', userId)
-        .order('created_at', { ascending: false });
-      if (error) { console.error(error); return []; }
-      return data || [];
-    }
+    // Pas de jointure : « laws » est une vue, sans clé étrangère vers user_votes. La demande
+    // avec jointure échouait à chaque visite (erreur 400 en console) avant de se rabattre
+    // sur celle-ci ; l'espace personnel retrouve lui-même le titre de chaque texte.
+    const { data, error } = await supabase
+      .from('user_votes')
+      .select('*')
+      .eq('user_id', userId)
+      .order('created_at', { ascending: false });
+    if (error) { console.error(error); return []; }
+    return data || [];
   },
 
   saveUserVote: async (userId: string, lawId: string, vote: string) => {

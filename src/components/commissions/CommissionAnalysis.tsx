@@ -57,7 +57,7 @@ export function CommissionAnalysis({ m, accent, sombre = false }: {
       ? (
         <div>
           <p className={`whitespace-pre-line text-sm leading-relaxed ${corps}`}>{m.summary}</p>
-          <MentionIA sombre={sombre} source={{ libelle: "compte rendu officiel de la réunion", url: m.cr_url }} />
+          <MentionIA sombre={sombre} source={{ libelle: (m.analysis as any)?.source === "transcription" ? "enregistrement vidéo de la réunion, transcrit automatiquement" : "compte rendu officiel de la réunion", url: m.cr_url }} />
         </div>
       )
       : (
@@ -163,7 +163,7 @@ export function CommissionAnalysis({ m, accent, sombre = false }: {
 
       {/* Les citations sont retrouvées mot pour mot dans le verbatim avant publication
           (dropInventedQuotes, scripts/update-commissions.ts) ; le reste ne l'est pas. */}
-      <MentionIA sombre={sombre} nature="Analyse" source={{ libelle: "compte rendu officiel de la réunion", url: m.cr_url }}
+      <MentionIA sombre={sombre} nature="Analyse" source={{ libelle: (m.analysis as any)?.source === "transcription" ? "enregistrement vidéo de la réunion, transcrit automatiquement" : "compte rendu officiel de la réunion", url: m.cr_url }}
         verification={a.citations?.length ? "citations vérifiées automatiquement dans le compte rendu" : undefined} />
     </div>
   );

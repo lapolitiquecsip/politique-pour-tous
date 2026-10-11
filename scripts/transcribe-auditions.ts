@@ -239,10 +239,10 @@ async function main() {
 
   const { data, error } = await q;
   if (error) { console.error(`❌ lecture : ${error.message}`); process.exit(1); }
-  if (!data?.length) { console.log("  Rien à traiter."); return; }
+  if (!data?.length) console.log("  Aucun compte rendu en attente d'analyse.");
 
   let traitees = 0, ignorees = 0;
-  for (const r of data as any[]) {
+  for (const r of (data ?? []) as any[]) {
     if (traitees >= LIMITE) break;
     try {
       const lien = await lienVideo(r.cr_url);
@@ -280,7 +280,169 @@ async function main() {
     }
   }
 
+  if (!REF && traitees < LIMITE) traitees += await depuisLeJournal(supabase, LIMITE - traitees);
+
   console.log(`\n=== ${traitees} audition(s) transcrite(s), ${ignorees} réunion(s) avec compte rendu écrit ignorée(s) ===`);
+}
+
+/* ───────────── Réunions filmées dont aucun compte rendu n'a jamais paru ───────────── */
+
+/**
+ * Le veilleur des auditions (dépôt des mises à jour) tient la liste des réunions tenues. Il y
+ * marque « a_transcrire » celles qui ont été filmées et pour lesquelles l'Assemblée n'a
+ * publié aucun compte rendu — typiquement les auditions des commissions d'enquête, dont le
+ * compte rendu ne sort qu'avec le rapport, des mois plus tard. Elles n'avaient aucune ligne
+ * en base : cette tâche ne pouvait pas les voir.
+ *
+ * On retrouve la vidéo sur le portail vidéo de l'Assemblée, qui liste les réunions de
+ * commission par ordre chronologique, l'adresse de chaque vidéo portant son intitulé et sa
+ * date. Le rapprochement exige la même date ET plusieurs mots de l'intitulé en commun, sans
+ * second candidat aussi bon : dans le doute, on ne transcrit pas — mieux vaut une audition
+ * absente qu'une analyse rangée sous la mauvaise réunion.
+ */
+const PORTAIL = "https://videos.assemblee-nationale.fr";
+const MOIS_FR = ["janvier", "fevrier", "mars", "avril", "mai", "juin", "juillet", "aout", "septembre", "octobre", "novembre", "decembre"];
+const sansAccent = (s: string) => s.normalize("NFD").replace(/[̀-ͯ]/g, "").toLowerCase();
+const NAVIGATEUR = "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/126 Safari/537.36";
+
+/** Mots présents dans presque tous les intitulés : ils ne distinguent aucune réunion d'une autre. */
+const BANALS = new Set(["commission", "commissions", "audition", "auditions", "representants", "representantes", "nationale",
+  "national", "presse", "ouverte", "madame", "monsieur", "president", "presidente", "directeur", "directrice", "general",
+  "generale", "mission", "information", "enquete", "table", "ronde", "ministre", "conjointe", "membres", "france", "francaise"]);
+const distinctifs = (mots: string[]) => mots.filter(x => x.length >= 5 && !BANALS.has(x));
+
+type Video = { url: string; date: string; mots: Set<string> };
+
+/** Les vidéos de commission du portail, des plus récentes jusqu'à la date voulue. */
+async function indexVideos(jusqua: string): Promise<Video[]> {
+  const videos = new Map<string, Video>();
+  for (let page = 1; page <= 80; page++) {
+    // Une page qui ne répond pas ne doit pas faire perdre celles déjà lues.
+    let html: string;
+    try {
+      const r = await fetch(`${PORTAIL}/commissions.p${page}`, { headers: { "User-Agent": NAVIGATEUR } });
+      if (!r.ok) break;
+      html = await r.text();
+    } catch { break; }
+    let plusAncienne = "9999";
+    for (const m of html.matchAll(/href="(video\.[\w.]+?\.([a-z0-9-]+?)-(\d{1,2})(?:er)?-([a-z]+)-(\d{4}))"/g)) {
+      const mois = MOIS_FR.indexOf(m[4]);
+      if (mois < 0) continue;
+      const date = `${m[5]}-${String(mois + 1).padStart(2, "0")}-${m[3].padStart(2, "0")}`;
+      if (date < plusAncienne) plusAncienne = date;
+      videos.set(m[1], { url: `${PORTAIL}/${m[1]}`, date, mots: new Set(m[2].split("-").filter(x => x.length >= 3)) });
+    }
+    if (plusAncienne < jusqua) break;
+    await new Promise(x => setTimeout(x, 350));
+  }
+  return [...videos.values()];
+}
+
+/**
+ * Ce qui désigne une audition sans équivoque : le NOM DE FAMILLE des personnes entendues
+ * (« Mme Claire Hédon » → hedon) et les sigles entre parenthèses (« (CNLE) » → cnle).
+ *
+ * Les mots de l'intitulé ne suffisent pas : le même jour, deux auditions de la même commission
+ * d'enquête partagent « représentants », « lutte », « pauvreté », et un premier essai sur les
+ * mots communs rangeait une audition sous la vidéo d'une autre commission.
+ */
+function reperes(intitule: string): Set<string> {
+  const out = new Set<string>();
+  for (const m of intitule.matchAll(/(?:\bMM?\.|\bMmes?|\bDr|\bMe)\s+((?:[A-ZÀ-Ý][\wÀ-ÿ'’-]*\s+){0,3}[A-ZÀ-Ý][\wÀ-ÿ'’-]*)/g)) {
+    const dernier = m[1].trim().split(/\s+/).pop() ?? "";
+    for (const part of sansAccent(dernier).split(/[^a-z]+/)) if (part.length >= 4 && !BANALS.has(part)) out.add(part);
+  }
+  for (const m of intitule.matchAll(/\(([A-Z]{3,8})\)/g)) out.add(m[1].toLowerCase());
+  return out;
+}
+
+/** La vidéo d'une réunion : même jour, un nom ou un sigle en commun, et une seule candidate. */
+function trouverVideo(videos: Video[], date: string, intitule: string): Video | null {
+  const noms = reperes(intitule);
+  if (!noms.size) return null;
+  const candidates = videos.filter(v => v.date === date && [...noms].some(n => v.mots.has(n)));
+  return candidates.length === 1 ? candidates[0] : null;
+}
+
+async function mp4DeLaPage(url: string): Promise<string | null> {
+  const r = await fetch(url, { headers: { "User-Agent": NAVIGATEUR } });
+  if (!r.ok) throw new Error(`page vidéo : HTTP ${r.status}`);
+  const mp4 = (await r.text()).match(/https?:\/\/[^"'\s&]+\.mp4/)?.[0];
+  return mp4 ?? null;
+}
+
+async function depuisLeJournal(supabase: any, reste: number): Promise<number> {
+  const { data: file, error } = await supabase.from("cycle_items")
+    .select("cle, titre, sujet, date_objet, donnees, tentatives")
+    .eq("cycle", "auditions").eq("etape", "a_transcrire").lt("tentatives", 3)
+    .order("date_objet", { ascending: false }).limit(40);
+  if (error) { console.warn(`  ⚠ journal des auditions illisible : ${error.message}`); return 0; }
+  if (!file?.length) return 0;
+
+  console.log(`\n  ${file.length} réunion(s) filmée(s) sans compte rendu écrit, au journal`);
+  const videos = await indexVideos(file[file.length - 1].date_objet);
+  console.log(`  ${videos.length} vidéo(s) de commission relevée(s) sur le portail`);
+
+  const noter = async (cle: string, tentatives: number, erreur: string) => {
+    if (DRY) return;
+    await supabase.from("cycle_items").update({ tentatives: tentatives + 1, erreur, agent: "transcripteur", maj_le: new Date().toISOString() })
+      .eq("cycle", "auditions").eq("cle", cle);
+  };
+
+  // Une vidéo qui réunit deux auditions (« représentants du CNLE, représentants de la DGCS »)
+  // ne peut pas être attribuée à l'une d'elles : son analyse mêlerait les deux. On l'écarte.
+  const paires = (file as any[]).map(it => ({ it, video: trouverVideo(videos, it.date_objet, String(it.titre ?? "")) }));
+  const usage = new Map<string, number>();
+  for (const p of paires) if (p.video) usage.set(p.video.url, (usage.get(p.video.url) ?? 0) + 1);
+  const sures = paires.filter(p => p.video && usage.get(p.video.url) === 1);
+  console.log(`  ${sures.length} réunion(s) rapprochée(s) d'une vidéo sans équivoque`);
+
+  let faites = 0;
+  for (const { it, video: v } of sures) {
+    if (faites >= reste) break;
+    const video = v!;
+    console.log(`\n  ${it.date_objet} — ${String(it.titre).slice(0, 70)}\n    vidéo : ${video.url.slice(0, 110)}`);
+    try {
+      const mp4 = await mp4DeLaPage(video.url);
+      if (!mp4) throw new Error("aucun fichier vidéo sur la page");
+      const texte = await transcrire(mp4, it.cle);
+      const mots = texte.split(/\s+/).length;
+      console.log(`    transcription : ${mots.toLocaleString("fr-FR")} mots`);
+      if (mots < 200) throw new Error("transcription trop courte");
+
+      const { analysis, dropped } = await analyser(texte, it.titre ?? "", it.date_objet);
+      const points = analysis.points_cles ?? [];
+      const summary = [analysis.contexte, ...points.slice(0, 4).map(p => `- ${p}`)].filter(Boolean).join("\n\n");
+      console.log(`    analyse : ${points.length} point(s)${dropped ? `, ${dropped} citation(s) écartée(s)` : ""}`);
+      if (DRY) { console.log("    (--dry-run : rien n'est écrit)"); faites++; continue; }
+
+      const { error: err } = await supabase.from("commission_reports").upsert({
+        // Pas de compte rendu, donc pas de référence de compte rendu : la réunion garde
+        // son identifiant d'agenda, que le veilleur reconnaîtra.
+        ref: it.cle, chamber: "AN", organe_ref: it.donnees?.organe_ref ?? null,
+        commission: /^PO\d+$/.test(it.sujet ?? "") ? "Réunion de commission" : (it.sujet ?? "Réunion de commission"),
+        title: it.titre, meeting_date: it.date_objet,
+        // La source consultable est la vidéo elle-même.
+        cr_url: video.url, video_url: video.url,
+        analysis: { ...analysis, source: "transcription" },
+        summary, word_count: mots, analyzed_at: new Date().toISOString(), updated_at: new Date().toISOString(),
+      }, { onConflict: "ref" });
+      if (err) throw new Error(err.message);
+      await supabase.from("cycle_items").update({
+        etape: "en_ligne", erreur: null, agent: "transcripteur", en_ligne_le: new Date().toISOString(), maj_le: new Date().toISOString(),
+        donnees: { ...it.donnees, video: video.url, transcrit: true },
+      }).eq("cycle", "auditions").eq("cle", it.cle);
+      console.log("    ✓ en ligne");
+      faites++;
+    } catch (e) {
+      const message = (e as Error).message;
+      console.warn(`    ⚠ ${message}`);
+      // Quota de transcription ou d'analyse : ce n'est pas la faute de la réunion.
+      if (/429|quota|rate/i.test(message)) break;
+      await noter(it.cle, it.tentatives ?? 0, message.slice(0, 300));
+    }
+  }
+  return faites;
 }
 
 main().catch(e => { console.error("Erreur fatale :", e); process.exit(1); });

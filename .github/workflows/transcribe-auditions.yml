@@ -20,7 +20,7 @@ on:
       limit:
         description: "Nombre d'auditions à traiter"
         required: false
-        default: "3"
+        default: "2"
 
 concurrency:
   group: transcriptions
@@ -55,4 +55,4 @@ jobs:
           # L'analyse passe par le modèle gratuit (scripts/lib/llm.ts) : sans cette clé, le
           # script s'arrêtait avant d'analyser, même avec une clé de transcription.
           LLM_FREE_API_KEY: ${{ secrets.LLM_FREE_API_KEY }}
-        run: npx --yes tsx scripts/transcribe-auditions.ts --limit=${{ github.event.inputs.limit || '3' }}
+        run: npx --yes tsx scripts/transcribe-auditions.ts --limit=${{ github.event.inputs.limit || '2' }}

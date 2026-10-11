@@ -18,9 +18,13 @@
     "                pour que le titre et le diffuseur soient utilisés",
     "",
     "Le script ne supprime jamais un évènement retiré de ce fichier : il faut le",
-    "passer en statut « annule » pour qu'il disparaisse proprement de l'affichage."
+    "passer en statut « annule » pour qu'il disparaisse proprement de l'affichage.",
+    "",
+    "Résultat d'une primaire : ajoutez un bloc `resultat` à la primaire (vainqueur, proclame_le,",
+    "scores…). Dès qu'il existe, la page affiche le résultat et masque les fiches des battus.",
+    "Sans lui, le script cherche seul le vainqueur dans la presse après chaque vote (voir",
+    "detecterVainqueurs dans scripts/update-primary-debates.ts) et annule les tours devenus sans objet."
   ],
-
   "primaires": [
     {
       "nom": "Primaire Choisir 2027",
@@ -32,22 +36,80 @@
         "jerome-guedj",
         "emmanuel-maurel"
       ],
-      "_note": "« Choisir 2027 », organisée par le PS, Place publique et la Gauche républicaine et socialiste. Philippe Brun a été exclu de la primaire et suspendu du PS le 16 septembre 2026 ; sa demande de réintégration a été rejetée en référé puis en appel le 23 septembre. Il ne figure donc pas parmi les cinq candidats, et sa fiche ne porte plus de rattachement à une primaire."
+      "_note": "« Choisir 2027 », organisée par le PS, Place publique et la Gauche républicaine et socialiste. Philippe Brun a été exclu de la primaire et suspendu du PS le 16 septembre 2026 ; sa demande de réintégration a été rejetée en référé puis en appel le 23 septembre. Il ne figure donc pas parmi les cinq candidats, et sa fiche ne porte plus de rattachement à une primaire.",
+      "resultat": {
+        "vainqueur": "raphael-glucksmann",
+        "proclame_le": "2026-10-11",
+        "tour": "Élu dès le premier tour",
+        "scores": [
+          {
+            "slug": "raphael-glucksmann",
+            "nom": "Raphaël Glucksmann",
+            "parti": "Place publique",
+            "pct": 66.1,
+            "voix": 79613
+          },
+          {
+            "slug": "olivier-faure",
+            "nom": "Olivier Faure",
+            "parti": "Parti socialiste",
+            "pct": 14.5
+          },
+          {
+            "slug": "segolene-royal",
+            "nom": "Ségolène Royal",
+            "parti": "Parti socialiste",
+            "pct": 7.6
+          },
+          {
+            "slug": "emmanuel-maurel",
+            "nom": "Emmanuel Maurel",
+            "parti": "Gauche républicaine et socialiste",
+            "pct": 5.9
+          },
+          {
+            "slug": "jerome-guedj",
+            "nom": "Jérôme Guedj",
+            "parti": "Parti socialiste",
+            "pct": 5.8
+          }
+        ],
+        "votants": 120587,
+        "exprimes": 120307,
+        "inscrits_environ": 140000,
+        "contexte": "Vote en ligne ouvert le vendredi 9 octobre à 8 h. Perturbé par une cyberattaque dès l'ouverture, il a été prolongé jusqu'au dimanche 11 octobre à 18 h. Résultats annoncés par Patrick Mennucci, président de la commission d'organisation.",
+        "note": "Scores arrondis au dixième : les médias divergent de quelques centièmes sur trois d'entre eux (66,13 % ou 66,17 % pour le vainqueur).",
+        "sources": [
+          {
+            "titre": "Toute l'Europe, 11 octobre 2026",
+            "url": "https://www.touteleurope.eu/vie-politique-des-etats-membres/presidentielle-2027-l-eurodepute-raphael-glucksmann-remporte-largement-la-primaire-de-la-gauche-sociale-democrate/"
+          },
+          {
+            "titre": "France 24, 11 octobre 2026",
+            "url": "https://www.france24.com/fr/france/20261011-en-direct-primaire-sociale-d%C3%A9mocrate-qui-arrivera-en-t%C3%AAte-candidat-gauche-2027"
+          }
+        ]
+      }
     },
     {
       "nom": "Primaire de la gauche unitaire",
       "camp": "gauche",
-      "candidats": ["francois-ruffin", "lydie-massard", "marine-tondelier"],
+      "candidats": [
+        "francois-ruffin",
+        "lydie-massard",
+        "marine-tondelier"
+      ],
       "_note": "Un scrutin avait été annoncé pour le 11 octobre 2026, mais le processus est abandonné de fait depuis juillet 2026 : retraits de Clémentine Autain et de Benjamin Lucas-Lundy, puis refus du PS d'y participer. Aucune date n'ayant été reconfirmée depuis, rien n'est inscrit au calendrier — mieux vaut une rubrique vide qu'un rendez-vous qui n'aura pas lieu. En conséquence, les trois candidats ne sont plus rattachés à cette primaire dans presidential_candidates : leur fiche ne porte plus la pastille, qui annonçait une échéance inexistante. Ce bloc reste ici pour documenter la décision, et servira tel quel si la primaire repart."
     },
     {
       "nom": "Primaire de la droite",
       "camp": "droite",
-      "candidats": ["david-lisnard"],
+      "candidats": [
+        "david-lisnard"
+      ],
       "_note": "Les Républicains ont désigné Bruno Retailleau le 19 avril 2026, la primaire ayant été écartée. David Lisnard, candidat déclaré à la présidentielle depuis le 31 mars 2026, plaide pour une primaire ouverte de la droite et du centre — Retailleau dit qu'il l'affronterait — mais elle n'existe pas et aucune date n'est fixée. Sa fiche ne porte donc plus de rattachement : aucun candidat n'est aujourd'hui rattaché à une primaire de droite, et le calendrier reste vide. Ce bloc resservira tel quel si une primaire est convoquée."
     }
   ],
-
   "evenements": [
     {
       "id": "choisir2027-debat-1",
@@ -105,9 +167,9 @@
       "id": "choisir2027-tour-1",
       "primaire": "Primaire Choisir 2027",
       "type": "vote",
-      "titre": "Premier tour du scrutin, en ligne",
+      "titre": "Premier tour : Raphaël Glucksmann élu avec 66 % des voix",
       "date_prevue": "2026-10-09",
-      "heure": "du vendredi 9 octobre 8h au samedi 10 octobre 20h",
+      "heure": "du vendredi 9 octobre 8h au dimanche 11 octobre 18h (vote prolongé)",
       "participants": [
         "olivier-faure",
         "jerome-guedj",
@@ -133,7 +195,8 @@
         "segolene-royal"
       ],
       "recherche": "résultat second tour primaire gauche Choisir 2027",
-      "source_url": "https://choisir2027.fr/"
+      "source_url": "https://choisir2027.fr/",
+      "statut": "annule"
     }
   ]
 }

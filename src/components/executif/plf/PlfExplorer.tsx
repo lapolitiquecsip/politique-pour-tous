@@ -214,23 +214,27 @@ function Verrou() {
 /* ======================================================================= */
 function VueSimple({ comp, versDetail }: { comp: PlfAnnee | null; versDetail: () => void }) {
   const p = PLF[REF];
-  const r = comp ? PLF[comp] : null;
+  // L'évolution est TOUJOURS affichée à côté des montants : par rapport au PLF 2026 par défaut,
+  // ou par rapport à l'année choisie dans « Comparer avec ». Les barres grises, elles, n'apparaissent
+  // que si une année est explicitement choisie.
+  const an: PlfAnnee = comp ?? 2026;
+  const r = PLF[an];
   const dep = depensesSimples(REF);
-  const depR = comp ? depensesSimples(comp) : [];
+  const depR = depensesSimples(an);
   const parCle = new Map(depR.map((d) => [d.cle, d.cp]));
   const TOP = 14;
   const top = dep.slice(0, TOP);
   const autres = dep.slice(TOP);
   const autresCp = autres.reduce((s, d) => s + d.cp, 0);
-  const autresR = comp ? depR.filter((d) => !top.some((t) => t.cle === d.cle)).reduce((s, d) => s + d.cp, 0) : 0;
+  const autresR = depR.filter((d) => !top.some((t) => t.cle === d.cle)).reduce((s, d) => s + d.cp, 0);
   const max = Math.max(...top.map((d) => d.cp), ...(comp ? top.map((d) => parCle.get(d.cle) ?? 0) : [0]));
 
   const chiffres: { label: string; v: number; rv?: number; f: (x: number) => string; sens: "bon" | "mauvais" | "neutre" }[] = [
-    { label: "Dépenses de l’État", v: p.etat.depensesNettes, rv: r?.etat.depensesNettes, f: (x) => `${nf1(x)} Md€`, sens: "neutre" },
-    { label: "Impôts encaissés (nets)", v: p.recettes.nettes / 1e3, rv: r ? r.recettes.nettes / 1e3 : undefined, f: (x) => `${nf1(x)} Md€`, sens: "bon" },
-    { label: "Déficit de l’État", v: -p.etat.solde, rv: r ? -r.etat.solde : undefined, f: (x) => `${nf1(x)} Md€`, sens: "mauvais" },
-    { label: "Déficit public visé", v: p.macro.deficit, rv: r?.macro.deficit, f: (x) => `${nf1(x)} % du PIB`, sens: "mauvais" },
-    { label: "Dette publique", v: p.macro.dette, rv: r?.macro.dette, f: (x) => `${nf1(x)} % du PIB`, sens: "mauvais" },
+    { label: "Dépenses de l’État", v: p.etat.depensesNettes, rv: r.etat.depensesNettes, f: (x) => `${nf1(x)} Md€`, sens: "neutre" },
+    { label: "Impôts encaissés (nets)", v: p.recettes.nettes / 1e3, rv: r.recettes.nettes / 1e3, f: (x) => `${nf1(x)} Md€`, sens: "bon" },
+    { label: "Déficit de l’État", v: -p.etat.solde, rv: -r.etat.solde, f: (x) => `${nf1(x)} Md€`, sens: "mauvais" },
+    { label: "Déficit public visé", v: p.macro.deficit, rv: r.macro.deficit, f: (x) => `${nf1(x)} % du PIB`, sens: "mauvais" },
+    { label: "Dette publique", v: p.macro.dette, rv: r.macro.dette, f: (x) => `${nf1(x)} % du PIB`, sens: "mauvais" },
   ];
 
   const recettes = (y: PlfAnnee) => {
@@ -242,7 +246,7 @@ function VueSimple({ comp, versDetail }: { comp: PlfAnnee | null; versDetail: ()
     ];
   };
   const rec = recettes(REF);
-  const recR = comp ? recettes(comp) : [];
+  const recR = recettes(an);
   const recMax = Math.max(...rec.map((x) => x.v), ...recR.map((x) => x.v));
 
   return (
@@ -252,9 +256,9 @@ function VueSimple({ comp, versDetail }: { comp: PlfAnnee | null; versDetail: ()
           <div key={c.label} className="rounded-2xl border border-border bg-card p-4 md:p-5">
             <p className="text-[10px] font-black uppercase tracking-widest text-muted-foreground">{c.label}</p>
             <p className="mt-1 font-staatliches text-3xl leading-none text-foreground md:text-4xl">{c.f(c.v)}</p>
-            {comp && c.rv !== undefined && (
+            {c.rv !== undefined && (
               <p className="mt-2 flex flex-wrap items-center gap-x-2 text-xs text-muted-foreground">
-                <span>{comp} : {c.f(c.rv)}</span>
+                <span>{an} : {c.f(c.rv)}</span>
                 <Delta v={c.v - c.rv} sens={c.sens} />
               </p>
             )}
@@ -264,16 +268,16 @@ function VueSimple({ comp, versDetail }: { comp: PlfAnnee | null; versDetail: ()
 
       <section className="rounded-3xl border border-border bg-card p-5 md:p-8">
         <h2 className="font-staatliches text-3xl uppercase tracking-tight text-foreground">Où va l’argent</h2>
-        <p className="mb-5 text-sm text-muted-foreground">Crédits de paiement 2027, en milliards d’euros{comp ? ` — comparés au PLF ${comp}` : ""}.</p>
+        <p className="mb-5 text-sm text-muted-foreground">Crédits de paiement 2027, en milliards d’euros. À droite : l’évolution par rapport au PLF {an}.</p>
         <ul className="space-y-2.5">
           {top.map((d) => {
-            const rv = comp ? parCle.get(d.cle) : undefined;
+            const rv = parCle.get(d.cle);
             return (
               <li key={d.cle}>
                 <div className="flex items-baseline justify-between gap-3">
                   <span className="truncate text-sm font-bold text-foreground">{d.label}</span>
                   <span className="flex shrink-0 items-baseline gap-2">
-                    {comp && <Delta v={rv !== undefined ? (d.cp - rv) / 1e9 : null} small />}
+                    <Delta v={rv !== undefined ? (d.cp - rv) / 1e9 : null} small />
                     <span className="font-black tabular-nums text-foreground">{nf1(d.cp / 1e9)}</span>
                   </span>
                 </div>
@@ -291,7 +295,7 @@ function VueSimple({ comp, versDetail }: { comp: PlfAnnee | null; versDetail: ()
           <li className="flex items-baseline justify-between border-t border-border pt-2.5 text-sm">
             <span className="font-bold text-muted-foreground">Autres missions ({autres.length})</span>
             <span className="flex items-baseline gap-2">
-              {comp && <Delta v={(autresCp - autresR) / 1e9} small />}
+              <Delta v={(autresCp - autresR) / 1e9} small />
               <span className="font-black tabular-nums text-foreground">{nf1(autresCp / 1e9)}</span>
             </span>
           </li>
@@ -301,7 +305,7 @@ function VueSimple({ comp, versDetail }: { comp: PlfAnnee | null; versDetail: ()
 
       <section className="rounded-3xl border border-border bg-card p-5 md:p-8">
         <h2 className="font-staatliches text-3xl uppercase tracking-tight text-foreground">D’où vient l’argent</h2>
-        <p className="mb-5 text-sm text-muted-foreground">Impôts perçus par l’État en 2027, avant remboursements, en milliards d’euros.</p>
+        <p className="mb-5 text-sm text-muted-foreground">Impôts perçus par l’État en 2027, avant remboursements, en milliards d’euros. À droite : l’évolution par rapport au PLF {an}.</p>
         <ul className="space-y-2.5">
           {rec.map((x) => {
             const rv = recR.find((y) => y.k === x.k)?.v;
@@ -310,7 +314,7 @@ function VueSimple({ comp, versDetail }: { comp: PlfAnnee | null; versDetail: ()
                 <div className="flex items-baseline justify-between gap-3">
                   <span className="text-sm font-bold text-foreground">{x.label}</span>
                   <span className="flex items-baseline gap-2">
-                    {comp && <Delta v={rv !== undefined ? (x.v - rv) / 1e3 : null} small />}
+                    <Delta v={rv !== undefined ? (x.v - rv) / 1e3 : null} small />
                     <span className="font-black tabular-nums text-foreground">{nf1(x.v / 1e3)}</span>
                   </span>
                 </div>

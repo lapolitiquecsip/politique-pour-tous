@@ -668,6 +668,21 @@ export const api = {
     return data ?? [];
   },
 
+  /**
+   * Nom et photo de candidats donnés par leur identifiant d'URL, QUEL QUE SOIT leur statut :
+   * les battus d'une primaire n'ont plus de fiche, mais restent nommés dans ses résultats
+   * et dans la liste des participants à ses débats.
+   */
+  getCandidatesBySlugs: async (slugs: string[]) => {
+    if (!slugs.length) return [];
+    const { data, error } = await supabase
+      .from('presidential_candidates')
+      .select('slug, full_name, party, photo_url, status')
+      .in('slug', slugs);
+    if (error) return [];
+    return data ?? [];
+  },
+
   /* ════════ JOURNAL OFFICIEL DU JOUR (abonnement Pro) ════════ */
 
   /**

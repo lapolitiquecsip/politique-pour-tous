@@ -297,11 +297,20 @@ export default function PrimaryDebates({ candidateSlug }: { candidateSlug?: stri
     api.getPrimaryEvents(40)
       .then(r => { if (vivant) setEvents(r as Evenement[]); })
       .catch(() => { if (vivant) setEvents([]); });
-    api.getCandidates()
+    return () => { vivant = false; };
+  }, []);
+
+  // Les noms sont demandés par identifiant, sans condition de statut : un battu de primaire
+  // n'a plus de fiche, mais il a bien participé aux débats.
+  useEffect(() => {
+    const slugs = [...new Set((events ?? []).flatMap(e => e.participants ?? []))];
+    if (!slugs.length) return;
+    let vivant = true;
+    api.getCandidatesBySlugs(slugs)
       .then((r: any[]) => { if (vivant) setNoms(new Map(r.map(c => [c.slug, c.full_name]))); })
       .catch(() => {});
     return () => { vivant = false; };
-  }, []);
+  }, [events]);
 
   // Sur une fiche de candidat, on ne garde que ses rendez-vous.
   //

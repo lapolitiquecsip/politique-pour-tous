@@ -49,9 +49,75 @@ type Evenement = {
 };
 
 type Calendrier = {
-  primaires: { nom: string; camp: string; candidats: string[] }[];
+  primaires: { nom: string; camp: string; candidats: string[]; resultat?: { vainqueur: string } }[];
   evenements: Evenement[];
 };
+
+/** Préfixe du champ `resume` d'un vote dont le vainqueur a été repéré dans la presse. */
+const VAINQUEUR_AUTO = "VAINQUEUR_AUTO";
+
+/**
+ * Cherche dans la presse le vainqueur d'un vote de primaire qui vient d'avoir lieu.
+ *
+ * Aucune API ne publie le résultat d'une primaire : il est proclamé par ses organisateurs et
+ * repris dans l'heure par toute la presse. On lit donc les titres de Google Actualités (flux
+ * RSS, libre et sans clé) parus depuis l'ouverture du vote, et on ne retient un nom que si
+ * plusieurs médias DISTINCTS l'annoncent vainqueur sans ambiguïté — jamais sur un titre isolé,
+ * un sondage ou une question. Les scores détaillés, eux, restent saisis à la main dans
+ * primaires.json (bloc `resultat`) : les médias divergent trop pour les recopier seuls.
+ */
+async function detecterVainqueur(
+  candidats: { slug: string; nom: string }[], depuis: string,
+): Promise<{ slug: string; nom: string; medias: number; url: string; titre: string } | null> {
+  const familles = candidats.map(c => ({ ...c, cle: sansAccent(c.nom.split(" ").slice(-1)[0]) }));
+  const balise = (bloc: string, nom: string) => {
+    const m = bloc.match(new RegExp("<" + nom + "[^>]*>([^]*?)</" + nom + ">"));
+    return (m?.[1] ?? "").replace("<![CDATA[", "").replace("]]>", "").trim();
+  };
+  // Deux formulations : Google Actualités ne renvoie pas les mêmes titres d'une requête à l'autre.
+  const requetes = [
+    `primaire ${familles.map(c => c.cle).join(" ")} résultat`,
+    `primaire ${familles.map(c => c.cle).join(" OR ")} vainqueur when:7d`,
+  ];
+  const gagne = "(remporte|l.emporte des|l.emporte avec|l.emporte largement|vainqueur|designe|est elu|elu des|elu candidat|s.impose|ecrase|sacre)";
+  const voix = new Map<string, { medias: Set<string>; url: string; titre: string }>();
+  const vus = new Set<string>();
+  for (const q of requetes) {
+    const r = await fetch(
+      `https://news.google.com/rss/search?q=${encodeURIComponent(q)}&hl=fr&gl=FR&ceid=FR:fr`,
+      { headers: { "User-Agent": "Mozilla/5.0" } },
+    );
+    if (!r.ok) throw new Error(`Google Actualités a répondu ${r.status}`);
+    const xml = await r.text();
+    for (const it of xml.split("<item>").slice(1)) {
+      const titre = balise(it, "title"), date = balise(it, "pubDate");
+      const media = balise(it, "source") || titre.split(" - ").pop() || "";
+      if (!titre || !date || vus.has(titre) || new Date(date) < new Date(`${depuis}T00:00:00Z`)) continue;
+      vus.add(titre);
+      const t = sansAccent(titre);
+      // Ni question, ni conditionnel, ni pronostic, ni débat : seulement des annonces de résultat.
+      if (/[?]|pourrait|espere|vise |favori|sondage|pronostic|selon un|avant le vote|peut-il|va-t-il|debat/.test(t)) continue;
+      // Un titre qui cite deux candidats ne dit pas clairement lequel a gagné.
+      const cites = familles.filter(c => t.includes(c.cle));
+      if (cites.length !== 1) continue;
+      const c = cites[0];
+      const annonce = new RegExp(
+        c.cle + "[^|]{0,70}" + gagne + "|(victoire|triomphe|sacre|vainqueur)[^|]{0,60}" + c.cle,
+      ).test(t);
+      if (!annonce) continue;
+      const v = voix.get(c.slug) ?? { medias: new Set<string>(), url: balise(it, "link"), titre };
+      v.medias.add(sansAccent(media));
+      voix.set(c.slug, v);
+    }
+  }
+  const tri = [...voix.entries()].sort((a, b) => b[1].medias.size - a[1].medias.size);
+  if (!tri.length) return null;
+  const [slug, premier] = tri[0];
+  const second = tri[1]?.[1].medias.size ?? 0;
+  // Au moins trois médias distincts, et trois fois plus que le suivant.
+  if (premier.medias.size < 3 || premier.medias.size < 3 * second) return null;
+  return { slug, nom: familles.find(c => c.slug === slug)!.nom, medias: premier.medias.size, url: premier.url, titre: premier.titre };
+}
 
 const sansAccent = (s: string) =>
   s.normalize("NFD").replace(/[̀-ͯ]/g, "").toLowerCase();
@@ -139,8 +205,9 @@ async function main() {
 
   // Les candidats connus, pour refuser un slug qui n'existe pas — une faute de frappe
   // dans le calendrier rattacherait le débat à personne, sans rien signaler.
-  const { data: candidats } = await supabase.from("presidential_candidates").select("slug");
+  const { data: candidats } = await supabase.from("presidential_candidates").select("slug, full_name");
   const connus = new Set((candidats ?? []).map((c: any) => c.slug));
+  const nomDe = new Map((candidats ?? []).map((c: any) => [c.slug as string, c.full_name as string]));
 
   const aujourdhui = new Date().toISOString().slice(0, 10);
   const lignes: any[] = [];
@@ -210,9 +277,46 @@ async function main() {
     lignes.push(ligne);
   }
 
+  // Vainqueur d'un vote récent : cherché dans la presse tant que primaires.json n'a pas de bloc
+  // `resultat`. Dès qu'il est connu, les tours suivants de la même primaire sont annulés : sans
+  // cela, un second tour devenu sans objet restait annoncé « à venir ».
+  const annonces: { id: string; resume: string }[] = [];
+  for (const p of cal.primaires) {
+    const votes = lignes
+      .filter(l => l.primaire === p.nom && l.type === "vote" && l.statut !== "annule")
+      .sort((a, b) => a.date_prevue.localeCompare(b.date_prevue));
+    const dernierPasse = [...votes].reverse().find(l => l.date_prevue <= aujourdhui);
+    if (!dernierPasse) continue;
+    let vainqueur = p.resultat?.vainqueur ?? null;
+    const recent = dernierPasse.date_prevue >= new Date(Date.now() - 21 * 864e5).toISOString().slice(0, 10);
+    if (!vainqueur && recent) {
+      try {
+        const v = await detecterVainqueur(
+          p.candidats.map(sl => ({ slug: sl, nom: nomDe.get(sl) ?? sl })), dernierPasse.date_prevue,
+        );
+        if (v) {
+          vainqueur = v.slug;
+          annonces.push({ id: dernierPasse.id, resume: [VAINQUEUR_AUTO, v.slug, v.medias, v.url, v.titre].join("|") });
+          console.log(`  ★ ${p.nom} : ${v.nom} donné vainqueur par ${v.medias} médias — à confirmer dans primaires.json (bloc resultat)`);
+        } else {
+          console.log(`  · ${p.nom} : pas de vainqueur établi dans la presse pour l'instant`);
+        }
+      } catch (err) {
+        console.warn(`  ⚠ ${p.nom} : ${(err as Error).message}`);
+      }
+    }
+    if (vainqueur) for (const l of votes) if (l.date_prevue > dernierPasse.date_prevue) l.statut = "annule";
+  }
+
   if (DRY) { console.log(`\n  (--dry-run : ${lignes.length} rendez-vous, rien n'est écrit)`); return; }
   const { error } = await supabase.from("primary_events").upsert(lignes, { onConflict: "id" });
   if (error) { console.error(`  ✗ écriture : ${error.message}`); process.exit(1); }
+  // Écrit à part : glissé dans l'envoi groupé, ce champ présent sur une seule ligne aurait
+  // effacé le compte rendu des autres.
+  for (const a of annonces) {
+    await supabase.from("primary_events")
+      .update({ resume: a.resume, resume_at: new Date().toISOString() }).eq("id", a.id);
+  }
   console.log(`\n  → ${lignes.length} rendez-vous enregistré(s), ${trouvees} retransmission(s) rattachée(s)`);
 }
 

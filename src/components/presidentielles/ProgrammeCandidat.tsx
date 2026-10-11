@@ -4,7 +4,7 @@ import { useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import {
   ChevronDown, HelpCircle, ExternalLink, Globe2, GraduationCap, ShieldCheck, HeartPulse, Wheat, Leaf, Flag,
-  TrendingUp, Landmark, FileText, Coins, Building2, Home, FlaskConical, Briefcase, PlayCircle,
+  TrendingUp, Landmark, FileText, Coins, Building2, Home, FlaskConical, Briefcase, PlayCircle, TrainFront, Palette, Scale, Mountain,
 } from "lucide-react";
 import MentionIA from "@/components/shared/MentionIA";
 
@@ -25,6 +25,10 @@ export function themeStyle(name: string): { Icon: any; c: string; bg: string; do
   if (/fiscal|impôt|impot/.test(h)) return { Icon: Coins, c: "text-yellow-700 dark:text-yellow-300", bg: "bg-yellow-50 dark:bg-yellow-500/10", dot: "bg-yellow-500" };
   if (/dépenses|depenses|état|etat|collectivit/.test(h)) return { Icon: Building2, c: "text-slate-700 dark:text-slate-200", bg: "bg-slate-100 dark:bg-slate-500/10", dot: "bg-slate-500" };
   if (/logement/.test(h)) return { Icon: Home, c: "text-orange-700 dark:text-orange-300", bg: "bg-orange-50 dark:bg-orange-500/10", dot: "bg-orange-500" };
+  if (/transport|numérique|numerique|mobilit/.test(h)) return { Icon: TrainFront, c: "text-blue-700 dark:text-blue-300", bg: "bg-blue-50 dark:bg-blue-500/10", dot: "bg-blue-500" };
+  if (/culture|sport|associati/.test(h)) return { Icon: Palette, c: "text-fuchsia-700 dark:text-fuchsia-300", bg: "bg-fuchsia-50 dark:bg-fuchsia-500/10", dot: "bg-fuchsia-500" };
+  if (/égalité|egalite|discrimin|droits des femmes/.test(h)) return { Icon: Scale, c: "text-purple-700 dark:text-purple-300", bg: "bg-purple-50 dark:bg-purple-500/10", dot: "bg-purple-500" };
+  if (/tourisme/.test(h)) return { Icon: Mountain, c: "text-green-700 dark:text-green-300", bg: "bg-green-50 dark:bg-green-500/10", dot: "bg-green-500" };
   if (/emploi|travail/.test(h)) return { Icon: Briefcase, c: "text-teal-700 dark:text-teal-300", bg: "bg-teal-50 dark:bg-teal-500/10", dot: "bg-teal-500" };
   if (/économ|econom|budget|ambition|prosp/.test(h)) return { Icon: TrendingUp, c: "text-violet-600 dark:text-violet-300", bg: "bg-violet-50 dark:bg-violet-500/10", dot: "bg-violet-500" };
   if (/institution|destin|civique|démocr|democr|maître|maitre|renouveau/.test(h)) return { Icon: Landmark, c: "text-indigo-600 dark:text-indigo-300", bg: "bg-indigo-50 dark:bg-indigo-500/10", dot: "bg-indigo-500" };

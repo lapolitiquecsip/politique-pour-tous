@@ -4,12 +4,14 @@ import { Suspense, useEffect, useMemo, useRef, useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { useSearchParams } from "next/navigation";
 import Link from "next/link";
-import { Search, Loader2, X, CalendarDays, ExternalLink, Briefcase, GraduationCap, Users, ShieldCheck, Landmark, ArrowRight, Vote, ChevronDown, Globe2, HeartPulse, Wheat, Leaf, Flag, TrendingUp, HelpCircle, FileText, Play, Bell } from "lucide-react";
+import { Search, Loader2, X, CalendarDays, ExternalLink, Briefcase, GraduationCap, Users, ShieldCheck, Landmark, ArrowRight, Vote, ChevronDown, Globe2, HeartPulse, Wheat, Leaf, Flag, TrendingUp, HelpCircle, FileText, Play, Bell, Trophy } from "lucide-react";
 import { api } from "@/lib/api";
 import LegalStatusModal from "@/components/deputies/LegalStatusModal";
 import ThemesView from "@/components/presidentielles/ThemesView";
 import DynamiquesView from "@/components/presidentielles/dynamiques/DynamiquesView";
 import PrimaryDebates from "@/components/presidentielles/PrimaryDebates";
+import PrimaireResultat from "@/components/presidentielles/PrimaireResultat";
+import { resultatsPrimaires } from "@/lib/primaires";
 import DragScroller from "@/components/ui/DragScroller";
 import { usePremium } from "@/lib/hooks/usePremium";
 import { isFollowingCandidate, toggleFollowCandidate } from "@/lib/candidateFollows";
@@ -252,9 +254,9 @@ function CandidateModal({ candidate, onClose }: { candidate: Candidate; onClose:
             <div>
               <div className="flex flex-wrap items-center justify-center gap-2 md:justify-start">
                 <span className="rounded-full bg-white/25 px-3 py-1 text-[11px] font-black uppercase tracking-widest">{side.label}{candidate.party ? ` · ${candidate.party}` : ""}</span>
-                {candidate.category?.startsWith("Primaire") && (
+                {/^(Primaire|Vainqueur)/.test(candidate.category ?? "") && (
                   <span className="inline-flex items-center gap-1.5 rounded-full bg-gradient-to-br from-amber-300 via-amber-400 to-orange-500 px-3.5 py-1.5 text-[11px] font-black uppercase tracking-wider text-white shadow-lg shadow-orange-500/40 ring-1 ring-white/50">
-                    <Vote size={13} strokeWidth={2.5} /> {candidate.category}
+                    {candidate.category?.startsWith("Vainqueur") ? <Trophy size={13} strokeWidth={2.5} /> : <Vote size={13} strokeWidth={2.5} />} {candidate.category}
                   </span>
                 )}
               </div>
@@ -637,15 +639,30 @@ function PositionsView({ candidates }: { candidates: Candidate[] }) {
 
 function CandidatesContent() {
   const params = useSearchParams();
-  const [candidates, setCandidates] = useState<Candidate[]>([]);
+  const [bruts, setBruts] = useState<Candidate[]>([]);
   const [loading, setLoading] = useState(true);
   const [search, setSearch] = useState("");
   const [side, setSide] = useState<string>("Tous");
   const [view, setView] = useState<"candidats" | "positions" | "enjeux" | "dynamiques">("candidats");
 
+  // Les primaires déjà tranchées. Un battu n'est plus candidat : sa fiche disparaît de toute la
+  // page (liste, positions, enjeux, dynamiques), y compris le soir du vote, quand seule la
+  // presse a parlé et que la base n'a pas encore été mise à jour.
+  const [votes, setVotes] = useState<any[] | null>(null);
+  const issues = useMemo(() => resultatsPrimaires(votes), [votes]);
+  const battus = useMemo(() => new Set(issues.flatMap(r => r.perdants)), [issues]);
+  const investis = useMemo(() => new Set(issues.map(r => r.vainqueur)), [issues]);
+
+  const candidates = useMemo(() => bruts.map(c => (
+    // Sa primaire est gagnée : il n'y est plus « candidat », il en est le vainqueur.
+    c.category?.startsWith("Primaire") && investis.has(c.slug)
+      ? { ...c, category: c.category.replace(/^Primaire/, "Vainqueur de la primaire") } : c
+  )).filter(c => !battus.has(c.slug)), [bruts, battus, investis]);
+
   useEffect(() => {
-    api.getCandidates().then(data => { setCandidates(data as Candidate[]); }).finally(() => setLoading(false));
+    api.getCandidates().then(data => { setBruts(data as Candidate[]); }).finally(() => setLoading(false));
   }, []);
+  useEffect(() => { api.getPrimaryEvents(40).then(setVotes).catch(() => setVotes([])); }, []);
 
   // Ouverture directe d'un onglet depuis un lien extérieur (#veille, #enjeux, #positions).
   // Sans cela, un lien vers /presidentielles-2027#veille atterrissait sur l'onglet
@@ -740,6 +757,10 @@ function CandidatesContent() {
         <PositionsView candidates={candidates} />
       ) : (
       <>
+      {issues.map(r => (
+        <PrimaireResultat key={r.primaire} r={r}
+          onOuvrir={slug => { const c = candidates.find(x => x.slug === slug); if (c) open(c); }} />
+      ))}
       <PrimaryDebates />
       <div className="mx-auto max-w-6xl px-4 pb-24">
         <div className="mb-10 flex flex-col items-start justify-between gap-5 md:flex-row md:items-center">
@@ -786,6 +807,11 @@ function CandidatesContent() {
                     {c.category?.startsWith("Primaire") && (
                       <span className="absolute right-2 top-2 inline-flex items-center gap-1 rounded-full bg-gradient-to-br from-amber-300 via-amber-400 to-orange-500 px-2 py-0.5 text-[8px] font-black uppercase tracking-wider text-white shadow-lg shadow-orange-500/40 ring-1 ring-white/50 backdrop-blur-sm">
                         <Vote size={10} strokeWidth={2.5} /> Primaire
+                      </span>
+                    )}
+                    {c.category?.startsWith("Vainqueur") && (
+                      <span className="absolute right-2 top-2 inline-flex items-center gap-1 rounded-full bg-gradient-to-br from-amber-300 via-amber-400 to-orange-500 px-2 py-0.5 text-[8px] font-black uppercase tracking-wider text-white shadow-lg shadow-orange-500/40 ring-1 ring-white/50 backdrop-blur-sm">
+                        <Trophy size={10} strokeWidth={2.5} /> Vainqueur de primaire
                       </span>
                     )}
                   </div>

@@ -285,7 +285,17 @@ function Detail({ e, isPro, onFermer }: { e: Evenement; isPro: boolean; onFermer
 
 /* ───────────────────────────────── Section ──────────────────────────────── */
 
-export default function PrimaryDebates({ candidateSlug }: { candidateSlug?: string }) {
+export default function PrimaryDebates({
+  candidateSlug, seule, sauf, integre,
+}: {
+  candidateSlug?: string;
+  /** Ne montrer que les rendez-vous de cette primaire. */
+  seule?: string;
+  /** Primaires à laisser de côté : celles dont le résultat est affiché, avec leurs débats. */
+  sauf?: string[];
+  /** Rail seul, sans titre ni marges : logé dans le bloc de résultat d'une primaire. */
+  integre?: boolean;
+}) {
   const { isPro } = usePremium();
   const [events, setEvents] = useState<Evenement[] | null>(null);
   const [noms, setNoms] = useState<Map<string, string>>(new Map());
@@ -320,14 +330,16 @@ export default function PrimaryDebates({ candidateSlug }: { candidateSlug?: stri
   // du premier, ce qui se lit à l'envers.
   const siens = useMemo(() => {
     const gardes = (events ?? []).filter(
-      e => !candidateSlug || (e.participants ?? []).includes(candidateSlug),
+      e => (!candidateSlug || (e.participants ?? []).includes(candidateSlug))
+        && (!seule || e.primaire === seule)
+        && !(sauf ?? []).includes(e.primaire),
     );
     const parDate = (a: Evenement, b: Evenement) => a.date_prevue.localeCompare(b.date_prevue);
     return [
       ...gardes.filter(e => e.statut === "a_venir").sort(parDate),
       ...gardes.filter(e => e.statut !== "a_venir").sort((a, b) => parDate(b, a)),
     ];
-  }, [events, candidateSlug]);
+  }, [events, candidateSlug, seule, sauf]);
   const primaires = useMemo(() => [...new Set(siens.map(e => e.primaire))], [siens]);
   const visibles = primaire ? siens.filter(e => e.primaire === primaire) : siens;
   // Le détail suit le filtre : garder ouvert un rendez-vous que le filtre vient
@@ -335,10 +347,28 @@ export default function PrimaryDebates({ candidateSlug }: { candidateSlug?: stri
   const actif = visibles.find(e => e.id === choisi) ?? null;
 
   if (events === null) {
+    if (integre || sauf?.length) return null;
     return <div className="flex justify-center py-10"><Loader2 className="animate-spin text-fuchsia-500" /></div>;
   }
   // Tant qu'aucun rendez-vous n'est annoncé, la rubrique s'efface.
   if (!siens.length) return null;
+
+  if (integre) {
+    return (
+      <div>
+        <DragScroller ariaLabel="Débats et votes de la primaire" className="gap-3 pb-2">
+          {visibles.map(e => (
+            <Carte
+              key={e.id} e={e} noms={noms}
+              actif={actif?.id === e.id}
+              onChoisir={() => setChoisi(c => (c === e.id ? null : e.id))}
+            />
+          ))}
+        </DragScroller>
+        {actif && <div className="mt-3"><Detail e={actif} isPro={isPro} onFermer={() => setChoisi(null)} /></div>}
+      </div>
+    );
+  }
 
   const aVenir = siens.filter(e => e.statut === "a_venir").length;
 

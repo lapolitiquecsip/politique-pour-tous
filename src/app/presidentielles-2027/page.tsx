@@ -652,6 +652,7 @@ function CandidatesContent() {
   const issues = useMemo(() => resultatsPrimaires(votes), [votes]);
   const battus = useMemo(() => new Set(issues.flatMap(r => r.perdants)), [issues]);
   const investis = useMemo(() => new Set(issues.map(r => r.vainqueur)), [issues]);
+  const primairesTranchees = useMemo(() => issues.map(r => r.primaire), [issues]);
 
   const candidates = useMemo(() => bruts.map(c => (
     // Sa primaire est gagnée : il n'y est plus « candidat », il en est le vainqueur.
@@ -761,7 +762,8 @@ function CandidatesContent() {
         <PrimaireResultat key={r.primaire} r={r}
           onOuvrir={slug => { const c = candidates.find(x => x.slug === slug); if (c) open(c); }} />
       ))}
-      <PrimaryDebates />
+      {/* Les débats d une primaire tranchée sont rangés dans son bandeau de résultat. */}
+      <PrimaryDebates sauf={primairesTranchees} />
       <div className="mx-auto max-w-6xl px-4 pb-24">
         <div className="mb-10 flex flex-col items-start justify-between gap-5 md:flex-row md:items-center">
           <div className="flex flex-wrap gap-2">

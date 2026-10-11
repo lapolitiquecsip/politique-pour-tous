@@ -55,6 +55,17 @@ export type Plf = {
     chargeDette: number;       // programmes « Charge de la dette » (y c. SNCF Réseau), CP
     pde: number;               // périmètre des dépenses de l'État (norme LPFP 2023-2027)
   };
+  /** article liminaire : décomposition du solde public et sous-secteurs (en % du PIB ; dépenses en Md€) */
+  apu: {
+    structurel: number; conjoncturel: number;
+    soldeEtat: number; soldeCollectivites: number; soldeSecu: number;
+    depEtatMd?: number; depCollectivitesMd?: number; depSecuMd?: number;
+    volume: number;            // évolution de la dépense publique en volume, %
+  };
+  /** tableau de financement de l'État (article d'équilibre), en Md€ */
+  financement: { amortissement: number; deficit: number; besoin: number; emissions: number };
+  /** plafond d'autorisation des emplois de l'État, en ETPT */
+  emplois: number;
   recettes: Recettes;
   energieLibelle: string;
   effort: { texte: string; source: "texte" | "annonce"; note?: string };
@@ -81,6 +92,9 @@ export const PLF: Record<PlfAnnee, Plf> = {
       dette: 121.7, depensePublique: 56.9, depensePubliqueMd: 1782, prelevementsObligatoires: 44.2,
     },
     etat: { solde: -156.4, depensesNettes: 474.9, chargeDette: 72.9, pde: 511 },
+    apu: { structurel: -4.6, conjoncturel: -0.4, soldeEtat: -5.0, soldeCollectivites: -0.3, soldeSecu: 0.2, depEtatMd: 710, depCollectivitesMd: 338, depSecuMd: 840, volume: 0.6 },
+    financement: { amortissement: 189.2, deficit: 156.4, besoin: 339.7, emissions: 340.0 },
+    emplois: 2032750,
     recettes: { ir: 127616, is: 83890, tva: 187068, energie: 25249, brutes: 515882, remboursements: 140193, nettes: 375688, nonFiscales: 16678, psrCollectivites: 43096, psrUE: 30906 },
     energieLibelle: "TICPE (carburants)",
     effort: { texte: "54 Md€, dont 43 Md€ de mesures nouvelles (PLF + PLFSS)", source: "texte", note: "Le reste provient de la montée en charge de mesures prises en 2026 et avant. Sans mesures, le déficit se dégraderait d'environ 1 point de PIB selon le texte." },
@@ -113,6 +127,9 @@ export const PLF: Record<PlfAnnee, Plf> = {
       dette: 117.9, depensePublique: 56.4, depensePubliqueMd: 1725, prelevementsObligatoires: 43.9,
     },
     etat: { solde: -124.4, depensesNettes: 447.4, chargeDette: 59.3, pde: 500.9 },
+    apu: { structurel: -4.3, conjoncturel: -0.4, soldeEtat: -4.5, soldeCollectivites: -0.3, soldeSecu: 0.1, depEtatMd: 683, depCollectivitesMd: 338, depSecuMd: 814, volume: 0.3 },
+    financement: { amortissement: 175.8, deficit: 124.4, besoin: 305.7, emissions: 310.0 },
+    emplois: 2016366,
     recettes: { ir: 130178, is: 84694, tva: 188392, energie: 24681, brutes: 513756, remboursements: 140845, nettes: 372911, nonFiscales: 28696, psrCollectivites: 49515, psrUE: 28781 },
     energieLibelle: "Accises sur les énergies",
     effort: { texte: "≈ 30 Md€ (présentation du Gouvernement)", source: "annonce", note: "Le texte du PLF ne totalise pas l'effort. Il chiffre notamment 6,5 Md€ demandés aux contribuables les plus aisés et aux plus grandes entreprises, et ≈ 5 Md€ de rationalisation des niches fiscales et sociales." },
@@ -143,6 +160,9 @@ export const PLF: Record<PlfAnnee, Plf> = {
       dette: 114.7, depensePublique: 56.5, depensePubliqueMd: 1699, prelevementsObligatoires: 43.6,
     },
     etat: { solde: -142.1, soldeNote: "−135,6 Md€ visés après amendements du Gouvernement", depensesNettes: 451.3, chargeDette: 54.9, pde: 490 },
+    apu: { structurel: -4.8, conjoncturel: -0.4, soldeEtat: -4.7, soldeCollectivites: -0.7, soldeSecu: 0.2, depEtatMd: 668, depCollectivitesMd: 343, depSecuMd: 795, volume: 0.7 },
+    financement: { amortissement: 174.8, deficit: 142.1, besoin: 313.2, emissions: 300.0 },
+    emplois: 2007005,
     recettes: { ir: 120191, is: 79769, tva: 189901, energie: 18058, brutes: 500349, remboursements: 142742, nettes: 357607, nonFiscales: 20549, psrCollectivites: 44189, psrUE: 23321 },
     energieLibelle: "TICPE (carburants)",
     effort: { texte: "60 Md€ (≈ 40 Md€ sur la dépense, ≈ 20 Md€ de recettes)", source: "texte", note: "Soit 2 points de PIB selon le texte." },
@@ -171,6 +191,9 @@ export const PLF: Record<PlfAnnee, Plf> = {
       dette: 109.7, depensePublique: 55.3, prelevementsObligatoires: 44.1,
     },
     etat: { solde: -144.5, depensesNettes: 445.1, chargeDette: 52.2, pde: 491 },
+    apu: { structurel: -3.7, conjoncturel: -0.6, soldeEtat: -4.7, soldeCollectivites: -0.3, soldeSecu: 0.6, volume: 0.5 },
+    financement: { amortissement: 160.2, deficit: 144.5, besoin: 299.7, emissions: 285.0 },
+    emplois: 1987484,
     recettes: { ir: 117616, is: 91415, tva: 183857, energie: 18423, brutes: 485384, remboursements: 135960, nettes: 349424, nonFiscales: 22633, psrCollectivites: 44842, psrUE: 21610 },
     energieLibelle: "TICPE (carburants)",
     effort: { texte: "16 Md€ d'économies (présentation des ministres)", source: "annonce", note: "Montant annoncé dans la lettre de présentation des ministres, essentiellement la fin du bouclier tarifaire sur l'électricité. Il n'est pas totalisé dans le texte du PLF." },

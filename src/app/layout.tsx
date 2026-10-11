@@ -71,11 +71,14 @@ export default function RootLayout({
         Ce n'est qu'un habillage — l'accès aux rubriques réservées reste décidé par la
         vérification côté base, jamais par cette valeur mémorisée.
       */}
-      <script
-        dangerouslySetInnerHTML={{
-          __html: `try{var d=document.documentElement.dataset,t=localStorage.getItem("lpcs.tier");if(t==="pro"||t==="elite")d.abonnement=t;if(localStorage.getItem("lpcs.connecte")==="1")d.connecte="1";}catch(e){}`,
-        }}
-      />
+      {/* Dans <head> : un <script> enfant direct de <html> est du HTML invalide (erreur d'hydratation). */}
+      <head>
+        <script
+          dangerouslySetInnerHTML={{
+            __html: `try{var d=document.documentElement.dataset,t=localStorage.getItem("lpcs.tier");if(t==="pro"||t==="elite")d.abonnement=t;if(localStorage.getItem("lpcs.connecte")==="1")d.connecte="1";}catch(e){}`,
+          }}
+        />
+      </head>
       <body className="min-h-screen flex flex-col font-sans bg-background text-foreground transition-colors duration-300">
         <ThemeProvider>
           <GlossaryProvider>

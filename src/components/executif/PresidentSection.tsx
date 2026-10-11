@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import { motion } from "framer-motion";
+import { motion, AnimatePresence } from "framer-motion";
 import { ScrollText, Mic, Plane, ExternalLink, ArrowRight, X, Sparkles } from "lucide-react";
 import { api } from "@/lib/api";
 import MinisterImage from "./MinisterImage";
@@ -38,8 +38,8 @@ function PubList({ items, accent, empty, onSelect }: { items: Pub[]; accent: str
     return <p className="text-xs text-slate-400 italic py-3">{empty}</p>;
   }
   return (
-    <div className="space-y-2">
-      {items.map((p, i) => {
+    <div className="grid gap-2 sm:grid-cols-2 lg:grid-cols-3">
+      {items.map(p => {
         const inner = (
           <>
             <div className="min-w-0 flex-1">
@@ -53,9 +53,7 @@ function PubList({ items, accent, empty, onSelect }: { items: Pub[]; accent: str
               : <ExternalLink size={14} className="mt-1 shrink-0 text-slate-300" />}
           </>
         );
-        // Mobile : on limite à 3 éléments par bloc (les suivants n'apparaissent qu'à partir de sm)
-        // pour que la section président ne mange pas tout l'écran avant le reste de l'exécutif.
-        const cls = `group w-full items-start gap-3 rounded-2xl border border-border bg-slate-50/60 dark:bg-slate-500/10 p-3 text-left transition hover:border-amber-300 hover:bg-amber-50/40 ${i < 3 ? "flex" : "hidden sm:flex"}`;
+        const cls = "group flex w-full items-start gap-3 rounded-2xl border border-border bg-slate-50/60 dark:bg-slate-500/10 p-3 text-left transition hover:border-amber-300 hover:bg-amber-50/40";
         // Conseils des ministres : on ouvre le résumé SUR le site plutôt que d'envoyer
         // l'utilisateur déchiffrer le compte rendu officiel sur elysee.fr.
         return onSelect
@@ -76,6 +74,10 @@ export default function PresidentSection({ photoUrl }: { photoUrl?: string }) {
   const [discours, setDiscours] = useState<Pub[]>([]);
   const [deplacements, setDeplacements] = useState<Pub[]>([]);
   const [openCdm, setOpenCdm] = useState<Pub | null>(null);
+  // Les trois rubriques sont repliées : seules leurs icônes sont visibles tant que le
+  // lecteur n'en ouvre pas une. La section tient ainsi en quelques lignes, sur mobile
+  // comme sur ordinateur, au lieu de dérouler quinze cartes avant le reste de l'exécutif.
+  const [ouvert, setOuvert] = useState<string | null>(null);
 
   useEffect(() => {
     let active = true;
@@ -131,20 +133,51 @@ export default function PresidentSection({ photoUrl }: { photoUrl?: string }) {
         </a>
       </div>
 
-      {/* Trois colonnes : conseils, discours, déplacements */}
-      <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 pt-2">
-        {blocks.map(b => (
-          <motion.div key={b.key} initial={{ opacity: 0, y: 12 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }} className="space-y-4">
-            <div className="flex items-center gap-2.5">
-              <div className={`w-9 h-9 rounded-xl flex items-center justify-center ${b.iconBg}`}>
-                <b.icon size={16} />
-              </div>
-              <h3 className="text-sm font-black uppercase tracking-widest text-foreground">{b.title}</h3>
+      {/* Trois rubriques, une icône chacune ; la liste ne s'affiche qu'au clic. */}
+      <div className="flex items-center justify-center gap-3 sm:justify-start sm:gap-4">
+        {blocks.map(b => {
+          const actif = ouvert === b.key;
+          return (
+            <button
+              key={b.key} type="button"
+              onClick={() => setOuvert(actif ? null : b.key)}
+              aria-expanded={actif} aria-label={b.title} title={b.title}
+              className={`relative flex h-14 w-14 items-center justify-center rounded-2xl transition sm:h-16 sm:w-16 ${
+                actif
+                  ? "bg-gradient-to-br from-amber-500 to-orange-500 text-white shadow-lg shadow-orange-500/30"
+                  : `${b.iconBg} hover:-translate-y-0.5 hover:shadow-md`
+              }`}
+            >
+              <b.icon size={24} strokeWidth={2} />
+              {b.items.length > 0 && !actif && (
+                <span className="absolute -right-1.5 -top-1.5 flex h-5 min-w-5 items-center justify-center rounded-full bg-slate-900 px-1 text-[10px] font-black text-white ring-2 ring-card">
+                  {b.items.length}
+                </span>
+              )}
+            </button>
+          );
+        })}
+      </div>
+
+      <AnimatePresence initial={false} mode="wait">
+        {blocks.filter(b => b.key === ouvert).map(b => (
+          <motion.div
+            key={b.key}
+            initial={{ opacity: 0, y: -6 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: -6 }}
+            transition={{ duration: 0.18, ease: "easeOut" }}
+            className="space-y-4"
+          >
+            <div className="flex items-center justify-between gap-3">
+              <h3 className={`text-sm font-black uppercase tracking-widest ${b.accent}`}>{b.title}</h3>
+              <button type="button" onClick={() => setOuvert(null)} aria-label="Replier"
+                className="rounded-full p-1.5 text-muted-foreground transition hover:bg-muted hover:text-foreground">
+                <X size={16} />
+              </button>
             </div>
             <PubList items={b.items} accent={b.accent} empty={b.empty} onSelect={b.key === "cdm" ? setOpenCdm : undefined} />
           </motion.div>
         ))}
-      </div>
+      </AnimatePresence>
 
       <p className="text-[10px] text-muted-foreground italic border-t border-border pt-4">
         Source : présidence de la République (elysee.fr) — flux officiel, mis à jour quotidiennement.

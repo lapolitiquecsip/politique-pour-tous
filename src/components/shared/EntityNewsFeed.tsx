@@ -32,7 +32,29 @@ type FeedItem = {
   summary: string | null;
   news_type: string | null;
   published_at: string | null;
+  /** Le journal qui a publié l'article ; `source_name` ne dit que par où il a été trouvé. */
+  media?: string | null;
+  /** officiel | recoupe | unique — « unique » : aucun autre média n'a été trouvé sur ce fait. */
+  recoupement?: string | null;
+  autres_medias?: number | null;
 };
+
+/** Le nom à afficher comme source : le journal, jamais l'agrégateur qui a servi à le trouver. */
+const sourceDe = (it: FeedItem) => it.media || (it.source_name === "Google News" ? "Presse" : it.source_name);
+
+/**
+ * « Un seul média » : l'information n'a été retrouvée chez aucun autre journal. Elle n'est
+ * pas fausse pour autant — beaucoup de nouvelles locales n'ont qu'un journal pour les dire —
+ * mais le lecteur doit savoir qu'elle n'est pas recoupée.
+ */
+function SeulMedia({ className = "" }: { className?: string }) {
+  return (
+    <span title="Aucun autre média n'a été trouvé sur cette information."
+      className={`inline-flex items-center gap-1 rounded-full bg-amber-100 px-2 py-0.5 text-[9px] font-black uppercase tracking-wider text-amber-800 dark:bg-amber-500/15 dark:text-amber-300 ${className}`}>
+      Un seul média
+    </span>
+  );
+}
 
 const fmt = (d: string | null) =>
   !d ? "" : new Date(d).toLocaleDateString("fr-FR", { day: "numeric", month: "long", year: "numeric" });
@@ -126,7 +148,8 @@ export default function EntityNewsFeed({
                   <p className="text-sm font-bold leading-snug text-foreground dark:text-white">{it.title}</p>
                   {it.summary && <p className="mt-1 text-xs leading-5 text-muted-foreground dark:text-slate-300">{it.summary}</p>}
                   <span className="mt-auto inline-flex items-center gap-1 pt-2 text-[10px] font-bold uppercase tracking-widest text-muted-foreground">
-                    {it.source_name}
+                    {sourceDe(it)}
+                    {it.recoupement === "unique" && <SeulMedia />}
                   </span>
                 </button>
               ))}
@@ -161,9 +184,19 @@ export default function EntityNewsFeed({
               <p className="text-[11px] font-bold uppercase tracking-widest text-slate-400">{fmt(selected.published_at)}</p>
               <h3 className="mt-1 text-xl font-black leading-snug text-foreground dark:text-white">{selected.title}</h3>
               {selected.summary && <p className="mt-3 leading-7 text-muted-foreground dark:text-slate-300">{selected.summary}</p>}
-              {selected.summary && <MentionIA source={{ libelle: `l'article de ${selected.source_name || "la source"}`, url: selected.url }} />}
+              {selected.summary && <MentionIA source={{ libelle: `l'article de ${sourceDe(selected) || "la source"}`, url: selected.url }} />}
+              {selected.recoupement === "unique" && (
+                <p className="mt-4 rounded-2xl bg-amber-50 px-4 py-3 text-[13px] leading-snug text-amber-900 dark:bg-amber-500/10 dark:text-amber-200">
+                  <strong>Un seul média.</strong>{" "}Nous n&apos;avons trouvé cette information chez aucun autre journal. Elle n&apos;est pas fausse pour autant, mais elle n&apos;est pas recoupée.
+                </p>
+              )}
+              {selected.recoupement === "recoupe" && !!selected.autres_medias && (
+                <p className="mt-4 text-[12px] text-muted-foreground">
+                  Information également donnée par {selected.autres_medias} autre{selected.autres_medias > 1 ? "s" : ""} média{selected.autres_medias > 1 ? "s" : ""}.
+                </p>
+              )}
               <div className="mt-5 flex items-center justify-between gap-3 border-t border-border pt-4 dark:border-slate-800">
-                <span className="text-[11px] font-bold uppercase tracking-widest text-slate-400">Source : {selected.source_name}</span>
+                <span className="text-[11px] font-bold uppercase tracking-widest text-slate-400">Source : {sourceDe(selected)}</span>
                 {selected.url && (
                   <a href={selected.url} target="_blank" rel="noopener noreferrer"
                     className="inline-flex items-center gap-1.5 rounded-full bg-slate-950 px-4 py-2 text-[11px] font-black uppercase tracking-widest text-white transition hover:bg-slate-700 dark:bg-slate-800">

@@ -3,6 +3,7 @@ import { XMLParser } from 'fast-xml-parser';
 import Anthropic from '@anthropic-ai/sdk';
 
 import { CLAUDE_MODEL } from '@/lib/ai-model';
+import { chiffresAbsents } from './verificationSource';
 import { demanderJSON, llmDisponible } from '../../../scripts/lib/llm';
 // --- Configuration ---
 // On instanciera Supabase et Anthropic à l'intérieur des fonctions pour s'assurer que les variables d'environnement sont chargées.
@@ -140,6 +141,8 @@ interface ProcessedArticle {
   source_name: string;
   /** Intitulé et chapô de la source, publiés tels quels, sans IA. */
   brut?: boolean;
+  /** Ce que le rédacteur a eu sous les yeux pour écrire la fiche : sert au contrôle, jamais publié. */
+  sourceLue?: string;
 }
 
 /** Que faire quand l'IA échoue sur un lot : voir processWithClaude. */
@@ -439,6 +442,7 @@ ${articlesForPrompt}`);
         const parsed = JSON.parse(jsonMatch[0]) as ProcessedArticle[];
         for (const item of parsed) {
           item.date_publication = normalizeDate(item.date_publication);
+          item.sourceLue = articlesForPrompt;
           allProcessed.push(item);
         }
         console.log(`[Scraper/Claude] Lot ${batchIndex + 1} : ${parsed.length} fiches extraites.`);
@@ -735,7 +739,18 @@ export async function scrapeAndUpdateContent(): Promise<{
   let rejectedCount = 0;
   for (const card of processedArticles) {
     const result = validateCard(card);
-    if (result.valid && result.cleanedCard) {
+    // AGENT VÉRIFICATEUR (sans IA) — dernière étape avant publication. Le rédacteur n'a lu
+    // que le titre et l'extrait de chaque article, et la consigne lui réclame un chiffre :
+    // il lui arrive d'en fournir un de mémoire. Une fiche dont un nombre ne figure dans
+    // aucun des articles qu'il a lus n'est pas publiée. Les intitulés repris tels quels
+    // (sans IA) ne sont pas concernés. FIL_ACCUEIL_VERIFICATEUR=0 coupe ce contrôle.
+    const inventes = result.valid && !card.brut && card.sourceLue && process.env.FIL_ACCUEIL_VERIFICATEUR !== '0'
+      ? chiffresAbsents(`${card.titre_simplifie} ${card.resume_flash}`, card.sourceLue) : [];
+    if (inventes.length) {
+      console.warn(`[VÉRIFICATEUR] "${card.titre_simplifie}" — nombre(s) absent(s) des sources lues : ${inventes.join(', ')}`);
+      details.push(`🛡️ Retenue : "${card.titre_simplifie}" (nombre absent des sources : ${inventes.join(', ')})`);
+      rejectedCount++;
+    } else if (result.valid && result.cleanedCard) {
       validCards.push(result.cleanedCard);
     } else {
       console.warn(`[REJET] "${card.titre_simplifie}" — ${result.reason}`);

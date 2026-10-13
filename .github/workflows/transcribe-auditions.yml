@@ -12,9 +12,10 @@ name: Auditions sans compte rendu (transcription)
 # borné : une heure de vidéo prend plusieurs minutes à télécharger et à convertir.
 # Voir scripts/transcribe-auditions.ts
 
+# Le passage quotidien est assuré par le dépôt des mises à jour (transcription-auditions.yml),
+# qui détient la clé de transcription : deux passages programmés transcriraient deux fois la
+# même audition. Cette tâche ne reste que pour un lancement à la main.
 on:
-  schedule:
-    - cron: '30 4 * * *'    # 06h30 Paris — après l'ingestion des comptes rendus
   workflow_dispatch:
     inputs:
       limit:

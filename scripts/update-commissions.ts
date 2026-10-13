@@ -364,7 +364,14 @@ async function analyseOne(supabase: any, row: any) {
   // Ce n'est pas à cette tâche de l'« analyser » — elle n'aurait que trois lignes sous les
   // yeux. Le transcripteur (transcribe-auditions.ts) s'en charge, à partir de l'enregistrement.
   if (/n.a pas fait l.objet d.un compte rendu/i.test(transcript)) {
-    return { ok: false, reason: "audition sans compte rendu écrit : laissée au transcripteur", dropped: 0, inTok: 0, outTok: 0 };
+    // On le NOTE sur la ligne : laissée sans rien, elle revenait en tête de file à chaque
+    // passage et prenait la place des réunions qui, elles, attendent une analyse.
+    const { error: e } = await supabase.from("commission_reports").update({
+      analysis: { v: VERSION_ANALYSE, court: true, a_transcrire: true }, summary: null,
+      word_count: mots, analyzed_at: new Date().toISOString(),
+    }).eq("ref", row.ref);
+    if (e) throw new Error(e.message);
+    return { ok: true, dropped: 0, inTok: 0, outTok: 0, points: 0, chiffres: 0, citations: 0 };
   }
 
   // Le compte rendu intégral est gardé : l'abonné le lit sur le site, sans être renvoyé
@@ -391,20 +398,39 @@ async function analyseOne(supabase: any, row: any) {
   // AI Studio en premier, DeepSeek seulement en secours. C'est ce qui remet ce
   // cron au vert — le compte DeepSeek est passé à découvert (-0,50 $), et
   // l'intégralité des analyses échouait depuis, plusieurs fois par jour.
-  const parsed = await demanderJSON<Analysis>(
-    `${SYSTEM}
+  const consigne = `${SYSTEM}
 
-${SHAPE}`,
-    `Compte rendu de la ${row.commission ?? "commission"} — séance du ${row.meeting_date}.
+${SHAPE}`;
+  const demande = `Compte rendu de la ${row.commission ?? "commission"} — séance du ${row.meeting_date}.
 Objet : ${row.title ?? "(non précisé)"}
 
 --- COMPTE RENDU INTÉGRAL ---
-${transcript}`,
-    { maxJetons: 16000 },
-  );
+${transcript}`;
+  let parsed = await demanderJSON<Analysis>(consigne, demande, { maxJetons: 16000 });
+
+  // CONTRÔLE DE QUALITÉ — une analyse doit être à la mesure de ce qu'elle résume. Un
+  // compte rendu de dix mille mots rendu en quatre points n'apporte rien à un abonné Pro :
+  // on compte les éléments produits, et s'ils sont trop peu pour la longueur du texte, on
+  // redemande une fois en le disant. La plus fournie des deux est gardée.
+  const richesse = (x: Analysis) => (x.points_cles?.length ?? 0) + (x.echanges?.length ?? 0) + (x.positions?.length ?? 0)
+    + (x.citations?.length ?? 0) + (x.annonces?.length ?? 0) + (x.votes?.length ?? 0);
+  const attendu = mots > 6000 ? 20 : mots > 2500 ? 13 : mots > 800 ? 7 : 0;
+  if (richesse(parsed) < attendu) {
+    try {
+      const seconde = await demanderJSON<Analysis>(consigne,
+        `${demande}
+
+--- RAPPEL ---
+Une première analyse de ce compte rendu de ${mots} mots ne contenait que ${richesse(parsed)} éléments : c'est trop peu. Reprends le compte rendu en entier, jusqu'à la fin, et relève TOUS les points substantiels, les questions des parlementaires avec leurs réponses, les positions de chaque orateur et les annonces. N'invente rien : si le texte ne contient vraiment pas davantage, rends la même analyse.`,
+        { maxJetons: 16000 });
+      if (richesse(seconde) > richesse(parsed)) parsed = seconde;
+    } catch { /* on garde la première */ }
+  }
 
   const { analysis: brute, dropped } = dropInventedQuotes(parsed, transcript);
   const analysis: Analysis = { ...brute, v: VERSION_ANALYSE };
+  // Trace du contrôle : une analyse restée mince malgré la seconde demande se repère en base.
+  (analysis as any).mesure = { mots, elements: richesse(analysis), attendu };
   const points = analysis.points_cles ?? [];
   const summary = [analysis.a_retenir || analysis.contexte, ...points.slice(0, 4).map(p => `- ${p}`)].filter(Boolean).join("\n\n");
 

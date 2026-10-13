@@ -237,7 +237,8 @@ async function main() {
   let q = supabase
     .from("commission_reports")
     .select("ref, commission, chamber, title, meeting_date, cr_url")
-    .is("analysis", null)
+    // Sans analyse, ou marquée « à transcrire » par la tâche des comptes rendus écrits.
+    .or("analysis.is.null,analysis->>a_transcrire.eq.true")
     .not("cr_url", "is", null)
     .order("meeting_date", { ascending: false })
     .limit(REF ? 1 : LIMITE * 8);   // on élargit : la plupart ont un compte rendu écrit

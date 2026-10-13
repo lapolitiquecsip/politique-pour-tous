@@ -76,6 +76,8 @@ export type CommissionAnalysis = {
   court?: boolean;
   /** Le compte rendu intégral n'est pas encore publié par l'assemblée. */
   attente?: boolean;
+  /** Pas de compte rendu écrit : la vidéo de la réunion va être transcrite. */
+  a_transcrire?: boolean;
   source?: string;
   contexte?: string;
   points_cles?: string[];

@@ -67,15 +67,18 @@ export function CommissionAnalysis({ m, accent, sombre = false }: {
         <div className={bloc}>
           <p className={`flex items-center gap-2 text-sm font-bold ${fort}`}>
             <Hourglass size={15} className={a.attente ? "text-amber-500" : accent.text} />
-            {a.attente ? "Compte rendu intégral pas encore publié" : "Réunion brève : voici son compte rendu, en entier"}
+            {a.a_transcrire ? "Audition sans compte rendu écrit : transcription de la vidéo en cours"
+              : a.attente ? "Compte rendu intégral pas encore publié" : "Réunion brève : voici son compte rendu, en entier"}
           </p>
           <p className={`mt-1 text-[13px] leading-relaxed ${appui}`}>
-            {a.attente
+            {a.a_transcrire
+              ? "L'Assemblée n'a pas rédigé de compte rendu de cette audition. Nous transcrivons son enregistrement vidéo, puis nous l'analysons : le tout paraît ici sous quelques jours."
+              : a.attente
               ? `${m.chamber === "SENAT" ? "Le Sénat" : "L'Assemblée"} n'a mis en ligne que l'ordre du jour de cette réunion. L'analyse sera rédigée dès que le compte rendu complet paraîtra ; nous relisons la page chaque jour.`
               : "Ce point de l'ordre du jour tient en quelques lignes : aucune analyse n'y ajouterait quoi que ce soit."}
           </p>
         </div>
-        {texteCourt && <p className={`whitespace-pre-line text-sm leading-relaxed ${corps}`}>{texteCourt}</p>}
+        {texteCourt && !a.a_transcrire && <p className={`whitespace-pre-line text-sm leading-relaxed ${corps}`}>{texteCourt}</p>}
       </div>
     );
   }

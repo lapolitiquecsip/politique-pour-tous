@@ -250,9 +250,17 @@ export default function TopicBrief() {
     setDocsOuverts(false);
     setTousLesTextes(false);
     try {
-      const { data, error } = await supabase.functions.invoke<Reponse>("topic-brief", {
+      // Sur un sujet jamais demandé, la synthèse peut dépasser le temps que le navigateur
+      // accorde à une requête : la connexion tombe, alors que le service, lui, termine et
+      // garde le résultat. On redemande donc une fois, sans rien montrer : la seconde
+      // demande trouve la synthèse déjà prête.
+      let { data, error } = await supabase.functions.invoke<Reponse>("topic-brief", {
         body: { keyword: q, refresh: refaire },
       });
+      if (error && /Failed to send|network|timeout/i.test(error.message || "")) {
+        await new Promise(r => setTimeout(r, 6000));
+        ({ data, error } = await supabase.functions.invoke<Reponse>("topic-brief", { body: { keyword: q } }));
+      }
       if (error) throw error;
       if (data?.error) { setErreur(data.error); return; }
       setRes(data ?? null);
@@ -260,8 +268,10 @@ export default function TopicBrief() {
       // La fonction peut ne pas être déployée : le dire clairement plutôt que
       // de laisser un panneau muet.
       const m = (e as Error).message || "";
-      setErreur(/404|not found|Failed to send/i.test(m)
+      setErreur(/404|not found/i.test(m)
         ? "Le service de synthèse n'est pas encore en ligne. Réessayez dans quelques minutes."
+        : /Failed to send|network|timeout/i.test(m)
+        ? "La synthèse prend plus de temps que prévu. Relancez la recherche dans une minute : elle sera prête."
         : `La synthèse n'a pas abouti : ${m}`);
     } finally {
       setEnCours(false);

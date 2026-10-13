@@ -37,7 +37,7 @@
  * DEEPSEEK_API_KEY n'est nécessaire que pour l'étape 2 (analyses).
  */
 import { createClient } from "@supabase/supabase-js";
-import { SYSTEM, SHAPE, dropInventedQuotes, type Analysis } from "./lib/commission-prompt";
+import { SYSTEM, SHAPE, dropInventedQuotes, VERSION_ANALYSE, MOTS_MINIMUM, ANNONCE_ATTENTE, type Analysis } from "./lib/commission-prompt";
 import { demanderJSON, llmDisponible, llmVoie } from "./lib/llm";
 
 const UA = "Mozilla/5.0 (compatible; lapolitiquecestsimple/1.0; +https://lapolitiquecestsimple.fr)";
@@ -222,7 +222,12 @@ async function ingestSenate(supabase: any, weeks: number) {
   const refresh = process.argv.includes("--refresh");
   const { data: known } = await supabase
     .from("commission_reports").select("cr_url").eq("chamber", "SENAT");
-  const seen = refresh ? new Set<string>() : new Set((known ?? []).map((r: any) => r.cr_url));
+  // Les pages des cinq dernières semaines sont TOUJOURS relues : le Sénat met d'abord en
+  // ligne l'ordre du jour (« le compte rendu sera publié ultérieurement »), puis complète la
+  // page. En sautant toute page déjà vue, on gardait à jamais l'analyse de l'ordre du jour.
+  const recent = new Date(Date.now() - 35 * 864e5).toISOString().slice(0, 10).replace(/-/g, "");
+  const estRecente = (u: string) => (u.match(/commissions\/(\d{8})\//)?.[1] ?? "0") >= recent;
+  const seen = refresh ? new Set<string>() : new Set((known ?? []).map((r: any) => r.cr_url as string).filter((u: string) => !estRecente(u)));
   if (refresh) console.log("  (--refresh : les pages déjà connues sont relues)");
 
   let inserted = 0, skipped = 0;
@@ -250,6 +255,18 @@ async function ingestSenate(supabase: any, weeks: number) {
 
     const { error } = await supabase.from("commission_reports").upsert(rows, { onConflict: "ref" });
     if (error) { console.warn(`  ⚠ insertion ${url} : ${error.message}`); continue; }
+
+    // Une réunion dont le texte a nettement grossi depuis son analyse est à refaire.
+    const { data: gardes } = await supabase.from("commission_transcripts").select("ref, mots").in("ref", meetings.map(m => m.ref));
+    const avant = new Map<string, number>((gardes ?? []).map((g: any) => [g.ref as string, g.mots as number]));
+    for (const m of meetings) {
+      const mots = m.text.split(/\s+/).length;
+      const ancien = avant.get(m.ref);
+      if (ancien !== undefined && mots > ancien * 1.5 + 100) {
+        await supabase.from("commission_reports").update({ analysis: null, summary: null, analyzed_at: null }).eq("ref", m.ref);
+        console.log(`  ↻ ${m.ref} : compte rendu complété (${ancien} → ${mots} mots), analyse à refaire`);
+      }
+    }
 
     inserted += rows.length;
     console.log(`  ✓ ${url.split("/").slice(-2).join("/")} — ${rows.length} réunion(s)`);
@@ -341,6 +358,34 @@ async function readBalance(): Promise<number | null> {
 async function analyseOne(supabase: any, row: any) {
   const transcript = await loadTranscript(row);
   if (!transcript) return { ok: false, reason: "verbatim introuvable", dropped: 0, inTok: 0, outTok: 0 };
+  const mots = transcript.split(/\s+/).length;
+
+  // L'Assemblée n'a pas rédigé de compte rendu : le document ne fait que renvoyer à la vidéo.
+  // Ce n'est pas à cette tâche de l'« analyser » — elle n'aurait que trois lignes sous les
+  // yeux. Le transcripteur (transcribe-auditions.ts) s'en charge, à partir de l'enregistrement.
+  if (/n.a pas fait l.objet d.un compte rendu/i.test(transcript)) {
+    return { ok: false, reason: "audition sans compte rendu écrit : laissée au transcripteur", dropped: 0, inTok: 0, outTok: 0 };
+  }
+
+  // Le compte rendu intégral est gardé : l'abonné le lit sur le site, sans être renvoyé
+  // chez l'Assemblée ou le Sénat.
+  await supabase.from("commission_transcripts").upsert(
+    { ref: row.ref, texte: transcript, mots, source: "compte_rendu", maj_le: new Date().toISOString() }, { onConflict: "ref" });
+
+  // Quelques lignes ne s'analysent pas. Soit la réunion tient vraiment en un paragraphe
+  // (désignation d'un rapporteur) et le texte se suffit ; soit le Sénat n'a encore publié
+  // que l'ordre du jour, et « analyser » revenait à broder autour d'un compte rendu absent.
+  // Dans les deux cas on le dit, on montre le texte, et on n'appelle aucun modèle. La
+  // relecture des pages récentes relancera l'analyse quand le compte rendu sera complété.
+  if (mots < MOTS_MINIMUM) {
+    const attente = ANNONCE_ATTENTE.test(transcript);
+    const { error: e } = await supabase.from("commission_reports").update({
+      analysis: { v: VERSION_ANALYSE, court: true, attente }, summary: null,
+      word_count: mots, analyzed_at: new Date().toISOString(),
+    }).eq("ref", row.ref);
+    if (e) throw new Error(e.message);
+    return { ok: true, dropped: 0, inTok: 0, outTok: 0, points: 0, chiffres: 0, citations: 0 };
+  }
 
   // L'appel passe par le client « gratuit d'abord » (scripts/lib/llm.ts) : Google
   // AI Studio en premier, DeepSeek seulement en secours. C'est ce qui remet ce
@@ -358,14 +403,14 @@ ${transcript}`,
     { maxJetons: 16000 },
   );
 
-  const { analysis, dropped } = dropInventedQuotes(parsed, transcript);
+  const { analysis: brute, dropped } = dropInventedQuotes(parsed, transcript);
+  const analysis: Analysis = { ...brute, v: VERSION_ANALYSE };
   const points = analysis.points_cles ?? [];
-  const summary = row.summary
-    ?? [analysis.contexte, ...points.slice(0, 4).map(p => `- ${p}`)].filter(Boolean).join("\n\n");
+  const summary = [analysis.a_retenir || analysis.contexte, ...points.slice(0, 4).map(p => `- ${p}`)].filter(Boolean).join("\n\n");
 
   const { error } = await supabase
     .from("commission_reports")
-    .update({ analysis, summary, word_count: transcript.split(/\s+/).length, analyzed_at: new Date().toISOString() })
+    .update({ analysis, summary, word_count: mots, analyzed_at: new Date().toISOString() })
     .eq("ref", row.ref);
   if (error) throw new Error(error.message);
 
@@ -427,6 +472,17 @@ async function analyseMeetings(
     .limit(limit);
 
   if (error) { console.error(`  ✗ ${error.message}`); return; }
+  // Une fois les réunions nouvelles servies, le reste du passage reprend les analyses de
+  // l'ancienne forme (sans échanges, annonces ni votes), des plus récentes aux plus anciennes.
+  if ((rows?.length ?? 0) < limit) {
+    const { data: anciennes } = await supabase
+      .from("commission_reports")
+      .select("ref, chamber, commission, title, meeting_date, cr_url, summary")
+      .not("analysis", "is", null).is("analysis->v", null)
+      .order("meeting_date", { ascending: false })
+      .limit(limit - (rows?.length ?? 0));
+    if (anciennes?.length) { rows.push(...anciennes); console.log(`  dont ${anciennes.length} analyse(s) à refaire dans la nouvelle forme`); }
+  }
   if (!rows?.length) { console.log("  Rien à analyser."); return; }
   console.log(`  ${rows.length} réunion(s) à traiter, ${opts.concurrency} en parallèle`);
 
@@ -482,6 +538,40 @@ async function analyseMeetings(
   }
 }
 
+/**
+ * Rattrapage : garde sur le site le compte rendu intégral des réunions déjà analysées,
+ * sans refaire leur analyse. L'Assemblée répond 503 aux demandes rapprochées : on va lentement.
+ */
+async function garderComptesRendus(supabase: any, limite: number) {
+  console.log(`\n📄 Comptes rendus intégraux — jusqu'à ${limite} réunion(s)`);
+  const toutes: any[] = [];
+  for (let d = 0; ; d += 1000) {
+    const { data } = await supabase.from("commission_reports")
+      .select("ref, chamber, commission, title, meeting_date, cr_url").not("cr_url", "is", null)
+      .order("meeting_date", { ascending: false }).range(d, d + 999);
+    toutes.push(...(data ?? []));
+    if (!data || data.length < 1000) break;
+  }
+  const dejaLa = new Set<string>();
+  for (let d = 0; ; d += 1000) {
+    const { data } = await supabase.from("commission_transcripts").select("ref").range(d, d + 999);
+    for (const r of data ?? []) dejaLa.add(r.ref);
+    if (!data || data.length < 1000) break;
+  }
+  const manquantes = toutes.filter(r => !dejaLa.has(r.ref) && !/videos\.assemblee/.test(r.cr_url)).slice(0, limite);
+  let faits = 0, rates = 0;
+  for (const row of manquantes) {
+    const texte = await loadTranscript(row).catch(() => null);
+    if (!texte) { rates++; await sleep(2500); continue; }
+    const { error } = await supabase.from("commission_transcripts").upsert(
+      { ref: row.ref, texte, mots: texte.split(/\s+/).length, source: "compte_rendu", maj_le: new Date().toISOString() }, { onConflict: "ref" });
+    if (error) { console.warn(`  ⚠ ${row.ref} : ${error.message}`); rates++; } else faits++;
+    if ((faits + rates) % 25 === 0) console.log(`  … ${faits} gardé(s), ${rates} indisponible(s)`);
+    await sleep(row.chamber === "AN" ? 1100 : 500);
+  }
+  console.log(`  → ${faits} compte(s) rendu(s) gardé(s), ${rates} indisponible(s)`);
+}
+
 /* ───────────────────────────────── Entrée ───────────────────────────────── */
 
 function arg(name: string, fallback: number): number {
@@ -503,6 +593,9 @@ async function main() {
 
   if (!process.argv.includes("--skip-scrape")) {
     await ingestSenate(supabase, arg("weeks", 3));
+  }
+  if (process.argv.some(a => a.startsWith("--transcripts="))) {
+    await garderComptesRendus(supabase, arg("transcripts", 60));
   }
   if (!process.argv.includes("--skip-analysis")) {
     await analyseMeetings(supabase, arg("analyses", 20), {

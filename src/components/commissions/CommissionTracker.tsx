@@ -10,6 +10,7 @@ import { usePremium } from "@/lib/hooks/usePremium";
 import LockedSection from "@/components/premium/LockedSection";
 import { CommissionAnalysis as Analysis, ACCENTS } from "./CommissionAnalysis";
 import AuditionsParMois from "./AuditionsParMois";
+import CompteRendu from "./CompteRendu";
 import {
   cleanTitle, decode, extractPeople, shortCommission, fmtMeetingDate,
   type CommissionMeeting,
@@ -30,6 +31,7 @@ type Props = {
 /* ─────────────────────────── Une réunion, pliable ─────────────────────────── */
 function MeetingCard({ m, accent }: { m: CommissionMeeting; accent: typeof ACCENTS.emerald }) {
   const [open, setOpen] = useState(false);
+  const [lecture, setLecture] = useState(false);
   // L'analyse est demandée au dépliage. Chargée avec la liste, elle pesait
   // soixante-sept kilo-octets pour vingt-quatre réunions — contre quatorze sans
   // elle — alors qu'on n'en ouvre qu'une à la fois.
@@ -82,12 +84,11 @@ function MeetingCard({ m, accent }: { m: CommissionMeeting; accent: typeof ACCEN
           )}
 
           <div className="mt-5 flex flex-wrap gap-3 border-t border-border pt-3 dark:border-slate-800">
-            {m.cr_url && (
-              <a href={m.cr_url} target="_blank" rel="noopener noreferrer"
-                className={`inline-flex items-center gap-1.5 text-[10px] font-black uppercase tracking-widest text-muted-foreground ${accent.hover}`}>
-                <ExternalLink size={12} /> Compte rendu officiel
-              </a>
-            )}
+            {/* Le compte rendu se lit ici, sans quitter le site. */}
+            <button type="button" onClick={() => setLecture(true)}
+              className={`inline-flex items-center gap-1.5 text-[10px] font-black uppercase tracking-widest text-muted-foreground ${accent.hover}`}>
+              <ListChecks size={12} /> Compte rendu intégral
+            </button>
             {m.video_url && (
               <a href={m.video_url} target="_blank" rel="noopener noreferrer"
                 className={`inline-flex items-center gap-1.5 text-[10px] font-black uppercase tracking-widest text-muted-foreground ${accent.hover}`}>
@@ -97,6 +98,7 @@ function MeetingCard({ m, accent }: { m: CommissionMeeting; accent: typeof ACCEN
           </div>
         </div>
       )}
+      {lecture && <CompteRendu m={m} onFermer={() => setLecture(false)} />}
     </div>
   );
 }

@@ -5,6 +5,7 @@ import { AnimatePresence, motion } from "framer-motion";
 import { ChevronLeft, ChevronRight, ChevronDown, Loader2, Play, FileText, Users, Mic, CalendarOff, Sparkles } from "lucide-react";
 import { api } from "@/lib/api";
 import { CommissionAnalysis as Analysis, ACCENTS } from "./CommissionAnalysis";
+import CompteRendu from "./CompteRendu";
 import { cleanTitle, decode, extractPeople, shortCommission, type CommissionMeeting } from "@/lib/commissions";
 
 /**
@@ -55,6 +56,7 @@ function Resume({ texte, point }: { texte: string; point: string }) {
 
 function Carte({ a, accent, isPro }: { a: Audition; accent: typeof ACCENTS.emerald; isPro: boolean }) {
   const [ouvert, setOuvert] = useState(false);
+  const [lecture, setLecture] = useState(false);
   const [detail, setDetail] = useState<{ analysis: any; summary: string | null } | null>(null);
   useEffect(() => {
     if (!ouvert || detail || !isPro) return;
@@ -104,7 +106,14 @@ function Carte({ a, accent, isPro }: { a: Audition; accent: typeof ACCENTS.emera
                 <Play size={11} fill="currentColor" /> Vidéo
               </a>
             )}
-            {a.cr_url && a.cr_url !== a.video_url && (
+            {/* Le compte rendu s'ouvre SUR LE SITE (abonnés Pro) ; la source officielle reste
+                accessible depuis le lecteur. */}
+            {isPro ? (
+              <button type="button" onClick={() => setLecture(true)}
+                className="inline-flex items-center gap-1.5 rounded-full bg-muted px-3.5 py-1.5 text-[10px] font-black uppercase tracking-widest text-muted-foreground transition hover:text-foreground">
+                <FileText size={12} /> Compte rendu intégral
+              </button>
+            ) : a.cr_url && a.cr_url !== a.video_url && (
               <a href={a.cr_url} target="_blank" rel="noopener noreferrer"
                 className="inline-flex items-center gap-1.5 rounded-full bg-muted px-3.5 py-1.5 text-[10px] font-black uppercase tracking-widest text-muted-foreground transition hover:text-foreground">
                 <FileText size={12} /> Compte rendu
@@ -113,6 +122,8 @@ function Carte({ a, accent, isPro }: { a: Audition; accent: typeof ACCENTS.emera
           </div>
         </div>
       </div>
+
+      {lecture && <CompteRendu m={a} onFermer={() => setLecture(false)} />}
 
       {ouvert && (
         <div className="border-t border-border px-4 py-4 dark:border-slate-800 sm:px-5">

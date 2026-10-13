@@ -65,6 +65,18 @@ export function shortCommission(raw: string | null): string {
 
 /** Forme attendue de commission_reports.analysis (produit par le script d'ingestion). */
 export type CommissionAnalysis = {
+  /** Version de la forme : 2 ajoute « à retenir », annonces, échanges, désaccords, votes. */
+  v?: number;
+  a_retenir?: string;
+  annonces?: string[];
+  echanges?: { question_de: string; groupe?: string; question: string; reponse_de?: string; reponse?: string }[];
+  desaccords?: string[];
+  votes?: { objet: string; resultat: string; detail?: string }[];
+  /** Compte rendu de quelques lignes : montré tel quel, sans analyse. */
+  court?: boolean;
+  /** Le compte rendu intégral n'est pas encore publié par l'assemblée. */
+  attente?: boolean;
+  source?: string;
   contexte?: string;
   points_cles?: string[];
   chiffres?: { valeur: string; quoi: string }[];

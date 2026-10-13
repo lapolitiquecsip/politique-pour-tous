@@ -279,6 +279,8 @@ async function main() {
         })
         .eq("ref", r.ref);
       if (err) throw new Error(err.message);
+      await supabase.from("commission_transcripts").upsert(
+        { ref: r.ref, texte, mots, source: "transcription", maj_le: new Date().toISOString() }, { onConflict: "ref" });
       console.log("    ✓ enregistrée");
       traitees++;
     } catch (e) {
@@ -434,6 +436,9 @@ async function depuisLeJournal(supabase: any, reste: number): Promise<number> {
         summary, word_count: mots, analyzed_at: new Date().toISOString(), updated_at: new Date().toISOString(),
       }, { onConflict: "ref" });
       if (err) throw new Error(err.message);
+      // La transcription est gardée : c'est le seul « compte rendu » de cette audition.
+      await supabase.from("commission_transcripts").upsert(
+        { ref: it.cle, texte, mots, source: "transcription", maj_le: new Date().toISOString() }, { onConflict: "ref" });
       await supabase.from("cycle_items").update({
         etape: "en_ligne", erreur: null, agent: "transcripteur", en_ligne_le: new Date().toISOString(), maj_le: new Date().toISOString(),
         donnees: { ...it.donnees, video: video.url, transcrit: true },

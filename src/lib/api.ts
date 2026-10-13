@@ -878,6 +878,16 @@ export const api = {
     return data ?? [];
   },
 
+  /** Le compte rendu intégral d'une réunion (ou la transcription de sa vidéo), gardé sur le site. */
+  getCommissionTranscript: async (ref: string) => {
+    const { data, error } = await supabase
+      .from('commission_transcripts')
+      .select('texte, mots, source')
+      .eq('ref', ref)
+      .maybeSingle();
+    if (error) return null;
+    return data ?? null;
+  },
   getCommissionAnalysis: async (ref: string) => {
     const { data, error } = await supabase
       .from('commission_reports')

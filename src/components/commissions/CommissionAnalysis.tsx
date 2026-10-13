@@ -1,6 +1,8 @@
 "use client";
 
-import { Target, ListChecks, Quote, ArrowRight } from "lucide-react";
+import { useEffect, useState } from "react";
+import { Target, ListChecks, Quote, ArrowRight, Megaphone, MessagesSquare, Swords, Vote, Hourglass, Sparkles } from "lucide-react";
+import { api } from "@/lib/api";
 import type { CommissionMeeting } from "@/lib/commissions";
 import MentionIA from "@/components/shared/MentionIA";
 
@@ -48,6 +50,36 @@ export function CommissionAnalysis({ m, accent, sombre = false }: {
     ? "rounded-2xl border border-white/10 bg-white/[0.05] p-3"
     : "rounded-2xl border border-border bg-slate-50/70 p-3 dark:border-slate-800 dark:bg-slate-800/40";
   const a = m.analysis || {};
+
+  // Compte rendu de quelques lignes : il n'y a rien à analyser, on montre le texte lui-même.
+  // S'il annonce que le compte rendu intégral viendra plus tard, on le dit sans détour — une
+  // « analyse » d'un ordre du jour n'apprend rien à personne.
+  const [texteCourt, setTexteCourt] = useState<string | null>(null);
+  useEffect(() => {
+    if (!a.court) return;
+    let vivant = true;
+    api.getCommissionTranscript(m.ref).then(t => { if (vivant) setTexteCourt((t as any)?.texte ?? ""); }).catch(() => { if (vivant) setTexteCourt(""); });
+    return () => { vivant = false; };
+  }, [a.court, m.ref]);
+  if (a.court) {
+    return (
+      <div className="space-y-3">
+        <div className={bloc}>
+          <p className={`flex items-center gap-2 text-sm font-bold ${fort}`}>
+            <Hourglass size={15} className={a.attente ? "text-amber-500" : accent.text} />
+            {a.attente ? "Compte rendu intégral pas encore publié" : "Réunion brève : voici son compte rendu, en entier"}
+          </p>
+          <p className={`mt-1 text-[13px] leading-relaxed ${appui}`}>
+            {a.attente
+              ? `${m.chamber === "SENAT" ? "Le Sénat" : "L'Assemblée"} n'a mis en ligne que l'ordre du jour de cette réunion. L'analyse sera rédigée dès que le compte rendu complet paraîtra ; nous relisons la page chaque jour.`
+              : "Ce point de l'ordre du jour tient en quelques lignes : aucune analyse n'y ajouterait quoi que ce soit."}
+          </p>
+        </div>
+        {texteCourt && <p className={`whitespace-pre-line text-sm leading-relaxed ${corps}`}>{texteCourt}</p>}
+      </div>
+    );
+  }
+
   const hasStructured =
     !!(a.contexte || a.points_cles?.length || a.chiffres?.length || a.positions?.length || a.suites?.length || a.citations?.length);
 
@@ -77,6 +109,13 @@ export function CommissionAnalysis({ m, accent, sombre = false }: {
 
   return (
     <div className="space-y-5">
+      {a.a_retenir && (
+        <div className={`rounded-2xl bg-gradient-to-br ${accent.grad} p-4 text-white shadow-md`}>
+          <p className="flex items-center gap-1.5 text-[10px] font-black uppercase tracking-widest text-white/80"><Sparkles size={12} /> À retenir</p>
+          <p className="mt-1.5 text-[15px] font-semibold leading-snug">{a.a_retenir}</p>
+        </div>
+      )}
+
       {a.contexte && (
         <div>
           <p className={`mb-1.5 flex items-center gap-1.5 text-[10px] font-black uppercase tracking-widest ${accent.text}`}>
@@ -98,6 +137,76 @@ export function CommissionAnalysis({ m, accent, sombre = false }: {
               </li>
             ))}
           </ul>
+        </div>
+      )}
+
+      {!!a.annonces?.length && (
+        <div>
+          <p className="mb-2 flex items-center gap-1.5 text-[10px] font-black uppercase tracking-widest text-emerald-700 dark:text-emerald-400">
+            <Megaphone size={12} /> Annonces et engagements
+          </p>
+          <ul className="space-y-1.5">
+            {a.annonces.map((p, i) => (
+              <li key={i} className={`flex gap-2 text-sm leading-snug ${corps}`}>
+                <ArrowRight size={14} className="mt-0.5 shrink-0 text-emerald-500" />{p}
+              </li>
+            ))}
+          </ul>
+        </div>
+      )}
+
+      {!!a.echanges?.length && (
+        <div>
+          <p className="mb-2 flex items-center gap-1.5 text-[10px] font-black uppercase tracking-widest text-indigo-700 dark:text-indigo-400">
+            <MessagesSquare size={12} /> Questions et réponses
+          </p>
+          <div className="space-y-2">
+            {a.echanges.map((e, i) => (
+              <div key={i} className={bloc}>
+                <p className={`text-[12px] font-black ${fort}`}>
+                  {e.question_de}
+                  {e.groupe && <span className="ml-2 rounded-full bg-indigo-100 px-2 py-0.5 text-[9px] font-black uppercase tracking-wider text-indigo-700 dark:bg-indigo-500/20 dark:text-indigo-300">{e.groupe}</span>}
+                </p>
+                <p className={`mt-1 text-sm leading-snug ${corps}`}>{e.question}</p>
+                {e.reponse && (
+                  <p className={`mt-2 border-l-2 border-indigo-300 pl-3 text-sm leading-snug dark:border-indigo-500/50 ${appui}`}>
+                    {e.reponse_de && <strong className={fort}>{e.reponse_de} : </strong>}{e.reponse}
+                  </p>
+                )}
+              </div>
+            ))}
+          </div>
+        </div>
+      )}
+
+      {!!a.desaccords?.length && (
+        <div>
+          <p className="mb-2 flex items-center gap-1.5 text-[10px] font-black uppercase tracking-widest text-rose-700 dark:text-rose-400">
+            <Swords size={12} /> Points de désaccord
+          </p>
+          <ul className="space-y-1.5">
+            {a.desaccords.map((p, i) => (
+              <li key={i} className={`flex gap-2 text-sm leading-snug ${corps}`}>
+                <span className="mt-1.5 h-1.5 w-1.5 shrink-0 rounded-full bg-rose-500" />{p}
+              </li>
+            ))}
+          </ul>
+        </div>
+      )}
+
+      {!!a.votes?.length && (
+        <div>
+          <p className="mb-2 flex items-center gap-1.5 text-[10px] font-black uppercase tracking-widest text-sky-700 dark:text-sky-400">
+            <Vote size={12} /> Votes de la réunion
+          </p>
+          <div className="space-y-1.5">
+            {a.votes.map((v, i) => (
+              <div key={i} className={`flex flex-wrap items-baseline gap-x-2 gap-y-0.5 text-sm ${corps}`}>
+                <span className={`rounded-full px-2 py-0.5 text-[10px] font-black uppercase tracking-wider ${/adopt/i.test(v.resultat) ? "bg-emerald-100 text-emerald-700 dark:bg-emerald-500/20 dark:text-emerald-300" : /rejet/i.test(v.resultat) ? "bg-rose-100 text-rose-700 dark:bg-rose-500/20 dark:text-rose-300" : "bg-slate-200 text-slate-700 dark:bg-slate-700 dark:text-slate-200"}`}>{v.resultat}</span>
+                <span className="min-w-0 flex-1">{v.objet}{v.detail ? <span className={appui}> — {v.detail}</span> : null}</span>
+              </div>
+            ))}
+          </div>
         </div>
       )}
 

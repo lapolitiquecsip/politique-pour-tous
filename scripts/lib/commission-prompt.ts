@@ -16,24 +16,51 @@ Règles absolues :
 - Un champ sans matière dans le compte rendu reste un tableau vide. Ne jamais combler un vide.
 - Tes lecteurs connaissent le vocabulaire parlementaire : sois précis et dense, pas pédagogique.`;
 
+/** Version de la forme d'analyse. Une analyse d'une version antérieure est refaite. */
+export const VERSION_ANALYSE = 2;
+
 export const SHAPE = `Réponds UNIQUEMENT par un objet JSON de cette forme exacte :
 {
-  "contexte": "2 à 3 phrases : de quoi traite la réunion, qui est auditionné, pourquoi maintenant",
-  "points_cles": ["5 à 9 points sur ce qui a RÉELLEMENT été dit, du plus important au moins important"],
+  "a_retenir": "UNE phrase : l'essentiel de la réunion, pour qui ne lira rien d'autre",
+  "contexte": "2 à 3 phrases : de quoi traite la réunion, qui est entendu, pourquoi maintenant",
+  "points_cles": ["6 à 12 points sur ce qui a RÉELLEMENT été dit, du plus important au moins important. Chaque point est une phrase complète qui nomme celui qui parle et donne le fait, le chiffre ou l'argument précis — jamais une généralité"],
+  "annonces": ["annonces, engagements et calendriers donnés pendant la réunion, avec leur auteur : « M. X annonce… », « le Gouvernement s'engage à… d'ici… »"],
+  "echanges": [{"question_de": "M./Mme Nom", "groupe": "groupe ou fonction, sinon chaîne vide", "question": "ce qui est demandé, précisément", "reponse_de": "M./Mme Nom", "reponse": "ce qui est répondu ; « pas de réponse » si la question est restée sans réponse"}],
+  "desaccords": ["points de désaccord exprimés : qui s'oppose à qui, sur quoi"],
+  "votes": [{"objet": "amendement, article ou texte mis aux voix", "resultat": "adopté, rejeté, retiré…", "detail": "précision utile, sinon chaîne vide"}],
   "chiffres": [{"valeur": "le chiffre tel qu'énoncé", "quoi": "ce qu'il mesure, avec l'exercice concerné"}],
-  "positions": [{"orateur": "M./Mme Nom", "groupe": "groupe ou fonction, sinon chaîne vide", "position": "ce qu'il ou elle défend"}],
-  "citations": [{"orateur": "M./Mme Nom", "texte": "citation exacte, 30 mots maximum"}],
-  "suites": ["suites annoncées : rapport, vote, saisine, nouvelle audition"]
-}`;
+  "positions": [{"orateur": "M./Mme Nom", "groupe": "groupe ou fonction, sinon chaîne vide", "position": "ce qu'il ou elle défend, en une ou deux phrases précises"}],
+  "citations": [{"orateur": "M./Mme Nom", "texte": "citation exacte, 35 mots maximum"}],
+  "suites": ["suites annoncées : rapport, vote, saisine, nouvelle audition, date"]
+}
+Volume attendu pour une audition d'une heure ou plus : au moins 8 points, 4 échanges, 4 positions et 4 citations quand le compte rendu les contient. "echanges" reprend les questions des parlementaires les plus substantielles et la réponse qui leur est faite. "votes" ne concerne que les réunions où l'on vote.`;
 
 export type Analysis = {
+  /** Version de la forme (VERSION_ANALYSE). */
+  v?: number;
+  a_retenir?: string;
   contexte?: string;
   points_cles?: string[];
+  annonces?: string[];
+  echanges?: { question_de: string; groupe?: string; question: string; reponse_de?: string; reponse?: string }[];
+  desaccords?: string[];
+  votes?: { objet: string; resultat: string; detail?: string }[];
   chiffres?: { valeur: string; quoi: string }[];
   positions?: { orateur: string; groupe?: string; position: string }[];
   citations?: { orateur: string; texte: string }[];
   suites?: string[];
+  /** Le compte rendu tient en quelques lignes : il est montré tel quel, sans analyse. */
+  court?: boolean;
+  /** Le compte rendu intégral n'est pas encore publié par l'assemblée concernée. */
+  attente?: boolean;
+  source?: string;
 };
+
+/** En deçà de ce nombre de mots, il n'y a rien à analyser : on montre le texte. */
+export const MOTS_MINIMUM = 220;
+
+/** Le document dit lui-même que le compte rendu viendra plus tard. */
+export const ANNONCE_ATTENTE = /sera publi[ée]e? ult[ée]rieurement|n'est pas (encore )?(retranscrit|disponible)|compte rendu (int[ée]gral )?(sera|est) (publi[ée]|mis en ligne) ult[ée]rieurement/i;
 
 /** Normalisation tolérante : accents, ponctuation et espaces ne doivent pas faire échouer une comparaison. */
 const normalize = (s: string) =>

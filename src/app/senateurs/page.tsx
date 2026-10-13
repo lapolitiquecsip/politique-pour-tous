@@ -25,7 +25,7 @@ export default async function SenateursPage() {
           { label: "Composition", href: "#composition" },
           { label: "Les sénateurs & leurs votes", href: "#membres" },
           { label: "Textes législatifs", href: "#textes" },
-          { label: "Commissions", href: "#commissions" },
+          { label: "Commissions & auditions", href: "#commissions" },
           { label: "En vidéo", href: "#videos" },
         ]}
       />

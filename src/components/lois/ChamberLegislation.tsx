@@ -5,7 +5,7 @@ import { Loader2 } from "lucide-react";
 import { api } from "@/lib/api";
 import { type LegislativeListItem } from "@/lib/legislative";
 import { LawCardBody, CARD_CLASS, lawTypeMeta, type LawCardStatus } from "./LawCard";
-import SwipeArrow from "@/components/ui/SwipeArrow";
+import DragScroller from "@/components/ui/DragScroller";
 import DossierModal from "@/components/lois/DossierModal";
 import { type LegislativeDossierDetail } from "@/lib/legislative";
 import SaveLawButton from "./SaveLawButton";
@@ -98,11 +98,11 @@ export default function ChamberLegislation({ chamber, chamberLabel }: { chamber:
       ) : visible.length === 0 ? (
         <div className="py-16 text-center text-muted-foreground">Aucun texte ne correspond à ces filtres pour cette chambre.</div>
       ) : (
-        <div className="relative">
-        <SwipeArrow color="#dc2626" />
-        <div className="flex snap-x snap-mandatory gap-4 overflow-x-auto overscroll-x-contain pb-3 -mx-4 px-4 [scrollbar-width:none] [&::-webkit-scrollbar]:hidden sm:mx-0 sm:grid sm:grid-cols-2 sm:gap-5 sm:overflow-visible sm:px-0 sm:pb-0 lg:grid-cols-3">
+        // Une seule ligne, qu'on fait défiler : en grille, quarante textes occupaient
+        // plusieurs écrans de hauteur avant la suite de la page.
+        <DragScroller ariaLabel={`Textes législatifs — ${chamberLabel}`} className="!gap-4 pb-3">
           {visible.map(item => (
-            <div key={item.id} className="relative w-[85vw] shrink-0 snap-center sm:w-auto sm:shrink">
+            <div key={item.id} className="relative w-[82vw] max-w-[22rem] shrink-0">
               <button type="button" onClick={() => void openDossier(item)}
                 className={`w-full text-left ${CARD_CLASS} ${lawTypeMeta((item as any).text_type)?.accent || ""}`}>
                 <LawCardBody
@@ -116,12 +116,17 @@ export default function ChamberLegislation({ chamber, chamberLabel }: { chamber:
               <SaveLawButton itemId={item.id} />
             </div>
           ))}
-        </div>
-        </div>
+          {hasMore && (
+            <button type="button" onClick={loadMore} disabled={loading}
+              className="flex w-40 shrink-0 flex-col items-center justify-center gap-2 rounded-[2rem] border border-dashed border-border text-[11px] font-black uppercase tracking-widest text-muted-foreground transition hover:border-slate-400 hover:text-foreground disabled:opacity-50">
+              {loading ? <Loader2 className="animate-spin" size={18} /> : <span className="text-2xl leading-none">+</span>}
+              Textes suivants
+            </button>
+          )}
+        </DragScroller>
       )}
       <DossierModal detail={detail} loading={detailLoading} fallback={opened as any}
         onClose={() => { setDetail(null); setDetailLoading(false); setOpened(null); }} />
-      {visible.length > 0 && hasMore && <div className="mt-8 text-center"><button onClick={loadMore} disabled={loading} className="rounded-full bg-slate-950 px-8 py-4 font-black text-white disabled:opacity-50">Charger plus de textes</button></div>}
     </section>
   );
 }

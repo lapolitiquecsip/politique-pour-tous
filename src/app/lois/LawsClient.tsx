@@ -13,6 +13,7 @@ import {
 import { LawCardBody, CARD_CLASS, lawTypeMeta, type LawCardStatus } from "@/components/lois/LawCard";
 import IssuesVotesView from "@/components/lois/IssuesVotesView";
 import SaveLawButton from "@/components/lois/SaveLawButton";
+import DragScroller from "@/components/ui/DragScroller";
 import DossierModal from "@/components/lois/DossierModal";
 
 type Tab = "promulgated" | "ongoing" | "enjeux";
@@ -190,7 +191,7 @@ function LawsContent() {
       <div className="mt-10"><h2 className="text-4xl font-staatliches uppercase md:text-6xl text-foreground">{tab === "promulgated" ? "Publiées au Journal officiel" : "Dans la navette parlementaire"}</h2><p className="mt-2 text-muted-foreground">{tab === "promulgated" ? "Seule une publication JORF peut faire apparaître un texte ici." : "Suivez chaque texte : la chambre qui l'examine, son type et son étape."}</p></div>
       {loading && <div className="flex justify-center py-24"><Loader2 className="animate-spin text-red-700 dark:text-red-400" /></div>}
       {error && <div className="mt-8 rounded-2xl bg-red-50 dark:bg-red-500/10 p-5 font-bold text-red-800 dark:text-red-300">{error}</div>}
-      {!loading && !error && <div className="mt-8 grid gap-5 sm:grid-cols-2 lg:grid-cols-3">{visibleItems.map(item => {
+      {!loading && !error && visibleItems.length > 0 && <DragScroller ariaLabel="Textes législatifs" className="mt-8 !gap-5 pb-3">{visibleItems.map(item => {
         const status: LawCardStatus | null = tab === "promulgated"
           ? { label: "Promulguée", tone: "green" }
           : stageStatus(item.status_code);
@@ -198,7 +199,7 @@ function LawsContent() {
         const cardType = tab === "ongoing" ? (item as any).text_type : null;
         const accent = lawTypeMeta(cardType)?.accent || "";
         return (
-          <div key={item.id} className="relative">
+          <div key={item.id} className="relative w-[82vw] max-w-[22rem] shrink-0">
             <button onClick={() => openDossier(item.id, item)} className={`${CARD_CLASS} ${accent}`}>
               <LawCardBody
                 title={item.display_title || item.title}
@@ -211,9 +212,16 @@ function LawsContent() {
             <SaveLawButton itemId={item.id} />
           </div>
         );
-      })}</div>}
+      })}
+      {hasMore && (
+        <button type="button" onClick={loadMore} disabled={loading}
+          className="flex w-40 shrink-0 flex-col items-center justify-center gap-2 rounded-[2rem] border border-dashed border-border text-[11px] font-black uppercase tracking-widest text-muted-foreground transition hover:border-slate-400 hover:text-foreground disabled:opacity-50">
+          <span className="text-2xl leading-none">+</span>
+          Textes suivants
+        </button>
+      )}
+      </DragScroller>}
       {!loading && !error && !visibleItems.length && <div className="py-20 text-center text-muted-foreground">Aucun texte officiel ne correspond à ces filtres.</div>}
-      {!error && visibleItems.length > 0 && hasMore && <div className="mt-10 text-center"><button onClick={loadMore} disabled={loading} className="rounded-full bg-slate-950 px-8 py-4 font-black text-white disabled:opacity-50">Charger plus de textes</button></div>}
       </>)}
       <DossierModal
         detail={detail} loading={detailLoading} fallback={openedItem} onClose={closeDossier}

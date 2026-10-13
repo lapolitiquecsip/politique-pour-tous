@@ -9,6 +9,7 @@ import { api } from "@/lib/api";
 import { usePremium } from "@/lib/hooks/usePremium";
 import LockedSection from "@/components/premium/LockedSection";
 import { CommissionAnalysis as Analysis, ACCENTS } from "./CommissionAnalysis";
+import AuditionsParMois from "./AuditionsParMois";
 import {
   cleanTitle, decode, extractPeople, shortCommission, fmtMeetingDate,
   type CommissionMeeting,
@@ -105,6 +106,9 @@ export default function CommissionTracker({ chamber, chamberLabel, accent = "eme
   const { isPro, isPremium } = usePremium();
   const a = ACCENTS[accent];
 
+  // Deux lectures de la même matière : les auditions, feuilletées mois par mois, et toutes
+  // les réunions, avec recherche et filtre par commission.
+  const [vue, setVue] = useState<"auditions" | "reunions">("auditions");
   const [commissions, setCommissions] = useState<CommissionSummary[]>([]);
   const [selected, setSelected] = useState<string | null>(null);
   const [search, setSearch] = useState("");
@@ -231,7 +235,22 @@ export default function CommissionTracker({ chamber, chamberLabel, accent = "eme
           remplacée par son argumentaire tant que l'abonnement n'est pas Pro — y
           compris pour un abonné Premium, à qui on dit alors ce qui lui manque.
           Un contenu flouté frustre sans informer et sous-vend ce qu'on protège. */}
-      {!isPro ? (
+      {(isPremium || isPro) && (
+        <div className="relative mb-5 inline-flex rounded-full border border-border bg-muted/60 p-1 dark:border-slate-800">
+          {([["auditions", "Auditions", Mic], ["reunions", "Toutes les réunions", ListChecks]] as const).map(([cle, label, Icone]) => (
+            <button key={cle} type="button" onClick={() => setVue(cle)} aria-pressed={vue === cle}
+              className={`inline-flex items-center gap-1.5 rounded-full px-4 py-2 text-[11px] font-black uppercase tracking-widest transition ${vue === cle
+                ? "bg-gradient-to-r from-violet-600 to-fuchsia-500 text-white shadow"
+                : "text-muted-foreground hover:text-foreground"}`}>
+              <Icone size={13} /> {label}
+            </button>
+          ))}
+        </div>
+      )}
+
+      {(isPremium || isPro) && vue === "auditions" ? (
+        <AuditionsParMois chamber={chamber} accent={accent} isPro={isPro} />
+      ) : !isPro ? (
         <LockedSection
           proOnly
           alreadySubscribed={isPremium}

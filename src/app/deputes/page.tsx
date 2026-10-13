@@ -6,7 +6,6 @@ import AdoptedTextsFeed from "@/components/lois/AdoptedTextsFeed";
 import ChamberHero from "@/components/lois/ChamberHero";
 import MemberFinderIntro from "@/components/lois/MemberFinderIntro";
 import VideoFeed from "@/components/executif/VideoFeed";
-import CommissionAuditions from "@/components/executif/CommissionAuditions";
 import CommissionTracker from "@/components/commissions/CommissionTracker";
 import PresidentPhoto from "@/components/shared/PresidentPhoto";
 import Link from "next/link";
@@ -44,8 +43,8 @@ export default async function DeputesPage() {
           { label: "Derniers textes adoptés", href: "#adoptes" },
           { label: "Les députés & leurs votes", href: "#membres" },
           { label: "Textes législatifs", href: "#textes" },
-          { label: "Commissions", href: "#commissions" },
-          { label: "Séances & auditions", href: "#videos" },
+          { label: "Commissions & auditions", href: "#commissions" },
+          { label: "Séances en vidéo", href: "#videos" },
         ]}
       />
       {/* Présidente de l'Assemblée nationale — cliquable vers sa fiche */}
@@ -92,7 +91,6 @@ export default async function DeputesPage() {
       </section>
       <section id="videos" className="scroll-mt-24 mx-auto max-w-6xl px-4 pb-16">
         <VideoFeed source="an" />
-        <CommissionAuditions />
       </section>
     </div>
   );

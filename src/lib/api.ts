@@ -974,6 +974,33 @@ export const api = {
     return data;
   },
 
+  /**
+   * Les auditions et tables rondes d'une chambre pour un mois donné (« 2026-10 »), des plus
+   * récentes aux plus anciennes. Sans l'analyse détaillée, demandée au dépliage d'une carte.
+   */
+  getAuditionsDuMois: async (chamber: 'AN' | 'SENAT', mois: string) => {
+    const [annee, numero] = mois.split('-').map(Number);
+    const debut = `${mois}-01`;
+    const suivant = numero === 12 ? `${annee + 1}-01-01` : `${annee}-${String(numero + 1).padStart(2, '0')}-01`;
+    const { data, error } = await supabase
+      .from('commission_reports')
+      .select('ref, chamber, commission, title, meeting_date, cr_url, video_url, summary, speakers, topics')
+      .eq('chamber', chamber)
+      .gte('meeting_date', debut).lt('meeting_date', suivant)
+      .or('title.ilike.%audition%,title.ilike.%table ronde%')
+      .order('meeting_date', { ascending: false })
+      .limit(200);
+    if (error) { console.warn('API Warning (getAuditionsDuMois):', error.message); return []; }
+    return data ?? [];
+  },
+  /** Le mois de la plus ancienne audition connue d'une chambre : borne de la flèche « précédent ». */
+  getPremierMoisAuditions: async (chamber: 'AN' | 'SENAT') => {
+    const { data } = await supabase
+      .from('commission_reports').select('meeting_date').eq('chamber', chamber)
+      .or('title.ilike.%audition%,title.ilike.%table ronde%')
+      .order('meeting_date', { ascending: true }).limit(1);
+    return data?.[0]?.meeting_date ? String(data[0].meeting_date).slice(0, 7) : null;
+  },
   getCommissionReports: async (limit = 12) => {
     const { data, error } = await supabase
       .from('commission_reports')

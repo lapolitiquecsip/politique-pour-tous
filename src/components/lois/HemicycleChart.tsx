@@ -109,7 +109,7 @@ function Hemicycle({ title, total, groups, enExercice }: { title: string; total:
               className={linkOf(g) ? "cursor-pointer" : ""}
               style={{ transform: isH ? `translate(${dx}px, ${dy}px)` : "translate(0,0)", transition: EASE,
                 opacity: dim ? 0.4 : 1, filter: dim ? "grayscale(.75)" : (isH ? "brightness(1.06)" : "none") }}>
-              <title>{g.label} — {g.seats} sièges{linkOf(g) ? " · cliquer pour en savoir plus" : ""}</title>
+              <title>{`${g.label} — ${g.seats} sièges${linkOf(g) ? " · cliquer pour en savoir plus" : ""}`}</title>
             </path>
           );
         })}

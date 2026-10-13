@@ -456,14 +456,14 @@ export default function Senatoriales2026() {
                     onMouseLeave={() => setHover(null)}
                     onClick={() => { setQuery(DEPT_NAMES[code] || code); setChoisi(code); }}
                   >
-                    <title>
-                      {DEPT_NAMES[code] || code}
-                      {vote
-                        ? phase === "resultats"
-                          ? ` — ${(parDept.get(code) || []).map(e => `${e.full_name} (${e.nuance || "sans nuance"})`).join(", ") || "en attente"}`
-                          : " — vote en 2026"
-                        : " — non concerné"}
-                    </title>
+                    {/* UNE seule chaîne dans <title> : avec plusieurs morceaux, le rendu côté
+                        serveur produit un titre vide et la page entière est reconstruite
+                        dans le navigateur (erreur d'hydratation). */}
+                    <title>{`${DEPT_NAMES[code] || code}${vote
+                      ? phase === "resultats"
+                        ? ` — ${(parDept.get(code) || []).map(e => `${e.full_name} (${e.nuance || "sans nuance"})`).join(", ") || "en attente"}`
+                        : " — vote en 2026"
+                      : " — non concerné"}`}</title>
                   </path>
                 );
               })}

@@ -437,8 +437,9 @@ async function depuisLeJournal(supabase: any, reste: number): Promise<number> {
     } catch (e) {
       const message = (e as Error).message;
       console.warn(`    ⚠ ${message}`);
-      // Quota de transcription ou d'analyse : ce n'est pas la faute de la réunion.
-      if (/429|quota|rate/i.test(message)) break;
+      // Quota de transcription ou d'analyse, outil absent de la machine : ce n'est pas la
+      // faute de la réunion, on s'arrête sans lui compter un échec.
+      if (/429|quota|rate|ENOENT/i.test(message)) break;
       await noter(it.cle, it.tentatives ?? 0, message.slice(0, 300));
     }
   }

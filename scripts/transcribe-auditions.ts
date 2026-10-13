@@ -27,7 +27,7 @@
 import { createClient } from "@supabase/supabase-js";
 import { execFile } from "node:child_process";
 import { promisify } from "node:util";
-import { mkdtemp, readFile, rm, stat } from "node:fs/promises";
+import { mkdtemp, readFile, readdir, rm, stat } from "node:fs/promises";
 import { tmpdir } from "node:os";
 import { join } from "node:path";
 import { request as requeteHttps } from "node:https";
@@ -143,32 +143,38 @@ async function transcrire(mp4: string, etiquette: string): Promise<string> {
   if (!ASR_KEY) throw new Error("ASR_API_KEY absente");
 
   const dossier = await mkdtemp(join(tmpdir(), "audition-"));
-  const audio = join(dossier, "audio.ogg");
   try {
+    // Le son est découpé en tranches de quarante minutes. Une audition de plus de trois
+    // heures et demie dépassait les 25 Mo admis par l'interface de transcription et était
+    // refusée en bloc (« audio trop lourd ») ; par tranches, aucune durée n'est trop longue.
     await execFileP("ffmpeg", [
       "-nostdin", "-loglevel", "error", "-y",
       "-i", mp4,
       "-vn",                        // pas d'image
       "-ac", "1", "-ar", "16000",   // mono 16 kHz : ce que le modèle attend
       "-c:a", "libopus", "-b:a", "16k",
-      audio,
-    ], { maxBuffer: 1 << 24, timeout: 40 * 60 * 1000 });
+      "-f", "segment", "-segment_time", "2400",
+      join(dossier, "tranche-%03d.ogg"),
+    ], { maxBuffer: 1 << 24, timeout: 60 * 60 * 1000 });
 
-    const taille = (await stat(audio)).size;
-    console.log(`    audio extrait : ${(taille / 1e6).toFixed(1)} Mo`);
-    // Les interfaces de transcription plafonnent en général à 25 Mo.
-    if (taille > 24e6) throw new Error(`audio trop lourd (${(taille / 1e6).toFixed(0)} Mo)`);
-
-    const form = new FormData();
-    form.append("file", new Blob([await readFile(audio)], { type: "audio/ogg" }), `${etiquette}.ogg`);
-    form.append("model", ASR_MODEL);
-    form.append("language", "fr");
-    form.append("response_format", "text");
-
-    const r = await fetch(ASR_URL, { method: "POST", headers: { Authorization: `Bearer ${ASR_KEY}` }, body: form });
-    const corps = await r.text();
-    if (!r.ok) throw new Error(`transcription : HTTP ${r.status} — ${corps.slice(0, 160)}`);
-    return corps.trim();
+    const tranches = (await readdir(dossier)).filter(f => f.endsWith(".ogg")).sort();
+    let total = 0;
+    const textes: string[] = [];
+    for (const [i, nom] of tranches.entries()) {
+      const fichier = join(dossier, nom);
+      total += (await stat(fichier)).size;
+      const form = new FormData();
+      form.append("file", new Blob([await readFile(fichier)], { type: "audio/ogg" }), `${etiquette}-${i + 1}.ogg`);
+      form.append("model", ASR_MODEL);
+      form.append("language", "fr");
+      form.append("response_format", "text");
+      const r = await fetch(ASR_URL, { method: "POST", headers: { Authorization: `Bearer ${ASR_KEY}` }, body: form });
+      const corps = await r.text();
+      if (!r.ok) throw new Error(`transcription (tranche ${i + 1}/${tranches.length}) : HTTP ${r.status} — ${corps.slice(0, 160)}`);
+      textes.push(corps.trim());
+    }
+    console.log(`    audio extrait : ${(total / 1e6).toFixed(1)} Mo en ${tranches.length} tranche(s)`);
+    return textes.join(" ");
   } finally {
     await rm(dossier, { recursive: true, force: true });
   }

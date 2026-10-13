@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { supabase } from "@/lib/supabase";
 import { tierAtLeast, type Tier } from "@/lib/constants";
 
@@ -78,6 +78,9 @@ export function usePremium() {
   const [tier, setTier] = useState<Tier>("free");
   const [hint, setHint] = useState<Tier | null>(null);
   const [loading, setLoading] = useState<boolean>(true);
+  // La dernière lecture du niveau a échoué : l'habillage s'en tient au niveau retenu.
+  const [echec, setEchec] = useState(false);
+  const essais = useRef(0);
   const [userId, setUserId] = useState<string | null>(null);
   // Ce que la visite précédente savait de la session, pour dessiner l'en-tête avant
   // que Supabase n'ait fini de la restaurer.
@@ -135,8 +138,15 @@ export function usePremium() {
           .eq("id", user.id)
           .single();
 
-        // …repli si la colonne n'est pas encore en base.
-        if (res.error) {
+        // …repli SEULEMENT si la colonne n'est pas encore en base (erreur 42703).
+        //
+        // Ce repli se déclenchait sur n'importe quelle erreur — y compris une coupure de
+        // réseau d'une demi-seconde en changeant de page. L'ancien indicateur `is_premium`
+        // vaut vrai pour un abonné Pro : il se retrouvait alors affiché « Premium », en
+        // doré, et ce niveau faux était retenu pour les pages suivantes. D'où l'en-tête qui
+        // alternait entre Pro et Premium.
+        const colonneAbsente = !!res.error && /42703|column .* does not exist/i.test(`${(res.error as any).code ?? ""} ${res.error.message}`);
+        if (colonneAbsente) {
           res = await supabase
             .from("profiles")
             .select("is_premium")
@@ -145,8 +155,13 @@ export function usePremium() {
         }
 
         if (res.error) {
+          // Lecture en échec : on ne conclut RIEN. Le niveau déjà connu (vérifié plus tôt
+          // ou retenu de la visite précédente) reste affiché, et rien n'est mémorisé.
+          // Aucun accès n'est ouvert sur cette base : seul l'habillage garde le niveau
+          // retenu (`echec`), et la lecture est retentée deux fois.
           console.warn("Erreur usePremium:", res.error.message);
-          setTier("free");
+          setEchec(true);
+          if (essais.current < 2) { essais.current++; setTimeout(checkPremium, 1500 * essais.current); }
         } else {
           const raw = String(res.data?.subscription_tier || "").toLowerCase();
           const niveau: Tier = raw === "pro" ? "pro"
@@ -154,6 +169,8 @@ export function usePremium() {
             : "free";
           setTier(niveau);
           setHint(niveau);
+          setEchec(false);
+          essais.current = 0;
           setConnecteMemorise(true);
           setCourrielMemorise(user.email ?? null);
           retenir(niveau, user.email);
@@ -195,7 +212,7 @@ export function usePremium() {
      * connu, sinon celui de la dernière visite. Ne jamais s'en servir pour décider
      * d'un accès.
      */
-    tierAffiche: loading ? (hint ?? tier) : tier,
+    tierAffiche: loading || echec ? (hint ?? tier) : tier,
     /**
      * true quand un niveau a été retenu d'une visite précédente. Permet d'afficher la
      * page tout de suite plutôt qu'un écran d'attente à chaque changement de page.

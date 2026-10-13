@@ -214,7 +214,9 @@ export default function CommissionTracker({ chamber, chamberLabel, accent = "eme
             <Crown size={12} strokeWidth={2.8} />
           </span>
         </span>
-        <div className="min-w-0 flex-1">
+        {/* Largeur minimale : sur téléphone, le bouton d'export passe alors à la ligne au
+            lieu d'écraser le titre et sa phrase dans une colonne de cent pixels. */}
+        <div className="min-w-[13rem] flex-1">
           <h3 className="font-staatliches text-4xl uppercase leading-none tracking-tight text-foreground dark:text-white md:text-5xl">
             Suivi des <span className="bg-gradient-to-r from-violet-600 to-fuchsia-500 bg-clip-text text-transparent">commissions</span>
           </h3>
@@ -239,7 +241,7 @@ export default function CommissionTracker({ chamber, chamberLabel, accent = "eme
         <div className="relative mb-5 inline-flex rounded-full border border-border bg-muted/60 p-1 dark:border-slate-800">
           {([["auditions", "Auditions", Mic], ["reunions", "Toutes les réunions", ListChecks]] as const).map(([cle, label, Icone]) => (
             <button key={cle} type="button" onClick={() => setVue(cle)} aria-pressed={vue === cle}
-              className={`inline-flex items-center gap-1.5 rounded-full px-4 py-2 text-[11px] font-black uppercase tracking-widest transition ${vue === cle
+              className={`inline-flex items-center gap-1.5 whitespace-nowrap rounded-full px-3 py-2 text-[10px] font-black uppercase tracking-wider transition sm:px-4 sm:text-[11px] sm:tracking-widest ${vue === cle
                 ? "bg-gradient-to-r from-violet-600 to-fuchsia-500 text-white shadow"
                 : "text-muted-foreground hover:text-foreground"}`}>
               <Icone size={13} /> {label}

@@ -100,18 +100,27 @@ export function mesurerAction(nom: string, path?: string) {
 }
 
 /**
- * À l'arrivée sur le site : un « ?ref=CODE » dans l'adresse est mémorisé (le
- * dernier lien suivi l'emporte) puis retiré de la barre d'adresse, pour qu'un
+ * À l'arrivée sur le site : un « ?ref=CODE » dans l'adresse est relevé, puis retiré
+ * de la barre d'adresse (s'il est accepté, le dernier lien suivi l'emporte), pour qu'un
  * membre qui partage la page ne propage pas le code de quelqu'un d'autre.
  */
-export function capterParrainage() {
-  if (typeof window === "undefined") return;
+export function capterParrainage(): string | null {
+  if (typeof window === "undefined") return null;
   const url = new URL(window.location.href);
   const code = (url.searchParams.get("ref") || "").trim().toUpperCase();
-  if (!/^[A-Z0-9-]{3,40}$/.test(code)) return;
-  ecrire(window.localStorage, CLE_PARRAIN, { code, depuis: Date.now() });
+  if (!/^[A-Z0-9-]{3,40}$/.test(code)) return null;
   url.searchParams.delete("ref");
   window.history.replaceState(window.history.state, "", url.pathname + url.search + url.hash);
+  // Rien n'est écrit dans le navigateur à ce stade : un traceur de parrainage n'est pas
+  // de ceux que la CNIL exempte de consentement. Le code est rendu à l'appelant, qui
+  // demande l'accord du visiteur (BandeauParrainage) avant de le mémoriser.
+  return code;
+}
+
+/** Le visiteur accepte que son arrivée par un lien de parrainage soit retenue 90 jours. */
+export function accepterParrainage(code: string) {
+  if (typeof window === "undefined") return;
+  ecrire(window.localStorage, CLE_PARRAIN, { code, depuis: Date.now() });
   mesurerAction("arrivee_parrainage");
 }
 

@@ -50,7 +50,8 @@ export default function CGV() {
                 d&apos;accès immédiat, puis paiement sur la page sécurisée de notre prestataire <strong>Stripe</strong>{" "}(carte bancaire). Le site ne voit ni
                 ne conserve vos coordonnées bancaires.</p>
               <p>Le paiement est prélevé à la souscription, puis à chaque échéance. Le contrat est confirmé par un e-mail récapitulant l&apos;offre,
-                son prix, ses conditions de renouvellement, de résiliation et de rétractation. Les factures sont disponibles sur demande.</p>
+                son prix, ses conditions de renouvellement, de résiliation et de rétractation. Un reçu est envoyé par e-mail à chaque paiement ; une
+                facture vous est adressée sur simple demande.</p>
             </>
           ),
         },

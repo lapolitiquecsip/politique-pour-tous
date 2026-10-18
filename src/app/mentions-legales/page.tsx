@@ -35,8 +35,8 @@ export default function MentionsLegales() {
           id: "hebergement", titre: "Hébergement",
           contenu: (
             <ul>
-              <li><strong>Pages du site :</strong>{" "}GitHub, Inc. (GitHub Pages), 88 Colin P. Kelly Jr. Street, San Francisco, CA 94107, États-Unis — github.com.</li>
-              <li><strong>Base de données et comptes :</strong>{" "}Supabase, Inc., 970 Toa Payoh North #07-04, Singapour 318992 — supabase.com.
+              <li><strong>Pages du site :</strong>{" "}GitHub, Inc. (GitHub Pages), 88 Colin P. Kelly Jr. Street, San Francisco, CA 94107, États-Unis — téléphone +1 877 448 4820 — github.com.</li>
+              <li><strong>Base de données et comptes :</strong>{" "}Supabase, Inc., 970 Toa Payoh North #07-04, Singapour 318992 — contact : supabase.com/support.
                 Les données sont stockées dans l&apos;Union européenne (centre de données d&apos;Amazon Web Services en Irlande).</li>
             </ul>
           ),

@@ -28,9 +28,13 @@ const playfairDisplay = Playfair_Display({
 });
 
 export const metadata: Metadata = {
-  title: "LA POLITIQUE C SIMPLE",
-  description: "Comprendre la politique française simplement.",
-  applicationName: "La Politique C Simple",
+  metadataBase: new URL("https://lapolitiquecestsimple.fr"),
+  // Chaque page donne son propre titre ; le nom du site s'ajoute derrière.
+  title: { default: "La politique, c'est simple", template: "%s | La politique, c'est simple" },
+  description: "Les lois expliquées, les votes de vos députés et sénateurs, le budget, les élections : la politique française rendue lisible, à partir des sources officielles.",
+  applicationName: "La politique, c'est simple",
+  openGraph: { type: "website", locale: "fr_FR", siteName: "La politique, c'est simple" },
+  twitter: { card: "summary_large_image" },
   manifest: "/manifest.webmanifest",
   appleWebApp: { capable: true, title: "Politique", statusBarStyle: "default" },
   icons: {

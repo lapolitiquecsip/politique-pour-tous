@@ -34,16 +34,16 @@ export default function GlossaryTooltip({ term, definition, children }: Glossary
             <div className="flex items-start gap-3">
               <div className="mt-1 p-1 rounded-lg bg-blue-500/20 text-blue-400">
                 <HelpCircle size={14} />
-              </div>
+              </div>{" "}
               <div>
                 <h4 className="text-[10px] font-black uppercase tracking-widest text-blue-400 mb-1">
                   Définition • {term}
-                </h4>
+                </h4>{" "}
                 <p className="text-xs leading-relaxed text-slate-200">
                   {definition}
                 </p>
               </div>
-            </div>
+            </div>{" "}
             
             {/* Arrow */}
             <div className="absolute top-full left-1/2 -translate-x-1/2 border-8 border-transparent border-t-slate-900" />

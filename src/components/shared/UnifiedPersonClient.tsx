@@ -52,9 +52,9 @@ function EmbeddedFunction({ role }: { role: Role }) {
   // Fonctions non embarquables (candidat, parti, département, maire) : accès direct.
   return (
     <div className="mx-auto max-w-3xl px-4 py-16 text-center">
-      <p className="text-muted-foreground dark:text-slate-400">Cette fonction dispose de sa propre page dédiée.</p>
+      <p className="text-muted-foreground dark:text-slate-400">Cette fonction dispose de sa propre page dédiée.</p>{" "}
       <Link href={role.href} className="mt-4 inline-flex items-center gap-2 rounded-2xl bg-slate-900 px-6 py-4 font-black uppercase tracking-widest text-white transition hover:bg-slate-800 dark:bg-white dark:text-slate-900">
-        Ouvrir : {role.label} <ArrowUpRight size={16} />
+        Ouvrir : {role.label} {" "}<ArrowUpRight size={16} />
       </Link>
     </div>
   );
@@ -93,11 +93,11 @@ export default function UnifiedPersonClient({ entryType, slug }: { entryType: st
         <div className="mx-auto flex max-w-6xl items-center gap-3 overflow-x-auto px-4 py-2.5 [scrollbar-width:none] [&::-webkit-scrollbar]:hidden">
           <Link href={backHref} className="inline-flex shrink-0 items-center gap-1.5 text-xs font-black uppercase tracking-widest text-muted-foreground hover:text-foreground dark:hover:text-white">
             <ArrowLeft size={14} /> {backLabel}
-          </Link>
-          {multi && <span className="mx-1 h-5 w-px shrink-0 bg-slate-200 dark:bg-slate-700" />}
+          </Link>{" "}
+          {multi && <span className="mx-1 h-5 w-px shrink-0 bg-slate-200 dark:bg-slate-700" />}{" "}
           {multi && (
             <div className="flex items-center gap-2">
-              <span className="hidden shrink-0 items-center gap-1.5 text-[10px] font-black uppercase tracking-widest text-slate-400 sm:flex"><Layers size={13} /> Ses fonctions</span>
+              <span className="hidden shrink-0 items-center gap-1.5 text-[10px] font-black uppercase tracking-widest text-slate-400 sm:flex"><Layers size={13} /> Ses fonctions</span>{" "}
               {roles!.map((r, i) => {
                 const Icon = ICON[r.type] || Layers;
                 const on = active.type === r.type && roleSlug(active) === roleSlug(r);
@@ -106,14 +106,14 @@ export default function UnifiedPersonClient({ entryType, slug }: { entryType: st
                     className={`group inline-flex shrink-0 items-center gap-2 rounded-full px-4 py-2 text-[11px] font-black uppercase tracking-wide transition ${
                       on ? "bg-slate-900 text-white shadow-md dark:bg-white dark:text-slate-900"
                          : "border border-border bg-card text-muted-foreground hover:border-slate-400 hover:text-foreground dark:border-slate-700 dark:bg-slate-900 dark:text-slate-300 dark:hover:text-white"}`}>
-                    <Icon size={14} className={on ? "" : "text-muted-foreground"} /> {r.kind}
+                    <Icon size={14} className={on ? "" : "text-muted-foreground"} /> {r.kind}{" "}
                   </button>
                 );
               })}
             </div>
           )}
         </div>
-      </div>
+      </div>{" "}
 
       {/* Contenu embarqué de la fonction active */}
       <EmbeddedFunction key={`${active.type}:${roleSlug(active)}`} role={active} />

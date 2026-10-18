@@ -49,7 +49,7 @@ export default function InitiativeRank({
     <Wrapper className={embedded ? "" : "rounded-[2.5rem] border border-border dark:border-slate-800 bg-card dark:bg-slate-900 p-8"}>
       {!embedded && (
         <div className="flex items-center gap-3 mb-4">
-          <FileText className="text-orange-700 dark:text-orange-400" size={22} />
+          <FileText className="text-orange-700 dark:text-orange-400" size={22} />{" "}
           <h2 className="text-3xl font-staatliches uppercase tracking-tight text-foreground dark:text-white">
             Initiatives <span className="text-orange-700 dark:text-orange-400">législatives</span>
           </h2>
@@ -57,12 +57,12 @@ export default function InitiativeRank({
       )}
 
       <div className="flex items-center gap-6">
-        <p className="text-5xl font-black text-orange-700 dark:text-orange-400">{p}</p>
+        <p className="text-5xl font-black text-orange-700 dark:text-orange-400">{p}</p>{" "}
         <div className="flex-1">
           <p className="text-sm font-bold text-slate-700 dark:text-slate-200">
             {p === 0 ? "Aucun texte déposé en tant qu'auteur·rice principal·e" : <>Texte{p > 1 ? "s" : ""} <strong>déposé{p > 1 ? "s" : ""}</strong> en tant qu'auteur·rice principal·e</>}
-          </p>
-          {co > 0 && <p className="text-xs text-muted-foreground dark:text-slate-400">+ {co} texte{co > 1 ? "s" : ""} co-signé{co > 1 ? "s" : ""}</p>}
+          </p>{" "}
+          {co > 0 && <p className="text-xs text-muted-foreground dark:text-slate-400">+ {co} texte{co > 1 ? "s" : ""} co-signé{co > 1 ? "s" : ""}</p>}{" "}
           {/* Barre relative au plus prolifique de la chambre. */}
           <div className="mt-2 h-3 w-full overflow-hidden rounded-full bg-slate-100 dark:bg-slate-800">
             <div className="h-full rounded-full bg-orange-500" style={{ width: `${Math.round((p / max) * 100)}%` }} />
@@ -75,19 +75,19 @@ export default function InitiativeRank({
           <span className="inline-flex items-center gap-2 rounded-full bg-orange-500/10 px-4 py-2 text-sm font-bold text-orange-700 dark:text-orange-300">
             <Trophy size={15} /> {rank}ᵉ / {count} {peerLabel}
           </span>
-        )}
+        )}{" "}
         {pct != null && (
           pct >= 50 ? (
             <span className="inline-flex items-center rounded-full bg-slate-100 dark:bg-slate-800 px-4 py-2 text-sm font-bold text-muted-foreground dark:text-slate-300">Dépose plus que {pct}% des {peerLabel}</span>
           ) : (
             <span className="inline-flex items-center rounded-full bg-rose-500/10 px-4 py-2 text-sm font-bold text-rose-700 dark:text-rose-300">Dépose moins que {100 - pct}% des {peerLabel}</span>
           )
-        )}
+        )}{" "}
         {topDecile && (
           <span className="inline-flex items-center gap-1.5 rounded-full bg-gradient-to-br from-orange-400 to-amber-600 px-4 py-2 text-sm font-black uppercase tracking-wide text-white shadow-lg shadow-orange-500/30">
             <Trophy size={14} /> Parmi les plus prolifiques
           </span>
-        )}
+        )}{" "}
         {bottomDecile && (
           <span className="inline-flex items-center gap-1.5 rounded-full bg-gradient-to-br from-slate-400 to-slate-600 px-4 py-2 text-sm font-black uppercase tracking-wide text-white shadow-lg shadow-slate-500/20">
             <TriangleAlert size={14} /> Parmi les moins actifs

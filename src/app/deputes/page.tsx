@@ -13,6 +13,11 @@ import { ChevronRight } from "lucide-react";
 
 import { Suspense } from "react";
 
+export const metadata = {
+  title: "Les 577 députés : votes, positions, parcours",
+  description: "Retrouvez votre député : ses votes sur chaque loi, ses prises de position, ses propositions de loi et son parcours, d'après les données de l'Assemblée nationale.",
+};
+
 // React Server Component
 export default async function DeputesPage() {
   const deputies = await api.getDeputies();
@@ -46,49 +51,49 @@ export default async function DeputesPage() {
           { label: "Commissions & auditions", href: "#commissions" },
           { label: "Séances en vidéo", href: "#videos" },
         ]}
-      />
+      />{" "}
       {/* Présidente de l'Assemblée nationale — cliquable vers sa fiche */}
       <div className="mx-auto max-w-6xl px-4 pt-6">
         <Link href="/deputes/yael-braun-pivet" className="group flex items-center gap-4 rounded-3xl border border-emerald-200 bg-emerald-50/60 p-5 transition hover:border-emerald-300 hover:bg-emerald-50 dark:border-emerald-900/40 dark:bg-emerald-950/20">
-          <PresidentPhoto src="https://www.assemblee-nationale.fr/dyn/static/tribun/17/photos/carre/721908.jpg" alt="Yaël Braun-Pivet" ring="ring-emerald-300" gradient="from-emerald-500 to-teal-600" />
+          <PresidentPhoto src="https://www.assemblee-nationale.fr/dyn/static/tribun/17/photos/carre/721908.jpg" alt="Yaël Braun-Pivet" ring="ring-emerald-300" gradient="from-emerald-500 to-teal-600" />{" "}
           <div className="min-w-0">
-            <p className="text-[10px] font-black uppercase tracking-widest text-emerald-700 dark:text-emerald-400">Présidente de l'Assemblée nationale</p>
-            <p className="text-xl font-bold text-foreground dark:text-white group-hover:text-emerald-700 transition-colors">Yaël Braun-Pivet</p>
+            <p className="text-[10px] font-black uppercase tracking-widest text-emerald-700 dark:text-emerald-400">Présidente de l'Assemblée nationale</p>{" "}
+            <p className="text-xl font-bold text-foreground dark:text-white group-hover:text-emerald-700 transition-colors">Yaël Braun-Pivet</p>{" "}
             <p className="text-sm text-muted-foreground">Quatrième personnage de l'État — voir sa fiche</p>
-          </div>
+          </div>{" "}
           <ChevronRight className="ml-auto text-muted-foreground group-hover:text-emerald-500 transition-colors" />
         </Link>
-      </div>
+      </div>{" "}
       {/* Outil interactif : comparateur de parlementaires. */}
       <div className="mx-auto mt-4 max-w-6xl px-4">
         <Link href="/comparateur-parlementaires" className="group flex items-center gap-3 rounded-3xl border border-border bg-card p-5 transition hover:border-slate-400 hover:shadow-md dark:border-slate-800 dark:bg-slate-900">
-          <span className="text-3xl">⚖️</span>
+          <span className="text-3xl">⚖️</span>{" "}
           <div className="min-w-0">
-            <p className="font-black text-foreground dark:text-white">Comparer deux parlementaires</p>
+            <p className="font-black text-foreground dark:text-white">Comparer deux parlementaires</p>{" "}
             <p className="text-sm text-muted-foreground">Participation, amendements, loyauté — côte à côte</p>
-          </div>
+          </div>{" "}
           <ChevronRight className="ml-auto shrink-0 text-muted-foreground transition-colors group-hover:text-muted-foreground" />
         </Link>
-      </div>
+      </div>{" "}
       <section id="composition" className="scroll-mt-24 pt-4 pb-8">
         <HemicycleChart chamber="an" subtitle="Assemblée nationale" title="Composition de l'Assemblée" />
-      </section>
+      </section>{" "}
       <section id="membres" className="scroll-mt-24">
         <MemberFinderIntro role="député" roleShort="député" accent="text-emerald-700 dark:text-emerald-400" />
         <Suspense fallback={<div className="h-64 flex items-center justify-center">Chargement...</div>}>
           <DiscoveryClient initialDeputies={mappedDeputies} single="deputies" />
         </Suspense>
-      </section>
+      </section>{" "}
       <section id="adoptes" className="scroll-mt-24 pb-12">
         <AdoptedTextsFeed />
-      </section>
+      </section>{" "}
       <section id="textes" className="scroll-mt-24">
         <ChamberLegislation chamber="AN" chamberLabel="Assemblée nationale" />
-      </section>
+      </section>{" "}
       {/* Suivi détaillé des commissions — cœur de l'abonnement Pro. */}
       <section className="mx-auto max-w-6xl px-4">
         <CommissionTracker chamber="AN" chamberLabel="Assemblée nationale" accent="emerald" />
-      </section>
+      </section>{" "}
       <section id="videos" className="scroll-mt-24 mx-auto max-w-6xl px-4 pb-16">
         <VideoFeed source="an" />
       </section>

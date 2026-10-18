@@ -40,16 +40,16 @@ export default function DiscoveryClient({ initialDeputies, single }: { initialDe
           <h1 className="text-5xl md:text-7xl font-staatliches uppercase tracking-tighter leading-none relative z-10 text-black dark:text-white">
             <span className="text-foreground opacity-[0.08] absolute -top-10 left-1/2 -translate-x-1/2 select-none hidden md:block whitespace-nowrap">
               RÉPUBLIQUE • ÉLUS
-            </span>
+            </span>{" "}
             Que votent vos <span className="inline-flex items-center bg-[#3b82f6] px-4 pt-1.5 pb-0.5 md:pt-3 md:pb-1 rounded-xl md:rounded-2xl shadow-sm mx-1"><span className="text-white">élus</span></span> ?
-          </h1>
-          <div className="h-1.5 w-32 bg-gradient-to-r from-blue-600 to-red-600 mt-6 rounded-full mx-auto" />
+          </h1>{" "}
+          <div className="h-1.5 w-32 bg-gradient-to-r from-blue-600 to-red-600 mt-6 rounded-full mx-auto" />{" "}
           
           {/* Subtitle - Discret mais clair */}
           <p className="text-muted-foreground font-bold uppercase tracking-[0.2em] text-[10px] mt-4">
             Assemblée nationale • Sénat • Parlement européen
           </p>
-        </div>
+        </div>{" "}
 
         {/* 2. INTEGRATED VISUAL SWITCHER (masqué sur les pages dédiées à une chambre) */}
         {!single && <div className="flex justify-center">
@@ -62,9 +62,9 @@ export default function DiscoveryClient({ initialDeputies, single }: { initialDe
                   : "text-muted-foreground hover:text-muted-foreground dark:hover:text-slate-300"
               }`}
             >
-              <div className={`w-2.5 h-2.5 rounded-full transition-colors ${activeMode === "deputies" ? "bg-blue-600 shadow-[0_0_8px_rgba(37,99,235,0.6)] animate-pulse" : "bg-slate-300"}`} />
+              <div className={`w-2.5 h-2.5 rounded-full transition-colors ${activeMode === "deputies" ? "bg-blue-600 shadow-[0_0_8px_rgba(37,99,235,0.6)] animate-pulse" : "bg-slate-300"}`} />{" "}
               DÉPUTÉS
-            </button>
+            </button>{" "}
             <button
               onClick={() => setActiveMode("senators")}
               className={`flex items-center gap-3 px-10 py-4 rounded-[1.5rem] font-black tracking-tight transition-all duration-300 active:scale-95 ${
@@ -73,9 +73,9 @@ export default function DiscoveryClient({ initialDeputies, single }: { initialDe
                   : "text-muted-foreground hover:text-muted-foreground dark:hover:text-slate-300"
               }`}
             >
-              <div className={`w-2.5 h-2.5 rounded-full transition-colors ${activeMode === "senators" ? "bg-amber-600 shadow-[0_0_8px_rgba(217,119,6,0.6)] animate-pulse" : "bg-slate-300"}`} />
+              <div className={`w-2.5 h-2.5 rounded-full transition-colors ${activeMode === "senators" ? "bg-amber-600 shadow-[0_0_8px_rgba(217,119,6,0.6)] animate-pulse" : "bg-slate-300"}`} />{" "}
               SÉNATEURS
-            </button>
+            </button>{" "}
             <button
               onClick={() => setActiveMode("meps")}
               className={`flex items-center gap-3 px-10 py-4 rounded-[1.5rem] font-black tracking-tight transition-all duration-300 active:scale-95 ${
@@ -84,12 +84,12 @@ export default function DiscoveryClient({ initialDeputies, single }: { initialDe
                   : "text-muted-foreground hover:text-muted-foreground dark:hover:text-slate-300"
               }`}
             >
-              <div className={`w-2.5 h-2.5 rounded-full transition-colors ${activeMode === "meps" ? "bg-sky-600 shadow-[0_0_8px_rgba(2,132,199,0.6)] animate-pulse" : "bg-slate-300"}`} />
+              <div className={`w-2.5 h-2.5 rounded-full transition-colors ${activeMode === "meps" ? "bg-sky-600 shadow-[0_0_8px_rgba(2,132,199,0.6)] animate-pulse" : "bg-slate-300"}`} />{" "}
               EUROPÉENS
             </button>
           </div>
         </div>}
-      </div>}
+      </div>}{" "}
 
       {/* Content Rendering */}
       <div className="transition-all duration-500">

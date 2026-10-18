@@ -25,11 +25,11 @@ export default function VocabularyCard({ term }: { term: VocabularyTerm }) {
   return (
     <div className="bg-card border border-border shadow-sm rounded-2xl p-6 flex flex-col h-full hover:shadow-md transition-shadow">
       <div className="flex justify-between items-start mb-4">
-        <h2 className="text-2xl font-heading font-bold text-foreground">{term.term}</h2>
+        <h2 className="text-2xl font-heading font-bold text-foreground">{term.term}</h2>{" "}
         <span className={`px-3 py-1 text-xs font-semibold rounded-full ${badgeClass}`}>
           {term.category}
         </span>
-      </div>
+      </div>{" "}
 
       <div className="flex mb-4 text-accent">
         {[1, 2, 3].map((star) => (
@@ -40,11 +40,11 @@ export default function VocabularyCard({ term }: { term: VocabularyTerm }) {
             className={star <= term.difficulty ? "text-accent" : "text-gray-300"}
           />
         ))}
-      </div>
+      </div>{" "}
 
       <p className="text-foreground/80 mb-6 flex-grow leading-relaxed">
         {term.definition}
-      </p>
+      </p>{" "}
 
       {term.example && (
         <div className="bg-muted/50 p-4 rounded-xl mt-auto">

@@ -77,53 +77,53 @@ export default function AuthCallbackPage() {
       <div className="w-full max-w-md rounded-[32px] border border-border bg-card p-8 text-center shadow-2xl">
         {etat === "attente" && (
           <>
-            <Loader2 className="mx-auto mb-4 h-10 w-10 animate-spin text-amber-500" />
+            <Loader2 className="mx-auto mb-4 h-10 w-10 animate-spin text-amber-500" />{" "}
             <p className="text-muted-foreground">Vérification du lien…</p>
           </>
         )}
         {(etat === "connecte" || etat === "confirme") && (
           <>
-            <CheckCircle2 className="mx-auto mb-4 h-12 w-12 text-emerald-500" />
-            <h1 className="mb-2 text-2xl font-extrabold text-foreground">Adresse confirmée !</h1>
+            <CheckCircle2 className="mx-auto mb-4 h-12 w-12 text-emerald-500" />{" "}
+            <h1 className="mb-2 text-2xl font-extrabold text-foreground">Adresse confirmée !</h1>{" "}
             <p className="text-muted-foreground">
               {etat === "connecte"
                 ? "Votre compte est actif. Ouverture de votre espace…"
                 : "Votre compte est actif. Connectez-vous pour accéder à votre espace."}
-            </p>
+            </p>{" "}
             {etat === "confirme" && <Link href="/login" className={bouton}>Se connecter</Link>}
           </>
-        )}
+        )}{" "}
         {etat === "nouveau_mdp" && (
           <form onSubmit={enregistrer} className="text-left">
-            <Lock className="mx-auto mb-4 h-10 w-10 text-amber-500" />
-            <h1 className="mb-2 text-center text-2xl font-extrabold text-foreground">Nouveau mot de passe</h1>
-            <p className="mb-5 text-center text-muted-foreground">Choisissez-en un, vous serez connecté aussitôt.</p>
+            <Lock className="mx-auto mb-4 h-10 w-10 text-amber-500" />{" "}
+            <h1 className="mb-2 text-center text-2xl font-extrabold text-foreground">Nouveau mot de passe</h1>{" "}
+            <p className="mb-5 text-center text-muted-foreground">Choisissez-en un, vous serez connecté aussitôt.</p>{" "}
             <input
               type="password" required minLength={6} autoFocus
               value={mdp} onChange={e => setMdp(e.target.value)}
               placeholder="6 caractères au minimum"
               className="w-full rounded-2xl border border-border bg-muted px-4 py-4 font-medium text-foreground focus:outline-none focus:ring-2 focus:ring-rose-500/40"
-            />
-            {erreurMdp && <p className="mt-2 text-sm font-medium text-rose-500">{erreurMdp}</p>}
+            />{" "}
+            {erreurMdp && <p className="mt-2 text-sm font-medium text-rose-500">{erreurMdp}</p>}{" "}
             <button type="submit" disabled={envoi} className={`${bouton} w-full disabled:opacity-50`}>
               {envoi ? "Enregistrement…" : "Enregistrer"}
             </button>
           </form>
-        )}
+        )}{" "}
         {etat === "mdp_ok" && (
           <>
-            <CheckCircle2 className="mx-auto mb-4 h-12 w-12 text-emerald-500" />
-            <h1 className="mb-2 text-2xl font-extrabold text-foreground">Mot de passe changé</h1>
+            <CheckCircle2 className="mx-auto mb-4 h-12 w-12 text-emerald-500" />{" "}
+            <h1 className="mb-2 text-2xl font-extrabold text-foreground">Mot de passe changé</h1>{" "}
             <p className="text-muted-foreground">Ouverture de votre espace…</p>
           </>
         )}
         {etat === "erreur" && (
           <>
-            <AlertCircle className="mx-auto mb-4 h-12 w-12 text-rose-500" />
-            <h1 className="mb-2 text-2xl font-extrabold text-foreground">Lien non valide</h1>
+            <AlertCircle className="mx-auto mb-4 h-12 w-12 text-rose-500" />{" "}
+            <h1 className="mb-2 text-2xl font-extrabold text-foreground">Lien non valide</h1>{" "}
             <p className="text-muted-foreground">
               {url.erreur || "Ce lien n'a pas pu être utilisé. Retournez à la connexion pour en demander un nouveau."}
-            </p>
+            </p>{" "}
             <Link href="/login" className={bouton}>Aller à la connexion</Link>
           </>
         )}

@@ -46,7 +46,7 @@ export default function MentionIA({
 
   return (
     <p className={`mt-2 flex items-start gap-1.5 text-[11px] leading-snug ${sombre ? "text-white/50" : "text-muted-foreground"} ${className}`}>
-      <Sparkles size={12} className="mt-px shrink-0" aria-hidden /> <span>{contenu}</span>
+      <Sparkles size={12} className="mt-px shrink-0" aria-hidden /> {" "}<span>{contenu}</span>
     </p>
   );
 }

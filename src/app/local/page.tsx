@@ -141,16 +141,16 @@ const DepartmentGridCard: React.FC<{
       {/* Top Banner: Colored background and two columns */}
       <div className={cn("relative h-36 shrink-0 w-full flex items-center justify-between overflow-hidden border-b border-border px-6", theme.lightBg)}>
         {/* Subtle background graphic */}
-        <div className="absolute inset-0 bg-[radial-gradient(circle_at_30%_20%,rgba(255,255,255,0.4),transparent_70%)]" />
+        <div className="absolute inset-0 bg-[radial-gradient(circle_at_30%_20%,rgba(255,255,255,0.4),transparent_70%)]" />{" "}
         
         {/* Left column: Text */}
         <div className="relative z-10 max-w-[65%] space-y-1">
           <span className={cn("text-[9px] font-black uppercase tracking-widest px-2.5 py-0.5 rounded-full bg-card border inline-block shadow-sm", theme.text)}>
             N° {item.id}
-          </span>
-          <p className="text-slate-400 font-bold text-[8px] uppercase tracking-widest mt-1">Département</p>
+          </span>{" "}
+          <p className="text-slate-400 font-bold text-[8px] uppercase tracking-widest mt-1">Département</p>{" "}
           <h4 className="text-foreground font-extrabold text-lg leading-tight line-clamp-2">{item.name}</h4>
-        </div>
+        </div>{" "}
 
         {/* Right column: Geographic Shape */}
         <div className="relative w-20 h-20 shrink-0 flex items-center justify-center rounded-2xl bg-white/90 border border-border/80 shadow-md overflow-hidden p-2 transition-transform hover:scale-105">
@@ -172,7 +172,7 @@ const DepartmentGridCard: React.FC<{
             <MapPin size={28} className={theme.text} />
           )}
         </div>
-      </div>
+      </div>{" "}
 
       {/* Body Content */}
       <div className="p-6 flex-1 flex flex-col justify-between space-y-5 bg-card">
@@ -181,20 +181,20 @@ const DepartmentGridCard: React.FC<{
           <div className="flex items-center gap-3">
             <div className={cn("w-9 h-9 rounded-xl flex items-center justify-center shrink-0 bg-muted border border-border text-muted-foreground")}>
               <Users size={14} />
-            </div>
+            </div>{" "}
             <div className="min-w-0">
-              <p className="text-[8px] font-black uppercase tracking-widest text-slate-400">Président</p>
+              <p className="text-[8px] font-black uppercase tracking-widest text-slate-400">Président</p>{" "}
               <p className="font-bold text-foreground text-xs truncate">{item.president}</p>
             </div>
-          </div>
+          </div>{" "}
           
           {/* Party row */}
           <div className="flex items-center gap-3">
             <div className={cn("w-9 h-9 rounded-xl flex items-center justify-center shrink-0 bg-muted border border-border text-muted-foreground")}>
               <Building2 size={14} />
-            </div>
+            </div>{" "}
             <div className="min-w-0">
-              <p className="text-[8px] font-black uppercase tracking-widest text-slate-400">Parti Majoritaire</p>
+              <p className="text-[8px] font-black uppercase tracking-widest text-slate-400">Parti Majoritaire</p>{" "}
               <span className={cn("inline-block font-black text-[9px] px-2 py-0.5 rounded-full mt-0.5 border border-border shadow-sm bg-muted text-slate-700 dark:text-slate-200", 
                 item.party !== "N/A" && "font-black"
               )}>
@@ -202,13 +202,13 @@ const DepartmentGridCard: React.FC<{
               </span>
             </div>
           </div>
-        </div>
+        </div>{" "}
 
         {/* Action Button */}
         <div className="pt-3 border-t border-slate-50 flex items-center justify-between group/btn">
           <span className={cn("text-[9px] font-black uppercase tracking-widest transition-colors duration-200", cardTheme.text)}>
             Analyser
-          </span>
+          </span>{" "}
           <div className={cn("w-8 h-8 rounded-full bg-muted flex items-center justify-center text-slate-400 transition-all duration-300", 
             "group-hover/btn:bg-rose-600 group-hover/btn:text-white group-hover/btn:scale-110 shadow-sm"
           )}>
@@ -364,7 +364,7 @@ function LocalPoliticsContent() {
         // Fetch commune data and open panel
         const fetchCommune = async () => {
            try {
-             const res = await fetch(`https://geo.api.gouv.fr/communes/${code}?fields=nom,code,codesPostaux,population,departement,region`);
+             const res = await fetch(`https://geo.api.gouv.fr/communes/${code}?fields=nom,code,codesPostaux,population,departement,region`, { signal: AbortSignal.timeout(8000) });
              const data = await res.json();
              if (data && data.code) {
                setSelectedCommune(data);
@@ -453,9 +453,9 @@ function LocalPoliticsContent() {
       {/* 1. HERO SECTION (POSTER IMPACT STYLE) */}
       <section className="relative pt-32 pb-24 px-4 overflow-hidden bg-card">
         <div className="absolute top-0 left-0 w-full h-full opacity-[0.03] pointer-events-none select-none">
-          <span className="absolute top-10 left-10 text-[15rem] font-staatliches leading-none rotate-12">TERRITOIRES</span>
+          <span className="absolute top-10 left-10 text-[15rem] font-staatliches leading-none rotate-12">TERRITOIRES</span>{" "}
           <span className="absolute bottom-10 right-10 text-[15rem] font-staatliches leading-none -rotate-12">PROXIMITÉ</span>
-        </div>
+        </div>{" "}
 
         <div className="container mx-auto max-w-6xl relative z-10 text-center">
           <motion.div
@@ -465,24 +465,24 @@ function LocalPoliticsContent() {
           >
             <div className="flex items-center gap-3 mb-2">
               <span className="relative flex h-3 w-3">
-                <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-rose-400 opacity-75"></span>
+                <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-rose-400 opacity-75"></span>{" "}
                 <span className="relative inline-flex rounded-full h-3 w-3 bg-rose-600"></span>
-              </span>
+              </span>{" "}
               <span className="text-xs font-black uppercase tracking-widest text-rose-700 dark:text-rose-400">Action Locale</span>
-            </div>
+            </div>{" "}
 
             <h1 className="text-6xl md:text-8xl font-staatliches uppercase tracking-tight leading-tight mb-8 py-4 text-foreground">
               La Politique <span className="inline-block bg-gradient-to-r from-rose-600 via-fuchsia-600 to-rose-600 bg-clip-text text-transparent italic pl-2 pr-12">Locale</span>
-            </h1>
+            </h1>{" "}
             
             <p className="text-xl md:text-2xl text-muted-foreground font-medium italic leading-relaxed max-w-3xl mx-auto text-pretty">
               Découvrez les acteurs de vos territoires, des maires aux conseillers municipaux, et comprenez comment vos impôts locaux façonnent votre ville.
-            </p>
+            </p>{" "}
 
             <div className="h-1.5 w-32 bg-gradient-to-r from-rose-600 to-fuchsia-600 mt-8 rounded-full" />
           </motion.div>
         </div>
-      </section>
+      </section>{" "}
 
       <div className="container mx-auto max-w-7xl px-4 mt-12">
         {/* 1.5 TABS NAVIGATION (GROS PANNEAU) */}
@@ -507,19 +507,19 @@ function LocalPoliticsContent() {
                 >
                   <div className={`p-3 rounded-2xl transition-colors ${isActive ? tab.iconOn : "bg-slate-100 dark:bg-slate-500/10 group-hover:bg-slate-200"}`}>
                     <Icon size={24} strokeWidth={isActive ? 2.5 : 2} />
-                  </div>
+                  </div>{" "}
                   <div className="text-left">
-                    <p className="text-[10px] font-black uppercase tracking-widest opacity-80">Échelon</p>
+                    <p className="text-[10px] font-black uppercase tracking-widest opacity-80">Échelon</p>{" "}
                     <p className="text-lg font-staatliches uppercase tracking-wide">{tab.label}</p>
-                  </div>
+                  </div>{" "}
                   {isActive && (
                     <motion.div layoutId="activeTab" className={`w-1.5 h-1.5 rounded-full ml-2 ${tab.dot}`} />
-                  )}
+                  )}{" "}
                 </button>
               );
             })}
           </div>
-        </div>
+        </div>{" "}
 
         <div className="grid grid-cols-1 lg:grid-cols-12 gap-12">
           {/* LEFT COL: Search & List */}
@@ -528,7 +528,7 @@ function LocalPoliticsContent() {
             <div className="relative group">
               <div className="absolute inset-y-0 left-8 flex items-center pointer-events-none text-slate-400 group-focus-within:text-rose-600 transition-colors">
                 <Search size={22} />
-              </div>
+              </div>{" "}
               <input
                 type="text"
                 placeholder={
@@ -569,18 +569,18 @@ function LocalPoliticsContent() {
                         className="w-full px-8 py-6 text-left hover:bg-muted border-b border-slate-50 flex items-center justify-between group"
                       >
                         <div>
-                          <p className="text-lg font-bold text-foreground group-hover:text-rose-600 transition-colors">{c.nom}</p>
+                          <p className="text-lg font-bold text-foreground group-hover:text-rose-600 transition-colors">{c.nom}</p>{" "}
                           <p className="text-sm text-slate-400">{c.codesPostaux[0]} • {c.departement.nom}</p>
-                        </div>
+                        </div>{" "}
                         <div className="w-10 h-10 rounded-full bg-muted flex items-center justify-center text-slate-400 group-hover:bg-rose-600 group-hover:text-white transition-all">
                           <ChevronRight size={20} />
-                        </div>
+                        </div>{" "}
                       </button>
                     ))}
                   </motion.div>
                 )}
               </AnimatePresence>
-            </div>
+            </div>{" "}
 
             {/* Content Display */}
             <div className="space-y-8">
@@ -589,12 +589,12 @@ function LocalPoliticsContent() {
                   {!selectedCommune ? (
                     <div className="space-y-8">
                       <div className="flex items-center justify-between">
-                        <h3 className="text-2xl font-staatliches uppercase tracking-wide">Villes à la Une</h3>
+                        <h3 className="text-2xl font-staatliches uppercase tracking-wide">Villes à la Une</h3>{" "}
                         <div className="flex items-center gap-2 text-rose-700 dark:text-rose-400 font-black text-[10px] uppercase tracking-widest">
-                          <span className="w-2 h-2 rounded-full bg-rose-600" />
+                          <span className="w-2 h-2 rounded-full bg-rose-600" />{" "}
                           Données officielles
                         </div>
-                      </div>
+                      </div>{" "}
                       {/* Un rail horizontal : la grille faisait descendre toute la page avant
                           d'atteindre la suite. Glisser au doigt, flèches à la souris. */}
                       <DragScroller ariaLabel="Grandes villes" className="!gap-4 md:!gap-5">
@@ -624,26 +624,26 @@ function LocalPoliticsContent() {
                               className="group relative w-[78vw] max-w-[21rem] shrink-0 bg-card rounded-[2.5rem] border border-border overflow-hidden hover:shadow-2xl transition-shadow duration-500 text-left sm:w-[19rem]"
                             >
                               <div className="h-40 overflow-hidden relative">
-                                <img src={city.image.startsWith('/') ? `${process.env.NEXT_PUBLIC_BASE_PATH || ''}${city.image}` : city.image} alt={city.name} className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-700" />
-                                <div className="absolute inset-0 bg-gradient-to-t from-slate-900/90 via-slate-900/20 to-transparent" />
+                                <img src={city.image.startsWith('/') ? `${process.env.NEXT_PUBLIC_BASE_PATH || ''}${city.image}` : city.image} alt={city.name} className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-700" />{" "}
+                                <div className="absolute inset-0 bg-gradient-to-t from-slate-900/90 via-slate-900/20 to-transparent" />{" "}
                                 <div className="absolute bottom-4 left-6 z-10 flex flex-col items-start gap-2">
                                   <span className={`${theme.badge} px-5 pt-2 pb-1 rounded-2xl shadow-lg font-staatliches uppercase tracking-wider text-2xl inline-block transform -rotate-2 hover:rotate-0 transition-transform`}>
                                     {city.name}
-                                  </span>
+                                  </span>{" "}
                                   <p className="text-white font-black text-[9px] uppercase tracking-widest bg-slate-900/60 backdrop-blur-md px-3 py-1 rounded-full border border-white/10">
                                     {city.mayor} <span className="opacity-60">•</span> <span className="text-white/90">{city.party}</span>
                                   </p>
                                 </div>
-                              </div>
+                              </div>{" "}
                               <div className="p-6">
                                 <div className="grid grid-cols-1 gap-6 py-6 border-y border-slate-50">
                                   <div className="space-y-1">
-                                    <span className="text-[9px] font-black uppercase text-muted-foreground tracking-widest flex items-center gap-1"><Users size={10} /> Population</span>
+                                    <span className="text-[9px] font-black uppercase text-muted-foreground tracking-widest flex items-center gap-1"><Users size={10} /> Population</span>{" "}
                                     <p className="text-sm font-black text-foreground">{city.population}</p>
                                   </div>
-                                </div>
+                                </div>{" "}
                                 <div className={`w-full flex items-center justify-between group/btn text-foreground ${theme.hoverText} transition-colors pt-2`}>
-                                  <span className="text-[10px] font-black uppercase tracking-widest">Voir les détails</span>
+                                  <span className="text-[10px] font-black uppercase tracking-widest">Voir les détails</span>{" "}
                                   <div className={`w-10 h-10 rounded-full bg-muted flex items-center justify-center ${theme.hoverBg} group-hover/btn:text-white transition-all`}><ChevronRight size={18} /></div>
                                 </div>
                               </div>
@@ -658,13 +658,13 @@ function LocalPoliticsContent() {
                         onClick={() => setSelectedCommune(null)}
                         className="flex items-center gap-2 text-muted-foreground hover:text-rose-600 transition-colors font-black text-[10px] uppercase tracking-widest"
                       >
-                        <ChevronRight className="rotate-180" size={16} />
+                        <ChevronRight className="rotate-180" size={16} />{" "}
                         Retour à la liste
                       </button>
                     </div>
                   )}
                 </>
-              )}
+              )}{" "}
 
               {/* REGION TAB: Carousel */}
               {activeTab === 'region' && (
@@ -675,7 +675,7 @@ function LocalPoliticsContent() {
                     isPremium={isPremium}
                   />
                 </div>
-              )}
+              )}{" "}
 
               {/* DEPARTMENT TAB: Grid and Pagination */}
               {activeTab === 'departement' && (
@@ -695,7 +695,7 @@ function LocalPoliticsContent() {
                             isPremium={isPremium}
                           />
                         ))}
-                      </div>
+                      </div>{" "}
                       
                       {filteredItems.length > visibleCount && (
                         <div className="flex justify-center pt-4">
@@ -714,18 +714,18 @@ function LocalPoliticsContent() {
                 </div>
               )}
             </div>
-          </div>
+          </div>{" "}
 
           {/* RIGHT COL: Sidebars */}
           <div className="lg:col-span-4 space-y-8">
             {/* Prochaines échéances Card */}
             <div className="bg-slate-900 rounded-[2.5rem] p-8 text-white relative overflow-hidden">
-               <div className="absolute top-0 right-0 w-32 h-32 bg-rose-600/20 blur-3xl rounded-full" />
+               <div className="absolute top-0 right-0 w-32 h-32 bg-rose-600/20 blur-3xl rounded-full" />{" "}
                <div className="relative z-10 space-y-8">
                  <div className="flex items-center gap-3">
-                   <div className="w-10 h-10 rounded-2xl bg-white/10 flex items-center justify-center"><Vote size={20} className="text-rose-700 dark:text-rose-400" /></div>
+                   <div className="w-10 h-10 rounded-2xl bg-white/10 flex items-center justify-center"><Vote size={20} className="text-rose-700 dark:text-rose-400" /></div>{" "}
                    <h3 className="text-2xl font-staatliches uppercase tracking-wide">Prochaines échéances</h3>
-                 </div>
+                 </div>{" "}
                  
                  <div className="space-y-4">
                     {[
@@ -755,32 +755,32 @@ function LocalPoliticsContent() {
                         <div key={i} className={`bg-white/5 p-5 rounded-2xl border border-white/10 ${passe ? "opacity-70" : ""}`}>
                           <p className={`font-black text-[9px] uppercase tracking-widest mb-1 flex items-center gap-2 ${passe ? "text-slate-300" : "text-rose-400"}`}>
                             {passe && <span className="w-1 h-1 rounded-full bg-slate-400" />} {e.periode}
-                          </p>
-                          <p className="font-bold text-lg mb-1">{e.titre}</p>
+                          </p>{" "}
+                          <p className="font-bold text-lg mb-1">{e.titre}</p>{" "}
                           {/* Badge de statut calculé à partir de la date du jour : plus de « à venir » périmé. */}
                           <span className={`inline-block mb-2 rounded-md px-2 py-0.5 text-[9px] font-black uppercase tracking-widest ${passe ? "bg-emerald-500/15 text-emerald-300" : "bg-rose-500/15 text-rose-300"}`}>
                             {passe ? "✓ Terminé" : "À venir"}
-                          </span>
-                          <p className="text-sm text-white/80 leading-relaxed">{e.desc}</p>
+                          </span>{" "}
+                          <p className="text-sm text-white/80 leading-relaxed">{e.desc}</p>{" "}
                         </div>
                       );
                     })}
                  </div>
                </div>
-            </div>
+            </div>{" "}
 
             {/* Mayors by Party Panel */}
             {activeTab === 'commune' && (
               <div className="bg-card dark:bg-slate-900 rounded-[2.5rem] border border-border dark:border-slate-800 p-8 space-y-8">
                 <div className="flex items-center justify-between">
                   <div className="space-y-1">
-                    <h3 className="text-2xl font-staatliches uppercase tracking-wide text-foreground dark:text-white">Maires par Étiquette</h3>
+                    <h3 className="text-2xl font-staatliches uppercase tracking-wide text-foreground dark:text-white">Maires par Étiquette</h3>{" "}
                     <p className="text-[10px] font-black uppercase tracking-widest text-muted-foreground">France entière • Mandature 2026 vs 2020</p>
-                  </div>
+                  </div>{" "}
                   <div className="w-12 h-12 rounded-2xl bg-muted dark:bg-slate-800 flex items-center justify-center text-foreground dark:text-slate-100 border border-border dark:border-slate-800 shadow-sm">
                     <Building size={22} />
                   </div>
-                </div>
+                </div>{" "}
                 
                 <div className="space-y-5 max-h-[500px] overflow-y-auto pr-2 custom-scrollbar">
                   {[
@@ -801,11 +801,11 @@ function LocalPoliticsContent() {
                     <div key={idx} className="space-y-2 group">
                       <div className="flex items-center justify-between text-sm font-bold text-foreground dark:text-slate-200">
                         <span className="flex items-center gap-2">
-                          <span className={`w-2 h-2 rounded-full ${stat.color} shadow-sm`} />
+                          <span className={`w-2 h-2 rounded-full ${stat.color} shadow-sm`} />{" "}
                           {stat.party}
-                        </span>
+                        </span>{" "}
                         <div className="flex items-center gap-2">
-                          <span className="font-extrabold text-slate-950 dark:text-white">{stat.count.toLocaleString('fr-FR')}</span>
+                          <span className="font-extrabold text-slate-950 dark:text-white">{stat.count.toLocaleString('fr-FR')}</span>{" "}
                           <span className={`inline-flex items-center text-[10px] px-1.5 py-0.5 rounded font-black tracking-tight ${
                             stat.diff >= 0 
                               ? "bg-emerald-50 dark:bg-emerald-950/30 text-emerald-700 dark:text-emerald-400 border border-emerald-100 dark:border-emerald-900/30" 
@@ -814,7 +814,7 @@ function LocalPoliticsContent() {
                             {stat.diff >= 0 ? `+${stat.diff}` : stat.diff}
                           </span>
                         </div>
-                      </div>
+                      </div>{" "}
                       <div className="h-2.5 w-full bg-muted dark:bg-slate-800/80 rounded-full overflow-hidden">
                         <motion.div 
                           initial={{ width: 0 }}
@@ -822,22 +822,22 @@ function LocalPoliticsContent() {
                           transition={{ duration: 1, delay: 0.2 + (idx * 0.05) }}
                           className={`h-full ${stat.color} rounded-full`}
                         />
-                      </div>
+                      </div>{" "}
                     </div>
                   ))}
-                </div>
+                </div>{" "}
 
                 <div className="pt-4 border-t border-slate-50 dark:border-slate-800/80 space-y-3">
                   <p className="text-[9px] font-black uppercase tracking-widest text-muted-foreground flex items-center justify-center gap-4">
-                    <span className="flex items-center gap-1.5"><span className="w-1.5 h-1.5 rounded-full bg-emerald-500" /> Progression</span>
+                    <span className="flex items-center gap-1.5"><span className="w-1.5 h-1.5 rounded-full bg-emerald-500" /> Progression</span>{" "}
                     <span className="flex items-center gap-1.5"><span className="w-1.5 h-1.5 rounded-full bg-rose-500" /> Recul</span>
-                  </p>
+                  </p>{" "}
                   <p className="text-xs text-muted-foreground dark:text-slate-400 italic text-center">
                     La majorité des communes rurales de moins de 3500 habitants sont gérées par des maires sans étiquette. Les évolutions comparent les résultats post-2026 à la mandature de 2020.
                   </p>
                 </div>
               </div>
-            )}
+            )}{" "}
             
             {/* Premium Teaser / Comparator Access */}
             {(() => {
@@ -846,16 +846,16 @@ function LocalPoliticsContent() {
                 <div className="bg-gradient-to-br from-amber-400 to-orange-500 rounded-[2.5rem] p-8 text-foreground space-y-6 shadow-xl shadow-orange-200">
                   {pLoading ? (
                     <div className="flex flex-col items-center justify-center py-12 gap-4">
-                      <Loader2 className="animate-spin text-foreground" size={32} />
+                      <Loader2 className="animate-spin text-foreground" size={32} />{" "}
                       <p className="text-xs font-bold text-foreground/60 uppercase tracking-wider">Vérification de l'accès...</p>
                     </div>
                   ) : (
                     <>
                       <div className="flex items-center justify-between">
                         <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-white/25 border border-white/30 text-[9px] font-black uppercase tracking-widest text-foreground shadow-sm">
-                          <Coins size={12} className="text-foreground fill-slate-900/10" />
+                          <Coins size={12} className="text-foreground fill-slate-900/10" />{" "}
                           {isPremium ? "Outil Premium Actif" : "Option Premium"}
-                        </div>
+                        </div>{" "}
                         <div className="w-8 h-8 rounded-full bg-white/20 flex items-center justify-center border border-white/10">
                           {isPremium ? (
                             <ShieldCheck size={14} className="text-foreground" />
@@ -863,81 +863,81 @@ function LocalPoliticsContent() {
                             <Lock size={14} className="text-foreground" />
                           )}
                         </div>
-                      </div>
+                      </div>{" "}
 
                       <div className="space-y-2">
-                        <h3 className="text-3xl font-staatliches uppercase tracking-wide leading-none">{config.title}</h3>
+                        <h3 className="text-3xl font-staatliches uppercase tracking-wide leading-none">{config.title}</h3>{" "}
                         <p className="text-xs font-semibold opacity-95 leading-relaxed">
                           {isPremium 
                             ? "Utilisez notre outil d'analyse comparative en temps réel pour comparer les budgets et indicateurs de performance."
                             : config.description}
                         </p>
-                      </div>
+                      </div>{" "}
 
                       {/* Comparator Preview Mockup */}
                       <div className="bg-white/15 backdrop-blur-md border border-white/20 rounded-3xl p-5 relative overflow-hidden shadow-inner my-2">
                         {/* Entity headers */}
                         <div className="grid grid-cols-7 items-center gap-1 text-center mb-4">
                           <div className="col-span-3 bg-white/30 rounded-2xl p-2.5 flex flex-col items-center border border-white/10 shadow-sm min-w-0">
-                            <span className="text-[10px] font-black uppercase tracking-wider text-foreground truncate max-w-full">{config.entityA}</span>
+                            <span className="text-[10px] font-black uppercase tracking-wider text-foreground truncate max-w-full">{config.entityA}</span>{" "}
                             <span className="text-[9px] font-bold text-slate-700 dark:text-slate-200 mt-0.5 truncate max-w-full">{config.subA}</span>
-                          </div>
+                          </div>{" "}
                           <div className="col-span-1 flex justify-center">
                             <span className="w-7 h-7 rounded-full bg-slate-900 text-white font-black text-[10px] flex items-center justify-center shadow-md border border-white/15">VS</span>
-                          </div>
+                          </div>{" "}
                           <div className="col-span-3 bg-white/30 rounded-2xl p-2.5 flex flex-col items-center border border-white/10 shadow-sm min-w-0">
-                            <span className="text-[10px] font-black uppercase tracking-wider text-foreground truncate max-w-full">{config.entityB}</span>
+                            <span className="text-[10px] font-black uppercase tracking-wider text-foreground truncate max-w-full">{config.entityB}</span>{" "}
                             <span className="text-[9px] font-bold text-slate-700 dark:text-slate-200 mt-0.5 truncate max-w-full">{config.subB}</span>
                           </div>
-                        </div>
+                        </div>{" "}
 
                         {/* Comparative Metrics (Locked & Blurred only if not premium) */}
                         <div className="space-y-3.5 relative">
                           {/* Metric 1 */}
                           <div className="grid grid-cols-7 items-center text-xs font-bold text-foreground border-b border-white/10 pb-2">
-                            <div className={cn("col-span-2 text-left font-black", config.metric1ColorA)}>{config.metric1ValA}</div>
+                            <div className={cn("col-span-2 text-left font-black", config.metric1ColorA)}>{config.metric1ValA}</div>{" "}
                             <div className="col-span-3 text-center text-[8px] uppercase tracking-widest text-slate-700 dark:text-slate-200 font-extrabold flex items-center justify-center gap-1">
                               <Scale size={10} className="opacity-60" /> {config.metric1Label}
-                            </div>
+                            </div>{" "}
                             <div className={cn("col-span-2 text-right font-black", config.metric1ColorB)}>{config.metric1ValB}</div>
-                          </div>
+                          </div>{" "}
                           
                           {/* Metric 2 */}
                           <div className="grid grid-cols-7 items-center text-xs font-bold text-foreground border-b border-white/10 pb-2">
-                            <div className={cn("col-span-2 text-left font-black", config.metric2ColorA)}>{config.metric2ValA}</div>
+                            <div className={cn("col-span-2 text-left font-black", config.metric2ColorA)}>{config.metric2ValA}</div>{" "}
                             <div className="col-span-3 text-center text-[8px] uppercase tracking-widest text-slate-700 dark:text-slate-200 font-extrabold">
                               {config.metric2Label}
-                            </div>
+                            </div>{" "}
                             <div className={cn("col-span-2 text-right font-black", config.metric2ColorB)}>{config.metric2ValB}</div>
-                          </div>
+                          </div>{" "}
 
                           {/* Metric 3 */}
                           <div className="grid grid-cols-7 items-center text-xs font-bold text-foreground">
-                            <div className={cn("col-span-2 text-left font-black", config.metric3ColorA)}>{config.metric3ValA}</div>
+                            <div className={cn("col-span-2 text-left font-black", config.metric3ColorA)}>{config.metric3ValA}</div>{" "}
                             <div className="col-span-3 text-center text-[8px] uppercase tracking-widest text-slate-700 dark:text-slate-200 font-extrabold">
                               {config.metric3Label}
-                            </div>
+                            </div>{" "}
                             <div className={cn("col-span-2 text-right font-black", config.metric3ColorB)}>{config.metric3ValB}</div>
-                          </div>
+                          </div>{" "}
 
                           {/* Lock Overlay */}
                           {!isPremium && (
                             <div className="absolute -inset-2 bg-white/5 backdrop-blur-[3.5px] rounded-2xl flex items-center justify-center border border-white/10 shadow-sm">
                               <div className="bg-slate-900/90 text-white px-4 py-2 rounded-full flex items-center gap-2 shadow-lg border border-white/10">
-                                <Lock size={12} className="text-amber-400 fill-amber-400" />
+                                <Lock size={12} className="text-amber-400 fill-amber-400" />{" "}
                                 <span className="text-[9px] font-black uppercase tracking-wider">Débloquer le comparateur</span>
                               </div>
                             </div>
                           )}
                         </div>
-                      </div>
+                      </div>{" "}
 
                       {isPremium ? (
                         <Link 
                           href={`/local/comparateur/app?type=${activeTab === 'departement' ? 'department' : activeTab}`}
                           className="w-full py-4 bg-slate-900 hover:bg-slate-800 text-white rounded-2xl font-staatliches uppercase tracking-wider text-sm flex items-center justify-center gap-2 transition-colors shadow-lg active:scale-[0.98] duration-150"
                         >
-                          <span>Lancer le comparateur</span>
+                          <span>Lancer le comparateur</span>{" "}
                           <ArrowRight size={16} />
                         </Link>
                       ) : (
@@ -956,7 +956,7 @@ function LocalPoliticsContent() {
           </div>
         </div>
       </div>
-    </main>
+    </main>{" "}
     
     <CommuneDetailPanel 
       commune={selectedCommune}

@@ -108,16 +108,16 @@ export default function CompteRendu({ m, onFermer }: { m: CommissionMeeting; onF
           <div className="flex items-start justify-between gap-4">
             <div className="min-w-0">
               <p className="flex flex-wrap items-center gap-x-2 gap-y-1 text-[10px] font-black uppercase tracking-widest text-violet-600 dark:text-violet-300">
-                {transcription ? <Video size={12} /> : <FileText size={12} />}
-                {transcription ? "Transcription de la vidéo" : "Compte rendu intégral"}
+                {transcription ? <Video size={12} /> : <FileText size={12} />}{" "}
+                {transcription ? "Transcription de la vidéo" : "Compte rendu intégral"}{" "}
                 <span className="text-muted-foreground">· {fmtMeetingDate(m.meeting_date)} · {shortCommission(m.commission)}</span>
-              </p>
-              <h3 className="mt-1.5 line-clamp-2 text-base font-bold leading-snug text-foreground dark:text-white sm:text-lg">{cleanTitle(m.title || "")}</h3>
+              </p>{" "}
+              <h3 className="mt-1.5 line-clamp-2 text-base font-bold leading-snug text-foreground dark:text-white sm:text-lg">{cleanTitle(m.title || "")}</h3>{" "}
               {t && <p className="mt-1 text-[11px] font-semibold text-muted-foreground">{t.mots.toLocaleString("fr-FR")} mots · environ {minutes} min de lecture</p>}
-            </div>
+            </div>{" "}
             <button type="button" onClick={onFermer} aria-label="Fermer le compte rendu"
               className="shrink-0 rounded-full bg-muted p-2 text-muted-foreground transition hover:text-foreground"><X size={18} /></button>
-          </div>
+          </div>{" "}
 
           {t && (
             <div className="mt-3 flex items-center gap-2">
@@ -126,27 +126,27 @@ export default function CompteRendu({ m, onFermer }: { m: CommissionMeeting; onF
                 <input value={terme} onChange={e => setTerme(e.target.value)} onKeyDown={e => { if (e.key === "Enter") aller(courant + (e.shiftKey ? -1 : 1)); }}
                   placeholder="Chercher un mot, un nom, un chiffre…"
                   className="w-full rounded-full border border-border bg-background py-2.5 pl-10 pr-3 text-sm text-foreground outline-none transition focus:border-violet-400 dark:border-slate-800 dark:bg-slate-900" />
-              </div>
+              </div>{" "}
               {terme.trim().length >= 2 && (
                 <div className="flex shrink-0 items-center gap-1 text-[11px] font-black tabular-nums text-muted-foreground">
-                  <span className="px-1">{trouves.length ? `${courant + 1}/${trouves.length}` : "0"}</span>
-                  <button type="button" onClick={() => aller(courant - 1)} disabled={!trouves.length} aria-label="Résultat précédent" className="rounded-full bg-muted p-1.5 disabled:opacity-40"><ChevronUp size={14} /></button>
+                  <span className="px-1">{trouves.length ? `${courant + 1}/${trouves.length}` : "0"}</span>{" "}
+                  <button type="button" onClick={() => aller(courant - 1)} disabled={!trouves.length} aria-label="Résultat précédent" className="rounded-full bg-muted p-1.5 disabled:opacity-40"><ChevronUp size={14} /></button>{" "}
                   <button type="button" onClick={() => aller(courant + 1)} disabled={!trouves.length} aria-label="Résultat suivant" className="rounded-full bg-muted p-1.5 disabled:opacity-40"><ChevronDown size={14} /></button>
                 </div>
               )}
             </div>
-          )}
+          )}{" "}
           {orateurs.length > 1 && (
             <div className="-mx-1 mt-2.5 flex gap-1.5 overflow-x-auto px-1 pb-0.5 [scrollbar-width:none] [&::-webkit-scrollbar]:hidden">
               {orateurs.map(([nom, n]) => (
                 <button key={nom} type="button" onClick={() => setTerme(nom)}
                   className={`shrink-0 whitespace-nowrap rounded-full px-3 py-1 text-[11px] font-bold transition ${terme === nom ? "bg-violet-600 text-white" : "bg-muted text-muted-foreground hover:text-foreground"}`}>
-                  {nom.replace(/^(M\.|Mme)\s(l[ea]\s)?/, "")} <span className="opacity-60">{n}</span>
+                  {nom.replace(/^(M\.|Mme)\s(l[ea]\s)?/, "")} <span className="opacity-60">{n}</span>{" "}
                 </button>
               ))}
             </div>
           )}
-        </div>
+        </div>{" "}
 
         {/* Le texte */}
         <div ref={corps} className="min-h-0 flex-1 overflow-y-auto px-5 py-5 sm:px-7">
@@ -154,7 +154,7 @@ export default function CompteRendu({ m, onFermer }: { m: CommissionMeeting; onF
             <div className="flex justify-center py-20"><Loader2 className="animate-spin text-violet-500" /></div>
           ) : t === null ? (
             <div className="py-16 text-center">
-              <p className="text-sm font-bold text-foreground dark:text-white">Le texte de ce compte rendu n&apos;est pas encore repris sur le site.</p>
+              <p className="text-sm font-bold text-foreground dark:text-white">Le texte de ce compte rendu n&apos;est pas encore repris sur le site.</p>{" "}
               <p className="mx-auto mt-1 max-w-sm text-[13px] text-muted-foreground">Il le sera au prochain passage de la collecte. En attendant, il reste lisible à sa source officielle.</p>
             </div>
           ) : (
@@ -163,23 +163,23 @@ export default function CompteRendu({ m, onFermer }: { m: CommissionMeeting; onF
                 <p className="rounded-2xl bg-amber-50 px-4 py-3 text-[13px] leading-snug text-amber-900 dark:bg-amber-500/10 dark:text-amber-200">
                   L&apos;Assemblée n&apos;a pas rédigé de compte rendu de cette réunion : ce texte est la transcription automatique de son enregistrement vidéo. Les noms propres et les chiffres peuvent y être mal orthographiés.
                 </p>
-              )}
+              )}{" "}
               {blocs.map((b, i) => {
                 const vise = trouves.length > 0 && trouves[courant] === i;
                 return (
                   <div key={i} data-bloc={i} className={`rounded-xl transition-colors ${vise ? "bg-violet-50 px-3 py-2 dark:bg-violet-500/10" : ""}`}>
-                    {b.orateur && <p className="text-[12px] font-black text-violet-700 dark:text-violet-300"><Surligne texte={b.orateur} terme={terme.trim()} /></p>}
-                    <p className={`text-[15px] leading-relaxed text-foreground/90 dark:text-slate-200 ${b.orateur ? "mt-0.5" : ""}`}><Surligne texte={b.texte} terme={terme.trim()} /></p>
+                    {b.orateur && <p className="text-[12px] font-black text-violet-700 dark:text-violet-300"><Surligne texte={b.orateur} terme={terme.trim()} /></p>}{" "}
+                    <p className={`text-[15px] leading-relaxed text-foreground/90 dark:text-slate-200 ${b.orateur ? "mt-0.5" : ""}`}><Surligne texte={b.texte} terme={terme.trim()} /></p>{" "}
                   </div>
                 );
               })}
             </div>
           )}
-        </div>
+        </div>{" "}
 
         {/* Pied : la source fait foi */}
         <div className="flex shrink-0 flex-wrap items-center justify-between gap-x-4 gap-y-2 border-t border-border px-5 py-3 text-[11px] text-muted-foreground dark:border-slate-800 sm:px-7">
-          <span>{transcription ? "Seul l'enregistrement officiel fait foi." : "Texte repris du compte rendu officiel, qui seul fait foi."}</span>
+          <span>{transcription ? "Seul l'enregistrement officiel fait foi." : "Texte repris du compte rendu officiel, qui seul fait foi."}</span>{" "}
           {m.cr_url && (
             <a href={m.cr_url} target="_blank" rel="noopener noreferrer" className="inline-flex items-center gap-1.5 font-black uppercase tracking-widest hover:text-foreground">
               <ExternalLink size={12} /> {transcription ? "Vidéo officielle" : "Source officielle"}

@@ -38,8 +38,8 @@ export default function ContactPage() {
     <div className="min-h-screen bg-card">
       {/* ── HEADER IMMERSIF ── */}
       <section className="relative bg-slate-950 py-24 md:py-32 overflow-hidden">
-        <div className="absolute inset-0 bg-[url('https://www.elysee.fr/theme/front/dist/assets/images/elysee-social.jpg')] bg-cover bg-center opacity-10 saturate-0 scale-110" />
-        <div className="absolute inset-0 bg-gradient-to-t from-background via-transparent to-black/60" />
+        <div className="absolute inset-0 bg-[url('https://www.elysee.fr/theme/front/dist/assets/images/elysee-social.jpg')] bg-cover bg-center opacity-10 saturate-0 scale-110" />{" "}
+        <div className="absolute inset-0 bg-gradient-to-t from-background via-transparent to-black/60" />{" "}
         
         <div className="container mx-auto px-6 relative z-10 text-center">
           <motion.div
@@ -47,18 +47,18 @@ export default function ContactPage() {
             animate={{ opacity: 1, y: 0 }}
             className="inline-flex items-center gap-3 px-4 py-2 rounded-full bg-white/5 border border-white/10 mb-8 backdrop-blur-md"
           >
-            <MessageSquare className="w-4 h-4 text-red-500" />
+            <MessageSquare className="w-4 h-4 text-red-500" />{" "}
             <span className="text-[10px] font-black text-white/60 uppercase tracking-[0.3em]">Dialogue & Support</span>
-          </motion.div>
+          </motion.div>{" "}
           
           <h1 className="text-6xl md:text-9xl font-staatliches text-white leading-none uppercase italic mb-6">
             Parlons <span className="text-red-700 dark:text-red-400 font-sans tracking-tighter not-italic">Politique</span>
-          </h1>
+          </h1>{" "}
           <p className="text-white/60 text-lg md:text-2xl font-medium max-w-2xl mx-auto leading-relaxed">
             Une question sur votre abonnement ? Une suggestion de dossier ? Notre équipe vous répond sous 24h.
           </p>
         </div>
-      </section>
+      </section>{" "}
 
       {/* ── FORMULAIRE ── */}
       <section className="container mx-auto px-6 max-w-4xl -mt-16 pb-32 relative z-20">
@@ -77,7 +77,7 @@ export default function ContactPage() {
                 >
                   <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
                     <div className="space-y-2">
-                      <label className="text-xs font-black uppercase tracking-widest text-muted-foreground pl-4">Nom Complet</label>
+                      <label className="text-xs font-black uppercase tracking-widest text-muted-foreground pl-4">Nom Complet</label>{" "}
                       <div className="relative">
                         <User className="absolute left-6 top-1/2 -translate-y-1/2 w-5 h-5 text-slate-300" />
                         <input 
@@ -89,9 +89,9 @@ export default function ContactPage() {
                           onChange={(e) => setFormData({...formData, name: e.target.value})}
                         />
                       </div>
-                    </div>
+                    </div>{" "}
                     <div className="space-y-2">
-                      <label className="text-xs font-black uppercase tracking-widest text-muted-foreground pl-4">Votre Email</label>
+                      <label className="text-xs font-black uppercase tracking-widest text-muted-foreground pl-4">Votre Email</label>{" "}
                       <div className="relative">
                         <Mail className="absolute left-6 top-1/2 -translate-y-1/2 w-5 h-5 text-slate-300" />
                         <input 
@@ -104,7 +104,7 @@ export default function ContactPage() {
                         />
                       </div>
                     </div>
-                  </div>
+                  </div>{" "}
 
                   <div className="space-y-2">
                     <label className="text-xs font-black uppercase tracking-widest text-muted-foreground pl-4">Objet du message</label>
@@ -118,7 +118,7 @@ export default function ContactPage() {
                       <option value="idea">Suggestion de dossier</option>
                       <option value="other">Autre demande</option>
                     </select>
-                  </div>
+                  </div>{" "}
 
                   <div className="space-y-2">
                     <label className="text-xs font-black uppercase tracking-widest text-muted-foreground pl-4">Votre Message</label>
@@ -130,7 +130,7 @@ export default function ContactPage() {
                       value={formData.message}
                       onChange={(e) => setFormData({...formData, message: e.target.value})}
                     />
-                  </div>
+                  </div>{" "}
 
                   <input
                     type="text"
@@ -141,11 +141,11 @@ export default function ContactPage() {
                     className="absolute -left-[9999px] h-0 w-0 opacity-0"
                     value={formData.site_web}
                     onChange={(e) => setFormData({...formData, site_web: e.target.value})}
-                  />
+                  />{" "}
 
                   {error && (
                     <div className="rounded-2xl bg-red-50 dark:bg-red-500/10 px-6 py-4 font-bold text-red-700 dark:text-red-300">{error}</div>
-                  )}
+                  )}{" "}
 
                   <button
                     type="submit"
@@ -160,7 +160,7 @@ export default function ContactPage() {
                         <Send className="w-5 h-5 group-hover:translate-x-2 group-hover:-translate-y-2 transition-transform" />
                       </>
                     )}
-                  </button>
+                  </button>{" "}
                 </motion.form>
               ) : (
                 <motion.div 
@@ -171,17 +171,17 @@ export default function ContactPage() {
                 >
                   <div className="w-24 h-24 rounded-full bg-emerald-700 flex items-center justify-center text-white mb-8 shadow-2xl shadow-emerald-500/20">
                     <CheckCircle2 className="w-12 h-12" />
-                  </div>
-                  <h2 className="text-4xl font-black text-foreground uppercase tracking-tighter mb-4">Message Envoyé !</h2>
+                  </div>{" "}
+                  <h2 className="text-4xl font-black text-foreground uppercase tracking-tighter mb-4">Message Envoyé !</h2>{" "}
                   <p className="text-muted-foreground font-medium mb-12 max-w-sm">
                     Votre demande a été transmise avec succès. Notre équipe reviendra vers vous sous peu.
-                  </p>
+                  </p>{" "}
                   <button 
                     onClick={() => setIsSubmitted(false)}
                     className="inline-flex items-center gap-2 text-red-700 dark:text-red-400 font-black uppercase tracking-widest hover:gap-4 transition-all"
                   >
                     Envoyer un autre message <ArrowRight className="w-5 h-5" />
-                  </button>
+                  </button>{" "}
                 </motion.div>
               )}
             </AnimatePresence>

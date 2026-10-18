@@ -33,9 +33,9 @@ function SecCard({ header, body }: { header: string; body: string }) {
   return (
     <div className="rounded-2xl border border-border dark:border-slate-800 bg-card dark:bg-slate-900 p-4 shadow-sm">
       <div className="mb-2 flex items-center gap-2">
-        <span className={`flex h-8 w-8 items-center justify-center rounded-xl ${bg} ${c}`}><Icon size={16} /></span>
+        <span className={`flex h-8 w-8 items-center justify-center rounded-xl ${bg} ${c}`}><Icon size={16} /></span>{" "}
         <h4 className={`text-[11px] font-black uppercase tracking-widest ${c}`}>{header}</h4>
-      </div>
+      </div>{" "}
       <p className="text-[14px] leading-6 text-slate-700 dark:text-slate-300"><HL text={body} /></p>
     </div>
   );
@@ -116,15 +116,15 @@ export default function AdoptedTextsFeed() {
       <div className="mb-6">
         <h2 className="text-3xl font-staatliches uppercase tracking-tight text-foreground dark:text-white md:text-4xl">
           Derniers textes <span className="text-blue-700 dark:text-blue-400">adoptés par l'Assemblée</span>
-        </h2>
-        <p className="mt-1 text-muted-foreground">Chaque vote solennel sur l'ensemble d'un texte : l'issue, le vote de chaque parti, et ce qui se passe ensuite.</p>
+        </h2>{" "}
+        <p className="mt-1 text-muted-foreground">Chaque vote solennel sur l'ensemble d'un texte : l'issue, le vote de chaque parti, et ce qui se passe ensuite.</p>{" "}
         {horsSession && (
           // Sans cette phrase, une date vieille de deux mois passe pour une
           // panne d'alimentation. Elle n'en est pas une : l'Assemblee ne tient
           // pas de seance publique hors session, et ne vote donc pas. La regle
           // citee est constitutionnelle (article 28) : elle ne se perimera pas.
           <p className="mt-3 flex flex-wrap items-start gap-2 rounded-2xl bg-blue-50 px-4 py-2.5 text-[13px] font-medium leading-snug text-blue-900 dark:bg-blue-500/10 dark:text-blue-200">
-            <CalendarClock size={15} className="mt-0.5 shrink-0" />
+            <CalendarClock size={15} className="mt-0.5 shrink-0" />{" "}
             <span>
               Aucun vote depuis le <strong>{frDate(items[0].date_scrutin)}</strong> : c&apos;est
               l&apos;intersession. La session ordinaire court du 1<sup>er</sup> octobre au 30 juin,
@@ -132,7 +132,7 @@ export default function AdoptedTextsFeed() {
             </span>
           </p>
         )}
-      </div>
+      </div>{" "}
 
       {/* Mobile : rail horizontal. Une carte par rangée pleine hauteur obligeait à
           faire défiler très longtemps avant d'atteindre la suite de la page. */}
@@ -147,38 +147,38 @@ export default function AdoptedTextsFeed() {
             <button key={v.id} onClick={() => setOpen(v)}
               className="group flex w-[82vw] shrink-0 flex-col rounded-[2rem] border border-border bg-card p-6 text-left shadow-sm transition hover:-translate-y-1 hover:shadow-xl dark:border-slate-800 dark:bg-slate-900 sm:w-[23rem]">
               <div className="flex items-start justify-between gap-3">
-                <span className="text-xs font-bold text-muted-foreground">{frDate(v.date_scrutin)}</span>
+                <span className="text-xs font-bold text-muted-foreground">{frDate(v.date_scrutin)}</span>{" "}
                 <span className={`inline-flex items-center gap-1 rounded-full px-3 py-1 text-[10px] font-black uppercase tracking-widest text-white ${adopted ? "bg-emerald-700" : "bg-rose-600"}`}>
-                  {adopted ? <CheckCircle2 size={12} /> : <XCircle size={12} />}{adopted ? "Adopté" : "Rejeté"}
+                  {adopted ? <CheckCircle2 size={12} /> : <XCircle size={12} />}{" "}{adopted ? "Adopté" : "Rejeté"}
                 </span>
-              </div>
-              <h3 className="mt-3 line-clamp-3 text-base font-bold leading-snug text-foreground group-hover:text-blue-600 dark:text-white">{cleanTitle(v)}</h3>
+              </div>{" "}
+              <h3 className="mt-3 line-clamp-3 text-base font-bold leading-snug text-foreground group-hover:text-blue-600 dark:text-white">{cleanTitle(v)}</h3>{" "}
 
               {/* Étape suivante vérifiée. */}
               {nav?.navette_label && (
                 <span className={`mt-3 inline-flex w-fit items-center gap-1.5 rounded-full px-3 py-1 text-[11px] font-black ${NAV_TONE[nav.navette_status] || NAV_TONE.assemblee}`}>
-                  {nav.navette_status === "senat" ? <ArrowRight size={12} /> : nav.navette_status === "definitif" ? <Landmark size={12} /> : null}
+                  {nav.navette_status === "senat" ? <ArrowRight size={12} /> : nav.navette_status === "definitif" ? <Landmark size={12} /> : null}{" "}
                   {nav.navette_label}
                 </span>
-              )}
+              )}{" "}
 
               {/* Résumé du vote + aperçu par parti. */}
               <div className="mt-4">
-                <VoteBar pour={v.pour || 0} contre={v.contre || 0} abst={v.abstention || 0} />
+                <VoteBar pour={v.pour || 0} contre={v.contre || 0} abst={v.abstention || 0} />{" "}
                 <div className="mt-1.5 flex justify-between text-[11px] font-bold">
-                  <span className="text-emerald-700 dark:text-emerald-400">{v.pour ?? 0} pour</span>
-                  <span className="text-rose-700 dark:text-rose-400">{v.contre ?? 0} contre</span>
+                  <span className="text-emerald-700 dark:text-emerald-400">{v.pour ?? 0} pour</span>{" "}
+                  <span className="text-rose-700 dark:text-rose-400">{v.contre ?? 0} contre</span>{" "}
                   <span className="text-muted-foreground">{v.abstention ?? 0} abst.</span>
                 </div>
-              </div>
+              </div>{" "}
               {groups.length > 0 && (
                 <span className="mt-4 text-[11px] font-black uppercase tracking-widest text-blue-700 dark:text-blue-400">Voir le vote des {groups.length} partis →</span>
-              )}
+              )}{" "}
             </button>
           );
         })}
       </DragScroller>
-      </div>
+      </div>{" "}
 
       {/* Détail : décryptage + vote de chaque parti. */}
       <AnimatePresence>
@@ -188,16 +188,16 @@ export default function AdoptedTextsFeed() {
             <motion.div className="relative flex max-h-[90vh] w-full max-w-2xl flex-col overflow-hidden rounded-t-[2rem] bg-card shadow-2xl dark:bg-slate-900 sm:rounded-[2rem]"
               initial={{ y: 40, opacity: 0 }} animate={{ y: 0, opacity: 1 }} exit={{ y: 40, opacity: 0 }} onClick={e => e.stopPropagation()}>
               <div className={`relative p-6 pr-14 text-white ${isAdopted(open.resultat) ? "bg-gradient-to-br from-emerald-600 to-teal-700" : "bg-gradient-to-br from-rose-600 to-red-700"}`}>
-                <button onClick={() => setOpen(null)} className="absolute right-4 top-4 rounded-full bg-white/20 p-2 transition hover:bg-white/30"><X size={18} /></button>
-                <p className="text-[10px] font-black uppercase tracking-widest text-white/80">{frDate(open.date_scrutin)} · {open.category || "Assemblée nationale"}</p>
-                <h3 className="mt-1 text-xl font-bold leading-snug">{cleanTitle(open)}</h3>
+                <button onClick={() => setOpen(null)} className="absolute right-4 top-4 rounded-full bg-white/20 p-2 transition hover:bg-white/30"><X size={18} /></button>{" "}
+                <p className="text-[10px] font-black uppercase tracking-widest text-white/80">{frDate(open.date_scrutin)} · {open.category || "Assemblée nationale"}</p>{" "}
+                <h3 className="mt-1 text-xl font-bold leading-snug">{cleanTitle(open)}</h3>{" "}
                 <p className="mt-2 inline-flex items-center gap-1.5 rounded-full bg-white/20 px-3 py-1 text-[11px] font-black uppercase tracking-widest">
                   {isAdopted(open.resultat) ? "Adopté" : "Rejeté"} · {open.pour ?? 0} pour / {open.contre ?? 0} contre / {open.abstention ?? 0} abst.
-                </p>
+                </p>{" "}
                 {open.navette?.navette_label && (
                   <p className="mt-2 text-sm font-semibold text-white/90">{open.navette.navette_status === "senat" ? "→ " : ""}{open.navette.navette_label}</p>
                 )}
-              </div>
+              </div>{" "}
               <div className="overflow-y-auto p-6 space-y-3">
                 {/* Analyse détaillée au design premium : chaque partie en carte, chiffres surlignés. */}
                 {open.summary && <SecCard header="De quoi s'agit-il" body={open.summary} />}
@@ -214,27 +214,27 @@ export default function AdoptedTextsFeed() {
                         repli={hasDetail ? <>{toSections(detailed, "En détail").map((s, i) => <SecCard key={i} header={s.header} body={s.body} />)}</> : undefined} />
                     </>
                   );
-                })()}
+                })()}{" "}
 
                 <div className="pt-2">
-                  <p className="text-[10px] font-black uppercase tracking-widest text-muted-foreground">Le vote de chaque parti</p>
+                  <p className="text-[10px] font-black uppercase tracking-widest text-muted-foreground">Le vote de chaque parti</p>{" "}
                   <div className="mt-3 space-y-2.5">
                     {(open.group_results || []).slice().sort((a: any, b: any) => (b.total || 0) - (a.total || 0)).map((g: any) => (
                       <div key={g.group_id} className="flex items-center gap-3">
-                        <span className="w-32 shrink-0 truncate text-sm font-bold text-slate-700 dark:text-slate-200" title={g.group_label}>{g.group_label}</span>
-                        <VoteBar pour={g.pour} contre={g.contre} abst={g.abstention} className="flex-1" />
+                        <span className="w-32 shrink-0 truncate text-sm font-bold text-slate-700 dark:text-slate-200" title={g.group_label}>{g.group_label}</span>{" "}
+                        <VoteBar pour={g.pour} contre={g.contre} abst={g.abstention} className="flex-1" />{" "}
                         <span className="w-24 shrink-0 text-right text-[11px] font-bold tabular-nums">
                           <span className="text-emerald-700 dark:text-emerald-400">{g.pour}</span> · <span className="text-rose-700 dark:text-rose-400">{g.contre}</span> · <span className="text-muted-foreground">{g.abstention}</span>
-                        </span>
+                        </span>{" "}
                       </div>
                     ))}
-                  </div>
+                  </div>{" "}
                   <div className="mt-3 flex gap-4 text-[10px] font-black uppercase tracking-widest text-muted-foreground">
-                    <span className="flex items-center gap-1"><span className="h-2 w-2 rounded-full bg-emerald-500" />Pour</span>
-                    <span className="flex items-center gap-1"><span className="h-2 w-2 rounded-full bg-rose-500" />Contre</span>
-                    <span className="flex items-center gap-1"><span className="h-2 w-2 rounded-full bg-slate-300 dark:bg-slate-600" />Abstention</span>
+                    <span className="flex items-center gap-1"><span className="h-2 w-2 rounded-full bg-emerald-500" />{" "}Pour</span>{" "}
+                    <span className="flex items-center gap-1"><span className="h-2 w-2 rounded-full bg-rose-500" />{" "}Contre</span>{" "}
+                    <span className="flex items-center gap-1"><span className="h-2 w-2 rounded-full bg-slate-300 dark:bg-slate-600" />{" "}Abstention</span>
                   </div>
-                </div>
+                </div>{" "}
 
                 {open.dossier_url && <a href={open.dossier_url} target="_blank" rel="noopener noreferrer" className="inline-flex items-center gap-1.5 text-[11px] font-black uppercase tracking-widest text-blue-700 dark:text-blue-400 hover:text-blue-500"><ExternalLink size={13} /> Voir le scrutin officiel</a>}
               </div>

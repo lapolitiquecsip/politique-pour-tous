@@ -34,14 +34,14 @@ function AccordionSection({
         <span className="flex items-center gap-2">
           {icon}
           {title}
-        </span>
+        </span>{" "}
         <motion.div
           animate={{ rotate: isOpen ? 90 : 0 }}
           transition={{ duration: 0.2 }}
         >
           <ChevronRight className="w-5 h-5 text-muted-foreground" />
         </motion.div>
-      </button>
+      </button>{" "}
 
       <AnimatePresence>
         {isOpen && (
@@ -67,7 +67,7 @@ export default function LawAccordions({ pros, cons }: LawAccordionsProps) {
     <section className="space-y-4">
       <h2 className="text-2xl font-bold mb-4">
         Pourquoi ça bloque (ou pas) ?
-      </h2>
+      </h2>{" "}
 
       <AccordionSection
         title="Arguments Pour"
@@ -77,8 +77,8 @@ export default function LawAccordions({ pros, cons }: LawAccordionsProps) {
         <ul className="space-y-3">
           {pros.length > 0 ? pros.map((pro, idx) => (
             <li key={idx} className="flex gap-2 text-green-900/80">
-              <CheckCircle2 className="w-4 h-4 text-green-500 mt-1 flex-shrink-0" />
-              <span>{pro}</span>
+              <CheckCircle2 className="w-4 h-4 text-green-500 mt-1 flex-shrink-0" />{" "}
+              <span>{pro}</span>{" "}
             </li>
           )) : (
             <li className="text-muted-foreground italic">Non renseigné.</li>
@@ -94,8 +94,8 @@ export default function LawAccordions({ pros, cons }: LawAccordionsProps) {
         <ul className="space-y-3">
           {cons.length > 0 ? cons.map((con, idx) => (
             <li key={idx} className="flex gap-2 text-red-900/80">
-              <XCircle className="w-4 h-4 text-red-500 mt-1 flex-shrink-0" />
-              <span>{con}</span>
+              <XCircle className="w-4 h-4 text-red-500 mt-1 flex-shrink-0" />{" "}
+              <span>{con}</span>{" "}
             </li>
           )) : (
             <li className="text-muted-foreground italic">Non renseigné.</li>

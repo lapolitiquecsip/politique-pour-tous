@@ -260,29 +260,29 @@ export default function Senatoriales2026() {
             <div className="flex flex-wrap items-center gap-2">
               <span className="inline-flex items-center gap-1.5 rounded-full bg-red-600 px-3 py-1 text-[10px] font-black uppercase tracking-widest text-white">
                 <Vote size={12} /> Sénatoriales 2026
-              </span>
+              </span>{" "}
               {phase === "avant" && (
                 <span className="inline-flex items-center gap-1.5 rounded-full bg-amber-500/15 px-3 py-1 text-[10px] font-black uppercase tracking-widest text-amber-700 dark:text-amber-400">
                   <CalendarClock size={12} /> {jMinus === 0 ? "C'est aujourd'hui" : `J‑${jMinus}`}
                 </span>
-              )}
+              )}{" "}
               {phase === "attente" && (
                 <span className="inline-flex items-center gap-1.5 rounded-full bg-amber-500/15 px-3 py-1 text-[10px] font-black uppercase tracking-widest text-amber-700 dark:text-amber-400">
                   <Hourglass size={12} /> Résultats en cours de publication
                 </span>
-              )}
+              )}{" "}
               {phase === "resultats" && (
                 <span className="inline-flex items-center gap-1.5 rounded-full bg-emerald-500/15 px-3 py-1 text-[10px] font-black uppercase tracking-widest text-emerald-700 dark:text-emerald-400">
                   <CheckCircle2 size={12} /> Résultats officiels
                 </span>
               )}
-            </div>
+            </div>{" "}
 
             <h2 className="mt-3 font-staatliches text-2xl uppercase leading-[1.05] tracking-tight text-foreground dark:text-white md:text-4xl">
               {phase === "resultats"
                 ? <>Le nouveau Sénat, élu le <span className="text-red-700 dark:text-red-400">27 septembre</span></>
                 : <>Les départements qui votent le <span className="text-red-700 dark:text-red-400">27 septembre</span></>}
-            </h2>
+            </h2>{" "}
 
             <p className="mt-2 text-sm leading-6 text-muted-foreground dark:text-slate-300">
               {phase === "resultats" ? (
@@ -303,7 +303,7 @@ export default function Senatoriales2026() {
                   63 départements et collectivités, plus six sièges des Français établis hors de France.
                 </>
               )}
-            </p>
+            </p>{" "}
 
             {/* ── Chiffres clés ─────────────────────────────────────────── */}
             <div className="mt-4 grid grid-cols-3 gap-2 text-center">
@@ -320,11 +320,11 @@ export default function Senatoriales2026() {
                   ]
               ).map(([n, l]) => (
                 <div key={l} className="rounded-2xl bg-white/70 p-2.5 dark:bg-slate-800/50">
-                  <p className="text-lg font-black tabular-nums text-foreground dark:text-white">{n}</p>
-                  <p className="text-[10px] font-bold uppercase tracking-wide text-muted-foreground">{l}</p>
+                  <p className="text-lg font-black tabular-nums text-foreground dark:text-white">{n}</p>{" "}
+                  <p className="text-[10px] font-bold uppercase tracking-wide text-muted-foreground">{l}</p>{" "}
                 </div>
               ))}
-            </div>
+            </div>{" "}
 
             {/* Les sièges encore en attente : le dire, plutôt que laisser croire
                 que le compte est clos. */}
@@ -334,16 +334,16 @@ export default function Senatoriales2026() {
                 {" — "}
                 {circos.filter(c => (c.known ?? c.seats) < c.seats).map(c => c.label).join(", ")}.
               </p>
-            )}
+            )}{" "}
 
             {/* ── Vérificateur / consultation par circonscription ────────── */}
             <div className="mt-5">
               <label className="text-xs font-black uppercase tracking-widest text-muted-foreground">
                 {phase === "resultats" ? "Qui a été élu chez vous ?" : "Votre département vote‑t‑il ?"}
-              </label>
+              </label>{" "}
               <div className="mt-2 flex gap-2">
                 <div className="flex flex-1 items-center gap-2 rounded-2xl border border-border bg-card px-3 dark:border-slate-700 dark:bg-slate-900">
-                  <MapPin size={16} className="shrink-0 text-muted-foreground" />
+                  <MapPin size={16} className="shrink-0 text-muted-foreground" />{" "}
                   <input
                     value={query}
                     onChange={e => { setQuery(e.target.value); setChoisi(null); }}
@@ -351,7 +351,7 @@ export default function Senatoriales2026() {
                     placeholder="N° ou nom (ex. 33, Gironde)"
                     className="w-full bg-transparent py-3 text-sm text-foreground outline-none placeholder:text-slate-400 dark:text-white [color-scheme:light] dark:[color-scheme:dark]"
                   />
-                </div>
+                </div>{" "}
                 <button
                   onClick={chercher}
                   aria-label="Chercher cette circonscription"
@@ -359,7 +359,7 @@ export default function Senatoriales2026() {
                 >
                   <Search size={16} />
                 </button>
-              </div>
+              </div>{" "}
 
               {deptChoisi && (
                 <div className={`mt-3 rounded-2xl border p-3.5 ${deptChoisi.concerne
@@ -368,11 +368,11 @@ export default function Senatoriales2026() {
                   <div className="flex items-start gap-3">
                     {deptChoisi.concerne
                       ? <CheckCircle2 className="mt-0.5 shrink-0 text-emerald-700 dark:text-emerald-400" size={20} />
-                      : <XCircle className="mt-0.5 shrink-0 text-slate-400" size={20} />}
+                      : <XCircle className="mt-0.5 shrink-0 text-slate-400" size={20} />}{" "}
                     <div className="min-w-0 text-sm">
                       <p className="font-black text-foreground dark:text-white">
                         {deptChoisi.name}{deptChoisi.code !== "ZZ" ? ` (${deptChoisi.code})` : ""}
-                      </p>
+                      </p>{" "}
                       {deptChoisi.concerne ? (
                         elusDuDept.length ? (
                           <p className="text-emerald-700 dark:text-emerald-400">
@@ -392,7 +392,7 @@ export default function Senatoriales2026() {
                         </p>
                       )}
                     </div>
-                  </div>
+                  </div>{" "}
 
                   {elusDuDept.length > 0 && (
                     <ul className="mt-3 space-y-1.5 border-t border-emerald-200/70 pt-3 dark:border-emerald-500/20">
@@ -400,18 +400,18 @@ export default function Senatoriales2026() {
                     </ul>
                   )}
                 </div>
-              )}
+              )}{" "}
               {query && !choisi && (
                 <p className="mt-2 text-xs italic text-slate-400">
                   Tapez un numéro (01–95, 2A…) ou un nom de département, puis validez.
                 </p>
               )}
-            </div>
+            </div>{" "}
 
             <div className="mt-5 flex flex-wrap items-center gap-4">
               <Link href="#membres" className="inline-flex items-center gap-2 rounded-full bg-red-600 px-5 py-3 text-xs font-black uppercase tracking-widest text-white transition hover:bg-red-700">
-                <Users size={15} /> {phase === "resultats" ? "Voir tous les sénateurs" : "Voir les sénateurs actuels"} <ArrowRight size={14} />
-              </Link>
+                <Users size={15} /> {phase === "resultats" ? "Voir tous les sénateurs" : "Voir les sénateurs actuels"} {" "}<ArrowRight size={14} />
+              </Link>{" "}
               <a
                 href="https://senatoriales2026.senat.fr/"
                 target="_blank" rel="noopener noreferrer"
@@ -420,7 +420,7 @@ export default function Senatoriales2026() {
                 Source : Sénat <ExternalLink size={11} />
               </a>
             </div>
-          </div>
+          </div>{" "}
 
           {/* ── Carte ──────────────────────────────────────────────────── */}
           <div className="relative flex flex-col items-center justify-center bg-white/40 p-4 dark:bg-slate-900/30 md:p-6">
@@ -467,7 +467,7 @@ export default function Senatoriales2026() {
                   </path>
                 );
               })}
-            </svg>
+            </svg>{" "}
 
             {/* Légende : elle change avec la phase, sinon elle ment. */}
             {phase === "resultats" && familles.length > 0 ? (
@@ -482,10 +482,10 @@ export default function Senatoriales2026() {
                   >
                     {/* Une des six couleurs est le blanc : sans cet anneau, la
                         pastille disparaîtrait sur la carte comme sur le fond. */}
-                    <span className="h-2.5 w-2.5 rounded-sm ring-1 ring-slate-900/15" style={{ background: f.color }} />
-                    {f.nuances[0][0]}
-                    {f.nuances.length > 1 && <span className="opacity-60">+{f.nuances.length - 1}</span>}
-                    <span className="tabular-nums opacity-70">{f.total}</span>
+                    <span className="h-2.5 w-2.5 rounded-sm ring-1 ring-slate-900/15" style={{ background: f.color }} />{" "}
+                    {f.nuances[0][0]}{" "}
+                    {f.nuances.length > 1 && <span className="opacity-60">+{f.nuances.length - 1}</span>}{" "}
+                    <span className="tabular-nums opacity-70">{f.total}</span>{" "}
                   </span>
                 ))}
               </div>
@@ -493,12 +493,12 @@ export default function Senatoriales2026() {
               <div className="pointer-events-none absolute bottom-3 left-1/2 flex -translate-x-1/2 items-center gap-3 rounded-full bg-white/85 px-3 py-1.5 text-[10px] font-bold shadow-sm backdrop-blur-sm dark:bg-slate-800/85">
                 <span className="flex items-center gap-1.5 text-muted-foreground dark:text-slate-300">
                   <span className="h-2.5 w-2.5 rounded-sm bg-amber-500" /> Vote en 2026
-                </span>
+                </span>{" "}
                 <span className="flex items-center gap-1.5 text-muted-foreground">
                   <span className="h-2.5 w-2.5 rounded-sm bg-slate-200" /> En 2029
                 </span>
               </div>
-            ) : null}
+            ) : null}{" "}
 
             {/* L'outre-mer et les Français de l'étranger ne figurent pas sur le
                 fond de carte métropolitain : ils sont rappelés ici. */}
@@ -514,66 +514,66 @@ export default function Senatoriales2026() {
                       title={l.length ? l.map(e => e.full_name).join(", ") : `${c.label} — vote en 2026`}
                       className="rounded-full bg-white/70 px-2.5 py-1 text-[10px] font-bold text-muted-foreground transition hover:bg-red-600 hover:text-white dark:bg-slate-800/60 dark:text-slate-300"
                     >
-                      {c.label}
+                      {c.label}{" "}
                     </button>
                   );
                 })}
               </div>
             )}
           </div>
-        </div>
+        </div>{" "}
 
         {/* ── Les nouveaux visages ─────────────────────────────────────── */}
         {phase === "resultats" && nouveaux.length > 0 && (
           <div className="border-t border-border/60 px-5 py-5 dark:border-slate-700/50 md:px-8">
             <p className="flex items-center gap-1.5 text-[10px] font-black uppercase tracking-[0.2em] text-muted-foreground">
               <Sparkles size={12} className="text-amber-700 dark:text-amber-400" /> Ils entrent au Sénat — {nouveaux.length} nouveaux élus
-            </p>
+            </p>{" "}
             <DragScroller ariaLabel="Les nouveaux sénateurs" className="mt-3 gap-3 pb-2">
               {nouveaux.map(e => <CarteElu key={e.full_name} elu={e} />)}
             </DragScroller>
           </div>
-        )}
+        )}{" "}
 
         {/* ── Le solde par groupe, une fois les groupes constitués ──────── */}
         {phase === "resultats" && solde.length > 0 && (
           <div className="border-t border-border/60 px-5 py-5 dark:border-slate-700/50 md:px-8">
             <p className="text-[10px] font-black uppercase tracking-[0.2em] text-muted-foreground">
               Ce que chaque groupe gagne ou perd — sur l&apos;ensemble des 348 sièges
-            </p>
+            </p>{" "}
             <div className="mt-3 grid grid-cols-2 gap-2 sm:grid-cols-3 lg:grid-cols-5">
               {solde.map(g => {
                 const ecart = g.apres - g.avant;
                 return (
                   <div key={g.code} className="rounded-2xl bg-white/70 p-3 dark:bg-slate-800/50">
                     <div className="flex items-center gap-1.5">
-                      <span className="h-2.5 w-2.5 shrink-0 rounded-sm" style={{ background: g.color }} />
+                      <span className="h-2.5 w-2.5 shrink-0 rounded-sm" style={{ background: g.color }} />{" "}
                       <span className="truncate text-[11px] font-black text-foreground dark:text-white">{g.label}</span>
-                    </div>
+                    </div>{" "}
                     <div className="mt-1 flex items-baseline gap-2">
-                      <span className="text-xl font-black tabular-nums text-foreground dark:text-white">{g.apres}</span>
+                      <span className="text-xl font-black tabular-nums text-foreground dark:text-white">{g.apres}</span>{" "}
                       <span className={`text-xs font-black tabular-nums ${ecart > 0 ? "text-emerald-700 dark:text-emerald-400" : ecart < 0 ? "text-red-700" : "text-muted-foreground"}`}>
                         {ecart > 0 ? `+${ecart}` : ecart < 0 ? ecart : "="}
                       </span>
-                    </div>
+                    </div>{" "}
                   </div>
                 );
               })}
             </div>
           </div>
-        )}
+        )}{" "}
 
         {/* ── Pendant l'attente : dire ce qui se passe ─────────────────── */}
         {phase === "attente" && (
           <div className="flex items-start gap-3 border-t border-border/60 px-5 py-4 text-sm dark:border-slate-700/50 md:px-8">
-            <RefreshCw size={16} className="mt-0.5 shrink-0 animate-spin text-amber-500" style={{ animationDuration: "3s" }} />
+            <RefreshCw size={16} className="mt-0.5 shrink-0 animate-spin text-amber-500" style={{ animationDuration: "3s" }} />{" "}
             <p className="text-muted-foreground dark:text-slate-300">
               Le Sénat publie les résultats circonscription par circonscription. Nous les relisons
               plusieurs fois par jour : dès qu&apos;ils paraissent, les élus, la carte et la
               composition de l&apos;hémicycle se mettent à jour ici sans intervention.
             </p>
           </div>
-        )}
+        )}{" "}
 
         {/* Provenance : un résultat d'élection sans source n'est qu'une rumeur. */}
         {statut?.updated_at && (
@@ -628,11 +628,11 @@ function CarteElu({ elu }: { elu: Elu }) {
           : <span className="flex h-full w-full items-center justify-center text-lg font-black text-slate-400">
               {initiales}
             </span>}
-      </span>
+      </span>{" "}
       <span className="mt-2 block truncate text-center text-sm font-black text-foreground dark:text-white">
         {elu.full_name}
-      </span>
-      <span className="mt-0.5 block truncate text-center text-[11px] text-muted-foreground">{elu.constituency}</span>
+      </span>{" "}
+      <span className="mt-0.5 block truncate text-center text-[11px] text-muted-foreground">{elu.constituency}</span>{" "}
       <span
         className="mx-auto mt-1.5 block w-fit max-w-full truncate rounded-full px-2 py-0.5 text-[9px] font-black uppercase tracking-wider ring-1 ring-slate-900/10"
         style={{ background: couleur, color: texteSur(couleur) }}

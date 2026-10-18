@@ -114,27 +114,27 @@ export default function ItddSection({ level, code }: { level: "region" | "depart
               {vars.map(v => <option key={v} value={v}>{CATALOG[v].label}</option>)}
             </optgroup>
           ))}
-        </select>
+        </select>{" "}
         {subFields.length > 1 && (
           <div className="inline-flex flex-wrap gap-1">
             {subFields.map(s => (
               <button key={s} onClick={() => setSub(s)}
                 className={`rounded-full px-3 py-1.5 text-xs font-bold transition ${sub === s ? "bg-emerald-600 text-white" : "bg-slate-100 dark:bg-slate-500/10 text-muted-foreground hover:bg-slate-200"}`}>
-                {s || "total"}
+                {s || "total"}{" "}
               </button>
             ))}
           </div>
         )}
-      </div>
+      </div>{" "}
 
       {last && (
         <div className="mt-4 flex items-end gap-3">
-          <span className="text-4xl font-black text-foreground">{fmt(last.value)}</span>
+          <span className="text-4xl font-black text-foreground">{fmt(last.value)}</span>{" "}
           <span className="mb-1 text-sm font-bold text-muted-foreground">en {last.year}</span>
         </div>
-      )}
+      )}{" "}
 
-      {chart}
+      {chart}{" "}
       <p className="mt-1 text-right text-[10px] text-muted-foreground">Source : Insee/SDES — Indicateurs territoriaux de développement durable</p>
     </div>
   );

@@ -50,12 +50,12 @@ export default function ElectionsBanner() {
         <div>
           <h2 className="text-2xl font-staatliches uppercase tracking-wider text-slate-800 dark:text-slate-200 flex items-center gap-2">
             <Calendar className="w-6 h-6 text-blue-700 dark:text-blue-400" /> Prochaines Échéances Électorales
-          </h2>
+          </h2>{" "}
           <p className="text-sm text-muted-foreground dark:text-slate-400 font-medium italic mt-1">
             Restez informé sur les moments clés de la démocratie française.
           </p>
         </div>
-      </div>
+      </div>{" "}
 
       <div className="grid grid-cols-2 lg:grid-cols-4 gap-3 md:gap-4">
         {upcomingElections.map((election, index) => {
@@ -74,34 +74,34 @@ export default function ElectionsBanner() {
               {/* Cartes compactes sur mobile (padding/icône/texte réduits) → moins encombrant. */}
               <div className="h-full p-4 md:p-6 bg-card dark:bg-slate-900 rounded-2xl md:rounded-3xl border border-border dark:border-slate-800 shadow-sm hover:shadow-xl transition-all overflow-hidden">
                 {/* Background Accent */}
-                <div className={`absolute top-0 right-0 w-24 h-24 -mr-8 -mt-8 rounded-full opacity-[0.05] group-hover:scale-150 transition-transform duration-500 ${colors.accent}`} />
+                <div className={`absolute top-0 right-0 w-24 h-24 -mr-8 -mt-8 rounded-full opacity-[0.05] group-hover:scale-150 transition-transform duration-500 ${colors.accent}`} />{" "}
 
                 <div className="relative z-10">
                   <div className={`w-9 h-9 md:w-12 md:h-12 rounded-xl md:rounded-2xl flex items-center justify-center mb-2.5 md:mb-4 ${colors.bg} ${colors.text} group-hover:scale-110 transition-transform`}>
                     <Icon className="w-[18px] h-[18px] md:w-6 md:h-6" />
-                  </div>
+                  </div>{" "}
 
                   <span className="text-[9px] md:text-[10px] font-black uppercase tracking-[0.2em] text-muted-foreground mb-0.5 md:mb-1 block">
                     {election.type}
-                  </span>
+                  </span>{" "}
 
                   <h3 className="text-sm md:text-lg font-staatliches uppercase leading-none mb-1.5 md:mb-2 text-foreground dark:text-white">
                     {election.date}
-                  </h3>
+                  </h3>{" "}
 
                   <p className="text-[11px] md:text-xs text-muted-foreground dark:text-slate-400 line-clamp-2 md:mb-4 leading-relaxed">
                     {wrapWithGlossary(election.description)}
-                  </p>
+                  </p>{" "}
 
                   <div className="hidden md:flex items-center gap-1 text-[10px] font-bold text-blue-700 dark:text-blue-400 uppercase tracking-wider opacity-0 group-hover:opacity-100 transition-opacity">
                     Comment ça marche ? <ChevronRight size={12} />
                   </div>
                 </div>
-              </div>
+              </div>{" "}
             </motion.div>
           );
         })}
-      </div>
+      </div>{" "}
 
       {/* Modal for Details */}
       <AnimatePresence>
@@ -118,43 +118,43 @@ export default function ElectionsBanner() {
                 className="absolute top-6 right-6 p-2 rounded-full bg-slate-100 dark:bg-slate-500/10 text-muted-foreground hover:bg-slate-200 transition-colors z-20"
               >
                 <X size={20} />
-              </button>
+              </button>{" "}
 
               {/* Header Gradient */}
               <div className={`h-32 bg-gradient-to-br ${colorMap[selectedElection.color]?.gradient || colorMap.blue.gradient} flex items-center justify-center`}>
                 <div className="w-20 h-20 rounded-3xl bg-white/20 backdrop-blur-md flex items-center justify-center text-white">
                   {React.createElement(iconMap[selectedElection.icon], { size: 40 })}
                 </div>
-              </div>
+              </div>{" "}
 
               <div className="p-8">
                 <div className="mb-6">
                   <span className="text-[11px] font-black uppercase tracking-[0.3em] text-slate-400 mb-2 block">
                     Focus sur les {selectedElection.type}
-                  </span>
+                  </span>{" "}
                   <h2 className="text-3xl font-staatliches uppercase leading-tight text-foreground">
                     {selectedElection.title}
-                  </h2>
+                  </h2>{" "}
                   <div className="h-1 w-12 bg-blue-600 mt-2 rounded-full" />
-                </div>
+                </div>{" "}
 
                 <div className="space-y-6">
                   <div>
                     <h4 className="text-[10px] font-black uppercase tracking-widest text-slate-400 mb-2 flex items-center gap-2">
                       <Calendar size={14} /> Échéance
-                    </h4>
+                    </h4>{" "}
                     <p className="text-lg font-bold text-foreground">{selectedElection.date}</p>
-                  </div>
+                  </div>{" "}
 
                   <div>
                     <h4 className="text-[10px] font-black uppercase tracking-widest text-slate-400 mb-2 flex items-center gap-2">
                       <Info size={14} /> Fonctionnement
-                    </h4>
+                    </h4>{" "}
                     <div className="text-muted-foreground leading-relaxed text-sm">
                       {wrapWithGlossary(selectedElection.howItWorks)}
                     </div>
                   </div>
-                </div>
+                </div>{" "}
 
                 <button
                   onClick={() => setSelectedElection(null)}

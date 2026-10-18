@@ -118,7 +118,7 @@ export function BadgePro() {
     <span className="sword-shine inline-flex items-center gap-2 rounded-xl bg-gradient-to-r from-[#d8b4fe] via-[#a855f7] to-[#c026d3] py-1 pl-1 pr-3 shadow-[0_6px_24px_rgba(168,85,247,0.45)] ring-1 ring-white/30">
       <span className="flex h-6 w-6 items-center justify-center rounded-lg bg-slate-950/30">
         <Crown size={13} className="text-white" />
-      </span>
+      </span>{" "}
       <span className="font-staatliches text-lg leading-none tracking-[0.18em] text-white drop-shadow-[0_1px_2px_rgba(0,0,0,0.35)]">Pro</span>
     </span>
   );
@@ -138,7 +138,7 @@ function Renvois({ indices, ouvrir }: { indices?: (number | null | undefined)[];
           aria-label={`Voir le document ${i}`}
           className="rounded bg-white/10 px-1.5 py-0.5 text-[10px] font-black tabular-nums text-white/60 transition hover:bg-white/20 hover:text-white"
         >
-          {i}
+          {i}{" "}
         </button>
       ))}
     </span>
@@ -159,7 +159,7 @@ function Puces({ items, teinte }: { items?: string[]; teinte: string }) {
     <ul className="mt-2 space-y-1">
       {items.map((x, i) => (
         <li key={i} className="flex items-start gap-2 text-[13px] leading-relaxed text-white/75">
-          <span className={`mt-[7px] h-1.5 w-1.5 shrink-0 rounded-full ${teinte}`} /> {x}
+          <span className={`mt-[7px] h-1.5 w-1.5 shrink-0 rounded-full ${teinte}`} /> {x}{" "}
         </li>
       ))}
     </ul>
@@ -174,18 +174,18 @@ function Rubrique({
   if (!points?.length) return null;
   return (
     <div>
-      <Titre icone={icone} teinte={teinte}>{titre}</Titre>
+      <Titre icone={icone} teinte={teinte}>{titre}</Titre>{" "}
       <ul className="mt-2.5 space-y-2.5">
         {points.map((p, i) => (
           <li key={i} className="rounded-2xl bg-white/[0.04] p-4">
-            <p className="text-sm font-bold text-white">{p.titre}</p>
+            <p className="text-sm font-bold text-white">{p.titre}</p>{" "}
             {p.detail && (
               <p className="mt-1 text-[13px] leading-relaxed text-white/70">
                 {p.detail}{!p.points?.length && <Renvois indices={p.sources} ouvrir={ouvrir} />}
               </p>
-            )}
-            <Puces items={p.points} teinte={puce} />
-            {!!p.points?.length && <p className="mt-1.5"><Renvois indices={p.sources} ouvrir={ouvrir} /></p>}
+            )}{" "}
+            <Puces items={p.points} teinte={puce} />{" "}
+            {!!p.points?.length && <p className="mt-1.5"><Renvois indices={p.sources} ouvrir={ouvrir} /></p>}{" "}
           </li>
         ))}
       </ul>
@@ -198,10 +198,10 @@ function CarteAide({ a, ouvrir }: { a: Aide; ouvrir: (i: number) => void }) {
   const montants = (a.montants ?? []).filter(m => m.montant);
   return (
     <li className="rounded-2xl border border-emerald-400/15 bg-emerald-400/[0.04] p-4">
-      <p className="text-sm font-bold text-white">{a.titre}</p>
+      <p className="text-sm font-bold text-white">{a.titre}</p>{" "}
       {(a.pour_qui || a.detail) && (
         <p className="mt-1 text-[13px] leading-relaxed text-white/70">{a.pour_qui || a.detail}</p>
-      )}
+      )}{" "}
       {montants.length > 0 && (
         <div className="mt-3 overflow-hidden rounded-xl border border-white/10">
           <table className="w-full text-left text-[13px]">
@@ -215,18 +215,18 @@ function CarteAide({ a, ouvrir }: { a: Aide; ouvrir: (i: number) => void }) {
             </tbody>
           </table>
         </div>
-      )}
+      )}{" "}
       {!!a.conditions?.length && (
         <>
-          <p className="mt-3 text-[10px] font-black uppercase tracking-widest text-white/35">Conditions</p>
+          <p className="mt-3 text-[10px] font-black uppercase tracking-widest text-white/35">Conditions</p>{" "}
           <Puces items={a.conditions} teinte="bg-emerald-400/70" />
         </>
-      )}
+      )}{" "}
       {a.demarche && (
         <p className="mt-3 text-[12px] leading-relaxed text-white/60">
           <span className="font-black uppercase tracking-widest text-white/35">Démarche · </span>{a.demarche}
         </p>
-      )}
+      )}{" "}
       <p className="mt-2"><Renvois indices={a.sources} ouvrir={ouvrir} /></p>
     </li>
   );
@@ -325,20 +325,20 @@ export default function TopicBrief() {
     <section className="mx-auto max-w-5xl px-4 py-8">
       <div className="overflow-hidden rounded-3xl border border-violet-400/25 bg-gradient-to-br from-slate-950 via-slate-900 to-violet-950/60 text-white shadow-2xl shadow-violet-950/30">
         <div className="p-5 sm:p-7">
-          <BadgePro />
+          <BadgePro />{" "}
 
           <h2 className="mt-3 font-staatliches text-3xl uppercase leading-none tracking-tight sm:text-4xl">
             Tout sur un sujet
-          </h2>
+          </h2>{" "}
           <p className="mt-2 max-w-2xl text-sm leading-6 text-white/65">
             Tapez un mot — <em>apprentissage</em>, <em>panneau solaire</em>, <em>prêt à taux zéro</em> — et
             obtenez ce qui s&apos;applique : les montants en vigueur, les textes de loi précis et ce qui
             change. Chaque point renvoie au texte officiel.
-          </p>
+          </p>{" "}
 
           <div className="mt-5 flex gap-2">
             <div className="flex flex-1 items-center gap-2 rounded-2xl border border-white/15 bg-white/[0.06] px-3 focus-within:border-violet-400/60">
-              <Search size={17} className="shrink-0 text-white/40" />
+              <Search size={17} className="shrink-0 text-white/40" />{" "}
               <input
                 value={mot}
                 onChange={e => setMot(e.target.value)}
@@ -347,16 +347,16 @@ export default function TopicBrief() {
                 maxLength={80}
                 className="w-full bg-transparent py-3.5 text-sm text-white outline-none placeholder:text-white/35"
               />
-            </div>
+            </div>{" "}
             <button
               onClick={() => chercher()}
               disabled={enCours || mot.trim().length < 3}
               className="inline-flex shrink-0 items-center gap-2 rounded-2xl bg-gradient-to-r from-violet-500 to-fuchsia-600 px-5 text-[11px] font-black uppercase tracking-widest transition hover:brightness-110 disabled:cursor-not-allowed disabled:opacity-40"
             >
-              {enCours ? <Loader2 size={15} className="animate-spin" /> : <Sparkles size={15} />}
+              {enCours ? <Loader2 size={15} className="animate-spin" /> : <Sparkles size={15} />}{" "}
               <span className="hidden sm:inline">Analyser</span>
             </button>
-          </div>
+          </div>{" "}
 
           {!res && !enCours && !erreur && (
             <div className="mt-3 flex flex-wrap gap-2">
@@ -366,26 +366,26 @@ export default function TopicBrief() {
                   onClick={() => chercher(x)}
                   className="rounded-full border border-white/12 bg-white/[0.04] px-3 py-1.5 text-[11px] font-bold text-white/65 transition hover:border-violet-400/50 hover:text-white"
                 >
-                  {x}
+                  {x}{" "}
                 </button>
               ))}
             </div>
-          )}
+          )}{" "}
 
           {enCours && (
             <p className="mt-4 flex items-center gap-2 text-[13px] text-white/55">
-              <Loader2 size={14} className="shrink-0 animate-spin" />
+              <Loader2 size={14} className="shrink-0 animate-spin" />{" "}
               On réunit les fiches officielles, les textes de loi et les débats, puis on les met en clair.
               Comptez jusqu&apos;à une minute la première fois qu&apos;un sujet est demandé.
             </p>
-          )}
+          )}{" "}
 
           {erreur && (
             <p className="mt-4 flex items-start gap-2 rounded-2xl bg-amber-500/10 p-3.5 text-[13px] leading-snug text-amber-200">
               <AlertTriangle size={15} className="mt-0.5 shrink-0" /> {erreur}
             </p>
           )}
-        </div>
+        </div>{" "}
 
         <AnimatePresence mode="wait">
           {res && (
@@ -399,7 +399,7 @@ export default function TopicBrief() {
             >
               {res.empty ? (
                 <p className="flex items-start gap-2 text-sm leading-relaxed text-white/70">
-                  <Info size={16} className="mt-0.5 shrink-0 text-white/40" />
+                  <Info size={16} className="mt-0.5 shrink-0 text-white/40" />{" "}
                   {res.message}
                 </p>
               ) : (
@@ -407,29 +407,29 @@ export default function TopicBrief() {
                   <div className="flex flex-wrap items-baseline justify-between gap-3">
                     <h3 className="font-staatliches text-2xl uppercase tracking-tight sm:text-3xl">
                       {brief?.sujet || res.keyword}
-                    </h3>
+                    </h3>{" "}
                     {res.generated_at && (
                       <p className="text-[10px] font-black uppercase tracking-widest text-white/35">
                         Synthèse du {dateCourte(res.generated_at)}
                       </p>
                     )}
-                  </div>
+                  </div>{" "}
 
                   {/* La garantie de fraîcheur, dite au lecteur : les sources sont
                       revérifiées à chaque demande, et la synthèse est refaite dès
                       qu'une fiche, un décret ou une loi a bougé. */}
                   {res.verifie_le && (
                     <p className="mt-2 inline-flex items-center gap-1.5 rounded-full bg-emerald-400/10 px-3 py-1 text-[11px] font-bold text-emerald-200 ring-1 ring-inset ring-emerald-400/20">
-                      <ShieldCheck size={12} className="shrink-0" />
+                      <ShieldCheck size={12} className="shrink-0" />{" "}
                       Droit en vigueur vérifié le {dateCourte(res.verifie_le)} à {heure(res.verifie_le)}
                     </p>
-                  )}
+                  )}{" "}
 
                   {brief?.en_bref && (
                     <p className="mt-3 rounded-2xl bg-gradient-to-r from-violet-500/15 to-fuchsia-500/10 p-4 text-[15px] font-medium leading-relaxed text-white/90">
                       {brief.en_bref}
                     </p>
-                  )}
+                  )}{" "}
 
                   {/* Les chiffres d'abord : c'est ce qu'un professionnel vient chercher. */}
                   {chiffres.length > 0 && (
@@ -438,26 +438,26 @@ export default function TopicBrief() {
                         <div key={i} className="rounded-2xl border border-white/10 bg-white/[0.04] p-4">
                           <p className="bg-gradient-to-r from-violet-200 to-fuchsia-300 bg-clip-text font-staatliches text-3xl leading-none tracking-tight text-transparent">
                             {c.valeur}
-                          </p>
+                          </p>{" "}
                           <p className="mt-2 text-[12px] leading-snug text-white/65">
                             {c.libelle}<Renvois indices={[c.source]} ouvrir={ouvrir} />
-                          </p>
+                          </p>{" "}
                         </div>
                       ))}
                     </div>
-                  )}
+                  )}{" "}
 
                   {/* Les lois précises. Titre et lien viennent des documents : la
                       synthèse ne fait que désigner les textes et dire leur rôle. */}
                   {textesAffiches.length > 0 && (
                     <div className="mt-6">
-                      <Titre icone={Landmark} teinte="text-sky-300">Les textes qui s&apos;appliquent</Titre>
+                      <Titre icone={Landmark} teinte="text-sky-300">Les textes qui s&apos;appliquent</Titre>{" "}
                       <ul className="mt-2.5 divide-y divide-white/[0.06] overflow-hidden rounded-2xl border border-white/10 bg-white/[0.03]">
                         {[...textesAffiches, ...(tousLesTextes ? autresTextes : [])].map(({ n, role, s }) => (
                           <li key={n} className="flex items-start gap-3 px-4 py-3">
                             <span className={`mt-0.5 shrink-0 rounded-md px-2 py-0.5 text-[9px] font-black uppercase tracking-wider ${TEINTE_TEXTE[s.kind] ?? "bg-white/10 text-white/60"}`}>
                               {s.kind}
-                            </span>
+                            </span>{" "}
                             <span className="min-w-0 flex-1">
                               {s.url ? (
                                 <a href={s.url} target="_blank" rel="noopener noreferrer"
@@ -466,83 +466,83 @@ export default function TopicBrief() {
                                 </a>
                               ) : (
                                 <span className="text-[13px] font-semibold leading-snug text-white">{s.title}</span>
-                              )}
+                              )}{" "}
                               {(role || s.note) && (
                                 <span className="mt-0.5 block text-[12px] leading-snug text-white/55">{role || s.note}</span>
-                              )}
+                              )}{" "}
                               {s.en_vigueur && (
                                 <span className="mt-1 inline-flex items-center gap-1 text-[10px] font-bold text-emerald-300/80">
                                   <ShieldCheck size={10} /> Lien vers la version en vigueur
                                 </span>
                               )}
-                            </span>
+                            </span>{" "}
                             {s.url && (
                               <a href={s.url} target="_blank" rel="noopener noreferrer" aria-label={`Ouvrir sur ${hote(s.url) ?? "le site officiel"}`}
                                 className="mt-0.5 hidden shrink-0 items-center gap-1 text-[10px] font-bold text-white/35 transition hover:text-white sm:inline-flex">
-                                {hote(s.url)} <ExternalLink size={10} />
+                                {hote(s.url)} {" "}<ExternalLink size={10} />
                               </a>
-                            )}
+                            )}{" "}
                           </li>
                         ))}
-                      </ul>
+                      </ul>{" "}
                       {autresTextes.length > 0 && (
                         <button
                           onClick={() => setTousLesTextes(v => !v)}
                           className="mt-2 inline-flex items-center gap-1.5 text-[10px] font-black uppercase tracking-widest text-white/40 transition hover:text-white"
                         >
-                          <ChevronDown size={12} className={`transition ${tousLesTextes ? "rotate-180" : ""}`} />
+                          <ChevronDown size={12} className={`transition ${tousLesTextes ? "rotate-180" : ""}`} />{" "}
                           {tousLesTextes ? "Masquer les autres textes" : `Voir les ${autresTextes.length} autres textes cités`}
                         </button>
                       )}
                     </div>
-                  )}
+                  )}{" "}
 
                   <div className="mt-6 space-y-6">
                     <Rubrique titre="Ce que dit la règle" icone={Scale} teinte="text-violet-300" puce="bg-violet-400"
-                      points={brief?.regles} ouvrir={ouvrir} />
+                      points={brief?.regles} ouvrir={ouvrir} />{" "}
 
                     {!!brief?.aides?.length && (
                       <div>
-                        <Titre icone={HandCoins} teinte="text-emerald-300">Les aides en vigueur</Titre>
+                        <Titre icone={HandCoins} teinte="text-emerald-300">Les aides en vigueur</Titre>{" "}
                         <ul className="mt-2.5 space-y-2.5">
                           {brief.aides.map((a, i) => <CarteAide key={i} a={a} ouvrir={ouvrir} />)}
                         </ul>
                       </div>
-                    )}
+                    )}{" "}
 
                     {/* Les outils officiels des fiches : simulateurs, téléservices,
                         formulaires. Ils ne passent pas par le modèle. */}
                     {outils.length > 0 && (
                       <div>
-                        <Titre icone={Calculator} teinte="text-amber-300">Outils officiels</Titre>
+                        <Titre icone={Calculator} teinte="text-amber-300">Outils officiels</Titre>{" "}
                         <div className="mt-2.5 grid gap-2 sm:grid-cols-2">
                           {outils.map((o, i) => (
                             <a key={i} href={o.url!} target="_blank" rel="noopener noreferrer"
                               className="group flex items-start gap-3 rounded-2xl border border-white/10 bg-white/[0.03] p-3.5 transition hover:border-amber-300/40">
                               <span className="mt-0.5 shrink-0 rounded-md bg-amber-300/15 px-2 py-0.5 text-[9px] font-black uppercase tracking-wider text-amber-200">
                                 {o.type}
-                              </span>
+                              </span>{" "}
                               <span className="min-w-0 flex-1 text-[13px] font-semibold leading-snug text-white/85 group-hover:text-white">
-                                {o.titre}
+                                {o.titre}{" "}
                                 <span className="mt-0.5 block text-[10px] font-bold text-white/35">{hote(o.url)}</span>
-                              </span>
-                              <ExternalLink size={12} className="mt-1 shrink-0 text-white/30 group-hover:text-white" />
+                              </span>{" "}
+                              <ExternalLink size={12} className="mt-1 shrink-0 text-white/30 group-hover:text-white" />{" "}
                             </a>
                           ))}
                         </div>
                       </div>
-                    )}
+                    )}{" "}
 
                     <Rubrique titre="Ce qui est en discussion" icone={Hourglass} teinte="text-amber-300" puce="bg-amber-400"
                       points={brief?.en_cours} ouvrir={ouvrir} />
-                  </div>
+                  </div>{" "}
 
                   {!!brief?.a_savoir?.length && (
                     <div className="mt-6">
                       <Titre icone={Lightbulb} teinte="text-white/50">À savoir</Titre>
                       <Puces items={brief.a_savoir} teinte="bg-violet-400" />
                     </div>
-                  )}
+                  )}{" "}
 
                   {/* Ce que la synthèse NE couvre pas : dit par elle-même, parce
                       qu'un récap qui se tait sur ses angles morts se fait passer
@@ -551,7 +551,7 @@ export default function TopicBrief() {
                     <p className="mt-5 flex items-start gap-2 rounded-2xl bg-white/[0.04] p-3.5 text-[12px] leading-relaxed text-white/50">
                       <Info size={14} className="mt-0.5 shrink-0" /> {brief.limites}
                     </p>
-                  )}
+                  )}{" "}
 
                   {/* Les documents, repliés : on les consulte par les renvois, pas
                       en lisant une liste de cent lignes. */}
@@ -561,8 +561,8 @@ export default function TopicBrief() {
                         onClick={() => setDocsOuverts(v => !v)}
                         className="inline-flex items-center gap-1.5 text-[11px] font-black uppercase tracking-[0.2em] text-white/45 transition hover:text-white"
                       >
-                        <ChevronDown size={13} className={`transition ${docsOuverts ? "rotate-180" : ""}`} />
-                        Les {sources.length} documents utilisés
+                        <ChevronDown size={13} className={`transition ${docsOuverts ? "rotate-180" : ""}`} />{" "}
+                        Les {sources.length} documents utilisés{" "}
                         {total > sources.length && <span className="font-bold text-white/25">· {total} trouvés</span>}
                       </button>
                       {docsOuverts && (
@@ -571,15 +571,15 @@ export default function TopicBrief() {
                             <div className="mt-3 flex flex-wrap gap-1.5">
                               {parCorpus.map(([cle, n]) => (
                                 <span key={cle} className="rounded-full bg-white/[0.06] px-2.5 py-1 text-[10px] font-bold text-white/50">
-                                  {CORPUS[cle] ?? cle} <span className="tabular-nums text-white/75">{n as number}</span>
+                                  {CORPUS[cle] ?? cle} <span className="tabular-nums text-white/75">{n as number}</span>{" "}
                                 </span>
                               ))}
                             </div>
-                          )}
+                          )}{" "}
                           <ol className="mt-3 space-y-1">
                             {sources.map((s, i) => (
                               <li key={i} id={`src-${i + 1}`} className="flex gap-2.5 rounded-lg px-1 py-0.5 text-[12px] leading-snug transition-colors duration-700 scroll-mt-24">
-                                <span className="mt-0.5 w-5 shrink-0 text-right font-black tabular-nums text-white/30">{i + 1}</span>
+                                <span className="mt-0.5 w-5 shrink-0 text-right font-black tabular-nums text-white/30">{i + 1}</span>{" "}
                                 <span className="min-w-0">
                                   <span className="mr-1.5 rounded bg-white/10 px-1.5 py-0.5 text-[9px] font-black uppercase tracking-wider text-white/50">
                                     {s.kind}
@@ -593,14 +593,14 @@ export default function TopicBrief() {
                                     <span className="text-white/75">{s.title}</span>
                                   )}
                                   {s.date && <span className="ml-1.5 text-white/35">{s.groupe === "fiche" ? "mise à jour le " : ""}{dateCourte(s.date)}</span>}
-                                </span>
+                                </span>{" "}
                               </li>
                             ))}
                           </ol>
                         </>
                       )}
                     </div>
-                  )}
+                  )}{" "}
 
                   <div className="mt-6 flex flex-wrap items-center gap-3 border-t border-white/10 pt-4">
                     <button
@@ -608,7 +608,7 @@ export default function TopicBrief() {
                       className="inline-flex items-center gap-1.5 text-[10px] font-black uppercase tracking-widest text-white/40 transition hover:text-white"
                     >
                       <RotateCw size={12} /> Refaire la synthèse
-                    </button>
+                    </button>{" "}
                     {/* Le périmètre réel, dit sans détour. */}
                     <p className="text-[11px] leading-snug text-white/35">
                       Synthèse produite à partir des seuls documents listés : fiches de service-public.gouv.fr
@@ -618,7 +618,7 @@ export default function TopicBrief() {
                     </p>
                   </div>
                 </>
-              )}
+              )}{" "}
             </motion.div>
           )}
         </AnimatePresence>

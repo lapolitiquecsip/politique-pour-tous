@@ -57,7 +57,7 @@ function Colonnes() {
               // pas colonne de journal.
               style={{ width: `${[100, 92, 97, 78, 95, 60][(l + c) % 6]}%` }}
             />
-          ))}
+          ))}{" "}
         </div>
       ))}
     </div>
@@ -101,7 +101,7 @@ export default function JournalCouverture({
       className="group relative mb-10 overflow-hidden rounded-[2rem] border-2 border-fuchsia-400/40 bg-gradient-to-br from-slate-950 via-slate-900 to-purple-950 text-white shadow-2xl shadow-purple-950/40"
     >
       {/* Pli du papier : une ombre verticale au tiers, qui suggère la pliure. */}
-      <div aria-hidden className="pointer-events-none absolute inset-y-0 left-1/3 w-24 bg-gradient-to-r from-transparent via-black/25 to-transparent" />
+      <div aria-hidden className="pointer-events-none absolute inset-y-0 left-1/3 w-24 bg-gradient-to-r from-transparent via-black/25 to-transparent" />{" "}
 
       <motion.button
         type="button"
@@ -118,14 +118,14 @@ export default function JournalCouverture({
         >
           {/* Manchette. */}
           <div className="flex flex-wrap items-center justify-between gap-3 text-[10px] font-black uppercase tracking-[0.25em] text-white/45">
-            <span>République française</span>
+            <span>République française</span>{" "}
             <span className="inline-flex items-center gap-1.5 rounded-full bg-gradient-to-r from-fuchsia-500 to-purple-600 px-2.5 py-1 text-white">
               <Newspaper size={11} /> Pro
             </span>
-          </div>
+          </div>{" "}
 
-          <div className="mt-3 h-px bg-white/20" />
-          <div className="mt-[3px] h-px bg-white/10" />
+          <div className="mt-3 h-px bg-white/20" />{" "}
+          <div className="mt-[3px] h-px bg-white/10" />{" "}
 
           {/* Le titre, et le reflet qui le traverse.
               La première version découpait un dégradé animé AU TEXTE
@@ -137,8 +137,8 @@ export default function JournalCouverture({
               qui TRAVERSE, animée par translation seule — le compositeur s'en
               charge, sans repeindre une seule lettre. */}
           <h3 className="relative mt-5 select-none overflow-hidden font-staatliches text-[2.7rem] uppercase leading-[0.85] tracking-tight sm:text-7xl">
-            <span className="block">Journal</span>
-            <span className="block text-fuchsia-300">Officiel</span>
+            <span className="block">Journal</span>{" "}
+            <span className="block text-fuchsia-300">Officiel</span>{" "}
             {!reduce && (
               <motion.span
                 aria-hidden
@@ -147,40 +147,40 @@ export default function JournalCouverture({
                 transition={{ duration: 2.8, repeat: Infinity, repeatDelay: 3.2, ease: "easeInOut" }}
               />
             )}
-          </h3>
+          </h3>{" "}
 
           {/* Ce que l'abonnement donne, dit une fois et sans emphase. */}
           <p className="mt-4 max-w-xl text-[15px] font-bold leading-snug sm:text-base">
             <span className="bg-gradient-to-r from-fuchsia-300 via-purple-300 to-fuchsia-400 bg-clip-text text-transparent">
               Votre abonnement Pro ouvre l&apos;intégralité du Journal officiel,
               chaque matin dès sa parution.
-            </span>
+            </span>{" "}
             <span className="mt-1 block text-[13px] font-medium text-white/55">
               Décrets, arrêtés, décisions, avis : chaque texte est expliqué en une
               phrase, classé par ministère, et renvoie à Légifrance.
             </span>
-          </p>
+          </p>{" "}
 
-          <div className="mt-5 h-px bg-white/20" />
+          <div className="mt-5 h-px bg-white/20" />{" "}
 
           <div className="mt-3 flex flex-wrap items-baseline gap-x-3 gap-y-1">
-            <span className="text-sm font-bold text-white/85">{dateLongue(date)}</span>
+            <span className="text-sm font-bold text-white/85">{dateLongue(date)}</span>{" "}
             <span className="text-[11px] font-black uppercase tracking-widest text-white/35">n° {num}</span>
-          </div>
+          </div>{" "}
 
-          <Colonnes />
+          <Colonnes />{" "}
 
           <div className="mt-6 flex flex-wrap items-center gap-4">
             <span className="inline-flex items-center gap-2 rounded-2xl bg-gradient-to-r from-fuchsia-500 to-purple-600 px-5 py-3 text-[11px] font-black uppercase tracking-widest shadow-lg shadow-fuchsia-500/30 transition group-hover:brightness-110">
-              Ouvrir l&apos;édition
+              Ouvrir l&apos;édition{" "}
               <ArrowRight size={14} className="transition-transform group-hover:translate-x-1" />
-            </span>
+            </span>{" "}
             <span className="text-[13px] font-bold text-white/60">
               <strong className="font-staatliches text-2xl text-white">{textCount}</strong> textes publiés ce jour
             </span>
           </div>
         </motion.div>
-      </motion.button>
+      </motion.button>{" "}
 
       {/* Les éditions précédentes, hors du bouton. Elles remontent jusqu'au début
           de l'historique conservé : on peut redescendre jusqu'en août sans avoir
@@ -190,7 +190,7 @@ export default function JournalCouverture({
           <p className="mb-2.5 text-[10px] font-black uppercase tracking-[0.2em] text-white/40">
             Autres éditions — {editions.length} jours conservés, jusqu&apos;au{" "}
             {dateLongue(editions[editions.length - 1].date)}
-          </p>
+          </p>{" "}
           <DragScroller ariaLabel="Autres éditions du Journal officiel" sombre className="gap-2 pb-2 pt-0 md:gap-2">
             {autres.map(({ e, i }) => {
               const d = jourCourt(e.date);
@@ -202,7 +202,7 @@ export default function JournalCouverture({
                   title={`${dateLongue(e.date)} — ${e.text_count} textes`}
                   className="shrink-0 rounded-xl bg-white/10 px-3 py-2 text-center text-white/70 transition hover:bg-white/20 hover:text-white"
                 >
-                  <span className="block font-staatliches text-lg leading-none tabular-nums">{d.jour}</span>
+                  <span className="block font-staatliches text-lg leading-none tabular-nums">{d.jour}</span>{" "}
                   <span className="block text-[9px] font-black uppercase tracking-widest opacity-70">{d.mois}</span>
                 </button>
               );

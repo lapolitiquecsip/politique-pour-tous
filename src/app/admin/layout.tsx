@@ -19,7 +19,7 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
           <span className="ml-2 px-2 py-0.5 mt-1 bg-red-600 font-bold text-[10px] uppercase tracking-wider rounded text-white inline-block">
             Admin
           </span>
-        </div>
+        </div>{" "}
         
         {/* Trois entrées, toutes actives. « Abonnés » et « Scrapers » étaient des liens
             morts grisés : on cliquait sur « Abonnés » en cherchant la liste des
@@ -34,23 +34,23 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
             return (
               <Link key={href} href={href}
                 className={`flex items-start gap-3 rounded-xl px-4 py-3 transition ${ici ? `${actif} text-white shadow-lg` : "text-slate-300 hover:bg-slate-800 hover:text-white"}`}>
-                <Icone className="mt-0.5 h-5 w-5 shrink-0" />
+                <Icone className="mt-0.5 h-5 w-5 shrink-0" />{" "}
                 <span>
-                  <span className="block font-semibold">{titre}</span>
+                  <span className="block font-semibold">{titre}</span>{" "}
                   <span className={`block text-xs ${ici ? "text-white/75" : "text-slate-500"}`}>{sous}</span>
-                </span>
+                </span>{" "}
               </Link>
             );
           })}
-        </nav>
+        </nav>{" "}
 
         <div className="p-4 border-t border-slate-800">
           <Link href="/" className="flex items-center gap-3 px-4 py-3 rounded-lg text-slate-400 hover:text-red-400 hover:bg-slate-800 transition">
-            <LogOut className="w-5 h-5" />
+            <LogOut className="w-5 h-5" />{" "}
             Quitter
           </Link>
         </div>
-      </aside>
+      </aside>{" "}
 
       {/* Main Content */}
       <main className="flex-1 p-6 md:p-10 overflow-auto">

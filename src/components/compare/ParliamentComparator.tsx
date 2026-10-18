@@ -38,11 +38,11 @@ function Picker({ people, value, onPick, placeholder }: { people: Person[]; valu
   if (value) {
     return (
       <div className="flex items-center gap-3 rounded-2xl border-2 p-3" style={{ borderColor: value.color }}>
-        <Avatar p={value} size={48} />
+        <Avatar p={value} size={48} />{" "}
         <div className="min-w-0 flex-1">
-          <p className="truncate font-black text-foreground">{value.name}</p>
+          <p className="truncate font-black text-foreground">{value.name}</p>{" "}
           <p className="truncate text-xs font-bold text-muted-foreground">{value.party || "—"} · {value.type === "depute" ? "Député·e" : "Sénateur·rice"}</p>
-        </div>
+        </div>{" "}
         <button onClick={() => onPick(null)} className="shrink-0 rounded-full p-1.5 text-slate-400 hover:bg-slate-100"><X size={18} /></button>
       </div>
     );
@@ -50,20 +50,20 @@ function Picker({ people, value, onPick, placeholder }: { people: Person[]; valu
   return (
     <div className="relative">
       <div className="flex items-center gap-2 rounded-2xl border border-border bg-card px-4">
-        <Search size={18} className="text-muted-foreground" />
+        <Search size={18} className="text-muted-foreground" />{" "}
         <input value={q} onChange={e => setQ(e.target.value)} placeholder={placeholder}
           className="w-full bg-transparent py-3.5 text-foreground outline-none placeholder:text-slate-400 [color-scheme:light]" />
-      </div>
+      </div>{" "}
       {matches.length > 0 && (
         <div className="absolute z-20 mt-1 max-h-72 w-full overflow-y-auto rounded-2xl border border-border bg-card shadow-xl">
           {matches.map(p => (
             <button key={`${p.type}-${p.slug}`} onClick={() => { onPick(p); setQ(""); }}
               className="flex w-full items-center gap-3 border-b border-slate-50 p-2.5 text-left transition hover:bg-muted">
-              <Avatar p={p} size={36} />
+              <Avatar p={p} size={36} />{" "}
               <div className="min-w-0">
-                <p className="truncate text-sm font-bold text-foreground">{p.name}</p>
+                <p className="truncate text-sm font-bold text-foreground">{p.name}</p>{" "}
                 <p className="truncate text-[11px] font-bold text-muted-foreground">{p.party || "—"} · {p.type === "depute" ? "Député·e" : "Sénateur·rice"}</p>
-              </div>
+              </div>{" "}
             </button>
           ))}
         </div>
@@ -83,8 +83,8 @@ function Row({ label, a, b, fmt, higherBetter = true, aRaw, bRaw }: { label: str
   const bWin = aRaw != null && bRaw != null && aRaw !== bRaw && (higherBetter ? bRaw > aRaw : bRaw < aRaw);
   return (
     <div className="grid grid-cols-[1fr_auto_1fr] items-center gap-3 border-b border-border py-3">
-      <p className={`text-right text-lg font-black tabular-nums ${aWin ? "text-emerald-700 dark:text-emerald-400" : "text-foreground"}`}>{a}{fmt}</p>
-      <p className="px-2 text-center text-[10px] font-black uppercase tracking-widest text-slate-400">{label}</p>
+      <p className={`text-right text-lg font-black tabular-nums ${aWin ? "text-emerald-700 dark:text-emerald-400" : "text-foreground"}`}>{a}{fmt}</p>{" "}
+      <p className="px-2 text-center text-[10px] font-black uppercase tracking-widest text-slate-400">{label}</p>{" "}
       <p className={`text-left text-lg font-black tabular-nums ${bWin ? "text-emerald-700 dark:text-emerald-400" : "text-foreground"}`}>{b}{fmt}</p>
     </div>
   );
@@ -112,33 +112,33 @@ export default function ParliamentComparator() {
   return (
     <div className="mx-auto max-w-3xl px-4 pb-24">
       <div className="grid gap-4 sm:grid-cols-2">
-        <Picker people={people} value={a} onPick={setA} placeholder="1er parlementaire…" />
+        <Picker people={people} value={a} onPick={setA} placeholder="1er parlementaire…" />{" "}
         <Picker people={people} value={b} onPick={setB} placeholder="2e parlementaire…" />
-      </div>
+      </div>{" "}
 
       {a && b ? (
         <div className="mt-8 rounded-[2rem] border border-border bg-card p-6 shadow-sm">
           <div className="grid grid-cols-[1fr_auto_1fr] items-end gap-3 border-b-2 border-border pb-5">
-            <PersonHead p={a} align="right" />
-            <span className="pb-2 font-staatliches text-2xl text-slate-300">VS</span>
+            <PersonHead p={a} align="right" />{" "}
+            <span className="pb-2 font-staatliches text-2xl text-slate-300">VS</span>{" "}
             <PersonHead p={b} align="left" />
-          </div>
+          </div>{" "}
           <div className="mt-2">
             <Row label="Participation" a={fmtPct(a.participation)} b={fmtPct(b.participation)} aRaw={a.participation} bRaw={b.participation} />
             <Row label="Amendements déposés" a={fmtNum(a.amendments)} b={fmtNum(b.amendments)} aRaw={a.amendments} bRaw={b.amendments} />
             <Row label="Amendements cosignés" a={fmtNum(a.cosigned)} b={fmtNum(b.cosigned)} aRaw={a.cosigned} bRaw={b.cosigned} />
             {bothDeputies && <Row label="Loyauté au groupe" a={fmtPct(a.loyalty)} b={fmtPct(b.loyalty)} aRaw={a.loyalty} bRaw={b.loyalty} />}
-            {bothDeputies && <Row label="Mandats" a={fmtNum(a.mandats)} b={fmtNum(b.mandats)} aRaw={a.mandats} bRaw={b.mandats} />}
+            {bothDeputies && <Row label="Mandats" a={fmtNum(a.mandats)} b={fmtNum(b.mandats)} aRaw={a.mandats} bRaw={b.mandats} />}{" "}
             <div className="grid grid-cols-[1fr_auto_1fr] items-center gap-3 py-3">
-              <p className="text-right text-sm font-bold text-muted-foreground">{a.department || "—"}</p>
-              <p className="px-2 text-center text-[10px] font-black uppercase tracking-widest text-slate-400">Département</p>
+              <p className="text-right text-sm font-bold text-muted-foreground">{a.department || "—"}</p>{" "}
+              <p className="px-2 text-center text-[10px] font-black uppercase tracking-widest text-slate-400">Département</p>{" "}
               <p className="text-left text-sm font-bold text-muted-foreground">{b.department || "—"}</p>
             </div>
-          </div>
+          </div>{" "}
           <div className="mt-5 grid grid-cols-2 gap-3">
-            <Link href={`/${a.type === "depute" ? "deputes" : "senateurs"}/${a.slug}`} className="inline-flex items-center justify-center gap-1.5 rounded-full bg-slate-950 px-4 py-2.5 text-sm font-black text-white transition hover:bg-slate-700">Fiche de {a.name.split(" ")[0]} <ArrowRight size={15} /></Link>
-            <Link href={`/${b.type === "depute" ? "deputes" : "senateurs"}/${b.slug}`} className="inline-flex items-center justify-center gap-1.5 rounded-full bg-slate-950 px-4 py-2.5 text-sm font-black text-white transition hover:bg-slate-700">Fiche de {b.name.split(" ")[0]} <ArrowRight size={15} /></Link>
-          </div>
+            <Link href={`/${a.type === "depute" ? "deputes" : "senateurs"}/${a.slug}`} className="inline-flex items-center justify-center gap-1.5 rounded-full bg-slate-950 px-4 py-2.5 text-sm font-black text-white transition hover:bg-slate-700">Fiche de {a.name.split(" ")[0]} {" "}<ArrowRight size={15} /></Link>{" "}
+            <Link href={`/${b.type === "depute" ? "deputes" : "senateurs"}/${b.slug}`} className="inline-flex items-center justify-center gap-1.5 rounded-full bg-slate-950 px-4 py-2.5 text-sm font-black text-white transition hover:bg-slate-700">Fiche de {b.name.split(" ")[0]} {" "}<ArrowRight size={15} /></Link>
+          </div>{" "}
           {!bothDeputies && (a.type !== b.type) && <p className="mt-4 text-[11px] italic text-muted-foreground">Comparaison député·e ↔ sénateur·rice : certains indicateurs (loyauté, mandats) ne sont pas comparables entre les deux chambres.</p>}
         </div>
       ) : (
@@ -151,9 +151,9 @@ export default function ParliamentComparator() {
 function PersonHead({ p, align }: { p: Person; align: "left" | "right" }) {
   return (
     <div className={`flex flex-col items-center gap-2 ${align === "right" ? "sm:items-end" : "sm:items-start"}`}>
-      <Avatar p={p} size={72} />
+      <Avatar p={p} size={72} />{" "}
       <div className={align === "right" ? "text-center sm:text-right" : "text-center sm:text-left"}>
-        <p className="font-black leading-tight text-foreground">{p.name}</p>
+        <p className="font-black leading-tight text-foreground">{p.name}</p>{" "}
         <span className="mt-1 inline-block rounded-full px-2.5 py-0.5 text-[10px] font-black uppercase tracking-widest text-white" style={{ background: p.color }}>{p.party || "—"}</span>
       </div>
     </div>

@@ -41,7 +41,7 @@ export default function ThemeToggle() {
             exit={{ y: -20, opacity: 0, rotate: 45 }}
             transition={{ duration: 0.2 }}
           >
-            <Laptop className="w-5 h-5 text-muted-foreground group-hover:text-foreground transition-colors" />
+            <Laptop className="w-5 h-5 text-muted-foreground group-hover:text-foreground transition-colors" />{" "}
           </motion.div>
         ) : resolvedTheme === "dark" ? (
           <motion.div
@@ -51,7 +51,7 @@ export default function ThemeToggle() {
             exit={{ y: -20, opacity: 0, rotate: 45 }}
             transition={{ duration: 0.2 }}
           >
-            <Moon className="w-5 h-5 text-blue-400 fill-blue-400 group-hover:text-blue-300 transition-colors" />
+            <Moon className="w-5 h-5 text-blue-400 fill-blue-400 group-hover:text-blue-300 transition-colors" />{" "}
           </motion.div>
         ) : (
           <motion.div
@@ -61,10 +61,10 @@ export default function ThemeToggle() {
             exit={{ y: -20, opacity: 0, rotate: 45 }}
             transition={{ duration: 0.2 }}
           >
-            <Sun className="w-5 h-5 text-amber-500 fill-amber-500 group-hover:text-amber-400 transition-colors" />
+            <Sun className="w-5 h-5 text-amber-500 fill-amber-500 group-hover:text-amber-400 transition-colors" />{" "}
           </motion.div>
         )}
-      </AnimatePresence>
+      </AnimatePresence>{" "}
 
       <div className="absolute inset-x-0 bottom-0 h-0.5 bg-primary/20 scale-x-0 group-hover:scale-x-75 transition-transform duration-300" />
     </button>

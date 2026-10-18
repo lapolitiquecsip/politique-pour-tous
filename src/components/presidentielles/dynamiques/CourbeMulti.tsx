@@ -165,19 +165,19 @@ export default function CourbeMulti({
             {lecture?.map(l => <circle key={l.s.id} cx={X(l.x)} cy={Y(l.v)} r={4} fill={l.s.couleur} className="stroke-white dark:stroke-slate-950" strokeWidth={1.5} />)}
           </g>
         )}
-      </svg>
+      </svg>{" "}
 
       {xSurvol != null && lecture && lecture.length > 0 && (
         <div className="pointer-events-none absolute top-2 z-10 w-48 rounded-2xl border border-border bg-card/95 p-3 shadow-xl backdrop-blur"
           style={{ left: Math.min(Math.max(8, xSurvol + 14), largeur - 200) }}>
           <p className="mb-1.5 text-[10px] font-black uppercase tracking-widest text-muted-foreground">
             {new Date(survol!).toLocaleDateString("fr-FR", { day: "numeric", month: "long", year: "numeric" })}
-          </p>
+          </p>{" "}
           {lecture.slice(0, 10).map(l => (
             <p key={l.s.id} className="flex items-center gap-2 text-xs">
-              <span className="h-2 w-2 shrink-0 rounded-full" style={{ background: l.s.couleur }} />
-              <span className="min-w-0 flex-1 truncate font-bold text-foreground">{l.s.label}</span>
-              <span className="font-black tabular-nums text-foreground">{fmt(l.v)}</span>
+              <span className="h-2 w-2 shrink-0 rounded-full" style={{ background: l.s.couleur }} />{" "}
+              <span className="min-w-0 flex-1 truncate font-bold text-foreground">{l.s.label}</span>{" "}
+              <span className="font-black tabular-nums text-foreground">{fmt(l.v)}</span>{" "}
             </p>
           ))}
         </div>

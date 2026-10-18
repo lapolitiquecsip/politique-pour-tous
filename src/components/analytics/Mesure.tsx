@@ -58,10 +58,10 @@ export default function Mesure() {
         Vous arrivez par le lien de parrainage d&apos;un membre. Le site peut s&apos;en souvenir dans votre navigateur pendant
         90 jours, pour le remercier si vous vous abonnez. Cela ne change rien à votre prix.{" "}
         <a href="/confidentialite#cookies" className="underline">En savoir plus</a>
-      </p>
+      </p>{" "}
       <div className="mt-3 flex justify-end gap-2">
         <button type="button" onClick={() => setParrainage(null)}
-          className="rounded-full bg-muted px-4 py-2 text-xs font-bold text-muted-foreground transition hover:text-foreground">Non merci</button>
+          className="rounded-full bg-muted px-4 py-2 text-xs font-bold text-muted-foreground transition hover:text-foreground">Non merci</button>{" "}
         <button type="button" onClick={() => { accepterParrainage(parrainage); setParrainage(null); }}
           className="rounded-full bg-violet-600 px-4 py-2 text-xs font-bold text-white transition hover:bg-violet-700">D&apos;accord</button>
       </div>

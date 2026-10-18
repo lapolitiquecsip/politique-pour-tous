@@ -42,10 +42,10 @@ export default function SuivreBouton({ kind, refId, label, className = "" }: {
     return (
       <span className={`inline-flex max-w-md flex-col gap-2 rounded-2xl border border-fuchsia-400/40 bg-slate-950/90 p-3 text-left text-xs leading-relaxed text-white ${className}`}>
         Suivre un parti ou un candidat peut laisser deviner une opinion politique. Nous ne l&apos;utilisons que pour vous envoyer
-        les informations qui les concernent, sans la partager ; vous pouvez retirer votre accord à tout moment depuis votre espace.
+        les informations qui les concernent, sans la partager ; vous pouvez retirer votre accord à tout moment depuis votre espace.{" "}
         <span className="flex gap-2">
           <button onClick={async () => { await api.donnerConsentementSuivis(); setDemande(false); setSuivi(true); await api.ajouterSuivi(kind, refId, label); }}
-            className="rounded-lg bg-fuchsia-600 px-3 py-1.5 text-[11px] font-black uppercase tracking-widest">J&apos;accepte et je suis</button>
+            className="rounded-lg bg-fuchsia-600 px-3 py-1.5 text-[11px] font-black uppercase tracking-widest">J&apos;accepte et je suis</button>{" "}
           <button onClick={() => setDemande(false)} className="rounded-lg px-3 py-1.5 text-[11px] font-bold text-white/70">Annuler</button>
         </span>
       </span>

@@ -38,15 +38,15 @@ export default function LawTimeline({ events }: { events: TimelineEvent[] }) {
           <div key={index} className="mb-10 ml-8 relative">
             <span className={`absolute -left-[41px] flex items-center justify-center w-8 h-8 rounded-full ring-4 ${ringColor}`}>
               <StatusIcon className={`w-4 h-4 ${iconColor}`} />
-            </span>
+            </span>{" "}
             <div className="bg-card border border-border p-4 rounded-xl shadow-sm hover:shadow-md transition-shadow -mt-1">
               <h4 className="flex items-center gap-2 mb-1 text-lg font-bold text-foreground font-heading">
                 {event.title}
-              </h4>
+              </h4>{" "}
               <time className="block text-sm font-medium text-muted-foreground leading-none">
                 {dateStr}
               </time>
-            </div>
+            </div>{" "}
           </div>
         );
       })}

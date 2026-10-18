@@ -55,8 +55,8 @@ export default function IssuesVotesView() {
 
   return (
     <div className="mt-8">
-      <div className="mb-2 text-4xl font-staatliches uppercase text-foreground md:text-6xl">Les votes par enjeu</div>
-      <p className="mb-6 text-muted-foreground">Choisissez un thème : voyez les <b>votes clés</b> de l&apos;Assemblée et comment chaque groupe s&apos;est prononcé.</p>
+      <div className="mb-2 text-4xl font-staatliches uppercase text-foreground md:text-6xl">Les votes par enjeu</div>{" "}
+      <p className="mb-6 text-muted-foreground">Choisissez un thème : voyez les <b>votes clés</b> de l&apos;Assemblée et comment chaque groupe s&apos;est prononcé.</p>{" "}
 
       {/* Sélecteur d'enjeux */}
       <div className="flex flex-wrap gap-2">
@@ -65,24 +65,24 @@ export default function IssuesVotesView() {
           return (
             <button key={i.slug} onClick={() => setSel(i.slug)}
               className={`rounded-full px-4 py-2 text-sm font-black transition ${on ? "bg-slate-950 text-white" : "bg-card text-muted-foreground ring-1 ring-slate-200 hover:ring-slate-400"}`}>
-              {i.title} <span className={`ml-1 text-xs ${on ? "text-white/60" : "text-muted-foreground"}`}>{counts.get(i.slug)}</span>
+              {i.title} <span className={`ml-1 text-xs ${on ? "text-white/60" : "text-muted-foreground"}`}>{counts.get(i.slug)}</span>{" "}
             </button>
           );
         })}
-      </div>
+      </div>{" "}
 
       {/* Légende */}
       <div className="mt-6 flex flex-wrap items-center gap-4 text-[11px] font-black uppercase tracking-widest text-muted-foreground">
-        <span className="flex items-center gap-1.5"><span className="h-3 w-4 rounded bg-emerald-500" /> A voté pour</span>
-        <span className="flex items-center gap-1.5"><span className="h-3 w-4 rounded bg-rose-500" /> A voté contre</span>
+        <span className="flex items-center gap-1.5"><span className="h-3 w-4 rounded bg-emerald-500" /> A voté pour</span>{" "}
+        <span className="flex items-center gap-1.5"><span className="h-3 w-4 rounded bg-rose-500" /> A voté contre</span>{" "}
         <span className="flex items-center gap-1.5"><span className="h-3 w-4 rounded bg-slate-300" /> Abstention</span>
-      </div>
+      </div>{" "}
 
       {currentIssue?.proposition && (
         <p className="mt-3 rounded-2xl border-l-4 border-slate-300 bg-muted px-4 py-3 text-sm italic text-muted-foreground">
           Enjeu « {currentIssue.title} » — {currentIssue.proposition}.
         </p>
-      )}
+      )}{" "}
 
       {/* Liste des votes clés du thème */}
       <div className="mt-4 space-y-4">
@@ -91,12 +91,12 @@ export default function IssuesVotesView() {
           return (
             <div key={v.id} className="rounded-[1.5rem] border border-border bg-card p-5">
               <div className="flex flex-wrap items-center gap-2">
-                <span className="text-xs font-bold text-muted-foreground">{frDate(v.date)}</span>
+                <span className="text-xs font-bold text-muted-foreground">{frDate(v.date)}</span>{" "}
                 <span className={`inline-flex items-center gap-1 rounded-full px-2.5 py-0.5 text-[10px] font-black uppercase tracking-widest ${adopted ? "bg-emerald-500 text-white" : "bg-slate-400 text-white"}`}>
-                  {adopted ? <CheckCircle2 size={11} /> : <XCircle size={11} />}{adopted ? "Adopté" : "Rejeté"}
+                  {adopted ? <CheckCircle2 size={11} /> : <XCircle size={11} />}{" "}{adopted ? "Adopté" : "Rejeté"}
                 </span>
-              </div>
-              <h3 className="mt-2 text-lg font-bold leading-snug text-foreground">{cleanTitle(v.title, v.objet)}</h3>
+              </div>{" "}
+              <h3 className="mt-2 text-lg font-bold leading-snug text-foreground">{cleanTitle(v.title, v.objet)}</h3>{" "}
               {/* Position de chaque groupe */}
               <div className="mt-3 flex flex-wrap gap-1.5">
                 {AN_GROUPS_ORDERED.map(g => {
@@ -105,15 +105,15 @@ export default function IssuesVotesView() {
                   return (
                     <span key={g.po} title={`${g.name} — ${pos === "pour" ? "pour" : pos === "contre" ? "contre" : "abstention"}`}
                       className={`inline-flex items-center rounded-lg px-2 py-1 text-[11px] font-black ${POS_CLS[pos]}`}>
-                      {g.short}
+                      {g.short}{" "}
                     </span>
                   );
                 })}
-              </div>
+              </div>{" "}
             </div>
           );
         })}
-      </div>
+      </div>{" "}
       <p className="mt-6 text-[11px] italic text-slate-400">
         Votes « sur l&apos;ensemble » d&apos;un texte à l&apos;Assemblée nationale (open data officiel), tagués par thème. Position = majorité du groupe sur le vote.
       </p>

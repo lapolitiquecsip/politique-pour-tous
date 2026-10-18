@@ -45,7 +45,7 @@ export default function VersementsParrainage({ disponible, seuil }: { disponible
   }
   return (
     <div className="flex flex-col items-start gap-3 rounded-3xl border border-teal-300/30 bg-teal-400/[0.07] p-5 sm:flex-row sm:items-center sm:justify-between">
-      <p className="text-sm leading-relaxed text-white/85">{texte}</p>
+      <p className="text-sm leading-relaxed text-white/85">{texte}</p>{" "}
       {action && <div className="shrink-0">{action}</div>}
     </div>
   );

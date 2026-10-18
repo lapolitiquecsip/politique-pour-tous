@@ -269,7 +269,7 @@ export const AwardBadge = ({
       onMouseLeave={onMouseLeave}
       onMouseEnter={onMouseEnter}
     >
-      <style>{overlayAnimations}</style>
+      <style>{overlayAnimations}</style>{" "}
       <div
         style={{
           transform: `perspective(700px) matrix3d(${matrix})`,

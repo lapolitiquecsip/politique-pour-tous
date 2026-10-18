@@ -86,14 +86,14 @@ export default function ProgramSection() {
   return (
     <section className="bg-card p-8 md:p-10 rounded-[3rem] border border-border space-y-5">
       <div>
-        <p className="text-amber-700 dark:text-amber-400 font-black text-xs uppercase tracking-widest mb-2">Élection 2022</p>
+        <p className="text-amber-700 dark:text-amber-400 font-black text-xs uppercase tracking-widest mb-2">Élection 2022</p>{" "}
         <h2 className="text-3xl md:text-4xl font-staatliches uppercase tracking-tight text-foreground">
           Le <span className="text-transparent bg-clip-text bg-gradient-to-r from-amber-500 via-orange-500 to-yellow-500">programme</span> et son avancement
-        </h2>
+        </h2>{" "}
         <p className="mt-2 text-sm text-muted-foreground">
           {total} engagements du programme officiel « Avec Vous ».
         </p>
-      </div>
+      </div>{" "}
 
       {/* Synthèse visuelle : l'essentiel se lit d'un coup d'œil, sans dérouler la liste. */}
       <div className="space-y-2">
@@ -101,20 +101,20 @@ export default function ProgramSection() {
           {ORDER.filter(s => counts[s]).map(s => (
             <div key={s} className={STATUS[s].bar} style={{ width: `${(counts[s] / total) * 100}%` }} title={`${STATUS[s].label} : ${counts[s]}`} />
           ))}
-        </div>
+        </div>{" "}
         <div className="flex flex-wrap gap-x-4 gap-y-1">
           {ORDER.filter(s => counts[s]).map(s => (
             <span key={s} className="flex items-center gap-1.5 text-[10px] font-bold text-muted-foreground">
-              <span className={`h-2 w-2 rounded-full ${STATUS[s].dot}`} />
-              {STATUS[s].label} <span className="text-foreground font-black">{counts[s]}</span>
+              <span className={`h-2 w-2 rounded-full ${STATUS[s].dot}`} />{" "}
+              {STATUS[s].label} {" "}<span className="text-foreground font-black">{counts[s]}</span>{" "}
             </span>
           ))}
         </div>
-      </div>
+      </div>{" "}
 
       {/* Avertissement : le lecteur doit distinguer le fait de l'appréciation. */}
       <div className="flex items-start gap-3 rounded-2xl border border-amber-200 dark:border-amber-500/25 bg-amber-50/60 dark:bg-amber-500/10 p-3.5">
-        <Sparkles size={15} className="mt-0.5 shrink-0 text-amber-700 dark:text-amber-400" />
+        <Sparkles size={15} className="mt-0.5 shrink-0 text-amber-700 dark:text-amber-400" />{" "}
         <p className="text-[11px] leading-relaxed text-amber-900 dark:text-amber-300">
           <strong>Les engagements sont des faits</strong>, repris du programme officiel de campagne.
           <strong> L'avancement est instruit à charge et à décharge</strong> à partir des textes
@@ -122,7 +122,7 @@ export default function ProgramSection() {
           ce qui plaide pour, ce qui plaide contre. Quand les faits ne permettent pas de trancher,
           nous l'assumons plutôt que d'affirmer à tort.
         </p>
-      </div>
+      </div>{" "}
 
       {/* Filtres + recherche : on va droit à ce qu'on cherche au lieu de tout parcourir. */}
       <div className="flex flex-col sm:flex-row gap-3">
@@ -132,17 +132,17 @@ export default function ProgramSection() {
             className={`rounded-xl border px-3 py-2 text-[10px] font-black uppercase tracking-widest transition ${filter === null ? "bg-slate-900 text-white border-slate-900" : "bg-card text-muted-foreground border-border hover:border-slate-300"}`}
           >
             Tous ({total})
-          </button>
+          </button>{" "}
           {ORDER.filter(s => counts[s]).map(s => (
             <button
               key={s}
               onClick={() => { setFilter(filter === s ? null : s); setOpen(null); }}
               className={`rounded-xl border px-3 py-2 text-[10px] font-black uppercase tracking-widest transition ${filter === s ? STATUS[s].chip + " ring-2 ring-offset-1 ring-slate-300" : "bg-card text-muted-foreground border-border hover:border-slate-300"}`}
             >
-              {STATUS[s].label} ({counts[s]})
+              {STATUS[s].label} ({counts[s]}){" "}
             </button>
           ))}
-        </div>
+        </div>{" "}
         <div className="relative sm:w-56">
           <Search className="absolute left-3 top-1/2 -translate-y-1/2 text-slate-400" size={14} />
           <input
@@ -153,7 +153,7 @@ export default function ProgramSection() {
             className="w-full rounded-xl border border-border bg-card py-2 pl-9 pr-3 text-xs text-foreground outline-none transition focus:border-amber-300"
           />
         </div>
-      </div>
+      </div>{" "}
 
       {/* Liste à défilement interne : la section garde une hauteur fixe, donc les blocs
           suivants (ministres, Premiers ministres) restent accessibles sans scroll infini. */}
@@ -161,7 +161,7 @@ export default function ProgramSection() {
         <div className="max-h-[26rem] overflow-y-auto pr-2 space-y-2 custom-scrollbar">
           {shown.length === 0 && (
             <p className="py-8 text-center text-xs italic text-slate-400">Aucun engagement ne correspond.</p>
-          )}
+          )}{" "}
           {shown.map(i => {
             const st = STATUS[effectiveStatus(i)];
             const isOpen = open === i.id;
@@ -172,79 +172,79 @@ export default function ProgramSection() {
                   onClick={() => setOpen(isOpen ? null : i.id)}
                   className="w-full flex items-start gap-3 p-3.5 text-left transition hover:bg-muted"
                 >
-                  <span className={`mt-1.5 h-2 w-2 shrink-0 rounded-full ${st.dot}`} />
+                  <span className={`mt-1.5 h-2 w-2 shrink-0 rounded-full ${st.dot}`} />{" "}
                   <span className="min-w-0 flex-1">
-                    {i.theme && <span className="block text-[9px] font-black uppercase tracking-widest text-muted-foreground truncate">{i.theme}</span>}
+                    {i.theme && <span className="block text-[9px] font-black uppercase tracking-widest text-muted-foreground truncate">{i.theme}</span>}{" "}
                     <span className="mt-0.5 block text-sm font-bold leading-snug text-foreground">{i.engagement}</span>
-                  </span>
+                  </span>{" "}
                   <span className="flex shrink-0 items-center gap-2">
                     {(i.evidence_count ?? 0) > 0 && (
                       <span className="hidden sm:flex items-center gap-1 text-[9px] font-black text-muted-foreground" title={`${i.evidence_count} preuve(s)`}>
                         <FileCheck2 size={11} /> {i.evidence_count}
                       </span>
-                    )}
+                    )}{" "}
                     <span className={`rounded-lg border px-2 py-1 text-[9px] font-black uppercase tracking-widest ${st.chip}`}>
                       {st.label}
-                    </span>
+                    </span>{" "}
                     <ChevronDown size={15} className={`text-slate-300 transition-transform ${isOpen ? "rotate-180" : ""}`} />
                   </span>
-                </button>
+                </button>{" "}
 
                 {isOpen && (
                   <div className="border-t border-border bg-card">
                     {/* Bandeau de statut coloré + niveau de confiance, repère immédiat. */}
                     <div className={`flex items-center gap-2 border-b px-4 py-2.5 text-[10px] font-black uppercase tracking-widest ${st.chip}`}>
-                      <span className={`h-2.5 w-2.5 rounded-full ${st.dot}`} />
-                      {st.label}
+                      <span className={`h-2.5 w-2.5 rounded-full ${st.dot}`} />{" "}
+                      {st.label}{" "}
                       {i.confidence && (
                         <span className={`ml-auto rounded-full border px-2 py-0.5 text-[9px] ${confStyle(i.confidence).cls}`}>
                           {confStyle(i.confidence).label}
                         </span>
                       )}
-                    </div>
+                    </div>{" "}
 
                     <div className="space-y-3 px-4 py-4">
                       {/* Ce qui est établi */}
                       {i.certitudes && (
                         <div className="flex gap-2.5 rounded-xl border border-border bg-muted p-3">
-                          <CheckCircle2 size={16} className="mt-0.5 shrink-0 text-muted-foreground" />
+                          <CheckCircle2 size={16} className="mt-0.5 shrink-0 text-muted-foreground" />{" "}
                           <div>
-                            <p className="text-[10px] font-black uppercase tracking-widest text-muted-foreground">Ce qui est établi</p>
+                            <p className="text-[10px] font-black uppercase tracking-widest text-muted-foreground">Ce qui est établi</p>{" "}
                             <p className="mt-0.5 text-xs leading-relaxed text-slate-700 dark:text-slate-200">{i.certitudes}</p>
                           </div>
                         </div>
-                      )}
+                      )}{" "}
 
                       {/* Pour / contre — cartes à liseré coloré, le lecteur juge. */}
                       {(i.arguments_pour || i.arguments_contre) && (
                         <div className="grid grid-cols-1 gap-2.5 sm:grid-cols-2">
                           {i.arguments_pour && (
                             <div className="rounded-xl border-l-4 border-emerald-400 bg-emerald-50/60 dark:bg-emerald-500/10 p-3">
-                              <p className="flex items-center gap-1.5 text-[10px] font-black uppercase tracking-widest text-emerald-700 dark:text-emerald-300"><ThumbsUp size={12} /> Plaide pour</p>
+                              <p className="flex items-center gap-1.5 text-[10px] font-black uppercase tracking-widest text-emerald-700 dark:text-emerald-300"><ThumbsUp size={12} /> Plaide pour</p>{" "}
                               <p className="mt-1 text-[11px] leading-relaxed text-slate-700 dark:text-slate-200">{i.arguments_pour}</p>
                             </div>
-                          )}
+                          )}{" "}
                           {i.arguments_contre && (
                             <div className="rounded-xl border-l-4 border-rose-400 bg-rose-50/60 dark:bg-rose-500/10 p-3">
-                              <p className="flex items-center gap-1.5 text-[10px] font-black uppercase tracking-widest text-rose-700 dark:text-rose-300"><ThumbsDown size={12} /> Plaide contre</p>
+                              <p className="flex items-center gap-1.5 text-[10px] font-black uppercase tracking-widest text-rose-700 dark:text-rose-300"><ThumbsDown size={12} /> Plaide contre</p>{" "}
                               <p className="mt-1 text-[11px] leading-relaxed text-slate-700 dark:text-slate-200">{i.arguments_contre}</p>
                             </div>
                           )}
                         </div>
-                      )}
+                      )}{" "}
 
                       {/* Synthèse IA — encart ambré distinct. */}
                       {i.justification && (
                         <div className="rounded-xl border border-amber-200 bg-gradient-to-br from-amber-50 to-white p-3">
-                          <p className="flex items-center gap-1.5 text-[10px] font-black uppercase tracking-widest text-amber-700 dark:text-amber-400"><Sparkles size={12} /> Synthèse</p>
+                          <p className="flex items-center gap-1.5 text-[10px] font-black uppercase tracking-widest text-amber-700 dark:text-amber-400"><Sparkles size={12} /> Synthèse</p>{" "}
                           <p className="mt-1 text-xs leading-relaxed text-muted-foreground">{i.justification}</p>
                         </div>
-                      )}
+                      )}{" "}
 
                       {/* Sources — pastille de type colorée, compact. */}
                       {evs.length > 0 && (
                         <div>
-                          <p className="flex items-center gap-1.5 text-[10px] font-black uppercase tracking-widest text-slate-400"><FileCheck2 size={12} /> Sources ({evs.length})</p>
+                          <p className="flex items-center gap-1.5 text-[10px] font-black uppercase tracking-widest text-slate-400"><FileCheck2 size={12} /> Sources ({evs.length})</p>{" "}
                           <ul className="mt-2 space-y-1.5">
                             {evs.map((e, k) => {
                               const t = evStyle(e.type);
@@ -252,19 +252,19 @@ export default function ProgramSection() {
                                 <li key={k} className="flex items-start gap-2 rounded-lg border border-border bg-slate-50/70 dark:bg-slate-500/10 px-2.5 py-2">
                                   <span className={`mt-0.5 flex shrink-0 items-center gap-1 rounded px-1.5 py-0.5 text-[8px] font-black uppercase tracking-widest ${t.cls}`}>
                                     <t.Icon size={9} /> {t.label}
-                                  </span>
+                                  </span>{" "}
                                   <span className="min-w-0 flex-1 text-[11px] leading-snug text-slate-700 dark:text-slate-200">
                                     {e.url ? (
                                       <a href={e.url} target="_blank" rel="noopener noreferrer" className="hover:text-amber-600 hover:underline">{e.title}</a>
                                     ) : e.title}
                                     {e.date && <span className="ml-1 text-[9px] text-slate-400">· {fmtDate(e.date)}</span>}
-                                  </span>
+                                  </span>{" "}
                                 </li>
                               );
                             })}
                           </ul>
                         </div>
-                      )}
+                      )}{" "}
 
                       <a
                         href={i.source_url} target="_blank" rel="noopener noreferrer"
@@ -274,17 +274,17 @@ export default function ProgramSection() {
                       </a>
                     </div>
                   </div>
-                )}
+                )}{" "}
               </div>
             );
           })}
-        </div>
+        </div>{" "}
         {/* Dégradé : signale qu'il reste du contenu dans le cadre. */}
         <div className="pointer-events-none absolute bottom-0 left-0 right-2 h-8 bg-gradient-to-t from-background to-transparent rounded-b-2xl" />
-      </div>
+      </div>{" "}
 
       <p className="text-[10px] text-muted-foreground italic border-t border-border pt-4 flex items-start gap-1.5">
-        <ClipboardList size={12} className="mt-0.5 shrink-0" />
+        <ClipboardList size={12} className="mt-0.5 shrink-0" />{" "}
         <span>
           Engagements : programme officiel « Emmanuel Macron — Avec Vous » (2022)
           {sourceUrl && <> — <a href={sourceUrl} target="_blank" rel="noopener noreferrer" className="underline hover:text-amber-600">source</a></>}.

@@ -154,8 +154,8 @@ export default function LoginPage() {
   return (
     <div className="min-h-screen bg-[slate-950] flex items-center justify-center p-4 relative overflow-hidden">
       {/* Background Decorative Elements */}
-      <div className="absolute top-[-10%] left-[-10%] w-[40%] h-[40%] bg-blue-600/10 rounded-full blur-[120px]" />
-      <div className="absolute bottom-[-10%] right-[-10%] w-[40%] h-[40%] bg-amber-500/10 rounded-full blur-[120px]" />
+      <div className="absolute top-[-10%] left-[-10%] w-[40%] h-[40%] bg-blue-600/10 rounded-full blur-[120px]" />{" "}
+      <div className="absolute bottom-[-10%] right-[-10%] w-[40%] h-[40%] bg-amber-500/10 rounded-full blur-[120px]" />{" "}
 
       <motion.div 
         initial={{ opacity: 0, y: 20 }}
@@ -167,18 +167,18 @@ export default function LoginPage() {
           <div className="w-16 h-16 bg-gradient-to-tr from-blue-500 via-rose-500 to-amber-500 rounded-2xl flex items-center justify-center shadow-lg shadow-blue-500/20">
             <ShieldCheck className="text-white w-8 h-8" />
           </div>
-        </div>
+        </div>{" "}
 
         <div className="text-center mb-8">
           <h1 className="text-3xl font-extrabold text-foreground mb-2">
             {success ? "Vérifiez vos mails !" : (isLogin ? "Bon retour !" : "Rejoignez-nous")}
-          </h1>
+          </h1>{" "}
           <p className="text-muted-foreground">
             {success 
               ? "Un lien de confirmation vous a été envoyé." 
               : "Accédez à votre espace Politique, C'est Simple."}
           </p>
-        </div>
+        </div>{" "}
 
         {success ? (
           <motion.div 
@@ -186,12 +186,12 @@ export default function LoginPage() {
             animate={{ scale: 1, opacity: 1 }}
             className="bg-emerald-50 dark:bg-emerald-500/10 border border-emerald-100 dark:border-emerald-500/25 p-6 rounded-2xl text-center"
           >
-            <CheckCircle2 className="w-12 h-12 text-emerald-500 mx-auto mb-4" />
+            <CheckCircle2 className="w-12 h-12 text-emerald-500 mx-auto mb-4" />{" "}
             <p className="text-emerald-900 dark:text-emerald-300 text-sm leading-relaxed">
               Nous avons envoyé un e-mail à <strong>{email}</strong>. Cliquez sur le lien pour valider votre compte.
               Il peut mettre une minute à arriver ; pensez à regarder dans les courriers indésirables.
-            </p>
-            <div>{boutonRenvoi}</div>
+            </p>{" "}
+            <div>{boutonRenvoi}</div>{" "}
             <button
               onClick={() => setSuccess(false)}
               className="mt-6 text-emerald-700 dark:text-emerald-400 text-sm font-bold hover:underline"
@@ -203,11 +203,11 @@ export default function LoginPage() {
           <form onSubmit={handleSubmit} className="space-y-5">
             {/* Email Field */}
             <div className="space-y-2">
-              <label className="text-xs font-bold text-muted-foreground uppercase tracking-wider ml-1">Adresse E-mail</label>
+              <label className="text-xs font-bold text-muted-foreground uppercase tracking-wider ml-1">Adresse E-mail</label>{" "}
               <div className="relative group">
                 <div className="absolute left-4 top-1/2 -translate-y-1/2 text-muted-foreground group-focus-within:text-rose-500 transition-colors">
                   <Mail size={18} />
-                </div>
+                </div>{" "}
                 <input 
                   type="email"
                   required
@@ -217,15 +217,15 @@ export default function LoginPage() {
                   className="w-full bg-muted border border-border rounded-2xl py-4 pl-12 pr-4 text-foreground placeholder:text-slate-400 focus:outline-none focus:ring-2 focus:ring-rose-500/40 focus:border-rose-500 transition-all font-medium"
                 />
               </div>
-            </div>
+            </div>{" "}
 
             {/* Password Field */}
             <div className="space-y-2">
-              <label className="text-xs font-bold text-muted-foreground uppercase tracking-wider ml-1">Mot de passe</label>
+              <label className="text-xs font-bold text-muted-foreground uppercase tracking-wider ml-1">Mot de passe</label>{" "}
               <div className="relative group">
                 <div className="absolute left-4 top-1/2 -translate-y-1/2 text-muted-foreground group-focus-within:text-rose-500 transition-colors">
                   <Lock size={18} />
-                </div>
+                </div>{" "}
                 <input 
                   type="password"
                   required
@@ -235,7 +235,7 @@ export default function LoginPage() {
                   className="w-full bg-muted border border-border rounded-2xl py-4 pl-12 pr-4 text-foreground placeholder:text-slate-400 focus:outline-none focus:ring-2 focus:ring-rose-500/40 focus:border-rose-500 transition-all font-medium"
                 />
               </div>
-            </div>
+            </div>{" "}
 
             {/* Error Message */}
             {error && (
@@ -244,14 +244,14 @@ export default function LoginPage() {
                 animate={{ opacity: 1, x: 0 }}
                 className="bg-red-500/10 border border-red-500/20 p-4 rounded-xl flex items-start gap-3"
               >
-                <AlertCircle className="w-5 h-5 text-red-500 flex-shrink-0" />
+                <AlertCircle className="w-5 h-5 text-red-500 flex-shrink-0" />{" "}
                 <div>
-                  <p className="text-red-200 text-xs font-medium leading-tight">{error}</p>
-                  {nonConfirme && boutonRenvoi}
+                  <p className="text-red-200 text-xs font-medium leading-tight">{error}</p>{" "}
+                  {nonConfirme && boutonRenvoi}{" "}
                   {(dejaInscrit || /incorrect/.test(error)) && <div>{boutonReinit}</div>}
                 </div>
               </motion.div>
-            )}
+            )}{" "}
 
             {/* Submit Button */}
             <button 
@@ -267,12 +267,12 @@ export default function LoginPage() {
                   <ArrowRight size={18} />
                 </>
               )}
-            </button>
+            </button>{" "}
 
             {/* Mot de passe oublié : il n'existait aucun moyen de le réinitialiser. */}
             {isLogin && !dejaInscrit && !/incorrect/.test(error) && (
               <div className="text-center">{boutonReinit}</div>
-            )}
+            )}{" "}
 
             {/* Switch Mode */}
             <div className="text-center pt-4">
@@ -285,21 +285,21 @@ export default function LoginPage() {
               </button>
             </div>
           </form>
-        )}
+        )}{" "}
 
         {/* Footer info */}
         <div className="mt-10 pt-6 border-t border-white/5 flex items-center justify-center gap-2 text-xs text-muted-foreground">
-          <Star className="w-3 h-3 text-amber-500" />
+          <Star className="w-3 h-3 text-amber-500" />{" "}
           <span>Accès premium sécurisé par Supabase</span>
         </div>
-      </motion.div>
+      </motion.div>{" "}
 
       {/* Return Home */}
       <Link 
         href="/"
         className="absolute top-8 left-8 text-muted-foreground hover:text-white transition-colors flex items-center gap-2 text-sm font-medium"
       >
-        <ArrowRight className="w-4 h-4 rotate-180" />
+        <ArrowRight className="w-4 h-4 rotate-180" />{" "}
         Retour à l'accueil
       </Link>
     </div>

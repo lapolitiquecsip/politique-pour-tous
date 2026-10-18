@@ -93,13 +93,13 @@ export default function GlobalSearch({ variant = "desktop", onNavigate }: { vari
           autoFocus={variant === "mobile"}
           placeholder="Rechercher un élu, un territoire, une loi…"
           className="w-full rounded-full border border-border bg-muted py-2.5 pl-10 pr-9 text-sm text-foreground outline-none transition focus:border-slate-400 focus:bg-card dark:border-slate-700 dark:bg-slate-800 dark:text-white"
-        />
+        />{" "}
         {q && (
           <button onClick={() => { setQ(""); setGroups([]); }} className="absolute right-2.5 top-1/2 -translate-y-1/2 rounded-full p-1 text-muted-foreground hover:bg-slate-100 dark:hover:bg-slate-700">
             <X size={14} />
           </button>
         )}
-      </div>
+      </div>{" "}
 
       {open && q.trim().length >= 2 && (
         <div className="absolute left-0 right-0 z-50 mt-2 max-h-[70vh] overflow-y-auto overscroll-contain rounded-2xl border border-border bg-card p-2 shadow-2xl dark:border-slate-700 dark:bg-slate-900">
@@ -110,7 +110,7 @@ export default function GlobalSearch({ variant = "desktop", onNavigate }: { vari
           ) : (
             groups.map(g => (
               <div key={g.category} className="mb-1">
-                <p className="px-3 pb-1 pt-2 text-[10px] font-black uppercase tracking-widest text-muted-foreground">{g.category}</p>
+                <p className="px-3 pb-1 pt-2 text-[10px] font-black uppercase tracking-widest text-muted-foreground">{g.category}</p>{" "}
                 {g.items.map((it, i) => {
                   const Icon = ICON[it.type] || Search;
                   return (
@@ -122,14 +122,14 @@ export default function GlobalSearch({ variant = "desktop", onNavigate }: { vari
                           onError={e => { (e.currentTarget as HTMLImageElement).style.display = "none"; }} />
                       ) : (
                         <span className="flex h-9 w-9 shrink-0 items-center justify-center rounded-lg bg-slate-100 text-muted-foreground dark:bg-slate-800 dark:text-slate-300"><Icon size={15} /></span>
-                      )}
+                      )}{" "}
                       <span className="min-w-0 flex-1">
-                        <span className="block truncate text-sm font-bold text-foreground dark:text-white">{it.label}</span>
+                        <span className="block truncate text-sm font-bold text-foreground dark:text-white">{it.label}</span>{" "}
                         {it.sub && <span className="block truncate text-[11px] text-muted-foreground">{it.sub}</span>}
-                      </span>
+                      </span>{" "}
                     </button>
                   );
-                })}
+                })}{" "}
               </div>
             ))
           )}

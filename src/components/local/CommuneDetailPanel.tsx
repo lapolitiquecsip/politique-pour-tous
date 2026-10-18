@@ -307,7 +307,7 @@ const renderComparison = (val: any, metricKey: string, inverse?: boolean) => {
 
     return (
       <div className="flex justify-between items-center text-[9px] mt-1 font-medium leading-none">
-        <span className="text-muted-foreground">Moy. nationale : <span className="font-bold text-muted-foreground">{nat.format(nat.value)}</span></span>
+        <span className="text-muted-foreground">Moy. nationale : <span className="font-bold text-muted-foreground">{nat.format(nat.value)}</span></span>{" "}
         {isSame ? (
           <span className="text-muted-foreground font-semibold">Identique à la moyenne</span>
         ) : isNeutral ? (
@@ -323,7 +323,7 @@ const renderComparison = (val: any, metricKey: string, inverse?: boolean) => {
     const isSame = val.toLowerCase() === nat.value.toLowerCase();
     return (
       <div className="flex justify-between items-center text-[9px] mt-1 font-medium leading-none">
-        <span className="text-muted-foreground">Moy. nationale : <span className="font-bold text-muted-foreground">{nat.value}</span></span>
+        <span className="text-muted-foreground">Moy. nationale : <span className="font-bold text-muted-foreground">{nat.value}</span></span>{" "}
         <span className="text-muted-foreground font-semibold">{isSame ? 'Identique' : `Ville : ${val}`}</span>
       </div>
     );
@@ -497,7 +497,7 @@ export default function CommuneDetailPanel({
             exit={{ opacity: 0 }}
             onClick={onClose}
             className="fixed inset-0 bg-slate-950/60 backdrop-blur-sm z-50"
-          />
+          />{" "}
 
           {/* Modal Container */}
           <div className="fixed inset-0 flex items-center justify-center p-4 md:p-8 z-50 pointer-events-none">
@@ -526,53 +526,53 @@ export default function CommuneDetailPanel({
                     ) : (
                       <Star size={18} className={isSaved ? "fill-current" : ""} />
                     )}
-                  </button>
+                  </button>{" "}
                   <button
                     onClick={onClose}
                     className="w-10 h-10 rounded-full bg-white/20 backdrop-blur-md flex items-center justify-center text-white hover:bg-white/30 transition-colors"
                   >
                     <X size={20} />
                   </button>
-                </div>
+                </div>{" "}
 
                 <div className="space-y-4">
                   <div className="flex items-center gap-2">
-                    <MapPin size={14} className="text-rose-200" />
+                    <MapPin size={14} className="text-rose-200" />{" "}
                     <span className="text-[10px] font-black uppercase tracking-widest text-rose-200">
                       {commune.departement?.nom} · {commune.region?.nom}
-                    </span>
+                    </span>{" "}
                     {communeData && !communeData.isEstimated && (
                       <span className="px-2 py-0.5 bg-emerald-500/20 text-emerald-300 text-[8px] uppercase tracking-widest rounded-full border border-emerald-500/30 font-bold ml-2">
                         Données officielles
                       </span>
                     )}
-                  </div>
+                  </div>{" "}
 
                   <h2 className="text-4xl font-staatliches uppercase tracking-tight text-white leading-none">
                     {commune.nom}
-                  </h2>
+                  </h2>{" "}
 
                   <div className="flex items-center gap-4 pt-2">
                     {commune.codesPostaux?.[0] && (
                       <span className="px-3 py-1 bg-white/15 backdrop-blur-md rounded-full text-xs font-bold text-white">
                         {commune.codesPostaux[0]}
                       </span>
-                    )}
+                    )}{" "}
                     <span className="px-3 py-1 bg-white/15 backdrop-blur-md rounded-full text-xs font-bold text-white flex items-center gap-1.5">
-                      <Users size={12} />
+                      <Users size={12} />{" "}
                       {formatPopulation(commune.population)}
-                    </span>
+                    </span>{" "}
                     <button
                       onClick={handleOpenBudget}
                       className="px-4 py-1.5 bg-amber-400 hover:bg-amber-300 text-slate-950 text-xs font-extrabold uppercase tracking-wider rounded-full shadow-lg hover:shadow-xl transition-all flex items-center gap-1.5 border border-amber-300/30 active:scale-95"
                     >
-                      <Coins size={12} />
-                      <span>Budget Municipal</span>
+                      <Coins size={12} />{" "}
+                      <span>Budget Municipal</span>{" "}
                       {!isPremium && <Lock size={10} className="text-foreground/80" />}
                     </button>
                   </div>
                 </div>
-              </div>
+              </div>{" "}
 
               {/* Content (Scrollable) */}
               <div className="p-8 space-y-8 -mt-4 overflow-y-auto custom-scrollbar">
@@ -596,15 +596,15 @@ export default function CommuneDetailPanel({
                           ) : (
                             <Award size={20} />
                           )}
-                        </div>
+                        </div>{" "}
                         <div>
                           <p className="text-[9px] font-black uppercase tracking-widest text-muted-foreground">
                             Mairie &amp; Élus Municipaux (Source : RNE)
-                          </p>
+                          </p>{" "}
                           <h3 className="text-xl font-bold text-foreground group-hover:text-rose-600 transition-colors flex items-center gap-1.5">
-                            {mayorName}
+                            {mayorName}{" "}
                             {mayorFiche && <ArrowRight size={15} className="opacity-0 -translate-x-1 group-hover:opacity-100 group-hover:translate-x-0 transition-all text-rose-500" />}
-                          </h3>
+                          </h3>{" "}
                           {mayorFiche && <span className="text-[9px] font-black uppercase tracking-widest text-rose-500/80">Voir la fiche complète du maire</span>}
                         </div>
                       </>
@@ -616,7 +616,7 @@ export default function CommuneDetailPanel({
                     ) : (
                       <div className="flex items-center gap-3">{inner}</div>
                     );
-                  })()}
+                  })()}{" "}
 
                   {(communeData?.rne?.maire || mayor) && (
                     <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
@@ -624,20 +624,20 @@ export default function CommuneDetailPanel({
                       <div className="p-4 rounded-2xl bg-muted space-y-2">
                         <p className="text-[9px] font-black uppercase tracking-widest text-muted-foreground">
                           Parti politique
-                        </p>
+                        </p>{" "}
                         <div className="flex items-center gap-2">
-                          <div className={`w-3 h-3 rounded-full ${partyColor}`} />
+                          <div className={`w-3 h-3 rounded-full ${partyColor}`} />{" "}
                           <span className="text-sm font-bold text-foreground">
                             {communeData?.party || mayor?.p || "Non renseigné"}
                           </span>
                         </div>
-                      </div>
+                      </div>{" "}
 
                       {/* Mandate */}
                       <div className="p-4 rounded-2xl bg-muted space-y-2">
                         <p className="text-[9px] font-black uppercase tracking-widest text-muted-foreground flex items-center gap-1">
                           <Calendar size={10} /> Mandat depuis
-                        </p>
+                        </p>{" "}
                         <span className="text-sm font-bold text-foreground">
                           {communeData?.rne?.maire?.dateDebutMandat 
                             ? formatDate(communeData.rne.maire.dateDebutMandat) 
@@ -645,38 +645,38 @@ export default function CommuneDetailPanel({
                         </span>
                       </div>
                     </div>
-                  )}
+                  )}{" "}
 
                   {/* Rémunération du maire — calculée automatiquement depuis la population (barème légal). */}
-                  <RemunerationInfo mode="maire" population={commune.population} />
+                  <RemunerationInfo mode="maire" population={commune.population} />{" "}
 
                   {communeData?.rne && (
                     <div className="pt-4 border-t border-border space-y-4">
                       {communeData.rne.adjoints && communeData.rne.adjoints.length > 0 && (
                         <div className="space-y-2">
-                          <p className="text-[9px] font-black uppercase tracking-widest text-muted-foreground">Adjoints au Maire</p>
+                          <p className="text-[9px] font-black uppercase tracking-widest text-muted-foreground">Adjoints au Maire</p>{" "}
                           <div className="grid grid-cols-1 md:grid-cols-2 gap-2">
                             {communeData.rne.adjoints.slice(0, 8).map((adj: any, idx: number) => (
                               <div key={idx} className="p-3 rounded-xl bg-muted border border-border flex flex-col justify-center">
-                                <span className="text-xs font-bold text-foreground">{adj.prenom} {adj.nom}</span>
-                                <span className="text-[9px] text-slate-400 italic mt-0.5">{adj.fonction}</span>
+                                <span className="text-xs font-bold text-foreground">{adj.prenom} {adj.nom}</span>{" "}
+                                <span className="text-[9px] text-slate-400 italic mt-0.5">{adj.fonction}</span>{" "}
                               </div>
                             ))}
                           </div>
                         </div>
-                      )}
+                      )}{" "}
                       
                       {communeData.rne.conseillers && communeData.rne.conseillers.length > 0 && (
                         <div className="space-y-2">
                           <div className="flex justify-between items-center">
-                            <p className="text-[9px] font-black uppercase tracking-widest text-muted-foreground">Conseillers Municipaux ({communeData.rne.conseillers.length})</p>
+                            <p className="text-[9px] font-black uppercase tracking-widest text-muted-foreground">Conseillers Municipaux ({communeData.rne.conseillers.length})</p>{" "}
                             <button 
                               onClick={() => setShowAllElus(!showAllElus)}
                               className="text-[10px] font-bold text-rose-700 dark:text-rose-400 hover:text-rose-500 transition-colors"
                             >
                               {showAllElus ? "Masquer la liste" : "Afficher la liste"}
                             </button>
-                          </div>
+                          </div>{" "}
                           
                           {showAllElus && (
                             <motion.div 
@@ -686,7 +686,7 @@ export default function CommuneDetailPanel({
                             >
                               {communeData.rne.conseillers.map((cons: any, idx: number) => (
                                 <div key={idx} className="p-2.5 rounded-xl bg-slate-50/50 dark:bg-slate-500/10 border border-border/50 flex items-center justify-between">
-                                  <span className="text-xs font-semibold text-slate-700 dark:text-slate-200">{cons.prenom} {cons.nom}</span>
+                                  <span className="text-xs font-semibold text-slate-700 dark:text-slate-200">{cons.prenom} {cons.nom}</span>{" "}
                                 </div>
                               ))}
                             </motion.div>
@@ -695,10 +695,10 @@ export default function CommuneDetailPanel({
                       )}
                     </div>
                   )}
-                </motion.div>
+                </motion.div>{" "}
 
                 {/* Fil d'actualité de la ville (sources curées + résumé IA) — masqué s'il n'y a rien. */}
-                <EntityNewsFeed entityType="commune" entityId={commune.code} />
+                <EntityNewsFeed entityType="commune" entityId={commune.code} />{" "}
 
                 {/* Election Section */}
                 <motion.div
@@ -711,36 +711,36 @@ export default function CommuneDetailPanel({
                     <div className="flex items-center gap-3">
                       <div className="w-10 h-10 rounded-2xl bg-fuchsia-100 dark:bg-fuchsia-500/10 flex items-center justify-center text-fuchsia-600 dark:text-fuchsia-300">
                         <TrendingUp size={20} />
-                      </div>
+                      </div>{" "}
                       <div>
                         <p className="text-[9px] font-black uppercase tracking-widest text-muted-foreground">
                           Résultats Municipales
-                        </p>
+                        </p>{" "}
                         <h3 className="text-lg font-bold text-foreground">
                           Mars 2026
                         </h3>
                       </div>
-                    </div>
+                    </div>{" "}
                     {electionData?.m_score && (
                       <div className="text-right">
                         <p className="text-[9px] font-black uppercase tracking-widest text-muted-foreground">
                           Score de la liste
-                        </p>
+                        </p>{" "}
                         <p className="text-3xl font-black text-rose-700 dark:text-rose-400 leading-none mt-1">
                           {electionData.m_score.toFixed(2)}%
                         </p>
                       </div>
                     )}
-                  </div>
+                  </div>{" "}
 
                   {electionData ? (
                     <div className="space-y-4">
                       {/* Mayor Progress Bar */}
                       <div className="space-y-1.5">
                         <div className="flex justify-between text-[10px] font-bold uppercase tracking-wider text-muted-foreground">
-                          <span>{mayor?.n || "Maire sortant"}</span>
+                          <span>{mayor?.n || "Maire sortant"}</span>{" "}
                           <span>{electionData.m_score?.toFixed(2)}%</span>
-                        </div>
+                        </div>{" "}
                         <div className="h-3 w-full bg-slate-100 dark:bg-slate-500/10 rounded-full overflow-hidden">
                           <motion.div
                             initial={{ width: 0 }}
@@ -748,26 +748,26 @@ export default function CommuneDetailPanel({
                             className={`h-full ${partyColor}`}
                           />
                         </div>
-                      </div>
+                      </div>{" "}
 
                       {/* Competitors */}
                       {electionData.comp.length > 0 && (
                         <div className="pt-2 space-y-3">
                           <p className="text-[9px] font-black uppercase tracking-widest text-slate-400 flex items-center gap-1.5">
                             <UserMinus size={12} /> Principaux concurrents
-                          </p>
+                          </p>{" "}
                           <div className="grid grid-cols-1 gap-2">
                             {electionData.comp.slice(0, 3).map((comp, idx) => (
                               <div key={idx} className="flex items-center justify-between p-3 rounded-2xl bg-muted border border-border transition-hover hover:border-border">
                                 <div className="flex items-center gap-3">
-                                  <div className={`w-2 h-2 rounded-full ${PARTY_COLORS[comp.p] || "bg-slate-300"}`} />
+                                  <div className={`w-2 h-2 rounded-full ${PARTY_COLORS[comp.p] || "bg-slate-300"}`} />{" "}
                                   <span className="text-xs font-bold text-slate-700 dark:text-slate-200">
                                     {NUANCE_MAP[comp.p] || comp.p || "Indépendant"}
                                   </span>
-                                </div>
+                                </div>{" "}
                                 <span className="text-xs font-black text-muted-foreground">
                                   {comp.s.toFixed(2)}%
-                                </span>
+                                </span>{" "}
                               </div>
                             ))}
                           </div>
@@ -781,14 +781,14 @@ export default function CommuneDetailPanel({
                       </p>
                     </div>
                   )}
-                </motion.div>
+                </motion.div>{" "}
 
                 {finances && <LocalFinancesSection finances={finances} label="Finances communales" />}
                 {fiscalite && <FiscaliteSection fiscalite={fiscalite} />}
                 {/* Real indicators or coming soon */}
                 {loadingDetails ? (
                   <div className="flex flex-col items-center justify-center py-12 gap-3">
-                    <Loader2 className="animate-spin text-rose-700 dark:text-rose-400" size={24} />
+                    <Loader2 className="animate-spin text-rose-700 dark:text-rose-400" size={24} />{" "}
                     <p className="text-slate-400 text-xs font-bold uppercase tracking-wider">Chargement des indicateurs...</p>
                   </div>
                 ) : communeData ? (
@@ -811,40 +811,40 @@ export default function CommuneDetailPanel({
                           <div className="flex items-center gap-3">
                             <div className={`w-10 h-10 rounded-2xl flex items-center justify-center ${cat.iconClass}`}>
                               <cat.icon size={20} />
-                            </div>
+                            </div>{" "}
                             <h3 className={`text-xl font-staatliches uppercase tracking-wide ${cat.textClass}`}>{cat.title}</h3>
-                          </div>
+                          </div>{" "}
                           <div className={`grid grid-cols-1 md:grid-cols-2 gap-x-12 gap-y-6 rounded-[2rem] p-8 border ${cat.bgClass} ${cat.borderClass} bg-card`}>
                             {metrics.map((m: any, i: number) => (
                               <div key={`m${i}`} className="space-y-2">
                                 <div className="flex justify-between text-[10px] font-black uppercase tracking-widest text-slate-400">
-                                  <span>{m.label}</span>
+                                  <span>{m.label}</span>{" "}
                                   <span className="text-foreground font-bold">{m.display}</span>
-                                </div>
-                                {m.help && <div className="text-[10px] text-slate-400 font-medium normal-case leading-relaxed -mt-1">{m.help}</div>}
+                                </div>{" "}
+                                {m.help && <div className="text-[10px] text-slate-400 font-medium normal-case leading-relaxed -mt-1">{m.help}</div>}{" "}
                                 <div className="h-2 w-full bg-slate-200/60 rounded-full overflow-hidden">
                                   <div className={`h-full ${cat.progressClass}`} style={{ width: typeof m.raw === 'number' ? Math.min(Math.max(m.raw, 0), 100) + '%' : '50%' }} />
-                                </div>
-                                {renderComparison(m.raw, m.key, m.inverse)}
+                                </div>{" "}
+                                {renderComparison(m.raw, m.key, m.inverse)}{" "}
                               </div>
-                            ))}
+                            ))}{" "}
                             {extra.map((c, i) => (
                               <div key={`e${i}`} className="space-y-2">
                                 <div className="flex justify-between text-[10px] font-black uppercase tracking-widest text-slate-400">
-                                  <span>{c.label}</span>
+                                  <span>{c.label}</span>{" "}
                                   <span className="text-foreground font-bold">{c.display}</span>
-                                </div>
+                                </div>{" "}
                                 {c.pct != null && (
                                   <div className="h-2 w-full bg-slate-200/60 rounded-full overflow-hidden">
                                     <div className={`h-full ${cat.progressClass}`} style={{ width: c.pct + '%' }} />
                                   </div>
-                                )}
+                                )}{" "}
                               </div>
                             ))}
-                          </div>
+                          </div>{" "}
                         </motion.div>
                       );
-                    })}
+                    })}{" "}
 
                     {/* Catégories développement durable (ITDD) sans équivalent existant */}
                     {ITDD_NEW_CATEGORIES.map((cat) => {
@@ -855,27 +855,27 @@ export default function CommuneDetailPanel({
                           <div className="flex items-center gap-3">
                             <div className={`w-10 h-10 rounded-2xl flex items-center justify-center ${cat.iconClass}`}>
                               <cat.icon size={20} />
-                            </div>
+                            </div>{" "}
                             <h3 className={`text-xl font-staatliches uppercase tracking-wide ${cat.textClass}`}>{cat.title}</h3>
-                          </div>
+                          </div>{" "}
                           <div className={`grid grid-cols-1 md:grid-cols-2 gap-x-12 gap-y-6 rounded-[2rem] p-8 border ${cat.bgClass} ${cat.borderClass} bg-card`}>
                             {extra.map((c, i) => (
                               <div key={i} className="space-y-2">
                                 <div className="flex justify-between text-[10px] font-black uppercase tracking-widest text-slate-400">
-                                  <span>{c.label}</span>
+                                  <span>{c.label}</span>{" "}
                                   <span className="text-foreground font-bold">{c.display}</span>
-                                </div>
+                                </div>{" "}
                                 {c.pct != null && (
                                   <div className="h-2 w-full bg-slate-200/60 rounded-full overflow-hidden">
                                     <div className={`h-full ${cat.progressClass}`} style={{ width: c.pct + '%' }} />
                                   </div>
-                                )}
+                                )}{" "}
                               </div>
                             ))}
-                          </div>
+                          </div>{" "}
                         </div>
                       );
-                    })}
+                    })}{" "}
 
                     {/* Sources */}
                     {communeData.sources && (
@@ -896,20 +896,20 @@ export default function CommuneDetailPanel({
                       <div className="p-5 rounded-3xl bg-card border border-border shadow-lg shadow-slate-200/30 text-center space-y-2">
                         <p className="text-[9px] font-black uppercase tracking-widest text-muted-foreground">
                           Population
-                        </p>
+                        </p>{" "}
                         <p className="text-2xl font-black text-foreground">
                           {commune.population?.toLocaleString("fr-FR") || "N/A"}
                         </p>
-                      </div>
+                      </div>{" "}
                       <div className="p-5 rounded-3xl bg-card border border-border shadow-lg shadow-slate-200/30 text-center space-y-2">
                         <p className="text-[9px] font-black uppercase tracking-widest text-muted-foreground">
                           Code INSEE
-                        </p>
+                        </p>{" "}
                         <p className="text-2xl font-black text-foreground">
                           {commune.code}
                         </p>
                       </div>
-                    </motion.div>
+                    </motion.div>{" "}
 
                     {/* More info coming soon */}
                     <motion.div
@@ -920,10 +920,10 @@ export default function CommuneDetailPanel({
                     >
                       <p className="text-[9px] font-black uppercase tracking-widest text-muted-foreground">
                         Bientôt disponible
-                      </p>
+                      </p>{" "}
                       <p className="text-lg font-bold">
                         Budget municipal, fiscalité locale, projets en cours…
-                      </p>
+                      </p>{" "}
                       <p className="text-xs text-slate-400 font-medium">
                         Ces données seront intégrées prochainement.
                       </p>

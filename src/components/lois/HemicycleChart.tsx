@@ -131,7 +131,7 @@ function Hemicycle({ title, total, groups, enExercice }: { title: string; total:
           <tspan className={hg ? "" : "fill-slate-900 dark:fill-white"}>{hg ? hg.seats : total}</tspan>
         </text>
         <text x={cx} y={cy - 8} textAnchor="middle" className="fill-slate-400 font-black uppercase" fontSize={hg ? 11 : 13} letterSpacing={hg ? 1 : 2}>{hg ? clip(hg.label) : (enExercice != null ? "sièges" : title)}</text>
-      </svg>
+      </svg>{" "}
       {/* Légende (identité jamais portée par la seule couleur) — cliquable vers la fiche du parti. */}
       <div className="mt-2 flex flex-wrap justify-center gap-x-4 gap-y-1.5">
         {sorted.map((g, i) => {
@@ -146,20 +146,20 @@ function Hemicycle({ title, total, groups, enExercice }: { title: string; total:
           const style = { opacity: dim ? 0.4 : 1, transform: isH ? "scale(1.08)" : "scale(1)" };
           const link = linkOf(g);
           return link ? (
-            <Link key={i} href={link} onMouseEnter={() => setHovered(i)} onMouseLeave={() => setHovered(null)} className={`${cls} hover:text-red-600`} style={style}>{inner}</Link>
+            <Link key={i} href={link} onMouseEnter={() => setHovered(i)} onMouseLeave={() => setHovered(null)} className={`${cls} hover:text-red-600`} style={style}>{inner}{" "}</Link>
           ) : (
-            <span key={i} onMouseEnter={() => setHovered(i)} onMouseLeave={() => setHovered(null)} className={cls} style={style}>{inner}</span>
+            <span key={i} onMouseEnter={() => setHovered(i)} onMouseLeave={() => setHovered(null)} className={cls} style={style}>{inner}{" "}</span>
           );
         })}
-      </div>
+      </div>{" "}
       {enExercice != null && (
         <p className="mt-2 text-center text-[12px] font-bold text-muted-foreground">
           {total} sièges · {enExercice} {title.toLowerCase()} en exercice{total - enExercice > 0 ? ` · ${total - enExercice} siège${total - enExercice > 1 ? "s" : ""} vacant${total - enExercice > 1 ? "s" : ""}` : ""}
         </p>
-      )}
+      )}{" "}
       {sorted.some(g => linkOf(g)) && (
         <figcaption className="mt-3 inline-flex items-center gap-1.5 rounded-md bg-yellow-200 px-2.5 py-1 text-[10px] font-bold uppercase tracking-wider text-slate-800 shadow-sm dark:bg-yellow-300 dark:text-slate-900">
-          <MousePointerClick className="h-3 w-3" />
+          <MousePointerClick className="h-3 w-3" />{" "}
           Cliquez sur un {sorted.some(g => g.href) ? "groupe" : "parti"} pour en savoir plus
         </figcaption>
       )}
@@ -229,14 +229,14 @@ export default function HemicycleChart({ chamber = "both", title, subtitle }: { 
     <section className="mx-auto max-w-7xl px-4">
       <div className="rounded-[2.5rem] border border-border dark:border-slate-800 bg-card dark:bg-slate-900 p-6 md:p-10 shadow-sm">
         <div className="mb-6 text-center">
-          <p className="text-[11px] font-black uppercase tracking-[0.25em] text-red-700 dark:text-red-400">{subtitle || "Composition du Parlement"}</p>
+          <p className="text-[11px] font-black uppercase tracking-[0.25em] text-red-700 dark:text-red-400">{subtitle || "Composition du Parlement"}</p>{" "}
           <h2 className="mt-1 text-3xl font-staatliches uppercase tracking-tight text-foreground dark:text-white md:text-4xl">
             {title || "Qui siège à l'Assemblée et au Sénat"}
           </h2>
-        </div>
+        </div>{" "}
         {chamber === "both" ? (
           <div className="grid gap-10 md:grid-cols-2">
-            <Hemicycle title="Députés" total={anTotal} groups={anG!} enExercice={anElus} />
+            <Hemicycle title="Députés" total={anTotal} groups={anG!} enExercice={anElus} />{" "}
             <Hemicycle title="Sénateurs" total={senTotal} groups={senG!} enExercice={senElus} />
           </div>
         ) : (
@@ -245,7 +245,7 @@ export default function HemicycleChart({ chamber = "both", title, subtitle }: { 
             {chamber === "senat" && <Hemicycle title="Sénateurs" total={senTotal} groups={senG!} enExercice={senElus} />}
             {chamber === "eu" && <Hemicycle title="Eurodéputés FR" total={euTotal} groups={eu!} />}
           </div>
-        )}
+        )}{" "}
         {(chamber === "an" || chamber === "both") && vacantsAN.length > 0 && anElus < SIEGES.an && (
           <p className="mx-auto mt-6 max-w-3xl rounded-2xl bg-muted px-4 py-3 text-center text-[12px] leading-relaxed text-muted-foreground">
             <strong className="text-foreground">{SIEGES.an - anElus} siège{SIEGES.an - anElus > 1 ? "s" : ""} vacant{SIEGES.an - anElus > 1 ? "s" : ""}</strong> en attendant

@@ -59,18 +59,18 @@ export default function FranceRnMap() {
   return (
     <div className="mt-6 rounded-3xl border border-border bg-card p-6">
       <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
-        <h2 className="text-lg font-black uppercase tracking-widest text-foreground">Où le RN a fait ses meilleurs scores</h2>
+        <h2 className="text-lg font-black uppercase tracking-widest text-foreground">Où le RN a fait ses meilleurs scores</h2>{" "}
         {/* Sélecteur d'élection */}
         <div className="inline-flex rounded-full border border-border bg-muted p-1">
           {MAPS.map(x => (
             <button key={x.key} onClick={() => { setTab(x.key as any); setHover(null); }}
               className={`rounded-full px-4 py-1.5 text-xs font-black uppercase tracking-widest transition ${tab === x.key ? "bg-rose-600 text-white shadow-sm" : "text-muted-foreground hover:text-slate-800"}`}>
-              {x.tab}
+              {x.tab}{" "}
             </button>
           ))}
         </div>
-      </div>
-      <p className="mt-1 text-sm text-muted-foreground">{m.subtitle} (national : {m.national.toLocaleString("fr-FR")} %).</p>
+      </div>{" "}
+      <p className="mt-1 text-sm text-muted-foreground">{m.subtitle} (national : {m.national.toLocaleString("fr-FR")} %).</p>{" "}
 
       <div className="mt-4 grid gap-6 md:grid-cols-[1.4fr_1fr] md:items-center">
         <div className="relative">
@@ -85,36 +85,36 @@ export default function FranceRnMap() {
                 </path>
               );
             })}
-          </svg>
+          </svg>{" "}
           {hover && (
             <div className="pointer-events-none absolute left-2 top-2 rounded-lg bg-slate-900 px-3 py-1.5 text-xs font-black text-white shadow-lg">
               {deptLabel(hover.code)} · <span className="text-rose-300">{hover.v.toLocaleString("fr-FR")} %</span>
             </div>
           )}
-        </div>
+        </div>{" "}
 
         <div>
-          <p className="mb-2 text-[10px] font-black uppercase tracking-widest text-muted-foreground">Part des voix</p>
+          <p className="mb-2 text-[10px] font-black uppercase tracking-widest text-muted-foreground">Part des voix</p>{" "}
           <div className="flex flex-col gap-1.5">
             {m.scale.map(s => (
               <div key={s.min} className="flex items-center gap-2 text-xs text-muted-foreground">
-                <span className="h-3.5 w-6 rounded" style={{ background: s.color }} /> {s.label}
+                <span className="h-3.5 w-6 rounded" style={{ background: s.color }} /> {s.label}{" "}
               </div>
             ))}
-          </div>
-          <p className="mb-2 mt-5 text-[10px] font-black uppercase tracking-widest text-muted-foreground">Départements en tête</p>
+          </div>{" "}
+          <p className="mb-2 mt-5 text-[10px] font-black uppercase tracking-widest text-muted-foreground">Départements en tête</p>{" "}
           <ol className="space-y-1.5">
             {top.map(([code, v], i) => (
               <li key={code} className="flex items-center gap-2 text-sm">
-                <span className="w-5 text-right font-black tabular-nums text-slate-400">{i + 1}</span>
-                <span className="h-3 w-3 rounded-full" style={{ background: colorFor(m.scale, v) }} />
-                <span className="font-bold text-foreground">{deptLabel(code)}</span>
-                <span className="ml-auto font-black tabular-nums text-rose-700 dark:text-rose-300">{v.toLocaleString("fr-FR")} %</span>
+                <span className="w-5 text-right font-black tabular-nums text-slate-400">{i + 1}</span>{" "}
+                <span className="h-3 w-3 rounded-full" style={{ background: colorFor(m.scale, v) }} />{" "}
+                <span className="font-bold text-foreground">{deptLabel(code)}</span>{" "}
+                <span className="ml-auto font-black tabular-nums text-rose-700 dark:text-rose-300">{v.toLocaleString("fr-FR")} %</span>{" "}
               </li>
             ))}
           </ol>
         </div>
-      </div>
+      </div>{" "}
 
       <a href={m.sourceUrl} target="_blank" rel="noopener noreferrer" className="mt-4 inline-flex items-start gap-1.5 text-[11px] leading-snug text-slate-400 hover:text-rose-600">
         <ExternalLink size={11} className="mt-0.5 shrink-0" /> {m.source}

@@ -111,7 +111,7 @@ export default function LawsGrid({ onSelectLaw, categoryFilter }: { onSelectLaw?
           onChange={(e) => setSearch(e.target.value)}
           className="w-full pl-14 pr-8 py-5 rounded-[2rem] bg-card border border-border shadow-sm focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all outline-none text-foreground font-medium"
         />
-      </div>
+      </div>{" "}
 
       {loading ? (
         <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
@@ -134,22 +134,22 @@ export default function LawsGrid({ onSelectLaw, categoryFilter }: { onSelectLaw?
                   <div className="flex items-start justify-between mb-6">
                     <span className="px-4 py-2 bg-muted text-muted-foreground rounded-full text-xs font-black uppercase tracking-widest border border-border">
                       {law.category}
-                    </span>
+                    </span>{" "}
                     {law.status && (
                       <span className="px-3 py-1.5 bg-blue-50 dark:bg-blue-500/10 text-blue-700 dark:text-blue-300 rounded-full text-[10px] font-bold uppercase tracking-wider">
                         {law.status}
                       </span>
                     )}
-                  </div>
+                  </div>{" "}
                   
                   <h3 className="text-xl md:text-2xl font-bold text-foreground mb-4 leading-tight group-hover:text-blue-600 transition-colors">
                     {law.title}
-                  </h3>
+                  </h3>{" "}
                   
                   <p className="text-muted-foreground text-sm leading-relaxed mb-6 line-clamp-3">
                     {law.summary}
                   </p>
-                </div>
+                </div>{" "}
 
                 {(() => {
                   const deputy = findDeputy(law.author);
@@ -169,11 +169,11 @@ export default function LawsGrid({ onSelectLaw, categoryFilter }: { onSelectLaw?
                         ) : (
                           <UserCheck size={14} />
                         )}
-                      </div>
+                      </div>{" "}
                       <div className="flex flex-col">
                         <span className="text-[10px] font-black uppercase tracking-wider text-muted-foreground">
                           {law.category === 'Projet de loi' ? 'Initiative' : 'Déposé par'}
-                        </span>
+                        </span>{" "}
                         <span className={`text-xs font-bold ${deputy ? 'text-blue-700 dark:text-blue-300' : 'text-slate-700 dark:text-slate-200'}`}>
                           {law.author}
                         </span>
@@ -186,23 +186,23 @@ export default function LawsGrid({ onSelectLaw, categoryFilter }: { onSelectLaw?
                       {content}
                     </Link>
                   ) : content;
-                })()}
+                })()}{" "}
 
                 <div className="flex items-center justify-between pt-6 border-t border-border mt-auto">
                   <div className="flex items-center gap-2 text-muted-foreground text-xs">
-                    <Calendar size={14} />
+                    <Calendar size={14} />{" "}
                     <span>{law.context?.replace(/\[.*?\]\s*/, "") || "Dossier en cours"}</span>
-                  </div>
+                  </div>{" "}
                   <button 
                     onClick={() => onSelectLaw ? onSelectLaw(law) : null}
                     className="flex items-center gap-2 text-xs font-black uppercase tracking-widest text-foreground hover:text-blue-600 transition-colors"
                   >
                     Détails du dossier <ChevronRight size={14} />
                   </button>
-                </div>
+                </div>{" "}
               </motion.div>
             ))}
-          </div>
+          </div>{" "}
           
           {totalPages > 1 && (
             <div className="flex flex-col items-center justify-center mt-12 gap-4">
@@ -216,7 +216,7 @@ export default function LawsGrid({ onSelectLaw, categoryFilter }: { onSelectLaw?
                   className="px-4 py-2 rounded-xl border border-border bg-card text-slate-700 dark:text-slate-200 font-bold disabled:opacity-50 disabled:cursor-not-allowed hover:bg-muted transition-colors"
                 >
                   Précédent
-                </button>
+                </button>{" "}
                 
                 <div className="flex gap-1 overflow-x-auto max-w-[200px] md:max-w-md p-1 scrollbar-hide">
                   {Array.from({ length: totalPages }).map((_, i) => {
@@ -236,11 +236,11 @@ export default function LawsGrid({ onSelectLaw, categoryFilter }: { onSelectLaw?
                       );
                     }
                     if (page === currentPage - 2 || page === currentPage + 2) {
-                      return <span key={page} className="w-10 h-10 flex items-center justify-center text-muted-foreground">...</span>;
+                      return <span key={page} className="w-10 h-10 flex items-center justify-center text-muted-foreground">...{" "}</span>;
                     }
                     return null;
                   })}
-                </div>
+                </div>{" "}
 
                 <button 
                   onClick={() => {
@@ -252,15 +252,15 @@ export default function LawsGrid({ onSelectLaw, categoryFilter }: { onSelectLaw?
                 >
                   Suivant
                 </button>
-              </div>
+              </div>{" "}
               <p className="text-muted-foreground text-sm font-medium">Page {currentPage} sur {totalPages}</p>
             </div>
           )}
         </>
       ) : (
         <div className="text-center py-20 bg-muted rounded-[3rem] border-2 border-dashed border-border">
-          <FileText className="mx-auto text-muted-foreground w-16 h-16 mb-4" />
-          <h3 className="text-xl font-bold text-foreground">Aucun dossier trouvé</h3>
+          <FileText className="mx-auto text-muted-foreground w-16 h-16 mb-4" />{" "}
+          <h3 className="text-xl font-bold text-foreground">Aucun dossier trouvé</h3>{" "}
           <p className="text-muted-foreground">Essayez d'ajuster votre recherche.</p>
         </div>
       )}

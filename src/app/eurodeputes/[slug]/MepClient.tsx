@@ -145,12 +145,12 @@ export default function MepClient({ mep, initialVotes, embedded }: { mep: any; i
           </Link>
         </div>
       </div>
-      )}
+      )}{" "}
 
       {/* Toutes les fonctions de la personne. */}
       <div className="container mx-auto max-w-5xl px-4 pt-6">
         <ParallelRoles fullName={mep.full_name || `${mep.first_name} ${mep.last_name}`} selfHref={`/eurodeputes/${mep.slug}`} />
-      </div>
+      </div>{" "}
 
       <div className="container mx-auto max-w-5xl px-4 pt-10">
         <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
@@ -164,37 +164,37 @@ export default function MepClient({ mep, initialVotes, embedded }: { mep: any; i
                   alt={mep.full_name}
                   className="absolute inset-0 h-full w-full object-cover object-[50%_20%]"
                   onError={(e) => { (e.currentTarget as HTMLImageElement).style.display = "none"; }}
-                />
+                />{" "}
                 <div className="absolute top-4 left-4 rounded-full bg-white/90 px-3 py-1 text-[10px] font-black uppercase tracking-widest text-slate-800">
                   {mep.ep_group_code}
-                </div>
+                </div>{" "}
                 {!mep.photo_url && <div className="w-full text-center text-white text-5xl font-staatliches pb-8">{initials}</div>}
-              </div>
+              </div>{" "}
               <div className="p-6">
                 <p className="text-amber-700 dark:text-amber-400 font-black text-[10px] uppercase tracking-widest flex items-center gap-1.5">
                   <Star size={11} className="fill-current" /> Membre du Parlement européen
-                </p>
+                </p>{" "}
                 <h1 className="mt-1 text-2xl font-staatliches uppercase tracking-wide text-foreground dark:text-white leading-tight">
                   {mep.full_name}
-                </h1>
+                </h1>{" "}
                 <div className="mt-4 space-y-3 text-sm">
                   <div>
-                    <p className="text-[9px] font-black uppercase tracking-widest text-muted-foreground">Groupe au Parlement européen</p>
+                    <p className="text-[9px] font-black uppercase tracking-widest text-muted-foreground">Groupe au Parlement européen</p>{" "}
                     {groupByCode(mep.ep_group_code) ? (
                       <Link href={`/groupes-europeens/${groupByCode(mep.ep_group_code)!.slug}`}
                         className="group/link inline-flex items-start gap-1 font-bold text-foreground dark:text-white hover:text-sky-600 dark:hover:text-sky-400 transition-colors">
-                        <span className="underline decoration-sky-500/40 decoration-2 underline-offset-2 group-hover/link:decoration-sky-500">{mep.ep_group || "—"}</span>
+                        <span className="underline decoration-sky-500/40 decoration-2 underline-offset-2 group-hover/link:decoration-sky-500">{mep.ep_group || "—"}</span>{" "}
                         <ExternalLink size={12} className="mt-1 shrink-0 opacity-50" />
                       </Link>
                     ) : (
                       <p className="font-bold text-foreground dark:text-white">{mep.ep_group || "—"}</p>
                     )}
-                  </div>
+                  </div>{" "}
                   <div>
-                    <p className="text-[9px] font-black uppercase tracking-widest text-muted-foreground">Parti national</p>
+                    <p className="text-[9px] font-black uppercase tracking-widest text-muted-foreground">Parti national</p>{" "}
                     <p className="font-bold text-foreground dark:text-white">{mep.national_party || "—"}</p>
                   </div>
-                </div>
+                </div>{" "}
                 <a
                   href={`https://www.europarl.europa.eu/meps/fr/${mep.id}`}
                   target="_blank" rel="noopener noreferrer"
@@ -204,7 +204,7 @@ export default function MepClient({ mep, initialVotes, embedded }: { mep: any; i
                 </a>
               </div>
             </div>
-          </div>
+          </div>{" "}
 
           {/* Colonne bio + votes */}
           <div className="md:col-span-2 space-y-8">
@@ -212,25 +212,25 @@ export default function MepClient({ mep, initialVotes, embedded }: { mep: any; i
             <section className="space-y-4">
               {(bio.profession || bio.formation || bio.enfants) && (
                 <div className="flex flex-wrap gap-2">
-                  {bio.profession && <span className="inline-flex items-center gap-2 rounded-full bg-card dark:bg-slate-900 border border-border dark:border-slate-800 px-4 py-2 text-sm font-bold text-slate-700 dark:text-slate-200"><Briefcase size={15} className="text-muted-foreground" />{bio.profession}</span>}
-                  {bio.formation && <span className="inline-flex items-center gap-2 rounded-full bg-card dark:bg-slate-900 border border-border dark:border-slate-800 px-4 py-2 text-sm font-bold text-slate-700 dark:text-slate-200"><GraduationCap size={16} className="text-muted-foreground" />{bio.formation}</span>}
-                  {bio.enfants && <span className="inline-flex items-center gap-2 rounded-full bg-card dark:bg-slate-900 border border-border dark:border-slate-800 px-4 py-2 text-sm font-bold text-slate-700 dark:text-slate-200"><Users size={15} className="text-muted-foreground" />{bio.enfants}</span>}
+                  {bio.profession && <span className="inline-flex items-center gap-2 rounded-full bg-card dark:bg-slate-900 border border-border dark:border-slate-800 px-4 py-2 text-sm font-bold text-slate-700 dark:text-slate-200"><Briefcase size={15} className="text-muted-foreground" />{" "}{bio.profession}</span>}{" "}
+                  {bio.formation && <span className="inline-flex items-center gap-2 rounded-full bg-card dark:bg-slate-900 border border-border dark:border-slate-800 px-4 py-2 text-sm font-bold text-slate-700 dark:text-slate-200"><GraduationCap size={16} className="text-muted-foreground" />{" "}{bio.formation}</span>}{" "}
+                  {bio.enfants && <span className="inline-flex items-center gap-2 rounded-full bg-card dark:bg-slate-900 border border-border dark:border-slate-800 px-4 py-2 text-sm font-bold text-slate-700 dark:text-slate-200"><Users size={15} className="text-muted-foreground" />{" "}{bio.enfants}</span>}
                 </div>
-              )}
+              )}{" "}
 
               <div className="flex items-center justify-between gap-4 rounded-3xl border border-border dark:border-slate-800 bg-card dark:bg-slate-900 p-5">
                 <div>
-                  <p className="text-[9px] font-black uppercase tracking-widest text-muted-foreground">Intégrité &amp; Transparence</p>
-                  <h3 className="text-lg font-bold text-foreground dark:text-white">Situation judiciaire</h3>
+                  <p className="text-[9px] font-black uppercase tracking-widest text-muted-foreground">Intégrité &amp; Transparence</p>{" "}
+                  <h3 className="text-lg font-bold text-foreground dark:text-white">Situation judiciaire</h3>{" "}
                   <span className={`text-[10px] font-black uppercase tracking-widest ${legalClean ? "text-emerald-700 dark:text-emerald-400" : "text-amber-800 dark:text-amber-400"}`}>{legalClean ? "Dossier vierge" : "Affaires à consulter"}</span>
-                </div>
+                </div>{" "}
                 <button onClick={() => setShowLegal(true)} className={`inline-flex items-center gap-2 rounded-2xl border px-5 py-3 text-[10px] font-black uppercase tracking-widest ${legalClean ? "border-emerald-500/20 bg-emerald-500/10 text-emerald-700 dark:text-emerald-400" : "border-amber-500/20 bg-amber-500/10 text-amber-800 dark:text-amber-400"}`}>
                   <ShieldCheck className="h-3.5 w-3.5" /> Consulter
                 </button>
-              </div>
+              </div>{" "}
 
               <FollowButton kind="mep" id={String(mep.id)} label="cet eurodéputé" />
-            </section>
+            </section>{" "}
 
             {/* PRÉSENCE AUX VOTES — remontée en haut, avec comparaison entre eurodéputés. */}
             <ActivityRank
@@ -238,7 +238,7 @@ export default function MepClient({ mep, initialVotes, embedded }: { mep: any; i
               peerLabel="eurodéputés français"
               participated={mep.votes_participated} total={mep.votes_total}
               note="Participation aux votes nominaux (position exprimée à l'appel nominal) : l'indicateur de présence fiable et vérifiable au Parlement européen. Comparaison entre eurodéputés français. Source : Parlement européen via HowTheyVote.eu."
-            />
+            />{" "}
 
             {/* Portrait — menu déroulant (ouvrir/fermer), comme les fiches député/sénateur. */}
             {hasPortrait && (
@@ -250,11 +250,11 @@ export default function MepClient({ mep, initialVotes, embedded }: { mep: any; i
               >
                 <h2 className="text-3xl font-staatliches uppercase tracking-tight text-foreground dark:text-white">
                   Portrait & <span className="text-sky-700 dark:text-sky-400">Engagement</span>
-                </h2>
+                </h2>{" "}
                 <div className={`w-10 h-10 shrink-0 rounded-full bg-slate-100 dark:bg-slate-800 flex items-center justify-center text-muted-foreground transition-transform duration-500 ${bioOpen ? "rotate-180" : ""}`}>
                   <ChevronDown className="w-5 h-5" />
                 </div>
-              </button>
+              </button>{" "}
 
               <AnimatePresence initial={false}>
                 {bioOpen && (
@@ -266,7 +266,7 @@ export default function MepClient({ mep, initialVotes, embedded }: { mep: any; i
                     className="overflow-hidden"
                   >
                     <div className="px-8 pb-8">
-                      {bio.summary && <p className="mb-6 text-[15px] leading-relaxed text-muted-foreground dark:text-slate-300">{bio.summary}</p>}
+                      {bio.summary && <p className="mb-6 text-[15px] leading-relaxed text-muted-foreground dark:text-slate-300">{bio.summary}</p>}{" "}
 
                       {hasStructured ? (
                         <div className="grid items-start gap-4 sm:grid-cols-2">
@@ -276,11 +276,11 @@ export default function MepClient({ mep, initialVotes, embedded }: { mep: any; i
                             const wide = key === "parcours" || key === "chronologie" || key === "realisations" ? "sm:col-span-2" : "";
                             return (
                               <div key={key} className={`rounded-3xl border border-border dark:border-slate-800 bg-slate-50/60 dark:bg-slate-800/40 p-5 ${wide}`}>
-                                <h3 className={`font-staatliches text-2xl uppercase leading-none ${color}`}>{label}</h3>
-                                <div className={`mb-3 mt-1.5 h-1 w-12 rounded-full ${color.replace("text-", "bg-")}`} />
+                                <h3 className={`font-staatliches text-2xl uppercase leading-none ${color}`}>{label}</h3>{" "}
+                                <div className={`mb-3 mt-1.5 h-1 w-12 rounded-full ${color.replace("text-", "bg-")}`} />{" "}
                                 <ul className="list-disc space-y-1.5 pl-4 text-sm leading-6 text-slate-700 dark:text-slate-300 marker:text-slate-300">
-                                  {points.map((p, i) => <li key={i}><NumHighlight text={p} /></li>)}
-                                </ul>
+                                  {points.map((p, i) => <li key={i}><NumHighlight text={p} />{" "}</li>)}
+                                </ul>{" "}
                               </div>
                             );
                           })}
@@ -295,22 +295,22 @@ export default function MepClient({ mep, initialVotes, embedded }: { mep: any; i
                 )}
               </AnimatePresence>
             </section>
-            )}
+            )}{" "}
 
             {/* VOTES — principaux par défaut, bascule « tous », pagination. */}
             <section className="rounded-[2.5rem] border border-border dark:border-slate-800 bg-card dark:bg-slate-900 p-8">
               <div className="flex flex-wrap items-center justify-between gap-3 mb-6">
                 <div className="flex items-center gap-3">
-                  <Building2 className="text-amber-700 dark:text-amber-400" size={22} />
+                  <Building2 className="text-amber-700 dark:text-amber-400" size={22} />{" "}
                   <h2 className="text-3xl font-staatliches uppercase tracking-tight text-foreground dark:text-white">
                     Votes au <span className="text-amber-700 dark:text-amber-400">Parlement européen</span>
                   </h2>
-                </div>
+                </div>{" "}
                 <div className="inline-flex rounded-xl border border-border dark:border-slate-700 p-1">
-                  <button onClick={() => reload(true)} className={`rounded-lg px-3 py-1.5 text-[10px] font-black uppercase tracking-widest transition ${onlyMain ? "bg-slate-900 text-white" : "text-muted-foreground"}`}>Principaux</button>
+                  <button onClick={() => reload(true)} className={`rounded-lg px-3 py-1.5 text-[10px] font-black uppercase tracking-widest transition ${onlyMain ? "bg-slate-900 text-white" : "text-muted-foreground"}`}>Principaux</button>{" "}
                   <button onClick={() => reload(false)} className={`rounded-lg px-3 py-1.5 text-[10px] font-black uppercase tracking-widest transition ${!onlyMain ? "bg-slate-900 text-white" : "text-muted-foreground"}`}>Tous</button>
                 </div>
-              </div>
+              </div>{" "}
 
               {/* Filtres par DOMAINE (catégories officielles) — éclaire les positions par thème. */}
               {cats.length > 1 && (
@@ -318,15 +318,15 @@ export default function MepClient({ mep, initialVotes, embedded }: { mep: any; i
                   <button onClick={() => selectCat(null)}
                     className={`rounded-full px-3.5 py-1.5 text-[11px] font-black uppercase tracking-wide transition ${category === null ? "bg-amber-700 text-white shadow" : "bg-slate-100 dark:bg-slate-800 text-muted-foreground hover:text-amber-600"}`}>
                     Tous les domaines
-                  </button>
+                  </button>{" "}
                   {cats.map(c => (
                     <button key={c.category} onClick={() => selectCat(c.category)}
                       className={`rounded-full px-3.5 py-1.5 text-[11px] font-bold transition ${category === c.category ? "bg-amber-700 text-white shadow" : "bg-slate-100 dark:bg-slate-800 text-muted-foreground dark:text-slate-300 hover:text-amber-600"}`}>
-                      {c.category} <span>· {c.count}</span>
+                      {c.category} <span>· {c.count}</span>{" "}
                     </button>
                   ))}
                 </div>
-              )}
+              )}{" "}
 
               {votes.length === 0 ? (
                 <p className="rounded-2xl border border-dashed border-border dark:border-slate-700 p-6 text-center text-sm italic text-slate-400">
@@ -340,72 +340,72 @@ export default function MepClient({ mep, initialVotes, embedded }: { mep: any; i
                       onClick={() => openExplanation(v)}
                       className="flex w-full items-center gap-4 rounded-2xl border border-border dark:border-slate-800 bg-slate-50/60 dark:bg-slate-800/40 p-4 text-left transition hover:border-amber-300 hover:bg-amber-50/40 dark:hover:bg-slate-800"
                     >
-                      <BallotBox vote={POS[v.position] || "ABSTENTION"} size={32} />
+                      <BallotBox vote={POS[v.position] || "ABSTENTION"} size={32} />{" "}
                       <div className="min-w-0 flex-1">
                         <p className="text-[10px] font-black uppercase tracking-widest text-muted-foreground">
                           {fmtDate(v.voted_at)}{v.reference ? ` · ${v.reference}` : ""}
-                        </p>
-                        <p className="text-sm font-bold leading-snug text-foreground dark:text-white line-clamp-2">{v.title}</p>
+                        </p>{" "}
+                        <p className="text-sm font-bold leading-snug text-foreground dark:text-white line-clamp-2">{v.title}</p>{" "}
                         {v.category && v.category !== "Autres" && (
                           <span className="mt-1 mr-2 inline-block rounded-full bg-slate-100 dark:bg-slate-700 px-2 py-0.5 text-[9px] font-black uppercase tracking-wide text-muted-foreground dark:text-slate-300">{v.category}</span>
                         )}
                         <span className="mt-1 inline-flex items-center gap-1 text-[10px] font-black uppercase tracking-widest text-amber-700 dark:text-amber-400">
                           <Sparkles size={11} /> Comprendre ce vote
                         </span>
-                      </div>
+                      </div>{" "}
                       <div className="shrink-0 flex flex-col items-end gap-1.5">
                         <span className={`text-[11px] font-black uppercase tracking-widest ${posColor[v.position] || "text-muted-foreground"}`}>
                           {posLabel[v.position] || v.position}
-                        </span>
+                        </span>{" "}
                         {v.result && (
                           <span className={`inline-flex items-center gap-1 rounded-full px-2 py-0.5 text-[9px] font-black uppercase tracking-wide ${v.result === "ADOPTED" ? "bg-emerald-500/10 text-emerald-700 dark:text-emerald-400" : "bg-rose-500/10 text-rose-600"}`}>
                             {v.result === "ADOPTED" ? "Adopté" : "Rejeté"}
                           </span>
-                        )}
+                        )}{" "}
                         {againstCurrent(v) && (
                           <span className="inline-flex items-center gap-1 rounded-full bg-amber-500/15 px-2 py-0.5 text-[9px] font-black uppercase tracking-wide text-amber-700 dark:text-amber-400" title="A voté à l'inverse du résultat final">
                             <TrendingDown size={10} /> À contre-courant
                           </span>
                         )}
-                      </div>
+                      </div>{" "}
                     </button>
                   ))}
                 </div>
-              )}
+              )}{" "}
               {!end && votes.length > 0 && (
                 <button
                   onClick={loadMore}
                   disabled={loading}
                   className="mt-5 inline-flex items-center gap-2 rounded-xl border border-border dark:border-slate-700 px-4 py-2.5 text-[10px] font-black uppercase tracking-widest text-muted-foreground transition hover:border-amber-300 hover:text-amber-600 disabled:opacity-50"
                 >
-                  {loading ? "Chargement…" : "Voir plus de votes"} <ChevronDown size={14} />
+                  {loading ? "Chargement…" : "Voir plus de votes"} {" "}<ChevronDown size={14} />
                 </button>
-              )}
+              )}{" "}
               <p className="mt-4 text-[10px] italic text-muted-foreground">
                 {onlyMain ? "Votes principaux (scrutins finaux sur les textes)." : "Tous les scrutins nominaux (y compris amendements)."} Source : Parlement européen via HowTheyVote.eu.
               </p>
             </section>
           </div>
         </div>
-      </div>
-      <LegalStatusModal isOpen={showLegal} onClose={() => setShowLegal(false)} deputy={legalPerson} cible={{ type: "mep", slug: mep.slug }} />
+      </div>{" "}
+      <LegalStatusModal isOpen={showLegal} onClose={() => setShowLegal(false)} deputy={legalPerson} cible={{ type: "mep", slug: mep.slug }} />{" "}
 
       {/* Explication IA d'un vote */}
       {openVote && (
         <div className="fixed inset-0 z-[60] flex items-end justify-center bg-slate-950/70 p-0 backdrop-blur-sm sm:items-center sm:p-6" onClick={() => setOpenVote(null)}>
           <div className="relative w-full max-w-2xl overflow-hidden rounded-t-[2rem] bg-card shadow-2xl dark:bg-slate-900 sm:rounded-[2rem] max-h-[90vh] flex flex-col" onClick={e => e.stopPropagation()}>
             <div className="relative bg-gradient-to-br from-amber-500 to-orange-600 p-6 pr-14 text-white shrink-0">
-              <button onClick={() => setOpenVote(null)} className="absolute right-4 top-4 rounded-full bg-white/20 p-2 transition hover:bg-white/30" aria-label="Fermer"><X size={18} /></button>
+              <button onClick={() => setOpenVote(null)} className="absolute right-4 top-4 rounded-full bg-white/20 p-2 transition hover:bg-white/30" aria-label="Fermer"><X size={18} /></button>{" "}
               <p className="flex items-center gap-1.5 text-[10px] font-black uppercase tracking-widest text-white/80">
                 <Sparkles size={12} /> Le vote expliqué
-              </p>
-              <h3 className="mt-1 text-lg font-bold leading-snug">{openVote.title}</h3>
+              </p>{" "}
+              <h3 className="mt-1 text-lg font-bold leading-snug">{openVote.title}</h3>{" "}
               <p className="mt-1 text-[11px] font-bold text-white/70">
                 {fmtDate(openVote.voted_at)}{openVote.reference ? ` · ${openVote.reference}` : ""} · Position : {posLabel[openVote.position] || openVote.position}
                 {openVote.result ? ` · Scrutin ${openVote.result === "ADOPTED" ? "adopté" : "rejeté"}` : ""}
                 {againstCurrent(openVote) ? " · à contre-courant" : ""}
               </p>
-            </div>
+            </div>{" "}
             <div className="overflow-y-auto p-6 space-y-5">
               {exp === undefined ? (
                 <div className="flex items-center justify-center gap-2 py-10 text-slate-400"><Loader2 className="animate-spin" size={18} /> Chargement de l'explication…</div>
@@ -418,30 +418,30 @@ export default function MepClient({ mep, initialVotes, embedded }: { mep: any; i
                 <>
                   {exp.subject && (
                     <div>
-                      <p className="text-[10px] font-black uppercase tracking-widest text-amber-700 dark:text-amber-400">Le sujet</p>
+                      <p className="text-[10px] font-black uppercase tracking-widest text-amber-700 dark:text-amber-400">Le sujet</p>{" "}
                       <p className="mt-1 text-[15px] font-bold leading-relaxed text-foreground dark:text-white">{exp.subject}</p>
                     </div>
-                  )}
+                  )}{" "}
                   {exp.explanation && (
                     <div>
-                      <p className="text-[10px] font-black uppercase tracking-widest text-muted-foreground">L'enjeu, expliqué</p>
+                      <p className="text-[10px] font-black uppercase tracking-widest text-muted-foreground">L'enjeu, expliqué</p>{" "}
                       <p className="mt-1 text-[15px] leading-relaxed text-slate-700 dark:text-slate-300">{exp.explanation}</p>
                     </div>
-                  )}
+                  )}{" "}
                   {exp.stakes && (
                     <div className="rounded-2xl bg-amber-50/60 dark:bg-slate-800/60 p-4">
-                      <p className="text-[10px] font-black uppercase tracking-widest text-amber-700 dark:text-amber-400">Ce que ça change</p>
+                      <p className="text-[10px] font-black uppercase tracking-widest text-amber-700 dark:text-amber-400">Ce que ça change</p>{" "}
                       <p className="mt-1 text-[15px] leading-relaxed text-slate-700 dark:text-slate-300">{exp.stakes}</p>
                     </div>
-                  )}
+                  )}{" "}
                   <p className="text-[10px] italic text-muted-foreground">Explication établie à partir des métadonnées officielles du scrutin. Neutre et factuelle.</p>
                 </>
-              )}
+              )}{" "}
 
               {/* Position PAR GROUPE au Parlement européen (données officielles). */}
               {groupsVote && groupsVote.length > 0 && (
                 <div>
-                  <p className="text-[10px] font-black uppercase tracking-widest text-muted-foreground">Position des groupes</p>
+                  <p className="text-[10px] font-black uppercase tracking-widest text-muted-foreground">Position des groupes</p>{" "}
                   <div className="mt-2 space-y-2">
                     {groupsVote.map((g: any, idx: number) => {
                       const total = (g.for || 0) + (g.against || 0) + (g.abstention || 0) + (g.dnv || 0);
@@ -452,27 +452,27 @@ export default function MepClient({ mep, initialVotes, embedded }: { mep: any; i
                         : { l: "Absent", c: "text-muted-foreground" };
                       return (
                         <div key={idx} className="flex items-center gap-3">
-                          <span className="w-14 shrink-0 text-[11px] font-black uppercase tracking-wide text-slate-700 dark:text-slate-200">{g.code}</span>
+                          <span className="w-14 shrink-0 text-[11px] font-black uppercase tracking-wide text-slate-700 dark:text-slate-200">{g.code}</span>{" "}
                           <div className="flex h-3 flex-1 overflow-hidden rounded-full bg-slate-100 dark:bg-slate-800" title={`Pour ${g.for} · Contre ${g.against} · Abst. ${g.abstention} · N'a pas voté ${g.dnv}`}>
-                            <span className="bg-emerald-500" style={{ width: pct(g.for) }} />
-                            <span className="bg-rose-500" style={{ width: pct(g.against) }} />
-                            <span className="bg-amber-400" style={{ width: pct(g.abstention) }} />
+                            <span className="bg-emerald-500" style={{ width: pct(g.for) }} />{" "}
+                            <span className="bg-rose-500" style={{ width: pct(g.against) }} />{" "}
+                            <span className="bg-amber-400" style={{ width: pct(g.abstention) }} />{" "}
                             <span className="bg-slate-300 dark:bg-slate-600" style={{ width: pct(g.dnv) }} />
-                          </div>
-                          <span className={`w-14 shrink-0 text-right text-[11px] font-black uppercase tracking-wide ${verdict.c}`}>{verdict.l}</span>
+                          </div>{" "}
+                          <span className={`w-14 shrink-0 text-right text-[11px] font-black uppercase tracking-wide ${verdict.c}`}>{verdict.l}</span>{" "}
                         </div>
                       );
                     })}
-                  </div>
+                  </div>{" "}
                   <div className="mt-2 flex flex-wrap gap-x-3 gap-y-1 text-[9px] font-bold uppercase tracking-widest text-slate-400">
-                    <span className="inline-flex items-center gap-1"><span className="h-2 w-2 rounded-full bg-emerald-500" />Pour</span>
-                    <span className="inline-flex items-center gap-1"><span className="h-2 w-2 rounded-full bg-rose-500" />Contre</span>
-                    <span className="inline-flex items-center gap-1"><span className="h-2 w-2 rounded-full bg-amber-400" />Abstention</span>
-                    <span className="inline-flex items-center gap-1"><span className="h-2 w-2 rounded-full bg-slate-300 dark:bg-slate-600" />N'a pas voté</span>
-                  </div>
+                    <span className="inline-flex items-center gap-1"><span className="h-2 w-2 rounded-full bg-emerald-500" />{" "}Pour</span>{" "}
+                    <span className="inline-flex items-center gap-1"><span className="h-2 w-2 rounded-full bg-rose-500" />{" "}Contre</span>{" "}
+                    <span className="inline-flex items-center gap-1"><span className="h-2 w-2 rounded-full bg-amber-400" />{" "}Abstention</span>{" "}
+                    <span className="inline-flex items-center gap-1"><span className="h-2 w-2 rounded-full bg-slate-300 dark:bg-slate-600" />{" "}N'a pas voté</span>
+                  </div>{" "}
                   <p className="mt-2 text-[10px] italic text-slate-400">Source : Parlement européen via HowTheyVote.eu.</p>
                 </div>
-              )}
+              )}{" "}
 
               {openVote.url && (
                 <a href={openVote.url} target="_blank" rel="noopener noreferrer" className="inline-flex items-center gap-1.5 text-[11px] font-black uppercase tracking-widest text-sky-700 dark:text-sky-400 hover:text-sky-500">

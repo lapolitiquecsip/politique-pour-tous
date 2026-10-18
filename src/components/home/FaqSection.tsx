@@ -82,11 +82,11 @@ export default function FaqSection() {
   return (
     <section id="faq" className="relative py-32 px-4 bg-muted overflow-hidden group border-t border-border">
       {/* Decorative background elements (subtle for light mode) */}
-      <div className="absolute -top-40 -right-40 w-96 h-96 bg-red-600/5 rounded-full blur-[60px] z-10" />
-      <div className="absolute top-40 -left-10 w-96 h-96 bg-blue-600/10 rounded-full blur-[60px] z-10" />
+      <div className="absolute -top-40 -right-40 w-96 h-96 bg-red-600/5 rounded-full blur-[60px] z-10" />{" "}
+      <div className="absolute top-40 -left-10 w-96 h-96 bg-blue-600/10 rounded-full blur-[60px] z-10" />{" "}
       <div className="absolute inset-0 z-0 opacity-[0.03] pointer-events-none select-none">
         <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[120%] h-[120%] bg-[url('https://www.transparenttextures.com/patterns/felt.png')] opacity-20" />
-      </div>
+      </div>{" "}
 
       <div className="container mx-auto max-w-6xl relative z-10">
         {/* Poster Title (CLEAN BLACK STYLE) */}
@@ -94,14 +94,14 @@ export default function FaqSection() {
           <div className="relative z-10">
             <span className="text-foreground opacity-[0.06] absolute -top-12 left-1/2 -translate-x-1/2 select-none hidden md:block whitespace-nowrap text-9xl font-staatliches tracking-widest leading-none">
               QUESTIONS • RÉPONSES
-            </span>
+            </span>{" "}
             
             <h2 className="text-7xl md:text-9xl font-staatliches uppercase tracking-tighter leading-none text-foreground">
               F.A.Q.
             </h2>
-          </div>
+          </div>{" "}
           <div className="h-1.5 w-32 bg-gradient-to-r from-blue-600 to-red-600 mt-8 rounded-full mx-auto" />
-        </div>
+        </div>{" "}
 
         {/* Floating FAQ Bubbles Area */}
         <div className="relative h-[600px] md:h-[500px] w-full mt-12">
@@ -135,14 +135,14 @@ export default function FaqSection() {
                 {/* Speech Bubble "Tail" */}
                 <div className={`absolute -bottom-3 left-1/2 -translate-x-1/2 w-0 h-0 border-l-[10px] border-l-transparent border-r-[10px] border-r-transparent border-t-[10px]
                   ${BUBBLE_COLORS[item.color].tail}
-                `} />
+                `} />{" "}
 
                 <p className="font-bold text-sm md:text-base leading-tight">
                   {item.question}
                 </p>
-              </motion.div>
+              </motion.div>{" "}
             </motion.div>
-          ))}
+          ))}{" "}
 
           {/* Modal / Answer Panel Overlaid */}
           <AnimatePresence>
@@ -155,37 +155,37 @@ export default function FaqSection() {
               >
                 <div className="bg-card p-8 md:p-12 rounded-[2.5rem] shadow-2xl max-w-xl mx-4 pointer-events-auto border border-blue-100 relative group overflow-hidden">
                    {/* Decorative corner */}
-                  <div className="absolute top-0 right-0 w-24 h-24 bg-gradient-to-bl from-blue-50 to-transparent -mr-12 -mt-12 rounded-full" />
+                  <div className="absolute top-0 right-0 w-24 h-24 bg-gradient-to-bl from-blue-50 to-transparent -mr-12 -mt-12 rounded-full" />{" "}
                   
                   <button 
                     onClick={() => setSelectedId(null)}
                     className="absolute top-6 right-6 p-2 hover:bg-slate-100 rounded-full transition-colors text-muted-foreground hover:text-foreground"
                   >
                     <X size={24} />
-                  </button>
+                  </button>{" "}
 
                   <div className="flex flex-col items-center text-center">
                     <div className="w-16 h-16 bg-blue-600 text-white rounded-2xl flex items-center justify-center mb-6 shadow-lg shadow-blue-200">
                       <HelpCircle size={32} />
-                    </div>
+                    </div>{" "}
                     <h3 className="text-3xl font-staatliches uppercase tracking-tight text-foreground mb-4 leading-none">
                       {faqData.find(f => f.id === selectedId)?.question}
-                    </h3>
+                    </h3>{" "}
                     <p className="text-xl text-muted-foreground leading-relaxed font-medium italic">
                       &quot;{faqData.find(f => f.id === selectedId)?.answer}&quot;
                     </p>
-                  </div>
+                  </div>{" "}
 
                   <div className="mt-8 flex items-center gap-2 text-blue-500/40 font-black text-[10px] uppercase tracking-[0.3em] justify-center">
-                    <div className="w-8 h-px bg-blue-500/20" />
-                    Réponse Citoyenne
+                    <div className="w-8 h-px bg-blue-500/20" />{" "}
+                    Réponse Citoyenne{" "}
                     <div className="w-8 h-px bg-blue-500/20" />
                   </div>
                 </div>
               </motion.div>
             )}
           </AnimatePresence>
-        </div>
+        </div>{" "}
 
         {/* Closing phrase inspired by poster design */}
         <div className="text-center mt-12 text-white/40 font-staatliches tracking-[0.4em] uppercase text-xs">

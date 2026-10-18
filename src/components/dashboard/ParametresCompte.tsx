@@ -89,18 +89,18 @@ export default function ParametresCompte() {
     <div className="container mx-auto max-w-3xl space-y-4 px-4">
       {/* Identifiants */}
       <div className={carte}>
-        <p className={titre}><Mail size={13} /> Adresse de connexion</p>
-        <p className="mt-2 break-all text-lg font-bold text-white">{courriel ?? "…"}</p>
+        <p className={titre}><Mail size={13} /> Adresse de connexion</p>{" "}
+        <p className="mt-2 break-all text-lg font-bold text-white">{courriel ?? "…"}</p>{" "}
         {depuis && (
           <p className="mt-1 text-[12px] text-white/45">
             Compte ouvert le {new Date(depuis).toLocaleDateString("fr-FR", { day: "numeric", month: "long", year: "numeric" })}
           </p>
-        )}
+        )}{" "}
         <p className="mt-3 text-[12px] leading-snug text-white/45">
           L&apos;adresse sert à la connexion et aux alertes. Pour en changer, écrivez-nous :
           elle est liée au paiement, et la modifier sans précaution couperait l&apos;abonnement.
         </p>
-      </div>
+      </div>{" "}
 
       {/* Abonnement — la carte la plus regardée de l'écran : on lui donne l'habillage
           de l'offre, un halo qui respire, et surtout une sortie claire vers la gestion
@@ -112,22 +112,22 @@ export default function ParametresCompte() {
           className="pointer-events-none absolute -right-16 -top-16 h-48 w-48 rounded-full bg-amber-500/25 blur-3xl"
           animate={reduce ? undefined : { scale: [1, 1.18, 1], opacity: [0.45, 0.85, 0.45] }}
           transition={{ duration: 5, repeat: Infinity, ease: "easeInOut" }}
-        />
+        />{" "}
 
         <div className="relative">
           <p className="flex items-center gap-2 text-[10px] font-black uppercase tracking-widest text-amber-300">
             <ShieldCheck size={13} /> Abonnement
-          </p>
+          </p>{" "}
 
           <div className="mt-2 flex flex-wrap items-center gap-x-3 gap-y-1">
-            <span className="font-staatliches text-4xl uppercase leading-none tracking-tight text-white">{niveau.nom}</span>
+            <span className="font-staatliches text-4xl uppercase leading-none tracking-tight text-white">{niveau.nom}</span>{" "}
             {niveau.prix && (
               <span className="rounded-full bg-gradient-to-r from-amber-400 to-yellow-600 px-3 py-1 text-[11px] font-black uppercase tracking-widest text-white shadow-[0_8px_24px_rgb(var(--lueur-offre)/0.35)]">
                 {niveau.prix}
               </span>
             )}
-          </div>
-          <p className="mt-2 max-w-xl text-[13px] leading-relaxed text-white/65">{niveau.detail}</p>
+          </div>{" "}
+          <p className="mt-2 max-w-xl text-[13px] leading-relaxed text-white/65">{niveau.detail}</p>{" "}
 
           <div className="mt-5 flex flex-col gap-2 sm:flex-row sm:flex-wrap sm:items-center">
             {STRIPE_PORTAL_URL ? (
@@ -137,8 +137,8 @@ export default function ParametresCompte() {
               >
                 <CreditCard size={15} /> Gérer mon abonnement <ArrowUpRight size={14} />
               </a>
-            ) : null}
-            {(tier === "elite" || tier === "pro") && <ResiliationAbonnement />}
+            ) : null}{" "}
+            {(tier === "elite" || tier === "pro") && <ResiliationAbonnement />}{" "}
 
             {tier !== "pro" && (
               <Link href="/premium"
@@ -146,7 +146,7 @@ export default function ParametresCompte() {
                 {tier === "elite" ? "Passer à l'offre Pro" : "Voir les formules"}
               </Link>
             )}
-          </div>
+          </div>{" "}
 
           <p className="mt-3 text-[11px] leading-snug text-white/35">
             {STRIPE_PORTAL_URL
@@ -154,16 +154,16 @@ export default function ParametresCompte() {
               : "La résiliation prend effet à la fin de la période payée, sans frais ; un e-mail la confirme. Pour changer de formule, écrivez-nous depuis la page Contact."}
           </p>
         </div>
-      </div>
+      </div>{" "}
 
 
       {/* Apparence — un réglage, donc à sa place dans les réglages plutôt qu'en
           permanence dans la barre de navigation. */}
       <div className={carte}>
-        <p className={titre}><Palette size={13} /> Apparence</p>
+        <p className={titre}><Palette size={13} /> Apparence</p>{" "}
         <p className="mt-2 text-[13px] leading-snug text-white/55">
           Choisissez le thème du site. « Système » suit le réglage de votre appareil.
-        </p>
+        </p>{" "}
         <div className="mt-4 inline-flex rounded-2xl border border-white/10 bg-white/[0.04] p-1">
           {([
             ["light", "Clair", Sun],
@@ -178,52 +178,52 @@ export default function ParametresCompte() {
                 theme === valeur ? "bg-white text-slate-900" : "text-white/60 hover:text-white"
               }`}
             >
-              <Icone size={14} /> {libelle}
+              <Icone size={14} /> {libelle}{" "}
             </button>
           ))}
-        </div>
+        </div>{" "}
         <p className="mt-3 text-[11px] leading-snug text-white/35">
           Le choix vaut pour tout le site et reste mémorisé d&apos;une visite à l&apos;autre.
           Quelques écrans gardent volontairement leurs couleurs — l&apos;espace Pro, les
           panneaux d&apos;abonnement — parce qu&apos;ils sont dessinés sombres.
         </p>
-      </div>
+      </div>{" "}
 
       {/* Mot de passe */}
       <form onSubmit={changerMotDePasse} className={carte}>
-        <p className={titre}><KeyRound size={13} /> Mot de passe</p>
+        <p className={titre}><KeyRound size={13} /> Mot de passe</p>{" "}
         <div className="mt-3 grid gap-3 sm:grid-cols-2">
           <input
             type="password" value={motDePasse} onChange={e => setMotDePasse(e.target.value)}
             placeholder="Nouveau mot de passe" autoComplete="new-password" className={champ}
-          />
+          />{" "}
           <input
             type="password" value={confirmation} onChange={e => setConfirmation(e.target.value)}
             placeholder="Confirmer" autoComplete="new-password" className={champ}
           />
-        </div>
+        </div>{" "}
 
         {message && (
           <p className={`mt-3 flex items-start gap-2 text-[13px] leading-snug ${message.ton === "ok" ? "text-emerald-300" : "text-rose-300"}`}>
-            {message.ton === "ok" ? <Check size={15} className="mt-0.5 shrink-0" /> : <AlertTriangle size={15} className="mt-0.5 shrink-0" />}
+            {message.ton === "ok" ? <Check size={15} className="mt-0.5 shrink-0" /> : <AlertTriangle size={15} className="mt-0.5 shrink-0" />}{" "}
             {message.texte}
           </p>
-        )}
+        )}{" "}
 
         <button
           type="submit" disabled={enCours || !motDePasse}
           className="mt-4 inline-flex items-center gap-2 rounded-2xl bg-white px-5 py-2.5 text-[11px] font-black uppercase tracking-widest text-slate-900 transition hover:brightness-95 disabled:opacity-40"
         >
-          {enCours && <Loader2 size={14} className="animate-spin" />}
+          {enCours && <Loader2 size={14} className="animate-spin" />}{" "}
           Modifier le mot de passe
         </button>
-      </form>
+      </form>{" "}
 
-      <MesDonnees />
+      <MesDonnees />{" "}
 
       {/* Déconnexion */}
       <div className={carte}>
-        <p className={titre}><LogOut size={13} /> Session</p>
+        <p className={titre}><LogOut size={13} /> Session</p>{" "}
         <button
           onClick={deconnexion}
           className="mt-3 inline-flex items-center gap-2 rounded-2xl border border-rose-400/30 bg-rose-500/10 px-5 py-2.5 text-[11px] font-black uppercase tracking-widest text-rose-300 transition hover:bg-rose-500/20"

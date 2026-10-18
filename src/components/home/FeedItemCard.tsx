@@ -121,24 +121,24 @@ export default function FeedItemCard({ item, colorIndex }: { item: ContentItem; 
       <div className="flex min-h-0 flex-1 flex-col px-6 pb-5 pt-6">
         <div className="mb-4 flex shrink-0 items-center justify-between">
           <span className={`inline-flex items-center gap-1.5 rounded-full px-2.5 py-1 text-[10px] font-black uppercase tracking-widest ${config.tintBg} ${config.tintText}`}>
-            <span className={`h-1.5 w-1.5 rounded-full ${config.dot}`} />
+            <span className={`h-1.5 w-1.5 rounded-full ${config.dot}`} />{" "}
             {config.label}
-          </span>
+          </span>{" "}
           <span className="text-[11px] font-semibold text-muted-foreground">{relativeDate}{item.titre_original && item.titre_original === item.titre_simplifie
             ? <span title="Intitulé et chapô repris tels quels de la source officielle"> · texte de la source</span>
             : <span title="Titre et résumé rédigés par IA à partir de la source citée"> · résumé IA</span>}</span>
-        </div>
+        </div>{" "}
 
         <h3 className="mb-3 shrink-0 text-[19px] font-black leading-[1.3] tracking-tight text-foreground dark:text-white">
           <GlossaryText>{item.titre_simplifie}</GlossaryText>
-        </h3>
+        </h3>{" "}
 
         {/* Jamais de texte coupé : un résumé plus long que la carte défile dans la carte. */}
         <div ref={resume} className="relative min-h-0 flex-1 overflow-y-auto overscroll-contain pr-1">
           <p className="text-[14.5px] leading-[1.6] text-slate-600 dark:text-slate-300">
             <GlossaryText>{item.resume_flash}</GlossaryText>
           </p>
-        </div>
+        </div>{" "}
 
         <div className="mt-4 shrink-0 border-t border-border/60 pt-3.5 dark:border-slate-800">
           {item.source_url ? (
@@ -148,15 +148,15 @@ export default function FeedItemCard({ item, colorIndex }: { item: ContentItem; 
               rel="noopener noreferrer"
               className="group/link flex items-center gap-2 text-xs text-muted-foreground transition-colors hover:text-foreground dark:text-slate-400 dark:hover:text-white"
             >
-              <AvatarGroup members={getAvatarMembers(item.source_name || "Source officielle")} size={20} limit={3} />
-              <span className="min-w-0 flex-1 truncate font-semibold group-hover/link:underline">{libelleSource}</span>
+              <AvatarGroup members={getAvatarMembers(item.source_name || "Source officielle")} size={20} limit={3} />{" "}
+              <span className="min-w-0 flex-1 truncate font-semibold group-hover/link:underline">{libelleSource}</span>{" "}
               <span className="shrink-0 font-bold text-foreground/70 group-hover/link:text-foreground">
                 {deborde ? "Lire la suite →" : "Lire →"}
               </span>
             </a>
           ) : sources.length ? (
             <div className="flex items-center gap-2 text-xs text-muted-foreground dark:text-slate-400">
-              <AvatarGroup members={getAvatarMembers(item.source_name || "Source officielle")} size={20} limit={3} />
+              <AvatarGroup members={getAvatarMembers(item.source_name || "Source officielle")} size={20} limit={3} />{" "}
               <span className="min-w-0 flex-1 truncate font-semibold">{libelleSource}</span>
             </div>
           ) : (

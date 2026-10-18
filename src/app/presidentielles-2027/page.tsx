@@ -111,9 +111,9 @@ function Timeline({ points }: { points: string[] }) {
         const desc = idx > 0 ? p.slice(idx + 3) : p;
         return (
           <div key={i} className="relative w-[220px] shrink-0 rounded-2xl border border-border bg-muted p-4">
-            <div className="mb-2 h-1 w-8 rounded-full bg-red-500" />
-            {date && <p className="font-staatliches text-2xl uppercase leading-none text-red-700 dark:text-red-400">{date}</p>}
-            <p className="mt-2 text-sm leading-6 text-slate-700 dark:text-slate-200"><NumHighlight text={desc} /></p>
+            <div className="mb-2 h-1 w-8 rounded-full bg-red-500" />{" "}
+            {date && <p className="font-staatliches text-2xl uppercase leading-none text-red-700 dark:text-red-400">{date}</p>}{" "}
+            <p className="mt-2 text-sm leading-6 text-slate-700 dark:text-slate-200"><NumHighlight text={desc} /></p>{" "}
           </div>
         );
       })}
@@ -248,44 +248,44 @@ function CandidateModal({ candidate, onClose }: { candidate: Candidate; onClose:
       <div className="mx-auto max-w-4xl overflow-hidden rounded-[2rem] bg-card shadow-2xl" onClick={e => e.stopPropagation()}>
         {/* En-tête coloré */}
         <div className={`relative bg-gradient-to-br ${side.from} ${side.to} p-6 md:p-8`}>
-          <button onClick={onClose} className="absolute right-4 top-4 rounded-full bg-white/20 p-2 text-white transition hover:bg-white/30" aria-label="Fermer"><X /></button>
+          <button onClick={onClose} className="absolute right-4 top-4 rounded-full bg-white/20 p-2 text-white transition hover:bg-white/30" aria-label="Fermer"><X /></button>{" "}
           <div className="flex flex-col items-center gap-5 text-center text-white md:flex-row md:items-end md:text-left">
-            <CandidateAvatar c={candidate} className="h-32 w-32 shrink-0 rounded-full border-4 border-white/80 shadow-xl text-3xl" />
+            <CandidateAvatar c={candidate} className="h-32 w-32 shrink-0 rounded-full border-4 border-white/80 shadow-xl text-3xl" />{" "}
             <div>
               <div className="flex flex-wrap items-center justify-center gap-2 md:justify-start">
-                <span className="rounded-full bg-white/25 px-3 py-1 text-[11px] font-black uppercase tracking-widest">{side.label}{candidate.party ? ` · ${candidate.party}` : ""}</span>
+                <span className="rounded-full bg-white/25 px-3 py-1 text-[11px] font-black uppercase tracking-widest">{side.label}{candidate.party ? ` · ${candidate.party}` : ""}</span>{" "}
                 {/^(Primaire|Vainqueur)/.test(candidate.category ?? "") && (
                   <span className="inline-flex items-center gap-1.5 rounded-full bg-gradient-to-br from-amber-300 via-amber-400 to-orange-500 px-3.5 py-1.5 text-[11px] font-black uppercase tracking-wider text-white shadow-lg shadow-orange-500/40 ring-1 ring-white/50">
                     {candidate.category?.startsWith("Vainqueur") ? <Trophy size={13} strokeWidth={2.5} /> : <Vote size={13} strokeWidth={2.5} />} {candidate.category}
                   </span>
                 )}
-              </div>
-              <h2 className="mt-3 text-4xl font-staatliches uppercase leading-none md:text-5xl">{candidate.full_name}</h2>
+              </div>{" "}
+              <h2 className="mt-3 text-4xl font-staatliches uppercase leading-none md:text-5xl">{candidate.full_name}</h2>{" "}
               {candidate.declared_at
                 ? <p className="mt-2 text-sm font-bold text-white/80">Candidature déclarée le {formatDate(candidate.declared_at)}</p>
-                : candidate.category?.startsWith("Primaire") && <p className="mt-2 text-sm font-bold text-white/80">Candidat·e à la {candidate.category.replace(/^Primaire/, "primaire")}</p>}
+                : candidate.category?.startsWith("Primaire") && <p className="mt-2 text-sm font-bold text-white/80">Candidat·e à la {candidate.category.replace(/^Primaire/, "primaire")}</p>}{" "}
               {/* Cloche dorée : suivre ce candidat (membres premium) → son fil arrive sur le profil. */}
               <button onClick={onToggleFollow}
                 title={following ? "Ne plus suivre" : "Suivre ce candidat"}
                 className={`mt-4 inline-flex items-center gap-2 rounded-full px-5 py-2.5 text-xs font-black uppercase tracking-widest transition ${following ? "bg-amber-400 text-foreground shadow-lg shadow-amber-500/30" : "bg-white/15 text-slate-950 ring-1 ring-white/40 hover:bg-white/25"}`}>
-                <Bell size={15} className={following ? "fill-slate-900" : ""} />
+                <Bell size={15} className={following ? "fill-slate-900" : ""} />{" "}
                 {following ? "Suivi ✓" : isPremium ? "Suivre ce candidat" : "Suivre (Premium)"}
               </button>
             </div>
           </div>
-        </div>
+        </div>{" "}
 
         <div className="p-6 md:p-8">
-          {candidate.summary && <p className="mb-4 text-lg leading-7 text-slate-700 dark:text-slate-200">{candidate.summary}</p>}
+          {candidate.summary && <p className="mb-4 text-lg leading-7 text-slate-700 dark:text-slate-200">{candidate.summary}</p>}{" "}
 
           {/* Fil conducteur : fiche du parti */}
           {partyLink && (
             <Link href={`/partis/${partyLink.slug}`}
               className="mb-4 flex items-center justify-between gap-3 rounded-2xl border border-border bg-muted px-5 py-3 text-foreground transition hover:border-slate-300 hover:bg-slate-100">
-              <span className="flex items-center gap-2 text-sm font-bold"><Landmark size={17} /> Voir la fiche du parti — {partyLink.name}</span>
+              <span className="flex items-center gap-2 text-sm font-bold"><Landmark size={17} /> Voir la fiche du parti — {partyLink.name}</span>{" "}
               <ArrowRight size={17} />
             </Link>
-          )}
+          )}{" "}
 
           {/* Fil conducteur : lien vers la fiche parlementaire de la même personne */}
           {mandate && (
@@ -294,38 +294,38 @@ function CandidateModal({ candidate, onClose }: { candidate: Candidate; onClose:
               className="mb-4 flex items-center justify-between gap-3 rounded-2xl border border-blue-200 dark:border-blue-500/25 bg-blue-50 dark:bg-blue-500/10 px-5 py-3 text-blue-800 dark:text-blue-300 transition hover:border-blue-300 hover:bg-blue-100"
             >
               <span className="flex items-center gap-2 text-sm font-bold">
-                <Landmark size={17} />
+                <Landmark size={17} />{" "}
                 Voir aussi sa fiche {mandate.type === "senateur" ? "de sénateur·rice" : "de député·e"}
-              </span>
+              </span>{" "}
               <ArrowRight size={17} />
             </Link>
-          )}
+          )}{" "}
 
-          <FactChips candidate={candidate} />
+          <FactChips candidate={candidate} />{" "}
 
           {/* Situation juridique — suivi en temps réel des affaires judiciaires */}
           <div className="mb-6 rounded-3xl border border-border bg-card p-5 shadow-sm relative overflow-hidden">
-            <div className={`absolute top-0 left-0 h-full w-2 ${legalStyle.bar}`} />
+            <div className={`absolute top-0 left-0 h-full w-2 ${legalStyle.bar}`} />{" "}
             <div className="flex items-center justify-between gap-4 pl-2">
               <div className="min-w-0">
-                <p className="text-[9px] font-black uppercase tracking-[0.2em] text-muted-foreground">Intégrité &amp; Transparence</p>
-                <h3 className="text-lg font-bold text-foreground">Situation judiciaire</h3>
+                <p className="text-[9px] font-black uppercase tracking-[0.2em] text-muted-foreground">Intégrité &amp; Transparence</p>{" "}
+                <h3 className="text-lg font-bold text-foreground">Situation judiciaire</h3>{" "}
                 <div className="mt-1 flex items-center gap-2">
-                  <span className={`h-1.5 w-1.5 animate-pulse rounded-full ${legalStyle.dot}`} />
+                  <span className={`h-1.5 w-1.5 animate-pulse rounded-full ${legalStyle.dot}`} />{" "}
                   <span className={`text-[10px] font-black uppercase tracking-widest ${legalStyle.text}`}>
                     {legalStyle.label}
                   </span>
                 </div>
-              </div>
+              </div>{" "}
               <button
                 onClick={() => setShowLegal(true)}
                 className={`flex shrink-0 items-center gap-2 rounded-2xl border px-5 py-3 text-[10px] font-black uppercase tracking-widest shadow-lg transition-all active:scale-95 ${legalStyle.btn}`}
               >
-                <ShieldCheck className="h-3.5 w-3.5" />
+                <ShieldCheck className="h-3.5 w-3.5" />{" "}
                 Consulter
               </button>
             </div>
-          </div>
+          </div>{" "}
 
           <div className="grid items-start gap-4 sm:grid-cols-2">
             {BIO_FIELDS.map(([key, label]) => {
@@ -341,14 +341,14 @@ function CandidateModal({ candidate, onClose }: { candidate: Candidate; onClose:
                   <button onClick={() => togglePanel(key)} aria-expanded={isOpen}
                     className="flex w-full items-center justify-between gap-3 p-5 text-left">
                     <div>
-                      <h3 className={`font-staatliches text-2xl uppercase leading-none ${color.head}`}>{label}</h3>
+                      <h3 className={`font-staatliches text-2xl uppercase leading-none ${color.head}`}>{label}</h3>{" "}
                       <div className={`mt-1.5 h-1 w-12 rounded-full ${color.bar}`} />
-                    </div>
+                    </div>{" "}
                     <span className="flex items-center gap-2 shrink-0">
-                      <span className="text-[10px] font-black uppercase tracking-widest text-muted-foreground">{points.length}</span>
+                      <span className="text-[10px] font-black uppercase tracking-widest text-muted-foreground">{points.length}</span>{" "}
                       <ChevronDown size={20} className={`text-slate-400 transition-transform duration-300 ${isOpen ? "rotate-180" : ""}`} />
                     </span>
-                  </button>
+                  </button>{" "}
                   <AnimatePresence initial={false}>
                     {isOpen && (
                       <motion.div initial={{ height: 0, opacity: 0 }} animate={{ height: "auto", opacity: 1 }} exit={{ height: 0, opacity: 0 }}
@@ -358,9 +358,9 @@ function CandidateModal({ candidate, onClose }: { candidate: Candidate; onClose:
                             <Timeline points={points} />
                           ) : (
                             <ul className="list-disc space-y-1.5 pl-4 text-sm leading-6 text-slate-700 dark:text-slate-200 marker:text-slate-300">
-                              {points.map((p, i) => <li key={i} className="break-words [overflow-wrap:anywhere]"><NumHighlight text={p} /></li>)}
+                              {points.map((p, i) => <li key={i} className="break-words [overflow-wrap:anywhere]"><NumHighlight text={p} />{" "}</li>)}
                             </ul>
-                          )}
+                          )}{" "}
                           {key === "controverses" && (
                             <p className="mt-3 text-[11px] leading-snug text-muted-foreground">
                               D&apos;après des sources publiques. Toute personne mise en cause est présumée innocente tant qu&apos;une décision
@@ -370,28 +370,28 @@ function CandidateModal({ candidate, onClose }: { candidate: Candidate; onClose:
                         </div>
                       </motion.div>
                     )}
-                  </AnimatePresence>
+                  </AnimatePresence>{" "}
                 </div>
               );
             })}
-          </div>
-          <MentionIA texte="Fiche synthétisée par IA à partir de Wikipédia, des sites officiels et de la presse — signalez toute erreur via la page Contact." className="mt-3" />
+          </div>{" "}
+          <MentionIA texte="Fiche synthétisée par IA à partir de Wikipédia, des sites officiels et de la presse — signalez toute erreur via la page Contact." className="mt-3" />{" "}
 
           {candidate.program && (
             <section className="mt-6 rounded-2xl border border-amber-200 dark:border-amber-500/25 bg-amber-50 dark:bg-amber-500/10 p-5">
-              <h3 className="text-sm font-black uppercase tracking-widest text-amber-800 dark:text-amber-300">Programme</h3>
+              <h3 className="text-sm font-black uppercase tracking-widest text-amber-800 dark:text-amber-300">Programme</h3>{" "}
               <p className="mt-2 whitespace-pre-line text-sm leading-6 text-amber-950">{candidate.program}</p>
             </section>
-          )}
+          )}{" "}
 
-          <ProgrammeCandidat proposals={proposals} sources={sourcesProgramme} />
+          <ProgrammeCandidat proposals={proposals} sources={sourcesProgramme} />{" "}
 
           {/* Ses débats de primaire — rubrique à part, avant le fil général : un débat
               se cherche, il ne se croise pas au fil du défilement. La rubrique s'efface
               d'elle-même pour un candidat qui n'est engagé dans aucune primaire. */}
           <div className="-mx-4">
             <PrimaryDebates candidateSlug={candidate.slug} />
-          </div>
+          </div>{" "}
 
           {/* Fil d'actu quotidien */}
           {/* FIL UNIFIÉ : actualités de presse + vidéos YouTube officielles, en un seul défilement. */}
@@ -412,8 +412,8 @@ function CandidateModal({ candidate, onClose }: { candidate: Candidate; onClose:
             }
             return (
               <section className="mt-8">
-                <h3 className="text-2xl font-staatliches uppercase text-foreground">Actualités &amp; <span className="text-amber-700 dark:text-amber-400">vidéos</span></h3>
-                <p className="mt-1 text-xs text-muted-foreground">Le fil du candidat — articles de presse, débats télévisés et vidéos de sa chaîne YouTube officielle, lisibles ici, actualisés plusieurs fois par jour. Faites défiler →</p>
+                <h3 className="text-2xl font-staatliches uppercase text-foreground">Actualités &amp; <span className="text-amber-700 dark:text-amber-400">vidéos</span></h3>{" "}
+                <p className="mt-1 text-xs text-muted-foreground">Le fil du candidat — articles de presse, débats télévisés et vidéos de sa chaîne YouTube officielle, lisibles ici, actualisés plusieurs fois par jour. Faites défiler →</p>{" "}
                 {news === null ? (
                   <p className="mt-3 text-sm text-muted-foreground">Chargement…</p>
                 ) : feed.length === 0 ? (
@@ -426,31 +426,31 @@ function CandidateModal({ candidate, onClose }: { candidate: Candidate; onClose:
                       <button key={`v${it.data.video_id}${it.data.debat ? "d" : ""}`} onClick={() => setSelectedVideo(it.data)} className="group flex w-[280px] shrink-0 select-none flex-col overflow-hidden rounded-2xl border border-border text-left transition hover:border-slate-300 hover:shadow-sm">
                         <div className="relative aspect-video overflow-hidden bg-slate-900">
                           {/* eslint-disable-next-line @next/next/no-img-element */}
-                          {it.data.thumbnail_url && <img src={it.data.thumbnail_url} alt={it.data.title} loading="lazy" className="h-full w-full object-cover transition group-hover:scale-105" />}
-                          <span className="absolute inset-0 flex items-center justify-center"><span className="flex h-11 w-11 items-center justify-center rounded-full bg-white/90 text-foreground shadow-lg"><Play size={20} className="ml-0.5 fill-current" /></span></span>
+                          {it.data.thumbnail_url && <img src={it.data.thumbnail_url} alt={it.data.title} loading="lazy" className="h-full w-full object-cover transition group-hover:scale-105" />}{" "}
+                          <span className="absolute inset-0 flex items-center justify-center"><span className="flex h-11 w-11 items-center justify-center rounded-full bg-white/90 text-foreground shadow-lg"><Play size={20} className="ml-0.5 fill-current" /></span></span>{" "}
                           <span className={`absolute left-2 top-2 inline-flex items-center gap-1 rounded-full px-2 py-0.5 text-[9px] font-black uppercase tracking-widest text-white ${it.data.debat ? "bg-indigo-700" : "bg-red-600"}`}><Play size={10} className="fill-current" /> {it.data.debat ? `Débat${it.data.broadcaster ? ` · ${it.data.broadcaster}` : ""}` : "Vidéo"}</span>
-                        </div>
+                        </div>{" "}
                         <div className="flex flex-1 flex-col p-4">
-                          <span className="text-xs font-bold text-muted-foreground"><CalendarDays className="mr-1 inline" size={13} />{formatDate(it.data.published_at)}</span>
-                          <p className="mt-1.5 font-bold text-foreground">{it.data.title}</p>
-                          {it.data.resume_ia && <p className="mt-1 text-[13px] leading-5 text-muted-foreground">{it.data.resume_ia}</p>}
+                          <span className="text-xs font-bold text-muted-foreground"><CalendarDays className="mr-1 inline" size={13} />{formatDate(it.data.published_at)}</span>{" "}
+                          <p className="mt-1.5 font-bold text-foreground">{it.data.title}</p>{" "}
+                          {it.data.resume_ia && <p className="mt-1 text-[13px] leading-5 text-muted-foreground">{it.data.resume_ia}</p>}{" "}
                           <span className="mt-auto pt-2 text-xs font-bold text-muted-foreground">{it.data.resume_ia ? "YouTube · résumé IA de ce qui est dit" : "YouTube"}</span>
-                        </div>
+                        </div>{" "}
                       </button>
                     ) : (
                       <button key={`n${it.data.id}`} onClick={() => setSelectedNews(it.data)} className="flex w-[280px] shrink-0 select-none flex-col rounded-2xl border border-border p-4 text-left transition hover:border-slate-300 hover:shadow-sm">
                         <div className="flex items-center justify-between gap-3 text-xs font-bold text-muted-foreground">
-                          <span className="rounded-full bg-slate-100 dark:bg-slate-500/10 px-2 py-0.5 uppercase tracking-widest">{it.data.news_type || "actu"}</span>
+                          <span className="rounded-full bg-slate-100 dark:bg-slate-500/10 px-2 py-0.5 uppercase tracking-widest">{it.data.news_type || "actu"}</span>{" "}
                           <span><CalendarDays className="mr-1 inline" size={13} />{formatDate(it.data.date)}</span>
-                        </div>
-                        <p className="mt-2 font-bold text-foreground">{it.data.title}</p>
-                        {it.data.summary && <p className="mt-1 text-sm leading-6 text-muted-foreground">{it.data.summary}</p>}
-                        {it.data.source_name && <p className="mt-auto pt-2 text-xs font-bold text-muted-foreground">{it.data.source_name}</p>}
+                        </div>{" "}
+                        <p className="mt-2 font-bold text-foreground">{it.data.title}</p>{" "}
+                        {it.data.summary && <p className="mt-1 text-sm leading-6 text-muted-foreground">{it.data.summary}</p>}{" "}
+                        {it.data.source_name && <p className="mt-auto pt-2 text-xs font-bold text-muted-foreground">{it.data.source_name}</p>}{" "}
                       </button>
                     ))}
                   </DragScroller>
                   </div>
-                )}
+                )}{" "}
                 <p className="mt-2 text-[11px] italic leading-snug text-muted-foreground">Vidéos : chaîne YouTube officielle du candidat. Instagram, TikTok et X ne sont pas repris automatiquement (ces plateformes n'autorisent pas la récupération de leurs contenus).</p>
               </section>
             );
@@ -472,14 +472,14 @@ function CandidateModal({ candidate, onClose }: { candidate: Candidate; onClose:
                   className="max-h-[85vh] w-full max-w-lg overflow-y-auto rounded-t-[2rem] bg-card p-6 shadow-2xl sm:rounded-[2rem]"
                 >
                   <div className="mb-3 flex items-center justify-between gap-3">
-                    <span className="inline-flex items-center rounded-full bg-slate-100 dark:bg-slate-500/10 px-3 py-1 text-[10px] font-black uppercase tracking-widest text-muted-foreground">{selectedNews.news_type || "actu"}</span>
+                    <span className="inline-flex items-center rounded-full bg-slate-100 dark:bg-slate-500/10 px-3 py-1 text-[10px] font-black uppercase tracking-widest text-muted-foreground">{selectedNews.news_type || "actu"}</span>{" "}
                     <button onClick={() => setSelectedNews(null)} className="rounded-full bg-slate-100 dark:bg-slate-500/10 p-2 text-muted-foreground transition hover:bg-slate-200"><X size={18} /></button>
-                  </div>
-                  <p className="text-[11px] font-bold uppercase tracking-widest text-muted-foreground">{formatDate(selectedNews.date)}</p>
-                  <h3 className="mt-1 text-xl font-black leading-snug text-foreground">{selectedNews.title}</h3>
-                  {selectedNews.summary && <p className="mt-3 leading-7 text-muted-foreground">{selectedNews.summary}</p>}
+                  </div>{" "}
+                  <p className="text-[11px] font-bold uppercase tracking-widest text-muted-foreground">{formatDate(selectedNews.date)}</p>{" "}
+                  <h3 className="mt-1 text-xl font-black leading-snug text-foreground">{selectedNews.title}</h3>{" "}
+                  {selectedNews.summary && <p className="mt-3 leading-7 text-muted-foreground">{selectedNews.summary}</p>}{" "}
                   <div className="mt-5 flex items-center justify-between gap-3 border-t border-border pt-4">
-                    <span className="text-[11px] font-bold uppercase tracking-widest text-muted-foreground">Source : {selectedNews.source_name || "—"}</span>
+                    <span className="text-[11px] font-bold uppercase tracking-widest text-muted-foreground">Source : {selectedNews.source_name || "—"}</span>{" "}
                     {selectedNews.source_url && (
                       <a href={selectedNews.source_url} target="_blank" rel="noopener noreferrer" className="inline-flex items-center gap-1.5 rounded-full bg-slate-950 px-4 py-2 text-[11px] font-black uppercase tracking-widest text-white transition hover:bg-slate-700">
                         Lire l&apos;article <ExternalLink size={12} />
@@ -500,9 +500,9 @@ function CandidateModal({ candidate, onClose }: { candidate: Candidate; onClose:
                 <motion.div initial={{ scale: 0.95, opacity: 0 }} animate={{ scale: 1, opacity: 1 }} exit={{ scale: 0.95, opacity: 0 }}
                   onClick={e => e.stopPropagation()} className="w-full max-w-3xl">
                   <div className="mb-2 flex items-center justify-between gap-3">
-                    <p className="line-clamp-1 text-sm font-bold text-white">{selectedVideo.title}</p>
+                    <p className="line-clamp-1 text-sm font-bold text-white">{selectedVideo.title}</p>{" "}
                     <button onClick={() => setSelectedVideo(null)} className="rounded-full bg-white/10 p-2 text-white transition hover:bg-white/20"><X size={18} /></button>
-                  </div>
+                  </div>{" "}
                   <div className="aspect-video overflow-hidden rounded-2xl bg-black shadow-2xl">
                     <iframe src={`https://www.youtube-nocookie.com/embed/${selectedVideo.video_id}?autoplay=1&rel=0`} title={selectedVideo.title}
                       allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowFullScreen className="h-full w-full" />
@@ -510,21 +510,21 @@ function CandidateModal({ candidate, onClose }: { candidate: Candidate; onClose:
                 </motion.div>
               </motion.div>
             )}
-          </AnimatePresence>
+          </AnimatePresence>{" "}
 
           {candidate.source_urls && candidate.source_urls.length > 0 && (
             <section className="mt-8">
-              <h3 className="text-sm font-black uppercase tracking-widest text-muted-foreground">Sources</h3>
+              <h3 className="text-sm font-black uppercase tracking-widest text-muted-foreground">Sources</h3>{" "}
               <div className="mt-2 flex flex-col gap-1">
                 {candidate.source_urls.filter(Boolean).map(url => (
-                  <a key={url} href={url} target="_blank" rel="noreferrer" className="inline-flex items-center gap-1.5 text-sm text-blue-700 dark:text-blue-300 hover:underline"><ExternalLink size={13} />{url}</a>
+                  <a key={url} href={url} target="_blank" rel="noreferrer" className="inline-flex items-center gap-1.5 text-sm text-blue-700 dark:text-blue-300 hover:underline"><ExternalLink size={13} />{" "}{url}{" "}</a>
                 ))}
               </div>
             </section>
           )}
         </div>
       </div>
-    </div>
+    </div>{" "}
     <LegalStatusModal isOpen={showLegal} onClose={() => setShowLegal(false)} deputy={legalPerson} cible={{ type: "candidate", slug: candidate.slug }} />
     </>
   );
@@ -568,10 +568,10 @@ function PositionsView({ candidates }: { candidates: Candidate[] }) {
 
   return (
     <div className="mx-auto max-w-6xl px-4 pb-24">
-      <p className="mb-8 text-center text-sm text-muted-foreground">Position de chaque candidat sur les grands enjeux — cliquez sur un candidat pour le détail et la source.</p>
+      <p className="mb-8 text-center text-sm text-muted-foreground">Position de chaque candidat sur les grands enjeux — cliquez sur un candidat pour le détail et la source.</p>{" "}
       {categories.map(({ cat, items }) => (
         <div key={cat} className="mb-12">
-          <h2 className="mb-5 text-xl font-staatliches uppercase tracking-wide text-foreground">{cat}</h2>
+          <h2 className="mb-5 text-xl font-staatliches uppercase tracking-wide text-foreground">{cat}</h2>{" "}
           <div className="space-y-4">
             {items.map(issue => {
               const groups: Record<string, Candidate[]> = { pour: [], nuance: [], contre: [] };
@@ -581,54 +581,54 @@ function PositionsView({ candidates }: { candidates: Candidate[] }) {
               }
               return (
                 <div key={issue.slug} className="rounded-3xl border border-border bg-card p-5 shadow-sm">
-                  <p className="text-[10px] font-black uppercase tracking-widest text-muted-foreground">{issue.title}</p>
-                  <h3 className="mb-4 text-lg font-bold text-foreground">{issue.proposition} ?</h3>
+                  <p className="text-[10px] font-black uppercase tracking-widest text-muted-foreground">{issue.title}</p>{" "}
+                  <h3 className="mb-4 text-lg font-bold text-foreground">{issue.proposition} ?</h3>{" "}
                   <div className="grid gap-4 md:grid-cols-3">
                     {(["pour", "nuance", "contre"] as const).map(stance => (
                       <div key={stance}>
                         <div className="mb-2 flex items-center gap-2">
-                          <span className={`h-2 w-2 rounded-full ${STANCE_META[stance].dot}`} />
+                          <span className={`h-2 w-2 rounded-full ${STANCE_META[stance].dot}`} />{" "}
                           <span className={`text-[11px] font-black uppercase tracking-widest ${STANCE_META[stance].text}`}>{STANCE_META[stance].label} ({groups[stance].length})</span>
-                        </div>
+                        </div>{" "}
                         <div className="flex flex-wrap gap-2">
                           {groups[stance].length === 0 ? <span className="text-xs text-slate-300">—</span> : groups[stance].map(c => (
                             <button key={c.slug} onClick={() => setDetail({ c, issue, pos: posMap.get(`${c.slug}|${issue.slug}`) })}
                               className={`inline-flex items-center gap-2 rounded-full bg-muted py-1 pl-1 pr-3 ring-1 ${STANCE_META[stance].ring} transition hover:bg-slate-100`}>
-                              <CandidateAvatar c={c} className="h-6 w-6 rounded-full text-[9px]" />
-                              <span className="text-xs font-bold text-foreground">{c.full_name}</span>
+                              <CandidateAvatar c={c} className="h-6 w-6 rounded-full text-[9px]" />{" "}
+                              <span className="text-xs font-bold text-foreground">{c.full_name}</span>{" "}
                             </button>
                           ))}
-                        </div>
+                        </div>{" "}
                       </div>
                     ))}
-                  </div>
+                  </div>{" "}
                 </div>
               );
             })}
-          </div>
+          </div>{" "}
         </div>
-      ))}
+      ))}{" "}
 
       {detail && (
         <div className="fixed inset-0 z-50 flex items-center justify-center bg-slate-950/80 p-4" onClick={() => setDetail(null)}>
           <div className="w-full max-w-lg rounded-3xl bg-card p-6 shadow-2xl" onClick={e => e.stopPropagation()}>
             <div className="mb-4 flex items-center gap-3">
-              <CandidateAvatar c={detail.c} className="h-12 w-12 rounded-full text-sm" />
+              <CandidateAvatar c={detail.c} className="h-12 w-12 rounded-full text-sm" />{" "}
               <div>
-                <p className="font-black text-foreground">{detail.c.full_name}</p>
+                <p className="font-black text-foreground">{detail.c.full_name}</p>{" "}
                 <p className="text-xs font-bold text-muted-foreground">{detail.issue.title}</p>
-              </div>
+              </div>{" "}
               <button onClick={() => setDetail(null)} className="ml-auto rounded-full bg-slate-100 dark:bg-slate-500/10 p-2"><X size={18} /></button>
-            </div>
+            </div>{" "}
             <span className={`inline-flex items-center gap-2 rounded-full px-3 py-1 text-xs font-black uppercase tracking-widest ${detail.pos?.stance === "pour" ? "bg-emerald-100 dark:bg-emerald-500/10 text-emerald-700 dark:text-emerald-300" : detail.pos?.stance === "contre" ? "bg-rose-100 dark:bg-rose-500/10 text-rose-700 dark:text-rose-300" : "bg-amber-100 dark:bg-amber-500/10 text-amber-700 dark:text-amber-300"}`}>
               {STANCE_META[detail.pos?.stance]?.label ?? "—"} · {detail.issue.proposition}
-            </span>
-            <p className="mt-4 text-sm leading-6 text-slate-700 dark:text-slate-200">{detail.pos?.summary || "Position non détaillée."}</p>
+            </span>{" "}
+            <p className="mt-4 text-sm leading-6 text-slate-700 dark:text-slate-200">{detail.pos?.summary || "Position non détaillée."}</p>{" "}
             {detail.pos?.source_url && (
               <a href={detail.pos.source_url} target="_blank" rel="noreferrer" className="mt-4 inline-flex items-center gap-1.5 text-sm font-bold text-blue-700 dark:text-blue-300 hover:underline">
                 <ExternalLink size={14} /> Source ({detail.pos.source_type === "wikipedia" ? "Wikipédia" : detail.pos.source_type === "vote" ? "Vote au Parlement" : detail.pos.source_type === "programme" ? "Programme officiel" : detail.pos.source_type})
               </a>
-            )}
+            )}{" "}
             <p className="mt-3 text-[11px] italic text-muted-foreground">Position résumée automatiquement à partir de la source. Vérifiez la source pour le détail exact.</p>
           </div>
         </div>
@@ -716,17 +716,17 @@ function CandidatesContent() {
     <div className="min-h-screen bg-background">
       {/* Hero */}
       <div className="relative overflow-hidden px-4 py-24 text-center">
-        <div className="absolute left-1/4 top-0 h-96 w-96 -translate-x-1/2 rounded-full bg-blue-500/10 blur-[120px]" />
-        <div className="absolute right-1/4 top-10 h-96 w-96 translate-x-1/2 rounded-full bg-red-500/10 blur-[120px]" />
+        <div className="absolute left-1/4 top-0 h-96 w-96 -translate-x-1/2 rounded-full bg-blue-500/10 blur-[120px]" />{" "}
+        <div className="absolute right-1/4 top-10 h-96 w-96 translate-x-1/2 rounded-full bg-red-500/10 blur-[120px]" />{" "}
         <div className="relative mx-auto max-w-5xl">
-          <span className="rounded-full border border-border bg-card px-4 py-1.5 text-[11px] font-black uppercase tracking-[0.25em] text-muted-foreground shadow-sm">Mis à jour chaque jour</span>
+          <span className="rounded-full border border-border bg-card px-4 py-1.5 text-[11px] font-black uppercase tracking-[0.25em] text-muted-foreground shadow-sm">Mis à jour chaque jour</span>{" "}
           <h1 className="mt-6 text-6xl font-staatliches uppercase leading-none tracking-tight text-foreground md:text-8xl">
             Présidentielles <span className="bg-gradient-to-r from-blue-600 to-red-600 bg-clip-text text-transparent">2027</span>
-          </h1>
-          <div className="mx-auto mt-6 h-1.5 w-40 rounded-full bg-gradient-to-r from-blue-600 to-red-600" />
+          </h1>{" "}
+          <div className="mx-auto mt-6 h-1.5 w-40 rounded-full bg-gradient-to-r from-blue-600 to-red-600" />{" "}
           <p className="mx-auto mt-6 max-w-2xl text-lg font-medium italic tracking-tight text-muted-foreground md:text-xl">
             Tous les candidats officiellement déclarés, leur parcours détaillé et l'actualité de la campagne, actualisés automatiquement.
-          </p>
+          </p>{" "}
           {/* Onglets Candidats / Positions */}
           <div className="mt-8 inline-flex rounded-full border border-border bg-card p-1 shadow-sm">
             {([["candidats", "Candidats"], ["positions", "Positions"], ["enjeux", "Enjeux"], ["dynamiques", "Dynamiques"]] as const).map(([key, label]) => (
@@ -742,12 +742,12 @@ function CandidatesContent() {
                       ? "bg-slate-900 text-white"
                       : "text-muted-foreground hover:text-foreground"
                 }`}>
-                {label}
+                {label}{" "}
               </button>
             ))}
           </div>
         </div>
-      </div>
+      </div>{" "}
 
       {view === "dynamiques" ? (
         // Sondages (ouverts à tous) puis veille presse, télé-radio et réseaux (Pro).
@@ -763,30 +763,30 @@ function CandidatesContent() {
           onOuvrir={slug => { const c = candidates.find(x => x.slug === slug); if (c) open(c); }} />
       ))}
       {/* Les débats d une primaire tranchée sont rangés dans son bandeau de résultat. */}
-      <PrimaryDebates sauf={primairesTranchees} />
+      <PrimaryDebates sauf={primairesTranchees} />{" "}
       <div className="mx-auto max-w-6xl px-4 pb-24">
         <div className="mb-10 flex flex-col items-start justify-between gap-5 md:flex-row md:items-center">
           <div className="flex flex-wrap gap-2">
             {sideTabs.map(tab => (
               <button key={tab} onClick={() => setSide(tab)}
                 className={`rounded-full px-4 py-2 text-sm font-bold transition ${side === tab ? "bg-slate-900 text-white" : "border border-border bg-card text-muted-foreground hover:bg-slate-100"}`}>
-                {tab === "Tous" ? "Tous" : SIDES[tab].label}
+                {tab === "Tous" ? "Tous" : SIDES[tab].label}{" "}
               </button>
             ))}
-          </div>
+          </div>{" "}
           <div className="relative w-full md:w-72">
             <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-5 w-5 text-slate-400" />
             <input value={search} onChange={e => setSearch(e.target.value)} placeholder="Rechercher un candidat…"
               className="w-full rounded-full border border-border bg-card py-3 pl-10 pr-4 text-foreground shadow-sm placeholder:text-slate-400 focus:outline-none focus:ring-2 focus:ring-blue-500/40" />
           </div>
-        </div>
+        </div>{" "}
 
         {loading ? (
-          <div className="flex flex-col items-center py-24 text-muted-foreground"><Loader2 className="mb-4 h-12 w-12 animate-spin" /><p>Chargement des candidats…</p></div>
+          <div className="flex flex-col items-center py-24 text-muted-foreground"><Loader2 className="mb-4 h-12 w-12 animate-spin" />{" "}<p>Chargement des candidats…</p></div>
         ) : filtered.length === 0 ? (
           <div className="rounded-3xl border border-border bg-card py-20 text-center text-muted-foreground">
-            <div className="mb-3 text-5xl">🗳️</div>
-            <p className="text-lg font-bold">Aucun candidat pour ce filtre.</p>
+            <div className="mb-3 text-5xl">🗳️</div>{" "}
+            <p className="text-lg font-bold">Aucun candidat pour ce filtre.</p>{" "}
             <p className="mt-1 text-sm">Les nouveaux candidats déclarés sont ajoutés automatiquement chaque jour.</p>
           </div>
         ) : (
@@ -804,8 +804,8 @@ function CandidatesContent() {
                 >
                   <div className="relative">
                     {/* Photo claire, sans voile sombre, cadrage portrait centré sur le visage. */}
-                    <CandidateAvatar c={c} className="aspect-[4/5] w-full text-3xl" />
-                    <span className={`absolute left-2.5 top-2.5 rounded-full ${s.badge} px-2 py-0.5 text-[8px] font-black uppercase tracking-widest text-white shadow-lg ring-1 ring-white/30`}>{s.label}</span>
+                    <CandidateAvatar c={c} className="aspect-[4/5] w-full text-3xl" />{" "}
+                    <span className={`absolute left-2.5 top-2.5 rounded-full ${s.badge} px-2 py-0.5 text-[8px] font-black uppercase tracking-widest text-white shadow-lg ring-1 ring-white/30`}>{s.label}</span>{" "}
                     {c.category?.startsWith("Primaire") && (
                       <span className="absolute right-2 top-2 inline-flex items-center gap-1 rounded-full bg-gradient-to-br from-amber-300 via-amber-400 to-orange-500 px-2 py-0.5 text-[8px] font-black uppercase tracking-wider text-white shadow-lg shadow-orange-500/40 ring-1 ring-white/50 backdrop-blur-sm">
                         <Vote size={10} strokeWidth={2.5} /> Primaire
@@ -816,16 +816,16 @@ function CandidatesContent() {
                         <Trophy size={10} strokeWidth={2.5} /> Vainqueur de primaire
                       </span>
                     )}
-                  </div>
+                  </div>{" "}
                   {/* Bandeau plein coloré façon bulle FAQ : nom + parti en blanc. */}
                   <div className={`bg-gradient-to-br ${s.from} ${s.to} px-3.5 py-2.5 text-white`}>
-                    <h3 className="text-lg font-staatliches uppercase leading-none drop-shadow-sm">{c.full_name}</h3>
+                    <h3 className="text-lg font-staatliches uppercase leading-none drop-shadow-sm">{c.full_name}</h3>{" "}
                     {c.party && <p className="mt-0.5 text-xs font-bold text-white/85">{c.party}</p>}
-                  </div>
+                  </div>{" "}
                   <div className="p-3.5">
-                    {c.summary && <p className="line-clamp-2 text-xs leading-5 text-muted-foreground">{c.summary}</p>}
+                    {c.summary && <p className="line-clamp-2 text-xs leading-5 text-muted-foreground">{c.summary}</p>}{" "}
                     <span className={`mt-3 inline-flex items-center gap-1 rounded-full bg-gradient-to-r ${s.from} ${s.to} px-3 py-1.5 text-[10px] font-black uppercase tracking-widest text-white shadow-md transition-transform group-hover:translate-x-0.5`}>Voir la fiche →</span>
-                  </div>
+                  </div>{" "}
                 </button>
               );
             })}

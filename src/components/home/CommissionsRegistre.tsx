@@ -101,19 +101,19 @@ function Ligne({ m }: { m: Reunion }) {
       >
         <span className={`mt-0.5 shrink-0 rounded-full px-2 py-0.5 text-[9px] font-black uppercase tracking-widest ${c.classe}`}>
           {c.court}
-        </span>
+        </span>{" "}
         <span className="min-w-0 flex-1">
           {m.commission && (
             <span className="block truncate text-[10px] font-black uppercase tracking-wider text-white/40">
               {m.commission}
             </span>
-          )}
+          )}{" "}
           <span className="mt-0.5 block text-[13px] font-bold leading-snug text-white/90">
             {m.title || "Réunion"}
           </span>
-        </span>
+        </span>{" "}
         <ChevronDown size={16} className={`mt-1 shrink-0 text-white/40 transition-transform ${ouvert ? "rotate-180" : ""}`} />
-      </button>
+      </button>{" "}
 
       <AnimatePresence initial={false}>
         {ouvert && (
@@ -136,7 +136,7 @@ function Ligne({ m }: { m: Reunion }) {
                   Le compte rendu de cette réunion n&apos;a pas encore été analysé. Il le
                   sera au prochain passage ; le lien officiel ci-dessous reste disponible.
                 </p>
-              )}
+              )}{" "}
 
               <div className="mt-3 flex flex-wrap gap-3">
                 {m.cr_url && (
@@ -144,7 +144,7 @@ function Ligne({ m }: { m: Reunion }) {
                     className="inline-flex items-center gap-1.5 text-[10px] font-black uppercase tracking-widest text-white/50 transition hover:text-white">
                     <FileText size={12} /> Compte rendu officiel <ExternalLink size={10} />
                   </a>
-                )}
+                )}{" "}
                 {m.video_url && (
                   <a href={m.video_url} target="_blank" rel="noopener noreferrer"
                     className="inline-flex items-center gap-1.5 text-[10px] font-black uppercase tracking-widest text-white/50 transition hover:text-white">
@@ -190,7 +190,7 @@ function RechercheCommissions({ onClose }: { onClose: () => void }) {
     <div className="border-b border-white/10 bg-slate-950/50 p-5 sm:p-7">
       <div className="flex items-center gap-3">
         <div className="flex min-w-0 flex-1 items-center gap-2.5 rounded-2xl bg-white/[0.07] px-4 ring-1 ring-white/15 focus-within:ring-emerald-400/60">
-          <Search size={17} className="shrink-0 text-emerald-300" />
+          <Search size={17} className="shrink-0 text-emerald-300" />{" "}
           <input
             autoFocus
             value={q}
@@ -198,14 +198,14 @@ function RechercheCommissions({ onClose }: { onClose: () => void }) {
             placeholder="Chercher une audition, un texte, une commission…"
             aria-label="Rechercher dans les comptes rendus de commission"
             className="min-w-0 flex-1 bg-transparent py-3.5 text-[15px] text-white outline-none placeholder:text-white/35"
-          />
+          />{" "}
           {cherche && <Loader2 size={15} className="shrink-0 animate-spin text-white/50" />}
-        </div>
+        </div>{" "}
         <button onClick={onClose} aria-label="Fermer la recherche"
           className="shrink-0 rounded-2xl bg-white/[0.07] p-3.5 text-white/70 ring-1 ring-white/15 transition hover:bg-white/15 hover:text-white">
           <X size={17} />
         </button>
-      </div>
+      </div>{" "}
 
       {q.trim().length < 2 ? (
         <p className="mt-4 text-[13px] leading-relaxed text-white/45">
@@ -220,14 +220,14 @@ function RechercheCommissions({ onClose }: { onClose: () => void }) {
         <div className="mt-4">
           <p className="mb-2.5 text-[10px] font-black uppercase tracking-widest text-white/40">
             {res.length} réunion{res.length > 1 ? "s" : ""}
-          </p>
+          </p>{" "}
           <div className="max-h-[24rem] space-y-2 overflow-y-auto pr-1">
             {res.map(m => (
               <div key={m.ref}>
                 <p className="mb-1 text-[10px] font-black uppercase tracking-widest text-emerald-300">
                   {dateLongue(m.meeting_date)}
-                </p>
-                <Ligne m={m} />
+                </p>{" "}
+                <Ligne m={m} />{" "}
               </div>
             ))}
           </div>
@@ -258,7 +258,7 @@ function Couverture({
       className="group relative mb-10 overflow-hidden rounded-[2rem] border-2 border-emerald-400/35 bg-gradient-to-br from-slate-950 via-slate-900 to-emerald-950 text-white shadow-2xl shadow-emerald-950/40"
     >
       {/* Tranche du registre : la reliure, à gauche. */}
-      <div aria-hidden className="pointer-events-none absolute inset-y-0 left-0 w-3 bg-gradient-to-r from-black/45 to-transparent" />
+      <div aria-hidden className="pointer-events-none absolute inset-y-0 left-0 w-3 bg-gradient-to-r from-black/45 to-transparent" />{" "}
 
       <motion.button
         type="button"
@@ -273,20 +273,20 @@ function Couverture({
           transition={{ duration: 6, repeat: Infinity, ease: "easeInOut" }}
         >
           <div className="flex flex-wrap items-center justify-between gap-3 text-[10px] font-black uppercase tracking-[0.25em] text-white/45">
-            <span>Travaux parlementaires</span>
+            <span>Travaux parlementaires</span>{" "}
             <span className="inline-flex items-center gap-1.5 rounded-full bg-gradient-to-r from-fuchsia-500 to-purple-600 px-2.5 py-1 text-white">
               <Landmark size={11} /> Pro
             </span>
-          </div>
+          </div>{" "}
 
-          <div className="mt-3 h-px bg-white/20" />
-          <div className="mt-[3px] h-px bg-white/10" />
+          <div className="mt-3 h-px bg-white/20" />{" "}
+          <div className="mt-[3px] h-px bg-white/10" />{" "}
 
           {/* Un reflet qui traverse, par translation seule : le compositeur s'en
               charge sans repeindre une lettre. */}
           <h3 className="relative mt-5 select-none overflow-hidden font-staatliches text-[2.4rem] uppercase leading-[0.85] tracking-tight sm:text-6xl">
-            <span className="block">Suivi des</span>
-            <span className="block text-emerald-300">commissions</span>
+            <span className="block">Suivi des</span>{" "}
+            <span className="block text-emerald-300">commissions</span>{" "}
             {!reduce && (
               <motion.span
                 aria-hidden
@@ -295,27 +295,27 @@ function Couverture({
                 transition={{ duration: 2.8, repeat: Infinity, repeatDelay: 3.6, ease: "easeInOut" }}
               />
             )}
-          </h3>
+          </h3>{" "}
 
           <p className="mt-4 max-w-xl text-[15px] font-bold leading-snug sm:text-base">
             <span className="bg-gradient-to-r from-fuchsia-300 via-purple-300 to-fuchsia-400 bg-clip-text text-transparent">
               Votre abonnement Pro ouvre le travail des commissions, jour après
               jour, dans les deux chambres.
-            </span>
+            </span>{" "}
             <span className="mt-1 block text-[13px] font-medium text-white/55">
               Auditions, examens de textes, tables rondes : ce qui s&apos;est dit,
               qui l&apos;a dit, et ce qui a été décidé — avant que la presse n&apos;en parle.
             </span>
-          </p>
+          </p>{" "}
 
-          <div className="mt-5 h-px bg-white/20" />
+          <div className="mt-5 h-px bg-white/20" />{" "}
 
           <div className="mt-3 flex flex-wrap items-baseline gap-x-3 gap-y-1">
-            <span className="text-sm font-bold text-white/85">{dateLongue(j.date)}</span>
+            <span className="text-sm font-bold text-white/85">{dateLongue(j.date)}</span>{" "}
             <span className="text-[11px] font-black uppercase tracking-widest text-white/35">
               dernière journée de séance
             </span>
-          </div>
+          </div>{" "}
 
           {/* Onglets de registre : la silhouette d'un classeur, sans faire croire
               à des boutons — le rail cliquable est plus bas, hors du bouton. */}
@@ -323,27 +323,27 @@ function Couverture({
             {[0, 1, 2, 3, 4, 5, 6, 7].map(i => (
               <div key={i} className="h-7 rounded-t-md bg-white/50" style={{ width: `${[26, 34, 22, 30, 24, 36, 28, 20][i]}px` }} />
             ))}
-          </div>
-          <div aria-hidden className="h-1.5 rounded-sm bg-white/30 opacity-25" />
+          </div>{" "}
+          <div aria-hidden className="h-1.5 rounded-sm bg-white/30 opacity-25" />{" "}
 
           <div className="mt-6 flex flex-wrap items-center gap-4">
             <span className="inline-flex items-center gap-2 rounded-2xl bg-gradient-to-r from-emerald-500 to-teal-600 px-5 py-3 text-[11px] font-black uppercase tracking-widest shadow-lg shadow-emerald-500/30 transition group-hover:brightness-110">
-              Ouvrir le registre
+              Ouvrir le registre{" "}
               <ArrowRight size={14} className="transition-transform group-hover:translate-x-1" />
-            </span>
+            </span>{" "}
             <span className="text-[13px] font-bold text-white/60">
               <strong className="font-staatliches text-2xl text-white">{j.total}</strong> réunion{j.total > 1 ? "s" : ""} ce jour-là
               {j.an > 0 && j.senat > 0 && <span className="text-white/40"> · {j.an} à l&apos;Assemblée, {j.senat} au Sénat</span>}
             </span>
           </div>
         </motion.div>
-      </motion.button>
+      </motion.button>{" "}
 
       {autres.length > 0 && (
         <div className="relative border-t border-white/10 px-6 pb-5 pt-4 sm:px-9">
           <p className="mb-2.5 text-[10px] font-black uppercase tracking-[0.2em] text-white/40">
             Autres journées — {jours.length} jours de séance, {total} réunions suivies
-          </p>
+          </p>{" "}
           <DragScroller ariaLabel="Journées de séance des commissions" sombre className="gap-2 pb-2 pt-0 md:gap-2">
             {autres.map(({ x, i }) => {
               const d = jourCourt(x.date);
@@ -355,7 +355,7 @@ function Couverture({
                   title={`${dateLongue(x.date)} — ${x.total} réunion(s)`}
                   className="shrink-0 rounded-xl bg-white/10 px-3 py-2 text-center text-white/70 transition hover:bg-white/20 hover:text-white"
                 >
-                  <span className="block font-staatliches text-lg leading-none tabular-nums">{d.jour}</span>
+                  <span className="block font-staatliches text-lg leading-none tabular-nums">{d.jour}</span>{" "}
                   <span className="block text-[9px] font-black uppercase tracking-widest opacity-70">{d.mois}</span>
                 </button>
               );
@@ -435,27 +435,27 @@ export default function CommissionsRegistre() {
           <div className="flex flex-wrap items-center gap-x-3 gap-y-2">
             <span className="inline-flex items-center gap-1.5 rounded-full bg-gradient-to-r from-fuchsia-500 to-purple-600 px-3 py-1 text-[10px] font-black uppercase tracking-widest">
               <Landmark size={12} /> Pro
-            </span>
+            </span>{" "}
             <h3 className="font-staatliches text-2xl uppercase leading-none tracking-tight sm:text-3xl">
               Le suivi des commissions
             </h3>
-          </div>
+          </div>{" "}
 
           <div className="mt-4 flex flex-wrap items-baseline gap-2">
-            <span className="font-staatliches text-6xl leading-none text-emerald-300">{jour.total}</span>
+            <span className="font-staatliches text-6xl leading-none text-emerald-300">{jour.total}</span>{" "}
             <span className="pb-1.5 text-sm font-bold text-white/70">
               réunion{jour.total > 1 ? "s" : ""} le {dateLongue(jour.date)}
             </span>
-          </div>
+          </div>{" "}
           <p className="mt-1 text-[13px] text-white/45">
             {total} réunions suivies sur {jours.length} journées de séance, dans les deux chambres.
-          </p>
+          </p>{" "}
 
           <div className="mt-7 rounded-2xl bg-white/[0.05] p-5 ring-1 ring-white/10">
             <p className="flex items-start gap-2 text-[10px] font-black uppercase leading-snug tracking-widest text-emerald-300">
-              <Lock size={13} className="mt-px shrink-0" />
+              <Lock size={13} className="mt-px shrink-0" />{" "}
               {isPremium ? "Votre abonnement Premium ne couvre pas cette rubrique" : "Réservé à l'offre Pro"}
-            </p>
+            </p>{" "}
             <ul className="mt-3.5 grid gap-2 sm:grid-cols-2">
               {[
                 "Ce qui s'est dit dans chaque réunion",
@@ -466,18 +466,18 @@ export default function CommissionsRegistre() {
                 "Mis à jour après chaque séance",
               ].map(b => (
                 <li key={b} className="flex items-start gap-2 text-[13px] leading-snug text-white/85">
-                  <Check size={15} className="mt-0.5 shrink-0 text-emerald-400" />
-                  {b}
+                  <Check size={15} className="mt-0.5 shrink-0 text-emerald-400" />{" "}
+                  {b}{" "}
                 </li>
               ))}
             </ul>
-          </div>
+          </div>{" "}
 
           <div className="mt-6 flex flex-col gap-2 sm:flex-row sm:items-center sm:gap-3">
             <Link href="/premium"
               className="inline-flex items-center justify-center gap-2 rounded-2xl bg-gradient-to-r from-fuchsia-500 to-purple-600 px-6 py-3.5 text-[12px] font-black uppercase tracking-widest text-white shadow-lg shadow-fuchsia-500/30 transition hover:brightness-110">
-              {isPremium ? "Passer à l'offre Pro" : "Découvrir l'offre Pro"} <ArrowRight size={15} />
-            </Link>
+              {isPremium ? "Passer à l'offre Pro" : "Découvrir l'offre Pro"} {" "}<ArrowRight size={15} />
+            </Link>{" "}
             <span className="text-[11px] font-bold text-white/45">24,99 €/mois, sans engagement</span>
           </div>
         </div>
@@ -499,7 +499,7 @@ export default function CommissionsRegistre() {
             indexCourant={choisi}
             onOuvrir={() => setOuvert(true)}
             onChoisir={(i) => { setChoisi(i); setChambre(null); setOuvert(true); }}
-          />
+          />{" "}
         </motion.div>
       ) : (
         <motion.div
@@ -514,10 +514,10 @@ export default function CommissionsRegistre() {
                 <div className="flex flex-wrap items-center gap-x-3 gap-y-2">
                   <span className="inline-flex items-center gap-1.5 rounded-full bg-gradient-to-r from-fuchsia-500 to-purple-600 px-3 py-1 text-[10px] font-black uppercase tracking-widest">
                     <Landmark size={12} /> Pro
-                  </span>
+                  </span>{" "}
                   <h3 className="font-staatliches text-2xl uppercase leading-none tracking-tight sm:text-3xl">
                     Le suivi des commissions
-                  </h3>
+                  </h3>{" "}
                   <button
                     onClick={() => setRecherche(r => !r)}
                     aria-expanded={recherche}
@@ -526,16 +526,16 @@ export default function CommissionsRegistre() {
                       recherche ? "bg-white text-slate-900" : "bg-white/10 text-white/80 ring-1 ring-white/15 hover:bg-white/20 hover:text-white"
                     }`}
                   >
-                    <Search size={13} /> <span className="hidden sm:inline">Rechercher</span>
-                  </button>
+                    <Search size={13} /> {" "}<span className="hidden sm:inline">Rechercher</span>
+                  </button>{" "}
                   <button
                     onClick={() => { setOuvert(false); setRecherche(false); }}
                     aria-label="Refermer le registre"
                     className="inline-flex items-center gap-1.5 rounded-full bg-white/10 px-3 py-1.5 text-[10px] font-black uppercase tracking-widest text-white/80 ring-1 ring-white/15 transition hover:bg-white/20 hover:text-white"
                   >
-                    <ChevronUp size={13} /> <span className="hidden sm:inline">Refermer</span>
+                    <ChevronUp size={13} /> {" "}<span className="hidden sm:inline">Refermer</span>
                   </button>
-                </div>
+                </div>{" "}
 
                 <div className="mt-4">
                   <DragScroller ariaLabel="Journées de séance des commissions" sombre className="gap-2 md:gap-2">
@@ -552,15 +552,15 @@ export default function CommissionsRegistre() {
                             actif ? "bg-white text-slate-900" : "bg-white/10 text-white/70 hover:bg-white/20"
                           }`}
                         >
-                          <span className="block font-staatliches text-lg leading-none tabular-nums">{d.jour}</span>
+                          <span className="block font-staatliches text-lg leading-none tabular-nums">{d.jour}</span>{" "}
                           <span className="block text-[9px] font-black uppercase tracking-widest opacity-70">{d.mois}</span>
                         </button>
                       );
                     })}
                   </DragScroller>
-                </div>
+                </div>{" "}
 
-                <p className="mt-4 text-sm font-bold text-white/90">{dateLongue(jour.date)}</p>
+                <p className="mt-4 text-sm font-bold text-white/90">{dateLongue(jour.date)}</p>{" "}
 
                 <div className="mt-3 flex flex-wrap gap-1.5">
                   <button
@@ -570,7 +570,7 @@ export default function CommissionsRegistre() {
                     }`}
                   >
                     {jour.total} réunion{jour.total > 1 ? "s" : ""}
-                  </button>
+                  </button>{" "}
                   {jour.an > 0 && (
                     <button
                       onClick={() => setChambre(chambre === "AN" ? null : "AN")}
@@ -580,7 +580,7 @@ export default function CommissionsRegistre() {
                     >
                       {jour.an} à l&apos;Assemblée
                     </button>
-                  )}
+                  )}{" "}
                   {jour.senat > 0 && (
                     <button
                       onClick={() => setChambre(chambre === "SENAT" ? null : "SENAT")}
@@ -592,7 +592,7 @@ export default function CommissionsRegistre() {
                     </button>
                   )}
                 </div>
-              </div>
+              </div>{" "}
 
               <AnimatePresence initial={false}>
                 {recherche && (
@@ -606,7 +606,7 @@ export default function CommissionsRegistre() {
                     <RechercheCommissions onClose={() => setRecherche(false)} />
                   </motion.div>
                 )}
-              </AnimatePresence>
+              </AnimatePresence>{" "}
 
               <div className="p-5 sm:p-7">
                 {reunions === null || reunionsPour !== jour.date ? (
@@ -619,7 +619,7 @@ export default function CommissionsRegistre() {
                   <div className="space-y-2">
                     {visibles.map(m => <Ligne key={m.ref} m={m} />)}
                   </div>
-                )}
+                )}{" "}
 
                 <p className="mt-4 text-[10px] italic leading-snug text-white/40">
                   Source : comptes rendus officiels de l&apos;Assemblée nationale et du Sénat.
@@ -627,7 +627,7 @@ export default function CommissionsRegistre() {
                 </p>
               </div>
             </div>
-          </Garde>
+          </Garde>{" "}
         </motion.div>
       )}
     </AnimatePresence>

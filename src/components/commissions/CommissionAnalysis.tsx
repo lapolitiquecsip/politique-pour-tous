@@ -66,10 +66,10 @@ export function CommissionAnalysis({ m, accent, sombre = false }: {
       <div className="space-y-3">
         <div className={bloc}>
           <p className={`flex items-center gap-2 text-sm font-bold ${fort}`}>
-            <Hourglass size={15} className={a.attente ? "text-amber-500" : accent.text} />
+            <Hourglass size={15} className={a.attente ? "text-amber-500" : accent.text} />{" "}
             {a.a_transcrire ? "Audition sans compte rendu écrit : transcription de la vidéo en cours"
               : a.attente ? "Compte rendu intégral pas encore publié" : "Réunion brève : voici son compte rendu, en entier"}
-          </p>
+          </p>{" "}
           <p className={`mt-1 text-[13px] leading-relaxed ${appui}`}>
             {a.a_transcrire
               ? "L'Assemblée n'a pas rédigé de compte rendu de cette audition. Nous transcrivons son enregistrement vidéo, puis nous l'analysons : le tout paraît ici sous quelques jours."
@@ -77,7 +77,7 @@ export function CommissionAnalysis({ m, accent, sombre = false }: {
               ? `${m.chamber === "SENAT" ? "Le Sénat" : "L'Assemblée"} n'a mis en ligne que l'ordre du jour de cette réunion. L'analyse sera rédigée dès que le compte rendu complet paraîtra ; nous relisons la page chaque jour.`
               : "Ce point de l'ordre du jour tient en quelques lignes : aucune analyse n'y ajouterait quoi que ce soit."}
           </p>
-        </div>
+        </div>{" "}
         {texteCourt && !a.a_transcrire && <p className={`whitespace-pre-line text-sm leading-relaxed ${corps}`}>{texteCourt}</p>}
       </div>
     );
@@ -91,16 +91,16 @@ export function CommissionAnalysis({ m, accent, sombre = false }: {
     return m.summary
       ? (
         <div>
-          <p className={`whitespace-pre-line text-sm leading-relaxed ${corps}`}>{m.summary}</p>
+          <p className={`whitespace-pre-line text-sm leading-relaxed ${corps}`}>{m.summary}</p>{" "}
           <MentionIA sombre={sombre} source={{ libelle: (m.analysis as any)?.source === "transcription" ? "enregistrement vidéo de la réunion, transcrit automatiquement" : "compte rendu officiel de la réunion", url: m.cr_url }} />
         </div>
       )
       : (
         <div className={bloc}>
           <p className={`flex items-center gap-2 text-sm font-bold ${fort}`}>
-            <span className={`h-2 w-2 shrink-0 animate-pulse rounded-full ${accent.dot}`} />
+            <span className={`h-2 w-2 shrink-0 animate-pulse rounded-full ${accent.dot}`} />{" "}
             Analyse en préparation
-          </p>
+          </p>{" "}
           <p className={`mt-1 text-[13px] leading-relaxed ${appui}`}>
             Le compte rendu officiel de cette réunion est publié ; son analyse (ce qui s&apos;est dit,
             positions, chiffres, verbatim vérifié) est rédigée dans les heures qui viennent. En
@@ -114,164 +114,164 @@ export function CommissionAnalysis({ m, accent, sombre = false }: {
     <div className="space-y-5">
       {a.a_retenir && (
         <div className={`rounded-2xl bg-gradient-to-br ${accent.grad} p-4 text-white shadow-md`}>
-          <p className="flex items-center gap-1.5 text-[10px] font-black uppercase tracking-widest text-white/80"><Sparkles size={12} /> À retenir</p>
+          <p className="flex items-center gap-1.5 text-[10px] font-black uppercase tracking-widest text-white/80"><Sparkles size={12} /> À retenir</p>{" "}
           <p className="mt-1.5 text-[15px] font-semibold leading-snug">{a.a_retenir}</p>
         </div>
-      )}
+      )}{" "}
 
       {a.contexte && (
         <div>
           <p className={`mb-1.5 flex items-center gap-1.5 text-[10px] font-black uppercase tracking-widest ${accent.text}`}>
             <Target size={12} /> Contexte
-          </p>
+          </p>{" "}
           <p className={`text-sm leading-relaxed ${corps}`}>{a.contexte}</p>
         </div>
-      )}
+      )}{" "}
 
       {!!a.points_cles?.length && (
         <div>
           <p className={`mb-2 flex items-center gap-1.5 text-[10px] font-black uppercase tracking-widest ${accent.text}`}>
             <ListChecks size={12} /> Ce qui s&apos;est dit
-          </p>
+          </p>{" "}
           <ul className="space-y-1.5">
             {a.points_cles.map((p, i) => (
               <li key={i} className={`flex gap-2 text-sm leading-snug ${corps}`}>
-                <span className={`mt-1.5 h-1.5 w-1.5 shrink-0 rounded-full ${accent.dot}`} />{p}
+                <span className={`mt-1.5 h-1.5 w-1.5 shrink-0 rounded-full ${accent.dot}`} />{" "}{p}{" "}
               </li>
             ))}
           </ul>
         </div>
-      )}
+      )}{" "}
 
       {!!a.annonces?.length && (
         <div>
           <p className="mb-2 flex items-center gap-1.5 text-[10px] font-black uppercase tracking-widest text-emerald-700 dark:text-emerald-400">
             <Megaphone size={12} /> Annonces et engagements
-          </p>
+          </p>{" "}
           <ul className="space-y-1.5">
             {a.annonces.map((p, i) => (
               <li key={i} className={`flex gap-2 text-sm leading-snug ${corps}`}>
-                <ArrowRight size={14} className="mt-0.5 shrink-0 text-emerald-500" />{p}
+                <ArrowRight size={14} className="mt-0.5 shrink-0 text-emerald-500" />{" "}{p}{" "}
               </li>
             ))}
           </ul>
         </div>
-      )}
+      )}{" "}
 
       {!!a.echanges?.length && (
         <div>
           <p className="mb-2 flex items-center gap-1.5 text-[10px] font-black uppercase tracking-widest text-indigo-700 dark:text-indigo-400">
             <MessagesSquare size={12} /> Questions et réponses
-          </p>
+          </p>{" "}
           <div className="space-y-2">
             {a.echanges.map((e, i) => (
               <div key={i} className={bloc}>
                 <p className={`text-[12px] font-black ${fort}`}>
                   {e.question_de}
                   {e.groupe && <span className="ml-2 rounded-full bg-indigo-100 px-2 py-0.5 text-[9px] font-black uppercase tracking-wider text-indigo-700 dark:bg-indigo-500/20 dark:text-indigo-300">{e.groupe}</span>}
-                </p>
-                <p className={`mt-1 text-sm leading-snug ${corps}`}>{e.question}</p>
+                </p>{" "}
+                <p className={`mt-1 text-sm leading-snug ${corps}`}>{e.question}</p>{" "}
                 {e.reponse && (
                   <p className={`mt-2 border-l-2 border-indigo-300 pl-3 text-sm leading-snug dark:border-indigo-500/50 ${appui}`}>
                     {e.reponse_de && <strong className={fort}>{e.reponse_de} : </strong>}{e.reponse}
                   </p>
-                )}
+                )}{" "}
               </div>
             ))}
           </div>
         </div>
-      )}
+      )}{" "}
 
       {!!a.desaccords?.length && (
         <div>
           <p className="mb-2 flex items-center gap-1.5 text-[10px] font-black uppercase tracking-widest text-rose-700 dark:text-rose-400">
             <Swords size={12} /> Points de désaccord
-          </p>
+          </p>{" "}
           <ul className="space-y-1.5">
             {a.desaccords.map((p, i) => (
               <li key={i} className={`flex gap-2 text-sm leading-snug ${corps}`}>
-                <span className="mt-1.5 h-1.5 w-1.5 shrink-0 rounded-full bg-rose-500" />{p}
+                <span className="mt-1.5 h-1.5 w-1.5 shrink-0 rounded-full bg-rose-500" />{" "}{p}{" "}
               </li>
             ))}
           </ul>
         </div>
-      )}
+      )}{" "}
 
       {!!a.votes?.length && (
         <div>
           <p className="mb-2 flex items-center gap-1.5 text-[10px] font-black uppercase tracking-widest text-sky-700 dark:text-sky-400">
             <Vote size={12} /> Votes de la réunion
-          </p>
+          </p>{" "}
           <div className="space-y-1.5">
             {a.votes.map((v, i) => (
               <div key={i} className={`flex flex-wrap items-baseline gap-x-2 gap-y-0.5 text-sm ${corps}`}>
-                <span className={`rounded-full px-2 py-0.5 text-[10px] font-black uppercase tracking-wider ${/adopt/i.test(v.resultat) ? "bg-emerald-100 text-emerald-700 dark:bg-emerald-500/20 dark:text-emerald-300" : /rejet/i.test(v.resultat) ? "bg-rose-100 text-rose-700 dark:bg-rose-500/20 dark:text-rose-300" : "bg-slate-200 text-slate-700 dark:bg-slate-700 dark:text-slate-200"}`}>{v.resultat}</span>
-                <span className="min-w-0 flex-1">{v.objet}{v.detail ? <span className={appui}> — {v.detail}</span> : null}</span>
+                <span className={`rounded-full px-2 py-0.5 text-[10px] font-black uppercase tracking-wider ${/adopt/i.test(v.resultat) ? "bg-emerald-100 text-emerald-700 dark:bg-emerald-500/20 dark:text-emerald-300" : /rejet/i.test(v.resultat) ? "bg-rose-100 text-rose-700 dark:bg-rose-500/20 dark:text-rose-300" : "bg-slate-200 text-slate-700 dark:bg-slate-700 dark:text-slate-200"}`}>{v.resultat}</span>{" "}
+                <span className="min-w-0 flex-1">{v.objet}{v.detail ? <span className={appui}> — {v.detail}</span> : null}</span>{" "}
               </div>
             ))}
           </div>
         </div>
-      )}
+      )}{" "}
 
       {!!a.chiffres?.length && (
         <div>
-          <p className="mb-2 text-[10px] font-black uppercase tracking-widest text-amber-700 dark:text-amber-400">Chiffres avancés</p>
+          <p className="mb-2 text-[10px] font-black uppercase tracking-widest text-amber-700 dark:text-amber-400">Chiffres avancés</p>{" "}
           <div className="flex flex-wrap gap-2">
             {a.chiffres.map((c, i) => (
               <div key={i} className="rounded-2xl border border-amber-200 bg-amber-50 px-3.5 py-2 dark:border-amber-500/30 dark:bg-amber-500/10">
-                <p className="font-staatliches text-xl leading-none text-amber-700 dark:text-amber-400">{c.valeur}</p>
-                <p className={`mt-1 text-[11px] leading-tight ${appui}`}>{c.quoi}</p>
+                <p className="font-staatliches text-xl leading-none text-amber-700 dark:text-amber-400">{c.valeur}</p>{" "}
+                <p className={`mt-1 text-[11px] leading-tight ${appui}`}>{c.quoi}</p>{" "}
               </div>
             ))}
           </div>
         </div>
-      )}
+      )}{" "}
 
       {!!a.positions?.length && (
         <div>
-          <p className="mb-2 text-[10px] font-black uppercase tracking-widest text-violet-700 dark:text-violet-400">Positions défendues</p>
+          <p className="mb-2 text-[10px] font-black uppercase tracking-widest text-violet-700 dark:text-violet-400">Positions défendues</p>{" "}
           <div className="space-y-2">
             {a.positions.map((p, i) => (
               <div key={i} className={bloc}>
                 <p className={`text-[12px] font-black ${fort}`}>
                   {p.orateur}
                   {p.groupe && <span className="ml-2 rounded-full bg-violet-100 px-2 py-0.5 text-[9px] font-black uppercase tracking-wider text-violet-700 dark:bg-violet-500/20 dark:text-violet-300">{p.groupe}</span>}
-                </p>
-                <p className={`mt-1 text-sm leading-snug ${appui}`}>{p.position}</p>
+                </p>{" "}
+                <p className={`mt-1 text-sm leading-snug ${appui}`}>{p.position}</p>{" "}
               </div>
             ))}
           </div>
         </div>
-      )}
+      )}{" "}
 
       {!!a.citations?.length && (
         <div>
           <p className="mb-2 flex items-center gap-1.5 text-[10px] font-black uppercase tracking-widest text-muted-foreground">
             <Quote size={12} /> Verbatim
-          </p>
+          </p>{" "}
           <div className="space-y-2">
             {a.citations.map((c, i) => (
               <blockquote key={i} className="border-l-4 border-border pl-3 dark:border-slate-700">
-                <p className={`text-sm italic leading-snug ${corps}`}>« {c.texte} »</p>
-                <p className="mt-0.5 text-[11px] font-bold text-muted-foreground">— {c.orateur}</p>
+                <p className={`text-sm italic leading-snug ${corps}`}>« {c.texte} »</p>{" "}
+                <p className="mt-0.5 text-[11px] font-bold text-muted-foreground">— {c.orateur}</p>{" "}
               </blockquote>
             ))}
           </div>
         </div>
-      )}
+      )}{" "}
 
       {!!a.suites?.length && (
         <div>
-          <p className="mb-2 text-[10px] font-black uppercase tracking-widest text-sky-700 dark:text-sky-400">Suites annoncées</p>
+          <p className="mb-2 text-[10px] font-black uppercase tracking-widest text-sky-700 dark:text-sky-400">Suites annoncées</p>{" "}
           <ul className="space-y-1.5">
             {a.suites.map((p, i) => (
               <li key={i} className={`flex gap-2 text-sm leading-snug ${corps}`}>
-                <ArrowRight size={14} className="mt-0.5 shrink-0 text-sky-500" />{p}
+                <ArrowRight size={14} className="mt-0.5 shrink-0 text-sky-500" />{" "}{p}{" "}
               </li>
             ))}
           </ul>
         </div>
-      )}
+      )}{" "}
 
       {/* Les citations sont retrouvées mot pour mot dans le verbatim avant publication
           (dropInventedQuotes, scripts/update-commissions.ts) ; le reste ne l'est pas. */}

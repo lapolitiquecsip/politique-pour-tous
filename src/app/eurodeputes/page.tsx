@@ -7,6 +7,11 @@ import EuFranceProjects from "@/components/lois/EuFranceProjects";
 import EuFranceDecisionsFeed from "@/components/lois/EuFranceDecisionsFeed";
 import UkraineAidTracker from "@/components/lois/UkraineAidTracker";
 
+export const metadata = {
+  title: "Les eurodéputés français",
+  description: "Les 81 députés européens élus en France : leurs votes au Parlement européen, leur groupe politique et leur parcours.",
+};
+
 export const dynamic = "force-static";
 
 export default async function EurodeputesPage() {
@@ -23,27 +28,27 @@ export default async function EurodeputesPage() {
           { label: "Aide à l'Ukraine", href: "#ukraine" },
           { label: "Décisions concernant la France", href: "#decisions" },
         ]}
-      />
+      />{" "}
       <section id="composition" className="scroll-mt-24 pt-4 pb-8">
         <HemicycleChart chamber="eu" subtitle="Parlement européen" title="Eurodéputés français" />
-      </section>
+      </section>{" "}
 
       {/* La liste des eurodéputés vient DIRECTEMENT sous l'hémicycle (au clic sur un secteur, on filtre). */}
       <section id="membres" className="scroll-mt-24">
         <EurodeputesClient meps={meps as any[]} />
-      </section>
+      </section>{" "}
 
       {/* Bande bleu nuit UE : budget France↔UE + projets financés + aide Ukraine + fil des décisions. */}
       <div className="bg-gradient-to-b from-[#0a1a3f] to-[#050d24] py-16 space-y-16">
         <section id="budget" className="scroll-mt-24">
           <EuFranceBudget />
-        </section>
+        </section>{" "}
         <section id="projets" className="scroll-mt-24">
           <EuFranceProjects />
-        </section>
+        </section>{" "}
         <section id="ukraine" className="scroll-mt-24">
           <UkraineAidTracker />
-        </section>
+        </section>{" "}
         <section id="decisions" className="scroll-mt-24">
           <EuFranceDecisionsFeed />
         </section>

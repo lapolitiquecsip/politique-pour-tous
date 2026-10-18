@@ -49,7 +49,7 @@ export default function MinisterFicheClient({ params, embedded }: { params: Prom
   if (loading) return <div className="flex min-h-screen items-center justify-center bg-muted"><Loader2 className="h-10 w-10 animate-spin text-slate-300" /></div>;
   if (!m) return (
     <div className="flex min-h-screen flex-col items-center justify-center gap-4 bg-muted">
-      <p className="text-muted-foreground">Fiche ministre introuvable.</p>
+      <p className="text-muted-foreground">Fiche ministre introuvable.</p>{" "}
       <Link href="/executif" className="text-blue-700 dark:text-blue-400 font-bold hover:underline">← Retour à l'Exécutif</Link>
     </div>
   );
@@ -68,61 +68,61 @@ export default function MinisterFicheClient({ params, embedded }: { params: Prom
           <Link href="/executif" className="mb-6 inline-flex items-center gap-2 text-xs font-black uppercase tracking-widest text-slate-400 hover:text-white">
             <ArrowLeft size={14} /> Retour au gouvernement
           </Link>
-          )}
+          )}{" "}
           <div className="flex flex-col items-center gap-6 text-center md:flex-row md:items-end md:text-left">
             <div className="h-36 w-36 shrink-0 overflow-hidden rounded-full border-4 border-white/20 bg-slate-800">
               {m.photo_url
                 // eslint-disable-next-line @next/next/no-img-element
                 ? <img src={m.photo_url} alt={m.full_name} className="h-full w-full object-cover object-top" />
                 : <div className="flex h-full w-full items-center justify-center text-3xl font-black">{m.full_name.split(" ").map((x: string) => x[0]).slice(0, 2).join("")}</div>}
-            </div>
+            </div>{" "}
             <div>
-              <p className="text-[11px] font-black uppercase tracking-widest text-amber-400">{cleanMinistryName(m.title) || "Membre du gouvernement"}</p>
-              <h1 className="mt-2 text-4xl font-staatliches uppercase leading-none md:text-6xl">{m.full_name}</h1>
+              <p className="text-[11px] font-black uppercase tracking-widest text-amber-400">{cleanMinistryName(m.title) || "Membre du gouvernement"}</p>{" "}
+              <h1 className="mt-2 text-4xl font-staatliches uppercase leading-none md:text-6xl">{m.full_name}</h1>{" "}
               {m.ministry_name && <p className="mt-2 text-sm text-white/70">{cleanMinistryName(m.ministry_name)}</p>}
             </div>
-          </div>
+          </div>{" "}
           {m.summary && <p className="mx-auto mt-6 max-w-3xl text-center text-lg leading-relaxed text-white/85 md:text-left">{m.summary}</p>}
         </div>
-      </section>
+      </section>{" "}
 
       <div className="mx-auto max-w-4xl px-4">
         {/* Faits clés */}
         <div className="-mt-6 flex flex-wrap justify-center gap-2 md:justify-start">
-          {bio.profession && <span className="inline-flex items-center gap-2 rounded-full bg-card px-4 py-2 text-sm font-bold text-slate-700 dark:text-slate-200 shadow-sm"><Briefcase size={15} className="text-muted-foreground" />{bio.profession}</span>}
-          {bio.formation && <span className="inline-flex items-center gap-2 rounded-full bg-card px-4 py-2 text-sm font-bold text-slate-700 dark:text-slate-200 shadow-sm"><GraduationCap size={16} className="text-muted-foreground" />{bio.formation}</span>}
-          {bio.enfants && <span className="inline-flex items-center gap-2 rounded-full bg-card px-4 py-2 text-sm font-bold text-slate-700 dark:text-slate-200 shadow-sm"><Users size={15} className="text-muted-foreground" />{bio.enfants}</span>}
-        </div>
+          {bio.profession && <span className="inline-flex items-center gap-2 rounded-full bg-card px-4 py-2 text-sm font-bold text-slate-700 dark:text-slate-200 shadow-sm"><Briefcase size={15} className="text-muted-foreground" />{" "}{bio.profession}</span>}{" "}
+          {bio.formation && <span className="inline-flex items-center gap-2 rounded-full bg-card px-4 py-2 text-sm font-bold text-slate-700 dark:text-slate-200 shadow-sm"><GraduationCap size={16} className="text-muted-foreground" />{" "}{bio.formation}</span>}{" "}
+          {bio.enfants && <span className="inline-flex items-center gap-2 rounded-full bg-card px-4 py-2 text-sm font-bold text-slate-700 dark:text-slate-200 shadow-sm"><Users size={15} className="text-muted-foreground" />{" "}{bio.enfants}</span>}
+        </div>{" "}
 
         {/* Cabinet de Matignon — uniquement sur la fiche du Premier ministre. */}
         {/premier\s*ministre/i.test(m.title || "") && (
           <div className="mt-8 flex items-start gap-4 rounded-3xl border border-blue-100 dark:border-blue-500/25 bg-blue-50/50 dark:bg-blue-500/10 p-5">
-            <span className="flex h-11 w-11 shrink-0 items-center justify-center rounded-2xl bg-blue-100 dark:bg-blue-500/10 text-blue-600 dark:text-blue-300"><Landmark size={20} /></span>
+            <span className="flex h-11 w-11 shrink-0 items-center justify-center rounded-2xl bg-blue-100 dark:bg-blue-500/10 text-blue-600 dark:text-blue-300"><Landmark size={20} /></span>{" "}
             <div className="min-w-0">
-              <p className="text-[10px] font-black uppercase tracking-widest text-blue-700 dark:text-blue-400">Cabinet de Matignon</p>
-              <p className="mt-0.5 text-2xl font-black text-foreground">{PM_CABINET.value} <span className="text-base font-bold text-muted-foreground">conseillers</span></p>
-              <p className="mt-0.5 text-sm leading-snug text-muted-foreground">{PM_CABINET.sub}</p>
-              <a href={PM_CABINET.url} target="_blank" rel="noopener noreferrer" className="mt-1.5 inline-flex items-center gap-1 text-[10px] font-black uppercase tracking-widest text-muted-foreground hover:text-blue-600">{PM_CABINET.year} · {PM_CABINET.source} <ExternalLink size={10} /></a>
+              <p className="text-[10px] font-black uppercase tracking-widest text-blue-700 dark:text-blue-400">Cabinet de Matignon</p>{" "}
+              <p className="mt-0.5 text-2xl font-black text-foreground">{PM_CABINET.value} <span className="text-base font-bold text-muted-foreground">conseillers</span></p>{" "}
+              <p className="mt-0.5 text-sm leading-snug text-muted-foreground">{PM_CABINET.sub}</p>{" "}
+              <a href={PM_CABINET.url} target="_blank" rel="noopener noreferrer" className="mt-1.5 inline-flex items-center gap-1 text-[10px] font-black uppercase tracking-widest text-muted-foreground hover:text-blue-600">{PM_CABINET.year} · {PM_CABINET.source} {" "}<ExternalLink size={10} /></a>
             </div>
           </div>
-        )}
+        )}{" "}
 
         {/* Toutes les fonctions de la personne. */}
         <div className="mt-8">
           <ParallelRoles fullName={m.full_name} selfHref={`/executif/ministre/${slug}`} />
-        </div>
+        </div>{" "}
 
         {/* Situation judiciaire */}
         <div className="mt-8 flex items-center justify-between gap-4 rounded-3xl border border-border bg-card p-5">
           <div>
-            <p className="text-[9px] font-black uppercase tracking-widest text-muted-foreground">Intégrité &amp; Transparence</p>
-            <h3 className="text-lg font-bold text-foreground">Situation judiciaire</h3>
+            <p className="text-[9px] font-black uppercase tracking-widest text-muted-foreground">Intégrité &amp; Transparence</p>{" "}
+            <h3 className="text-lg font-bold text-foreground">Situation judiciaire</h3>{" "}
             <span className={`text-[10px] font-black uppercase tracking-widest ${legalClean ? "text-emerald-700 dark:text-emerald-400" : "text-amber-800 dark:text-amber-400"}`}>{legalClean ? "Dossier vierge" : "Affaires à consulter"}</span>
-          </div>
+          </div>{" "}
           <button onClick={() => setShowLegal(true)} className={`inline-flex items-center gap-2 rounded-2xl border px-5 py-3 text-[10px] font-black uppercase tracking-widest ${legalClean ? "border-emerald-500/20 bg-emerald-500/10 text-emerald-700 dark:text-emerald-400" : "border-amber-500/20 bg-amber-500/10 text-amber-800 dark:text-amber-400"}`}>
             <ShieldCheck className="h-3.5 w-3.5" /> Consulter
           </button>
-        </div>
+        </div>{" "}
 
         {/* Rubriques bio */}
         <div className="mt-6 grid items-start gap-4 sm:grid-cols-2">
@@ -132,23 +132,23 @@ export default function MinisterFicheClient({ params, embedded }: { params: Prom
             const wide = key === "parcours" || key === "chronologie" || key === "realisations" ? "sm:col-span-2" : "";
             return (
               <div key={key} className={`rounded-3xl border border-border bg-card p-5 shadow-sm ${wide}`}>
-                <h3 className={`font-staatliches text-2xl uppercase leading-none ${color}`}>{label}</h3>
-                <div className={`mb-3 mt-1.5 h-1 w-12 rounded-full ${color.replace("text-", "bg-")}`} />
+                <h3 className={`font-staatliches text-2xl uppercase leading-none ${color}`}>{label}</h3>{" "}
+                <div className={`mb-3 mt-1.5 h-1 w-12 rounded-full ${color.replace("text-", "bg-")}`} />{" "}
                 <ul className="list-disc space-y-1.5 pl-4 text-sm leading-6 text-slate-700 dark:text-slate-200 marker:text-slate-300">
-                  {points.map((p, i) => <li key={i}><NumHighlight text={p} /></li>)}
-                </ul>
+                  {points.map((p, i) => <li key={i}><NumHighlight text={p} />{" "}</li>)}
+                </ul>{" "}
               </div>
             );
           })}
-        </div>
+        </div>{" "}
 
         {m.source_url && (
           <a href={m.source_url} target="_blank" rel="noreferrer" className="mt-8 inline-flex items-center gap-1.5 text-sm font-bold text-blue-700 dark:text-blue-300 hover:underline">
             <ExternalLink size={14} /> Source : Wikipédia
           </a>
-        )}
+        )}{" "}
         <p className="mt-2 text-[11px] italic text-muted-foreground">Fiche générée automatiquement à partir de Wikipédia — susceptible d'être incomplète.</p>
-      </div>
+      </div>{" "}
 
       <LegalStatusModal isOpen={showLegal} onClose={() => setShowLegal(false)} deputy={legalPerson} cible={{ type: "minister", slug: m.slug }} />
     </main>

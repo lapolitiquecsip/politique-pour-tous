@@ -44,9 +44,9 @@ function StatBar({ label, value, display, color }: { label: string; value: numbe
   return (
     <div className="rounded-2xl bg-white/5 p-4">
       <div className="flex items-center justify-between">
-        <span className="text-[11px] font-black uppercase tracking-widest text-white/60">{label}</span>
+        <span className="text-[11px] font-black uppercase tracking-widest text-white/60">{label}</span>{" "}
         <span className="text-lg font-black text-white">{display}</span>
-      </div>
+      </div>{" "}
       <div className="mt-2 h-1.5 w-full overflow-hidden rounded-full bg-white/10">
         <div className="h-full rounded-full" style={{ width: `${Math.min((value ?? 0) * 100, 100)}%`, backgroundColor: color }} />
       </div>
@@ -66,9 +66,9 @@ function InfoRow({ icon: Icon, label, value }: { icon: any; label: string; value
   if (!value) return null;
   return (
     <div className="flex items-start gap-3 rounded-2xl border border-border bg-card p-4">
-      <div className="flex h-9 w-9 shrink-0 items-center justify-center rounded-xl bg-slate-100 dark:bg-slate-500/10 text-muted-foreground"><Icon className="h-4 w-4" /></div>
+      <div className="flex h-9 w-9 shrink-0 items-center justify-center rounded-xl bg-slate-100 dark:bg-slate-500/10 text-muted-foreground"><Icon className="h-4 w-4" /></div>{" "}
       <div className="min-w-0">
-        <p className="text-[10px] font-black uppercase tracking-widest text-muted-foreground">{label}</p>
+        <p className="text-[10px] font-black uppercase tracking-widest text-muted-foreground">{label}</p>{" "}
         <p className="font-bold text-foreground">{value}</p>
       </div>
     </div>
@@ -92,12 +92,12 @@ function LeaderRow({ value }: { value: string | null }) {
     <div className={`flex items-start gap-3 rounded-2xl border p-4 transition ${href ? "border-indigo-200 bg-card hover:border-indigo-400 hover:shadow-md cursor-pointer group" : "border-border bg-card"}`}>
       {photo && imgOk
         ? <img src={photo} alt={cleanName} onError={() => setImgOk(false)} className="h-10 w-10 shrink-0 rounded-xl object-cover object-top ring-1 ring-slate-200" />
-        : <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-slate-100 dark:bg-slate-500/10 text-muted-foreground"><UserCircle className="h-5 w-5" /></div>}
+        : <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-slate-100 dark:bg-slate-500/10 text-muted-foreground"><UserCircle className="h-5 w-5" /></div>}{" "}
       <div className="min-w-0">
-        <p className="text-[10px] font-black uppercase tracking-widest text-muted-foreground">Dirigeant·e</p>
+        <p className="text-[10px] font-black uppercase tracking-widest text-muted-foreground">Dirigeant·e</p>{" "}
         <p className="font-bold text-foreground group-hover:text-indigo-600 transition-colors inline-flex items-center gap-1">
-          {value}{href && <ArrowRight className="h-3.5 w-3.5 opacity-0 -translate-x-1 group-hover:opacity-100 group-hover:translate-x-0 transition-all" />}
-        </p>
+          {value}{" "}{href && <ArrowRight className="h-3.5 w-3.5 opacity-0 -translate-x-1 group-hover:opacity-100 group-hover:translate-x-0 transition-all" />}
+        </p>{" "}
         {href && <p className="text-[10px] font-black uppercase tracking-widest text-indigo-700 dark:text-indigo-400">Voir la fiche →</p>}
       </div>
     </div>
@@ -141,7 +141,7 @@ export default function PartyClient({ params }: { params: Promise<{ slug: string
   if (loading) return <div className="flex min-h-screen items-center justify-center bg-slate-950"><Loader2 className="h-10 w-10 animate-spin text-white/50" /></div>;
   if (!party) return (
     <div className="flex min-h-screen flex-col items-center justify-center gap-4 bg-slate-950 text-white/70">
-      <p>Fiche parti introuvable.</p>
+      <p>Fiche parti introuvable.</p>{" "}
       <Link href="/deputes" className="text-blue-400 hover:underline">← Retour</Link>
     </div>
   );
@@ -156,67 +156,67 @@ export default function PartyClient({ params }: { params: Promise<{ slug: string
         <div className="mx-auto max-w-5xl">
           <button onClick={() => window.history.back()} className="mb-6 inline-flex items-center gap-1 text-sm font-bold text-white/70 transition hover:text-white">
             <ChevronLeft className="h-4 w-4" /> Retour
-          </button>
+          </button>{" "}
           <div className="flex flex-col items-start gap-6 md:flex-row md:items-center">
             <div className="flex h-24 w-24 shrink-0 items-center justify-center overflow-hidden rounded-3xl bg-white p-1.5 shadow-lg">
               {party.logo_url
                 // eslint-disable-next-line @next/next/no-img-element
                 ? <img src={party.logo_url} alt={party.name} className="h-full w-full object-contain" />
                 : <Landmark className="h-12 w-12 text-slate-700 dark:text-slate-200" />}
-            </div>
+            </div>{" "}
             <div>
-              {party.abbrev && <span className="rounded-full bg-white/20 px-3 py-1 text-xs font-black uppercase tracking-widest">{party.abbrev}</span>}
-              <h1 className="mt-2 text-4xl font-staatliches uppercase leading-none md:text-6xl">{party.name}</h1>
-              {party.orientation && <p className="mt-2 text-white/80 font-bold">{party.orientation}</p>}
+              {party.abbrev && <span className="rounded-full bg-white/20 px-3 py-1 text-xs font-black uppercase tracking-widest">{party.abbrev}</span>}{" "}
+              <h1 className="mt-2 text-4xl font-staatliches uppercase leading-none md:text-6xl">{party.name}</h1>{" "}
+              {party.orientation && <p className="mt-2 text-white/80 font-bold">{party.orientation}</p>}{" "}
               <SuivreBouton kind="parti" refId={party.slug} label={party.abbrev && party.abbrev !== party.name ? `${party.name} (${party.abbrev})` : party.name} className="mt-4 !border-white/30 !bg-white/15 !text-white backdrop-blur" />
             </div>
-          </div>
-          {party.summary && <p className="mt-6 max-w-3xl text-lg leading-relaxed text-white/90">{party.summary}</p>}
+          </div>{" "}
+          {party.summary && <p className="mt-6 max-w-3xl text-lg leading-relaxed text-white/90">{party.summary}</p>}{" "}
 
           {/* Stats datan */}
           {hasDatan && (
             <div className="mt-8">
-              <p className="mb-3 text-[11px] font-black uppercase tracking-widest text-white/50">Groupe à l'Assemblée nationale · données datan</p>
+              <p className="mb-3 text-[11px] font-black uppercase tracking-widest text-white/50">Groupe à l'Assemblée nationale · données datan</p>{" "}
               <div className="grid grid-cols-2 gap-3 md:grid-cols-3 lg:grid-cols-5">
                 <div className="rounded-2xl bg-white/5 p-4">
-                  <div className="flex items-center justify-between"><span className="text-[11px] font-black uppercase tracking-widest text-white/60">Députés</span><span className="text-lg font-black text-white">{party.effectif}</span></div>
-                </div>
+                  <div className="flex items-center justify-between"><span className="text-[11px] font-black uppercase tracking-widest text-white/60">Députés</span>{" "}<span className="text-lg font-black text-white">{party.effectif}</span></div>
+                </div>{" "}
                 <div className="rounded-2xl bg-white/5 p-4">
-                  <div className="flex items-center justify-between"><span className="text-[11px] font-black uppercase tracking-widest text-white/60">Femmes</span><span className="text-lg font-black text-white">{pct(party.pct_women)}</span></div>
-                </div>
+                  <div className="flex items-center justify-between"><span className="text-[11px] font-black uppercase tracking-widest text-white/60">Femmes</span>{" "}<span className="text-lg font-black text-white">{pct(party.pct_women)}</span></div>
+                </div>{" "}
                 <div className="rounded-2xl bg-white/5 p-4">
-                  <div className="flex items-center justify-between"><span className="text-[11px] font-black uppercase tracking-widest text-white/60">Âge moyen</span><span className="text-lg font-black text-white">{party.avg_age != null ? Math.round(party.avg_age) : "—"}</span></div>
-                </div>
-                <StatBar label="Cohésion des votes" value={party.score_cohesion} display={score(party.score_cohesion)} color={color} />
+                  <div className="flex items-center justify-between"><span className="text-[11px] font-black uppercase tracking-widest text-white/60">Âge moyen</span>{" "}<span className="text-lg font-black text-white">{party.avg_age != null ? Math.round(party.avg_age) : "—"}</span></div>
+                </div>{" "}
+                <StatBar label="Cohésion des votes" value={party.score_cohesion} display={score(party.score_cohesion)} color={color} />{" "}
                 <StatBar label="Participation aux votes" value={party.score_participation} display={score(party.score_participation)} color={color} />
               </div>
             </div>
           )}
         </div>
-      </div>
+      </div>{" "}
 
       <div className="mx-auto max-w-5xl px-4">
         {/* Infos parti */}
         <div className="mt-8 grid grid-cols-1 gap-3 sm:grid-cols-2 lg:grid-cols-3">
-          <InfoRow icon={Calendar} label="Fondation" value={party.founded} />
-          <InfoRow icon={Users} label="Adhérents" value={recentMembers(party.members)} />
-          <InfoRow icon={Wallet} label="Budget / financement" value={party.budget} />
-          <LeaderRow value={party.leader} />
-          <InfoRow icon={Compass} label="Orientation" value={party.orientation} />
+          <InfoRow icon={Calendar} label="Fondation" value={party.founded} />{" "}
+          <InfoRow icon={Users} label="Adhérents" value={recentMembers(party.members)} />{" "}
+          <InfoRow icon={Wallet} label="Budget / financement" value={party.budget} />{" "}
+          <LeaderRow value={party.leader} />{" "}
+          <InfoRow icon={Compass} label="Orientation" value={party.orientation} />{" "}
           <InfoRow icon={MapPin} label="Siège" value={party.headquarters} />
-        </div>
+        </div>{" "}
 
         {/* Idéologie & valeurs — courants revendiqués par le parti (puces à sa couleur). */}
         {party.ideology && party.ideology.length > 0 && (
           <div className="mt-6 rounded-3xl border border-border bg-card p-6">
-            <h2 className="text-lg font-black uppercase tracking-widest text-foreground">Idéologie &amp; valeurs</h2>
+            <h2 className="text-lg font-black uppercase tracking-widest text-foreground">Idéologie &amp; valeurs</h2>{" "}
             <div className="mt-3 flex flex-wrap gap-2">
               {party.ideology.map((id, i) => (
-                <span key={i} className="rounded-full px-3.5 py-1.5 text-sm font-bold text-white shadow-sm" style={{ background: color }}>{id}</span>
+                <span key={i} className="rounded-full px-3.5 py-1.5 text-sm font-bold text-white shadow-sm" style={{ background: color }}>{id}{" "}</span>
               ))}
             </div>
           </div>
-        )}
+        )}{" "}
 
         {/* Finances du parti : subventions publiques + endettement (données officielles sourcées). */}
         {(party.subventions_eur != null || party.dettes_eur != null) && (() => {
@@ -224,41 +224,41 @@ export default function PartyClient({ params }: { params: Promise<{ slug: string
           const src = party.subventions_source || party.comptes_source;
           return (
             <div className="mt-6 rounded-3xl border border-border bg-card p-6">
-              <h2 className="text-lg font-black uppercase tracking-widest text-foreground">Finances du parti</h2>
+              <h2 className="text-lg font-black uppercase tracking-widest text-foreground">Finances du parti</h2>{" "}
               {/* Classements comparatifs (subventions + endettement) — les montants du parti y figurent, surlignés. */}
-              <PartyFinanceCompare currentSlug={party.slug} />
+              <PartyFinanceCompare currentSlug={party.slug} />{" "}
               {src && <p className="mt-4 text-[11px] text-muted-foreground">Source : {src}</p>}
             </div>
           );
-        })()}
+        })()}{" "}
 
         {/* Suivre le parti : site officiel + réseaux sociaux (liens directs). */}
         {(party.website || party.twitter || party.facebook || party.instagram || party.youtube || party.tiktok) && (
           <div className="mt-6">
-            <p className="mb-2 text-[10px] font-black uppercase tracking-widest text-muted-foreground">Suivre le parti</p>
+            <p className="mb-2 text-[10px] font-black uppercase tracking-widest text-muted-foreground">Suivre le parti</p>{" "}
             <div className="flex flex-wrap gap-2">
               {party.website && (
                 <a href={party.website.startsWith("http") ? party.website : `https://${party.website}`} target="_blank" rel="noreferrer"
                   className="inline-flex items-center gap-2 rounded-xl bg-slate-900 px-4 py-2.5 text-sm font-bold text-white transition hover:bg-slate-700">
                   <Globe className="h-4 w-4" /> Site officiel
                 </a>
-              )}
-              {party.twitter && <a href={party.twitter} target="_blank" rel="noreferrer" className="inline-flex items-center gap-1.5 rounded-xl bg-black px-4 py-2.5 text-sm font-bold text-white transition hover:opacity-80">X <ExternalLink className="h-3.5 w-3.5" /></a>}
-              {party.facebook && <a href={party.facebook} target="_blank" rel="noreferrer" className="inline-flex items-center gap-1.5 rounded-xl bg-[#1877F2] px-4 py-2.5 text-sm font-bold text-white transition hover:opacity-80">Facebook <ExternalLink className="h-3.5 w-3.5" /></a>}
-              {party.instagram && <a href={party.instagram} target="_blank" rel="noreferrer" className="inline-flex items-center gap-1.5 rounded-xl bg-gradient-to-br from-[#833AB4] via-[#E1306C] to-[#F77737] px-4 py-2.5 text-sm font-bold text-white transition hover:opacity-80">Instagram <ExternalLink className="h-3.5 w-3.5" /></a>}
-              {party.youtube && <a href={party.youtube} target="_blank" rel="noreferrer" className="inline-flex items-center gap-1.5 rounded-xl bg-[#FF0000] px-4 py-2.5 text-sm font-bold text-white transition hover:opacity-80">YouTube <ExternalLink className="h-3.5 w-3.5" /></a>}
+              )}{" "}
+              {party.twitter && <a href={party.twitter} target="_blank" rel="noreferrer" className="inline-flex items-center gap-1.5 rounded-xl bg-black px-4 py-2.5 text-sm font-bold text-white transition hover:opacity-80">X <ExternalLink className="h-3.5 w-3.5" /></a>}{" "}
+              {party.facebook && <a href={party.facebook} target="_blank" rel="noreferrer" className="inline-flex items-center gap-1.5 rounded-xl bg-[#1877F2] px-4 py-2.5 text-sm font-bold text-white transition hover:opacity-80">Facebook <ExternalLink className="h-3.5 w-3.5" /></a>}{" "}
+              {party.instagram && <a href={party.instagram} target="_blank" rel="noreferrer" className="inline-flex items-center gap-1.5 rounded-xl bg-gradient-to-br from-[#833AB4] via-[#E1306C] to-[#F77737] px-4 py-2.5 text-sm font-bold text-white transition hover:opacity-80">Instagram <ExternalLink className="h-3.5 w-3.5" /></a>}{" "}
+              {party.youtube && <a href={party.youtube} target="_blank" rel="noreferrer" className="inline-flex items-center gap-1.5 rounded-xl bg-[#FF0000] px-4 py-2.5 text-sm font-bold text-white transition hover:opacity-80">YouTube <ExternalLink className="h-3.5 w-3.5" /></a>}{" "}
               {party.tiktok && <a href={party.tiktok} target="_blank" rel="noreferrer" className="inline-flex items-center gap-1.5 rounded-xl bg-black px-4 py-2.5 text-sm font-bold text-white transition hover:opacity-80">TikTok <ExternalLink className="h-3.5 w-3.5" /></a>}
             </div>
           </div>
-        )}
+        )}{" "}
 
         {/* Fil d'actualité du parti (Google News, résumé IA court, sources officielles). */}
         <div className="mt-8">
           <EntityNewsFeed entityType="party" entityId={party.slug} defaultOpen />
-        </div>
+        </div>{" "}
 
         {/* Programme du ou des candidats du parti à la présidentielle, dès sa publication. */}
-        <ProgrammesDuParti nomParti={party.name} sigle={party.abbrev} />
+        <ProgrammesDuParti nomParti={party.name} sigle={party.abbrev} />{" "}
 
         {/* Représentation — compteurs cliquables (clic = voir les membres) */}
         <div className="mt-8 grid grid-cols-3 gap-3">
@@ -272,11 +272,11 @@ export default function PartyClient({ params }: { params: Promise<{ slug: string
               onClick={() => setTab(x.key)}
               className={`rounded-2xl border bg-card p-3 md:p-4 text-center transition ${tab === x.key ? `border-transparent ring-2 ${x.ring} shadow-md` : "border-border hover:border-slate-300 hover:shadow-sm"}`}
             >
-              <p className="text-2xl md:text-3xl font-black text-foreground">{x.n}</p>
-              <p className="mt-1 text-[9px] md:text-[10px] font-black uppercase leading-tight tracking-tight text-muted-foreground break-words">{x.label}</p>
+              <p className="text-2xl md:text-3xl font-black text-foreground">{x.n}</p>{" "}
+              <p className="mt-1 text-[9px] md:text-[10px] font-black uppercase leading-tight tracking-tight text-muted-foreground break-words">{x.label}</p>{" "}
             </button>
           ))}
-        </div>
+        </div>{" "}
 
         {/* Membres du groupe sélectionné — hauteur bornée avec scroll interne : l'utilisateur
             n'a plus à défiler tout le groupe pour atteindre le contenu en dessous. */}
@@ -287,62 +287,62 @@ export default function PartyClient({ params }: { params: Promise<{ slug: string
               : <div className="grid grid-cols-1 gap-3 sm:grid-cols-2 lg:grid-cols-3">
                   {members.deputies.map((d: any) => (
                     <Link key={d.slug} href={`/deputes/${d.slug}`} className="flex items-center gap-3 rounded-2xl border border-border bg-card p-3 transition hover:border-red-300 group">
-                      <Avatar name={`${d.first_name} ${d.last_name}`} anId={d.an_id} photo={d.photo_url} color={color} />
+                      <Avatar name={`${d.first_name} ${d.last_name}`} anId={d.an_id} photo={d.photo_url} color={color} />{" "}
                       <div className="min-w-0">
-                        <p className="truncate font-bold text-foreground">{d.first_name} {d.last_name}</p>
+                        <p className="truncate font-bold text-foreground">{d.first_name} {d.last_name}</p>{" "}
                         <p className="truncate text-[11px] font-bold text-muted-foreground">{d.department || ""}</p>
-                      </div>
-                      <ArrowRight className="ml-auto h-4 w-4 shrink-0 text-slate-300 group-hover:text-red-500" />
+                      </div>{" "}
+                      <ArrowRight className="ml-auto h-4 w-4 shrink-0 text-slate-300 group-hover:text-red-500" />{" "}
                     </Link>
                   ))}
                 </div>
-          )}
+          )}{" "}
           {tab === "senators" && (
             members.senators.length === 0
               ? <p className="text-sm text-muted-foreground">Aucun·e sénateur·rice pour ce parti.</p>
               : <div className="grid grid-cols-1 gap-3 sm:grid-cols-2 lg:grid-cols-3">
                   {members.senators.map((s: any) => (
                     <Link key={s.slug} href={`/senateurs/${s.slug}`} className="flex items-center gap-3 rounded-2xl border border-border bg-card p-3 transition hover:border-amber-300 group">
-                      <Avatar name={`${s.first_name} ${s.last_name}`} photo={s.photo_url} color={color} />
-                      <span className="truncate font-bold text-foreground">{s.first_name} {s.last_name}</span>
-                      <ArrowRight className="ml-auto h-4 w-4 shrink-0 text-slate-300 group-hover:text-amber-500" />
+                      <Avatar name={`${s.first_name} ${s.last_name}`} photo={s.photo_url} color={color} />{" "}
+                      <span className="truncate font-bold text-foreground">{s.first_name} {s.last_name}</span>{" "}
+                      <ArrowRight className="ml-auto h-4 w-4 shrink-0 text-slate-300 group-hover:text-amber-500" />{" "}
                     </Link>
                   ))}
                 </div>
-          )}
+          )}{" "}
           {tab === "meps" && (
             members.meps.length === 0
               ? <p className="text-sm text-muted-foreground">Aucun·e député·e européen·ne pour ce parti.</p>
               : <div className="grid grid-cols-1 gap-3 sm:grid-cols-2 lg:grid-cols-3">
                   {members.meps.map((m: any) => (
                     <div key={m.id} className="flex items-center gap-3 rounded-2xl border border-border bg-card p-3">
-                      <Avatar name={m.full_name} color={color} />
-                      <span className="truncate font-bold text-foreground">{m.full_name}</span>
+                      <Avatar name={m.full_name} color={color} />{" "}
+                      <span className="truncate font-bold text-foreground">{m.full_name}</span>{" "}
                     </div>
                   ))}
                 </div>
           )}
-        </section>
+        </section>{" "}
 
         {/* Candidat·e·s à la présidentielle */}
         {members.candidates.length > 0 && (
           <section className="mt-12">
-            <h2 className="mb-4 text-2xl font-staatliches uppercase text-foreground">Candidat·e·s à la présidentielle</h2>
+            <h2 className="mb-4 text-2xl font-staatliches uppercase text-foreground">Candidat·e·s à la présidentielle</h2>{" "}
             <div className="space-y-3">
               {members.candidates.map((c: any) => {
                 const progOpen = openProgram.has(c.slug);
                 return (
                   <div key={c.slug} className="overflow-hidden rounded-2xl border border-border bg-card">
                     <div className="flex items-center gap-3 p-3">
-                      <Avatar name={c.full_name} photo={c.photo_url} color={color} />
-                      <Link href={`/presidentielles-2027/?candidat=${c.slug}`} className="font-bold text-foreground transition hover:text-blue-600">{c.full_name}</Link>
+                      <Avatar name={c.full_name} photo={c.photo_url} color={color} />{" "}
+                      <Link href={`/presidentielles-2027/?candidat=${c.slug}`} className="font-bold text-foreground transition hover:text-blue-600">{c.full_name}</Link>{" "}
                       {c.id && (
                         <button onClick={() => toggleProgram(c.slug)}
                           className={`ml-auto inline-flex items-center gap-1.5 rounded-full px-3.5 py-2 text-[11px] font-black uppercase tracking-widest transition ${progOpen ? "bg-blue-600 text-white" : "bg-blue-50 dark:bg-blue-500/10 text-blue-700 dark:text-blue-300 hover:bg-blue-100"}`}>
-                          {progOpen ? "Masquer" : "Voir le programme"} <ChevronDown size={14} className={`transition-transform ${progOpen ? "rotate-180" : ""}`} />
+                          {progOpen ? "Masquer" : "Voir le programme"} {" "}<ChevronDown size={14} className={`transition-transform ${progOpen ? "rotate-180" : ""}`} />
                         </button>
                       )}
-                    </div>
+                    </div>{" "}
                     <AnimatePresence initial={false}>
                       {progOpen && c.id && (
                         <motion.div initial={{ height: 0, opacity: 0 }} animate={{ height: "auto", opacity: 1 }} exit={{ height: 0, opacity: 0 }} className="overflow-hidden">
@@ -351,13 +351,13 @@ export default function PartyClient({ params }: { params: Promise<{ slug: string
                           </div>
                         </motion.div>
                       )}
-                    </AnimatePresence>
+                    </AnimatePresence>{" "}
                   </div>
                 );
               })}
             </div>
           </section>
-        )}
+        )}{" "}
 
         {/* Évolution : adhérents + résultats électoraux */}
         {history.length > 0 && (() => {
@@ -368,31 +368,31 @@ export default function PartyClient({ params }: { params: Promise<{ slug: string
           if (!showElec) return null;
           return (
             <section className="mt-14">
-              <h2 className="mb-6 text-2xl font-staatliches uppercase text-foreground">Évolution</h2>
+              <h2 className="mb-6 text-2xl font-staatliches uppercase text-foreground">Évolution</h2>{" "}
 
               {(
                 <div className="rounded-3xl border border-border bg-card p-6">
-                  <p className="mb-4 text-sm font-black uppercase tracking-widest text-slate-400">Résultats électoraux (% des voix)</p>
+                  <p className="mb-4 text-sm font-black uppercase tracking-widest text-slate-400">Résultats électoraux (% des voix)</p>{" "}
                   <div className="space-y-4">
                     {elecKinds.map(([k, label]) => {
                       const pts = history.filter(h => h.kind === k).sort((a, b) => a.year - b.year);
                       if (pts.length === 0) return null;
                       return (
                         <div key={k}>
-                          <p className="mb-2 text-xs font-black uppercase tracking-widest" style={{ color }}>{label}</p>
+                          <p className="mb-2 text-xs font-black uppercase tracking-widest" style={{ color }}>{label}</p>{" "}
                           <div className="flex flex-wrap gap-2">
                             {pts.map((p, i) => (
                               <span key={i} className={`rounded-xl px-3 py-1.5 text-sm ${p.source?.startsWith("officiel") ? "bg-emerald-50 dark:bg-emerald-500/10 ring-1 ring-emerald-200" : "bg-slate-100 dark:bg-slate-500/10"}`}>
                                 <span className="font-black text-foreground">{Number(p.value).toLocaleString("fr-FR", { maximumFractionDigits: 1 })}%</span>
                                 <span className="ml-1.5 text-xs font-bold text-muted-foreground">{p.year}{p.label ? ` · ${p.label}` : ""}</span>
-                                {p.source?.startsWith("officiel") && <span className="ml-1.5 text-[9px] font-black uppercase tracking-widest text-emerald-700 dark:text-emerald-400">officiel</span>}
+                                {p.source?.startsWith("officiel") && <span className="ml-1.5 text-[9px] font-black uppercase tracking-widest text-emerald-700 dark:text-emerald-400">officiel</span>}{" "}
                               </span>
                             ))}
-                          </div>
+                          </div>{" "}
                         </div>
                       );
                     })}
-                  </div>
+                  </div>{" "}
                   <p className="mt-4 text-[11px] italic text-muted-foreground">En vert : résultats nationaux officiels (Ministère de l'Intérieur). Autres points : Wikipédia, susceptibles d'être incomplets.</p>
                 </div>
               )}
@@ -405,11 +405,11 @@ export default function PartyClient({ params }: { params: Promise<{ slug: string
         <PartyElectionMap slug={party.slug} color={color} name={party.name} />
 
         {/* Navigation vers tous les partis */}
-        <AllPartiesNav currentSlug={party.slug} />
+        <AllPartiesNav currentSlug={party.slug} />{" "}
 
         {/* Sources */}
         <div className="mt-12 flex flex-wrap items-center gap-4 border-t border-border pt-6 text-xs text-muted-foreground">
-          {hasDatan && <span>Statistiques : <a href="https://datan.fr" target="_blank" rel="noreferrer" className="font-bold text-muted-foreground hover:underline">datan.fr</a>{party.datan_updated_at ? ` (MAJ ${party.datan_updated_at})` : ""}</span>}
+          {hasDatan && <span>Statistiques : <a href="https://datan.fr" target="_blank" rel="noreferrer" className="font-bold text-muted-foreground hover:underline">datan.fr</a>{party.datan_updated_at ? ` (MAJ ${party.datan_updated_at})` : ""}</span>}{" "}
           {party.source_url && <span>Infos parti : <a href={party.source_url} target="_blank" rel="noreferrer" className="font-bold text-muted-foreground hover:underline">Wikipédia</a> — résumé généré automatiquement</span>}
         </div>
       </div>

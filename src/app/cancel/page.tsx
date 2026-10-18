@@ -7,27 +7,27 @@ export default function CancelPage() {
       <div className="max-w-md w-full bg-card dark:bg-slate-900 border border-border rounded-[2rem] p-8 md:p-12 text-center shadow-xl relative overflow-hidden">
         
         {/* Glow effect */}
-        <div className="absolute -top-24 -right-24 w-48 h-48 bg-slate-400/10 blur-[80px] rounded-full pointer-events-none" />
-        <div className="absolute -bottom-24 -left-24 w-48 h-48 bg-red-400/10 blur-[80px] rounded-full pointer-events-none" />
+        <div className="absolute -top-24 -right-24 w-48 h-48 bg-slate-400/10 blur-[80px] rounded-full pointer-events-none" />{" "}
+        <div className="absolute -bottom-24 -left-24 w-48 h-48 bg-red-400/10 blur-[80px] rounded-full pointer-events-none" />{" "}
 
         <div className="relative">
           <div className="w-24 h-24 bg-slate-100 dark:bg-slate-800 text-muted-foreground rounded-full flex items-center justify-center mx-auto mb-8 shadow-sm">
             <XCircle className="w-12 h-12" />
-          </div>
+          </div>{" "}
           
           <h1 className="text-3xl md:text-4xl font-extrabold text-foreground mb-4 tracking-tight">
             Paiement Annulé
-          </h1>
+          </h1>{" "}
           
           <p className="text-muted-foreground dark:text-slate-400 mb-10 text-lg leading-relaxed">
             Vous avez interrompu la procédure de paiement. Rassurez-vous, <strong>aucun montant n'a été débité</strong>.
-          </p>
+          </p>{" "}
           
           <Link 
             href="/premium" 
             className="group flex items-center justify-center gap-3 w-full py-4 bg-slate-100 text-slate-700 dark:bg-slate-800 dark:text-slate-300 font-bold rounded-2xl hover:bg-slate-200 dark:hover:bg-slate-700 transition-all text-lg border border-border dark:border-slate-700 shadow-sm"
           >
-            <ArrowLeft className="w-5 h-5 group-hover:-translate-x-1 transition-transform" />
+            <ArrowLeft className="w-5 h-5 group-hover:-translate-x-1 transition-transform" />{" "}
             Vérifier les avantages Premium
           </Link>
         </div>

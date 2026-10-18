@@ -40,12 +40,12 @@ function Resume({ texte, point }: { texte: string; point: string }) {
   const puces = lignes.filter(l => l.startsWith("-")).map(l => l.replace(/^-\s*/, ""));
   return (
     <div className="space-y-2.5">
-      {intro && <p className="text-sm leading-relaxed text-muted-foreground">{intro}</p>}
+      {intro && <p className="text-sm leading-relaxed text-muted-foreground">{intro}</p>}{" "}
       {puces.length > 0 && (
         <ul className="space-y-1.5">
           {puces.map((b, i) => (
             <li key={i} className="flex gap-2 text-sm leading-snug text-foreground/85">
-              <span className={`mt-1.5 h-1.5 w-1.5 shrink-0 rounded-full ${point}`} />{b}
+              <span className={`mt-1.5 h-1.5 w-1.5 shrink-0 rounded-full ${point}`} />{" "}{b}{" "}
             </li>
           ))}
         </ul>
@@ -75,37 +75,37 @@ function Carte({ a, accent, isPro }: { a: Audition; accent: typeof ACCENTS.emera
         {/* La date, comme une feuille d'éphéméride */}
         {d && (
           <div className={`flex h-[4.5rem] w-14 shrink-0 flex-col items-center justify-center rounded-2xl bg-gradient-to-br ${accent.grad} text-white shadow-md`}>
-            <span className="text-[9px] font-black uppercase tracking-widest opacity-80">{JOURS[d.getDay()]}</span>
-            <span className="font-staatliches text-3xl leading-none">{d.getDate()}</span>
+            <span className="text-[9px] font-black uppercase tracking-widest opacity-80">{JOURS[d.getDay()]}</span>{" "}
+            <span className="font-staatliches text-3xl leading-none">{d.getDate()}</span>{" "}
             <span className="text-[9px] font-black uppercase tracking-widest opacity-80">{MOIS_COURT[d.getMonth()]}</span>
           </div>
-        )}
+        )}{" "}
 
         <div className="min-w-0 flex-1">
           <p className="flex flex-wrap items-center gap-1.5 text-[10px] font-black uppercase tracking-widest">
-            <span className={`rounded-full px-2 py-0.5 ${accent.bg} ${accent.text}`}>{shortCommission(a.commission)}</span>
+            <span className={`rounded-full px-2 py-0.5 ${accent.bg} ${accent.text}`}>{shortCommission(a.commission)}</span>{" "}
             <span className="text-muted-foreground">{tableRonde ? "Table ronde" : "Audition"}</span>
-          </p>
-          <h4 className="mt-1.5 line-clamp-2 text-[15px] font-bold leading-snug text-foreground dark:text-white">{cleanTitle(a.title || "")}</h4>
+          </p>{" "}
+          <h4 className="mt-1.5 line-clamp-2 text-[15px] font-bold leading-snug text-foreground dark:text-white">{cleanTitle(a.title || "")}</h4>{" "}
           {personnes.length > 0 && (
             <p className="mt-1.5 flex items-start gap-1.5 text-[12px] font-semibold text-muted-foreground">
-              <Users size={13} className={`mt-0.5 shrink-0 ${accent.text}`} />
+              <Users size={13} className={`mt-0.5 shrink-0 ${accent.text}`} />{" "}
               <span className="line-clamp-1">{personnes.join(", ")}</span>
             </p>
-          )}
+          )}{" "}
 
           <div className="mt-3 flex flex-wrap items-center gap-2">
             <button type="button" onClick={() => setOuvert(o => !o)} aria-expanded={ouvert}
               className={`inline-flex items-center gap-1.5 rounded-full px-3.5 py-1.5 text-[10px] font-black uppercase tracking-widest transition ${ouvert ? "bg-foreground text-background" : `${accent.chip} hover:brightness-110`}`}>
-              <Sparkles size={12} /> {isPro ? "Analyse" : "Résumé"}
+              <Sparkles size={12} /> {isPro ? "Analyse" : "Résumé"}{" "}
               <ChevronDown size={12} className={`transition-transform ${ouvert ? "rotate-180" : ""}`} />
-            </button>
+            </button>{" "}
             {a.video_url && (
               <a href={a.video_url} target="_blank" rel="noopener noreferrer"
                 className="inline-flex items-center gap-1.5 rounded-full bg-red-600 px-3.5 py-1.5 text-[10px] font-black uppercase tracking-widest text-white transition hover:bg-red-500">
                 <Play size={11} fill="currentColor" /> Vidéo
               </a>
-            )}
+            )}{" "}
             {/* Le compte rendu s'ouvre SUR LE SITE (abonnés Pro) ; la source officielle reste
                 accessible depuis le lecteur. */}
             {isPro ? (
@@ -121,9 +121,9 @@ function Carte({ a, accent, isPro }: { a: Audition; accent: typeof ACCENTS.emera
             )}
           </div>
         </div>
-      </div>
+      </div>{" "}
 
-      {lecture && <CompteRendu m={a} onFermer={() => setLecture(false)} />}
+      {lecture && <CompteRendu m={a} onFermer={() => setLecture(false)} />}{" "}
 
       {ouvert && (
         <div className="border-t border-border px-4 py-4 dark:border-slate-800 sm:px-5">
@@ -186,30 +186,30 @@ export default function AuditionsParMois({
     <div>
       {/* Le mois, entre ses deux flèches */}
       <div className="flex items-center justify-between gap-3 rounded-[2rem] border border-border bg-gradient-to-b from-muted/60 to-transparent px-3 py-3 dark:border-slate-800 sm:px-5 sm:py-4">
-        <Fleche dir={-1} actif={peutReculer} />
+        <Fleche dir={-1} actif={peutReculer} />{" "}
         <div className="min-w-0 text-center">
           <AnimatePresence mode="wait" initial={false}>
             <motion.div key={mois} initial={{ opacity: 0, x: 18 * sens }} animate={{ opacity: 1, x: 0 }} exit={{ opacity: 0, x: -18 * sens }} transition={{ duration: 0.16 }}>
               <p className="font-staatliches text-3xl uppercase leading-none tracking-tight text-foreground dark:text-white sm:text-4xl">
                 {MOIS[numero - 1]} <span className={a.text}>{annee}</span>
-              </p>
+              </p>{" "}
               <p className="mt-1.5 text-[10px] font-black uppercase tracking-widest text-muted-foreground">
                 {auditions === null ? "Chargement…"
                   : auditions.length === 0 ? "Aucune audition"
                   : `${auditions.length} audition${auditions.length > 1 ? "s" : ""} · ${commissions} commission${commissions > 1 ? "s" : ""}${avecVideo ? ` · ${avecVideo} en vidéo` : ""}`}
-              </p>
+              </p>{" "}
             </motion.div>
           </AnimatePresence>
-        </div>
+        </div>{" "}
         <Fleche dir={1} actif={peutAvancer} />
-      </div>
+      </div>{" "}
 
       {auditions === null ? (
         <div className="flex justify-center py-12"><Loader2 className={`animate-spin ${a.text}`} /></div>
       ) : auditions.length === 0 ? (
         <div className="mt-4 rounded-3xl border border-dashed border-border py-12 text-center dark:border-slate-800">
-          <CalendarOff size={26} className="mx-auto mb-3 text-muted-foreground" />
-          <p className="text-sm font-bold text-muted-foreground">Aucune audition publiée pour {MOIS[numero - 1]} {annee}.</p>
+          <CalendarOff size={26} className="mx-auto mb-3 text-muted-foreground" />{" "}
+          <p className="text-sm font-bold text-muted-foreground">Aucune audition publiée pour {MOIS[numero - 1]} {annee}.</p>{" "}
           <p className="mx-auto mt-1 max-w-md text-[13px] text-muted-foreground">
             Une audition paraît ici dès que son compte rendu officiel est publié, en général deux à trois semaines après la réunion.
           </p>
@@ -219,10 +219,10 @@ export default function AuditionsParMois({
         <div className="mt-4 grid grid-cols-1 items-start gap-3 lg:grid-cols-2">
           {auditions.map(x => <Carte key={x.ref} a={x} accent={a} isPro={isPro} />)}
         </div>
-      )}
+      )}{" "}
 
       <p className="mt-4 flex items-center gap-1.5 text-[11px] text-muted-foreground">
-        <Mic size={12} className="shrink-0" />
+        <Mic size={12} className="shrink-0" />{" "}
         Auditions et tables rondes des commissions, d&apos;après leurs comptes rendus officiels.
       </p>
     </div>

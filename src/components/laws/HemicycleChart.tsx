@@ -81,20 +81,20 @@ export default function HemicycleChart({ groups }: { groups?: GroupVote[] }) {
         ))}
         {/* Ligne de base de l'hémicycle */}
         <line x1="30" y1="195" x2="370" y2="195" stroke="#e2e8f0" strokeWidth="2" />
-      </svg>
+      </svg>{" "}
 
       {/* Légende */}
       <div className="flex flex-wrap items-center justify-center gap-4 mt-4">
         <span className="flex items-center gap-1.5 text-xs font-semibold text-muted-foreground">
           <span className="w-3 h-3 rounded-full bg-green-500 inline-block"></span> Pour
-        </span>
+        </span>{" "}
         <span className="flex items-center gap-1.5 text-xs font-semibold text-muted-foreground">
           <span className="w-3 h-3 rounded-full bg-red-500 inline-block"></span> Contre
-        </span>
+        </span>{" "}
         <span className="flex items-center gap-1.5 text-xs font-semibold text-muted-foreground">
           <span className="w-3 h-3 rounded-full bg-gray-400 inline-block"></span> Abstention
         </span>
-      </div>
+      </div>{" "}
 
       {/* Liste des groupes */}
       <div className="grid grid-cols-2 sm:grid-cols-3 gap-2 mt-5">
@@ -106,9 +106,9 @@ export default function HemicycleChart({ groups }: { groups?: GroupVote[] }) {
             <span
               className="w-2.5 h-2.5 rounded-full flex-shrink-0"
               style={{ backgroundColor: VOTE_COLORS[group.vote] }}
-            ></span>
-            <span className="font-semibold text-slate-700 dark:text-slate-200 truncate">{group.name}</span>
-            <span className="text-muted-foreground ml-auto">{group.seats}</span>
+            ></span>{" "}
+            <span className="font-semibold text-slate-700 dark:text-slate-200 truncate">{group.name}</span>{" "}
+            <span className="text-muted-foreground ml-auto">{group.seats}</span>{" "}
           </div>
         ))}
       </div>

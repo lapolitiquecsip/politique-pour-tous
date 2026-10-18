@@ -53,15 +53,15 @@ export default class Garde extends React.Component<Props, State> {
       <div className="my-6 rounded-3xl border border-amber-400/30 bg-amber-500/10 p-5 text-left">
         <p className="flex items-center gap-2 text-[11px] font-black uppercase tracking-widest text-amber-300">
           <AlertTriangle size={14} /> {this.props.quoi} n&apos;a pas pu s&apos;afficher
-        </p>
+        </p>{" "}
         <p className="mt-2 text-sm leading-snug text-white/70">
           Le reste de la page fonctionne normalement. Si cela se reproduit,
           transmettez-nous le message ci-dessous : il dit exactement ce qui a
           échoué.
-        </p>
+        </p>{" "}
         <code className="mt-3 block overflow-x-auto rounded-xl bg-black/40 px-3 py-2 text-[11px] text-amber-200">
           {erreur.message || String(erreur)}
-        </code>
+        </code>{" "}
         <button
           onClick={reessayer}
           className="mt-3 inline-flex items-center gap-1.5 rounded-xl bg-white/10 px-3.5 py-2 text-[10px] font-black uppercase tracking-widest text-white transition hover:bg-white/20"

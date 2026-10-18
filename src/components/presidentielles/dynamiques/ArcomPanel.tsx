@@ -55,16 +55,16 @@ export default function ArcomPanel({ candidats }: { candidats: Candidat[] }) {
         <div className="rounded-[2rem] border border-border bg-card p-5 md:p-6">
           <div className="mb-4 flex flex-wrap items-center justify-between gap-3">
             <div>
-              <h3 className="text-sm font-black uppercase tracking-widest text-foreground">{nomMois(courant)}</h3>
+              <h3 className="text-sm font-black uppercase tracking-widest text-foreground">{nomMois(courant)}</h3>{" "}
               <p className="text-[11px] text-muted-foreground">{heures(total)} de parole au total pour les candidats déclarés</p>
-            </div>
+            </div>{" "}
             <div className="flex flex-wrap gap-1">
               {tousMois.slice(-6).map(m => (
                 <button key={m} onClick={() => setMois(m)}
-                  className={`rounded-lg px-2.5 py-1 text-[10px] font-black uppercase tracking-wider transition ${m === courant ? "bg-sky-700 text-white" : "bg-muted text-muted-foreground hover:text-foreground"}`}>{nomMois(m, false)}</button>
+                  className={`rounded-lg px-2.5 py-1 text-[10px] font-black uppercase tracking-wider transition ${m === courant ? "bg-sky-700 text-white" : "bg-muted text-muted-foreground hover:text-foreground"}`}>{nomMois(m, false)}{" "}</button>
               ))}
             </div>
-          </div>
+          </div>{" "}
 
           <div className="space-y-2">
             {lignes.map((l, i) => {
@@ -74,33 +74,33 @@ export default function ArcomPanel({ candidats }: { candidats: Candidat[] }) {
               return (
                 <div key={l.slug} className="rounded-2xl border border-transparent transition hover:border-border">
                   <button onClick={() => setOuvert(open ? null : l.slug)} aria-expanded={open} className="flex w-full items-center gap-3 p-2 text-left">
-                    <span className="w-5 shrink-0 text-center font-staatliches text-lg text-muted-foreground">{i + 1}</span>
+                    <span className="w-5 shrink-0 text-center font-staatliches text-lg text-muted-foreground">{i + 1}</span>{" "}
                     <span className="min-w-0 flex-1">
                       <span className="flex items-baseline justify-between gap-2">
-                        <span className="truncate text-sm font-black text-foreground">{c.full_name}</span>
+                        <span className="truncate text-sm font-black text-foreground">{c.full_name}</span>{" "}
                         <span className="shrink-0 text-xs font-black tabular-nums text-foreground">{heures(l.secondes)} · {Math.round((l.secondes / total) * 100)} %</span>
-                      </span>
+                      </span>{" "}
                       <span className="mt-1 block h-2 overflow-hidden rounded-full bg-slate-100 dark:bg-slate-800">
                         <span className="block h-full rounded-full" style={{ width: `${(l.secondes / lignes[0].secondes) * 100}%`, background: col }} />
                       </span>
-                    </span>
-                    <span className="hidden sm:block"><Barres valeurs={l.histo} couleur={col} /></span>
+                    </span>{" "}
+                    <span className="hidden sm:block"><Barres valeurs={l.histo} couleur={col} /></span>{" "}
                     <span className="hidden w-16 shrink-0 text-right text-[11px] font-black sm:block">
-                      {evol != null && <span className={`inline-flex items-center gap-0.5 ${evol >= 0 ? "text-emerald-700 dark:text-emerald-400" : "text-rose-700 dark:text-rose-400"}`}>{evol >= 0 ? <TrendingUp size={11} /> : <TrendingDown size={11} />}{evol >= 0 ? "+" : ""}{Math.round(evol)} %</span>}
-                    </span>
+                      {evol != null && <span className={`inline-flex items-center gap-0.5 ${evol >= 0 ? "text-emerald-700 dark:text-emerald-400" : "text-rose-700 dark:text-rose-400"}`}>{evol >= 0 ? <TrendingUp size={11} /> : <TrendingDown size={11} />}{" "}{evol >= 0 ? "+" : ""}{Math.round(evol)} %</span>}
+                    </span>{" "}
                     <ChevronDown size={16} className={`shrink-0 text-muted-foreground transition-transform ${open ? "rotate-180" : ""}`} />
-                  </button>
+                  </button>{" "}
                   {open && (
                     <div className={`grid gap-x-6 gap-y-1.5 px-10 pb-3 sm:grid-cols-2`}>
                       {chaines.map(([ch, s]) => (
                         <div key={ch} className="flex items-center gap-2 text-xs">
-                          <span className="w-28 shrink-0 truncate font-bold text-foreground">{ch}</span>
-                          <span className="h-1.5 min-w-0 flex-1 overflow-hidden rounded-full bg-slate-100 dark:bg-slate-800"><span className="block h-full rounded-full" style={{ width: `${(s / chaines[0][1]) * 100}%`, background: col }} /></span>
-                          <span className="w-14 shrink-0 text-right tabular-nums text-muted-foreground">{heures(s)}</span>
+                          <span className="w-28 shrink-0 truncate font-bold text-foreground">{ch}</span>{" "}
+                          <span className="h-1.5 min-w-0 flex-1 overflow-hidden rounded-full bg-slate-100 dark:bg-slate-800"><span className="block h-full rounded-full" style={{ width: `${(s / chaines[0][1]) * 100}%`, background: col }} /></span>{" "}
+                          <span className="w-14 shrink-0 text-right tabular-nums text-muted-foreground">{heures(s)}</span>{" "}
                         </div>
                       ))}
                     </div>
-                  )}
+                  )}{" "}
                 </div>
               );
             })}

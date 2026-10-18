@@ -32,10 +32,10 @@ function Carte({ titre, valeur, detail, Icone, teinte }: { titre: string; valeur
   return (
     <div className="rounded-3xl border border-slate-200 bg-white p-5 shadow-sm">
       <div className="flex items-center gap-3">
-        <span className={`flex h-10 w-10 items-center justify-center rounded-2xl ${teinte}`}><Icone size={19} /></span>
+        <span className={`flex h-10 w-10 items-center justify-center rounded-2xl ${teinte}`}><Icone size={19} /></span>{" "}
         <p className="text-[11px] font-black uppercase tracking-widest text-slate-500">{titre}</p>
-      </div>
-      <p className="mt-3 text-4xl font-black tabular-nums leading-none tracking-tight text-slate-900">{valeur}</p>
+      </div>{" "}
+      <p className="mt-3 text-4xl font-black tabular-nums leading-none tracking-tight text-slate-900">{valeur}</p>{" "}
       {detail && <p className="mt-1.5 text-xs text-slate-500">{detail}</p>}
     </div>
   );
@@ -88,9 +88,9 @@ export default function MembresPage() {
   if (refus) {
     return (
       <div className="mx-auto mt-20 max-w-md rounded-3xl border border-slate-200 bg-white p-8 text-center shadow-sm">
-        <Lock className="mx-auto mb-3 text-slate-400" />
-        <h1 className="text-xl font-bold text-slate-900">Accès réservé</h1>
-        <p className="mt-2 text-sm text-slate-500">La liste des membres est réservée aux administrateurs du site.</p>
+        <Lock className="mx-auto mb-3 text-slate-400" />{" "}
+        <h1 className="text-xl font-bold text-slate-900">Accès réservé</h1>{" "}
+        <p className="mt-2 text-sm text-slate-500">La liste des membres est réservée aux administrateurs du site.</p>{" "}
         <Link href="/login" className="mt-5 inline-block rounded-full bg-slate-900 px-5 py-2.5 text-sm font-bold text-white">Se connecter</Link>
       </div>
     );
@@ -110,55 +110,55 @@ export default function MembresPage() {
     <div className="mx-auto max-w-7xl space-y-6">
       <header className="flex flex-wrap items-end justify-between gap-4">
         <div>
-          <h1 className="font-staatliches text-5xl uppercase leading-none text-slate-900">Membres</h1>
+          <h1 className="font-staatliches text-5xl uppercase leading-none text-slate-900">Membres</h1>{" "}
           <p className="mt-2 text-sm text-slate-500">Tous les comptes du site, leurs abonnements et d&apos;où ils viennent.</p>
-        </div>
+        </div>{" "}
         <Link href="/admin/statistiques" className="inline-flex items-center gap-2 rounded-full border border-slate-200 bg-white px-4 py-2 text-sm font-bold text-slate-700 shadow-sm hover:bg-slate-50">
           <BarChart3 size={16} /> Statistiques de visite
         </Link>
-      </header>
+      </header>{" "}
 
       <div className="grid grid-cols-2 gap-4 lg:grid-cols-4">
-        <Carte titre="Comptes" valeur={String(t.comptes ?? 0)} detail={`${t.confirmes ?? 0} adresses confirmées · ${t.actifs_7j ?? 0} connectés cette semaine`} Icone={Users} teinte="bg-blue-100 dark:bg-blue-500/10 text-blue-700 dark:text-blue-300" />
-        <Carte titre="Abonnés" valeur={String((t.premium ?? 0) + (t.pro ?? 0))} detail={`${t.premium ?? 0} Premium · ${t.pro ?? 0} Pro${t.offerts ? ` · dont ${t.offerts} offert${t.offerts > 1 ? "s" : ""}` : ""}`} Icone={Crown} teinte="bg-amber-100 dark:bg-amber-500/10 text-amber-700 dark:text-amber-300" />
-        <Carte titre="Revenu mensuel" valeur={euros(t.revenu_mensuel_estime ?? 0)} detail="estimé d'après les abonnés actuels (Stripe fait foi)" Icone={Euro} teinte="bg-emerald-100 dark:bg-emerald-500/10 text-emerald-700 dark:text-emerald-300" />
+        <Carte titre="Comptes" valeur={String(t.comptes ?? 0)} detail={`${t.confirmes ?? 0} adresses confirmées · ${t.actifs_7j ?? 0} connectés cette semaine`} Icone={Users} teinte="bg-blue-100 dark:bg-blue-500/10 text-blue-700 dark:text-blue-300" />{" "}
+        <Carte titre="Abonnés" valeur={String((t.premium ?? 0) + (t.pro ?? 0))} detail={`${t.premium ?? 0} Premium · ${t.pro ?? 0} Pro${t.offerts ? ` · dont ${t.offerts} offert${t.offerts > 1 ? "s" : ""}` : ""}`} Icone={Crown} teinte="bg-amber-100 dark:bg-amber-500/10 text-amber-700 dark:text-amber-300" />{" "}
+        <Carte titre="Revenu mensuel" valeur={euros(t.revenu_mensuel_estime ?? 0)} detail="estimé d'après les abonnés actuels (Stripe fait foi)" Icone={Euro} teinte="bg-emerald-100 dark:bg-emerald-500/10 text-emerald-700 dark:text-emerald-300" />{" "}
         <Carte titre="Nouveaux" valeur={String(t.nouveaux_7j ?? 0)} detail={`cette semaine · ${t.nouveaux_30j ?? 0} sur 30 jours · ${t.parraines ?? 0} parrainés`} Icone={UserPlus} teinte="bg-violet-100 dark:bg-violet-500/10 text-violet-700 dark:text-violet-300" />
-      </div>
+      </div>{" "}
 
       <section className="rounded-3xl border border-slate-200 bg-white p-5 shadow-sm">
-        <h2 className="mb-4 flex items-center gap-2 text-[12px] font-black uppercase tracking-widest text-slate-600"><Activity size={15} /> Inscriptions, 30 derniers jours</h2>
+        <h2 className="mb-4 flex items-center gap-2 text-[12px] font-black uppercase tracking-widest text-slate-600"><Activity size={15} /> Inscriptions, 30 derniers jours</h2>{" "}
         <div className="flex h-36 gap-1">
           {jours.map(j => (
             <div key={j.jour} className="flex flex-1 flex-col items-center" title={`${new Date(j.jour).toLocaleDateString("fr-FR", { day: "numeric", month: "short" })} : ${j.n} inscription${j.n > 1 ? "s" : ""}`}>
               <div className="relative w-full flex-1">
                 <div className="absolute inset-x-0 bottom-0 rounded-t-md bg-violet-500/85" style={{ height: `${(j.n / maxJour) * 100}%`, minHeight: j.n ? 3 : 1 }} />
-              </div>
-              <span className="mt-1 h-3 text-[9px] font-bold text-slate-400">{new Date(j.jour).getDate() % 5 === 0 ? new Date(j.jour).getDate() : ""}</span>
+              </div>{" "}
+              <span className="mt-1 h-3 text-[9px] font-bold text-slate-400">{new Date(j.jour).getDate() % 5 === 0 ? new Date(j.jour).getDate() : ""}</span>{" "}
             </div>
           ))}
         </div>
-      </section>
+      </section>{" "}
 
       <section className="rounded-3xl border border-slate-200 bg-white p-5 shadow-sm">
         <div className="mb-4 flex flex-wrap items-center gap-2">
           {([["tous", `Tous · ${membres.length}`], ["abonnes", `Abonnés · ${(t.premium ?? 0) + (t.pro ?? 0)}`], ["elite", `Premium · ${t.premium ?? 0}`], ["pro", `Pro · ${t.pro ?? 0}`], ["free", "Classiques"]] as const).map(([cle, libelle]) => (
             <button key={cle} onClick={() => setFiltre(cle)}
               className={`rounded-full px-3.5 py-1.5 text-xs font-black uppercase tracking-wider transition ${filtre === cle ? "bg-slate-900 text-white" : "bg-slate-100 text-slate-600 hover:bg-slate-200"}`}>
-              {libelle}
+              {libelle}{" "}
             </button>
-          ))}
+          ))}{" "}
           <div className="relative ml-auto">
             <Search size={15} className="absolute left-3 top-1/2 -translate-y-1/2 text-slate-400" />
             <input value={recherche} onChange={e => setRecherche(e.target.value)} placeholder="Chercher une adresse…"
               className="w-56 rounded-full border border-slate-200 py-2 pl-9 pr-3 text-sm outline-none focus:border-slate-400" />
-          </div>
+          </div>{" "}
           <button onClick={exporter} className="inline-flex items-center gap-1.5 rounded-full border border-slate-200 px-3.5 py-2 text-xs font-black uppercase tracking-wider text-slate-600 hover:bg-slate-50">
             <Download size={14} /> Export CSV
           </button>
-        </div>
+        </div>{" "}
 
-        {message && <p className="mb-3 rounded-xl bg-emerald-50 dark:bg-emerald-500/10 px-3 py-2 text-sm font-semibold text-emerald-800">{message}</p>}
-        <p className="mb-2 text-xs text-slate-400">Cliquez sur le niveau d&apos;un membre pour lui donner ou lui retirer un accès Premium ou Pro. Un accès donné ici est marqué « offert » et ne compte pas dans le revenu.</p>
+        {message && <p className="mb-3 rounded-xl bg-emerald-50 dark:bg-emerald-500/10 px-3 py-2 text-sm font-semibold text-emerald-800">{message}</p>}{" "}
+        <p className="mb-2 text-xs text-slate-400">Cliquez sur le niveau d&apos;un membre pour lui donner ou lui retirer un accès Premium ou Pro. Un accès donné ici est marqué « offert » et ne compte pas dans le revenu.</p>{" "}
         <div className="overflow-x-auto">
           <table className="w-full min-w-[820px] text-sm">
             <thead>
@@ -180,16 +180,16 @@ export default function MembresPage() {
                         <select value={modif.niveau} onChange={e => setModif({ id: m.id, niveau: e.target.value as Membre["niveau"] })}
                           className="rounded-lg border border-slate-300 bg-white px-2 py-1 text-xs font-bold">
                           <option value="free">Classique</option><option value="elite">Premium</option><option value="pro">Pro</option>
-                        </select>
+                        </select>{" "}
                         <button onClick={() => void confirmer()} disabled={modif.niveau === m.niveau}
-                          className="rounded-lg bg-slate-900 px-2.5 py-1 text-[11px] font-black text-white disabled:opacity-30">Confirmer</button>
+                          className="rounded-lg bg-slate-900 px-2.5 py-1 text-[11px] font-black text-white disabled:opacity-30">Confirmer</button>{" "}
                         <button onClick={() => setModif(null)} className="px-1.5 text-[11px] font-bold text-slate-400">Annuler</button>
                       </span>
                     ) : (
                       <button onClick={() => { setModif({ id: m.id, niveau: m.niveau }); setMessage(null); }} title="Changer le niveau de ce membre"
                         className={`inline-flex items-center gap-1 rounded-full px-2.5 py-0.5 text-[11px] font-black ring-1 ring-transparent transition hover:ring-slate-300 ${NIVEAUX[m.niveau]?.classe ?? ""}`}>
-                        {m.niveau === "pro" ? <Crown size={11} /> : m.niveau === "elite" ? <Star size={11} /> : null}{NIVEAUX[m.niveau]?.libelle ?? m.niveau}
-                        {m.offert && m.niveau !== "free" && <span className="ml-1 rounded-full bg-white/70 px-1.5 text-[9px] uppercase">offert</span>}
+                        {m.niveau === "pro" ? <Crown size={11} /> : m.niveau === "elite" ? <Star size={11} /> : null}{" "}{NIVEAUX[m.niveau]?.libelle ?? m.niveau}{" "}
+                        {m.offert && m.niveau !== "free" && <span className="ml-1 rounded-full bg-white/70 px-1.5 text-[9px] uppercase">offert</span>}{" "}
                         <span className="ml-0.5 text-[10px] opacity-50">▾</span>
                       </button>
                     )}
@@ -201,9 +201,9 @@ export default function MembresPage() {
                 </tr>
               ))}
             </tbody>
-          </table>
+          </table>{" "}
           {!visibles.length && <p className="py-8 text-center text-sm text-slate-400">Aucun membre ne correspond.</p>}
-        </div>
+        </div>{" "}
         <p className="mt-3 text-[11px] text-slate-400">Le niveau est celui du compte sur le site, tenu à jour par Stripe à chaque paiement, renouvellement ou résiliation. Les montants réellement encaissés sont dans votre tableau de bord Stripe.</p>
       </section>
     </div>

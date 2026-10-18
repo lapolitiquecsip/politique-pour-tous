@@ -11,6 +11,11 @@ import PresidentPhoto from "@/components/shared/PresidentPhoto";
 import Senatoriales2026 from "@/components/senat/Senatoriales2026";
 import CommissionTracker from "@/components/commissions/CommissionTracker";
 
+export const metadata = {
+  title: "Les sénateurs : votes, positions, parcours",
+  description: "Retrouvez les sénateurs de votre département : leurs votes, leurs propositions de loi et leur parcours, d'après les données du Sénat.",
+};
+
 // Page dédiée au Sénat : composition + textes législatifs du Sénat + sénateurs.
 export default async function SenateursPage() {
   return (
@@ -30,35 +35,35 @@ export default async function SenateursPage() {
         ]}
       />
       {/* À LA UNE : élections sénatoriales du 27 septembre 2026 (série 2). */}
-      <Senatoriales2026 />
+      <Senatoriales2026 />{" "}
       {/* Président du Sénat — cliquable vers sa fiche */}
       <div className="mx-auto max-w-6xl px-4 pt-6">
         <Link href="/senateurs/gerard-larcher" className="group flex items-center gap-4 rounded-3xl border border-amber-200 bg-amber-50/60 p-5 transition hover:border-amber-300 hover:bg-amber-50 dark:border-amber-500/30 dark:bg-amber-500/[0.08] dark:hover:border-amber-400/60 dark:hover:bg-amber-500/[0.12]">
-          <PresidentPhoto src="https://www.senat.fr/senimg/larcher_gerard86034e.jpg" alt="Gérard Larcher" ring="ring-amber-300" gradient="from-amber-500 to-orange-500" />
+          <PresidentPhoto src="https://www.senat.fr/senimg/larcher_gerard86034e.jpg" alt="Gérard Larcher" ring="ring-amber-300" gradient="from-amber-500 to-orange-500" />{" "}
           <div className="min-w-0">
-            <p className="text-[10px] font-black uppercase tracking-widest text-amber-700 dark:text-amber-400">Président du Sénat</p>
-            <p className="text-xl font-bold text-foreground group-hover:text-amber-700 transition-colors">Gérard Larcher</p>
+            <p className="text-[10px] font-black uppercase tracking-widest text-amber-700 dark:text-amber-400">Président du Sénat</p>{" "}
+            <p className="text-xl font-bold text-foreground group-hover:text-amber-700 transition-colors">Gérard Larcher</p>{" "}
             <p className="text-sm text-muted-foreground">Deuxième personnage de l'État — voir sa fiche</p>
-          </div>
+          </div>{" "}
           <ChevronRight className="ml-auto text-muted-foreground group-hover:text-amber-500 transition-colors" />
         </Link>
-      </div>
+      </div>{" "}
       <section id="composition" className="scroll-mt-24 pt-4 pb-8">
         <HemicycleChart chamber="senat" subtitle="Sénat" title="Composition du Sénat" />
-      </section>
+      </section>{" "}
       <section id="membres" className="scroll-mt-24">
         <MemberFinderIntro role="sénateur" roleShort="sénateur" />
         <Suspense fallback={<div className="h-64 flex items-center justify-center">Chargement...</div>}>
           <DiscoveryClient initialDeputies={[]} single="senators" />
         </Suspense>
-      </section>
+      </section>{" "}
       <section id="textes" className="scroll-mt-24">
         <ChamberLegislation chamber="SENAT" chamberLabel="Sénat" />
-      </section>
+      </section>{" "}
       {/* Suivi détaillé des commissions — cœur de l'abonnement Pro. */}
       <section className="mx-auto max-w-6xl px-4">
         <CommissionTracker chamber="SENAT" chamberLabel="Sénat" accent="red" />
-      </section>
+      </section>{" "}
       <section id="videos" className="scroll-mt-24 mx-auto max-w-6xl px-4 pb-16">
         <VideoFeed source="senat" />
       </section>

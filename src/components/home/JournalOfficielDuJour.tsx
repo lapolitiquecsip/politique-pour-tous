@@ -160,41 +160,41 @@ export default function JournalOfficielDuJour() {
           className="pointer-events-none absolute -right-20 -top-20 h-56 w-56 rounded-full bg-fuchsia-500/25 blur-3xl"
           animate={reduce ? undefined : { scale: [1, 1.15, 1], opacity: [0.5, 0.9, 0.5] }}
           transition={{ duration: 5, repeat: Infinity, ease: "easeInOut" }}
-        />
+        />{" "}
 
         <div className="relative p-6 sm:p-9">
           <div className="flex flex-wrap items-center gap-x-3 gap-y-2">
             <span className="inline-flex items-center gap-1.5 rounded-full bg-gradient-to-r from-fuchsia-500 to-purple-600 px-3 py-1 text-[10px] font-black uppercase tracking-widest">
               <Newspaper size={12} /> Pro
-            </span>
+            </span>{" "}
             <h3 className="font-staatliches text-2xl uppercase leading-none tracking-tight sm:text-3xl">
               Le Journal officiel du jour
             </h3>
-          </div>
+          </div>{" "}
           <p className="mt-2.5 max-w-2xl text-sm leading-relaxed text-white/70">
             L&apos;État publie chaque matin une centaine de textes — décrets, arrêtés, décisions, avis —
             qui font l&apos;essentiel du droit applicable et que personne ne lit. Les voici, classés par
             rubrique et par ministère, avec le point de ce qu&apos;il faut en retenir.
-          </p>
+          </p>{" "}
 
           {/* Le volume du jour, en données réelles. */}
           <div className="mt-7 flex flex-wrap items-end gap-x-4 gap-y-1">
             <span className="font-staatliches text-6xl leading-none tabular-nums text-white sm:text-7xl">
               {edition.text_count}
-            </span>
+            </span>{" "}
             <span className="pb-1.5 text-sm font-bold text-white/70">
               textes publiés le {jour} {mois}
             </span>
-          </div>
+          </div>{" "}
           {repartition.length > 0 && (
             <div className="mt-3 flex flex-wrap gap-1.5">
               {repartition.map(([n, c]) => (
                 <span key={n} className="rounded-full bg-white/10 px-2.5 py-1 text-[10px] font-black uppercase tracking-widest text-white/75">
-                  {c} {c > 1 ? nat(n).plusieurs : nat(n).un.toLowerCase()}
+                  {c} {c > 1 ? nat(n).plusieurs : nat(n).un.toLowerCase()}{" "}
                 </span>
               ))}
             </div>
-          )}
+          )}{" "}
 
           {/* Les jours précédents : la preuve que la rubrique est alimentée chaque matin. */}
           <div className="mt-6 grid grid-cols-4 gap-2 sm:grid-cols-7">
@@ -202,20 +202,20 @@ export default function JournalOfficielDuJour() {
               const d = jourCourt(e.date);
               return (
                 <div key={e.date} className="rounded-xl bg-white/[0.06] px-1 py-2 text-center ring-1 ring-white/10">
-                  <span className="block text-[9px] font-black uppercase tracking-widest text-white/40">{d.jour} {d.mois}</span>
-                  <span className="block font-staatliches text-xl leading-tight tabular-nums text-fuchsia-300">{e.text_count}</span>
+                  <span className="block text-[9px] font-black uppercase tracking-widest text-white/40">{d.jour} {d.mois}</span>{" "}
+                  <span className="block font-staatliches text-xl leading-tight tabular-nums text-fuchsia-300">{e.text_count}</span>{" "}
                 </div>
               );
             })}
-          </div>
+          </div>{" "}
 
           <div className="mt-7 rounded-2xl bg-white/[0.05] p-5 ring-1 ring-white/10">
             <p className="flex items-start gap-2 text-[10px] font-black uppercase leading-snug tracking-widest text-fuchsia-300">
-              <Lock size={13} className="mt-px shrink-0" />
+              <Lock size={13} className="mt-px shrink-0" />{" "}
               {isPremium
                 ? "Votre abonnement Premium ne couvre pas cette rubrique"
                 : "Réservé à l'offre Pro"}
-            </p>
+            </p>{" "}
             <ul className="mt-3.5 grid gap-2 sm:grid-cols-2">
               {[
                 "Le détail de chaque texte, jour par jour",
@@ -226,18 +226,18 @@ export default function JournalOfficielDuJour() {
                 "Mis à jour dès la parution, chaque matin",
               ].map(b => (
                 <li key={b} className="flex items-start gap-2 text-[13px] leading-snug text-white/85">
-                  <Check size={15} className="mt-0.5 shrink-0 text-fuchsia-400" />
-                  {b}
+                  <Check size={15} className="mt-0.5 shrink-0 text-fuchsia-400" />{" "}
+                  {b}{" "}
                 </li>
               ))}
             </ul>
-          </div>
+          </div>{" "}
 
           <div className="mt-6 flex flex-col gap-2 sm:flex-row sm:items-center sm:gap-3">
             <Link href="/premium"
               className="inline-flex items-center justify-center gap-2 rounded-2xl bg-gradient-to-r from-fuchsia-500 to-purple-600 px-6 py-3.5 text-[12px] font-black uppercase tracking-widest text-white shadow-lg shadow-fuchsia-500/30 transition hover:brightness-110">
-              {isPremium ? "Passer à l'offre Pro" : "Découvrir l'offre Pro"} <ArrowRight size={15} />
-            </Link>
+              {isPremium ? "Passer à l'offre Pro" : "Découvrir l'offre Pro"} {" "}<ArrowRight size={15} />
+            </Link>{" "}
             <span className="text-[11px] font-bold text-white/45">24,99 €/mois, sans engagement</span>
           </div>
         </div>
@@ -271,7 +271,7 @@ export default function JournalOfficielDuJour() {
             indexCourant={choisi}
             onOuvrir={() => setOuvert(true)}
             onChoisir={(i) => { setChoisi(i); setFiltre(null); setOuvert(true); }}
-          />
+          />{" "}
         </motion.div>
       ) : (
         <motion.div
@@ -286,10 +286,10 @@ export default function JournalOfficielDuJour() {
         <div className="flex flex-wrap items-center gap-x-3 gap-y-2">
           <span className="inline-flex items-center gap-1.5 rounded-full bg-gradient-to-r from-fuchsia-500 to-purple-600 px-3 py-1 text-[10px] font-black uppercase tracking-widest">
             <Newspaper size={12} /> Pro
-          </span>
+          </span>{" "}
           <h3 className="font-staatliches text-2xl uppercase leading-none tracking-tight sm:text-3xl">
             Le Journal officiel du jour
-          </h3>
+          </h3>{" "}
           {/* La loupe cherche dans TOUT le Journal officiel conservé, pas dans la
               seule journée affichée : c'est la différence entre feuilleter et
               retrouver. Elle reste repliée pour ne pas encombrer la lecture. */}
@@ -304,8 +304,8 @@ export default function JournalOfficielDuJour() {
                 : "bg-white/10 text-white/80 ring-1 ring-white/15 hover:bg-white/20 hover:text-white"
             }`}
           >
-            <Search size={13} /> <span className="hidden sm:inline">Rechercher</span>
-          </button>
+            <Search size={13} /> {" "}<span className="hidden sm:inline">Rechercher</span>
+          </button>{" "}
           {/* Refermer : on rend la une, et l'accueil retrouve sa respiration. */}
           <button
             onClick={() => { setOuvert(false); setRecherche(false); }}
@@ -313,9 +313,9 @@ export default function JournalOfficielDuJour() {
             title="Refermer"
             className="inline-flex items-center gap-1.5 rounded-full bg-white/10 px-3 py-1.5 text-[10px] font-black uppercase tracking-widest text-white/80 ring-1 ring-white/15 transition hover:bg-white/20 hover:text-white"
           >
-            <ChevronUp size={13} /> <span className="hidden sm:inline">Refermer</span>
+            <ChevronUp size={13} /> {" "}<span className="hidden sm:inline">Refermer</span>
           </button>
-        </div>
+        </div>{" "}
 
         {/* Rail des éditions — un mois de profondeur, qu'on parcourt au doigt
             comme à la souris. Le composant laisse le tactile au navigateur et
@@ -334,13 +334,13 @@ export default function JournalOfficielDuJour() {
                     actif ? "bg-white text-slate-900" : "bg-white/10 text-white/70 hover:bg-white/20"
                   }`}
                 >
-                  <span className="block font-staatliches text-lg leading-none tabular-nums">{d.jour}</span>
+                  <span className="block font-staatliches text-lg leading-none tabular-nums">{d.jour}</span>{" "}
                   <span className="block text-[9px] font-black uppercase tracking-widest opacity-70">{d.mois}</span>
                 </button>
               );
             })}
           </DragScroller>
-        </div>
+        </div>{" "}
 
         <p className="mt-4 text-sm font-bold text-white/90">
           {edition.title}
@@ -350,7 +350,7 @@ export default function JournalOfficielDuJour() {
               Légifrance <ExternalLink size={9} />
             </a>
           )}
-        </p>
+        </p>{" "}
 
         {/* Répartition par nature, qui sert aussi de filtre. */}
         <div className="mt-3 flex flex-wrap gap-1.5">
@@ -361,7 +361,7 @@ export default function JournalOfficielDuJour() {
             }`}
           >
             {edition.text_count} textes
-          </button>
+          </button>{" "}
           {repartition.map(([n, c]) => (
             <button
               key={n}
@@ -370,21 +370,21 @@ export default function JournalOfficielDuJour() {
                 filtre === n ? "bg-white text-slate-900" : "bg-white/10 text-white/70 hover:bg-white/20"
               }`}
             >
-              {c} {c > 1 ? nat(n).plusieurs : nat(n).un.toLowerCase()}
+              {c} {c > 1 ? nat(n).plusieurs : nat(n).un.toLowerCase()}{" "}
             </button>
           ))}
-        </div>
+        </div>{" "}
 
         {edition.digest && (
           <div className="mt-4 flex gap-3 rounded-2xl bg-white/[0.07] p-4 ring-1 ring-white/10">
-            <Sparkles size={16} className="mt-0.5 shrink-0 text-fuchsia-300" />
+            <Sparkles size={16} className="mt-0.5 shrink-0 text-fuchsia-300" />{" "}
             <div className="min-w-0">
-              <p className="text-[13px] leading-relaxed text-white/85">{edition.digest}</p>
+              <p className="text-[13px] leading-relaxed text-white/85">{edition.digest}</p>{" "}
               <MentionIA sombre source={{ libelle: "sommaire officiel de l'édition, détaillé ci-dessous" }} />
             </div>
           </div>
         )}
-      </div>
+      </div>{" "}
 
       {/* La recherche, quand on l'appelle. Montée seulement alors : son index des
           natures est une requête, inutile tant que personne ne cherche. */}
@@ -400,7 +400,7 @@ export default function JournalOfficielDuJour() {
             <JorfSearch onClose={() => setRecherche(false)} />
           </motion.div>
         )}
-      </AnimatePresence>
+      </AnimatePresence>{" "}
 
       {/* Sommaire complet, replié rubrique par rubrique. */}
       <div className="p-5 sm:p-7">
@@ -423,10 +423,10 @@ export default function JournalOfficielDuJour() {
                     })}
                     className="flex w-full items-center gap-3 px-4 py-3 text-left transition hover:bg-white/[0.04]"
                   >
-                    <span className="min-w-0 flex-1 text-[13px] font-bold leading-snug">{r.titre}</span>
-                    <span className="shrink-0 text-[10px] font-black tabular-nums text-white/50">{nb}</span>
+                    <span className="min-w-0 flex-1 text-[13px] font-bold leading-snug">{r.titre}</span>{" "}
+                    <span className="shrink-0 text-[10px] font-black tabular-nums text-white/50">{nb}</span>{" "}
                     <ChevronDown size={16} className={`shrink-0 text-white/50 transition-transform ${ouverte ? "rotate-180" : ""}`} />
-                  </button>
+                  </button>{" "}
 
                   <AnimatePresence initial={false}>
                     {ouverte && (
@@ -440,7 +440,7 @@ export default function JournalOfficielDuJour() {
                         <div className="space-y-4 px-4 pb-4">
                           {r.groupes.map(g => (
                             <div key={g.titre}>
-                              <p className="mb-1.5 text-[10px] font-black uppercase tracking-widest text-fuchsia-300/80">{g.titre}</p>
+                              <p className="mb-1.5 text-[10px] font-black uppercase tracking-widest text-fuchsia-300/80">{g.titre}</p>{" "}
                               <ul className="space-y-1">
                                 {g.textes.map(t => (
                                   <li key={t.id}>
@@ -451,11 +451,11 @@ export default function JournalOfficielDuJour() {
                                     >
                                       <span className={`mt-0.5 shrink-0 rounded px-1.5 py-0.5 text-[9px] font-black uppercase tracking-wider ${nat(t.nature).classe}`}>
                                         {nat(t.nature).un}
-                                      </span>
+                                      </span>{" "}
                                       <span className="min-w-0 flex-1">
                                         <span className="block text-[12px] font-semibold leading-snug text-white/85 group-hover:text-white">
                                           {t.titre}
-                                        </span>
+                                        </span>{" "}
                                         {t.explication && (
                                           <span className={`mt-1 block text-[12px] leading-snug ${t.source_explication === "renvoi" ? "italic text-white/35" : "text-white/60"}`}>
                                             {t.explication}
@@ -468,23 +468,23 @@ export default function JournalOfficielDuJour() {
                                             )}
                                           </span>
                                         )}
-                                      </span>
+                                      </span>{" "}
                                       <ExternalLink size={11} className="mt-0.5 shrink-0 text-white/25 group-hover:text-fuchsia-300" />
-                                    </a>
+                                    </a>{" "}
                                   </li>
                                 ))}
-                              </ul>
+                              </ul>{" "}
                             </div>
                           ))}
                         </div>
                       </motion.div>
                     )}
-                  </AnimatePresence>
+                  </AnimatePresence>{" "}
                 </div>
               );
             })}
           </div>
-        )}
+        )}{" "}
 
         <p className="mt-4 text-[10px] italic leading-snug text-white/40">
           Source : flux officiel de la DILA (Direction de l&apos;information légale et administrative).
@@ -492,7 +492,7 @@ export default function JournalOfficielDuJour() {
         </p>
       </div>
     </div>
-    </Garde>
+    </Garde>{" "}
         </motion.div>
       )}
     </AnimatePresence>

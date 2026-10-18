@@ -52,49 +52,49 @@ export default function AdminDashboardPage() {
   return (
     <div className="max-w-6xl mx-auto space-y-8 animate-fade-in">
       <header className="mb-10">
-        <h1 className="text-3xl font-heading font-extrabold text-foreground">Vue d'ensemble</h1>
+        <h1 className="text-3xl font-heading font-extrabold text-foreground">Vue d'ensemble</h1>{" "}
         <p className="text-muted-foreground mt-1">Supervision de la plateforme et des mises à jour automatiques.</p>
-      </header>
+      </header>{" "}
 
       {/* KPIs */}
       <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
         <div className="bg-card rounded-2xl p-6 border border-border shadow-sm flex items-center justify-between">
           <div>
-            <p className="text-sm font-semibold text-muted-foreground uppercase tracking-widest mb-1">Abonnés Newsletter</p>
+            <p className="text-sm font-semibold text-muted-foreground uppercase tracking-widest mb-1">Abonnés Newsletter</p>{" "}
             <h2 className="text-4xl font-extrabold text-foreground">{subscribersCount ?? 0}</h2>
-          </div>
+          </div>{" "}
           <div className="w-14 h-14 rounded-full bg-blue-50 dark:bg-blue-500/10 flex items-center justify-center text-blue-700 dark:text-blue-300">
             <Users className="w-7 h-7" />
           </div>
-        </div>
+        </div>{" "}
 
         <div className="bg-card rounded-2xl p-6 border border-border shadow-sm flex items-center justify-between">
           <div>
-            <p className="text-sm font-semibold text-muted-foreground uppercase tracking-widest mb-1">Politiciens en base</p>
+            <p className="text-sm font-semibold text-muted-foreground uppercase tracking-widest mb-1">Politiciens en base</p>{" "}
             <h2 className="text-4xl font-extrabold text-foreground">{politiciansCount ?? 0}</h2>
-          </div>
+          </div>{" "}
           <div className="w-14 h-14 rounded-full bg-purple-50 dark:bg-purple-500/10 flex items-center justify-center text-purple-700 dark:text-purple-300">
             <Webhook className="w-7 h-7" />
           </div>
         </div>
-      </div>
+      </div>{" "}
 
       {/* Main Panel */}
       <div className="bg-card rounded-2xl border border-border shadow-sm overflow-hidden">
         <div className="p-6 border-b border-border flex flex-col md:flex-row md:items-center justify-between gap-4">
           <div>
-            <h3 className="text-xl font-bold font-heading text-foreground">Historique des Scrapers (Pipelines)</h3>
+            <h3 className="text-xl font-bold font-heading text-foreground">Historique des Scrapers (Pipelines)</h3>{" "}
             <p className="text-sm text-muted-foreground">Liste des exécutions des robots de collecte de données RSS.</p>
-          </div>
+          </div>{" "}
           <button 
             onClick={handleTriggerPipeline}
             disabled={triggering}
             className="flex items-center justify-center gap-2 px-6 py-3 bg-red-600 hover:bg-red-700 disabled:opacity-50 disabled:cursor-not-allowed text-white font-bold rounded-xl shadow-sm transition-all"
           >
-            {triggering ? <Loader2 className="w-5 h-5 animate-spin" /> : <PlayCircle className="w-5 h-5" />}
+            {triggering ? <Loader2 className="w-5 h-5 animate-spin" /> : <PlayCircle className="w-5 h-5" />}{" "}
             Récupération RSS manuelle
           </button>
-        </div>
+        </div>{" "}
 
         <div className="overflow-x-auto">
           <table className="w-full text-left border-collapse">
@@ -143,7 +143,7 @@ export default function AdminDashboardPage() {
               )}
             </tbody>
           </table>
-        </div>
+        </div>{" "}
         
         <div className="p-4 bg-muted text-center border-t border-border">
           <button onClick={() => fetchData()} className="text-sm font-medium text-muted-foreground hover:text-slate-800 flex items-center gap-2 justify-center mx-auto">

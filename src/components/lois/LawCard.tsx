@@ -53,22 +53,22 @@ export function LawCardBody({
   return (
     <>
       <div className="flex flex-wrap items-center gap-2 pr-9">
-        <span className="text-xs font-bold text-muted-foreground">{frDate(date)}</span>
+        <span className="text-xs font-bold text-muted-foreground">{frDate(date)}</span>{" "}
         {status && (
           <span className={`inline-flex items-center gap-1 rounded-full px-3 py-1 text-[10px] font-black uppercase tracking-widest ${TONE[status.tone]}`}>
-            {status.tone === "green" && <CheckCircle2 size={12} />}{status.label}
+            {status.tone === "green" && <CheckCircle2 size={12} />}{" "}{status.label}
           </span>
         )}
-      </div>
+      </div>{" "}
       {/* Badge de TYPE bien visible : l'utilisateur voit d'un coup d'œil proposition vs projet. */}
       {meta && (
         <span className={`mt-3 inline-flex w-fit items-center gap-1.5 rounded-lg px-2.5 py-1 text-[10px] font-black uppercase tracking-widest ${meta.badge}`}>
           <meta.Icon size={12} strokeWidth={2.5} /> {meta.label}
         </span>
-      )}
+      )}{" "}
       <h3 className="mt-3 line-clamp-4 text-lg font-bold leading-snug text-foreground transition-colors group-hover:text-red-600 dark:text-white">
         {title}
-      </h3>
+      </h3>{" "}
       <div className="mt-auto flex items-end justify-between gap-3 pt-5">
         {category ? (
           <span className="inline-block rounded-full bg-gradient-to-r from-red-600 to-fuchsia-600 px-3 py-1 text-[10px] font-black uppercase tracking-widest text-white">

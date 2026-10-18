@@ -57,18 +57,18 @@ export default function InvitationCompte() {
             <button type="button" aria-label="Fermer" onClick={fermer}
               className="absolute right-4 top-4 z-10 rounded-full p-2 text-muted-foreground transition hover:bg-muted hover:text-foreground">
               <X size={18} />
-            </button>
-            <p className="text-[10px] font-black uppercase tracking-[0.25em] text-sky-700 dark:text-sky-400">Gratuit, en 30 secondes</p>
-            <h2 id="invitation-titre" className="mt-2 font-staatliches text-3xl uppercase leading-none">Créez votre compte</h2>
+            </button>{" "}
+            <p className="text-[10px] font-black uppercase tracking-[0.25em] text-sky-700 dark:text-sky-400">Gratuit, en 30 secondes</p>{" "}
+            <h2 id="invitation-titre" className="mt-2 font-staatliches text-3xl uppercase leading-none">Créez votre compte</h2>{" "}
             <ul className="mt-5 space-y-3 text-sm leading-snug text-foreground/85">
-              <li className="flex gap-3"><Bell size={18} className="mt-0.5 shrink-0 text-sky-600 dark:text-sky-400" /> Suivez vos élus : leurs votes et leur actualité, au même endroit.</li>
-              <li className="flex gap-3"><Vote size={18} className="mt-0.5 shrink-0 text-sky-600 dark:text-sky-400" /> Donnez votre avis sur les lois et comparez-le aux votes des députés.</li>
+              <li className="flex gap-3"><Bell size={18} className="mt-0.5 shrink-0 text-sky-600 dark:text-sky-400" /> Suivez vos élus : leurs votes et leur actualité, au même endroit.</li>{" "}
+              <li className="flex gap-3"><Vote size={18} className="mt-0.5 shrink-0 text-sky-600 dark:text-sky-400" /> Donnez votre avis sur les lois et comparez-le aux votes des députés.</li>{" "}
               <li className="flex gap-3"><Bookmark size={18} className="mt-0.5 shrink-0 text-sky-600 dark:text-sky-400" /> Enregistrez les lois et les fiches qui vous intéressent.</li>
-            </ul>
+            </ul>{" "}
             <Link href={`/login/?inscription=1&suite=${encodeURIComponent(chemin)}`} onClick={() => { mesurerAction("invitation_compte_clic"); fermer(); }}
               className="mt-6 block rounded-2xl bg-sky-600 px-5 py-3.5 text-center text-sm font-black uppercase tracking-widest text-white transition hover:bg-sky-700">
               Créer mon compte gratuit
-            </Link>
+            </Link>{" "}
             <button type="button" onClick={fermer} className="mt-3 w-full text-center text-xs font-bold text-muted-foreground hover:text-foreground">
               Plus tard
             </button>

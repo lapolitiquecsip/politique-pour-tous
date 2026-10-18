@@ -141,7 +141,7 @@ function ComparateurContent() {
       } else if (preselectedType === 'commune') {
         const fetchCommune = async () => {
           try {
-            const res = await fetch(`https://geo.api.gouv.fr/communes/${preselectedId}?fields=nom,code,codesPostaux,population,departement,region`);
+            const res = await fetch(`https://geo.api.gouv.fr/communes/${preselectedId}?fields=nom,code,codesPostaux,population,departement,region`, { signal: AbortSignal.timeout(8000) });
             const data = await res.json();
             if (data && data.code) {
               handleSelect('A', data, 'commune');
@@ -170,18 +170,18 @@ function ComparateurContent() {
       <div className="space-y-4">
         <div className="flex items-center justify-between mb-2">
           <div className="flex items-center gap-2 text-white/40 text-[10px] font-black uppercase tracking-widest">
-            <Icon size={14} className={color} />
+            <Icon size={14} className={color} />{" "}
             {label}
-          </div>
+          </div>{" "}
           <div className="flex gap-8">
-             <span className={`text-sm font-bold ${valA > valB ? 'text-amber-400' : 'text-white/60'}`}>{valA || 0}%</span>
+             <span className={`text-sm font-bold ${valA > valB ? 'text-amber-400' : 'text-white/60'}`}>{valA || 0}%</span>{" "}
              <span className={`text-sm font-bold ${valB > valA ? 'text-amber-400' : 'text-white/60'}`}>{valB || 0}%</span>
           </div>
-        </div>
+        </div>{" "}
         <div className="relative h-2 bg-white/5 rounded-full overflow-hidden flex">
           <div className="absolute inset-0 flex items-center justify-center opacity-10">
             <div className="w-px h-full bg-white/20" />
-          </div>
+          </div>{" "}
           {/* Side A Progress (Left half, going left) */}
           <div className="flex-1 flex justify-end pr-[1px]">
             <motion.div 
@@ -189,7 +189,7 @@ function ComparateurContent() {
               animate={{ width: `${(valA / max) * 100}%` }}
               className={`h-full rounded-l-full bg-gradient-to-l ${color.replace('text-', 'from-').replace('400', '500')} to-transparent opacity-80`}
             />
-          </div>
+          </div>{" "}
           {/* Side B Progress (Right half, going right) */}
           <div className="flex-1 pl-[1px]">
             <motion.div 
@@ -211,24 +211,24 @@ function ComparateurContent() {
       <div className="container mx-auto max-w-6xl px-4 py-8">
         <Link href="/local" className="inline-flex items-center gap-2 text-muted-foreground hover:text-foreground transition-colors font-bold text-xs uppercase tracking-widest mb-8">
           <ChevronLeft size={16} /> Retour au portail
-        </Link>
+        </Link>{" "}
 
         <div className="bg-card rounded-[3rem] shadow-2xl border border-border overflow-hidden">
           <div className="p-12 border-b border-border flex flex-col md:flex-row justify-between items-center gap-8">
             <div className="space-y-2">
-              <h1 className="text-4xl font-staatliches uppercase tracking-tight text-foreground">Le Comparateur <span className="text-amber-700 dark:text-amber-400">Premium</span></h1>
+              <h1 className="text-4xl font-staatliches uppercase tracking-tight text-foreground">Le Comparateur <span className="text-amber-700 dark:text-amber-400">Premium</span></h1>{" "}
               <p className="text-muted-foreground font-medium italic">Analysez et comparez les territoires de France en temps réel.</p>
-            </div>
+            </div>{" "}
             <div className="flex items-center gap-3 px-6 py-3 bg-amber-50 dark:bg-amber-500/10 text-amber-600 dark:text-amber-300 rounded-2xl border border-amber-100 dark:border-amber-500/25 font-black text-xs uppercase tracking-widest">
-              <Star className="w-4 h-4 fill-current" />
+              <Star className="w-4 h-4 fill-current" />{" "}
               Accès Élite Activé
             </div>
-          </div>
+          </div>{" "}
 
           <div className="p-8 md:p-16 grid grid-cols-1 lg:grid-cols-2 gap-12 relative">
             <div className="absolute top-[40%] left-1/2 -translate-x-1/2 -translate-y-1/2 w-16 h-16 bg-card border-2 border-amber-500 rounded-full flex items-center justify-center text-amber-500 font-black z-20 shadow-2xl hidden lg:flex">
               VS
-            </div>
+            </div>{" "}
 
             {/* Entity A */}
             <div className="space-y-8 relative z-10">
@@ -272,14 +272,14 @@ function ComparateurContent() {
                              ) : (
                                <Map size={20} className="text-muted-foreground" />
                              )}
-                           </div>
+                           </div>{" "}
                            <div className="flex-1">
-                             <p className="font-bold text-foreground">{r.name}</p>
+                             <p className="font-bold text-foreground">{r.name}</p>{" "}
                              <p className="text-[10px] font-black uppercase text-amber-500 tracking-widest">Région</p>
-                           </div>
-                           <ArrowRight size={16} className="text-muted-foreground" />
+                           </div>{" "}
+                           <ArrowRight size={16} className="text-muted-foreground" />{" "}
                          </button>
-                       ))}
+                       ))}{" "}
                        {/* Departments */}
                        {resultsA.depts.map(d => (
                          <button key={d.name} onClick={() => handleSelect('A', d, 'department')} className="w-full px-8 py-4 flex items-center gap-4 hover:bg-muted transition-colors border-b border-slate-50 text-left">
@@ -301,31 +301,31 @@ function ComparateurContent() {
                              ) : (
                                <Building2 size={20} className="text-blue-500" />
                              )}
-                           </div>
+                           </div>{" "}
                            <div className="flex-1">
-                             <p className="font-bold text-foreground">{d.name}</p>
+                             <p className="font-bold text-foreground">{d.name}</p>{" "}
                              <p className="text-[10px] font-black uppercase text-blue-500 tracking-widest">Département</p>
-                           </div>
-                           <ArrowRight size={16} className="text-muted-foreground" />
+                           </div>{" "}
+                           <ArrowRight size={16} className="text-muted-foreground" />{" "}
                          </button>
-                       ))}
+                       ))}{" "}
                        {/* Communes */}
                        {(!allowedType || allowedType === 'commune') && searchA.results.map(c => (
                          <button key={c.code} onClick={() => handleSelect('A', c, 'commune')} className="w-full px-8 py-4 flex items-center gap-4 hover:bg-muted transition-colors border-b border-slate-50 text-left">
                            <div className="w-10 h-10 rounded-lg overflow-hidden shrink-0 bg-slate-100 dark:bg-slate-500/10 flex items-center justify-center text-muted-foreground">
                              <MapPin size={20} />
-                           </div>
+                           </div>{" "}
                            <div className="flex-1">
-                             <p className="font-bold text-foreground">{c.nom}</p>
+                             <p className="font-bold text-foreground">{c.nom}</p>{" "}
                              <p className="text-[10px] font-black uppercase text-muted-foreground tracking-widest">{c.departement.nom} ({c.departement.code})</p>
-                           </div>
-                           <ArrowRight size={16} className="text-muted-foreground" />
+                           </div>{" "}
+                           <ArrowRight size={16} className="text-muted-foreground" />{" "}
                          </button>
                        ))}
                     </motion.div>
                   )}
                 </AnimatePresence>
-              </div>
+              </div>{" "}
 
               {sideA ? (
                 <motion.div 
@@ -335,7 +335,7 @@ function ComparateurContent() {
                 >
                   <button onClick={() => setSideA(null)} className="absolute top-4 right-4 p-2 bg-card rounded-full text-muted-foreground hover:text-red-500 transition-colors shadow-sm z-10">
                     <X size={16} />
-                  </button>
+                  </button>{" "}
                   <div className="flex items-center gap-6 mb-8">
                     <div className="w-16 h-16 rounded-2xl bg-card shadow-lg flex items-center justify-center text-muted-foreground overflow-hidden shrink-0 p-2">
                       {sideA.type === 'region' && regionPaths[sideA.id] ? (
@@ -373,32 +373,32 @@ function ComparateurContent() {
                       ) : (
                         <MapPin size={32} />
                       )}
-                    </div>
+                    </div>{" "}
                     <div>
-                      <h3 className="text-2xl font-black text-foreground leading-tight">{sideA.name}</h3>
+                      <h3 className="text-2xl font-black text-foreground leading-tight">{sideA.name}</h3>{" "}
                       <p className="text-[10px] font-black uppercase tracking-[0.2em] text-muted-foreground">
                         {sideA.type === 'commune' ? sideA.data.departement?.nom || 'Commune' : sideA.type === 'region' ? 'Région' : 'Département'}
                       </p>
                     </div>
-                  </div>
+                  </div>{" "}
                   <div className="grid grid-cols-2 gap-4">
                     <div className="bg-card p-4 rounded-2xl border border-border">
-                      <p className="text-[10px] font-black text-muted-foreground uppercase mb-1">Population</p>
+                      <p className="text-[10px] font-black text-muted-foreground uppercase mb-1">Population</p>{" "}
                       <p className="text-lg font-bold text-foreground">{(sideA.data.demographie?.populationTotal || sideA.data.population)?.toLocaleString() || 'NC'}</p>
-                    </div>
+                    </div>{" "}
                     <div className="bg-card p-4 rounded-2xl border border-border">
-                      <p className="text-[10px] font-black text-muted-foreground uppercase mb-1">Responsable</p>
+                      <p className="text-[10px] font-black text-muted-foreground uppercase mb-1">Responsable</p>{" "}
                       <p className="text-lg font-bold text-foreground truncate">{sideA.data.president || sideA.data.politique?.elu || sideA.data.mayor || 'NC'}</p>
                     </div>
                   </div>
                 </motion.div>
               ) : (
                 <div className="h-64 rounded-[2.5rem] border-2 border-dashed border-border flex flex-col items-center justify-center text-muted-foreground gap-4">
-                  <MapPin size={40} className="opacity-20" />
+                  <MapPin size={40} className="opacity-20" />{" "}
                   <p className="font-bold italic">En attente de sélection...</p>
                 </div>
               )}
-            </div>
+            </div>{" "}
 
             {/* Entity B */}
             <div className="space-y-8 relative z-10">
@@ -441,14 +441,14 @@ function ComparateurContent() {
                              ) : (
                                <Map size={20} className="text-muted-foreground" />
                              )}
-                           </div>
+                           </div>{" "}
                            <div className="flex-1">
-                             <p className="font-bold text-foreground">{r.name}</p>
+                             <p className="font-bold text-foreground">{r.name}</p>{" "}
                              <p className="text-[10px] font-black uppercase text-amber-500 tracking-widest">Région</p>
-                           </div>
-                           <ArrowRight size={16} className="text-muted-foreground" />
+                           </div>{" "}
+                           <ArrowRight size={16} className="text-muted-foreground" />{" "}
                          </button>
-                       ))}
+                       ))}{" "}
                        {/* Departments */}
                        {resultsB.depts.map(d => (
                          <button key={d.name} onClick={() => handleSelect('B', d, 'department')} className="w-full px-8 py-4 flex items-center gap-4 hover:bg-muted transition-colors border-b border-slate-50 text-left">
@@ -470,30 +470,30 @@ function ComparateurContent() {
                              ) : (
                                <Building2 size={20} className="text-blue-500" />
                              )}
-                           </div>
+                           </div>{" "}
                            <div className="flex-1">
-                             <p className="font-bold text-foreground">{d.name}</p>
+                             <p className="font-bold text-foreground">{d.name}</p>{" "}
                              <p className="text-[10px] font-black uppercase text-blue-500 tracking-widest">Département</p>
-                           </div>
-                           <ArrowRight size={16} className="text-muted-foreground" />
+                           </div>{" "}
+                           <ArrowRight size={16} className="text-muted-foreground" />{" "}
                          </button>
-                       ))}
+                       ))}{" "}
                        {(!allowedType || allowedType === 'commune') && searchB.results.map(c => (
                          <button key={c.code} onClick={() => handleSelect('B', c, 'commune')} className="w-full px-8 py-4 flex items-center gap-4 hover:bg-muted transition-colors border-b border-slate-50 text-left">
                            <div className="w-10 h-10 rounded-lg overflow-hidden shrink-0 bg-slate-100 dark:bg-slate-500/10 flex items-center justify-center text-muted-foreground">
                              <MapPin size={20} />
-                           </div>
+                           </div>{" "}
                            <div className="flex-1">
-                             <p className="font-bold text-foreground">{c.nom}</p>
+                             <p className="font-bold text-foreground">{c.nom}</p>{" "}
                              <p className="text-[10px] font-black uppercase text-muted-foreground tracking-widest">{c.departement.nom} ({c.departement.code})</p>
-                           </div>
-                           <ArrowRight size={16} className="text-muted-foreground" />
+                           </div>{" "}
+                           <ArrowRight size={16} className="text-muted-foreground" />{" "}
                          </button>
                        ))}
                     </motion.div>
                   )}
                 </AnimatePresence>
-              </div>
+              </div>{" "}
 
               {sideB ? (
                 <motion.div 
@@ -503,7 +503,7 @@ function ComparateurContent() {
                 >
                   <button onClick={() => setSideB(null)} className="absolute top-4 right-4 p-2 bg-card rounded-full text-muted-foreground hover:text-red-500 transition-colors shadow-sm z-10">
                     <X size={16} />
-                  </button>
+                  </button>{" "}
                   <div className="flex items-center gap-6 mb-8">
                     <div className="w-16 h-16 rounded-2xl bg-card shadow-lg flex items-center justify-center text-muted-foreground overflow-hidden shrink-0 p-2">
                       {sideB.type === 'region' && regionPaths[sideB.id] ? (
@@ -541,40 +541,40 @@ function ComparateurContent() {
                       ) : (
                         <MapPin size={32} />
                       )}
-                    </div>
+                    </div>{" "}
                     <div>
-                      <h3 className="text-2xl font-black text-foreground leading-tight">{sideB.name}</h3>
+                      <h3 className="text-2xl font-black text-foreground leading-tight">{sideB.name}</h3>{" "}
                       <p className="text-[10px] font-black uppercase tracking-[0.2em] text-muted-foreground">
                         {sideB.type === 'commune' ? sideB.data.departement?.nom || 'Commune' : sideB.type === 'region' ? 'Région' : 'Département'}
                       </p>
                     </div>
-                  </div>
+                  </div>{" "}
                   <div className="grid grid-cols-2 gap-4">
                     <div className="bg-card p-4 rounded-2xl border border-border">
-                      <p className="text-[10px] font-black text-muted-foreground uppercase mb-1">Population</p>
+                      <p className="text-[10px] font-black text-muted-foreground uppercase mb-1">Population</p>{" "}
                       <p className="text-lg font-bold text-foreground">{(sideB.data.demographie?.populationTotal || sideB.data.population)?.toLocaleString() || 'NC'}</p>
-                    </div>
+                    </div>{" "}
                     <div className="bg-card p-4 rounded-2xl border border-border">
-                      <p className="text-[10px] font-black text-muted-foreground uppercase mb-1">Responsable</p>
+                      <p className="text-[10px] font-black text-muted-foreground uppercase mb-1">Responsable</p>{" "}
                       <p className="text-lg font-bold text-foreground truncate">{sideB.data.president || sideB.data.politique?.elu || sideB.data.mayor || 'NC'}</p>
                     </div>
                   </div>
                 </motion.div>
               ) : (
                 <div className="h-64 rounded-[2.5rem] border-2 border-dashed border-border flex flex-col items-center justify-center text-muted-foreground gap-4">
-                  <MapPin size={40} className="opacity-20" />
+                  <MapPin size={40} className="opacity-20" />{" "}
                   <p className="font-bold italic">En attente de sélection...</p>
                 </div>
               )}
             </div>
-          </div>
+          </div>{" "}
 
           {/* Metrics Section */}
           <div className="bg-slate-50/50 dark:bg-slate-500/10 border-t border-border p-12 md:p-16 text-foreground overflow-hidden relative">
-            <div className="absolute top-0 left-1/2 -translate-x-1/2 w-px h-full bg-slate-200/60 hidden lg:block" />
+            <div className="absolute top-0 left-1/2 -translate-x-1/2 w-px h-full bg-slate-200/60 hidden lg:block" />{" "}
             
             <div className="relative z-10">
-              <h3 className="text-3xl font-staatliches uppercase tracking-widest mb-16 text-center bg-gradient-to-r from-rose-600 via-fuchsia-600 to-rose-600 bg-clip-text text-transparent">Indicateurs de Performance Comparative</h3>
+              <h3 className="text-3xl font-staatliches uppercase tracking-widest mb-16 text-center bg-gradient-to-r from-rose-600 via-fuchsia-600 to-rose-600 bg-clip-text text-transparent">Indicateurs de Performance Comparative</h3>{" "}
               
               {!sideA && !sideB ? (
                 <div className="mt-12 text-center text-muted-foreground font-bold italic uppercase tracking-widest text-xs">
@@ -648,7 +648,7 @@ function ComparateurContent() {
                     }
                   ].map((category, catIdx) => (
                     <div key={catIdx} className="space-y-8">
-                      <h4 className="text-xl font-staatliches uppercase tracking-wide border-b border-border pb-4 text-foreground">{category.title}</h4>
+                      <h4 className="text-xl font-staatliches uppercase tracking-wide border-b border-border pb-4 text-foreground">{category.title}</h4>{" "}
                       <div className="space-y-8">
                         {(category.metrics as any[]).map((metric, mIdx) => {
                           const getVal = (data: any, path: string) => {
@@ -683,88 +683,88 @@ function ComparateurContent() {
                               <div className="flex items-center justify-between text-xs">
                                 <div className={`flex-1 text-right font-extrabold text-sm ${winner === 'A' ? 'text-emerald-700 dark:text-emerald-400' : 'text-muted-foreground'}`}>
                                   {metric.format(valA)}
-                                </div>
+                                </div>{" "}
                                 <div className={`flex-[2] text-center font-black uppercase text-[10px] tracking-widest text-muted-foreground ${metric.color}`}>
                                   {metric.label}
-                                </div>
+                                </div>{" "}
                                 <div className={`flex-1 text-left font-extrabold text-sm ${winner === 'B' ? 'text-emerald-700 dark:text-emerald-400' : 'text-muted-foreground'}`}>
                                   {metric.format(valB)}
                                 </div>
-                              </div>
+                              </div>{" "}
                               <div className="relative h-2 bg-slate-200/60 rounded-full overflow-hidden flex">
                                 <div className="absolute inset-0 flex items-center justify-center opacity-10">
                                   <div className="w-px h-full bg-slate-300" />
-                                </div>
+                                </div>{" "}
                                 <div className="flex-1 flex justify-end pr-[1px]">
                                   {renderBar(valA, metric.max, false)}
-                                </div>
+                                </div>{" "}
                                 <div className="flex-1 pl-[1px]">
                                   {renderBar(valB, metric.max, true)}
                                 </div>
-                              </div>
+                              </div>{" "}
                             </div>
                           );
                         })}
-                      </div>
+                      </div>{" "}
                     </div>
-                  ))}
+                  ))}{" "}
                   
                   {/* Politique (Text only) */}
                   <div className="space-y-8">
-                    <h4 className="text-xl font-staatliches uppercase tracking-wide border-b border-border pb-4 text-foreground">Politique</h4>
+                    <h4 className="text-xl font-staatliches uppercase tracking-wide border-b border-border pb-4 text-foreground">Politique</h4>{" "}
                     <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
                       {/* Side A */}
                       <div className="bg-muted border border-border rounded-[2.5rem] p-8 space-y-6 shadow-sm">
                         <div className="text-center font-staatliches uppercase tracking-wider text-xl text-rose-700 dark:text-rose-400 mb-6 flex flex-col items-center gap-2">
-                          <span>{sideA?.name || "Territoire A"}</span>
+                          <span>{sideA?.name || "Territoire A"}</span>{" "}
                           {sideA?.data.isEstimated && (
                             <span className="px-3 py-1 bg-amber-50 dark:bg-amber-500/10 text-amber-600 dark:text-amber-300 text-[9px] uppercase tracking-widest rounded-full border border-amber-200 dark:border-amber-500/25">
                               Données estimées
                             </span>
                           )}
-                        </div>
+                        </div>{" "}
                         {sideA?.data.politique ? (
                           <>
                             <div className="bg-card p-4 rounded-2xl border border-border/80">
-                              <div className="text-[10px] font-black uppercase text-muted-foreground tracking-wider mb-1">Présidentielle 2022 (T1)</div>
+                              <div className="text-[10px] font-black uppercase text-muted-foreground tracking-wider mb-1">Présidentielle 2022 (T1)</div>{" "}
                               <div className="text-sm font-bold text-foreground">{sideA.data.politique.pres2022T1}</div>
-                            </div>
+                            </div>{" "}
                             <div className="bg-card p-4 rounded-2xl border border-border/80">
-                              <div className="text-[10px] font-black uppercase text-muted-foreground tracking-wider mb-1">Présidentielle 2022 (T2)</div>
+                              <div className="text-[10px] font-black uppercase text-muted-foreground tracking-wider mb-1">Présidentielle 2022 (T2)</div>{" "}
                               <div className="text-sm font-bold text-foreground">{sideA.data.politique.pres2022T2}</div>
-                            </div>
+                            </div>{" "}
                             <div className="bg-card p-4 rounded-2xl border border-border/80">
-                              <div className="text-[10px] font-black uppercase text-muted-foreground tracking-wider mb-1">Élu en place</div>
+                              <div className="text-[10px] font-black uppercase text-muted-foreground tracking-wider mb-1">Élu en place</div>{" "}
                               <div className="text-sm font-bold text-foreground">{sideA.data.politique.elu} {sideA.data.politique.eluDepuis && `(depuis ${sideA.data.politique.eluDepuis})`}</div>
                             </div>
                           </>
                         ) : (
                           <div className="text-center text-muted-foreground italic text-sm py-4">Données non disponibles</div>
                         )}
-                      </div>
+                      </div>{" "}
                       
                       {/* Side B */}
                       <div className="bg-muted border border-border rounded-[2.5rem] p-8 space-y-6 shadow-sm">
                         <div className="text-center font-staatliches uppercase tracking-wider text-xl text-fuchsia-700 dark:text-fuchsia-400 mb-6 flex flex-col items-center gap-2">
-                          <span>{sideB?.name || "Territoire B"}</span>
+                          <span>{sideB?.name || "Territoire B"}</span>{" "}
                           {sideB?.data.isEstimated && (
                             <span className="px-3 py-1 bg-amber-50 dark:bg-amber-500/10 text-amber-600 dark:text-amber-300 text-[9px] uppercase tracking-widest rounded-full border border-amber-200 dark:border-amber-500/25">
                               Données estimées
                             </span>
                           )}
-                        </div>
+                        </div>{" "}
                         {sideB?.data.politique ? (
                           <>
                             <div className="bg-card p-4 rounded-2xl border border-border/80">
-                              <div className="text-[10px] font-black uppercase text-muted-foreground tracking-wider mb-1">Présidentielle 2022 (T1)</div>
+                              <div className="text-[10px] font-black uppercase text-muted-foreground tracking-wider mb-1">Présidentielle 2022 (T1)</div>{" "}
                               <div className="text-sm font-bold text-foreground">{sideB.data.politique.pres2022T1}</div>
-                            </div>
+                            </div>{" "}
                             <div className="bg-card p-4 rounded-2xl border border-border/80">
-                              <div className="text-[10px] font-black uppercase text-muted-foreground tracking-wider mb-1">Présidentielle 2022 (T2)</div>
+                              <div className="text-[10px] font-black uppercase text-muted-foreground tracking-wider mb-1">Présidentielle 2022 (T2)</div>{" "}
                               <div className="text-sm font-bold text-foreground">{sideB.data.politique.pres2022T2}</div>
-                            </div>
+                            </div>{" "}
                             <div className="bg-card p-4 rounded-2xl border border-border/80">
-                              <div className="text-[10px] font-black uppercase text-muted-foreground tracking-wider mb-1">Élu en place</div>
+                              <div className="text-[10px] font-black uppercase text-muted-foreground tracking-wider mb-1">Élu en place</div>{" "}
                               <div className="text-sm font-bold text-foreground">{sideB.data.politique.elu} {sideB.data.politique.eluDepuis && `(depuis ${sideB.data.politique.eluDepuis})`}</div>
                             </div>
                           </>

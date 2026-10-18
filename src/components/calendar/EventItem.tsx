@@ -37,40 +37,40 @@ export default function EventItem({ event }: { event: CalendarEvent }) {
     <div className="relative pl-8 sm:pl-32 py-6 group">
       {/* Date & Time (Left column on md, top inline on sm) */}
       <div className="hidden sm:flex flex-col items-end absolute left-0 top-6 w-24 text-right pr-4">
-        <span className="text-sm font-bold text-deep-blue capitalize">{dateFormatted}</span>
+        <span className="text-sm font-bold text-deep-blue capitalize">{dateFormatted}</span>{" "}
         <span className="text-xs text-muted-foreground">{timeFormatted}</span>
-      </div>
+      </div>{" "}
 
       {/* Timeline Line & Bullet */}
-      <div className="absolute left-0 sm:left-24 top-0 bottom-0 w-px bg-border group-last:bottom-auto group-last:h-full"></div>
-      <div className="absolute left-[-4px] sm:left-[92px] top-7.5 w-2.5 h-2.5 rounded-full bg-deep-blue ring-4 ring-cream"></div>
+      <div className="absolute left-0 sm:left-24 top-0 bottom-0 w-px bg-border group-last:bottom-auto group-last:h-full"></div>{" "}
+      <div className="absolute left-[-4px] sm:left-[92px] top-7.5 w-2.5 h-2.5 rounded-full bg-deep-blue ring-4 ring-cream"></div>{" "}
 
       {/* Content */}
       <div className="bg-card border border-border rounded-xl p-5 shadow-sm hover:shadow-md transition-shadow">
         <div className="sm:hidden flex items-center justify-between mb-2">
-          <span className="text-sm font-bold text-deep-blue capitalize">{dateFormatted} à {timeFormatted}</span>
+          <span className="text-sm font-bold text-deep-blue capitalize">{dateFormatted} à {timeFormatted}</span>{" "}
           <span className={`px-2 py-0.5 text-[10px] font-bold uppercase tracking-wider rounded-md ${badgeColor}`}>
             {event.institution}
           </span>
-        </div>
+        </div>{" "}
         
         <div className="hidden sm:flex justify-between items-start mb-2">
           <h3 className="text-lg font-heading font-bold text-deep-blue leading-tight">
             {event.title}
-          </h3>
+          </h3>{" "}
           <span className={`ml-3 px-2 py-0.5 text-[10px] font-bold uppercase tracking-wider rounded-md whitespace-nowrap ${badgeColor}`}>
             {event.institution}
           </span>
-        </div>
+        </div>{" "}
 
         {/* Mobile Title */}
         <h3 className="sm:hidden text-lg font-heading font-bold text-deep-blue leading-tight mb-2">
           {event.title}
-        </h3>
+        </h3>{" "}
 
         <p className="text-foreground/80 text-sm leading-relaxed">
           {event.description}
-        </p>
+        </p>{" "}
 
         {event.category && (
           <div className="mt-3 inline-block px-3 py-1 bg-gray-100 dark:bg-gray-500/10 text-gray-600 dark:text-slate-200 rounded-full text-xs font-medium">

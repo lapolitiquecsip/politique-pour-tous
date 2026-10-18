@@ -83,17 +83,17 @@ const InstitutionCard = memo(({ inst, index, onClick }: { inst: Institution, ind
       <div 
         className="absolute inset-0 bg-cover bg-center transition-all duration-1000 group-hover:scale-110 group-hover:saturate-[1.5]"
         style={{ backgroundImage: `url(${inst.image.startsWith('/') ? `${process.env.NEXT_PUBLIC_BASE_PATH || ''}${inst.image}` : inst.image})`, opacity: 0.9 }}
-      />
+      />{" "}
       
       {/* Overlay dégradé - PRÉSERVÉ & AMÉLIORÉ */}
-      <div className={`absolute inset-0 bg-gradient-to-t from-slate-950 via-slate-950/40 to-transparent group-hover:from-slate-900 group-hover:via-slate-900/20 transition-colors duration-500`} />
+      <div className={`absolute inset-0 bg-gradient-to-t from-slate-950 via-slate-950/40 to-transparent group-hover:from-slate-900 group-hover:via-slate-900/20 transition-colors duration-500`} />{" "}
 
       {/* Indicateur « cliquable » : pastille en verre dépoli, s'incruste sur toute image */}
       <div className="absolute top-4 right-4 z-20 pointer-events-none">
         <div className="flex h-11 w-11 items-center justify-center rounded-full bg-white/10 backdrop-blur-md ring-1 ring-inset ring-white/30 shadow-[0_4px_20px_rgba(0,0,0,0.25)] text-white transition-all duration-500 group-hover:bg-white/20 group-hover:ring-white/60">
           <MousePointerClick className="h-[18px] w-[18px] drop-shadow-[0_1px_2px_rgba(0,0,0,0.5)]" />
         </div>
-      </div>
+      </div>{" "}
 
       {/* Contenu */}
       <div className="relative z-10 flex flex-col justify-end h-full p-10">
@@ -102,19 +102,19 @@ const InstitutionCard = memo(({ inst, index, onClick }: { inst: Institution, ind
         <div className="flex items-center gap-3 mb-3">
 
           <div className="flex items-center gap-2 px-2.5 py-1 bg-red-600 rounded-full shadow-[0_0_15px_rgba(239,68,68,0.4)] animate-pulse">
-            <div className="h-1.5 w-1.5 rounded-full bg-card" />
+            <div className="h-1.5 w-1.5 rounded-full bg-card" />{" "}
             <p className="text-white font-black text-[9px] uppercase tracking-widest">En Direct</p>
           </div>
-        </div>
+        </div>{" "}
         
         <h3 className="text-3xl md:text-4xl font-staatliches uppercase tracking-tighter text-white mb-4 md:mb-8 group-hover:text-blue-400 transition-colors">
           {inst.name}
-        </h3>
+        </h3>{" "}
         
         <div className="flex items-center gap-3 text-white font-bold text-[10px] uppercase tracking-widest self-start transition-all group-hover:translate-x-2">
           Que se passe-t-il aujourd'hui ? <ChevronRight className="w-4 h-4 text-blue-500" />
         </div>
-      </div>
+      </div>{" "}
       
       {/* Bottom accent bar */}
       <div className="absolute bottom-0 left-0 w-full h-1.5 bg-blue-600 transform scale-x-0 group-hover:scale-x-100 transition-transform origin-left duration-500" />
@@ -255,30 +255,30 @@ export default function InstitutionsGrid() {
       {/* ── MARQUEE DES INSTITUTIONS ── */}
       <div className="relative w-full overflow-hidden">
         {/* Gradients de fondu sur les côtés — desktop uniquement (sur le marquee). */}
-        <div className="pointer-events-none absolute top-0 left-0 z-10 hidden h-full w-16 bg-gradient-to-r from-background to-transparent md:block" />
-        <div className="pointer-events-none absolute top-0 right-0 z-10 hidden h-full w-16 bg-gradient-to-l from-background to-transparent md:block" />
+        <div className="pointer-events-none absolute top-0 left-0 z-10 hidden h-full w-16 bg-gradient-to-r from-background to-transparent md:block" />{" "}
+        <div className="pointer-events-none absolute top-0 right-0 z-10 hidden h-full w-16 bg-gradient-to-l from-background to-transparent md:block" />{" "}
 
         {/* MOBILE : scroll horizontal LIBRE (swipe fluide, l'utilisateur choisit son institution sans
             attendre l'animation). Cartes plus compactes. */}
         <div className="flex snap-x snap-mandatory gap-3 overflow-x-auto px-4 pb-2 md:hidden [scrollbar-width:none] [&::-webkit-scrollbar]:hidden">
           {INSTITUTIONS.map((inst, index) => (
             <div key={inst.id} className="w-[240px] shrink-0 snap-center">
-              <InstitutionCard inst={inst} index={index} onClick={() => setSelectedInst(inst)} />
+              <InstitutionCard inst={inst} index={index} onClick={() => setSelectedInst(inst)} />{" "}
             </div>
           ))}
-        </div>
+        </div>{" "}
 
         {/* DESKTOP : marquee auto-défilant (inchangé). */}
         <div className="hidden md:block">
           <Marquee className="[--gap:1.5rem]" pauseOnHover>
             {INSTITUTIONS.map((inst, index) => (
               <div key={inst.id} className="w-[380px] shrink-0">
-                <InstitutionCard inst={inst} index={index} onClick={() => setSelectedInst(inst)} />
+                <InstitutionCard inst={inst} index={index} onClick={() => setSelectedInst(inst)} />{" "}
               </div>
             ))}
           </Marquee>
         </div>
-      </div>
+      </div>{" "}
 
       {/* ── MODALE DE DÉTAIL (REDESIGN PREMIUM) ── */}
       <AnimatePresence mode="wait">
@@ -291,7 +291,7 @@ export default function InstitutionsGrid() {
               exit={{ opacity: 0 }}
               onClick={() => setSelectedInst(null)}
               className="fixed inset-0"
-            />
+            />{" "}
 
             {/* Contenu Modale */}
             <motion.div
@@ -321,7 +321,7 @@ export default function InstitutionsGrid() {
                 >
                   <ChevronLeft className="w-5 h-5 md:w-6 md:h-6 group-hover:-translate-x-1 transition-transform" />
                 </button>
-              </div>
+              </div>{" "}
 
               <div className="absolute inset-y-0 right-2 md:-right-20 flex items-center z-50 pointer-events-none">
                 <button
@@ -331,7 +331,7 @@ export default function InstitutionsGrid() {
                 >
                   <ChevronRight className="w-5 h-5 md:w-6 md:h-6 group-hover:translate-x-1 transition-transform" />
                 </button>
-              </div>
+              </div>{" "}
 
               <div className="bg-background rounded-[2.5rem] shadow-2xl border border-border overflow-hidden flex flex-col md:flex-row h-full max-h-[85vh] relative">
 
@@ -341,28 +341,28 @@ export default function InstitutionsGrid() {
                 className="absolute top-6 right-6 z-50 p-2 rounded-full bg-white/20 text-white md:text-foreground md:bg-slate-100 hover:bg-amber-500 hover:text-white transition-all backdrop-blur-md border border-black/5 md:border-border group"
               >
                 <X className="w-6 h-6 group-hover:rotate-90 transition-transform" />
-              </button>
+              </button>{" "}
 
               {/* Partie Gauche (Image & Titre Immersif) */}
               <div className="w-full md:w-2/5 relative min-h-[300px] md:min-h-full overflow-hidden">
                 <div 
                   className="absolute inset-0 bg-cover bg-center"
                   style={{ backgroundImage: `url(${selectedInst.image.startsWith('/') ? `${process.env.NEXT_PUBLIC_BASE_PATH || ''}${selectedInst.image}` : selectedInst.image})` }}
-                />
+                />{" "}
                 {/* Image Fade - PRÉSERVÉ */}
-                <div className="absolute inset-0 bg-gradient-to-t from-slate-950 via-slate-900/40 to-transparent md:bg-gradient-to-r md:from-transparent md:to-background/10" />
-                <div className="absolute inset-0 bg-slate-900/20" />
+                <div className="absolute inset-0 bg-gradient-to-t from-slate-950 via-slate-900/40 to-transparent md:bg-gradient-to-r md:from-transparent md:to-background/10" />{" "}
+                <div className="absolute inset-0 bg-slate-900/20" />{" "}
 
                 <div className="absolute bottom-8 left-8 right-8">
                    <div className="bg-amber-500 w-12 h-12 rounded-xl flex items-center justify-center mb-4 shadow-xl">
                     <Landmark className="w-6 h-6 text-white" />
-                  </div>
+                  </div>{" "}
                   <h3 className="text-4xl md:text-5xl font-staatliches uppercase tracking-tighter text-white leading-none">
                     {selectedInst.name}
-                  </h3>
+                  </h3>{" "}
                   <div className="h-1 w-20 bg-amber-500 mt-4 rounded-full" />
                 </div>
-              </div>
+              </div>{" "}
 
               {/* Partie Droite (Contenu Editorial) */}
               <div className="flex-1 p-8 md:p-12 flex flex-col justify-start bg-background overflow-y-auto custom-scrollbar-blue">
@@ -370,17 +370,17 @@ export default function InstitutionsGrid() {
                   <div className="flex items-center gap-2 mb-6">
                     <span className="px-4 py-1.5 rounded-full text-[10px] font-black uppercase tracking-[0.2em] bg-blue-100 dark:bg-blue-500/10 text-blue-700 dark:text-blue-300 border border-blue-200 dark:border-blue-500/25 inline-block">
                       Institution Officielle
-                    </span>
-                    <div className="h-1.5 w-1.5 rounded-full bg-red-500 animate-pulse" />
+                    </span>{" "}
+                    <div className="h-1.5 w-1.5 rounded-full bg-red-500 animate-pulse" />{" "}
                     <span className="text-red-500 font-bold text-[10px] uppercase tracking-widest">En Direct</span>
-                  </div>
+                  </div>{" "}
                   
                   {(dailySummary || selectedInst.summary) && (
                     <p className="text-muted-foreground dark:text-slate-300 text-sm md:text-base leading-relaxed font-medium italic text-pretty opacity-80">
                       &ldquo;{dailySummary || selectedInst.summary}&rdquo;
                     </p>
                   )}
-                </div>
+                </div>{" "}
 
                 {/* Section "En Direct" - Style Dashboard Premium */}
                 <div className="space-y-6">
@@ -388,10 +388,10 @@ export default function InstitutionsGrid() {
                     <div className="flex items-center gap-3">
                       <div className="w-8 h-8 bg-blue-100 dark:bg-blue-900/30 text-blue-700 dark:text-blue-400 rounded-lg flex items-center justify-center">
                         <CalendarDays size={18} />
-                      </div>
+                      </div>{" "}
                       <p className="text-foreground dark:text-white text-sm font-black uppercase tracking-widest">En Direct aujourd'hui</p>
                     </div>
-                  </div>
+                  </div>{" "}
 
                   <div className="grid grid-cols-1 gap-4">
                     {loading ? (
@@ -414,20 +414,20 @@ export default function InstitutionsGrid() {
                             className="flex items-center gap-5 p-4 rounded-2xl bg-card border border-border/50 hover:border-blue-200 dark:hover:border-blue-500/50 hover:shadow-md transition-all group text-left w-full"
                           >
                             <div className="flex-shrink-0 w-12 h-12 rounded-xl bg-blue-50 dark:bg-blue-900/20 flex flex-col items-center justify-center text-blue-700 dark:text-blue-400 group-hover:bg-blue-600 group-hover:text-white transition-colors">
-                               <span className="text-[10px] font-black leading-none mb-1">{displayTime}</span>
+                               <span className="text-[10px] font-black leading-none mb-1">{displayTime}</span>{" "}
                                <Landmark size={14} />
-                            </div>
+                            </div>{" "}
                             <div className="flex-1">
                               <span className="text-foreground dark:text-white font-bold text-sm leading-tight block mb-1">
                                 {displayTitle}
-                              </span>
+                              </span>{" "}
                               {displayDescription && (
                                 <span className="text-muted-foreground dark:text-slate-400 text-[11px] font-medium leading-relaxed line-clamp-2">
                                   {displayDescription}
                                 </span>
                               )}
-                            </div>
-                            <ChevronRight size={18} className="text-slate-300 dark:text-slate-600 group-hover:text-blue-500 dark:group-hover:text-blue-400 group-hover:translate-x-1 transition-all" />
+                            </div>{" "}
+                            <ChevronRight size={18} className="text-slate-300 dark:text-slate-600 group-hover:text-blue-500 dark:group-hover:text-blue-400 group-hover:translate-x-1 transition-all" />{" "}
                           </motion.button>
                         );
                       })
@@ -441,18 +441,18 @@ export default function InstitutionsGrid() {
                         >
                           <div className="flex-shrink-0 w-12 h-12 rounded-xl bg-slate-200 dark:bg-slate-800 flex items-center justify-center text-muted-foreground dark:text-slate-400">
                              <Landmark size={20} />
-                          </div>
+                          </div>{" "}
                           <div className="flex-1">
                             <p className="text-foreground dark:text-white font-bold text-sm">
                               {selectedInst.id === 'gouvernement' ? "Aucune activité publique prévue" : "Aucune séance prévue aujourd'hui"}
-                            </p>
+                            </p>{" "}
                             <p className="text-muted-foreground dark:text-slate-400 text-xs mt-0.5">
                               {selectedInst.id === 'gouvernement' 
                                 ? "L'agenda de l'exécutif ne mentionne pas de rendez-vous public pour ce jour." 
                                 : "Le calendrier de l'institution ne prévoit pas d'activité publique ce jour."}
                             </p>
                           </div>
-                        </motion.div>
+                        </motion.div>{" "}
 
                         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                           {/* Gros bouton vers le guide de l'institution */}
@@ -462,18 +462,18 @@ export default function InstitutionsGrid() {
                               whileTap={{ scale: 0.98 }}
                               className="bg-blue-600 p-8 rounded-[2rem] text-white shadow-xl shadow-blue-500/20 group cursor-pointer relative overflow-hidden h-full"
                             >
-                              <Landmark className="absolute -bottom-6 -right-6 w-32 h-32 text-white/10 rotate-12 group-hover:rotate-0 transition-transform duration-700" />
+                              <Landmark className="absolute -bottom-6 -right-6 w-32 h-32 text-white/10 rotate-12 group-hover:rotate-0 transition-transform duration-700" />{" "}
                               <div className="relative z-10 space-y-4">
-                                 <p className="text-blue-200 font-bold uppercase tracking-[0.3em] text-[10px]">Guide Pédagogique</p>
+                                 <p className="text-blue-200 font-bold uppercase tracking-[0.3em] text-[10px]">Guide Pédagogique</p>{" "}
                                  <h4 className="text-2xl font-bold leading-tight">
                                    Comprendre {selectedInst.shortName}
-                                 </h4>
+                                 </h4>{" "}
                                  <div className="flex items-center gap-2 text-xs font-black uppercase tracking-widest pt-2">
                                    Découvrir <ChevronRight size={16} className="group-hover:translate-x-2 transition-transform" />
                                  </div>
                               </div>
                             </motion.div>
-                          </Link>
+                          </Link>{" "}
 
                           {/* Bouton vers le calendrier (alternative quand vide) */}
                           <Link href="/calendrier">
@@ -482,12 +482,12 @@ export default function InstitutionsGrid() {
                               whileTap={{ scale: 0.98 }}
                               className="bg-slate-900 p-8 rounded-[2rem] text-white shadow-xl shadow-slate-900/20 group cursor-pointer relative overflow-hidden h-full"
                             >
-                              <CalendarDays className="absolute -bottom-6 -right-6 w-32 h-32 text-white/10 rotate-12 group-hover:rotate-0 transition-transform duration-700" />
+                              <CalendarDays className="absolute -bottom-6 -right-6 w-32 h-32 text-white/10 rotate-12 group-hover:rotate-0 transition-transform duration-700" />{" "}
                               <div className="relative z-10 space-y-4">
-                                 <p className="text-slate-400 font-bold uppercase tracking-[0.3em] text-[10px]">Agenda Complet</p>
+                                 <p className="text-slate-400 font-bold uppercase tracking-[0.3em] text-[10px]">Agenda Complet</p>{" "}
                                  <h4 className="text-2xl font-bold leading-tight">
                                    Prochaines <br /> Séances
-                                 </h4>
+                                 </h4>{" "}
                                  <div className="flex items-center gap-2 text-xs font-black uppercase tracking-widest pt-2">
                                    Calendrier <ChevronRight size={16} className="group-hover:translate-x-2 transition-transform" />
                                  </div>
@@ -498,7 +498,7 @@ export default function InstitutionsGrid() {
                       </div>
                     )}
                   </div>
-                </div>
+                </div>{" "}
 
                 {/* Footer CTA - Conditionally rendered */}
                 {selectedInst.directoryUrl && (
@@ -506,11 +506,11 @@ export default function InstitutionsGrid() {
                     <div className="flex -space-x-2">
                         {[1,2,3].map(i => (
                           <div key={i} className="w-8 h-8 rounded-full border-2 border-background bg-slate-200 dark:bg-slate-700" />
-                        ))}
+                        ))}{" "}
                         <div className="w-8 h-8 rounded-full border-2 border-background bg-blue-100 dark:bg-blue-900 flex items-center justify-center text-[10px] font-bold text-blue-700 dark:text-blue-300">
                           +{selectedInst.memberCount}
                         </div>
-                    </div>
+                    </div>{" "}
                     <Link 
                       href={selectedInst.directoryUrl}
                       className="text-xs font-black uppercase tracking-widest text-slate-400 dark:text-slate-400 hover:text-blue-600 dark:hover:text-blue-400 transition-colors flex items-center gap-2"
@@ -520,15 +520,15 @@ export default function InstitutionsGrid() {
                   </div>
                 )}
                 </div>
-              </div>
+              </div>{" "}
 
               {/* Pager mobile : montre l'institution courante (1/3) et rend le swipe évident. */}
               <div className="pointer-events-none absolute bottom-3 left-1/2 z-50 flex -translate-x-1/2 items-center gap-1.5 rounded-full bg-slate-900/70 px-3 py-1.5 backdrop-blur-md md:hidden">
                 {INSTITUTIONS.map(i => (
                   <span key={i.id} className={`h-1.5 rounded-full transition-all ${i.id === selectedInst.id ? "w-5 bg-card" : "w-1.5 bg-white/40"}`} />
                 ))}
-              </div>
-            </motion.div>
+              </div>{" "}
+            </motion.div>{" "}
 
             {/* --- DETAIL OVERLAY (Click on event) --- */}
             <AnimatePresence>
@@ -552,41 +552,41 @@ export default function InstitutionsGrid() {
                         <div className="flex items-center gap-3">
                           <div className="w-10 h-10 bg-blue-100 dark:bg-blue-900/30 text-blue-700 dark:text-blue-400 rounded-xl flex items-center justify-center">
                             <Clock size={20} />
-                          </div>
+                          </div>{" "}
                           <div>
-                            <p className="text-[10px] font-black uppercase tracking-widest text-muted-foreground">Horaire prévu</p>
+                            <p className="text-[10px] font-black uppercase tracking-widest text-muted-foreground">Horaire prévu</p>{" "}
                             <p className="text-foreground dark:text-white font-bold">
                               {extractTime(selectedEvent.title) || selectedEvent.time || 'Non spécifié'}
                             </p>
                           </div>
-                        </div>
+                        </div>{" "}
                         <button 
                           onClick={() => setSelectedEvent(null)}
                           className="w-10 h-10 rounded-full bg-slate-100 dark:bg-slate-800 flex items-center justify-center text-muted-foreground dark:text-slate-400 hover:bg-rose-500 hover:text-white transition-all"
                         >
                           <X size={20} />
                         </button>
-                      </div>
+                      </div>{" "}
 
                       <h4 className="text-2xl md:text-3xl font-bold text-foreground dark:text-white mb-6 leading-tight">
                         {cleanTitle(selectedEvent.title)}
-                      </h4>
+                      </h4>{" "}
 
-                      <div className="h-px bg-slate-100 dark:bg-slate-800 mb-8" />
+                      <div className="h-px bg-slate-100 dark:bg-slate-800 mb-8" />{" "}
 
                       <div className="space-y-4 max-h-[40vh] overflow-y-auto pr-4 custom-scrollbar-blue">
                         {selectedEvent.short_summary ? (
                           <div className="mb-6">
                             <p className="text-foreground dark:text-white text-xl font-semibold leading-relaxed italic">
                               &ldquo;{selectedEvent.short_summary}&rdquo;
-                            </p>
+                            </p>{" "}
                             
                             {/* Optionnel: Bouton pour voir le texte brut s'il est différent/plus long */}
                             <details className="mt-8 group">
                               <summary className="text-[10px] font-black uppercase tracking-widest text-slate-400 dark:text-slate-400 cursor-pointer hover:text-blue-500 transition-colors list-none flex items-center gap-2">
-                                <ChevronRight size={12} className="group-open:rotate-90 transition-transform" />
+                                <ChevronRight size={12} className="group-open:rotate-90 transition-transform" />{" "}
                                 Voir le texte original
-                              </summary>
+                              </summary>{" "}
                               <div className="mt-4 p-6 rounded-2xl bg-muted dark:bg-slate-800/50 border border-border dark:border-slate-800 text-muted-foreground dark:text-slate-300 text-sm leading-relaxed whitespace-pre-wrap">
                                 {cleanDescription(selectedEvent.description) || "Aucune information supplémentaire."}
                               </div>
@@ -594,13 +594,13 @@ export default function InstitutionsGrid() {
                           </div>
                         ) : (
                           <>
-                            <p className="text-[10px] font-black uppercase tracking-[0.2em] text-slate-400 dark:text-slate-400 mb-2">Détails de l'événement</p>
+                            <p className="text-[10px] font-black uppercase tracking-[0.2em] text-slate-400 dark:text-slate-400 mb-2">Détails de l'événement</p>{" "}
                             <div className="text-muted-foreground dark:text-slate-300 text-base leading-relaxed whitespace-pre-wrap">
                               {cleanDescription(selectedEvent.description) || "Aucune description détaillée disponible."}
                             </div>
                           </>
                         )}
-                      </div>
+                      </div>{" "}
 
                       <div className="mt-10 pt-8 border-t border-border dark:border-slate-800 flex items-center justify-between gap-4">
                         {/* Lien propre vers la page officielle (quand ce n'est pas l'agenda générique). */}
@@ -613,7 +613,7 @@ export default function InstitutionsGrid() {
                           >
                             Page officielle ↗
                           </a>
-                        ) : <span />}
+                        ) : <span />}{" "}
                         <button
                           onClick={() => setSelectedEvent(null)}
                           className="px-8 py-4 bg-slate-900 dark:bg-white text-white dark:text-slate-900 rounded-2xl font-bold uppercase tracking-widest text-xs hover:bg-blue-600 dark:hover:bg-blue-500 transition-all shadow-xl shadow-slate-900/20"

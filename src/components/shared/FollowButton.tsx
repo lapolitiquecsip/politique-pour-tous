@@ -61,7 +61,7 @@ export default function FollowButton({
           : "border border-slate-300 dark:border-slate-700 text-slate-700 dark:text-slate-200 hover:border-sky-400 hover:text-sky-600"
       }`}
     >
-      {loading || checking ? <Loader2 size={14} className="animate-spin" /> : following ? <BellRing size={14} /> : <Bell size={14} />}
+      {loading || checking ? <Loader2 size={14} className="animate-spin" /> : following ? <BellRing size={14} /> : <Bell size={14} />}{" "}
       {following ? "Suivi·e — notifications activées" : `Suivre ${label}`}
     </button>
   );

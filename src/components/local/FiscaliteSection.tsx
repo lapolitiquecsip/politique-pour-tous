@@ -47,27 +47,27 @@ export default function FiscaliteSection({ fiscalite }: { fiscalite: CommuneFisc
   return (
     <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.45 }} className="space-y-4">
       <div className="flex items-center gap-2">
-        <Coins size={16} className="text-foreground" />
+        <Coins size={16} className="text-foreground" />{" "}
         <h4 className="text-sm font-black uppercase tracking-widest text-foreground">
           Fiscalité locale {fiscalite.year}
         </h4>
-      </div>
+      </div>{" "}
 
       <div className="space-y-3">
         {rows.map((r, i) => (
           <div key={i} className="p-4 rounded-3xl bg-card border border-border shadow-sm" title={r.hint}>
             <div className="flex items-baseline justify-between gap-3">
-              <p className="text-[10px] font-black uppercase tracking-widest text-muted-foreground leading-tight">{r.label}</p>
+              <p className="text-[10px] font-black uppercase tracking-widest text-muted-foreground leading-tight">{r.label}</p>{" "}
               <p className="text-2xl font-black text-amber-700 dark:text-amber-400 whitespace-nowrap">{fmtTaux(r.taux)}</p>
-            </div>
+            </div>{" "}
             {fmtEuro(r.produit) && (
               <p className="mt-1 text-[10px] font-bold text-muted-foreground">
                 Rapporte {fmtEuro(r.produit)} à la commune
               </p>
-            )}
+            )}{" "}
           </div>
         ))}
-      </div>
+      </div>{" "}
 
       <p className="text-[10px] text-slate-400/80 italic">
         Taux votés — <strong>part communale uniquement</strong>. Le montant payé inclut aussi, selon les cas, la part

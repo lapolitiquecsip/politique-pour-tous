@@ -34,7 +34,7 @@ export default function PersonTabs({ fullName, currentHref }: { fullName: string
       <div className="mx-auto flex max-w-6xl items-center gap-2 overflow-x-auto px-4 py-2.5 [scrollbar-width:none] [&::-webkit-scrollbar]:hidden">
         <span className="hidden shrink-0 items-center gap-1.5 pr-1 text-[10px] font-black uppercase tracking-widest text-slate-400 sm:flex">
           <Layers3 size={13} /> Ses fonctions
-        </span>
+        </span>{" "}
         {roles.map((r, i) => {
           const Icon = ICON[r.type] || Layers;
           const isActive = base(r.href) === cur;
@@ -45,8 +45,8 @@ export default function PersonTabs({ fullName, currentHref }: { fullName: string
           }`;
           const inner = <><Icon size={14} className={isActive ? "" : "text-slate-400 group-hover:text-current"} /> {r.kind}</>;
           return isActive
-            ? <span key={i} className={cls} aria-current="page">{inner}</span>
-            : <Link key={i} href={r.href} className={cls} title={r.label}>{inner}</Link>;
+            ? <span key={i} className={cls} aria-current="page">{inner}{" "}</span>
+            : <Link key={i} href={r.href} className={cls} title={r.label}>{inner}{" "}</Link>;
         })}
       </div>
     </div>

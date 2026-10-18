@@ -7,14 +7,14 @@ export default function MemberFinderIntro({ role, roleShort, accent = "text-red-
     <div className="mx-auto max-w-6xl px-4 pt-10 text-center">
       <h2 className="text-3xl font-staatliches uppercase tracking-tight text-foreground dark:text-white md:text-5xl">
         Trouvez votre {roleShort} <span className={accent}>& ses votes</span>
-      </h2>
+      </h2>{" "}
       <p className="mx-auto mt-3 max-w-2xl text-[15px] leading-relaxed text-muted-foreground dark:text-slate-400">
         Tapez son nom ou repérez-le sur la <strong>carte interactive</strong>, puis cliquez sur son profil pour accéder à
         <strong> toute son activité</strong> : ses votes réels, sa présence, ses initiatives et sa fiche complète.
-      </p>
+      </p>{" "}
       <div className="mt-4 flex flex-wrap items-center justify-center gap-x-5 gap-y-2 text-[12px] font-bold text-muted-foreground dark:text-slate-400">
-        <span className="inline-flex items-center gap-1.5"><Search size={14} className={accent} /> Recherche par nom / parti</span>
-        <span className="inline-flex items-center gap-1.5"><MapPin size={14} className={accent} /> Carte interactive</span>
+        <span className="inline-flex items-center gap-1.5"><Search size={14} className={accent} /> Recherche par nom / parti</span>{" "}
+        <span className="inline-flex items-center gap-1.5"><MapPin size={14} className={accent} /> Carte interactive</span>{" "}
         <span className="inline-flex items-center gap-1.5"><Bell size={14} className="text-amber-700 dark:text-amber-400" /> Notifications de ses votes <em className="not-italic text-amber-700 dark:text-amber-400">(Premium)</em></span>
       </div>
     </div>

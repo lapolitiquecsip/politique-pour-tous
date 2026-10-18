@@ -69,9 +69,9 @@ export const AvatarGroup = ({ members, size = 24, limit = 3 }: AvatarGroupProps)
                 }}
               />
             )}
-          </span>
+          </span>{" "}
         </span>
-      ))}
+      ))}{" "}
       
       {members.length > limit - 1 && members.length === limit && (
         <span
@@ -89,9 +89,9 @@ export const AvatarGroup = ({ members, size = 24, limit = 3 }: AvatarGroupProps)
               alt={members[members.length - 1].username}
               className="w-full h-full object-contain p-0.5"
             />
-          </span>
+          </span>{" "}
         </span>
-      )}
+      )}{" "}
 
       {members.length > limit && (
         <span

@@ -40,7 +40,7 @@ export default async function MinistryPage({ params }: { params: Promise<{ slug:
   if (!ministryData) {
     return (
       <div className="min-h-screen bg-muted flex flex-col items-center justify-center p-4">
-        <h1 className="text-4xl font-staatliches uppercase mb-4">Ministère introuvable</h1>
+        <h1 className="text-4xl font-staatliches uppercase mb-4">Ministère introuvable</h1>{" "}
         <Link href="/executif" className="text-blue-700 dark:text-blue-400 font-bold hover:underline flex items-center gap-2">
           <ArrowLeft size={16} /> Retour à l'Exécutif
         </Link>
@@ -85,25 +85,25 @@ export default async function MinistryPage({ params }: { params: Promise<{ slug:
       <section className="bg-slate-900 text-white pt-32 pb-20 px-4 relative overflow-hidden">
         <div className="absolute top-0 right-0 w-full h-full opacity-5 pointer-events-none">
           <Building2 className="w-[800px] h-[800px] absolute -right-40 -bottom-40 rotate-12" />
-        </div>
+        </div>{" "}
         
         <div className="container mx-auto max-w-5xl relative z-10">
           <Link href="/executif" className="inline-flex items-center gap-2 text-slate-400 hover:text-white transition-colors text-xs font-black uppercase tracking-widest mb-8">
             <ArrowLeft size={14} /> Retour au gouvernement
-          </Link>
+          </Link>{" "}
           
           <div className="flex flex-col md:flex-row gap-8 items-start md:items-end justify-between">
             <div>
               <p className="text-amber-400 font-black text-sm uppercase tracking-widest mb-2 flex items-center gap-2">
                 <Building2 size={16} /> Fiche Ministère
-              </p>
+              </p>{" "}
               <h1 className="text-4xl md:text-5xl font-staatliches uppercase tracking-wide leading-tight">
                 {cleanMinistryName(ministryData.ministryName)}
               </h1>
             </div>
           </div>
         </div>
-      </section>
+      </section>{" "}
 
       {/* MAIN CONTENT */}
       <div className="container mx-auto max-w-5xl px-4 -mt-8 relative z-20 space-y-8">
@@ -121,20 +121,20 @@ export default async function MinistryPage({ params }: { params: Promise<{ slug:
                 alt={ministryData.ministerName}
                 className="w-full h-full object-cover object-top"
               />
-            </div>
+            </div>{" "}
             <div className="flex-1 text-center sm:text-left">
-              <p className="text-[10px] font-black text-amber-700 dark:text-amber-400 uppercase tracking-widest mb-1">Ministre en fonction</p>
-              <h2 className="text-2xl font-bold text-foreground group-hover:text-amber-600 transition-colors">{ministryData.ministerName}</h2>
-              {profile?.summary && <p className="mt-2 text-sm leading-6 text-muted-foreground line-clamp-2">{profile.summary}</p>}
+              <p className="text-[10px] font-black text-amber-700 dark:text-amber-400 uppercase tracking-widest mb-1">Ministre en fonction</p>{" "}
+              <h2 className="text-2xl font-bold text-foreground group-hover:text-amber-600 transition-colors">{ministryData.ministerName}</h2>{" "}
+              {profile?.summary && <p className="mt-2 text-sm leading-6 text-muted-foreground line-clamp-2">{profile.summary}</p>}{" "}
               <span className="mt-3 inline-flex items-center gap-2 rounded-xl bg-amber-500/10 px-4 py-2 text-[11px] font-black uppercase tracking-widest text-amber-700 dark:text-amber-400 group-hover:bg-amber-500 group-hover:text-white transition-colors">
                 Voir la fiche détaillée du ministre <ChevronRight size={14} />
               </span>
             </div>
           </div>
-        </Link>
+        </Link>{" "}
 
         {/* FIL D'ACTUALITÉ DE L'INSTITUTION (#4) — masqué tant qu'il n'y a pas d'actu */}
-        <EntityNewsFeed entityType="ministry" entityId={slug} />
+        <EntityNewsFeed entityType="ministry" entityId={slug} />{" "}
 
         {/* BUDGET OFFICIEL DU MINISTÈRE */}
         {ministryBudget && (
@@ -142,16 +142,16 @@ export default async function MinistryPage({ params }: { params: Promise<{ slug:
             <div className="flex items-center gap-3 border-b border-border pb-6 mb-6">
               <div className="w-10 h-10 bg-amber-50 dark:bg-amber-500/10 text-amber-600 dark:text-amber-300 rounded-xl flex items-center justify-center">
                 <CircleDollarSign size={20} />
-              </div>
+              </div>{" "}
               <h3 className="text-2xl font-staatliches uppercase tracking-wider text-foreground">Budget du ministère</h3>
-            </div>
+            </div>{" "}
             <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
               <div>
                 <p className="text-4xl font-black text-foreground">
                   {(ministryBudget.amount / 1e9).toLocaleString('fr-FR', { maximumFractionDigits: 2 })} Md€
-                </p>
+                </p>{" "}
                 <p className="mt-1 text-sm text-muted-foreground">Mission budgétaire « {ministryBudget.name} » — crédits {new Date().getFullYear()}</p>
-              </div>
+              </div>{" "}
               <a
                 href={(ministryBudget.source_urls && ministryBudget.source_urls[0]) || 'https://www.data.economie.gouv.fr'}
                 target="_blank" rel="noopener noreferrer"
@@ -159,47 +159,47 @@ export default async function MinistryPage({ params }: { params: Promise<{ slug:
               >
                 Source officielle (PLF) <ExternalLink size={14} />
               </a>
-            </div>
+            </div>{" "}
             {programmes.length > 0 && (() => {
               const total = programmes.reduce((s: number, p: any) => s + Number(p.amount_2026 || 0), 0) || 1;
               return (
                 <div className="mt-8 border-t border-border pt-6">
-                  <p className="text-[10px] font-black uppercase tracking-widest text-slate-400 mb-4">Où va ce budget — répartition par programme</p>
+                  <p className="text-[10px] font-black uppercase tracking-widest text-slate-400 mb-4">Où va ce budget — répartition par programme</p>{" "}
                   <div className="space-y-3">
                     {programmes.slice(0, 8).map((p: any) => {
                       const pct = (Number(p.amount_2026) / total) * 100;
                       return (
                         <div key={p.programme_num}>
                           <div className="flex justify-between items-baseline gap-3 text-sm">
-                            <span className="font-medium text-slate-700 dark:text-slate-200 leading-tight">{p.programme_name}</span>
+                            <span className="font-medium text-slate-700 dark:text-slate-200 leading-tight">{p.programme_name}</span>{" "}
                             <span className="font-black text-foreground whitespace-nowrap">{(Number(p.amount_2026) / 1e9).toLocaleString('fr-FR', { maximumFractionDigits: 2 })} Md€</span>
-                          </div>
+                          </div>{" "}
                           <div className="mt-1 h-1.5 w-full rounded-full bg-slate-100 dark:bg-slate-500/10 overflow-hidden">
                             <div className="h-full rounded-full bg-amber-500" style={{ width: `${Math.max(pct, 1)}%` }} />
-                          </div>
+                          </div>{" "}
                         </div>
                       );
                     })}
                   </div>
                 </div>
               );
-            })()}
+            })()}{" "}
             <p className="mt-4 text-[11px] italic text-muted-foreground">
               Montant de la mission budgétaire principale rattachée à ce ministère (budget de l'État, hors Sécurité sociale). Un ministère peut recouvrir plusieurs missions. Source : PLF 2026 (data.economie.gouv).
             </p>
           </div>
-        )}
+        )}{" "}
 
         {/* NEWS FEED */}
         <div className="bg-card rounded-[2.5rem] p-8 md:p-12 border border-border shadow-sm mb-20">
            <div className="flex items-center gap-3 border-b border-border pb-6 mb-6">
              <div className="w-10 h-10 bg-amber-50 dark:bg-amber-500/10 text-amber-600 dark:text-amber-300 rounded-xl flex items-center justify-center">
                <BookOpen size={20} />
-             </div>
+             </div>{" "}
              <h3 className="text-2xl font-staatliches uppercase tracking-wider text-foreground">
                Actualité du Ministère
              </h3>
-           </div>
+           </div>{" "}
            
            {filteredNews.length > 0 ? (
              <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
@@ -211,7 +211,7 @@ export default async function MinistryPage({ params }: { params: Promise<{ slug:
              <div className="text-center py-12 bg-muted rounded-2xl border border-dashed border-border">
                <p className="text-muted-foreground font-medium italic">Aucune actualité récente spécifique à ce ministère aujourd'hui.</p>
              </div>
-           )}
+           )}{" "}
            
            <div className="mt-8 text-center">
              <Link href="/" className="inline-flex items-center gap-2 text-xs font-black uppercase tracking-widest text-amber-700 dark:text-amber-400 hover:text-amber-700 hover:gap-3 transition-all">

@@ -51,22 +51,22 @@ export default function PwaProvider() {
       <div className="flex items-start gap-3">
         <div className="flex h-11 w-11 shrink-0 items-center justify-center rounded-xl bg-gradient-to-br from-[#1a3566] to-[#0b1c3b]">
           <Download size={20} className="text-[#FFCC00]" />
-        </div>
+        </div>{" "}
         <div className="min-w-0 flex-1">
-          <p className="text-sm font-black text-foreground dark:text-white">Installer l'application</p>
+          <p className="text-sm font-black text-foreground dark:text-white">Installer l'application</p>{" "}
           {iosHint ? (
             <p className="mt-0.5 text-xs leading-snug text-muted-foreground">
               Appuyez sur <Share size={12} className="inline -mt-0.5" /> puis « Sur l'écran d'accueil » pour installer l'app.
             </p>
           ) : (
-            <p className="mt-0.5 text-xs leading-snug text-muted-foreground">Ajoutez « La Politique C Simple » à votre écran d'accueil — accès rapide, plein écran, hors-ligne.</p>
-          )}
+            <p className="mt-0.5 text-xs leading-snug text-muted-foreground">Ajoutez « La politique, c'est simple » à votre écran d'accueil — accès rapide, plein écran, hors-ligne.</p>
+          )}{" "}
           {!iosHint && (
             <button onClick={install} className="mt-2 inline-flex items-center gap-1.5 rounded-full bg-[#1a3566] px-4 py-2 text-xs font-black uppercase tracking-wide text-white transition hover:bg-[#24408e]">
               <Download size={13} /> Installer
             </button>
           )}
-        </div>
+        </div>{" "}
         <button onClick={dismiss} aria-label="Fermer" className="shrink-0 rounded-full p-1 text-muted-foreground transition hover:bg-slate-100 dark:hover:bg-slate-800">
           <X size={16} />
         </button>

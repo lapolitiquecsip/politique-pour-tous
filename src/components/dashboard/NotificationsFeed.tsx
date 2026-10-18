@@ -80,16 +80,16 @@ function CarteVote({ n }: { n: Notif }) {
   const contenu = (
     <>
       {/* Halo discret de la position, qui teinte le haut de la carte. */}
-      <span aria-hidden className={`pointer-events-none absolute inset-0 bg-gradient-to-br ${p.teinte} via-transparent to-transparent`} />
+      <span aria-hidden className={`pointer-events-none absolute inset-0 bg-gradient-to-br ${p.teinte} via-transparent to-transparent`} />{" "}
       <div className="relative flex items-center justify-between gap-2">
         <span className="inline-flex min-w-0 items-center gap-1.5 rounded-full bg-white/10 px-2.5 py-1 text-[9px] font-black uppercase tracking-widest text-white/75">
-          <Landmark size={10} className="shrink-0 text-amber-300" />
+          <Landmark size={10} className="shrink-0 text-amber-300" />{" "}
           <span className="truncate">{elu?.chambre ?? "Vote"}</span>
-        </span>
+        </span>{" "}
         {!n.read
           ? <span className="h-2 w-2 shrink-0 rounded-full bg-amber-400 shadow-[0_0_10px_rgb(var(--lueur-offre)/0.9)]" />
           : <Check size={13} className="shrink-0 text-emerald-400/70" />}
-      </div>
+      </div>{" "}
 
       <div className="relative mt-3.5 flex items-center gap-3.5">
         <div className="relative shrink-0">
@@ -97,30 +97,30 @@ function CarteVote({ n }: { n: Notif }) {
             <Portrait photos={elu.photos} nom={elu.nom} className={`h-16 w-16 rounded-2xl ring-2 ring-offset-2 ring-offset-slate-900 ${p.anneau}`} />
           ) : (
             <span className={`block h-16 w-16 rounded-2xl bg-white/10 ring-2 ring-offset-2 ring-offset-slate-900 ${p.anneau}`} />
-          )}
+          )}{" "}
           <span className="absolute -bottom-2 -right-2 rounded-lg bg-slate-900 p-0.5">
             <BallotBox vote={n.position || "ABSTENTION"} size={22} />
           </span>
-        </div>
+        </div>{" "}
         <div className="min-w-0">
-          <p className="truncate text-[15px] font-black leading-tight text-white">{elu?.nom ?? n.detail}</p>
+          <p className="truncate text-[15px] font-black leading-tight text-white">{elu?.nom ?? n.detail}</p>{" "}
           {elu?.parti && (
             <p className="mt-0.5 flex items-center gap-1.5 truncate text-[11px] text-white/50">
-              {elu.couleur && <span className="h-2 w-2 shrink-0 rounded-full" style={{ backgroundColor: elu.couleur }} />}
+              {elu.couleur && <span className="h-2 w-2 shrink-0 rounded-full" style={{ backgroundColor: elu.couleur }} />}{" "}
               <span className="truncate">{elu.parti}</span>
             </p>
-          )}
+          )}{" "}
           <span className={`mt-1.5 inline-flex rounded-md px-2 py-0.5 text-[10px] font-black uppercase tracking-widest ring-1 ring-inset ${p.pastille}`}>
             {p.libelle}
           </span>
         </div>
-      </div>
+      </div>{" "}
 
-      <p className="relative mt-3.5 text-[13px] font-bold leading-snug text-white line-clamp-2">{texte}</p>
-      {resume && <p className="relative mt-1 text-[12px] leading-snug text-white/60 line-clamp-2">{resume}</p>}
+      <p className="relative mt-3.5 text-[13px] font-bold leading-snug text-white line-clamp-2">{texte}</p>{" "}
+      {resume && <p className="relative mt-1 text-[12px] leading-snug text-white/60 line-clamp-2">{resume}</p>}{" "}
 
       <div className="relative mt-auto flex items-center justify-between gap-2 pt-3">
-        <span className="text-[10px] font-black uppercase tracking-widest text-white/35">{fmtDate(n.event_at || n.created_at)}</span>
+        <span className="text-[10px] font-black uppercase tracking-widest text-white/35">{fmtDate(n.event_at || n.created_at)}</span>{" "}
         {elu?.href && (
           <span className="inline-flex items-center gap-1 text-[10px] font-black uppercase tracking-widest text-amber-300 transition-all group-hover:gap-1.5">
             Le vote expliqué <ArrowRight size={11} />
@@ -146,22 +146,22 @@ function CarteActu({ n }: { n: Notif }) {
   const contenu = (
     <>
       <div className="mb-2 flex min-w-0 items-center gap-2">
-        <span className="flex h-7 w-7 shrink-0 items-center justify-center rounded-lg" style={{ backgroundColor: (dom?.color || "#64748b") + "33", color: dom?.color || "#cbd5e1" }}><Newspaper size={14} /></span>
-        {!n.read && <span className="h-2 w-2 shrink-0 rounded-full bg-amber-400" />}
-        {n.read && <Check size={13} className="shrink-0 text-emerald-400/70" />}
+        <span className="flex h-7 w-7 shrink-0 items-center justify-center rounded-lg" style={{ backgroundColor: (dom?.color || "#64748b") + "33", color: dom?.color || "#cbd5e1" }}><Newspaper size={14} /></span>{" "}
+        {!n.read && <span className="h-2 w-2 shrink-0 rounded-full bg-amber-400" />}{" "}
+        {n.read && <Check size={13} className="shrink-0 text-emerald-400/70" />}{" "}
         {/* OÙ, avant QUOI : une alerte locale sans lieu ne se rattache à rien. */}
         {n.place && (
           <span className="ml-auto inline-flex min-w-0 items-center gap-1 rounded-full bg-white/10 px-2 py-0.5 text-[10px] font-bold text-white/85">
-            <MapPin size={10} className="shrink-0 text-amber-300" />
+            <MapPin size={10} className="shrink-0 text-amber-300" />{" "}
             <span className="truncate">{n.place}</span>
           </span>
         )}
-      </div>
-      <p className="text-[13px] font-bold leading-snug text-white line-clamp-3">{n.title}</p>
-      {n.detail && <p className="mt-1 text-[12px] leading-snug text-white/60 line-clamp-3">{n.detail}</p>}
+      </div>{" "}
+      <p className="text-[13px] font-bold leading-snug text-white line-clamp-3">{n.title}</p>{" "}
+      {n.detail && <p className="mt-1 text-[12px] leading-snug text-white/60 line-clamp-3">{n.detail}</p>}{" "}
       <div className="mt-auto flex flex-wrap items-center gap-2 pt-3">
-        {dom && <span className="rounded-full px-2 py-0.5 text-[9px] font-black uppercase tracking-wider text-white" style={{ backgroundColor: dom.color }}>{dom.label}</span>}
-        <span className="text-[10px] font-black uppercase tracking-widest text-white/35">{fmtDate(n.event_at || n.created_at)}</span>
+        {dom && <span className="rounded-full px-2 py-0.5 text-[9px] font-black uppercase tracking-wider text-white" style={{ backgroundColor: dom.color }}>{dom.label}</span>}{" "}
+        <span className="text-[10px] font-black uppercase tracking-widest text-white/35">{fmtDate(n.event_at || n.created_at)}</span>{" "}
         {n.url && <ExternalLink size={11} className="text-white/35" />}
       </div>
     </>
@@ -218,9 +218,9 @@ export default function NotificationsFeed({ userId }: { userId: string }) {
       <div className="flex items-center gap-4 rounded-[2rem] border border-amber-400/20 bg-white/[0.04] p-6 text-white">
         <div className="flex h-14 w-14 shrink-0 items-center justify-center rounded-2xl bg-amber-400/10 text-amber-300">
           <Bell size={24} />
-        </div>
+        </div>{" "}
         <div className="min-w-0">
-          <p className="font-bold">Aucune alerte pour l&apos;instant</p>
+          <p className="font-bold">Aucune alerte pour l&apos;instant</p>{" "}
           <p className="mt-0.5 text-[12px] leading-snug text-white/50">Complétez votre profil (centres d&apos;intérêt, localisation) et suivez des élus : vos alertes personnalisées apparaîtront ici.</p>
         </div>
       </div>
@@ -243,19 +243,19 @@ export default function NotificationsFeed({ userId }: { userId: string }) {
             animate={reduce || unread === 0 ? undefined : { rotate: [0, -12, 10, -8, 6, -3, 0] }}
             transition={{ duration: 1.4, repeat: Infinity, repeatDelay: 3, ease: "easeInOut" }}
           >
-            <Bell size={30} className="text-white" fill={unread > 0 ? "currentColor" : "none"} />
+            <Bell size={30} className="text-white" fill={unread > 0 ? "currentColor" : "none"} />{" "}
             {unread > 0 && (
               <span className="absolute -right-1.5 -top-1.5 flex h-6 min-w-6 items-center justify-center rounded-full bg-rose-600 px-1.5 text-[11px] font-black text-white ring-2 ring-slate-950">
                 {unread > 9 ? "9+" : unread}
               </span>
             )}
-          </motion.div>
+          </motion.div>{" "}
 
           <div className="min-w-0">
-            <h3 className="font-staatliches text-2xl uppercase leading-none tracking-tight">Mes alertes</h3>
+            <h3 className="font-staatliches text-2xl uppercase leading-none tracking-tight">Mes alertes</h3>{" "}
             <p className="mt-1 text-[12px] text-white/55">
               {unread > 0 ? `${unread} nouvelle${unread > 1 ? "s" : ""}` : "Tout est lu"}
-            </p>
+            </p>{" "}
             {unread > 0 && (
               <button
                 onClick={markAllRead}
@@ -265,7 +265,7 @@ export default function NotificationsFeed({ userId }: { userId: string }) {
               </button>
             )}
           </div>
-        </div>
+        </div>{" "}
 
         {/* Rail : une alerte par carte, on glisse sur le côté — le même rail que
             partout ailleurs sur le site : défilement natif au doigt, glisser avec
@@ -280,10 +280,10 @@ export default function NotificationsFeed({ userId }: { userId: string }) {
                 animate={{ opacity: n.read ? 0.55 : 1 }}
                 transition={{ duration: 0.4, delay: n.read ? Math.min(i, 12) * 0.04 : 0 }}
               >
-                {n.type === "vote" ? <CarteVote n={n} /> : <CarteActu n={n} />}
+                {n.type === "vote" ? <CarteVote n={n} /> : <CarteActu n={n} />}{" "}
               </motion.div>
             ))}
-          </DragScroller>
+          </DragScroller>{" "}
 
           <p className="px-5 pt-1 text-[10px] font-black uppercase tracking-widest text-white/25 sm:hidden">
             Glissez pour voir les suivantes →

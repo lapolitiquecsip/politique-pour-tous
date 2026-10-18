@@ -102,18 +102,18 @@ export default function EntityNewsFeed({
         <div className="flex items-center gap-4">
           <span className="flex h-11 w-11 shrink-0 items-center justify-center rounded-2xl bg-gradient-to-br from-blue-500 to-sky-500 text-white shadow-md">
             <Newspaper size={20} />
-          </span>
+          </span>{" "}
           <div>
-            <h2 className="text-2xl font-staatliches uppercase tracking-tight text-foreground dark:text-white">Fil d'actualité</h2>
+            <h2 className="text-2xl font-staatliches uppercase tracking-tight text-foreground dark:text-white">Fil d'actualité</h2>{" "}
             <p className="mt-0.5 text-sm text-muted-foreground">
               {items === null ? "Chargement…" : `${items.length} actualité${items.length > 1 ? "s" : ""} récente${items.length > 1 ? "s" : ""}`}
             </p>
           </div>
-        </div>
+        </div>{" "}
         <span className={`flex h-9 w-9 shrink-0 items-center justify-center rounded-full bg-slate-100 text-muted-foreground transition-transform dark:bg-slate-800 ${open ? "rotate-180" : ""}`}>
           <ChevronDown size={18} />
         </span>
-      </button>
+      </button>{" "}
 
       {open && (
         <div className="border-t border-border p-4 dark:border-slate-800 sm:p-5">
@@ -128,12 +128,12 @@ export default function EntityNewsFeed({
                   return (
                     <button key={t || "all"} onClick={() => setFilter(t || null)}
                       className={`shrink-0 whitespace-nowrap rounded-full px-3 py-1.5 text-[10px] font-black uppercase tracking-widest transition border ${active ? "bg-blue-600 text-white border-blue-600" : "bg-card dark:bg-slate-900 text-muted-foreground border-border dark:border-slate-800 hover:border-blue-400"}`}>
-                      {t ? typeLabel(t) : "Tout"} <span>· {n}</span>
+                      {t ? typeLabel(t) : "Tout"} <span>· {n}</span>{" "}
                     </button>
                   );
                 })}
               </div>
-            )}
+            )}{" "}
             {/* Un rail horizontal, partout : au doigt le défilement natif du téléphone
                 (inertie, rebond), à la souris le glisser et les flèches du rail. Une
                 grille de 40 cartes faisait descendre d'un écran entier avant la suite. */}
@@ -142,22 +142,22 @@ export default function EntityNewsFeed({
                 <button key={it.id} onClick={() => setSelected(it)}
                   className="flex w-[78vw] max-w-[20rem] shrink-0 flex-col rounded-2xl border border-border bg-card p-4 text-left transition hover:-translate-y-0.5 hover:border-blue-300 hover:shadow-md dark:border-slate-800 dark:bg-slate-900 sm:w-[18.5rem]">
                   <div className="mb-1.5 flex items-center justify-between gap-2">
-                    <span className="text-[10px] font-black uppercase tracking-widest text-blue-700 dark:text-blue-400">{typeLabel(it.news_type)}</span>
+                    <span className="text-[10px] font-black uppercase tracking-widest text-blue-700 dark:text-blue-400">{typeLabel(it.news_type)}</span>{" "}
                     <span className="shrink-0 text-[10px] font-bold text-muted-foreground">{fmt(it.published_at)}</span>
-                  </div>
-                  <p className="text-sm font-bold leading-snug text-foreground dark:text-white">{it.title}</p>
-                  {it.summary && <p className="mt-1 text-xs leading-5 text-muted-foreground dark:text-slate-300">{it.summary}</p>}
+                  </div>{" "}
+                  <p className="text-sm font-bold leading-snug text-foreground dark:text-white">{it.title}</p>{" "}
+                  {it.summary && <p className="mt-1 text-xs leading-5 text-muted-foreground dark:text-slate-300">{it.summary}</p>}{" "}
                   <span className="mt-auto inline-flex items-center gap-1 pt-2 text-[10px] font-bold uppercase tracking-widest text-muted-foreground">
-                    {sourceDe(it)}
+                    {sourceDe(it)}{" "}
                     {it.recoupement === "unique" && <SeulMedia />}
-                  </span>
+                  </span>{" "}
                 </button>
               ))}
             </DragScroller>
             </>
           )}
         </div>
-      )}
+      )}{" "}
 
       {/* Récap de la news EN SITE : l'utilisateur lit l'essentiel sans quitter le site. */}
       <AnimatePresence>
@@ -176,27 +176,27 @@ export default function EntityNewsFeed({
               <div className="mb-3 flex items-center justify-between gap-3">
                 <span className="inline-flex items-center gap-1.5 rounded-full bg-blue-100 px-3 py-1 text-[10px] font-black uppercase tracking-widest text-blue-700 dark:bg-blue-500/15 dark:text-blue-300">
                   {typeLabel(selected.news_type)}
-                </span>
+                </span>{" "}
                 <button onClick={() => setSelected(null)} className="rounded-full bg-slate-100 p-2 text-muted-foreground transition hover:bg-slate-200 dark:bg-slate-800 dark:text-slate-300">
                   <X size={18} />
                 </button>
-              </div>
-              <p className="text-[11px] font-bold uppercase tracking-widest text-slate-400">{fmt(selected.published_at)}</p>
-              <h3 className="mt-1 text-xl font-black leading-snug text-foreground dark:text-white">{selected.title}</h3>
-              {selected.summary && <p className="mt-3 leading-7 text-muted-foreground dark:text-slate-300">{selected.summary}</p>}
-              {selected.summary && <MentionIA source={{ libelle: `l'article de ${sourceDe(selected) || "la source"}`, url: selected.url }} />}
+              </div>{" "}
+              <p className="text-[11px] font-bold uppercase tracking-widest text-slate-400">{fmt(selected.published_at)}</p>{" "}
+              <h3 className="mt-1 text-xl font-black leading-snug text-foreground dark:text-white">{selected.title}</h3>{" "}
+              {selected.summary && <p className="mt-3 leading-7 text-muted-foreground dark:text-slate-300">{selected.summary}</p>}{" "}
+              {selected.summary && <MentionIA source={{ libelle: `l'article de ${sourceDe(selected) || "la source"}`, url: selected.url }} />}{" "}
               {selected.recoupement === "unique" && (
                 <p className="mt-4 rounded-2xl bg-amber-50 px-4 py-3 text-[13px] leading-snug text-amber-900 dark:bg-amber-500/10 dark:text-amber-200">
                   <strong>Un seul média.</strong>{" "}Nous n&apos;avons trouvé cette information chez aucun autre journal. Elle n&apos;est pas fausse pour autant, mais elle n&apos;est pas recoupée.
                 </p>
-              )}
+              )}{" "}
               {selected.recoupement === "recoupe" && !!selected.autres_medias && (
                 <p className="mt-4 text-[12px] text-muted-foreground">
                   Information également donnée par {selected.autres_medias} autre{selected.autres_medias > 1 ? "s" : ""} média{selected.autres_medias > 1 ? "s" : ""}.
                 </p>
-              )}
+              )}{" "}
               <div className="mt-5 flex items-center justify-between gap-3 border-t border-border pt-4 dark:border-slate-800">
-                <span className="text-[11px] font-bold uppercase tracking-widest text-slate-400">Source : {sourceDe(selected)}</span>
+                <span className="text-[11px] font-bold uppercase tracking-widest text-slate-400">Source : {sourceDe(selected)}</span>{" "}
                 {selected.url && (
                   <a href={selected.url} target="_blank" rel="noopener noreferrer"
                     className="inline-flex items-center gap-1.5 rounded-full bg-slate-950 px-4 py-2 text-[11px] font-black uppercase tracking-widest text-white transition hover:bg-slate-700 dark:bg-slate-800">

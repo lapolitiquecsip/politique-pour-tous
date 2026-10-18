@@ -50,23 +50,23 @@ export default function RecentVotesFeed() {
             <button key={v.id} onClick={() => setOpen(v)}
               className="group w-[300px] shrink-0 snap-start rounded-[2rem] border border-border bg-card p-6 text-left shadow-sm transition hover:-translate-y-1 hover:shadow-xl dark:border-slate-800 dark:bg-slate-900">
               <div className="flex items-start justify-between gap-3">
-                <span className="text-xs font-bold text-muted-foreground">{frDate(v.date_scrutin)}</span>
+                <span className="text-xs font-bold text-muted-foreground">{frDate(v.date_scrutin)}</span>{" "}
                 <span className={`inline-flex items-center gap-1 rounded-full px-3 py-1 text-[10px] font-black uppercase tracking-widest text-white ${adopted ? "bg-emerald-700" : "bg-rose-600"}`}>
-                  {adopted ? <CheckCircle2 size={12} /> : <XCircle size={12} />}{adopted ? "Adopté" : "Rejeté"}
+                  {adopted ? <CheckCircle2 size={12} /> : <XCircle size={12} />}{" "}{adopted ? "Adopté" : "Rejeté"}
                 </span>
-              </div>
-              <h3 className="mt-4 line-clamp-4 text-lg font-bold leading-snug text-foreground group-hover:text-red-600 dark:text-white">{cleanTitle(v)}</h3>
-              {v.category && <span className="mt-4 inline-block rounded-full bg-gradient-to-r from-red-600 to-fuchsia-600 px-3 py-1 text-[10px] font-black uppercase tracking-widest text-white">{v.category}</span>}
+              </div>{" "}
+              <h3 className="mt-4 line-clamp-4 text-lg font-bold leading-snug text-foreground group-hover:text-red-600 dark:text-white">{cleanTitle(v)}</h3>{" "}
+              {v.category && <span className="mt-4 inline-block rounded-full bg-gradient-to-r from-red-600 to-fuchsia-600 px-3 py-1 text-[10px] font-black uppercase tracking-widest text-white">{v.category}</span>}{" "}
             </button>
           );
         })}
-      </div>
+      </div>{" "}
 
       <div className="mt-6 flex items-center justify-center gap-4">
-        <button onClick={() => scroll(-1)} className="flex h-11 w-11 items-center justify-center rounded-full border border-border bg-card text-muted-foreground shadow-sm transition hover:border-red-300 hover:text-red-600 dark:border-slate-700 dark:bg-slate-900"><ChevronLeft /></button>
-        <span className="text-[11px] font-black uppercase tracking-widest text-muted-foreground">Votes solennels · Assemblée nationale</span>
+        <button onClick={() => scroll(-1)} className="flex h-11 w-11 items-center justify-center rounded-full border border-border bg-card text-muted-foreground shadow-sm transition hover:border-red-300 hover:text-red-600 dark:border-slate-700 dark:bg-slate-900"><ChevronLeft /></button>{" "}
+        <span className="text-[11px] font-black uppercase tracking-widest text-muted-foreground">Votes solennels · Assemblée nationale</span>{" "}
         <button onClick={() => scroll(1)} className="flex h-11 w-11 items-center justify-center rounded-full border border-border bg-card text-muted-foreground shadow-sm transition hover:border-red-300 hover:text-red-600 dark:border-slate-700 dark:bg-slate-900"><ChevronRight /></button>
-      </div>
+      </div>{" "}
 
       {/* Décryptage au clic. */}
       <AnimatePresence>
@@ -76,29 +76,29 @@ export default function RecentVotesFeed() {
             <motion.div className="relative flex max-h-[88vh] w-full max-w-2xl flex-col overflow-hidden rounded-t-[2rem] bg-card shadow-2xl dark:bg-slate-900 sm:rounded-[2rem]"
               initial={{ y: 40, opacity: 0 }} animate={{ y: 0, opacity: 1 }} exit={{ y: 40, opacity: 0 }} onClick={e => e.stopPropagation()}>
               <div className={`relative p-6 pr-14 text-white ${isAdopted(open.resultat) ? "bg-gradient-to-br from-emerald-600 to-teal-700" : "bg-gradient-to-br from-rose-600 to-red-700"}`}>
-                <button onClick={() => setOpen(null)} className="absolute right-4 top-4 rounded-full bg-white/20 p-2 transition hover:bg-white/30"><X size={18} /></button>
-                <p className="text-[10px] font-black uppercase tracking-widest text-white/80">{frDate(open.date_scrutin)} · {open.category || "Assemblée nationale"}</p>
-                <h3 className="mt-1 text-xl font-bold leading-snug">{cleanTitle(open)}</h3>
+                <button onClick={() => setOpen(null)} className="absolute right-4 top-4 rounded-full bg-white/20 p-2 transition hover:bg-white/30"><X size={18} /></button>{" "}
+                <p className="text-[10px] font-black uppercase tracking-widest text-white/80">{frDate(open.date_scrutin)} · {open.category || "Assemblée nationale"}</p>{" "}
+                <h3 className="mt-1 text-xl font-bold leading-snug">{cleanTitle(open)}</h3>{" "}
                 <p className="mt-2 inline-flex items-center gap-1.5 rounded-full bg-white/20 px-3 py-1 text-[11px] font-black uppercase tracking-widest">
                   {isAdopted(open.resultat) ? "Adopté" : "Rejeté"} · {open.pour ?? 0} pour / {open.contre ?? 0} contre / {open.abstention ?? 0} abst.
                 </p>
-              </div>
+              </div>{" "}
               <div className="overflow-y-auto p-6 space-y-5">
                 {(() => {
                   // Le champ why_it_matters encode « pourquoi|||DETAILED|||détails » : on sépare proprement.
                   const [why, detailed] = String(open.why_it_matters || "").split("|||DETAILED|||").map(s => s.trim());
                   const hasContent = open.summary || why || detailed;
                   const enDetail = detailed && detailed !== "Détails supplémentaires non disponibles."
-                    ? <div><p className="text-[10px] font-black uppercase tracking-widest text-muted-foreground">En détail</p><p className="mt-1 text-[15px] leading-relaxed text-slate-700 dark:text-slate-300">{detailed}</p></div>
+                    ? <div><p className="text-[10px] font-black uppercase tracking-widest text-muted-foreground">En détail</p>{" "}<p className="mt-1 text-[15px] leading-relaxed text-slate-700 dark:text-slate-300">{detailed}</p></div>
                     : null;
                   // Un vote sur l'ensemble d'un texte a son analyse détaillée (abonnés) ;
                   // les autres votes solennels (motions…) gardent leur « En détail ».
                   const surUnTexte = /^l['’]ensemble/i.test(open.title || "");
                   return (
                     <>
-                      {open.summary && <div><p className="text-[10px] font-black uppercase tracking-widest text-muted-foreground">De quoi s'agit-il</p><p className="mt-1 text-[15px] leading-relaxed text-slate-700 dark:text-slate-300">{open.summary}</p></div>}
-                      {why && <div className="rounded-2xl bg-red-50/60 p-4 dark:bg-slate-800/60"><p className="text-[10px] font-black uppercase tracking-widest text-red-700 dark:text-red-400">Pourquoi c'est important</p><p className="mt-1 text-[15px] leading-relaxed text-slate-700 dark:text-slate-300">{why}</p></div>}
-                      {surUnTexte ? <AnalyseApprofondie scrutinId={open.id} sujet={cleanTitle(open)} repli={enDetail || undefined} /> : enDetail}
+                      {open.summary && <div><p className="text-[10px] font-black uppercase tracking-widest text-muted-foreground">De quoi s'agit-il</p>{" "}<p className="mt-1 text-[15px] leading-relaxed text-slate-700 dark:text-slate-300">{open.summary}</p></div>}{" "}
+                      {why && <div className="rounded-2xl bg-red-50/60 p-4 dark:bg-slate-800/60"><p className="text-[10px] font-black uppercase tracking-widest text-red-700 dark:text-red-400">Pourquoi c'est important</p>{" "}<p className="mt-1 text-[15px] leading-relaxed text-slate-700 dark:text-slate-300">{why}</p></div>}{" "}
+                      {surUnTexte ? <AnalyseApprofondie scrutinId={open.id} sujet={cleanTitle(open)} repli={enDetail || undefined} /> : enDetail}{" "}
                       {!hasContent && <p className="rounded-2xl bg-muted p-4 text-[14px] italic leading-relaxed text-muted-foreground dark:bg-slate-800/60">Le décryptage de ce vote est en cours de génération. Revenez bientôt pour l'explication complète.</p>}
                     </>
                   );

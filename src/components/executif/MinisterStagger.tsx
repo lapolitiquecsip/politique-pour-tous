@@ -77,17 +77,17 @@ const MinisterCard: React.FC<CardProps> = React.memo(({ position, item, handleMo
       <span
         className="absolute block origin-top-right rotate-45 bg-slate-200 z-20"
         style={{ right: -2, top: 48, width: SQRT_5000, height: 2 }}
-      />
+      />{" "}
 
       {/* Top Banner : nom + portrait */}
       <div className={cn("relative h-40 shrink-0 w-full flex items-center justify-between overflow-hidden border-b border-border px-6", theme.lightBg)}>
-        <div className="absolute inset-0 bg-[radial-gradient(circle_at_20%_20%,rgba(255,255,255,0.4),transparent_70%)]" />
+        <div className="absolute inset-0 bg-[radial-gradient(circle_at_20%_20%,rgba(255,255,255,0.4),transparent_70%)]" />{" "}
 
         {/* Texte à gauche */}
         <div className="relative z-10 max-w-[60%]">
-          <p className={cn("font-black text-[9px] uppercase tracking-widest mb-1.5", theme.text)}>Ministère</p>
+          <p className={cn("font-black text-[9px] uppercase tracking-widest mb-1.5", theme.text)}>Ministère</p>{" "}
           <h4 className="text-foreground font-extrabold text-lg leading-tight line-clamp-3">{cleanMinistryName(item.ministry)}</h4>
-        </div>
+        </div>{" "}
 
         {/* Portrait à droite */}
         <div className="relative w-24 h-24 shrink-0 flex items-center justify-center rounded-2xl bg-white/95 border border-border/80 shadow-md overflow-hidden transition-transform hover:scale-105 z-10">
@@ -99,7 +99,7 @@ const MinisterCard: React.FC<CardProps> = React.memo(({ position, item, handleMo
             style={{ objectPosition: item.objectPosition || "center 20%" }}
           />
         </div>
-      </div>
+      </div>{" "}
 
       {/* Contenu */}
       <div className="p-6 flex-1 flex flex-col justify-between bg-card relative z-10">
@@ -107,22 +107,22 @@ const MinisterCard: React.FC<CardProps> = React.memo(({ position, item, handleMo
           <div className="flex items-center gap-3">
             <div className={cn("w-10 h-10 rounded-xl flex items-center justify-center shrink-0", theme.lightBg, theme.text)}>
               <Users size={16} />
-            </div>
+            </div>{" "}
             <div className="min-w-0">
-              <p className="text-[9px] font-black uppercase tracking-widest text-muted-foreground">Ministre</p>
+              <p className="text-[9px] font-black uppercase tracking-widest text-muted-foreground">Ministre</p>{" "}
               <p className="font-bold text-foreground text-sm truncate">{item.name}</p>
             </div>
-          </div>
+          </div>{" "}
           <div className="flex items-center gap-3">
             <div className={cn("w-10 h-10 rounded-xl flex items-center justify-center shrink-0", theme.lightBg, theme.text)}>
               <Building2 size={16} />
-            </div>
+            </div>{" "}
             <div className="min-w-0">
-              <p className="text-[9px] font-black uppercase tracking-widest text-muted-foreground">Fonction</p>
+              <p className="text-[9px] font-black uppercase tracking-widest text-muted-foreground">Fonction</p>{" "}
               <p className="font-bold text-foreground text-xs leading-snug line-clamp-2">{item.role}</p>
             </div>
           </div>
-        </div>
+        </div>{" "}
 
         {isCenter && (
           <div className="mt-4 pt-4 border-t border-border">
@@ -199,7 +199,7 @@ export const MinisterStagger: React.FC<{ items: MinisterItem[] }> = ({ items }) 
 
   return (
     <div className="relative w-full overflow-hidden rounded-[2.5rem] bg-muted border border-border/60" style={{ height: 620 }}>
-      <div className="absolute inset-0 bg-[radial-gradient(circle_at_center,rgba(245,158,11,0.04)_0%,transparent_70%)]" />
+      <div className="absolute inset-0 bg-[radial-gradient(circle_at_center,rgba(245,158,11,0.04)_0%,transparent_70%)]" />{" "}
 
       {list.map((item, index) => {
         const position = list.length % 2 ? index - (list.length - 1) / 2 : index - list.length / 2;
@@ -216,7 +216,7 @@ export const MinisterStagger: React.FC<{ items: MinisterItem[] }> = ({ items }) 
             onSelect={onSelect}
           />
         );
-      })}
+      })}{" "}
 
       <div className="absolute bottom-8 left-1/2 flex -translate-x-1/2 gap-4 z-20">
         <button
@@ -229,7 +229,7 @@ export const MinisterStagger: React.FC<{ items: MinisterItem[] }> = ({ items }) 
           aria-label="Ministre précédent"
         >
           <ChevronLeft />
-        </button>
+        </button>{" "}
         <button
           onClick={() => handleMove(1)}
           className={cn(

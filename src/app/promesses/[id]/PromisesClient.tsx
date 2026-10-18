@@ -175,7 +175,7 @@ export default function PoliticianPromisesPage() {
   if (!politician) {
     return (
       <div className="min-h-screen flex flex-col items-center justify-center bg-background p-4">
-        <h1 className="text-4xl font-heading font-bold mb-4">Profil introuvable</h1>
+        <h1 className="text-4xl font-heading font-bold mb-4">Profil introuvable</h1>{" "}
         <button onClick={() => router.back()} className="text-primary hover:underline">
           &larr; Retour à la liste
         </button>
@@ -208,11 +208,11 @@ export default function PoliticianPromisesPage() {
     <div className="min-h-screen bg-background pb-24">
       {/* Header Profile */}
       <div className="bg-card border-b border-border shadow-sm pt-8 pb-12 px-4 relative overflow-hidden">
-        <div className="tricolor-band left-0 w-2"><span></span><span></span><span></span></div>
+        <div className="tricolor-band left-0 w-2"><span></span><span></span><span></span></div>{" "}
         <div className="container mx-auto max-w-4xl relative z-10">
           <Link href="/promesses" className="inline-flex items-center text-muted-foreground hover:text-primary transition-colors mb-12 text-sm font-semibold">
             <ArrowLeft className="w-4 h-4 mr-2" /> Retour aux élus
-          </Link>
+          </Link>{" "}
 
           <div className="flex flex-col md:flex-row items-center md:items-start gap-8">
             <div 
@@ -220,45 +220,45 @@ export default function PoliticianPromisesPage() {
               style={{ backgroundColor: politician.party_color || '#95A5A6' }}
             >
               {initials}
-            </div>
+            </div>{" "}
             
             <div className="flex-1 text-center md:text-left">
               <h1 className="text-4xl md:text-5xl font-heading font-extrabold text-foreground mb-3">
                 {politician.first_name} {politician.last_name}
-              </h1>
+              </h1>{" "}
               <div className="flex flex-wrap items-center justify-center md:justify-start gap-3 mb-6">
-                <span className="text-xl text-muted-foreground font-medium">{politician.role}</span>
-                <span className="text-muted-foreground">•</span>
+                <span className="text-xl text-muted-foreground font-medium">{politician.role}</span>{" "}
+                <span className="text-muted-foreground">•</span>{" "}
                 <span 
                   className="px-3 py-1 text-sm font-bold rounded-full text-white"
                   style={{ backgroundColor: politician.party_color || '#95A5A6' }}
                 >
                   {politician.party}
                 </span>
-              </div>
+              </div>{" "}
 
               <div className="bg-background rounded-2xl p-5 border border-border mt-4 w-full">
                 <div className="flex justify-between items-end mb-3">
-                  <span className="font-heading font-bold text-lg">Suivi des promesses</span>
+                  <span className="font-heading font-bold text-lg">Suivi des promesses</span>{" "}
                   <span className="text-2xl font-bold text-primary">{kept}/{total} <span className="text-sm text-muted-foreground font-normal">tenues</span></span>
-                </div>
-                <ProgressBar total={total} kept={kept} inProgress={inProgress} broken={broken} pending={pending} />
+                </div>{" "}
+                <ProgressBar total={total} kept={kept} inProgress={inProgress} broken={broken} pending={pending} />{" "}
                 
                 <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mt-6 text-sm text-center md:text-left">
                   <div className="flex items-center justify-center md:justify-start gap-2">
-                    <CheckCircle2 className="w-5 h-5 text-green-500" />
+                    <CheckCircle2 className="w-5 h-5 text-green-500" />{" "}
                     <span className="font-semibold">{kept} tenues</span>
-                  </div>
+                  </div>{" "}
                   <div className="flex items-center justify-center md:justify-start gap-2">
-                    <Clock className="w-5 h-5 text-yellow-500" />
+                    <Clock className="w-5 h-5 text-yellow-500" />{" "}
                     <span className="font-semibold">{inProgress} en cours</span>
-                  </div>
+                  </div>{" "}
                   <div className="flex items-center justify-center md:justify-start gap-2">
-                    <XCircle className="w-5 h-5 text-red-500" />
+                    <XCircle className="w-5 h-5 text-red-500" />{" "}
                     <span className="font-semibold">{broken} non tenues</span>
-                  </div>
+                  </div>{" "}
                   <div className="flex items-center justify-center md:justify-start gap-2">
-                    <HelpCircle className="w-5 h-5 text-gray-400" />
+                    <HelpCircle className="w-5 h-5 text-gray-400" />{" "}
                     <span className="font-semibold">{pending} en attente</span>
                   </div>
                 </div>
@@ -266,12 +266,12 @@ export default function PoliticianPromisesPage() {
             </div>
           </div>
         </div>
-      </div>
+      </div>{" "}
 
       <div className="container mx-auto max-w-4xl px-4 mt-12">
         <h2 className="text-2xl font-bold font-heading mb-6 flex items-center gap-2">
           Garde à vue des engagements
-        </h2>
+        </h2>{" "}
         
         <div className="flex gap-2 mb-8 overflow-x-auto pb-4 hide-scrollbar">
           {filters.map(filter => (
@@ -284,10 +284,10 @@ export default function PoliticianPromisesPage() {
                   : "bg-card text-foreground border-border hover:bg-muted"
               }`}
             >
-              {filter.label} <span className="text-[10px] bg-foreground/10 px-2 py-0.5 rounded-full">{filter.count}</span>
+              {filter.label} {" "}<span className="text-[10px] bg-foreground/10 px-2 py-0.5 rounded-full">{filter.count}</span>{" "}
             </button>
           ))}
-        </div>
+        </div>{" "}
 
         <div className="space-y-6">
           {filteredPromises.length === 0 ? (

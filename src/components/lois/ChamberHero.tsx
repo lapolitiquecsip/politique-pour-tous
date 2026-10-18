@@ -39,31 +39,31 @@ export default function ChamberHero({
       {imgSrc ? (
         <>
           {/* Photo de l'édifice + voile teinté pour la lisibilité du texte. */}
-          <div className="absolute inset-0 bg-cover bg-center" style={{ backgroundImage: `url(${imgSrc})` }} />
+          <div className="absolute inset-0 bg-cover bg-center" style={{ backgroundImage: `url(${imgSrc})` }} />{" "}
           <div className={`absolute inset-0 bg-gradient-to-b ${t.overlay}`} />
         </>
       ) : (
         <>
-          <div className={`absolute left-1/4 top-0 h-96 w-96 -translate-x-1/2 rounded-full ${t.blob1} blur-[120px]`} />
+          <div className={`absolute left-1/4 top-0 h-96 w-96 -translate-x-1/2 rounded-full ${t.blob1} blur-[120px]`} />{" "}
           <div className={`absolute right-1/4 top-10 h-96 w-96 translate-x-1/2 rounded-full ${t.blob2} blur-[130px]`} />
         </>
-      )}
+      )}{" "}
       <div className="relative z-10 mx-auto max-w-5xl">
         <span className={`inline-flex items-center gap-2 rounded-full border ${t.pill} bg-white/5 px-4 py-1.5 text-[11px] font-black uppercase tracking-[0.25em]`}>
           {eyebrow}
-        </span>
+        </span>{" "}
         <h1 className="mt-6 font-staatliches text-7xl uppercase leading-none tracking-tight text-white md:text-9xl">
           {accentLetter ? (
             <>{title}<span className={`bg-gradient-to-b ${t.letter} bg-clip-text text-transparent`}>{accentLetter}</span></>
           ) : title}
-        </h1>
-        <div className={`mx-auto mt-6 h-1.5 w-44 rounded-full bg-gradient-to-r ${t.underline}`} />
-        <p className="mx-auto mt-6 max-w-2xl text-[15px] leading-relaxed text-white/70 md:text-base">{description}</p>
+        </h1>{" "}
+        <div className={`mx-auto mt-6 h-1.5 w-44 rounded-full bg-gradient-to-r ${t.underline}`} />{" "}
+        <p className="mx-auto mt-6 max-w-2xl text-[15px] leading-relaxed text-white/70 md:text-base">{description}</p>{" "}
         <div className="mt-7 flex flex-wrap justify-center gap-2">
           {links.map(l => (
             <a key={l.href} href={l.href}
               className={`rounded-full border border-white/15 bg-white/5 px-5 py-2 text-[11px] font-black uppercase tracking-widest text-white/80 transition ${t.accent}`}>
-              {l.label}
+              {l.label}{" "}
             </a>
           ))}
         </div>

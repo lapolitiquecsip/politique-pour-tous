@@ -56,8 +56,13 @@ function LocalBudgetContent() {
       setLoadingData(true);
       try {
         // Fetch base commune data from official Geo API
-        const geoRes = await fetch(`https://geo.api.gouv.fr/communes/${code}?fields=nom,code,codesPostaux,population,departement,region`);
-        const geoJson = await geoRes.json();
+        // L'API Géo de l'État ne sert qu'à l'en-tête (nom, population) : si elle ne répond pas,
+        // le budget (lu dans notre base) s'affiche quand même.
+        let geoJson: any = { code };
+        try {
+          const geoRes = await fetch(`https://geo.api.gouv.fr/communes/${code}?fields=nom,code,codesPostaux,population,departement,region`, { signal: AbortSignal.timeout(8000) });
+          if (geoRes.ok) geoJson = await geoRes.json();
+        } catch { /* en-tête réduit */ }
         setCommune(geoJson);
 
         // Indicateurs détaillés en direct Supabase (plus de backend Express)
@@ -76,7 +81,7 @@ function LocalBudgetContent() {
   if (pLoading || loadingData) {
     return (
       <div className="min-h-screen bg-muted flex flex-col items-center justify-center gap-4">
-        <Loader2 className="animate-spin text-rose-700 dark:text-rose-400" size={40} />
+        <Loader2 className="animate-spin text-rose-700 dark:text-rose-400" size={40} />{" "}
         <p className="text-sm font-bold text-slate-400 uppercase tracking-widest">Chargement du budget municipal...</p>
       </div>
     );
@@ -86,25 +91,25 @@ function LocalBudgetContent() {
   if (!isPremium) {
     return (
       <div className="min-h-screen bg-slate-900 text-white flex items-center justify-center p-6 relative overflow-hidden">
-        <div className="absolute top-0 right-0 w-96 h-96 bg-rose-600/10 blur-3xl rounded-full" />
-        <div className="absolute bottom-0 left-0 w-96 h-96 bg-fuchsia-600/10 blur-3xl rounded-full" />
+        <div className="absolute top-0 right-0 w-96 h-96 bg-rose-600/10 blur-3xl rounded-full" />{" "}
+        <div className="absolute bottom-0 left-0 w-96 h-96 bg-fuchsia-600/10 blur-3xl rounded-full" />{" "}
         
         <div className="max-w-md w-full bg-white/5 border border-white/10 rounded-[3rem] p-8 md:p-12 text-center shadow-2xl backdrop-blur-xl relative z-10 space-y-8">
           <div className="w-20 h-20 bg-amber-400 text-slate-950 rounded-full flex items-center justify-center mx-auto shadow-lg shadow-amber-400/20">
             <Lock size={32} />
-          </div>
+          </div>{" "}
           
           <div className="space-y-3">
             <span className="px-3 py-1 bg-amber-400/20 text-amber-300 text-[10px] font-black uppercase tracking-widest rounded-full border border-amber-400/30">
               Option Premium
-            </span>
-            <h2 className="text-3xl font-staatliches uppercase tracking-wide">Budget Communal Bloqué</h2>
+            </span>{" "}
+            <h2 className="text-3xl font-staatliches uppercase tracking-wide">Budget Communal Bloqué</h2>{" "}
             <p className="text-sm text-slate-400 leading-relaxed">
               L'analyse interactive et la décomposition détaillée des dépenses réelles (exercice 2024, source DGFiP) sont réservées aux abonnés Premium.
             </p>
-          </div>
+          </div>{" "}
 
-          <div className="h-px bg-white/10 w-full" />
+          <div className="h-px bg-white/10 w-full" />{" "}
 
           <button
             onClick={() => router.push("/premium")}
@@ -226,61 +231,61 @@ function LocalBudgetContent() {
             onClick={() => router.back()}
             className="flex items-center gap-2 text-muted-foreground hover:text-foreground transition-colors font-bold text-xs uppercase tracking-widest"
           >
-            <ArrowLeft size={16} />
+            <ArrowLeft size={16} />{" "}
             Retour à la ville
-          </button>
+          </button>{" "}
           
           <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-emerald-50 dark:bg-emerald-500/10 text-[9px] font-black uppercase tracking-widest text-emerald-800 dark:text-emerald-300 border border-emerald-100 dark:border-emerald-500/25">
-            <ShieldCheck size={12} className="fill-emerald-800/10" />
+            <ShieldCheck size={12} className="fill-emerald-800/10" />{" "}
             Espace premium
           </div>
         </div>
-      </div>
+      </div>{" "}
 
       <div className="container mx-auto max-w-5xl px-4 mt-8 space-y-8">
         {/* City Info Banner */}
         <div className="bg-gradient-to-br from-rose-600 via-fuchsia-600 to-rose-700 rounded-[2.5rem] p-8 md:p-12 text-white shadow-xl shadow-fuchsia-100/50 relative overflow-hidden">
-          <div className="absolute top-0 right-0 w-80 h-80 bg-white/5 blur-3xl rounded-full" />
+          <div className="absolute top-0 right-0 w-80 h-80 bg-white/5 blur-3xl rounded-full" />{" "}
           
           <div className="relative z-10 space-y-6">
             <div className="flex items-center gap-3">
               <span className="px-3 py-1 bg-white/20 backdrop-blur-md rounded-full text-[10px] font-black uppercase tracking-widest">
                 Code Insee : {code}
-              </span>
+              </span>{" "}
               <span className="px-3 py-1 bg-emerald-400/25 text-emerald-300 text-[10px] font-black uppercase tracking-widest rounded-full border border-emerald-400/30">
                 Données Officielles DGFiP
               </span>
-            </div>
+            </div>{" "}
             
             <div className="space-y-2">
               <p className="text-rose-200 font-bold text-xs uppercase tracking-widest">
                 Derniers comptes officiels — exercice 2024 (source DGFiP)
-              </p>
+              </p>{" "}
               <h1 className="text-4xl md:text-6xl font-staatliches uppercase tracking-tight leading-none">
                 Budget de {commune?.nom}
               </h1>
-            </div>
+            </div>{" "}
 
             <div className="grid grid-cols-2 md:grid-cols-4 gap-6 pt-6 border-t border-white/10">
               <div className="space-y-1">
-                <p className="text-[9px] font-black uppercase tracking-widest text-rose-200/70">Population</p>
+                <p className="text-[9px] font-black uppercase tracking-widest text-rose-200/70">Population</p>{" "}
                 <p className="text-lg font-bold">{pop.toLocaleString("fr-FR")} hab.</p>
-              </div>
+              </div>{" "}
               <div className="space-y-1">
-                <p className="text-[9px] font-black uppercase tracking-widest text-rose-200/70">Budget global</p>
+                <p className="text-[9px] font-black uppercase tracking-widest text-rose-200/70">Budget global</p>{" "}
                 <p className="text-lg font-bold">~ {(totalBudget / 1000000).toFixed(1)} M€</p>
-              </div>
+              </div>{" "}
               <div className="space-y-1">
-                <p className="text-[9px] font-black uppercase tracking-widest text-rose-200/70">Dépenses / hab.</p>
+                <p className="text-[9px] font-black uppercase tracking-widest text-rose-200/70">Dépenses / hab.</p>{" "}
                 <p className="text-lg font-bold">{budgetHab.toLocaleString("fr-FR")} €</p>
-              </div>
+              </div>{" "}
               <div className="space-y-1">
-                <p className="text-[9px] font-black uppercase tracking-widest text-rose-200/70">Dette municipale</p>
+                <p className="text-[9px] font-black uppercase tracking-widest text-rose-200/70">Dette municipale</p>{" "}
                 <p className="text-lg font-bold">~ {(totalDebt / 1000000).toFixed(1)} M€</p>
               </div>
             </div>
           </div>
-        </div>
+        </div>{" "}
 
         {/* Dashboard grid */}
         <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 items-start">
@@ -298,9 +303,9 @@ function LocalBudgetContent() {
                     : "text-slate-400 hover:text-muted-foreground hover:bg-muted"
                 }`}
               >
-                <Wallet size={18} />
+                <Wallet size={18} />{" "}
                 Fonctionnement (~ {((operatingBudget / totalBudget) * 100).toFixed(0)}%)
-              </button>
+              </button>{" "}
               <button
                 onClick={() => setActiveSection("investissement")}
                 className={`flex-1 py-4 px-6 rounded-[1.5rem] font-staatliches text-lg uppercase tracking-wider transition-all flex items-center justify-center gap-2 ${
@@ -309,10 +314,10 @@ function LocalBudgetContent() {
                     : "text-slate-400 hover:text-muted-foreground hover:bg-muted"
                 }`}
               >
-                <Landmark size={18} />
+                <Landmark size={18} />{" "}
                 Investissement (~ {investRate}%)
               </button>
-            </div>
+            </div>{" "}
 
             {/* List breakdown */}
             <div className="bg-card rounded-[2.5rem] border border-border p-8 space-y-6 shadow-sm">
@@ -320,18 +325,18 @@ function LocalBudgetContent() {
                 <div className="space-y-1">
                   <h3 className="text-2xl font-staatliches uppercase tracking-wide text-foreground">
                     {activeSection === "fonctionnement" ? "Dépenses de Fonctionnement" : "Dépenses d'Investissement"}
-                  </h3>
+                  </h3>{" "}
                   <p className="text-xs text-slate-400">
                     {activeSection === "fonctionnement" 
                       ? "Dépenses quotidiennes obligatoires pour faire tourner l'administration locale." 
                       : "Dépenses de la commune affectées aux opérations d'équipement et de remboursement de dette."}
                   </p>
-                </div>
+                </div>{" "}
                 <div className="text-right shrink-0">
-                  <p className="text-xs font-black uppercase text-muted-foreground tracking-widest">Montant réel (2024)</p>
+                  <p className="text-xs font-black uppercase text-muted-foreground tracking-widest">Montant réel (2024)</p>{" "}
                   <p className="text-2xl font-black text-rose-700 dark:text-rose-400">{(activeAmount / 1000000).toFixed(1)} M€</p>
                 </div>
-              </div>
+              </div>{" "}
 
               <div className="space-y-6">
                 {activeItems.map((item, idx) => {
@@ -345,19 +350,19 @@ function LocalBudgetContent() {
                         <div className="flex gap-3">
                           <div className={`w-10 h-10 rounded-xl flex items-center justify-center shrink-0 text-white ${item.color} shadow-md`}>
                             <item.icon size={18} />
-                          </div>
+                          </div>{" "}
                           <div>
-                            <p className="font-extrabold text-foreground text-sm">{item.label}</p>
+                            <p className="font-extrabold text-foreground text-sm">{item.label}</p>{" "}
                             <p className="text-xs text-muted-foreground max-w-md">{item.desc}</p>
                           </div>
-                        </div>
+                        </div>{" "}
                         <div className="text-right shrink-0">
-                          <p className="font-black text-foreground text-sm">{item.percent}%</p>
+                          <p className="font-black text-foreground text-sm">{item.percent}%</p>{" "}
                           <p className="text-[10px] font-black text-slate-400 uppercase tracking-tight">
                             {(amount / 1000000).toFixed(2)} M€
                           </p>
                         </div>
-                      </div>
+                      </div>{" "}
                       <div className="h-2 w-full bg-slate-100 dark:bg-slate-500/10 rounded-full overflow-hidden">
                         <motion.div
                           initial={{ width: 0 }}
@@ -366,94 +371,94 @@ function LocalBudgetContent() {
                           className={`h-full ${item.color} rounded-full`}
                           style={{ filter: isH ? "brightness(1.12) saturate(1.2)" : "none", transition: "filter .2s" }}
                         />
-                      </div>
+                      </div>{" "}
                     </div>
                   );
                 })}
               </div>
             </div>
-          </div>
+          </div>{" "}
 
           {/* RIGHT: Ratios & Explanations */}
           <div className="lg:col-span-4 space-y-6">
             {/* Financial Health ratios */}
             <div className="bg-card rounded-[2.5rem] border border-border p-8 space-y-6 shadow-sm">
-              <h3 className="text-2xl font-staatliches uppercase tracking-wide text-foreground">Ratios Budgétaires</h3>
+              <h3 className="text-2xl font-staatliches uppercase tracking-wide text-foreground">Ratios Budgétaires</h3>{" "}
               
               <div className="space-y-5">
                 <div className="space-y-2 border-b border-slate-50 pb-4">
                   <div className="flex justify-between text-xs font-extrabold text-foreground">
-                    <span>Taux d'endettement</span>
+                    <span>Taux d'endettement</span>{" "}
                     <span className={debtRate > 100 ? "text-rose-700 dark:text-rose-400" : "text-foreground"}>{debtRate}%</span>
-                  </div>
+                  </div>{" "}
                   <p className="text-[10px] text-slate-400 leading-normal">
                     La moyenne nationale est de **73.6%**. {debtRate > 100 ? "⚠️ La commune est plus endettée que la moyenne." : "✅ Le niveau d'endettement est sous contrôle."}
                   </p>
-                </div>
+                </div>{" "}
 
                 <div className="space-y-2 border-b border-slate-50 pb-4">
                   <div className="flex justify-between text-xs font-extrabold text-foreground">
-                    <span>Effort d'investissement</span>
+                    <span>Effort d'investissement</span>{" "}
                     <span>{investRate}%</span>
-                  </div>
+                  </div>{" "}
                   <p className="text-[10px] text-slate-400 leading-normal">
                     La moyenne nationale est de **27%**. Cette ville consacre {investRate}% de ses dépenses totales à l'investissement (exercice 2024).
                   </p>
-                </div>
+                </div>{" "}
 
                 <div className="space-y-2">
                   <div className="flex justify-between text-xs font-extrabold text-foreground">
-                    <span>Dépenses réelles / hab.</span>
+                    <span>Dépenses réelles / hab.</span>{" "}
                     <span>{budgetHab} €</span>
-                  </div>
+                  </div>{" "}
                   <p className="text-[10px] text-slate-400 leading-normal">
                     Moyenne nationale : **1 550 €** par habitant pour les communes de taille similaire.
                   </p>
                 </div>
               </div>
-            </div>
+            </div>{" "}
 
             {/* Explanatory notes */}
             <div className="bg-slate-900 text-white rounded-[2.5rem] p-8 space-y-5 relative overflow-hidden">
-              <div className="absolute top-0 right-0 w-24 h-24 bg-amber-400/10 blur-2xl rounded-full" />
-              <h3 className="text-2xl font-staatliches uppercase tracking-wide">Comprendre ces chiffres</h3>
+              <div className="absolute top-0 right-0 w-24 h-24 bg-amber-400/10 blur-2xl rounded-full" />{" "}
+              <h3 className="text-2xl font-staatliches uppercase tracking-wide">Comprendre ces chiffres</h3>{" "}
               <p className="text-[11px] text-slate-300 leading-relaxed">
                 Le compte administratif retrace l'ensemble des recettes perçues et des dépenses réalisées par la commune sur un exercice budgétaire clos. Il permet de mesurer l'exécution réelle du budget de la commune.
-              </p>
-              <div className="h-px bg-white/10 w-full" />
+              </p>{" "}
+              <div className="h-px bg-white/10 w-full" />{" "}
               <div className="flex items-center gap-2 text-[10px] font-black text-amber-300 uppercase tracking-widest">
-                <Sparkles size={12} />
+                <Sparkles size={12} />{" "}
                 Comptes administratifs consolidés
               </div>
-            </div>
+            </div>{" "}
             
             {/* Certification Badge */}
             <div className="p-6 rounded-[2rem] border border-border/80 bg-white/50 dark:bg-white/[0.04] text-muted-foreground text-center text-[10px] italic leading-relaxed space-y-2">
               <p>
                 Les chiffres de cette analyse sont issus des rapports officiels consolidés de la Direction Générale des Finances Publiques (DGFiP) et de l'OFGL (Observatoire des Finances et de la Gestion Locale) pour le compte administratif de la commune.
-              </p>
+              </p>{" "}
               <p className="font-bold text-foreground not-italic">
                 © La Politique Locale - Tous droits réservés
               </p>
             </div>
           </div>
-        </div>
+        </div>{" "}
 
         {/* Grands chantiers section */}
         <div className="space-y-6 pt-4">
           <div className="flex items-center gap-3">
             <div className="w-10 h-10 rounded-2xl bg-amber-100 dark:bg-amber-500/10 flex items-center justify-center text-amber-750 shadow-sm shrink-0">
               <Wrench size={20} className="text-amber-700 dark:text-amber-300" />
-            </div>
+            </div>{" "}
             <div>
               <h2 className="text-3xl font-staatliches uppercase tracking-wide text-foreground leading-none">
                 🏗️ Grands Chantiers & Investissements
-              </h2>
+              </h2>{" "}
               <p className="text-[9px] text-slate-400 font-bold uppercase tracking-wider italic mt-1">
                 Sources : Rapports budgétaires municipaux et comptes-rendus officiels
               </p>
             </div>
-          </div>
+          </div>{" "}
           
           {communeData?.grandsTravaux && communeData.grandsTravaux.length > 0 ? (
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
@@ -476,23 +481,23 @@ function LocalBudgetContent() {
                       }`}>
                         {proj.status}
                       </span>
-                    </div>
+                    </div>{" "}
                     <h3 className="font-staatliches text-xl text-foreground uppercase tracking-wide group-hover:text-rose-600 transition-colors">
                       {proj.title}
-                    </h3>
+                    </h3>{" "}
                     <p className="text-xs text-muted-foreground leading-relaxed">
                       {proj.desc}
                     </p>
-                  </div>
+                  </div>{" "}
                   
                   <div className="mt-6 pt-4 border-t border-border flex justify-between items-center">
                     <span className="text-[10px] font-bold text-slate-400 uppercase tracking-wider">
                       Budget alloué / estimé
-                    </span>
+                    </span>{" "}
                     <span className="font-staatliches text-2xl text-rose-700 dark:text-rose-400">
                       {proj.cost}
                     </span>
-                  </div>
+                  </div>{" "}
                 </motion.div>
               ))}
             </div>
@@ -501,23 +506,23 @@ function LocalBudgetContent() {
               <p className="text-sm font-bold">Aucun projet renseigné — contribuez !</p>
             </div>
           )}
-        </div>
+        </div>{" "}
 
         {/* Événements section */}
         <div className="space-y-6 pt-4">
           <div className="flex items-center gap-3">
             <div className="w-10 h-10 rounded-2xl bg-fuchsia-100 dark:bg-fuchsia-500/10 flex items-center justify-center text-fuchsia-750 shadow-sm shrink-0">
               <Calendar size={20} className="text-fuchsia-700 dark:text-fuchsia-300" />
-            </div>
+            </div>{" "}
             <div>
               <h2 className="text-3xl font-staatliches uppercase tracking-wide text-foreground leading-none">
                 📅 Événements Majeurs & Animation Locale
-              </h2>
+              </h2>{" "}
               <p className="text-[9px] text-slate-400 font-bold uppercase tracking-wider italic mt-1">
                 Sources : Agendas culturels officiels et offices de tourisme
               </p>
             </div>
-          </div>
+          </div>{" "}
           
           {communeData?.evenements && communeData.evenements.length > 0 ? (() => {
             const sortedEvents = [...communeData.evenements].sort((a: any, b: any) => {
@@ -548,18 +553,18 @@ function LocalBudgetContent() {
                         <div className="flex justify-between items-center gap-2">
                           <span className="text-[10px] font-black text-rose-700 dark:text-rose-400 uppercase tracking-widest">
                             {evt.date}
-                          </span>
+                          </span>{" "}
                           <span className={`px-2 py-0.5 text-[8px] font-bold uppercase tracking-wider rounded-full border ${colClass}`}>
                             {evt.category}
                           </span>
-                        </div>
+                        </div>{" "}
                         <h3 className="font-extrabold text-sm text-foreground">
                           {evt.title}
-                        </h3>
+                        </h3>{" "}
                         <p className="text-[11px] text-slate-400 leading-normal">
                           {evt.desc}
                         </p>
-                      </div>
+                      </div>{" "}
                     </motion.div>
                   );
                 })}

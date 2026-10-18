@@ -97,28 +97,28 @@ export default function RegionFinancesChart({ regionCode }: { regionCode: string
           className="rounded-full border border-border bg-card px-4 py-2 text-sm font-bold text-foreground shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500/40"
         >
           {INDICATORS.map(i => <option key={i.code} value={i.code}>{i.label}</option>)}
-        </select>
+        </select>{" "}
         {!isRatio && (
           <div className="inline-flex rounded-full bg-slate-100 dark:bg-slate-500/10 p-0.5 text-xs font-bold">
             {(["hab", "total"] as const).map(m => (
               <button key={m} onClick={() => setMode(m)}
                 className={`rounded-full px-3 py-1.5 transition ${mode === m ? "bg-card text-foreground shadow-sm" : "text-muted-foreground"}`}>
-                {m === "hab" ? "€ / habitant" : "Total"}
+                {m === "hab" ? "€ / habitant" : "Total"}{" "}
               </button>
             ))}
           </div>
         )}
-      </div>
-      <p className="mt-1.5 text-xs text-muted-foreground">{meta.hint}</p>
+      </div>{" "}
+      <p className="mt-1.5 text-xs text-muted-foreground">{meta.hint}</p>{" "}
 
       {/* Valeur la plus récente + tendance */}
       <div className="mt-4 flex flex-wrap items-end gap-3">
-        <span className="text-4xl font-black text-foreground">{format(last.value, meta.unit, mode)}</span>
+        <span className="text-4xl font-black text-foreground">{format(last.value, meta.unit, mode)}</span>{" "}
         <span className={`mb-1 inline-flex items-center gap-1 text-sm font-bold ${trendColor}`}>
-          <TrendingUp size={16} className={up ? "" : "rotate-180"} />
+          <TrendingUp size={16} className={up ? "" : "rotate-180"} />{" "}
           {format(delta, meta.unit, mode, true)} depuis {first.year}
         </span>
-      </div>
+      </div>{" "}
 
       {/* Graphique */}
       <svg viewBox={`0 0 ${W} ${H}`} className="mt-3 w-full" role="img" aria-label={`Évolution ${meta.label}`}>
@@ -151,7 +151,7 @@ export default function RegionFinancesChart({ regionCode }: { regionCode: string
             )}
           </g>
         ))}
-      </svg>
+      </svg>{" "}
       <p className="mt-1 text-right text-[10px] text-muted-foreground">Source : OFGL · budget principal · {isRatio ? "années" : mode === "hab" ? "euros par habitant" : "millions d'euros"}</p>
     </div>
   );

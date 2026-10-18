@@ -15,41 +15,41 @@ export default function Footer() {
             <Link href="/" className="flex items-center gap-2 mb-6 group">
               <div className="w-10 h-10 rounded-xl bg-red-600 flex items-center justify-center shadow-lg shadow-red-600/20 group-hover:scale-110 transition-transform">
                 <Landmark className="w-6 h-6 text-white" />
-              </div>
+              </div>{" "}
               <span className="flex flex-col justify-center font-sans font-black tracking-tight uppercase leading-none">
-                <span className="text-white text-[15px] sm:text-[16px]">La politique,</span>
+                <span className="text-white text-[15px] sm:text-[16px]">La politique,</span>{" "}
                 <span className="mt-0.5 flex items-center gap-1">
-                  <span className="text-white text-[13px] sm:text-[14px]">c'est</span>
+                  <span className="text-white text-[13px] sm:text-[14px]">c'est</span>{" "}
                   <span className="bg-[#0bb274] text-white px-1.5 py-0.5 rounded-[5px] text-[12px] sm:text-[13px] leading-none">Simple.</span>
                 </span>
               </span>
             </Link>
-          </div>
+          </div>{" "}
 
           {/* Site Map */}
           <div>
-            <h4 className="text-xs font-black uppercase tracking-[0.3em] text-white/60 mb-6 font-staatliches">Navigation</h4>
+            <h4 className="text-xs font-black uppercase tracking-[0.3em] text-white/60 mb-6 font-staatliches">Navigation</h4>{" "}
             <ul className="space-y-4">
-              <li><Link href="/" className="text-slate-300 hover:text-white hover:translate-x-1 transition-all inline-block font-medium">Accueil</Link></li>
-              <li><Link href="/deputes" className="text-slate-300 hover:text-white hover:translate-x-1 transition-all inline-block font-medium whitespace-nowrap">Votes des élus</Link></li>
+              <li><Link href="/" className="text-slate-300 hover:text-white hover:translate-x-1 transition-all inline-block font-medium">Accueil</Link></li>{" "}
+              <li><Link href="/deputes" className="text-slate-300 hover:text-white hover:translate-x-1 transition-all inline-block font-medium whitespace-nowrap">Votes des élus</Link></li>{" "}
               <li><Link href="/lois" className="text-slate-300 hover:text-white hover:translate-x-1 transition-all inline-block font-medium">Dossiers Législatifs</Link></li>
             </ul>
-          </div>
+          </div>{" "}
 
           {/* Legal Section */}
           <div>
-            <h4 className="text-xs font-black uppercase tracking-[0.3em] text-white/60 mb-6 font-staatliches">Légal</h4>
+            <h4 className="text-xs font-black uppercase tracking-[0.3em] text-white/60 mb-6 font-staatliches">Légal</h4>{" "}
             <ul className="space-y-4">
-              <li><Link href="/mentions-legales" className="text-slate-300 hover:text-white hover:translate-x-1 transition-all inline-block font-medium">Mentions Légales</Link></li>
-              <li><Link href="/cgu" className="text-slate-300 hover:text-white hover:translate-x-1 transition-all inline-block font-medium">CGU</Link></li>
-              <li><Link href="/cgv" className="text-slate-300 hover:text-white hover:translate-x-1 transition-all inline-block font-medium">CGV</Link></li>
+              <li><Link href="/mentions-legales" className="text-slate-300 hover:text-white hover:translate-x-1 transition-all inline-block font-medium">Mentions Légales</Link></li>{" "}
+              <li><Link href="/cgu" className="text-slate-300 hover:text-white hover:translate-x-1 transition-all inline-block font-medium">CGU</Link></li>{" "}
+              <li><Link href="/cgv" className="text-slate-300 hover:text-white hover:translate-x-1 transition-all inline-block font-medium">CGV</Link></li>{" "}
               <li><Link href="/confidentialite" className="text-slate-300 hover:text-white hover:translate-x-1 transition-all inline-block font-medium">Confidentialité et cookies</Link></li>
             </ul>
-          </div>
+          </div>{" "}
 
           {/* Contact Section */}
           <div>
-            <h4 className="text-xs font-black uppercase tracking-[0.3em] text-white/60 mb-6 font-staatliches">Assistance</h4>
+            <h4 className="text-xs font-black uppercase tracking-[0.3em] text-white/60 mb-6 font-staatliches">Assistance</h4>{" "}
             <ul className="space-y-4">
               <li>
                 <Link 
@@ -58,25 +58,25 @@ export default function Footer() {
                 >
                   Contactez-nous
                 </Link>
-              </li>
+              </li>{" "}
               <li>
                 <Link href="/faq" className="text-slate-400 hover:text-white text-[11px] font-bold uppercase tracking-widest transition-colors inline-block">
                   FAQ — Questions fréquentes
                 </Link>
-              </li>
+              </li>{" "}
               <li className="text-slate-400 text-[10px] uppercase tracking-widest font-bold pt-4">
                 © {currentYear} La Politique, C&apos;est Simple
               </li>
             </ul>
           </div>
-        </div>
+        </div>{" "}
 
         <div className="pt-8 border-t border-white/5 flex flex-col md:flex-row justify-between items-center gap-6">
           <div className="flex items-center gap-6">
-             <span className="text-[10px] font-black text-white/50 uppercase tracking-[0.4em]">Liberté</span>
-             <span className="text-[10px] font-black text-white/50 uppercase tracking-[0.4em]">Égalité</span>
+             <span className="text-[10px] font-black text-white/50 uppercase tracking-[0.4em]">Liberté</span>{" "}
+             <span className="text-[10px] font-black text-white/50 uppercase tracking-[0.4em]">Égalité</span>{" "}
              <span className="text-[10px] font-black text-white/50 uppercase tracking-[0.4em]">Fraternité</span>
-          </div>
+          </div>{" "}
           <div className="text-[10px] text-slate-400 font-medium">
             Made with passion for Democracy 🇫🇷
           </div>

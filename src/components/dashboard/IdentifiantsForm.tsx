@@ -35,7 +35,7 @@ function Message({ etat }: { etat: Etat }) {
   const ok = etat.type === "ok";
   return (
     <p className={`mt-3 flex items-start gap-2 rounded-xl px-3 py-2.5 text-[13px] leading-snug ${ok ? "bg-emerald-500/10 text-emerald-300" : "bg-rose-500/10 text-rose-300"}`}>
-      {ok ? <CheckCircle2 size={15} className="mt-0.5 shrink-0" /> : <AlertCircle size={15} className="mt-0.5 shrink-0" />}
+      {ok ? <CheckCircle2 size={15} className="mt-0.5 shrink-0" /> : <AlertCircle size={15} className="mt-0.5 shrink-0" />}{" "}
       {etat.texte}
     </p>
   );
@@ -91,11 +91,11 @@ export default function IdentifiantsForm({ adresseModifiable = true }: { adresse
       <form onSubmit={changerAdresse} className="rounded-3xl border border-white/10 bg-white/[0.03] p-6">
         <p className="flex items-center gap-2 text-[11px] font-black uppercase tracking-[0.2em] text-sky-300">
           <Mail size={14} /> Adresse e-mail
-        </p>
-        <p className="mt-3 break-all text-lg font-bold text-white">{courriel ?? "…"}</p>
+        </p>{" "}
+        <p className="mt-3 break-all text-lg font-bold text-white">{courriel ?? "…"}</p>{" "}
         {adresseModifiable ? (
           <>
-            <label className="mt-5 block text-[11px] font-bold uppercase tracking-widest text-white/45" htmlFor="nouvelle-adresse">Nouvelle adresse</label>
+            <label className="mt-5 block text-[11px] font-bold uppercase tracking-widest text-white/45" htmlFor="nouvelle-adresse">Nouvelle adresse</label>{" "}
             <input
               id="nouvelle-adresse" type="email" required value={nouvelle}
               onChange={e => setNouvelle(e.target.value)} placeholder="nouvelle@adresse.fr"
@@ -112,20 +112,20 @@ export default function IdentifiantsForm({ adresseModifiable = true }: { adresse
             depuis la page Contact, nous mettons les deux à jour ensemble.
           </p>
         )}
-      </form>
+      </form>{" "}
 
       {/* Mot de passe */}
       <form onSubmit={changerMdp} className="rounded-3xl border border-white/10 bg-white/[0.03] p-6">
         <p className="flex items-center gap-2 text-[11px] font-black uppercase tracking-[0.2em] text-sky-300">
           <KeyRound size={14} /> Mot de passe
-        </p>
-        <label className="mt-5 block text-[11px] font-bold uppercase tracking-widest text-white/45" htmlFor="nouveau-mdp">Nouveau mot de passe</label>
+        </p>{" "}
+        <label className="mt-5 block text-[11px] font-bold uppercase tracking-widest text-white/45" htmlFor="nouveau-mdp">Nouveau mot de passe</label>{" "}
         <input
           id="nouveau-mdp" type="password" required minLength={8} autoComplete="new-password"
           value={mdp} onChange={e => setMdp(e.target.value)} placeholder="8 caractères au minimum"
           className={`mt-2 ${champ}`}
-        />
-        <label className="mt-4 block text-[11px] font-bold uppercase tracking-widest text-white/45" htmlFor="nouveau-mdp-2">Confirmer</label>
+        />{" "}
+        <label className="mt-4 block text-[11px] font-bold uppercase tracking-widest text-white/45" htmlFor="nouveau-mdp-2">Confirmer</label>{" "}
         <input
           id="nouveau-mdp-2" type="password" required autoComplete="new-password"
           value={mdp2} onChange={e => setMdp2(e.target.value)} placeholder="Retapez-le"

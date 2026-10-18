@@ -23,25 +23,25 @@ export default function HomeHero() {
     <div className="relative flex flex-col items-center justify-center pt-8 pb-4 w-full bg-card dark:bg-slate-900/10">
       <main className="w-full max-w-5xl mx-auto flex flex-col items-center justify-center px-4 mt-6">
 
-        {/* Titre */}
-        <div className="w-full flex flex-row flex-wrap justify-center items-center gap-x-4 md:gap-x-6 gap-y-2 text-center mb-8">
+        {/* Titre — UN seul <h1> (trois balises de titre principal brouillaient les moteurs de recherche). */}
+        <h1 className="w-full flex flex-row flex-wrap justify-center items-center gap-x-4 md:gap-x-6 gap-y-2 text-center mb-8">
           {["La politique,", "c'est"].map((word, i) => (
-            <motion.h1
+            <motion.span
               key={word}
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.8, delay: i * 0.1 }}
-              className="text-[clamp(3rem,8vw,120px)] text-foreground dark:text-white leading-[0.85] tracking-tight m-0 uppercase"
+              className="block text-[clamp(3rem,8vw,120px)] text-foreground dark:text-white leading-[0.85] tracking-tight m-0 uppercase"
               style={{ fontFamily: '"Staatliches", "Arial Black", Impact, sans-serif' }}
             >
-              {word}
-            </motion.h1>
-          ))}
-          <motion.h1
+              {word}{" "}
+            </motion.span>
+          ))}{" "}
+          <motion.span
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.8, delay: 0.2 }}
-            className="text-[clamp(3.5rem,9vw,140px)] leading-[0.85] tracking-tight m-0 uppercase"
+            className="block text-[clamp(3.5rem,9vw,140px)] leading-[0.85] tracking-tight m-0 uppercase"
             style={{ fontFamily: '"Staatliches", "Arial Black", Impact, sans-serif' }}
           >
             <MarkerHighlight
@@ -52,8 +52,8 @@ export default function HomeHero() {
               highlightedTextColor="#ffffff"
               delay={0.4}
             />
-          </motion.h1>
-        </div>
+          </motion.span>
+        </h1>{" "}
 
         {/* Sous-titre épuré */}
         <motion.p
@@ -63,7 +63,7 @@ export default function HomeHero() {
           className="max-w-xl text-center text-sm md:text-base text-muted-foreground dark:text-slate-400 leading-relaxed mb-10"
         >
           Contrôlez l'activité des politiques et décryptez les lois, en temps réel.
-        </motion.p>
+        </motion.p>{" "}
 
         {/* 3 cartes minimalistes */}
         {/* Mobile : 3 cartes CÔTE À CÔTE et compactes (glanceable, sans scroll) ; desktop inchangé. */}
@@ -82,12 +82,12 @@ export default function HomeHero() {
                 <div className="aspect-[320/150] w-full transition-transform duration-500 group-hover:scale-[1.04]">
                   <HomeCardArt kind={card.art} />
                 </div>
-              </div>
-              <h3 className="mt-0.5 md:mt-1 text-[11px] leading-tight md:text-base font-bold text-foreground dark:text-white group-hover:text-red-600 transition-colors">{card.title}</h3>
-              <p className="hidden md:block text-sm leading-relaxed text-muted-foreground dark:text-slate-400">{card.text}</p>
+              </div>{" "}
+              <h3 className="mt-0.5 md:mt-1 text-[11px] leading-tight md:text-base font-bold text-foreground dark:text-white group-hover:text-red-600 transition-colors">{card.title}</h3>{" "}
+              <p className="hidden md:block text-sm leading-relaxed text-muted-foreground dark:text-slate-400">{card.text}</p>{" "}
             </MotionLink>
           ))}
-        </div>
+        </div>{" "}
 
         {/* Accroche finale sobre */}
         <motion.p

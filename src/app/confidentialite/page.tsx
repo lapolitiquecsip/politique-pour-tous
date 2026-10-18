@@ -4,7 +4,7 @@ import RefusMesure from "@/components/analytics/RefusMesure";
 import { EDITEUR, CONTACT_EMAIL } from "@/lib/constants";
 
 export const metadata = {
-  title: "Confidentialité et cookies | La Politique, C'est Simple",
+  title: "Confidentialité et cookies",
   description: "Quelles données, pourquoi, combien de temps, chez qui, et comment exercer vos droits.",
 };
 
@@ -69,7 +69,7 @@ export default function Confidentialite() {
                     ))}
                   </tbody>
                 </table>
-              </div>
+              </div>{" "}
               <p>Les données facultatives du profil ne sont jamais obligatoires : sans elles, vous recevez simplement des alertes moins ciblées.</p>
             </>
           ),
@@ -81,7 +81,7 @@ export default function Confidentialite() {
               <p>Suivre un parti ou un candidat, ou donner votre position sur une loi, peut laisser deviner une opinion politique — une
                 donnée « sensible » (RGPD art. 9). Nous ne l&apos;enregistrons qu&apos;avec votre accord explicite, demandé au moment de l&apos;action et
                 daté. Ces informations ne sont visibles que de vous, ne sont jamais partagées ni utilisées à d&apos;autres fins que vos alertes et
-                votre historique ; les statistiques affichées sont des totaux anonymes.</p>
+                votre historique ; les statistiques affichées sont des totaux anonymes.</p>{" "}
               <p>Retirer votre accord : <strong>Mon compte → Alertes</strong>{" "}(les partis et candidats suivis sont alors effacés), ou{" "}
                 <strong>Mon compte → Mes données → « Effacer mes positions sur les lois »</strong>.</p>
             </>
@@ -99,20 +99,20 @@ export default function Confidentialite() {
           id: "destinataires", titre: "Qui y a accès : nos prestataires",
           contenu: (
             <>
-              <p>Seul l&apos;éditeur accède à vos données. Les prestataires techniques ci-dessous les traitent pour notre compte, sur nos instructions :</p>
+              <p>Seul l&apos;éditeur accède à vos données. Les prestataires techniques ci-dessous les traitent pour notre compte, sur nos instructions :</p>{" "}
               <ul>
-                <li><strong>Supabase</strong> — base de données et comptes, hébergés dans l&apos;UE (Irlande).</li>
-                <li><strong>Stripe Payments Europe</strong>{" "}(Irlande) — paiement ; vos coordonnées bancaires ne nous sont jamais transmises.</li>
-                <li><strong>Resend</strong>{" "}(États-Unis) — envoi des e-mails (alertes, récapitulatif, confirmations).</li>
+                <li><strong>Supabase</strong> — base de données et comptes, hébergés dans l&apos;UE (Irlande).</li>{" "}
+                <li><strong>Stripe Payments Europe</strong>{" "}(Irlande) — paiement ; vos coordonnées bancaires ne nous sont jamais transmises.</li>{" "}
+                <li><strong>Resend</strong>{" "}(États-Unis) — envoi des e-mails (alertes, récapitulatif, confirmations).</li>{" "}
                 <li><strong>GitHub</strong>{" "}(États-Unis) — hébergement des pages : votre adresse IP est vue lors du chargement, comme pour tout site.</li>
-              </ul>
+              </ul>{" "}
               <p>Les transferts hors de l&apos;UE sont encadrés par le cadre de protection des données UE–États-Unis ou par les clauses
-                contractuelles types de la Commission européenne.</p>
+                contractuelles types de la Commission européenne.</p>{" "}
               <p><strong>Intelligence artificielle.</strong>{" "}Les modèles d&apos;IA — Google Gemini (États-Unis), DeepSeek (Chine), Groq (États-Unis,
                 transcription des vidéos d&apos;audition et relecture) — ne reçoivent que des documents publics : lois, décrets, comptes rendus et
                 vidéos officielles, articles de presse. Aucune donnée de votre compte ne leur est envoyée. Seule exception : le sujet que vous tapez
                 dans « Tout sur un sujet » est envoyé à Google Gemini, sans votre nom ni votre adresse ; Google peut le conserver et s&apos;en servir pour
-                améliorer ses services — n&apos;y écrivez donc aucune information personnelle.</p>
+                améliorer ses services — n&apos;y écrivez donc aucune information personnelle.</p>{" "}
               <p><strong>Contenus de tiers.</strong>{" "}Les vidéos ne se chargent depuis YouTube (Google) que lorsque vous cliquez pour les lire, en mode
                 « confidentialité renforcée » ; certaines photos proviennent des sites de l&apos;Assemblée, du Sénat ou de Wikimedia Commons, qui voient
                 alors votre adresse IP.</p>
@@ -126,7 +126,7 @@ export default function Confidentialite() {
               <p>Le site n&apos;utilise que des traceurs nécessaires à son fonctionnement ou exemptés de consentement, à une exception près : le
                 traceur de parrainage, qui n&apos;est posé que si vous l&apos;acceptez, dans le bandeau affiché lorsque vous arrivez par le lien d&apos;un
                 membre. C&apos;est pourquoi le site ne présente pas de bandeau de cookies à chaque visite. Aucun traceur n&apos;est publicitaire ni partagé
-                avec un tiers.</p>
+                avec un tiers.</p>{" "}
               <div className="overflow-x-auto rounded-2xl border border-border">
                 <table className="w-full min-w-[560px] text-left text-[13px]">
                   <thead className="bg-muted text-[10px] uppercase tracking-widest text-muted-foreground">
@@ -138,10 +138,10 @@ export default function Confidentialite() {
                     ))}
                   </tbody>
                 </table>
-              </div>
+              </div>{" "}
               <p><strong>Mesure d&apos;audience.</strong>{" "}Elle sert uniquement à des statistiques de fréquentation pour notre propre compte : identifiant
                 tiré au hasard, aucun croisement avec d&apos;autres données, aucune transmission à des tiers, effacement au bout de 13 mois. Vous pouvez
-                vous y opposer ici :</p>
+                vous y opposer ici :</p>{" "}
               <RefusMesure />
             </>
           ),
@@ -152,13 +152,13 @@ export default function Confidentialite() {
             <>
               <p>Vous disposez des droits d&apos;accès, de rectification, d&apos;effacement, de limitation, de portabilité et d&apos;opposition, du droit de
                 retirer votre consentement à tout moment, et du droit de définir des directives sur le sort de vos données après votre décès
-                (loi Informatique et Libertés, art. 85).</p>
+                (loi Informatique et Libertés, art. 85).</p>{" "}
               <ul>
                 <li><strong>En libre-service :</strong>{" "}Mon compte → Mes données (téléchargement complet au format JSON, suppression du compte),
-                  Mon compte → Alertes (profil, suivis, accords).</li>
-                <li><strong>Par écrit :</strong> {CONTACT_EMAIL} ou <Link href="/contact">formulaire de contact</Link>. Réponse sous un mois.</li>
+                  Mon compte → Alertes (profil, suivis, accords).</li>{" "}
+                <li><strong>Par écrit :</strong> {CONTACT_EMAIL} ou <Link href="/contact">formulaire de contact</Link>. Réponse sous un mois.</li>{" "}
                 <li><strong>E-mails :</strong>{" "}chaque e-mail contient un lien pour vous désinscrire (en un clic pour le récapitulatif hebdomadaire).</li>
-              </ul>
+              </ul>{" "}
               <p>Si vous estimez que vos droits ne sont pas respectés, vous pouvez saisir la <strong>CNIL</strong>{" "}(3 place de Fontenoy, TSA 80715,
                 75334 Paris Cedex 07 — cnil.fr).</p>
             </>
@@ -171,15 +171,15 @@ export default function Confidentialite() {
               <p>Le site traite aussi des données sur des personnes qui ne sont pas ses membres : élus, candidats, membres du gouvernement et
                 autres personnalités publiques. Il s&apos;agit de leur nom, de leur photographie officielle, de leurs mandats et fonctions, de leur
                 parcours, de leurs votes, déclarations, propositions et rémunérations publiques, ainsi que des affaires judiciaires rapportées
-                par la presse.</p>
+                par la presse.</p>{" "}
               <ul>
-                <li><strong>Finalité :</strong>{" "}informer le public sur l&apos;action et les positions des responsables politiques.</li>
+                <li><strong>Finalité :</strong>{" "}informer le public sur l&apos;action et les positions des responsables politiques.</li>{" "}
                 <li><strong>Base légale :</strong>{" "}intérêt légitime et liberté d&apos;information (RGPD art. 6.1.f et art. 85 ; loi Informatique et
-                  Libertés, art. 80). Seules sont traitées les informations liées à la vie publique de ces personnes.</li>
+                  Libertés, art. 80). Seules sont traitées les informations liées à la vie publique de ces personnes.</li>{" "}
                 <li><strong>Sources :</strong>{" "}Assemblée nationale, Sénat, Parlement européen, Journal officiel, Haute Autorité pour la transparence
                   de la vie publique, ministère de l&apos;Intérieur, Wikidata et Wikipédia, sites des partis et des candidats, articles de presse —
-                  citées sur chaque fiche.</li>
-                <li><strong>Durée :</strong>{" "}le temps du mandat ou de la candidature, puis comme archive de la vie publique.</li>
+                  citées sur chaque fiche.</li>{" "}
+                <li><strong>Durée :</strong>{" "}le temps du mandat ou de la candidature, puis comme archive de la vie publique.</li>{" "}
                 <li><strong>Vos droits :</strong>{" "}une personne concernée peut demander la rectification d&apos;une erreur, s&apos;opposer à un traitement
                   qui ne relèverait pas de sa vie publique, ou exercer son droit de réponse, via la <Link href="/contact">page Contact</Link>.</li>
               </ul>

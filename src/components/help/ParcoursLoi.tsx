@@ -84,7 +84,7 @@ export default function ParcoursLoi() {
     <div className="mt-3 rounded-xl border border-border bg-slate-50/70 p-3 dark:border-slate-800 dark:bg-slate-800/40">
       <p className="mb-3 text-[10px] font-black uppercase tracking-widest text-muted-foreground">
         Le chemin complet d&apos;une loi
-      </p>
+      </p>{" "}
 
       <ol className="space-y-0">
         {ETAPES.map((e, i) => {
@@ -96,28 +96,28 @@ export default function ParcoursLoi() {
               <div className="flex shrink-0 flex-col items-center">
                 <span className={`flex h-7 w-7 items-center justify-center rounded-full text-[11px] font-black tabular-nums ${t.pastille}`}>
                   {e.n}
-                </span>
+                </span>{" "}
                 {!dernier && <span className={`w-0.5 flex-1 ${t.barre}`} aria-hidden />}
-              </div>
+              </div>{" "}
 
               <div className={`min-w-0 flex-1 ${dernier ? "pb-0" : "pb-4"}`}>
                 <div className="flex flex-wrap items-center gap-x-2 gap-y-1">
-                  <h5 className="text-[13px] font-black leading-tight text-foreground dark:text-white">{e.titre}</h5>
+                  <h5 className="text-[13px] font-black leading-tight text-foreground dark:text-white">{e.titre}</h5>{" "}
                   {e.conditionnel && (
                     <span className="rounded-full bg-amber-100 px-1.5 py-0.5 text-[8px] font-black uppercase tracking-widest text-amber-700 dark:bg-amber-500/20 dark:text-amber-300">
                       Seulement si besoin
                     </span>
                   )}
-                </div>
+                </div>{" "}
                 <span className={`mt-1 inline-block rounded-full px-2 py-0.5 text-[9px] font-black uppercase tracking-wider dark:bg-white/10 dark:text-slate-200 ${t.puce}`}>
                   {e.qui}
-                </span>
+                </span>{" "}
                 <p className="mt-1.5 text-[11.5px] leading-snug text-muted-foreground dark:text-slate-300">{e.detail}</p>
-              </div>
+              </div>{" "}
             </li>
           );
         })}
-      </ol>
+      </ol>{" "}
 
       <p className="mt-3 border-t border-border pt-2.5 text-[10.5px] leading-snug text-muted-foreground dark:border-slate-700 dark:text-slate-400">
         Les étapes marquées « seulement si besoin » n&apos;ont pas toujours lieu : un texte voté

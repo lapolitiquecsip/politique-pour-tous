@@ -48,7 +48,7 @@ export const SenatorCard = memo(function SenatorCard({
       }`}
     >
       {/* Decorative Senate Band */}
-      <div className="absolute top-0 left-0 w-full h-1 bg-gradient-to-r from-red-600 via-white to-blue-600 opacity-50"></div>
+      <div className="absolute top-0 left-0 w-full h-1 bg-gradient-to-r from-red-600 via-white to-blue-600 opacity-50"></div>{" "}
       
       {!isBlurred ? (
         <Link href={`/senateurs/${senator.slug}`} className="w-full flex flex-col items-center">
@@ -56,7 +56,7 @@ export const SenatorCard = memo(function SenatorCard({
         </Link>
       ) : (
         <SenatorContent senator={senator} isBlurred={isBlurred} imgError={imgError} setImgError={setImgError} initials={initials} colorClass={colorClass} />
-      )}
+      )}{" "}
 
       {isBlurred && (
         <div className="absolute inset-0 flex items-center justify-center">
@@ -64,7 +64,7 @@ export const SenatorCard = memo(function SenatorCard({
             <Lock className="w-5 h-5 text-amber-700 dark:text-amber-400" />
           </div>
         </div>
-      )}
+      )}{" "}
 
       {!isBlurred && (
         <div className="absolute top-4 right-4 text-muted-foreground opacity-0 group-hover:opacity-100 group-hover:text-amber-600 transition-all transform translate-x-2 group-hover:translate-x-0">
@@ -93,15 +93,15 @@ function SenatorContent({ senator, isBlurred, imgError, setImgError, initials, c
             </div>
           )}
         </div>
-      </div>
+      </div>{" "}
       
       <h3 className="text-xl font-bold text-foreground mb-2 group-hover:text-amber-700 transition-colors mt-12">
         {senator.first_name} {senator.last_name}
-      </h3>
+      </h3>{" "}
       
       <span className={`px-3 py-1 text-[10px] font-bold uppercase tracking-wider rounded-full text-white mb-3 ${colorClass} max-w-full truncate block`}>
         {getFullPartyName(senator.party)}
-      </span>
+      </span>{" "}
       
       <p className="text-muted-foreground text-sm">
         Sénat • {senator.department}

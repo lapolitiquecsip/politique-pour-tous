@@ -68,27 +68,27 @@ export default function PartyElectionMap({ slug, color, name }: { slug: string; 
   return (
     <div className="mt-6 rounded-3xl border border-border bg-card p-6">
       <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
-        <h2 className="text-lg font-black uppercase tracking-widest text-foreground">Résultats électoraux</h2>
+        <h2 className="text-lg font-black uppercase tracking-widest text-foreground">Résultats électoraux</h2>{" "}
         {available.length > 1 && (
           <div className="inline-flex flex-wrap rounded-full border border-border bg-muted p-1">
             {available.map(e => (
               <button key={e.key} onClick={() => { setTabKey(e.key); setHover(null); }}
                 style={tabKey === e.key ? { background: color } : undefined}
                 className={`rounded-full px-4 py-1.5 text-xs font-black uppercase tracking-widest transition ${tabKey === e.key ? "text-white shadow-sm" : "text-muted-foreground hover:text-slate-800"}`}>
-                {e.tab}
+                {e.tab}{" "}
               </button>
             ))}
           </div>
         )}
-      </div>
+      </div>{" "}
       {/* EN TITRE : le score NATIONAL de l'élection sélectionnée (gros chiffre), puis la carte
           permet d'explorer le détail par collectivité. */}
       <div className="mt-4 flex flex-wrap items-baseline gap-x-3 gap-y-1">
-        <span className="text-4xl font-black leading-none tabular-nums text-foreground">{serie.national.toLocaleString("fr-FR", { maximumFractionDigits: 1 })} %</span>
-        <span className="text-sm font-bold text-muted-foreground">à l&apos;échelle nationale · {el.label}</span>
+        <span className="text-4xl font-black leading-none tabular-nums text-foreground">{serie.national.toLocaleString("fr-FR", { maximumFractionDigits: 1 })} %</span>{" "}
+        <span className="text-sm font-bold text-muted-foreground">à l&apos;échelle nationale · {el.label}</span>{" "}
         <span className="rounded-full bg-emerald-50 dark:bg-emerald-500/10 px-2 py-0.5 text-[9px] font-black uppercase tracking-widest text-emerald-700 dark:text-emerald-300 ring-1 ring-emerald-200">Officiel</span>
-      </div>
-      <p className="mt-1.5 text-sm text-muted-foreground">{el.desc} — survolez une collectivité pour voir son score.</p>
+      </div>{" "}
+      <p className="mt-1.5 text-sm text-muted-foreground">{el.desc} — survolez une collectivité pour voir son score.</p>{" "}
 
       <div className="mt-4 grid gap-6 md:grid-cols-[1.4fr_1fr] md:items-center">
         <div className="relative">
@@ -103,36 +103,36 @@ export default function PartyElectionMap({ slug, color, name }: { slug: string; 
                 </path>
               );
             })}
-          </svg>
+          </svg>{" "}
           {hover && (
             <div className="pointer-events-none absolute left-2 top-2 rounded-lg bg-slate-900 px-3 py-1.5 text-xs font-black text-white shadow-lg">
               {deptLabel(hover.code)} · <span style={{ color }}>{hover.v.toLocaleString("fr-FR")} %</span>
             </div>
           )}
-        </div>
+        </div>{" "}
 
         <div>
-          <p className="mb-2 text-[10px] font-black uppercase tracking-widest text-muted-foreground">Part des voix</p>
+          <p className="mb-2 text-[10px] font-black uppercase tracking-widest text-muted-foreground">Part des voix</p>{" "}
           <div className="flex flex-col gap-1.5">
             {bands.map((s, i) => (
               <div key={i} className="flex items-center gap-2 text-xs text-muted-foreground">
-                <span className="h-3.5 w-6 rounded ring-1 ring-black/5" style={{ background: s.color }} /> {s.label}
+                <span className="h-3.5 w-6 rounded ring-1 ring-black/5" style={{ background: s.color }} /> {s.label}{" "}
               </div>
             ))}
-          </div>
-          <p className="mb-2 mt-5 text-[10px] font-black uppercase tracking-widest text-muted-foreground">Départements en tête</p>
+          </div>{" "}
+          <p className="mb-2 mt-5 text-[10px] font-black uppercase tracking-widest text-muted-foreground">Départements en tête</p>{" "}
           <ol className="space-y-1.5">
             {top.map(([code, v], i) => (
               <li key={code} className="flex items-center gap-2 text-sm">
-                <span className="w-5 text-right font-black tabular-nums text-slate-400">{i + 1}</span>
-                <span className="h-3 w-3 rounded-full" style={{ background: colorFor(v) }} />
-                <span className="font-bold text-foreground">{deptLabel(code)}</span>
-                <span className="ml-auto font-black tabular-nums text-foreground">{v.toLocaleString("fr-FR")} %</span>
+                <span className="w-5 text-right font-black tabular-nums text-slate-400">{i + 1}</span>{" "}
+                <span className="h-3 w-3 rounded-full" style={{ background: colorFor(v) }} />{" "}
+                <span className="font-bold text-foreground">{deptLabel(code)}</span>{" "}
+                <span className="ml-auto font-black tabular-nums text-foreground">{v.toLocaleString("fr-FR")} %</span>{" "}
               </li>
             ))}
           </ol>
         </div>
-      </div>
+      </div>{" "}
 
       <a href={el.url} target="_blank" rel="noopener noreferrer" className="mt-4 inline-flex items-start gap-1.5 text-[11px] leading-snug text-muted-foreground hover:text-slate-700">
         <ExternalLink size={11} className="mt-0.5 shrink-0" /> {el.source}

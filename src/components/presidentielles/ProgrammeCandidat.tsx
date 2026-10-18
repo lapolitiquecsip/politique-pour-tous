@@ -61,11 +61,11 @@ export default function ProgrammeCandidat({ proposals, sources = [], titre = "So
 
   return (
     <section className="mt-8">
-      <h3 className="text-2xl font-staatliches uppercase text-foreground">{titre}</h3>
+      <h3 className="text-2xl font-staatliches uppercase text-foreground">{titre}</h3>{" "}
       <p className="mt-1 text-xs text-muted-foreground">
         Toutes {nomCandidat ? `les idées de ${nomCandidat}` : "ses idées"}, par thème — issues {urls.some(estVideo) && !urls.every(estVideo) ? "du programme officiel et de ses présentations" : urls.every(estVideo) ? "de sa présentation officielle" : "du programme officiel"}.
         Cliquez sur <HelpCircle size={12} className="inline -mt-0.5" /> pour comprendre pourquoi.
-      </p>
+      </p>{" "}
       <div className="mt-4 space-y-4">
         {Object.entries(groups).map(([theme, g]) => {
           const { Icon, c, bg, dot } = themeStyle(theme);
@@ -74,15 +74,15 @@ export default function ProgrammeCandidat({ proposals, sources = [], titre = "So
             <div key={theme} className="overflow-hidden rounded-2xl border border-border">
               <button onClick={() => setOpenTheme(s => bascule(s, theme))} aria-expanded={isOpen}
                 className={`flex w-full items-center gap-2.5 ${bg} px-4 py-3 text-left transition hover:brightness-95`}>
-                <span className={`flex h-8 w-8 shrink-0 items-center justify-center rounded-xl bg-card ${c} shadow-sm`}><Icon size={16} /></span>
-                <p className={`text-sm font-black uppercase tracking-widest ${c}`}>{theme}</p>
-                <span className="text-[10px] font-black text-muted-foreground">· {g.items.length}</span>
+                <span className={`flex h-8 w-8 shrink-0 items-center justify-center rounded-xl bg-card ${c} shadow-sm`}><Icon size={16} /></span>{" "}
+                <p className={`text-sm font-black uppercase tracking-widest ${c}`}>{theme}</p>{" "}
+                <span className="text-[10px] font-black text-muted-foreground">· {g.items.length}</span>{" "}
                 <ChevronDown size={18} className={`ml-auto shrink-0 ${c} transition-transform ${isOpen ? "rotate-180" : ""}`} />
-              </button>
+              </button>{" "}
               <AnimatePresence initial={false}>
                 {isOpen && (
                   <motion.div initial={{ height: 0, opacity: 0 }} animate={{ height: "auto", opacity: 1 }} exit={{ height: 0, opacity: 0 }} className="overflow-hidden">
-                    {g.ctx && <p className="border-b border-border bg-muted px-4 py-3 text-sm italic leading-6 text-muted-foreground">💡 {g.ctx}</p>}
+                    {g.ctx && <p className="border-b border-border bg-muted px-4 py-3 text-sm italic leading-6 text-muted-foreground">💡 {g.ctx}</p>}{" "}
                     <ul className="divide-y divide-slate-50 bg-card dark:divide-slate-800">
                       {g.items.map((p, i) => {
                         const exKey = `${theme}#${i}`;
@@ -90,40 +90,40 @@ export default function ProgrammeCandidat({ proposals, sources = [], titre = "So
                         return (
                           <li key={i} className="px-4 py-2.5 text-sm leading-6 text-slate-700 dark:text-slate-200">
                             <div className="flex items-start gap-2.5">
-                              <span className={`mt-2 h-1.5 w-1.5 shrink-0 rounded-full ${dot}`} />
-                              <span className="flex-1">{p.text}</span>
+                              <span className={`mt-2 h-1.5 w-1.5 shrink-0 rounded-full ${dot}`} />{" "}
+                              <span className="flex-1">{p.text}</span>{" "}
                               {p.explanation && (
                                 <button onClick={() => setOpenExpl(s => bascule(s, exKey))} title="Comprendre cette proposition"
                                   className={`mt-0.5 flex h-6 w-6 shrink-0 items-center justify-center rounded-full border transition ${exOpen ? "border-violet-300 bg-violet-100 text-violet-700 dark:bg-violet-500/10 dark:text-violet-300" : "border-violet-200 bg-card text-violet-500 hover:bg-violet-50 dark:border-violet-500/25"}`}>
                                   <HelpCircle size={14} />
                                 </button>
                               )}
-                            </div>
+                            </div>{" "}
                             <AnimatePresence initial={false}>
                               {exOpen && p.explanation && (
                                 <motion.div initial={{ height: 0, opacity: 0 }} animate={{ height: "auto", opacity: 1 }} exit={{ height: 0, opacity: 0 }} className="overflow-hidden">
                                   <p className="ml-4 mt-2 rounded-xl border-l-2 border-violet-300 bg-violet-50/70 px-3 py-2.5 text-[13px] leading-6 text-muted-foreground dark:bg-violet-500/10">{p.explanation}</p>
                                 </motion.div>
                               )}
-                            </AnimatePresence>
+                            </AnimatePresence>{" "}
                           </li>
                         );
                       })}
                     </ul>
                   </motion.div>
                 )}
-              </AnimatePresence>
+              </AnimatePresence>{" "}
             </div>
           );
         })}
-      </div>
+      </div>{" "}
       <div className="mt-3 flex flex-col gap-1.5">
         {urls.map(u => (
           <a key={u} href={u} target="_blank" rel="noreferrer" className="inline-flex items-center gap-1.5 text-[11px] font-black uppercase tracking-widest text-blue-700 hover:underline dark:text-blue-300">
-            {estVideo(u) ? <PlayCircle size={12} /> : <ExternalLink size={12} />} {libelleSource(u)}
+            {estVideo(u) ? <PlayCircle size={12} /> : <ExternalLink size={12} />} {libelleSource(u)}{" "}
           </a>
         ))}
-      </div>
+      </div>{" "}
       <MentionIA texte="Propositions restructurées par IA à partir des sources officielles citées (chiffres vérifiés contre le texte ou le discours) ; les explications « ? » sont rédigées par IA. Seule la source officielle fait foi." />
     </section>
   );

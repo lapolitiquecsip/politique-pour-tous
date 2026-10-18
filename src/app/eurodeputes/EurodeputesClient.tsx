@@ -64,14 +64,14 @@ export default function EurodeputesClient({ meps }: { meps: any[] }) {
         <div className="flex flex-col items-center gap-2 text-center">
           <h1 className="font-staatliches text-5xl uppercase leading-none tracking-tight text-[#003399] dark:text-white md:text-6xl">
             Euro<span className="text-[#FFCC00]">députés</span>
-          </h1>
+          </h1>{" "}
           <p className="inline-flex items-center gap-2 text-[11px] font-black uppercase tracking-widest text-[#003399] dark:text-[#8CA6E8]">
             <Star size={14} className="fill-[#FFCC00] text-[#FFCC00]" /> {meps.length} eurodéputés français
-          </p>
+          </p>{" "}
           <p className="inline-flex items-center gap-2 rounded-full border border-[#003399]/20 bg-[#003399]/[0.06] px-4 py-1.5 text-xs font-bold text-[#003399] dark:border-[#8CA6E8]/25 dark:bg-[#8CA6E8]/10 dark:text-[#8CA6E8]">
             <MousePointerClick size={14} /> Cliquez sur un eurodéputé pour voir toute son activité : ses votes par thème et sa présence.
           </p>
-        </div>
+        </div>{" "}
         <div className="flex flex-col sm:flex-row gap-3">
           <div className="relative flex-1">
             <Search className="absolute left-4 top-1/2 -translate-y-1/2 text-slate-400" size={16} />
@@ -81,21 +81,21 @@ export default function EurodeputesClient({ meps }: { meps: any[] }) {
               className="w-full rounded-2xl border border-border dark:border-slate-700 bg-card dark:bg-slate-900 py-3 pl-11 pr-4 text-sm text-foreground dark:text-white outline-none focus:border-[#003399]"
             />
           </div>
-        </div>
+        </div>{" "}
 
         {/* Un seul bloc pour filtrer ET comprendre les sigles. Les puces de filtre ne
             portaient que le sigle, et la légende répétait la même liste juste en dessous :
             l'utilisateur devait faire l'aller-retour pour savoir ce que « PfE » désigne. */}
         <div>
           <div className="mb-2.5 flex flex-wrap items-center justify-between gap-2">
-            <p className="text-[10px] font-black uppercase tracking-widest text-muted-foreground">Les groupes du Parlement européen</p>
+            <p className="text-[10px] font-black uppercase tracking-widest text-muted-foreground">Les groupes du Parlement européen</p>{" "}
             <button
               onClick={() => setGroup(null)}
               className={`rounded-full border px-3.5 py-1.5 text-[10px] font-black uppercase tracking-widest transition ${group === null ? "bg-[#003399] text-white border-[#003399] shadow-md" : "bg-card dark:bg-slate-900 text-muted-foreground border-border dark:border-slate-700 hover:border-slate-300"}`}
             >
               Tous ({meps.length})
             </button>
-          </div>
+          </div>{" "}
           <div className="grid gap-2 sm:grid-cols-2 lg:grid-cols-3">
             {groups.map(([g, n]) => {
               const actif = group === g;
@@ -106,18 +106,18 @@ export default function EurodeputesClient({ meps }: { meps: any[] }) {
                   style={actif ? { background: `linear-gradient(135deg, ${grad(g)[0]}, ${grad(g)[1]})`, boxShadow: `0 4px 12px ${grad(g)[0]}55` } : undefined}
                   className={`flex items-center gap-2.5 rounded-xl border px-3 py-2.5 text-left transition ${actif ? "border-transparent text-white" : "border-border bg-card text-muted-foreground hover:border-slate-300 dark:border-slate-700 dark:bg-slate-900"}`}
                 >
-                  <span className="h-2.5 w-2.5 shrink-0 rounded-sm" style={{ background: actif ? "rgba(255,255,255,0.9)" : grad(g)[0] }} />
+                  <span className="h-2.5 w-2.5 shrink-0 rounded-sm" style={{ background: actif ? "rgba(255,255,255,0.9)" : grad(g)[0] }} />{" "}
                   <span className="min-w-0">
                     <span className="block text-[11px] font-black uppercase tracking-widest">
                       {g} <span className={actif ? "text-white/70" : "text-muted-foreground"}>· {n}</span>
-                    </span>
+                    </span>{" "}
                     <span className={`block text-[11px] leading-snug ${actif ? "text-white/85" : "text-muted-foreground dark:text-slate-400"}`}>{groupName(g)}</span>
-                  </span>
+                  </span>{" "}
                 </button>
               );
             })}
           </div>
-        </div>
+        </div>{" "}
 
         <div className="grid grid-cols-3 sm:grid-cols-4 md:grid-cols-5 lg:grid-cols-6 gap-3">
           {shown.map(m => {
@@ -144,20 +144,20 @@ export default function EurodeputesClient({ meps }: { meps: any[] }) {
                   className="absolute left-2.5 top-2.5 inline-flex items-center gap-1.5 rounded-full px-2.5 py-1 text-[9px] font-black uppercase tracking-widest text-white shadow-lg ring-1 ring-white/40 backdrop-blur-sm"
                   style={{ background: `linear-gradient(135deg, ${grad(m.ep_group_code)[0]}, ${grad(m.ep_group_code)[1]})`, boxShadow: `0 4px 12px ${grad(m.ep_group_code)[0]}55` }}
                 >
-                  <span className="h-1.5 w-1.5 rounded-full bg-white/90" />
+                  <span className="h-1.5 w-1.5 rounded-full bg-white/90" />{" "}
                   {m.ep_group_code}
                 </span>
-              </div>
+              </div>{" "}
               <div className="p-3">
                 {/* Nom TOUJOURS lisible (blanc en sombre) — l'ancienne couleur de groupe le rendait
                     illisible pour les groupes foncés (PFE, ECR…). La couleur du groupe reste sur le badge. */}
-                <p className="text-sm font-bold leading-tight text-foreground dark:text-white line-clamp-2">{m.full_name}</p>
+                <p className="text-sm font-bold leading-tight text-foreground dark:text-white line-clamp-2">{m.full_name}</p>{" "}
                 <p className="mt-0.5 text-[11px] font-medium text-muted-foreground dark:text-slate-300 line-clamp-1">{m.national_party}</p>
-              </div>
+              </div>{" "}
             </Link>
             );
           })}
-        </div>
+        </div>{" "}
         {shown.length === 0 && <p className="py-12 text-center text-sm italic text-slate-400">Aucun eurodéputé ne correspond.</p>}
       </div>
     </main>

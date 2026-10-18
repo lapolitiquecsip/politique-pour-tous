@@ -41,6 +41,12 @@ jobs:
       # next.config porte `typescript.ignoreBuildErrors: true` : le build ne
       # vérifie donc RIEN. Un composant utilisé sans être importé est ainsi parti
       # en production sans que rien ne s'allume. tsc passe ici avant le build.
+      # Mots collés dans le texte brut (« PÉTITIONSPOUVOIR ») : deux éléments JSX écrits sur
+      # deux lignes n'ont aucune espace entre eux pour Google et les lecteurs d'écran. Le script
+      # ajoute {" "} là où elle est invisible à l'écran ; il tourne à chaque déploiement pour que
+      # le code écrit depuis soit corrigé lui aussi (sans rien changer au dépôt).
+      - name: Espaces du texte brut
+        run: node scripts/espaces-texte-brut.mjs --ecrire
       - name: Vérification des types
         run: npm run typecheck
       - name: Clean previous build output

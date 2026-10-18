@@ -1,7 +1,7 @@
 import FaqSection from "@/components/home/FaqSection";
 
 export const metadata = {
-  title: "FAQ — La Politique Pour Tous",
+  title: "Questions fréquentes",
   description: "Questions fréquentes : d'où proviennent les données, neutralité du site, abonnement premium…",
 };
 

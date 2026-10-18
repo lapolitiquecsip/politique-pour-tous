@@ -108,28 +108,28 @@ export default function FranceMap({ selectedDepartment, onDepartmentSelect }: Fr
 
   return (
     <div className="relative w-full">
-      <style dangerouslySetInnerHTML={{ __html: REGION_CSS }} />
+      <style dangerouslySetInnerHTML={{ __html: REGION_CSS }} />{" "}
 
       <div className="mb-4 flex flex-wrap items-center justify-between gap-3">
         <div className="flex items-center gap-2">
-          <MapPin className="h-5 w-5 shrink-0 text-red-500" />
+          <MapPin className="h-5 w-5 shrink-0 text-red-500" />{" "}
           <span className="text-sm font-semibold text-foreground">
             {selectedDepartment
               ? "Touchez un autre département ou réinitialisez"
               : "Touchez un département — Hexagone, Corse ou Outre-mer"}
           </span>
-        </div>
+        </div>{" "}
 
         {selectedDepartment && (
           <button
             onClick={() => onDepartmentSelect(null)}
             className="flex shrink-0 items-center gap-1.5 rounded-full bg-red-500/10 px-3 py-1.5 text-xs font-semibold text-red-600 transition hover:bg-red-500/20 active:scale-95 dark:text-red-400"
           >
-            <X className="h-3.5 w-3.5" />
+            <X className="h-3.5 w-3.5" />{" "}
             Voir toute la France
           </button>
         )}
-      </div>
+      </div>{" "}
 
       {/* Sur un téléphone, viser le Val-de-Marne au doigt relève de l'exploit : la liste
           déroulante fait le même travail, et reste utile au clavier sur grand écran. */}
@@ -143,19 +143,19 @@ export default function FranceMap({ selectedDepartment, onDepartmentSelect }: Fr
           <option value="">Choisir un département…</option>
           {liste.map(d => <option key={d.code} value={d.code}>{d.code} — {d.nom}</option>)}
         </select>
-      </label>
+      </label>{" "}
 
       <div className="relative overflow-hidden rounded-2xl border border-border bg-card p-4 shadow-sm md:p-8">
-        <div className="pointer-events-none absolute inset-0 rounded-2xl bg-gradient-to-br from-red-500/[0.05] via-transparent to-red-500/[0.02]" />
+        <div className="pointer-events-none absolute inset-0 rounded-2xl bg-gradient-to-br from-red-500/[0.05] via-transparent to-red-500/[0.02]" />{" "}
 
         <div
           ref={bulle}
           style={{ opacity: 0, transition: "opacity .12s ease-out" }}
           className="pointer-events-none absolute right-4 top-4 z-20 flex min-w-[130px] flex-col rounded-xl bg-slate-900 px-4 py-2.5 text-sm font-bold text-white shadow-2xl dark:bg-slate-100 dark:text-slate-900 md:right-6 md:top-6"
         >
-          <span ref={bulleCode} className="mb-0.5 text-[10px] uppercase tracking-wider opacity-60" />
+          <span ref={bulleCode} className="mb-0.5 text-[10px] uppercase tracking-wider opacity-60" />{" "}
           <span ref={bulleNom} className="text-nowrap text-base" />
-        </div>
+        </div>{" "}
 
         <svg
           viewBox={VIEWBOX}

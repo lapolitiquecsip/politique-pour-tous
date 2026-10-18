@@ -56,8 +56,8 @@ function DefaultDemoCard({ item, isCurrent }: { item: any; isCurrent: boolean })
       className="relative h-[420px] w-[280px] overflow-hidden rounded-3xl bg-card ring-1 ring-border/20"
       style={{ boxShadow: isCurrent ? "0 25px 50px -12px rgba(0,0,0,0.15), 0 0 0 1px rgba(0,0,0,0.05)" : "0 10px 30px -10px rgba(0,0,0,0.1)" }}
     >
-      <div className="absolute inset-0 rounded-3xl bg-gradient-to-b from-black/20 via-transparent to-black/40 z-10" />
-      <Image src={item.src || "/placeholder.svg"} alt={item.alt || "Image"} fill className="object-cover w-full h-full" draggable={false} priority={isCurrent} />
+      <div className="absolute inset-0 rounded-3xl bg-gradient-to-b from-black/20 via-transparent to-black/40 z-10" />{" "}
+      <Image src={item.src || "/placeholder.svg"} alt={item.alt || "Image"} fill className="object-cover w-full h-full" draggable={false} priority={isCurrent} />{" "}
       <div className="absolute inset-x-0 bottom-0 p-6 z-20 text-white">
         <h3 className="font-bold text-lg leading-tight">{item.alt || "La Politique"}</h3>
       </div>
@@ -303,7 +303,7 @@ export function VerticalImageStack({
           className={`absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 rounded-full ${isMobile ? "h-[320px] w-[320px] blur-2xl" : "h-[550px] w-[550px] blur-3xl transition-colors duration-500"}`}
           style={{ backgroundColor: vividAt(currentIndex), opacity: 0.09 }}
         />
-      </div>
+      </div>{" "}
 
       {/* Swipe Overlay Indicators (Tinder style visual feedback) */}
       <AnimatePresence>
@@ -314,7 +314,7 @@ export function VerticalImageStack({
             exit={{ opacity: 0, scale: 0.8, y: -20 }}
             className={`absolute z-40 pointer-events-none bg-slate-900/90 backdrop-blur-md px-6 py-3 rounded-full border border-slate-700 shadow-2xl flex items-center gap-2 text-white font-black text-sm uppercase tracking-widest`}
           >
-            <span>SUIVANT</span>
+            <span>SUIVANT</span>{" "}
             <svg className="w-4 h-4 animate-bounce" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="3" d="M5 10l7-7m0 0l7 7m-7-7v18" />
             </svg>
@@ -327,13 +327,13 @@ export function VerticalImageStack({
             exit={{ opacity: 0, scale: 0.8, y: 20 }}
             className={`absolute z-40 pointer-events-none bg-slate-900/90 backdrop-blur-md px-6 py-3 rounded-full border border-slate-700 shadow-2xl flex items-center gap-2 text-white font-black text-sm uppercase tracking-widest`}
           >
-            <span>PRÉCÉDENT</span>
+            <span>PRÉCÉDENT</span>{" "}
             <svg className="w-4 h-4 animate-bounce" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="3" d="M19 14l-7 7m0 0l-7-7m7 7V3" />
             </svg>
           </motion.div>
         )}
-      </AnimatePresence>
+      </AnimatePresence>{" "}
 
       {/* Particles Container for dopamine confetti */}
       <div className="absolute inset-0 pointer-events-none z-30 overflow-hidden flex items-center justify-center">
@@ -358,7 +358,7 @@ export function VerticalImageStack({
             }}
           />
         ))}
-      </div>
+      </div>{" "}
 
       {/* Card Stack */}
       {isMobile ? (
@@ -381,7 +381,7 @@ export function VerticalImageStack({
               onDragEnd={handleDragEnd}
               style={{ willChange: "transform, opacity" }}
             >
-              {items[currentIndex] && (renderCard ? renderCard(items[currentIndex], true, currentIndex) : <DefaultDemoCard item={items[currentIndex]} isCurrent />)}
+              {items[currentIndex] && (renderCard ? renderCard(items[currentIndex], true, currentIndex) : <DefaultDemoCard item={items[currentIndex]} isCurrent />)}{" "}
             </motion.div>
           </AnimatePresence>
         </div>
@@ -411,12 +411,12 @@ export function VerticalImageStack({
               onDragEnd={handleDragEnd}
               style={{ transformStyle: "preserve-3d", zIndex: style.zIndex, willChange: "transform, opacity" }}
             >
-              {renderCard ? renderCard(item, isCurrent, absoluteIndex) : <DefaultDemoCard item={item} isCurrent={isCurrent} />}
+              {renderCard ? renderCard(item, isCurrent, absoluteIndex) : <DefaultDemoCard item={item} isCurrent={isCurrent} />}{" "}
             </motion.div>
           )
         })}
       </div>
-      )}
+      )}{" "}
 
       {/* Instruction hint / Tinder-style Controls merged */}
       <div className="absolute bottom-4 left-1/2 z-30 flex -translate-x-1/2 select-none items-center gap-4">
@@ -431,11 +431,11 @@ export function VerticalImageStack({
           <svg className="w-5 h-5 stroke-[2.5]" fill="none" stroke="currentColor" viewBox="0 0 24 24">
             <path strokeLinecap="round" strokeLinejoin="round" d="M19 9l-7 7-7-7" />
           </svg>
-        </motion.button>
+        </motion.button>{" "}
 
         <span className="select-none text-[10px] font-bold uppercase tracking-[0.2em] text-muted-foreground/70 tabular-nums">
           {currentIndex + 1} / {items.length}
-        </span>
+        </span>{" "}
 
         <motion.button
           whileHover={{ scale: 1.15 }}
@@ -449,7 +449,7 @@ export function VerticalImageStack({
             <path strokeLinecap="round" strokeLinejoin="round" d="M5 15l7-7 7 7" />
           </svg>
         </motion.button>
-      </div>
+      </div>{" "}
 
 
 
@@ -463,10 +463,10 @@ export function VerticalImageStack({
         >
           <span className="flex items-center gap-1 text-[9px] font-black uppercase tracking-widest text-amber-700 dark:text-amber-400">
             Combo {combo > 0 ? "🔥" : "💤"}
-          </span>
+          </span>{" "}
           <span className="bg-gradient-to-b from-amber-500 to-orange-600 bg-clip-text text-5xl font-black leading-none tabular-nums text-transparent">
             {combo}
-          </span>
+          </span>{" "}
 
           {/* Progression vers le prochain palier. */}
           <div className="w-full">
@@ -476,23 +476,23 @@ export function VerticalImageStack({
                 animate={{ width: `${Math.min(100, (combo / nextMilestone(combo)) * 100)}%` }}
                 transition={{ type: "spring", stiffness: 200, damping: 26 }}
               />
-            </div>
+            </div>{" "}
             <span className="mt-1 block text-[9px] font-bold uppercase tracking-tight text-muted-foreground">
               {combo >= (MILESTONES[MILESTONES.length - 1]) ? "Palier max 👑" : `Palier à ${nextMilestone(combo)}`}
             </span>
-          </div>
+          </div>{" "}
 
           <span className="text-[9px] font-bold uppercase leading-tight tracking-tight text-muted-foreground dark:text-slate-400">
             {getStreakMessage(combo)}
-          </span>
+          </span>{" "}
 
           {best > 0 && (
             <span className="mt-0.5 flex items-center gap-1 rounded-full bg-amber-50 px-2.5 py-1 text-[9px] font-black uppercase tracking-widest text-amber-600 dark:bg-amber-500/10">
               🏆 Record {best}
             </span>
-          )}
+          )}{" "}
         </motion.div>
-      </div>
+      </div>{" "}
 
       {/* Points de progression dans le fil (drive de complétion). */}
       <div className="absolute left-6 top-1/2 hidden -translate-y-1/2 flex-col items-center gap-1.5 md:flex">
@@ -504,7 +504,7 @@ export function VerticalImageStack({
             <span key={i} className={`rounded-full transition-all duration-300 ${active ? "h-5 w-1.5 bg-amber-500" : done ? "h-1.5 w-1.5 bg-amber-400/70" : "h-1.5 w-1.5 bg-slate-300 dark:bg-slate-700"}`} />
           );
         })}
-      </div>
+      </div>{" "}
 
       {/* Célébration de palier (toast central). */}
       <AnimatePresence>
@@ -517,7 +517,7 @@ export function VerticalImageStack({
             transition={{ type: "spring", stiffness: 320, damping: 18 }}
             className="pointer-events-none absolute top-10 z-50 flex items-center gap-2 rounded-full bg-gradient-to-r from-amber-500 to-orange-600 px-6 py-3 text-sm font-black uppercase tracking-widest text-white shadow-2xl shadow-orange-500/40"
           >
-            {milestone.value} d'affilée · {getStreakMessage(milestone.value)}
+            {milestone.value} d'affilée · {getStreakMessage(milestone.value)}{" "}
           </motion.div>
         )}
       </AnimatePresence>

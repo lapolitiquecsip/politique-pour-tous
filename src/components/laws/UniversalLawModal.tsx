@@ -86,7 +86,7 @@ export default function UniversalLawModal({ law, isOpen, onClose, onNext, onPrev
             exit={{ opacity: 0 }}
             onClick={onClose}
             className="absolute inset-0 bg-slate-950/60 backdrop-blur-md"
-          />
+          />{" "}
 
           {/* Modal Content */}
           <motion.div
@@ -114,19 +114,19 @@ export default function UniversalLawModal({ law, isOpen, onClose, onNext, onPrev
                     <BookmarkCheck size={18} className="fill-current" />
                   ) : (
                     <Bookmark size={18} />
-                  )}
+                  )}{" "}
                   <span className="text-[10px] font-black uppercase tracking-widest hidden md:block">
                     {isSaved ? "Enregistré" : "Enregistrer"}
                   </span>
                 </button>
-              )}
+              )}{" "}
               <button 
                 onClick={onClose}
                 className="p-2.5 rounded-full bg-slate-100 dark:bg-slate-500/10 text-muted-foreground hover:bg-slate-200 hover:text-foreground transition-all shadow-sm"
               >
                 <X size={20} />
               </button>
-            </div>
+            </div>{" "}
 
             <div className="overflow-y-auto flex-1 custom-scrollbar">
               {isScrutin ? (
@@ -137,37 +137,37 @@ export default function UniversalLawModal({ law, isOpen, onClose, onNext, onPrev
                       <div className="flex items-center gap-3 mb-3">
                         <span className="px-3 py-1 bg-blue-600 text-white text-[9px] font-black uppercase tracking-widest rounded-lg">
                           {law.category}
-                        </span>
+                        </span>{" "}
                         <span className="text-[10px] font-bold text-muted-foreground uppercase tracking-widest">
                           Scrutin public n°{law.numero} — {new Date(law.date_scrutin).toLocaleDateString('fr-FR', { day: 'numeric', month: 'long', year: 'numeric' })}
                         </span>
-                      </div>
+                      </div>{" "}
                       <h2 className="text-xl md:text-2xl font-black text-foreground leading-tight italic tracking-tighter">
                         {law.objet}
                       </h2>
                     </div>
-                  </div>
+                  </div>{" "}
 
                   <div className="grid grid-cols-1 lg:grid-cols-12 gap-12 items-start">
                     <div className="lg:col-span-7 space-y-8">
                       <div className="flex items-center gap-3">
-                        <div className="w-1.5 h-8 bg-slate-900 rounded-full" />
+                        <div className="w-1.5 h-8 bg-slate-900 rounded-full" />{" "}
                         <h3 className="text-xl font-black uppercase tracking-tighter italic">Répartition des sièges</h3>
-                      </div>
+                      </div>{" "}
                       <div className="bg-slate-50/50 dark:bg-slate-500/10 rounded-[2rem] p-4 border border-border">
                         <HemicycleVisual groups={law.group_results || []} />
-                      </div>
+                      </div>{" "}
 
                       {law.summary && (
                          <section className="pt-8">
                             <h3 className="text-lg font-bold text-foreground mb-4 flex items-center gap-2">
                               <Info className="text-blue-500" size={20} /> Résumé du scrutin
-                            </h3>
+                            </h3>{" "}
                             <p className="text-muted-foreground leading-relaxed bg-muted p-6 rounded-3xl border border-border italic">
                               {law.summary}
                             </p>
                          </section>
-                      )}
+                      )}{" "}
 
                       {law.why_it_matters && (() => {
                         const parts = law.why_it_matters.split('|||DETAILED|||');
@@ -179,12 +179,12 @@ export default function UniversalLawModal({ law, isOpen, onClose, onNext, onPrev
                               <section className="pt-4">
                                 <h3 className="text-lg font-bold text-foreground mb-4 flex items-center gap-2">
                                   <FileText className="text-blue-500" size={20} /> Pourquoi c'est important ?
-                                </h3>
+                                </h3>{" "}
                                 <p className="text-muted-foreground leading-relaxed bg-blue-50/50 dark:bg-blue-500/10 p-6 rounded-3xl border border-blue-100 dark:border-blue-500/25 italic">
                                   {whyItMatters}
                                 </p>
                               </section>
-                            )}
+                            )}{" "}
                             
                             {detailedSummary && (
                               <section className="mt-8">
@@ -193,12 +193,12 @@ export default function UniversalLawModal({ law, isOpen, onClose, onNext, onPrev
                                     <div className="flex items-center gap-4">
                                       <div className="w-12 h-12 bg-amber-400 rounded-2xl flex items-center justify-center text-slate-950 shadow-[0_0_20px_rgba(251,191,36,0.3)]">
                                         <Zap size={24} fill="currentColor" />
-                                      </div>
+                                      </div>{" "}
                                       <div>
-                                        <span className="text-2xl font-staatliches tracking-wider uppercase bg-gradient-to-b from-amber-200 via-amber-400 to-amber-600 bg-clip-text text-transparent block">Analyse détaillée</span>
+                                        <span className="text-2xl font-staatliches tracking-wider uppercase bg-gradient-to-b from-amber-200 via-amber-400 to-amber-600 bg-clip-text text-transparent block">Analyse détaillée</span>{" "}
                                         <span className="text-[10px] font-black uppercase text-amber-500/60 tracking-widest">Réservé aux membres Premium</span>
                                       </div>
-                                    </div>
+                                    </div>{" "}
                                     <AwardBadge 
                                       titleText="Débloquer"
                                       subtitleText="Accès Premium"
@@ -208,15 +208,15 @@ export default function UniversalLawModal({ law, isOpen, onClose, onNext, onPrev
                                   </div>
                                 ) : (
                                   <div className="relative p-8 md:p-12 rounded-[3rem] bg-slate-950 text-white overflow-hidden shadow-2xl border border-white/5">
-                                    <div className="absolute top-0 right-0 w-64 h-64 bg-amber-500/10 rounded-full blur-[100px] -translate-y-1/2 translate-x-1/2" />
+                                    <div className="absolute top-0 right-0 w-64 h-64 bg-amber-500/10 rounded-full blur-[100px] -translate-y-1/2 translate-x-1/2" />{" "}
                                     
                                     <div className="relative z-10">
                                       <div className="flex items-center gap-3 mb-10">
                                         <div className="p-3 bg-gradient-to-br from-amber-200 via-amber-400 to-amber-600 rounded-2xl text-slate-950 shadow-[0_0_20px_rgba(251,191,36,0.3)]">
                                           <Zap size={24} fill="currentColor" />
-                                        </div>
+                                        </div>{" "}
                                         <h4 className="text-4xl font-staatliches tracking-wider uppercase bg-gradient-to-b from-amber-200 via-amber-400 to-amber-600 bg-clip-text text-transparent">Analyse détaillée</h4>
-                                      </div>
+                                      </div>{" "}
                                       
                                       <div className="space-y-8">
                                         <div className="prose dark:prose-invert prose-invert max-w-none">
@@ -233,30 +233,30 @@ export default function UniversalLawModal({ law, isOpen, onClose, onNext, onPrev
                           </>
                         );
                       })()}
-                    </div>
+                    </div>{" "}
 
                     <div className="lg:col-span-5 space-y-8">
                        <div className="bg-muted border border-border p-6 rounded-[2rem] text-center relative overflow-hidden">
-                        <div className={`absolute top-0 left-0 w-full h-1.5 ${law.resultat?.includes('adopté') ? 'bg-emerald-500' : 'bg-red-500'}`} />
-                        <p className="text-[9px] font-black text-slate-400 uppercase tracking-[0.3em] mb-2">Résultat Final</p>
+                        <div className={`absolute top-0 left-0 w-full h-1.5 ${law.resultat?.includes('adopté') ? 'bg-emerald-500' : 'bg-red-500'}`} />{" "}
+                        <p className="text-[9px] font-black text-slate-400 uppercase tracking-[0.3em] mb-2">Résultat Final</p>{" "}
                         <p className={`text-2xl font-black italic tracking-tighter ${law.resultat?.includes('adopté') ? 'text-emerald-700 dark:text-emerald-400' : 'text-red-600'}`}>
                           {law.resultat}
                         </p>
-                      </div>
+                      </div>{" "}
 
                       <div className="space-y-3">
-                        <VoteHemicycle pour={law.pour} contre={law.contre} abstention={law.abstention} />
+                        <VoteHemicycle pour={law.pour} contre={law.contre} abstention={law.abstention} />{" "}
                         <div className="grid grid-cols-3 gap-2 pt-4 border-t border-border">
                            <div className="text-center">
-                              <p className="text-xl font-black text-emerald-700 dark:text-emerald-400 leading-none">{law.pour}</p>
+                              <p className="text-xl font-black text-emerald-700 dark:text-emerald-400 leading-none">{law.pour}</p>{" "}
                               <p className="text-[8px] font-bold text-slate-400 uppercase">Pour</p>
-                           </div>
+                           </div>{" "}
                            <div className="text-center border-x border-border">
-                              <p className="text-xl font-black text-red-700 dark:text-red-400 leading-none">{law.contre}</p>
+                              <p className="text-xl font-black text-red-700 dark:text-red-400 leading-none">{law.contre}</p>{" "}
                               <p className="text-[8px] font-bold text-slate-400 uppercase">Contre</p>
-                           </div>
+                           </div>{" "}
                            <div className="text-center">
-                              <p className="text-xl font-black text-slate-400 leading-none">{law.abstention}</p>
+                              <p className="text-xl font-black text-slate-400 leading-none">{law.abstention}</p>{" "}
                               <p className="text-[8px] font-bold text-slate-400 uppercase">Abs</p>
                            </div>
                         </div>
@@ -270,48 +270,48 @@ export default function UniversalLawModal({ law, isOpen, onClose, onNext, onPrev
                   <div className="flex items-center gap-2 mb-6">
                     <span className="px-4 py-1.5 rounded-full bg-blue-100 dark:bg-blue-500/10 text-blue-600 dark:text-blue-300 text-[10px] font-black uppercase tracking-widest">
                       {law.category || 'Législation'}
-                    </span>
+                    </span>{" "}
                     <span className="flex items-center gap-1 px-4 py-1.5 rounded-full bg-slate-100 dark:bg-slate-500/10 text-muted-foreground text-[10px] font-black uppercase tracking-widest">
                       <Calendar size={12} /> {law.context?.replace(/\[.*?\]\s*/, "") || "En cours"}
                     </span>
-                  </div>
+                  </div>{" "}
 
                   <h2 className="text-3xl md:text-4xl font-black text-foreground mb-12 leading-tight">
                     {law.title}
-                  </h2>
+                  </h2>{" "}
 
                   <div className="grid grid-cols-1 md:grid-cols-3 gap-12">
                     <div className="md:col-span-2 space-y-12">
                       <section>
                         <h3 className="text-lg font-bold text-foreground mb-4 flex items-center gap-2">
                           <FileText className="text-blue-500" size={20} /> Résumé de la loi
-                        </h3>
+                        </h3>{" "}
                         <p className="text-muted-foreground leading-relaxed text-lg italic bg-muted p-6 rounded-3xl border border-border">
                           {law.summary}
                         </p>
-                      </section>
+                      </section>{" "}
 
                       <section>
                         <h3 className="text-lg font-bold text-foreground mb-6 flex items-center gap-2">
                           <CheckCircle2 className="text-green-500" size={20} /> État d'avancement
-                        </h3>
+                        </h3>{" "}
                         <div className="relative pl-8 space-y-8 before:absolute before:left-[11px] before:top-2 before:bottom-2 before:w-[2px] before:bg-slate-100">
                           {law.timeline && law.timeline !== "Analyse du parcours législatif en cours..." ? (
                             <div className="relative">
-                              <div className="absolute -left-[31px] top-1 w-4 h-4 rounded-full bg-green-500 ring-4 ring-green-100 shadow-sm" />
+                              <div className="absolute -left-[31px] top-1 w-4 h-4 rounded-full bg-green-500 ring-4 ring-green-100 shadow-sm" />{" "}
                               <div className="flex flex-col">
-                                <span className="text-[10px] font-black uppercase tracking-wider text-green-700 dark:text-green-400 mb-1">Dernière étape franchie</span>
+                                <span className="text-[10px] font-black uppercase tracking-wider text-green-700 dark:text-green-400 mb-1">Dernière étape franchie</span>{" "}
                                 <p className="text-foreground font-bold text-lg leading-tight">{law.timeline}</p>
                               </div>
                             </div>
                           ) : (
                             <div className="relative">
-                              <div className="absolute -left-[31px] top-1 w-4 h-4 rounded-full bg-slate-200" />
+                              <div className="absolute -left-[31px] top-1 w-4 h-4 rounded-full bg-slate-200" />{" "}
                               <p className="text-slate-400 italic">Mise à jour en cours par nos services...</p>
                             </div>
                           )}
                         </div>
-                      </section>
+                      </section>{" "}
 
                       {law.content && (
                         <section className="mt-8">
@@ -320,12 +320,12 @@ export default function UniversalLawModal({ law, isOpen, onClose, onNext, onPrev
                               <div className="flex items-center gap-4">
                                 <div className="w-12 h-12 bg-amber-400 rounded-2xl flex items-center justify-center text-slate-950 shadow-[0_0_20px_rgba(251,191,36,0.3)]">
                                   <Zap size={24} fill="currentColor" />
-                                </div>
+                                </div>{" "}
                                 <div>
-                                  <span className="text-2xl font-staatliches tracking-wider uppercase bg-gradient-to-b from-amber-200 via-amber-400 to-amber-600 bg-clip-text text-transparent block">Analyse détaillée</span>
+                                  <span className="text-2xl font-staatliches tracking-wider uppercase bg-gradient-to-b from-amber-200 via-amber-400 to-amber-600 bg-clip-text text-transparent block">Analyse détaillée</span>{" "}
                                   <span className="text-[10px] font-black uppercase text-amber-500/60 tracking-widest">Réservé aux membres Premium</span>
                                 </div>
-                              </div>
+                              </div>{" "}
                               <AwardBadge 
                                 titleText="Débloquer"
                                 subtitleText="Accès Premium"
@@ -335,15 +335,15 @@ export default function UniversalLawModal({ law, isOpen, onClose, onNext, onPrev
                             </div>
                           ) : (
                             <div className="relative p-8 md:p-12 rounded-[3rem] bg-slate-950 text-white overflow-hidden shadow-2xl border border-white/5">
-                              <div className="absolute top-0 right-0 w-64 h-64 bg-amber-500/10 rounded-full blur-[100px] -translate-y-1/2 translate-x-1/2" />
+                              <div className="absolute top-0 right-0 w-64 h-64 bg-amber-500/10 rounded-full blur-[100px] -translate-y-1/2 translate-x-1/2" />{" "}
                               
                               <div className="relative z-10">
                                 <div className="flex items-center gap-3 mb-10">
                                   <div className="p-3 bg-gradient-to-br from-amber-200 via-amber-400 to-amber-600 rounded-2xl text-slate-950 shadow-[0_0_20px_rgba(251,191,36,0.3)]">
                                     <Zap size={24} fill="currentColor" />
-                                  </div>
+                                  </div>{" "}
                                   <h4 className="text-4xl font-staatliches tracking-wider uppercase bg-gradient-to-b from-amber-200 via-amber-400 to-amber-600 bg-clip-text text-transparent">Analyse détaillée</h4>
-                                </div>
+                                </div>{" "}
                                 
                                 <div className="space-y-8">
                                   <div className="prose dark:prose-invert prose-invert max-w-none">
@@ -367,7 +367,7 @@ export default function UniversalLawModal({ law, isOpen, onClose, onNext, onPrev
                                         return <div dangerouslySetInnerHTML={{ __html: formatted }} />;
                                       })()}
                                     </div>
-                                  </div>
+                                  </div>{" "}
 
                                   <div className="pt-10 border-t border-white/10 flex flex-wrap gap-4">
                                     <a 
@@ -384,28 +384,28 @@ export default function UniversalLawModal({ law, isOpen, onClose, onNext, onPrev
                           )}
                         </section>
                       )}
-                    </div>
+                    </div>{" "}
 
                     <div className="space-y-8">
                       <div className="p-8 bg-muted rounded-[2.5rem] border border-border">
                         <span className="text-[10px] font-black uppercase tracking-wider text-slate-400 block mb-6">
                           Initiateur du texte
-                        </span>
+                        </span>{" "}
                         <div className="flex items-center gap-4">
                           <div className="w-12 h-12 rounded-2xl bg-card border border-border flex items-center justify-center text-blue-700 dark:text-blue-400 shadow-sm">
                             <UserCheck size={20} />
-                          </div>
+                          </div>{" "}
                           <div>
-                            <p className="text-base font-bold text-foreground leading-tight">{law.author || "Non spécifié"}</p>
+                            <p className="text-base font-bold text-foreground leading-tight">{law.author || "Non spécifié"}</p>{" "}
                             <p className="text-[10px] text-muted-foreground uppercase tracking-tight font-black mt-1">{law.category}</p>
                           </div>
                         </div>
-                      </div>
+                      </div>{" "}
 
                       <div className="p-8 bg-slate-950 text-white rounded-[2.5rem] border border-white/5 flex items-start gap-4">
                         <div className="w-10 h-10 rounded-xl bg-blue-600 flex items-center justify-center shrink-0 shadow-lg shadow-blue-500/20">
                           <CheckCircle2 size={20} />
-                        </div>
+                        </div>{" "}
                         <p className="text-xs text-slate-400 leading-relaxed font-medium">
                           Ce dossier est <span className="text-white font-bold underline decoration-blue-500 underline-offset-4">mis à jour automatiquement</span> à partir des données officielles.
                         </p>

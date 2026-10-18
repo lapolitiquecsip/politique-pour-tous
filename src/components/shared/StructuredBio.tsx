@@ -56,7 +56,7 @@ function PointsList({ points, sectionKey, recentYear }: { points: string[]; sect
           <li key={i} className={recent ? "marker:text-yellow-500" : ""}>
             {recent
               ? <mark className="rounded bg-yellow-200 px-1 py-0.5 font-medium text-foreground dark:bg-yellow-400/30 dark:text-yellow-50"><NumHighlight text={p} /></mark>
-              : <NumHighlight text={p} />}
+              : <NumHighlight text={p} />}{" "}
           </li>
         );
       })}
@@ -85,17 +85,17 @@ export default function StructuredBio({ bio, fallbackText }: { bio: any; fallbac
               <div key={key} className="overflow-hidden rounded-2xl border border-border bg-slate-50/60 dark:border-slate-800 dark:bg-slate-800/40">
                 <button onClick={() => toggle(key)} className="flex w-full items-center justify-between gap-3 p-4 text-left" aria-expanded={isOpen}>
                   <span className="flex items-center gap-2.5 min-w-0">
-                    <span className={`h-5 w-1 shrink-0 rounded-full ${bar}`} />
-                    <span className={`font-staatliches text-lg uppercase leading-none ${color}`}>{label}</span>
+                    <span className={`h-5 w-1 shrink-0 rounded-full ${bar}`} />{" "}
+                    <span className={`font-staatliches text-lg uppercase leading-none ${color}`}>{label}</span>{" "}
                     <span className="text-[11px] font-bold text-muted-foreground">({points.length})</span>
-                  </span>
+                  </span>{" "}
                   <ChevronDown size={18} className={`shrink-0 text-muted-foreground transition-transform ${isOpen ? "rotate-180" : ""}`} />
-                </button>
-                {isOpen && <div className="px-4 pb-4"><PointsList points={points} sectionKey={key} recentYear={recentYear} /></div>}
+                </button>{" "}
+                {isOpen && <div className="px-4 pb-4"><PointsList points={points} sectionKey={key} recentYear={recentYear} /></div>}{" "}
               </div>
             );
           })}
-        </div>
+        </div>{" "}
 
         {/* DESKTOP : grille de cartes (inchangée). */}
         <div className="hidden items-start gap-4 sm:grid-cols-2 md:grid">
@@ -103,13 +103,13 @@ export default function StructuredBio({ bio, fallbackText }: { bio: any; fallbac
             const wide = key === "parcours" || key === "chronologie" || key === "realisations" ? "sm:col-span-2" : "";
             return (
               <div key={key} className={`rounded-3xl border border-border dark:border-slate-800 bg-slate-50/60 dark:bg-slate-800/40 p-5 ${wide}`}>
-                <h3 className={`font-staatliches text-2xl uppercase leading-none ${color}`}>{label}</h3>
-                <div className={`mb-3 mt-1.5 h-1 w-12 rounded-full ${color.replace(/text-/g, "bg-").split(" ")[0]}`} />
-                <PointsList points={points} sectionKey={key} recentYear={recentYear} />
+                <h3 className={`font-staatliches text-2xl uppercase leading-none ${color}`}>{label}</h3>{" "}
+                <div className={`mb-3 mt-1.5 h-1 w-12 rounded-full ${color.replace(/text-/g, "bg-").split(" ")[0]}`} />{" "}
+                <PointsList points={points} sectionKey={key} recentYear={recentYear} />{" "}
               </div>
             );
           })}
-        </div>
+        </div>{" "}
         <MentionIA texte={`Biographie synthétisée par IA à partir de Wikipédia et des sites officiels — signalez toute erreur via la page Contact.${
           sections.some(x => x.key === "controverses") ? " Toute personne mise en cause dans une procédure est présumée innocente tant qu'une décision de justice définitive n'a pas établi sa culpabilité." : ""}`} />
       </>

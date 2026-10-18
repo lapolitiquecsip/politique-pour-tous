@@ -198,7 +198,7 @@ export default function HemicycleVisual({ groups }: HemicycleVisualProps) {
               </motion.g>
             );
           })}
-        </svg>
+        </svg>{" "}
 
         <AnimatePresence>
           {hoveredGroupId && hoveredGroupInfo && hoveredGroupData && (
@@ -215,54 +215,54 @@ export default function HemicycleVisual({ groups }: HemicycleVisualProps) {
               className="bg-slate-900/95 backdrop-blur-md text-white p-5 rounded-[2rem] shadow-2xl border border-white/10 pointer-events-none min-w-[220px]"
             >
               <div className="flex items-center gap-2 mb-4">
-                <div className="w-3.5 h-3.5 rounded-full shadow-lg shadow-white/10" style={{ backgroundColor: hoveredGroupInfo.color }} />
+                <div className="w-3.5 h-3.5 rounded-full shadow-lg shadow-white/10" style={{ backgroundColor: hoveredGroupInfo.color }} />{" "}
                 <span className="text-xs font-black uppercase tracking-widest">{hoveredGroupInfo.short}</span>
-              </div>
+              </div>{" "}
               <p className="text-[10px] text-muted-foreground font-bold mb-4 leading-tight uppercase tracking-tighter">
                 {hoveredGroupInfo.name}
-              </p>
+              </p>{" "}
               <div className="space-y-2 border-t border-white/10 pt-4">
                 <div className="flex justify-between items-center">
-                  <span className="text-[10px] text-emerald-400 font-black tracking-widest">POUR</span>
+                  <span className="text-[10px] text-emerald-400 font-black tracking-widest">POUR</span>{" "}
                   <span className="text-xs font-black font-mono">{hoveredGroupData.pour}</span>
-                </div>
+                </div>{" "}
                 <div className="flex justify-between items-center">
-                  <span className="text-[10px] text-red-400 font-black tracking-widest">CONTRE</span>
+                  <span className="text-[10px] text-red-400 font-black tracking-widest">CONTRE</span>{" "}
                   <span className="text-xs font-black font-mono">{hoveredGroupData.contre}</span>
-                </div>
+                </div>{" "}
                 <div className="flex justify-between items-center">
-                  <span className="text-[10px] text-muted-foreground font-black tracking-widest">ABSTENTION</span>
+                  <span className="text-[10px] text-muted-foreground font-black tracking-widest">ABSTENTION</span>{" "}
                   <span className="text-xs font-black font-mono">{hoveredGroupData.abstention}</span>
-                </div>
+                </div>{" "}
                 <div className="flex justify-between items-center border-t border-white/5 pt-2 mt-2">
-                  <span className="text-[10px] text-muted-foreground font-bold tracking-widest">NON-VOTANTS</span>
+                  <span className="text-[10px] text-muted-foreground font-bold tracking-widest">NON-VOTANTS</span>{" "}
                   <span className="text-xs font-black font-mono text-muted-foreground">{nonVotants}</span>
-                </div>
+                </div>{" "}
                 <div className="flex justify-between items-center pt-2 mt-2 border-t border-white/10">
-                  <span className="text-[10px] text-blue-400 font-black uppercase">TOTAL GROUPE</span>
+                  <span className="text-[10px] text-blue-400 font-black uppercase">TOTAL GROUPE</span>{" "}
                   <span className="text-sm font-black font-mono text-blue-400">{hoveredRealTotal}</span>
                 </div>
               </div>
             </motion.div>
           )}
         </AnimatePresence>
-      </div>
+      </div>{" "}
 
       <div className="flex flex-wrap justify-center gap-x-6 gap-y-2 mt-6 px-8 py-4 bg-card border border-border rounded-full shadow-sm">
         <div className="flex items-center gap-2">
-          <div className="w-3 h-3 rounded-full bg-emerald-500 shadow-lg shadow-emerald-500/20" />
+          <div className="w-3 h-3 rounded-full bg-emerald-500 shadow-lg shadow-emerald-500/20" />{" "}
           <span className="text-[10px] font-black uppercase tracking-widest text-muted-foreground">Pour</span>
-        </div>
+        </div>{" "}
         <div className="flex items-center gap-2 border-l border-border pl-6">
-          <div className="w-3 h-3 rounded-full bg-red-500 shadow-lg shadow-red-500/20" />
+          <div className="w-3 h-3 rounded-full bg-red-500 shadow-lg shadow-red-500/20" />{" "}
           <span className="text-[10px] font-black uppercase tracking-widest text-muted-foreground">Contre</span>
-        </div>
+        </div>{" "}
         <div className="flex items-center gap-2 border-l border-border pl-6">
-          <div className="w-3 h-3 rounded-full bg-slate-500 shadow-lg shadow-slate-500/20" />
+          <div className="w-3 h-3 rounded-full bg-slate-500 shadow-lg shadow-slate-500/20" />{" "}
           <span className="text-[10px] font-black uppercase tracking-widest text-muted-foreground">Abs</span>
-        </div>
+        </div>{" "}
         <div className="flex items-center gap-2 border-l border-border pl-6">
-          <div className="w-3 h-3 rounded-full bg-slate-200" />
+          <div className="w-3 h-3 rounded-full bg-slate-200" />{" "}
           <span className="text-[10px] font-black uppercase tracking-widest text-muted-foreground">Absent</span>
         </div>
       </div>

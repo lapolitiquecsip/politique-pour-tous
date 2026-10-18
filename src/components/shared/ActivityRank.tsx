@@ -55,32 +55,32 @@ export default function ActivityRank({
   return (
     <section className="rounded-[2.5rem] border border-border dark:border-slate-800 bg-card dark:bg-slate-900 p-8">
       <div className="flex items-center gap-3 mb-4">
-        <Activity className="text-sky-700 dark:text-sky-400" size={22} />
+        <Activity className="text-sky-700 dark:text-sky-400" size={22} />{" "}
         <h2 className="text-3xl font-staatliches uppercase tracking-tight text-foreground dark:text-white">
           Présence aux <span className="text-sky-700 dark:text-sky-400">votes</span>
         </h2>
-      </div>
+      </div>{" "}
 
       <div className="flex items-center gap-6">
-        <p className={`text-5xl font-black ${clr}`}>{r.toLocaleString("fr-FR", { maximumFractionDigits: 1 })}%</p>
+        <p className={`text-5xl font-black ${clr}`}>{r.toLocaleString("fr-FR", { maximumFractionDigits: 1 })}%</p>{" "}
         <div className="flex-1">
           {/* Barre + repère de la médiane des pairs */}
           <div className="relative h-3 w-full overflow-hidden rounded-full bg-slate-100 dark:bg-slate-800">
-            <div className={`h-full rounded-full ${barClr}`} style={{ width: `${r}%` }} />
+            <div className={`h-full rounded-full ${barClr}`} style={{ width: `${r}%` }} />{" "}
             {median != null && (
               <div className="absolute top-[-3px] h-[18px] w-[2px] bg-slate-400 dark:bg-slate-500" style={{ left: `calc(${median}% - 1px)` }} title={`Médiane : ${median}%`} />
             )}
-          </div>
+          </div>{" "}
           {participated != null && total != null && (
             <p className="mt-2 text-sm text-muted-foreground dark:text-slate-300">
               A pris part à <strong>{participated.toLocaleString("fr-FR")}</strong> des <strong>{total.toLocaleString("fr-FR")}</strong> scrutins.
             </p>
-          )}
+          )}{" "}
           {median != null && (
             <p className="mt-0.5 text-[11px] text-muted-foreground">Trait gris = médiane des {peerLabel} ({median}%).</p>
           )}
         </div>
-      </div>
+      </div>{" "}
 
       {/* Classement comparatif */}
       <div className="mt-5 flex flex-wrap items-center gap-2">
@@ -92,7 +92,7 @@ export default function ActivityRank({
           <span className="inline-flex items-center gap-2 rounded-full bg-slate-100 dark:bg-slate-800 px-4 py-2 text-sm font-bold text-muted-foreground">
             <Minus size={15} /> Classement indisponible
           </span>
-        )}
+        )}{" "}
         {pct != null && (
           pct >= 50 ? (
             <span className="inline-flex items-center rounded-full bg-slate-100 dark:bg-slate-800 px-4 py-2 text-sm font-bold text-muted-foreground dark:text-slate-300">
@@ -103,18 +103,18 @@ export default function ActivityRank({
               Moins assidu·e que {100 - pct}% des {peerLabel}
             </span>
           )
-        )}
+        )}{" "}
         {topDecile && (
           <span className="inline-flex items-center gap-1.5 rounded-full bg-gradient-to-br from-emerald-400 to-teal-600 px-4 py-2 text-sm font-black uppercase tracking-wide text-white shadow-lg shadow-emerald-500/30">
             <Trophy size={14} /> Parmi les plus assidu·e·s
           </span>
-        )}
+        )}{" "}
         {bottomDecile && (
           <span className="inline-flex items-center gap-1.5 rounded-full bg-gradient-to-br from-rose-400 to-red-600 px-4 py-2 text-sm font-black uppercase tracking-wide text-white shadow-lg shadow-rose-500/30">
             <TriangleAlert size={14} /> Parmi les moins assidu·e·s
           </span>
         )}
-      </div>
+      </div>{" "}
 
       <p className="mt-4 text-[11px] leading-snug italic text-muted-foreground">
         {note || "Participation aux votes nominaux (position exprimée). Comparaison entre élu·e·s d'une même chambre pour situer l'assiduité de chacun·e."}

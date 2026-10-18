@@ -231,7 +231,7 @@ export default function DragScroller({
         style={{ touchAction: "pan-x pan-y" }}
       >
         {children}
-      </div>
+      </div>{" "}
 
       {/* Flèches : repère visuel autant que commande, et seulement quand il y a
           quelque part où aller. Masquées au tactile, où le geste suffit. */}
@@ -252,7 +252,7 @@ export default function DragScroller({
               actif ? "opacity-100 hover:scale-110" : "pointer-events-none opacity-0"
             }`}
           >
-            <Icone size={20} />
+            <Icone size={20} />{" "}
           </button>
         );
       })}

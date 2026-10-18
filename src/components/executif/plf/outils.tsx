@@ -26,7 +26,7 @@ export function Delta({ v, f = nf1, sens = "neutre", small = false }: { v: numbe
   const Ic = nul ? Minus : hausse ? ArrowUpRight : ArrowDownRight;
   return (
     <span className={`inline-flex items-center gap-0.5 whitespace-nowrap font-black tabular-nums ${small ? "text-[11px]" : "text-xs"} ${cls}`}>
-      <Ic size={small ? 11 : 13} className={nul ? "opacity-40" : ""} />
+      <Ic size={small ? 11 : 13} className={nul ? "opacity-40" : ""} />{" "}
       {nul ? "stable" : signe(v, f)}
     </span>
   );

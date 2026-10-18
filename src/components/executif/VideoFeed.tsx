@@ -51,20 +51,20 @@ export default function VideoFeed({ source = "elysee", candidateId }: { source?:
       <div className="flex items-center gap-3">
         <div className={`w-10 h-10 rounded-2xl flex items-center justify-center ${cfg.icon}`}>
           <Video size={20} />
-        </div>
+        </div>{" "}
         <div>
           <h2 className="text-2xl md:text-3xl font-staatliches uppercase tracking-tight text-foreground dark:text-white">
             {cfg.pre}<span className={`text-transparent bg-clip-text bg-gradient-to-r ${cfg.grad}`}>{cfg.accent}</span>
-          </h2>
+          </h2>{" "}
           <p className="text-xs text-muted-foreground">{cfg.sub}</p>
         </div>
-      </div>
+      </div>{" "}
 
       {/* Mobile : rail horizontal. `touch-pan-x` laisse le geste au navigateur, donc le
           défilement reste au rythme natif du système ; `scroll-smooth` n'est PAS appliqué
           ici, il rendrait le suivi du doigt visqueux. */}
       <div className="relative">
-      <SwipeArrow color="#0ea5e9" />
+      <SwipeArrow color="#0ea5e9" />{" "}
       <div className="flex touch-pan-x snap-x snap-mandatory gap-4 overflow-x-auto overscroll-x-contain pb-2 -mx-8 px-8 [scrollbar-width:none] [&::-webkit-scrollbar]:hidden sm:mx-0 sm:grid sm:grid-cols-2 sm:gap-4 sm:overflow-visible sm:px-0 sm:pb-0 lg:grid-cols-3">
         {videos.map(v => {
           const media = (
@@ -75,31 +75,31 @@ export default function VideoFeed({ source = "elysee", candidateId }: { source?:
                   <img src={v.thumbnail_url} alt={v.title} loading="lazy" decoding="async" className="h-full w-full object-cover transition-transform duration-500 group-hover:scale-105" />
                 ) : (
                   <div className={`h-full w-full bg-gradient-to-br ${cfg.grad} opacity-90`} />
-                )}
-                <div className="absolute inset-0 bg-slate-950/20 transition group-hover:bg-slate-950/40" />
+                )}{" "}
+                <div className="absolute inset-0 bg-slate-950/20 transition group-hover:bg-slate-950/40" />{" "}
                 <div className="absolute inset-0 flex items-center justify-center">
                   <span className="flex h-12 w-12 items-center justify-center rounded-full bg-white/90 text-foreground shadow-lg transition group-hover:bg-slate-900 group-hover:text-white">
                     {cfg.external ? <ExternalLink size={17} /> : <Play size={18} className="ml-0.5" fill="currentColor" />}
                   </span>
                 </div>
-              </div>
+              </div>{" "}
               <div className="p-3">
-                <p className="text-[10px] font-black uppercase tracking-widest text-muted-foreground">{fmtDate(v.published_at)}{v.description && cfg.external ? ` · ${v.description}` : ""}</p>
+                <p className="text-[10px] font-black uppercase tracking-widest text-muted-foreground">{fmtDate(v.published_at)}{v.description && cfg.external ? ` · ${v.description}` : ""}</p>{" "}
                 <p className="mt-0.5 text-sm font-bold leading-snug text-foreground dark:text-white line-clamp-2 transition-colors">{v.title}</p>
               </div>
             </>
           );
           const cls = "group w-[78vw] shrink-0 snap-center sm:w-auto sm:shrink text-left rounded-2xl overflow-hidden border border-border dark:border-slate-800 bg-slate-50/60 dark:bg-slate-800/40 transition hover:shadow-lg";
           return cfg.external ? (
-            <a key={v.video_id} href={v.url} target="_blank" rel="noopener noreferrer" className={cls}>{media}</a>
+            <a key={v.video_id} href={v.url} target="_blank" rel="noopener noreferrer" className={cls}>{media}{" "}</a>
           ) : (
-            <button key={v.video_id} onClick={() => setOpen(v)} className={cls}>{media}</button>
+            <button key={v.video_id} onClick={() => setOpen(v)} className={cls}>{media}{" "}</button>
           );
         })}
       </div>
-      </div>
+      </div>{" "}
 
-      <p className="text-[10px] text-muted-foreground italic border-t border-border dark:border-slate-800 pt-4">{cfg.note}</p>
+      <p className="text-[10px] text-muted-foreground italic border-t border-border dark:border-slate-800 pt-4">{cfg.note}</p>{" "}
 
       {/* Lecteur monté seulement au clic. */}
       {open && (
@@ -107,13 +107,13 @@ export default function VideoFeed({ source = "elysee", candidateId }: { source?:
           <div className="w-full max-w-3xl" onClick={e => e.stopPropagation()}>
             <div className="flex items-start justify-between gap-4 pb-3">
               <div className="min-w-0">
-                <p className="text-[10px] font-black uppercase tracking-widest text-amber-400">{fmtDate(open.published_at)}</p>
+                <p className="text-[10px] font-black uppercase tracking-widest text-amber-400">{fmtDate(open.published_at)}</p>{" "}
                 <h3 className="mt-0.5 text-base font-bold leading-snug text-white">{open.title}</h3>
-              </div>
+              </div>{" "}
               <button onClick={() => setOpen(null)} className="rounded-full bg-white/10 p-2 text-white transition hover:bg-white/20">
                 <X size={18} />
               </button>
-            </div>
+            </div>{" "}
             <div className="aspect-video w-full overflow-hidden rounded-2xl bg-black">
               <iframe
                 src={`https://www.youtube-nocookie.com/embed/${open.video_id}?autoplay=1&rel=0`}
@@ -122,7 +122,7 @@ export default function VideoFeed({ source = "elysee", candidateId }: { source?:
                 allowFullScreen
                 className="h-full w-full border-0"
               />
-            </div>
+            </div>{" "}
             <a
               href={open.url} target="_blank" rel="noopener noreferrer"
               className="mt-3 inline-flex items-center gap-2 text-[11px] font-black uppercase tracking-widest text-white/70 transition hover:text-white"

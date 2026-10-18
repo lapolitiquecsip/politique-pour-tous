@@ -53,23 +53,23 @@ function MeetingCard({ m, accent }: { m: CommissionMeeting; accent: typeof ACCEN
       <button onClick={() => setOpen(o => !o)} className="flex w-full items-start gap-4 p-5 text-left" aria-expanded={open}>
         <span className={`flex h-11 w-11 shrink-0 items-center justify-center rounded-2xl ${accent.bg} ${accent.text}`}>
           <Mic size={18} />
-        </span>
+        </span>{" "}
         <div className="min-w-0 flex-1">
           <p className={`flex flex-wrap items-center gap-x-2 text-[10px] font-black uppercase tracking-widest ${accent.text}`}>
-            <span>{fmtMeetingDate(m.meeting_date)}</span>
-            <span className="text-muted-foreground">·</span>
+            <span>{fmtMeetingDate(m.meeting_date)}</span>{" "}
+            <span className="text-muted-foreground">·</span>{" "}
             <span className="text-muted-foreground">{commission}</span>
-          </p>
-          <p className="mt-1 text-sm font-bold leading-snug text-foreground dark:text-white line-clamp-2">{title}</p>
+          </p>{" "}
+          <p className="mt-1 text-sm font-bold leading-snug text-foreground dark:text-white line-clamp-2">{title}</p>{" "}
           {people.length > 0 && (
             <p className="mt-1.5 flex items-center gap-1.5 text-[11px] font-semibold text-muted-foreground dark:text-slate-400">
-              <Users size={12} className={`shrink-0 ${accent.text}`} />
+              <Users size={12} className={`shrink-0 ${accent.text}`} />{" "}
               <span className="truncate">Avec {people.join(", ")}</span>
             </p>
           )}
-        </div>
+        </div>{" "}
         <ChevronDown size={18} className={`mt-1 shrink-0 text-muted-foreground transition-transform ${open ? "rotate-180" : ""}`} />
-      </button>
+      </button>{" "}
 
       {open && (
         <div className="border-t border-border px-5 py-4 dark:border-slate-800">
@@ -81,14 +81,14 @@ function MeetingCard({ m, accent }: { m: CommissionMeeting; accent: typeof ACCEN
             </p>
           ) : (
             <Analysis m={{ ...m, analysis: detail.analysis, summary: detail.summary }} accent={accent} />
-          )}
+          )}{" "}
 
           <div className="mt-5 flex flex-wrap gap-3 border-t border-border pt-3 dark:border-slate-800">
             {/* Le compte rendu se lit ici, sans quitter le site. */}
             <button type="button" onClick={() => setLecture(true)}
               className={`inline-flex items-center gap-1.5 text-[10px] font-black uppercase tracking-widest text-muted-foreground ${accent.hover}`}>
               <ListChecks size={12} /> Compte rendu intégral
-            </button>
+            </button>{" "}
             {m.video_url && (
               <a href={m.video_url} target="_blank" rel="noopener noreferrer"
                 className={`inline-flex items-center gap-1.5 text-[10px] font-black uppercase tracking-widest text-muted-foreground ${accent.hover}`}>
@@ -97,7 +97,7 @@ function MeetingCard({ m, accent }: { m: CommissionMeeting; accent: typeof ACCEN
             )}
           </div>
         </div>
-      )}
+      )}{" "}
       {lecture && <CompteRendu m={m} onFermer={() => setLecture(false)} />}
     </div>
   );
@@ -194,46 +194,46 @@ export default function CommissionTracker({ chamber, chamberLabel, accent = "eme
     // un halo, et un bandeau « Espace Pro ». Sans lui, la section se lisait comme
     // n'importe quelle liste du site — rien ne disait qu'on était dans l'offre Pro.
     <div id="commissions" className="scroll-mt-24 mt-16 relative overflow-hidden rounded-[2.5rem] p-[2px] shadow-[0_24px_80px_-30px_rgba(168,85,247,0.65)]">
-      <span aria-hidden className="pointer-events-none absolute left-1/2 top-1/2 aspect-square w-[260%] -translate-x-1/2 -translate-y-1/2 bg-[conic-gradient(from_0deg,transparent_0deg,#a855f7_50deg,#f0abfc_90deg,transparent_150deg,transparent_190deg,#7c3aed_240deg,#e879f9_290deg,transparent_350deg)] motion-safe:animate-[spin_9s_linear_infinite]" />
+      <span aria-hidden className="pointer-events-none absolute left-1/2 top-1/2 aspect-square w-[260%] -translate-x-1/2 -translate-y-1/2 bg-[conic-gradient(from_0deg,transparent_0deg,#a855f7_50deg,#f0abfc_90deg,transparent_150deg,transparent_190deg,#7c3aed_240deg,#e879f9_290deg,transparent_350deg)] motion-safe:animate-[spin_9s_linear_infinite]" />{" "}
       <div className="relative rounded-[calc(2.5rem-2px)] bg-card p-5 dark:bg-slate-950 md:p-8">
-      <div aria-hidden className="pointer-events-none absolute inset-x-0 top-0 h-48 rounded-t-[inherit] bg-gradient-to-b from-violet-500/[0.09] via-fuchsia-500/[0.03] to-transparent" />
+      <div aria-hidden className="pointer-events-none absolute inset-x-0 top-0 h-48 rounded-t-[inherit] bg-gradient-to-b from-violet-500/[0.09] via-fuchsia-500/[0.03] to-transparent" />{" "}
 
       {/* Bandeau de l'offre */}
       <div className="relative mb-5 flex flex-wrap items-center gap-x-3 gap-y-2">
         <span className="sword-shine inline-flex items-center gap-1.5 rounded-full bg-gradient-to-r from-violet-600 via-fuchsia-500 to-violet-600 px-3.5 py-1.5 text-[10px] font-black uppercase tracking-[0.22em] text-white shadow-[0_0_28px_rgba(168,85,247,0.55)]">
           <Crown size={13} strokeWidth={2.5} /> Espace Pro
-        </span>
+        </span>{" "}
         <span className="flex items-center gap-1.5 text-[11px] font-bold uppercase tracking-widest text-violet-600 dark:text-violet-300">
           <Sparkles size={13} /> Réservé aux membres Pro
         </span>
-      </div>
+      </div>{" "}
 
       {/* En-tête */}
       <div className="relative mb-6 flex flex-wrap items-start gap-4">
         <span className="relative flex h-14 w-14 shrink-0 items-center justify-center rounded-2xl bg-gradient-to-br from-violet-600 to-fuchsia-500 text-white shadow-[0_10px_30px_-8px_rgba(168,85,247,0.7)]">
-          <Briefcase size={24} />
+          <Briefcase size={24} />{" "}
           <span className="absolute -right-1.5 -top-1.5 flex h-6 w-6 items-center justify-center rounded-full border-2 border-card bg-amber-400 text-slate-950 dark:border-slate-950">
             <Crown size={12} strokeWidth={2.8} />
           </span>
-        </span>
+        </span>{" "}
         {/* Largeur minimale : sur téléphone, le bouton d'export passe alors à la ligne au
             lieu d'écraser le titre et sa phrase dans une colonne de cent pixels. */}
         <div className="min-w-[13rem] flex-1">
           <h3 className="font-staatliches text-4xl uppercase leading-none tracking-tight text-foreground dark:text-white md:text-5xl">
             Suivi des <span className="bg-gradient-to-r from-violet-600 to-fuchsia-500 bg-clip-text text-transparent">commissions</span>
-          </h3>
+          </h3>{" "}
           <p className="mt-2 text-sm text-muted-foreground">
             Ce qui s&apos;est dit dans chaque commission {chamberLabel === "Sénat" ? "du " : "de l'"}<span className={`font-bold ${a.text}`}>{chamberLabel}</span>, réunion par réunion.
             {total > 0 && <> {total.toLocaleString("fr-FR")} réunions indexées.</>}
           </p>
-        </div>
+        </div>{" "}
         {isPro && meetings?.length ? (
           <button onClick={exportCsv}
             className="inline-flex shrink-0 items-center gap-1.5 rounded-xl border border-border px-3.5 py-2 text-[10px] font-black uppercase tracking-widest text-muted-foreground transition hover:border-slate-400 dark:border-slate-700 dark:text-slate-300">
             <Download size={13} /> Export CSV
           </button>
         ) : null}
-      </div>
+      </div>{" "}
 
       {/* Le suivi des commissions relève de l'offre Pro : la section entière est
           remplacée par son argumentaire tant que l'abonnement n'est pas Pro — y
@@ -246,7 +246,7 @@ export default function CommissionTracker({ chamber, chamberLabel, accent = "eme
               className={`inline-flex items-center gap-1.5 whitespace-nowrap rounded-full px-3 py-2 text-[10px] font-black uppercase tracking-wider transition sm:px-4 sm:text-[11px] sm:tracking-widest ${vue === cle
                 ? "bg-gradient-to-r from-violet-600 to-fuchsia-500 text-white shadow"
                 : "text-muted-foreground hover:text-foreground"}`}>
-              <Icone size={13} /> {label}
+              <Icone size={13} /> {label}{" "}
             </button>
           ))}
         </div>
@@ -281,14 +281,14 @@ export default function CommissionTracker({ chamber, chamberLabel, accent = "eme
           onChange={e => setSearch(e.target.value)}
           placeholder="Chercher un sujet, une personne auditionnée, un chiffre…"
           className="w-full rounded-2xl border border-border bg-card py-3 pl-11 pr-10 text-sm text-foreground outline-none transition focus:border-slate-400 dark:border-slate-800 dark:bg-slate-900 dark:text-white"
-        />
+        />{" "}
         {search && (
           <button onClick={() => setSearch("")} aria-label="Effacer la recherche"
             className="absolute right-3 top-1/2 -translate-y-1/2 rounded-full p-1 text-muted-foreground hover:bg-slate-100 dark:hover:bg-slate-800">
             <X size={15} />
           </button>
         )}
-      </div>
+      </div>{" "}
 
       {/* Filtre par commission */}
       {commissions.length > 0 && (
@@ -296,26 +296,26 @@ export default function CommissionTracker({ chamber, chamberLabel, accent = "eme
           <button onClick={() => setSelected(null)}
             className={`shrink-0 rounded-full px-3.5 py-1.5 text-[11px] font-black uppercase tracking-wider transition ${selected === null ? "bg-gradient-to-r from-violet-600 to-fuchsia-500 text-white shadow-[0_6px_18px_-6px_rgba(168,85,247,0.7)]" : "bg-slate-100 text-muted-foreground hover:bg-slate-200 dark:bg-slate-800 dark:text-slate-300"}`}>
             Toutes
-          </button>
+          </button>{" "}
           {commissions.slice(0, 10).map(c => (
             <button key={c.name} onClick={() => setSelected(c.name === selected ? null : c.name)}
               title={decode(c.name)}
               className={`shrink-0 whitespace-nowrap rounded-full px-3.5 py-1.5 text-[11px] font-black uppercase tracking-wider transition ${selected === c.name ? "bg-gradient-to-r from-violet-600 to-fuchsia-500 text-white shadow-[0_6px_18px_-6px_rgba(168,85,247,0.7)]" : "bg-slate-100 text-muted-foreground hover:bg-slate-200 dark:bg-slate-800 dark:text-slate-300"}`}>
-              {shortCommission(c.name)} <span className="opacity-50">{c.count}</span>
+              {shortCommission(c.name)} <span className="opacity-50">{c.count}</span>{" "}
             </button>
           ))}
         </div>
-      )}
+      )}{" "}
 
       {/* Liste */}
       {meetings === null ? (
         <div className="flex justify-center py-10"><Loader2 className={`animate-spin ${a.text}`} /></div>
       ) : meetings.length === 0 ? (
         <div className="rounded-3xl border border-dashed border-border py-12 text-center dark:border-slate-800">
-          <CalendarDays size={28} className="mx-auto mb-3 text-muted-foreground" />
+          <CalendarDays size={28} className="mx-auto mb-3 text-muted-foreground" />{" "}
           <p className="text-sm font-bold text-muted-foreground">
             {debounced ? `Aucune réunion ne correspond à « ${debounced} ».` : "Aucune réunion indexée pour l'instant."}
-          </p>
+          </p>{" "}
           {!debounced && (
             <p className="mx-auto mt-1 max-w-md text-[13px] text-muted-foreground">
               Les comptes rendus sont récupérés chaque nuit depuis les sources officielles.
@@ -328,12 +328,12 @@ export default function CommissionTracker({ chamber, chamberLabel, accent = "eme
               même hauteur et laisse un grand vide blanc à côté. */}
           <div className="grid grid-cols-1 items-start gap-3 lg:grid-cols-2">
             {meetings.map(m => <MeetingCard key={m.ref} m={m} accent={a} />)}
-          </div>
+          </div>{" "}
           {!exhausted && (
             <div className="mt-6 flex justify-center">
               <button onClick={loadMore} disabled={loadingMore}
                 className="inline-flex items-center gap-2 rounded-2xl border border-border px-6 py-3 text-[11px] font-black uppercase tracking-widest text-muted-foreground transition hover:border-slate-400 disabled:opacity-50 dark:border-slate-700 dark:text-slate-300">
-                {loadingMore ? <Loader2 size={14} className="animate-spin" /> : <ChevronDown size={14} />}
+                {loadingMore ? <Loader2 size={14} className="animate-spin" /> : <ChevronDown size={14} />}{" "}
                 Charger plus de réunions
               </button>
             </div>

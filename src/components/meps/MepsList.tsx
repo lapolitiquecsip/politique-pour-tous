@@ -56,7 +56,7 @@ export default function MepsList({ meps: initial }: { meps?: any[] }) {
     <div className="space-y-6">
       <p className="text-center text-slate-400 font-bold uppercase tracking-[0.2em] text-[10px]">
         {meps.length} eurodéputés français • Parlement européen
-      </p>
+      </p>{" "}
 
       <div className="relative max-w-xl mx-auto">
         <Search className="absolute left-4 top-1/2 -translate-y-1/2 text-slate-400" size={16} />
@@ -65,7 +65,7 @@ export default function MepsList({ meps: initial }: { meps?: any[] }) {
           placeholder="Rechercher un nom, un parti…"
           className="w-full rounded-2xl border border-border dark:border-slate-700 bg-card dark:bg-slate-900 py-3 pl-11 pr-4 text-sm text-foreground dark:text-white outline-none focus:border-sky-300"
         />
-      </div>
+      </div>{" "}
 
       {/* Filtres par groupe — libellé lisible, plus seulement le code. */}
       <div className="flex flex-wrap gap-2 justify-center">
@@ -74,7 +74,7 @@ export default function MepsList({ meps: initial }: { meps?: any[] }) {
           className={`rounded-xl border px-3 py-2 text-[10px] font-black uppercase tracking-widest transition ${group === null ? "bg-slate-900 text-white border-slate-900" : "bg-card dark:bg-slate-900 text-muted-foreground border-border dark:border-slate-700"}`}
         >
           Tous ({meps.length})
-        </button>
+        </button>{" "}
         {groups.map(([g, n]) => (
           <button
             key={g}
@@ -82,18 +82,18 @@ export default function MepsList({ meps: initial }: { meps?: any[] }) {
             title={grp(g).name}
             className={`flex items-center gap-1.5 rounded-xl border px-3 py-2 text-[10px] font-black uppercase tracking-widest transition ${group === g ? "text-white border-transparent " + grp(g).clr : "bg-card dark:bg-slate-900 text-muted-foreground border-border dark:border-slate-700"}`}
           >
-            <span className={`h-2 w-2 rounded-full ${group === g ? "bg-white/80" : grp(g).clr}`} />
-            {g} ({n})
+            <span className={`h-2 w-2 rounded-full ${group === g ? "bg-white/80" : grp(g).clr}`} />{" "}
+            {g} ({n}){" "}
           </button>
         ))}
-      </div>
+      </div>{" "}
 
       {/* Légende des groupes, pour lever l'ambiguïté des sigles. */}
       {group && (
         <p className="flex items-center justify-center gap-2 text-xs text-muted-foreground">
-          <Info size={13} /> <strong>{group}</strong> — {grp(group).name}
+          <Info size={13} /> {" "}<strong>{group}</strong> — {grp(group).name}
         </p>
-      )}
+      )}{" "}
 
       {/* Un rail horizontal sur deux rangées, et non une grille qui descend.
           À quatre colonnes, les quatre-vingts eurodéputés occupaient vingt et une
@@ -118,7 +118,7 @@ export default function MepsList({ meps: initial }: { meps?: any[] }) {
                 href={`/eurodeputes/${m.slug}`}
                 className="group relative flex w-[9.5rem] shrink-0 flex-col items-center overflow-hidden rounded-2xl border border-border bg-card px-3 pb-4 pt-5 text-center transition hover:border-sky-300 hover:shadow-lg dark:border-slate-800 dark:bg-slate-900"
               >
-                <span className={`absolute left-0 top-0 h-1 w-full ${g.clr} opacity-70`} />
+                <span className={`absolute left-0 top-0 h-1 w-full ${g.clr} opacity-70`} />{" "}
                 {/* eslint-disable-next-line @next/next/no-img-element */}
                 <img
                   src={m.photo_url}
@@ -126,19 +126,19 @@ export default function MepsList({ meps: initial }: { meps?: any[] }) {
                   loading="lazy"
                   className="h-16 w-16 rounded-full border-2 border-white object-cover object-top shadow-md transition group-hover:scale-105 dark:border-slate-800"
                   onError={(e) => { (e.currentTarget as HTMLImageElement).src = `https://ui-avatars.com/api/?name=${encodeURIComponent(m.full_name)}&background=0284c7&color=fff&size=160`; }}
-                />
+                />{" "}
                 <p className="mt-2 line-clamp-2 text-[13px] font-bold leading-tight text-foreground transition-colors group-hover:text-sky-600 dark:text-white">
                   {m.full_name}
-                </p>
-                <p className="mt-0.5 line-clamp-1 text-[10px] text-muted-foreground">{m.national_party}</p>
+                </p>{" "}
+                <p className="mt-0.5 line-clamp-1 text-[10px] text-muted-foreground">{m.national_party}</p>{" "}
                 <span className={`mt-1.5 inline-flex items-center rounded-full px-2 py-0.5 text-[9px] font-black uppercase tracking-widest text-white ${g.clr}`}>
                   {m.ep_group_code}
-                </span>
+                </span>{" "}
               </Link>
             );
           })}
         </div>
-      </DragScroller>
+      </DragScroller>{" "}
 
       {shown.length === 0 && <p className="py-12 text-center text-sm italic text-slate-400">Aucun eurodéputé ne correspond.</p>}
     </div>

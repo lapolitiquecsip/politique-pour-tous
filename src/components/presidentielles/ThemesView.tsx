@@ -44,9 +44,9 @@ function Sparkline({ history, unit, betterWhen, accent }: {
         <polygon points={area} fill={`url(#${gid})`} />
         <polyline points={line} fill="none" stroke={accent} strokeWidth="1.75" strokeLinejoin="round" strokeLinecap="round" />
         {history.map((h, i) => <circle key={h.year} cx={x(i)} cy={y(h.value)} r={i === history.length - 1 ? 3 : 1.6} fill={i === history.length - 1 ? trendColor : accent} />)}
-      </svg>
+      </svg>{" "}
       <div className="text-[11px] leading-tight text-muted-foreground">
-        <div className="tabular-nums">{first.year} · {fmt(first.value)}</div>
+        <div className="tabular-nums">{first.year} · {fmt(first.value)}</div>{" "}
         <div className="tabular-nums font-black" style={{ color: trendColor }}>{last.year} · {fmt(last.value)}{unit ? ` ${unit}` : ""}</div>
       </div>
     </div>
@@ -68,25 +68,25 @@ function ThemeCard({ theme, index }: { theme: CampaignTheme; index: number }) {
     >
       <button onClick={() => setOpen(o => !o)} className="flex w-full items-center gap-5 px-6 py-5 text-left sm:px-8">
         {/* Numéro d'ordre, ton éditorial */}
-        <span className="hidden shrink-0 font-staatliches text-4xl leading-none text-foreground/10 sm:block">{num}</span>
+        <span className="hidden shrink-0 font-staatliches text-4xl leading-none text-foreground/10 sm:block">{num}</span>{" "}
         <span className="flex h-11 w-11 shrink-0 items-center justify-center rounded-xl ring-1" style={{ backgroundColor: `${theme.accent}1f`, color: theme.accent, boxShadow: `inset 0 0 0 1px ${theme.accent}40` }}>
           <ThemeIcon name={theme.icon} className="h-5 w-5" />
-        </span>
+        </span>{" "}
         <div className="min-w-0 flex-1">
-          <h3 className="font-staatliches text-2xl uppercase leading-none tracking-wide text-foreground md:text-3xl">{theme.title}</h3>
+          <h3 className="font-staatliches text-2xl uppercase leading-none tracking-wide text-foreground md:text-3xl">{theme.title}</h3>{" "}
           <p className="mt-1.5 text-sm text-muted-foreground">{theme.summary}</p>
-        </div>
+        </div>{" "}
         {/* Chiffre phare, aligné à droite */}
         {head && (
           <div className="hidden shrink-0 text-right md:block">
-            <div className="font-staatliches text-3xl leading-none tabular-nums" style={{ color: theme.accent }}>{head.value}</div>
+            <div className="font-staatliches text-3xl leading-none tabular-nums" style={{ color: theme.accent }}>{head.value}</div>{" "}
             <div className="mt-1 text-[10px] font-black uppercase tracking-widest text-muted-foreground">{head.label} · {head.year}</div>
           </div>
-        )}
+        )}{" "}
         <span className="flex h-8 w-8 shrink-0 items-center justify-center rounded-full bg-white/70 dark:bg-white/10 ring-1 ring-slate-200 dark:ring-slate-700 text-slate-400 transition-all group-hover:ring-slate-300" style={{ transform: open ? "rotate(45deg)" : "none" }}>
           <Plus className="h-4 w-4" />
         </span>
-      </button>
+      </button>{" "}
 
       {open && (
         <div className="bg-white/60 dark:bg-white/[0.03] px-6 pb-7 sm:px-8 sm:pl-24">
@@ -95,24 +95,24 @@ function ThemeCard({ theme, index }: { theme: CampaignTheme; index: number }) {
               <div key={s.label} className="flex flex-col gap-3 py-4 sm:flex-row sm:items-center sm:justify-between">
                 <div className="min-w-0">
                   <div className="flex items-baseline gap-2">
-                    <span className="font-staatliches text-3xl leading-none tabular-nums text-foreground">{s.value}</span>
+                    <span className="font-staatliches text-3xl leading-none tabular-nums text-foreground">{s.value}</span>{" "}
                     <span className="text-sm font-bold text-muted-foreground">{s.label}</span>
-                  </div>
-                  {s.sub && <p className="mt-1 text-xs leading-snug text-muted-foreground">{s.sub}</p>}
+                  </div>{" "}
+                  {s.sub && <p className="mt-1 text-xs leading-snug text-muted-foreground">{s.sub}</p>}{" "}
                   <a
                     href={s.url} target="_blank" rel="noreferrer"
                     className="mt-1.5 inline-flex items-center gap-1 text-[10px] font-black uppercase tracking-widest text-muted-foreground hover:text-slate-700"
                   >
-                    {s.year} · {s.source} {s.url && <ExternalLink className="h-2.5 w-2.5" />}
+                    {s.year} · {s.source} {" "}{s.url && <ExternalLink className="h-2.5 w-2.5" />}
                   </a>
-                </div>
-                {s.history && <div className="shrink-0"><Sparkline history={s.history} unit={s.unit} betterWhen={s.betterWhen} accent={theme.accent} /></div>}
+                </div>{" "}
+                {s.history && <div className="shrink-0"><Sparkline history={s.history} unit={s.unit} betterWhen={s.betterWhen} accent={theme.accent} /></div>}{" "}
               </div>
             ))}
-          </div>
+          </div>{" "}
           {theme.perspective && (
             <div className="mt-5 flex gap-3 rounded-xl bg-muted p-4 ring-1 ring-slate-100">
-              <span className="mt-0.5 font-staatliches text-lg uppercase tracking-widest" style={{ color: theme.accent }}>À venir</span>
+              <span className="mt-0.5 font-staatliches text-lg uppercase tracking-widest" style={{ color: theme.accent }}>À venir</span>{" "}
               <p className="text-sm leading-relaxed text-muted-foreground">{theme.perspective}</p>
             </div>
           )}
@@ -196,15 +196,15 @@ export default function ThemesView() {
       <div className="mb-8 text-center">
         <p className="mx-auto max-w-2xl text-sm leading-relaxed text-muted-foreground">
           Les grands enjeux de la campagne, éclairés par des <span className="font-bold text-foreground">données strictement officielles</span> — INSEE, RTE, COR, SSMSI, ministères, Commission européenne. Chaque chiffre est daté et sourcé. Dépliez un thème pour l&apos;évolution et les sources.
-        </p>
+        </p>{" "}
         {freshest && (
           <p className="mt-3 inline-flex items-center gap-2 rounded-full bg-emerald-50 dark:bg-emerald-500/10 px-3 py-1.5 text-[11px] font-black uppercase tracking-widest text-emerald-700 dark:text-emerald-300">
-            <span className="h-1.5 w-1.5 rounded-full bg-emerald-500" />
+            <span className="h-1.5 w-1.5 rounded-full bg-emerald-500" />{" "}
             Dernière publication officielle reprise : {new Date(freshest).toLocaleDateString("fr-FR", { day: "numeric", month: "long", year: "numeric" })}
           </p>
-        )}
+        )}{" "}
         <div className="mx-auto mt-5 h-px w-24 bg-gradient-to-r from-transparent via-slate-300 to-transparent" />
-      </div>
+      </div>{" "}
       <div className="space-y-3">
         {themes.map((t, i) => <ThemeCard key={t.slug} theme={t} index={i} />)}
       </div>

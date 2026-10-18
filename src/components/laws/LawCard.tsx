@@ -36,26 +36,26 @@ export default function LawCard({ law }: { law: Law }) {
       <div className="flex justify-between items-start mb-4">
         <span className="px-3 py-1 bg-primary/10 text-primary text-xs font-bold uppercase tracking-wider rounded-md">
           {law.category}
-        </span>
+        </span>{" "}
         <span className={`px-2.5 py-1 text-xs font-semibold rounded-full border flex items-center gap-1.5 ${statusColor}`}>
-          <StatusIcon className="w-3 h-3" />
+          <StatusIcon className="w-3 h-3" />{" "}
           {law.vote_result || "En cours"}
         </span>
-      </div>
+      </div>{" "}
 
       <h3 className="text-xl font-heading font-bold text-foreground mb-3 leading-snug group-hover:text-primary transition-colors">
         {law.title}
-      </h3>
+      </h3>{" "}
       
       <p className="text-muted-foreground leading-relaxed mb-6 flex-grow">
         {law.summary}
-      </p>
+      </p>{" "}
 
       <div className="flex justify-between items-center mt-auto pt-4 border-t border-border/50">
         <div className="text-xs text-muted-foreground flex items-center gap-2">
-          <FileText className="w-4 h-4" />
+          <FileText className="w-4 h-4" />{" "}
           Mise à jour le {dateStr}
-        </div>
+        </div>{" "}
         <Link 
           href={`/lois/${law.id}`} 
           className="text-primary font-bold text-sm inline-flex items-center gap-1 hover:gap-2 transition-all"

@@ -29,31 +29,31 @@ export default function EuropeHero({ description, links }: { description: string
   return (
     <div className="relative overflow-hidden bg-[#00133a] px-4 pt-28 pb-16 text-center">
       {/* Photo de l'hémicycle du Parlement européen + voile bleu pour la lisibilité. */}
-      <div className="absolute inset-0 bg-cover bg-center" style={{ backgroundImage: `url(${img})` }} />
-      <div className="absolute inset-0 bg-gradient-to-b from-[#00133a]/86 via-[#00133a]/72 to-[#00133a]/95" />
+      <div className="absolute inset-0 bg-cover bg-center" style={{ backgroundImage: `url(${img})` }} />{" "}
+      <div className="absolute inset-0 bg-gradient-to-b from-[#00133a]/86 via-[#00133a]/72 to-[#00133a]/95" />{" "}
       {/* Halos lumineux (bleu + or). */}
-      <div className="absolute left-1/4 top-0 h-96 w-96 -translate-x-1/2 rounded-full bg-[#003399]/40 blur-[120px]" />
-      <div className="absolute right-1/4 top-10 h-96 w-96 translate-x-1/2 rounded-full bg-[#FFCC00]/15 blur-[130px]" />
-      <StarCrown />
+      <div className="absolute left-1/4 top-0 h-96 w-96 -translate-x-1/2 rounded-full bg-[#003399]/40 blur-[120px]" />{" "}
+      <div className="absolute right-1/4 top-10 h-96 w-96 translate-x-1/2 rounded-full bg-[#FFCC00]/15 blur-[130px]" />{" "}
+      <StarCrown />{" "}
       <div className="relative z-10 mx-auto max-w-5xl">
         <span className="inline-flex items-center gap-2 rounded-full border border-[#FFCC00]/30 bg-white/5 px-4 py-1.5 text-[11px] font-black uppercase tracking-[0.25em] text-[#FFD54A]">
           🇪🇺 Parlement européen · 27 pays
-        </span>
+        </span>{" "}
         <h1 className="mt-6 font-staatliches text-7xl uppercase leading-none tracking-tight text-white md:text-9xl">
           EUR<span className="bg-gradient-to-b from-[#FFE07A] to-[#FFCC00] bg-clip-text text-transparent">O</span>PE
-        </h1>
-        <div className="mx-auto mt-6 h-1.5 w-44 rounded-full bg-gradient-to-r from-[#003399] via-[#3b6fd4] to-[#FFCC00]" />
-        <p className="mx-auto mt-6 max-w-2xl text-[15px] leading-relaxed text-white/70 md:text-base">{description}</p>
+        </h1>{" "}
+        <div className="mx-auto mt-6 h-1.5 w-44 rounded-full bg-gradient-to-r from-[#003399] via-[#3b6fd4] to-[#FFCC00]" />{" "}
+        <p className="mx-auto mt-6 max-w-2xl text-[15px] leading-relaxed text-white/70 md:text-base">{description}</p>{" "}
         <div className="mt-8">
           <p className="mb-3 inline-flex items-center gap-2 rounded-full bg-[#FFCC00]/15 px-3.5 py-1.5 text-[10px] font-black uppercase tracking-[0.2em] text-[#FFD54A] ring-1 ring-[#FFCC00]/25">
             <MousePointerClick size={13} /> {links.length} sections · cliquez pour y accéder
-          </p>
+          </p>{" "}
           <div className="flex flex-wrap justify-center gap-2.5">
             {links.map(l => (
               <a key={l.href} href={l.href}
                 className="group inline-flex items-center gap-1.5 rounded-full border border-white/25 bg-white/[0.08] px-4 py-2.5 text-[11px] font-black uppercase tracking-widest text-white shadow-sm transition hover:border-[#FFCC00] hover:bg-[#FFCC00] hover:text-[#00133a] active:scale-95">
-                {l.label}
-                <ChevronDown size={13} className="opacity-70 transition group-hover:translate-y-0.5" />
+                {l.label}{" "}
+                <ChevronDown size={13} className="opacity-70 transition group-hover:translate-y-0.5" />{" "}
               </a>
             ))}
           </div>

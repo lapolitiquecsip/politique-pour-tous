@@ -48,8 +48,8 @@ function CardContent({ data }: { data: CardData }) {
   return (
     <div className={`flex h-full w-full flex-col justify-center items-center text-center p-4 sm:p-6 rounded-[1.625rem] ${bgColor} text-white shadow-inner relative overflow-hidden`}>
       {/* Decorative subtle ambient glows */}
-      <div className="absolute top-0 right-0 w-48 h-48 bg-white/10 rounded-full blur-3xl -mr-10 -mt-10 pointer-events-none" />
-      <div className="absolute bottom-0 left-0 w-48 h-48 bg-black/10 rounded-full blur-2xl -ml-10 -mb-10 pointer-events-none" />
+      <div className="absolute top-0 right-0 w-48 h-48 bg-white/10 rounded-full blur-3xl -mr-10 -mt-10 pointer-events-none" />{" "}
+      <div className="absolute bottom-0 left-0 w-48 h-48 bg-black/10 rounded-full blur-2xl -ml-10 -mb-10 pointer-events-none" />{" "}
 
       <div className="relative z-10 w-full h-full flex flex-col items-center justify-center">
         {data.value ? (
@@ -111,21 +111,21 @@ function CardContent({ data }: { data: CardData }) {
               <div className="flex items-center gap-1.5 mb-2 sm:mb-3">
                 <span className="bg-white/20 text-white/90 border border-white/10 px-2 py-0.5 rounded text-[10px] font-black uppercase tracking-wider">
                   Fact-Checking
-                </span>
+                </span>{" "}
                 <h1 className="font-staatliches text-2xl sm:text-3xl tracking-wide uppercase leading-none text-white">
                   INTOX
                 </h1>
-              </div>
+              </div>{" "}
 
               {/* Rumeur Box */}
               <div className="bg-black/25 border border-white/5 rounded-xl px-4 py-2.5 text-left w-full mb-3 relative max-w-sm flex-1 flex flex-col justify-center">
                 <span className="absolute -top-2 left-3 bg-rose-600 text-[8px] font-black uppercase px-1.5 py-0.5 rounded tracking-widest text-white shadow-sm border border-rose-400">
                   LA RUMEUR
-                </span>
+                </span>{" "}
                 <p className="text-white/90 italic font-medium leading-snug text-xs sm:text-sm line-clamp-3">
                   « {content} »
                 </p>
-              </div>
+              </div>{" "}
 
               {/* Réalité Box */}
               <div className={`bg-card text-foreground rounded-xl p-3 text-left w-full max-w-sm shadow-xl border-l-4 ${
@@ -138,7 +138,7 @@ function CardContent({ data }: { data: CardData }) {
                 <div className="flex items-center justify-between mb-1.5">
                   <span className="text-[10px] font-extrabold uppercase tracking-wider bg-emerald-100 dark:bg-emerald-500/10 text-emerald-800 dark:text-emerald-300 px-2 py-0.5 rounded">
                     RÉALITÉ
-                  </span>
+                  </span>{" "}
                   
                   {verdict && (
                     <span className={`text-[10px] font-black uppercase px-2 py-0.5 rounded flex items-center gap-1 ${
@@ -152,16 +152,16 @@ function CardContent({ data }: { data: CardData }) {
                         <svg className="w-3 h-3 text-rose-700 dark:text-rose-400" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={3}>
                           <path strokeLinecap="round" strokeLinejoin="round" d="M6 18L18 6M6 6l12 12" />
                         </svg>
-                      )}
+                      )}{" "}
                       {isVrai && (
                         <svg className="w-3 h-3 text-emerald-700 dark:text-emerald-400" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={3}>
                           <path strokeLinecap="round" strokeLinejoin="round" d="M5 13l4 4L19 7" />
                         </svg>
-                      )}
+                      )}{" "}
                       {verdict}
                     </span>
                   )}
-                </div>
+                </div>{" "}
                 <p className="text-xs sm:text-xs text-slate-700 dark:text-slate-200 leading-normal font-medium line-clamp-4">
                   {debunkText}
                 </p>
@@ -225,7 +225,7 @@ function AnimatedCard({
       }}
       className="absolute flex h-[360px] w-[324px] items-center justify-center overflow-hidden rounded-[2rem] border border-border bg-card p-1.5 shadow-2xl will-change-transform sm:w-[512px]"
     >
-      <CardContent data={card} />
+      <CardContent data={card} />{" "}
     </motion.div>
   )
 }
@@ -277,7 +277,7 @@ export default function AnimatedCardStack({ items = [] }: { items: CardData[] })
             <AnimatedCard key={card.id} card={card} index={index} isAnimating={isAnimating} />
           ))}
         </AnimatePresence>
-      </div>
+      </div>{" "}
 
       <div className="relative z-10 flex w-full items-center justify-center pt-2">
         <button

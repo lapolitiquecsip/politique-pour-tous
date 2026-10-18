@@ -49,20 +49,20 @@ export default function DynamiquesView({ candidates }: { candidates: Candidat[] 
               <a key={id} href={`#${id}`} aria-current={on ? "true" : undefined}
                 onClick={e => { e.preventDefault(); document.getElementById(id)?.scrollIntoView({ behavior: "smooth" }); history.replaceState(null, "", `#${id}`); }}
                 className={`group inline-flex shrink-0 items-center gap-2 rounded-full px-4 py-2.5 text-[13px] font-bold transition-all duration-300 ${on ? `bg-gradient-to-r ${teinte} text-white shadow-lg` : "text-muted-foreground hover:bg-muted hover:text-foreground"}`}>
-                <span className={`hidden text-[10px] font-black tabular-nums sm:inline ${on ? "text-white/70" : "text-muted-foreground/70"}`}>0{i + 1}</span>
-                <Icone size={15} className={on ? "" : "transition-transform group-hover:scale-110"} />
-                {label}
+                <span className={`hidden text-[10px] font-black tabular-nums sm:inline ${on ? "text-white/70" : "text-muted-foreground/70"}`}>0{i + 1}</span>{" "}
+                <Icone size={15} className={on ? "" : "transition-transform group-hover:scale-110"} />{" "}
+                {label}{" "}
               </a>
             );
           })}
         </div>
-      </nav>
+      </nav>{" "}
 
       <div className="mx-auto max-w-6xl space-y-16 px-4">
         <SondagesPanel candidats={candidates} />
         <PressePanel candidats={candidates} />
         <ArcomPanel candidats={candidates} />
-      </div>
+      </div>{" "}
       <div className="mt-16">
         <CandidateSocialTracker candidates={candidates} />
       </div>

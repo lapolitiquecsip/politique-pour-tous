@@ -25,7 +25,7 @@ export default function PromiseItem({ promise }: { promise: PromiseData }) {
 
   return (
     <div className="bg-card border border-border shadow-sm rounded-[2.5rem] hover:shadow-xl transition-all duration-300 group bg-card relative overflow-hidden flex flex-col">
-      <div className="absolute top-0 right-0 w-32 h-32 bg-muted rounded-bl-full -mr-16 -mt-16 transition-all group-hover:scale-110 pointer-events-none" />
+      <div className="absolute top-0 right-0 w-32 h-32 bg-muted rounded-bl-full -mr-16 -mt-16 transition-all group-hover:scale-110 pointer-events-none" />{" "}
       
       {/* Upper Content */}
       <div className="p-8 pb-4 relative z-10">
@@ -34,21 +34,21 @@ export default function PromiseItem({ promise }: { promise: PromiseData }) {
             <div className="flex items-center gap-3 mb-4">
               <span className="px-3 py-1 bg-blue-50 dark:bg-blue-500/10 text-blue-600 dark:text-blue-300 text-[10px] font-black uppercase tracking-widest rounded-lg border border-blue-100 dark:border-blue-500/25">
                 {promise.category || "Engagement"}
-              </span>
-              <span className="text-slate-300">•</span>
+              </span>{" "}
+              <span className="text-slate-300">•</span>{" "}
               <span className="text-[10px] font-bold text-slate-400 uppercase tracking-widest leading-none">
                 Déclaration du {dateStr}
               </span>
-            </div>
+            </div>{" "}
             <blockquote className="text-3xl md:text-4xl font-staatliches text-foreground italic mb-4 leading-tight border-l-4 border-blue-600/30 pl-6 py-2">
               « {promise.citation} »
             </blockquote>
-          </div>
+          </div>{" "}
           <div className="flex-shrink-0">
             <PromiseStatusBadge status={promise.status} />
           </div>
         </div>
-      </div>
+      </div>{" "}
 
       {/* Action Buttons */}
       <div className="px-8 pb-8 flex flex-wrap items-center justify-between gap-4 relative z-10 mt-auto">
@@ -60,10 +60,10 @@ export default function PromiseItem({ promise }: { promise: PromiseData }) {
               rel="noopener noreferrer"
               className="group/link inline-flex items-center gap-2 px-5 py-2.5 bg-slate-900 text-white text-xs font-bold rounded-xl hover:bg-blue-600 transition-all shadow-lg hover:shadow-blue-500/20"
             >
-              Vérifier la source
+              Vérifier la source{" "}
               <ArrowRight className="w-3.5 h-3.5 group-hover/link:translate-x-1 transition-transform" />
             </a>
-          )}
+          )}{" "}
           
           <button
             onClick={() => setIsOpen(!isOpen)}
@@ -73,17 +73,17 @@ export default function PromiseItem({ promise }: { promise: PromiseData }) {
                 : "bg-card text-muted-foreground border-border hover:bg-muted"
             }`}
           >
-            {isOpen ? "Fermer l'analyse" : "Consulter le détail"}
+            {isOpen ? "Fermer l'analyse" : "Consulter le détail"}{" "}
             <ChevronDown className={`w-4 h-4 transition-transform duration-300 ${isOpen ? "rotate-180" : ""}`} />
           </button>
-        </div>
+        </div>{" "}
 
         <div className="flex items-center gap-1.5 opacity-20">
-          <div className="w-1.5 h-1.5 rounded-full bg-slate-400" />
-          <div className="w-1.5 h-1.5 rounded-full bg-slate-400" />
+          <div className="w-1.5 h-1.5 rounded-full bg-slate-400" />{" "}
+          <div className="w-1.5 h-1.5 rounded-full bg-slate-400" />{" "}
           <div className="w-1.5 h-1.5 rounded-full bg-slate-400" />
         </div>
-      </div>
+      </div>{" "}
 
       {/* Expandable Section */}
       <AnimatePresence>
@@ -100,28 +100,28 @@ export default function PromiseItem({ promise }: { promise: PromiseData }) {
                 {/* 1. Bilan Concret */}
                 <div className="space-y-4">
                   <div className="flex items-center gap-2 text-blue-700 dark:text-blue-400">
-                    <History className="w-5 h-5" />
+                    <History className="w-5 h-5" />{" "}
                     <h4 className="text-sm font-black uppercase tracking-widest">Bilan Concret</h4>
-                  </div>
+                  </div>{" "}
                   <ul className="space-y-3">
                     {promise.actions?.map((action, idx) => (
                       <li key={idx} className="flex items-start gap-3 text-sm text-muted-foreground group/item">
-                        <CheckCircle2 className="w-4 h-4 text-slate-300 mt-0.5 group-hover/item:text-blue-500 transition-colors" />
-                        <span>{action}</span>
+                        <CheckCircle2 className="w-4 h-4 text-slate-300 mt-0.5 group-hover/item:text-blue-500 transition-colors" />{" "}
+                        <span>{action}</span>{" "}
                       </li>
-                    ))}
+                    ))}{" "}
                     {(!promise.actions || promise.actions.length === 0) && (
                       <li className="text-sm text-slate-400 italic">Aucune action répertoriée pour le moment.</li>
                     )}
                   </ul>
-                </div>
+                </div>{" "}
 
                 {/* 2. Analyse de la Rédaction */}
                 <div className="space-y-4">
                   <div className="flex items-center gap-2 text-amber-700 dark:text-amber-400">
-                    <AlertCircle className="w-5 h-5" />
+                    <AlertCircle className="w-5 h-5" />{" "}
                     <h4 className="text-sm font-black uppercase tracking-widest">Justification du Score</h4>
-                  </div>
+                  </div>{" "}
                   <div className="p-4 bg-card rounded-2xl border border-border shadow-inner">
                     <p className="text-sm text-muted-foreground leading-relaxed italic">
                       « {promise.justification || "L'analyse détaillée de cet engagement est en cours de rédaction par nos équipes."} »

@@ -50,14 +50,14 @@ export default function EuFranceProjects() {
         <div>
           <h2 className="text-3xl font-staatliches uppercase tracking-tight text-white md:text-4xl">
             Projets financés par <span className="text-yellow-400">l'UE en France</span>
-          </h2>
+          </h2>{" "}
           <p className="mt-1 text-blue-200/70">Des projets concrets cofinancés par l'Union européenne près de chez vous — infrastructures, formation, recherche, transition écologique. Source officielle Kohesio.</p>
-        </div>
+        </div>{" "}
         <span className="mt-1 flex shrink-0 items-center gap-2 rounded-full border border-white/15 bg-white/5 px-4 py-2 text-[11px] font-black uppercase tracking-widest text-yellow-300">
-          {open ? "Fermer" : `Voir les projets`}
+          {open ? "Fermer" : `Voir les projets`}{" "}
           <ChevronDown size={16} className={`transition-transform ${open ? "rotate-180" : ""}`} />
         </span>
-      </button>
+      </button>{" "}
 
       {open && (
         <>
@@ -65,10 +65,10 @@ export default function EuFranceProjects() {
             {[["Toutes", items.length] as [string, number], ...regions].map(([r, n]) => (
               <button key={r} onClick={() => { setRegion(r); setLimit(12); }}
                 className={`rounded-full border px-3.5 py-1.5 text-[11px] font-black uppercase tracking-wider transition ${region === r ? "border-yellow-400 bg-yellow-400 text-blue-950" : "border-white/15 bg-white/5 text-blue-100 hover:border-yellow-400/40"}`}>
-                {r} <span className="opacity-80">{n}</span>
+                {r} <span className="opacity-80">{n}</span>{" "}
               </button>
             ))}
-          </div>
+          </div>{" "}
 
           <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
             {visible.map(p => (
@@ -78,18 +78,18 @@ export default function EuFranceProjects() {
                   {p.image_url && (
                     // eslint-disable-next-line @next/next/no-img-element
                     <img src={p.image_url} alt="" loading="lazy" className="h-full w-full object-cover opacity-90 transition group-hover:scale-105" />
-                  )}
+                  )}{" "}
                   <span className="absolute bottom-2 left-3 rounded-full bg-blue-950/70 px-3 py-1 text-lg font-staatliches text-yellow-300">{fmtEur(p.eu_budget_eur)}</span>
-                </div>
+                </div>{" "}
                 <div className="flex flex-1 flex-col p-4">
-                  <p className="inline-flex items-center gap-1 text-[10px] font-black uppercase tracking-wider text-blue-300/70"><MapPin size={11} /> {p.region}</p>
-                  <h3 className="mt-1 line-clamp-2 text-sm font-bold leading-snug text-white group-hover:text-yellow-300">{p.name}</h3>
-                  {p.description && <p className="mt-1.5 line-clamp-3 text-xs leading-relaxed text-blue-100/60">{p.description}</p>}
+                  <p className="inline-flex items-center gap-1 text-[10px] font-black uppercase tracking-wider text-blue-300/70"><MapPin size={11} /> {p.region}</p>{" "}
+                  <h3 className="mt-1 line-clamp-2 text-sm font-bold leading-snug text-white group-hover:text-yellow-300">{p.name}</h3>{" "}
+                  {p.description && <p className="mt-1.5 line-clamp-3 text-xs leading-relaxed text-blue-100/60">{p.description}</p>}{" "}
                   <span className="mt-auto pt-3 inline-flex items-center gap-1 text-[10px] font-black uppercase tracking-widest text-blue-300/70">Fiche Kohesio <ExternalLink size={10} /></span>
-                </div>
+                </div>{" "}
               </a>
             ))}
-          </div>
+          </div>{" "}
 
           {limit < totalFiltered && (
             <div className="mt-6 text-center">

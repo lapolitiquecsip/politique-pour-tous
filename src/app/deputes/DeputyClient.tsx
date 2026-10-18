@@ -72,9 +72,9 @@ export default function DeputyClient({ initialDeputies }: { initialDeputies: Dep
                   : "text-muted-foreground hover:text-foreground"
               }`}
             >
-              <Map className="w-4 h-4" />
+              <Map className="w-4 h-4" />{" "}
               Vue Carte
-            </button>
+            </button>{" "}
             <button
               onClick={() => handleSetShowMap(false)}
               className={`flex items-center gap-2 px-4 py-2 rounded-lg text-sm font-medium transition-all ${
@@ -83,21 +83,21 @@ export default function DeputyClient({ initialDeputies }: { initialDeputies: Dep
                   : "text-muted-foreground hover:text-foreground"
               }`}
             >
-              <List className="w-4 h-4" />
+              <List className="w-4 h-4" />{" "}
               Vue Liste
             </button>
-          </div>
+          </div>{" "}
           
           {isPending && (
             <div className="flex items-center gap-2 text-blue-700 dark:text-blue-400 animate-in fade-in slide-in-from-left-2">
-              <Loader2 className="w-4 h-4 animate-spin" />
+              <Loader2 className="w-4 h-4 animate-spin" />{" "}
               <span className="text-xs font-bold uppercase tracking-widest">Mise à jour...</span>
             </div>
           )}
-        </div>
+        </div>{" "}
 
         <div className="w-full max-w-md flex flex-col gap-2">
-          <DeputySearch searchQuery={searchQuery} setSearchQuery={setSearchQuery} />
+          <DeputySearch searchQuery={searchQuery} setSearchQuery={setSearchQuery} />{" "}
           
           {/* Indicateur de filtres actifs */}
           <AnimatePresence>
@@ -110,8 +110,8 @@ export default function DeputyClient({ initialDeputies }: { initialDeputies: Dep
               >
                 {selectedDepartment && (
                   <span className="inline-flex items-center gap-1.5 px-3 py-1 bg-blue-500/10 text-blue-700 dark:text-blue-400 rounded-full text-xs font-bold border border-blue-500/20">
-                    <MapPin className="w-3 h-3" />
-                    {getDepartmentName(selectedDepartment)}
+                    <MapPin className="w-3 h-3" />{" "}
+                    {getDepartmentName(selectedDepartment)}{" "}
                     <button 
                       onClick={() => handleDepartmentSelect(null)}
                       className="hover:text-blue-800 transition-colors"
@@ -119,10 +119,10 @@ export default function DeputyClient({ initialDeputies }: { initialDeputies: Dep
                       <X className="w-3 h-3" />
                     </button>
                   </span>
-                )}
+                )}{" "}
                 {searchQuery && (
                   <span className="inline-flex items-center gap-1.5 px-3 py-1 bg-slate-100 dark:bg-slate-800 text-muted-foreground dark:text-slate-400 rounded-full text-xs font-bold border border-border">
-                    Recherche: {searchQuery}
+                    Recherche: {searchQuery}{" "}
                     <button 
                       onClick={() => setSearchQuery("")}
                       className="hover:text-foreground dark:hover:text-white transition-colors"
@@ -130,7 +130,7 @@ export default function DeputyClient({ initialDeputies }: { initialDeputies: Dep
                       <X className="w-3 h-3" />
                     </button>
                   </span>
-                )}
+                )}{" "}
                 {(selectedDepartment || searchQuery) && (
                   <button 
                     onClick={() => {
@@ -146,7 +146,7 @@ export default function DeputyClient({ initialDeputies }: { initialDeputies: Dep
             )}
           </AnimatePresence>
         </div>
-      </div>
+      </div>{" "}
 
       {/* Main Content Area */}
       <div className={`transition-opacity duration-300 ${isPending ? "opacity-40" : "opacity-100"}`}>
@@ -170,7 +170,7 @@ export default function DeputyClient({ initialDeputies }: { initialDeputies: Dep
                 selectedDepartment={selectedDepartment}
                 onDepartmentSelect={handleDepartmentSelect}
               />
-            </motion.div>
+            </motion.div>{" "}
 
             {/* Panel de Circonscriptions (Side Panel en Desktop, sous la carte en Mobile) */}
             <AnimatePresence>
@@ -189,15 +189,15 @@ export default function DeputyClient({ initialDeputies }: { initialDeputies: Dep
                       <div className="flex items-center justify-between">
                         <div>
                           <h3 className="text-2xl font-black text-foreground dark:text-white flex items-center gap-2">
-                            <Landmark className="w-6 h-6 text-red-500" />
+                            <Landmark className="w-6 h-6 text-red-500" />{" "}
                             {getDepartmentName(selectedDepartment)}
-                          </h3>
+                          </h3>{" "}
                           <p className="text-sm font-semibold text-muted-foreground mt-1 uppercase tracking-widest">
                             {filteredDeputies.length} circonscription{filteredDeputies.length > 1 ? "s" : ""}
                           </p>
                         </div>
                       </div>
-                    </div>
+                    </div>{" "}
 
                     {/* Découpage par circonscription */}
                     <div className="overflow-y-auto p-4 space-y-3 custom-scrollbar flex-1 bg-slate-50/50 dark:bg-slate-950">
@@ -205,7 +205,7 @@ export default function DeputyClient({ initialDeputies }: { initialDeputies: Dep
                         .sort((a, b) => a.constituencyNumber - b.constituencyNumber)
                         .map((deputy) => (
                           <SidebarDeputyItem key={deputy.id} deputy={deputy} router={router} />
-                        ))}
+                        ))}{" "}
 
                       {filteredDeputies.length === 0 && (
                         <div className="text-center py-12 px-4">
@@ -216,7 +216,7 @@ export default function DeputyClient({ initialDeputies }: { initialDeputies: Dep
                   </div>
                 </motion.div>
               )}
-            </AnimatePresence>
+            </AnimatePresence>{" "}
           </motion.div>
         ) : (
           <motion.div
@@ -229,7 +229,7 @@ export default function DeputyClient({ initialDeputies }: { initialDeputies: Dep
             <DeputyGrid 
               key={`${searchQuery}-${selectedDepartment}`}
               deputies={filteredDeputies} 
-            />
+            />{" "}
           </motion.div>
         )}
         </AnimatePresence>
@@ -276,20 +276,20 @@ function SidebarDeputyItem({ deputy, router }: { deputy: Deputy; router: any }) 
           <div className={`w-14 h-14 rounded-xl flex items-center justify-center text-white font-bold shadow-md ${partyColorClass}`}>
             {initials}
           </div>
-        )}
+        )}{" "}
         <div className="absolute -bottom-1 -right-1 w-6 h-6 bg-card dark:bg-slate-800 rounded-lg shadow-sm border border-border dark:border-slate-700 flex items-center justify-center text-[10px] font-black text-muted-foreground">
           {deputy.constituencyNumber}
         </div>
-      </div>
+      </div>{" "}
       
       <div className="flex-1 min-w-0">
         <p className="font-bold text-foreground dark:text-white truncate leading-tight">
           {deputy.firstName} {deputy.lastName}
-        </p>
+        </p>{" "}
         <p className="text-xs font-semibold text-muted-foreground truncate mt-0.5">
           {deputy.party}
         </p>
-      </div>
+      </div>{" "}
 
       <button 
         onClick={() => router.push(`/deputes/${slug}`)}

@@ -138,41 +138,41 @@ function Carte({
           <span className="flex items-center gap-1.5 text-[10px] font-black uppercase tracking-widest">
             {compte?.imminent && (
               <span className="relative flex h-2 w-2">
-                <span className="absolute inline-flex h-full w-full animate-ping rounded-full bg-white opacity-75" />
+                <span className="absolute inline-flex h-full w-full animate-ping rounded-full bg-white opacity-75" />{" "}
                 <span className="relative inline-flex h-2 w-2 rounded-full bg-white" />
               </span>
-            )}
+            )}{" "}
             À venir
-          </span>
+          </span>{" "}
           {compte && (
             <span className="truncate text-[10px] font-black uppercase tracking-widest text-white/90">
               {compte.texte}
             </span>
           )}
         </span>
-      )}
+      )}{" "}
 
       <span className="flex items-start gap-3">
         <span className={`flex h-10 w-10 shrink-0 items-center justify-center rounded-2xl ${CAMPS[e.camp ?? ""] ?? "bg-muted text-muted-foreground"}`}>
           <Icone size={17} />
-        </span>
+        </span>{" "}
         <span className="min-w-0 flex-1">
           <span className="flex flex-wrap items-center gap-x-1.5 gap-y-1 text-[9px] font-black uppercase tracking-widest">
             <span className={`rounded-full px-2 py-0.5 ${CAMPS[e.camp ?? ""] ?? "bg-muted text-muted-foreground"}`}>{e.primaire}</span>
-          </span>
+          </span>{" "}
           <span className="mt-1 block text-[10px] font-bold uppercase tracking-wide text-muted-foreground">{quand}</span>
         </span>
-      </span>
+      </span>{" "}
 
       {/* Deux lignes au plus : au-delà, les cartes n'ont plus la même hauteur et
           le rail se met à onduler d'une carte à l'autre. */}
-      <span className="mt-2.5 line-clamp-2 block text-sm font-bold leading-snug text-foreground">{e.titre}</span>
-      {e.diffuseur && <span className="mt-0.5 block truncate text-[11px] text-muted-foreground">Sur {e.diffuseur}</span>}
+      <span className="mt-2.5 line-clamp-2 block text-sm font-bold leading-snug text-foreground">{e.titre}</span>{" "}
+      {e.diffuseur && <span className="mt-0.5 block truncate text-[11px] text-muted-foreground">Sur {e.diffuseur}</span>}{" "}
       {!!e.participants?.length && (
         <span className="mt-1.5 line-clamp-2 block text-[11px] leading-snug text-muted-foreground">
           Avec {e.participants.map(s => noms.get(s) ?? s).join(", ")}
         </span>
-      )}
+      )}{" "}
 
       <span className="mt-auto flex items-center gap-2 pt-3">
         {e.video_id ? (
@@ -183,7 +183,7 @@ function Carte({
           <span className="inline-flex items-center gap-1.5 rounded-full bg-muted px-3 py-1.5 text-[10px] font-black uppercase tracking-widest text-muted-foreground">
             <CalendarDays size={11} /> {passe ? "Détails" : "Le rendez-vous"}
           </span>
-        )}
+        )}{" "}
         {actif && (
           <span className="text-[10px] font-black uppercase tracking-widest text-fuchsia-600 dark:text-fuchsia-300">
             Affiché
@@ -206,16 +206,16 @@ function Detail({ e, isPro, onFermer }: { e: Evenement; isPro: boolean; onFermer
         <div className="min-w-0 flex-1">
           <p className="text-[10px] font-black uppercase tracking-widest text-muted-foreground">
             {estIntervalle(e) ? e.heure : `${jourLong(e.date_prevue)}${e.heure ? ` · ${e.heure}` : ""}`}
-          </p>
+          </p>{" "}
           <h3 className="mt-0.5 text-base font-bold leading-snug text-foreground">{e.titre}</h3>
-        </div>
+        </div>{" "}
         <button
           type="button" onClick={onFermer} aria-label="Fermer le détail"
           className="shrink-0 rounded-full p-1.5 text-muted-foreground transition hover:bg-muted hover:text-foreground"
         >
           <X size={16} />
         </button>
-      </div>
+      </div>{" "}
 
       {e.video_id ? (
         <div className="overflow-hidden rounded-2xl bg-black" style={{ aspectRatio: "16 / 9" }}>
@@ -236,12 +236,12 @@ function Detail({ e, isPro, onFermer }: { e: Evenement; isPro: boolean; onFermer
         </p>
       ) : (
         <p className="flex items-center gap-2 text-sm text-muted-foreground">
-          <CalendarDays size={15} />
+          <CalendarDays size={15} />{" "}
           {estIntervalle(e)
             ? `Scrutin ouvert ${e.heure}, en ligne.`
             : `Rendez-vous le ${jourLong(e.date_prevue)}${e.heure ? ` à ${e.heure}` : ""}${e.diffuseur ? `, sur ${e.diffuseur}` : ""}.`}
         </p>
-      )}
+      )}{" "}
 
       {/* Résumé écrit : réservé à l'offre Pro, et propre aux débats — un scrutin
           n'a pas de compte rendu, il a un résultat. */}
@@ -249,10 +249,10 @@ function Detail({ e, isPro, onFermer }: { e: Evenement; isPro: boolean; onFermer
         <div className="mt-4">
           {!isPro ? (
             <div className="flex flex-wrap items-center gap-3 rounded-2xl border border-fuchsia-200 bg-fuchsia-50/60 p-4 dark:border-fuchsia-500/30 dark:bg-fuchsia-500/10">
-              <Lock size={16} className="shrink-0 text-fuchsia-600 dark:text-fuchsia-300" />
+              <Lock size={16} className="shrink-0 text-fuchsia-600 dark:text-fuchsia-300" />{" "}
               <p className="min-w-0 flex-1 text-[13px] leading-snug text-muted-foreground">
                 Le compte rendu écrit de ce débat est réservé à l&apos;abonnement Pro.
-              </p>
+              </p>{" "}
               <Link href="/premium"
                 className="shrink-0 rounded-xl bg-gradient-to-r from-fuchsia-500 to-purple-600 px-4 py-2 text-[10px] font-black uppercase tracking-widest text-white">
                 Découvrir le Pro
@@ -260,7 +260,7 @@ function Detail({ e, isPro, onFermer }: { e: Evenement; isPro: boolean; onFermer
             </div>
           ) : e.resume ? (
             <div className="rounded-2xl bg-muted p-4">
-              <p className="mb-2 text-[10px] font-black uppercase tracking-widest text-fuchsia-600 dark:text-fuchsia-300">Ce qui s&apos;est dit</p>
+              <p className="mb-2 text-[10px] font-black uppercase tracking-widest text-fuchsia-600 dark:text-fuchsia-300">Ce qui s&apos;est dit</p>{" "}
               <p className="whitespace-pre-line text-sm leading-relaxed text-foreground">{e.resume}</p>
             </div>
           ) : (
@@ -271,7 +271,7 @@ function Detail({ e, isPro, onFermer }: { e: Evenement; isPro: boolean; onFermer
             </p>
           )}
         </div>
-      )}
+      )}{" "}
 
       {e.source_url && (
         <a href={e.source_url} target="_blank" rel="noopener noreferrer"
@@ -364,7 +364,7 @@ export default function PrimaryDebates({
               onChoisir={() => setChoisi(c => (c === e.id ? null : e.id))}
             />
           ))}
-        </DragScroller>
+        </DragScroller>{" "}
         {actif && <div className="mt-3"><Detail e={actif} isPro={isPro} onFermer={() => setChoisi(null)} /></div>}
       </div>
     );
@@ -378,32 +378,32 @@ export default function PrimaryDebates({
       <div className="mb-5 flex flex-wrap items-start gap-4">
         <span className="flex h-12 w-12 shrink-0 items-center justify-center rounded-2xl bg-gradient-to-br from-fuchsia-500 to-purple-600 text-white shadow-lg">
           <Mic2 size={22} />
-        </span>
+        </span>{" "}
         <div className="min-w-0 flex-1">
           <h2 className="font-staatliches text-3xl uppercase tracking-tight text-foreground">
             {candidateSlug ? "Ses " : "Les "}<span className="text-fuchsia-700 dark:text-fuchsia-400">débats de primaire</span>
-          </h2>
+          </h2>{" "}
           <p className="mt-0.5 text-sm text-muted-foreground">
             Débats et votes des primaires, avec la retransmission dès qu&apos;elle est en ligne.
             {aVenir > 0 && <strong className="font-bold text-foreground"> {aVenir} rendez-vous à venir.</strong>}
           </p>
         </div>
-      </div>
+      </div>{" "}
 
       {!candidateSlug && primaires.length > 1 && (
         <div className="mb-4 flex flex-wrap gap-2">
           <button onClick={() => setPrimaire(null)}
             className={`rounded-full px-3.5 py-1.5 text-[11px] font-black uppercase tracking-widest transition ${primaire === null ? "bg-foreground text-background" : "bg-muted text-muted-foreground hover:text-foreground"}`}>
             Toutes
-          </button>
+          </button>{" "}
           {primaires.map(p => (
             <button key={p} onClick={() => setPrimaire(p === primaire ? null : p)}
               className={`rounded-full px-3.5 py-1.5 text-[11px] font-black uppercase tracking-widest transition ${primaire === p ? "bg-foreground text-background" : "bg-muted text-muted-foreground hover:text-foreground"}`}>
-              {p}
+              {p}{" "}
             </button>
           ))}
         </div>
-      )}
+      )}{" "}
 
       <DragScroller ariaLabel="Débats et votes des primaires" className="gap-3 pb-2">
         {visibles.map(e => (
@@ -425,7 +425,7 @@ export default function PrimaryDebates({
             transition={{ duration: 0.18, ease: "easeOut" }}
             className="mt-4"
           >
-            <Detail e={actif} isPro={isPro} onFermer={() => setChoisi(null)} />
+            <Detail e={actif} isPro={isPro} onFermer={() => setChoisi(null)} />{" "}
           </motion.div>
         )}
       </AnimatePresence>

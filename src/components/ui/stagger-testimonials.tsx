@@ -92,20 +92,20 @@ const TestimonialCard: React.FC<TestimonialCardProps> = ({
           width: SQRT_5000,
           height: 2
         }}
-      />
+      />{" "}
       
       {/* Top Banner with Image or SVG Map */}
       <div className={cn("relative h-40 shrink-0 w-full flex items-center justify-between overflow-hidden border-b border-border px-6", theme.lightBg)}>
         {/* Subtle background glow */}
-        <div className="absolute inset-0 bg-[radial-gradient(circle_at_20%_20%,rgba(255,255,255,0.4),transparent_70%)]" />
+        <div className="absolute inset-0 bg-[radial-gradient(circle_at_20%_20%,rgba(255,255,255,0.4),transparent_70%)]" />{" "}
         
         {/* Left Side: Text Details */}
         <div className="relative z-10 max-w-[60%]">
           <p className={cn("font-black text-[9px] uppercase tracking-widest mb-1.5", theme.text)}>
             {item.type === 'region' ? 'Région' : 'Département'}
-          </p>
+          </p>{" "}
           <h4 className="text-foreground font-extrabold text-xl leading-tight line-clamp-2">{item.name}</h4>
-        </div>
+        </div>{" "}
 
         {/* Right Side: Map illustration container */}
         <div className="relative w-24 h-24 shrink-0 flex items-center justify-center rounded-2xl bg-white/95 border border-border/80 shadow-md p-2 transition-transform hover:scale-105 z-10">
@@ -123,7 +123,7 @@ const TestimonialCard: React.FC<TestimonialCardProps> = ({
                 strokeLinejoin="round"
               />
             </svg>
-          )}
+          )}{" "}
 
           {item.type === 'department' && departmentPaths[item.id] && (
             <svg 
@@ -139,7 +139,7 @@ const TestimonialCard: React.FC<TestimonialCardProps> = ({
                 strokeLinejoin="round"
               />
             </svg>
-          )}
+          )}{" "}
 
           {/* Fallback image or icon if no path data found */}
           {((item.type === 'region' && !regionPaths[item.id]) || 
@@ -151,7 +151,7 @@ const TestimonialCard: React.FC<TestimonialCardProps> = ({
             )
           )}
         </div>
-      </div>
+      </div>{" "}
 
       {/* Content */}
       <div className="p-6 flex-1 flex flex-col justify-between bg-card relative z-10">
@@ -159,33 +159,33 @@ const TestimonialCard: React.FC<TestimonialCardProps> = ({
           <div className="flex items-center gap-3">
             <div className={cn("w-10 h-10 rounded-xl flex items-center justify-center shrink-0", theme.lightBg, theme.text)}>
               <Users size={16} />
-            </div>
+            </div>{" "}
             <div className="min-w-0">
-              <p className="text-[9px] font-black uppercase tracking-widest text-muted-foreground">Président</p>
+              <p className="text-[9px] font-black uppercase tracking-widest text-muted-foreground">Président</p>{" "}
               <p className="font-bold text-foreground text-sm truncate">{item.president}</p>
             </div>
-          </div>
+          </div>{" "}
           <div className="flex items-center gap-3">
             <div className={cn("w-10 h-10 rounded-xl flex items-center justify-center shrink-0", theme.lightBg, theme.text)}>
               <Building2 size={16} />
-            </div>
+            </div>{" "}
             <div className="min-w-0">
-              <p className="text-[9px] font-black uppercase tracking-widest text-muted-foreground">Parti Majoritaire</p>
+              <p className="text-[9px] font-black uppercase tracking-widest text-muted-foreground">Parti Majoritaire</p>{" "}
               <p className="font-bold text-foreground text-sm truncate">{item.party}</p>
             </div>
-          </div>
+          </div>{" "}
           {item.budget2026 && (
             <div className="flex items-center gap-3">
               <div className={cn("w-10 h-10 rounded-xl flex items-center justify-center shrink-0", theme.lightBg, theme.text)}>
                 <Coins size={16} />
-              </div>
+              </div>{" "}
               <div className="min-w-0">
-                <p className="text-[9px] font-black uppercase tracking-widest text-muted-foreground">Budget 2026</p>
+                <p className="text-[9px] font-black uppercase tracking-widest text-muted-foreground">Budget 2026</p>{" "}
                 <p className="font-bold text-foreground text-sm truncate">{item.budget2026}</p>
               </div>
             </div>
           )}
-        </div>
+        </div>{" "}
 
         {isCenter && (
           <div className="mt-4 pt-4 border-t border-border">
@@ -257,7 +257,7 @@ export const StaggerTestimonials: React.FC<{ items: Territory[], onSelect: (t: T
       className="relative w-full overflow-hidden rounded-[2.5rem] bg-muted border border-border/60"
       style={{ height: 600 }}
     >
-      <div className="absolute inset-0 bg-[radial-gradient(circle_at_center,rgba(225,29,72,0.03)_0%,transparent_70%)]" />
+      <div className="absolute inset-0 bg-[radial-gradient(circle_at_center,rgba(225,29,72,0.03)_0%,transparent_70%)]" />{" "}
       
       {territoriesList.map((item, index) => {
         const position = territoriesList.length % 2
@@ -278,7 +278,7 @@ export const StaggerTestimonials: React.FC<{ items: Territory[], onSelect: (t: T
             isPremium={isPremium}
           />
         );
-      })}
+      })}{" "}
       <div className="absolute bottom-8 left-1/2 flex -translate-x-1/2 gap-4 z-20">
         <button
           onClick={() => handleMove(-1)}
@@ -290,7 +290,7 @@ export const StaggerTestimonials: React.FC<{ items: Territory[], onSelect: (t: T
           aria-label="Région précédente"
         >
           <ChevronLeft />
-        </button>
+        </button>{" "}
         <button
           onClick={() => handleMove(1)}
           className={cn(

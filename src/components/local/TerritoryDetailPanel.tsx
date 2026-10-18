@@ -284,7 +284,7 @@ export default function TerritoryDetailPanel({ territory, onClose, onNavigate }:
             exit={{ opacity: 0 }}
             onClick={onClose}
             className="fixed inset-0 bg-slate-950/60 backdrop-blur-sm z-50"
-          />
+          />{" "}
 
           <div className="fixed inset-0 flex items-center justify-center p-4 md:p-8 z-50 pointer-events-none">
             {onNavigate && navIndex >= 0 && (
@@ -295,7 +295,7 @@ export default function TerritoryDetailPanel({ territory, onClose, onNavigate }:
                   className="pointer-events-auto absolute left-2 top-1/2 z-[55] flex h-12 w-12 -translate-y-1/2 items-center justify-center rounded-full bg-white/90 text-foreground shadow-xl backdrop-blur transition hover:bg-card md:left-6"
                 >
                   <ChevronLeft size={26} />
-                </button>
+                </button>{" "}
                 <button
                   onClick={() => goTo(1)}
                   aria-label={territory.type === 'region' ? 'Région suivante' : 'Département suivant'}
@@ -304,7 +304,7 @@ export default function TerritoryDetailPanel({ territory, onClose, onNavigate }:
                   <ChevronRight size={26} />
                 </button>
               </>
-            )}
+            )}{" "}
             <motion.div
               initial={{ opacity: 0, scale: 0.9, y: 20 }}
               animate={{ opacity: 1, scale: 1, y: 0 }}
@@ -314,7 +314,7 @@ export default function TerritoryDetailPanel({ territory, onClose, onNavigate }:
             >
               {/* Header */}
               <div className="relative bg-slate-900 p-8 pb-12 shrink-0 overflow-hidden">
-                <div className="absolute top-0 right-0 w-64 h-64 bg-rose-600/20 blur-3xl rounded-full pointer-events-none" />
+                <div className="absolute top-0 right-0 w-64 h-64 bg-rose-600/20 blur-3xl rounded-full pointer-events-none" />{" "}
                 
                 <div className="absolute top-6 right-6 flex gap-2 z-[60]">
                   <button
@@ -328,7 +328,7 @@ export default function TerritoryDetailPanel({ territory, onClose, onNavigate }:
                     }`}
                   >
                     {loadingSave ? <Loader2 size={18} className="animate-spin" /> : <Star size={18} className={isSaved ? "fill-current" : ""} />}
-                  </button>
+                  </button>{" "}
                   <button
                     data-testid="panel-close-btn"
                     onClick={(e) => {
@@ -339,24 +339,24 @@ export default function TerritoryDetailPanel({ territory, onClose, onNavigate }:
                   >
                     <X size={20} />
                   </button>
-                </div>
+                </div>{" "}
 
                 <div className="relative z-10 flex flex-col sm:flex-row sm:items-center justify-start gap-8 md:gap-12 mr-16">
                   <div className="space-y-4">
                     <div className="flex items-center gap-2">
                       <span className="text-[10px] font-black uppercase tracking-widest text-rose-400">
                         {territory.type === 'region' ? 'Échelon Régional' : 'Échelon Départemental'}
-                      </span>
+                      </span>{" "}
                       {data?.isEstimated && (
                         <span className="px-2 py-0.5 bg-amber-500/20 text-amber-300 text-[8px] uppercase tracking-widest rounded-full border border-amber-500/30">
                           Données estimées
                         </span>
                       )}
-                    </div>
+                    </div>{" "}
 
                     <h2 className="text-5xl font-staatliches uppercase tracking-tight text-white leading-none">
                       {territory.name}
-                    </h2>
+                    </h2>{" "}
                     
                     <div className="flex items-center gap-4 text-white/70">
                       {territory.type === 'department' && deptPres ? (
@@ -371,15 +371,15 @@ export default function TerritoryDetailPanel({ territory, onClose, onNavigate }:
                             ) : (
                               <span className="text-xs font-black">{(deptPres.first_name?.[0] || '') + (deptPres.last_name?.[0] || '')}</span>
                             )}
-                          </div>
+                          </div>{" "}
                           <div className="flex flex-col">
                             <span className="text-[9px] font-black uppercase tracking-widest text-white/40">
                               Président·e du Conseil Départemental
-                            </span>
+                            </span>{" "}
                             <span className="text-sm font-bold text-white group-hover:text-rose-300 transition-colors flex items-center gap-1">
-                              {deptPres.full_name}
+                              {deptPres.full_name}{" "}
                               <ArrowRight size={13} className="opacity-0 -translate-x-1 group-hover:opacity-100 group-hover:translate-x-0 transition-all" />
-                            </span>
+                            </span>{" "}
                             <span className="text-[9px] font-bold uppercase tracking-widest text-rose-300/70">Voir la fiche complète</span>
                           </div>
                         </Link>
@@ -387,11 +387,11 @@ export default function TerritoryDetailPanel({ territory, onClose, onNavigate }:
                         <div className="flex items-center gap-3">
                           <div className="w-8 h-8 rounded-lg bg-white/10 flex items-center justify-center text-white/80 shrink-0">
                             <Building2 size={16} />
-                          </div>
+                          </div>{" "}
                           <div className="flex flex-col">
                             <span className="text-[9px] font-black uppercase tracking-widest text-white/40">
                               {territory.type === 'region' ? 'Président du Conseil Régional' : 'Président du Conseil Départemental'}
-                            </span>
+                            </span>{" "}
                             <span className="text-sm font-bold text-white">
                               {data?.president || (data === null && loading ? "Chargement..." : territory.name)}
                             </span>
@@ -399,7 +399,7 @@ export default function TerritoryDetailPanel({ territory, onClose, onNavigate }:
                         </div>
                       )}
                     </div>
-                  </div>
+                  </div>{" "}
 
                   {/* France map (only for departments) */}
                   {(territory.type === 'department' || !territory.type) && departmentPaths[territory.id] && (
@@ -524,13 +524,13 @@ export default function TerritoryDetailPanel({ territory, onClose, onNavigate }:
                     })()
                   )}
                 </div>
-              </div>
+              </div>{" "}
 
               {/* Content */}
               <div className="p-8 space-y-10 -mt-4 overflow-y-auto custom-scrollbar">
                 {loading ? (
                   <div className="flex flex-col items-center justify-center py-20 gap-4">
-                    <Loader2 className="animate-spin text-rose-700 dark:text-rose-400" size={40} />
+                    <Loader2 className="animate-spin text-rose-700 dark:text-rose-400" size={40} />{" "}
                     <p className="text-slate-400 font-medium">Chargement des indicateurs...</p>
                   </div>
                 ) : (
@@ -547,45 +547,45 @@ export default function TerritoryDetailPanel({ territory, onClose, onNavigate }:
                           <div className="flex items-center gap-3">
                             <div className={`w-10 h-10 rounded-2xl flex items-center justify-center ${cat.iconClass}`}>
                               <cat.icon size={20} />
-                            </div>
+                            </div>{" "}
                             <h3 className={`text-xl font-staatliches uppercase tracking-wide ${cat.textClass}`}>{cat.title}</h3>
-                          </div>
+                          </div>{" "}
                           <div className={`grid grid-cols-1 md:grid-cols-2 gap-x-12 gap-y-6 rounded-[2rem] p-8 border ${cat.bgClass} ${cat.borderClass}`}>
                             {metrics.map((m: any, i: number) => (
                               <div key={`m${i}`} className="space-y-2">
                                 <div className="flex justify-between text-[10px] font-black uppercase tracking-widest text-slate-400">
-                                  <span>{m.label}</span>
+                                  <span>{m.label}</span>{" "}
                                   <span className="text-foreground font-bold">{m.display}</span>
-                                </div>
-                                {m.help && <div className="text-[10px] text-slate-400 font-medium normal-case leading-relaxed -mt-1">{m.help}</div>}
+                                </div>{" "}
+                                {m.help && <div className="text-[10px] text-slate-400 font-medium normal-case leading-relaxed -mt-1">{m.help}</div>}{" "}
                                 <div className="h-2 w-full bg-slate-200/60 rounded-full overflow-hidden">
                                   <div className={`h-full ${cat.progressClass}`} style={{ width: (typeof m.raw === 'number' ? Math.min(m.raw, 100) : 50) + '%' }} />
-                                </div>
+                                </div>{" "}
                               </div>
-                            ))}
+                            ))}{" "}
                             {extra.map((c, i) => (
                               <div key={`e${i}`} className="space-y-2">
                                 <div className="flex justify-between text-[10px] font-black uppercase tracking-widest text-slate-400">
-                                  <span>{c.label}</span>
+                                  <span>{c.label}</span>{" "}
                                   <span className="text-foreground font-bold">{c.display}</span>
-                                </div>
+                                </div>{" "}
                                 {c.pct != null && (
                                   <div className="h-2 w-full bg-slate-200/60 rounded-full overflow-hidden">
                                     <div className={`h-full ${cat.progressClass}`} style={{ width: c.pct + '%' }} />
                                   </div>
-                                )}
+                                )}{" "}
                               </div>
                             ))}
-                          </div>
+                          </div>{" "}
                         </div>
                       );
-                    })}
+                    })}{" "}
 
                     {/* Fil d'actualité de la collectivité (région / département) : le même rail que
                         les communes, masqué tant qu'il n'y a rien. */}
                     {(territory.type === 'region' || territory.type === 'department') && (
                       <EntityNewsFeed key={`${territory.type}-${territory.id}`} entityType={territory.type} entityId={territory.id} defaultOpen />
-                    )}
+                    )}{" "}
 
                     {/* Fil conducteur : les député·e·s de ce département */}
                     {territory.type === 'department' && localDeputies.length > 0 && (
@@ -593,9 +593,9 @@ export default function TerritoryDetailPanel({ territory, onClose, onNavigate }:
                         <div className="flex items-center gap-3">
                           <div className="w-10 h-10 rounded-2xl flex items-center justify-center bg-red-100 dark:bg-red-500/10 text-red-600 dark:text-red-300">
                             <Landmark size={20} />
-                          </div>
+                          </div>{" "}
                           <h3 className="text-xl font-staatliches uppercase tracking-wide text-red-700 dark:text-red-400">Les député·e·s du département</h3>
-                        </div>
+                        </div>{" "}
                         <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
                           {localDeputies.map((dep) => (
                             <Link key={dep.slug} href={`/deputes/${dep.slug}`}
@@ -613,17 +613,17 @@ export default function TerritoryDetailPanel({ territory, onClose, onNavigate }:
                                     />
                                   </div>
                                 );
-                              })()}
+                              })()}{" "}
                               <div className="min-w-0">
-                                <p className="font-bold text-foreground truncate">{dep.first_name} {dep.last_name}</p>
+                                <p className="font-bold text-foreground truncate">{dep.first_name} {dep.last_name}</p>{" "}
                                 <p className="text-[11px] font-bold text-muted-foreground truncate">{dep.party || '—'}{dep.constituency_number ? ` · ${dep.constituency_number}${dep.constituency_number === 1 ? 'ère' : 'ème'} circ.` : ''}</p>
-                              </div>
-                              <ArrowRight className="ml-auto w-4 h-4 text-slate-300 group-hover:text-red-500 transition-colors" />
+                              </div>{" "}
+                              <ArrowRight className="ml-auto w-4 h-4 text-slate-300 group-hover:text-red-500 transition-colors" />{" "}
                             </Link>
                           ))}
                         </div>
                       </div>
-                    )}
+                    )}{" "}
 
                     {/* Finances régionales 2012-2024 (OFGL) */}
                     {territory.type === 'region' && (
@@ -631,14 +631,14 @@ export default function TerritoryDetailPanel({ territory, onClose, onNavigate }:
                         <div className="flex items-center gap-3">
                           <div className="w-10 h-10 rounded-2xl flex items-center justify-center bg-blue-100 dark:bg-blue-500/10 text-blue-600 dark:text-blue-300">
                             <TrendingUp size={20} />
-                          </div>
+                          </div>{" "}
                           <h3 className="text-xl font-staatliches uppercase tracking-wide text-blue-700 dark:text-blue-400">Finances 2012-2024</h3>
-                        </div>
+                        </div>{" "}
                         <div className="rounded-[2rem] p-6 md:p-8 border bg-slate-50/60 dark:bg-slate-500/10 border-border">
                           <RegionFinancesChart regionCode={territory.id} />
                         </div>
                       </div>
-                    )}
+                    )}{" "}
 
                     {/* Finances réelles (OFGL) — synthèse du dernier millésime */}
                     {finances && (
@@ -646,7 +646,7 @@ export default function TerritoryDetailPanel({ territory, onClose, onNavigate }:
                         finances={finances}
                         label={territory.type === 'region' ? 'Finances régionales' : 'Finances départementales'}
                       />
-                    )}
+                    )}{" "}
 
                     {/* Catégories développement durable (ITDD) sans équivalent existant */}
                     {ITDD_NEW_CATEGORIES.map((cat) => {
@@ -657,27 +657,27 @@ export default function TerritoryDetailPanel({ territory, onClose, onNavigate }:
                           <div className="flex items-center gap-3">
                             <div className={`w-10 h-10 rounded-2xl flex items-center justify-center ${cat.iconClass}`}>
                               <cat.icon size={20} />
-                            </div>
+                            </div>{" "}
                             <h3 className={`text-xl font-staatliches uppercase tracking-wide ${cat.textClass}`}>{cat.title}</h3>
-                          </div>
+                          </div>{" "}
                           <div className={`grid grid-cols-1 md:grid-cols-2 gap-x-12 gap-y-6 rounded-[2rem] p-8 border ${cat.bgClass} ${cat.borderClass}`}>
                             {extra.map((c, i) => (
                               <div key={i} className="space-y-2">
                                 <div className="flex justify-between text-[10px] font-black uppercase tracking-widest text-slate-400">
-                                  <span>{c.label}</span>
+                                  <span>{c.label}</span>{" "}
                                   <span className="text-foreground font-bold">{c.display}</span>
-                                </div>
+                                </div>{" "}
                                 {c.pct != null && (
                                   <div className="h-2 w-full bg-slate-200/60 rounded-full overflow-hidden">
                                     <div className={`h-full ${cat.progressClass}`} style={{ width: c.pct + '%' }} />
                                   </div>
-                                )}
+                                )}{" "}
                               </div>
                             ))}
-                          </div>
+                          </div>{" "}
                         </div>
                       );
-                    })}
+                    })}{" "}
 
                     {/* Compare Button */}
                     <div className="pt-8">
@@ -686,13 +686,13 @@ export default function TerritoryDetailPanel({ territory, onClose, onNavigate }:
                           href={`/local/comparateur/app?id=${territory.id}&type=${territory.type === 'region' ? 'region' : 'department'}`}
                           className="w-full py-6 bg-gradient-to-r from-rose-600 to-fuchsia-600 text-white rounded-3xl font-staatliches uppercase tracking-widest text-xl flex items-center justify-center gap-3 hover:scale-[1.02] active:scale-[0.98] transition-all shadow-xl shadow-rose-600/20"
                         >
-                          Comparer avec un autre territoire
+                          Comparer avec un autre territoire{" "}
                           <ArrowRight size={24} />
                         </Link>
                       ) : (
                         <div className="p-8 rounded-[2rem] bg-amber-50 dark:bg-amber-500/10 border border-amber-100 dark:border-amber-500/25 text-center space-y-4 flex flex-col items-center">
-                          <p className="font-bold text-amber-900 dark:text-amber-300 uppercase tracking-widest text-xs">Fonctionnalité Premium</p>
-                          <p className="text-sm text-amber-800 dark:text-amber-300 mb-2">Passez à l'offre <strong>Premium</strong> pour comparer les performances de ce territoire avec n'importe quel autre en France.</p>
+                          <p className="font-bold text-amber-900 dark:text-amber-300 uppercase tracking-widest text-xs">Fonctionnalité Premium</p>{" "}
+                          <p className="text-sm text-amber-800 dark:text-amber-300 mb-2">Passez à l'offre <strong>Premium</strong> pour comparer les performances de ce territoire avec n'importe quel autre en France.</p>{" "}
                           <AwardBadge 
                             titleText="Découvrir l'offre Premium"
                             subtitleText="Fonctionnalité Premium"
@@ -700,7 +700,7 @@ export default function TerritoryDetailPanel({ territory, onClose, onNavigate }:
                           />
                         </div>
                       )}
-                    </div>
+                    </div>{" "}
 
                     {/* Sources (if available) */}
                     {data?.sources && (

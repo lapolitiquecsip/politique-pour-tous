@@ -73,7 +73,7 @@ export default function LegalStatusModal({ isOpen, onClose, deputy, cible }: Leg
             exit={{ opacity: 0 }}
             onClick={onClose}
             className="absolute inset-0 bg-slate-950/80 backdrop-blur-md"
-          />
+          />{" "}
           
           <motion.div 
             initial={{ opacity: 0, scale: 0.9, y: 20 }}
@@ -82,78 +82,78 @@ export default function LegalStatusModal({ isOpen, onClose, deputy, cible }: Leg
             className="relative w-full max-w-2xl bg-card dark:bg-slate-900 rounded-[3rem] shadow-2xl overflow-hidden border border-border dark:border-slate-800 flex flex-col max-h-[85vh]"
           >
             {/* Folder Tab Effect */}
-            <div className="absolute top-0 left-12 w-32 h-2 bg-emerald-500 rounded-b-full shadow-lg shadow-emerald-500/20" />
+            <div className="absolute top-0 left-12 w-32 h-2 bg-emerald-500 rounded-b-full shadow-lg shadow-emerald-500/20" />{" "}
 
             {/* Header */}
             <div className="p-8 pb-6 flex items-start justify-between bg-slate-50/50 dark:bg-slate-800/30 border-b border-border dark:border-slate-800">
               <div className="flex items-center gap-5">
                 <div className={`w-14 h-14 rounded-2xl flex items-center justify-center text-white shadow-xl ${isClean ? 'bg-emerald-500 shadow-emerald-500/20' : 'bg-amber-500 shadow-amber-500/20'}`}>
                   {isClean ? <ShieldCheck size={32} /> : <Gavel size={32} />}
-                </div>
+                </div>{" "}
                 <div>
-                  <p className="text-[10px] font-black text-slate-400 uppercase tracking-[0.3em] mb-1">Dossier Numérisé n°{deputy?.an_id || '---'}</p>
+                  <p className="text-[10px] font-black text-slate-400 uppercase tracking-[0.3em] mb-1">Dossier Numérisé n°{deputy?.an_id || '---'}</p>{" "}
                   <h3 className="text-3xl font-staatliches uppercase tracking-tight text-foreground dark:text-white leading-none">
                     Historique <span className={isClean ? 'text-emerald-700 dark:text-emerald-400' : 'text-amber-700 dark:text-amber-400'}>Juridique</span>
                   </h3>
                 </div>
-              </div>
+              </div>{" "}
               <button 
                 onClick={onClose}
                 className="p-3 bg-card dark:bg-slate-800 rounded-full shadow-sm border border-border dark:border-slate-700 hover:rotate-90 transition-transform"
               >
                 <X className="w-6 h-6 text-slate-400" />
               </button>
-            </div>
+            </div>{" "}
 
             {/* Content */}
             <div className="flex-1 overflow-y-auto p-8 space-y-8 custom-scrollbar">
               <p className="rounded-xl bg-muted p-3 text-[12px] leading-snug text-muted-foreground">
                 Informations tirées de sources publiques citées. Toute personne mise en cause est présumée innocente tant qu&apos;une
                 décision de justice définitive n&apos;a pas établi sa culpabilité (code civil, art. 9-1).
-              </p>
+              </p>{" "}
 
               {sanctions.length > 0 && (
                 <section className="rounded-[2rem] border border-amber-200 bg-amber-50/60 p-6 dark:border-amber-500/25 dark:bg-amber-500/5">
-                  <p className="text-[10px] font-black uppercase tracking-[0.25em] text-amber-800 dark:text-amber-300">Conseil constitutionnel — juge des élections</p>
+                  <p className="text-[10px] font-black uppercase tracking-[0.25em] text-amber-800 dark:text-amber-300">Conseil constitutionnel — juge des élections</p>{" "}
                   <ul className="mt-3 space-y-4">
                     {sanctions.map((s: any) => (
                       <li key={s.numero + s.nom} className="text-sm leading-relaxed text-foreground">
-                        <p className="font-bold">{s.sanction}</p>
+                        <p className="font-bold">{s.sanction}</p>{" "}
                         <p className="text-muted-foreground">
                           Décision du {new Date(s.date_dec).toLocaleDateString("fr-FR", { day: "numeric", month: "long", year: "numeric" })} — {s.circonscription}
                           {s.etiquette ? ` (candidat·e ${s.etiquette})` : ""}{s.motif ? `. Motif : ${s.motif.toLowerCase()}.` : "."}
-                        </p>
+                        </p>{" "}
                         <a href={s.url} target="_blank" rel="noreferrer" className="mt-1 inline-flex items-center gap-1 text-xs font-bold text-amber-800 underline dark:text-amber-300">
-                          Lire la décision n° {s.numero} <ExternalLink size={12} />
-                        </a>
+                          Lire la décision n° {s.numero} {" "}<ExternalLink size={12} />
+                        </a>{" "}
                       </li>
                     ))}
-                  </ul>
+                  </ul>{" "}
                   <p className="mt-4 text-[11px] leading-snug text-muted-foreground">
                     Le Conseil constitutionnel juge les élections nationales. Une inéligibilité liée au compte de campagne sanctionne une
                     irrégularité de financement électoral : ce n&apos;est pas une condamnation pénale. Source : décisions publiées (base CONSTIT, DILA).
                   </p>
                 </section>
-              )}
+              )}{" "}
               
               {/* STATUS CARD */}
               <div className={`p-8 rounded-[2rem] border relative overflow-hidden ${isClean ? 'bg-emerald-50/50 border-emerald-100 dark:bg-emerald-500/5 dark:border-emerald-500/20' : 'bg-amber-50/50 border-amber-100 dark:bg-amber-500/5 dark:border-amber-500/20'}`}>
                 <div className={`absolute top-0 right-0 p-4 ${isClean ? 'text-emerald-500/20' : 'text-amber-500/20'}`}>
                   {isClean ? <CheckCircle2 size={80} /> : <AlertCircle size={80} />}
-                </div>
+                </div>{" "}
                 
                 <div className="relative z-10">
                    <div className="flex items-center gap-2 mb-4">
                      <span className={`px-3 py-1 rounded-full text-[10px] font-black uppercase tracking-widest ${isClean ? 'bg-emerald-500 text-white' : 'bg-amber-500 text-white'}`}>
                        {isClean ? 'Vérifié : RAS' : 'Vérifié : À consulter'}
-                     </span>
+                     </span>{" "}
                      <span className="text-[10px] font-bold text-muted-foreground uppercase tracking-widest">Mise à jour : {new Date().toLocaleDateString('fr-FR')}</span>
-                   </div>
+                   </div>{" "}
                    <h4 className="text-xl font-bold text-foreground dark:text-white mb-4 italic leading-tight">
                      {isClean 
                        ? `Le dossier de ${deputy?.first_name} ${deputy?.last_name} ne présente aucune mention judiciaire.`
                        : `Des éléments juridiques ont été relevés concernant ${deputy?.first_name} ${deputy?.last_name}.`}
-                   </h4>
+                   </h4>{" "}
                    
                    {!isClean ? (
                     <div className="space-y-4 mt-6">
@@ -166,7 +166,7 @@ export default function LegalStatusModal({ isOpen, onClose, deputy, cible }: Leg
                         const isOpen2 = expanded.has(idx);
                         return (
                           <div key={idx} className="relative pl-8 border-l-2 border-amber-500/20 dark:border-amber-500/10 py-2 group">
-                            <div className="absolute left-[-9px] top-4 w-4 h-4 rounded-full bg-amber-500 shadow-lg shadow-amber-500/20 group-hover:scale-125 transition-transform" />
+                            <div className="absolute left-[-9px] top-4 w-4 h-4 rounded-full bg-amber-500 shadow-lg shadow-amber-500/20 group-hover:scale-125 transition-transform" />{" "}
                             <button
                               type="button"
                               onClick={() => toggle(idx)}
@@ -176,12 +176,12 @@ export default function LegalStatusModal({ isOpen, onClose, deputy, cible }: Leg
                               <div className="flex items-start justify-between gap-3">
                                 <h5 className="text-xs font-black text-foreground dark:text-white uppercase tracking-tight mb-2 leading-tight">
                                   {title}
-                                </h5>
+                                </h5>{" "}
                                 <ChevronDown size={18} className={`shrink-0 text-amber-500 transition-transform duration-300 ${isOpen2 ? 'rotate-180' : ''}`} />
-                              </div>
+                              </div>{" "}
                               <div className="text-[10px] text-muted-foreground dark:text-slate-400 font-bold uppercase tracking-wider leading-relaxed">
                                 {details}
-                              </div>
+                              </div>{" "}
 
                               {/* Précisions révélées au clic */}
                               <AnimatePresence initial={false}>
@@ -197,20 +197,20 @@ export default function LegalStatusModal({ isOpen, onClose, deputy, cible }: Leg
                                       {explanation ? (
                                         <>
                                           <p className="flex gap-2 text-[12px] leading-relaxed text-slate-700 dark:text-slate-200 normal-case font-medium">
-                                            <span className="not-italic shrink-0">💡</span>
+                                            <span className="not-italic shrink-0">💡</span>{" "}
                                             <span>{explanation}</span>
                                           </p>
                                         </>
                                       ) : (
                                         <p className="flex gap-2 text-[12px] leading-relaxed text-muted-foreground dark:text-slate-400 normal-case italic">
-                                          <span className="not-italic shrink-0">💡</span>
+                                          <span className="not-italic shrink-0">💡</span>{" "}
                                           <span>{loadingExpl ? 'Chargement des précisions…' : "Le détail de cette affaire n'est pas encore disponible. Les infractions et peines retenues sont indiquées ci-dessus."}</span>
                                         </p>
                                       )}
                                     </div>
                                   </motion.div>
                                 )}
-                              </AnimatePresence>
+                              </AnimatePresence>{" "}
 
                               {/* Invitation au clic (repliée) */}
                               {!isOpen2 && (
@@ -218,7 +218,7 @@ export default function LegalStatusModal({ isOpen, onClose, deputy, cible }: Leg
                                   Comprendre cette affaire
                                 </p>
                               )}
-                            </button>
+                            </button>{" "}
                           </div>
                         );
                       })}
@@ -229,7 +229,7 @@ export default function LegalStatusModal({ isOpen, onClose, deputy, cible }: Leg
                     </div>
                    )}
                 </div>
-              </div>
+              </div>{" "}
 
               {/* SOURCE */}
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
@@ -241,34 +241,34 @@ export default function LegalStatusModal({ isOpen, onClose, deputy, cible }: Leg
                 >
                   <div className="w-10 h-10 rounded-xl bg-blue-100 dark:bg-blue-500/20 flex items-center justify-center text-blue-600">
                     <Search size={20} />
-                  </div>
+                  </div>{" "}
                   <div className="min-w-0">
-                    <p className="text-[10px] font-black text-muted-foreground uppercase tracking-widest">Source</p>
+                    <p className="text-[10px] font-black text-muted-foreground uppercase tracking-widest">Source</p>{" "}
                     <p className="text-xs font-bold text-slate-700 dark:text-slate-300 flex items-center gap-1 group-hover:text-blue-600">casier-politique.fr <ExternalLink size={12} /></p>
                   </div>
-                </a>
+                </a>{" "}
                 <div className="p-5 rounded-2xl bg-muted dark:bg-slate-800 border border-border dark:border-slate-700 flex items-center gap-4">
                   <div className="w-10 h-10 rounded-xl bg-purple-100 dark:bg-purple-500/20 flex items-center justify-center text-purple-600">
                     <FileText size={20} />
-                  </div>
+                  </div>{" "}
                   <div>
-                    <p className="text-[10px] font-black text-muted-foreground uppercase tracking-widest">Mise à jour</p>
+                    <p className="text-[10px] font-black text-muted-foreground uppercase tracking-widest">Mise à jour</p>{" "}
                     <p className="text-xs font-bold text-slate-700 dark:text-slate-300">Quotidienne, automatique</p>
                   </div>
                 </div>
-              </div>
+              </div>{" "}
 
               {/* FOOTER MESSAGE */}
               <div className="bg-slate-900 text-white p-6 rounded-[2rem] flex items-center gap-5 shadow-2xl relative overflow-hidden">
-                <div className="absolute top-0 right-0 w-24 h-24 bg-white/5 rounded-full -mr-12 -mt-12 blur-2xl" />
+                <div className="absolute top-0 right-0 w-24 h-24 bg-white/5 rounded-full -mr-12 -mt-12 blur-2xl" />{" "}
                 <div className="w-12 h-12 rounded-full bg-white/10 flex items-center justify-center shrink-0">
                   <AlertTriangle size={24} className="text-amber-400" />
-                </div>
+                </div>{" "}
                 <p className="text-[11px] leading-relaxed italic opacity-80">
                   Ces informations sont fournies à titre indicatif et visent à renforcer la transparence démocratique. Elles ne constituent en aucun cas un jugement de valeur définitif.
                 </p>
               </div>
-            </div>
+            </div>{" "}
 
             {/* Actions */}
             <div className="p-8 bg-muted dark:bg-slate-800/30 border-t border-border dark:border-slate-800 flex items-center gap-4">
@@ -277,7 +277,7 @@ export default function LegalStatusModal({ isOpen, onClose, deputy, cible }: Leg
                 className="flex-1 py-4 rounded-2xl bg-slate-900 dark:bg-white text-white dark:text-slate-900 font-bold text-sm shadow-xl hover:shadow-slate-900/20 transition-all active:scale-[0.98]"
               >
                 Fermer le dossier
-              </button>
+              </button>{" "}
               {deputy?.hatvp_url && (
                 <a 
                   href={deputy.hatvp_url}

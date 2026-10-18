@@ -69,10 +69,10 @@ function Carte({ titre, valeur, detail, Icone, teinte }: { titre: string; valeur
   return (
     <div className="rounded-3xl border border-slate-200 bg-white p-5 shadow-sm">
       <div className="flex items-center gap-3">
-        <span className={`flex h-10 w-10 items-center justify-center rounded-2xl ${teinte}`}><Icone size={19} /></span>
+        <span className={`flex h-10 w-10 items-center justify-center rounded-2xl ${teinte}`}><Icone size={19} /></span>{" "}
         <p className="text-[11px] font-black uppercase tracking-widest text-slate-500">{titre}</p>
-      </div>
-      <p className="mt-3 text-4xl font-black tabular-nums leading-none tracking-tight text-slate-900">{valeur}</p>
+      </div>{" "}
+      <p className="mt-3 text-4xl font-black tabular-nums leading-none tracking-tight text-slate-900">{valeur}</p>{" "}
       {detail && <p className="mt-1.5 text-xs text-slate-500">{detail}</p>}
     </div>
   );
@@ -82,9 +82,9 @@ function Bloc({ titre, Icone, children, action }: { titre: string; Icone: typeof
   return (
     <section className="rounded-3xl border border-slate-200 bg-white p-5 shadow-sm">
       <div className="mb-4 flex items-center justify-between gap-3">
-        <h2 className="flex items-center gap-2 text-[12px] font-black uppercase tracking-widest text-slate-600"><Icone size={15} /> {titre}</h2>
+        <h2 className="flex items-center gap-2 text-[12px] font-black uppercase tracking-widest text-slate-600"><Icone size={15} /> {titre}</h2>{" "}
         {action}
-      </div>
+      </div>{" "}
       {children}
     </section>
   );
@@ -97,9 +97,9 @@ function Ligne({ libelle, sous, valeur, max, teinte = "bg-blue-500" }: { libelle
       <div className="flex items-baseline justify-between gap-3 text-sm">
         <span className="min-w-0 truncate font-semibold text-slate-800" title={sous || libelle}>
           {libelle}{sous && <span className="ml-2 text-xs font-normal text-slate-400">{sous}</span>}
-        </span>
+        </span>{" "}
         <span className="shrink-0 tabular-nums font-bold text-slate-700">{nombre(valeur)}</span>
-      </div>
+      </div>{" "}
       <div className="mt-1 h-1.5 overflow-hidden rounded-full bg-slate-100">
         <div className={`h-full rounded-full ${teinte}`} style={{ width: `${max ? Math.max(2, (valeur / max) * 100) : 0}%` }} />
       </div>
@@ -164,9 +164,9 @@ export default function StatistiquesPage() {
   if (refus) {
     return (
       <div className="mx-auto mt-20 max-w-md rounded-3xl border border-slate-200 bg-white p-8 text-center shadow-sm">
-        <Lock className="mx-auto mb-3 text-slate-400" />
-        <h1 className="text-xl font-bold text-slate-900">Accès réservé</h1>
-        <p className="mt-2 text-sm text-slate-500">Les statistiques sont réservées aux administrateurs du site. Connectez-vous avec un compte administrateur.</p>
+        <Lock className="mx-auto mb-3 text-slate-400" />{" "}
+        <h1 className="text-xl font-bold text-slate-900">Accès réservé</h1>{" "}
+        <p className="mt-2 text-sm text-slate-500">Les statistiques sont réservées aux administrateurs du site. Connectez-vous avec un compte administrateur.</p>{" "}
         <Link href="/login" className="mt-5 inline-block rounded-full bg-slate-900 px-5 py-2.5 text-sm font-bold text-white">Se connecter</Link>
       </div>
     );
@@ -191,53 +191,53 @@ export default function StatistiquesPage() {
       {/* En-tête */}
       <header className="flex flex-wrap items-end justify-between gap-4">
         <div>
-          <h1 className="font-staatliches text-5xl uppercase leading-none text-slate-900">Statistiques</h1>
+          <h1 className="font-staatliches text-5xl uppercase leading-none text-slate-900">Statistiques</h1>{" "}
           <p className="mt-2 flex items-center gap-2 text-sm text-slate-500">
-            <span className="relative flex h-2.5 w-2.5"><span className="absolute inline-flex h-full w-full animate-ping rounded-full bg-emerald-400 opacity-75" /><span className="relative inline-flex h-2.5 w-2.5 rounded-full bg-emerald-500" /></span>
-            En direct · mis à jour {majA ? ilYa(new Date(majA).toISOString()) : "…"}
+            <span className="relative flex h-2.5 w-2.5"><span className="absolute inline-flex h-full w-full animate-ping rounded-full bg-emerald-400 opacity-75" />{" "}<span className="relative inline-flex h-2.5 w-2.5 rounded-full bg-emerald-500" /></span>{" "}
+            En direct · mis à jour {majA ? ilYa(new Date(majA).toISOString()) : "…"}{" "}
             <button onClick={() => void charger()} className="ml-1 rounded-full p-1 text-slate-400 hover:bg-slate-100 hover:text-slate-700" aria-label="Actualiser"><RefreshCw size={14} /></button>
           </p>
-        </div>
+        </div>{" "}
         <Link href="/admin/membres" className="inline-flex items-center gap-2 rounded-full bg-violet-600 px-4 py-2 text-sm font-bold text-white shadow-sm hover:bg-violet-500">
           <Users size={16} /> Membres et abonnés
-        </Link>
+        </Link>{" "}
         <div className="flex rounded-2xl border border-slate-200 bg-white p-1 shadow-sm">
           {PERIODES.map(p => (
             <button key={p} onClick={() => setJours(p)}
               className={`rounded-xl px-4 py-2 text-xs font-black uppercase tracking-widest transition ${jours === p ? "bg-slate-900 text-white" : "text-slate-500 hover:text-slate-900"}`}>
-              {p === 1 ? "24 h" : `${p} j`}
+              {p === 1 ? "24 h" : `${p} j`}{" "}
             </button>
           ))}
         </div>
-      </header>
+      </header>{" "}
 
       {periodeDepasse && (
         <p className="flex items-start gap-2 rounded-2xl border border-sky-200 bg-sky-50 dark:bg-sky-500/10 px-4 py-3 text-sm text-sky-900">
-          <Activity size={16} className="mt-0.5 shrink-0" />
+          <Activity size={16} className="mt-0.5 shrink-0" />{" "}
           <span>La mesure des visites fonctionne depuis le <strong>{depuis}</strong>. Tant que l&apos;historique est plus court que la période choisie, 24 h, 7 j, 30 j et 90 j montrent les mêmes visites : les écarts apparaîtront au fil des jours.</span>
         </p>
-      )}
+      )}{" "}
 
       {/* Chiffres clés */}
       <div className="grid grid-cols-2 gap-4 lg:grid-cols-4">
         <div className="relative overflow-hidden rounded-3xl bg-gradient-to-br from-emerald-500 to-teal-600 p-5 text-white shadow-lg shadow-emerald-500/20">
-          <p className="flex items-center gap-2 text-[11px] font-black uppercase tracking-widest text-white/80"><Activity size={15} /> En ligne maintenant</p>
-          <p className="mt-3 text-6xl font-black tabular-nums leading-none tracking-tight">{nombre(stats.en_ligne)}</p>
-          <p className="mt-1.5 text-xs text-white/80">visiteur{stats.en_ligne > 1 ? "s" : ""} actifs ces 5 dernières minutes</p>
+          <p className="flex items-center gap-2 text-[11px] font-black uppercase tracking-widest text-white/80"><Activity size={15} /> En ligne maintenant</p>{" "}
+          <p className="mt-3 text-6xl font-black tabular-nums leading-none tracking-tight">{nombre(stats.en_ligne)}</p>{" "}
+          <p className="mt-1.5 text-xs text-white/80">visiteur{stats.en_ligne > 1 ? "s" : ""} actifs ces 5 dernières minutes</p>{" "}
           {!!stats.en_ligne_pages?.length && (
             <div className="mt-3 space-y-0.5 border-t border-white/20 pt-2 text-[11px] text-white/90">
-              {stats.en_ligne_pages.slice(0, 3).map((p: any) => <p key={p.path} className="truncate">{p.n} · {nomPage(p.path) ?? p.path}</p>)}
+              {stats.en_ligne_pages.slice(0, 3).map((p: any) => <p key={p.path} className="truncate">{p.n} · {nomPage(p.path) ?? p.path}{" "}</p>)}
             </div>
           )}
-        </div>
-        <Carte titre="Aujourd'hui" valeur={nombre(stats.aujourdhui?.vues)} detail={`pages vues · ${nombre(stats.aujourdhui?.visiteurs)} visiteurs`} Icone={Eye} teinte="bg-blue-100 dark:bg-blue-500/10 text-blue-700 dark:text-blue-300" />
+        </div>{" "}
+        <Carte titre="Aujourd'hui" valeur={nombre(stats.aujourdhui?.vues)} detail={`pages vues · ${nombre(stats.aujourdhui?.visiteurs)} visiteurs`} Icone={Eye} teinte="bg-blue-100 dark:bg-blue-500/10 text-blue-700 dark:text-blue-300" />{" "}
         <Carte titre={periodeDepasse ? `Depuis le ${depuis}` : jours === 1 ? "24 dernières heures" : `${jours} derniers jours`} valeur={nombre(periode.visiteurs)}
           detail={`visiteurs · ${nombre(periode.vues)} pages vues · ${periode.sessions ? (periode.vues / periode.sessions).toFixed(1).replace(".", ",") : "0"} pages par visite`}
-          Icone={Users} teinte="bg-violet-100 dark:bg-violet-500/10 text-violet-700 dark:text-violet-300" />
+          Icone={Users} teinte="bg-violet-100 dark:bg-violet-500/10 text-violet-700 dark:text-violet-300" />{" "}
         <Carte titre="Comptes (total)" valeur={nombre(stats.comptes?.total)}
           detail={`dont ${nombre(stats.comptes?.premium)} Premium et ${nombre(stats.comptes?.pro)} Pro · ${nombre(stats.comptes?.nouveaux)} créés sur la période choisie`}
           Icone={UserPlus} teinte="bg-amber-100 dark:bg-amber-500/10 text-amber-700 dark:text-amber-300" />
-      </div>
+      </div>{" "}
 
       {/* Ce qui intéresse : la part de chaque rubrique et le temps qu'on y passe. */}
       {(() => {
@@ -254,7 +254,7 @@ export default function StatistiquesPage() {
                     {/* Barre de répartition : d'un coup d'œil, qui prend la plus grande part. */}
                     <div className="mb-4 flex h-3 overflow-hidden rounded-full bg-slate-100">
                       {rubriques.map((r, i) => <div key={r.rubrique} className={TEINTES_RUBRIQUES[i % TEINTES_RUBRIQUES.length]} style={{ width: `${(r.vues / total) * 100}%` }} title={`${r.rubrique} : ${Math.round((r.vues / total) * 100)} %`} />)}
-                    </div>
+                    </div>{" "}
                     <div className="overflow-x-auto">
                       <table className="w-full min-w-[480px] text-sm">
                         <thead>
@@ -265,7 +265,7 @@ export default function StatistiquesPage() {
                         <tbody className="divide-y divide-slate-100 dark:divide-slate-800">
                           {rubriques.map((r, i) => (
                             <tr key={r.rubrique}>
-                              <td className="py-2"><span className="inline-flex items-center gap-2 font-semibold text-slate-800"><span className={`h-2.5 w-2.5 rounded-full ${TEINTES_RUBRIQUES[i % TEINTES_RUBRIQUES.length]}`} />{r.rubrique}</span></td>
+                              <td className="py-2"><span className="inline-flex items-center gap-2 font-semibold text-slate-800"><span className={`h-2.5 w-2.5 rounded-full ${TEINTES_RUBRIQUES[i % TEINTES_RUBRIQUES.length]}`} />{" "}{r.rubrique}</span></td>
                               <td className="text-right font-black tabular-nums text-slate-900">{Math.round((r.vues / total) * 100)} %</td>
                               <td className="text-right tabular-nums text-slate-600">{nombre(r.vues)}</td>
                               <td className="text-right tabular-nums text-slate-600">{nombre(r.visiteurs)}</td>
@@ -278,7 +278,7 @@ export default function StatistiquesPage() {
                   </>
                 )}
               </Bloc>
-            </div>
+            </div>{" "}
             <Bloc titre="Pages d'arrivée" Icone={Globe}>
               <p className="-mt-2 mb-2 text-xs text-slate-400">La première page vue de chaque visite : par où l&apos;on entre sur le site.</p>
               {!entrees.length ? <p className="text-sm text-slate-400">—</p> : entrees.map(e => (
@@ -287,7 +287,7 @@ export default function StatistiquesPage() {
             </Bloc>
           </div>
         );
-      })()}
+      })()}{" "}
 
       {/* Courbes */}
       <div className="grid gap-4 lg:grid-cols-3">
@@ -298,13 +298,13 @@ export default function StatistiquesPage() {
                 <div key={j.jour} className="group flex flex-1 flex-col items-center" title={`${new Date(j.jour).toLocaleDateString("fr-FR", { weekday: "short", day: "numeric", month: "short" })} : ${j.vues} vues, ${j.visiteurs} visiteurs`}>
                   <div className="relative w-full flex-1">
                     <div className="absolute inset-x-0 bottom-0 rounded-t-md bg-blue-500/85 transition group-hover:bg-blue-600" style={{ height: `${(j.vues / maxJour) * 100}%`, minHeight: 3 }} />
-                  </div>
-                  <span className="mt-1 h-3 text-[9px] font-bold text-slate-400">{parJour.length <= 14 ? new Date(j.jour).getDate() : ""}</span>
+                  </div>{" "}
+                  <span className="mt-1 h-3 text-[9px] font-bold text-slate-400">{parJour.length <= 14 ? new Date(j.jour).getDate() : ""}</span>{" "}
                 </div>
               ))}
             </div>
           )}
-        </Bloc>
+        </Bloc>{" "}
         <div className="lg:col-span-2">
           <Bloc titre="Aujourd'hui, heure par heure" Icone={Activity}>
             <div className="flex h-44 gap-1">
@@ -312,14 +312,14 @@ export default function StatistiquesPage() {
                 <div key={h.heure} className="flex flex-1 flex-col items-center" title={`${h.heure} h : ${h.vues} vues`}>
                   <div className="relative w-full flex-1">
                     <div className={`absolute inset-x-0 bottom-0 rounded-t-md ${h.heure === heureCourante ? "bg-emerald-500" : "bg-slate-300"}`} style={{ height: `${(h.vues / maxHeure) * 100}%`, minHeight: h.vues ? 3 : 1 }} />
-                  </div>
-                  <span className="mt-1 h-3 text-[9px] font-bold text-slate-400">{h.heure % 3 === 0 ? `${h.heure}h` : ""}</span>
+                  </div>{" "}
+                  <span className="mt-1 h-3 text-[9px] font-bold text-slate-400">{h.heure % 3 === 0 ? `${h.heure}h` : ""}</span>{" "}
                 </div>
               ))}
             </div>
           </Bloc>
         </div>
-      </div>
+      </div>{" "}
 
       {/* Classements */}
       <div className="grid gap-4 lg:grid-cols-3">
@@ -327,12 +327,12 @@ export default function StatistiquesPage() {
           {pages.length === 0 ? <p className="text-sm text-slate-400">—</p> : pages.map(p => (
             <Ligne key={p.path} libelle={pageEnClair(p.path)} sous={p.path} valeur={p.vues} max={pages[0].vues} />
           ))}
-        </Bloc>
+        </Bloc>{" "}
         <Bloc titre="D'où viennent les visiteurs" Icone={Globe}>
           {sources.length === 0 ? <p className="text-sm text-slate-400">—</p> : sources.map(s => (
             <Ligne key={s.source} libelle={s.source} valeur={s.sessions} max={sources[0].sessions} teinte="bg-violet-500" />
           ))}
-        </Bloc>
+        </Bloc>{" "}
         <div className="space-y-4">
           <Bloc titre="Appareils" Icone={Smartphone}>
             {Object.keys(appareils).length === 0 ? <p className="text-sm text-slate-400">—</p> : (
@@ -342,10 +342,10 @@ export default function StatistiquesPage() {
                   const pct = Math.round((n / totalAppareils) * 100);
                   return (
                     <div key={nom} className="flex items-center gap-3 text-sm">
-                      <Icone size={16} className="text-slate-400" />
-                      <span className="w-24 font-semibold capitalize text-slate-700">{nom}</span>
-                      <div className="h-2 flex-1 overflow-hidden rounded-full bg-slate-100"><div className="h-full rounded-full bg-teal-500" style={{ width: `${pct}%` }} /></div>
-                      <span className="w-10 text-right font-bold tabular-nums text-slate-700">{pct} %</span>
+                      <Icone size={16} className="text-slate-400" />{" "}
+                      <span className="w-24 font-semibold capitalize text-slate-700">{nom}</span>{" "}
+                      <div className="h-2 flex-1 overflow-hidden rounded-full bg-slate-100"><div className="h-full rounded-full bg-teal-500" style={{ width: `${pct}%` }} /></div>{" "}
+                      <span className="w-10 text-right font-bold tabular-nums text-slate-700">{pct} %</span>{" "}
                     </div>
                   );
                 })}
@@ -358,25 +358,25 @@ export default function StatistiquesPage() {
             ))}
           </Bloc>
         </div>
-      </div>
+      </div>{" "}
 
       {/* Flux en direct */}
       <Bloc titre="En direct" Icone={Activity}>
         <div className="max-h-96 divide-y divide-slate-100 dark:divide-slate-800 overflow-y-auto">
           {(stats.flux ?? []).map((e: any, i: number) => (
             <div key={i} className="flex items-center gap-3 py-2 text-sm">
-              <span className={`h-2 w-2 shrink-0 rounded-full ${e.kind === "action" ? "bg-amber-500" : "bg-blue-400"}`} />
-              <span className="w-24 shrink-0 text-xs text-slate-400">{ilYa(e.at)}</span>
+              <span className={`h-2 w-2 shrink-0 rounded-full ${e.kind === "action" ? "bg-amber-500" : "bg-blue-400"}`} />{" "}
+              <span className="w-24 shrink-0 text-xs text-slate-400">{ilYa(e.at)}</span>{" "}
               <span className="min-w-0 flex-1 truncate text-slate-700">
                 {e.kind === "action" ? <strong className="text-amber-700 dark:text-amber-400">{ACTIONS[e.name] ?? e.name}</strong> : (nomPage(e.path) ?? e.path)}
                 {e.kind === "action" && <span className="ml-2 text-xs text-slate-400">{e.path}</span>}
-              </span>
-              <span className="hidden shrink-0 text-xs capitalize text-slate-400 sm:inline">{e.device}</span>
+              </span>{" "}
+              <span className="hidden shrink-0 text-xs capitalize text-slate-400 sm:inline">{e.device}</span>{" "}
               {e.niveau && e.niveau !== "anonyme" && (
                 <span className={`shrink-0 rounded-full px-2 py-0.5 text-[10px] font-black uppercase ${e.niveau === "pro" ? "bg-violet-100 dark:bg-violet-500/10 text-violet-700 dark:text-violet-300" : e.niveau === "elite" ? "bg-amber-100 text-amber-700" : "bg-slate-100 text-slate-500"}`}>
                   {e.niveau === "elite" ? "Premium" : e.niveau === "pro" ? "Pro" : "Membre"}
                 </span>
-              )}
+              )}{" "}
             </div>
           ))}
         </div>
@@ -399,7 +399,7 @@ export default function StatistiquesPage() {
                   {parrainage.parrains.map((p: any) => (
                     <tr key={p.user_id}>
                       <td className="py-2.5">
-                        <span className="font-semibold text-slate-800">{p.nom || p.email}</span>
+                        <span className="font-semibold text-slate-800">{p.nom || p.email}</span>{" "}
                         {p.nom && <span className="block text-xs text-slate-400">{p.email}</span>}
                       </td>
                       <td className="font-mono text-xs text-slate-500">
@@ -419,7 +419,7 @@ export default function StatistiquesPage() {
                           versement === p.user_id ? (
                             <span className="inline-flex gap-1">
                               <button onClick={async () => { await api.marquerCommissionsVersees(p.user_id); setVersement(null); void charger(); }}
-                                className="rounded-full bg-emerald-600 px-3 py-1 text-[11px] font-black text-white">Confirmer</button>
+                                className="rounded-full bg-emerald-600 px-3 py-1 text-[11px] font-black text-white">Confirmer</button>{" "}
                               <button onClick={() => setVersement(null)} className="rounded-full px-2 py-1 text-[11px] font-bold text-slate-500">Annuler</button>
                             </span>
                           ) : (
@@ -438,24 +438,24 @@ export default function StatistiquesPage() {
           )}
           {/* Influenceurs : un lien à leur nom, un taux négocié. */}
           <div className="mt-5 rounded-2xl border border-violet-200 bg-violet-50/60 p-4">
-            <p className="text-[11px] font-black uppercase tracking-widest text-violet-700 dark:text-violet-400">Ajouter ou régler un influenceur</p>
-            <p className="mt-1 text-xs text-slate-500">Il crée d&apos;abord un compte gratuit sur le site ; vous lui attribuez ici un lien à son nom et, si vous l&apos;avez négocié, un taux à part (vide = taux général).</p>
+            <p className="text-[11px] font-black uppercase tracking-widest text-violet-700 dark:text-violet-400">Ajouter ou régler un influenceur</p>{" "}
+            <p className="mt-1 text-xs text-slate-500">Il crée d&apos;abord un compte gratuit sur le site ; vous lui attribuez ici un lien à son nom et, si vous l&apos;avez négocié, un taux à part (vide = taux général).</p>{" "}
             <div className="mt-3 grid gap-2 sm:grid-cols-[1.4fr_1fr_0.6fr_1fr_auto]">
               <input value={influ.email} onChange={e => setInflu({ ...influ, email: e.target.value })} placeholder="Adresse e-mail de son compte"
-                className="rounded-xl border border-slate-200 bg-white px-3 py-2 text-sm outline-none focus:border-violet-400" />
+                className="rounded-xl border border-slate-200 bg-white px-3 py-2 text-sm outline-none focus:border-violet-400" />{" "}
               <input value={influ.code} onChange={e => setInflu({ ...influ, code: e.target.value.toUpperCase() })} placeholder="Code (ex. HUGO)"
-                className="rounded-xl border border-slate-200 bg-white px-3 py-2 font-mono text-sm uppercase outline-none focus:border-violet-400" />
+                className="rounded-xl border border-slate-200 bg-white px-3 py-2 font-mono text-sm uppercase outline-none focus:border-violet-400" />{" "}
               <input value={influ.taux} onChange={e => setInflu({ ...influ, taux: e.target.value })} placeholder="Taux %" inputMode="decimal"
-                className="rounded-xl border border-slate-200 bg-white px-3 py-2 text-sm outline-none focus:border-violet-400" />
+                className="rounded-xl border border-slate-200 bg-white px-3 py-2 text-sm outline-none focus:border-violet-400" />{" "}
               <input value={influ.nom} onChange={e => setInflu({ ...influ, nom: e.target.value })} placeholder="Nom affiché (facultatif)"
-                className="rounded-xl border border-slate-200 bg-white px-3 py-2 text-sm outline-none focus:border-violet-400" />
+                className="rounded-xl border border-slate-200 bg-white px-3 py-2 text-sm outline-none focus:border-violet-400" />{" "}
               <button onClick={() => void enregistrerInflu()} disabled={!influ.email || !influ.code}
                 className="rounded-xl bg-violet-600 px-4 py-2 text-sm font-black text-white transition hover:bg-violet-500 disabled:opacity-40">Enregistrer</button>
-            </div>
+            </div>{" "}
             {influMsg && <p className="mt-2 break-all text-xs font-semibold text-violet-800">{influMsg}</p>}
           </div>
           <p className="mt-3 flex items-center gap-1.5 text-[11px] text-slate-400">
-            <Sparkles size={12} /> « À verser » : commissions sorties du délai de rétractation. Après votre virement, « Virement fait » les passe en « Versé ».
+            <Sparkles size={12} /> « À verser » : commissions sorties du délai de rétractation. Après votre virement, « Virement fait » les passe en « Versé ».{" "}
             <Crown size={12} className="ml-1" />
           </p>
         </Bloc>

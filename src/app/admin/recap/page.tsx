@@ -30,16 +30,16 @@ function Contenu() {
 
   return (
     <div className="mx-auto max-w-2xl p-6 md:p-10">
-      <h1 className="text-2xl font-black text-slate-900">Relecture du récap de samedi</h1>
-      {etat === "attente" && <Loader2 className="mt-6 animate-spin text-slate-400" />}
-      {etat === "ok" && <p className="mt-4 flex items-start gap-2 rounded-xl bg-emerald-50 p-4 text-sm text-emerald-800"><Check size={16} className="mt-0.5 shrink-0" /> Retiré de l&apos;envoi de samedi : « {titre} ».</p>}
-      {etat === "erreur" && <p className="mt-4 rounded-xl bg-rose-50 p-4 text-sm text-rose-800">Impossible de retirer cette ligne (êtes-vous connecté avec le compte administrateur ?).</p>}
-      <h2 className="mt-8 text-xs font-black uppercase tracking-widest text-slate-500">Retiré pour ce samedi ({retirees.length})</h2>
+      <h1 className="text-2xl font-black text-slate-900">Relecture du récap de samedi</h1>{" "}
+      {etat === "attente" && <Loader2 className="mt-6 animate-spin text-slate-400" />}{" "}
+      {etat === "ok" && <p className="mt-4 flex items-start gap-2 rounded-xl bg-emerald-50 p-4 text-sm text-emerald-800"><Check size={16} className="mt-0.5 shrink-0" /> Retiré de l&apos;envoi de samedi : « {titre} ».</p>}{" "}
+      {etat === "erreur" && <p className="mt-4 rounded-xl bg-rose-50 p-4 text-sm text-rose-800">Impossible de retirer cette ligne (êtes-vous connecté avec le compte administrateur ?).</p>}{" "}
+      <h2 className="mt-8 text-xs font-black uppercase tracking-widest text-slate-500">Retiré pour ce samedi ({retirees.length})</h2>{" "}
       <ul className="mt-2 divide-y divide-slate-200 rounded-xl border border-slate-200 bg-white">
         {retirees.length ? retirees.map(r => (
-          <li key={r.cle} className="flex items-start gap-2 p-3 text-sm text-slate-700"><Trash2 size={14} className="mt-0.5 shrink-0 text-slate-400" /> {r.titre || r.cle}</li>
+          <li key={r.cle} className="flex items-start gap-2 p-3 text-sm text-slate-700"><Trash2 size={14} className="mt-0.5 shrink-0 text-slate-400" /> {r.titre || r.cle}{" "}</li>
         )) : <li className="p-3 text-sm text-slate-500">Rien de retiré pour l&apos;instant.</li>}
-      </ul>
+      </ul>{" "}
       <p className="mt-4 text-xs text-slate-500">Le récap part samedi à 8 h. Sans action de votre part, il part tel que l&apos;aperçu.</p>
     </div>
   );

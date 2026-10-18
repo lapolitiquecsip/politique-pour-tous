@@ -23,12 +23,12 @@ function SummaryBody({ text }: { text: string }) {
   const bullets = lines.filter(l => l.startsWith("-")).map(l => l.replace(/^-\s*/, ""));
   return (
     <div className="space-y-2">
-      {intro && <p className="text-sm leading-relaxed text-muted-foreground dark:text-slate-300">{intro}</p>}
+      {intro && <p className="text-sm leading-relaxed text-muted-foreground dark:text-slate-300">{intro}</p>}{" "}
       {bullets.length > 0 && (
         <ul className="space-y-1.5">
           {bullets.map((b, i) => (
             <li key={i} className="flex gap-2 text-sm leading-snug text-slate-700 dark:text-slate-300">
-              <span className="mt-1.5 h-1.5 w-1.5 shrink-0 rounded-full bg-emerald-500" />{b}
+              <span className="mt-1.5 h-1.5 w-1.5 shrink-0 rounded-full bg-emerald-500" />{" "}{b}{" "}
             </li>
           ))}
         </ul>
@@ -47,25 +47,25 @@ function AuditionCard({ r, isPremium }: { r: Report; isPremium: boolean }) {
       <button onClick={() => setOpen(o => !o)} className="flex w-full items-start gap-4 p-5 text-left">
         <span className="flex h-11 w-11 shrink-0 items-center justify-center rounded-2xl bg-emerald-50 text-emerald-600 dark:bg-emerald-500/15">
           <Mic size={18} />
-        </span>
+        </span>{" "}
         <div className="min-w-0 flex-1">
-          <p className="text-[10px] font-black uppercase tracking-widest text-emerald-700 dark:text-emerald-400">{fmtDate(r.meeting_date)}{commission ? ` · ${commission}` : ""}</p>
-          <p className="mt-1 text-sm font-bold leading-snug text-foreground dark:text-white line-clamp-2">{title}</p>
+          <p className="text-[10px] font-black uppercase tracking-widest text-emerald-700 dark:text-emerald-400">{fmtDate(r.meeting_date)}{commission ? ` · ${commission}` : ""}</p>{" "}
+          <p className="mt-1 text-sm font-bold leading-snug text-foreground dark:text-white line-clamp-2">{title}</p>{" "}
           {people.length > 0 && (
             <p className="mt-1.5 flex items-center gap-1.5 text-[11px] font-semibold text-muted-foreground dark:text-slate-400">
-              <Users size={12} className="shrink-0 text-emerald-500" />
+              <Users size={12} className="shrink-0 text-emerald-500" />{" "}
               <span className="truncate">Avec {people.join(", ")}</span>
             </p>
           )}
-        </div>
+        </div>{" "}
         <ChevronDown size={18} className={`mt-1 shrink-0 text-muted-foreground transition-transform ${open ? "rotate-180" : ""}`} />
-      </button>
+      </button>{" "}
 
       {open && (
         <div className="border-t border-border px-5 py-4 dark:border-slate-800">
           <p className="mb-2 flex items-center gap-1.5 text-[10px] font-black uppercase tracking-widest text-emerald-700 dark:text-emerald-400">
             <Sparkles size={12} /> Résumé de l'audition
-          </p>
+          </p>{" "}
           {isPremium ? (
             r.summary ? <SummaryBody text={r.summary} />
               : <p className="text-sm italic text-muted-foreground">Résumé en cours de génération…</p>
@@ -74,15 +74,15 @@ function AuditionCard({ r, isPremium }: { r: Report; isPremium: boolean }) {
             <div className="relative">
               <div className="pointer-events-none select-none blur-[5px]">
                 {r.summary ? <SummaryBody text={r.summary} /> : <p className="text-sm text-muted-foreground">Résumé détaillé de ce qui a été dit pendant l'audition…</p>}
-              </div>
+              </div>{" "}
               <div className="absolute inset-0 flex flex-col items-center justify-center gap-2 text-center">
-                <span className="flex items-center gap-1.5 rounded-full bg-amber-400/90 px-3 py-1 text-[11px] font-black uppercase tracking-widest text-slate-950"><Lock size={12} /> Réservé premium</span>
+                <span className="flex items-center gap-1.5 rounded-full bg-amber-400/90 px-3 py-1 text-[11px] font-black uppercase tracking-widest text-slate-950"><Lock size={12} /> Réservé premium</span>{" "}
                 <Link href="/premium" className="text-[11px] font-black uppercase tracking-widest text-amber-700 dark:text-amber-400 hover:underline">Débloquer les résumés →</Link>
               </div>
             </div>
-          )}
+          )}{" "}
           <div className="mt-4 flex flex-wrap gap-3">
-            {r.cr_url && <a href={r.cr_url} target="_blank" rel="noopener noreferrer" className="inline-flex items-center gap-1.5 text-[10px] font-black uppercase tracking-widest text-muted-foreground hover:text-emerald-600"><ExternalLink size={12} /> Compte rendu officiel</a>}
+            {r.cr_url && <a href={r.cr_url} target="_blank" rel="noopener noreferrer" className="inline-flex items-center gap-1.5 text-[10px] font-black uppercase tracking-widest text-muted-foreground hover:text-emerald-600"><ExternalLink size={12} /> Compte rendu officiel</a>}{" "}
             {r.video_url && <a href={r.video_url} target="_blank" rel="noopener noreferrer" className="inline-flex items-center gap-1.5 text-[10px] font-black uppercase tracking-widest text-muted-foreground hover:text-emerald-600"><ExternalLink size={12} /> Vidéo</a>}
           </div>
         </div>
@@ -127,12 +127,12 @@ export default function CommissionAuditions() {
   return (
     <div className="mt-16">
       <div className="mb-6 flex items-start gap-4">
-        <span className="flex h-12 w-12 shrink-0 items-center justify-center rounded-2xl bg-gradient-to-br from-emerald-500 to-teal-500 text-white shadow-lg"><Mic size={22} /></span>
+        <span className="flex h-12 w-12 shrink-0 items-center justify-center rounded-2xl bg-gradient-to-br from-emerald-500 to-teal-500 text-white shadow-lg"><Mic size={22} /></span>{" "}
         <div>
-          <h3 className="font-staatliches text-3xl uppercase tracking-tight text-foreground dark:text-white">Auditions de <span className="text-emerald-700 dark:text-emerald-400">commission</span></h3>
+          <h3 className="font-staatliches text-3xl uppercase tracking-tight text-foreground dark:text-white">Auditions de <span className="text-emerald-700 dark:text-emerald-400">commission</span></h3>{" "}
           <p className="mt-0.5 text-sm text-muted-foreground">Ce qui a été dit lors des auditions, résumé à partir du compte rendu officiel. <span className="font-bold text-amber-700 dark:text-amber-400">Résumés réservés aux membres premium.</span></p>
         </div>
-      </div>
+      </div>{" "}
       <div className="grid grid-cols-1 gap-3 md:grid-cols-2">
         {reports.map(r => <AuditionCard key={r.ref} r={r} isPremium={isPremium} />)}
       </div>

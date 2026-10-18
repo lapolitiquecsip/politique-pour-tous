@@ -33,7 +33,7 @@ export default function ProgrammesDuParti({ nomParti, sigle }: { nomParti: strin
           <ProgrammeCandidat proposals={props} sources={sources} titre={`Le programme de ${c.full_name}`} nomCandidat={c.full_name} />
           <Link href={c.slug ? `/presidentielles-2027/?candidat=${c.slug}` : "/presidentielles-2027/"} className="mt-2 inline-block text-xs font-bold underline">
             Voir la fiche de candidat·e de {c.full_name}
-          </Link>
+          </Link>{" "}
         </div>
       ))}
     </div>

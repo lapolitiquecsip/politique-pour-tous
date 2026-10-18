@@ -23,7 +23,7 @@ export default function VocabularyFilters({
                 : "bg-card text-foreground border-gray-300 hover:bg-muted"
             }`}
           >
-            {category}
+            {category}{" "}
           </button>
         );
       })}

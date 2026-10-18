@@ -152,7 +152,7 @@ export default function JorfSearch({ onClose }: { onClose: () => void }) {
     <div className="border-b border-white/10 bg-slate-950/60 p-5 sm:p-7">
       <div className="flex items-center gap-3">
         <div className="flex min-w-0 flex-1 items-center gap-2.5 rounded-2xl bg-white/[0.07] px-4 ring-1 ring-white/15 focus-within:ring-fuchsia-400/60">
-          <Search size={17} className="shrink-0 text-fuchsia-300" />
+          <Search size={17} className="shrink-0 text-fuchsia-300" />{" "}
           <input
             ref={champ}
             value={q}
@@ -160,14 +160,14 @@ export default function JorfSearch({ onClose }: { onClose: () => void }) {
             placeholder="Chercher un décret, un arrêté, un mot-clé…"
             aria-label="Rechercher dans le Journal officiel"
             className="min-w-0 flex-1 bg-transparent py-3.5 text-[15px] text-white outline-none placeholder:text-white/35"
-          />
-          {cherche && <Loader2 size={15} className="shrink-0 animate-spin text-white/50" />}
+          />{" "}
+          {cherche && <Loader2 size={15} className="shrink-0 animate-spin text-white/50" />}{" "}
           {!!q && !cherche && (
             <button onClick={() => setQ("")} aria-label="Effacer" className="shrink-0 text-white/40 hover:text-white">
               <X size={15} />
             </button>
           )}
-        </div>
+        </div>{" "}
         <button
           onClick={onClose}
           aria-label="Fermer la recherche"
@@ -175,11 +175,11 @@ export default function JorfSearch({ onClose }: { onClose: () => void }) {
         >
           <X size={17} />
         </button>
-      </div>
+      </div>{" "}
 
       {natures.length > 1 && (
         <div className="mt-3 flex flex-wrap items-center gap-1.5">
-          <SlidersHorizontal size={12} className="mr-0.5 text-white/35" />
+          <SlidersHorizontal size={12} className="mr-0.5 text-white/35" />{" "}
           <button
             onClick={() => setNature(null)}
             className={`rounded-full px-2.5 py-1 text-[10px] font-black uppercase tracking-widest transition ${
@@ -187,7 +187,7 @@ export default function JorfSearch({ onClose }: { onClose: () => void }) {
             }`}
           >
             Tout
-          </button>
+          </button>{" "}
           {natures.slice(0, 8).map(n => (
             <button
               key={n.nature}
@@ -196,11 +196,11 @@ export default function JorfSearch({ onClose }: { onClose: () => void }) {
                 nature === n.nature ? "bg-white text-slate-900" : "bg-white/10 text-white/70 hover:bg-white/20"
               }`}
             >
-              {nat(n.nature).un}
+              {nat(n.nature).un}{" "}
             </button>
           ))}
         </div>
-      )}
+      )}{" "}
 
       <AnimatePresence initial={false} mode="wait">
         {q.trim().length < 2 ? (
@@ -212,7 +212,7 @@ export default function JorfSearch({ onClose }: { onClose: () => void }) {
             La recherche porte sur tout le Journal officiel conservé — intitulés et
             explications. Les guillemets cherchent une expression exacte
             (<span className="text-white/70">&laquo;&nbsp;taxe de séjour&nbsp;&raquo;</span>),
-            un tiret devant un mot l&apos;exclut.
+            un tiret devant un mot l&apos;exclut.{" "}
           </motion.p>
         ) : resultats === null ? null : !resultats.length ? (
           <motion.p
@@ -221,7 +221,7 @@ export default function JorfSearch({ onClose }: { onClose: () => void }) {
             className="mt-4 text-[13px] text-white/50"
           >
             Aucun texte ne correspond à <strong className="text-white/80">{q.trim()}</strong>
-            {nature ? <> parmi les {nat(nature).un.toLowerCase()}s</> : null}.
+            {nature ? <> parmi les {nat(nature).un.toLowerCase()}s</> : null}.{" "}
           </motion.p>
         ) : (
           <motion.div
@@ -232,13 +232,13 @@ export default function JorfSearch({ onClose }: { onClose: () => void }) {
             <p className="mb-2.5 text-[10px] font-black uppercase tracking-widest text-white/40">
               {resultats.length}{resultats.length === 60 ? "+" : ""} résultat{resultats.length > 1 ? "s" : ""}
               {" "}sur {parJour.length} édition{parJour.length > 1 ? "s" : ""}
-            </p>
+            </p>{" "}
             <div className="max-h-[26rem] space-y-4 overflow-y-auto pr-1">
               {parJour.map(([date, textes]) => (
                 <div key={date}>
                   <p className="sticky top-0 z-10 -mx-1 bg-slate-950/90 px-1 py-1 text-[11px] font-black uppercase tracking-widest text-fuchsia-300 backdrop-blur">
                     {jourLong(date)}
-                  </p>
+                  </p>{" "}
                   <ul className="mt-1.5 space-y-1.5">
                     {textes.map(t => (
                       <li key={t.id}>
@@ -250,29 +250,29 @@ export default function JorfSearch({ onClose }: { onClose: () => void }) {
                           <span className="flex flex-wrap items-center gap-2">
                             <span className={`rounded-full px-2 py-0.5 text-[9px] font-black uppercase tracking-widest ${nat(t.nature).classe}`}>
                               {nat(t.nature).un}
-                            </span>
+                            </span>{" "}
                             {t.groupe && (
                               <span className="min-w-0 truncate text-[10px] font-bold uppercase tracking-wider text-white/35">
                                 {t.groupe}
                               </span>
-                            )}
+                            )}{" "}
                             <ExternalLink size={11} className="ml-auto shrink-0 text-white/25 transition group-hover:text-fuchsia-300" />
-                          </span>
+                          </span>{" "}
                           <span className="mt-1.5 block text-[13px] font-bold leading-snug text-white/90">
                             <Surligne texte={t.titre} mots={mots} />
-                          </span>
+                          </span>{" "}
                           {t.explication && (
                             <span className="mt-1 block text-[12px] leading-snug text-white/55">
                               <Surligne texte={t.explication} mots={mots} />
                             </span>
                           )}
-                        </a>
+                        </a>{" "}
                       </li>
                     ))}
-                  </ul>
+                  </ul>{" "}
                 </div>
               ))}
-            </div>
+            </div>{" "}
           </motion.div>
         )}
       </AnimatePresence>

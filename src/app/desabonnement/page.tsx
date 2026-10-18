@@ -24,16 +24,16 @@ function Contenu() {
     <div className="w-full max-w-md rounded-[2rem] border border-border bg-card p-8 text-center shadow-xl">
       <span className={`mx-auto flex h-14 w-14 items-center justify-center rounded-2xl ${etat === "ok" ? "bg-emerald-500/15 text-emerald-700 dark:text-emerald-400" : "bg-muted text-muted-foreground"}`}>
         {etat === "attente" ? <Loader2 className="animate-spin" /> : etat === "ok" ? <Check size={26} /> : <MailX size={26} />}
-      </span>
+      </span>{" "}
       <h1 className="mt-5 font-staatliches text-3xl uppercase leading-none text-foreground">
         {etat === "attente" ? "Un instant…" : etat === "ok" ? "C'est fait" : "Lien invalide"}
-      </h1>
+      </h1>{" "}
       <p className="mt-3 text-sm leading-relaxed text-muted-foreground">
         {etat === "ok"
           ? "Vous ne recevrez plus « La semaine politique en 5 minutes ». Vos autres alertes ne changent pas."
           : etat === "attente" ? "Nous enregistrons votre choix."
           : "Ce lien de désabonnement n'est pas reconnu. Vous pouvez régler vos e-mails depuis votre espace."}
-      </p>
+      </p>{" "}
       <Link href="/dashboard#preferences" className="mt-6 inline-block rounded-2xl bg-slate-900 px-5 py-3 text-xs font-black uppercase tracking-widest text-white transition hover:bg-slate-700 dark:bg-white dark:text-slate-900">
         {etat === "ok" ? "Le réactiver ou régler mes alertes" : "Régler mes e-mails"}
       </Link>

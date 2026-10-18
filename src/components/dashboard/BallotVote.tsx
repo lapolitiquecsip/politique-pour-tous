@@ -80,7 +80,7 @@ export function BallotChip({ vote }: { vote: VoteValue }) {
     <span
       className={`inline-flex items-center gap-2 rounded-full border px-3 py-1.5 text-[10px] font-black uppercase tracking-widest ${s.chip}`}
     >
-      <BallotBox vote={vote} size={18} />
+      <BallotBox vote={vote} size={18} />{" "}
       {s.label}
     </span>
   );

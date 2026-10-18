@@ -104,18 +104,18 @@ export default function PremiumButton() {
               exit={{ opacity: 0, y: 10, scale: 0.95 }}
               className="absolute bottom-full right-0 mb-4 w-72 bg-red-600 text-white p-4 rounded-2xl shadow-2xl z-50 flex items-start gap-3 border border-red-400"
             >
-              <AlertCircle className="w-5 h-5 flex-shrink-0 mt-0.5" />
+              <AlertCircle className="w-5 h-5 flex-shrink-0 mt-0.5" />{" "}
               <div className="flex-1">
-                <p className="text-sm font-bold leading-tight">Authentification requise</p>
-                <p className="text-xs opacity-90 mt-1 mb-2">Veuillez vous connecter pour accéder au paiement.</p>
+                <p className="text-sm font-bold leading-tight">Authentification requise</p>{" "}
+                <p className="text-xs opacity-90 mt-1 mb-2">Veuillez vous connecter pour accéder au paiement.</p>{" "}
                 <Link 
                   href="/login" 
                   className="inline-flex items-center gap-1.5 px-3 py-1.5 bg-card text-red-700 dark:text-red-400 rounded-lg text-xs font-extrabold hover:bg-red-50 transition-colors shadow-sm"
                 >
-                  Se connecter
+                  Se connecter{" "}
                   <ArrowRight size={12} />
                 </Link>
-              </div>
+              </div>{" "}
               <button
                 onClick={() => setError(null)}
                 className="text-white/70 hover:text-white flex-shrink-0"
@@ -131,7 +131,7 @@ export default function PremiumButton() {
               exit={{ opacity: 0, y: 10, scale: 0.95 }}
               className="bg-red-600 text-white px-4 py-3 rounded-2xl shadow-xl text-sm font-medium max-w-[280px] flex items-start gap-2"
             >
-              <span>{error}</span>
+              <span>{error}</span>{" "}
               <button
                 onClick={() => setError(null)}
                 className="shrink-0 mt-0.5 hover:opacity-70 transition-opacity"
@@ -140,7 +140,7 @@ export default function PremiumButton() {
               </button>
             </motion.div>
           )}
-        </AnimatePresence>
+        </AnimatePresence>{" "}
 
         {/* Le bouton Premium */}
         <motion.div
@@ -156,7 +156,7 @@ export default function PremiumButton() {
               title="Masquer"
             >
               <X className="w-3 h-3" />
-            </button>
+            </button>{" "}
 
             {/* Mobile : pastille compacte (prend beaucoup moins de place). */}
             <button
@@ -165,7 +165,7 @@ export default function PremiumButton() {
               className="sm:hidden flex h-11 w-11 items-center justify-center rounded-full bg-gradient-to-br from-amber-400 to-amber-600 text-white shadow-lg shadow-amber-500/30 ring-2 ring-white/60 dark:ring-slate-900 transition-transform active:scale-95"
             >
               <Crown className="h-5 w-5" />
-            </button>
+            </button>{" "}
 
             {/* Écran large : badge complet. */}
             <div className="hidden sm:block">

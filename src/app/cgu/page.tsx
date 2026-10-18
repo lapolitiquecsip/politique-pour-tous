@@ -3,7 +3,7 @@ import PageJuridique, { ou } from "@/components/legal/PageJuridique";
 import { EDITEUR } from "@/lib/constants";
 
 export const metadata = {
-  title: "Conditions générales d'utilisation | La Politique, C'est Simple",
+  title: "Conditions générales d'utilisation",
   description: "Règles d'accès et d'utilisation du site et des comptes.",
 };
 
@@ -22,7 +22,7 @@ export default function CGU() {
             <>
               <p>Le site explique la vie politique et législative française et européenne à partir de sources publiques : lois, votes,
                 élus, institutions, Journal officiel, élections. Il est gratuit et accessible sans compte ; certaines fonctions demandent un
-                compte gratuit (suivre des élus, enregistrer des contenus) ou un abonnement payant (offres Premium et Pro).</p>
+                compte gratuit (suivre des élus, enregistrer des contenus) ou un abonnement payant (offres Premium et Pro).</p>{" "}
               <p>Le site est indépendant de tout parti, élu ou institution. Il présente les positions et les votes de chacun selon les mêmes
                 règles, sans consigne de vote.</p>
             </>
@@ -32,8 +32,8 @@ export default function CGU() {
           id: "compte", titre: "Votre compte",
           contenu: (
             <>
-              <p>Vous vous engagez à fournir une adresse e-mail valide et à garder votre mot de passe confidentiel. Le compte est personnel.</p>
-              <p>Vous pouvez à tout moment télécharger vos données ou supprimer votre compte depuis <strong>Mon compte → Mes données</strong>.</p>
+              <p>Vous vous engagez à fournir une adresse e-mail valide et à garder votre mot de passe confidentiel. Le compte est personnel.</p>{" "}
+              <p>Vous pouvez à tout moment télécharger vos données ou supprimer votre compte depuis <strong>Mon compte → Mes données</strong>.</p>{" "}
               <p>L&apos;éditeur peut suspendre un compte utilisé pour nuire au service (robots, tentatives d&apos;intrusion, revente des contenus),
                 après vous en avoir informé, sauf urgence.</p>
             </>
@@ -53,14 +53,14 @@ export default function CGU() {
             <>
               <p>Les informations proviennent de sources publiques citées sur chaque page (Assemblée nationale, Sénat, Légifrance, Journal
                 officiel, instituts de sondage…) et sont mises à jour automatiquement. Malgré le soin apporté, elles peuvent comporter des
-                erreurs ou des retards : <strong>seuls les textes officiels font foi</strong>. Le site ne fournit pas de conseil juridique.</p>
+                erreurs ou des retards : <strong>seuls les textes officiels font foi</strong>. Le site ne fournit pas de conseil juridique.</p>{" "}
               <p><strong>Intelligence artificielle.</strong>{" "}Des résumés, titres, biographies, analyses et récapitulatifs sont rédigés
                 automatiquement par des modèles d&apos;IA à partir des documents officiels (règlement européen sur l&apos;IA, art. 50). Ils
-                peuvent être inexacts ; les pages renvoient aux documents d&apos;origine.</p>
+                peuvent être inexacts ; les pages renvoient aux documents d&apos;origine.</p>{" "}
               <p><strong>Affaires judiciaires.</strong>{" "}Les procédures mentionnées le sont d&apos;après des sources publiques citées ; toute
-                personne mise en cause est présumée innocente tant qu&apos;une décision de justice définitive n&apos;a pas établi sa culpabilité.</p>
+                personne mise en cause est présumée innocente tant qu&apos;une décision de justice définitive n&apos;a pas établi sa culpabilité.</p>{" "}
               <p><strong>Sondages.</strong>{" "}Ils sont publiés avec les mentions prévues par la loi du 19 juillet 1977 et retirés la veille et le
-                jour de chaque tour de scrutin. Un sondage n&apos;est pas une prédiction.</p>
+                jour de chaque tour de scrutin. Un sondage n&apos;est pas une prédiction.</p>{" "}
               <p>Une erreur ? Signalez-la depuis la <Link href="/contact">page Contact</Link> : elle est corrigée, et les personnes citées
                 disposent d&apos;un droit de réponse (voir les mentions légales).</p>
             </>
@@ -71,8 +71,8 @@ export default function CGU() {
           contenu: (
             <ul>
               <li>Extraire massivement les contenus propres au site (aspiration, revente) ; les données publiques d&apos;origine restent
-                réutilisables à leur source, selon leur licence.</li>
-              <li>Tenter d&apos;accéder aux données d&apos;autres membres ou de perturber le fonctionnement du site.</li>
+                réutilisables à leur source, selon leur licence.</li>{" "}
+              <li>Tenter d&apos;accéder aux données d&apos;autres membres ou de perturber le fonctionnement du site.</li>{" "}
               <li>Utiliser le formulaire de contact pour du démarchage, des menaces ou des propos illicites.</li>
             </ul>
           ),
@@ -83,11 +83,11 @@ export default function CGU() {
             <>
               <p>Tout membre peut partager son lien de parrainage. Une personne arrivée par ce lien et inscrite dans les 90 jours lui est
                 rattachée ; sur chacun de ses paiements d&apos;abonnement pendant la durée indiquée dans l&apos;espace « Parrainage », le parrain
-                perçoit la commission affichée (20 % par défaut), calculée sur le montant payé.</p>
+                perçoit la commission affichée (20 % par défaut), calculée sur le montant payé.</p>{" "}
               <p>Une commission devient disponible après le délai de validation affiché (30 jours, qui couvre le délai de rétractation) ;
                 elle est annulée si le paiement est remboursé, et reprise si elle avait déjà été versée. Les commissions disponibles sont
                 virées automatiquement, dès le seuil atteint, sur le compte bancaire que le parrain a renseigné auprès de notre prestataire
-                de paiement Stripe (vérification d&apos;identité exigée par la réglementation ; réservé aux majeurs).</p>
+                de paiement Stripe (vérification d&apos;identité exigée par la réglementation ; réservé aux majeurs).</p>{" "}
               <p>Le parrainage doit rester loyal : pas de publicité trompeuse, pas de parrainage de soi-même ou de comptes fictifs, pas de
                 courriels non sollicités. Une fraude entraîne l&apos;annulation des commissions concernées. Les sommes perçues sont des revenus
                 à déclarer par le parrain. L&apos;éditeur peut modifier le taux ou la durée pour l&apos;avenir, sans effet sur les commissions déjà acquises.</p>

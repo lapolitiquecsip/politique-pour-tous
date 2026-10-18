@@ -35,9 +35,9 @@ export default function GardeAdministrateur({ children }: { children: React.Reac
     return (
       <div className="flex min-h-[60vh] items-center justify-center px-4">
         <div className="max-w-md rounded-3xl border border-border bg-card p-8 text-center shadow-sm">
-          <Lock className="mx-auto mb-3 text-slate-400" />
-          <h1 className="text-xl font-bold text-foreground">Page introuvable</h1>
-          <p className="mt-2 text-sm text-muted-foreground">Cette page n&apos;existe pas ou ne vous est pas accessible.</p>
+          <Lock className="mx-auto mb-3 text-slate-400" />{" "}
+          <h1 className="text-xl font-bold text-foreground">Page introuvable</h1>{" "}
+          <p className="mt-2 text-sm text-muted-foreground">Cette page n&apos;existe pas ou ne vous est pas accessible.</p>{" "}
           <Link href="/" className="mt-5 inline-block rounded-full bg-slate-900 px-5 py-2.5 text-sm font-bold text-white">Retour à l&apos;accueil</Link>
         </div>
       </div>

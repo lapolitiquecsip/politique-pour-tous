@@ -192,19 +192,19 @@ function LawExampleModal({ open, onClose }: { open: boolean; onClose: () => void
       {open && (
         <div className="fixed inset-0 z-[100] flex items-end sm:items-center justify-center p-0 sm:p-6">
           <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} onClick={onClose}
-            className="absolute inset-0 bg-slate-950/85 backdrop-blur-md" />
+            className="absolute inset-0 bg-slate-950/85 backdrop-blur-md" />{" "}
           <motion.div initial={{ opacity: 0, y: 40, scale: 0.98 }} animate={{ opacity: 1, y: 0, scale: 1 }} exit={{ opacity: 0, y: 40, scale: 0.98 }}
             className="relative w-full max-w-2xl bg-white dark:bg-slate-900 rounded-t-[2rem] sm:rounded-[2.5rem] shadow-2xl overflow-hidden flex flex-col max-h-[90vh]">
             <div className="relative bg-gradient-to-br from-slate-900 to-slate-800 p-6 pr-14 text-white shrink-0">
-              <div className="absolute inset-0 opacity-[0.15] bg-[radial-gradient(circle_at_top_right,rgba(251,191,36,0.6),transparent_60%)]" />
-              <button onClick={onClose} className="absolute right-4 top-4 z-10 rounded-full bg-white/15 p-2 hover:bg-white/25 transition" aria-label="Fermer"><X size={18} /></button>
-              <p className="relative flex items-center gap-1.5 text-[10px] font-black uppercase tracking-[0.25em] text-amber-400"><Scale size={12} /> Exemple réel · Analyse détaillée</p>
-              <h3 className="relative mt-2 text-lg sm:text-xl font-bold leading-tight">{d.title}</h3>
+              <div className="absolute inset-0 opacity-[0.15] bg-[radial-gradient(circle_at_top_right,rgba(251,191,36,0.6),transparent_60%)]" />{" "}
+              <button onClick={onClose} className="absolute right-4 top-4 z-10 rounded-full bg-white/15 p-2 hover:bg-white/25 transition" aria-label="Fermer"><X size={18} /></button>{" "}
+              <p className="relative flex items-center gap-1.5 text-[10px] font-black uppercase tracking-[0.25em] text-amber-400"><Scale size={12} /> Exemple réel · Analyse détaillée</p>{" "}
+              <h3 className="relative mt-2 text-lg sm:text-xl font-bold leading-tight">{d.title}</h3>{" "}
               <div className="relative mt-3 flex flex-wrap items-center gap-2">
-                <span className="rounded-full bg-white/10 px-3 py-1 text-[10px] font-black uppercase tracking-widest text-white/80">{d.category}</span>
+                <span className="rounded-full bg-white/10 px-3 py-1 text-[10px] font-black uppercase tracking-widest text-white/80">{d.category}</span>{" "}
                 <span className="inline-flex items-center gap-1 rounded-full bg-emerald-500/20 px-3 py-1 text-[10px] font-black uppercase tracking-widest text-emerald-300"><CheckCircle2 size={11} /> {d.status}</span>
               </div>
-            </div>
+            </div>{" "}
 
             <div className="flex-1 overflow-y-auto p-5 sm:p-6">
               <div className="grid gap-3 sm:grid-cols-2">
@@ -214,16 +214,16 @@ function LawExampleModal({ open, onClose }: { open: boolean; onClose: () => void
                   return (
                     <div key={i} className={`rounded-2xl border border-slate-100 dark:border-slate-800 bg-white dark:bg-slate-900 p-4 shadow-sm ${wide}`}>
                       <div className="mb-2 flex items-center gap-2">
-                        <span className={`flex h-8 w-8 items-center justify-center rounded-xl ${bg} ${c}`}><Icon size={16} /></span>
+                        <span className={`flex h-8 w-8 items-center justify-center rounded-xl ${bg} ${c}`}><Icon size={16} /></span>{" "}
                         <h4 className={`text-[11px] font-black uppercase tracking-widest ${c}`}>{s.header}</h4>
-                      </div>
-                      <p className="text-[13.5px] leading-6 text-slate-700 dark:text-slate-300"><HL text={s.body} /></p>
+                      </div>{" "}
+                      <p className="text-[13.5px] leading-6 text-slate-700 dark:text-slate-300"><HL text={s.body} /></p>{" "}
                     </div>
                   );
                 })}
-              </div>
+              </div>{" "}
               <p className="mt-4 text-[10px] italic text-muted-foreground">Exemple réel d&apos;un décryptage Premium — le design exact affiché sur chaque loi.</p>
-            </div>
+            </div>{" "}
 
             <div className="p-5 border-t border-slate-100 dark:border-slate-800 bg-slate-50 dark:bg-slate-800/30">
               <Link href="/lois" className="flex items-center justify-center gap-2 py-3.5 rounded-2xl bg-gradient-to-r from-amber-400 to-yellow-500 text-slate-900 font-black uppercase tracking-widest text-xs hover:brightness-110 transition">
@@ -249,45 +249,45 @@ function NotifDemoModal({ open, onClose }: { open: boolean; onClose: () => void 
     <AnimatePresence>
       {open && (
         <div className="fixed inset-0 z-[100] flex items-end sm:items-center justify-center p-0 sm:p-6">
-          <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} onClick={onClose} className="absolute inset-0 bg-slate-950/80 backdrop-blur-md" />
+          <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} onClick={onClose} className="absolute inset-0 bg-slate-950/80 backdrop-blur-md" />{" "}
           <motion.div initial={{ opacity: 0, y: 40, scale: 0.98 }} animate={{ opacity: 1, y: 0, scale: 1 }} exit={{ opacity: 0, y: 40, scale: 0.98 }}
             className="relative w-full max-w-md bg-white dark:bg-slate-900 rounded-t-[2rem] sm:rounded-[2rem] shadow-2xl overflow-hidden flex flex-col max-h-[88vh]">
             <div className="relative bg-gradient-to-br from-purple-600 to-fuchsia-700 p-6 pr-14 text-white shrink-0">
-              <button onClick={onClose} className="absolute right-4 top-4 rounded-full bg-white/20 p-2 hover:bg-white/30 transition" aria-label="Fermer"><X size={18} /></button>
-              <p className="flex items-center gap-1.5 text-[10px] font-black uppercase tracking-widest text-white/80"><BellRing size={12} /> Votre fil d'alertes</p>
+              <button onClick={onClose} className="absolute right-4 top-4 rounded-full bg-white/20 p-2 hover:bg-white/30 transition" aria-label="Fermer"><X size={18} /></button>{" "}
+              <p className="flex items-center gap-1.5 text-[10px] font-black uppercase tracking-widest text-white/80"><BellRing size={12} /> Votre fil d'alertes</p>{" "}
               <p className="mt-1 text-[11px] text-white/70">Un aperçu de ce qui vous attend, en temps réel.</p>
-            </div>
+            </div>{" "}
             <div className="flex-1 overflow-y-auto p-4 space-y-2.5">
               {/* mini en-tête façon fil réel */}
               <div className="flex items-center justify-between px-1 pb-1">
                 <div className="flex items-center gap-2">
-                  <span className="flex h-8 w-8 items-center justify-center rounded-xl bg-amber-50 dark:bg-amber-500/15 text-amber-600"><BellRing size={15} /></span>
+                  <span className="flex h-8 w-8 items-center justify-center rounded-xl bg-amber-50 dark:bg-amber-500/15 text-amber-600"><BellRing size={15} /></span>{" "}
                   <span className="text-xs font-black uppercase tracking-widest text-slate-900 dark:text-white">Mes alertes</span>
-                </div>
+                </div>{" "}
                 <span className="rounded-full bg-rose-600 px-2 py-0.5 text-[10px] font-black text-white">4 nouvelles</span>
-              </div>
+              </div>{" "}
               {DEMO_NOTIFS.map((n, i) => (
                 <motion.div key={i} initial={{ opacity: 0, x: -10 }} animate={{ opacity: 1, x: 0 }} transition={{ delay: 0.05 * i }}
                   className="flex items-start gap-3 rounded-2xl border border-slate-100 dark:border-slate-800 bg-slate-50/60 dark:bg-slate-800/40 p-3.5">
                   <span className="flex h-9 w-9 shrink-0 items-center justify-center rounded-xl" style={{ backgroundColor: n.color + "22", color: n.color }}>
                     {n.kind === "vote" ? <Vote size={17} /> : n.kind === "local" ? <MapPin size={17} /> : <FileText size={17} />}
-                  </span>
+                  </span>{" "}
                   <div className="min-w-0 flex-1">
                     {n.kind === "vote" ? (
                       <p className="text-sm font-bold text-slate-900 dark:text-white">{n.who} <span style={{ color: n.color }}>{n.pos}</span></p>
                     ) : (
                       <p className="text-sm font-bold leading-snug text-slate-900 dark:text-white">{n.title}</p>
-                    )}
-                    {n.kind === "vote" ? <p className="text-xs text-slate-500 line-clamp-1">« {n.title} »</p> : null}
+                    )}{" "}
+                    {n.kind === "vote" ? <p className="text-xs text-slate-500 line-clamp-1">« {n.title} »</p> : null}{" "}
                     <div className="mt-1 flex items-center gap-2">
-                      {n.dom && <span className="rounded-full px-2 py-0.5 text-[9px] font-black uppercase tracking-wider text-white" style={{ backgroundColor: n.color }}>{n.dom}</span>}
+                      {n.dom && <span className="rounded-full px-2 py-0.5 text-[9px] font-black uppercase tracking-wider text-white" style={{ backgroundColor: n.color }}>{n.dom}</span>}{" "}
                       <span className="text-[10px] font-black uppercase tracking-widest text-muted-foreground">{n.when}</span>
                     </div>
-                  </div>
-                  <span className="mt-1.5 h-2 w-2 shrink-0 rounded-full bg-amber-500" />
+                  </div>{" "}
+                  <span className="mt-1.5 h-2 w-2 shrink-0 rounded-full bg-amber-500" />{" "}
                 </motion.div>
               ))}
-            </div>
+            </div>{" "}
             <div className="p-5 border-t border-slate-100 dark:border-slate-800 bg-slate-50 dark:bg-slate-800/30">
               <Link href="/dashboard" className="block text-center py-3 rounded-2xl bg-slate-900 dark:bg-white text-white dark:text-slate-900 font-bold text-sm hover:opacity-90 transition">Configurer mes alertes</Link>
             </div>
@@ -346,32 +346,32 @@ function PageOffre() {
           onFermer={() => setCommande(null)}
           onContinuer={() => { window.location.href = lienPaiementStripe(userId, commande.key, commande.cycle); }}
         />
-      )}
+      )}{" "}
       {/* ══════ HERO ══════ */}
       <section className="relative overflow-hidden bg-gradient-to-br from-slate-950 via-slate-900 to-amber-950 text-white py-28 px-4">
         <div className="absolute inset-0 opacity-20">
-          <div className="absolute top-20 left-[10%] w-72 h-72 bg-amber-500 rounded-full blur-[120px] animate-pulse" />
+          <div className="absolute top-20 left-[10%] w-72 h-72 bg-amber-500 rounded-full blur-[120px] animate-pulse" />{" "}
           <div className="absolute bottom-10 right-[15%] w-60 h-60 bg-yellow-600 rounded-full blur-[100px] animate-pulse" />
-        </div>
+        </div>{" "}
         <div className="relative z-10 max-w-4xl mx-auto text-center">
           <motion.h1 initial={{ opacity: 0, y: 40 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.8, delay: 0.15 }}
             className="mt-4 text-6xl md:text-8xl font-staatliches uppercase tracking-tight leading-[0.9] mb-6">
             <span className="text-white">La politique,</span>{" "}
             <span className="bg-gradient-to-b from-amber-200 via-amber-400 to-amber-600 bg-clip-text text-transparent drop-shadow-[0_0_15px_rgba(251,191,36,0.4)]">en premium.</span>
-          </motion.h1>
+          </motion.h1>{" "}
           <motion.p initial={{ opacity: 0, y: 30 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.7, delay: 0.3 }}
             className="text-xl md:text-2xl text-white/70 max-w-2xl mx-auto mb-10 leading-relaxed">
             Décryptages de lois illimités, suivi de vos élus et notifications personnalisées sur tout ce qui vous concerne. L&apos;essentiel, sans le bruit.
-          </motion.p>
+          </motion.p>{" "}
           <motion.button initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.6, delay: 0.45 }}
             onClick={() => SALES_OPEN ? goPremium("elite") : document.getElementById("offres")?.scrollIntoView({ behavior: "smooth" })}
             className="inline-flex items-center gap-2 rounded-2xl bg-gradient-to-r from-amber-400 to-yellow-500 px-8 py-4 text-slate-900 font-black uppercase tracking-widest text-sm shadow-[0_10px_40px_rgba(251,191,36,0.35)] hover:brightness-110 transition">
-            {SALES_OPEN ? <>Devenir Premium — dès {fmtPrice(plan.monthly)}/mois</> : <>Découvrir les formules</>} <ArrowRight size={18} />
+            {SALES_OPEN ? <>Devenir Premium — dès {fmtPrice(plan.monthly)}/mois</> : <>Découvrir les formules</>} {" "}<ArrowRight size={18} />
           </motion.button>
           {/* Pas de compteur d'abonnés : les chiffres affichés ici (302 et 47) étaient
               inventés, alors même que les abonnements ne sont pas ouverts. */}
         </div>
-      </section>
+      </section>{" "}
 
       {/* Les vitrines de fonctionnalités ont été retirées : chaque fonctionnalité est
           désormais listée — et cliquable — directement dans sa carte d'offre ci-dessous.
@@ -385,7 +385,7 @@ function PageOffre() {
               Deux formules, <span className="text-amber-700 dark:text-amber-400">un seul site</span>
             </h2>
             <p className="mt-3 text-slate-500 dark:text-slate-300 text-lg">Choisissez selon l&apos;usage que vous en faites.</p>
-          </FadeIn>
+          </FadeIn>{" "}
 
           {/* Mobile : les deux offres côte à côte dans un sélecteur fixe, prix compris. */}
           <div className="mx-auto mb-6 grid max-w-sm grid-cols-2 gap-1 rounded-2xl bg-slate-100 p-1 dark:bg-slate-800 md:hidden">
@@ -396,12 +396,12 @@ function PageOffre() {
                   className={`rounded-xl px-3 py-2.5 text-center transition ${actif
                     ? cle === "pro" ? "bg-gradient-to-br from-fuchsia-500 to-purple-600 text-white shadow-md" : "bg-gradient-to-br from-amber-300 to-yellow-500 text-slate-950 shadow-md"
                     : "text-slate-500 dark:text-slate-400"}`}>
-                  <span className="block font-staatliches text-xl uppercase leading-none">{nom}</span>
-                  <span className="mt-0.5 block text-[11px] font-bold opacity-80">{prix} / mois</span>
+                  <span className="block font-staatliches text-xl uppercase leading-none">{nom}</span>{" "}
+                  <span className="mt-0.5 block text-[11px] font-bold opacity-80">{prix} / mois</span>{" "}
                 </button>
               );
             })}
-          </div>
+          </div>{" "}
 
           {/*
             Mobile : les deux offres sont côte à côte dans un rail qui défile au doigt,
@@ -413,20 +413,20 @@ function PageOffre() {
             {/* ─── Premium ─── */}
             <FadeIn className={`[&>div]:h-full ${offreMobile === "elite" ? "" : "hidden md:block"}`}>
               <div className="relative flex h-full flex-col rounded-[2.5rem] border-2 border-amber-400 bg-gradient-to-b from-amber-50/60 to-white dark:from-amber-500/5 dark:to-slate-900 p-6 shadow-2xl shadow-amber-500/10 md:p-8">
-                <div className="absolute top-0 left-1/2 -translate-x-1/2 -translate-y-1/2 whitespace-nowrap bg-slate-900 text-white px-4 py-1.5 rounded-full text-[10px] font-black uppercase tracking-widest shadow-lg">Offre la plus populaire</div>
+                <div className="absolute top-0 left-1/2 -translate-x-1/2 -translate-y-1/2 whitespace-nowrap bg-slate-900 text-white px-4 py-1.5 rounded-full text-[10px] font-black uppercase tracking-widest shadow-lg">Offre la plus populaire</div>{" "}
 
-                <p className="text-[10px] font-black uppercase tracking-widest text-amber-700 dark:text-amber-400">{PLANS.elite.audience}</p>
-                <h3 className="mt-1 font-staatliches text-4xl uppercase tracking-tight text-slate-900 dark:text-white">{PLANS.elite.name}</h3>
-                <p className="mt-1 text-sm text-slate-500">{PLANS.elite.tagline}</p>
+                <p className="text-[10px] font-black uppercase tracking-widest text-amber-700 dark:text-amber-400">{PLANS.elite.audience}</p>{" "}
+                <h3 className="mt-1 font-staatliches text-4xl uppercase tracking-tight text-slate-900 dark:text-white">{PLANS.elite.name}</h3>{" "}
+                <p className="mt-1 text-sm text-slate-500">{PLANS.elite.tagline}</p>{" "}
 
                 {/* Formule mensuelle uniquement : aucun choix de périodicité à proposer. */}
                 <div className="mt-6 mb-8">
                   <div className="flex items-baseline gap-1">
-                    <span className="text-5xl font-black text-slate-900 dark:text-white">{fmtPrice(PLANS.elite.monthly)}</span>
+                    <span className="text-5xl font-black text-slate-900 dark:text-white">{fmtPrice(PLANS.elite.monthly)}</span>{" "}
                     <span className="text-slate-400 font-bold">/mois</span>
-                  </div>
+                  </div>{" "}
                   <p className="mt-2 text-xs font-bold italic text-slate-400">Sans engagement, résiliable à tout moment.</p>
-                </div>
+                </div>{" "}
 
                 {/* Les fonctionnalités sont listées ICI, et chacune mène à la vraie page
                     ou ouvre sa démo : on décide et on essaie au même endroit. */}
@@ -436,7 +436,7 @@ function PageOffre() {
                       <>
                         <span className="flex h-7 w-7 shrink-0 items-center justify-center rounded-lg bg-emerald-50 text-emerald-600 dark:bg-emerald-500/15">
                           <f.icon size={14} />
-                        </span>
+                        </span>{" "}
                         <span className="min-w-0 flex-1 text-[13px] font-medium leading-snug text-slate-700 dark:text-slate-200">{f.title}</span>
                         <ArrowRight size={13} className="shrink-0 text-slate-300 transition-transform group-hover/f:translate-x-0.5" />
                       </>
@@ -446,7 +446,7 @@ function PageOffre() {
                       ? <button key={f.title} onClick={() => (f.demo === "law" ? setLawOpen(true) : setNotifOpen(true))} className={cls}>{inner}</button>
                       : <Link key={f.title} href={f.href} className={cls}>{inner}</Link>;
                   })}
-                </div>
+                </div>{" "}
 
                 {SALES_OPEN ? (
                   <button onClick={() => goPremium("elite")}
@@ -459,7 +459,7 @@ function PageOffre() {
                   </div>
                 )}
               </div>
-            </FadeIn>
+            </FadeIn>{" "}
 
             {/* ─── Pro ─── */}
             <FadeIn delay={0.1} className={`[&>div]:h-full ${offreMobile === "pro" ? "" : "hidden md:block"}`}>
@@ -474,12 +474,12 @@ function PageOffre() {
                     "0 0 18px 0 rgba(217,70,239,0.25) inset",
                   ] }}
                   transition={{ duration: 3.4, repeat: Infinity, ease: "easeInOut" }}
-                />
-                <FallingParticles />
-                <div className="absolute top-0 left-1/2 -translate-x-1/2 -translate-y-1/2 whitespace-nowrap bg-gradient-to-r from-fuchsia-500 to-purple-600 text-white px-4 py-1.5 rounded-full text-[10px] font-black uppercase tracking-widest shadow-lg">Professionnels</div>
+                />{" "}
+                <FallingParticles />{" "}
+                <div className="absolute top-0 left-1/2 -translate-x-1/2 -translate-y-1/2 whitespace-nowrap bg-gradient-to-r from-fuchsia-500 to-purple-600 text-white px-4 py-1.5 rounded-full text-[10px] font-black uppercase tracking-widest shadow-lg">Professionnels</div>{" "}
 
-                <h3 className="mt-1 font-staatliches text-4xl uppercase tracking-tight">{PLANS.pro.name}</h3>
-                <p className="mt-1 text-sm text-white/60">{PLANS.pro.tagline}</p>
+                <h3 className="mt-1 font-staatliches text-4xl uppercase tracking-tight">{PLANS.pro.name}</h3>{" "}
+                <p className="mt-1 text-sm text-white/60">{PLANS.pro.tagline}</p>{" "}
 
                 {/* Le Pro est la seule formule à proposer l'annuel : la bascule vit donc ici. */}
                 <div className="mt-5 inline-flex items-center gap-3 rounded-full bg-white/10 p-1 pr-3">
@@ -487,41 +487,41 @@ function PageOffre() {
                     aria-label="Basculer entre facturation mensuelle et annuelle"
                     className="relative h-7 w-12 rounded-full bg-slate-950/60 p-1">
                     <motion.div animate={{ x: billingCycle === "monthly" ? 0 : 20 }} className="h-5 w-5 rounded-full bg-fuchsia-400 shadow-lg" />
-                  </button>
+                  </button>{" "}
                   <span className="text-[11px] font-black uppercase tracking-widest">
                     {billingCycle === "monthly"
                       ? <span className="text-white/50">Passer à l&apos;annuel <span className="ml-1 rounded-full bg-emerald-700 px-1.5 py-0.5 text-white">-20%</span></span>
                       : <span className="text-emerald-700 dark:text-emerald-400">Facturation annuelle</span>}
                   </span>
-                </div>
+                </div>{" "}
 
                 <div className="mt-4 mb-8">
                   <div className="flex items-baseline gap-1">
-                    <span className="text-5xl font-black">{fmtPrice(billingCycle === "monthly" ? PLANS.pro.monthly : PLANS.pro.annually)}</span>
+                    <span className="text-5xl font-black">{fmtPrice(billingCycle === "monthly" ? PLANS.pro.monthly : PLANS.pro.annually)}</span>{" "}
                     <span className="text-white/40 font-bold">/{billingCycle === "monthly" ? "mois" : "an"}</span>
-                  </div>
+                  </div>{" "}
                   {billingCycle === "annually" && <p className="mt-2 text-xs font-bold italic text-emerald-400">Soit {fmtPrice(PLANS.pro.annually / 12)}/mois — deux mois offerts</p>}
-                </div>
+                </div>{" "}
 
                 {/* Même principe côté Pro : tout le Premium, puis les outils de veille, cliquables. */}
                 <div className="mb-8 flex-1 space-y-1">
                   <div className="-mx-2 flex items-center gap-2.5 rounded-xl px-2 py-1.5">
                     <span className="flex h-7 w-7 shrink-0 items-center justify-center rounded-lg bg-amber-400/20 text-amber-300">
                       <Sparkles size={14} />
-                    </span>
+                    </span>{" "}
                     <span className="text-[13px] font-bold text-white">Tous les avantages premium</span>
-                  </div>
+                  </div>{" "}
                   {PRO_FEATURES.map(f => (
                     <Link key={f.title} href={f.href}
                       className="group/f -mx-2 flex w-[calc(100%+1rem)] items-center gap-2.5 rounded-xl px-2 py-1.5 transition hover:bg-white/10">
                       <span className="flex h-7 w-7 shrink-0 items-center justify-center rounded-lg bg-fuchsia-500/20 text-fuchsia-300">
                         <f.icon size={14} />
-                      </span>
-                      <span className="min-w-0 flex-1 text-[13px] font-medium leading-snug text-white/90">{f.title}</span>
-                      <ArrowRight size={13} className="shrink-0 text-white/30 transition-transform group-hover/f:translate-x-0.5" />
+                      </span>{" "}
+                      <span className="min-w-0 flex-1 text-[13px] font-medium leading-snug text-white/90">{f.title}</span>{" "}
+                      <ArrowRight size={13} className="shrink-0 text-white/30 transition-transform group-hover/f:translate-x-0.5" />{" "}
                     </Link>
                   ))}
-                </div>
+                </div>{" "}
 
                 {SALES_OPEN ? (
                   <button onClick={() => goPremium("pro")}
@@ -535,13 +535,13 @@ function PageOffre() {
                 )}
               </div>
             </FadeIn>
-          </div>
+          </div>{" "}
 
           <p className="text-center text-[10px] text-muted-foreground font-bold uppercase tracking-widest mt-6 md:mt-8">
             {SALES_OPEN ? "Sécurisé par Stripe • Résiliable à tout moment" : "Ouverture des abonnements très prochainement"}
           </p>
         </div>
-      </section>
+      </section>{" "}
 
       {/* Section « témoignages » retirée : les trois avis (Camille D., Marc T., Sophie L.)
           étaient inventés. De faux avis présentés comme réels sont une pratique commerciale

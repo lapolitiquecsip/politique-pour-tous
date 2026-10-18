@@ -66,14 +66,14 @@ export default function EuFranceDecisionsFeed() {
         <div>
           <h2 className="text-3xl font-staatliches uppercase tracking-tight text-white md:text-4xl">
             Décisions & lois de l'UE <span className="text-yellow-400">concernant la France</span>
-          </h2>
+          </h2>{" "}
           <p className="mt-1 text-blue-200/70">Arrêts de la Cour de justice visant la France, décisions de la Commission et du Conseil, et directives &amp; règlements européens qui s'appliquent en France — depuis les bases officielles EUR-Lex.</p>
-        </div>
+        </div>{" "}
         <span className="mt-1 flex shrink-0 items-center gap-2 rounded-full border border-white/15 bg-white/5 px-4 py-2 text-[11px] font-black uppercase tracking-widest text-yellow-300">
-          {open ? "Fermer" : `Voir les ${items.length}`}
+          {open ? "Fermer" : `Voir les ${items.length}`}{" "}
           <ChevronDown size={16} className={`transition-transform ${open ? "rotate-180" : ""}`} />
         </span>
-      </button>
+      </button>{" "}
 
       {!open ? null : items.length === 0 ? (
         <div className="mt-6 rounded-3xl border border-white/10 bg-white/5 p-8 text-center text-blue-200/70">
@@ -86,30 +86,30 @@ export default function EuFranceDecisionsFeed() {
             {[["Tout", items.length] as [string, number], ...cats].map(([c, n]) => (
               <button key={c} onClick={() => { setFilter(c); setLimit(20); }}
                 className={`rounded-full border px-3.5 py-1.5 text-[11px] font-black uppercase tracking-wider transition ${filter === c ? "border-yellow-400 bg-yellow-400 text-blue-950" : "border-white/15 bg-white/5 text-blue-100 hover:border-yellow-400/40"}`}>
-                {c} <span className="opacity-80">{n}</span>
+                {c} <span className="opacity-80">{n}</span>{" "}
               </button>
             ))}
-          </div>
+          </div>{" "}
 
           <div className="space-y-3">
             {visible.map(d => (
               <a key={d.id} href={d.url} target="_blank" rel="noopener noreferrer"
                 className="group flex flex-col gap-2 rounded-3xl border border-white/10 bg-white/[0.04] p-5 transition hover:border-yellow-400/40 hover:bg-white/[0.07] sm:flex-row sm:items-start sm:gap-5">
                 <div className="flex shrink-0 items-center gap-2 sm:w-44 sm:flex-col sm:items-start">
-                  <span className="text-xs font-black uppercase tracking-widest text-yellow-400/90">{frDate(d.published_at)}</span>
-                  {d.category && <span className={`rounded-full border px-2.5 py-0.5 text-[10px] font-black uppercase tracking-wider ${catColor(d.category)}`}>{d.category}</span>}
+                  <span className="text-xs font-black uppercase tracking-widest text-yellow-400/90">{frDate(d.published_at)}</span>{" "}
+                  {d.category && <span className={`rounded-full border px-2.5 py-0.5 text-[10px] font-black uppercase tracking-wider ${catColor(d.category)}`}>{d.category}</span>}{" "}
                   {APPLIES_FR.has(d.category) && <span className="text-[9px] font-black uppercase tracking-wider text-blue-300/60">s'applique en France</span>}
-                </div>
+                </div>{" "}
                 <div className="min-w-0 flex-1">
-                  <h3 className="text-base font-bold leading-snug text-white transition-colors group-hover:text-yellow-300">{d.title}</h3>
-                  {d.summary && <p className="mt-1 line-clamp-2 text-sm leading-relaxed text-blue-100/70">{d.summary}</p>}
+                  <h3 className="text-base font-bold leading-snug text-white transition-colors group-hover:text-yellow-300">{d.title}</h3>{" "}
+                  {d.summary && <p className="mt-1 line-clamp-2 text-sm leading-relaxed text-blue-100/70">{d.summary}</p>}{" "}
                   <span className="mt-2 inline-flex items-center gap-1.5 text-[11px] font-black uppercase tracking-widest text-blue-300/70">
-                    <Landmark size={12} /> {d.institution} <ExternalLink size={11} className="ml-1" />
+                    <Landmark size={12} /> {d.institution} {" "}<ExternalLink size={11} className="ml-1" />
                   </span>
-                </div>
+                </div>{" "}
               </a>
             ))}
-          </div>
+          </div>{" "}
 
           {limit < totalFiltered && (
             <div className="mt-6 text-center">

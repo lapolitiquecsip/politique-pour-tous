@@ -385,16 +385,16 @@ function CollapsibleSection({ title, subtitle, icon, color = "from-amber-500 to-
         aria-expanded={open}
       >
         <div className="flex items-center gap-4">
-          {icon && <span className={`flex h-12 w-12 shrink-0 items-center justify-center rounded-2xl bg-gradient-to-br ${color} text-white shadow-md`}>{icon}</span>}
+          {icon && <span className={`flex h-12 w-12 shrink-0 items-center justify-center rounded-2xl bg-gradient-to-br ${color} text-white shadow-md`}>{icon}</span>}{" "}
           <div>
-            <h2 className="text-2xl font-staatliches uppercase tracking-tight text-foreground">{title}</h2>
+            <h2 className="text-2xl font-staatliches uppercase tracking-tight text-foreground">{title}</h2>{" "}
             {subtitle && <p className="mt-0.5 text-sm text-muted-foreground">{subtitle}</p>}
           </div>
-        </div>
+        </div>{" "}
         <span className={`flex h-9 w-9 shrink-0 items-center justify-center rounded-full bg-slate-100 dark:bg-slate-500/10 text-muted-foreground transition-transform ${open ? "rotate-180" : ""}`}>
           <ChevronDown size={18} />
         </span>
-      </button>
+      </button>{" "}
       <motion.div initial={false} animate={{ height: open ? "auto" : 0, opacity: open ? 1 : 0 }} transition={{ duration: 0.25, ease: "circOut" }} className="overflow-hidden">
         <div className="border-t border-border p-5 md:p-6">{children}</div>
       </motion.div>
@@ -500,9 +500,9 @@ export default function ExecutifPage() {
       {/* 1. HERO SECTION (POSTER IMPACT STYLE) */}
       <section className="relative pt-32 pb-24 px-4 overflow-hidden bg-card">
         <div className="absolute top-0 left-0 w-full h-full opacity-[0.03] pointer-events-none select-none">
-          <span className="absolute top-10 left-10 text-[15rem] font-staatliches leading-none rotate-12">GOUVERNEMENT</span>
+          <span className="absolute top-10 left-10 text-[15rem] font-staatliches leading-none rotate-12">GOUVERNEMENT</span>{" "}
           <span className="absolute bottom-10 right-10 text-[15rem] font-staatliches leading-none -rotate-12">EXÉCUTIF</span>
-        </div>
+        </div>{" "}
 
         <div className="container mx-auto max-w-6xl relative z-10 text-center">
           <motion.div
@@ -512,32 +512,32 @@ export default function ExecutifPage() {
           >
             <div className="flex items-center gap-3 mb-2">
               <span className="relative flex h-3 w-3">
-                <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-amber-400 opacity-75"></span>
+                <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-amber-400 opacity-75"></span>{" "}
                 <span className="relative inline-flex rounded-full h-3 w-3 bg-orange-500"></span>
-              </span>
+              </span>{" "}
               <span className="text-xs font-black uppercase tracking-widest text-orange-700 dark:text-orange-400">Pouvoir Exécutif</span>
-            </div>
+            </div>{" "}
 
             <h1 className="text-6xl md:text-8xl font-staatliches uppercase tracking-tighter leading-none mb-8 text-foreground">
               Le <span className="bg-gradient-to-r from-amber-500 via-orange-500 to-yellow-500 bg-clip-text text-transparent">Gouvernement</span>
-            </h1>
+            </h1>{" "}
             
             <p className="text-xl md:text-2xl text-muted-foreground font-medium italic leading-relaxed max-w-3xl mx-auto">
               <GlossaryText>
                 Comprendre l'action ministérielle, les budgets alloués et les décisions réglementaires qui façonnent la France au quotidien.
               </GlossaryText>
-            </p>
+            </p>{" "}
 
             <div className="h-1.5 w-32 bg-gradient-to-r from-amber-500 to-orange-600 mt-8 rounded-full" />
           </motion.div>
         </div>
-      </section>
+      </section>{" "}
 
       <div className="container mx-auto max-w-7xl px-4 mt-12">
         {/* À LA UNE — le projet de budget de l'année en cours d'examen */}
         <div className="mb-8">
           <PlfALaUne />
-        </div>
+        </div>{" "}
         <div className="grid grid-cols-1 lg:grid-cols-12 gap-8">
           
           {/* MAIN CONTENT AREA */}
@@ -575,7 +575,7 @@ export default function ExecutifPage() {
                     onChange={(e) => setSearch(e.target.value)}
                     className="w-full pl-10 pr-4 py-3 rounded-2xl bg-card border border-border focus:ring-2 focus:ring-blue-500 outline-none transition-all shadow-sm text-sm text-foreground"
                   />
-                </div>
+                </div>{" "}
                 <MinisterStagger items={filteredMinisters} />
               </div>
             </CollapsibleSection>
@@ -596,18 +596,18 @@ export default function ExecutifPage() {
                         alt={pm.name}
                         className="w-full h-full object-cover object-top"
                       />
-                    </div>
+                    </div>{" "}
                     <div className="min-w-0">
-                      <p className="font-bold text-foreground group-hover:text-amber-600 transition-colors truncate">{pm.name}</p>
+                      <p className="font-bold text-foreground group-hover:text-amber-600 transition-colors truncate">{pm.name}</p>{" "}
                       <p className="text-[11px] font-bold text-muted-foreground">{pm.period}</p>
-                    </div>
-                    <ChevronRight size={16} className="ml-auto text-slate-300 group-hover:text-amber-500 transition-colors" />
+                    </div>{" "}
+                    <ChevronRight size={16} className="ml-auto text-slate-300 group-hover:text-amber-500 transition-colors" />{" "}
                   </Link>
                 ))}
               </div>
             </CollapsibleSection>
 
-          </div>
+          </div>{" "}
 
           {/* SIDEBAR - BUDGETS & DECREES */}
           <div className="lg:col-span-4 space-y-8">
@@ -615,23 +615,23 @@ export default function ExecutifPage() {
             {/* CALENDAR CTA - CONTEXTUAL ACCESS */}
             <Link href="/calendrier" className="group block">
               <div className="bg-gradient-to-br from-amber-500 to-orange-600 p-8 rounded-[2.5rem] text-white shadow-xl shadow-amber-500/20 relative overflow-hidden transition-all duration-500 hover:scale-[1.02] active:scale-[0.98]">
-                <CalendarDays className="absolute -bottom-6 -right-6 w-32 h-32 text-white/10 -rotate-12 group-hover:rotate-0 transition-transform duration-700" />
+                <CalendarDays className="absolute -bottom-6 -right-6 w-32 h-32 text-white/10 -rotate-12 group-hover:rotate-0 transition-transform duration-700" />{" "}
                 <div className="relative z-10 space-y-4">
                    <div className="w-10 h-10 bg-white/20 rounded-xl flex items-center justify-center backdrop-blur-md">
                      <CalendarDays size={20} />
-                   </div>
+                   </div>{" "}
                    <h3 className="text-2xl font-staatliches uppercase tracking-tight leading-none">
                      Agenda du <br /> Gouvernement
-                   </h3>
+                   </h3>{" "}
                    <p className="text-amber-50 text-xs font-medium leading-relaxed opacity-80">
                      Suivez les déplacements, conseils des ministres et auditions en direct.
-                   </p>
+                   </p>{" "}
                    <div className="flex items-center gap-2 text-[10px] font-black uppercase tracking-widest pt-2">
                      Ouvrir le calendrier <ArrowRight size={14} className="group-hover:translate-x-2 transition-transform" />
                    </div>
                 </div>
               </div>
-            </Link>
+            </Link>{" "}
 
             {/* BUDGET CARD */}
             <motion.div 
@@ -641,13 +641,13 @@ export default function ExecutifPage() {
             >
               <div className="flex items-center justify-between mb-8">
                 <div className="space-y-1">
-                  <h3 className="text-xl font-bold text-foreground">Budgets de l'État</h3>
+                  <h3 className="text-xl font-bold text-foreground">Budgets de l'État</h3>{" "}
                   <p className="text-[10px] text-muted-foreground font-black uppercase tracking-widest">PLF 2026 · missions (officiel)</p>
-                </div>
+                </div>{" "}
                 <div className="w-12 h-12 bg-emerald-50 dark:bg-emerald-500/10 text-emerald-600 dark:text-emerald-300 rounded-2xl flex items-center justify-center">
                   <CircleDollarSign size={24} />
                 </div>
-              </div>
+              </div>{" "}
 
               {/* Hover Explanation Box - Moved to top */}
               <div className="mb-8 min-h-[90px] flex items-center justify-center bg-muted rounded-3xl p-4 border border-border">
@@ -657,7 +657,7 @@ export default function ExecutifPage() {
                     animate={{ opacity: 1, scale: 1 }}
                     className="w-full"
                   >
-                    <p className="text-[9px] font-black text-blue-700 dark:text-blue-400 uppercase tracking-widest mb-1">Détails de la mission</p>
+                    <p className="text-[9px] font-black text-blue-700 dark:text-blue-400 uppercase tracking-widest mb-1">Détails de la mission</p>{" "}
                     <p className="text-[11px] text-muted-foreground leading-relaxed italic font-medium">
                       {hoveredBudget.desc}
                     </p>
@@ -669,7 +669,7 @@ export default function ExecutifPage() {
                     </p>
                   </div>
                 )}
-              </div>
+              </div>{" "}
 
               <div className="relative">
                 <div className="space-y-6 max-h-[420px] overflow-y-auto pr-4 custom-scrollbar scroll-smooth">
@@ -681,9 +681,9 @@ export default function ExecutifPage() {
                       onMouseLeave={() => setHoveredBudget(null)}
                     >
                       <div className="flex justify-between items-end">
-                        <span className="text-[11px] font-bold text-muted-foreground leading-tight pr-4">{item.label}</span>
+                        <span className="text-[11px] font-bold text-muted-foreground leading-tight pr-4">{item.label}</span>{" "}
                         <span className="text-xs font-black text-foreground whitespace-nowrap">{item.amount} Md€</span>
-                      </div>
+                      </div>{" "}
                       
                       <div className="h-2 bg-slate-100 dark:bg-slate-500/10 rounded-full overflow-hidden">
                         <motion.div 
@@ -692,17 +692,17 @@ export default function ExecutifPage() {
                           transition={{ duration: 1.5, delay: 0.1 }}
                           className={`h-full ${item.color} rounded-full`}
                         />
-                      </div>
+                      </div>{" "}
                     </div>
                   ))}
-                </div>
+                </div>{" "}
                 
                 {/* Scroll Indicator */}
                 <div className="absolute -bottom-4 left-1/2 -translate-x-1/2 flex flex-col items-center gap-1 opacity-50 animate-bounce pointer-events-none">
-                   <span className="text-[8px] font-black uppercase text-slate-400">Scrollez pour voir plus</span>
+                   <span className="text-[8px] font-black uppercase text-slate-400">Scrollez pour voir plus</span>{" "}
                    <ChevronDown size={12} className="text-muted-foreground" />
                 </div>
-              </div>
+              </div>{" "}
 
               <div className="flex justify-center mt-8 w-full">
                 <AwardBadge 
@@ -710,7 +710,7 @@ export default function ExecutifPage() {
                   className="w-full"
                 />
               </div>
-            </motion.div>
+            </motion.div>{" "}
 
             {/* DECREES CARD - SIMPLE LIST */}
             <motion.div 
@@ -719,18 +719,18 @@ export default function ExecutifPage() {
               transition={{ delay: 0.2 }}
               className="bg-slate-900 p-8 rounded-[2.5rem] text-white shadow-2xl shadow-slate-900/40 relative overflow-hidden"
             >
-              <ScrollText className="absolute -bottom-10 -right-10 w-48 h-48 text-white/5 -rotate-12" />
+              <ScrollText className="absolute -bottom-10 -right-10 w-48 h-48 text-white/5 -rotate-12" />{" "}
               
               <div className="relative z-10">
                 <div className="flex items-center justify-between mb-8">
                   <div className="space-y-1">
-                    <h3 className="text-xl font-bold">Derniers Décrets</h3>
+                    <h3 className="text-xl font-bold">Derniers Décrets</h3>{" "}
                     <p className="text-[10px] text-white/40 font-black uppercase tracking-widest">Journal Officiel</p>
-                  </div>
+                  </div>{" "}
                   <div className="w-10 h-10 bg-white/10 rounded-xl flex items-center justify-center">
                     <ScrollText size={20} />
                   </div>
-                </div>
+                </div>{" "}
 
                 <div className="space-y-3">
                   {decrees.length === 0 ? (
@@ -742,15 +742,15 @@ export default function ExecutifPage() {
                       className="w-full text-left p-4 rounded-2xl bg-white/5 border border-white/10 hover:bg-white/10 transition-colors cursor-pointer group flex flex-col gap-1"
                     >
                       <div className="flex justify-between items-center">
-                        <span className="text-[8px] font-black uppercase tracking-widest text-blue-400">{decree.decree_type}</span>
+                        <span className="text-[8px] font-black uppercase tracking-widest text-blue-400">{decree.decree_type}</span>{" "}
                         <span className="text-[8px] text-white/40 font-bold">
                           Publié au JO le {new Date(decree.date_publi).toLocaleDateString('fr-FR', { day: 'numeric', month: 'long', year: 'numeric' })}
                         </span>
-                      </div>
-                      <h4 className="text-xs font-bold leading-snug group-hover:text-blue-300 transition-colors line-clamp-2">{decree.display_title || decree.title}</h4>
+                      </div>{" "}
+                      <h4 className="text-xs font-bold leading-snug group-hover:text-blue-300 transition-colors line-clamp-2">{decree.display_title || decree.title}</h4>{" "}
                     </button>
                   ))}
-                </div>
+                </div>{" "}
 
                 <a 
                   href="https://www.legifrance.gouv.fr/jorf/jo"
@@ -765,7 +765,7 @@ export default function ExecutifPage() {
 
           </div>
         </div>
-      </div>
+      </div>{" "}
 
       {/* Modale décret : résumé + source officielle */}
       {openDecree && (
@@ -773,21 +773,21 @@ export default function ExecutifPage() {
           <div className="w-full max-w-lg rounded-3xl bg-card p-7 shadow-2xl" onClick={e => e.stopPropagation()}>
             <div className="flex items-start justify-between gap-4">
               <div>
-                <span className="text-[9px] font-black uppercase tracking-widest text-blue-700 dark:text-blue-400">{openDecree.decree_type}</span>
+                <span className="text-[9px] font-black uppercase tracking-widest text-blue-700 dark:text-blue-400">{openDecree.decree_type}</span>{" "}
                 <p className="mt-1 text-[10px] font-bold uppercase tracking-widest text-slate-400">
                   Publié au JO le {new Date(openDecree.date_publi).toLocaleDateString('fr-FR', { day: 'numeric', month: 'long', year: 'numeric' })}
                 </p>
-              </div>
+              </div>{" "}
               <button onClick={() => setOpenDecree(null)} className="rounded-full bg-slate-100 dark:bg-slate-500/10 p-2 text-muted-foreground hover:bg-slate-200"><X size={18} /></button>
-            </div>
-            <h3 className="mt-3 text-lg font-bold leading-snug text-foreground">{openDecree.display_title || openDecree.title}</h3>
-            {openDecree.display_title && <p className="mt-1 text-[11px] leading-snug text-slate-400">{openDecree.title}</p>}
+            </div>{" "}
+            <h3 className="mt-3 text-lg font-bold leading-snug text-foreground">{openDecree.display_title || openDecree.title}</h3>{" "}
+            {openDecree.display_title && <p className="mt-1 text-[11px] leading-snug text-slate-400">{openDecree.title}</p>}{" "}
             <div className="mt-4 rounded-2xl bg-muted p-4">
-              <p className="text-[9px] font-black uppercase tracking-widest text-muted-foreground mb-1">Ce que ça implique</p>
+              <p className="text-[9px] font-black uppercase tracking-widest text-muted-foreground mb-1">Ce que ça implique</p>{" "}
               <p className="text-sm leading-relaxed text-slate-700 dark:text-slate-200">
                 {openDecree.summary || "Résumé en cours de génération — consultez le texte officiel pour le détail."}
               </p>
-            </div>
+            </div>{" "}
             <a href={openDecree.source_url} target="_blank" rel="noopener noreferrer"
               className="mt-5 inline-flex items-center gap-2 rounded-xl bg-slate-900 px-5 py-3 text-xs font-black uppercase tracking-widest text-white transition hover:bg-slate-700">
               Lire le texte officiel <ArrowRight size={14} />

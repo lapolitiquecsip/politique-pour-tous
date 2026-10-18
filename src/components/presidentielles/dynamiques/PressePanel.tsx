@@ -56,7 +56,7 @@ export default function PressePanel({ candidats }: { candidats: Candidat[] }) {
     <div className="inline-flex rounded-full border border-border bg-card p-1 shadow-sm">
       {([[7, "7 jours"], [30, "30 jours"]] as const).map(([v, l]) => (
         <button key={v} onClick={() => setJours(v)}
-          className={`rounded-full px-4 py-1.5 text-[10px] font-black uppercase tracking-widest transition ${jours === v ? "bg-slate-900 text-white dark:bg-white dark:text-slate-900" : "text-muted-foreground hover:text-foreground"}`}>{l}</button>
+          className={`rounded-full px-4 py-1.5 text-[10px] font-black uppercase tracking-widest transition ${jours === v ? "bg-slate-900 text-white dark:bg-white dark:text-slate-900" : "text-muted-foreground hover:text-foreground"}`}>{l}{" "}</button>
       ))}
     </div>
   );
@@ -76,7 +76,7 @@ export default function PressePanel({ candidats }: { candidats: Candidat[] }) {
         <ZonePro titre="La veille presse" points={["Part de voix de chaque candidat", "Évolution jour par jour", "Qui parle de qui, média par média"]}>
           {!comparable && (
             <p className="mb-4 flex items-start gap-2 rounded-2xl bg-amber-500/10 px-4 py-3 text-[12px] text-amber-900 dark:text-amber-200">
-              <Info size={14} className="mt-0.5 shrink-0" />
+              <Info size={14} className="mt-0.5 shrink-0" />{" "}
               Mesure démarrée le {new Date(depuis).toLocaleDateString("fr-FR", { day: "numeric", month: "long" })} : la période couvre pour l&apos;instant {joursMesures} jour{joursMesures > 1 ? "s" : ""}.
               Les évolutions apparaîtront quand la période précédente sera entièrement mesurée.
             </p>
@@ -85,25 +85,25 @@ export default function PressePanel({ candidats }: { candidats: Candidat[] }) {
           {/* Chiffres clés */}
           <div className="mb-5 grid gap-3 sm:grid-cols-3">
             <div className="rounded-[1.75rem] border border-border bg-card p-5">
-              <p className="text-[10px] font-black uppercase tracking-[0.2em] text-muted-foreground">Articles</p>
-              <p className="mt-2 font-staatliches text-5xl leading-none tabular-nums text-foreground">{d.articles.toLocaleString("fr-FR")}</p>
+              <p className="text-[10px] font-black uppercase tracking-[0.2em] text-muted-foreground">Articles</p>{" "}
+              <p className="mt-2 font-staatliches text-5xl leading-none tabular-nums text-foreground">{d.articles.toLocaleString("fr-FR")}</p>{" "}
               <p className="mt-1 text-xs text-muted-foreground">citent au moins un candidat</p>
-            </div>
+            </div>{" "}
             <div className="rounded-[1.75rem] border border-border bg-card p-5">
-              <p className="text-[10px] font-black uppercase tracking-[0.2em] text-muted-foreground">Médias</p>
-              <p className="mt-2 font-staatliches text-5xl leading-none tabular-nums text-foreground">{d.medias}<span className="text-2xl text-muted-foreground">/{PANEL}</span></p>
+              <p className="text-[10px] font-black uppercase tracking-[0.2em] text-muted-foreground">Médias</p>{" "}
+              <p className="mt-2 font-staatliches text-5xl leading-none tabular-nums text-foreground">{d.medias}<span className="text-2xl text-muted-foreground">/{PANEL}</span></p>{" "}
               <p className="mt-1 text-xs text-muted-foreground">ont parlé des candidats</p>
-            </div>
+            </div>{" "}
             <div className="relative overflow-hidden rounded-[1.75rem] border border-border bg-card p-5">
-              <div aria-hidden className="absolute -right-10 -top-10 h-32 w-32 rounded-full opacity-20 blur-2xl" style={{ background: couleur(premier.slug) }} />
-              <p className="text-[10px] font-black uppercase tracking-[0.2em] text-muted-foreground">Le plus cité</p>
+              <div aria-hidden className="absolute -right-10 -top-10 h-32 w-32 rounded-full opacity-20 blur-2xl" style={{ background: couleur(premier.slug) }} />{" "}
+              <p className="text-[10px] font-black uppercase tracking-[0.2em] text-muted-foreground">Le plus cité</p>{" "}
               <div className="mt-2 flex items-center gap-3">
                 {parSlug.get(premier.slug)?.photo_url && (
                   // eslint-disable-next-line @next/next/no-img-element
                   <img src={vignette(parSlug.get(premier.slug)!.photo_url, 120)!} alt="" className="h-11 w-11 rounded-full object-cover object-top" style={{ boxShadow: `0 0 0 2px ${couleur(premier.slug)}` }} />
-                )}
+                )}{" "}
                 <p className="font-staatliches text-3xl uppercase leading-none text-foreground">{court(nom(premier.slug))}</p>
-              </div>
+              </div>{" "}
               <p className="mt-1 text-xs text-muted-foreground">{Math.round((premier.n / totalMentions) * 100)} % des citations</p>
             </div>
           </div>
@@ -111,37 +111,37 @@ export default function PressePanel({ candidats }: { candidats: Candidat[] }) {
           <div className="grid gap-5 lg:grid-cols-5">
             {/* Part de voix */}
             <div className="rounded-[2rem] border border-border bg-card p-5 md:p-6 lg:col-span-2">
-              <h3 className="text-[11px] font-black uppercase tracking-[0.2em] text-foreground">Part de voix</h3>
-              <p className="mb-5 text-xs text-muted-foreground">Part des citations de candidats qui revient à chacun.</p>
+              <h3 className="text-[11px] font-black uppercase tracking-[0.2em] text-foreground">Part de voix</h3>{" "}
+              <p className="mb-5 text-xs text-muted-foreground">Part des citations de candidats qui revient à chacun.</p>{" "}
               <div className="space-y-3.5">
                 {d.totaux.slice(0, 12).map(x => {
                   const part = (x.n / totalMentions) * 100; const evol = comparable && x.n_prec ? ((x.n - x.n_prec) / x.n_prec) * 100 : null;
                   return (
                     <div key={x.slug} onMouseEnter={() => setFocus(x.slug)} onMouseLeave={() => setFocus(null)}>
                       <div className="flex items-baseline justify-between gap-2">
-                        <span className="truncate text-sm font-bold text-foreground">{nom(x.slug)}</span>
+                        <span className="truncate text-sm font-bold text-foreground">{nom(x.slug)}</span>{" "}
                         <span className="shrink-0 font-staatliches text-xl leading-none tabular-nums text-foreground">{Math.round(part)} %</span>
-                      </div>
+                      </div>{" "}
                       <div className="mt-1.5 h-1.5 overflow-hidden rounded-full bg-slate-100 dark:bg-slate-800">
                         <div className="h-full rounded-full" style={{ width: `${(x.n / d.totaux[0].n) * 100}%`, background: couleur(x.slug) }} />
-                      </div>
+                      </div>{" "}
                       <div className="mt-1 flex justify-between text-[10px] text-muted-foreground">
-                        <span>{x.n} article{x.n > 1 ? "s" : ""} · {x.nb_medias} média{x.nb_medias > 1 ? "s" : ""}</span>
-                        {evol != null && <span className={`inline-flex items-center gap-0.5 font-black ${evol >= 0 ? "text-emerald-700 dark:text-emerald-400" : "text-rose-700 dark:text-rose-400"}`}>{evol >= 0 ? <TrendingUp size={11} /> : <TrendingDown size={11} />}{evol >= 0 ? "+" : ""}{Math.round(evol)} %</span>}
-                      </div>
+                        <span>{x.n} article{x.n > 1 ? "s" : ""} · {x.nb_medias} média{x.nb_medias > 1 ? "s" : ""}</span>{" "}
+                        {evol != null && <span className={`inline-flex items-center gap-0.5 font-black ${evol >= 0 ? "text-emerald-700 dark:text-emerald-400" : "text-rose-700 dark:text-rose-400"}`}>{evol >= 0 ? <TrendingUp size={11} /> : <TrendingDown size={11} />}{" "}{evol >= 0 ? "+" : ""}{Math.round(evol)} %</span>}
+                      </div>{" "}
                     </div>
                   );
                 })}
               </div>
-            </div>
+            </div>{" "}
 
             {/* Jour par jour */}
             <div className="flex flex-col rounded-[2rem] border border-border bg-card p-5 md:p-6 lg:col-span-3">
-              <h3 className="text-[11px] font-black uppercase tracking-[0.2em] text-foreground">Jour par jour</h3>
-              <p className="mb-3 text-xs text-muted-foreground">Articles par jour pour les six candidats les plus cités.</p>
+              <h3 className="text-[11px] font-black uppercase tracking-[0.2em] text-foreground">Jour par jour</h3>{" "}
+              <p className="mb-3 text-xs text-muted-foreground">Articles par jour pour les six candidats les plus cités.</p>{" "}
               {joursMesures < 3
                 ? <div className="flex flex-1 flex-col items-center justify-center rounded-2xl border border-dashed border-border p-8 text-center">
-                    <p className="font-staatliches text-2xl uppercase text-foreground">La courbe se dessine</p>
+                    <p className="font-staatliches text-2xl uppercase text-foreground">La courbe se dessine</p>{" "}
                     <p className="mt-1 max-w-xs text-xs text-muted-foreground">Elle apparaît après trois jours de mesure : il faut quelques points pour qu&apos;une tendance ait un sens.</p>
                   </div>
                 : <CourbeMulti series={series} debut={Math.max(Date.now() - jours * JOUR, depuis)} fin={Date.now()} hauteur={300} unite="" decimales={0} pasJour focus={focus} onFocus={setFocus} />}
@@ -151,8 +151,8 @@ export default function PressePanel({ candidats }: { candidats: Candidat[] }) {
           {/* Médias × candidats */}
           {carte && carte.medias.length > 0 && (
             <div className="mt-5 rounded-[2rem] border border-border bg-card p-5 md:p-6">
-              <h3 className="text-[11px] font-black uppercase tracking-[0.2em] text-foreground">Qui parle de qui</h3>
-              <p className="mb-4 text-xs text-muted-foreground">Articles par média, pour les candidats les plus cités.</p>
+              <h3 className="text-[11px] font-black uppercase tracking-[0.2em] text-foreground">Qui parle de qui</h3>{" "}
+              <p className="mb-4 text-xs text-muted-foreground">Articles par média, pour les candidats les plus cités.</p>{" "}
               <div className="overflow-x-auto">
                 <table className="w-full min-w-[640px] border-separate border-spacing-1 text-center text-[11px]">
                   <thead>

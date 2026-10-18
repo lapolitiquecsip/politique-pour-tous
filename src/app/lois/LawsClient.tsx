@@ -1,7 +1,6 @@
 "use client";
 
 import { Suspense, useCallback, useEffect, useRef, useState } from "react";
-import { useSearchParams } from "next/navigation";
 import { FileText, Loader2, Search, Scale, Vote } from "lucide-react";
 import { api } from "@/lib/api";
 import {
@@ -46,8 +45,7 @@ const stageStatus = (code?: string | null): LawCardStatus =>
   : code === "filed" ? { label: "Déposé", tone: "slate" }
   : { label: stageLabel(code) || "En commission", tone: "amber" };
 
-function LawsContent() {
-  const params = useSearchParams();
+function LawsContent({ initialItems }: { initialItems?: LegislativeListItem[] }) {
   const [tab, setTab] = useState<Tab>("promulgated");
   const [category, setCategory] = useState<LegislativeCategory | null>(null);
   const [search, setSearch] = useState("");
@@ -55,8 +53,11 @@ function LawsContent() {
   const [chamber, setChamber] = useState<string | null>(null);   // AN | SENAT (côté serveur)
   const [stage, setStage] = useState<string | null>(null);       // status_code (côté serveur)
   const [textType, setTextType] = useState<string | null>(null); // proposal | bill (côté client)
-  const [items, setItems] = useState<LegislativeListItem[]>([]);
-  const [loading, setLoading] = useState(true);
+  // Les dernières lois promulguées, lues à la construction du site : affichées d'emblée
+  // (et visibles des moteurs de recherche), puis rafraîchies sans faire clignoter la liste.
+  const [items, setItems] = useState<LegislativeListItem[]>(initialItems ?? []);
+  const [loading, setLoading] = useState(!initialItems?.length);
+  const rafraichirEnSilence = useRef(!!initialItems?.length);
   const [error, setError] = useState<string | null>(null);
   const [hasMore, setHasMore] = useState(false);
   const [detail, setDetail] = useState<LegislativeDossierDetail | null>(null);
@@ -66,14 +67,19 @@ function LawsContent() {
 
   const load = useCallback(async () => {
     if (tab === "enjeux") { setLoading(false); return; }   // l'onglet Enjeux charge ses propres données
-    setLoading(true); setError(null);
+    const silencieux = rafraichirEnSilence.current;
+    rafraichirEnSilence.current = false;
+    if (!silencieux) setLoading(true);
+    setError(null);
     try {
       const rows = tab === "promulgated"
         ? await api.getPromulgatedLaws({ category, search, limit: 40 })
         : await api.getLegislativeDossiers({ category, search, chamber: chamber || undefined, status: stage || undefined, limit: 40 });
       setItems(rows); setHasMore(rows.length === 40);
     } catch (cause) {
-      console.error(cause); setError("Les données législatives sont momentanément indisponibles.");
+      console.error(cause);
+      // Rafraîchissement de la liste déjà affichée : on la garde plutôt que d'afficher une erreur.
+      if (!silencieux) setError("Les données législatives sont momentanément indisponibles.");
     } finally { setLoading(false); }
   }, [tab, category, search, chamber, stage]);
 
@@ -103,9 +109,11 @@ function LawsContent() {
   useEffect(() => {
     if (hydratedFromUrl.current) return;
     hydratedFromUrl.current = true;
-    const id = params.get("dossier");
+    // Lu directement dans l'adresse : useSearchParams obligeait à rendre toute la liste dans
+    // le navigateur seulement (rien dans le HTML construit).
+    const id = new URLSearchParams(window.location.search).get("dossier");
     if (id) void openDossier(id);
-  }, [openDossier, params]);
+  }, [openDossier]);
 
   const closeDossier = () => { setDetail(null); setDetailLoading(false); setOpenedItem(null); inscrireAdresse("/lois/"); };
 
@@ -143,54 +151,54 @@ function LawsContent() {
         {/* Onglets : sur mobile, icône AU-DESSUS d'un libellé court centré (fini le texte qui se
             replie de travers) ; sur desktop, disposition en ligne inchangée. */}
         <div className="grid grid-cols-3 gap-2 rounded-2xl bg-card p-2 shadow-sm">
-          <button onClick={() => setTab("promulgated")} className={`flex flex-col items-center justify-center gap-1.5 rounded-xl px-2 py-3 text-center text-xs font-black leading-tight transition md:flex-row md:gap-2 md:py-4 md:text-base ${tab === "promulgated" ? "bg-red-600 text-white" : "text-muted-foreground"}`}><Scale size={18} className="shrink-0" /><span>Lois promulguées</span></button>
-          <button onClick={() => setTab("ongoing")} className={`flex flex-col items-center justify-center gap-1.5 rounded-xl px-2 py-3 text-center text-xs font-black leading-tight transition md:flex-row md:gap-2 md:py-4 md:text-base ${tab === "ongoing" ? "bg-slate-950 text-white" : "text-muted-foreground"}`}><FileText size={18} className="shrink-0" /><span>Textes en cours</span></button>
-          <button onClick={() => setTab("enjeux")} className={`flex flex-col items-center justify-center gap-1.5 rounded-xl px-2 py-3 text-center text-xs font-black leading-tight transition md:flex-row md:gap-2 md:py-4 md:text-base ${tab === "enjeux" ? "bg-violet-600 text-white" : "text-muted-foreground"}`}><Vote size={18} className="shrink-0" /><span>Votes par enjeu</span></button>
-        </div>
+          <button onClick={() => setTab("promulgated")} className={`flex flex-col items-center justify-center gap-1.5 rounded-xl px-2 py-3 text-center text-xs font-black leading-tight transition md:flex-row md:gap-2 md:py-4 md:text-base ${tab === "promulgated" ? "bg-red-600 text-white" : "text-muted-foreground"}`}><Scale size={18} className="shrink-0" />{" "}<span>Lois promulguées</span></button>{" "}
+          <button onClick={() => setTab("ongoing")} className={`flex flex-col items-center justify-center gap-1.5 rounded-xl px-2 py-3 text-center text-xs font-black leading-tight transition md:flex-row md:gap-2 md:py-4 md:text-base ${tab === "ongoing" ? "bg-slate-950 text-white" : "text-muted-foreground"}`}><FileText size={18} className="shrink-0" />{" "}<span>Textes en cours</span></button>{" "}
+          <button onClick={() => setTab("enjeux")} className={`flex flex-col items-center justify-center gap-1.5 rounded-xl px-2 py-3 text-center text-xs font-black leading-tight transition md:flex-row md:gap-2 md:py-4 md:text-base ${tab === "enjeux" ? "bg-violet-600 text-white" : "text-muted-foreground"}`}><Vote size={18} className="shrink-0" />{" "}<span>Votes par enjeu</span></button>
+        </div>{" "}
         {tab !== "enjeux" && (
         <div className="flex flex-col gap-3 md:flex-row">
-          <label className="flex flex-1 items-center gap-3 rounded-xl border border-border bg-card px-4 text-muted-foreground focus-within:border-slate-400"><Search size={18} /><input value={search} onChange={event => setSearch(event.target.value)} className="w-full bg-transparent py-4 outline-none text-foreground placeholder:text-slate-400" placeholder="Rechercher un texte officiel" /></label>
+          <label className="flex flex-1 items-center gap-3 rounded-xl border border-border bg-card px-4 text-muted-foreground focus-within:border-slate-400"><Search size={18} />{" "}<input value={search} onChange={event => setSearch(event.target.value)} className="w-full bg-transparent py-4 outline-none text-foreground placeholder:text-slate-400" placeholder="Rechercher un texte officiel" /></label>{" "}
           <select value={category || ""} onChange={event => setCategory((event.target.value || null) as LegislativeCategory | null)} className="rounded-xl border border-border bg-card px-4 py-4 font-bold text-foreground outline-none"><option value="">Toutes les catégories</option>{LEGISLATIVE_CATEGORIES.map(item => <option key={item.value} value={item.value}>{item.label}</option>)}</select>
         </div>
-        )}
+        )}{" "}
 
         {/* Sous-filtres de la navette : où en est le texte, quel type, quelle étape. */}
         {tab === "ongoing" && (
           <div className="flex flex-col gap-3 border-t border-border pt-4">
             <div>
-              <p className="mb-2 text-[10px] font-black uppercase tracking-widest text-muted-foreground">Chambre saisie actuellement</p>
+              <p className="mb-2 text-[10px] font-black uppercase tracking-widest text-muted-foreground">Chambre saisie actuellement</p>{" "}
               <div className="inline-flex flex-wrap gap-2">
                 {CHAMBERS.map(c => (
-                  <button key={c.label} onClick={() => setChamber(c.value)} className={`rounded-full px-4 py-2 text-[11px] font-black uppercase tracking-wide transition ${chamber === c.value ? "bg-slate-950 text-white shadow" : "bg-card border border-border text-muted-foreground hover:border-slate-400"}`}>{c.short}</button>
+                  <button key={c.label} onClick={() => setChamber(c.value)} className={`rounded-full px-4 py-2 text-[11px] font-black uppercase tracking-wide transition ${chamber === c.value ? "bg-slate-950 text-white shadow" : "bg-card border border-border text-muted-foreground hover:border-slate-400"}`}>{c.short}{" "}</button>
                 ))}
               </div>
-            </div>
+            </div>{" "}
             <div className="flex flex-col gap-3 sm:flex-row sm:gap-8">
               <div>
-                <p className="mb-2 text-[10px] font-black uppercase tracking-widest text-muted-foreground">Type de texte</p>
+                <p className="mb-2 text-[10px] font-black uppercase tracking-widest text-muted-foreground">Type de texte</p>{" "}
                 <div className="inline-flex flex-wrap gap-2">
                   {TYPES.map(t => (
-                    <button key={t.label} onClick={() => setTextType(t.value)} className={`rounded-full px-4 py-2 text-[11px] font-black uppercase tracking-wide transition ${textType === t.value ? "bg-red-600 text-white shadow" : "bg-card border border-border text-muted-foreground hover:border-red-300"}`}>{t.label}</button>
+                    <button key={t.label} onClick={() => setTextType(t.value)} className={`rounded-full px-4 py-2 text-[11px] font-black uppercase tracking-wide transition ${textType === t.value ? "bg-red-600 text-white shadow" : "bg-card border border-border text-muted-foreground hover:border-red-300"}`}>{t.label}{" "}</button>
                   ))}
                 </div>
-              </div>
+              </div>{" "}
               <div>
-                <p className="mb-2 text-[10px] font-black uppercase tracking-widest text-muted-foreground">Étape</p>
+                <p className="mb-2 text-[10px] font-black uppercase tracking-widest text-muted-foreground">Étape</p>{" "}
                 <div className="inline-flex flex-wrap gap-2">
                   {STAGES.map(s => (
-                    <button key={s.label} onClick={() => setStage(s.value)} className={`rounded-full px-4 py-2 text-[11px] font-black uppercase tracking-wide transition ${stage === s.value ? "bg-amber-500 text-slate-950 shadow" : "bg-card border border-border text-muted-foreground hover:border-amber-300"}`}>{s.label}</button>
+                    <button key={s.label} onClick={() => setStage(s.value)} className={`rounded-full px-4 py-2 text-[11px] font-black uppercase tracking-wide transition ${stage === s.value ? "bg-amber-500 text-slate-950 shadow" : "bg-card border border-border text-muted-foreground hover:border-amber-300"}`}>{s.label}{" "}</button>
                   ))}
                 </div>
               </div>
             </div>
           </div>
         )}
-      </div>
+      </div>{" "}
 
       {tab === "enjeux" ? <IssuesVotesView /> : (<>
-      <div className="mt-10"><h2 className="text-4xl font-staatliches uppercase md:text-6xl text-foreground">{tab === "promulgated" ? "Publiées au Journal officiel" : "Dans la navette parlementaire"}</h2><p className="mt-2 text-muted-foreground">{tab === "promulgated" ? "Seule une publication JORF peut faire apparaître un texte ici." : "Suivez chaque texte : la chambre qui l'examine, son type et son étape."}</p></div>
-      {loading && <div className="flex justify-center py-24"><Loader2 className="animate-spin text-red-700 dark:text-red-400" /></div>}
-      {error && <div className="mt-8 rounded-2xl bg-red-50 dark:bg-red-500/10 p-5 font-bold text-red-800 dark:text-red-300">{error}</div>}
+      <div className="mt-10"><h2 className="text-4xl font-staatliches uppercase md:text-6xl text-foreground">{tab === "promulgated" ? "Publiées au Journal officiel" : "Dans la navette parlementaire"}</h2>{" "}<p className="mt-2 text-muted-foreground">{tab === "promulgated" ? "Seule une publication JORF peut faire apparaître un texte ici." : "Suivez chaque texte : la chambre qui l'examine, son type et son étape."}</p></div>{" "}
+      {loading && <div className="flex justify-center py-24"><Loader2 className="animate-spin text-red-700 dark:text-red-400" /></div>}{" "}
+      {error && <div className="mt-8 rounded-2xl bg-red-50 dark:bg-red-500/10 p-5 font-bold text-red-800 dark:text-red-300">{error}</div>}{" "}
       {!loading && !error && visibleItems.length > 0 && <DragScroller ariaLabel="Textes législatifs" className="mt-8 !gap-5 pb-3">{visibleItems.map(item => {
         const status: LawCardStatus | null = tab === "promulgated"
           ? { label: "Promulguée", tone: "green" }
@@ -209,18 +217,18 @@ function LawsContent() {
                 type={cardType}
               />
             </button>
-            <SaveLawButton itemId={item.id} />
+            <SaveLawButton itemId={item.id} />{" "}
           </div>
         );
       })}
       {hasMore && (
         <button type="button" onClick={loadMore} disabled={loading}
           className="flex w-40 shrink-0 flex-col items-center justify-center gap-2 rounded-[2rem] border border-dashed border-border text-[11px] font-black uppercase tracking-widest text-muted-foreground transition hover:border-slate-400 hover:text-foreground disabled:opacity-50">
-          <span className="text-2xl leading-none">+</span>
+          <span className="text-2xl leading-none">+</span>{" "}
           Textes suivants
         </button>
       )}
-      </DragScroller>}
+      </DragScroller>}{" "}
       {!loading && !error && !visibleItems.length && <div className="py-20 text-center text-muted-foreground">Aucun texte officiel ne correspond à ces filtres.</div>}
       </>)}
       <DossierModal
@@ -234,6 +242,6 @@ function LawsContent() {
   );
 }
 
-export default function LawsClient() {
-  return <Suspense fallback={<div className="flex justify-center py-24"><Loader2 className="animate-spin text-red-700 dark:text-red-400" /></div>}><LawsContent /></Suspense>;
+export default function LawsClient({ initialItems }: { initialItems?: LegislativeListItem[] }) {
+  return <Suspense fallback={<div className="flex justify-center py-24"><Loader2 className="animate-spin text-red-700 dark:text-red-400" /></div>}><LawsContent initialItems={initialItems} /></Suspense>;
 }

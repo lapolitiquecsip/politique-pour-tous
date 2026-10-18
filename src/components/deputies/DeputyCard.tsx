@@ -56,7 +56,7 @@ export const DeputyCard = memo(function DeputyCard({ deputy }: { deputy: Deputy 
       href={`/deputes/${slug}`}
       className="bg-card border border-border shadow-sm rounded-2xl p-6 flex flex-col items-center hover:shadow-lg hover:border-slate-300 transition-all text-center relative overflow-hidden group cursor-pointer"
     >
-      <div className="tricolor-band"><span></span><span></span><span></span></div>
+      <div className="tricolor-band"><span></span><span></span><span></span></div>{" "}
 
       {/* Photo ou fallback initiales */}
       {!imgError ? (
@@ -67,7 +67,7 @@ export const DeputyCard = memo(function DeputyCard({ deputy }: { deputy: Deputy 
               alt={deputy.lastName}
               onError={handleImgError}
               className="w-24 h-24 rounded-full object-cover object-top border-[3px] border-border shadow-md transform group-hover:scale-110 transition-transform duration-500"
-            />
+            />{" "}
             <div className="absolute -bottom-2 -right-2 w-8 h-8 bg-card dark:bg-slate-800 rounded-xl shadow-lg border border-border dark:border-slate-700 flex items-center justify-center text-xs font-black text-muted-foreground">
               {deputy.constituencyNumber}
             </div>
@@ -79,19 +79,19 @@ export const DeputyCard = memo(function DeputyCard({ deputy }: { deputy: Deputy 
         >
           {initials}
         </div>
-      )}
+      )}{" "}
       
       <h3 className="text-xl font-bold text-foreground mb-2 group-hover:text-blue-600 transition-colors">
         {deputy.firstName} {deputy.lastName}
-      </h3>
+      </h3>{" "}
       
       <span className={`px-3 py-1 text-xs font-semibold rounded-full text-white mb-3 ${colorClass} max-w-full truncate`}>
         {getFullPartyName(deputy.party)}
-      </span>
+      </span>{" "}
       
       <p className="text-muted-foreground text-sm">
         {deputy.department} • {deputy.constituencyNumber}ème circ.
-      </p>
+      </p>{" "}
       
       <div className="absolute top-4 right-4 text-muted-foreground opacity-0 group-hover:opacity-100 group-hover:text-blue-500 transition-all transform translate-x-2 group-hover:translate-x-0">
         <ChevronRight className="w-6 h-6" />

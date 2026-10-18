@@ -44,7 +44,7 @@ export default function Home() {
   return (
     <div className="flex flex-col min-h-screen">
       {/* 1. HERO SECTION (POSTER IMPACT) */}
-      <HomeHero />
+      <HomeHero />{" "}
 
       {/* 2. LES 3 INSTITUTIONS (POSTER IMPACT REBORN) */}
       <section id="institutions" className="scroll-mt-24 py-20 px-4 bg-background">
@@ -53,24 +53,24 @@ export default function Home() {
             <div className="relative z-10 flex flex-col md:flex-row items-center justify-center gap-4 md:gap-6">
               <span className="text-foreground dark:text-slate-100 opacity-[0.08] absolute -top-10 left-1/2 -translate-x-1/2 select-none hidden md:block whitespace-nowrap text-8xl font-staatliches tracking-widest">
                 RÉPUBLIQUE • SYSTÈME
-              </span>
+              </span>{" "}
               
               <div className="flex items-center gap-4">
                 <span className="relative flex h-4 w-4 md:h-6 md:w-6">
-                  <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-red-400 opacity-75"></span>
+                  <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-red-400 opacity-75"></span>{" "}
                   <span className="relative inline-flex rounded-full h-4 w-4 md:h-6 md:w-6 bg-red-600 shadow-[0_0_15px_rgba(220,38,38,0.5)]"></span>
-                </span>
+                </span>{" "}
                 
                 <h2 className="text-5xl md:text-7xl font-staatliches uppercase tracking-tighter leading-none inline-flex items-center">
                   <span className="bg-rose-600 text-white px-6 pt-2 pb-1 md:pt-4 md:pb-2 rounded-2xl md:rounded-3xl shadow-lg">AUJOURD'HUI</span>
                 </h2>
               </div>
-            </div>
+            </div>{" "}
             <div className="h-1.5 w-32 bg-gradient-to-r from-blue-600 to-red-600 mt-8 rounded-full mx-auto" />
-          </div>
+          </div>{" "}
           <InstitutionsGrid />
         </div>
-      </section>
+      </section>{" "}
 
       {/* LOIS PROMULGUÉES — livre feuilletable (une page = un jour + une loi). */}
       <section id="journal-officiel" className="scroll-mt-24 py-20 px-4 bg-gradient-to-b from-amber-50/40 to-transparent dark:from-slate-900/40">
@@ -82,16 +82,16 @@ export default function Home() {
               introduit par un chapeau sur le Journal officiel qui annonçait une
               rubrique absente de cette page. */}
           <div className="mb-12 text-center">
-            <p className="text-[11px] font-black uppercase tracking-[0.25em] text-red-700 dark:text-red-400">Ce que le Parlement a définitivement adopté</p>
-            <h2 className="mt-2 text-4xl md:text-6xl font-staatliches uppercase tracking-tight text-foreground dark:text-white">Dernières lois promulguées</h2>
-            <p className="mt-3 text-muted-foreground max-w-2xl mx-auto">Feuilletez les dernières lois — une page par jour et par texte. Cliquez pour voir le parcours complet de chaque loi.</p>
+            <p className="text-[11px] font-black uppercase tracking-[0.25em] text-red-700 dark:text-red-400">Ce que le Parlement a définitivement adopté</p>{" "}
+            <h2 className="mt-2 text-4xl md:text-6xl font-staatliches uppercase tracking-tight text-foreground dark:text-white">Dernières lois promulguées</h2>{" "}
+            <p className="mt-3 text-muted-foreground max-w-2xl mx-auto">Feuilletez les dernières lois — une page par jour et par texte. Cliquez pour voir le parcours complet de chaque loi.</p>{" "}
             <p className="mx-auto mt-4 max-w-md rounded-2xl bg-emerald-50 px-4 py-2.5 text-center text-sm font-bold leading-6 text-emerald-700 dark:bg-emerald-500/10 dark:text-emerald-400">
               ✅ Publiée au Journal officiel = la loi <strong>entre en vigueur</strong> et devient applicable.
             </p>
-          </div>
+          </div>{" "}
           <JournalOfficielBook />
         </div>
-      </section>
+      </section>{" "}
 
       {/* 4. FIL D'ACTUALITÉ — placé juste sous le livre des lois. */}
       <section id="actualites" className="scroll-mt-24 py-20 px-4">
@@ -100,22 +100,22 @@ export default function Home() {
             <div className="relative z-10 flex flex-col md:flex-row items-center gap-4 md:gap-6">
               <span className="text-foreground dark:text-slate-100 opacity-[0.08] absolute -top-10 left-0 select-none hidden md:block whitespace-nowrap text-8xl font-staatliches tracking-widest">
                 ACTUALITÉ • DIRECT
-              </span>
+              </span>{" "}
               
               <div className="flex items-center gap-4">
                 <span className="relative flex h-4 w-4 md:h-6 md:w-6">
-                  <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-red-400 opacity-75"></span>
+                  <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-red-400 opacity-75"></span>{" "}
                   <span className="relative inline-flex rounded-full h-4 w-4 md:h-6 md:w-6 bg-red-600 shadow-[0_0_15px_rgba(220,38,38,0.5)]"></span>
-                </span>
+                </span>{" "}
                 
                 <h2 className="text-5xl md:text-7xl font-staatliches uppercase tracking-tighter leading-none inline-flex items-center gap-2 md:gap-3 flex-wrap">
-                  <span className="text-black dark:text-white">Récemment en</span>
+                  <span className="text-black dark:text-white">Récemment en</span>{" "}
                   <span className="bg-yellow-300 text-black px-4 pt-1.5 pb-0.5 md:pt-3 md:pb-1 rounded-xl md:rounded-2xl shadow-sm">politique</span>
                 </h2>
               </div>
-            </div>
+            </div>{" "}
             <div className="h-1.5 w-32 bg-gradient-to-r from-blue-600 to-red-600 mt-8 rounded-full mx-auto md:mx-0" />
-          </div>
+          </div>{" "}
 
           {loading ? (
             <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-6">
@@ -125,8 +125,8 @@ export default function Home() {
             </div>
           ) : !latestContent || latestContent.length === 0 ? (
             <div className="bg-card text-center p-12 rounded-3xl border shadow-sm flex flex-col items-center justify-center max-w-3xl mx-auto">
-              <Landmark className="w-16 h-16 text-muted-foreground/30 mb-6" />
-              <h3 className="text-2xl font-bold mb-3">Les actualités arrivent bientôt</h3>
+              <Landmark className="w-16 h-16 text-muted-foreground/30 mb-6" />{" "}
+              <h3 className="text-2xl font-bold mb-3">Les actualités arrivent bientôt</h3>{" "}
               <p className="text-muted-foreground text-lg">
                 Nos robots sont en train de lire les textes du Parlement. 
                 Revenez dans quelques instants pour l&apos;essentiel de la journée politique.
@@ -150,14 +150,14 @@ export default function Home() {
             />
           )}
         </div>
-      </section>
+      </section>{" "}
 
       {/* 3. STATS + LE SAVIEZ-VOUS (fusionnés) — déplacé sous le fil d'actualité. */}
       <section className="py-12 px-4">
         <div className="container mx-auto max-w-6xl">
           <StatsPanel />
         </div>
-      </section>
+      </section>{" "}
 
       {/* 4.5 CALENDAR CTA SECTION (NEW) */}
       <section className="py-12 px-4 bg-slate-50/50 dark:bg-slate-950/20">
@@ -168,34 +168,34 @@ export default function Home() {
               whileTap={{ scale: 0.99 }}
               className="bg-card dark:bg-slate-900 p-8 md:p-12 rounded-[3rem] border border-border dark:border-slate-800 shadow-xl shadow-slate-200/20 dark:shadow-none flex flex-col md:flex-row items-center justify-between gap-8 group-hover:border-amber-200 dark:group-hover:border-amber-500/30 transition-all duration-500 overflow-hidden relative"
             >
-              <div className="absolute -top-12 -left-12 w-48 h-48 bg-amber-500/5 rounded-full blur-3xl" />
-              <div className="absolute -bottom-12 -right-12 w-48 h-48 bg-blue-500/5 rounded-full blur-3xl" />
+              <div className="absolute -top-12 -left-12 w-48 h-48 bg-amber-500/5 rounded-full blur-3xl" />{" "}
+              <div className="absolute -bottom-12 -right-12 w-48 h-48 bg-blue-500/5 rounded-full blur-3xl" />{" "}
 
               <div className="flex flex-col md:flex-row items-center gap-8 relative z-10">
                 <div className="w-20 h-20 bg-amber-500 rounded-3xl flex items-center justify-center text-slate-950 shadow-2xl shadow-amber-500/40 rotate-3 group-hover:rotate-0 transition-transform duration-500">
                   <CalendarDays size={40} />
-                </div>
+                </div>{" "}
                 <div className="text-center md:text-left space-y-2">
                   <h3 className="text-3xl md:text-4xl font-staatliches uppercase tracking-tighter leading-none">
                     L'agenda <span className="text-amber-700 dark:text-amber-400">Complet</span> de la république
-                  </h3>
+                  </h3>{" "}
                   <p className="text-muted-foreground dark:text-slate-400 font-medium text-lg italic">
                     Découvrez toutes les séances, auditions et événements politiques à venir.
                   </p>
                 </div>
-              </div>
+              </div>{" "}
 
               <div className="flex flex-col items-center gap-2 relative z-10">
                 <div className="px-10 py-6 bg-slate-950 text-white rounded-[2rem] font-black uppercase tracking-widest text-sm flex items-center gap-3 group-hover:bg-amber-600 transition-all shadow-2xl shadow-slate-900/20 group-hover:shadow-amber-500/40">
-                  Voir le calendrier
+                  Voir le calendrier{" "}
                   <ArrowRight size={20} className="group-hover:translate-x-2 transition-transform" />
-                </div>
+                </div>{" "}
                 <span className="text-[10px] font-black uppercase tracking-widest text-muted-foreground">AN • SÉNAT • GOUVERNEMENT</span>
               </div>
             </motion.div>
           </Link>
         </div>
-      </section>
+      </section>{" "}
 
       {/* NEW: SECTION PÉTITIONS CITOYENNES */}
       <PetitionsSection />

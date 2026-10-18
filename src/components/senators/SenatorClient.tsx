@@ -73,7 +73,7 @@ export default function SenatorClient() {
         <div className="flex-1 w-full space-y-4">
           <label className="text-sm font-semibold text-muted-foreground flex items-center gap-2">
             <Search className="w-4 h-4" /> RECHERCHER UN SÉNATEUR
-          </label>
+          </label>{" "}
           <input
             type="text"
             placeholder="Nom, département..."
@@ -81,7 +81,7 @@ export default function SenatorClient() {
             onChange={(e) => setSearch(e.target.value)}
             className="w-full bg-muted text-foreground border-none rounded-2xl p-4 text-lg focus:ring-2 focus:ring-amber-500/20 transition-all outline-none placeholder:text-muted-foreground"
           />
-        </div>
+        </div>{" "}
         
         <div className="flex gap-2">
            <button 
@@ -91,22 +91,22 @@ export default function SenatorClient() {
              Tous
            </button>
         </div>
-      </div>
+      </div>{" "}
 
       {/* Map Section */}
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 items-start relative">
         <div className="bg-card rounded-3xl p-6 shadow-sm border border-border h-full min-h-[500px] relative overflow-hidden">
           <div className="flex justify-between items-center mb-6">
             <h2 className="text-xl font-bold flex items-center gap-3">
-              <MapIcon className="w-6 h-6 text-amber-700 dark:text-amber-400" />
+              <MapIcon className="w-6 h-6 text-amber-700 dark:text-amber-400" />{" "}
               Répartition par département
-            </h2>
+            </h2>{" "}
             {selectedDept && (
               <span className="bg-amber-100 dark:bg-amber-500/10 text-amber-700 dark:text-amber-300 px-3 py-1 rounded-full text-xs font-bold">
                 {selectedDept}
               </span>
             )}
-          </div>
+          </div>{" "}
           
           {/* La carte n'est montée que pour les abonnés, qui seuls peuvent s'en servir ;
               les autres voient un panneau statique. Sa justification d'origine — un
@@ -122,11 +122,11 @@ export default function SenatorClient() {
             <div className="absolute inset-0 z-10 flex flex-col items-center justify-center p-8 text-center">
                 <div className="bg-amber-600 p-4 rounded-full shadow-2xl mb-4">
                     <Lock className="w-8 h-8 text-white" />
-                </div>
-                <h3 className="text-2xl font-bold text-foreground dark:text-white mb-2">Carte des Sénateurs</h3>
+                </div>{" "}
+                <h3 className="text-2xl font-bold text-foreground dark:text-white mb-2">Carte des Sénateurs</h3>{" "}
                 <p className="text-muted-foreground dark:text-slate-300 max-w-xs mb-6">
                     Connectez-vous à votre compte <strong>Premium</strong> pour accéder à la carte interactive du Sénat.
-                </p>
+                </p>{" "}
                 <AwardBadge
                   titleText="Passer au Premium"
                   subtitleText="Accéder à la carte"
@@ -134,16 +134,16 @@ export default function SenatorClient() {
                 />
             </div>
           )}
-        </div>
+        </div>{" "}
 
         {/* Listing Section */}
         <div className="space-y-6 relative min-h-[600px]">
           <div className="flex items-center justify-between mb-2 px-2">
             <h2 className="text-xl font-bold flex items-center gap-3">
-              <Users className="w-6 h-6 text-amber-700 dark:text-amber-400" />
+              <Users className="w-6 h-6 text-amber-700 dark:text-amber-400" />{" "}
               {filteredSenators.length} Sénateurs trouvés
             </h2>
-          </div>
+          </div>{" "}
 
           <div className={`grid grid-cols-1 sm:grid-cols-2 gap-x-4 gap-y-16 mt-12 ${!isPremium ? "max-h-[820px] overflow-hidden" : ""}`}>
             {loading ? (
@@ -157,7 +157,7 @@ export default function SenatorClient() {
                 <SenatorCard key={s.id} senator={s} isBlurred={!isPremium} />
               ))
             )}
-          </div>
+          </div>{" "}
 
           {/* Pagination : on ne déroule pas les 348 sénateurs d'un coup. */}
           {isPremium && !loading && visible < filteredSenators.length && (
@@ -166,7 +166,7 @@ export default function SenatorClient() {
                 Voir plus de sénateurs ({filteredSenators.length - visible} restants)
               </button>
             </div>
-          )}
+          )}{" "}
 
           {!isPremium && filteredSenators.length > 4 && (
              <div className="absolute bottom-0 left-0 w-full h-64 bg-gradient-to-t from-background via-background/90 to-transparent pointer-events-none flex items-end justify-center pb-8 p-4 text-center">

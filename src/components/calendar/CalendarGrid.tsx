@@ -92,14 +92,14 @@ export default function CalendarGrid({
       <div className="flex items-center justify-between mb-8">
         <h2 className="text-2xl font-black text-foreground capitalize">
           {new Intl.DateTimeFormat('fr-FR', { month: 'long', year: 'numeric' }).format(viewDate)}
-        </h2>
+        </h2>{" "}
         <div className="flex gap-2">
           <button 
             onClick={onPrevMonth}
             className="p-2 rounded-xl bg-muted hover:bg-slate-200 text-muted-foreground transition-colors"
           >
             <ChevronLeft className="w-5 h-5" />
-          </button>
+          </button>{" "}
           <button 
             onClick={onNextMonth}
             className="p-2 rounded-xl bg-muted hover:bg-slate-200 text-muted-foreground transition-colors"
@@ -107,16 +107,16 @@ export default function CalendarGrid({
             <ChevronRight className="w-5 h-5" />
           </button>
         </div>
-      </div>
+      </div>{" "}
 
       {/* Jours de la semaine */}
       <div className="grid grid-cols-7 mb-4">
         {DAYS_OF_WEEK.map(day => (
           <div key={day} className="text-center text-[10px] font-black uppercase tracking-widest text-muted-foreground py-2">
-            {day}
+            {day}{" "}
           </div>
         ))}
-      </div>
+      </div>{" "}
 
       {/* Grille des jours */}
       <div className="grid grid-cols-7 gap-1">
@@ -141,7 +141,7 @@ export default function CalendarGrid({
             >
               <span className={`text-sm font-black ${today ? 'text-blue-700 dark:text-blue-400' : 'text-foreground'}`}>
                 {dayObj.date.getDate()}
-              </span>
+              </span>{" "}
               
               {/* Indicateurs d'évènements */}
               <div className="flex flex-wrap gap-1 mt-auto">
@@ -158,11 +158,11 @@ export default function CalendarGrid({
                     />
                   );
                 })}
-              </div>
+              </div>{" "}
               
               {today && (
                 <div className="absolute top-2 right-2 w-1 h-1 rounded-full bg-blue-500" />
-              )}
+              )}{" "}
             </motion.button>
           );
         })}

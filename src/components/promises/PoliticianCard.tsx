@@ -27,10 +27,10 @@ export default function PoliticianCard({ politician }: { politician: Politician 
       <div className="bg-card border border-border rounded-[2.5rem] p-8 shadow-sm hover:shadow-2xl transition-all duration-500 group-hover:-translate-y-2 relative overflow-hidden flex flex-col h-full bg-gradient-to-br from-white to-slate-50">
         {/* Tricolor band for style consistency */}
         <div className="absolute top-0 left-0 w-full h-1.5 flex">
-          <div className="flex-1 bg-blue-600" />
-          <div className="flex-1 bg-card" />
+          <div className="flex-1 bg-blue-600" />{" "}
+          <div className="flex-1 bg-card" />{" "}
           <div className="flex-1 bg-red-600" />
-        </div>
+        </div>{" "}
         
         <div className="flex items-start gap-6 mb-8 relative z-10 transition-transform duration-500 group-hover:scale-[1.02]">
           <div 
@@ -41,13 +41,13 @@ export default function PoliticianCard({ politician }: { politician: Politician 
             }}
           >
             {initials}
-          </div>
+          </div>{" "}
           <div>
-            <p className="text-amber-500 text-[10px] uppercase tracking-[0.2em] font-black mb-1">{politician.role}</p>
+            <p className="text-amber-500 text-[10px] uppercase tracking-[0.2em] font-black mb-1">{politician.role}</p>{" "}
             <h3 className="text-3xl md:text-4xl font-staatliches uppercase tracking-tight text-foreground group-hover:text-blue-600 transition-colors leading-none mb-3">
-              {politician.first_name} <br/>
+              {politician.first_name} {" "}<br/>
               <span className="bg-gradient-to-r from-slate-900 to-slate-700 bg-clip-text text-transparent">{politician.last_name}</span>
-            </h3>
+            </h3>{" "}
             <span 
               className="px-3 py-1 text-[10px] font-black uppercase tracking-widest rounded-lg text-white inline-block shadow-sm"
               style={{ backgroundColor: politician.party_color || '#95A5A6' }}
@@ -55,13 +55,13 @@ export default function PoliticianCard({ politician }: { politician: Politician 
               {getFullPartyName(politician.party)}
             </span>
           </div>
-        </div>
+        </div>{" "}
 
         <div className="mt-auto relative z-10">
           <div className="flex justify-between text-sm mb-2 text-foreground font-medium">
-            <span>Bilan des promesses</span>
+            <span>Bilan des promesses</span>{" "}
             <span>{politician.promises.kept}/{politician.promises.total} tenues</span>
-          </div>
+          </div>{" "}
           <ProgressBar 
             total={politician.promises.total}
             kept={politician.promises.kept}

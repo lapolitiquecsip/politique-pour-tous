@@ -64,19 +64,19 @@ function AccountRow({ m, period, isPro }: { m: Metrics; period: Period; isPro: b
   return (
     <div className="flex flex-wrap items-center gap-x-4 gap-y-2 border-t border-border py-3 dark:border-slate-800">
       <span className="flex items-center gap-2 min-w-[150px]">
-        <span className="h-2.5 w-2.5 shrink-0 rounded-full" style={{ backgroundColor: meta.color }} />
-        <span className="text-[13px] font-bold text-foreground dark:text-white">{meta.label}</span>
+        <span className="h-2.5 w-2.5 shrink-0 rounded-full" style={{ backgroundColor: meta.color }} />{" "}
+        <span className="text-[13px] font-bold text-foreground dark:text-white">{meta.label}</span>{" "}
         <span className={`rounded-full px-1.5 py-0.5 text-[9px] font-black uppercase tracking-wider ${m.account.kind === "official" ? "bg-slate-100 text-muted-foreground dark:bg-slate-800 dark:text-slate-300" : "bg-amber-100 text-amber-700 dark:bg-amber-500/20 dark:text-amber-300"}`}>
           {m.account.kind === "official" ? "Officiel" : "Soutien"}
         </span>
-      </span>
+      </span>{" "}
 
       <span className="min-w-0 flex-1 truncate text-[12px] text-slate-400">
         {m.account.url
-          ? <a href={m.account.url} target="_blank" rel="noopener noreferrer" className="inline-flex items-center gap-1 hover:text-muted-foreground hover:underline">{m.account.handle} <ExternalLink size={10} /></a>
+          ? <a href={m.account.url} target="_blank" rel="noopener noreferrer" className="inline-flex items-center gap-1 hover:text-muted-foreground hover:underline">{m.account.handle} {" "}<ExternalLink size={10} /></a>
           : m.account.handle}
         {m.account.label && <span className="ml-2 italic">{m.account.label}</span>}
-      </span>
+      </span>{" "}
 
       {m.status === "unavailable" ? (
         <span className="flex items-center gap-1.5 text-[11px] font-bold text-slate-400">
@@ -213,7 +213,7 @@ export default function CandidateSocialTracker({ candidates }: { candidates: Can
             className="inline-flex items-center gap-1.5 rounded-full border border-border bg-card px-4 py-2 text-[10px] font-black uppercase tracking-widest text-muted-foreground shadow-sm transition hover:border-slate-400 hover:text-foreground">
             <Download size={13} /> Export CSV
           </button>
-        ) : undefined} />
+        ) : undefined} />{" "}
 
       {/* Réglages */}
       <div className="mb-5 flex flex-wrap items-center gap-3">
@@ -221,19 +221,19 @@ export default function CandidateSocialTracker({ candidates }: { candidates: Can
           {([[7, "7 jours"], [30, "30 jours"]] as const).map(([v, label]) => (
             <button key={v} onClick={() => setPeriod(v)}
               className={`rounded-full px-4 py-1.5 text-[11px] font-black uppercase tracking-widest transition ${period === v ? "bg-slate-900 text-white" : "text-muted-foreground hover:text-foreground"}`}>
-              {label}
+              {label}{" "}
             </button>
           ))}
-        </div>
+        </div>{" "}
         <div className="inline-flex rounded-full border border-border bg-card p-1">
           {([["official", "Comptes personnels"], ["support", "Comptes de soutien"], ["all", "Les deux"]] as const).map(([v, label]) => (
             <button key={v} onClick={() => setScope(v)}
               className={`rounded-full px-4 py-1.5 text-[11px] font-black uppercase tracking-widest transition ${scope === v ? "bg-slate-900 text-white" : "text-muted-foreground hover:text-foreground"}`}>
-              {label}
+              {label}{" "}
             </button>
           ))}
         </div>
-      </div>
+      </div>{" "}
 
       {/* Contenu */}
       <ZonePro titre="La veille réseaux sociaux" points={["Audience de chaque candidat, compte par compte", "Vues gagnées sur 7 et 30 jours", "Publications de la semaine et tendances"]}>
@@ -241,8 +241,8 @@ export default function CandidateSocialTracker({ candidates }: { candidates: Can
         <div className="flex justify-center py-16"><Loader2 className="animate-spin text-fuchsia-500" /></div>
       ) : rows.length === 0 ? (
         <div className="rounded-3xl border border-dashed border-border py-14 text-center">
-          <Radio size={28} className="mx-auto mb-3 text-slate-300" />
-          <p className="text-sm font-bold text-muted-foreground">Aucun compte suivi pour l&apos;instant.</p>
+          <Radio size={28} className="mx-auto mb-3 text-slate-300" />{" "}
+          <p className="text-sm font-bold text-muted-foreground">Aucun compte suivi pour l&apos;instant.</p>{" "}
           <p className="mx-auto mt-1 max-w-lg text-[13px] text-slate-400">
             Les comptes des candidats sont renseignés puis relevés chaque nuit. Les tendances apparaissent
             dès qu&apos;au moins deux relevés existent.
@@ -256,50 +256,50 @@ export default function CandidateSocialTracker({ candidates }: { candidates: Can
               <div key={r.candidate.id} className="overflow-hidden rounded-3xl border border-border bg-card transition-all hover:border-fuchsia-300 hover:shadow-lg">
                 <button onClick={() => setOpenId(open ? null : r.candidate.id)} aria-expanded={open}
                   className="flex w-full flex-wrap items-center gap-x-4 gap-y-3 p-4 text-left sm:flex-nowrap">
-                  <span className="w-6 shrink-0 text-center font-staatliches text-xl text-slate-300">{rank + 1}</span>
+                  <span className="w-6 shrink-0 text-center font-staatliches text-xl text-slate-300">{rank + 1}</span>{" "}
 
                   {r.candidate.photo_url
                     ? <img src={r.candidate.photo_url} alt="" className="h-11 w-11 shrink-0 rounded-full object-cover" />
-                    : <span className="flex h-11 w-11 shrink-0 items-center justify-center rounded-full bg-slate-100 dark:bg-slate-500/10 text-sm font-black text-slate-400">{r.candidate.full_name.charAt(0)}</span>}
+                    : <span className="flex h-11 w-11 shrink-0 items-center justify-center rounded-full bg-slate-100 dark:bg-slate-500/10 text-sm font-black text-slate-400">{r.candidate.full_name.charAt(0)}</span>}{" "}
 
                   <span className="min-w-0 flex-1">
-                    <span className="block truncate text-sm font-black text-foreground">{r.candidate.full_name}</span>
+                    <span className="block truncate text-sm font-black text-foreground">{r.candidate.full_name}</span>{" "}
                     <span className="block truncate text-[11px] text-slate-400">
                       {r.candidate.party} · {r.metrics.length} compte{r.metrics.length > 1 ? "s" : ""} suivi{r.metrics.length > 1 ? "s" : ""}
                       {" · "}
                       {r.plateformes.map(pf => PLATFORM_META[pf].label).join(", ")}
                     </span>
-                  </span>
+                  </span>{" "}
 
-                  <span className="hidden sm:block"><Sparkline points={r.spark} color="#c026d3" /></span>
+                  <span className="hidden sm:block"><Sparkline points={r.spark} color="#c026d3" /></span>{" "}
 
                   <span className="w-[96px] shrink-0 text-right">
-                    <span className="block text-[9px] font-black uppercase tracking-wider text-slate-400">Audience</span>
+                    <span className="block text-[9px] font-black uppercase tracking-wider text-slate-400">Audience</span>{" "}
                     <span className="flex items-center justify-end gap-1 text-sm font-black tabular-nums text-foreground">
-                      <Users2 size={12} className="text-slate-300" /><Masked isPro={isPro}>{compact(r.followers)}</Masked>
+                      <Users2 size={12} className="text-slate-300" />{" "}<Masked isPro={isPro}>{compact(r.followers)}</Masked>
                     </span>
-                  </span>
+                  </span>{" "}
 
                   <span className="hidden w-[72px] shrink-0 text-right sm:block">
-                    <span className="block text-[9px] font-black uppercase tracking-wider text-slate-400">Posts 7 j</span>
+                    <span className="block text-[9px] font-black uppercase tracking-wider text-slate-400">Posts 7 j</span>{" "}
                     <span className="flex items-center justify-end gap-1 text-sm font-black tabular-nums text-foreground">
-                      <Clapperboard size={12} className="text-slate-300" /><Masked isPro={isPro}>{r.posts7 == null ? "—" : String(r.posts7)}</Masked>
+                      <Clapperboard size={12} className="text-slate-300" />{" "}<Masked isPro={isPro}>{r.posts7 == null ? "—" : String(r.posts7)}</Masked>
                     </span>
-                  </span>
+                  </span>{" "}
 
                   <span className="w-[104px] shrink-0 text-right">
-                    <span className="block text-[9px] font-black uppercase tracking-wider text-slate-400">Vues {period} j</span>
+                    <span className="block text-[9px] font-black uppercase tracking-wider text-slate-400">Vues {period} j</span>{" "}
                     <span className="flex items-center justify-end gap-1 text-sm font-black tabular-nums text-fuchsia-700 dark:text-fuchsia-400">
-                      <Eye size={12} className="text-fuchsia-300" /><Masked isPro={isPro}>{compact(r.views)}</Masked>
+                      <Eye size={12} className="text-fuchsia-300" />{" "}<Masked isPro={isPro}>{compact(r.views)}</Masked>
                     </span>
-                  </span>
+                  </span>{" "}
 
                   <ChevronDown size={18} className={`shrink-0 text-slate-300 transition-transform ${open ? "rotate-180" : ""}`} />
-                </button>
+                </button>{" "}
 
                 {open && (
                   <div className="px-4 pb-4">
-                    {r.metrics.map(m => <AccountRow key={m.account.id} m={m} period={period} isPro={isPro} />)}
+                    {r.metrics.map(m => <AccountRow key={m.account.id} m={m} period={period} isPro={isPro} />)}{" "}
                     {!isPro && (
                       <div className="mt-4 text-center">
                         <Link href="/premium" className="text-[11px] font-black uppercase tracking-widest text-fuchsia-700 dark:text-fuchsia-400 hover:underline">
@@ -308,10 +308,10 @@ export default function CandidateSocialTracker({ candidates }: { candidates: Can
                       </div>
                     )}
                   </div>
-                )}
+                )}{" "}
               </div>
             );
-          })}
+          })}{" "}
 
           <p className="pt-3 text-center text-[11px] italic text-slate-400">
             {scope === "all"
@@ -321,7 +321,7 @@ export default function CandidateSocialTracker({ candidates }: { candidates: Can
                 : "Comptes personnels des candidats uniquement, hors comptes de parti."}
             {" "}Relevés quotidiens. Les vues sont celles réellement gagnées sur la période, mesurées entre deux
             relevés ; les publications de la semaine sont datées une à une sur YouTube.
-            Un compte marqué « source indisponible » n&apos;affiche aucun chiffre plutôt qu&apos;un chiffre périmé.
+            Un compte marqué « source indisponible » n&apos;affiche aucun chiffre plutôt qu&apos;un chiffre périmé.{" "}
             <br />
             Ce classement mesure une présence sur ces plateformes, pas une notoriété : un responsable très présent
             dans la presse ou sur X peut y paraître modeste, et un candidat qui publie beaucoup en vidéo y apparaître

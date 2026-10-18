@@ -35,12 +35,12 @@ function Chapitre({ id, n, titre, sous, children }: { id: string; n: number; tit
   return (
     <section id={id} className="scroll-mt-36 rounded-3xl border border-border bg-card p-5 md:p-8">
       <div className="mb-5 flex items-start gap-3">
-        <span className="flex h-9 w-9 shrink-0 items-center justify-center rounded-xl bg-gradient-to-br from-amber-400 to-orange-600 font-staatliches text-lg text-white">{n}</span>
+        <span className="flex h-9 w-9 shrink-0 items-center justify-center rounded-xl bg-gradient-to-br from-amber-400 to-orange-600 font-staatliches text-lg text-white">{n}</span>{" "}
         <div>
-          <h2 className="font-staatliches text-3xl uppercase leading-none tracking-tight text-foreground">{titre}</h2>
+          <h2 className="font-staatliches text-3xl uppercase leading-none tracking-tight text-foreground">{titre}</h2>{" "}
           {sous && <p className="mt-1 text-sm text-muted-foreground">{sous}</p>}
         </div>
-      </div>
+      </div>{" "}
       {children}
     </section>
   );
@@ -76,7 +76,7 @@ function Tableau({ lignes, comp, titreCol = "Indicateur" }: { lignes: Ligne[]; c
               <tr key={l.label} className={`border-b border-border/60 align-top ${l.fort ? "bg-amber-50/60 dark:bg-amber-500/5" : ""}`}>
                 <td className={`py-2.5 pr-3 text-foreground ${l.fort ? "font-black" : "font-semibold"}`}>{l.label}</td>
                 <td className="py-2.5 pr-3 text-right font-black tabular-nums text-foreground">
-                  {a === null ? "—" : l.f(a)}
+                  {a === null ? "—" : l.f(a)}{" "}
                   {n && <span className="block text-[10px] font-normal leading-tight text-muted-foreground">{n}</span>}
                 </td>
                 {comp.map((c) => {
@@ -84,7 +84,7 @@ function Tableau({ lignes, comp, titreCol = "Indicateur" }: { lignes: Ligne[]; c
                   return (
                     <Fragment key={c}>
                       <td className="border-l border-border/60 py-2.5 pl-3 pr-3 text-right tabular-nums text-muted-foreground">
-                        {b === null ? "—" : l.f(b)}
+                        {b === null ? "—" : l.f(b)}{" "}
                         {nc && <span className="block text-[10px] leading-tight">{nc}</span>}
                       </td>
                       <td className="py-2.5 pr-1 text-right">{a === null || b === null ? "—" : <Delta v={a - b} f={l.df ?? nf1} sens={l.sens ?? "neutre"} />}</td>
@@ -101,11 +101,11 @@ function Tableau({ lignes, comp, titreCol = "Indicateur" }: { lignes: Ligne[]; c
 }
 
 const Note = ({ children }: { children: React.ReactNode }) => (
-  <p className="mt-3 flex items-start gap-1.5 text-[11px] leading-relaxed text-muted-foreground"><Info size={12} className="mt-0.5 shrink-0" /><span>{children}</span></p>
+  <p className="mt-3 flex items-start gap-1.5 text-[11px] leading-relaxed text-muted-foreground"><Info size={12} className="mt-0.5 shrink-0" />{" "}<span>{children}</span></p>
 );
 const Puces = ({ items }: { items: string[] }) => (
   <ul className="space-y-2">
-    {items.map((t) => <li key={t} className="flex items-start gap-2 text-sm leading-relaxed text-foreground"><span className="mt-2 h-1.5 w-1.5 shrink-0 rounded-full bg-orange-500" />{t}</li>)}
+    {items.map((t) => <li key={t} className="flex items-start gap-2 text-sm leading-relaxed text-foreground"><span className="mt-2 h-1.5 w-1.5 shrink-0 rounded-full bg-orange-500" />{" "}{t}{" "}</li>)}
   </ul>
 );
 
@@ -197,46 +197,46 @@ export default function PlfDetaille({ comp }: { comp: PlfAnnee[] }) {
           {CHAPITRES.map(({ id, label, Ic }, i) => (
             <li key={id}>
               <a href={`#${id}`} className="inline-flex items-center gap-1.5 whitespace-nowrap rounded-full border border-border bg-card px-3 py-1.5 text-xs font-bold text-foreground transition hover:border-orange-400 hover:text-orange-700 dark:hover:text-orange-400">
-                <Ic size={13} className="text-orange-600 dark:text-orange-400" /> <span className="text-muted-foreground">{i + 1}.</span> {label}
-              </a>
+                <Ic size={13} className="text-orange-600 dark:text-orange-400" /> {" "}<span className="text-muted-foreground">{i + 1}.</span> {label}
+              </a>{" "}
             </li>
           ))}
         </ul>
-      </nav>
+      </nav>{" "}
 
       {/* 1 — L'essentiel */}
       <Chapitre id="essentiel" n={1} titre="L'essentiel en un coup d'œil" sous={`Les six chiffres qui résument le PLF 2027${comp.length ? `, et leur écart avec ${comp.map((c) => `le PLF ${c}`).join(" et ")}` : ""}.`}>
         <div className="grid gap-3 sm:grid-cols-2 xl:grid-cols-3">
           {cartes.map((c) => (
             <div key={c.label} className="rounded-2xl border border-border bg-muted/40 p-4">
-              <p className="text-[10px] font-black uppercase tracking-widest text-muted-foreground">{c.label}</p>
-              <p className="mt-1 font-staatliches text-4xl leading-none text-foreground">{c.vf(c.get(REF))}</p>
-              <p className="mt-1 text-[11px] text-muted-foreground">{c.aide}</p>
+              <p className="text-[10px] font-black uppercase tracking-widest text-muted-foreground">{c.label}</p>{" "}
+              <p className="mt-1 font-staatliches text-4xl leading-none text-foreground">{c.vf(c.get(REF))}</p>{" "}
+              <p className="mt-1 text-[11px] text-muted-foreground">{c.aide}</p>{" "}
               {comp.length > 0 && (
                 <div className="mt-3 space-y-1 border-t border-border pt-2">
                   {comp.map((y) => (
                     <p key={y} className="flex items-center justify-between text-xs text-muted-foreground">
-                      <span>vs PLF {y} <span className="tabular-nums">({c.vf(c.get(y))})</span></span>
-                      <Delta v={c.get(REF) - c.get(y)} f={c.df} sens={c.sens} />
+                      <span>vs PLF {y} <span className="tabular-nums">({c.vf(c.get(y))})</span></span>{" "}
+                      <Delta v={c.get(REF) - c.get(y)} f={c.df} sens={c.sens} />{" "}
                     </p>
                   ))}
                 </div>
-              )}
+              )}{" "}
             </div>
           ))}
         </div>
         <div className="mt-5 grid gap-4 md:grid-cols-2">
           {([["Ce qui augmente le plus", mouvements.hausses, "text-emerald-700 dark:text-emerald-400"], ["Ce qui baisse le plus", mouvements.baisses, "text-rose-700 dark:text-rose-400"]] as const).map(([titre, liste, cls]) => (
             <div key={titre} className="rounded-2xl border border-border p-4">
-              <p className="text-[10px] font-black uppercase tracking-widest text-muted-foreground">{titre} — par rapport au budget voté pour 2026</p>
+              <p className="text-[10px] font-black uppercase tracking-widest text-muted-foreground">{titre} — par rapport au budget voté pour 2026</p>{" "}
               <ul className="mt-2 space-y-1.5">
                 {liste.map((x) => (
                   <li key={x.nom} className="flex items-baseline justify-between gap-3 text-sm">
-                    <span className="truncate font-semibold text-foreground">{x.nom}</span>
-                    <span className={`shrink-0 font-black tabular-nums ${cls}`}>{signe(x.d)} Md€ <span className="text-[11px] font-bold opacity-80">({signe(x.pc)} %)</span></span>
+                    <span className="truncate font-semibold text-foreground">{x.nom}</span>{" "}
+                    <span className={`shrink-0 font-black tabular-nums ${cls}`}>{signe(x.d)} Md€ <span className="text-[11px] font-bold opacity-80">({signe(x.pc)} %)</span></span>{" "}
                   </li>
                 ))}
-              </ul>
+              </ul>{" "}
             </div>
           ))}
         </div>
@@ -250,21 +250,21 @@ export default function PlfDetaille({ comp }: { comp: PlfAnnee[] }) {
             const x = PLF[y as PlfAnnee];
             return (
               <div key={y} className={`rounded-2xl border p-4 ${y === REF ? "border-orange-300 bg-orange-50/50 dark:border-orange-500/30 dark:bg-orange-500/5" : "border-border bg-muted/40"}`}>
-                <p className="font-staatliches text-2xl leading-none text-foreground">PLF {y}</p>
+                <p className="font-staatliches text-2xl leading-none text-foreground">PLF {y}</p>{" "}
                 <dl className="mt-3 space-y-1.5 text-sm">
-                  <div><dt className="inline font-bold text-foreground">Déposé : </dt><dd className="inline text-muted-foreground">{x.depot} ({x.numero})</dd></div>
-                  <div><dt className="inline font-bold text-foreground">Premier ministre : </dt><dd className="inline text-muted-foreground">{x.premierMinistre}</dd></div>
-                  <div><dt className="inline font-bold text-foreground">Ministres : </dt><dd className="inline text-muted-foreground">{x.ministres.join(" ; ")}</dd></div>
+                  <div><dt className="inline font-bold text-foreground">Déposé : </dt><dd className="inline text-muted-foreground">{x.depot} ({x.numero})</dd></div>{" "}
+                  <div><dt className="inline font-bold text-foreground">Premier ministre : </dt><dd className="inline text-muted-foreground">{x.premierMinistre}</dd></div>{" "}
+                  <div><dt className="inline font-bold text-foreground">Ministres : </dt><dd className="inline text-muted-foreground">{x.ministres.join(" ; ")}</dd></div>{" "}
                   <div><dt className="inline font-bold text-foreground">Issue : </dt><dd className="inline text-muted-foreground">{x.issue}</dd></div>
-                </dl>
-                <p className="mt-3 border-t border-border pt-3 text-xs leading-relaxed text-muted-foreground">{x.contexte}</p>
-                <a href={x.texteUrl} target="_blank" rel="noopener noreferrer" className="mt-3 inline-flex items-center gap-1 text-xs font-bold text-orange-700 hover:underline dark:text-orange-400"><FileText size={12} /> Texte déposé (PDF)</a>
+                </dl>{" "}
+                <p className="mt-3 border-t border-border pt-3 text-xs leading-relaxed text-muted-foreground">{x.contexte}</p>{" "}
+                <a href={x.texteUrl} target="_blank" rel="noopener noreferrer" className="mt-3 inline-flex items-center gap-1 text-xs font-bold text-orange-700 hover:underline dark:text-orange-400"><FileText size={12} /> Texte déposé (PDF)</a>{" "}
               </div>
             );
           })}
         </div>
         <div className="mt-5 rounded-2xl border border-border p-4">
-          <p className="mb-2 text-[10px] font-black uppercase tracking-widest text-muted-foreground">D’où l’on part : l’année 2026 selon le PLF 2027</p>
+          <p className="mb-2 text-[10px] font-black uppercase tracking-widest text-muted-foreground">D’où l’on part : l’année 2026 selon le PLF 2027</p>{" "}
           <Puces items={ANNEE_2026} />
         </div>
       </Chapitre>
@@ -274,7 +274,7 @@ export default function PlfDetaille({ comp }: { comp: PlfAnnee[] }) {
         <Tableau lignes={hypotheses} comp={comp} titreCol="Hypothèse pour l'année du budget" />
         <div className="mt-5 grid gap-4 lg:grid-cols-2">
           <div className="rounded-2xl border border-border p-4">
-            <p className="mb-2 text-[10px] font-black uppercase tracking-widest text-muted-foreground">Détail du scénario 2027 (et estimation pour 2026)</p>
+            <p className="mb-2 text-[10px] font-black uppercase tracking-widest text-muted-foreground">Détail du scénario 2027 (et estimation pour 2026)</p>{" "}
             <table className="w-full text-sm">
               <thead><tr className="border-b border-border text-[10px] font-black uppercase tracking-widest text-muted-foreground"><th className="py-1.5 text-left">Variable</th><th className="py-1.5 text-right">2026</th><th className="py-1.5 text-right text-orange-700 dark:text-orange-400">2027</th></tr></thead>
               <tbody>
@@ -283,9 +283,9 @@ export default function PlfDetaille({ comp }: { comp: PlfAnnee[] }) {
                 ))}
               </tbody>
             </table>
-          </div>
+          </div>{" "}
           <div className="rounded-2xl border border-amber-200 bg-amber-50/50 p-4 dark:border-amber-500/20 dark:bg-amber-500/5">
-            <p className="mb-2 flex items-center gap-1.5 text-[10px] font-black uppercase tracking-widest text-amber-800 dark:text-amber-300"><AlertTriangle size={13} /> Les aléas reconnus par le texte</p>
+            <p className="mb-2 flex items-center gap-1.5 text-[10px] font-black uppercase tracking-widest text-amber-800 dark:text-amber-300"><AlertTriangle size={13} /> Les aléas reconnus par le texte</p>{" "}
             <Puces items={ALEAS_2027} />
           </div>
         </div>
@@ -306,20 +306,20 @@ export default function PlfDetaille({ comp }: { comp: PlfAnnee[] }) {
             const max = Math.max(...ps.lignes.map((l) => Math.abs(l.v)));
             return (
               <div key={y} className="rounded-2xl border border-border p-4">
-                <p className="text-[10px] font-black uppercase tracking-widest text-muted-foreground">Pourquoi le solde {y === 2027 ? "se dégrade" : "s'améliorait"} — PLF {y}</p>
-                <p className="mt-1 text-sm text-foreground">De <b className="tabular-nums">{signe(ps.depart)} Md€</b> ({ps.de}) à <b className="tabular-nums">{signe(ps.arrivee)} Md€</b>, soit <b className="tabular-nums">{signe(ps.arrivee - ps.depart)} Md€</b>.</p>
+                <p className="text-[10px] font-black uppercase tracking-widest text-muted-foreground">Pourquoi le solde {y === 2027 ? "se dégrade" : "s'améliorait"} — PLF {y}</p>{" "}
+                <p className="mt-1 text-sm text-foreground">De <b className="tabular-nums">{signe(ps.depart)} Md€</b> ({ps.de}) à <b className="tabular-nums">{signe(ps.arrivee)} Md€</b>, soit <b className="tabular-nums">{signe(ps.arrivee - ps.depart)} Md€</b>.</p>{" "}
                 <ul className="mt-3 space-y-2.5">
                   {ps.lignes.map((l) => (
                     <li key={l.label}>
                       <div className="flex items-baseline justify-between gap-3 text-sm">
-                        <span className="font-semibold text-foreground">{l.label}</span>
+                        <span className="font-semibold text-foreground">{l.label}</span>{" "}
                         <span className={`font-black tabular-nums ${l.v >= 0 ? "text-emerald-700 dark:text-emerald-400" : "text-rose-700 dark:text-rose-400"}`}>{signe(l.v)} Md€</span>
-                      </div>
-                      <div className="mt-1 h-1.5 rounded-full bg-muted"><div className={`h-full rounded-full ${l.v >= 0 ? "bg-emerald-500" : "bg-rose-500"}`} style={{ width: `${(Math.abs(l.v) / max) * 100}%` }} /></div>
-                      {l.detail && <p className="mt-1 text-[11px] text-muted-foreground">{l.detail}</p>}
+                      </div>{" "}
+                      <div className="mt-1 h-1.5 rounded-full bg-muted"><div className={`h-full rounded-full ${l.v >= 0 ? "bg-emerald-500" : "bg-rose-500"}`} style={{ width: `${(Math.abs(l.v) / max) * 100}%` }} /></div>{" "}
+                      {l.detail && <p className="mt-1 text-[11px] text-muted-foreground">{l.detail}</p>}{" "}
                     </li>
                   ))}
-                </ul>
+                </ul>{" "}
               </div>
             );
           })}
@@ -349,12 +349,12 @@ export default function PlfDetaille({ comp }: { comp: PlfAnnee[] }) {
             const e = PLF[y as PlfAnnee].effort;
             return (
               <div key={y} className="rounded-2xl border border-border bg-muted/40 p-4">
-                <p className="text-[10px] font-black uppercase tracking-widest text-muted-foreground">Effort — PLF {y}</p>
-                <p className="mt-1 text-lg font-black leading-snug text-foreground">{e.texte}</p>
+                <p className="text-[10px] font-black uppercase tracking-widest text-muted-foreground">Effort — PLF {y}</p>{" "}
+                <p className="mt-1 text-lg font-black leading-snug text-foreground">{e.texte}</p>{" "}
                 <span className={`mt-2 inline-block rounded-full px-2 py-0.5 text-[10px] font-black uppercase tracking-widest ${e.source === "texte" ? "bg-emerald-100 text-emerald-800 dark:bg-emerald-500/15 dark:text-emerald-300" : "bg-amber-100 text-amber-900 dark:bg-amber-500/15 dark:text-amber-300"}`}>
                   {e.source === "texte" ? "Chiffré dans le texte" : "Annonce gouvernementale"}
-                </span>
-                {e.note && <p className="mt-2 text-xs leading-relaxed text-muted-foreground">{e.note}</p>}
+                </span>{" "}
+                {e.note && <p className="mt-2 text-xs leading-relaxed text-muted-foreground">{e.note}</p>}{" "}
               </div>
             );
           })}
@@ -363,18 +363,18 @@ export default function PlfDetaille({ comp }: { comp: PlfAnnee[] }) {
         <div className={`mt-5 grid gap-4 ${comp.length ? "md:grid-cols-2" : ""} ${comp.length >= 2 ? "xl:grid-cols-3" : ""}`}>
           {[REF, ...comp].map((y) => (
             <div key={y}>
-              <p className="mb-2 font-staatliches text-xl text-foreground">Mesures phares — PLF {y}</p>
+              <p className="mb-2 font-staatliches text-xl text-foreground">Mesures phares — PLF {y}</p>{" "}
               <ul className="space-y-2">
                 {PLF[y as PlfAnnee].mesures.map((m) => (
                   <li key={m.titre} className="rounded-xl border border-border bg-muted/30 p-3">
                     <p className="flex items-start justify-between gap-2 text-sm font-black text-foreground">
-                      {m.titre}
+                      {m.titre}{" "}
                       {m.ref && <span className="shrink-0 rounded-md bg-slate-200 px-1.5 py-0.5 text-[10px] font-black uppercase text-slate-700 dark:bg-slate-700 dark:text-slate-200">{m.ref}</span>}
-                    </p>
-                    <p className="mt-1 text-xs leading-relaxed text-muted-foreground">{m.detail}</p>
+                    </p>{" "}
+                    <p className="mt-1 text-xs leading-relaxed text-muted-foreground">{m.detail}</p>{" "}
                   </li>
                 ))}
-              </ul>
+              </ul>{" "}
             </div>
           ))}
         </div>
@@ -391,8 +391,8 @@ export default function PlfDetaille({ comp }: { comp: PlfAnnee[] }) {
         <div className="grid gap-3 md:grid-cols-2">
           {AUTRES_SECTEURS_2027.map((s) => (
             <div key={s.titre} className="rounded-2xl border border-border bg-muted/40 p-4">
-              <p className="flex items-center gap-2 font-staatliches text-xl text-foreground"><Building2 size={16} className="text-orange-600" />{s.titre}</p>
-              <p className="mt-1.5 text-sm leading-relaxed text-muted-foreground">{s.texte}</p>
+              <p className="flex items-center gap-2 font-staatliches text-xl text-foreground"><Building2 size={16} className="text-orange-600" />{" "}{s.titre}</p>{" "}
+              <p className="mt-1.5 text-sm leading-relaxed text-muted-foreground">{s.texte}</p>{" "}
             </div>
           ))}
         </div>
@@ -430,7 +430,7 @@ function MissionsDetaillees({ comp }: { comp: PlfAnnee[] }) {
     if (b === null) return <span className="text-[11px] text-muted-foreground">nouvelle</span>;
     return (
       <span className="inline-flex flex-col items-end leading-tight">
-        <span className="text-xs font-black tabular-nums text-foreground">{signe(d! / 1e9)}</span>
+        <span className="text-xs font-black tabular-nums text-foreground">{signe(d! / 1e9)}</span>{" "}
         {b > 0 && <span className="text-[10px] tabular-nums text-muted-foreground">{signe((d! / b) * 100)} %</span>}
       </span>
     );
@@ -442,10 +442,10 @@ function MissionsDetaillees({ comp }: { comp: PlfAnnee[] }) {
         <div className="inline-flex rounded-lg border border-border bg-muted p-0.5">
           {(["cp", "ae"] as const).map((k) => (
             <button key={k} onClick={() => setMode(k)} className={`rounded-md px-3 py-1 font-black ${mode === k ? "bg-card text-foreground shadow-sm" : "text-muted-foreground"}`}>
-              {k === "cp" ? "Crédits de paiement" : "Autorisations d'engagement"}
+              {k === "cp" ? "Crédits de paiement" : "Autorisations d'engagement"}{" "}
             </button>
           ))}
-        </div>
+        </div>{" "}
         <span className="flex items-center gap-1 text-muted-foreground"><Info size={12} /> CP : payé dans l’année. AE : engagements pris dans l’année (contrats pluriannuels).</span>
       </div>
       <div className="-mx-5 overflow-x-auto px-5 md:mx-0 md:px-0">
@@ -475,9 +475,9 @@ function MissionsDetaillees({ comp }: { comp: PlfAnnee[] }) {
                   <tr onClick={() => setOuvert(open ? null : cle)} className="cursor-pointer border-b border-border/60 align-top hover:bg-muted/50">
                     <td className="py-2.5 pr-3">
                       <span className="flex items-start gap-1.5 font-semibold text-foreground">
-                        <ChevronDown size={14} className={`mt-0.5 shrink-0 transition ${open ? "rotate-180" : ""}`} />
+                        <ChevronDown size={14} className={`mt-0.5 shrink-0 transition ${open ? "rotate-180" : ""}`} />{" "}
                         {nom.mission}
-                      </span>
+                      </span>{" "}
                       {note && (INFO.has(cle)
                         ? <span className="ml-5 block text-[10px] leading-snug text-muted-foreground">ℹ {note}</span>
                         : <span className="ml-5 block text-[10px] leading-snug text-amber-800 dark:text-amber-300">⚠ {note}</span>)}
@@ -559,23 +559,23 @@ function Articles() {
             <div key={g.titre} className="overflow-hidden rounded-2xl border border-border">
               <button onClick={() => setOuvert(open ? null : i)} className="flex w-full items-start justify-between gap-3 bg-muted/40 p-4 text-left hover:bg-muted">
                 <span>
-                  <span className="block font-staatliches text-xl leading-tight text-foreground">{g.titre}</span>
+                  <span className="block font-staatliches text-xl leading-tight text-foreground">{g.titre}</span>{" "}
                   <span className="mt-0.5 block text-xs text-muted-foreground">{g.resume}</span>
-                </span>
+                </span>{" "}
                 <span className="flex shrink-0 items-center gap-2 text-[11px] font-black uppercase tracking-widest text-muted-foreground">
-                  art. {g.de === g.a ? g.de : `${g.de}–${g.a}`} <ChevronDown size={16} className={`transition ${open ? "rotate-180" : ""}`} />
+                  art. {g.de === g.a ? g.de : `${g.de}–${g.a}`} {" "}<ChevronDown size={16} className={`transition ${open ? "rotate-180" : ""}`} />
                 </span>
-              </button>
+              </button>{" "}
               {open && (
                 <ol className="divide-y divide-border/60">
                   {arts.map((a) => (
                     <li key={a.n} className="flex gap-3 px-4 py-2 text-sm">
-                      <span className="w-12 shrink-0 font-black tabular-nums text-orange-700 dark:text-orange-400">Art. {a.n}</span>
-                      <span className="text-foreground">{a.titre}</span>
+                      <span className="w-12 shrink-0 font-black tabular-nums text-orange-700 dark:text-orange-400">Art. {a.n}</span>{" "}
+                      <span className="text-foreground">{a.titre}</span>{" "}
                     </li>
                   ))}
                 </ol>
-              )}
+              )}{" "}
             </div>
           );
         })}

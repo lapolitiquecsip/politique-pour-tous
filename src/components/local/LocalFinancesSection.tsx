@@ -58,56 +58,56 @@ export default function LocalFinancesSection({ finances, label }: { finances: Lo
   return (
     <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.4 }} className="space-y-4">
       <div className="flex items-center gap-2">
-        <Landmark size={16} className="text-foreground" />
+        <Landmark size={16} className="text-foreground" />{" "}
         <h4 className="text-sm font-black uppercase tracking-widest text-foreground">
           {label} {finances.year}
         </h4>
-      </div>
+      </div>{" "}
       {finances.entity_note && (
         <p className="text-[10px] font-bold text-amber-700 dark:text-amber-300 bg-amber-50 dark:bg-amber-500/10 border border-amber-100 dark:border-amber-500/25 rounded-2xl px-3 py-2">
           Budget de la {finances.entity_note} — l'entité qui exerce les compétences départementales sur ce territoire.
         </p>
-      )}
+      )}{" "}
       <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
         {rows.map((r, i) => (
           <div key={i} className="p-4 rounded-3xl bg-card border border-border shadow-sm space-y-1" title={r.hint}>
-            <p className="text-[9px] font-black uppercase tracking-widest text-muted-foreground">{r.label}</p>
-            <p className={`text-xl font-black ${r.accent}`}>{fmt(r.value)}</p>
-            {perHab(r.hab) && <p className="text-[10px] font-bold text-muted-foreground">{perHab(r.hab)}</p>}
-            {r.note && <p className="mt-1.5 text-[10px] leading-snug text-muted-foreground italic">{r.note}</p>}
+            <p className="text-[9px] font-black uppercase tracking-widest text-muted-foreground">{r.label}</p>{" "}
+            <p className={`text-xl font-black ${r.accent}`}>{fmt(r.value)}</p>{" "}
+            {perHab(r.hab) && <p className="text-[10px] font-bold text-muted-foreground">{perHab(r.hab)}</p>}{" "}
+            {r.note && <p className="mt-1.5 text-[10px] leading-snug text-muted-foreground italic">{r.note}</p>}{" "}
           </div>
         ))}
-      </div>
+      </div>{" "}
       {social.length > 0 && (
         <div className="pt-2 space-y-3">
           <p className="text-[9px] font-black uppercase tracking-widest text-muted-foreground">
             Action sociale — compétence du département
-          </p>
+          </p>{" "}
           <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
             {social.map((r, i) => (
               <div key={i} className="p-4 rounded-3xl bg-muted border border-border space-y-1" title={r.hint}>
-                <p className="text-[9px] font-black uppercase tracking-widest text-muted-foreground">{r.label}</p>
-                <p className="text-lg font-black text-foreground">{fmt(r.value)}</p>
-                {perHab(r.hab) && <p className="text-[10px] font-bold text-muted-foreground">{perHab(r.hab)}</p>}
+                <p className="text-[9px] font-black uppercase tracking-widest text-muted-foreground">{r.label}</p>{" "}
+                <p className="text-lg font-black text-foreground">{fmt(r.value)}</p>{" "}
+                {perHab(r.hab) && <p className="text-[10px] font-bold text-muted-foreground">{perHab(r.hab)}</p>}{" "}
               </div>
             ))}
           </div>
         </div>
-      )}
+      )}{" "}
       {/* Aide à la lecture, directement sur la fiche (demandé) : que signifient ces chiffres ? */}
       <details className="group rounded-2xl border border-border bg-slate-50/60 dark:bg-slate-500/10 p-3">
         <summary className="flex cursor-pointer list-none items-center gap-2 text-[11px] font-black uppercase tracking-widest text-muted-foreground">
-          <HelpCircle size={13} className="text-sky-500" /> Comment lire ces chiffres ?
+          <HelpCircle size={13} className="text-sky-500" /> Comment lire ces chiffres ?{" "}
           <span className="ml-auto text-sky-500 transition-transform group-open:rotate-45 text-base leading-none">+</span>
-        </summary>
+        </summary>{" "}
         <ul className="mt-2 space-y-1.5 text-[12px] leading-relaxed text-muted-foreground">
-          <li><strong>Recettes / dépenses de fonctionnement</strong> : ce que la collectivité encaisse et dépense pour son activité courante (salaires, services…).</li>
-          <li><strong>Épargne brute</strong> : recettes − dépenses de fonctionnement. C'est ce qui reste pour investir et rembourser la dette. Plus elle est élevée, plus la collectivité a de marge.</li>
-          <li><strong>Dépenses d'investissement</strong> : les dépenses durables (travaux, équipements, bâtiments).</li>
-          <li><strong>Encours de dette</strong> : le capital qu'il reste à rembourser sur les emprunts, au 31 décembre.</li>
+          <li><strong>Recettes / dépenses de fonctionnement</strong> : ce que la collectivité encaisse et dépense pour son activité courante (salaires, services…).</li>{" "}
+          <li><strong>Épargne brute</strong> : recettes − dépenses de fonctionnement. C'est ce qui reste pour investir et rembourser la dette. Plus elle est élevée, plus la collectivité a de marge.</li>{" "}
+          <li><strong>Dépenses d'investissement</strong> : les dépenses durables (travaux, équipements, bâtiments).</li>{" "}
+          <li><strong>Encours de dette</strong> : le capital qu'il reste à rembourser sur les emprunts, au 31 décembre.</li>{" "}
           <li>Le <strong>€/habitant</strong> permet de comparer des collectivités de tailles différentes.</li>
         </ul>
-      </details>
+      </details>{" "}
 
       <p className="text-[10px] text-slate-400/80 italic">
         Budget principal, exercice {finances.year}. Dépenses/recettes réelles retraitées. Source : OFGL (data.ofgl.fr).

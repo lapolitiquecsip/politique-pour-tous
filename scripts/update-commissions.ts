@@ -356,14 +356,24 @@ async function readBalance(): Promise<number | null> {
 
 /** Analyse une réunion et l'enregistre. Renvoie un compte rendu d'exécution. */
 async function analyseOne(supabase: any, row: any) {
-  const transcript = await loadTranscript(row);
+  // Une audition transcrite depuis sa vidéo n'a PAS de compte rendu à relire : son seul texte
+  // est la transcription gardée en base. La relire à son adresse (la page de la vidéo, ou le
+  // renvoi « pas de compte rendu écrit ») produisait une « analyse » de quelques lignes qui
+  // écrasait celle du transcripteur — chaque audition transcrite était ainsi défaite au passage
+  // suivant.
+  const { data: garde } = await supabase.from("commission_transcripts").select("texte, source").eq("ref", row.ref).maybeSingle();
+  const transcrite = garde?.source === "transcription";
+  if (!transcrite && /videos\.(assemblee-nationale|senat)\.fr/.test(row.cr_url || "")) {
+    return { ok: false, reason: "audition à transcrire depuis sa vidéo : laissée au transcripteur", dropped: 0, inTok: 0, outTok: 0 };
+  }
+  const transcript = transcrite ? garde!.texte : await loadTranscript(row);
   if (!transcript) return { ok: false, reason: "verbatim introuvable", dropped: 0, inTok: 0, outTok: 0 };
   const mots = transcript.split(/\s+/).length;
 
   // L'Assemblée n'a pas rédigé de compte rendu : le document ne fait que renvoyer à la vidéo.
   // Ce n'est pas à cette tâche de l'« analyser » — elle n'aurait que trois lignes sous les
   // yeux. Le transcripteur (transcribe-auditions.ts) s'en charge, à partir de l'enregistrement.
-  if (/n.a pas fait l.objet d.un compte rendu/i.test(transcript)) {
+  if (!transcrite && /n.a pas fait l.objet d.un compte rendu/i.test(transcript)) {
     // On le NOTE sur la ligne : laissée sans rien, elle revenait en tête de file à chaque
     // passage et prenait la place des réunions qui, elles, attendent une analyse.
     const { error: e } = await supabase.from("commission_reports").update({
@@ -376,8 +386,10 @@ async function analyseOne(supabase: any, row: any) {
 
   // Le compte rendu intégral est gardé : l'abonné le lit sur le site, sans être renvoyé
   // chez l'Assemblée ou le Sénat.
-  await supabase.from("commission_transcripts").upsert(
-    { ref: row.ref, texte: transcript, mots, source: "compte_rendu", maj_le: new Date().toISOString() }, { onConflict: "ref" });
+  if (!transcrite) {
+    await supabase.from("commission_transcripts").upsert(
+      { ref: row.ref, texte: transcript, mots, source: "compte_rendu", maj_le: new Date().toISOString() }, { onConflict: "ref" });
+  }
 
   // Quelques lignes ne s'analysent pas. Soit la réunion tient vraiment en un paragraphe
   // (désignation d'un rapporteur) et le texte se suffit ; soit le Sénat n'a encore publié
@@ -428,7 +440,7 @@ Une première analyse de ce compte rendu de ${mots} mots ne contenait que ${rich
   }
 
   const { analysis: brute, dropped } = dropInventedQuotes(parsed, transcript);
-  const analysis: Analysis = { ...brute, v: VERSION_ANALYSE };
+  const analysis: Analysis = { ...brute, v: VERSION_ANALYSE, ...(transcrite ? { source: "transcription" } : {}) };
   // Trace du contrôle : une analyse restée mince malgré la seconde demande se repère en base.
   (analysis as any).mesure = { mots, elements: richesse(analysis), attendu };
   const points = analysis.points_cles ?? [];

@@ -31,7 +31,7 @@ import { mkdtemp, readFile, readdir, rm, stat } from "node:fs/promises";
 import { tmpdir } from "node:os";
 import { join } from "node:path";
 import { request as requeteHttps } from "node:https";
-import { SYSTEM, SHAPE, dropInventedQuotes, type Analysis } from "./lib/commission-prompt";
+import { SYSTEM, SHAPE, dropInventedQuotes, VERSION_ANALYSE, type Analysis } from "./lib/commission-prompt";
 import { demanderJSON, llmDisponible, llmVoie } from "./lib/llm";
 
 const execFileP = promisify(execFile);
@@ -275,7 +275,9 @@ async function main() {
         .update({
           // La provenance reste visible : ces analyses viennent d'un enregistrement,
           // pas d'un compte rendu relu par l'Assemblée.
-          analysis: { ...analysis, source: "transcription" },
+          // Version courante : sans elle, la tâche des comptes rendus écrits prenait cette
+          // analyse pour une ancienne et la « refaisait » à partir de la page vide.
+          analysis: { ...analysis, v: VERSION_ANALYSE, source: "transcription" },
           summary, word_count: mots, analyzed_at: new Date().toISOString(),
         })
         .eq("ref", r.ref);
@@ -433,7 +435,7 @@ async function depuisLeJournal(supabase: any, reste: number): Promise<number> {
         title: it.titre, meeting_date: it.date_objet,
         // La source consultable est la vidéo elle-même.
         cr_url: video.url, video_url: video.url,
-        analysis: { ...analysis, source: "transcription" },
+        analysis: { ...analysis, v: VERSION_ANALYSE, source: "transcription" },
         summary, word_count: mots, analyzed_at: new Date().toISOString(), updated_at: new Date().toISOString(),
       }, { onConflict: "ref" });
       if (err) throw new Error(err.message);

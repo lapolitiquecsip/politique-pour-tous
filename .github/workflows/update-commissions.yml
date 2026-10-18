@@ -60,7 +60,10 @@ jobs:
           LLM_FREE_API_KEY: ${{ secrets.LLM_FREE_API_KEY }}
           # Secours payant facultatif.
           DEEPSEEK_API_KEY: ${{ secrets.DEEPSEEK_API_KEY }}
-          LLM_SECOURS_PAYANT: ${{ vars.LLM_SECOURS_PAYANT }}   # « 1 » : secours deepseek-v4-flash si Gemini sature
+          # Secours payant ALLUMÉ pour cette tâche (décision de l'éditeur, 18/10/2026) : chaque
+          # réunion doit avoir son analyse complète le jour même. Quand le quota gratuit est
+          # épuisé, l'analyse passe par deepseek-v4-flash — environ 0,3 centime par réunion.
+          LLM_SECOURS_PAYANT: '1'
           # Facultatif : bascule vers un modèle moins cher (deepseek-flash) sans toucher au code.
           COMMISSION_MODEL: ${{ vars.COMMISSION_MODEL }}
         run: >

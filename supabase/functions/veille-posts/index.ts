@@ -8,24 +8,29 @@ import { quasiDoublon } from "../../../src/lib/quasi-doublon.ts";
  * d'arriver dans la base : lois promulguées, textes notés importants, actualité
  * des candidats et des partis, sondages, programmes, pétitions qui franchissent
  * un seuil, primaires, controverses d'élus, indicateurs publics, fil d'accueil.
- * Il garde ce qui mérite un post et envoie, pour chaque info, un e-mail avec de
- * quoi l'écrire : les faits sourcés, pourquoi ça compte, des angles, un
- * carrousel Instagram, un texte LinkedIn, des hashtags, une idée de visuel et
- * les points de vigilance.
+ * Il garde ce qui mérite un post et en prépare la matière : les faits sourcés,
+ * pourquoi ça compte, des angles, un carrousel Instagram, un texte LinkedIn, des
+ * hashtags, une idée de visuel et les points de vigilance.
+ *
+ * Rien n'est envoyé dans la journée (demande de l'équipe : pas d'alertes en
+ * continu). Le soir, un seul e-mail récapitule toutes les idées de post DU JOUR :
+ * seules comptent les infos datées de ce jour-là (heure de Paris) ; une dépêche
+ * collectée aujourd'hui mais datée d'avant-hier n'en fait pas partie.
  *
  * La note vient d'une règle quand l'événement parle de lui-même (une loi
  * promulguée, une pétition à 500 000 signatures), sinon de l'IA, par lots, sur
  * une grille fixe. Le brouillon n'a droit qu'aux faits que le site détient ; tout
- * chiffre du brouillon absent de ces faits est signalé en tête de l'e-mail.
+ * chiffre du brouillon absent de ces faits est signalé dans le récapitulatif.
  *
  * Paramètres (secrets de la fonction) :
  *   VEILLE_POSTS_TO      destinataire des e-mails (jamais écrit dans le dépôt, public)
  *   VEILLE_POSTS_TOKEN   jeton exigé dans l'en-tête x-veille-token (pg_cron le lit dans le coffre)
  *   RESEND_API_KEY, LLM_FREE_API_KEY  déjà posés pour contact et topic-brief
- *   VEILLE_SEUIL (4), VEILLE_MAX_PASSAGE (3), VEILLE_MAX_JOUR (15)
+ *   VEILLE_SEUIL (4), VEILLE_MAX_PASSAGE (3 brouillons par passage), VEILLE_HEURE_RECAP (21, heure de Paris)
  *
  * Appels manuels : POST avec l'en-tête x-veille-token ; ?essai=1 renvoie ce qui
- * serait envoyé sans rien écrire ni envoyer.
+ * serait retenu sans rien écrire ; ?recap=1 envoie le récapitulatif du jour
+ * (?recap=1&force=1 : même hors de l'heure prévue ou s'il est déjà parti).
  *
  * Déploiement : supabase functions deploy veille-posts --no-verify-jwt
  */
@@ -35,8 +40,13 @@ declare const EdgeRuntime: { waitUntil(p: Promise<unknown>): void };
 const SITE = "https://lapolitiquecestsimple.fr";
 const SEUIL = Number(Deno.env.get("VEILLE_SEUIL") ?? 4);
 const MAX_PASSAGE = Number(Deno.env.get("VEILLE_MAX_PASSAGE") ?? 3);
-const MAX_JOUR = Number(Deno.env.get("VEILLE_MAX_JOUR") ?? 15);
+const HEURE_RECAP = Number(Deno.env.get("VEILLE_HEURE_RECAP") ?? 21);
 const HEURE = 3600_000;
+
+/** Le jour (AAAA-MM-JJ) d'une date, à l'heure de Paris. */
+const jourParis = (d: string | number | Date = Date.now()) =>
+  new Date(d).toLocaleDateString("fr-CA", { timeZone: "Europe/Paris" });
+const heureParis = () => Number(new Date().toLocaleString("en-GB", { timeZone: "Europe/Paris", hour: "2-digit", hour12: false }));
 
 type Signal = {
   cle: string;
@@ -45,6 +55,8 @@ type Signal = {
   url?: string | null;
   lien_site?: string | null;
   date_objet?: string | null;
+  /** Quand l'info est sortie (publication, vote, journal officiel…). Sans elle : le moment où on la repère. */
+  jour?: string | null;
   faits: string;
   importance?: number;
   raison?: string;
@@ -252,13 +264,14 @@ async function veilleSuivis(db: SupabaseClient, e?: Etat): Promise<Releve> {
     .gt("cree_le", de).gte("importance", 4).order("cree_le").limit(40);
   const titres = (data ?? []).map(t => t.titre);
   const { data: liens } = titres.length
-    ? await db.from("entity_feed").select("title, url").in("title", titres)
-    : { data: [] as { title: string; url: string }[] };
-  const url = new Map((liens ?? []).map((l: any) => [l.title, l.url]));
+    ? await db.from("entity_feed").select("title, url, published_at").in("title", titres)
+    : { data: [] as { title: string; url: string; published_at: string }[] };
+  const article = new Map((liens ?? []).map((l: any) => [l.title, l]));
   return {
     signaux: (data ?? []).map(t => ({
-      cle: `suivi:${t.cle}`, source: `Parti · ${t.entite}`, titre: t.titre, url: url.get(t.titre) ?? null,
-      lien_site: `${SITE}/partis`, date_objet: t.cree_le,
+      cle: `suivi:${t.cle}`, source: `Parti · ${t.entite}`, titre: t.titre, url: article.get(t.titre)?.url ?? null,
+      // cree_le est le moment du tri : la date de l'article dit quand l'info est sortie.
+      lien_site: `${SITE}/partis`, date_objet: article.get(t.titre)?.published_at ?? t.cree_le,
       faits: [t.evenement || t.titre, `Acteur : ${t.entite}`, `Nature : ${t.nature}`, t.raison ? `Pourquoi c'est notable : ${t.raison}` : ""].filter(Boolean).join("\n"),
     })),
     etat: { curseur: plusRecent((data ?? []).map(t => t.cree_le), de), instantane: null },
@@ -285,7 +298,8 @@ async function veilleSondages(db: SupabaseClient, e?: Etat): Promise<Releve> {
     signaux.push({
       cle: `sondage:${s.id}`, source: `Sondage · ${s.institut}`,
       titre: `Sondage ${s.institut} (1er tour, ${s.date_fin}) : ${lignes.slice(0, 2).join(", ")}`,
-      url: s.source_url, lien_site: `${SITE}/presidentielles-2027`, date_objet: s.date_fin,
+      // La fin du terrain précède la publication de deux ou trois jours : c'est la parution qui compte.
+      url: s.source_url, lien_site: `${SITE}/presidentielles-2027`, date_objet: s.date_fin, jour: s.cree_le,
       faits: [`Sondage ${s.institut}${s.commanditaire ? ` pour ${s.commanditaire}` : ""}, terrain achevé le ${s.date_fin}${s.echantillon ? `, ${s.echantillon} personnes interrogées` : ""}, premier tour (hypothèse principale).`, ...lignes,
         "Un sondage mesure des intentions à une date donnée, ce n'est pas une prédiction."].join("\n"),
     });
@@ -301,7 +315,8 @@ async function veilleControverses(db: SupabaseClient, e?: Etat): Promise<Releve>
   return {
     signaux: (data ?? []).map(c => ({
       cle: `controverse:${c.id}`, source: `Élu · ${c.personne}`, titre: `${c.personne} : ${court(c.texte, 110)}`,
-      url: ((c.sources ?? []) as any[])[0]?.url ?? null, lien_site: SITE, date_objet: c.date_faits,
+      // date_faits peut remonter à des années : l'info du jour, c'est l'article qui en parle.
+      url: ((c.sources ?? []) as any[])[0]?.url ?? null, lien_site: SITE, date_objet: c.date_faits, jour: c.creee_le,
       faits: [court(c.texte, 1500), "Affaire judiciaire ou controverse : respecter la présomption d'innocence, citer les sources, distinguer enquête, mise en examen et condamnation."].join("\n"),
     })),
     etat: { curseur: plusRecent((data ?? []).map(c => c.creee_le), de), instantane: null },
@@ -510,48 +525,91 @@ function chiffresAVerifier(brief: Brief, faits: string): string[] {
 
 const esc = (s: unknown) => String(s ?? "").replace(/[&<>"]/g, c => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;" }[c] as string));
 const etoiles = (n: number) => "★".repeat(n) + "☆".repeat(5 - n);
+const POLICE = "-apple-system,Segoe UI,Roboto,Arial,sans-serif";
+const hashtags = (l?: string[]) => (l ?? []).map(h => h.startsWith("#") ? h : `#${h}`).join(" ");
 
 function bloc(titre: string, contenu: string, fond = "#ffffff") {
-  return `<tr><td style="padding:0 24px 16px"><div style="background:${fond};border:1px solid #e7e2d6;border-radius:14px;padding:16px 18px">
-<div style="font:800 11px/1 -apple-system,Segoe UI,Roboto,Arial;letter-spacing:.14em;text-transform:uppercase;color:#64748b;margin-bottom:10px">${titre}</div>${contenu}</div></td></tr>`;
+  return `<div style="background:${fond};border:1px solid #e7e2d6;border-radius:12px;padding:14px 16px;margin-top:10px">
+<div style="font:800 10px/1 ${POLICE};letter-spacing:.14em;text-transform:uppercase;color:#64748b;margin-bottom:8px">${titre}</div>${contenu}</div>`;
 }
-const para = (t: string) => `<p style="margin:0 0 8px;font:15px/1.55 -apple-system,Segoe UI,Roboto,Arial;color:#0f172a">${esc(t).replace(/\n/g, "<br>")}</p>`;
-const liste = (l: string[]) => `<ul style="margin:0;padding-left:20px;font:15px/1.55 -apple-system,Segoe UI,Roboto,Arial;color:#0f172a">${l.map(x => `<li style="margin-bottom:4px">${esc(x)}</li>`).join("")}</ul>`;
+const para = (t: string) => `<p style="margin:0 0 6px;font:15px/1.55 ${POLICE};color:#0f172a">${esc(t).replace(/\n/g, "<br>")}</p>`;
+const liste = (l: string[], ordonnee = false) => {
+  const balise = ordonnee ? "ol" : "ul";
+  return `<${balise} style="margin:0;padding-left:20px;font:15px/1.55 ${POLICE};color:#0f172a">${l.map(x => `<li style="margin-bottom:4px">${esc(x)}</li>`).join("")}</${balise}>`;
+};
 
-function rendu(p: any): { sujet: string; html: string; texte: string } {
+/** Une idée de post, complète : de quoi écrire le post sans rouvrir le site. */
+function fiche(p: any, n: number): string {
   const b: Brief | null = p.brief;
-  const imp = p.importance ?? 4;
-  const lignes: string[] = [];
-  lignes.push(`<tr><td style="background:#0b1020;padding:22px 24px;border-radius:18px 18px 0 0">
-<div style="font:800 11px/1 -apple-system,Segoe UI,Roboto,Arial;letter-spacing:.16em;text-transform:uppercase;color:#fbbf24">Idée de post · ${esc(p.source)}</div>
-<div style="margin-top:10px;font:800 22px/1.25 -apple-system,Segoe UI,Roboto,Arial;color:#ffffff">${esc(b?.accroche || p.titre)}</div>
-<div style="margin-top:10px;font:14px/1.4 -apple-system,Segoe UI,Roboto,Arial;color:#cbd5e1"><span style="color:#fbbf24">${etoiles(imp)}</span> &nbsp;${esc(p.raison ?? "")}</div></td></tr><tr><td style="height:16px"></td></tr>`);
-  if (p.chiffres_a_verifier?.length) {
-    lignes.push(bloc("⚠ Chiffres à vérifier avant de publier", para(`Le brouillon cite ${p.chiffres_a_verifier.join(", ")}, absent(s) des faits du site. Vérifiez-les à la source ou retirez-les.`), "#fff7ed"));
-  }
+  const imp = p.importance ?? SEUIL;
   const liens = [p.url ? `<a href="${esc(p.url)}" style="color:#1d4ed8">Source</a>` : "", p.lien_site ? `<a href="${esc(p.lien_site)}" style="color:#1d4ed8">Page du site à partager</a>` : ""].filter(Boolean).join(" &nbsp;·&nbsp; ");
-  lignes.push(bloc("L'info", para(p.titre) + (b?.faits_cles?.length ? liste(b.faits_cles) : para(p.faits)) + (liens ? `<p style="margin:10px 0 0;font:14px -apple-system,Segoe UI,Roboto,Arial">${liens}</p>` : "")));
-  if (b) {
-    lignes.push(bloc("Pourquoi ça mérite un post", para(b.pourquoi)));
-    if (b.angles?.length) lignes.push(bloc("Angles possibles", liste(b.angles)));
-    if (b.instagram?.slides?.length) {
-      lignes.push(bloc("Instagram · carrousel", `<ol style="margin:0 0 10px;padding-left:22px;font:15px/1.55 -apple-system,Segoe UI,Roboto,Arial;color:#0f172a">${b.instagram.slides.map(x => `<li style="margin-bottom:6px">${esc(x)}</li>`).join("")}</ol>`
-        + para(`Légende : ${b.instagram.legende ?? ""}`) + para((b.instagram.hashtags ?? []).map(h => h.startsWith("#") ? h : `#${h}`).join(" ")), "#fdf4ff"));
-    }
-    if (b.linkedin?.texte) {
-      lignes.push(bloc("LinkedIn · texte prêt à adapter", para(b.linkedin.texte) + para((b.linkedin.hashtags ?? []).map(h => h.startsWith("#") ? h : `#${h}`).join(" ")), "#eff6ff"));
-    }
-    if (b.visuel) lignes.push(bloc("Idée de visuel", para(b.visuel)));
-    if (b.prudence?.length) lignes.push(bloc("Points de vigilance", liste(b.prudence), "#f8fafc"));
-  } else {
-    lignes.push(bloc("Brouillon", para("Le brouillon IA n'a pas pu être rédigé (modèle gratuit indisponible). Les faits bruts sont ci-dessus.")));
+  const parties = [
+    `<div id="idee-${n}" style="font:800 11px/1 ${POLICE};letter-spacing:.14em;text-transform:uppercase;color:#b45309">Idée n° ${n} · ${esc(p.source)}</div>
+<div style="margin-top:8px;font:800 21px/1.25 ${POLICE};color:#0f172a">${esc(b?.accroche || p.titre)}</div>
+<div style="margin-top:6px;font:14px/1.4 ${POLICE};color:#475569"><span style="color:#d97706">${etoiles(imp)}</span> &nbsp;${esc(p.raison ?? "")}</div>`,
+  ];
+  if (p.chiffres_a_verifier?.length) {
+    parties.push(bloc("⚠ Chiffres à vérifier avant de publier", para(`Le brouillon cite ${p.chiffres_a_verifier.join(", ")}, absent(s) des faits du site : vérifiez à la source ou retirez.`), "#fff7ed"));
   }
-  lignes.push(`<tr><td style="padding:4px 24px 28px;font:12px/1.5 -apple-system,Segoe UI,Roboto,Arial;color:#94a3b8">Veille automatique de La Politique C'est Simple — détecté le ${esc(new Date(p.detecte_le ?? Date.now()).toLocaleString("fr-FR", { timeZone: "Europe/Paris" }))}. Les brouillons sont rédigés par IA à partir des seuls faits du site : relisez avant de publier.</td></tr>`);
+  parties.push(bloc("L'info", para(p.titre) + (b?.faits_cles?.length ? liste(b.faits_cles) : para(court(p.faits, 1200)))
+    + (liens ? `<p style="margin:8px 0 0;font:14px ${POLICE}">${liens}</p>` : "")));
+  if (b) {
+    parties.push(bloc("Pourquoi ça mérite un post", para(b.pourquoi)));
+    if (b.angles?.length) parties.push(bloc("Angles possibles", liste(b.angles)));
+    if (b.instagram?.slides?.length) {
+      parties.push(bloc("Instagram · carrousel", liste(b.instagram.slides, true)
+        + `<div style="height:8px"></div>` + para(`Légende : ${b.instagram.legende ?? ""}`) + para(hashtags(b.instagram.hashtags)), "#fdf4ff"));
+    }
+    if (b.linkedin?.texte) parties.push(bloc("LinkedIn · texte prêt à adapter", para(b.linkedin.texte) + para(hashtags(b.linkedin.hashtags)), "#eff6ff"));
+    if (b.visuel) parties.push(bloc("Idée de visuel", para(b.visuel)));
+    if (b.prudence?.length) parties.push(bloc("Points de vigilance", liste(b.prudence), "#f8fafc"));
+  } else {
+    parties.push(bloc("Brouillon", para("Le brouillon n'a pas pu être rédigé (modèle gratuit indisponible) : les faits ci-dessus restent utilisables.")));
+  }
+  return `<tr><td style="padding:0 20px 18px"><div style="background:#ffffff;border-radius:16px;padding:20px 20px 16px;border:1px solid #e7e2d6">${parties.join("")}</div></td></tr>`;
+}
+
+const JOURS = ["dimanche", "lundi", "mardi", "mercredi", "jeudi", "vendredi", "samedi"];
+const MOIS = ["janvier", "février", "mars", "avril", "mai", "juin", "juillet", "août", "septembre", "octobre", "novembre", "décembre"];
+const jourEnClair = (j: string) => { const d = new Date(`${j}T12:00:00Z`); return `${JOURS[d.getUTCDay()]} ${d.getUTCDate()} ${MOIS[d.getUTCMonth()]}`; };
+
+/** Au-delà, Gmail coupe le message (« Message tronqué ») : les suivantes passent en liste. */
+const FICHES_MAX = 15;
+
+function recapitulatif(jour: string, idees: any[], aSurveiller: any[]): { sujet: string; html: string; texte: string } {
+  const quand = jourEnClair(jour);
+  const lignes: string[] = [];
+  lignes.push(`<tr><td style="background:#0b1020;padding:24px 22px;border-radius:18px 18px 0 0">
+<div style="font:800 11px/1 ${POLICE};letter-spacing:.16em;text-transform:uppercase;color:#fbbf24">Récap du jour · idées de post</div>
+<div style="margin-top:10px;font:800 24px/1.25 ${POLICE};color:#ffffff">${idees.length ? `${idees.length} idée${idees.length > 1 ? "s" : ""} de post pour ce ${esc(quand)}` : `Rien de marquant ce ${esc(quand)}`}</div>
+<div style="margin-top:8px;font:14px/1.45 ${POLICE};color:#cbd5e1">Uniquement des infos sorties aujourd'hui, de la plus importante à la moins importante.</div></td></tr><tr><td style="height:16px"></td></tr>`);
+  if (idees.length) {
+    lignes.push(`<tr><td style="padding:0 20px 18px"><div style="background:#ffffff;border-radius:16px;padding:16px 18px;border:1px solid #e7e2d6">
+<div style="font:800 10px/1 ${POLICE};letter-spacing:.14em;text-transform:uppercase;color:#64748b;margin-bottom:8px">Au sommaire</div>
+<ol style="margin:0;padding-left:22px;font:15px/1.6 ${POLICE};color:#0f172a">${idees.map((p, i) => `<li><a href="#idee-${i + 1}" style="color:#0f172a;text-decoration:none"><span style="color:#d97706">${etoiles(p.importance ?? SEUIL)}</span> ${esc(p.brief?.accroche || p.titre)}</a> <span style="color:#94a3b8">· ${esc(p.source)}</span></li>`).join("")}</ol></div></td></tr>`);
+    idees.slice(0, FICHES_MAX).forEach((p, i) => lignes.push(fiche(p, i + 1)));
+    if (idees.length > FICHES_MAX) {
+      lignes.push(`<tr><td style="padding:0 20px 18px">${bloc("Et aussi", liste(idees.slice(FICHES_MAX).map(p => `${p.titre} (${p.source})`)))}</td></tr>`);
+    }
+  } else {
+    lignes.push(`<tr><td style="padding:0 20px 18px">${bloc("Aujourd'hui", para("Aucune info du jour n'a été jugée assez forte pour un post (4/5 ou plus)."))}</td></tr>`);
+  }
+  if (aSurveiller.length) {
+    lignes.push(`<tr><td style="padding:0 20px 18px">${bloc("À surveiller (3/5 : pas encore un post, peut le devenir)", liste(aSurveiller.map(p => `${p.titre} — ${p.source}`)), "#f8fafc")}</td></tr>`);
+  }
+  lignes.push(`<tr><td style="padding:4px 22px 28px;font:12px/1.5 ${POLICE};color:#94a3b8">Veille automatique de La Politique C'est Simple. Les brouillons sont rédigés par IA à partir des seuls faits du site : relisez avant de publier.</td></tr>`);
   const html = `<!doctype html><html lang="fr"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"></head>
 <body style="margin:0;background:#f4f1ea"><table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="background:#f4f1ea;padding:20px 0"><tr><td align="center">
-<table role="presentation" width="640" cellpadding="0" cellspacing="0" style="max-width:640px;width:100%;background:#f4f1ea">${lignes.join("")}</table></td></tr></table></body></html>`;
-  const texte = [b?.accroche || p.titre, `${etoiles(imp)} ${p.raison ?? ""}`, "", p.faits, "", b ? `INSTAGRAM\n${(b.instagram?.slides ?? []).map((x, i) => `${i + 1}. ${x}`).join("\n")}\n\nLINKEDIN\n${b.linkedin?.texte ?? ""}` : "", "", p.url ?? "", p.lien_site ?? ""].join("\n");
-  return { sujet: `${imp >= 5 ? "🔥" : "💡"} Idée de post · ${court(b?.accroche || p.titre, 110)}`, html, texte };
+<table role="presentation" width="660" cellpadding="0" cellspacing="0" style="max-width:660px;width:100%">${lignes.join("")}</table></td></tr></table></body></html>`;
+  const texte = [`Idées de post du ${quand}`, "", ...idees.map((p, i) => {
+    const b: Brief | null = p.brief;
+    return [`${i + 1}. ${b?.accroche || p.titre} (${p.source}, ${etoiles(p.importance ?? SEUIL)})`, p.url ?? "",
+      b ? `Instagram :\n${(b.instagram?.slides ?? []).map((x, k) => `  ${k + 1}. ${x}`).join("\n")}\nLinkedIn :\n${b.linkedin?.texte ?? ""}` : court(p.faits, 600), ""].join("\n");
+  })].join("\n");
+  return {
+    sujet: idees.length ? `📮 ${idees.length} idée${idees.length > 1 ? "s" : ""} de post · ${quand}` : `📮 Récap du ${quand} · rien de marquant`,
+    html, texte,
+  };
 }
 
 async function envoyer(sujet: string, html: string, texte: string): Promise<void> {
@@ -568,11 +626,27 @@ async function envoyer(sujet: string, html: string, texte: string): Promise<void
 }
 
 /* ─────────────────────────────── Le passage ─────────────────────────────── */
+// Toutes les 15 minutes : relever, noter, préparer les brouillons. Rien n'est envoyé.
+
+/** Rédige le brouillon d'une idée et le range ; false si le modèle n'a pas répondu. */
+async function preparer(db: SupabaseClient, p: any): Promise<boolean> {
+  try {
+    const brief = await rediger(p as Signal);
+    const chiffres = chiffresAVerifier(brief, `${p.faits} ${p.titre}`);
+    await db.from("veille_posts").update({ brief, chiffres_a_verifier: chiffres, statut: "pret", erreur: null }).eq("cle", p.cle);
+    p.brief = brief; p.chiffres_a_verifier = chiffres;
+    return true;
+  } catch (e) {
+    await db.from("veille_posts").update({ tentatives: (p.tentatives ?? 0) + 1, erreur: court((e as Error).message, 300) }).eq("cle", p.cle);
+    return false;
+  }
+}
 
 async function passage(db: SupabaseClient, essai: boolean) {
   const journal: string[] = [];
   const etats = await lireEtats(db);
   const cand = await candidatsParId(db);
+  const aujourdhui = jourParis();
 
   // 1. Relever.
   const veilleurs: [string, () => Promise<Releve>][] = [
@@ -607,7 +681,7 @@ async function passage(db: SupabaseClient, essai: boolean) {
   const { data: recents } = await db.from("veille_posts").select("cle, titre, statut")
     .gte("detecte_le", new Date(Date.now() - 72 * HEURE).toISOString());
   const vus = new Set((recents ?? []).map(r => r.cle));
-  const titres = (recents ?? []).filter(r => r.statut !== "ignore").map(r => r.titre);
+  const titres = (recents ?? []).filter(r => r.statut !== "ignore" && r.statut !== "hors_jour").map(r => r.titre);
   const retenus: Signal[] = [];
   for (const s of nouveaux.sort((a, b) => (b.importance ?? 0) - (a.importance ?? 0))) {
     if (vus.has(s.cle)) continue;
@@ -615,24 +689,30 @@ async function passage(db: SupabaseClient, essai: boolean) {
     if ([...titres, ...retenus.map(r => r.titre)].some(t => quasiDoublon(t, s.titre))) continue;
     retenus.push(s);
   }
+  // Le jour de l'info, et non celui de la collecte : seules les infos du jour font le récap.
+  const jourDe = (s: Signal) => jourParis(s.jour ?? s.date_objet ?? Date.now());
 
-  if (essai) return { journal, retenus };
+  if (essai) return { journal, retenus: retenus.map(s => ({ ...s, jour: jourDe(s), du_jour: jourDe(s) === aujourdhui })) };
 
   if (retenus.length) {
-    const { error } = await db.from("veille_posts").upsert(retenus.map(s => ({
-      cle: s.cle, source: s.source, titre: court(s.titre, 300), url: s.url ?? null, lien_site: s.lien_site ?? null,
-      date_objet: s.date_objet ?? null, faits: court(s.faits, 6000),
-      importance: s.importance ?? null, raison: s.raison ?? null, methode: s.methode ?? null,
-      statut: s.importance != null ? (s.importance >= SEUIL ? "a_envoyer" : "ignore") : "a_noter",
-    })), { onConflict: "cle", ignoreDuplicates: true });
+    const { error } = await db.from("veille_posts").upsert(retenus.map(s => {
+      const jour = jourDe(s);
+      return {
+        cle: s.cle, source: s.source, titre: court(s.titre, 300), url: s.url ?? null, lien_site: s.lien_site ?? null,
+        date_objet: s.date_objet ?? null, jour, faits: court(s.faits, 6000),
+        importance: s.importance ?? null, raison: s.raison ?? null, methode: s.methode ?? null,
+        // Une info d'un autre jour est gardée (elle sert au dédoublonnage) mais ni notée ni préparée.
+        statut: jour !== aujourdhui ? "hors_jour" : s.importance != null ? (s.importance >= SEUIL ? "a_preparer" : "ignore") : "a_noter",
+      };
+    }), { onConflict: "cle", ignoreDuplicates: true });
     if (error) throw error;
   }
   // L'état n'avance qu'une fois les signaux enregistrés : rien ne se perd sur une panne.
   await db.from("veille_posts_etat").upsert(nouveauxEtats, { onConflict: "source" });
 
   // 3. Noter ce qui attend une note (y compris les restes d'un passage où l'IA était saturée).
-  const { data: aNoter } = await db.from("veille_posts").select("cle, source, titre, faits, detecte_le")
-    .eq("statut", "a_noter").gte("detecte_le", new Date(Date.now() - 12 * HEURE).toISOString()).limit(80);
+  const { data: aNoter } = await db.from("veille_posts").select("cle, source, titre, faits")
+    .eq("statut", "a_noter").eq("jour", aujourdhui).limit(80);
   for (let i = 0; i < (aNoter ?? []).length; i += 40) {
     const lot = aNoter!.slice(i, i + 40).map((r, k) => ({ i: k + 1, s: r as Signal, cle: r.cle }));
     try {
@@ -640,7 +720,7 @@ async function passage(db: SupabaseClient, essai: boolean) {
       for (const { i: n, cle } of lot) {
         const note = notes.get(n);
         if (!note) continue;
-        await db.from("veille_posts").update({ importance: note.note, raison: note.raison, methode: "ia", statut: note.note >= SEUIL ? "a_envoyer" : "ignore" }).eq("cle", cle);
+        await db.from("veille_posts").update({ importance: note.note, raison: note.raison, methode: "ia", statut: note.note >= SEUIL ? "a_preparer" : "ignore" }).eq("cle", cle);
       }
       journal.push(`notés : ${lot.length}`);
     } catch (e) {
@@ -648,48 +728,60 @@ async function passage(db: SupabaseClient, essai: boolean) {
       break;
     }
   }
-  await db.from("veille_posts").update({ statut: "non_note" }).eq("statut", "a_noter").lt("detecte_le", new Date(Date.now() - 12 * HEURE).toISOString());
+  await db.from("veille_posts").update({ statut: "non_note" }).eq("statut", "a_noter").lt("jour", aujourdhui);
 
-  // 4. Rédiger et envoyer, les plus importantes d'abord, dans la limite du jour.
-  await db.from("veille_posts").update({ statut: "perime" }).eq("statut", "a_envoyer").lt("detecte_le", new Date(Date.now() - 36 * HEURE).toISOString());
-  const { count: envoyes } = await db.from("veille_posts").select("cle", { count: "exact", head: true })
-    .gte("envoye_le", new Date(Date.now() - 24 * HEURE).toISOString());
-  const place = Math.max(0, Math.min(MAX_PASSAGE, MAX_JOUR - (envoyes ?? 0)));
-  const { data: aEnvoyer } = place ? await db.from("veille_posts").select("*").eq("statut", "a_envoyer")
-    .order("importance", { ascending: false }).order("detecte_le", { ascending: false }).limit(place) : { data: [] as any[] };
-  for (const p of aEnvoyer ?? []) {
-    let brief: Brief | null = p.brief;
-    if (!brief) {
-      try { brief = await rediger(p as Signal); } catch (e) {
-        // Le gratuit est saturé : on réessaie aux passages suivants, puis on envoie les faits seuls
-        // plutôt que de laisser passer l'info.
-        const age = Date.now() - Date.parse(p.detecte_le);
-        if (p.tentatives < 3 && age < 4 * HEURE) {
-          await db.from("veille_posts").update({ tentatives: p.tentatives + 1, erreur: court((e as Error).message, 300) }).eq("cle", p.cle);
-          continue;
-        }
-      }
-    }
-    const chiffres = brief ? chiffresAVerifier(brief, `${p.faits} ${p.titre}`) : [];
-    const { sujet, html, texte } = rendu({ ...p, brief, chiffres_a_verifier: chiffres });
-    try {
-      await envoyer(sujet, html, texte);
-      await db.from("veille_posts").update({ brief, chiffres_a_verifier: chiffres, statut: "envoye", envoye_le: new Date().toISOString(), erreur: null }).eq("cle", p.cle);
-      journal.push(`envoyé : ${court(p.titre, 60)}`);
-    } catch (e) {
-      await db.from("veille_posts").update({ brief, statut: p.tentatives >= 3 ? "echec" : "a_envoyer", tentatives: p.tentatives + 1, erreur: court((e as Error).message, 300) }).eq("cle", p.cle);
-      journal.push(`envoi raté : ${(e as Error).message}`);
-    }
+  // 4. Préparer les brouillons dans la journée, quand le quota gratuit est disponible :
+  //    le soir, il est souvent épuisé, et le récap n'aurait plus que les faits bruts.
+  const { data: aPreparer } = await db.from("veille_posts").select("*").eq("statut", "a_preparer").eq("jour", aujourdhui)
+    .lt("tentatives", 6).order("importance", { ascending: false }).order("detecte_le").limit(MAX_PASSAGE);
+  for (const p of aPreparer ?? []) {
+    journal.push(`${await preparer(db, p) ? "préparé" : "brouillon reporté"} : ${court(p.titre, 60)}`);
   }
   return { journal };
+}
+
+/* ─────────────────────────────── Le récap du soir ─────────────────────────────── */
+
+async function recap(db: SupabaseClient, force: boolean): Promise<string> {
+  const jour = jourParis();
+  // pg_cron tourne en UTC : il frappe à deux heures (hiver / été) et seule celle qui tombe
+  // à HEURE_RECAP à Paris envoie. L'état « recap » empêche un second envoi le même jour.
+  if (!force && heureParis() !== HEURE_RECAP) return `pas l'heure (${heureParis()} h à Paris)`;
+  const { data: etat } = await db.from("veille_posts_etat").select("curseur").eq("source", "recap").maybeSingle();
+  if (!force && etat?.curseur && jourParis(etat.curseur) === jour) return "récap déjà envoyé aujourd'hui";
+
+  const { data: idees } = await db.from("veille_posts").select("*").eq("jour", jour).gte("importance", SEUIL)
+    .in("statut", ["pret", "a_preparer", "a_envoyer", "envoye"]).order("importance", { ascending: false }).order("date_objet", { ascending: false });
+  // Dernière chance pour les brouillons manquants ; sinon, les faits seuls.
+  let essais = 0;
+  for (const p of idees ?? []) if (!p.brief && essais++ < 4) await preparer(db, p);
+  const { data: aSurveiller } = await db.from("veille_posts").select("titre, source").eq("jour", jour).eq("importance", SEUIL - 1)
+    .order("detecte_le", { ascending: false }).limit(8);
+
+  const { sujet, html, texte } = recapitulatif(jour, idees ?? [], aSurveiller ?? []);
+  await envoyer(sujet, html, texte);
+  const maintenant = new Date().toISOString();
+  if (idees?.length) await db.from("veille_posts").update({ recap_le: maintenant }).in("cle", idees.map(p => p.cle));
+  await db.from("veille_posts_etat").upsert({ source: "recap", curseur: maintenant, maj_le: maintenant });
+  return `récap envoyé : ${idees?.length ?? 0} idée(s), ${Math.round(html.length / 1024)} Ko`;
 }
 
 Deno.serve(async (req) => {
   const jeton = Deno.env.get("VEILLE_POSTS_TOKEN");
   if (!jeton || req.headers.get("x-veille-token") !== jeton) return new Response("interdit", { status: 403 });
   const db = createClient(Deno.env.get("SUPABASE_URL")!, Deno.env.get("SUPABASE_SERVICE_ROLE_KEY")!, { auth: { persistSession: false } });
-  const essai = new URL(req.url).searchParams.get("essai") === "1";
-  if (essai) return Response.json(await passage(db, true));
+  const params = new URL(req.url).searchParams;
+  if (params.get("essai") === "1") return Response.json(await passage(db, true));
+  if (params.get("recap") === "1") {
+    const lancer = recap(db, params.get("force") === "1")
+      .then(r => { console.log(`[veille-posts] ${r}`); return r; })
+      .catch(e => { console.error("[veille-posts] récap", e); return `échec : ${(e as Error).message}`; });
+    // Appel à la main (attendre=1) : on rend le résultat. Depuis pg_cron (qui n'attend que
+    // 10 s) : réponse immédiate, le récap se termine en arrière-plan.
+    if (params.get("attendre") === "1") return Response.json({ recap: await lancer });
+    EdgeRuntime.waitUntil(lancer);
+    return Response.json({ ok: true }, { status: 202 });
+  }
 
   // pg_net n'attend pas : on répond tout de suite et le passage continue en arrière-plan.
   // Le verrou évite deux passages simultanés si l'un déborde sur le quart d'heure suivant.

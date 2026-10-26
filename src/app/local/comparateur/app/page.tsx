@@ -14,6 +14,7 @@ import { REGIONS, DEPARTMENTS } from "@/lib/data/territories";
 import { useRegionPaths } from "@/lib/data/useRegionPaths";
 import { departmentPaths } from "@/lib/data/departmentPaths";
 import { api } from "@/lib/api";
+import { provenanceLine } from "@/lib/data/indicator-sources";
 
 interface SelectedTerritory {
   id: string;
@@ -574,7 +575,10 @@ function ComparateurContent() {
             <div className="absolute top-0 left-1/2 -translate-x-1/2 w-px h-full bg-slate-200/60 hidden lg:block" />{" "}
             
             <div className="relative z-10">
-              <h3 className="text-3xl font-staatliches uppercase tracking-widest mb-16 text-center bg-gradient-to-r from-rose-600 via-fuchsia-600 to-rose-600 bg-clip-text text-transparent">Indicateurs de Performance Comparative</h3>{" "}
+              <h3 className="text-3xl font-staatliches uppercase tracking-widest mb-4 text-center bg-gradient-to-r from-rose-600 via-fuchsia-600 to-rose-600 bg-clip-text text-transparent">Indicateurs comparés</h3>{" "}
+              <p className="mx-auto mb-16 max-w-2xl text-center text-xs font-semibold leading-relaxed text-muted-foreground">
+                Chiffres officiels bruts, sans note ni classement maison : chaque ligne indique son producteur et l&apos;année des données, qui peut différer d&apos;un territoire à l&apos;autre. La valeur en vert n&apos;est signalée que lorsque le sens est sans ambiguïté (moins de chômage, plus d&apos;espérance de vie…) ; population, densité ou part de logements sociaux restent neutres.
+              </p>{" "}
               
               {!sideA && !sideB ? (
                 <div className="mt-12 text-center text-muted-foreground font-bold italic uppercase tracking-widest text-xs">
@@ -586,10 +590,10 @@ function ComparateurContent() {
                     {
                       title: "Démographie",
                       metrics: [
-                        { key: "demographie.populationTotal", label: "Population Totale", color: "text-blue-500", format: (v: any) => v ? v.toLocaleString('fr-FR') : 'NC', max: 13000000 },
-                        { key: "demographie.densite", label: "Densité (hab/km²)", color: "text-blue-500", format: (v: any) => v ? v.toLocaleString('fr-FR') : 'NC', max: 21000 },
-                        { key: "demographie.moins25ans", label: "Moins de 25 ans (%)", color: "text-blue-500", format: (v: any) => v ? `${v}%` : 'NC', max: 100 },
-                        { key: "demographie.plus65ans", label: "Plus de 65 ans (%)", color: "text-blue-500", format: (v: any) => v ? `${v}%` : 'NC', max: 100 },
+                        { key: "demographie.populationTotal", label: "Population Totale", color: "text-blue-500", format: (v: any) => v ? v.toLocaleString('fr-FR') : 'NC', max: 13000000, neutral: true },
+                        { key: "demographie.densite", label: "Densité (hab/km²)", color: "text-blue-500", format: (v: any) => v ? v.toLocaleString('fr-FR') : 'NC', max: 21000, neutral: true },
+                        { key: "demographie.moins25ans", label: "Moins de 25 ans (%)", color: "text-blue-500", format: (v: any) => v ? `${v}%` : 'NC', max: 100, neutral: true },
+                        { key: "demographie.plus65ans", label: "Plus de 65 ans (%)", color: "text-blue-500", format: (v: any) => v ? `${v}%` : 'NC', max: 100, neutral: true },
                       ]
                     },
                     {
@@ -619,31 +623,31 @@ function ComparateurContent() {
                     {
                       title: "Sécurité",
                       metrics: [
-                        { key: "securite.atteintesPersonnes", label: "Atteintes personnes / 1000", color: "text-amber-700 dark:text-amber-400", format: (v: any) => v ? v : 'NC', max: 50, inverse: true },
-                        { key: "securite.atteintesBiens", label: "Atteintes biens / 1000", color: "text-amber-700 dark:text-amber-400", format: (v: any) => v ? v : 'NC', max: 100, inverse: true },
+                        { key: "securite.atteintesPersonnes", label: "Violences enregistrées / 1 000 hab.", color: "text-amber-700 dark:text-amber-400", format: (v: any) => v ? v : 'NC', max: 50, inverse: true },
+                        { key: "securite.atteintesBiens", label: "Vols et cambriolages / 1 000 hab.", color: "text-amber-700 dark:text-amber-400", format: (v: any) => v ? v : 'NC', max: 100, inverse: true },
                       ]
                     },
                     {
                       title: "Logement",
                       metrics: [
-                        { key: "logement.prixM2", label: "Prix moyen au m²", color: "text-cyan-500", format: (v: any) => v ? `${v.toLocaleString('fr-FR')} €` : 'NC', max: 15000, inverse: true },
-                        { key: "logement.logementsSociaux", label: "Logements sociaux (%)", color: "text-cyan-500", format: (v: any) => v ? `${v}%` : 'NC', max: 100 },
-                        { key: "logement.proprietaires", label: "Propriétaires (%)", color: "text-cyan-500", format: (v: any) => v ? `${v}%` : 'NC', max: 100 },
+                        { key: "logement.prixM2", label: "Prix médian au m² (ventes)", color: "text-cyan-500", format: (v: any) => v ? `${v.toLocaleString('fr-FR')} €` : 'NC', max: 15000, neutral: true },
+                        { key: "logement.logementsSociaux", label: "Logements sociaux (%)", color: "text-cyan-500", format: (v: any) => v ? `${v}%` : 'NC', max: 100, neutral: true },
+                        { key: "logement.proprietaires", label: "Propriétaires (%)", color: "text-cyan-500", format: (v: any) => v ? `${v}%` : 'NC', max: 100, neutral: true },
                       ]
                     },
                     {
                       title: "Finances Locales",
                       metrics: [
-                        { key: "finances.budgetHabitant", label: "Budget par habitant", color: "text-pink-500", format: (v: any) => v ? `${v} €` : 'NC', max: 5000 },
+                        { key: "finances.budgetHabitant", label: "Budget par habitant", color: "text-pink-500", format: (v: any) => v ? `${v} €` : 'NC', max: 5000, neutral: true },
                         { key: "finances.endettement", label: "Taux d'endettement (%)", color: "text-pink-500", format: (v: any) => v ? `${v}%` : 'NC', max: 150, inverse: true },
-                        { key: "finances.investissement", label: "Part investissement (%)", color: "text-pink-500", format: (v: any) => v ? `${v}%` : 'NC', max: 100 },
+                        { key: "finances.investissement", label: "Part investissement (%)", color: "text-pink-500", format: (v: any) => v ? `${v}%` : 'NC', max: 100, neutral: true },
                       ]
                     },
                     {
                       title: "Environnement",
                       metrics: [
                         { key: "environnement.qualiteAir", label: "Indice ATMO moyen (1-6)", color: "text-purple-500", format: (v: any) => v ?? 'NC', max: 6, inverse: true },
-                        { key: "environnement.surfaceNaturelle", label: "Surface naturelle (%)", color: "text-purple-500", format: (v: any) => v ? `${v}%` : 'NC', max: 100 },
+                        { key: "environnement.surfaceNaturelle", label: "Surface naturelle (%)", color: "text-purple-500", format: (v: any) => v ? `${v}%` : 'NC', max: 100, neutral: true },
                       ]
                     }
                   ].map((category, catIdx) => (
@@ -659,9 +663,10 @@ function ComparateurContent() {
                           const valA = getVal(sideA?.data, metric.key);
                           const valB = getVal(sideB?.data, metric.key);
                           
-                          // Determine winner (A, B, or none)
+                          // Une valeur n'est mise en avant que si le sens du « mieux » ne se discute
+                          // pas : plus d'habitants ou plus de logements sociaux n'est pas une victoire.
                           let winner = null;
-                          if (valA !== null && valB !== null) {
+                          if (!metric.neutral && valA !== null && valB !== null) {
                             if (valA > valB) winner = metric.inverse ? 'B' : 'A';
                             else if (valB > valA) winner = metric.inverse ? 'A' : 'B';
                           }
@@ -702,6 +707,12 @@ function ComparateurContent() {
                                   {renderBar(valB, metric.max, true)}
                                 </div>
                               </div>{" "}
+                              {(valA !== null || valB !== null) && (
+                                <div className="flex justify-between gap-4 text-[9px] font-bold uppercase tracking-wider text-muted-foreground/80">
+                                  <span>{valA !== null ? provenanceLine(sideA?.data.provenance?.[metric.key]) : ""}</span>{" "}
+                                  <span className="text-right">{valB !== null ? provenanceLine(sideB?.data.provenance?.[metric.key]) : ""}</span>
+                                </div>
+                              )}
                             </div>
                           );
                         })}

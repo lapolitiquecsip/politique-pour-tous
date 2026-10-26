@@ -4,6 +4,7 @@ import Anthropic from '@anthropic-ai/sdk';
 
 import { CLAUDE_MODEL } from '@/lib/ai-model';
 import { chiffresAbsents } from './verificationSource';
+import { fusionnerSources, memeSujet, regroupable } from '../feed-events';
 import { demanderJSON, llmDisponible } from '../../../scripts/lib/llm';
 // --- Configuration ---
 // On instanciera Supabase et Anthropic à l'intérieur des fonctions pour s'assurer que les variables d'environnement sont chargées.
@@ -477,7 +478,10 @@ function normalizeDate(dateStr: string): string {
 }
 
 /**
- * Insère les articles dans Supabase avec déduplication sur source_url
+ * Insère les articles dans Supabase avec déduplication sur source_url, puis
+ * par événement : une fiche dont le titre recoupe celui d'une fiche des trois
+ * derniers jours (même nouvelle vue par un autre média) n'est pas ajoutée — ses
+ * médias rejoignent la liste des sources de la fiche existante.
  */
 async function upsertArticles(articles: ProcessedArticle[]): Promise<{ inserted: number; errors: number }> {
   let inserted = 0;
@@ -493,6 +497,13 @@ async function upsertArticles(articles: ProcessedArticle[]): Promise<{ inserted:
 
   const supabase = createClient(supabaseUrl, supabaseKey);
 
+  const depuis = new Date(Date.now() - 72 * 3600 * 1000).toISOString();
+  const { data: recentes } = await supabase
+    .from('content')
+    .select('id, titre_simplifie, date_publication, source_url, source_name')
+    .gte('date_publication', depuis);
+  const voisines: { id: string; titre_simplifie: string; date_publication: string; source_url: string; source_name: string }[] = recentes || [];
+
   for (const article of articles) {
     try {
       // Vérifier si l'article existe déjà (par source_url)
@@ -507,6 +518,20 @@ async function upsertArticles(articles: ProcessedArticle[]): Promise<{ inserted:
         continue;
       }
 
+      const ecart = (d: string) => Math.abs(Date.parse(d) - Date.parse(article.date_publication));
+      const jumelle = regroupable(article)
+        ? voisines.find(v => regroupable(v) && ecart(v.date_publication) <= 72 * 3600 * 1000 && memeSujet(v.titre_simplifie, article.titre_simplifie))
+        : undefined;
+      if (jumelle) {
+        const sources = fusionnerSources(jumelle.source_name, article.source_name);
+        if (sources !== jumelle.source_name) {
+          await supabase.from('content').update({ source_name: sources }).eq('id', jumelle.id);
+          jumelle.source_name = sources;
+        }
+        console.log(`[Scraper] Même événement que « ${jumelle.titre_simplifie} » : sources réunies (${sources}).`);
+        continue;
+      }
+
       // Normalisation de l'institution pour respecter le check constraint de la BDD (uniquement: média, assemblée, sénat, gouvernement)
       let mappedInstitution = article.institution;
       if (mappedInstitution === 'donnée_officielle') {
@@ -515,7 +540,7 @@ async function upsertArticles(articles: ProcessedArticle[]): Promise<{ inserted:
         mappedInstitution = 'gouvernement'; // fallback de sécurité
       }
 
-      const { error } = await supabase
+      const { data: inseree, error } = await supabase
         .from('content')
         .insert({
           institution: mappedInstitution,
@@ -526,7 +551,9 @@ async function upsertArticles(articles: ProcessedArticle[]): Promise<{ inserted:
           date_publication: article.date_publication,
           source_url: article.source_url,
           source_name: article.source_name,
-        });
+        })
+        .select('id')
+        .maybeSingle();
 
       if (error) {
         // Si erreur de duplication, c'est OK
@@ -535,6 +562,7 @@ async function upsertArticles(articles: ProcessedArticle[]): Promise<{ inserted:
         errors++;
       } else {
         inserted++;
+        if (inseree) voisines.push({ id: inseree.id, titre_simplifie: article.titre_simplifie, date_publication: article.date_publication, source_url: article.source_url, source_name: article.source_name });
       }
     } catch (err: any) {
       console.warn(`[Scraper] Erreur inattendue insert:`, err.message);

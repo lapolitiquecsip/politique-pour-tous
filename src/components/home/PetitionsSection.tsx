@@ -174,7 +174,7 @@ export default function PetitionsSection() {
                   <CheckCircle2 size={12} className="text-blue-700 dark:text-blue-400" />
                 </div>{" "}
                 <p className="text-xs text-muted-foreground dark:text-slate-400 leading-relaxed font-semibold">
-                  <span className="text-foreground dark:text-slate-100 font-black">100 000 signatures :</span> La pétition est examinée par une commission de l&apos;Assemblée.
+                  <span className="text-foreground dark:text-slate-100 font-black">100 000 signatures :</span> La pétition est mise en avant sur le site de l&apos;Assemblée. Comme toute pétition, elle est confiée à une commission, qui choisit de l&apos;examiner ou de la classer.
                 </p>
               </li>{" "}
               <li className="flex gap-3 items-start">
@@ -182,7 +182,7 @@ export default function PetitionsSection() {
                   <AlertCircle size={12} className="text-indigo-700 dark:text-indigo-400" />
                 </div>{" "}
                 <p className="text-xs text-muted-foreground dark:text-slate-400 leading-relaxed font-semibold">
-                  <span className="text-foreground dark:text-slate-100 font-black">500 000 signatures :</span> Elle peut faire l&apos;objet d&apos;un débat obligatoire au Parlement.
+                  <span className="text-foreground dark:text-slate-100 font-black">500 000 signatures</span> venant d&apos;au moins 30 départements ou outre-mer : la Conférence des présidents peut décider d&apos;un débat en séance. Ce débat n&apos;est pas automatique.
                 </p>
               </li>
             </ul>

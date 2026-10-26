@@ -71,7 +71,7 @@ export const PARCOURS: Record<string, Parcours> = {
       { emoji: "🔁", title: "La navette", text: "Le texte fait des allers-retours entre l'Assemblée et le Sénat jusqu'à une version identique. En cas de désaccord persistant, l'Assemblée a le dernier mot.", diagram: "navette" },
       { emoji: "🗺️", title: "Le chemin complet, étape par étape", text: "De l'idée au décret d'application, voici les onze étapes qu'un texte peut traverser — en gris celles qui n'ont pas toujours lieu.", diagram: "loi-parcours" },
       { emoji: "🗳️", title: "Le vote solennel", text: "Les élus votent l'ensemble du texte. C'est ce vote « sur l'ensemble » qui compte vraiment — la plupart des autres votes portent sur des amendements." },
-      { emoji: "✅", title: "La promulgation", text: "Une fois adoptée, la loi est promulguée par le président, puis publiée au Journal officiel : elle devient applicable." },
+      { emoji: "✅", title: "La promulgation", text: "Une fois adoptée, la loi est promulguée par le président, puis publiée au Journal officiel. Elle entre en vigueur à la date qu'elle fixe, sinon le lendemain de sa publication ; les articles qui attendent un décret d'application ne s'appliquent qu'une fois ce décret publié." },
     ],
   },
 
@@ -118,8 +118,8 @@ export const PARCOURS: Record<string, Parcours> = {
     intro: "Comment une pétition peut influencer l'Assemblée.",
     steps: [
       { emoji: "✍️", title: "Signer une pétition", text: "Sur la plateforme officielle de l'Assemblée, tout citoyen peut soutenir une pétition en la signant." },
-      { emoji: "💯", title: "Le seuil des 100 000", text: "À partir de 100 000 signatures, la pétition peut être transmise à la Conférence des présidents de l'Assemblée." },
-      { emoji: "⚖️", title: "La décision", text: "La Conférence des présidents décide de la suite : examen en commission, débat en séance, ou classement. Le site affiche le statut réel de chaque pétition." },
+      { emoji: "💯", title: "Le seuil des 100 000", text: "À 100 000 signatures, la pétition est mise en avant sur le site de l'Assemblée : elle gagne en visibilité, sans que son examen devienne obligatoire." },
+      { emoji: "⚖️", title: "La décision", text: "Toute pétition est confiée à une commission, qui choisit de l'examiner ou de la classer. Au-delà de 500 000 signatures venant d'au moins 30 départements ou outre-mer, la Conférence des présidents peut décider d'un débat en séance — rien d'automatique. Le site affiche le statut réel de chaque pétition." },
     ],
   },
 };

@@ -1,6 +1,7 @@
 "use client";
 
 import { api } from "@/lib/api";
+import { regrouperParEvenement } from "@/lib/feed-events";
 import { motion } from "framer-motion";
 import Link from "next/link";
 import { useState, useEffect } from "react";
@@ -31,7 +32,8 @@ export default function Home() {
     async function load() {
       try {
         const data = await api.getContent(100);
-        setLatestContent(data || []);
+        // Une carte par événement : trois médias sur la même nouvelle = une carte, trois sources.
+        setLatestContent(regrouperParEvenement(data || []));
       } catch (err) {
         console.error("Error loading home content:", err);
       } finally {
@@ -86,7 +88,7 @@ export default function Home() {
             <h2 className="mt-2 text-4xl md:text-6xl font-staatliches uppercase tracking-tight text-foreground dark:text-white">Dernières lois promulguées</h2>{" "}
             <p className="mt-3 text-muted-foreground max-w-2xl mx-auto">Feuilletez les dernières lois — une page par jour et par texte. Cliquez pour voir le parcours complet de chaque loi.</p>{" "}
             <p className="mx-auto mt-4 max-w-md rounded-2xl bg-emerald-50 px-4 py-2.5 text-center text-sm font-bold leading-6 text-emerald-700 dark:bg-emerald-500/10 dark:text-emerald-400">
-              ✅ Publiée au Journal officiel = la loi <strong>entre en vigueur</strong> et devient applicable.
+              ✅ Publiée au Journal officiel, la loi <strong>entre en vigueur</strong> à la date qu&apos;elle fixe, sinon le lendemain. Les articles qui attendent un décret d&apos;application ne s&apos;appliquent qu&apos;une fois ce décret publié.
             </p>
           </div>{" "}
           <JournalOfficielBook />

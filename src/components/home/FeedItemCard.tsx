@@ -48,6 +48,8 @@ interface ContentItem {
   source_name?: string;
   /** Égal au titre affiché quand la fiche reprend la source telle quelle, sans IA. */
   titre_original?: string | null;
+  /** Fiches réunies sur cette carte car elles couvrent le même événement (lib/feed-events). */
+  articles?: { url: string; sources: string }[];
 }
 
 type InstCfg = { label: string; dot: string; tintBg: string; tintText: string };
@@ -161,6 +163,17 @@ export default function FeedItemCard({ item, colorIndex }: { item: ContentItem; 
             </div>
           ) : (
             <span className="text-xs font-semibold text-muted-foreground">Source interne</span>
+          )}
+          {item.articles && item.articles.length > 1 && (
+            <p className="mt-1.5 truncate text-[11px] text-muted-foreground dark:text-slate-400">
+              <span className="font-bold">Même événement :</span>{" "}
+              {item.articles.slice(1).map((a, i) => (
+                <span key={a.url}>
+                  {i > 0 && " · "}
+                  <a href={a.url} target="_blank" rel="noopener noreferrer" className="font-semibold hover:text-foreground hover:underline">{a.sources}</a>
+                </span>
+              ))}
+            </p>
           )}
         </div>
       </div>

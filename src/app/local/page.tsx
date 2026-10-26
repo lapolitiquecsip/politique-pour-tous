@@ -14,6 +14,7 @@ import { usePremium } from "@/lib/hooks/usePremium";
 import { api } from "@/lib/api";
 import { getPremiumUrl, cn } from "@/lib/utils";
 import { departmentPaths } from "@/lib/data/departmentPaths";
+import { provenanceLine } from "@/lib/data/indicator-sources";
 import { useCommuneSearch } from "@/lib/hooks/useCommuneSearch";
 import type { CommuneResult } from "@/lib/hooks/useCommuneSearch";
 import CommuneDetailPanel from "@/components/local/CommuneDetailPanel";
@@ -222,98 +223,77 @@ const DepartmentGridCard: React.FC<{
 
 // Featured cities shown by default (Top 20)
 const FEATURED_CITIES = [
-  { name: "Paris", code: "75056", mayor: "Emmanuel Grégoire", party: "PS", population: "2.1M", image: "/cities/paris_bg_1779624272735.png", safety: 60, education: 90, health: 95, employment: 88 },
-  { name: "Marseille", code: "13055", mayor: "Benoît Payan", party: "DVG", population: "870K", image: "/cities/marseille_bg_1779624285652.png", safety: 55, education: 78, health: 85, employment: 75 },
-  { name: "Lyon", code: "69123", mayor: "Grégory Doucet", party: "EELV", population: "522K", image: "/cities/lyon_bg_1779624298539.png", safety: 72, education: 85, health: 88, employment: 84 },
-  { name: "Toulouse", code: "31555", mayor: "Jean-Luc Moudenc", party: "LR", population: "498K", image: "/cities/toulouse_bg_1779624313174.png", safety: 75, education: 82, health: 80, employment: 78 },
-  { name: "Nice", code: "06088", mayor: "Eric Ciotti", party: "LR", population: "342K", image: "/cities/nice_bg_1779624331877.png", safety: 68, education: 75, health: 82, employment: 72 },
-  { name: "Nantes", code: "44109", mayor: "Johanna Rolland", party: "PS", population: "320K", image: "/cities/nantes_bg_1779624348520.png", safety: 70, education: 84, health: 82, employment: 85 },
-  { name: "Montpellier", code: "34172", mayor: "Michaël Delafosse", party: "PS", population: "300K", image: "/cities/montpellier_bg_1779624362702.png", safety: 65, education: 80, health: 85, employment: 74 },
-  { name: "Strasbourg", code: "67482", mayor: "Catherine Trautmann", party: "PS", population: "290K", image: "/cities/strasbourg_bg_1779624376756.png", safety: 74, education: 85, health: 86, employment: 80 },
-  { name: "Bordeaux", code: "33063", mayor: "Thomas Cazenave", party: "Horizons", population: "260K", image: "/cities/bordeaux_bg_1779624397748.png", safety: 76, education: 88, health: 89, employment: 82 },
-  { name: "Lille", code: "59350", mayor: "Arnaud Deslandes", party: "PS", population: "236K", image: "/cities/lille_bg_1779624410952.png", safety: 62, education: 80, health: 83, employment: 75 },
-  { name: "Rennes", code: "35238", mayor: "Nathalie Appéré", party: "PS", population: "225K", image: "/cities/rennes_bg_1779624423348.png", safety: 80, education: 89, health: 88, employment: 86 },
-  { name: "Reims", code: "51454", mayor: "Arnaud Robinet", party: "Horizons", population: "180K", image: "/cities/reims_bg_1779624439328.png", safety: 72, education: 79, health: 84, employment: 77 },
-  { name: "Toulon", code: "83137", mayor: "Josée Massi", party: "DVD", population: "180K", image: "/cities/toulon_bg_1779624460673.png", safety: 64, education: 74, health: 80, employment: 72 },
-  { name: "Saint-Étienne", code: "42218", mayor: "Régis Juanico", party: "PS", population: "174K", image: "/cities/saint_etienne_bg_1779624474559.png", safety: 60, education: 75, health: 81, employment: 68 },
-  { name: "Le Havre", code: "76351", mayor: "Édouard Philippe", party: "Horizons", population: "165K", image: "/cities/le_havre_bg_1779624488137.png", safety: 65, education: 76, health: 82, employment: 74 },
-  { name: "Grenoble", code: "38185", mayor: "Laurence Ruffin", party: "EELV", population: "158K", image: "/cities/grenoble_bg_1779624501302.png", safety: 58, education: 86, health: 85, employment: 80 },
-  { name: "Dijon", code: "21231", mayor: "Nathalie Koenders", party: "PS", population: "158K", image: "/cities/dijon_bg_1779624520804.png", safety: 78, education: 85, health: 87, employment: 82 },
-  { name: "Angers", code: "49007", mayor: "Christophe Béchu", party: "Horizons", population: "155K", image: "/cities/angers_bg.png", safety: 82, education: 88, health: 89, employment: 85 },
-  { name: "Nîmes", code: "30189", mayor: "Vincent Bouget", party: "DVG", population: "148K", image: "/cities/nimes_bg.png", safety: 61, education: 73, health: 80, employment: 70 },
-  { name: "Villeurbanne", code: "69266", mayor: "Cédric Van Styvendael", party: "PS", population: "154K", image: "/cities/villeurbanne_bg.png", safety: 68, education: 82, health: 84, employment: 79 },
+  { name: "Paris", code: "75056", mayor: "Emmanuel Grégoire", party: "PS", population: "2.1M", image: "/cities/paris_bg_1779624272735.png" },
+  { name: "Marseille", code: "13055", mayor: "Benoît Payan", party: "DVG", population: "870K", image: "/cities/marseille_bg_1779624285652.png" },
+  { name: "Lyon", code: "69123", mayor: "Grégory Doucet", party: "EELV", population: "522K", image: "/cities/lyon_bg_1779624298539.png" },
+  { name: "Toulouse", code: "31555", mayor: "Jean-Luc Moudenc", party: "LR", population: "498K", image: "/cities/toulouse_bg_1779624313174.png" },
+  { name: "Nice", code: "06088", mayor: "Eric Ciotti", party: "LR", population: "342K", image: "/cities/nice_bg_1779624331877.png" },
+  { name: "Nantes", code: "44109", mayor: "Johanna Rolland", party: "PS", population: "320K", image: "/cities/nantes_bg_1779624348520.png" },
+  { name: "Montpellier", code: "34172", mayor: "Michaël Delafosse", party: "PS", population: "300K", image: "/cities/montpellier_bg_1779624362702.png" },
+  { name: "Strasbourg", code: "67482", mayor: "Catherine Trautmann", party: "PS", population: "290K", image: "/cities/strasbourg_bg_1779624376756.png" },
+  { name: "Bordeaux", code: "33063", mayor: "Thomas Cazenave", party: "Horizons", population: "260K", image: "/cities/bordeaux_bg_1779624397748.png" },
+  { name: "Lille", code: "59350", mayor: "Arnaud Deslandes", party: "PS", population: "236K", image: "/cities/lille_bg_1779624410952.png" },
+  { name: "Rennes", code: "35238", mayor: "Nathalie Appéré", party: "PS", population: "225K", image: "/cities/rennes_bg_1779624423348.png" },
+  { name: "Reims", code: "51454", mayor: "Arnaud Robinet", party: "Horizons", population: "180K", image: "/cities/reims_bg_1779624439328.png" },
+  { name: "Toulon", code: "83137", mayor: "Josée Massi", party: "DVD", population: "180K", image: "/cities/toulon_bg_1779624460673.png" },
+  { name: "Saint-Étienne", code: "42218", mayor: "Régis Juanico", party: "PS", population: "174K", image: "/cities/saint_etienne_bg_1779624474559.png" },
+  { name: "Le Havre", code: "76351", mayor: "Édouard Philippe", party: "Horizons", population: "165K", image: "/cities/le_havre_bg_1779624488137.png" },
+  { name: "Grenoble", code: "38185", mayor: "Laurence Ruffin", party: "EELV", population: "158K", image: "/cities/grenoble_bg_1779624501302.png" },
+  { name: "Dijon", code: "21231", mayor: "Nathalie Koenders", party: "PS", population: "158K", image: "/cities/dijon_bg_1779624520804.png" },
+  { name: "Angers", code: "49007", mayor: "Christophe Béchu", party: "Horizons", population: "155K", image: "/cities/angers_bg.png" },
+  { name: "Nîmes", code: "30189", mayor: "Vincent Bouget", party: "DVG", population: "148K", image: "/cities/nimes_bg.png" },
+  { name: "Villeurbanne", code: "69266", mayor: "Cédric Van Styvendael", party: "PS", population: "154K", image: "/cities/villeurbanne_bg.png" },
 ];
 
-const teaserConfigs = {
+// Aperçu du comparateur : deux territoires réels et trois indicateurs officiels,
+// lus en base comme dans le comparateur lui-même (aucun chiffre écrit ici).
+// Chaque valeur est montrée avec son producteur et son année.
+type TeaserMetric = { label: string; key: string; format: (v: number) => string };
+const nombreFr = (v: number, d = 1) => v.toLocaleString("fr-FR", { maximumFractionDigits: d });
+const teaserConfigs: Record<"commune" | "departement" | "region", {
+  title: string; description: string;
+  entityA: string; subA: string; codeA: string;
+  entityB: string; subB: string; codeB: string;
+  metrics: TeaserMetric[];
+}> = {
   commune: {
     title: "Comparateur de communes",
-    description: "Comparez instantanément les budgets, la sécurité, l'éducation, la santé et la qualité de vie de toutes les villes françaises.",
-    entityA: "Lyon",
-    subA: "69000",
-    entityB: "Bordeaux",
-    subB: "33000",
-    metric1Label: "Sécurité",
-    metric1ValA: "7.6 / 10",
-    metric1ValB: "8.2 / 10",
-    metric1ColorA: "text-emerald-800 dark:text-emerald-300",
-    metric1ColorB: "text-emerald-800 dark:text-emerald-300",
-    metric2Label: "Éducation",
-    metric2ValA: "82 / 100",
-    metric2ValB: "88 / 100",
-    metric2ColorA: "text-foreground",
-    metric2ColorB: "text-foreground",
-    metric3Label: "Cadre de vie",
-    metric3ValA: "Moyen",
-    metric3ValB: "Excellent",
-    metric3ColorA: "text-amber-800 dark:text-amber-300",
-    metric3ColorB: "text-emerald-800 dark:text-emerald-300",
+    description: "Comparez les indicateurs publics de deux villes — délinquance enregistrée, prix de l'immobilier, qualité de l'air, risques… — chacun avec sa source et son année.",
+    entityA: "Lyon", subA: "69000", codeA: "69123",
+    entityB: "Bordeaux", subB: "33000", codeB: "33063",
+    metrics: [
+      { label: "Violences / 1 000 hab.", key: "securite.atteintesPersonnes", format: v => nombreFr(v) },
+      { label: "Vols et cambriolages / 1 000 hab.", key: "securite.atteintesBiens", format: v => nombreFr(v) },
+      { label: "Prix médian au m²", key: "logement.prixM2", format: v => `${nombreFr(v, 0)} €` },
+    ],
   },
   departement: {
     title: "Comparateur de départements",
-    description: "Comparez instantanément les indicateurs financiers, la sécurité locale, la fiscalité et les performances de tous les départements.",
-    entityA: "Rhône",
-    subA: "N° 69",
-    entityB: "Gironde",
-    subB: "N° 33",
-    metric1Label: "Sécurité",
-    metric1ValA: "8.2 / 10",
-    metric1ValB: "6.5 / 10",
-    metric1ColorA: "text-emerald-800 dark:text-emerald-300",
-    metric1ColorB: "text-amber-800 dark:text-amber-300",
-    metric2Label: "Budget / Hab.",
-    metric2ValA: "1 240 €",
-    metric2ValB: "980 €",
-    metric2ColorA: "text-foreground",
-    metric2ColorB: "text-foreground",
-    metric3Label: "Fiscalité",
-    metric3ValA: "Basse",
-    metric3ValB: "Élevée",
-    metric3ColorA: "text-emerald-800 dark:text-emerald-300",
-    metric3ColorB: "text-rose-800 dark:text-rose-300",
+    description: "Comparez l'emploi, les revenus, l'éducation, la santé, la sécurité et le logement de deux départements, à partir des chiffres officiels datés.",
+    entityA: "Rhône", subA: "N° 69", codeA: "69",
+    entityB: "Gironde", subB: "N° 33", codeB: "33",
+    metrics: [
+      { label: "Taux de chômage", key: "economie.chomage", format: v => `${nombreFr(v)} %` },
+      { label: "Réussite au bac", key: "education.bac", format: v => `${nombreFr(v)} %` },
+      { label: "Violences / 1 000 hab.", key: "securite.atteintesPersonnes", format: v => nombreFr(v) },
+    ],
   },
   region: {
     title: "Comparateur de régions",
-    description: "Comparez les compétences régionales : transports ferroviaires (TER), lycées, développement économique et aménagement.",
-    entityA: "Île-de-France",
-    subA: "12,2 M hab.",
-    entityB: "PACA",
-    subB: "5,1 M hab.",
-    metric1Label: "Transports",
-    metric1ValA: "Très dense",
-    metric1ValB: "Moyen",
-    metric1ColorA: "text-emerald-800 dark:text-emerald-300",
-    metric1ColorB: "text-amber-800 dark:text-amber-300",
-    metric2Label: "Budget Lycées",
-    metric2ValA: "680 M€",
-    metric2ValB: "310 M€",
-    metric2ColorA: "text-foreground",
-    metric2ColorB: "text-foreground",
-    metric3Label: "Développement",
-    metric3ValA: "Très élevé",
-    metric3ValB: "Élevé",
-    metric3ColorA: "text-emerald-800 dark:text-emerald-300",
-    metric3ColorB: "text-emerald-800 dark:text-emerald-300",
-  }
+    description: "Comparez les finances, l'emploi et les conditions de vie de deux régions, à partir des chiffres officiels datés.",
+    entityA: "Île-de-France", subA: "Région", codeA: "R11",
+    entityB: "PACA", subB: "Région", codeB: "R93",
+    metrics: [
+      { label: "Budget par habitant", key: "finances.budgetHabitant", format: v => `${nombreFr(v, 0)} €` },
+      { label: "Taux d'endettement", key: "finances.endettement", format: v => `${nombreFr(v)} %` },
+      { label: "Taux de chômage", key: "economie.chomage", format: v => `${nombreFr(v)} %` },
+    ],
+  },
+};
+
+const lireCase = (data: any, key: string): number | null => {
+  const v = key.split(".").reduce((o, k) => (o == null ? null : o[k]), data);
+  return typeof v === "number" ? v : null;
 };
 
 export default function LocalPoliticsPage() {
@@ -353,6 +333,17 @@ function LocalPoliticsContent() {
   }, [userId, isPremium, communeSearch]);
 
   const [selectedTerritory, setSelectedTerritory] = useState<any | null>(null);
+
+  // Vrais chiffres de l'aperçu du comparateur, rechargés au changement d'onglet.
+  const [teaserData, setTeaserData] = useState<{ tab: string; a: any; b: any } | null>(null);
+  useEffect(() => {
+    const config = teaserConfigs[activeTab];
+    let annule = false;
+    Promise.all([api.getTerritoryDetail(config.codeA, config.entityA), api.getTerritoryDetail(config.codeB, config.entityB)])
+      .then(([a, b]) => { if (!annule) setTeaserData({ tab: activeTab, a, b }); })
+      .catch(() => { if (!annule) setTeaserData({ tab: activeTab, a: null, b: null }); });
+    return () => { annule = true; };
+  }, [activeTab]);
 
   useEffect(() => {
     const code = searchParams.get('code');
@@ -841,7 +832,7 @@ function LocalPoliticsContent() {
             
             {/* Premium Teaser / Comparator Access */}
             {(() => {
-              const config = teaserConfigs[activeTab] || teaserConfigs.commune;
+              const config = teaserConfigs[activeTab];
               return (
                 <div className="bg-gradient-to-br from-amber-400 to-orange-500 rounded-[2.5rem] p-8 text-foreground space-y-6 shadow-xl shadow-orange-200">
                   {pLoading ? (
@@ -869,7 +860,7 @@ function LocalPoliticsContent() {
                         <h3 className="text-3xl font-staatliches uppercase tracking-wide leading-none">{config.title}</h3>{" "}
                         <p className="text-xs font-semibold opacity-95 leading-relaxed">
                           {isPremium 
-                            ? "Utilisez notre outil d'analyse comparative en temps réel pour comparer les budgets et indicateurs de performance."
+                            ? "Comparez deux territoires indicateur par indicateur, à partir des chiffres officiels datés."
                             : config.description}
                         </p>
                       </div>{" "}
@@ -893,32 +884,29 @@ function LocalPoliticsContent() {
 
                         {/* Comparative Metrics (Locked & Blurred only if not premium) */}
                         <div className="space-y-3.5 relative">
-                          {/* Metric 1 */}
-                          <div className="grid grid-cols-7 items-center text-xs font-bold text-foreground border-b border-white/10 pb-2">
-                            <div className={cn("col-span-2 text-left font-black", config.metric1ColorA)}>{config.metric1ValA}</div>{" "}
-                            <div className="col-span-3 text-center text-[8px] uppercase tracking-widest text-slate-700 dark:text-slate-200 font-extrabold flex items-center justify-center gap-1">
-                              <Scale size={10} className="opacity-60" /> {config.metric1Label}
-                            </div>{" "}
-                            <div className={cn("col-span-2 text-right font-black", config.metric1ColorB)}>{config.metric1ValB}</div>
-                          </div>{" "}
-                          
-                          {/* Metric 2 */}
-                          <div className="grid grid-cols-7 items-center text-xs font-bold text-foreground border-b border-white/10 pb-2">
-                            <div className={cn("col-span-2 text-left font-black", config.metric2ColorA)}>{config.metric2ValA}</div>{" "}
-                            <div className="col-span-3 text-center text-[8px] uppercase tracking-widest text-slate-700 dark:text-slate-200 font-extrabold">
-                              {config.metric2Label}
-                            </div>{" "}
-                            <div className={cn("col-span-2 text-right font-black", config.metric2ColorB)}>{config.metric2ValB}</div>
-                          </div>{" "}
-
-                          {/* Metric 3 */}
-                          <div className="grid grid-cols-7 items-center text-xs font-bold text-foreground">
-                            <div className={cn("col-span-2 text-left font-black", config.metric3ColorA)}>{config.metric3ValA}</div>{" "}
-                            <div className="col-span-3 text-center text-[8px] uppercase tracking-widest text-slate-700 dark:text-slate-200 font-extrabold">
-                              {config.metric3Label}
-                            </div>{" "}
-                            <div className={cn("col-span-2 text-right font-black", config.metric3ColorB)}>{config.metric3ValB}</div>
-                          </div>{" "}
+                          {config.metrics.map((metric, i) => {
+                            const pret = teaserData?.tab === activeTab;
+                            const valA = pret ? lireCase(teaserData?.a, metric.key) : null;
+                            const valB = pret ? lireCase(teaserData?.b, metric.key) : null;
+                            const affiche = (v: number | null) => (!pret ? "…" : v === null ? "NC" : metric.format(v));
+                            return (
+                              <div key={metric.key} className={cn("text-xs font-bold text-foreground", i < config.metrics.length - 1 && "border-b border-white/10 pb-2")}>
+                                <div className="grid grid-cols-7 items-center">
+                                  <div className="col-span-2 text-left font-black">{affiche(valA)}</div>{" "}
+                                  <div className="col-span-3 text-center text-[8px] uppercase tracking-widest text-slate-700 dark:text-slate-200 font-extrabold flex items-center justify-center gap-1">
+                                    {i === 0 && <Scale size={10} className="opacity-60 shrink-0" />} {metric.label}
+                                  </div>{" "}
+                                  <div className="col-span-2 text-right font-black">{affiche(valB)}</div>
+                                </div>{" "}
+                                {pret && (valA !== null || valB !== null) && (
+                                  <div className="mt-0.5 flex justify-between gap-2 text-[8px] font-bold uppercase tracking-wider text-slate-700/80 dark:text-slate-200/80">
+                                    <span>{valA !== null ? provenanceLine(teaserData?.a?.provenance?.[metric.key]) : ""}</span>{" "}
+                                    <span className="text-right">{valB !== null ? provenanceLine(teaserData?.b?.provenance?.[metric.key]) : ""}</span>
+                                  </div>
+                                )}
+                              </div>
+                            );
+                          })}{" "}
 
                           {/* Lock Overlay */}
                           {!isPremium && (
@@ -929,7 +917,10 @@ function LocalPoliticsContent() {
                               </div>
                             </div>
                           )}
-                        </div>
+                        </div>{" "}
+                        <p className="mt-4 text-[9px] font-bold leading-snug text-slate-700 dark:text-slate-200">
+                          Exemple réel, chiffres bruts officiels — ni note ni classement. Le comparateur affiche la source et l&apos;année de chaque indicateur.
+                        </p>
                       </div>{" "}
 
                       {isPremium ? (

@@ -2491,12 +2491,22 @@ export const api = {
       if (!current || indicator.reference_year > current.reference_year) newest.set(indicator.indicator_code, indicator);
     }
     payload.indicator_provenance = {};
+    // Provenance par case affichée (« securite.atteintesBiens ») : plusieurs codes
+    // alimentent parfois la même case (INSEE 2022 et SSMSI 2025 pour les vols).
+    // La plus récente l'emporte, au lieu de dépendre de l'ordre de lecture, et la
+    // case garde la source et l'année du chiffre réellement montré.
+    payload.provenance = {};
     for (const [icode, indicator] of newest) {
       const mapping = mappings[icode];
       if (!mapping) continue;
-      payload[mapping[0]][mapping[1]] = indicator.value;
-      payload.indicator_provenance[icode] = { reference_year: indicator.reference_year, unit: indicator.unit, methodology_version: indicator.methodology_version, source_urls: indicator.source_urls, quality_status: indicator.quality_status };
+      const slot = `${mapping[0]}.${mapping[1]}`;
+      const provenance = { reference_year: indicator.reference_year, unit: indicator.unit, methodology_version: indicator.methodology_version, source_urls: indicator.source_urls, quality_status: indicator.quality_status };
+      payload.indicator_provenance[icode] = provenance;
       payload.source_urls.push(...(indicator.source_urls || []));
+      const held = payload.provenance[slot];
+      if (held && held.reference_year >= indicator.reference_year) continue;
+      payload[mapping[0]][mapping[1]] = indicator.value;
+      payload.provenance[slot] = provenance;
     }
     payload.source_urls = [...new Set(payload.source_urls)];
     payload.sources = payload.source_urls.join(' | ');

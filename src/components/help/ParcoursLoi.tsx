@@ -71,7 +71,7 @@ const ETAPES: Etape[] = [
   },
   {
     n: 10, ton: "vert", titre: "La publication au Journal officiel", qui: "État",
-    detail: "C'est la publication qui rend la loi applicable — et non le vote. Sans elle, le texte n'existe pas pour les citoyens.",
+    detail: "C'est la publication, et non le vote, qui permet à la loi de s'appliquer : elle entre en vigueur à la date qu'elle fixe, sinon le lendemain de sa publication. Sans elle, le texte n'existe pas pour les citoyens.",
   },
   {
     n: 11, ton: "gris", titre: "Les décrets d'application", qui: "Gouvernement",

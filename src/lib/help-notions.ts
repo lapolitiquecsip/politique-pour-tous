@@ -24,7 +24,7 @@ export const NOTIONS: Notion[] = [
   { term: "Proposition de loi", def: "Un texte de loi déposé par des parlementaires (députés ou sénateurs), et non par le gouvernement.", routes: ["/deputes", "/lois"] },
   { term: "Navette parlementaire", def: "Pour devenir une loi, un texte doit être voté dans les mêmes termes par l'Assemblée nationale ET le Sénat. La « navette », c'est le va-et-vient du texte entre les deux chambres : chacune l'examine, le modifie, puis le renvoie à l'autre — autant de fois que nécessaire jusqu'à une version identique. Si le désaccord persiste, une commission mixte paritaire (7 députés + 7 sénateurs) tente un compromis ; à défaut, l'Assemblée nationale tranche en dernier ressort à la demande du gouvernement.", example: "Un projet de loi voté par l'Assemblée puis modifié par le Sénat repart à l'Assemblée : c'est un « aller-retour » de la navette.", routes: ["/lois", "/deputes"] },
   { term: "Commission", def: "Un groupe restreint de parlementaires spécialisés (lois, finances, affaires étrangères…) qui examine les textes en détail avant le vote en séance.", routes: ["/lois", "/deputes", "/eurodeputes"] },
-  { term: "Promulgation", def: "L'acte par lequel le président rend une loi définitivement applicable, après son adoption par le Parlement.", routes: ["/lois"] },
+  { term: "Promulgation", def: "L'acte par lequel le président de la République signe la loi adoptée par le Parlement et ordonne sa publication. Elle entre ensuite en vigueur à la date qu'elle fixe, sinon le lendemain de sa publication au Journal officiel.", routes: ["/lois"] },
   { term: "Circonscription", def: "Le territoire dont un député est l'élu. La France est découpée en 577 circonscriptions législatives.", routes: ["/deputes"] },
   { term: "Législature", def: "La période entre deux élections législatives (en principe 5 ans). La 17ᵉ législature a débuté en 2024.", routes: ["/deputes", "/lois"] },
 
@@ -55,8 +55,9 @@ export const NOTIONS: Notion[] = [
   { term: "Taux de participation aux votes", def: "La proportion de scrutins où l'élu a exprimé une position. Attention : cela mesure la participation aux votes, pas la présence physique en séance.", routes: ["/eurodeputes"] },
 
   // ————— Pétitions —————
-  { term: "Seuil des 100 000 signatures", def: "À partir de 100 000 signatures, une pétition de l'Assemblée peut être transmise à la Conférence des présidents, qui décide de la suite (examen, débat ou classement).", routes: ["/"] },
-  { term: "Conférence des présidents", def: "L'instance qui organise le travail de l'Assemblée. Elle décide notamment du sort des pétitions ayant franchi le seuil.", routes: ["/"] },
+  { term: "Seuil des 100 000 signatures", def: "À partir de 100 000 signatures, une pétition de l'Assemblée est mise en avant sur son site. Ce seuil n'oblige pas à l'examiner : comme toute pétition, elle est confiée à une commission, qui choisit de l'examiner ou de la classer.", routes: ["/"] },
+  { term: "Seuil des 500 000 signatures", def: "Avec au moins 500 000 signatures venant d'au moins 30 départements ou collectivités d'outre-mer, la Conférence des présidents peut décider d'organiser un débat en séance publique. Ce débat n'est pas automatique.", routes: ["/"] },
+  { term: "Conférence des présidents", def: "L'instance qui organise le travail de l'Assemblée. Pour une pétition d'au moins 500 000 signatures, c'est elle qui peut décider d'un débat en séance.", routes: ["/"] },
 
   // ————— Présidentielles / élus —————
   { term: "Situation judiciaire", def: "Récapitulatif des affaires judiciaires connues concernant un élu (mises en cause, condamnations), avec leurs dates. « Dossier vierge » = aucune affaire signalée.", routes: ["/eurodeputes", "/deputes", "/senateurs", "/presidentielles-2027", "/executif"] },

@@ -7,11 +7,14 @@ import { Clock, CheckCircle2, Send, Archive, Gavel } from "lucide-react";
  *
  * On NE prédit PAS l'issue (« va-t-elle aboutir ? ») : on décrit où en est la pétition
  * et ce que cet état signifie concrètement dans la procédure. Le libellé brut vient de la
- * plateforme officielle ; les seuils (100 000 signatures) sont ceux du règlement de l'AN.
+ * plateforme officielle ; les seuils (100 000 et 500 000 signatures) sont ceux du règlement de l'AN :
+ * 100 000 = mise en avant sur le site, 500 000 = débat en séance possible (jamais automatique).
+ * Toute pétition est renvoyée à une commission, quel que soit son nombre de signatures.
  */
 type Info = { label: string; explain: string; cls: string; Icon: any };
 
 const SEUIL = 100000;
+const SEUIL_DEBAT = 500000;
 
 export function petitionStatusInfo(status: string | null, signatures: number, threshold: number): Info {
   const s = (status || "").toLowerCase();
@@ -27,7 +30,7 @@ export function petitionStatusInfo(status: string | null, signatures: number, th
   if (/transmis|commission|renvoy/.test(s)) {
     return {
       label: "Transmise à une commission",
-      explain: "Le seuil requis a été franchi : une commission de l'Assemblée est saisie et doit décider de la suite (rapport, débat, ou classement).",
+      explain: "Une commission de l'Assemblée est saisie, comme pour toute pétition quel que soit son nombre de signatures. Elle choisit de l'examiner ou de la classer.",
       cls: "bg-blue-50 dark:bg-blue-500/10 text-blue-700 dark:text-blue-300 border-blue-200 dark:border-blue-500/25",
       Icon: Send,
     };
@@ -35,7 +38,7 @@ export function petitionStatusInfo(status: string | null, signatures: number, th
   if (/d[ée]bat|s[ée]ance|inscrit/.test(s)) {
     return {
       label: "Vers un débat en séance",
-      explain: "La pétition a franchi les étapes menant à une possible inscription à l'ordre du jour de l'Assemblée.",
+      explain: "Un débat en séance publique est envisagé : c'est la Conférence des présidents de l'Assemblée qui décide de l'inscrire à l'ordre du jour.",
       cls: "bg-violet-50 dark:bg-violet-500/10 text-violet-700 dark:text-violet-300 border-violet-200 dark:border-violet-500/25",
       Icon: Gavel,
     };
@@ -50,10 +53,18 @@ export function petitionStatusInfo(status: string | null, signatures: number, th
   }
 
   // Par défaut : en recueil de signatures (« Enregistrée » ou statut inconnu).
+  if (signatures >= SEUIL_DEBAT) {
+    return {
+      label: "Seuil des 500 000 franchi",
+      explain: "Si les signatures viennent d'au moins 30 départements ou outre-mer, la Conférence des présidents peut décider d'organiser un débat en séance. Ce débat n'est pas automatique.",
+      cls: "bg-violet-50 dark:bg-violet-500/10 text-violet-700 dark:text-violet-300 border-violet-200 dark:border-violet-500/25",
+      Icon: Gavel,
+    };
+  }
   if (signatures >= SEUIL) {
     return {
       label: "Seuil des 100 000 franchi",
-      explain: "La pétition peut désormais être transmise à la Conférence des présidents de l'Assemblée, qui décide de la suite : examen en commission, débat, ou classement.",
+      explain: "La pétition est mise en avant sur le site de l'Assemblée. Ce seuil n'oblige pas à l'examiner : la commission saisie décide de la suite (examen ou classement).",
       cls: "bg-amber-50 dark:bg-amber-500/10 text-amber-700 dark:text-amber-300 border-amber-200 dark:border-amber-500/25",
       Icon: CheckCircle2,
     };
@@ -61,7 +72,7 @@ export function petitionStatusInfo(status: string | null, signatures: number, th
   const manque = SEUIL - signatures;
   return {
     label: "En recueil de signatures",
-    explain: `Encore ${manque.toLocaleString("fr-FR")} signature${manque > 1 ? "s" : ""} avant le seuil de 100 000 qui ouvre un examen possible par l'Assemblée.`,
+    explain: `Encore ${manque.toLocaleString("fr-FR")} signature${manque > 1 ? "s" : ""} avant le seuil de 100 000, qui met la pétition en avant sur le site de l'Assemblée.`,
     cls: "bg-muted text-muted-foreground border-border",
     Icon: Clock,
   };

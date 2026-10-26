@@ -399,7 +399,8 @@ export default function MepClient({ mep, initialVotes, embedded }: { mep: any; i
               <p className="flex items-center gap-1.5 text-[10px] font-black uppercase tracking-widest text-white/80">
                 <Sparkles size={12} /> Le vote expliqué
               </p>{" "}
-              <h3 className="mt-1 text-lg font-bold leading-snug">{openVote.title}</h3>{" "}
+              {/* Intitulé officiel en anglais : on montre sa traduction dès qu'elle existe. */}
+              <h3 className="mt-1 text-lg font-bold leading-snug">{exp?.title_fr || openVote.title}</h3>{" "}
               <p className="mt-1 text-[11px] font-bold text-white/70">
                 {fmtDate(openVote.voted_at)}{openVote.reference ? ` · ${openVote.reference}` : ""} · Position : {posLabel[openVote.position] || openVote.position}
                 {openVote.result ? ` · Scrutin ${openVote.result === "ADOPTED" ? "adopté" : "rejeté"}` : ""}

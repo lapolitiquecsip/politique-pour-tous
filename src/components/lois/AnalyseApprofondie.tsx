@@ -94,15 +94,20 @@ export default function AnalyseApprofondie({ dossierId, scrutinId, sujet, repli 
   if (!isPremium) return <Verrou apercu={apercu} sujet={sujet} />;
   if (data === undefined) return <div className="h-40 animate-pulse rounded-3xl bg-amber-400/10" />;
   if (!data) {
-    if (repli) return <>{repli}</>;
+    // Le résumé court n'est jamais présenté comme l'analyse détaillée : l'abonné
+    // sait que l'analyse arrive, et lit le résumé en attendant, annoncé comme tel.
     return (
-      <div data-offre={isPro ? "pro" : undefined} className="flex items-start gap-3 rounded-3xl border border-amber-400/30 bg-amber-400/[0.06] p-5">
-        <Sparkles className="mt-0.5 shrink-0 text-amber-500" size={18} />{" "}
-        <p className="text-[13px] leading-relaxed text-slate-700 dark:text-slate-300">
-          <strong className="text-foreground dark:text-white">Analyse approfondie en préparation.</strong> Elle est rédigée
-          à partir du texte officiel lui-même, article par article, et paraît ici dès qu&apos;elle est prête.
-        </p>
-      </div>
+      <>
+        <div data-offre={isPro ? "pro" : undefined} className="flex items-start gap-3 rounded-3xl border border-amber-400/30 bg-amber-400/[0.06] p-5">
+          <Sparkles className="mt-0.5 shrink-0 text-amber-500" size={18} />{" "}
+          <p className="text-[13px] leading-relaxed text-slate-700 dark:text-slate-300">
+            <strong className="text-foreground dark:text-white">Analyse approfondie en préparation.</strong> Elle est rédigée
+            à partir du texte officiel lui-même, article par article — mesures, chiffres, calendrier, publics concernés —
+            et paraît ici dès qu&apos;elle est prête.{repli ? " En attendant, voici le résumé du vote." : ""}
+          </p>
+        </div>{" "}
+        {repli}
+      </>
     );
   }
   return <Complete a={data} pro={isPro} />;

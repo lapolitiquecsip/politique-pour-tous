@@ -215,7 +215,7 @@ export const api = {
     if (!voteId) return null;
     const { data } = await supabase
       .from('vote_explanations')
-      .select('vote_id, title, reference, subject, explanation, stakes')
+      .select('vote_id, title, title_fr, reference, subject, explanation, stakes')
       .eq('vote_id', voteId)
       .maybeSingle();
     return data;

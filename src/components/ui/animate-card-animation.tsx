@@ -59,10 +59,10 @@ function CardContent({ data }: { data: CardData }) {
             </span>
             <span className={`font-bold max-w-sm leading-snug opacity-90 drop-shadow-sm text-balance ${
               (data.label || data.description || "").length > 120
-                ? 'text-xs sm:text-sm tracking-normal normal-case'
+                ? 'text-[13px] sm:text-sm tracking-normal normal-case'
                 : (data.label || data.description || "").length > 80
-                  ? 'text-[10px] sm:text-xs tracking-wider uppercase'
-                  : 'text-xs sm:text-sm tracking-[0.15em] uppercase'
+                  ? 'text-[13px] sm:text-sm tracking-normal normal-case'
+                  : 'text-sm tracking-normal normal-case'
             }`}>
               {data.label || data.description}
             </span>
@@ -109,7 +109,7 @@ function CardContent({ data }: { data: CardData }) {
             <div className="flex flex-col items-center justify-between w-full h-full py-1">
               {/* Header */}
               <div className="flex items-center gap-1.5 mb-2 sm:mb-3">
-                <span className="bg-white/20 text-white/90 border border-white/10 px-2 py-0.5 rounded text-[10px] font-black uppercase tracking-wider">
+                <span className="bg-white/20 text-white/90 border border-white/10 px-2 py-0.5 rounded text-[11px] font-black uppercase tracking-wider">
                   Fact-Checking
                 </span>{" "}
                 <h1 className="font-staatliches text-2xl sm:text-3xl tracking-wide uppercase leading-none text-white">
@@ -119,7 +119,7 @@ function CardContent({ data }: { data: CardData }) {
 
               {/* Rumeur Box */}
               <div className="bg-black/25 border border-white/5 rounded-xl px-4 py-2.5 text-left w-full mb-3 relative max-w-sm flex-1 flex flex-col justify-center">
-                <span className="absolute -top-2 left-3 bg-rose-600 text-[8px] font-black uppercase px-1.5 py-0.5 rounded tracking-widest text-white shadow-sm border border-rose-400">
+                <span className="absolute -top-2 left-3 bg-rose-600 text-[10px] font-black uppercase px-1.5 py-0.5 rounded tracking-widest text-white shadow-sm border border-rose-400">
                   LA RUMEUR
                 </span>{" "}
                 <p className="text-white/90 italic font-medium leading-snug text-xs sm:text-sm line-clamp-3">
@@ -136,12 +136,12 @@ function CardContent({ data }: { data: CardData }) {
                     : 'border-amber-500'
               } flex flex-col justify-center`}>
                 <div className="flex items-center justify-between mb-1.5">
-                  <span className="text-[10px] font-extrabold uppercase tracking-wider bg-emerald-100 dark:bg-emerald-500/10 text-emerald-800 dark:text-emerald-300 px-2 py-0.5 rounded">
+                  <span className="text-[11px] font-extrabold uppercase tracking-wider bg-emerald-100 dark:bg-emerald-500/10 text-emerald-800 dark:text-emerald-300 px-2 py-0.5 rounded">
                     RÉALITÉ
                   </span>{" "}
                   
                   {verdict && (
-                    <span className={`text-[10px] font-black uppercase px-2 py-0.5 rounded flex items-center gap-1 ${
+                    <span className={`text-[11px] font-black uppercase px-2 py-0.5 rounded flex items-center gap-1 ${
                       isFaux 
                         ? 'bg-rose-100 dark:bg-rose-500/10 text-rose-800 dark:text-rose-300' 
                         : isVrai 
@@ -170,12 +170,12 @@ function CardContent({ data }: { data: CardData }) {
           );
         })() : (
           <>
-            <span className="bg-white/20 text-white px-4 py-1 rounded-full text-[9px] font-black uppercase tracking-[0.2em] mb-4 backdrop-blur-sm">
+            <span className="bg-white/20 text-white px-4 py-1 rounded-full text-xs font-black uppercase tracking-wider mb-4 backdrop-blur-sm">
               {data.title}
             </span>
             <span className={`font-bold max-w-md drop-shadow-sm text-balance text-white/95 ${
               data.description.length > 240
-                ? 'text-[11px] sm:text-xs leading-snug'
+                ? 'text-[13px] sm:text-sm leading-snug'
                 : data.description.length > 150 
                   ? 'text-xs sm:text-sm leading-normal' 
                   : data.description.length > 80 

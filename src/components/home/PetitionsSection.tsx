@@ -51,27 +51,29 @@ function PetitionCard({ petition, idx }: { petition: Petition, idx: number }) {
     >
       <div className="p-5 sm:p-8 flex flex-col h-full">
         <div className="flex justify-between items-start mb-3 sm:mb-6">
-          <span className="px-3 py-1 bg-slate-100 dark:bg-slate-800 text-muted-foreground dark:text-slate-400 text-[10px] font-black uppercase tracking-widest rounded-full">
+          {/* Intitulé de commission en casse normale : en majuscules espacées, il
+              occupait trois lignes et se lisait mal. */}
+          <span className="line-clamp-2 rounded-xl bg-slate-100 px-3 py-1 text-xs font-semibold leading-snug text-slate-600 dark:bg-slate-800 dark:text-slate-300">
             {petition.category}
           </span>{" "}
-          <FileSignature className="text-blue-500 opacity-20 group-hover:opacity-100 transition-opacity" size={24} />
+          <FileSignature className="shrink-0 text-blue-500 opacity-20 group-hover:opacity-100 transition-opacity" size={24} />
         </div>{" "}
 
-        <h3 className="text-lg sm:text-2xl font-bold mb-2 sm:mb-4 italic leading-tight group-hover:text-blue-600 dark:group-hover:text-blue-400 transition-colors line-clamp-2 sm:line-clamp-3">
+        <h3 className="text-lg sm:text-2xl font-bold mb-2 sm:mb-4 leading-snug group-hover:text-blue-600 dark:group-hover:text-blue-400 transition-colors line-clamp-3">
           {petition.title}
         </h3>{" "}
 
-        <div className="text-muted-foreground dark:text-slate-400 text-sm mb-4 sm:mb-8 flex-1 font-medium leading-relaxed line-clamp-2 sm:line-clamp-4 whitespace-pre-line">
+        <div className="text-slate-600 dark:text-slate-400 text-[15px] mb-4 sm:mb-8 flex-1 leading-relaxed line-clamp-3 sm:line-clamp-4 whitespace-pre-line">
           {petition.description}
         </div>{" "}
 
         <div className="space-y-3 sm:space-y-4 mt-auto">
-          <div className="flex justify-between text-[11px] font-black uppercase tracking-wider mb-2">
-            <div className="flex items-center gap-2">
-              <Users size={14} className="text-muted-foreground" />{" "}
-              <span>{petition.signatures.toLocaleString()} Votants</span>
+          <div className="flex flex-wrap items-baseline justify-between gap-x-3 gap-y-1">
+            <div className="flex items-center gap-2 text-[15px] font-bold text-foreground">
+              <Users size={16} className="text-muted-foreground" />{" "}
+              <span>{petition.signatures.toLocaleString("fr-FR")} signatures</span>
             </div>{" "}
-            <span className="text-blue-700 dark:text-blue-400">{cappedPercentage}% du palier</span>
+            <span className="text-[13px] font-semibold text-blue-700 dark:text-blue-400">{cappedPercentage} % du seuil de {dynamicThreshold.toLocaleString("fr-FR")}</span>
           </div>{" "}
 
           <div className="h-2 bg-slate-100 dark:bg-slate-800 rounded-full overflow-hidden">
@@ -133,7 +135,7 @@ export default function PetitionsSection() {
   }, []);
 
   return (
-    <section className="py-14 sm:py-24 px-4 bg-muted dark:bg-slate-950/20 relative overflow-hidden">
+    <section className="py-10 md:py-24 px-4 bg-muted dark:bg-slate-950/20 relative overflow-hidden">
       {/* Fond décoratif */}
       <div aria-hidden="true" className="absolute top-0 left-0 w-full h-full opacity-[0.03] pointer-events-none select-none overflow-hidden">
         <span className="absolute -top-10 -left-10 text-[20rem] font-staatliches leading-none rotate-12">PÉTITIONS</span>{" "}
@@ -150,11 +152,12 @@ export default function PetitionsSection() {
               </span>{" "}
               <span className="text-xs font-black uppercase tracking-widest text-blue-700 dark:text-blue-400">Démocratie Participative</span>
             </div>{" "}
-            <h2 className="text-5xl md:text-7xl font-staatliches uppercase tracking-tighter leading-none mb-6">
+            <h2 className="text-[2.6rem] md:text-7xl font-staatliches uppercase tracking-tighter leading-none mb-4 md:mb-6">
               Le pouvoir <span className="bg-gradient-to-r from-blue-600 to-indigo-600 bg-clip-text text-transparent">citoyen</span>
             </h2>{" "}
-            <p className="text-lg text-muted-foreground dark:text-slate-400 font-medium leading-relaxed italic">
-              L&apos;Assemblée Nationale permet aux citoyens de proposer des lois. Voici les pétitions qui mobilisent la France aujourd&apos;hui.
+            {/* Une pétition adresse une demande à l'Assemblée ; elle ne « propose » pas de loi. */}
+            <p className="text-base md:text-lg text-slate-600 dark:text-slate-300 leading-relaxed">
+              Sur la plateforme de l&apos;Assemblée nationale, chaque citoyen peut déposer ou signer une pétition. Voici celles qui mobilisent le plus, et les dernières déposées.
             </p>
           </div>{" "}
 
@@ -173,16 +176,16 @@ export default function PetitionsSection() {
                 <div className="w-5 h-5 rounded-full bg-blue-100 dark:bg-blue-950/50 flex items-center justify-center shrink-0 mt-0.5">
                   <CheckCircle2 size={12} className="text-blue-700 dark:text-blue-400" />
                 </div>{" "}
-                <p className="text-xs text-muted-foreground dark:text-slate-400 leading-relaxed font-semibold">
-                  <span className="text-foreground dark:text-slate-100 font-black">100 000 signatures :</span> La pétition est mise en avant sur le site de l&apos;Assemblée. Comme toute pétition, elle est confiée à une commission, qui choisit de l&apos;examiner ou de la classer.
+                <p className="text-sm text-slate-600 dark:text-slate-300 leading-relaxed">
+                  <span className="text-foreground dark:text-slate-100 font-bold">100 000 signatures :</span> La pétition est mise en avant sur le site de l&apos;Assemblée. Comme toute pétition, elle est confiée à une commission, qui choisit de l&apos;examiner ou de la classer.
                 </p>
               </li>{" "}
               <li className="flex gap-3 items-start">
                 <div className="w-5 h-5 rounded-full bg-indigo-100 dark:bg-indigo-950/50 flex items-center justify-center shrink-0 mt-0.5">
                   <AlertCircle size={12} className="text-indigo-700 dark:text-indigo-400" />
                 </div>{" "}
-                <p className="text-xs text-muted-foreground dark:text-slate-400 leading-relaxed font-semibold">
-                  <span className="text-foreground dark:text-slate-100 font-black">500 000 signatures</span> venant d&apos;au moins 30 départements ou outre-mer : la Conférence des présidents peut décider d&apos;un débat en séance. Ce débat n&apos;est pas automatique.
+                <p className="text-sm text-slate-600 dark:text-slate-300 leading-relaxed">
+                  <span className="text-foreground dark:text-slate-100 font-bold">500 000 signatures</span>{" "}venant d&apos;au moins 30 départements ou outre-mer : la Conférence des présidents peut décider d&apos;un débat en séance. Ce débat n&apos;est pas automatique.
                 </p>
               </li>
             </ul>
@@ -204,10 +207,10 @@ export default function PetitionsSection() {
               <div key={rail.titre}>
                 <div className="flex items-center gap-4 mb-8">
                   <div className="h-px flex-1 bg-slate-200 dark:bg-slate-800" />{" "}
-                  <h3 className={`text-center text-xl font-staatliches uppercase tracking-widest italic ${rail.teinte}`}>
+                  <h3 className={`text-center text-xl font-staatliches uppercase tracking-wide ${rail.teinte}`}>
                     {rail.titre}
                     {rail.liste.length > 0 && (
-                      <span className="ml-2 not-italic opacity-75">({rail.liste.length})</span>
+                      <span className="ml-2 opacity-75">({rail.liste.length})</span>
                     )}
                   </h3>{" "}
                   <div className="h-px flex-1 bg-slate-200 dark:bg-slate-800" />
@@ -232,8 +235,8 @@ export default function PetitionsSection() {
                   ))}
                   {rail.liste.length > (visiblesMobile[rail.titre] ?? 3) && (
                     <button onClick={() => setVisiblesMobile(v => ({ ...v, [rail.titre]: (v[rail.titre] ?? 3) + 6 }))}
-                      className="w-full rounded-2xl border border-border py-3 text-[11px] font-black uppercase tracking-widest text-muted-foreground transition hover:bg-muted dark:border-slate-800">
-                      Voir plus ({rail.liste.length - (visiblesMobile[rail.titre] ?? 3)} autres)
+                      className="w-full rounded-2xl border border-border bg-card py-3.5 text-sm font-bold text-foreground transition hover:bg-muted dark:border-slate-800 dark:bg-slate-900">
+                      Voir plus de pétitions ({rail.liste.length - (visiblesMobile[rail.titre] ?? 3)} autres)
                     </button>
                   )}
                 </div>{" "}

@@ -1,18 +1,22 @@
 "use client";
 
 import { useState } from "react";
-import { CalendarDays } from "lucide-react";
+import { CalendarDays, List, LayoutGrid } from "lucide-react";
 import CalendarGrid from "@/components/calendar/CalendarGrid";
 import CalendarDayDetail from "@/components/calendar/CalendarDayDetail";
 import { CalendarEvent } from "@/components/calendar/EventItem";
 import { motion } from "framer-motion";
 import ElectionsBanner from "@/components/calendar/ElectionsBanner";
 import { upcomingElections } from "@/data/electionsData";
+import ProchainsEvenements from "@/components/calendar/ProchainsEvenements";
 
 export default function CalendarClient({ initialEvents }: { initialEvents: CalendarEvent[] }) {
   const [viewDate, setViewDate] = useState(new Date());
   const [selectedDate, setSelectedDate] = useState<Date | null>(new Date());
   const [activeFilter, setActiveFilter] = useState("Tous");
+  // Téléphone : la liste des prochains rendez-vous d'abord (la grille n'y montre que des
+  // points de couleur). Grand écran : grille et détail du jour, comme avant.
+  const [vue, setVue] = useState<"liste" | "calendrier">("liste");
 
   // Inject upcoming elections as calendar events
   const electionEvents: CalendarEvent[] = upcomingElections.map(e => ({
@@ -87,12 +91,12 @@ export default function CalendarClient({ initialEvents }: { initialEvents: Calen
           </div>
         </div>{" "}
 
-        <div className="flex bg-slate-100 dark:bg-slate-500/10 p-1 rounded-2xl border border-border self-start lg:self-auto">
+        <div className="-mx-4 flex gap-1 self-stretch overflow-x-auto bg-slate-100 dark:bg-slate-500/10 p-1 px-4 [scrollbar-width:none] sm:mx-0 sm:self-start sm:rounded-2xl sm:border sm:border-border lg:self-auto [&::-webkit-scrollbar]:hidden">
           {["Tous", "Assemblée", "Sénat", "Élysée", "Élection"].map((f) => (
             <button
               key={f}
               onClick={() => setActiveFilter(f === "Assemblée" ? "Assemblée nationale" : f)}
-              className={`px-5 py-2 rounded-xl text-[10px] font-black uppercase tracking-widest transition-all ${
+              className={`shrink-0 px-4 py-2.5 rounded-xl text-xs font-bold uppercase tracking-wider transition-all ${
                 (activeFilter === f || (f === "Assemblée" && activeFilter === "Assemblée nationale"))
                   ? "bg-card text-foreground shadow-lg"
                   : "text-muted-foreground hover:text-muted-foreground"
@@ -104,8 +108,24 @@ export default function CalendarClient({ initialEvents }: { initialEvents: Calen
         </div>
       </div>{" "}
 
+      {/* Bascule de vue (téléphone et tablette). */}
+      <div className="mb-5 grid grid-cols-2 gap-1 rounded-2xl border border-border bg-slate-100 p-1 dark:bg-slate-500/10 lg:hidden" role="tablist" aria-label="Affichage de l'agenda">
+        {([["liste", "À venir", List], ["calendrier", "Calendrier", LayoutGrid]] as const).map(([v, libelle, Icone]) => (
+          <button key={v} role="tab" aria-selected={vue === v} onClick={() => setVue(v)}
+            className={`flex items-center justify-center gap-2 rounded-xl py-2.5 text-sm font-bold transition ${vue === v ? "bg-card text-foreground shadow" : "text-muted-foreground"}`}>
+            <Icone size={16} /> {libelle}
+          </button>
+        ))}
+      </div>{" "}
+
+      {vue === "liste" && (
+        <div className="mb-8 lg:hidden">
+          <ProchainsEvenements events={filteredEvents} />
+        </div>
+      )}{" "}
+
       {/* Grid + Side Panel Layout */}
-      <div className="flex flex-col lg:flex-row gap-8 min-h-[600px]">
+      <div className={`${vue === "liste" ? "hidden lg:flex" : "flex"} flex-col lg:flex-row gap-8 lg:min-h-[600px]`}>
         {/* Grille (75%) */}
         <motion.div 
           initial={{ opacity: 0, x: -20 }}
@@ -126,7 +146,7 @@ export default function CalendarClient({ initialEvents }: { initialEvents: Calen
         <motion.div 
           initial={{ opacity: 0, x: 20 }}
           animate={{ opacity: 1, x: 0 }}
-          className="flex-[1] min-w-[320px]"
+          className="flex-[1] min-w-0 lg:min-w-[320px]"
         >
           <CalendarDayDetail 
             selectedDate={selectedDate}

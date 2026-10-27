@@ -84,9 +84,9 @@ export default function PetitionStatus({ status, signatures, threshold }: { stat
     <div className={`rounded-2xl border px-3 py-2.5 ${info.cls}`}>
       <div className="flex items-center gap-2">
         <info.Icon size={13} className="shrink-0" />{" "}
-        <span className="text-[10px] font-black uppercase tracking-widest">{info.label}</span>
+        <span className="text-xs font-bold uppercase tracking-wider">{info.label}</span>
       </div>{" "}
-      <p className="mt-1 text-[11px] leading-snug">{info.explain}</p>
+      <p className="mt-1 text-[13px] leading-snug">{info.explain}</p>
     </div>
   );
 }

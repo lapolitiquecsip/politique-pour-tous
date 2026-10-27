@@ -9,12 +9,16 @@ import { usePremium } from "@/lib/hooks/usePremium";
 import { mesurerAction } from "@/lib/mesure";
 
 /**
- * Invitation à créer un compte gratuit, après 20 secondes de visite (cumulées d'une page
+ * Invitation à créer un compte gratuit, après 45 secondes de visite (cumulées d'une page
  * à l'autre). Jamais pour un membre connecté, jamais sur les pages de connexion, de
  * paiement, juridiques ou d'administration ; une fois fermée, elle ne revient pas avant
  * 7 jours. Rien n'est demandé ici : le bouton mène au formulaire d'inscription.
+ *
+ * Encart en bas d'écran, NON bloquant : c'était une fenêtre modale à 20 secondes, qui
+ * coupait la découverte du site au moment même où un visiteur arrivé d'Instagram
+ * commençait à lire. Il attend aussi qu'aucune autre fenêtre ne soit ouverte.
  */
-const DELAI_MS = 20_000;
+const DELAI_MS = 45_000;
 const CLE_DEBUT = "lpcs.visite-debut";
 const CLE_REFUS = "lpcs.invitation-fermee";
 const SILENCE_JOURS = 7;
@@ -36,7 +40,13 @@ export default function InvitationCompte() {
       if (!debut) { debut = Date.now(); sessionStorage.setItem(CLE_DEBUT, String(debut)); }
       restant = Math.max(0, DELAI_MS - (Date.now() - debut));
     } catch { /* stockage indisponible : délai simple */ }
-    const t = setTimeout(() => { setOuvert(true); mesurerAction("invitation_compte_vue"); }, restant);
+    let t: ReturnType<typeof setTimeout>;
+    const montrer = () => {
+      // Une fiche de loi ou d'institution est ouverte : on repasse dans 10 secondes.
+      if (document.querySelector('[aria-modal="true"]')) { t = setTimeout(montrer, 10_000); return; }
+      setOuvert(true); mesurerAction("invitation_compte_vue");
+    };
+    t = setTimeout(montrer, restant);
     return () => clearTimeout(t);
   }, [chemin, userId, loading]);
 
@@ -48,32 +58,30 @@ export default function InvitationCompte() {
   return (
     <AnimatePresence>
       {ouvert && (
-        <motion.div className="fixed inset-0 z-[80] flex items-end justify-center bg-slate-950/50 p-4 sm:items-center"
-          initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} onClick={fermer}>
-          <motion.div role="dialog" aria-modal="true" aria-labelledby="invitation-titre"
-            className="relative w-full max-w-md rounded-[2rem] bg-card p-7 text-foreground shadow-2xl dark:bg-slate-900"
-            initial={{ y: 30, opacity: 0 }} animate={{ y: 0, opacity: 1 }} exit={{ y: 30, opacity: 0 }}
-            onClick={e => e.stopPropagation()}>
-            <button type="button" aria-label="Fermer" onClick={fermer}
-              className="absolute right-4 top-4 z-10 rounded-full p-2 text-muted-foreground transition hover:bg-muted hover:text-foreground">
-              <X size={18} />
-            </button>{" "}
-            <p className="text-[10px] font-black uppercase tracking-[0.25em] text-sky-700 dark:text-sky-400">Gratuit, en 30 secondes</p>{" "}
-            <h2 id="invitation-titre" className="mt-2 font-staatliches text-3xl uppercase leading-none">Créez votre compte</h2>{" "}
-            <ul className="mt-5 space-y-3 text-sm leading-snug text-foreground/85">
-              <li className="flex gap-3"><Bell size={18} className="mt-0.5 shrink-0 text-sky-600 dark:text-sky-400" /> Suivez vos élus : leurs votes et leur actualité, au même endroit.</li>{" "}
-              <li className="flex gap-3"><Vote size={18} className="mt-0.5 shrink-0 text-sky-600 dark:text-sky-400" /> Donnez votre avis sur les lois et comparez-le aux votes des députés.</li>{" "}
-              <li className="flex gap-3"><Bookmark size={18} className="mt-0.5 shrink-0 text-sky-600 dark:text-sky-400" /> Enregistrez les lois et les fiches qui vous intéressent.</li>
-            </ul>{" "}
+        <motion.aside aria-labelledby="invitation-titre"
+          className="flottant fixed inset-x-3 bottom-[max(0.75rem,env(safe-area-inset-bottom))] z-[80] mx-auto max-w-md rounded-[1.5rem] border border-border bg-card p-5 pr-12 text-foreground shadow-2xl dark:bg-slate-900 sm:inset-x-auto sm:right-6 sm:p-6"
+          initial={{ y: 30, opacity: 0 }} animate={{ y: 0, opacity: 1 }} exit={{ y: 30, opacity: 0 }}>
+          <button type="button" aria-label="Fermer l'invitation" onClick={fermer}
+            className="absolute right-2 top-2 flex h-11 w-11 items-center justify-center rounded-full text-muted-foreground transition hover:bg-muted hover:text-foreground">
+            <X size={18} />
+          </button>{" "}
+          <p className="text-xs font-bold uppercase tracking-wider text-sky-700 dark:text-sky-400">Gratuit, en 30 secondes</p>{" "}
+          <h2 id="invitation-titre" className="mt-1 text-lg font-bold leading-tight">Créez votre compte pour suivre vos élus</h2>{" "}
+          <ul className="mt-3 hidden space-y-2.5 text-sm leading-snug text-foreground/85 sm:block">
+            <li className="flex gap-3"><Bell size={18} className="mt-0.5 shrink-0 text-sky-600 dark:text-sky-400" /> Suivez vos élus : leurs votes et leur actualité, au même endroit.</li>{" "}
+            <li className="flex gap-3"><Vote size={18} className="mt-0.5 shrink-0 text-sky-600 dark:text-sky-400" /> Donnez votre avis sur les lois et comparez-le aux votes des députés.</li>{" "}
+            <li className="flex gap-3"><Bookmark size={18} className="mt-0.5 shrink-0 text-sky-600 dark:text-sky-400" /> Enregistrez les lois et les fiches qui vous intéressent.</li>
+          </ul>{" "}
+          <div className="mt-4 flex items-center gap-3">
             <Link href={`/login/?inscription=1&suite=${encodeURIComponent(chemin)}`} onClick={() => { mesurerAction("invitation_compte_clic"); fermer(); }}
-              className="mt-6 block rounded-2xl bg-sky-600 px-5 py-3.5 text-center text-sm font-black uppercase tracking-widest text-white transition hover:bg-sky-700">
-              Créer mon compte gratuit
+              className="rounded-2xl bg-sky-600 px-5 py-3 text-sm font-bold text-white transition hover:bg-sky-700">
+              Créer mon compte
             </Link>{" "}
-            <button type="button" onClick={fermer} className="mt-3 w-full text-center text-xs font-bold text-muted-foreground hover:text-foreground">
+            <button type="button" onClick={fermer} className="px-2 py-3 text-sm font-semibold text-muted-foreground hover:text-foreground">
               Plus tard
             </button>
-          </motion.div>
-        </motion.div>
+          </div>
+        </motion.aside>
       )}
     </AnimatePresence>
   );

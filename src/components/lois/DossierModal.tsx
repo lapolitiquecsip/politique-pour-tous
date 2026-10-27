@@ -369,7 +369,24 @@ export type DossierFallback = {
   id?: string | null;
   title?: string | null; display_title?: string | null; category?: string | null;
   promulgated_at?: string | null; nor?: string | null; jorf_id?: string | null;
+  /** Résumé déjà connu de la carte cliquée : lisible pendant le chargement du parcours. */
+  summary?: string | null;
 };
+
+// Titre d'un texte de loi : une phrase souvent longue. En police condensée et en
+// majuscules, il occupait la moitié d'un écran de téléphone et se lisait mal.
+const TITRE_LOI = "text-[1.45rem] font-bold leading-tight tracking-tight text-foreground md:text-4xl";
+
+/** Libellé lisible d'une source officielle, au lieu de l'adresse brute. */
+function libelleSource(url: string): string {
+  let hote = "";
+  try { hote = new URL(url).hostname.replace(/^www\./, ""); } catch { return url; }
+  if (hote.endsWith("legifrance.gouv.fr")) return "Légifrance — texte publié au Journal officiel";
+  if (hote.endsWith("assemblee-nationale.fr")) return "Assemblée nationale — dossier législatif";
+  if (hote.endsWith("senat.fr")) return "Sénat — dossier législatif";
+  if (hote.endsWith("conseil-constitutionnel.fr")) return "Conseil constitutionnel — décision";
+  return hote;
+}
 
 export default function DossierModal({
   detail: detailRecu, loading, onClose, fallback, onPrev, onNext, prevTitle, nextTitle,
@@ -419,22 +436,33 @@ export default function DossierModal({
   // Repli affiché uniquement si le détail complet a bien été tenté mais est revenu vide.
   const showFallback = !loading && !detail && !!fallback;
 
-  // Fermeture au clavier (Échap) + verrou du scroll de fond tant que le panneau est ouvert.
+  // Verrou du défilement de fond : posé UNE fois à l'ouverture, levé à la fermeture. Il était
+  // relancé à chaque changement (chargement → détail, nouvelle fonction onClose du parent) ;
+  // la position mémorisée devenait 0 et la page remontait tout en haut à la fermeture.
+  const ouvert = !!(detail || loading || showFallback);
   useEffect(() => {
-    if (!detail && !loading && !showFallback) return;
+    if (!ouvert) return;
+    lockScroll();
+    return () => unlockScroll();
+  }, [ouvert]);
+
+  // Clavier : Échap ferme, flèches = texte précédent / suivant (toujours les derniers gestionnaires).
+  const gestes = useRef({ onClose, allerA });
+  useEffect(() => { gestes.current = { onClose, allerA }; });
+  useEffect(() => {
+    if (!ouvert) return;
     const onKey = (e: KeyboardEvent) => {
-      if (e.key === "Escape") onClose();
-      else if (e.key === "ArrowRight") allerA(1);
-      else if (e.key === "ArrowLeft") allerA(-1);
+      if (e.key === "Escape") gestes.current.onClose();
+      else if (e.key === "ArrowRight") gestes.current.allerA(1);
+      else if (e.key === "ArrowLeft") gestes.current.allerA(-1);
     };
     document.addEventListener("keydown", onKey);
-    lockScroll();
-    return () => { document.removeEventListener("keydown", onKey); unlockScroll(); };
-  }, [detail, loading, showFallback, onClose]);
+    return () => document.removeEventListener("keydown", onKey);
+  }, [ouvert]);
 
   if (!detail && !loading && !showFallback) return null;
   return (
-    <div className="fixed inset-0 z-50 flex items-start justify-center bg-slate-950/70 p-4 md:p-10" role="dialog" aria-modal="true" onClick={onClose}>
+    <div className="fixed inset-0 z-[90] flex items-end justify-center bg-slate-950/70 sm:items-start sm:p-4 md:p-10" role="dialog" aria-modal="true" aria-label="Fiche de la loi" onClick={onClose}>
       <div
         onClick={e => e.stopPropagation()}
         // Balayage horizontal franc = texte suivant/précédent. Le seuil vertical évite
@@ -448,10 +476,10 @@ export default function DossierModal({
           if (Math.abs(dx) < 70 || Math.abs(dx) < Math.abs(dy) * 1.5) return;
           allerA(dx < 0 ? 1 : -1);
         }}
-        className="relative mx-auto flex max-h-[calc(100dvh-2rem)] w-full max-w-5xl flex-col overflow-hidden rounded-[2rem] bg-card text-foreground shadow-2xl md:max-h-[calc(100dvh-5rem)]"
+        className="relative mx-auto flex max-h-[calc(100dvh-0.75rem)] w-full max-w-5xl flex-col overflow-hidden rounded-t-[1.75rem] bg-card text-foreground shadow-2xl sm:max-h-[calc(100dvh-2rem)] sm:rounded-[2rem] md:max-h-[calc(100dvh-5rem)]"
       >
         {/* Bouton fermer flottant (coin) — plus de bande blanche sticky qui recouvre le contenu au scroll */}
-        <button onClick={onClose} className="absolute right-4 top-4 z-20 rounded-full bg-slate-100 dark:bg-slate-500/10 p-3 shadow-sm transition hover:bg-slate-200" aria-label="Fermer"><X /></button>{" "}
+        <button onClick={onClose} className="absolute right-3 top-3 z-20 flex h-11 w-11 items-center justify-center rounded-full bg-slate-100 shadow-sm ring-1 ring-border transition hover:bg-slate-200 dark:bg-slate-800 md:right-4 md:top-4" aria-label="Fermer la fiche"><X /></button>{" "}
 
         {/* Navigation entre textes. Sur grand écran les flèches flottent sur les bords ;
             sur téléphone elles forment une barre en bas, atteignable au pouce, doublée
@@ -487,21 +515,28 @@ export default function DossierModal({
           /* Pendant le chargement, on affiche déjà ce que la carte cliquée savait :
              catégorie et titre. Un panneau blanc avec un rond qui tourne donne le
              sentiment d'un blocage, alors que le texte demandé est déjà connu. */
-          <div className="flex min-h-80 flex-col px-6 pb-12 pt-16 md:px-12">
+          <div className="flex min-h-80 flex-col px-5 pb-12 pt-6 pr-16 md:px-12 md:pt-16">
             {fallback?.category && (
               <div className="mb-3 text-xs font-black uppercase tracking-[0.2em] text-red-700 dark:text-red-400">{categoryLabel(fallback.category as any)}</div>
             )}{" "}
             {fallback && (
-              <h2 className="text-4xl font-staatliches uppercase leading-none text-foreground md:text-6xl">
+              <h2 className={TITRE_LOI}>
                 {fallback.display_title || fallback.title}
               </h2>
             )}{" "}
-            <p className="mt-8 flex items-center gap-2 text-sm font-bold text-slate-400">
-              <Loader2 size={16} className="animate-spin text-red-700 dark:text-red-400" /> Chargement du parcours législatif…
+            {/* Le résumé est déjà connu : on le lit pendant que le parcours se charge. */}
+            {fallback?.summary && (
+              <section className="mt-6">
+                <h3 className="text-lg font-bold text-foreground">Résumé</h3>{" "}
+                <p className="mt-2 text-[16px] leading-7 text-slate-700 dark:text-slate-200">{fallback.summary}</p>
+              </section>
+            )}{" "}
+            <p className="mt-6 flex items-center gap-2 text-sm font-semibold text-muted-foreground">
+              <Loader2 size={16} className="animate-spin text-red-700 dark:text-red-400" /> Chargement du parcours, des amendements et des votes…
             </p>
           </div>
         ) : showFallback ? (
-          <article className="px-6 pb-12 pt-16 md:px-12">
+          <article className="px-5 pb-12 pt-6 md:px-12 md:pt-16">
             {(() => {
               const f = fallback!;
               const promulgated = !!f.promulgated_at;              // ne rien affirmer sans date JO
@@ -509,7 +544,7 @@ export default function DossierModal({
               return (
                 <>
                   {f.category && <div className="mb-3 text-xs font-black uppercase tracking-[0.2em] text-red-700 dark:text-red-400">{categoryLabel(f.category as any)}</div>}{" "}
-                  <h2 className="text-4xl font-staatliches uppercase leading-none text-foreground md:text-6xl">{f.display_title || f.title}</h2>{" "}
+                  <h2 className={`${TITRE_LOI} pr-12`}>{f.display_title || f.title}</h2>{" "}
                   {promulgated && (
                     <div className="mt-6 rounded-3xl border border-emerald-200 dark:border-emerald-500/25 bg-emerald-50 dark:bg-emerald-500/10 p-5">
                       <p className="text-[10px] font-black uppercase tracking-widest text-emerald-700 dark:text-emerald-400">Statut</p>{" "}
@@ -534,9 +569,9 @@ export default function DossierModal({
             })()}
           </article>
         ) : detail && (
-          <article className="px-6 pb-12 pt-16 md:px-12">
-            <div className="mb-3 text-xs font-black uppercase tracking-[0.2em] text-red-700 dark:text-red-400">{categoryLabel(detail.dossier.category)}</div>{" "}
-            <h2 className="text-4xl font-staatliches uppercase leading-none text-foreground md:text-6xl">{detail.dossier.title}</h2>{" "}
+          <article className="px-5 pb-12 pt-6 md:px-12 md:pt-16">
+            <div className="mb-3 pr-12 text-xs font-black uppercase tracking-[0.2em] text-red-700 dark:text-red-400">{categoryLabel(detail.dossier.category)}</div>{" "}
+            <h2 className={`${TITRE_LOI} pr-12`}>{detail.dossier.title}</h2>{" "}
             <div className="mt-5 space-y-2.5 text-sm font-bold">
               <InitiatorField authorName={detail.dossier.author_name} />{" "}
               <div className="flex flex-wrap items-baseline gap-x-2 gap-y-1 text-slate-700 dark:text-slate-200">
@@ -566,10 +601,20 @@ export default function DossierModal({
               );
             })()}{" "}
 
-            <section className="mt-10"><h3 className="text-2xl font-staatliches uppercase text-foreground">Résumé</h3>{" "}<p className="mt-3 leading-7 text-slate-700 dark:text-slate-200">{detail.summary?.summary || "Analyse indisponible."}</p></section>{" "}
+            <section className="mt-8"><h3 className="text-2xl font-staatliches uppercase text-foreground">Résumé</h3>{" "}<p className="mt-3 text-[16px] leading-7 text-slate-700 dark:text-slate-200">{detail.summary?.summary || "Analyse indisponible."}</p></section>{" "}
+            {/* Lecture progressive : le résumé d'abord, puis l'accès direct à chaque détail. */}
+            <nav aria-label="Dans cette fiche" className="mt-6 flex flex-wrap gap-2">
+              {[["fiche-analyse", "Analyse détaillée"], ["fiche-navette", "Parcours"], ["fiche-amendements", "Amendements"], ["fiche-scrutins", "Votes"], ["fiche-sources", "Sources"]].map(([id, libelle]) => (
+                <button key={id} type="button"
+                  onClick={() => document.getElementById(id)?.scrollIntoView({ behavior: "smooth", block: "start" })}
+                  className="rounded-full border border-border bg-muted px-3.5 py-2 text-[13px] font-semibold text-foreground transition hover:border-slate-400 active:scale-95">
+                  {libelle}
+                </button>
+              ))}
+            </nav>{" "}
             {/* Analyse détaillée : l'analyse approfondie écrite d'après le texte (abonnés),
                 ou à défaut l'ancienne analyse ; un compte classique voit le cadenas doré. */}
-            <div className="mt-10">
+            <div id="fiche-analyse" className="mt-10 scroll-mt-4">
               <AnalyseApprofondie
                 key={`a-${detail.dossier.id}`}
                 dossierId={detail.dossier.id}
@@ -585,10 +630,23 @@ export default function DossierModal({
                 ) : undefined}
               />
             </div>{" "}
-            <NavetteSection steps={detail.steps} />
-            <AmendmentsSection key={detail.dossier.id} dossierId={detail.dossier.id} total={(detail as any).amendments_total} initial={detail.amendments} />
-            <ScrutinsSection key={`s-${detail.dossier.id}`} dossierId={detail.dossier.id} total={(detail as any).scrutins_total} initial={detail.scrutins} />{" "}
-            <section className="mt-10"><h3 className="text-2xl font-staatliches uppercase text-foreground">Sources officielles</h3>{" "}<div className="mt-3 flex flex-col gap-2">{[...new Set([...(detail.dossier.source_urls || []), ...(detail.summary?.source_urls || []), ...(detail.promulgation?.source_url ? [detail.promulgation.source_url] : [])])].map((url: string) => <a key={url} href={url} target="_blank" rel="noreferrer" className="flex items-start gap-2 text-blue-700 dark:text-blue-300 hover:underline"><ExternalLink size={15} className="mt-0.5 shrink-0" />{" "}<span className="min-w-0 break-all">{url}</span>{" "}</a>)}</div></section>
+            <div id="fiche-navette" className="scroll-mt-4"><NavetteSection steps={detail.steps} /></div>
+            <div id="fiche-amendements" className="scroll-mt-4"><AmendmentsSection key={detail.dossier.id} dossierId={detail.dossier.id} total={(detail as any).amendments_total} initial={detail.amendments} /></div>
+            <div id="fiche-scrutins" className="scroll-mt-4"><ScrutinsSection key={`s-${detail.dossier.id}`} dossierId={detail.dossier.id} total={(detail as any).scrutins_total} initial={detail.scrutins} /></div>{" "}
+            <section id="fiche-sources" className="mt-10 scroll-mt-4">
+              <h3 className="text-2xl font-staatliches uppercase text-foreground">Sources officielles</h3>{" "}
+              <div className="mt-3 flex flex-col gap-2">
+                {[...new Set([...(detail.dossier.source_urls || []), ...(detail.summary?.source_urls || []), ...(detail.promulgation?.source_url ? [detail.promulgation.source_url] : [])])].map((url: string) => (
+                  <a key={url} href={url} target="_blank" rel="noreferrer" className="flex items-start gap-2.5 rounded-2xl border border-border p-3 text-blue-700 transition hover:border-blue-300 dark:text-blue-300">
+                    <ExternalLink size={16} className="mt-0.5 shrink-0" />{" "}
+                    <span className="min-w-0">
+                      <span className="block text-[15px] font-semibold">{libelleSource(url)}</span>{" "}
+                      <span className="block truncate text-xs text-muted-foreground">{url}</span>
+                    </span>
+                  </a>
+                ))}
+              </div>
+            </section>
           </article>
         )}{" "}
         </motion.div>

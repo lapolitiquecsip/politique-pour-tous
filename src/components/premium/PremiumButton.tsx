@@ -18,6 +18,24 @@ export default function PremiumButton() {
   const [error, setError] = useState<string | null>(null);
   const [dismissed, setDismissed] = useState(false);
   const [hasOtherPremium, setHasOtherPremium] = useState(false);
+  const [enRetrait, setEnRetrait] = useState(false);
+
+  // Défilement vers le bas : le bouton se retire ; vers le haut : il revient. Sur le premier
+  // écran de l'accueil, il reste caché : il recouvrait la carte « Mes élus locaux », et
+  // l'offre y est déjà expliquée en une ligne sous les quatre actions.
+  useEffect(() => {
+    const premierEcran = (y: number) => pathname === "/" && y < 520;
+    let dernier = window.scrollY;
+    setEnRetrait(premierEcran(dernier));
+    const surDefilement = () => {
+      const y = window.scrollY;
+      if (Math.abs(y - dernier) < 8) return;
+      setEnRetrait(premierEcran(y) || (y > dernier && y > 240));
+      dernier = y;
+    };
+    window.addEventListener("scroll", surDefilement, { passive: true });
+    return () => window.removeEventListener("scroll", surDefilement);
+  }, [pathname]);
 
   useEffect(() => {
     const checkPremiumElements = () => {
@@ -93,8 +111,10 @@ export default function PremiumButton() {
 
   return (
     <>
-      {/* Bouton flottant fixe — masqué sur téléphone mobile (sm:flex) et conteneur identifié pour l'observateur */}
-      <div className="fixed bottom-6 right-6 z-50 flex flex-col items-end gap-3 floating-premium-container">
+      {/* Bouton flottant. `flottant` : effacé quand une fenêtre est ouverte (globals.css).
+          Il s'écarte aussi pendant qu'on fait défiler vers le bas — c'est là qu'il masquait
+          les liens « Lire » et « Détails » des cartes — et revient dès qu'on remonte. */}
+      <div className={`flottant fixed bottom-[max(1.5rem,env(safe-area-inset-bottom))] right-4 sm:right-6 z-50 flex flex-col items-end gap-3 floating-premium-container transition-all duration-300 ${enRetrait ? "pointer-events-none translate-y-24 opacity-0" : ""}`}>
         {/* Message d'erreur */}
         <AnimatePresence>
           {error === "auth_required" && (
@@ -150,10 +170,13 @@ export default function PremiumButton() {
         >
           <div className="relative group">
             {/* Bouton de fermeture (croix discrète) */}
+            {/* Sans survol possible (écran tactile), la croix reste visible : sinon on ne
+                pouvait jamais masquer le bouton sur téléphone. */}
             <button
               onClick={() => setDismissed(true)}
-              className="absolute -top-2 -right-2 z-10 bg-slate-800 hover:bg-slate-700 text-white/60 hover:text-white rounded-full p-1 shadow-md opacity-0 group-hover:opacity-100 transition-all duration-200"
+              className="absolute -top-2 -right-2 z-10 bg-slate-800 hover:bg-slate-700 text-white/60 hover:text-white rounded-full p-1 shadow-md opacity-0 group-hover:opacity-100 [@media(hover:none)]:opacity-100 transition-all duration-200"
               title="Masquer"
+              aria-label="Masquer le bouton Premium"
             >
               <X className="w-3 h-3" />
             </button>{" "}
@@ -161,7 +184,7 @@ export default function PremiumButton() {
             {/* Mobile : pastille compacte (prend beaucoup moins de place). */}
             <button
               onClick={handlePremiumClick}
-              aria-label="Devenir premium"
+              aria-label="Découvrir l'offre Premium (ce qui est gratuit, ce qui est payant)"
               className="sm:hidden flex h-11 w-11 items-center justify-center rounded-full bg-gradient-to-br from-amber-400 to-amber-600 text-white shadow-lg shadow-amber-500/30 ring-2 ring-white/60 dark:ring-slate-900 transition-transform active:scale-95"
             >
               <Crown className="h-5 w-5" />

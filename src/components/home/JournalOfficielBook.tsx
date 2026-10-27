@@ -128,16 +128,16 @@ export default function JournalOfficielBook() {
                 exit={{ rotateY: dir > 0 ? -78 : 78, opacity: 0 }}
                 transition={{ duration: 0.45, ease: [0.4, 0, 0.2, 1] }}
                 style={{ transformOrigin: "left center", transformStyle: "preserve-3d" }}
-                className="flex h-full flex-col p-8 md:p-10"
+                className="flex h-full flex-col p-5 md:p-10"
               >
                 <div className="mb-4 flex items-center justify-between">
-                  <span className="rounded-full bg-gradient-to-r from-red-600 to-fuchsia-600 px-3 py-1 text-[10px] font-black uppercase tracking-widest text-white shadow-sm">{categoryLabel(law.category)}</span>{" "}
-                  <span className="text-[11px] font-bold text-muted-foreground md:hidden">{date ? `${date.jour} ${date.mois} ${date.annee}` : ""}</span>{" "}
+                  <span className="rounded-full bg-gradient-to-r from-red-600 to-fuchsia-600 px-3 py-1 text-[11px] font-black uppercase tracking-wider text-white shadow-sm">{categoryLabel(law.category)}</span>{" "}
+                  <span className="text-xs font-bold text-muted-foreground md:hidden">{date ? `${date.jour} ${date.mois} ${date.annee}` : ""}</span>{" "}
                   {law.nor && <span className="hidden font-mono text-[11px] text-muted-foreground md:inline">NOR : {law.nor}</span>}
                 </div>{" "}
-                <h3 className="font-staatliches text-3xl uppercase leading-tight text-foreground dark:text-white md:text-4xl">{(law as any).display_title || law.title}</h3>{" "}
+                <h3 className="text-[1.3rem] font-bold leading-snug text-foreground dark:text-white md:font-staatliches md:text-4xl md:font-normal md:uppercase md:leading-tight">{(law as any).display_title || law.title}</h3>{" "}
                 <p className="mt-4 flex-1 overflow-hidden text-[15px] leading-7 text-muted-foreground dark:text-slate-300 line-clamp-[8]">{(law as any).impact || law.summary || "Texte promulgué et publié au Journal officiel."}</p>{" "}
-                <button type="button" onClick={() => openDossier(law)} className="mt-4 inline-flex items-center gap-2 self-start rounded-full bg-gradient-to-r from-red-600 to-fuchsia-600 px-5 py-2.5 text-[11px] font-black uppercase tracking-widest text-white shadow-lg shadow-rose-500/30 transition hover:shadow-rose-500/50">
+                <button type="button" onClick={() => openDossier(law)} className="mt-4 inline-flex items-center gap-2 self-start rounded-full bg-gradient-to-r from-red-600 to-fuchsia-600 px-5 py-3 text-xs font-black uppercase tracking-wider text-white shadow-lg shadow-rose-500/30 transition hover:shadow-rose-500/50">
                   Lire la loi & son parcours <ArrowRight size={14} />
                 </button>{" "}
               </motion.div>
@@ -148,9 +148,9 @@ export default function JournalOfficielBook() {
 
       {/* Commandes de feuilletage. */}
       <div className="mt-6 flex items-center justify-center gap-6">
-        <button onClick={() => go(-1)} disabled={i === 0} className="flex h-12 w-12 items-center justify-center rounded-full border border-border bg-card text-slate-700 shadow-sm transition hover:border-red-300 hover:text-red-600 disabled:opacity-40 dark:bg-slate-900 dark:border-slate-700 dark:text-slate-200"><ChevronLeft /></button>{" "}
+        <button onClick={() => go(-1)} disabled={i === 0} aria-label="Loi précédente" className="flex h-12 w-12 items-center justify-center rounded-full border border-border bg-card text-slate-700 shadow-sm transition hover:border-red-300 hover:text-red-600 disabled:opacity-40 dark:bg-slate-900 dark:border-slate-700 dark:text-slate-200"><ChevronLeft /></button>{" "}
         <span className="text-sm font-black uppercase tracking-widest text-muted-foreground">Loi {i + 1} / {laws.length}{hasMore ? "+" : ""}</span>{" "}
-        <button onClick={() => go(1)} disabled={i === laws.length - 1 && !hasMore} className="flex h-12 w-12 items-center justify-center rounded-full border border-border bg-card text-slate-700 shadow-sm transition hover:border-red-300 hover:text-red-600 disabled:opacity-40 dark:bg-slate-900 dark:border-slate-700 dark:text-slate-200">{loadingMore && i >= laws.length - 1 ? <Loader2 size={18} className="animate-spin" /> : <ChevronRight />}</button>
+        <button onClick={() => go(1)} disabled={i === laws.length - 1 && !hasMore} aria-label="Loi suivante" className="flex h-12 w-12 items-center justify-center rounded-full border border-border bg-card text-slate-700 shadow-sm transition hover:border-red-300 hover:text-red-600 disabled:opacity-40 dark:bg-slate-900 dark:border-slate-700 dark:text-slate-200">{loadingMore && i >= laws.length - 1 ? <Loader2 size={18} className="animate-spin" /> : <ChevronRight />}</button>
       </div>{" "}
 
       {/* Fiche complète de la loi, ouverte EN PANNEAU sur la home (fermable). */}

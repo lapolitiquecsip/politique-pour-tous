@@ -115,18 +115,23 @@ export default function FeedItemCard({ item, colorIndex }: { item: ContentItem; 
     if (el) setDeborde(el.scrollHeight > el.clientHeight + 2);
   }, [item.resume_flash]);
 
+  // Un document repris tel quel a souvent pour « résumé » son propre intitulé : le répéter
+  // sous le titre doublait la carte sans rien apprendre.
+  const plat = (s?: string | null) => (s || "").toLowerCase().replace(/[^a-z0-9à-ÿ]+/g, " ").trim();
+  const resumeUtile = !!item.resume_flash && !plat(item.resume_flash).startsWith(plat(item.titre_simplifie).slice(0, 80));
+
   const sources = item.source_name ? item.source_name.split(',').map(s => s.trim()).filter(Boolean) : [];
   const libelleSource = sources.length ? sources.slice(0, 2).join(', ') + (sources.length > 2 ? '…' : '') : 'Source';
 
   return (
     <div className="relative flex h-full flex-col overflow-hidden rounded-[2rem] bg-card ring-1 ring-slate-900/[0.06] dark:bg-slate-900 dark:ring-white/10">
-      <div className="flex min-h-0 flex-1 flex-col px-6 pb-5 pt-6">
-        <div className="mb-4 flex shrink-0 items-center justify-between">
-          <span className={`inline-flex items-center gap-1.5 rounded-full px-2.5 py-1 text-[10px] font-black uppercase tracking-widest ${config.tintBg} ${config.tintText}`}>
+      <div className="flex min-h-0 flex-1 flex-col px-5 pb-4 pt-5 md:px-6 md:pb-5 md:pt-6">
+        <div className="mb-3 flex shrink-0 flex-wrap items-center justify-between gap-x-3 gap-y-1 md:mb-4">
+          <span className={`inline-flex items-center gap-1.5 rounded-full px-2.5 py-1 text-[11px] font-black uppercase tracking-wider ${config.tintBg} ${config.tintText}`}>
             <span className={`h-1.5 w-1.5 rounded-full ${config.dot}`} />{" "}
             {config.label}
           </span>{" "}
-          <span className="text-[11px] font-semibold text-muted-foreground">{relativeDate}{item.titre_original && item.titre_original === item.titre_simplifie
+          <span className="text-xs font-semibold text-muted-foreground">{relativeDate}{item.titre_original && item.titre_original === item.titre_simplifie
             ? <span title="Intitulé et chapô repris tels quels de la source officielle"> · texte de la source</span>
             : <span title="Titre et résumé rédigés par IA à partir de la source citée"> · résumé IA</span>}</span>
         </div>{" "}
@@ -137,9 +142,11 @@ export default function FeedItemCard({ item, colorIndex }: { item: ContentItem; 
 
         {/* Jamais de texte coupé : un résumé plus long que la carte défile dans la carte. */}
         <div ref={resume} className="relative min-h-0 flex-1 overflow-y-auto overscroll-contain pr-1">
-          <p className="text-[14.5px] leading-[1.6] text-slate-600 dark:text-slate-300">
-            <GlossaryText>{item.resume_flash}</GlossaryText>
-          </p>
+          {resumeUtile && (
+            <p className="text-[15px] leading-[1.6] text-slate-600 dark:text-slate-300">
+              <GlossaryText>{item.resume_flash}</GlossaryText>
+            </p>
+          )}
         </div>{" "}
 
         <div className="mt-4 shrink-0 border-t border-border/60 pt-3.5 dark:border-slate-800">

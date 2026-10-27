@@ -343,6 +343,17 @@ export const api = {
     return data || [];
   },
 
+  /**
+   * Les événements d'un seul jour (AAAA-MM-JJ). getCalendarEvents lit une fenêtre de
+   * deux mois plafonnée à 300 lignes, triée par date : les journées chargées pouvaient
+   * y être tronquées. L'accueil n'a besoin que d'aujourd'hui.
+   */
+  getEvenementsDuJour: async (jour: string) => {
+    const { data, error } = await supabase.from('events').select('*').eq('date', jour).limit(200);
+    if (error) { console.error(error); return []; }
+    return data || [];
+  },
+
   // Brique #4 — fil d'actualité par entité (ministère, département…). Renvoie [] si la table
   // n'existe pas encore ou est vide (composant masqué côté front).
   getEntityFeed: async (entityType: string, entityId: string, limit = 12) => {

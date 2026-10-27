@@ -216,10 +216,11 @@ export default function Header() {
               className="auth-connecte h-9 w-9 items-center justify-center rounded-full bg-gradient-to-br from-teal-400 to-emerald-600 text-white shadow-md shadow-teal-500/30">
               <Gift size={18} strokeWidth={2.4} />
             </Link>{" "}
-            <button className="text-muted-foreground" onClick={() => setSearchOpen(true)} aria-label="Rechercher">
+            {/* Zones tactiles de 44 px : l'icône seule (22 px) se manquait au doigt. */}
+            <button className="flex h-11 w-11 items-center justify-center rounded-full text-muted-foreground active:bg-muted" onClick={() => setSearchOpen(true)} aria-label="Rechercher">
               <Search size={22} />
             </button>{" "}
-            <button className="text-muted-foreground" onClick={() => setIsMenuOpen(!isMenuOpen)}>
+            <button className="-mr-2 flex h-11 w-11 items-center justify-center rounded-full text-muted-foreground active:bg-muted" onClick={() => setIsMenuOpen(!isMenuOpen)} aria-label={isMenuOpen ? "Fermer le menu" : "Ouvrir le menu"} aria-expanded={isMenuOpen}>
               {isMenuOpen ? <X size={24} /> : <Menu size={24} />}
             </button>
           </div>
@@ -283,7 +284,7 @@ export default function Header() {
         <div className="mx-auto mt-20 w-[92%] max-w-2xl sm:mt-24" onClick={e => e.stopPropagation()}>
           <div className="mb-2 flex items-center justify-between">
             <p className="text-[11px] font-black uppercase tracking-widest text-white/70">Recherche sur tout le site</p>{" "}
-            <button onClick={() => setSearchOpen(false)} className="rounded-full bg-white/10 p-2 text-white hover:bg-white/20"><X size={16} /></button>
+            <button onClick={() => setSearchOpen(false)} aria-label="Fermer la recherche" className="flex h-11 w-11 items-center justify-center rounded-full bg-white/10 text-white hover:bg-white/20"><X size={18} /></button>
           </div>{" "}
           <GlobalSearch variant="mobile" onNavigate={() => setSearchOpen(false)} />
         </div>

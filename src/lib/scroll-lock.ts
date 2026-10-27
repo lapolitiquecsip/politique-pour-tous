@@ -34,6 +34,8 @@ export function unlockScroll() {
     b.width = "";
     b.overflow = "";
     b.overscrollBehavior = "";
-    window.scrollTo(0, savedY);
+    // Retour INSTANTANÉ : la page a `scroll-smooth`, qui transformait ce retour en longue
+    // animation depuis le haut — on fermait une fiche et la page défilait sous les yeux.
+    window.scrollTo({ top: savedY, behavior: "instant" as ScrollBehavior });
   }
 }

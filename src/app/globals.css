@@ -411,3 +411,19 @@ html[data-abonnement="pro"] .lbl-offre { display: none; }
    (fenêtre de recherche comprise). `clip` coupe sans créer de zone de défilement,
    donc les éléments collants (sticky) continuent de fonctionner. */
 html, body { overflow-x: clip; }
+
+/* « Réduire les animations » (réglage du téléphone ou de l'ordinateur) : clignotements,
+   pulsations, glissements et défilements animés s'arrêtent partout. Framer Motion suit
+   le même réglage via <MotionConfig reducedMotion="user"> (providers). */
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
+}
+
+/* Les éléments flottants (couronne Premium, bulle d'aide) ne doivent jamais recouvrir une
+   fenêtre ouverte : ils s'effacent tant qu'un dialogue modal est affiché. */
+body:has([aria-modal="true"]) .flottant { display: none !important; }

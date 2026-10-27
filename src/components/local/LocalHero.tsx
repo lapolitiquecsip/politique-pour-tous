@@ -1,14 +1,13 @@
 "use client";
 
-import { ArrowRight, BookOpen, ChevronRight, GraduationCap, Hammer, LayoutGrid, Layers, Map as MapIcon, Recycle, Route, School, TrainFront, type LucideIcon } from "lucide-react";
+import { ArrowRight, ChevronRight, LayoutGrid, Layers, Map as MapIcon, type LucideIcon } from "lucide-react";
 import Link from "next/link";
 import { departmentPaths } from "@/lib/data/departmentPaths";
 
 // En-tête « poster » de la page Local, dans l'esprit de celui de la page Exécutif mais
-// sans photo : la carte des départements en filigrane, des repères sur quelques villes,
-// une mairie au trait et des pastilles « qui fait quoi » (école → commune, collège →
-// département, lycée → région…). Le cœur de l'en-tête est pratique : trois cartes pour
-// choisir son échelon, qui ouvrent le bon onglet de la page et y conduisent.
+// sans photo : la carte des départements en filigrane, des repères sur quelques villes et
+// une mairie au trait. Le cœur de l'en-tête est pratique : trois cartes pour choisir son
+// échelon, qui ouvrent le bon onglet de la page et y conduisent.
 
 type Echelon = "commune" | "departement" | "region";
 
@@ -27,19 +26,6 @@ const REPERES = ["75", "13", "69", "31", "33", "59", "35", "67", "44", "06", "34
   const [x, y, w, h] = departmentPaths[code].viewBox.split(/\s+/).map(Number);
   return { code, x: x + w / 2, y: y + h / 2 };
 });
-
-// Qui fait quoi : des compétences que chacun croise dans sa vie quotidienne.
-// Placées dans la moitié haute : en bas à gauche flotte l'aide « Comment ça marche ? »,
-// en bas à droite se tient la mairie.
-const PASTILLES = [
-  { Icone: School, quoi: "Écoles", qui: "Commune", pos: "left-[6%] top-[22%] -rotate-6", ton: "text-emerald-300 border-emerald-400/30" },
-  { Icone: GraduationCap, quoi: "Lycées", qui: "Région", pos: "left-[2%] top-[38%] rotate-2", ton: "text-sky-300 border-sky-400/30" },
-  { Icone: Hammer, quoi: "Permis de construire", qui: "Commune", pos: "left-[7%] top-[54%] rotate-3", ton: "text-emerald-300 border-emerald-400/30" },
-  { Icone: Recycle, quoi: "Déchets, eau", qui: "Intercommunalité", pos: "right-[16%] top-[11%] -rotate-2", ton: "text-amber-300 border-amber-400/30" },
-  { Icone: BookOpen, quoi: "Collèges", qui: "Département", pos: "right-[4%] top-[27%] rotate-6", ton: "text-rose-300 border-rose-400/30" },
-  { Icone: Route, quoi: "Routes départementales", qui: "Département", pos: "right-[2%] top-[43%] -rotate-3", ton: "text-rose-300 border-rose-400/30" },
-  { Icone: TrainFront, quoi: "TER", qui: "Région", pos: "right-[7%] top-[59%] -rotate-6", ton: "text-sky-300 border-sky-400/30" },
-];
 
 const ECHELONS: { id: Echelon; titre: string; nombre: string; exemples: string; Icone: LucideIcon; ton: string; anneau: string }[] = [
   { id: "commune", titre: "Ma commune", nombre: "≈ 35 000 communes", exemples: "Maire, écoles, état civil, urbanisme", Icone: LayoutGrid,
@@ -103,16 +89,6 @@ export default function LocalHero({ onEchelon, liens }: {
       {/* Mairie au trait, posée en bas à droite (ordinateur et tablette). */}
       <Mairie className="pointer-events-none absolute -bottom-2 right-[-40px] -z-10 hidden w-[280px] text-rose-200/30 md:block lg:right-[2%] lg:w-[330px]" />{" "}
 
-      {/* « Qui fait quoi » : pastilles flottantes sur grand écran seulement. */}
-      <div className="pointer-events-none absolute inset-0 -z-10 hidden xl:block" aria-hidden="true">
-        {PASTILLES.map(({ Icone, quoi, qui, pos, ton }) => (
-          <span key={quoi} className={`absolute ${pos} inline-flex items-center gap-2 rounded-full border bg-black/35 px-3.5 py-1.5 text-[11px] font-bold backdrop-blur-sm ${ton}`}>
-            <Icone size={14} />{" "}
-            <span className="text-white/85">{quoi}</span>{" "}
-            <span className="opacity-80">· {qui}</span>
-          </span>
-        ))}
-      </div>{" "}
 
       <div className="relative mx-auto max-w-6xl px-4 pb-8 pt-[5.5rem] sm:pt-28 md:pb-14 md:pt-32">
         <div className="text-center">

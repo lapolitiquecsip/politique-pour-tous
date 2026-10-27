@@ -2,6 +2,7 @@
 
 import { useState, useMemo, useCallback, startTransition, useTransition } from "react";
 import { useRouter } from "next/navigation";
+import Link from "next/link";
 import DeputySearch from "@/components/deputies/DeputySearch";
 import DeputyGrid from "@/components/deputies/DeputyGrid";
 import FranceMap from "@/components/deputies/FranceMap";
@@ -61,12 +62,12 @@ export default function DeputyClient({ initialDeputies }: { initialDeputies: Dep
   return (
     <div className="container mx-auto px-4 py-4 max-w-7xl animate-in fade-in duration-700">
       {/* Search & Mode Switcher Row */}
-      <div className="flex flex-col md:flex-row items-center justify-between gap-6 mb-10">
-        <div className="flex gap-4 items-center">
+      <div className="flex flex-col md:flex-row items-center justify-between gap-3 md:gap-6 mb-6 md:mb-10">
+        <div className="order-2 flex gap-4 items-center md:order-1">
           <div className="inline-flex items-center gap-1 bg-secondary/50 border border-border rounded-xl p-1 shrink-0 relative">
             <button
               onClick={() => handleSetShowMap(true)}
-              className={`flex items-center gap-2 px-4 py-2 rounded-lg text-sm font-medium transition-all ${
+              className={`flex min-h-[40px] items-center gap-2 px-4 py-2 rounded-lg text-sm font-medium transition-all ${
                 showMap
                   ? "bg-card text-foreground shadow-sm"
                   : "text-muted-foreground hover:text-foreground"
@@ -77,7 +78,7 @@ export default function DeputyClient({ initialDeputies }: { initialDeputies: Dep
             </button>{" "}
             <button
               onClick={() => handleSetShowMap(false)}
-              className={`flex items-center gap-2 px-4 py-2 rounded-lg text-sm font-medium transition-all ${
+              className={`flex min-h-[40px] items-center gap-2 px-4 py-2 rounded-lg text-sm font-medium transition-all ${
                 !showMap
                   ? "bg-card text-foreground shadow-sm"
                   : "text-muted-foreground hover:text-foreground"
@@ -96,7 +97,7 @@ export default function DeputyClient({ initialDeputies }: { initialDeputies: Dep
           )}
         </div>{" "}
 
-        <div className="w-full max-w-md flex flex-col gap-2">
+        <div className="order-1 w-full max-w-md flex flex-col gap-2 md:order-2">
           <DeputySearch searchQuery={searchQuery} setSearchQuery={setSearchQuery} />{" "}
           
           {/* Indicateur de filtres actifs */}
@@ -114,7 +115,8 @@ export default function DeputyClient({ initialDeputies }: { initialDeputies: Dep
                     {getDepartmentName(selectedDepartment)}{" "}
                     <button 
                       onClick={() => handleDepartmentSelect(null)}
-                      className="hover:text-blue-800 transition-colors"
+                      aria-label="Retirer le filtre département"
+                      className="-my-2 -mr-2 flex h-8 w-8 items-center justify-center hover:text-blue-800 transition-colors"
                     >
                       <X className="w-3 h-3" />
                     </button>
@@ -125,7 +127,8 @@ export default function DeputyClient({ initialDeputies }: { initialDeputies: Dep
                     Recherche: {searchQuery}{" "}
                     <button 
                       onClick={() => setSearchQuery("")}
-                      className="hover:text-foreground dark:hover:text-white transition-colors"
+                      aria-label="Effacer la recherche"
+                      className="-my-2 -mr-2 flex h-8 w-8 items-center justify-center hover:text-foreground dark:hover:text-white transition-colors"
                     >
                       <X className="w-3 h-3" />
                     </button>
@@ -137,7 +140,7 @@ export default function DeputyClient({ initialDeputies }: { initialDeputies: Dep
                       setSelectedDepartment(null);
                       setSearchQuery("");
                     }}
-                    className="text-[10px] font-black uppercase tracking-widest text-muted-foreground hover:text-red-500 transition-colors ml-2"
+                    className="min-h-[32px] px-1 text-[10px] font-black uppercase tracking-widest text-muted-foreground hover:text-red-500 transition-colors ml-2"
                   >
                     Effacer tout
                   </button>
@@ -147,6 +150,25 @@ export default function DeputyClient({ initialDeputies }: { initialDeputies: Dep
           </AnimatePresence>
         </div>
       </div>{" "}
+
+      {/* Vue carte + recherche tapée : les résultats tout de suite, sous le champ. Avant, la
+          carte restait seule à l'écran et la recherche semblait ne rien faire. */}
+      {showMap && searchQuery.trim().length >= 2 && (
+        <div className="mx-auto mb-6 max-w-md">
+          <p className="mb-2 text-[13px] font-bold text-muted-foreground">
+            {filteredDeputies.length ? `${filteredDeputies.length} député${filteredDeputies.length > 1 ? "s" : ""} trouvé${filteredDeputies.length > 1 ? "s" : ""}` : "Aucun député ne correspond."}
+          </p>
+          <div className="space-y-2">
+            {filteredDeputies.slice(0, 6).map(d => <SidebarDeputyItem key={d.id} deputy={d} router={router} />)}
+          </div>
+          {filteredDeputies.length > 6 && (
+            <button type="button" onClick={() => handleSetShowMap(false)}
+              className="mt-3 flex w-full min-h-[48px] items-center justify-center gap-2 rounded-2xl border border-border bg-card text-sm font-bold text-foreground hover:bg-muted">
+              Voir les {filteredDeputies.length} résultats <ChevronRight className="h-4 w-4" />
+            </button>
+          )}
+        </div>
+      )}{" "}
 
       {/* Main Content Area */}
       <div className={`transition-opacity duration-300 ${isPending ? "opacity-40" : "opacity-100"}`}>
@@ -261,8 +283,8 @@ function SidebarDeputyItem({ deputy, router }: { deputy: Deputy; router: any }) 
   const partyColorClass = partyColors[deputy.party] || "bg-slate-400";
 
   return (
-    <div 
-      className="bg-card dark:bg-slate-900 rounded-2xl p-3 border border-border dark:border-slate-800 shadow-sm hover:shadow-md transition-all flex items-center gap-4 group"
+    <Link href={`/deputes/${slug}`}
+      className="bg-card dark:bg-slate-900 rounded-2xl p-3 border border-border dark:border-slate-800 shadow-sm hover:shadow-md active:scale-[0.99] transition-all flex items-center gap-4 group"
     >
       <div className="relative shrink-0">
         {!imgError ? (
@@ -291,13 +313,10 @@ function SidebarDeputyItem({ deputy, router }: { deputy: Deputy; router: any }) 
         </p>
       </div>{" "}
 
-      <button 
-        onClick={() => router.push(`/deputes/${slug}`)}
-        className="w-8 h-8 rounded-full bg-muted dark:bg-slate-800 flex items-center justify-center text-muted-foreground hover:text-red-500 hover:bg-red-50 transition-colors shrink-0"
-      >
+      <span aria-hidden className="w-8 h-8 rounded-full bg-muted dark:bg-slate-800 flex items-center justify-center text-muted-foreground group-hover:text-emerald-600 transition-colors shrink-0">
         <ChevronRight className="w-4 h-4" />
-      </button>
-    </div>
+      </span>
+    </Link>
   );
 }
 

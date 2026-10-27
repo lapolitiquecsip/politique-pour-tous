@@ -1,5 +1,8 @@
 // Hero « poster » sombre et coloré pour l'Assemblée (bleu) et le Sénat (rouge), dans le
 // même esprit que le hero Europe et que la page Présidentielles.
+// Avec `actions`, le hero devient une porte d'entrée : une phrase courte sur téléphone, deux
+// boutons d'action, et le sommaire passe dans la barre collante (SectionNav) sous le hero.
+import HeroActions from "./HeroActions";
 const THEMES = {
   blue: {
     bg: "bg-[#0a1633]", blob1: "bg-[#1d4ed8]/45", blob2: "bg-sky-400/15",
@@ -22,12 +25,14 @@ const THEMES = {
 } as const;
 
 export default function ChamberHero({
-  title, accentLetter, eyebrow, description, links, color, image,
+  title, accentLetter, eyebrow, description, descriptionCourte, actions, links, color, image,
 }: {
   title: string;           // ex. « ASSEMBLÉE » (mis en gros)
   accentLetter?: string;   // une lettre finale mise en dégradé (facultatif)
   eyebrow: string;
   description: string;
+  descriptionCourte?: string;  // remplace la description sur téléphone
+  actions?: { label: string; href: string; focus?: string }[];
   links: { label: string; href: string }[];
   color: "blue" | "red" | "green";
   image?: string;          // photo de fond optionnelle (ex. « /images/…jpg »)
@@ -35,7 +40,7 @@ export default function ChamberHero({
   const t = THEMES[color];
   const imgSrc = image ? `${process.env.NEXT_PUBLIC_BASE_PATH || ""}${image}` : null;
   return (
-    <div className={`relative overflow-hidden ${t.bg} px-4 pt-28 pb-16 text-center`}>
+    <div className={`relative overflow-hidden ${t.bg} px-4 ${actions ? "pt-24 pb-10 md:pt-28 md:pb-16" : "pt-28 pb-16"} text-center`}>
       {imgSrc ? (
         <>
           {/* Photo de l'édifice + voile teinté pour la lisibilité du texte. */}
@@ -52,14 +57,22 @@ export default function ChamberHero({
         <span className={`inline-flex items-center gap-2 rounded-full border ${t.pill} bg-white/5 px-4 py-1.5 text-[11px] font-black uppercase tracking-[0.25em]`}>
           {eyebrow}
         </span>{" "}
-        <h1 className="mt-6 font-staatliches text-7xl uppercase leading-none tracking-tight text-white md:text-9xl">
+        <h1 className={`${actions ? "mt-5 text-6xl" : "mt-6 text-7xl"} font-staatliches uppercase leading-none tracking-tight text-white md:text-9xl`}>
           {accentLetter ? (
             <>{title}<span className={`bg-gradient-to-b ${t.letter} bg-clip-text text-transparent`}>{accentLetter}</span></>
           ) : title}
         </h1>{" "}
         <div className={`mx-auto mt-6 h-1.5 w-44 rounded-full bg-gradient-to-r ${t.underline}`} />{" "}
-        <p className="mx-auto mt-6 max-w-2xl text-[15px] leading-relaxed text-white/70 md:text-base">{description}</p>{" "}
-        <div className="mt-7 flex flex-wrap justify-center gap-2">
+        {descriptionCourte ? (
+          <>
+            <p className="mx-auto mt-5 max-w-md text-[16px] leading-relaxed text-white/85 md:hidden">{descriptionCourte}</p>
+            <p className="mx-auto mt-6 hidden max-w-2xl text-base leading-relaxed text-white/70 md:block">{description}</p>
+          </>
+        ) : (
+          <p className="mx-auto mt-6 max-w-2xl text-[15px] leading-relaxed text-white/70 md:text-base">{description}</p>
+        )}{" "}
+        {actions && <HeroActions actions={actions} />}{" "}
+        <div className={`mt-7 flex-wrap justify-center gap-2 ${actions ? "hidden" : "flex"}`}>
           {links.map(l => (
             <a key={l.href} href={l.href}
               className={`rounded-full border border-white/15 bg-white/5 px-5 py-2 text-[11px] font-black uppercase tracking-widest text-white/80 transition ${t.accent}`}>

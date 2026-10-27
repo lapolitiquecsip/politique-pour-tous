@@ -247,11 +247,16 @@ export default function HemicycleChart({ chamber = "both", title, subtitle }: { 
           </div>
         )}{" "}
         {(chamber === "an" || chamber === "both") && vacantsAN.length > 0 && anElus < SIEGES.an && (
-          <p className="mx-auto mt-6 max-w-3xl rounded-2xl bg-muted px-4 py-3 text-center text-[12px] leading-relaxed text-muted-foreground">
-            <strong className="text-foreground">{SIEGES.an - anElus} siège{SIEGES.an - anElus > 1 ? "s" : ""} vacant{SIEGES.an - anElus > 1 ? "s" : ""}</strong> en attendant
-            l&apos;entrée en fonction du remplaçant : {vacantsAN.map(v => `${v.departement} (${v.circonscription}${v.circonscription === 1 ? "re" : "e"} circ., ${v.ancien})`).join(", ")}.
-            Un député qui quitte l&apos;Assemblée (élu sénateur, nommé au Gouvernement, devenu maire…) est en général remplacé par son suppléant ; à défaut, une élection partielle est organisée.
-          </p>
+          // Replié : le détail des sièges vacants est une précision, pas l'essentiel de la section.
+          <details className="mx-auto mt-6 max-w-3xl rounded-2xl bg-muted px-4 py-3 text-[12px] leading-relaxed text-muted-foreground">
+            <summary className="cursor-pointer text-center font-bold text-foreground">
+              {SIEGES.an - anElus} siège{SIEGES.an - anElus > 1 ? "s" : ""} vacant{SIEGES.an - anElus > 1 ? "s" : ""} — pourquoi ?
+            </summary>
+            <p className="mt-2 text-center">
+              En attendant l&apos;entrée en fonction du remplaçant : {vacantsAN.map(v => `${v.departement} (${v.circonscription}${v.circonscription === 1 ? "re" : "e"} circ., ${v.ancien})`).join(", ")}.
+              Un député qui quitte l&apos;Assemblée (élu sénateur, nommé au Gouvernement, devenu maire…) est en général remplacé par son suppléant ; à défaut, une élection partielle est organisée.
+            </p>
+          </details>
         )}
       </div>
     </section>

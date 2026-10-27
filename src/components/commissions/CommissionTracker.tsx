@@ -193,7 +193,7 @@ export default function CommissionTracker({ chamber, chamberLabel, accent = "eme
     // Le cadre de l'offre Pro : une bordure violette dont le dégradé tourne lentement,
     // un halo, et un bandeau « Espace Pro ». Sans lui, la section se lisait comme
     // n'importe quelle liste du site — rien ne disait qu'on était dans l'offre Pro.
-    <div id="commissions" className="scroll-mt-24 mt-16 relative overflow-hidden rounded-[2.5rem] p-[2px] shadow-[0_24px_80px_-30px_rgba(168,85,247,0.65)]">
+    <div id="commissions" className="scroll-mt-32 mt-10 relative overflow-hidden rounded-[2.5rem] p-[2px] shadow-[0_24px_80px_-30px_rgba(168,85,247,0.65)]">
       <span aria-hidden className="pointer-events-none absolute left-1/2 top-1/2 aspect-square w-[260%] -translate-x-1/2 -translate-y-1/2 bg-[conic-gradient(from_0deg,transparent_0deg,#a855f7_50deg,#f0abfc_90deg,transparent_150deg,transparent_190deg,#7c3aed_240deg,#e879f9_290deg,transparent_350deg)] motion-safe:animate-[spin_9s_linear_infinite]" />{" "}
       <div className="relative rounded-[calc(2.5rem-2px)] bg-card p-5 dark:bg-slate-950 md:p-8">
       <div aria-hidden className="pointer-events-none absolute inset-x-0 top-0 h-48 rounded-t-[inherit] bg-gradient-to-b from-violet-500/[0.09] via-fuchsia-500/[0.03] to-transparent" />{" "}
@@ -261,12 +261,10 @@ export default function CommissionTracker({ chamber, chamberLabel, accent = "eme
           icon={<Briefcase size={26} />}
           title={`Ce qui s'est dit en commission`}
           pitch={`${total > 0 ? total.toLocaleString("fr-FR") + " réunions" : "Chaque réunion"} de commission ${chamberLabel === "Sénat" ? "du Sénat" : "de l'Assemblée nationale"}, analysées une par une à partir du compte rendu officiel.`}
+          // Trois arguments, pas six : sur téléphone, l'encart tenait deux écrans.
           bullets={[
-            "Ce qui a réellement été dit, réunion par réunion",
-            "Positions défendues, orateur par orateur",
-            "Chiffres avancés, datés de leur exercice",
-            "Verbatim vérifié mot pour mot dans le compte rendu",
-            "Suites annoncées : rapports, votes, saisines",
+            "Ce qui a réellement été dit, orateur par orateur",
+            "Chiffres et suites annoncées, vérifiés dans le compte rendu",
             "Recherche plein texte et export CSV",
           ]}
         />

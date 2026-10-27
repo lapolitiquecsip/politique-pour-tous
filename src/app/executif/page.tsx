@@ -36,6 +36,7 @@ import PlfALaUne from "@/components/executif/plf/PlfALaUne";
 import { cleanMinistryName } from "@/lib/executif-utils";
 import { AwardBadge } from "@/components/ui/award-badge";
 import ExecutifHero from "@/components/executif/ExecutifHero";
+import AnnoncesGouvernement from "@/components/executif/AnnoncesGouvernement";
 
 const normalizeName = (name: string) => {
   if (!name) return "";
@@ -511,8 +512,9 @@ export default function ExecutifPage() {
     <main className="min-h-screen bg-muted pb-20">
       {/* 1. EN-TÊTE : Matignon, portrait du chef de l'exécutif, rubriques de la page. */}
       <ExecutifHero
-        description="Le Président, le Premier ministre et les ministres : qui décide, ce que prévoit le budget, l'état des finances publiques, les décrets publiés au Journal officiel et le suivi des engagements."
+        description="Ce que le gouvernement annonce, analysé chaque jour ; le Président, le Premier ministre et les ministres : qui décide, ce que prévoit le budget, l'état des finances publiques, les décrets publiés au Journal officiel et le suivi des engagements."
         links={[
+          { label: "Annonces", id: "annonces" },
           { label: "Président", id: "president" },
           { label: "Ministères", id: "ministeres" },
           { label: "Budget 2027", id: "budget-2027" },
@@ -525,6 +527,10 @@ export default function ExecutifPage() {
       />{" "}
 
       <div className="container mx-auto max-w-7xl px-4 mt-12">
+        {/* EN TÊTE — ce que le gouvernement annonce, analysé plusieurs fois par jour. */}
+        <div id="annonces" className="mb-8 scroll-mt-24">
+          <AnnoncesGouvernement />
+        </div>{" "}
         {/* À LA UNE — le projet de budget de l'année en cours d'examen */}
         <div id="budget-2027" className="mb-8 scroll-mt-24">
           <PlfALaUne />

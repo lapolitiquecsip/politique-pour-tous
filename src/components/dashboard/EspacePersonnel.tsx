@@ -380,7 +380,7 @@ export default function EspacePersonnel({ mode = "tout" }: { mode?: ModeEspace }
           serraient sur deux ou trois lignes dès que les onglets étaient nombreux. */}
       <div className="border-b border-white/10 px-3 pt-4 md:px-6 md:pt-6">
         <div className="-mx-1 flex gap-2 overflow-x-auto px-1 pb-4 [scrollbar-width:none] md:flex-wrap md:overflow-visible [&::-webkit-scrollbar]:hidden">
-          {ONGLETS.filter(o => !o.premium || isPremium).map(o => {
+          {ONGLETS.filter(o => (!o.premium || isPremium) && !(vueOnglets && o.id === "votes")).map(o => {
             const actif = activeTab === o.id;
             const Icone = o.icone;
             return (

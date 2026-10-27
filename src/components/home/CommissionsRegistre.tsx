@@ -369,7 +369,11 @@ function Couverture({
 
 /* ──────────────────────────────── Rubrique ──────────────────────────────── */
 
-export default function CommissionsRegistre() {
+/**
+ * direct : dans l'onglet de l'espace Pro, la rubrique s'ouvre sans couverture et ne se
+ * referme pas — l'abonné est venu pour la lire, pas pour cliquer « Ouvrir ».
+ */
+export default function CommissionsRegistre({ direct = false }: { direct?: boolean } = {}) {
   const { isPro, isPremium, loading: aboEnCours } = usePremium();
   const reduce = useReducedMotion();
   const [jours, setJours] = useState<Jour[] | null>(null);
@@ -377,7 +381,7 @@ export default function CommissionsRegistre() {
   const [reunions, setReunions] = useState<Reunion[] | null>(null);
   const [reunionsPour, setReunionsPour] = useState<string | null>(null);
   const [chambre, setChambre] = useState<"AN" | "SENAT" | null>(null);
-  const [ouvert, setOuvert] = useState(false);
+  const [ouvert, setOuvert] = useState(direct);
   const [recherche, setRecherche] = useState(false);
 
   // Rouvert tel qu'on l'a laissé pendant la visite ; une nouvelle visite retrouve
@@ -385,9 +389,11 @@ export default function CommissionsRegistre() {
   // HTML est pré-rendu, et lire le stockage à la construction ferait diverger le
   // serveur du navigateur.
   useEffect(() => {
+    if (direct) return;
     try { if (sessionStorage.getItem("lpcs.com.ouvert") === "1") setOuvert(true); } catch { /* navigation privée */ }
   }, []);
   useEffect(() => {
+    if (direct) return;
     try {
       if (ouvert) sessionStorage.setItem("lpcs.com.ouvert", "1");
       else sessionStorage.removeItem("lpcs.com.ouvert");
@@ -528,13 +534,13 @@ export default function CommissionsRegistre() {
                   >
                     <Search size={13} /> {" "}<span className="hidden sm:inline">Rechercher</span>
                   </button>{" "}
-                  <button
+                  {!direct && (<button
                     onClick={() => { setOuvert(false); setRecherche(false); }}
                     aria-label="Refermer le registre"
                     className="inline-flex items-center gap-1.5 rounded-full bg-white/10 px-3 py-1.5 text-[10px] font-black uppercase tracking-widest text-white/80 ring-1 ring-white/15 transition hover:bg-white/20 hover:text-white"
                   >
                     <ChevronUp size={13} /> {" "}<span className="hidden sm:inline">Refermer</span>
-                  </button>
+                  </button>)}
                 </div>{" "}
 
                 <div className="mt-4">

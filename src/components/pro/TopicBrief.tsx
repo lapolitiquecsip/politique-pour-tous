@@ -322,12 +322,10 @@ export default function TopicBrief() {
   const outils = (brief?.outils ?? []).filter(o => o.url);
 
   return (
-    <section className="mx-auto max-w-5xl px-4 py-8">
+    <section>
       <div className="overflow-hidden rounded-3xl border border-violet-400/25 bg-gradient-to-br from-slate-950 via-slate-900 to-violet-950/60 text-white shadow-2xl shadow-violet-950/30">
         <div className="p-5 sm:p-7">
-          <BadgePro />{" "}
-
-          <h2 className="mt-3 font-staatliches text-3xl uppercase leading-none tracking-tight sm:text-4xl">
+          <h2 className="font-staatliches text-3xl uppercase leading-none tracking-tight sm:text-4xl">
             Tout sur un sujet
           </h2>{" "}
           <p className="mt-2 max-w-2xl text-sm leading-6 text-white/65">

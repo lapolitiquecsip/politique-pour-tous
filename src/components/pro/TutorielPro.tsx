@@ -373,7 +373,7 @@ export default function TutorielPro({ userId, ouvert, onFermer }: { userId: stri
                             </>
                           )}
                         </div>{" "}
-                        <p className="text-[12px] text-white/45">Vos députés et sénateurs se suivent depuis leur fiche, avec la cloche. Les commissions se choisissent dans « Mes alertes Pro ».</p>
+                        <p className="text-[12px] text-white/45">Vos députés et sénateurs se suivent depuis leur fiche, avec la cloche. Les commissions se choisissent dans l&apos;onglet « E-mails &amp; réglages ».</p>
                       </div>
                     )}{" "}
 

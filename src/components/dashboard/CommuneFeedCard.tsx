@@ -57,7 +57,7 @@ export default function CommuneFeedCard() {
       <div className="flex items-center gap-2 rounded-2xl border border-border bg-card px-3 focus-within:border-blue-400">
         <Search size={16} className="shrink-0 text-slate-400" />{" "}
         <input
-          autoFocus
+          autoFocus={picking}
           value={query}
           onChange={(e) => setQuery(e.target.value)}
           placeholder="Nom de votre commune (ex. Orvault)"

@@ -61,7 +61,11 @@ function jourCourt(d: string) {
   return m ? { jour: +m[3], mois: MOIS[+m[2] - 1] } : { jour: 0, mois: "" };
 }
 
-export default function JournalOfficielDuJour() {
+/**
+ * direct : dans l'onglet de l'espace Pro, la rubrique s'ouvre sans couverture et ne se
+ * referme pas — l'abonné est venu pour la lire, pas pour cliquer « Ouvrir ».
+ */
+export default function JournalOfficielDuJour({ direct = false }: { direct?: boolean } = {}) {
   const { isPro, isPremium, loading: aboEnCours } = usePremium();
   const reduce = useReducedMotion();
   const [editions, setEditions] = useState<Edition[] | null>(null);
@@ -71,7 +75,7 @@ export default function JournalOfficielDuJour() {
   const [filtre, setFiltre] = useState<string | null>(null);
   const [deployees, setDeployees] = useState<Set<string>>(new Set());
   const [recherche, setRecherche] = useState(false);
-  const [ouvert, setOuvert] = useState(false);
+  const [ouvert, setOuvert] = useState(direct);
 
   // L'édition se rouvre telle qu'on l'a laissée pendant la visite : un
   // professionnel qui revient sur l'accueil entre deux pages n'a pas à recliquer.
@@ -80,9 +84,11 @@ export default function JournalOfficielDuJour() {
   // le HTML est pré-rendu, et lire le stockage à la construction ferait diverger
   // le serveur du navigateur.
   useEffect(() => {
+    if (direct) return;
     try { if (sessionStorage.getItem("lpcs.jo.ouvert") === "1") setOuvert(true); } catch { /* navigation privée */ }
   }, []);
   useEffect(() => {
+    if (direct) return;
     try {
       if (ouvert) sessionStorage.setItem("lpcs.jo.ouvert", "1");
       else sessionStorage.removeItem("lpcs.jo.ouvert");
@@ -307,14 +313,14 @@ export default function JournalOfficielDuJour() {
             <Search size={13} /> {" "}<span className="hidden sm:inline">Rechercher</span>
           </button>{" "}
           {/* Refermer : on rend la une, et l'accueil retrouve sa respiration. */}
-          <button
+          {!direct && (<button
             onClick={() => { setOuvert(false); setRecherche(false); }}
             aria-label="Refermer le Journal officiel"
             title="Refermer"
             className="inline-flex items-center gap-1.5 rounded-full bg-white/10 px-3 py-1.5 text-[10px] font-black uppercase tracking-widest text-white/80 ring-1 ring-white/15 transition hover:bg-white/20 hover:text-white"
           >
             <ChevronUp size={13} /> {" "}<span className="hidden sm:inline">Refermer</span>
-          </button>
+          </button>)}
         </div>{" "}
 
         {/* Rail des éditions — un mois de profondeur, qu'on parcourt au doigt

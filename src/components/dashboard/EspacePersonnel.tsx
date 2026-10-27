@@ -17,6 +17,7 @@ import JournalOfficielDuJour from "@/components/home/JournalOfficielDuJour";
 import TopicBrief from "@/components/pro/TopicBrief";
 import AmendementsAN from "@/components/pro/AmendementsAN";
 import FilActualitePro from "@/components/pro/FilActualitePro";
+import EspacePro from "@/components/pro/EspacePro";
 import TutorielPro, { tutorielProDejaVu } from "@/components/pro/TutorielPro";
 import EncartPremium from "@/components/dashboard/EncartPremium";
 import IdentifiantsForm from "@/components/dashboard/IdentifiantsForm";
@@ -174,6 +175,8 @@ export default function EspacePersonnel({ mode = "tout" }: { mode?: ModeEspace }
   //     ouvrirait des rubriques payantes à qui n'y a pas droit.
   const isPremium = tierAffiche === "elite" || tierAffiche === "pro";
   const isPro = tierAffiche === "pro";
+  // Abonné Pro dans son espace : une rubrique à la fois, en onglets (voir EspacePro).
+  const vueOnglets = mode === "espace" && isPro;
   const [loading, setLoading] = useState(true);
   // Tutoriel d'accueil Pro : ouvert de lui-même à la première visite de l'espace (ou au
   // retour du paiement, ?bienvenue=1), puis seulement à la demande.
@@ -181,7 +184,8 @@ export default function EspacePersonnel({ mode = "tout" }: { mode?: ModeEspace }
   const [userVotes, setUserVotes] = useState<any[]>([]);
   const [followedDeputies, setFollowedDeputies] = useState<any[]>([]);
   const [savedItems, setSavedItems] = useState<any[]>([]);
-  const [activeTab, setActiveTab] = useState<IdOnglet>("votes");
+  // Dans l'espace Pro, ce panneau devient l'onglet « Mes suivis » : on l'ouvre sur les élus.
+  const [activeTab, setActiveTab] = useState<IdOnglet>(mode === "espace" ? "deputies" : "votes");
   // Un lien « /dashboard#parrainage » (bouton cadeau de l'en-tête) ouvre directement
   // l'onglet, y compris quand on est déjà sur la page.
   useEffect(() => {
@@ -366,6 +370,405 @@ export default function EspacePersonnel({ mode = "tout" }: { mode?: ModeEspace }
     );
   }
 
+  // Votes, élus suivis, favoris, territoires, parrainage, compte : sous le hero pour tous,
+  // dans l'onglet « Mes suivis » pour un abonné Pro.
+  const panneau = (
+    <div className="bg-white/[0.03] rounded-[2.5rem] border border-white/10 shadow-2xl shadow-black/40 overflow-hidden min-h-[600px]">
+
+      {/* Onglets en pastilles, sur une ligne qui défile au doigt sur mobile.
+          Les anciens blocs colorés pleine largeur, en capitales espacées, se
+          serraient sur deux ou trois lignes dès que les onglets étaient nombreux. */}
+      <div className="border-b border-white/10 px-3 pt-4 md:px-6 md:pt-6">
+        <div className="-mx-1 flex gap-2 overflow-x-auto px-1 pb-4 [scrollbar-width:none] md:flex-wrap md:overflow-visible [&::-webkit-scrollbar]:hidden">
+          {ONGLETS.filter(o => !o.premium || isPremium).map(o => {
+            const actif = activeTab === o.id;
+            const Icone = o.icone;
+            return (
+              <button
+                key={o.id}
+                onClick={() => startTransition(() => setActiveTab(o.id))}
+                aria-current={actif ? "page" : undefined}
+                className={`group inline-flex shrink-0 items-center gap-2.5 whitespace-nowrap rounded-2xl py-2 pl-2 pr-4 text-sm font-bold transition-[background-color,color,box-shadow,transform] duration-200 active:scale-[0.97] ${
+                  actif
+                    ? `${o.actif} text-white shadow-lg ring-1 ring-white/30`
+                    : "bg-white/[0.04] text-white/70 ring-1 ring-white/10 hover:bg-white/[0.08] hover:text-white"
+                }`}
+              >
+                <span className={`flex h-8 w-8 items-center justify-center rounded-xl transition ${actif ? "bg-white/20" : "bg-white/[0.06] group-hover:bg-white/10"}`}>
+                  <Icone size={16} className={isPending && !actif ? "opacity-40" : ""} />
+                </span>{" "}
+                {o.label}{" "}
+              </button>
+            );
+          })}{" "}
+          {verrousVisibles.length > 0 && <span aria-hidden className="mx-1 hidden w-px shrink-0 self-stretch bg-white/10 md:block" />}{" "}
+          {/* Ce que l'offre supérieure ajoute : même forme, en retrait, avec un
+              cadenas doré. Un clic ouvre l'aperçu. */}
+          {verrousVisibles.map(v => {
+            const actif = activeTab === `verrou-${v.id}`;
+            const Icone = v.icone;
+            return (
+              <button
+                key={v.id}
+                onClick={() => startTransition(() => setActiveTab(`verrou-${v.id}`))}
+                aria-current={actif ? "page" : undefined}
+                title={`Réservé aux membres ${v.offre === "pro" ? "Pro" : "Premium"}`}
+                className={`group relative inline-flex shrink-0 items-center gap-2.5 overflow-hidden whitespace-nowrap rounded-2xl py-2 pl-2 pr-4 text-sm font-semibold transition-colors duration-200 ${
+                  actif ? "bg-amber-400/15 text-amber-100 ring-1 ring-amber-300/50" : "text-white/70 ring-1 ring-white/[0.12] hover:bg-amber-400/[0.08] hover:text-white"
+                }`}
+              >
+                <span className="relative flex h-8 w-8 items-center justify-center rounded-xl bg-white/[0.04]">
+                  <Icone size={15} className="opacity-75" />{" "}
+                  <span className={`absolute -right-1 -top-1 flex h-4 w-4 items-center justify-center rounded-full ${v.offre === "pro" ? "bg-gradient-to-br from-violet-300 to-fuchsia-500 text-white shadow-[0_0_8px_rgba(168,85,247,0.7)]" : "bg-gradient-to-br from-amber-200 to-amber-500 text-slate-950 shadow-[0_0_8px_rgba(251,191,36,0.6)]"}`}>
+                    <Lock size={9} strokeWidth={3} />
+                  </span>
+                </span>{" "}
+                {v.label}{" "}
+                <span aria-hidden className="verrou-reflet pointer-events-none absolute inset-y-0 -left-1/2 w-1/2 bg-gradient-to-r from-transparent via-amber-200/15 to-transparent" />{" "}
+              </button>
+            );
+          })}
+        </div>
+      </div>{" "}
+
+      <div className="p-4 sm:p-6 md:p-12">
+        {/* Quelques lignes grisées tiennent la place, plutôt qu'un « chargement de
+            votre compte » qui remplace tout l'écran : le panneau garde sa forme,
+            et rien ne saute quand les données arrivent. */}
+        {loading && !userVotes.length && !followedDeputies.length ? (
+          <div className="space-y-3 py-6">
+            {[0, 1, 2].map(i => (
+              <div key={i} className="h-16 animate-pulse rounded-2xl bg-white/[0.05]" style={{ animationDelay: `${i * 90}ms` }} />
+            ))}
+          </div>
+        ) : (
+          <AnimatePresence mode="wait">
+            {activeTab === "votes" ? (
+              <motion.div 
+                key="votes"
+                initial={{ opacity: 0, y: 10 }}
+                animate={{ opacity: 1, y: 0 }}
+                exit={{ opacity: 0, y: -10 }}
+                className="space-y-6"
+              >
+                {resolvedVotes.length === 0 ? (
+                  <div className="text-center py-20 bg-white/[0.03] rounded-[2rem] border border-dashed border-white/15">
+                    <Vote className="mx-auto mb-4 text-white/25" size={48} />{" "}
+                    <h3 className="text-xl font-bold mb-2">Aucun vote enregistré</h3>{" "}
+                    <p className="text-slate-400 mb-8 max-w-sm mx-auto">Votez sur les prochaines lois pour voir apparaître vos positions ici.</p>{" "}
+                    <Link href="/lois" className="text-amber-400 font-black uppercase text-xs tracking-widest hover:underline">Voir les lois &rarr;</Link>
+                  </div>
+                ) : (
+                  resolvedVotes.map((v) => {
+                    const lawInfo = v.laws || v.scrutins;
+
+                    return (
+                      <div key={v.id} className="group flex flex-col md:flex-row md:items-center gap-4 md:gap-6 p-4 md:p-6 rounded-3xl border border-white/10 hover:border-white/25 hover:shadow-xl transition-all gold-sheen-hover bg-white/[0.04] relative">
+                        <div className="w-14 h-14 rounded-2xl bg-white/5 flex items-center justify-center shrink-0 transition-transform group-hover:scale-105">
+                          <BallotBox vote={v.vote} size={34} />
+                        </div>{" "}
+                        <div className="flex-1 min-w-0">
+                          <div className="flex items-center gap-3 mb-1">
+                            <span className="text-[10px] font-black uppercase tracking-widest text-slate-400 bg-white/5 px-2 py-0.5 rounded border border-white/10">
+                              {lawInfo?.category || "Législation"}
+                            </span>{" "}
+                            <div className="flex items-center gap-1.5 text-[10px] font-bold text-slate-400">
+                              <Calendar size={10} />{" "}
+                              {formatDateSafe(v.created_at) || "Date inconnue"}
+                            </div>
+                          </div>{" "}
+                          {titreOuNull(lawInfo) ? (
+                            <h3 className="text-lg font-bold text-white truncate">
+                              {titreOuNull(lawInfo)}
+                            </h3>
+                          ) : (
+                            <h3 className="text-lg font-bold text-slate-400 truncate">
+                              {REFERENCE_PERDUE}
+                            </h3>
+                          )}
+                        </div>{" "}
+                        <BallotChip vote={v.vote} />{" "}
+                        <Link 
+                          href={`/lois`}
+                          className="w-10 h-10 rounded-full border border-white/10 flex items-center justify-center text-slate-400 hover:bg-slate-950 hover:text-white hover:border-slate-950 transition-all shrink-0"
+                        >
+                          <ArrowRight size={18} />
+                        </Link>{" "}
+                      </div>
+                    );
+                  })
+                )}{" "}
+              </motion.div>
+            ) : activeTab === "deputies" ? (
+              <motion.div 
+                key="deputies"
+                initial={{ opacity: 0, y: 10 }}
+                animate={{ opacity: 1, y: 0 }}
+                exit={{ opacity: 0, y: -10 }}
+                className="grid grid-cols-1 md:grid-cols-2 gap-6"
+              >
+                {!isPremium ? (
+                  <EncartPremium
+                    titre="Suivez vos élus"
+                    texte="Chaque vote de vos députés, sénateurs et eurodéputés favoris, expliqué et réuni ici."
+                    benefices={["Leurs votes dès qu'ils ont lieu, avec leur explication", "Députés, sénateurs et eurodéputés", "Une alerte à chaque vote, par e-mail si vous le souhaitez"]}
+                    apercu={["Votre député a voté pour", "Votre sénatrice s'est abstenue", "Votre eurodéputé a voté contre", "Réforme des retraites : leur vote"]}
+                  />
+                ) : followedDeputies.length === 0 ? (
+                  <div className="col-span-full text-center py-20 bg-white/[0.03] rounded-[2rem] border border-dashed border-white/15">
+                    <Users className="mx-auto mb-4 text-white/25" size={48} />{" "}
+                    <h3 className="text-xl font-bold mb-2">Aucun élu suivi</h3>{" "}
+                    <p className="text-slate-400 mb-8 max-w-sm mx-auto">Suivez vos députés, sénateurs et eurodéputés pour recevoir leurs derniers votes et positions.</p>{" "}
+                    <Link href="/deputes" className="text-amber-400 font-black uppercase text-xs tracking-widest hover:underline">Explorer les élus &rarr;</Link>
+                  </div>
+                ) : (
+                  followedDeputies.map((f) => (
+                    <Link key={f.id} href={f.elu_href || "#"}>
+                      <div className="group flex items-center gap-4 md:gap-6 p-4 md:p-6 rounded-3xl border border-white/10 hover:border-amber-400 hover:shadow-xl transition-all h-full gold-sheen-hover bg-white/[0.04] relative overflow-hidden">
+                        <div className="absolute top-0 right-0 w-24 h-24 bg-amber-500/5 rounded-full -mr-12 -mt-12 group-hover:bg-amber-500/10 transition-colors" />{" "}
+
+                        <img 
+                          src={f.elu?.photo_url || `https://ui-avatars.com/api/?name=${encodeURIComponent(`${f.elu?.first_name ?? ""} ${f.elu?.last_name ?? ""}`.trim())}&background=fcd34d&color=1e293b`}
+                          loading="lazy"
+                          decoding="async"
+                          className="w-20 h-20 rounded-2xl object-cover grayscale group-hover:grayscale-0 transition-all duration-500 shadow-lg"
+                          alt={`${f.elu?.first_name ?? ""} ${f.elu?.last_name ?? ""}`.trim()}
+                          onError={(e) => {
+                            (e.target as HTMLImageElement).src = `https://ui-avatars.com/api/?name=${encodeURIComponent(`${f.elu?.first_name ?? ""} ${f.elu?.last_name ?? ""}`.trim())}&background=fcd34d&color=1e293b`;
+                          }}
+                        />{" "}
+                        <div className="flex-1 min-w-0">
+                          <h4 className="text-xl font-bold text-white group-hover:text-amber-600 transition-colors truncate">
+                            {f.elu?.first_name} {f.elu?.last_name}
+                          </h4>{" "}
+                          <div className="flex items-center gap-2 text-slate-400">
+                            <MapPin size={12} className="text-amber-500" />{" "}
+                            <span className="text-[10px] font-black uppercase tracking-widest truncate">
+                              {f.elu?.department || (f.elu_type === "senator" ? "Sénat" : f.elu_type === "mep" ? (f.elu?.ep_group || "Parlement européen") : "Circonscription")}
+                            </span>
+                          </div>{" "}
+                          {/* La chambre est plus informative qu'un « suivi actif » redondant :
+                              les trois chambres cohabitent désormais dans cette liste. */}
+                          <div className={`flex items-center gap-2 text-[10px] font-black uppercase tracking-widest px-3 py-1 rounded-lg w-fit mt-3 ${
+                            f.elu_type === "senator" ? "text-rose-300 bg-rose-500/15" : f.elu_type === "mep" ? "text-sky-300 bg-sky-500/15" : "text-blue-300 bg-blue-500/15"
+                          }`}>
+                            <Bell size={10} fill="currentColor" />{" "}
+                            {f.elu_type === "senator" ? "Sénateur·rice" : f.elu_type === "mep" ? "Eurodéputé·e" : "Député·e"}
+                          </div>
+                        </div>{" "}
+                        <button
+                          onClick={(e) => handleUnfollow(e, f)}
+                          disabled={removingId === f.id}
+                          title="Ne plus suivre cet élu"
+                          aria-label={`Ne plus suivre ${f.elu?.first_name ?? ""} ${f.elu?.last_name ?? ""}`}
+                          className="relative z-10 shrink-0 rounded-xl border border-slate-200 bg-white p-2 text-slate-300 transition hover:border-rose-300 hover:bg-rose-50 hover:text-rose-500 disabled:opacity-40"
+                        >
+                          <UserMinus size={16} />
+                        </button>{" "}
+                        <ChevronRight size={20} className="text-slate-300 group-hover:text-amber-500 transition-colors shrink-0" />
+                      </div>
+                    </Link>
+                  ))
+                )}{" "}
+              </motion.div>
+            ) : activeTab === "saved" ? (
+              <motion.div 
+                key="saved"
+                initial={{ opacity: 0, y: 10 }}
+                animate={{ opacity: 1, y: 0 }}
+                exit={{ opacity: 0, y: -10 }}
+                className="grid grid-cols-1 md:grid-cols-2 gap-6"
+              >
+                {savedLaws.length === 0 ? (
+                  <div className="col-span-full text-center py-20 bg-white/[0.03] rounded-[2.5rem] border border-dashed border-white/15">
+                    <Bookmark className="mx-auto mb-4 text-white/25" size={48} />{" "}
+                    <h3 className="text-xl font-bold mb-2">Aucune loi enregistrée</h3>{" "}
+                    <p className="text-slate-400 mb-8 max-w-sm mx-auto">Enregistrez vos lois et propositions favorites pour les retrouver ici.</p>{" "}
+                    <Link href="/lois" className="text-amber-400 font-black uppercase text-xs tracking-widest hover:underline">Explorer les lois &rarr;</Link>
+                  </div>
+                ) : (
+                  savedLaws.map((item) => (
+                    <Link key={item.id} href={`/lois/?dossier=${item.item_id}`}>
+                      <div className="group relative flex h-full overflow-hidden rounded-3xl border border-white/10 bg-gradient-to-br from-amber-500/[0.06] to-white/[0.015] transition-all duration-500 hover:border-amber-400/50 hover:shadow-2xl hover:shadow-amber-500/10">
+                        {/* Marge reliée façon document officiel (œillets de reliure) */}
+                        <div className="relative w-9 shrink-0 border-r border-amber-400/20 bg-gradient-to-b from-amber-500/20 to-amber-700/10">
+                          <div className="absolute inset-y-0 left-1/2 w-px -translate-x-1/2 bg-amber-300/25" />{" "}
+                          <div className="absolute inset-y-0 left-1/2 flex -translate-x-1/2 flex-col justify-around py-7">
+                            {[0,1,2,3,4].map(i => <span key={i} className="h-2 w-2 rounded-full bg-slate-950/50 ring-1 ring-amber-300/25" />)}
+                          </div>
+                        </div>{" "}
+
+                        <div className="relative flex flex-1 flex-col p-6 md:p-7">
+                          {/* Lignes de texte en filigrane (papier réglé) */}
+                          <div className="pointer-events-none absolute inset-0 opacity-[0.05] [background-image:repeating-linear-gradient(to_bottom,transparent,transparent_21px,white_22px)]" />{" "}
+
+                          <div className="relative z-10 flex items-start justify-between gap-3">
+                            <div>
+                              <p className="mb-2 text-[9px] font-black uppercase tracking-[0.25em] text-amber-300/70">Texte de loi</p>{" "}
+                              <span className={`inline-block rounded-md px-2.5 py-1 text-[10px] font-black uppercase tracking-widest ${
+                                item.item_type === 'scrutin' ? 'bg-blue-500/15 text-blue-300' : 'bg-purple-500/15 text-purple-300'
+                              }`}>
+                                {item.item_type === 'scrutin' ? 'Loi votée' : 'Proposition'}
+                              </span>
+                            </div>{" "}
+                            {/* Sceau justice */}
+                            <div className="flex h-12 w-12 shrink-0 items-center justify-center rounded-full border border-amber-400/40 bg-amber-500/10 text-amber-300 shadow-[0_0_20px_rgb(var(--lueur-offre)/0.18)] transition-all group-hover:bg-amber-500 group-hover:text-slate-950">
+                              <Scale size={20} />
+                            </div>
+                          </div>{" "}
+
+                          <h4 className={`relative z-10 mb-4 mt-5 line-clamp-3 font-serif text-lg font-bold leading-snug transition-colors ${
+                            titreOuNull(item.data) ? "text-white group-hover:text-amber-200" : "text-slate-400"
+                          }`}>
+                            {titreOuNull(item.data) || REFERENCE_PERDUE}
+                          </h4>{" "}
+
+                          <div className="relative z-10 mt-auto flex items-center justify-between border-t border-dashed border-white/15 pt-5">
+                            <span className="inline-flex items-center gap-2 text-[10px] font-bold uppercase tracking-widest text-slate-400">
+                              <Calendar size={12} />{" "}
+                              {formatDateSafe(item.data?.date_scrutin || item.data?.date_adopted || item.data?.created_at) || "Non disponible"}
+                            </span>{" "}
+                            <span className="inline-flex items-center gap-1.5 text-[10px] font-black uppercase tracking-widest text-amber-300 transition-all group-hover:gap-2.5">
+                              Consulter <ChevronRight size={14} />
+                            </span>
+                          </div>
+                        </div>
+                      </div>
+                    </Link>
+                  ))
+                )}{" "}
+              </motion.div>
+            ) : activeTab === "geos" ? (
+              <motion.div 
+                key="geos"
+                initial={{ opacity: 0, y: 10 }}
+                animate={{ opacity: 1, y: 0 }}
+                exit={{ opacity: 0, y: -10 }}
+                className="grid grid-cols-1 md:grid-cols-2 gap-6"
+              >
+                {savedGeos.length === 0 ? (
+                  <div className="col-span-full text-center py-20 bg-white/[0.03] rounded-[2.5rem] border border-dashed border-white/15">
+                    <MapPin className="mx-auto mb-4 text-white/25" size={48} />{" "}
+                    <h3 className="text-xl font-bold mb-2">Aucun territoire suivi</h3>{" "}
+                    <p className="text-slate-400 mb-8 max-w-sm mx-auto">Suivez vos communes, départements ou régions pour les retrouver ici.</p>{" "}
+                    <Link href="/local" className="text-amber-400 font-black uppercase text-xs tracking-widest hover:underline">Découvrir les territoires &rarr;</Link>
+                  </div>
+                ) : (
+                  savedGeos.map((item) => (
+                    <Link key={item.id} href={`/local?code=${encodeURIComponent(item.item_id)}&type=${item.item_type}`}>
+                      <div className="group relative flex h-full flex-col overflow-hidden rounded-[2.5rem] border border-white/10 bg-gradient-to-br from-fuchsia-500/[0.07] to-pink-600/[0.03] p-6 transition-all duration-500 hover:border-fuchsia-400/50 hover:shadow-2xl hover:shadow-fuchsia-500/10 md:p-8">
+                        {/* Grille façon carte */}
+                        <div className="pointer-events-none absolute inset-0 opacity-[0.04] [background-image:linear-gradient(to_right,white_1px,transparent_1px),linear-gradient(to_bottom,white_1px,transparent_1px)] [background-size:24px_24px]" />{" "}
+                        {/* Fond : silhouette RÉELLE du territoire (dép./région) ou skyline (commune) */}
+                        {(() => {
+                          const deptD = item.item_type === 'department' ? departmentPaths[DEPT_CODE[item.item_id] || item.item_id] : null;
+                          const regCode = item.item_type === 'region' ? (REGION_CODE[item.item_id] || item.item_id) : null;
+                          const shape = deptD
+                            ? deptD
+                            : regCode && regionPaths[regCode]
+                              ? { d: regionPaths[regCode], viewBox: bboxFromPath(regionPaths[regCode]) }
+                              : null;
+                          if (shape) {
+                            return (
+                              <div className="pointer-events-none absolute -right-6 top-1/2 h-[155%] w-[70%] -translate-y-1/2 opacity-25 transition-transform duration-500 group-hover:scale-105">
+                                <svg viewBox={shape.viewBox} preserveAspectRatio="xMidYMid meet" className="h-full w-full text-fuchsia-300">
+                                  <path d={shape.d} fill="currentColor" fillOpacity="0.22" stroke="currentColor" strokeWidth="1.2" strokeOpacity="0.9" strokeLinejoin="round" />
+                                </svg>
+                              </div>
+                            );
+                          }
+                          // Une région dont les tracés ne sont pas encore arrivés reste
+                          // sans décor : lui donner la silhouette urbaine des communes
+                          // afficherait une ville à la place d'une région.
+                          if (regCode) return null;
+                          // Commune : skyline urbaine (immeubles + fenêtres)
+                          const B = [
+                            { x: 8, w: 34, y: 70 }, { x: 48, w: 30, y: 40 }, { x: 84, w: 26, y: 86 },
+                            { x: 116, w: 34, y: 54 }, { x: 156, w: 26, y: 24 }, { x: 188, w: 30, y: 72 },
+                            { x: 224, w: 34, y: 48 }, { x: 264, w: 26, y: 80 }, { x: 296, w: 26, y: 60 },
+                          ];
+                          return (
+                            <div className="pointer-events-none absolute inset-x-0 bottom-0 h-[58%] opacity-25 transition-transform duration-500 group-hover:translate-y-[-4px]">
+                              <svg viewBox="0 0 322 140" preserveAspectRatio="xMidYMax slice" className="h-full w-full text-fuchsia-300">
+                                <g fill="currentColor">
+                                  {B.map((b, i) => <rect key={i} x={b.x} y={b.y} width={b.w} height={140 - b.y} rx="2" />)}
+                                  <polygon points="169,10 156,24 182,24" />
+                                </g>
+                                <g fill="#0b1020" opacity="0.55">
+                                  {B.flatMap((b, i) => {
+                                    const cols = Math.max(2, Math.floor(b.w / 10));
+                                    const rows = Math.floor((140 - b.y - 8) / 12);
+                                    return Array.from({ length: cols * rows }).map((_, k) => {
+                                      const c = k % cols, r = Math.floor(k / cols);
+                                      return <rect key={`${i}-${k}`} x={b.x + 5 + c * (b.w / cols)} y={b.y + 8 + r * 12} width="4" height="6" rx="1" />;
+                                    });
+                                  })}
+                                </g>
+                              </svg>
+                            </div>
+                          );
+                        })()}{" "}
+
+                        <div className="relative z-10 mb-6 flex items-start justify-between">
+                          <span className="rounded-full bg-fuchsia-500/15 px-3 py-1 text-[10px] font-black uppercase tracking-widest text-fuchsia-300 ring-1 ring-inset ring-fuchsia-400/20">
+                            {item.item_type === 'commune' ? 'Commune' : item.item_type === 'region' ? 'Région' : 'Département'}
+                          </span>{" "}
+                          {/* Marqueur de carte pulsant */}
+                          <div className="relative">
+                            <span className="absolute inset-0 rounded-2xl ring-2 ring-fuchsia-400/30 opacity-40 animate-ping" />{" "}
+                            <div className="relative flex h-11 w-11 items-center justify-center rounded-2xl bg-fuchsia-500/15 text-fuchsia-300 ring-1 ring-fuchsia-400/30 transition-all group-hover:bg-fuchsia-500 group-hover:text-white">
+                              {item.item_type === 'commune' ? <Building2 size={18} /> : <MapPin size={18} className="fill-fuchsia-400/20" />}
+                            </div>
+                          </div>
+                        </div>{" "}
+
+                        <h4 className="relative z-10 mb-4 line-clamp-3 font-staatliches text-2xl tracking-wide text-white transition-colors group-hover:text-fuchsia-300">
+                          {item.data?.title}
+                        </h4>{" "}
+
+                        <div className="relative z-10 mt-auto flex items-center justify-between border-t border-white/10 pt-5">
+                          <div className="flex items-center gap-2">
+                            {item.item_type === 'commune' && item.data?.population ? (
+                              <span className="inline-flex items-center gap-1.5 rounded-full bg-white/5 px-3 py-1.5 text-[11px] font-black tracking-wide text-fuchsia-200">
+                                <Users size={12} /> {item.data.population.toLocaleString('fr-FR')} hab.
+                              </span>
+                            ) : (
+                              <span className="inline-flex items-center gap-1.5 text-[10px] font-black uppercase tracking-widest text-slate-400">
+                                <Globe size={12} /> Territoire suivi
+                              </span>
+                            )}
+                          </div>{" "}
+                          <span className="flex h-9 w-9 items-center justify-center rounded-full border border-white/10 text-slate-300 transition-all group-hover:border-fuchsia-400 group-hover:bg-fuchsia-500 group-hover:text-white">
+                            <ChevronRight size={18} />
+                          </span>
+                        </div>
+                      </div>
+                    </Link>
+                  ))
+                )}{" "}
+              </motion.div>
+            ) : activeTab === "parrainage" ? (
+              <motion.div key="parrainage" initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: -10 }}>
+                <Parrainage />{" "}
+              </motion.div>
+            ) : activeTab === "compte" ? (
+              <motion.div key="compte" initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: -10 }}>
+                <IdentifiantsForm adresseModifiable={!isPremium} />{" "}
+              </motion.div>
+            ) : verrouActif ? (
+              <motion.div key={activeTab} initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: -10 }}>
+                <EncartPremium
+                  offre={verrouActif.offre} titre={verrouActif.titre} texte={verrouActif.texte}
+                  benefices={verrouActif.benefices} apercu={verrouActif.apercu}
+                />{" "}
+              </motion.div>
+            ) : null}
+          </AnimatePresence>
+        )}
+      </div>
+    </div>
+  );
+
   return (
     // data-offre repeint la palette dorée en violet pour un abonné Pro : les
     // classes Tailwind ne changent pas, seules les variables de couleur (voir
@@ -381,7 +784,7 @@ export default function EspacePersonnel({ mode = "tout" }: { mode?: ModeEspace }
     // @custom-variant dark (&:is(.dark *))).
     <div data-offre={isPro ? "pro" : undefined} className="dark min-h-screen bg-gradient-to-b from-[#0b1020] via-[#0a0e1c] to-[#070a14] pb-20 text-white">
       {/* 1. Dashboard Header */}
-      <section className="border-b border-white/5 pt-28 pb-20 px-4 relative overflow-hidden">
+      <section className={`relative overflow-hidden px-4 ${vueOnglets ? "pt-24 pb-6 md:pb-7" : "border-b border-white/5 pt-28 pb-20"}`}>
         {/* Halos : dorés (ou violets) pour un abonné ; bleus, sans pulsation, pour un
             compte classique — l'or est la couleur de l'offre, pas celle du site. */}
         {isPremium ? (
@@ -401,7 +804,7 @@ export default function EspacePersonnel({ mode = "tout" }: { mode?: ModeEspace }
         )}{" "}
         <div className="container mx-auto max-w-6xl relative z-10">
           <div className="flex flex-col sm:flex-row items-center sm:items-start gap-6 text-center sm:text-left">
-             <div className={`w-20 h-20 rounded-full border-2 p-1 flex items-center justify-center transition-all duration-300 ${isPremium ? 'border-amber-400 bg-gradient-to-br from-amber-400/20 to-yellow-600/10 shadow-[0_0_30px_rgb(var(--lueur-offre)/0.35)] text-amber-300' : 'border-white/20 bg-white/5 text-slate-300'}`}>
+             <div className={`${vueOnglets ? "hidden" : "flex"} w-20 h-20 rounded-full border-2 p-1 items-center justify-center transition-all duration-300 ${isPremium ? 'border-amber-400 bg-gradient-to-br from-amber-400/20 to-yellow-600/10 shadow-[0_0_30px_rgb(var(--lueur-offre)/0.35)] text-amber-300' : 'border-white/20 bg-white/5 text-slate-300'}`}>
                 <User size={40} />
              </div>{" "}
              <div className="flex flex-col items-center sm:items-start">
@@ -409,7 +812,7 @@ export default function EspacePersonnel({ mode = "tout" }: { mode?: ModeEspace }
                   {isPremium && <Star size={12} className="fill-current" />}{" "}
                   {isPro ? "Membre Pro" : isPremium ? "Membre Premium" : "Compte Citoyen"}
                 </div>{" "}
-                <h1 className="text-5xl md:text-7xl font-staatliches uppercase tracking-tighter leading-none inline-flex items-center gap-2 md:gap-3 flex-wrap">
+                <h1 className={`${vueOnglets ? "text-4xl md:text-5xl" : "text-5xl md:text-7xl"} font-staatliches uppercase tracking-tighter leading-none inline-flex items-center gap-2 md:gap-3 flex-wrap`}>
                   <span className="text-white drop-shadow-[0_2px_20px_rgba(255,255,255,0.15)]">{mode === "compte" ? "Mon" : "Mon Espace"}</span>{" "}
                   {isPremium ? (
                     <span className="sword-shine bg-gradient-to-r from-amber-300 via-amber-500 to-yellow-600 text-white px-4 pt-1.5 pb-0.5 md:pt-3 md:pb-1 rounded-xl md:rounded-2xl shadow-[0_8px_30px_rgb(var(--lueur-offre)/0.4)]">
@@ -427,7 +830,7 @@ export default function EspacePersonnel({ mode = "tout" }: { mode?: ModeEspace }
                   {mode === "compte"
                     ? "Vos identifiants et les réglages de votre abonnement."
                     : mode === "espace"
-                      ? "Le Journal officiel, les commissions, les amendements et vos alertes, au même endroit."
+                      ? "Votre poste de travail parlementaire : tout ce qui a bougé, et ce qui vous concerne."
                       : "Gérez votre activité citoyenne et vos députés favoris."}
                 </p>{" "}
                 {/* Le niveau du compte, dit clairement, avec la porte de sortie vers les offres. */}
@@ -444,19 +847,19 @@ export default function EspacePersonnel({ mode = "tout" }: { mode?: ModeEspace }
                     </Link>
                   </div>
                 )}{" "}
-                {mode === "espace" && proVerifie && (
+                {mode === "espace" && proVerifie && !vueOnglets && (
                   <button type="button" onClick={() => setTutoriel(true)}
                     className="mt-5 inline-flex items-center gap-2 rounded-xl border border-white/15 bg-white/[0.05] px-4 py-2 text-[11px] font-black uppercase tracking-widest text-white/80 transition hover:bg-white/10 hover:text-white">
                     <Settings size={14} /> Régler mes alertes pas à pas
                   </button>
                 )}{" "}
-                <div className={`h-[1px] w-32 mt-6 rounded-full ${isPremium ? 'bg-gradient-to-r from-amber-400/70 to-transparent' : 'bg-gradient-to-r from-sky-400/60 to-transparent'}`} />
+                <div className={`${vueOnglets ? "hidden" : ""} h-[1px] w-32 mt-6 rounded-full ${isPremium ? 'bg-gradient-to-r from-amber-400/70 to-transparent' : 'bg-gradient-to-r from-sky-400/60 to-transparent'}`} />
              </div>
           </div>
         </div>
       </section>{" "}
 
-      {mode !== "compte" && premiumVerifie && userId && (
+      {mode !== "compte" && premiumVerifie && userId && !vueOnglets && (
         // relative z-20 : le fil chevauche le hero (-mt-16) ; sans ça, le contenu du hero (z-10)
         // recouvre le haut de la carte et intercepte le clic sur « Tout marquer lu ».
         <div className="relative z-20 container mx-auto max-w-6xl px-4 -mt-16 mb-6 space-y-6">
@@ -488,406 +891,17 @@ export default function EspacePersonnel({ mode = "tout" }: { mode?: ModeEspace }
         </div>
       )}{" "}
 
+      {vueOnglets && (proVerifie && userId
+        ? <EspacePro userId={userId} nbSuivis={followedDeputies.length} suivis={panneau} onTutoriel={() => setTutoriel(true)} />
+        : <div className="container mx-auto max-w-6xl space-y-3 px-4">{[0, 1, 2].map(i => <div key={i} className="h-24 animate-pulse rounded-3xl bg-white/[0.05]" />)}</div>)}{" "}
+
       {mode === "compte" && <ParametresCompte />}
       {userId && <TutorielPro userId={userId} ouvert={tutoriel} onFermer={() => setTutoriel(false)} />}{" "}
 
       {/* relative z-20 : pour un compte classique, ce panneau remonte sous le hero
           (-mt-16) dont le contenu (z-10) avalait les clics sur les onglets. */}
-      <div className={`relative z-20 container mx-auto max-w-6xl px-4 ${isPremium ? "" : "-mt-16"} ${mode === "compte" ? "hidden" : ""}`}>
-        <div className="bg-white/[0.03] rounded-[2.5rem] border border-white/10 shadow-2xl shadow-black/40 overflow-hidden min-h-[600px]">
-          
-          {/* Onglets en pastilles, sur une ligne qui défile au doigt sur mobile.
-              Les anciens blocs colorés pleine largeur, en capitales espacées, se
-              serraient sur deux ou trois lignes dès que les onglets étaient nombreux. */}
-          <div className="border-b border-white/10 px-3 pt-4 md:px-6 md:pt-6">
-            <div className="-mx-1 flex gap-2 overflow-x-auto px-1 pb-4 [scrollbar-width:none] md:flex-wrap md:overflow-visible [&::-webkit-scrollbar]:hidden">
-              {ONGLETS.filter(o => !o.premium || isPremium).map(o => {
-                const actif = activeTab === o.id;
-                const Icone = o.icone;
-                return (
-                  <button
-                    key={o.id}
-                    onClick={() => startTransition(() => setActiveTab(o.id))}
-                    aria-current={actif ? "page" : undefined}
-                    className={`group inline-flex shrink-0 items-center gap-2.5 whitespace-nowrap rounded-2xl py-2 pl-2 pr-4 text-sm font-bold transition-[background-color,color,box-shadow,transform] duration-200 active:scale-[0.97] ${
-                      actif
-                        ? `${o.actif} text-white shadow-lg ring-1 ring-white/30`
-                        : "bg-white/[0.04] text-white/70 ring-1 ring-white/10 hover:bg-white/[0.08] hover:text-white"
-                    }`}
-                  >
-                    <span className={`flex h-8 w-8 items-center justify-center rounded-xl transition ${actif ? "bg-white/20" : "bg-white/[0.06] group-hover:bg-white/10"}`}>
-                      <Icone size={16} className={isPending && !actif ? "opacity-40" : ""} />
-                    </span>{" "}
-                    {o.label}{" "}
-                  </button>
-                );
-              })}{" "}
-              {verrousVisibles.length > 0 && <span aria-hidden className="mx-1 hidden w-px shrink-0 self-stretch bg-white/10 md:block" />}{" "}
-              {/* Ce que l'offre supérieure ajoute : même forme, en retrait, avec un
-                  cadenas doré. Un clic ouvre l'aperçu. */}
-              {verrousVisibles.map(v => {
-                const actif = activeTab === `verrou-${v.id}`;
-                const Icone = v.icone;
-                return (
-                  <button
-                    key={v.id}
-                    onClick={() => startTransition(() => setActiveTab(`verrou-${v.id}`))}
-                    aria-current={actif ? "page" : undefined}
-                    title={`Réservé aux membres ${v.offre === "pro" ? "Pro" : "Premium"}`}
-                    className={`group relative inline-flex shrink-0 items-center gap-2.5 overflow-hidden whitespace-nowrap rounded-2xl py-2 pl-2 pr-4 text-sm font-semibold transition-colors duration-200 ${
-                      actif ? "bg-amber-400/15 text-amber-100 ring-1 ring-amber-300/50" : "text-white/70 ring-1 ring-white/[0.12] hover:bg-amber-400/[0.08] hover:text-white"
-                    }`}
-                  >
-                    <span className="relative flex h-8 w-8 items-center justify-center rounded-xl bg-white/[0.04]">
-                      <Icone size={15} className="opacity-75" />{" "}
-                      <span className={`absolute -right-1 -top-1 flex h-4 w-4 items-center justify-center rounded-full ${v.offre === "pro" ? "bg-gradient-to-br from-violet-300 to-fuchsia-500 text-white shadow-[0_0_8px_rgba(168,85,247,0.7)]" : "bg-gradient-to-br from-amber-200 to-amber-500 text-slate-950 shadow-[0_0_8px_rgba(251,191,36,0.6)]"}`}>
-                        <Lock size={9} strokeWidth={3} />
-                      </span>
-                    </span>{" "}
-                    {v.label}{" "}
-                    <span aria-hidden className="verrou-reflet pointer-events-none absolute inset-y-0 -left-1/2 w-1/2 bg-gradient-to-r from-transparent via-amber-200/15 to-transparent" />{" "}
-                  </button>
-                );
-              })}
-            </div>
-          </div>{" "}
-
-          <div className="p-4 sm:p-6 md:p-12">
-            {/* Quelques lignes grisées tiennent la place, plutôt qu'un « chargement de
-                votre compte » qui remplace tout l'écran : le panneau garde sa forme,
-                et rien ne saute quand les données arrivent. */}
-            {loading && !userVotes.length && !followedDeputies.length ? (
-              <div className="space-y-3 py-6">
-                {[0, 1, 2].map(i => (
-                  <div key={i} className="h-16 animate-pulse rounded-2xl bg-white/[0.05]" style={{ animationDelay: `${i * 90}ms` }} />
-                ))}
-              </div>
-            ) : (
-              <AnimatePresence mode="wait">
-                {activeTab === "votes" ? (
-                  <motion.div 
-                    key="votes"
-                    initial={{ opacity: 0, y: 10 }}
-                    animate={{ opacity: 1, y: 0 }}
-                    exit={{ opacity: 0, y: -10 }}
-                    className="space-y-6"
-                  >
-                    {resolvedVotes.length === 0 ? (
-                      <div className="text-center py-20 bg-white/[0.03] rounded-[2rem] border border-dashed border-white/15">
-                        <Vote className="mx-auto mb-4 text-white/25" size={48} />{" "}
-                        <h3 className="text-xl font-bold mb-2">Aucun vote enregistré</h3>{" "}
-                        <p className="text-slate-400 mb-8 max-w-sm mx-auto">Votez sur les prochaines lois pour voir apparaître vos positions ici.</p>{" "}
-                        <Link href="/lois" className="text-amber-400 font-black uppercase text-xs tracking-widest hover:underline">Voir les lois &rarr;</Link>
-                      </div>
-                    ) : (
-                      resolvedVotes.map((v) => {
-                        const lawInfo = v.laws || v.scrutins;
-
-                        return (
-                          <div key={v.id} className="group flex flex-col md:flex-row md:items-center gap-4 md:gap-6 p-4 md:p-6 rounded-3xl border border-white/10 hover:border-white/25 hover:shadow-xl transition-all gold-sheen-hover bg-white/[0.04] relative">
-                            <div className="w-14 h-14 rounded-2xl bg-white/5 flex items-center justify-center shrink-0 transition-transform group-hover:scale-105">
-                              <BallotBox vote={v.vote} size={34} />
-                            </div>{" "}
-                            <div className="flex-1 min-w-0">
-                              <div className="flex items-center gap-3 mb-1">
-                                <span className="text-[10px] font-black uppercase tracking-widest text-slate-400 bg-white/5 px-2 py-0.5 rounded border border-white/10">
-                                  {lawInfo?.category || "Législation"}
-                                </span>{" "}
-                                <div className="flex items-center gap-1.5 text-[10px] font-bold text-slate-400">
-                                  <Calendar size={10} />{" "}
-                                  {formatDateSafe(v.created_at) || "Date inconnue"}
-                                </div>
-                              </div>{" "}
-                              {titreOuNull(lawInfo) ? (
-                                <h3 className="text-lg font-bold text-white truncate">
-                                  {titreOuNull(lawInfo)}
-                                </h3>
-                              ) : (
-                                <h3 className="text-lg font-bold text-slate-400 truncate">
-                                  {REFERENCE_PERDUE}
-                                </h3>
-                              )}
-                            </div>{" "}
-                            <BallotChip vote={v.vote} />{" "}
-                            <Link 
-                              href={`/lois`}
-                              className="w-10 h-10 rounded-full border border-white/10 flex items-center justify-center text-slate-400 hover:bg-slate-950 hover:text-white hover:border-slate-950 transition-all shrink-0"
-                            >
-                              <ArrowRight size={18} />
-                            </Link>{" "}
-                          </div>
-                        );
-                      })
-                    )}{" "}
-                  </motion.div>
-                ) : activeTab === "deputies" ? (
-                  <motion.div 
-                    key="deputies"
-                    initial={{ opacity: 0, y: 10 }}
-                    animate={{ opacity: 1, y: 0 }}
-                    exit={{ opacity: 0, y: -10 }}
-                    className="grid grid-cols-1 md:grid-cols-2 gap-6"
-                  >
-                    {!isPremium ? (
-                      <EncartPremium
-                        titre="Suivez vos élus"
-                        texte="Chaque vote de vos députés, sénateurs et eurodéputés favoris, expliqué et réuni ici."
-                        benefices={["Leurs votes dès qu'ils ont lieu, avec leur explication", "Députés, sénateurs et eurodéputés", "Une alerte à chaque vote, par e-mail si vous le souhaitez"]}
-                        apercu={["Votre député a voté pour", "Votre sénatrice s'est abstenue", "Votre eurodéputé a voté contre", "Réforme des retraites : leur vote"]}
-                      />
-                    ) : followedDeputies.length === 0 ? (
-                      <div className="col-span-full text-center py-20 bg-white/[0.03] rounded-[2rem] border border-dashed border-white/15">
-                        <Users className="mx-auto mb-4 text-white/25" size={48} />{" "}
-                        <h3 className="text-xl font-bold mb-2">Aucun élu suivi</h3>{" "}
-                        <p className="text-slate-400 mb-8 max-w-sm mx-auto">Suivez vos députés, sénateurs et eurodéputés pour recevoir leurs derniers votes et positions.</p>{" "}
-                        <Link href="/deputes" className="text-amber-400 font-black uppercase text-xs tracking-widest hover:underline">Explorer les élus &rarr;</Link>
-                      </div>
-                    ) : (
-                      followedDeputies.map((f) => (
-                        <Link key={f.id} href={f.elu_href || "#"}>
-                          <div className="group flex items-center gap-4 md:gap-6 p-4 md:p-6 rounded-3xl border border-white/10 hover:border-amber-400 hover:shadow-xl transition-all h-full gold-sheen-hover bg-white/[0.04] relative overflow-hidden">
-                            <div className="absolute top-0 right-0 w-24 h-24 bg-amber-500/5 rounded-full -mr-12 -mt-12 group-hover:bg-amber-500/10 transition-colors" />{" "}
-                            
-                            <img 
-                              src={f.elu?.photo_url || `https://ui-avatars.com/api/?name=${encodeURIComponent(`${f.elu?.first_name ?? ""} ${f.elu?.last_name ?? ""}`.trim())}&background=fcd34d&color=1e293b`}
-                              loading="lazy"
-                              decoding="async"
-                              className="w-20 h-20 rounded-2xl object-cover grayscale group-hover:grayscale-0 transition-all duration-500 shadow-lg"
-                              alt={`${f.elu?.first_name ?? ""} ${f.elu?.last_name ?? ""}`.trim()}
-                              onError={(e) => {
-                                (e.target as HTMLImageElement).src = `https://ui-avatars.com/api/?name=${encodeURIComponent(`${f.elu?.first_name ?? ""} ${f.elu?.last_name ?? ""}`.trim())}&background=fcd34d&color=1e293b`;
-                              }}
-                            />{" "}
-                            <div className="flex-1 min-w-0">
-                              <h4 className="text-xl font-bold text-white group-hover:text-amber-600 transition-colors truncate">
-                                {f.elu?.first_name} {f.elu?.last_name}
-                              </h4>{" "}
-                              <div className="flex items-center gap-2 text-slate-400">
-                                <MapPin size={12} className="text-amber-500" />{" "}
-                                <span className="text-[10px] font-black uppercase tracking-widest truncate">
-                                  {f.elu?.department || (f.elu_type === "senator" ? "Sénat" : f.elu_type === "mep" ? (f.elu?.ep_group || "Parlement européen") : "Circonscription")}
-                                </span>
-                              </div>{" "}
-                              {/* La chambre est plus informative qu'un « suivi actif » redondant :
-                                  les trois chambres cohabitent désormais dans cette liste. */}
-                              <div className={`flex items-center gap-2 text-[10px] font-black uppercase tracking-widest px-3 py-1 rounded-lg w-fit mt-3 ${
-                                f.elu_type === "senator" ? "text-rose-300 bg-rose-500/15" : f.elu_type === "mep" ? "text-sky-300 bg-sky-500/15" : "text-blue-300 bg-blue-500/15"
-                              }`}>
-                                <Bell size={10} fill="currentColor" />{" "}
-                                {f.elu_type === "senator" ? "Sénateur·rice" : f.elu_type === "mep" ? "Eurodéputé·e" : "Député·e"}
-                              </div>
-                            </div>{" "}
-                            <button
-                              onClick={(e) => handleUnfollow(e, f)}
-                              disabled={removingId === f.id}
-                              title="Ne plus suivre cet élu"
-                              aria-label={`Ne plus suivre ${f.elu?.first_name ?? ""} ${f.elu?.last_name ?? ""}`}
-                              className="relative z-10 shrink-0 rounded-xl border border-slate-200 bg-white p-2 text-slate-300 transition hover:border-rose-300 hover:bg-rose-50 hover:text-rose-500 disabled:opacity-40"
-                            >
-                              <UserMinus size={16} />
-                            </button>{" "}
-                            <ChevronRight size={20} className="text-slate-300 group-hover:text-amber-500 transition-colors shrink-0" />
-                          </div>
-                        </Link>
-                      ))
-                    )}{" "}
-                  </motion.div>
-                ) : activeTab === "saved" ? (
-                  <motion.div 
-                    key="saved"
-                    initial={{ opacity: 0, y: 10 }}
-                    animate={{ opacity: 1, y: 0 }}
-                    exit={{ opacity: 0, y: -10 }}
-                    className="grid grid-cols-1 md:grid-cols-2 gap-6"
-                  >
-                    {savedLaws.length === 0 ? (
-                      <div className="col-span-full text-center py-20 bg-white/[0.03] rounded-[2.5rem] border border-dashed border-white/15">
-                        <Bookmark className="mx-auto mb-4 text-white/25" size={48} />{" "}
-                        <h3 className="text-xl font-bold mb-2">Aucune loi enregistrée</h3>{" "}
-                        <p className="text-slate-400 mb-8 max-w-sm mx-auto">Enregistrez vos lois et propositions favorites pour les retrouver ici.</p>{" "}
-                        <Link href="/lois" className="text-amber-400 font-black uppercase text-xs tracking-widest hover:underline">Explorer les lois &rarr;</Link>
-                      </div>
-                    ) : (
-                      savedLaws.map((item) => (
-                        <Link key={item.id} href={`/lois/?dossier=${item.item_id}`}>
-                          <div className="group relative flex h-full overflow-hidden rounded-3xl border border-white/10 bg-gradient-to-br from-amber-500/[0.06] to-white/[0.015] transition-all duration-500 hover:border-amber-400/50 hover:shadow-2xl hover:shadow-amber-500/10">
-                            {/* Marge reliée façon document officiel (œillets de reliure) */}
-                            <div className="relative w-9 shrink-0 border-r border-amber-400/20 bg-gradient-to-b from-amber-500/20 to-amber-700/10">
-                              <div className="absolute inset-y-0 left-1/2 w-px -translate-x-1/2 bg-amber-300/25" />{" "}
-                              <div className="absolute inset-y-0 left-1/2 flex -translate-x-1/2 flex-col justify-around py-7">
-                                {[0,1,2,3,4].map(i => <span key={i} className="h-2 w-2 rounded-full bg-slate-950/50 ring-1 ring-amber-300/25" />)}
-                              </div>
-                            </div>{" "}
-
-                            <div className="relative flex flex-1 flex-col p-6 md:p-7">
-                              {/* Lignes de texte en filigrane (papier réglé) */}
-                              <div className="pointer-events-none absolute inset-0 opacity-[0.05] [background-image:repeating-linear-gradient(to_bottom,transparent,transparent_21px,white_22px)]" />{" "}
-
-                              <div className="relative z-10 flex items-start justify-between gap-3">
-                                <div>
-                                  <p className="mb-2 text-[9px] font-black uppercase tracking-[0.25em] text-amber-300/70">Texte de loi</p>{" "}
-                                  <span className={`inline-block rounded-md px-2.5 py-1 text-[10px] font-black uppercase tracking-widest ${
-                                    item.item_type === 'scrutin' ? 'bg-blue-500/15 text-blue-300' : 'bg-purple-500/15 text-purple-300'
-                                  }`}>
-                                    {item.item_type === 'scrutin' ? 'Loi votée' : 'Proposition'}
-                                  </span>
-                                </div>{" "}
-                                {/* Sceau justice */}
-                                <div className="flex h-12 w-12 shrink-0 items-center justify-center rounded-full border border-amber-400/40 bg-amber-500/10 text-amber-300 shadow-[0_0_20px_rgb(var(--lueur-offre)/0.18)] transition-all group-hover:bg-amber-500 group-hover:text-slate-950">
-                                  <Scale size={20} />
-                                </div>
-                              </div>{" "}
-
-                              <h4 className={`relative z-10 mb-4 mt-5 line-clamp-3 font-serif text-lg font-bold leading-snug transition-colors ${
-                                titreOuNull(item.data) ? "text-white group-hover:text-amber-200" : "text-slate-400"
-                              }`}>
-                                {titreOuNull(item.data) || REFERENCE_PERDUE}
-                              </h4>{" "}
-
-                              <div className="relative z-10 mt-auto flex items-center justify-between border-t border-dashed border-white/15 pt-5">
-                                <span className="inline-flex items-center gap-2 text-[10px] font-bold uppercase tracking-widest text-slate-400">
-                                  <Calendar size={12} />{" "}
-                                  {formatDateSafe(item.data?.date_scrutin || item.data?.date_adopted || item.data?.created_at) || "Non disponible"}
-                                </span>{" "}
-                                <span className="inline-flex items-center gap-1.5 text-[10px] font-black uppercase tracking-widest text-amber-300 transition-all group-hover:gap-2.5">
-                                  Consulter <ChevronRight size={14} />
-                                </span>
-                              </div>
-                            </div>
-                          </div>
-                        </Link>
-                      ))
-                    )}{" "}
-                  </motion.div>
-                ) : activeTab === "geos" ? (
-                  <motion.div 
-                    key="geos"
-                    initial={{ opacity: 0, y: 10 }}
-                    animate={{ opacity: 1, y: 0 }}
-                    exit={{ opacity: 0, y: -10 }}
-                    className="grid grid-cols-1 md:grid-cols-2 gap-6"
-                  >
-                    {savedGeos.length === 0 ? (
-                      <div className="col-span-full text-center py-20 bg-white/[0.03] rounded-[2.5rem] border border-dashed border-white/15">
-                        <MapPin className="mx-auto mb-4 text-white/25" size={48} />{" "}
-                        <h3 className="text-xl font-bold mb-2">Aucun territoire suivi</h3>{" "}
-                        <p className="text-slate-400 mb-8 max-w-sm mx-auto">Suivez vos communes, départements ou régions pour les retrouver ici.</p>{" "}
-                        <Link href="/local" className="text-amber-400 font-black uppercase text-xs tracking-widest hover:underline">Découvrir les territoires &rarr;</Link>
-                      </div>
-                    ) : (
-                      savedGeos.map((item) => (
-                        <Link key={item.id} href={`/local?code=${encodeURIComponent(item.item_id)}&type=${item.item_type}`}>
-                          <div className="group relative flex h-full flex-col overflow-hidden rounded-[2.5rem] border border-white/10 bg-gradient-to-br from-fuchsia-500/[0.07] to-pink-600/[0.03] p-6 transition-all duration-500 hover:border-fuchsia-400/50 hover:shadow-2xl hover:shadow-fuchsia-500/10 md:p-8">
-                            {/* Grille façon carte */}
-                            <div className="pointer-events-none absolute inset-0 opacity-[0.04] [background-image:linear-gradient(to_right,white_1px,transparent_1px),linear-gradient(to_bottom,white_1px,transparent_1px)] [background-size:24px_24px]" />{" "}
-                            {/* Fond : silhouette RÉELLE du territoire (dép./région) ou skyline (commune) */}
-                            {(() => {
-                              const deptD = item.item_type === 'department' ? departmentPaths[DEPT_CODE[item.item_id] || item.item_id] : null;
-                              const regCode = item.item_type === 'region' ? (REGION_CODE[item.item_id] || item.item_id) : null;
-                              const shape = deptD
-                                ? deptD
-                                : regCode && regionPaths[regCode]
-                                  ? { d: regionPaths[regCode], viewBox: bboxFromPath(regionPaths[regCode]) }
-                                  : null;
-                              if (shape) {
-                                return (
-                                  <div className="pointer-events-none absolute -right-6 top-1/2 h-[155%] w-[70%] -translate-y-1/2 opacity-25 transition-transform duration-500 group-hover:scale-105">
-                                    <svg viewBox={shape.viewBox} preserveAspectRatio="xMidYMid meet" className="h-full w-full text-fuchsia-300">
-                                      <path d={shape.d} fill="currentColor" fillOpacity="0.22" stroke="currentColor" strokeWidth="1.2" strokeOpacity="0.9" strokeLinejoin="round" />
-                                    </svg>
-                                  </div>
-                                );
-                              }
-                              // Une région dont les tracés ne sont pas encore arrivés reste
-                              // sans décor : lui donner la silhouette urbaine des communes
-                              // afficherait une ville à la place d'une région.
-                              if (regCode) return null;
-                              // Commune : skyline urbaine (immeubles + fenêtres)
-                              const B = [
-                                { x: 8, w: 34, y: 70 }, { x: 48, w: 30, y: 40 }, { x: 84, w: 26, y: 86 },
-                                { x: 116, w: 34, y: 54 }, { x: 156, w: 26, y: 24 }, { x: 188, w: 30, y: 72 },
-                                { x: 224, w: 34, y: 48 }, { x: 264, w: 26, y: 80 }, { x: 296, w: 26, y: 60 },
-                              ];
-                              return (
-                                <div className="pointer-events-none absolute inset-x-0 bottom-0 h-[58%] opacity-25 transition-transform duration-500 group-hover:translate-y-[-4px]">
-                                  <svg viewBox="0 0 322 140" preserveAspectRatio="xMidYMax slice" className="h-full w-full text-fuchsia-300">
-                                    <g fill="currentColor">
-                                      {B.map((b, i) => <rect key={i} x={b.x} y={b.y} width={b.w} height={140 - b.y} rx="2" />)}
-                                      <polygon points="169,10 156,24 182,24" />
-                                    </g>
-                                    <g fill="#0b1020" opacity="0.55">
-                                      {B.flatMap((b, i) => {
-                                        const cols = Math.max(2, Math.floor(b.w / 10));
-                                        const rows = Math.floor((140 - b.y - 8) / 12);
-                                        return Array.from({ length: cols * rows }).map((_, k) => {
-                                          const c = k % cols, r = Math.floor(k / cols);
-                                          return <rect key={`${i}-${k}`} x={b.x + 5 + c * (b.w / cols)} y={b.y + 8 + r * 12} width="4" height="6" rx="1" />;
-                                        });
-                                      })}
-                                    </g>
-                                  </svg>
-                                </div>
-                              );
-                            })()}{" "}
-
-                            <div className="relative z-10 mb-6 flex items-start justify-between">
-                              <span className="rounded-full bg-fuchsia-500/15 px-3 py-1 text-[10px] font-black uppercase tracking-widest text-fuchsia-300 ring-1 ring-inset ring-fuchsia-400/20">
-                                {item.item_type === 'commune' ? 'Commune' : item.item_type === 'region' ? 'Région' : 'Département'}
-                              </span>{" "}
-                              {/* Marqueur de carte pulsant */}
-                              <div className="relative">
-                                <span className="absolute inset-0 rounded-2xl ring-2 ring-fuchsia-400/30 opacity-40 animate-ping" />{" "}
-                                <div className="relative flex h-11 w-11 items-center justify-center rounded-2xl bg-fuchsia-500/15 text-fuchsia-300 ring-1 ring-fuchsia-400/30 transition-all group-hover:bg-fuchsia-500 group-hover:text-white">
-                                  {item.item_type === 'commune' ? <Building2 size={18} /> : <MapPin size={18} className="fill-fuchsia-400/20" />}
-                                </div>
-                              </div>
-                            </div>{" "}
-
-                            <h4 className="relative z-10 mb-4 line-clamp-3 font-staatliches text-2xl tracking-wide text-white transition-colors group-hover:text-fuchsia-300">
-                              {item.data?.title}
-                            </h4>{" "}
-
-                            <div className="relative z-10 mt-auto flex items-center justify-between border-t border-white/10 pt-5">
-                              <div className="flex items-center gap-2">
-                                {item.item_type === 'commune' && item.data?.population ? (
-                                  <span className="inline-flex items-center gap-1.5 rounded-full bg-white/5 px-3 py-1.5 text-[11px] font-black tracking-wide text-fuchsia-200">
-                                    <Users size={12} /> {item.data.population.toLocaleString('fr-FR')} hab.
-                                  </span>
-                                ) : (
-                                  <span className="inline-flex items-center gap-1.5 text-[10px] font-black uppercase tracking-widest text-slate-400">
-                                    <Globe size={12} /> Territoire suivi
-                                  </span>
-                                )}
-                              </div>{" "}
-                              <span className="flex h-9 w-9 items-center justify-center rounded-full border border-white/10 text-slate-300 transition-all group-hover:border-fuchsia-400 group-hover:bg-fuchsia-500 group-hover:text-white">
-                                <ChevronRight size={18} />
-                              </span>
-                            </div>
-                          </div>
-                        </Link>
-                      ))
-                    )}{" "}
-                  </motion.div>
-                ) : activeTab === "parrainage" ? (
-                  <motion.div key="parrainage" initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: -10 }}>
-                    <Parrainage />{" "}
-                  </motion.div>
-                ) : activeTab === "compte" ? (
-                  <motion.div key="compte" initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: -10 }}>
-                    <IdentifiantsForm adresseModifiable={!isPremium} />{" "}
-                  </motion.div>
-                ) : verrouActif ? (
-                  <motion.div key={activeTab} initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: -10 }}>
-                    <EncartPremium
-                      offre={verrouActif.offre} titre={verrouActif.titre} texte={verrouActif.texte}
-                      benefices={verrouActif.benefices} apercu={verrouActif.apercu}
-                    />{" "}
-                  </motion.div>
-                ) : null}
-              </AnimatePresence>
-            )}
-          </div>
-        </div>
+      <div className={`relative z-20 container mx-auto max-w-6xl px-4 ${isPremium ? "" : "-mt-16"} ${mode === "compte" || vueOnglets ? "hidden" : ""}`}>
+        {panneau}
       </div>
     </div>
   );

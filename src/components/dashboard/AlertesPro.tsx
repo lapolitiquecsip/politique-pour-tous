@@ -145,8 +145,8 @@ export default function AlertesPro({ userId }: { userId: string }) {
         <div className="flex items-center gap-4">
           <span className="flex h-12 w-12 shrink-0 items-center justify-center rounded-2xl bg-gradient-to-br from-fuchsia-500 to-purple-600 text-white shadow-lg shadow-fuchsia-500/30"><BellRing size={22} /></span>{" "}
           <div>
-            <h2 className="font-staatliches text-3xl uppercase leading-none tracking-tight text-white">Mes alertes <span className="text-fuchsia-300">Pro</span></h2>{" "}
-            <p className="mt-1 text-sm text-white/65">Peu d&apos;e-mails, mais ceux qui comptent pour vous.</p>
+            <h2 className="font-staatliches text-3xl uppercase leading-none tracking-tight text-white">Mes e-mails <span className="text-fuchsia-300">Pro</span></h2>{" "}
+            <p className="mt-1 text-sm text-white/65">Choisissez ce que vous recevez, et à quel rythme. Peu d&apos;e-mails, mais ceux qui comptent.</p>
           </div>
         </div>{" "}
         <span className={`inline-flex items-center gap-1.5 rounded-full px-3 py-1 text-[11px] font-black uppercase tracking-widest transition ${etat === "ok" ? "bg-emerald-500/15 text-emerald-300" : etat ? "bg-white/10 text-white/65" : "opacity-0"}`}>
@@ -154,33 +154,9 @@ export default function AlertesPro({ userId }: { userId: string }) {
         </span>
       </div>{" "}
 
-      {/* Les deux envois */}
-      <div className="mt-7 grid gap-3 md:grid-cols-2">
-        <div className="flex items-start justify-between gap-4 rounded-3xl border border-white/10 bg-black/20 p-5">
-          <span className="flex items-start gap-3">
-            <span className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-white/10 text-fuchsia-200"><Scale size={18} /></span>{" "}
-            <span>
-              <span className="block font-bold text-white">Un texte vous concerne</span>{" "}
-              <span className="mt-0.5 block text-[13px] leading-snug text-white/65">Dès qu&apos;une loi est votée ou qu&apos;une loi ou un décret paraît et peut vous concerner : pourquoi, le résultat du vote, ce qu&apos;ont voté les groupes et vos élus.</span>
-            </span>
-          </span>{" "}
-          <Interrupteur actif={alertesTextes} label="Alertes textes" onChange={v => { setAlertesTextes(v); enregistrer({ alertes_textes: v }); }} />
-        </div>{" "}
-        <div className="flex items-start justify-between gap-4 rounded-3xl border border-white/10 bg-black/20 p-5">
-          <span className="flex items-start gap-3">
-            <span className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-white/10 text-fuchsia-200"><Newspaper size={18} /></span>{" "}
-            <span>
-              <span className="block font-bold text-white">La semaine politique en 5 minutes</span>{" "}
-              <span className="mt-0.5 block text-[13px] leading-snug text-white/65">Le samedi à 8 h : l&apos;essentiel vérifié, vos suivis, vos élus, votre territoire, leurs passages télé.</span>
-            </span>
-          </span>{" "}
-          <Interrupteur actif={recap} label="Récap du samedi" onChange={v => { setRecap(v); enregistrer({ recap_hebdo: v }); }} />
-        </div>
-      </div>{" "}
-
       {/* E-mails à la carte : chaque rubrique, chaque jour, chaque semaine ou pas du tout. */}
-      <div id="emails-pro" className="mt-8 scroll-mt-24">
-        <h3 className="flex items-center gap-2 text-[11px] font-black uppercase tracking-[0.2em] text-white/60"><Mail size={13} /> Mes e-mails à la carte</h3>{" "}
+      <div id="emails-pro" className="mt-7 scroll-mt-32">
+        <h3 className="flex items-center gap-2 text-[11px] font-black uppercase tracking-[0.2em] text-white/60"><Mail size={13} /> Les rubriques, à la carte</h3>{" "}
         <p className="mt-1 text-[13px] leading-relaxed text-white/65">
           Cochez ce que vous voulez recevoir. « Chaque jour » : un e-mail à 19 h ; « chaque semaine » : le dimanche à 18 h. Les rubriques au même rythme arrivent ensemble, et rien ne part s&apos;il n&apos;y a rien de nouveau.
           {nbChoisis > 0 && <strong className="font-bold text-white"> {nbChoisis} rubrique{nbChoisis > 1 ? "s" : ""} choisie{nbChoisis > 1 ? "s" : ""}.</strong>}
@@ -209,10 +185,34 @@ export default function AlertesPro({ userId }: { userId: string }) {
         </ul>
       </div>{" "}
 
+      {/* Les deux envois automatiques, après le choix des rubriques. */}
+      <div className="mt-8 grid gap-3 md:grid-cols-2">
+        <div className="flex items-start justify-between gap-4 rounded-3xl border border-white/10 bg-black/20 p-5">
+          <span className="flex items-start gap-3">
+            <span className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-white/10 text-fuchsia-200"><Scale size={18} /></span>{" "}
+            <span>
+              <span className="block font-bold text-white">Un texte vous concerne</span>{" "}
+              <span className="mt-0.5 block text-[13px] leading-snug text-white/65">Dès qu&apos;une loi est votée ou qu&apos;une loi ou un décret paraît et peut vous concerner : pourquoi, le résultat du vote, ce qu&apos;ont voté les groupes et vos élus.</span>
+            </span>
+          </span>{" "}
+          <Interrupteur actif={alertesTextes} label="Alertes textes" onChange={v => { setAlertesTextes(v); enregistrer({ alertes_textes: v }); }} />
+        </div>{" "}
+        <div className="flex items-start justify-between gap-4 rounded-3xl border border-white/10 bg-black/20 p-5">
+          <span className="flex items-start gap-3">
+            <span className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-white/10 text-fuchsia-200"><Newspaper size={18} /></span>{" "}
+            <span>
+              <span className="block font-bold text-white">La semaine politique en 5 minutes</span>{" "}
+              <span className="mt-0.5 block text-[13px] leading-snug text-white/65">Le samedi à 8 h : l&apos;essentiel vérifié, vos suivis, vos élus, votre territoire, leurs passages télé.</span>
+            </span>
+          </span>{" "}
+          <Interrupteur actif={recap} label="Récap du samedi" onChange={v => { setRecap(v); enregistrer({ recap_hebdo: v }); }} />
+        </div>
+      </div>{" "}
+
       {/* Profil d'impact */}
       <div className="mt-8">
         <h3 className="flex items-center gap-2 text-[11px] font-black uppercase tracking-[0.2em] text-white/60"><UserRound size={13} /> Ce qui me concerne</h3>{" "}
-        <p className="mt-1 text-[13px] text-white/60">Avec votre âge, votre situation et votre ville (préférences ci-dessus), ces réponses décident des textes qui vous sont signalés. Toutes sont facultatives.</p>{" "}
+        <p className="mt-1 text-[13px] text-white/60">Avec votre âge, votre situation et votre ville (rubrique « Mon profil »), ces réponses décident des textes qui vous sont signalés. Toutes sont facultatives.</p>{" "}
         <div className="mt-3 grid gap-3 sm:grid-cols-3">
           {([["Secteur d'activité", secteur, setSecteur, SECTEURS, "secteur"], ["Logement", logement, setLogement, LOGEMENTS, "logement"], ["Enfants", enfants, setEnfants, ENFANTS, "enfants"]] as const).map(([titre, val, set, opts, cle]) => (
             <label key={cle} className="block">

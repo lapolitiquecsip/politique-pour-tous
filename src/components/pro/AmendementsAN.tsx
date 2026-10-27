@@ -178,8 +178,8 @@ export default function AmendementsAN() {
         </div>
       </div>{" "}
 
-      <div className="mt-6 grid gap-2.5 sm:grid-cols-2 lg:grid-cols-4">
-        <label className="block sm:col-span-2">
+      <div className="mt-6 grid grid-cols-2 gap-2.5 lg:grid-cols-4">
+        <label className="col-span-2 block">
           <span className="sr-only">Texte</span>
           <select value={texte} onChange={e => setTexte(e.target.value)} className={select}>
             <option value="">Tous les textes ({textes.length})</option>
@@ -199,7 +199,7 @@ export default function AmendementsAN() {
             {SORTS.map(([v, l]) => <option key={v} value={v}>{l}</option>)}
           </select>
         </label>{" "}
-        <div className="relative sm:col-span-2 lg:col-span-4">
+        <div className="relative col-span-2 lg:col-span-4">
           <Search size={16} className="absolute left-3.5 top-1/2 -translate-y-1/2 text-white/50" />
           <input value={saisie} onChange={e => setSaisie(e.target.value)} placeholder="Député, numéro, mot du texte…" enterKeyHint="search"
             className="w-full min-h-[44px] rounded-xl border border-white/10 bg-white/5 pl-10 pr-10 text-[15px] text-white placeholder-white/45 focus:border-fuchsia-400/50 focus:outline-none" />

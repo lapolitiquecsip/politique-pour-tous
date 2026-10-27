@@ -25,7 +25,6 @@ import Link from "next/link";
 import { useState, useEffect } from "react";
 import { api } from "@/lib/api";
 import FeedItemCard from "@/components/home/FeedItemCard";
-import GlossaryText from "@/components/ui/GlossaryText";
 import ministersBios from "@/lib/data/ministersBios.json";
 import MinisterImage from "@/components/executif/MinisterImage";
 import MinisterStagger from "@/components/executif/MinisterStagger";
@@ -36,6 +35,7 @@ import PublicFinancePanel from "@/components/executif/PublicFinancePanel";
 import PlfALaUne from "@/components/executif/plf/PlfALaUne";
 import { cleanMinistryName } from "@/lib/executif-utils";
 import { AwardBadge } from "@/components/ui/award-badge";
+import ExecutifHero from "@/components/executif/ExecutifHero";
 
 const normalizeName = (name: string) => {
   if (!name) return "";
@@ -375,10 +375,22 @@ const PM_TIMELINE = [
 ];
 
 // Section repliable : l'utilisateur ouvre chaque partie de la page s'il le souhaite (fermé par défaut).
-function CollapsibleSection({ title, subtitle, icon, color = "from-amber-500 to-orange-500", defaultOpen = false, children }: { title: string; subtitle?: string; icon?: React.ReactNode; color?: string; defaultOpen?: boolean; children: React.ReactNode }) {
+// `id` : ancre de la rubrique. Un bouton de l'en-tête (ou un lien « /executif#ministeres »)
+// l'ouvre avant d'y faire défiler — sinon on arrivait sur une rubrique fermée.
+function CollapsibleSection({ id, title, subtitle, icon, color = "from-amber-500 to-orange-500", defaultOpen = false, children }: { id?: string; title: string; subtitle?: string; icon?: React.ReactNode; color?: string; defaultOpen?: boolean; children: React.ReactNode }) {
   const [open, setOpen] = useState(defaultOpen);
+  useEffect(() => {
+    if (!id) return;
+    const arrivee = window.location.hash === `#${id}` ? setTimeout(() => {
+      setOpen(true);
+      setTimeout(() => document.getElementById(id)?.scrollIntoView({ block: "start" }), 300);
+    }, 0) : undefined;
+    const ouvrir = (e: Event) => { if ((e as CustomEvent).detail === id) setOpen(true); };
+    window.addEventListener("executif:ouvrir", ouvrir);
+    return () => { clearTimeout(arrivee); window.removeEventListener("executif:ouvrir", ouvrir); };
+  }, [id]);
   return (
-    <section className="overflow-hidden rounded-[2rem] border border-border bg-card">
+    <section id={id} className="scroll-mt-24 overflow-hidden rounded-[2rem] border border-border bg-card">
       <button
         onClick={() => setOpen(o => !o)}
         className="flex w-full items-center justify-between gap-4 p-6 text-left transition-colors hover:bg-muted"
@@ -497,45 +509,24 @@ export default function ExecutifPage() {
 
   return (
     <main className="min-h-screen bg-muted pb-20">
-      {/* 1. HERO SECTION (POSTER IMPACT STYLE) */}
-      <section className="relative pt-32 pb-24 px-4 overflow-hidden bg-card">
-        <div className="absolute top-0 left-0 w-full h-full opacity-[0.03] pointer-events-none select-none">
-          <span className="absolute top-10 left-10 text-[15rem] font-staatliches leading-none rotate-12">GOUVERNEMENT</span>{" "}
-          <span className="absolute bottom-10 right-10 text-[15rem] font-staatliches leading-none -rotate-12">EXÉCUTIF</span>
-        </div>{" "}
-
-        <div className="container mx-auto max-w-6xl relative z-10 text-center">
-          <motion.div
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            className="flex flex-col items-center gap-6"
-          >
-            <div className="flex items-center gap-3 mb-2">
-              <span className="relative flex h-3 w-3">
-                <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-amber-400 opacity-75"></span>{" "}
-                <span className="relative inline-flex rounded-full h-3 w-3 bg-orange-500"></span>
-              </span>{" "}
-              <span className="text-xs font-black uppercase tracking-widest text-orange-700 dark:text-orange-400">Pouvoir Exécutif</span>
-            </div>{" "}
-
-            <h1 className="text-6xl md:text-8xl font-staatliches uppercase tracking-tighter leading-none mb-8 text-foreground">
-              Le <span className="bg-gradient-to-r from-amber-500 via-orange-500 to-yellow-500 bg-clip-text text-transparent">Gouvernement</span>
-            </h1>{" "}
-            
-            <p className="text-xl md:text-2xl text-muted-foreground font-medium italic leading-relaxed max-w-3xl mx-auto">
-              <GlossaryText>
-                Comprendre l'action ministérielle, les budgets alloués et les décisions réglementaires qui façonnent la France au quotidien.
-              </GlossaryText>
-            </p>{" "}
-
-            <div className="h-1.5 w-32 bg-gradient-to-r from-amber-500 to-orange-600 mt-8 rounded-full" />
-          </motion.div>
-        </div>
-      </section>{" "}
+      {/* 1. EN-TÊTE : Matignon, portrait du chef de l'exécutif, rubriques de la page. */}
+      <ExecutifHero
+        description="Le Président, le Premier ministre et les ministres : qui décide, ce que prévoit le budget, l'état des finances publiques, les décrets publiés au Journal officiel et le suivi des engagements."
+        links={[
+          { label: "Président", id: "president" },
+          { label: "Ministères", id: "ministeres" },
+          { label: "Budget 2027", id: "budget-2027" },
+          { label: "Dette publique", id: "dette" },
+          { label: "Décrets", id: "decrets" },
+          { label: "Programme", id: "programme" },
+          { label: "Premiers ministres", id: "premiers-ministres" },
+          { label: "Vidéos", id: "videos" },
+        ]}
+      />{" "}
 
       <div className="container mx-auto max-w-7xl px-4 mt-12">
         {/* À LA UNE — le projet de budget de l'année en cours d'examen */}
-        <div className="mb-8">
+        <div id="budget-2027" className="mb-8 scroll-mt-24">
           <PlfALaUne />
         </div>{" "}
         <div className="grid grid-cols-1 lg:grid-cols-12 gap-8">
@@ -544,27 +535,27 @@ export default function ExecutifPage() {
           <div className="lg:col-span-8 space-y-6">
 
             {/* PRÉSIDENT DE LA RÉPUBLIQUE — chef de l'exécutif, donc en tête */}
-            <CollapsibleSection title="Le Président de la République" subtitle="Chef de l'exécutif : rôle, agenda et actualité" icon={<Landmark size={22} />} color="from-blue-600 to-indigo-700" defaultOpen>
+            <CollapsibleSection id="president" title="Le Président de la République" subtitle="Chef de l'exécutif : rôle, agenda et actualité" icon={<Landmark size={22} />} color="from-blue-600 to-indigo-700" defaultOpen>
               <PresidentSection photoUrl={photoBySlug['emmanuel-macron']} />
             </CollapsibleSection>
 
             {/* DETTE & DÉPENSES PUBLIQUES — compteur en direct (extrapolé de l'INSEE) + comparaisons */}
-            <CollapsibleSection title="Dette & dépenses publiques" subtitle="Comptes de l'État en direct, sourcés (INSEE)" icon={<Coins size={22} />} color="from-emerald-500 to-teal-600">
+            <CollapsibleSection id="dette" title="Dette & dépenses publiques" subtitle="Comptes de l'État en direct, sourcés (INSEE)" icon={<Coins size={22} />} color="from-emerald-500 to-teal-600">
               <PublicFinancePanel />
             </CollapsibleSection>
 
             {/* PROGRAMME 2022 + AVANCEMENT (engagements officiels, avancement evalue par IA) */}
-            <CollapsibleSection title="Le programme et son avancement" subtitle="Les engagements de campagne et leur suivi factuel" icon={<ListChecks size={22} />} color="from-amber-500 to-orange-600">
+            <CollapsibleSection id="programme" title="Le programme et son avancement" subtitle="Les engagements de campagne et leur suivi factuel" icon={<ListChecks size={22} />} color="from-amber-500 to-orange-600">
               <ProgramSection />
             </CollapsibleSection>
 
             {/* FIL VIDEO (chaine YouTube officielle de l Elysee) */}
-            <CollapsibleSection title="Le fil vidéo de l'Élysée" subtitle="Chaîne YouTube officielle de la Présidence" icon={<PlayCircle size={22} />} color="from-red-500 to-rose-600">
+            <CollapsibleSection id="videos" title="Le fil vidéo de l'Élysée" subtitle="Chaîne YouTube officielle de la Présidence" icon={<PlayCircle size={22} />} color="from-red-500 to-rose-600">
               <VideoFeed />
             </CollapsibleSection>
 
             {/* MINISTÈRES */}
-            <CollapsibleSection title="Les ministères" subtitle="Chaque ministère : périmètre, budget et ministre en poste" icon={<Building2 size={22} />} color="from-violet-600 to-fuchsia-600">
+            <CollapsibleSection id="ministeres" title="Les ministères" subtitle="Chaque ministère : périmètre, budget et ministre en poste" icon={<Building2 size={22} />} color="from-violet-600 to-fuchsia-600">
               <div className="space-y-8">
                 <div className="relative w-full md:max-w-xs">
                   <Search className="absolute left-4 top-1/2 -translate-y-1/2 text-slate-400" size={16} />
@@ -581,7 +572,7 @@ export default function ExecutifPage() {
             </CollapsibleSection>
 
             {/* PREMIERS MINISTRES DEPUIS 2017 */}
-            <CollapsibleSection title="Les Premiers ministres depuis 2017" subtitle="Cliquez sur un nom pour voir sa fiche et son bilan" icon={<Users size={22} />} color="from-sky-500 to-blue-600">
+            <CollapsibleSection id="premiers-ministres" title="Les Premiers ministres depuis 2017" subtitle="Cliquez sur un nom pour voir sa fiche et son bilan" icon={<Users size={22} />} color="from-sky-500 to-blue-600">
               <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3">
                 {PM_TIMELINE.map((pm, i) => (
                   <Link
@@ -713,11 +704,11 @@ export default function ExecutifPage() {
             </motion.div>{" "}
 
             {/* DECREES CARD - SIMPLE LIST */}
-            <motion.div 
+            <motion.div id="decrets"
               initial={{ opacity: 0, x: 20 }}
               whileInView={{ opacity: 1, x: 0 }}
               transition={{ delay: 0.2 }}
-              className="bg-slate-900 p-8 rounded-[2.5rem] text-white shadow-2xl shadow-slate-900/40 relative overflow-hidden"
+              className="scroll-mt-24 bg-slate-900 p-8 rounded-[2.5rem] text-white shadow-2xl shadow-slate-900/40 relative overflow-hidden"
             >
               <ScrollText className="absolute -bottom-10 -right-10 w-48 h-48 text-white/5 -rotate-12" />{" "}
               

@@ -6,7 +6,7 @@ import {
   History, Building, ChevronRight, Map, Layers, LayoutGrid, Lock, Loader2, Star, Coins, Scale, ShieldCheck
 } from "lucide-react";
 import { useSearchParams } from "next/navigation";
-import { useState, useEffect, Suspense } from "react";
+import { useState, useEffect, useRef, Suspense } from "react";
 import Link from "next/link";
 import DragScroller from "@/components/ui/DragScroller";
 import GlossaryText from "@/components/ui/GlossaryText";
@@ -22,6 +22,7 @@ import TerritoryDetailPanel from "@/components/local/TerritoryDetailPanel";
 import { REGIONS, DEPARTMENTS } from "@/lib/data/territories";
 import { StaggerTestimonials } from "@/components/ui/stagger-testimonials";
 import { AwardBadge } from "@/components/ui/award-badge";
+import LocalHero from "@/components/local/LocalHero";
 
 const getPartyTheme = (party: string) => {
   switch (party) {
@@ -334,6 +335,21 @@ function LocalPoliticsContent() {
 
   const [selectedTerritory, setSelectedTerritory] = useState<any | null>(null);
 
+  // Les cartes « Par où commencer ? » de l'en-tête : bon onglet, puis la recherche à l'écran.
+  // Sur ordinateur, le curseur est déjà dans le champ ; pas sur téléphone, où le clavier
+  // surgirait et masquerait la moitié de l'écran.
+  const champRecherche = useRef<HTMLInputElement>(null);
+  const choisirEchelon = (e: "commune" | "departement" | "region") => {
+    setActiveTab(e);
+    setSearch("");
+    setShowDropdown(false);
+    if (e !== "commune") setSelectedCommune(null);
+    requestAnimationFrame(() => setTimeout(() => {
+      document.getElementById("explorer")?.scrollIntoView({ behavior: "smooth", block: "start" });
+      if (window.matchMedia("(pointer: fine)").matches) champRecherche.current?.focus({ preventScroll: true });
+    }, 50));
+  };
+
   // Vrais chiffres de l'aperçu du comparateur, rechargés au changement d'onglet.
   const [teaserData, setTeaserData] = useState<{ tab: string; a: any; b: any } | null>(null);
   useEffect(() => {
@@ -441,43 +457,18 @@ function LocalPoliticsContent() {
   return (
     <>
     <main className="min-h-screen bg-muted pb-20">
-      {/* 1. HERO SECTION (POSTER IMPACT STYLE) */}
-      <section className="relative pt-32 pb-24 px-4 overflow-hidden bg-card">
-        <div className="absolute top-0 left-0 w-full h-full opacity-[0.03] pointer-events-none select-none">
-          <span className="absolute top-10 left-10 text-[15rem] font-staatliches leading-none rotate-12">TERRITOIRES</span>{" "}
-          <span className="absolute bottom-10 right-10 text-[15rem] font-staatliches leading-none -rotate-12">PROXIMITÉ</span>
-        </div>{" "}
-
-        <div className="container mx-auto max-w-6xl relative z-10 text-center">
-          <motion.div
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            className="flex flex-col items-center gap-6"
-          >
-            <div className="flex items-center gap-3 mb-2">
-              <span className="relative flex h-3 w-3">
-                <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-rose-400 opacity-75"></span>{" "}
-                <span className="relative inline-flex rounded-full h-3 w-3 bg-rose-600"></span>
-              </span>{" "}
-              <span className="text-xs font-black uppercase tracking-widest text-rose-700 dark:text-rose-400">Action Locale</span>
-            </div>{" "}
-
-            <h1 className="text-6xl md:text-8xl font-staatliches uppercase tracking-tight leading-tight mb-8 py-4 text-foreground">
-              La Politique <span className="inline-block bg-gradient-to-r from-rose-600 via-fuchsia-600 to-rose-600 bg-clip-text text-transparent italic pl-2 pr-12">Locale</span>
-            </h1>{" "}
-            
-            <p className="text-xl md:text-2xl text-muted-foreground font-medium italic leading-relaxed max-w-3xl mx-auto text-pretty">
-              Découvrez les acteurs de vos territoires, des maires aux conseillers municipaux, et comprenez comment vos impôts locaux façonnent votre ville.
-            </p>{" "}
-
-            <div className="h-1.5 w-32 bg-gradient-to-r from-rose-600 to-fuchsia-600 mt-8 rounded-full" />
-          </motion.div>
-        </div>
-      </section>{" "}
+      {/* 1. EN-TÊTE : carte des départements, mairie, « qui fait quoi », choix de l'échelon. */}
+      <LocalHero
+        onEchelon={choisirEchelon}
+        liens={[
+          { label: "Prochaines élections", href: "#echeances", Icone: Vote },
+          { label: "Comparer deux territoires", href: "#comparateur", Icone: Scale },
+        ]}
+      />{" "}
 
       <div className="container mx-auto max-w-7xl px-4 mt-12">
-        {/* 1.5 TABS NAVIGATION (GROS PANNEAU) */}
-        <div className="mb-16">
+        {/* 1.5 TABS NAVIGATION (GROS PANNEAU) — cible des cartes de l'en-tête */}
+        <div id="explorer" className="mb-16 scroll-mt-24">
           <div className="bg-card p-2 rounded-[2.5rem] border border-border shadow-2xl shadow-slate-200/50 flex flex-col md:flex-row gap-2">
             {[
               // Chaque échelon a SA couleur d'état actif (classes littérales pour Tailwind JIT).
@@ -521,6 +512,7 @@ function LocalPoliticsContent() {
                 <Search size={22} />
               </div>{" "}
               <input
+                ref={champRecherche}
                 type="text"
                 placeholder={
                   activeTab === 'commune' 
@@ -710,7 +702,7 @@ function LocalPoliticsContent() {
           {/* RIGHT COL: Sidebars */}
           <div className="lg:col-span-4 space-y-8">
             {/* Prochaines échéances Card */}
-            <div className="bg-slate-900 rounded-[2.5rem] p-8 text-white relative overflow-hidden">
+            <div id="echeances" className="scroll-mt-24 bg-slate-900 rounded-[2.5rem] p-8 text-white relative overflow-hidden">
                <div className="absolute top-0 right-0 w-32 h-32 bg-rose-600/20 blur-3xl rounded-full" />{" "}
                <div className="relative z-10 space-y-8">
                  <div className="flex items-center gap-3">
@@ -834,7 +826,7 @@ function LocalPoliticsContent() {
             {(() => {
               const config = teaserConfigs[activeTab];
               return (
-                <div className="bg-gradient-to-br from-amber-400 to-orange-500 rounded-[2.5rem] p-8 text-foreground space-y-6 shadow-xl shadow-orange-200">
+                <div id="comparateur" className="scroll-mt-24 bg-gradient-to-br from-amber-400 to-orange-500 rounded-[2.5rem] p-8 text-foreground space-y-6 shadow-xl shadow-orange-200">
                   {pLoading ? (
                     <div className="flex flex-col items-center justify-center py-12 gap-4">
                       <Loader2 className="animate-spin text-foreground" size={32} />{" "}

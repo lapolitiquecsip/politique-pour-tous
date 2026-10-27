@@ -5,13 +5,7 @@ import { motion, AnimatePresence, useInView, useReducedMotion } from "framer-mot
 import { usePremium } from "@/lib/hooks/usePremium";
 import { lienPaiementStripe } from "@/lib/utils";
 import AccordAchat from "@/components/premium/AccordAchat";
-import {
-  CheckCircle2, Star, FileText, ArrowRight, Quote, Scale,
-  LayoutDashboard, BellRing, Bookmark, Building2, Sliders,
-  X, Sparkles, Vote, MapPin,
-  AlertTriangle, Target, GitBranch, Pencil, HelpCircle,
-  Mic, Radio, Search, Download, LineChart,
-} from "lucide-react";
+import { CheckCircle2, Star, FileText, ArrowRight, Quote, Scale, LayoutDashboard, BellRing, Bookmark, Building2, Sliders, X, Sparkles, Vote, MapPin, AlertTriangle, Target, GitBranch, Pencil, HelpCircle, Mic, Radio, Search, Download, LineChart, FilePenLine, MailCheck } from "lucide-react";
 import { PLANS, SALES_OPEN } from "@/lib/constants";
 import Link from "next/link";
 import EspacePersonnel from "@/components/dashboard/EspacePersonnel";
@@ -117,6 +111,22 @@ const PRO_FEATURES = [
     color: "from-emerald-500 to-teal-600",
     href: "/deputes#commissions",
     cta: "Voir les commissions",
+  },
+  {
+    icon: FilePenLine,
+    title: "Amendements en temps réel",
+    desc: "Tous les amendements déposés à l'Assemblée sur les textes en discussion, en séance et en commission, relevés toutes les heures : auteur, groupe, article visé, dispositif, exposé et sort. Filtres par texte, groupe, sort et député.",
+    color: "from-sky-500 to-indigo-600",
+    href: "/premium",
+    cta: "Ouvrir mon espace Pro",
+  },
+  {
+    icon: MailCheck,
+    title: "E-mails à la carte",
+    desc: "Choisissez vos rubriques et leur rythme, chaque jour ou chaque semaine : auditions et commissions, nouvelles lois et textes déposés, Journal officiel, élus suivis, votes européens, votre commune, votre département, votre région.",
+    color: "from-rose-500 to-pink-600",
+    href: "/premium",
+    cta: "Ouvrir mon espace Pro",
   },
   {
     icon: Radio,

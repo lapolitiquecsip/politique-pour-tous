@@ -1,16 +1,17 @@
 "use client";
 
 import { useEffect, useMemo, useState } from "react";
-import { BellRing, Check, Loader2, MapPin, Plus, Search, X, Newspaper, Scale, ShieldCheck, UserRound } from "lucide-react";
+import { BellRing, Check, Loader2, MapPin, Plus, Search, X, Newspaper, Scale, ShieldCheck, UserRound, Mail, Mic, ScrollText, BookOpen, Star, Globe2, type LucideIcon } from "lucide-react";
 import { api } from "@/lib/api";
 
 /**
  * Réglages des alertes Pro.
  *
  * Une seule alerte « sur le moment » : un texte (vote final d'une loi, loi ou décret au
- * Journal officiel) qui peut vous concerner d'après votre profil. Tout le reste — vos
- * suivis, votre territoire, les passages télé des personnalités suivies — arrive dans
- * le récap du samedi, trié pour ne garder que l'important.
+ * Journal officiel) qui peut vous concerner d'après votre profil. Le récap du samedi trie
+ * l'important de la semaine. S'y ajoutent les e-mails à la carte : rubrique par rubrique,
+ * le membre choisit de la recevoir chaque jour (19 h), chaque semaine (dimanche 18 h)
+ * ou pas du tout — rien n'est coché d'office (user_preferences.abonnements_pro).
  */
 
 type Kind = "parti" | "ministere" | "candidat" | "commission";
@@ -29,6 +30,17 @@ const ENFANTS: [string, string][] = [["", "Non précisé"], ["aucun", "Pas d'enf
 // Suivre un parti ou un candidat peut révéler une opinion politique (RGPD, art. 9) :
 // consentement explicite avant le premier suivi de ce type.
 const SENSIBLES: Kind[] = ["parti", "candidat"];
+
+type Rythme = "aucun" | "quotidien" | "hebdo";
+const RUBRIQUES: { code: string; Icone: LucideIcon; titre: string; texte: string }[] = [
+  { code: "commissions", Icone: Mic, titre: "Auditions et commissions", texte: "Le résumé de chaque audition et réunion de commission, Assemblée et Sénat." },
+  { code: "textes", Icone: ScrollText, titre: "Lois, projets et propositions de loi", texte: "Les lois promulguées et chaque nouveau projet ou proposition de loi déposé." },
+  { code: "jo", Icone: BookOpen, titre: "Journal officiel", texte: "La synthèse de chaque numéro, puis les lois, ordonnances et décrets expliqués." },
+  { code: "elus", Icone: Star, titre: "Mes élus suivis", texte: "Leurs votes et l'actualité qui les cite, avec vos partis, ministères et candidats suivis." },
+  { code: "europe", Icone: Globe2, titre: "Votes européens", texte: "Les votes du Parlement européen expliqués, et ce qu'ont voté vos eurodéputés suivis." },
+  { code: "territoire", Icone: MapPin, titre: "Mon territoire", texte: "L'actualité de votre commune, de votre département ou de votre région (périmètre plus bas)." },
+];
+const RYTHMES: [Rythme, string][] = [["aucun", "Non"], ["quotidien", "Chaque jour"], ["hebdo", "Chaque semaine"]];
 
 const champ = "w-full appearance-none rounded-xl border border-white/10 bg-white/5 px-3.5 py-2.5 text-sm font-medium text-white focus:border-fuchsia-400/50 focus:outline-none [&>option]:bg-slate-900";
 
@@ -66,6 +78,7 @@ export default function AlertesPro({ userId }: { userId: string }) {
   const [onglet, setOnglet] = useState<Kind>("parti");
   const [recherche, setRecherche] = useState("");
   const [etat, setEtat] = useState<"" | "enregistrement" | "ok">("");
+  const [abonnements, setAbonnements] = useState<Record<string, Rythme>>({});
 
   useEffect(() => {
     let actif = true;
@@ -74,6 +87,7 @@ export default function AlertesPro({ userId }: { userId: string }) {
       if (p) {
         setRecap(p.recap_hebdo ?? true); setAlertesTextes(p.alertes_textes ?? true); setPerimetre(p.perimetre || "departement");
         setSecteur(p.secteur || ""); setLogement(p.logement || ""); setEnfants(p.enfants || ""); setConsentement(p.consentement_suivis || null);
+        setAbonnements(p.abonnements_pro || {});
       }
       setSuivis(s); setOptions(o as Record<Kind, Option[]>); setCharge(false);
     }).catch(() => setCharge(false));
@@ -85,6 +99,13 @@ export default function AlertesPro({ userId }: { userId: string }) {
     try { await api.saveUserPreferences(userId, patch); setEtat("ok"); setTimeout(() => setEtat(""), 1800); }
     catch { setEtat(""); }
   };
+
+  const choisirRythme = (code: string, r: Rythme) => {
+    const suivant = { ...abonnements, [code]: r };
+    setAbonnements(suivant);
+    enregistrer({ abonnements_pro: suivant });
+  };
+  const nbChoisis = RUBRIQUES.filter(r => (abonnements[r.code] || "aucun") !== "aucun").length;
 
   const suivi = (kind: string, ref: string) => suivis.some(s => s.kind === kind && s.ref === ref);
   const basculer = async (kind: Kind, o: Option) => {
@@ -155,6 +176,37 @@ export default function AlertesPro({ userId }: { userId: string }) {
           </span>{" "}
           <Interrupteur actif={recap} label="Récap du samedi" onChange={v => { setRecap(v); enregistrer({ recap_hebdo: v }); }} />
         </div>
+      </div>{" "}
+
+      {/* E-mails à la carte : chaque rubrique, chaque jour, chaque semaine ou pas du tout. */}
+      <div id="emails-pro" className="mt-8 scroll-mt-24">
+        <h3 className="flex items-center gap-2 text-[11px] font-black uppercase tracking-[0.2em] text-white/60"><Mail size={13} /> Mes e-mails à la carte</h3>{" "}
+        <p className="mt-1 text-[13px] leading-relaxed text-white/65">
+          Cochez ce que vous voulez recevoir. « Chaque jour » : un e-mail à 19 h ; « chaque semaine » : le dimanche à 18 h. Les rubriques au même rythme arrivent ensemble, et rien ne part s&apos;il n&apos;y a rien de nouveau.
+          {nbChoisis > 0 && <strong className="font-bold text-white"> {nbChoisis} rubrique{nbChoisis > 1 ? "s" : ""} choisie{nbChoisis > 1 ? "s" : ""}.</strong>}
+        </p>{" "}
+        <ul className="mt-3 divide-y divide-white/[0.07] overflow-hidden rounded-3xl border border-white/10 bg-black/20">
+          {RUBRIQUES.map(({ code, Icone, titre, texte }) => {
+            const valeur = abonnements[code] || "aucun";
+            return (
+              <li key={code} className="flex flex-col gap-3 p-4 sm:flex-row sm:items-center sm:justify-between sm:gap-5">
+                <span className="flex items-start gap-3">
+                  <span className={`flex h-9 w-9 shrink-0 items-center justify-center rounded-xl transition ${valeur === "aucun" ? "bg-white/10 text-white/60" : "bg-fuchsia-500/25 text-fuchsia-200"}`}><Icone size={17} /></span>{" "}
+                  <span>
+                    <span className="block text-[15px] font-bold text-white">{titre}</span>{" "}
+                    <span className="mt-0.5 block text-[13px] leading-snug text-white/60">{texte}</span>
+                  </span>
+                </span>{" "}
+                <div role="radiogroup" aria-label={`${titre} : fréquence`} className="grid shrink-0 grid-cols-3 gap-1 rounded-2xl border border-white/10 bg-black/30 p-1 sm:w-[300px]">
+                  {RYTHMES.map(([r, l]) => (
+                    <button key={r} type="button" role="radio" aria-checked={valeur === r} onClick={() => choisirRythme(code, r)}
+                      className={`min-h-[38px] rounded-xl px-2 text-xs font-bold transition ${valeur === r ? (r === "aucun" ? "bg-white/15 text-white" : "bg-gradient-to-r from-fuchsia-500 to-purple-600 text-white shadow") : "text-white/60 hover:text-white"}`}>{l}{" "}</button>
+                  ))}
+                </div>
+              </li>
+            );
+          })}
+        </ul>
       </div>{" "}
 
       {/* Profil d'impact */}
@@ -230,7 +282,7 @@ export default function AlertesPro({ userId }: { userId: string }) {
 
       {/* Périmètre */}
       <div className="mt-8">
-        <h3 className="flex items-center gap-2 text-[11px] font-black uppercase tracking-[0.2em] text-white/60"><MapPin size={13} /> Mon territoire dans le récap</h3>{" "}
+        <h3 className="flex items-center gap-2 text-[11px] font-black uppercase tracking-[0.2em] text-white/60"><MapPin size={13} /> Mon territoire dans le récap et les e-mails</h3>{" "}
         <p className="mt-1 text-[13px] text-white/60">À partir de la ville et du département renseignés dans vos préférences.</p>{" "}
         <div className="mt-3"><Segments valeur={perimetre} options={PERIMETRES} onChange={v => { setPerimetre(v); enregistrer({ perimetre: v }); }} /></div>
       </div>

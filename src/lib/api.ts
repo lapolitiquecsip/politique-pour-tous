@@ -1261,6 +1261,7 @@ export const api = {
     interests?: string[]; notify_email?: boolean; email_min_importance?: number;
     recap_hebdo?: boolean; perimetre?: string; rythmes?: Record<string, string>;
     secteur?: string | null; logement?: string | null; enfants?: string | null; alertes_textes?: boolean; consentement_suivis?: string | null;
+    abonnements_pro?: Record<string, string>;
   }) => {
     const { error } = await supabase.from('user_preferences').upsert(
       { user_id: userId, ...prefs, updated_at: new Date().toISOString() },

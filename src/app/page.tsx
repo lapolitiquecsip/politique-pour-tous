@@ -1,18 +1,13 @@
 "use client";
 
-import { api } from "@/lib/api";
-import { regrouperParEvenement } from "@/lib/feed-events";
 import { motion } from "framer-motion";
 import Link from "next/link";
-import { useState, useEffect } from "react";
-import { CalendarDays, ArrowRight, Landmark, ChevronDown } from "lucide-react";
-import FeedItemCard from "@/components/home/FeedItemCard";
+import { CalendarDays, ArrowRight } from "lucide-react";
 import InstitutionsGrid from "@/components/home/InstitutionsGrid";
 import StatsPanel from "@/components/home/StatsPanel";
 import HomeHero from "@/components/home/HomeHero";
 import JournalOfficielBook from "@/components/home/JournalOfficielBook";
 import PetitionsSection from "@/components/home/PetitionsSection";
-import { VerticalImageStack } from "@/components/ui/vertical-image-stack";
 
 /** En-tête de section commun : sur-titre, titre court, une phrase qui dit à quoi sert la section. */
 function EnTete({ surTitre, titre, phrase, ton = "text-red-700 dark:text-red-400" }: { surTitre: string; titre: React.ReactNode; phrase?: string; ton?: string }) {
@@ -27,32 +22,11 @@ function EnTete({ surTitre, titre, phrase, ton = "text-red-700 dark:text-red-400
   );
 }
 
-/** Nombre d'actualités ajoutées à chaque « Voir plus » sur téléphone. */
-const PAR_PAGE = 6;
-
 export default function Home() {
-  const [latestContent, setLatestContent] = useState<any[]>([]);
-  const [loading, setLoading] = useState(true);
-  const [visibles, setVisibles] = useState(PAR_PAGE);
-
-  useEffect(() => {
-    async function load() {
-      try {
-        const data = await api.getContent(100);
-        // Une carte par événement : trois médias sur la même nouvelle = une carte, trois sources.
-        setLatestContent(regrouperParEvenement(data || []));
-      } catch (err) {
-        console.error("Error loading home content:", err);
-      } finally {
-        setLoading(false);
-      }
-    }
-    load();
-  }, []);
-
   // Ordre de la page : ce qu'un nouveau venu cherche d'abord (que faire, que se passe-t-il
-  // aujourd'hui, l'actualité), puis les lois, l'agenda, les pétitions, et la culture
-  // générale en dernier.
+  // aujourd'hui), puis les lois, l'agenda, les pétitions, et la culture générale en dernier.
+  // Le fil d'actualité défilant a été retiré (personne ne le parcourait) : la collecte
+  // continue et nourrit l'espace Pro (fil filtré, e-mails élus suivis et territoire).
   return (
     <div className="flex flex-col min-h-screen">
       {/* 1. PREMIER ÉCRAN : la promesse et quatre actions. */}
@@ -70,75 +44,7 @@ export default function Home() {
         </div>
       </section>{" "}
 
-      {/* 3. FIL D'ACTUALITÉ */}
-      <section id="actualites" className="scroll-mt-24 px-4 py-10 md:py-20">
-        <div className="container mx-auto max-w-6xl">
-          <EnTete
-            surTitre="Actualité politique"
-            titre={<>Récemment en <span className="rounded-xl bg-yellow-300 px-3 pb-0.5 pt-1 text-black md:rounded-2xl md:px-4 md:pt-2">politique</span></>}
-            phrase="Chaque carte cite ses sources et indique s'il s'agit du texte de la source ou d'un résumé rédigé par IA."
-            ton="text-amber-700 dark:text-amber-400"
-          />{" "}
-
-          {loading ? (
-            <div className="grid grid-cols-1 gap-4 md:grid-cols-2 md:gap-6 xl:grid-cols-3">
-              {Array(3).fill(0).map((_, i) => (
-                <div key={i} className="h-56 animate-pulse rounded-3xl bg-slate-100 dark:bg-slate-500/10" />
-              ))}
-            </div>
-          ) : !latestContent || latestContent.length === 0 ? (
-            <div className="mx-auto flex max-w-3xl flex-col items-center justify-center rounded-3xl border bg-card p-10 text-center shadow-sm">
-              <Landmark className="mb-5 h-14 w-14 text-muted-foreground/30" />{" "}
-              <h3 className="mb-3 text-2xl font-bold">Les actualités arrivent bientôt</h3>{" "}
-              <p className="text-lg text-muted-foreground">
-                Nos robots sont en train de lire les textes du Parlement.
-                Revenez dans quelques instants pour l&apos;essentiel de la journée politique.
-              </p>
-            </div>
-          ) : (
-            <>
-              {/* Téléphone : une liste qu'on fait défiler naturellement, plusieurs actualités
-                  visibles d'un coup. La pile à une seule carte obligeait à toucher une flèche
-                  pour chaque nouvelle (« 1 / 98 »). */}
-              <div className="md:hidden">
-                <ul className="space-y-3">
-                  {latestContent.slice(0, visibles).map((item, i) => (
-                    <li key={item.id ?? i} className="overflow-hidden rounded-[1.5rem] shadow-sm">
-                      <FeedItemCard item={item} colorIndex={i} />
-                    </li>
-                  ))}
-                </ul>{" "}
-                {visibles < latestContent.length && (
-                  <button
-                    onClick={() => setVisibles(v => v + PAR_PAGE)}
-                    className="mt-4 flex w-full items-center justify-center gap-2 rounded-2xl border border-border bg-card py-3.5 text-sm font-bold text-foreground transition active:scale-[0.99] dark:border-slate-800 dark:bg-slate-900"
-                  >
-                    Voir plus d&apos;actualités <span className="font-normal text-muted-foreground">({latestContent.length - visibles} autres)</span>{" "}
-                    <ChevronDown size={16} />
-                  </button>
-                )}
-              </div>{" "}
-
-              {/* Écran large : la pile feuilletable. */}
-              <div className="hidden md:block">
-                <VerticalImageStack
-                  items={latestContent}
-                  // Carte de 360 × 500 : le titre et le résumé tiennent en entier (résumés
-                  // de 500 caractères au plus). À 280 × 420, la moitié étaient coupés.
-                  height="h-[660px]"
-                  renderCard={(item, isCurrent, index) => (
-                    <div className={`h-[500px] w-full rounded-[2rem] transition-shadow duration-300 ${isCurrent ? "shadow-2xl shadow-slate-900/10" : "shadow-sm"}`}>
-                      <FeedItemCard item={item} colorIndex={index} />
-                    </div>
-                  )}
-                />
-              </div>
-            </>
-          )}
-        </div>
-      </section>{" "}
-
-      {/* 4. LOIS PROMULGUÉES — livre feuilletable (une page = un jour + une loi). */}
+      {/* 3. LOIS PROMULGUÉES — livre feuilletable (une page = un jour + une loi). */}
       <section id="journal-officiel" className="scroll-mt-24 bg-gradient-to-b from-amber-50/40 to-transparent px-4 py-10 dark:from-slate-900/40 md:py-20">
         <div className="container mx-auto max-w-6xl">
           {/* Le Journal officiel intégral et le suivi des commissions sont réservés à
@@ -156,7 +62,7 @@ export default function Home() {
         </div>
       </section>{" "}
 
-      {/* 5. AGENDA */}
+      {/* 4. AGENDA */}
       <section className="bg-slate-50/50 px-4 py-8 dark:bg-slate-950/20 md:py-12">
         <div className="container mx-auto max-w-6xl">
           <Link href="/calendrier" className="group block">
@@ -186,10 +92,10 @@ export default function Home() {
         </div>
       </section>{" "}
 
-      {/* 6. PÉTITIONS CITOYENNES */}
+      {/* 5. PÉTITIONS CITOYENNES */}
       <PetitionsSection />{" "}
 
-      {/* 7. LE SAVIEZ-VOUS — culture générale, en fin de page. */}
+      {/* 6. LE SAVIEZ-VOUS — culture générale, en fin de page. */}
       <section className="px-4 py-10 md:py-12">
         <div className="container mx-auto max-w-6xl">
           <StatsPanel />

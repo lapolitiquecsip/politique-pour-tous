@@ -6,19 +6,32 @@ import { useSearchParams } from "next/navigation";
 import { Check, Loader2, MailX } from "lucide-react";
 import { supabase } from "@/lib/supabase";
 
+/** Rubriques des e-mails Pro à la carte (paramètre « c » du lien). */
+const RUBRIQUES: Record<string, string> = {
+  commissions: "les résumés des auditions et commissions", textes: "les lois, projets et propositions de loi",
+  jo: "le Journal officiel", elus: "les actualités de vos élus suivis", europe: "les votes européens",
+  territoire: "les actualités de votre territoire", tout: "les e-mails Pro à la carte (toutes rubriques)",
+};
+
 /**
- * Désabonnement en un clic du récap « La semaine politique en 5 minutes ».
+ * Désabonnement en un clic : du récap « La semaine politique en 5 minutes » (sans « c »),
+ * ou d'une rubrique des e-mails Pro à la carte (« c » = rubrique, ou « tout »).
  * Le lien de l'e-mail porte un jeton propre au membre : pas besoin d'être connecté.
  */
 function Contenu() {
-  const jeton = useSearchParams().get("t");
+  const params = useSearchParams();
+  const jeton = params.get("t");
+  const rubrique = params.get("c");
+  const libelle = rubrique && RUBRIQUES[rubrique];
   const [etat, setEtat] = useState<"attente" | "ok" | "inconnu" | "erreur">("attente");
 
   useEffect(() => {
     if (!jeton || !/^[0-9a-f-]{36}$/i.test(jeton)) { setEtat("inconnu"); return; }
-    supabase.rpc("desabonner_recap", { p_jeton: jeton })
-      .then(({ data, error }) => setEtat(error ? "erreur" : data === "ok" ? "ok" : "inconnu"));
-  }, [jeton]);
+    const appel = rubrique
+      ? supabase.rpc("desabonner_digest", { p_jeton: jeton, p_categorie: rubrique })
+      : supabase.rpc("desabonner_recap", { p_jeton: jeton });
+    appel.then(({ data, error }) => setEtat(error ? "erreur" : data === "ok" ? "ok" : "inconnu"));
+  }, [jeton, rubrique]);
 
   return (
     <div className="w-full max-w-md rounded-[2rem] border border-border bg-card p-8 text-center shadow-xl">
@@ -30,7 +43,8 @@ function Contenu() {
       </h1>{" "}
       <p className="mt-3 text-sm leading-relaxed text-muted-foreground">
         {etat === "ok"
-          ? "Vous ne recevrez plus « La semaine politique en 5 minutes ». Vos autres alertes ne changent pas."
+          ? libelle ? `Vous ne recevrez plus ${libelle} par e-mail. Vos autres alertes ne changent pas.`
+            : "Vous ne recevrez plus « La semaine politique en 5 minutes ». Vos autres alertes ne changent pas."
           : etat === "attente" ? "Nous enregistrons votre choix."
           : "Ce lien de désabonnement n'est pas reconnu. Vous pouvez régler vos e-mails depuis votre espace."}
       </p>{" "}

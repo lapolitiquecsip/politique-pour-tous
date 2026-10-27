@@ -15,6 +15,8 @@ import CandidatesFollowFeed from "@/components/dashboard/CandidatesFollowFeed";
 import CommissionsRegistre from "@/components/home/CommissionsRegistre";
 import JournalOfficielDuJour from "@/components/home/JournalOfficielDuJour";
 import TopicBrief from "@/components/pro/TopicBrief";
+import AmendementsAN from "@/components/pro/AmendementsAN";
+import FilActualitePro from "@/components/pro/FilActualitePro";
 import TutorielPro, { tutorielProDejaVu } from "@/components/pro/TutorielPro";
 import EncartPremium from "@/components/dashboard/EncartPremium";
 import IdentifiantsForm from "@/components/dashboard/IdentifiantsForm";
@@ -128,8 +130,8 @@ const VERROUS: Verrou[] = [
   {
     id: "pro", label: "Outils Pro", icone: Layers, offre: "pro",
     titre: "Les outils Pro",
-    texte: "Pour un usage professionnel : la loi applicable sur n'importe quel sujet, le Journal officiel et les commissions au jour le jour.",
-    benefices: ["« Tout sur un sujet » : montants en vigueur et textes précis", "Le Journal officiel du jour, expliqué", "Les commissions de l'Assemblée et du Sénat, réunion par réunion"],
+    texte: "Pour un usage professionnel : la loi applicable sur n'importe quel sujet, le Journal officiel, les commissions et les amendements au jour le jour.",
+    benefices: ["« Tout sur un sujet » : montants en vigueur et textes précis", "Le Journal officiel du jour, expliqué", "Les commissions de l'Assemblée et du Sénat, réunion par réunion", "Les amendements de l'Assemblée en temps réel", "Vos e-mails à la carte, chaque jour ou chaque semaine"],
     apercu: ["Apprentissage : aides en vigueur", "Journal officiel du 29 septembre", "Commission des finances", "Panneaux solaires : les textes"],
   },
 ];
@@ -425,7 +427,7 @@ export default function EspacePersonnel({ mode = "tout" }: { mode?: ModeEspace }
                   {mode === "compte"
                     ? "Vos identifiants et les réglages de votre abonnement."
                     : mode === "espace"
-                      ? "Le Journal officiel, les commissions et vos alertes, au même endroit."
+                      ? "Le Journal officiel, les commissions, les amendements et vos alertes, au même endroit."
                       : "Gérez votre activité citoyenne et vos députés favoris."}
                 </p>{" "}
                 {/* Le niveau du compte, dit clairement, avec la porte de sortie vers les offres. */}
@@ -472,6 +474,10 @@ export default function EspacePersonnel({ mode = "tout" }: { mode?: ModeEspace }
               la recherche. */}
           {proVerifie && <div id="commissions" className="scroll-mt-24"><CommissionsRegistre /></div>}{" "}
           {proVerifie && <div id="journal-officiel" className="scroll-mt-24"><JournalOfficielDuJour /></div>}{" "}
+          {/* Amendements déposés à l'Assemblée, relevés toutes les heures. */}
+          {proVerifie && <div id="amendements" className="scroll-mt-24"><AmendementsAN /></div>}{" "}
+          {/* L'ancien fil de l'accueil, filtré pour le travail (élus suivis, recherche). */}
+          {proVerifie && <div id="fil-actualite" className="scroll-mt-24"><FilActualitePro userId={userId} /></div>}{" "}
           <CandidatesFollowFeed />
           <CommuneFeedCard />{" "}
           {/* Ancre des liens « Modifier mes alertes » des e-mails. */}

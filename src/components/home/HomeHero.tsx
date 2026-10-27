@@ -1,7 +1,7 @@
 "use client";
 
 import { motion } from "framer-motion";
-import { ArrowRight, MapPin, Newspaper, ScrollText, Users, type LucideIcon } from "lucide-react";
+import { ArrowRight, CalendarClock, MapPin, ScrollText, Users, type LucideIcon } from "lucide-react";
 import { MarkerHighlight } from "@/components/ui/marker-highlight";
 import Link from "next/link";
 import { useTheme } from "@/components/providers";
@@ -15,7 +15,7 @@ const ACTIONS: { href: string; Icone: LucideIcon; titre: string; texte: string; 
     ton: "from-blue-500 to-indigo-600" },
   { href: "/lois", Icone: ScrollText, titre: "Comprendre une loi", texte: "Résumé, parcours et votes de chaque texte",
     ton: "from-rose-500 to-red-600" },
-  { href: "#actualites", Icone: Newspaper, titre: "L'actualité du jour", texte: "Parlement et Gouvernement, sources à l'appui",
+  { href: "#institutions", Icone: CalendarClock, titre: "Aujourd'hui au Parlement", texte: "Séances, auditions et Conseil des ministres du jour",
     ton: "from-amber-500 to-orange-600" },
   { href: "/local", Icone: MapPin, titre: "Mes élus locaux", texte: "Maire, département, région et leurs budgets",
     ton: "from-emerald-500 to-teal-600" },
@@ -68,7 +68,7 @@ export default function HomeHero() {
           transition={{ duration: 0.8, delay: 0.3 }}
           className="mb-6 max-w-xl text-center text-base leading-relaxed text-slate-700 dark:text-slate-300 max-[359px]:mb-4 max-[359px]:text-[15px] md:mb-8 md:text-lg"
         >
-          Les votes de vos élus, les lois et l&apos;actualité politique, expliqués simplement à partir des sources officielles.
+          Les votes de vos élus, les lois et le travail du Parlement, expliqués simplement à partir des sources officielles.
         </motion.p>{" "}
 
         {/* Par où commencer : quatre actions explicites, faciles à toucher. */}

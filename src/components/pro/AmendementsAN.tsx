@@ -108,9 +108,28 @@ export default function AmendementsAN() {
   const [page, setPage] = useState(0);
   const [charge, setCharge] = useState(true);
   const [erreur, setErreur] = useState(false);
+  const [viser, setViser] = useState(false);
   // Dernière visite : lue une fois, avant d'être remplacée par celle-ci.
   const [visite] = useState<string | null>(() => { try { return localStorage.getItem(CLE_VISITE); } catch { return null; } });
   useEffect(() => { try { localStorage.setItem(CLE_VISITE, new Date().toISOString()); } catch { /* navigation privée */ } }, []);
+
+  // Lien depuis l'e-mail Pro (« Voir les amendements ») : /premium/?amdt-texte=…&amdt-q=…#amendements.
+  useEffect(() => {
+    const p = new URLSearchParams(window.location.search);
+    if (!p.get("amdt-texte") && !p.get("amdt-q")) return;
+    setTexte(p.get("amdt-texte") || "");
+    setSort(p.get("amdt-sort") || "");
+    setSaisie(p.get("amdt-q") || "");
+    setViser(true);
+  }, []);
+  // L'espace Pro se remplit au-dessus pendant quelques secondes : on recale la section jusqu'à ce qu'il soit stable.
+  useEffect(() => {
+    if (!viser || !liste.length) return;
+    const caler = () => document.getElementById("amendements")?.scrollIntoView({ block: "start" });
+    const ids = [300, 1500, 3500].map(ms => setTimeout(caler, ms));
+    const fin = setTimeout(() => setViser(false), 3600);
+    return () => { ids.forEach(clearTimeout); clearTimeout(fin); };
+  }, [viser, liste.length]);
 
   useEffect(() => {
     supabase.from("amendements_an_textes").select("texte_uid, texte_titre, nb, dernier").order("dernier", { ascending: false })

@@ -1,3 +1,4 @@
+import { vignetteWikimedia } from "./wikimedia";
 /**
  * Calculs de l'onglet « Dynamiques » (présidentielle 2027) : moyenne des sondages,
  * marges d'erreur, couleurs des candidats. Aucun appel réseau ici.
@@ -55,17 +56,9 @@ export function couleur(id: string): string {
   return RESERVE[h % RESERVE.length];
 }
 
-/**
- * Vignette Wikimedia d'une photo : les fiches pointent sur l'original (souvent plus de
- * 300 Ko) quand l'onglet n'affiche que des pastilles de quelques dizaines de pixels.
- */
+/** Vignette Wikimedia (voir lib/wikimedia) : `px` est ici la largeur voulue en pixels réels. */
 export function vignette(url: string | null | undefined, px = 96): string | null {
-  if (!url) return null;
-  const m = url.match(/^(https:\/\/upload\.wikimedia\.org\/wikipedia\/commons)\/(?:thumb\/)?([0-9a-f])\/([0-9a-f]{2})\/([^/?#]+)/);
-  if (!m || /\.svg$/i.test(m[4])) return url;
-  // Wikimedia ne sert que des largeurs standard (120, 250…) : une autre largeur répond 400.
-  const std = px <= 120 ? 120 : 250;
-  return `${m[1]}/thumb/${m[2]}/${m[3]}/${m[4]}/${std}px-${m[4]}`;
+  return vignetteWikimedia(url, px / 2);
 }
 
 const JOUR = 86400000;

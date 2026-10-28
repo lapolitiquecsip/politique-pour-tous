@@ -9,6 +9,7 @@ import {
 import { api } from "@/lib/api";
 import { usePremium } from "@/lib/hooks/usePremium";
 import { EnTete, ZonePro } from "./dynamiques/VerrouPro";
+import { vignetteWikimedia } from "@/lib/wikimedia";
 import {
   computeMetrics, sumMetric, compact, signed, PLATFORM_META,
   type Metrics, type SocialAccount, type Snapshot,
@@ -259,7 +260,7 @@ export default function CandidateSocialTracker({ candidates }: { candidates: Can
                   <span className="w-6 shrink-0 text-center font-staatliches text-xl text-slate-300">{rank + 1}</span>{" "}
 
                   {r.candidate.photo_url
-                    ? <img src={r.candidate.photo_url} alt="" className="h-11 w-11 shrink-0 rounded-full object-cover" />
+                    ? <img src={vignetteWikimedia(r.candidate.photo_url, 44)!} loading="lazy" decoding="async" alt="" className="h-11 w-11 shrink-0 rounded-full object-cover" />
                     : <span className="flex h-11 w-11 shrink-0 items-center justify-center rounded-full bg-slate-100 dark:bg-slate-500/10 text-sm font-black text-slate-400">{r.candidate.full_name.charAt(0)}</span>}{" "}
 
                   <span className="min-w-0 flex-1">

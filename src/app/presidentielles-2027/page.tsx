@@ -4,6 +4,7 @@ import { Suspense, useEffect, useMemo, useRef, useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { useSearchParams } from "next/navigation";
 import Link from "next/link";
+import { vignetteWikimedia } from "@/lib/wikimedia";
 import { Search, Loader2, X, CalendarDays, ExternalLink, Briefcase, GraduationCap, Users, ShieldCheck, Landmark, ArrowRight, Vote, ChevronDown, Globe2, HeartPulse, Wheat, Leaf, Flag, TrendingUp, HelpCircle, FileText, Play, Bell, Trophy } from "lucide-react";
 import { api } from "@/lib/api";
 import LegalStatusModal from "@/components/deputies/LegalStatusModal";
@@ -162,7 +163,8 @@ function initials(name: string) {
   return `${parts[0]?.[0] ?? ""}${parts[parts.length - 1]?.[0] ?? ""}`.toUpperCase();
 }
 
-function CandidateAvatar({ c, className }: { c: Candidate; className: string }) {
+// taille : largeur affichée (px CSS) — l'image servie est la miniature Wikimedia adaptée.
+function CandidateAvatar({ c, className, taille = 48, prioritaire = false }: { c: Candidate; className: string; taille?: number; prioritaire?: boolean }) {
   const [failed, setFailed] = useState(false);
   if (failed || !c.photo_url) {
     return (
@@ -172,7 +174,7 @@ function CandidateAvatar({ c, className }: { c: Candidate; className: string }) 
     );
   }
   // eslint-disable-next-line @next/next/no-img-element
-  return <img src={c.photo_url} alt={c.full_name} onError={() => setFailed(true)} className={`object-cover object-center ${className}`} />;
+  return <img src={vignetteWikimedia(c.photo_url, taille)!} alt={c.full_name} onError={() => setFailed(true)} loading={prioritaire ? "eager" : "lazy"} decoding="async" className={`object-cover object-center ${className}`} />;
 }
 
 function formatDate(value?: string | null) {
@@ -250,7 +252,7 @@ function CandidateModal({ candidate, onClose }: { candidate: Candidate; onClose:
         <div className={`relative bg-gradient-to-br ${side.from} ${side.to} p-6 md:p-8`}>
           <button onClick={onClose} className="absolute right-4 top-4 rounded-full bg-white/20 p-2 text-white transition hover:bg-white/30" aria-label="Fermer"><X /></button>{" "}
           <div className="flex flex-col items-center gap-5 text-center text-white md:flex-row md:items-end md:text-left">
-            <CandidateAvatar c={candidate} className="h-32 w-32 shrink-0 rounded-full border-4 border-white/80 shadow-xl text-3xl" />{" "}
+            <CandidateAvatar c={candidate} taille={128} className="h-32 w-32 shrink-0 rounded-full border-4 border-white/80 shadow-xl text-3xl" />{" "}
             <div>
               <div className="flex flex-wrap items-center justify-center gap-2 md:justify-start">
                 <span className="rounded-full bg-white/25 px-3 py-1 text-[11px] font-black uppercase tracking-widest">{side.label}{candidate.party ? ` · ${candidate.party}` : ""}</span>{" "}
@@ -594,7 +596,7 @@ function PositionsView({ candidates }: { candidates: Candidate[] }) {
                           {groups[stance].length === 0 ? <span className="text-xs text-slate-300">—</span> : groups[stance].map(c => (
                             <button key={c.slug} onClick={() => setDetail({ c, issue, pos: posMap.get(`${c.slug}|${issue.slug}`) })}
                               className={`inline-flex items-center gap-2 rounded-full bg-muted py-1 pl-1 pr-3 ring-1 ${STANCE_META[stance].ring} transition hover:bg-slate-100`}>
-                              <CandidateAvatar c={c} className="h-6 w-6 rounded-full text-[9px]" />{" "}
+                              <CandidateAvatar c={c} taille={24} className="h-6 w-6 rounded-full text-[9px]" />{" "}
                               <span className="text-xs font-bold text-foreground">{c.full_name}</span>{" "}
                             </button>
                           ))}
@@ -613,7 +615,7 @@ function PositionsView({ candidates }: { candidates: Candidate[] }) {
         <div className="fixed inset-0 z-50 flex items-center justify-center bg-slate-950/80 p-4" onClick={() => setDetail(null)}>
           <div className="w-full max-w-lg rounded-3xl bg-card p-6 shadow-2xl" onClick={e => e.stopPropagation()}>
             <div className="mb-4 flex items-center gap-3">
-              <CandidateAvatar c={detail.c} className="h-12 w-12 rounded-full text-sm" />{" "}
+              <CandidateAvatar c={detail.c} taille={48} className="h-12 w-12 rounded-full text-sm" />{" "}
               <div>
                 <p className="font-black text-foreground">{detail.c.full_name}</p>{" "}
                 <p className="text-xs font-bold text-muted-foreground">{detail.issue.title}</p>
@@ -804,7 +806,7 @@ function CandidatesContent() {
                 >
                   <div className="relative">
                     {/* Photo claire, sans voile sombre, cadrage portrait centré sur le visage. */}
-                    <CandidateAvatar c={c} className="aspect-[4/5] w-full text-3xl" />{" "}
+                    <CandidateAvatar c={c} taille={250} className="aspect-[4/5] w-full text-3xl" />{" "}
                     <span className={`absolute left-2.5 top-2.5 rounded-full ${s.badge} px-2 py-0.5 text-[8px] font-black uppercase tracking-widest text-white shadow-lg ring-1 ring-white/30`}>{s.label}</span>{" "}
                     {c.category?.startsWith("Primaire") && (
                       <span className="absolute right-2 top-2 inline-flex items-center gap-1 rounded-full bg-gradient-to-br from-amber-300 via-amber-400 to-orange-500 px-2 py-0.5 text-[8px] font-black uppercase tracking-wider text-white shadow-lg shadow-orange-500/40 ring-1 ring-white/50 backdrop-blur-sm">

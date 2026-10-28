@@ -6,6 +6,7 @@ import { Bell, X, ArrowRight, Mic, Play } from "lucide-react";
 import { api } from "@/lib/api";
 import DragScroller from "@/components/ui/DragScroller";
 import { getFollowedCandidates, toggleFollowCandidate, CANDIDATE_FOLLOWS_EVENT, type FollowedCandidate } from "@/lib/candidateFollows";
+import { vignetteWikimedia } from "@/lib/wikimedia";
 
 // Fil des candidats à la présidentielle SUIVIS par le membre premium (cloche dorée sur la
 // fiche candidat). Le choix est mémorisé dans le navigateur ; ici on affiche, pour chaque
@@ -123,7 +124,7 @@ export default function CandidatesFollowFeed() {
             <div className="flex items-center gap-3">
               {c.photo_url
                 // eslint-disable-next-line @next/next/no-img-element
-                ? <img src={c.photo_url} alt={c.name} className="h-9 w-9 shrink-0 rounded-full object-cover object-top" />
+                ? <img src={vignetteWikimedia(c.photo_url, 36)!} loading="lazy" decoding="async" alt={c.name} className="h-9 w-9 shrink-0 rounded-full object-cover object-top" />
                 : <span className="flex h-9 w-9 shrink-0 items-center justify-center rounded-full bg-slate-200 text-xs font-black text-muted-foreground">{c.name.slice(0, 2).toUpperCase()}</span>}{" "}
               <div className="min-w-0 flex-1">
                 <p className="truncate text-sm font-black text-foreground">{c.name}</p>{" "}

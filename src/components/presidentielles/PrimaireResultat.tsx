@@ -6,6 +6,7 @@ import { Trophy, ExternalLink, ArrowRight, Info, ChevronDown, Mic2, BarChart3 } 
 import { api } from "@/lib/api";
 import type { ResultatPrimaire } from "@/lib/primaires";
 import PrimaryDebates from "@/components/presidentielles/PrimaryDebates";
+import { vignetteWikimedia } from "@/lib/wikimedia";
 
 /**
  * Une primaire tranchée, en un bandeau : le vainqueur, le score de chaque candidat, et —
@@ -48,7 +49,7 @@ function Portrait({ p, nom, className }: { p?: Personne; nom: string; className:
     );
   }
   // eslint-disable-next-line @next/next/no-img-element
-  return <img src={p.photo_url} alt={nom} onError={() => setRate(true)} className={`object-cover object-top ${className}`} />;
+  return <img src={vignetteWikimedia(p.photo_url, 96)!} loading="lazy" decoding="async" alt={nom} onError={() => setRate(true)} className={`object-cover object-top ${className}`} />;
 }
 
 function Onglet({

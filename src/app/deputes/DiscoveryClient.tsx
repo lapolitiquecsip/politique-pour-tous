@@ -33,7 +33,7 @@ export default function DiscoveryClient({ initialDeputies, single }: { initialDe
   }, [modeParam, pathname, single]);
 
   return (
-    <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
+    <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6 md:py-12">
       {/* 1. GLOBAL POSTER HEADER — masqué sur les pages dédiées (le titre vient de la page). */}
       {!single && <div className="mb-16">
         <div className="relative mb-8 text-center">

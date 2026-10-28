@@ -223,6 +223,8 @@ function VueSimple({ comp, versDetail }: { comp: PlfAnnee | null; versDetail: ()
   const depR = depensesSimples(an);
   const parCle = new Map(depR.map((d) => [d.cle, d.cp]));
   const TOP = 14;
+  // Sur téléphone, les six premières missions ; « Voir les autres » déroule la liste.
+  const [toutes, setToutes] = useState(false);
   const top = dep.slice(0, TOP);
   const autres = dep.slice(TOP);
   const autresCp = autres.reduce((s, d) => s + d.cp, 0);
@@ -270,10 +272,10 @@ function VueSimple({ comp, versDetail }: { comp: PlfAnnee | null; versDetail: ()
         <h2 className="font-staatliches text-3xl uppercase tracking-tight text-foreground">Où va l’argent</h2>{" "}
         <p className="mb-5 text-sm text-muted-foreground">Crédits de paiement 2027, en milliards d’euros. À droite : l’évolution par rapport au PLF {an}.</p>{" "}
         <ul className="space-y-2.5">
-          {top.map((d) => {
+          {top.map((d, i) => {
             const rv = parCle.get(d.cle);
             return (
-              <li key={d.cle}>
+              <li key={d.cle} className={!toutes && i >= 6 ? "hidden md:block" : undefined}>
                 <div className="flex items-baseline justify-between gap-3">
                   <span className="truncate text-sm font-bold text-foreground">{d.label}</span>{" "}
                   <span className="flex shrink-0 items-baseline gap-2">
@@ -292,7 +294,15 @@ function VueSimple({ comp, versDetail }: { comp: PlfAnnee | null; versDetail: ()
               </li>
             );
           })}{" "}
-          <li className="flex items-baseline justify-between border-t border-border pt-2.5 text-sm">
+          {!toutes && (
+            <li className="md:hidden">
+              <button type="button" onClick={() => setToutes(true)}
+                className="flex min-h-[44px] w-full items-center justify-center rounded-xl bg-muted text-[13px] font-black text-foreground">
+                Voir les {top.length - 6 + autres.length} autres missions
+              </button>
+            </li>
+          )}
+          <li className={`${toutes ? "flex" : "hidden md:flex"} items-baseline justify-between border-t border-border pt-2.5 text-sm`}>
             <span className="font-bold text-muted-foreground">Autres missions ({autres.length})</span>{" "}
             <span className="flex items-baseline gap-2">
               <Delta v={(autresCp - autresR) / 1e9} small />{" "}

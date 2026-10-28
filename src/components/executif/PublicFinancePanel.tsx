@@ -61,7 +61,7 @@ export default function PublicFinancePanel() {
             <span className="relative flex h-2 w-2"><span className="absolute inline-flex h-full w-full animate-ping rounded-full bg-rose-400 opacity-75" />{" "}<span className="relative inline-flex h-2 w-2 rounded-full bg-rose-500" /></span>{" "}
             Dette publique · en direct
           </div>{" "}
-          <p className="mt-1.5 font-staatliches text-3xl tabular-nums leading-none text-foreground dark:text-white md:text-4xl">{eur0(debt)}</p>{" "}
+          <p className="mt-1.5 font-staatliches text-3xl tabular-nums leading-none text-foreground dark:text-white md:text-4xl" suppressHydrationWarning>{eur0(debt)}</p>{" "}
           <div className="mt-3 flex flex-wrap gap-x-6 gap-y-2">
             <div><p className="text-lg font-black tabular-nums text-rose-700 dark:text-rose-300">{eur0(perHab)}</p>{" "}<p className="text-[10px] font-black uppercase tracking-widest text-muted-foreground">par habitant</p></div>{" "}
             <div><p className="text-lg font-black tabular-nums text-rose-700 dark:text-rose-300">{DEBT_RATIO_GDP.toLocaleString("fr-FR")} %</p>{" "}<p className="text-[10px] font-black uppercase tracking-widest text-muted-foreground">du PIB (2025)</p></div>{" "}

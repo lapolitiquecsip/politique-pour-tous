@@ -21,9 +21,14 @@ export function allerALaRubrique(id: string) {
 }
 
 const base = process.env.NEXT_PUBLIC_BASE_PATH || "";
+import HeroActions from "@/components/lois/HeroActions";
 
-export default function ExecutifHero({ description, links }: {
+// Avec `actions` (29/10/2026) : une phrase sur téléphone, deux boutons, et les rubriques passent
+// dans le sommaire collant (SectionNav) sous le hero.
+export default function ExecutifHero({ description, descriptionCourte, actions, links }: {
   description: string;
+  descriptionCourte?: string;
+  actions?: { label: string; href: string }[];
   links: { label: string; id: string }[];
 }) {
   return (
@@ -66,14 +71,16 @@ export default function ExecutifHero({ description, links }: {
             Le Gouvernement
           </h1>{" "}
           <div className="mx-auto mt-5 h-1.5 w-32 rounded-full bg-gradient-to-r from-orange-600 via-orange-500 to-amber-400 shadow-[0_0_18px_rgba(249,115,22,0.6)] sm:w-44" />{" "}
-          <p className="mx-auto mt-5 max-w-2xl text-[15px] leading-relaxed text-white/85 sm:text-base md:text-lg">
+          {descriptionCourte && <p className="mx-auto mt-5 max-w-md text-[16px] leading-relaxed text-white/90 md:hidden">{descriptionCourte}</p>}
+          <p className={`mx-auto mt-5 max-w-2xl text-[15px] leading-relaxed text-white/85 sm:text-base md:text-lg ${descriptionCourte ? "hidden md:block" : ""}`}>
             {description}
           </p>
+          {actions && <div className="md:hidden"><HeroActions actions={actions} /></div>}
         </div>{" "}
 
         {/* Rubriques : rangée qui défile au doigt sur téléphone (pas de pavé de boutons
             sur trois lignes), boutons centrés sur plusieurs lignes ailleurs. */}
-        <nav aria-label="Rubriques de la page" className="relative mt-8 md:ml-[36%] lg:ml-[27%]">
+        <nav aria-label="Rubriques de la page" className={`relative mt-8 md:ml-[36%] lg:ml-[27%] ${actions ? "hidden md:block" : ""}`}>
           <div className="-mx-4 flex snap-x snap-mandatory gap-2 overflow-x-auto px-4 pb-2 [scrollbar-width:none] sm:mx-0 sm:flex-wrap sm:justify-center sm:overflow-visible sm:px-0 sm:pb-0 [&::-webkit-scrollbar]:hidden">
             {links.map(l => (
               <a

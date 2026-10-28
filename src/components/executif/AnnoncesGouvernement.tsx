@@ -37,7 +37,7 @@ export default function AnnoncesGouvernement() {
   const [annonces, setAnnonces] = useState<Annonce[] | null>(null);
   const [filtre, setFiltre] = useState("tout");
   const [ouverte, setOuverte] = useState<string | null>(null);
-  const [visibles, setVisibles] = useState(6);
+  const [visibles, setVisibles] = useState(4);
 
   useEffect(() => {
     supabase.from("executif_annonces")
@@ -78,7 +78,7 @@ export default function AnnoncesGouvernement() {
 
       <div className="flex gap-2 overflow-x-auto border-b border-border px-4 py-3 [scrollbar-width:none] md:px-6 [&::-webkit-scrollbar]:hidden">
         {FILTRES.map(([id, label]) => (
-          <button key={id} type="button" onClick={() => { setFiltre(id); setVisibles(6); }} aria-pressed={filtre === id}
+          <button key={id} type="button" onClick={() => { setFiltre(id); setVisibles(4); }} aria-pressed={filtre === id}
             className={`shrink-0 rounded-full px-3.5 py-1.5 text-[13px] font-bold transition ${filtre === id ? "bg-foreground text-background" : "bg-muted text-muted-foreground hover:text-foreground"}`}>{label}</button>
         ))}
       </div>{" "}
@@ -109,7 +109,7 @@ function Carte({ a, ouverte, basculer }: { a: Annonce; ouverte: boolean; bascule
     </div>
   ) : null;
   return (
-    <li className="p-4 md:p-6">
+    <li id={`annonce-${a.id}`} className="scroll-mt-32 p-4 md:p-6">
       <div className="flex flex-wrap items-center gap-x-2 gap-y-1 text-[11px] font-bold text-muted-foreground">
         <span className="capitalize">{jour(a.date_annonce)}</span>
         {a.ministere && <><span aria-hidden>·</span><span>{a.ministere}</span></>}
@@ -117,11 +117,11 @@ function Carte({ a, ouverte, basculer }: { a: Annonce; ouverte: boolean; bascule
         {a.importance >= 4 && <span className="rounded-full bg-amber-500/15 px-2 py-0.5 text-[10px] font-black uppercase tracking-widest text-amber-700 dark:text-amber-300">Majeure</span>}
       </div>{" "}
       <h3 className="mt-1.5 text-[17px] font-bold leading-snug text-foreground md:text-lg">{a.titre}</h3>{" "}
-      {a.chapo && <p className="mt-1.5 text-sm leading-relaxed text-muted-foreground">{a.chapo}</p>}{" "}
+      {a.chapo && <p className={`mt-1.5 text-sm leading-relaxed text-muted-foreground ${ouverte ? "" : "line-clamp-3 md:line-clamp-none"}`}>{a.chapo}</p>}{" "}
       {(a.montants || []).length > 0 && (
         <div className="mt-3 flex flex-wrap gap-2">
           {a.montants.slice(0, 4).map((m, i) => (
-            <span key={i} title={m.nature || undefined} className="inline-flex max-w-full items-center gap-1.5 rounded-xl bg-emerald-500/10 px-2.5 py-1.5 text-[12px] text-emerald-800 ring-1 ring-emerald-500/20 dark:text-emerald-200">
+            <span key={i} title={m.nature || undefined} className={`${i >= 2 ? "hidden md:inline-flex" : "inline-flex"}  max-w-full items-center gap-1.5 rounded-xl bg-emerald-500/10 px-2.5 py-1.5 text-[12px] text-emerald-800 ring-1 ring-emerald-500/20 dark:text-emerald-200`}>
               <Wallet size={13} className="shrink-0" /><strong className={m.montant.length <= 18 ? "shrink-0 whitespace-nowrap font-black" : "font-black"}>{m.montant}</strong><span className="truncate">{m.objet}{m.nature ? ` · ${m.nature}` : ""}</span>
             </span>
           ))}
@@ -177,6 +177,11 @@ function Carte({ a, ouverte, basculer }: { a: Annonce; ouverte: boolean; bascule
               </ul>
             </div>
           )}{" "}
+          {/* Refermer depuis le bas : l'analyse est longue, inutile de remonter à la main. */}
+          <button type="button" onClick={() => { basculer(); setTimeout(() => document.getElementById(`annonce-${a.id}`)?.scrollIntoView({ block: "start", behavior: "smooth" }), 60); }}
+            className="flex min-h-[44px] w-full items-center justify-center gap-1.5 rounded-xl bg-card text-[13px] font-black text-blue-700 ring-1 ring-border dark:text-blue-300">
+            Refermer l&apos;analyse <ChevronDown size={15} className="rotate-180" />
+          </button>{" "}
           <p className="flex items-start gap-1.5 text-[11px] leading-snug text-muted-foreground">
             <ShieldCheck size={13} className="mt-px shrink-0" />
             Analyse rédigée par une IA à partir des {a.nb_sources} articles et communiqués repérés{a.verifie ? ", puis relue par un second agent qui a retiré ce que les pages lues n'attestaient pas" : ""}. Vérifiez la source avant de citer.

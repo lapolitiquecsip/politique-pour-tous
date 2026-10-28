@@ -1,11 +1,11 @@
 "use client";
 
 import { motion } from "framer-motion";
-import { 
-  ShieldCheck, 
-  Users, 
-  CircleDollarSign, 
-  ScrollText, 
+import {
+  ShieldCheck,
+  Users,
+  CircleDollarSign,
+  ScrollText,
   ChevronRight,
   ChevronDown,
   Landmark,
@@ -37,6 +37,7 @@ import { cleanMinistryName } from "@/lib/executif-utils";
 import { AwardBadge } from "@/components/ui/award-badge";
 import ExecutifHero from "@/components/executif/ExecutifHero";
 import AnnoncesGouvernement from "@/components/executif/AnnoncesGouvernement";
+import SectionNav from "@/components/lois/SectionNav";
 
 const normalizeName = (name: string) => {
   if (!name) return "";
@@ -215,123 +216,123 @@ const MINISTERS = [
 ];
 
 export const BUDGETS = [
-  { 
-    label: "Remboursements et dégrèvements", 
-    amount: 145.60, 
+  {
+    label: "Remboursements et dégrèvements",
+    amount: 145.60,
     color: "bg-slate-400",
     desc: "Sommes que l'État rend aux contribuables (ex: trop-perçu d'impôts, crédits d'impôt ou aides à l'investissement)."
   },
-  { 
-    label: "Éducation Nationale", 
-    amount: 89.62, 
+  {
+    label: "Éducation Nationale",
+    amount: 89.62,
     color: "bg-blue-500",
     desc: "Premier budget de l'État : salaires des enseignants, fonctionnement des écoles, collèges et lycées."
   },
-  { 
-    label: "Pensions (CAS)", 
-    amount: 69.33, 
+  {
+    label: "Pensions (CAS)",
+    amount: 69.33,
     color: "bg-slate-500",
     desc: "Financement des retraites des fonctionnaires de l'État (militaires, enseignants, agents publics)."
   },
-  { 
-    label: "Défense (Armées)", 
-    amount: 66.48, 
+  {
+    label: "Défense (Armées)",
+    amount: 66.48,
     color: "bg-red-500",
     desc: "Équipement des forces armées, modernisation nucléaire et opérations militaires."
   },
-  { 
-    label: "Charge de la dette", 
-    amount: 60.34, 
+  {
+    label: "Charge de la dette",
+    amount: 60.34,
     color: "bg-orange-500",
     desc: "Paiement des intérêts sur l'argent que l'État a emprunté pour financer ses déficits passés."
   },
-  { 
-    label: "Intérieur (Sécurités & Admin)", 
-    amount: 33.06, 
+  {
+    label: "Intérieur (Sécurités & Admin)",
+    amount: 33.06,
     color: "bg-purple-500",
     desc: "Financement de la Police, de la Gendarmerie, de la sécurité routière et de l'administration des territoires."
   },
-  { 
-    label: "Enseignement Supérieur & Recherche", 
-    amount: 31.63, 
+  {
+    label: "Enseignement Supérieur & Recherche",
+    amount: 31.63,
     color: "bg-emerald-500",
     desc: "Financement des universités, des grandes écoles et de la recherche scientifique française."
   },
-  { 
-    label: "Solidarité et Insertion", 
-    amount: 31.28, 
+  {
+    label: "Solidarité et Insertion",
+    amount: 31.28,
     color: "bg-indigo-500",
     desc: "Aides aux plus démunis, aux personnes handicapées (AAH) et protection de l'enfance."
   },
-  { 
-    label: "Écologie et Mobilité", 
-    amount: 22.76, 
+  {
+    label: "Écologie et Mobilité",
+    amount: 22.76,
     color: "bg-green-500",
     desc: "Transition écologique, protection de la biodiversité, routes et infrastructures ferroviaires."
   },
-  { 
-    label: "Cohésion des territoires", 
-    amount: 22.57, 
+  {
+    label: "Cohésion des territoires",
+    amount: 22.57,
     color: "bg-blue-400",
     desc: "Aides au logement (APL), rénovation urbaine et soutien aux zones rurales."
   },
-  { 
-    label: "Travail et emploi", 
-    amount: 20.82, 
+  {
+    label: "Travail et emploi",
+    amount: 20.82,
     color: "bg-cyan-500",
     desc: "Politiques de l'emploi, formation professionnelle et financement de l'apprentissage."
   },
-  { 
-    label: "Justice", 
-    amount: 12.97, 
+  {
+    label: "Justice",
+    amount: 12.97,
     color: "bg-amber-500",
     desc: "Fonctionnement des tribunaux, des prisons et de la protection judiciaire de la jeunesse."
   },
-  { 
-    label: "Gestion des finances publiques", 
-    amount: 11.02, 
+  {
+    label: "Gestion des finances publiques",
+    amount: 11.02,
     color: "bg-slate-300",
     desc: "Coût des services qui collectent l'impôt (Bercy) et gèrent la dépense publique."
   },
-  { 
-    label: "Régimes sociaux et de retraite", 
-    amount: 6.07, 
+  {
+    label: "Régimes sociaux et de retraite",
+    amount: 6.07,
     color: "bg-rose-400",
     desc: "Soutien à certains régimes de retraite spécifiques (ex: marins, mineurs) et solidarité nationale."
   },
-  { 
-    label: "Agriculture et Alimentation", 
-    amount: 4.13, 
+  {
+    label: "Agriculture et Alimentation",
+    amount: 4.13,
     color: "bg-lime-600",
     desc: "Soutien aux agriculteurs, sécurité sanitaire des aliments et gestion des forêts."
   },
-  { 
-    label: "Relations Collectivités", 
-    amount: 3.96, 
+  {
+    label: "Relations Collectivités",
+    amount: 3.96,
     color: "bg-sky-400",
     desc: "Dotations versées par l'État aux mairies, départements et régions."
   },
-  { 
-    label: "Culture", 
-    amount: 3.74, 
+  {
+    label: "Culture",
+    amount: 3.74,
     color: "bg-pink-500",
     desc: "Protection du patrimoine, soutien à la création artistique et médias publics."
   },
-  { 
-    label: "Aide au développement", 
-    amount: 3.57, 
+  {
+    label: "Aide au développement",
+    amount: 3.57,
     color: "bg-yellow-600",
     desc: "Actions de solidarité internationale et aide aux pays en développement."
   },
-  { 
-    label: "Économie", 
-    amount: 3.51, 
+  {
+    label: "Économie",
+    amount: 3.51,
     color: "bg-indigo-400",
     desc: "Soutien aux entreprises, au commerce extérieur et régulation de la concurrence."
   },
-  { 
-    label: "Santé", 
-    amount: 1.89, 
+  {
+    label: "Santé",
+    amount: 1.89,
     color: "bg-red-400",
     desc: "Prévention, sécurité sanitaire et pilotage du système de santé."
   }
@@ -378,30 +379,44 @@ const PM_TIMELINE = [
 // Section repliable : l'utilisateur ouvre chaque partie de la page s'il le souhaite (fermé par défaut).
 // `id` : ancre de la rubrique. Un bouton de l'en-tête (ou un lien « /executif#ministeres »)
 // l'ouvre avant d'y faire défiler — sinon on arrivait sur une rubrique fermée.
+// Accordéon (29/10/2026) : ouvrir une rubrique referme les autres, et son titre revient en haut
+// de l'écran — les rubriques ouvertes l'une sous l'autre faisaient défiler sans fin. Le sommaire
+// collant ouvre aussi la rubrique visée (ancre → hashchange).
 function CollapsibleSection({ id, title, subtitle, icon, color = "from-amber-500 to-orange-500", defaultOpen = false, children }: { id?: string; title: string; subtitle?: string; icon?: React.ReactNode; color?: string; defaultOpen?: boolean; children: React.ReactNode }) {
   const [open, setOpen] = useState(defaultOpen);
+  const ouvrirSeule = (defiler: boolean) => {
+    setOpen(true);
+    window.dispatchEvent(new CustomEvent("executif:accordeon", { detail: id }));
+    if (defiler && id) setTimeout(() => document.getElementById(id)?.scrollIntoView({ block: "start", behavior: "smooth" }), 320);
+  };
   useEffect(() => {
     if (!id) return;
-    const arrivee = window.location.hash === `#${id}` ? setTimeout(() => {
-      setOpen(true);
-      setTimeout(() => document.getElementById(id)?.scrollIntoView({ block: "start" }), 300);
-    }, 0) : undefined;
-    const ouvrir = (e: Event) => { if ((e as CustomEvent).detail === id) setOpen(true); };
+    const arrivee = window.location.hash === `#${id}` ? setTimeout(() => ouvrirSeule(true), 0) : undefined;
+    const ouvrir = (e: Event) => { if ((e as CustomEvent).detail === id) ouvrirSeule(false); };
+    const fermer = (e: Event) => { if ((e as CustomEvent).detail !== id) setOpen(false); };
+    const ancre = () => { if (window.location.hash === `#${id}`) ouvrirSeule(true); };
     window.addEventListener("executif:ouvrir", ouvrir);
-    return () => { clearTimeout(arrivee); window.removeEventListener("executif:ouvrir", ouvrir); };
+    window.addEventListener("executif:accordeon", fermer);
+    window.addEventListener("hashchange", ancre);
+    return () => {
+      clearTimeout(arrivee);
+      window.removeEventListener("executif:ouvrir", ouvrir);
+      window.removeEventListener("executif:accordeon", fermer);
+      window.removeEventListener("hashchange", ancre);
+    };
   }, [id]);
   return (
-    <section id={id} className="scroll-mt-24 overflow-hidden rounded-[2rem] border border-border bg-card">
+    <section id={id} className="scroll-mt-32 overflow-hidden rounded-[2rem] border border-border bg-card">
       <button
-        onClick={() => setOpen(o => !o)}
-        className="flex w-full items-center justify-between gap-4 p-6 text-left transition-colors hover:bg-muted"
+        onClick={() => (open ? setOpen(false) : ouvrirSeule(true))}
+        className="flex w-full items-center justify-between gap-4 p-4 text-left transition-colors hover:bg-muted md:p-6"
         aria-expanded={open}
       >
         <div className="flex items-center gap-4">
           {icon && <span className={`flex h-12 w-12 shrink-0 items-center justify-center rounded-2xl bg-gradient-to-br ${color} text-white shadow-md`}>{icon}</span>}{" "}
           <div>
-            <h2 className="text-2xl font-staatliches uppercase tracking-tight text-foreground">{title}</h2>{" "}
-            {subtitle && <p className="mt-0.5 text-sm text-muted-foreground">{subtitle}</p>}
+            <h2 className="text-xl font-staatliches uppercase leading-tight tracking-tight text-foreground md:text-2xl">{title}</h2>{" "}
+            {subtitle && <p className="mt-0.5 text-[13px] leading-snug text-muted-foreground md:text-sm">{subtitle}</p>}
           </div>
         </div>{" "}
         <span className={`flex h-9 w-9 shrink-0 items-center justify-center rounded-full bg-slate-100 dark:bg-slate-500/10 text-muted-foreground transition-transform ${open ? "rotate-180" : ""}`}>
@@ -457,12 +472,12 @@ export default function ExecutifPage() {
               const apiMin = { ministerName: `${member.first_name} ${member.last_name}`.trim(), role: member.title, ministryName: member.ministry_name || '' };
               const apiNameNorm = normalizeName(apiMin.ministerName);
               const profilePhoto = photoByNorm.get(apiNameNorm);
-              const bioMatch = (ministersBios as any[]).find(b => 
-                normalizeName(b.name) === apiNameNorm || 
+              const bioMatch = (ministersBios as any[]).find(b =>
+                normalizeName(b.name) === apiNameNorm ||
                 (b.name.toLowerCase().includes('moutchou') && apiMin.ministerName.toLowerCase().includes('moutchou'))
               );
               const hardcoded = (MINISTERS as any[]).find(m => m.name && normalizeName(m.name) === apiNameNorm);
-              
+
               // Priorité : photo Wikimedia fiable (minister_profiles) > bios/hardcodé > avatar.
               let finalImage = `https://ui-avatars.com/api/?name=${encodeURIComponent(apiMin.ministerName)}&background=0D8ABC&color=fff&size=512`;
               if (profilePhoto) {
@@ -483,7 +498,7 @@ export default function ExecutifPage() {
                  objectPosition: hardcoded?.objectPosition
               }
            });
-           
+
            // Trier pour mettre le Premier ministre en premier
            const sorted = mapped.sort((a: any, b: any) => {
              if (a.role.toLowerCase().includes('premier ministre')) return -1;
@@ -502,8 +517,8 @@ export default function ExecutifPage() {
     loadGov();
   }, []);
 
-  const filteredMinisters = dynamicMinisters.filter(m => 
-    m.name.toLowerCase().includes(search.toLowerCase()) || 
+  const filteredMinisters = dynamicMinisters.filter(m =>
+    m.name.toLowerCase().includes(search.toLowerCase()) ||
     m.ministry.toLowerCase().includes(search.toLowerCase()) ||
     m.role.toLowerCase().includes(search.toLowerCase())
   );
@@ -512,6 +527,11 @@ export default function ExecutifPage() {
     <main className="min-h-screen bg-muted pb-20">
       {/* 1. EN-TÊTE : Matignon, portrait du chef de l'exécutif, rubriques de la page. */}
       <ExecutifHero
+        descriptionCourte="Ce que le gouvernement annonce, le budget 2027, et qui décide quoi au sommet de l'État."
+        actions={[
+          { label: "Ce que le gouvernement annonce", href: "#annonces" },
+          { label: "Le budget 2027 décrypté", href: "#budget-2027" },
+        ]}
         description="Ce que le gouvernement annonce, analysé chaque jour ; le Président, le Premier ministre et les ministres : qui décide, ce que prévoit le budget, l'état des finances publiques, les décrets publiés au Journal officiel et le suivi des engagements."
         links={[
           { label: "Annonces", id: "annonces" },
@@ -526,22 +546,32 @@ export default function ExecutifPage() {
         ]}
       />{" "}
 
-      <div className="container mx-auto max-w-7xl px-4 mt-12">
+      <SectionNav accent="bg-orange-600" items={[
+        { id: "annonces", label: "Annonces" },
+        { id: "budget-2027", label: "Budget 2027" },
+        { id: "president", label: "Président" },
+        { id: "ministeres", label: "Ministères" },
+        { id: "decrets", label: "Décrets" },
+        { id: "dette", label: "Dette" },
+        { id: "programme", label: "Programme" },
+        { id: "videos", label: "Vidéos" },
+      ]} />{" "}
+      <div className="container mx-auto max-w-7xl px-4 mt-6 md:mt-12">
         {/* EN TÊTE — ce que le gouvernement annonce, analysé plusieurs fois par jour. */}
-        <div id="annonces" className="mb-8 scroll-mt-24">
+        <div id="annonces" className="mb-8 scroll-mt-32">
           <AnnoncesGouvernement />
         </div>{" "}
         {/* À LA UNE — le projet de budget de l'année en cours d'examen */}
-        <div id="budget-2027" className="mb-8 scroll-mt-24">
+        <div id="budget-2027" className="mb-8 scroll-mt-32">
           <PlfALaUne />
         </div>{" "}
         <div className="grid grid-cols-1 lg:grid-cols-12 gap-8">
-          
+
           {/* MAIN CONTENT AREA */}
           <div className="lg:col-span-8 space-y-6">
 
             {/* PRÉSIDENT DE LA RÉPUBLIQUE — chef de l'exécutif, donc en tête */}
-            <CollapsibleSection id="president" title="Le Président de la République" subtitle="Chef de l'exécutif : rôle, agenda et actualité" icon={<Landmark size={22} />} color="from-blue-600 to-indigo-700" defaultOpen>
+            <CollapsibleSection id="president" title="Le Président de la République" subtitle="Chef de l'exécutif : rôle, agenda et actualité" icon={<Landmark size={22} />} color="from-blue-600 to-indigo-700">
               <PresidentSection photoUrl={photoBySlug['emmanuel-macron']} />
             </CollapsibleSection>
 
@@ -608,17 +638,17 @@ export default function ExecutifPage() {
 
           {/* SIDEBAR - BUDGETS & DECREES */}
           <div className="lg:col-span-4 space-y-8">
-            
+
             {/* CALENDAR CTA - CONTEXTUAL ACCESS */}
             <Link href="/calendrier" className="group block">
-              <div className="bg-gradient-to-br from-amber-500 to-orange-600 p-8 rounded-[2.5rem] text-white shadow-xl shadow-amber-500/20 relative overflow-hidden transition-all duration-500 hover:scale-[1.02] active:scale-[0.98]">
+              <div className="bg-gradient-to-br from-amber-500 to-orange-600 p-5 md:p-8 rounded-[2rem] md:rounded-[2.5rem] text-white shadow-xl shadow-amber-500/20 relative overflow-hidden transition-all duration-500 hover:scale-[1.02] active:scale-[0.98]">
                 <CalendarDays className="absolute -bottom-6 -right-6 w-32 h-32 text-white/10 -rotate-12 group-hover:rotate-0 transition-transform duration-700" />{" "}
-                <div className="relative z-10 space-y-4">
-                   <div className="w-10 h-10 bg-white/20 rounded-xl flex items-center justify-center backdrop-blur-md">
+                <div className="relative z-10 space-y-2 md:space-y-4">
+                   <div className="hidden w-10 h-10 bg-white/20 rounded-xl items-center justify-center backdrop-blur-md md:flex">
                      <CalendarDays size={20} />
                    </div>{" "}
                    <h3 className="text-2xl font-staatliches uppercase tracking-tight leading-none">
-                     Agenda du <br /> Gouvernement
+                     Agenda du <br className="hidden md:block" /> Gouvernement
                    </h3>{" "}
                    <p className="text-amber-50 text-xs font-medium leading-relaxed opacity-80">
                      Suivez les déplacements, conseils des ministres et auditions en direct.
@@ -631,12 +661,13 @@ export default function ExecutifPage() {
             </Link>{" "}
 
             {/* BUDGET CARD */}
-            <motion.div 
+            <motion.div
               initial={{ opacity: 0, x: 20 }}
               whileInView={{ opacity: 1, x: 0 }}
-              className="bg-card p-8 rounded-[2.5rem] border border-border shadow-xl shadow-slate-200/20"
+              viewport={{ once: true }}
+              className="bg-card p-5 md:p-8 rounded-[2rem] md:rounded-[2.5rem] border border-border shadow-xl shadow-slate-200/20"
             >
-              <div className="flex items-center justify-between mb-8">
+              <div className="flex items-center justify-between mb-5 md:mb-8">
                 <div className="space-y-1">
                   <h3 className="text-xl font-bold text-foreground">Budgets de l'État</h3>{" "}
                   <p className="text-[10px] text-muted-foreground font-black uppercase tracking-widest">PLF 2026 · missions (officiel)</p>
@@ -646,10 +677,10 @@ export default function ExecutifPage() {
                 </div>
               </div>{" "}
 
-              {/* Hover Explanation Box - Moved to top */}
-              <div className="mb-8 min-h-[90px] flex items-center justify-center bg-muted rounded-3xl p-4 border border-border">
+              {/* Encadré au survol : sans objet au doigt, donc réservé à l'ordinateur. */}
+              <div className="mb-8 min-h-[90px] hidden md:flex items-center justify-center bg-muted rounded-3xl p-4 border border-border">
                 {hoveredBudget ? (
-                  <motion.div 
+                  <motion.div
                     initial={{ opacity: 0, scale: 0.95 }}
                     animate={{ opacity: 1, scale: 1 }}
                     className="w-full"
@@ -669,11 +700,12 @@ export default function ExecutifPage() {
               </div>{" "}
 
               <div className="relative">
-                <div className="space-y-6 max-h-[420px] overflow-y-auto pr-4 custom-scrollbar scroll-smooth">
+                {/* Sur téléphone : les cinq plus gros budgets, sans défilement imbriqué ; le détail est sur /executif/budget. */}
+                <div className="space-y-4 md:space-y-6 md:max-h-[420px] md:overflow-y-auto md:pr-4 custom-scrollbar scroll-smooth">
                   {budgets.map((item, idx) => (
-                    <div 
-                      key={idx} 
-                      className="group/item relative space-y-2 cursor-help"
+                    <div
+                      key={idx}
+                      className={`group/item relative space-y-2 cursor-help ${idx >= 5 ? "hidden md:block" : ""}`}
                       onMouseEnter={() => setHoveredBudget(item)}
                       onMouseLeave={() => setHoveredBudget(null)}
                     >
@@ -681,9 +713,9 @@ export default function ExecutifPage() {
                         <span className="text-[11px] font-bold text-muted-foreground leading-tight pr-4">{item.label}</span>{" "}
                         <span className="text-xs font-black text-foreground whitespace-nowrap">{item.amount} Md€</span>
                       </div>{" "}
-                      
+
                       <div className="h-2 bg-slate-100 dark:bg-slate-500/10 rounded-full overflow-hidden">
-                        <motion.div 
+                        <motion.div
                           initial={{ width: 0 }}
                           whileInView={{ width: `${(item.amount / (budgets[0]?.amount || item.amount)) * 100}%` }}
                           transition={{ duration: 1.5, delay: 0.1 }}
@@ -693,16 +725,16 @@ export default function ExecutifPage() {
                     </div>
                   ))}
                 </div>{" "}
-                
+
                 {/* Scroll Indicator */}
-                <div className="absolute -bottom-4 left-1/2 -translate-x-1/2 flex flex-col items-center gap-1 opacity-50 animate-bounce pointer-events-none">
+                <div className="absolute -bottom-4 left-1/2 -translate-x-1/2 hidden md:flex flex-col items-center gap-1 opacity-50 animate-bounce pointer-events-none">
                    <span className="text-[8px] font-black uppercase text-slate-400">Scrollez pour voir plus</span>{" "}
                    <ChevronDown size={12} className="text-muted-foreground" />
                 </div>
               </div>{" "}
 
-              <div className="flex justify-center mt-8 w-full">
-                <AwardBadge 
+              <div className="flex justify-center mt-6 md:mt-8 w-full">
+                <AwardBadge
                   link="/executif/budget"
                   className="w-full"
                 />
@@ -713,13 +745,14 @@ export default function ExecutifPage() {
             <motion.div id="decrets"
               initial={{ opacity: 0, x: 20 }}
               whileInView={{ opacity: 1, x: 0 }}
+              viewport={{ once: true }}
               transition={{ delay: 0.2 }}
-              className="scroll-mt-24 bg-slate-900 p-8 rounded-[2.5rem] text-white shadow-2xl shadow-slate-900/40 relative overflow-hidden"
+              className="scroll-mt-32 bg-slate-900 p-5 md:p-8 rounded-[2rem] md:rounded-[2.5rem] text-white shadow-2xl shadow-slate-900/40 relative overflow-hidden"
             >
               <ScrollText className="absolute -bottom-10 -right-10 w-48 h-48 text-white/5 -rotate-12" />{" "}
-              
+
               <div className="relative z-10">
-                <div className="flex items-center justify-between mb-8">
+                <div className="flex items-center justify-between mb-5 md:mb-8">
                   <div className="space-y-1">
                     <h3 className="text-xl font-bold">Derniers Décrets</h3>{" "}
                     <p className="text-[10px] text-white/40 font-black uppercase tracking-widest">Journal Officiel</p>
@@ -732,11 +765,11 @@ export default function ExecutifPage() {
                 <div className="space-y-3">
                   {decrees.length === 0 ? (
                     <p className="text-xs text-white/40 italic py-4">Chargement des derniers décrets…</p>
-                  ) : decrees.map((decree) => (
+                  ) : decrees.map((decree, idx) => (
                     <button
                       key={decree.jorf_id}
                       onClick={() => setOpenDecree(decree)}
-                      className="w-full text-left p-4 rounded-2xl bg-white/5 border border-white/10 hover:bg-white/10 transition-colors cursor-pointer group flex flex-col gap-1"
+                      className={`w-full text-left p-4 rounded-2xl bg-white/5 border border-white/10 hover:bg-white/10 transition-colors cursor-pointer group flex-col gap-1 ${idx >= 3 ? "hidden md:flex" : "flex"}`}
                     >
                       <div className="flex justify-between items-center">
                         <span className="text-[8px] font-black uppercase tracking-widest text-blue-400">{decree.decree_type}</span>{" "}
@@ -749,11 +782,11 @@ export default function ExecutifPage() {
                   ))}
                 </div>{" "}
 
-                <a 
+                <a
                   href="https://www.legifrance.gouv.fr/jorf/jo"
                   target="_blank"
                   rel="noopener noreferrer"
-                  className="w-full mt-8 py-4 bg-white/10 rounded-2xl text-[9px] font-black uppercase tracking-widest hover:bg-white/20 transition-all flex items-center justify-center gap-2"
+                  className="w-full mt-5 md:mt-8 py-4 bg-white/10 rounded-2xl text-[9px] font-black uppercase tracking-widest hover:bg-white/20 transition-all flex items-center justify-center gap-2"
                 >
                   Consulter Legifrance <ArrowRight size={14} />
                 </a>

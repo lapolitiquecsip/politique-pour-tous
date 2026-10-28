@@ -630,7 +630,8 @@ const MOIS = ["janvier", "février", "mars", "avril", "mai", "juin", "juillet", 
 const jourEnClair = (j: string) => { const d = new Date(`${j}T12:00:00Z`); return `${JOURS[d.getUTCDay()]} ${d.getUTCDate()} ${MOIS[d.getUTCMonth()]}`; };
 
 /** Au-delà, Gmail coupe le message (« Message tronqué ») : les suivantes passent en liste. */
-const FICHES_MAX = 15;
+// Avec les deux prompts, une fiche pèse ~8 Ko : 11 fiches restent sous la coupure de Gmail.
+const FICHES_MAX = 11;
 
 function recapitulatif(jour: string, idees: any[], aSurveiller: any[]): { sujet: string; html: string; texte: string } {
   const quand = jourEnClair(jour);
@@ -835,7 +836,7 @@ Deno.serve(async (req) => {
       .in("statut", ["pret", "a_preparer", "a_envoyer", "envoye"]).order("importance", { ascending: false }).limit(FICHES_MAX);
     const { sujet, html, texte } = recapitulatif(jour, idees ?? [], []);
     if (params.get("envoyer") === "1") await envoyer(`[Essai] ${sujet}`, html, texte);
-    return Response.json({ jour, idees: idees?.length ?? 0, ko: Math.round(html.length / 1024), envoye: params.get("envoyer") === "1" });
+    return Response.json({ jour, idees: idees?.length ?? 0, ko: Math.round(html.length / 1024), envoye: params.get("envoyer") === "1", ...(params.get("voir") === "1" ? { texte } : {}) });
   }
   if (params.get("recap") === "1") {
     const lancer = recap(db, params.get("force") === "1")

@@ -18,10 +18,11 @@ const GROUP_LABELS: Record<string, string> = {
   PO840056: "Non-inscrits (NI)",
 };
 
-/** Renvoie le nom lisible d'un groupe : le nom fourni s'il existe, sinon la
- *  correspondance connue du code d'organe, sinon le code brut en dernier recours. */
+/** Renvoie le nom lisible d'un groupe : la correspondance vérifiée du code d'organe d'abord
+ *  (le collecteur a longtemps écrit des noms décalés — le RN étiqueté « LFI-NFP »…), sinon
+ *  le nom fourni, sinon le code brut en dernier recours. */
 export function groupLabel(code?: string | null, name?: string | null): string {
-  if (name && name.trim()) return name.trim();
   if (code && GROUP_LABELS[code]) return GROUP_LABELS[code];
+  if (name && name.trim()) return name.trim();
   return code || "Groupe";
 }

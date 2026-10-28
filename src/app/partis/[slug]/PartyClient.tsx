@@ -15,6 +15,7 @@ import {
   TrendingUp, HeartHandshake, ChevronLeft, ChevronDown, Loader2, ArrowRight, ExternalLink, Coins, Scale
 } from "lucide-react";
 import { api } from "@/lib/api";
+import VotesDuGroupe from "@/components/partis/VotesDuGroupe";
 
 type Party = {
   slug: string; name: string; abbrev: string | null; color: string | null;
@@ -323,6 +324,9 @@ export default function PartyClient({ params }: { params: Promise<{ slug: string
                 </div>
           )}
         </section>{" "}
+
+        {/* Les votes de son groupe à l'Assemblée (ancre #votes, menu « Partis » de la page Assemblée). */}
+        <VotesDuGroupe slug={slug} />{" "}
 
         {/* Candidat·e·s à la présidentielle */}
         {members.candidates.length > 0 && (

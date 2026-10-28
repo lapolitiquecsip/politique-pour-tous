@@ -1978,6 +1978,25 @@ export const api = {
     return data;
   },
 
+  // Votes d'un groupe de l'Assemblée, du plus récent au plus ancien (fiche d'un parti, #votes).
+  // « textes » : votes sur l'ensemble d'un texte ; sinon tous les scrutins, amendements compris.
+  // Le dossier législatif (lien vers la loi) vient de scrutin_navette.
+  getVotesDuGroupe: async ({ page = 0, parPage = 20, textes = true, recherche = "" }: { page?: number; parPage?: number; textes?: boolean; recherche?: string }) => {
+    let q = supabase.from('scrutins')
+      .select('id, date_scrutin, title, objet, resultat, group_results', { count: 'exact' })
+      .eq('institution', 'AN')
+      .order('date_scrutin', { ascending: false }).order('numero', { ascending: false })
+      .range(page * parPage, page * parPage + parPage - 1);
+    if (textes) q = q.eq('type', 'LOI').ilike('title', "l'ensemble%");
+    const r = recherche.replace(/[,()*%\\]/g, ' ').trim();
+    if (r) q = q.or(`objet.ilike.%${r}%,title.ilike.%${r}%`);
+    const { data, count, error } = await q;
+    if (error || !data) return { votes: [], total: 0 };
+    const { data: nav } = await supabase.from('scrutin_navette').select('scrutin_id, dossier_id').in('scrutin_id', data.map((x: any) => x.id));
+    const dossier = new Map((nav || []).map((n: any) => [n.scrutin_id, n.dossier_id]));
+    return { votes: data.map((x: any) => ({ ...x, dossier_id: dossier.get(x.id) || null })), total: count ?? 0 };
+  },
+
   // Votes CLÉS = votes solennels « sur l'ensemble » d'un texte à l'AN, tagués par enjeu (conf ≥ 0.7).
   // Chaque vote porte le résultat PAR GROUPE (group_results). Base commune du « scorecard » d'un parti
   // (comment son groupe vote par enjeu) et de la vue Enjeux (par thème, comment chaque groupe a voté).

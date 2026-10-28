@@ -5,6 +5,7 @@ import { motion, AnimatePresence } from "framer-motion";
 import SwipeArrow from "@/components/ui/SwipeArrow";
 import { CheckCircle2, XCircle, X, ExternalLink, Loader2, ArrowRight, Landmark, Info, HelpCircle, FileText, Target, AlertTriangle, GitBranch, Pencil, CalendarClock } from "lucide-react";
 import { api } from "@/lib/api";
+import { groupLabel } from "@/lib/legislative-groups";
 import DragScroller from "@/components/ui/DragScroller";
 import AnalyseApprofondie from "@/components/lois/AnalyseApprofondie";
 
@@ -221,7 +222,7 @@ export default function AdoptedTextsFeed() {
                   <div className="mt-3 space-y-2.5">
                     {(open.group_results || []).slice().sort((a: any, b: any) => (b.total || 0) - (a.total || 0)).map((g: any) => (
                       <div key={g.group_id} className="flex items-center gap-3">
-                        <span className="w-32 shrink-0 truncate text-sm font-bold text-slate-700 dark:text-slate-200" title={g.group_label}>{g.group_label}</span>{" "}
+                        <span className="w-32 shrink-0 truncate text-sm font-bold text-slate-700 dark:text-slate-200" title={groupLabel(g.group_id, g.group_label)}>{groupLabel(g.group_id, g.group_label)}</span>{" "}
                         <VoteBar pour={g.pour} contre={g.contre} abst={g.abstention} className="flex-1" />{" "}
                         <span className="w-24 shrink-0 text-right text-[11px] font-bold tabular-nums">
                           <span className="text-emerald-700 dark:text-emerald-400">{g.pour}</span> · <span className="text-rose-700 dark:text-rose-400">{g.contre}</span> · <span className="text-muted-foreground">{g.abstention}</span>

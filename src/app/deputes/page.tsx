@@ -9,6 +9,7 @@ import VideoFeed from "@/components/executif/VideoFeed";
 import CommissionTracker from "@/components/commissions/CommissionTracker";
 import PresidentPhoto from "@/components/shared/PresidentPhoto";
 import SectionNav from "@/components/lois/SectionNav";
+import PartisMenu from "@/components/lois/PartisMenu";
 import Link from "next/link";
 import { ChevronRight } from "lucide-react";
 
@@ -68,7 +69,7 @@ export default async function DeputesPage() {
         { id: "composition", label: "Composition" },
         { id: "commissions", label: "Commissions" },
         { id: "videos", label: "Vidéos" },
-      ]} />{" "}
+      ]} extra={<PartisMenu />} />{" "}
       <section id="membres" className="scroll-mt-32">
         <MemberFinderIntro role="député" roleShort="député" accent="text-emerald-700 dark:text-emerald-400" />
         <Suspense fallback={<div className="h-64 flex items-center justify-center">Chargement...</div>}>

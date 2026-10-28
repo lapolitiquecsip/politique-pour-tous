@@ -8,7 +8,8 @@ import { useEffect, useRef, useState } from "react";
  * téléphone, il remplace les six boutons empilés du hero : on sait toujours où l'on est,
  * et chaque partie est à un geste.
  */
-export default function SectionNav({ items, accent = "bg-emerald-600" }: { items: { id: string; label: string }[]; accent?: string }) {
+// extra : un bouton épinglé à droite, hors du défilement (ex. « Partis » sur la page Assemblée).
+export default function SectionNav({ items, accent = "bg-emerald-600", extra }: { items: { id: string; label: string }[]; accent?: string; extra?: React.ReactNode }) {
   const [actif, setActif] = useState(items[0]?.id);
   const barre = useRef<HTMLDivElement>(null);
 
@@ -31,13 +32,16 @@ export default function SectionNav({ items, accent = "bg-emerald-600" }: { items
 
   return (
     <nav aria-label="Sommaire de la page" className="sticky top-16 z-30 border-b border-border bg-card/90 backdrop-blur-md dark:border-slate-800 dark:bg-slate-950/90">
-      <div ref={barre} className="mx-auto flex max-w-6xl gap-1.5 overflow-x-auto px-3 py-2 [scrollbar-width:none] md:justify-center [&::-webkit-scrollbar]:hidden">
+      <div className="mx-auto flex max-w-6xl items-center">
+      <div ref={barre} className="flex min-w-0 flex-1 gap-1.5 overflow-x-auto px-3 py-2 [scrollbar-width:none] md:justify-center [&::-webkit-scrollbar]:hidden">
         {items.map(i => (
           <a key={i.id} href={`#${i.id}`} data-section={i.id} aria-current={actif === i.id ? "true" : undefined}
             className={`flex min-h-[40px] shrink-0 items-center rounded-full px-3.5 text-[13px] font-bold transition-colors ${actif === i.id ? `${accent} text-white shadow-sm` : "text-muted-foreground hover:bg-muted hover:text-foreground"}`}>
             {i.label}
           </a>
         ))}
+      </div>
+      {extra && <div className="shrink-0 border-l border-border py-2 pl-2 pr-3 dark:border-slate-800">{extra}</div>}
       </div>
     </nav>
   );

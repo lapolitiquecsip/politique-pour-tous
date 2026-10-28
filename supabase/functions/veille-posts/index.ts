@@ -521,6 +521,68 @@ function chiffresAVerifier(brief: Brief, faits: string): string[] {
   return [...new Set(nombres(tout).filter(n => !connus.has(n)))].slice(0, 12);
 }
 
+/* ─────────────────────── Les prompts pour ChatGPT ───────────────────────
+ * Demande de l'user (28/10/2026) : pour chaque idée, un prompt prêt à coller dans ChatGPT,
+ * qui contient tout le contenu nécessaire au post et rien de technique. Deux niveaux :
+ * Instagram court (l'essentiel pour un carrousel), LinkedIn détaillé (contexte, angles,
+ * vigilance). La matière vient des FAITS du site (vérifiés) ; le brouillon IA n'apporte que
+ * l'accroche, l'enjeu et les angles — ses chiffres non attestés ne passent pas dans le prompt.
+ */
+const extrait = (s: unknown, n: number) => {
+  const t = String(s ?? "").replace(/[ \t]+/g, " ").replace(/\n{3,}/g, "\n\n").trim();
+  return t.length <= n ? t : `${t.slice(0, t.lastIndexOf(" ", n))}…`;
+};
+const dateEnClair = (d?: string | null) => {
+  if (!d) return null;
+  const x = new Date(d);
+  return isNaN(x.getTime()) ? null : `${x.getUTCDate()} ${MOIS[x.getUTCMonth()]} ${x.getUTCFullYear()}`;
+};
+
+function promptInstagram(p: any): string {
+  const b: Brief | null = p.brief;
+  return [
+    `Rédige un carrousel Instagram pour « La Politique C'est Simple », un média qui explique la politique française simplement, sans prendre parti.`,
+    ``,
+    `Sujet : ${b?.accroche || p.titre}`,
+    b?.pourquoi ? `Pourquoi ça intéresse nos abonnés : ${b.pourquoi}` : null,
+    dateEnClair(p.date_objet) ? `Date : ${dateEnClair(p.date_objet)}` : null,
+    ``,
+    `Les informations à utiliser (n'ajoute aucun chiffre, nom ou date qui n'y figure pas) :`,
+    extrait(p.faits, 900),
+    ``,
+    `Ce que j'attends :`,
+    `- 6 slides. Slide 1 : une accroche de 10 mots maximum qui donne envie de faire défiler. Slides 2 à 5 : une idée par slide, 25 mots maximum, avec le chiffre ou le fait le plus parlant. Slide 6 : « Tout comprendre : lien en bio » et une invitation à s'abonner.`,
+    `- Une légende de 400 caractères maximum, puis 6 à 8 hashtags.`,
+    `- Ton : clair, neutre, compréhensible par un lycéen. Pas d'opinion, pas de caricature.`,
+    b?.visuel ? `- Idée de visuel : ${b.visuel}` : null,
+  ].filter(l => l !== null).join("\n");
+}
+
+function promptLinkedIn(p: any): string {
+  const b: Brief | null = p.brief;
+  const vigilance = (b?.prudence ?? []).filter(Boolean);
+  return [
+    `Rédige un post LinkedIn pour « La Politique C'est Simple » (lapolitiquecestsimple.fr), un média qui explique la politique française de façon factuelle et non partisane, pour un public de professionnels, d'élus, de journalistes et de citoyens engagés.`,
+    ``,
+    `Sujet : ${b?.accroche || p.titre}`,
+    dateEnClair(p.date_objet) ? `Date : ${dateEnClair(p.date_objet)}` : null,
+    b?.pourquoi ? `Pourquoi c'est important : ${b.pourquoi}` : null,
+    ``,
+    `Les faits (n'utilise que ceux-ci : aucun chiffre, nom, date ou citation en plus) :`,
+    extrait(p.faits, 2200),
+    b?.angles?.length ? `\nAngles possibles (choisis le plus fort, ou combine-les) :\n${b.angles.map(a => `- ${a}`).join("\n")}` : null,
+    vigilance.length ? `\nPoints de vigilance :\n${vigilance.map(v => `- ${v}`).join("\n")}` : null,
+    ``,
+    `Ce que j'attends :`,
+    `- 900 à 1 300 caractères. Une première ligne forte qui donne envie de cliquer sur « voir plus ».`,
+    `- Des paragraphes courts, aérés, avec les chiffres précis et ce que ça change concrètement.`,
+    `- Une conclusion qui ouvre la discussion par une question posée aux lecteurs.`,
+    p.lien_site ? `- En fin de post, renvoie vers ${p.lien_site} pour le détail.` : `- En fin de post, renvoie vers lapolitiquecestsimple.fr.`,
+    `- 3 à 5 hashtags.`,
+    `- Ton : expert, factuel, neutre. Aucune prise de position partisane.`,
+  ].filter(l => l !== null).join("\n");
+}
+
 /* ─────────────────────────────── L'e-mail ─────────────────────────────── */
 
 const esc = (s: unknown) => String(s ?? "").replace(/[&<>"]/g, c => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;" }[c] as string));
@@ -533,6 +595,9 @@ function bloc(titre: string, contenu: string, fond = "#ffffff") {
 <div style="font:800 10px/1 ${POLICE};letter-spacing:.14em;text-transform:uppercase;color:#64748b;margin-bottom:8px">${titre}</div>${contenu}</div>`;
 }
 const para = (t: string) => `<p style="margin:0 0 6px;font:15px/1.55 ${POLICE};color:#0f172a">${esc(t).replace(/\n/g, "<br>")}</p>`;
+// Un prompt : texte brut dans une zone bordée, retours à la ligne gardés, facile à sélectionner.
+const prompt = (t: string) => `<div style="margin:0;padding:12px 14px;background:#ffffff;border:1px dashed #94a3b8;border-radius:10px;white-space:pre-wrap;word-break:break-word;font:14px/1.5 ${POLICE};color:#0f172a">${esc(t)}</div>
+<p style="margin:6px 0 0;font:12px/1.4 ${POLICE};color:#64748b">Appui long → Tout sélectionner → Copier, puis coller dans ChatGPT.</p>`;
 const liste = (l: string[], ordonnee = false) => {
   const balise = ordonnee ? "ol" : "ul";
   return `<${balise} style="margin:0;padding-left:20px;font:15px/1.55 ${POLICE};color:#0f172a">${l.map(x => `<li style="margin-bottom:4px">${esc(x)}</li>`).join("")}</${balise}>`;
@@ -553,19 +618,10 @@ function fiche(p: any, n: number): string {
   }
   parties.push(bloc("L'info", para(p.titre) + (b?.faits_cles?.length ? liste(b.faits_cles) : para(court(p.faits, 1200)))
     + (liens ? `<p style="margin:8px 0 0;font:14px ${POLICE}">${liens}</p>` : "")));
-  if (b) {
-    parties.push(bloc("Pourquoi ça mérite un post", para(b.pourquoi)));
-    if (b.angles?.length) parties.push(bloc("Angles possibles", liste(b.angles)));
-    if (b.instagram?.slides?.length) {
-      parties.push(bloc("Instagram · carrousel", liste(b.instagram.slides, true)
-        + `<div style="height:8px"></div>` + para(`Légende : ${b.instagram.legende ?? ""}`) + para(hashtags(b.instagram.hashtags)), "#fdf4ff"));
-    }
-    if (b.linkedin?.texte) parties.push(bloc("LinkedIn · texte prêt à adapter", para(b.linkedin.texte) + para(hashtags(b.linkedin.hashtags)), "#eff6ff"));
-    if (b.visuel) parties.push(bloc("Idée de visuel", para(b.visuel)));
-    if (b.prudence?.length) parties.push(bloc("Points de vigilance", liste(b.prudence), "#f8fafc"));
-  } else {
-    parties.push(bloc("Brouillon", para("Le brouillon n'a pas pu être rédigé (modèle gratuit indisponible) : les faits ci-dessus restent utilisables.")));
-  }
+  if (b?.pourquoi) parties.push(bloc("Pourquoi ça mérite un post", para(b.pourquoi)));
+  // Les deux prompts, prêts à copier-coller dans ChatGPT (angles, visuel et vigilance y sont repris).
+  parties.push(bloc("Prompt ChatGPT · Instagram (carrousel)", prompt(promptInstagram(p)), "#fdf4ff"));
+  parties.push(bloc("Prompt ChatGPT · LinkedIn (post détaillé)", prompt(promptLinkedIn(p)), "#eff6ff"));
   return `<tr><td style="padding:0 20px 18px"><div style="background:#ffffff;border-radius:16px;padding:20px 20px 16px;border:1px solid #e7e2d6">${parties.join("")}</div></td></tr>`;
 }
 
@@ -597,14 +653,14 @@ function recapitulatif(jour: string, idees: any[], aSurveiller: any[]): { sujet:
   if (aSurveiller.length) {
     lignes.push(`<tr><td style="padding:0 20px 18px">${bloc("À surveiller (3/5 : pas encore un post, peut le devenir)", liste(aSurveiller.map(p => `${p.titre} — ${p.source}`)), "#f8fafc")}</td></tr>`);
   }
-  lignes.push(`<tr><td style="padding:4px 22px 28px;font:12px/1.5 ${POLICE};color:#94a3b8">Veille automatique de La Politique C'est Simple. Les brouillons sont rédigés par IA à partir des seuls faits du site : relisez avant de publier.</td></tr>`);
+  lignes.push(`<tr><td style="padding:4px 22px 28px;font:12px/1.5 ${POLICE};color:#94a3b8">Veille automatique de La Politique C'est Simple. Chaque prompt ne contient que les faits relevés sur le site : relisez le post de ChatGPT avant de publier.</td></tr>`);
   const html = `<!doctype html><html lang="fr"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"></head>
 <body style="margin:0;background:#f4f1ea"><table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="background:#f4f1ea;padding:20px 0"><tr><td align="center">
 <table role="presentation" width="660" cellpadding="0" cellspacing="0" style="max-width:660px;width:100%">${lignes.join("")}</table></td></tr></table></body></html>`;
   const texte = [`Idées de post du ${quand}`, "", ...idees.map((p, i) => {
     const b: Brief | null = p.brief;
     return [`${i + 1}. ${b?.accroche || p.titre} (${p.source}, ${etoiles(p.importance ?? SEUIL)})`, p.url ?? "",
-      b ? `Instagram :\n${(b.instagram?.slides ?? []).map((x, k) => `  ${k + 1}. ${x}`).join("\n")}\nLinkedIn :\n${b.linkedin?.texte ?? ""}` : court(p.faits, 600), ""].join("\n");
+      `--- Prompt ChatGPT · Instagram ---\n${promptInstagram(p)}`, `--- Prompt ChatGPT · LinkedIn ---\n${promptLinkedIn(p)}`, ""].join("\n\n");
   })].join("\n");
   return {
     sujet: idees.length ? `📮 ${idees.length} idée${idees.length > 1 ? "s" : ""} de post · ${quand}` : `📮 Récap du ${quand} · rien de marquant`,
@@ -772,6 +828,15 @@ Deno.serve(async (req) => {
   const db = createClient(Deno.env.get("SUPABASE_URL")!, Deno.env.get("SUPABASE_SERVICE_ROLE_KEY")!, { auth: { persistSession: false } });
   const params = new URL(req.url).searchParams;
   if (params.get("essai") === "1") return Response.json(await passage(db, true));
+  // Récap d'un jour donné, envoyé tel quel pour voir la mise en forme ; l'envoi du soir n'en sait rien.
+  if (params.get("essai_recap") === "1") {
+    const jour = params.get("jour") || jourParis();
+    const { data: idees } = await db.from("veille_posts").select("*").eq("jour", jour).gte("importance", SEUIL)
+      .in("statut", ["pret", "a_preparer", "a_envoyer", "envoye"]).order("importance", { ascending: false }).limit(FICHES_MAX);
+    const { sujet, html, texte } = recapitulatif(jour, idees ?? [], []);
+    if (params.get("envoyer") === "1") await envoyer(`[Essai] ${sujet}`, html, texte);
+    return Response.json({ jour, idees: idees?.length ?? 0, ko: Math.round(html.length / 1024), envoye: params.get("envoyer") === "1" });
+  }
   if (params.get("recap") === "1") {
     const lancer = recap(db, params.get("force") === "1")
       .then(r => { console.log(`[veille-posts] ${r}`); return r; })

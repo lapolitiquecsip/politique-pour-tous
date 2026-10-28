@@ -17,6 +17,7 @@ export default function HeroActions({ actions }: { actions: { label: string; hre
     if (champ) window.scrollTo({ top: champ.getBoundingClientRect().top + window.scrollY - 140, behavior: "smooth" });
     else document.getElementById(href.slice(1))?.scrollIntoView({ behavior: "smooth", block: "start" });
     history.replaceState(null, "", href);
+    window.dispatchEvent(new HashChangeEvent("hashchange"));
     // Le champ prend le focus une fois arrivé : sans attendre, le clavier ouvrirait sur le hero.
     if (focus) setTimeout(() => document.getElementById(focus)?.focus({ preventScroll: true }), 650);
   };
@@ -25,7 +26,7 @@ export default function HeroActions({ actions }: { actions: { label: string; hre
       {actions.map((a, i) => (
         <a key={a.href} href={a.href} onClick={e => aller(e, a.href, a.focus)}
           className={i === 0
-            ? "inline-flex min-h-[52px] items-center justify-center gap-2 rounded-2xl bg-white px-6 text-[15px] font-black text-slate-950 shadow-lg shadow-black/30 transition hover:bg-emerald-50 active:scale-[0.98]"
+            ? "inline-flex min-h-[52px] items-center justify-center gap-2 rounded-2xl bg-white px-6 text-[15px] font-black text-slate-950 shadow-lg shadow-black/30 transition hover:bg-slate-100 active:scale-[0.98]"
             : "inline-flex min-h-[52px] items-center justify-center gap-2 rounded-2xl border border-white/25 bg-white/10 px-6 text-[15px] font-bold text-white backdrop-blur transition hover:bg-white/20 active:scale-[0.98]"}>
           {i === 0 && <Search size={18} />}{a.label}{i > 0 && <ArrowRight size={17} />}
         </a>

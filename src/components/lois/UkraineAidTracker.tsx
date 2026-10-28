@@ -68,8 +68,8 @@ export default function UkraineAidTracker() {
         </div>
       </div>{" "}
 
-      {/* Chiffre France + répartition */}
-      <div className="mt-6 grid gap-3 md:grid-cols-[1.1fr_1.4fr]">
+      {/* Chiffre France (toujours visible) ; répartition, comparaison et usage dans le détail. */}
+      <div className={`mt-6 grid gap-3 ${open ? "md:grid-cols-[1.1fr_1.4fr]" : ""}`}>
         <div className="rounded-3xl border border-[#FFCC00]/25 bg-gradient-to-br from-[#FFCC00]/10 to-transparent p-6">
           <p className="text-[11px] font-black uppercase tracking-widest text-blue-200/60">Total donné par la France</p>{" "}
           <p className="mt-1 font-staatliches text-5xl text-white">{md(aid.france.total)} <span className="text-2xl text-blue-200/70">Md€</span></p>{" "}
@@ -77,7 +77,7 @@ export default function UkraineAidTracker() {
             {aid.france.rank}ᵉ donateur mondial
           </p>
         </div>{" "}
-        <div className="rounded-3xl border border-white/10 bg-white/[0.03] p-6">
+        {open && <div className="rounded-3xl border border-white/10 bg-white/[0.03] p-6">
           <p className="text-[11px] font-black uppercase tracking-widest text-blue-200/60">Répartition</p>{" "}
           <div className="mt-3 space-y-3">
             {TYPES.map(({ key, label, color, Icon }) => {
@@ -93,11 +93,17 @@ export default function UkraineAidTracker() {
               );
             })}
           </div>
-        </div>
+        </div>}
       </div>{" "}
 
+      <button onClick={() => setOpen(o => !o)} aria-expanded={open}
+        className="mt-3 flex min-h-[48px] w-full items-center justify-center gap-2 rounded-2xl bg-white/[0.06] px-4 text-[14px] font-black text-white ring-1 ring-white/15 transition hover:bg-white/10 sm:w-auto">
+        {open ? "Refermer le détail" : "Voir le détail : à quoi ça sert, la France face aux autres"}
+        <ChevronDown size={17} className={`shrink-0 transition-transform ${open ? "rotate-180" : ""}`} />
+      </button>{" "}
+
       {/* Comparaison des donateurs (barres empilées par type) */}
-      <div className="mt-3 rounded-3xl border border-white/10 bg-white/[0.03] p-6">
+      {open && <div className="mt-3 rounded-3xl border border-white/10 bg-white/[0.03] p-6">
         <div className="flex flex-wrap items-center justify-between gap-3">
           <p className="text-sm font-black uppercase tracking-widest text-white">La France face aux autres</p>{" "}
           <div className="flex flex-wrap gap-3">
@@ -127,14 +133,11 @@ export default function UkraineAidTracker() {
           <Info size={13} className="mt-0.5 shrink-0" />{" "}
           Aide bilatérale <strong className="font-bold text-blue-100">allouée</strong> (effectivement engagée), cumulée depuis janvier 2022. « Union européenne » = aide des institutions de l'UE, en plus de celle des États membres.
         </p>
-      </div>{" "}
+      </div>}{" "}
 
       {/* À quoi ont servi les milliards français */}
-      <div className="mt-3 rounded-3xl border border-white/10 bg-white/[0.03] p-6">
-        <button onClick={() => setOpen(o => !o)} className="flex w-full items-center justify-between gap-4 text-left" aria-expanded={open}>
-          <p className="text-sm font-black uppercase tracking-widest text-white">À quoi ont servi les {md(aid.france.total)} milliards français ?</p>{" "}
-          <span className={`flex h-8 w-8 shrink-0 items-center justify-center rounded-full bg-white/5 text-blue-100 transition-transform ${open ? "rotate-180" : ""}`}><ChevronDown size={18} /></span>
-        </button>{" "}
+      {open && <div className="mt-3 rounded-3xl border border-white/10 bg-white/[0.03] p-6">
+        <p className="text-sm font-black uppercase tracking-widest text-white">À quoi ont servi les {md(aid.france.total)} milliards français ?</p>{" "}
         {open && (
           <div className="mt-5 grid gap-3 md:grid-cols-3">
             {FRANCE_USAGE.map((u) => {
@@ -162,7 +165,7 @@ export default function UkraineAidTracker() {
             Détail des livraisons : sources officielles (Ministère des Armées). Les montants par type proviennent de l'Institut de Kiel.
           </p>
         )}
-      </div>{" "}
+      </div>}{" "}
 
       {/* Source */}
       <div className="mt-4 flex flex-col gap-2 sm:flex-row sm:items-center sm:justify-between">

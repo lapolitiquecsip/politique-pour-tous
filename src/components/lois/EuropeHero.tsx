@@ -2,6 +2,7 @@
 // couleurs du drapeau de l'UE (bleu #003399 + or #FFCC00) avec la couronne de 12 étoiles.
 
 import { MousePointerClick, ChevronDown } from "lucide-react";
+import HeroActions from "./HeroActions";
 
 function StarCrown() {
   // 12 étoiles d'or disposées en arc au-dessus du titre.
@@ -24,10 +25,14 @@ function StarCrown() {
   );
 }
 
-export default function EuropeHero({ description, links }: { description: string; links: { label: string; href: string }[] }) {
+// Avec `actions` (comme ChamberHero) : une phrase sur téléphone, deux boutons, et le sommaire
+// passe dans la barre collante (SectionNav) sous le hero.
+export default function EuropeHero({ description, descriptionCourte, actions, links }: {
+  description: string; descriptionCourte?: string; actions?: { label: string; href: string; focus?: string }[]; links: { label: string; href: string }[];
+}) {
   const img = `${process.env.NEXT_PUBLIC_BASE_PATH || ""}/images/parlement_europeen_premium.jpg`;
   return (
-    <div className="relative overflow-hidden bg-[#00133a] px-4 pt-28 pb-16 text-center">
+    <div className={`relative overflow-hidden bg-[#00133a] px-4 text-center ${actions ? "pt-24 pb-10 md:pt-28 md:pb-16" : "pt-28 pb-16"}`}>
       {/* Photo de l'hémicycle du Parlement européen + voile bleu pour la lisibilité. */}
       <div className="absolute inset-0 bg-cover bg-center" style={{ backgroundImage: `url(${img})` }} />{" "}
       <div className="absolute inset-0 bg-gradient-to-b from-[#00133a]/86 via-[#00133a]/72 to-[#00133a]/95" />{" "}
@@ -39,12 +44,20 @@ export default function EuropeHero({ description, links }: { description: string
         <span className="inline-flex items-center gap-2 rounded-full border border-[#FFCC00]/30 bg-white/5 px-4 py-1.5 text-[11px] font-black uppercase tracking-[0.25em] text-[#FFD54A]">
           🇪🇺 Parlement européen · 27 pays
         </span>{" "}
-        <h1 className="mt-6 font-staatliches text-7xl uppercase leading-none tracking-tight text-white md:text-9xl">
+        <h1 className={`${actions ? "mt-5 text-6xl" : "mt-6 text-7xl"} font-staatliches uppercase leading-none tracking-tight text-white md:text-9xl`}>
           EUR<span className="bg-gradient-to-b from-[#FFE07A] to-[#FFCC00] bg-clip-text text-transparent">O</span>PE
         </h1>{" "}
         <div className="mx-auto mt-6 h-1.5 w-44 rounded-full bg-gradient-to-r from-[#003399] via-[#3b6fd4] to-[#FFCC00]" />{" "}
-        <p className="mx-auto mt-6 max-w-2xl text-[15px] leading-relaxed text-white/70 md:text-base">{description}</p>{" "}
-        <div className="mt-8">
+        {descriptionCourte ? (
+          <>
+            <p className="mx-auto mt-5 max-w-md text-[16px] leading-relaxed text-white/85 md:hidden">{descriptionCourte}</p>
+            <p className="mx-auto mt-6 hidden max-w-2xl text-base leading-relaxed text-white/70 md:block">{description}</p>
+          </>
+        ) : (
+          <p className="mx-auto mt-6 max-w-2xl text-[15px] leading-relaxed text-white/70 md:text-base">{description}</p>
+        )}{" "}
+        {actions && <HeroActions actions={actions} />}{" "}
+        <div className={actions ? "hidden" : "mt-8"}>
           <p className="mb-3 inline-flex items-center gap-2 rounded-full bg-[#FFCC00]/15 px-3.5 py-1.5 text-[10px] font-black uppercase tracking-[0.2em] text-[#FFD54A] ring-1 ring-[#FFCC00]/25">
             <MousePointerClick size={13} /> {links.length} sections · cliquez pour y accéder
           </p>{" "}

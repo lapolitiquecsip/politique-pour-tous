@@ -16,9 +16,17 @@ export default function SectionNav({ items, accent = "bg-emerald-600", extra }: 
   // La section dont le haut a passé le premier tiers de l'écran est la section en cours.
   useEffect(() => {
     const sections = items.map(i => document.getElementById(i.id)).filter(Boolean) as HTMLElement[];
+    // L'observateur ne signale que les sections qui CHANGENT : on garde l'ensemble des visibles
+    // et on retient la plus haute — sinon, sur grand écran où plusieurs sections courtes sont
+    // visibles à la fois, la dernière arrivée l'emportait sur celle qu'on vient d'ouvrir.
+    const visibles = new Set<HTMLElement>();
     const obs = new IntersectionObserver(entrees => {
-      const visibles = entrees.filter(e => e.isIntersecting).sort((a, b) => a.boundingClientRect.top - b.boundingClientRect.top);
-      if (visibles[0]) setActif(visibles[0].target.id);
+      for (const e of entrees) {
+        if (e.isIntersecting) visibles.add(e.target as HTMLElement);
+        else visibles.delete(e.target as HTMLElement);
+      }
+      const premiere = [...visibles].sort((a, b) => a.getBoundingClientRect().top - b.getBoundingClientRect().top)[0];
+      if (premiere) setActif(premiere.id);
     }, { rootMargin: "-120px 0px -60% 0px" });
     sections.forEach(s => obs.observe(s));
     return () => obs.disconnect();

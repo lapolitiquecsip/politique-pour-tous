@@ -35,6 +35,12 @@ export default function EuFranceDecisionsFeed() {
   const [filter, setFilter] = useState<string>("Tout");
   const [limit, setLimit] = useState(20);
   const [open, setOpen] = useState(false);
+  useEffect(() => {
+    const verifier = () => { if (window.location.hash === "#decisions") setOpen(true); };
+    verifier();
+    window.addEventListener("hashchange", verifier);
+    return () => window.removeEventListener("hashchange", verifier);
+  }, []);
 
   useEffect(() => {
     let active = true;

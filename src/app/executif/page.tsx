@@ -4,7 +4,6 @@ import { motion } from "framer-motion";
 import {
   ShieldCheck,
   Users,
-  CircleDollarSign,
   ScrollText,
   ChevronRight,
   ChevronDown,
@@ -34,7 +33,6 @@ import VideoFeed from "@/components/executif/VideoFeed";
 import PublicFinancePanel from "@/components/executif/PublicFinancePanel";
 import PlfALaUne from "@/components/executif/plf/PlfALaUne";
 import { cleanMinistryName } from "@/lib/executif-utils";
-import { AwardBadge } from "@/components/ui/award-badge";
 import ExecutifHero from "@/components/executif/ExecutifHero";
 import AnnoncesGouvernement from "@/components/executif/AnnoncesGouvernement";
 import SectionNav from "@/components/lois/SectionNav";
@@ -338,32 +336,6 @@ export const BUDGETS = [
   }
 ];
 
-// Couleur + explication par mission budgétaire officielle (PLF).
-const BUDGET_META: Array<[RegExp, string, string]> = [
-  [/pension/i, "bg-slate-500", "Retraites des fonctionnaires de l'État (militaires, enseignants, agents publics)."],
-  [/enseignement scolaire/i, "bg-blue-500", "Écoles, collèges et lycées : salaires des enseignants et fonctionnement."],
-  [/défense/i, "bg-red-500", "Forces armées, dissuasion nucléaire, équipements et opérations."],
-  [/collectivit|psrct/i, "bg-indigo-500", "Prélèvement sur recettes reversé aux collectivités territoriales."],
-  [/solidarit/i, "bg-pink-500", "RSA, prime d'activité, aides aux personnes handicapées."],
-  [/travail|emploi/i, "bg-cyan-500", "France Travail, apprentissage, politiques de l'emploi."],
-  [/recherche|enseignement sup/i, "bg-violet-500", "Universités, CNRS, bourses étudiantes."],
-  [/cohésion des territoires/i, "bg-teal-500", "Logement, aides au logement (APL), politique de la ville."],
-  [/écologie|mobilité/i, "bg-green-500", "Transition écologique, transports, énergie."],
-  [/psrue|union européenne/i, "bg-amber-500", "Contribution de la France au budget de l'Union européenne."],
-  [/sécurité/i, "bg-purple-500", "Police, gendarmerie, sécurité civile."],
-  [/économie/i, "bg-orange-500", "Soutien aux entreprises, INSEE, douanes."],
-  [/justice/i, "bg-slate-600", "Tribunaux, prisons, protection judiciaire de la jeunesse."],
-  [/santé/i, "bg-rose-400", "Budget de l'État pour la santé (agences, prévention). L'essentiel des dépenses de santé passe par la Sécurité sociale / Assurance maladie (~250 Md€), qui n'est PAS dans le budget de l'État."],
-  [/engagements financiers|dette/i, "bg-orange-600", "Intérêts de la dette publique de l'État."],
-  [/finances publiques/i, "bg-gray-500", "Administration fiscale (DGFiP) et gestion des comptes publics."],
-  [/outre-mer/i, "bg-sky-500", "Politiques spécifiques aux territoires d'outre-mer."],
-  [/agriculture/i, "bg-lime-600", "Agriculture, alimentation, forêt et affaires rurales."],
-  [/remboursement|dégrèvement/i, "bg-slate-400", "Sommes que l'État rend aux contribuables (trop-perçu, crédits d'impôt)."],
-];
-function budgetMeta(name: string): { color: string; desc: string } {
-  for (const [re, color, desc] of BUDGET_META) if (re.test(name)) return { color, desc };
-  return { color: "bg-slate-400", desc: "Mission budgétaire de l'État (source : PLF, ministère de l'Économie)." };
-}
 
 // Premiers ministres depuis l'élection d'E. Macron (2017). Cliquables → fiche détaillée.
 const PM_TIMELINE = [
@@ -434,13 +406,11 @@ export default function ExecutifPage() {
   const [search, setSearch] = useState("");
   const [govtNews, setGovtNews] = useState<any[]>([]);
   const [loadingNews, setLoadingNews] = useState(true);
-  const [hoveredBudget, setHoveredBudget] = useState<any>(null);
 
   const [dynamicMinisters, setDynamicMinisters] = useState<any[]>([]);
   const [decrees, setDecrees] = useState<any[]>([]);
   // Photos des Premiers ministres, indexées par slug (fiches minister_profiles).
   const [photoBySlug, setPhotoBySlug] = useState<Record<string, string>>({});
-  const [budgets, setBudgets] = useState<any[]>([]);
   const [openDecree, setOpenDecree] = useState<any>(null);
 
   useEffect(() => {
@@ -451,14 +421,6 @@ export default function ExecutifPage() {
     }
     loadNews();
     api.getDecrees(6).then(setDecrees).catch(() => {});
-    // Budgets officiels vérifiés (PLF, RPC) — remplace les valeurs codées en dur.
-    api.getStateBudget(2026).then((res: any) => {
-      const missions = Array.isArray(res) ? res : (res?.missions || []);
-      const mapped = missions
-        .map((m: any) => ({ label: m.name, amount: Math.round((m.amount / 1e9) * 100) / 100, ...budgetMeta(m.name || "") }))
-        .sort((a: any, b: any) => b.amount - a.amount);
-      setBudgets(mapped);
-    }).catch(() => {});
   }, []);
 
   useEffect(() => {
@@ -636,7 +598,7 @@ export default function ExecutifPage() {
 
           </div>{" "}
 
-          {/* SIDEBAR - BUDGETS & DECREES */}
+          {/* SIDEBAR - AGENDA & DECREES */}
           <div className="lg:col-span-4 space-y-8">
 
             {/* CALENDAR CTA - CONTEXTUAL ACCESS */}
@@ -659,87 +621,6 @@ export default function ExecutifPage() {
                 </div>
               </div>
             </Link>{" "}
-
-            {/* BUDGET CARD */}
-            <motion.div
-              initial={{ opacity: 0, x: 20 }}
-              whileInView={{ opacity: 1, x: 0 }}
-              viewport={{ once: true }}
-              className="bg-card p-5 md:p-8 rounded-[2rem] md:rounded-[2.5rem] border border-border shadow-xl shadow-slate-200/20"
-            >
-              <div className="flex items-center justify-between mb-5 md:mb-8">
-                <div className="space-y-1">
-                  <h3 className="text-xl font-bold text-foreground">Budgets de l'État</h3>{" "}
-                  <p className="text-[10px] text-muted-foreground font-black uppercase tracking-widest">PLF 2026 · missions (officiel)</p>
-                </div>{" "}
-                <div className="w-12 h-12 bg-emerald-50 dark:bg-emerald-500/10 text-emerald-600 dark:text-emerald-300 rounded-2xl flex items-center justify-center">
-                  <CircleDollarSign size={24} />
-                </div>
-              </div>{" "}
-
-              {/* Encadré au survol : sans objet au doigt, donc réservé à l'ordinateur. */}
-              <div className="mb-8 min-h-[90px] hidden md:flex items-center justify-center bg-muted rounded-3xl p-4 border border-border">
-                {hoveredBudget ? (
-                  <motion.div
-                    initial={{ opacity: 0, scale: 0.95 }}
-                    animate={{ opacity: 1, scale: 1 }}
-                    className="w-full"
-                  >
-                    <p className="text-[9px] font-black text-blue-700 dark:text-blue-400 uppercase tracking-widest mb-1">Détails de la mission</p>{" "}
-                    <p className="text-[11px] text-muted-foreground leading-relaxed italic font-medium">
-                      {hoveredBudget.desc}
-                    </p>
-                  </motion.div>
-                ) : (
-                  <div className="text-center">
-                    <p className="text-[9px] text-muted-foreground font-bold uppercase tracking-widest animate-pulse">
-                      Survolez un budget pour <br /> voir son explication
-                    </p>
-                  </div>
-                )}
-              </div>{" "}
-
-              <div className="relative">
-                {/* Sur téléphone : les cinq plus gros budgets, sans défilement imbriqué ; le détail est sur /executif/budget. */}
-                <div className="space-y-4 md:space-y-6 md:max-h-[420px] md:overflow-y-auto md:pr-4 custom-scrollbar scroll-smooth">
-                  {budgets.map((item, idx) => (
-                    <div
-                      key={idx}
-                      className={`group/item relative space-y-2 cursor-help ${idx >= 5 ? "hidden md:block" : ""}`}
-                      onMouseEnter={() => setHoveredBudget(item)}
-                      onMouseLeave={() => setHoveredBudget(null)}
-                    >
-                      <div className="flex justify-between items-end">
-                        <span className="text-[11px] font-bold text-muted-foreground leading-tight pr-4">{item.label}</span>{" "}
-                        <span className="text-xs font-black text-foreground whitespace-nowrap">{item.amount} Md€</span>
-                      </div>{" "}
-
-                      <div className="h-2 bg-slate-100 dark:bg-slate-500/10 rounded-full overflow-hidden">
-                        <motion.div
-                          initial={{ width: 0 }}
-                          whileInView={{ width: `${(item.amount / (budgets[0]?.amount || item.amount)) * 100}%` }}
-                          transition={{ duration: 1.5, delay: 0.1 }}
-                          className={`h-full ${item.color} rounded-full`}
-                        />
-                      </div>{" "}
-                    </div>
-                  ))}
-                </div>{" "}
-
-                {/* Scroll Indicator */}
-                <div className="absolute -bottom-4 left-1/2 -translate-x-1/2 hidden md:flex flex-col items-center gap-1 opacity-50 animate-bounce pointer-events-none">
-                   <span className="text-[8px] font-black uppercase text-slate-400">Scrollez pour voir plus</span>{" "}
-                   <ChevronDown size={12} className="text-muted-foreground" />
-                </div>
-              </div>{" "}
-
-              <div className="flex justify-center mt-6 md:mt-8 w-full">
-                <AwardBadge
-                  link="/executif/budget"
-                  className="w-full"
-                />
-              </div>
-            </motion.div>{" "}
 
             {/* DECREES CARD - SIMPLE LIST */}
             <motion.div id="decrets"

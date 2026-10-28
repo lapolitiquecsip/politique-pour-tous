@@ -1,6 +1,6 @@
 "use client";
 
-import { ArrowRight, ChevronRight, LayoutGrid, Layers, Map as MapIcon, type LucideIcon } from "lucide-react";
+import { ArrowRight, ChevronRight, LayoutGrid, Layers, Map as MapIcon, type LucideIcon, Search } from "lucide-react";
 import Link from "next/link";
 import { departmentPaths } from "@/lib/data/departmentPaths";
 
@@ -57,8 +57,11 @@ function Mairie({ className }: { className?: string }) {
   );
 }
 
+// Sur téléphone (28/10/2026) : une phrase, « Trouver ma commune » (ouvre la recherche, clavier
+// compris) et deux boutons côte à côte pour le département et la région. Les grandes cartes
+// « Par où commencer ? » restent sur ordinateur ; les rubriques passent dans le sommaire collant.
 export default function LocalHero({ onEchelon, liens }: {
-  onEchelon: (e: Echelon) => void;
+  onEchelon: (e: Echelon, focus?: boolean) => void;
   liens: { label: string; href: string; Icone: LucideIcon }[];
 }) {
   return (
@@ -104,15 +107,34 @@ export default function LocalHero({ onEchelon, liens }: {
             <span className="inline-block bg-gradient-to-r from-rose-400 via-fuchsia-400 to-rose-300 bg-clip-text pr-[0.12em] italic text-transparent">locale</span>
           </h1>{" "}
           <div className="mx-auto mt-5 h-1.5 w-32 rounded-full bg-gradient-to-r from-rose-600 via-fuchsia-500 to-rose-400 shadow-[0_0_18px_rgba(244,63,94,0.55)] sm:w-44" />{" "}
-          <p className="mx-auto mt-5 max-w-2xl text-[15px] leading-relaxed text-white/80 sm:text-base md:text-lg">
+          <p className="mx-auto mt-5 max-w-md text-[16px] leading-relaxed text-white/85 md:hidden">
+            Votre maire, votre département, votre région : qui décide quoi près de chez vous, et avec quel budget.
+          </p>
+          <p className="mx-auto mt-5 hidden max-w-2xl text-base leading-relaxed text-white/80 md:block md:text-lg">
             Qui décide quoi près de chez vous ? Retrouvez votre maire, votre département et votre région, leurs élus,
             leurs budgets et ce qu&apos;ils financent avec vos impôts locaux.
           </p>
         </div>{" "}
 
+        {/* Téléphone : l'action principale, puis les deux autres échelons. */}
+        <div className="mx-auto mt-7 max-w-md space-y-2.5 md:hidden">
+          <button type="button" onClick={() => onEchelon("commune", true)}
+            className="flex min-h-[52px] w-full items-center justify-center gap-2 rounded-2xl bg-white px-6 text-[15px] font-black text-slate-950 shadow-lg shadow-black/30 transition active:scale-[0.98]">
+            <Search size={18} /> Trouver ma commune
+          </button>
+          <div className="grid grid-cols-2 gap-2.5">
+            {(["departement", "region"] as const).map(id => (
+              <button key={id} type="button" onClick={() => onEchelon(id)}
+                className="flex min-h-[48px] items-center justify-center gap-1.5 rounded-2xl border border-white/25 bg-white/10 px-3 text-[14px] font-bold text-white backdrop-blur transition active:scale-[0.98]">
+                {id === "departement" ? "Mon département" : "Ma région"} <ArrowRight size={15} />
+              </button>
+            ))}
+          </div>
+        </div>{" "}
+
         {/* Par où commencer : choisir son échelon ouvre le bon onglet, plus bas. */}
-        <p className="mt-7 text-center text-[11px] font-black uppercase tracking-[0.2em] text-white/55 md:mt-9">Par où commencer ?</p>{" "}
-        <div className="mx-auto mt-3 grid max-w-4xl gap-3 md:grid-cols-3">
+        <p className="mt-7 hidden text-center text-[11px] font-black uppercase tracking-[0.2em] text-white/55 md:mt-9 md:block">Par où commencer ?</p>{" "}
+        <div className="mx-auto mt-3 hidden max-w-4xl gap-3 md:grid md:grid-cols-3">
           {ECHELONS.map(({ id, titre, nombre, exemples, Icone, ton, anneau }) => (
             <button
               key={id}
@@ -137,7 +159,7 @@ export default function LocalHero({ onEchelon, liens }: {
         </div>{" "}
 
         {/* Les autres rubriques, en boutons arrondis comme sur les autres pages. */}
-        <nav aria-label="Rubriques de la page" className="relative mx-auto mt-6 max-w-4xl">
+        <nav aria-label="Rubriques de la page" className="relative mx-auto mt-6 hidden max-w-4xl md:block">
           <div className="-mx-4 flex snap-x gap-2 overflow-x-auto px-4 pb-1 [scrollbar-width:none] sm:mx-0 sm:flex-wrap sm:justify-center sm:overflow-visible sm:px-0 [&::-webkit-scrollbar]:hidden">
             {liens.map(({ label, href, Icone }) => {
               const classes = "inline-flex shrink-0 snap-start items-center gap-2 whitespace-nowrap rounded-full border border-white/20 bg-black/25 px-4 py-2.5 text-[11px] font-black uppercase tracking-[0.14em] text-white/85 backdrop-blur-sm transition hover:border-rose-400 hover:bg-rose-500/15 hover:text-rose-200 focus-visible:outline focus-visible:outline-2 focus-visible:outline-rose-400 active:scale-[0.97]";

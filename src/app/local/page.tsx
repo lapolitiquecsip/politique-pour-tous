@@ -1,7 +1,7 @@
 "use client";
 
 import { motion, AnimatePresence } from "framer-motion";
-import { 
+import {
   MapPin, Users, Building2, TrendingUp, Search, ArrowRight, Vote,
   History, Building, ChevronRight, Map, Layers, LayoutGrid, Lock, Loader2, Star, Coins, Scale, ShieldCheck
 } from "lucide-react";
@@ -23,6 +23,7 @@ import { REGIONS, DEPARTMENTS } from "@/lib/data/territories";
 import { StaggerTestimonials } from "@/components/ui/stagger-testimonials";
 import { AwardBadge } from "@/components/ui/award-badge";
 import LocalHero from "@/components/local/LocalHero";
+import SectionNav from "@/components/lois/SectionNav";
 
 const getPartyTheme = (party: string) => {
   switch (party) {
@@ -120,7 +121,7 @@ const DepartmentGridCard: React.FC<{
 }> = ({ item, onSelect, isPremium }) => {
   const colorIndex = (item.id.charCodeAt(0) + (item.id.charCodeAt(item.id.length - 1) || 0)) % cardColors.length;
   const theme = cardColors[colorIndex];
-  
+
   // Resolve party theme or fall back to standard color index theme
   const partyTheme = getPartyTheme(item.party);
   const cardTheme = partyTheme.text !== "text-fuchsia-700 dark:text-fuchsia-400" ? partyTheme : {
@@ -144,7 +145,7 @@ const DepartmentGridCard: React.FC<{
       <div className={cn("relative h-36 shrink-0 w-full flex items-center justify-between overflow-hidden border-b border-border px-6", theme.lightBg)}>
         {/* Subtle background graphic */}
         <div className="absolute inset-0 bg-[radial-gradient(circle_at_30%_20%,rgba(255,255,255,0.4),transparent_70%)]" />{" "}
-        
+
         {/* Left column: Text */}
         <div className="relative z-10 max-w-[65%] space-y-1">
           <span className={cn("text-[9px] font-black uppercase tracking-widest px-2.5 py-0.5 rounded-full bg-card border inline-block shadow-sm", theme.text)}>
@@ -157,16 +158,16 @@ const DepartmentGridCard: React.FC<{
         {/* Right column: Geographic Shape */}
         <div className="relative w-20 h-20 shrink-0 flex items-center justify-center rounded-2xl bg-white/90 border border-border/80 shadow-md overflow-hidden p-2 transition-transform hover:scale-105">
           {pathData ? (
-            <svg 
-              viewBox={pathData.viewBox} 
+            <svg
+              viewBox={pathData.viewBox}
               className={cn("w-full h-full drop-shadow-sm opacity-90", theme.text)}
               preserveAspectRatio="xMidYMid meet"
             >
-              <path 
-                d={pathData.d} 
-                fill="currentColor" 
-                stroke="white" 
-                strokeWidth="1.5" 
+              <path
+                d={pathData.d}
+                fill="currentColor"
+                stroke="white"
+                strokeWidth="1.5"
                 strokeLinejoin="round"
               />
             </svg>
@@ -189,7 +190,7 @@ const DepartmentGridCard: React.FC<{
               <p className="font-bold text-foreground text-xs truncate">{item.president}</p>
             </div>
           </div>{" "}
-          
+
           {/* Party row */}
           <div className="flex items-center gap-3">
             <div className={cn("w-9 h-9 rounded-xl flex items-center justify-center shrink-0 bg-muted border border-border text-muted-foreground")}>
@@ -197,7 +198,7 @@ const DepartmentGridCard: React.FC<{
             </div>{" "}
             <div className="min-w-0">
               <p className="text-[8px] font-black uppercase tracking-widest text-slate-400">Parti Majoritaire</p>{" "}
-              <span className={cn("inline-block font-black text-[9px] px-2 py-0.5 rounded-full mt-0.5 border border-border shadow-sm bg-muted text-slate-700 dark:text-slate-200", 
+              <span className={cn("inline-block font-black text-[9px] px-2 py-0.5 rounded-full mt-0.5 border border-border shadow-sm bg-muted text-slate-700 dark:text-slate-200",
                 item.party !== "N/A" && "font-black"
               )}>
                 {item.party}
@@ -211,7 +212,7 @@ const DepartmentGridCard: React.FC<{
           <span className={cn("text-[9px] font-black uppercase tracking-widest transition-colors duration-200", cardTheme.text)}>
             Analyser
           </span>{" "}
-          <div className={cn("w-8 h-8 rounded-full bg-muted flex items-center justify-center text-slate-400 transition-all duration-300", 
+          <div className={cn("w-8 h-8 rounded-full bg-muted flex items-center justify-center text-slate-400 transition-all duration-300",
             "group-hover/btn:bg-rose-600 group-hover/btn:text-white group-hover/btn:scale-110 shadow-sm"
           )}>
             <ChevronRight size={14} />
@@ -221,6 +222,25 @@ const DepartmentGridCard: React.FC<{
     </motion.div>
   );
 };
+
+/** Une région ou un département sur téléphone : une ligne, toute la ligne ouvre la fiche. */
+function LigneTerritoire({ item, onSelect }: { item: any; onSelect: (t: any) => void }) {
+  return (
+    <li>
+      <button type="button" onClick={() => onSelect(item)}
+        className="flex min-h-[64px] w-full items-center gap-3 rounded-2xl border border-border bg-card p-3 text-left shadow-sm transition active:scale-[0.99] dark:bg-slate-900">
+        <span className="flex h-11 w-11 shrink-0 items-center justify-center rounded-xl bg-rose-500/10 text-[12px] font-black text-rose-700 dark:text-rose-300">
+          {item.type === "region" ? <Map size={18} /> : item.id}
+        </span>
+        <span className="min-w-0 flex-1">
+          <span className="block truncate font-bold text-foreground">{item.name}</span>
+          {item.president && <span className="block truncate text-[12px] text-muted-foreground">{item.president}{item.party && item.party !== "N/A" ? ` · ${item.party}` : ""}</span>}
+        </span>
+        <ChevronRight size={18} className="shrink-0 text-muted-foreground" />
+      </button>
+    </li>
+  );
+}
 
 // Featured cities shown by default (Top 20)
 const FEATURED_CITIES = [
@@ -311,7 +331,7 @@ function LocalPoliticsContent() {
   const [activeTab, setActiveTab] = useState<"region" | "departement" | "commune">("commune");
   const [search, setSearch] = useState("");
   const [visibleCount, setVisibleCount] = useState(12);
-  
+
   useEffect(() => {
     setVisibleCount(12);
   }, [search, activeTab]);
@@ -339,14 +359,17 @@ function LocalPoliticsContent() {
   // Sur ordinateur, le curseur est déjà dans le champ ; pas sur téléphone, où le clavier
   // surgirait et masquerait la moitié de l'écran.
   const champRecherche = useRef<HTMLInputElement>(null);
-  const choisirEchelon = (e: "commune" | "departement" | "region") => {
+  const choisirEchelon = (e: "commune" | "departement" | "region", focus = false) => {
     setActiveTab(e);
     setSearch("");
     setShowDropdown(false);
     if (e !== "commune") setSelectedCommune(null);
     requestAnimationFrame(() => setTimeout(() => {
-      document.getElementById("explorer")?.scrollIntoView({ behavior: "smooth", block: "start" });
-      if (window.matchMedia("(pointer: fine)").matches) champRecherche.current?.focus({ preventScroll: true });
+      const champ = champRecherche.current;
+      // Le champ, sous le sommaire collant : il reste visible au-dessus du clavier.
+      if (champ) window.scrollTo({ top: champ.getBoundingClientRect().top + window.scrollY - 140, behavior: "smooth" });
+      // Clavier : quand on l'a demandé (« Trouver ma commune »), ou d'office sur ordinateur.
+      if (focus || window.matchMedia("(pointer: fine)").matches) setTimeout(() => champ?.focus({ preventScroll: true }), focus ? 600 : 0);
     }, 50));
   };
 
@@ -364,7 +387,7 @@ function LocalPoliticsContent() {
   useEffect(() => {
     const code = searchParams.get('code');
     const type = searchParams.get('type');
-    
+
     if (code && type) {
       if (type === 'commune') {
         setActiveTab('commune');
@@ -418,7 +441,7 @@ function LocalPoliticsContent() {
       } else {
         await api.saveItem(userId, id, type);
       }
-      
+
       // Refresh saved items list
       const updated = await api.getUserSavedItems(userId);
       setSavedItems(updated);
@@ -431,7 +454,7 @@ function LocalPoliticsContent() {
 
   const filteredItems = (() => {
     const s = search.normalize("NFD").replace(/[\u0300-\u036f]/g, "").toLowerCase();
-    
+
     const filterFn = (name: string, president?: string) => {
       const normName = name.normalize("NFD").replace(/[\u0300-\u036f]/g, "").toLowerCase();
       const normPres = president ? president.normalize("NFD").replace(/[\u0300-\u036f]/g, "").toLowerCase() : "";
@@ -465,61 +488,61 @@ function LocalPoliticsContent() {
           { label: "Comparer deux territoires", href: "#comparateur", Icone: Scale },
         ]}
       />{" "}
+      <SectionNav accent="bg-rose-600" items={[
+        { id: "explorer", label: "Mon territoire" },
+        { id: "echeances", label: "Élections" },
+        ...(activeTab === "commune" ? [{ id: "maires", label: "Maires" }] : []),
+        { id: "comparateur", label: "Comparateur" },
+      ]} />{" "}
 
-      <div className="container mx-auto max-w-7xl px-4 mt-12">
-        {/* 1.5 TABS NAVIGATION (GROS PANNEAU) — cible des cartes de l'en-tête */}
-        <div id="explorer" className="mb-16 scroll-mt-24">
-          <div className="bg-card p-2 rounded-[2.5rem] border border-border shadow-2xl shadow-slate-200/50 flex flex-col md:flex-row gap-2">
+      <div className="container mx-auto max-w-7xl px-4 mt-6 md:mt-12">
+        {/* 1.5 L'ÉCHELON : une ligne compacte (le gros panneau empilait trois boutons de 100 px). */}
+        <div id="explorer" className="mb-5 scroll-mt-32 md:mb-10">
+          <div role="tablist" aria-label="Échelon" className="mx-auto grid max-w-3xl grid-cols-3 gap-1 rounded-2xl border border-border bg-card p-1 shadow-sm">
             {[
               // Chaque échelon a SA couleur d'état actif (classes littérales pour Tailwind JIT).
-              { id: "region", label: "La Région", icon: Map, active: "bg-sky-50 dark:bg-sky-500/10 text-sky-700 dark:text-sky-300 shadow-inner", iconOn: "bg-sky-100 dark:bg-sky-500/10", dot: "bg-sky-600" },
+              { id: "commune", label: "La Commune", icon: LayoutGrid, active: "bg-emerald-50 dark:bg-emerald-500/10 text-emerald-700 dark:text-emerald-300 shadow-inner", iconOn: "bg-emerald-100 dark:bg-emerald-500/10", dot: "bg-emerald-600" },
               { id: "departement", label: "Le Département", icon: Layers, active: "bg-rose-50 dark:bg-rose-500/10 text-rose-700 dark:text-rose-300 shadow-inner", iconOn: "bg-rose-100 dark:bg-rose-500/10", dot: "bg-rose-600" },
-              { id: "commune", label: "La Commune", icon: LayoutGrid, active: "bg-emerald-50 dark:bg-emerald-500/10 text-emerald-700 dark:text-emerald-300 shadow-inner", iconOn: "bg-emerald-100 dark:bg-emerald-500/10", dot: "bg-emerald-600" }
+              { id: "region", label: "La Région", icon: Map, active: "bg-sky-50 dark:bg-sky-500/10 text-sky-700 dark:text-sky-300 shadow-inner", iconOn: "bg-sky-100 dark:bg-sky-500/10", dot: "bg-sky-600" },
             ].map((tab) => {
               const isActive = activeTab === tab.id;
               const Icon = tab.icon;
               return (
                 <button
                   key={tab.id}
-                  onClick={() => setActiveTab(tab.id as any)}
-                  className={`
-                    flex-1 flex items-center justify-center gap-4 py-6 px-8 rounded-[2rem] transition-all duration-500 group
-                    ${isActive ? tab.active : "text-muted-foreground hover:text-foreground hover:bg-muted"}
-                  `}
+                  role="tab"
+                  aria-selected={isActive}
+                  onClick={() => { setActiveTab(tab.id as any); setSearch(""); }}
+                  className={`flex min-h-[48px] items-center justify-center gap-1.5 rounded-xl px-1 text-[13px] font-black transition sm:gap-2 sm:text-sm ${isActive ? tab.active : "text-muted-foreground hover:bg-muted hover:text-foreground"}`}
                 >
-                  <div className={`p-3 rounded-2xl transition-colors ${isActive ? tab.iconOn : "bg-slate-100 dark:bg-slate-500/10 group-hover:bg-slate-200"}`}>
-                    <Icon size={24} strokeWidth={isActive ? 2.5 : 2} />
-                  </div>{" "}
-                  <div className="text-left">
-                    <p className="text-[10px] font-black uppercase tracking-widest opacity-80">Échelon</p>{" "}
-                    <p className="text-lg font-staatliches uppercase tracking-wide">{tab.label}</p>
-                  </div>{" "}
-                  {isActive && (
-                    <motion.div layoutId="activeTab" className={`w-1.5 h-1.5 rounded-full ml-2 ${tab.dot}`} />
-                  )}{" "}
+                  <Icon size={17} strokeWidth={isActive ? 2.5 : 2} className="hidden shrink-0 sm:block" />
+                  <span className="truncate">{tab.label.replace(/^(La|Le) /, "")}</span>
                 </button>
               );
             })}
           </div>
         </div>{" "}
 
-        <div className="grid grid-cols-1 lg:grid-cols-12 gap-12">
+        <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 md:gap-12">
           {/* LEFT COL: Search & List */}
-          <div className="lg:col-span-8 space-y-12">
+          <div className="lg:col-span-8 space-y-6 md:space-y-12">
             {/* Search Input */}
             <div className="relative group">
-              <div className="absolute inset-y-0 left-8 flex items-center pointer-events-none text-slate-400 group-focus-within:text-rose-600 transition-colors">
-                <Search size={22} />
+              <div className="absolute inset-y-0 left-4 flex items-center pointer-events-none text-slate-400 group-focus-within:text-rose-600 transition-colors md:left-6">
+                <Search size={20} />
               </div>{" "}
               <input
                 ref={champRecherche}
-                type="text"
+                id="recherche-elu"
+                type="search"
+                enterKeyHint="search"
+                autoComplete="off"
                 placeholder={
-                  activeTab === 'commune' 
-                    ? "Rechercher une ville, un code postal..." 
-                    : activeTab === 'departement' 
-                    ? "Rechercher un département, un président..." 
-                    : "Rechercher une région, un président..."
+                  activeTab === 'commune'
+                    ? "Votre commune ou code postal…"
+                    : activeTab === 'departement'
+                    ? "Un département, un président…"
+                    : "Une région, un président…"
                 }
                 value={search}
                 onChange={(e) => {
@@ -529,9 +552,9 @@ function LocalPoliticsContent() {
                     setShowDropdown(true);
                   }
                 }}
-                className="w-full bg-card border-2 border-border rounded-3xl py-7 pl-20 pr-10 text-xl font-medium text-foreground focus:outline-none focus:border-rose-600/30 focus:bg-rose-50/10 transition-all shadow-xl shadow-slate-200/20"
+                className="w-full bg-card border-2 border-border rounded-2xl py-4 pl-12 pr-4 text-base font-medium text-foreground focus:outline-none focus:border-rose-600/40 transition-all shadow-sm md:rounded-3xl md:py-6 md:pl-16 md:text-xl"
               />
-              
+
               {/* Commune Dropdown */}
               <AnimatePresence>
                 {activeTab === 'commune' && showDropdown && search.length >= 2 && (
@@ -549,7 +572,7 @@ function LocalPoliticsContent() {
                           setSearch("");
                           setShowDropdown(false);
                         }}
-                        className="w-full px-8 py-6 text-left hover:bg-muted border-b border-slate-50 flex items-center justify-between group"
+                        className="w-full px-5 py-4 text-left hover:bg-muted border-b border-border/60 flex items-center justify-between group md:px-8 md:py-6"
                       >
                         <div>
                           <p className="text-lg font-bold text-foreground group-hover:text-rose-600 transition-colors">{c.nom}</p>{" "}
@@ -594,10 +617,10 @@ function LocalPoliticsContent() {
                                 setSelectedCommune({
                                   nom: city.name,
                                   code: city.code,
-                                  population: city.population.endsWith('M') 
-                                    ? Math.round(parseFloat(city.population) * 1000000) 
-                                    : city.population.endsWith('K') 
-                                    ? Math.round(parseFloat(city.population) * 1000) 
+                                  population: city.population.endsWith('M')
+                                    ? Math.round(parseFloat(city.population) * 1000000)
+                                    : city.population.endsWith('K')
+                                    ? Math.round(parseFloat(city.population) * 1000)
                                     : parseInt(city.population),
                                   codesPostaux: [],
                                   departement: { nom: "" },
@@ -637,7 +660,7 @@ function LocalPoliticsContent() {
                     </div>
                   ) : (
                     <div className="flex items-center gap-4">
-                      <button 
+                      <button
                         onClick={() => setSelectedCommune(null)}
                         className="flex items-center gap-2 text-muted-foreground hover:text-rose-600 transition-colors font-black text-[10px] uppercase tracking-widest"
                       >
@@ -651,12 +674,17 @@ function LocalPoliticsContent() {
 
               {/* REGION TAB: Carousel */}
               {activeTab === 'region' && (
-                <div className="w-full py-4">
-                  <StaggerTestimonials 
-                    items={filteredItems.map((item: any) => ({...item, type: 'region'}))} 
-                    onSelect={(t) => setSelectedTerritory(t)} 
-                    isPremium={isPremium}
-                  />
+                <div className="w-full md:py-4">
+                  <ul className="space-y-2 md:hidden">
+                    {filteredItems.map((item: any) => <LigneTerritoire key={item.id} item={{ ...item, type: 'region' }} onSelect={(t) => setSelectedTerritory(t)} />)}
+                  </ul>
+                  <div className="hidden md:block">
+                    <StaggerTestimonials
+                      items={filteredItems.map((item: any) => ({...item, type: 'region'}))}
+                      onSelect={(t) => setSelectedTerritory(t)}
+                      isPremium={isPremium}
+                    />
+                  </div>
                 </div>
               )}{" "}
 
@@ -669,7 +697,10 @@ function LocalPoliticsContent() {
                     </div>
                   ) : (
                     <>
-                      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+                      <ul className="space-y-2 md:hidden">
+                        {filteredItems.slice(0, visibleCount).map((item: any) => <LigneTerritoire key={item.id} item={item} onSelect={(t) => setSelectedTerritory(t)} />)}
+                      </ul>
+                      <div className="hidden md:grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
                         {filteredItems.slice(0, visibleCount).map((item: any) => (
                           <DepartmentGridCard
                             key={item.id}
@@ -679,16 +710,16 @@ function LocalPoliticsContent() {
                           />
                         ))}
                       </div>{" "}
-                      
+
                       {filteredItems.length > visibleCount && (
                         <div className="flex justify-center pt-4">
                           <button
                             onClick={() => setVisibleCount(prev => prev + 12)}
                             className={cn(
-                              "px-8 py-3.5 bg-card border-2 border-border text-slate-700 dark:text-slate-200 font-bold text-xs uppercase tracking-widest rounded-full shadow-md hover:border-rose-600 hover:text-rose-600 transition-all active:scale-95 duration-200 cursor-pointer"
+                              "min-h-[48px] w-full max-w-sm px-8 bg-card border-2 border-border text-slate-700 dark:text-slate-200 font-black text-sm rounded-2xl shadow-sm hover:border-rose-600 hover:text-rose-600 transition-all active:scale-[0.98] duration-200 cursor-pointer"
                             )}
                           >
-                            Charger plus de départements
+                            Voir {Math.min(12, filteredItems.length - visibleCount)} départements de plus
                           </button>
                         </div>
                       )}
@@ -702,14 +733,14 @@ function LocalPoliticsContent() {
           {/* RIGHT COL: Sidebars */}
           <div className="lg:col-span-4 space-y-8">
             {/* Prochaines échéances Card */}
-            <div id="echeances" className="scroll-mt-24 bg-slate-900 rounded-[2.5rem] p-8 text-white relative overflow-hidden">
+            <div id="echeances" className="scroll-mt-32 bg-slate-900 rounded-[2rem] p-6 md:rounded-[2.5rem] md:p-8 text-white relative overflow-hidden">
                <div className="absolute top-0 right-0 w-32 h-32 bg-rose-600/20 blur-3xl rounded-full" />{" "}
                <div className="relative z-10 space-y-8">
                  <div className="flex items-center gap-3">
                    <div className="w-10 h-10 rounded-2xl bg-white/10 flex items-center justify-center"><Vote size={20} className="text-rose-700 dark:text-rose-400" /></div>{" "}
                    <h3 className="text-2xl font-staatliches uppercase tracking-wide">Prochaines échéances</h3>
                  </div>{" "}
-                 
+
                  <div className="space-y-4">
                     {[
                       {
@@ -754,7 +785,7 @@ function LocalPoliticsContent() {
 
             {/* Mayors by Party Panel */}
             {activeTab === 'commune' && (
-              <div className="bg-card dark:bg-slate-900 rounded-[2.5rem] border border-border dark:border-slate-800 p-8 space-y-8">
+              <div id="maires" className="scroll-mt-32 bg-card dark:bg-slate-900 rounded-[2rem] border border-border dark:border-slate-800 p-6 space-y-6 md:rounded-[2.5rem] md:p-8 md:space-y-8">
                 <div className="flex items-center justify-between">
                   <div className="space-y-1">
                     <h3 className="text-2xl font-staatliches uppercase tracking-wide text-foreground dark:text-white">Maires par Étiquette</h3>{" "}
@@ -764,7 +795,7 @@ function LocalPoliticsContent() {
                     <Building size={22} />
                   </div>
                 </div>{" "}
-                
+
                 <div className="space-y-5 max-h-[500px] overflow-y-auto pr-2 custom-scrollbar">
                   {[
                     { party: "Sans Étiquette", count: 22856, diff: -161, color: "bg-slate-400", total: 34965 },
@@ -790,8 +821,8 @@ function LocalPoliticsContent() {
                         <div className="flex items-center gap-2">
                           <span className="font-extrabold text-slate-950 dark:text-white">{stat.count.toLocaleString('fr-FR')}</span>{" "}
                           <span className={`inline-flex items-center text-[10px] px-1.5 py-0.5 rounded font-black tracking-tight ${
-                            stat.diff >= 0 
-                              ? "bg-emerald-50 dark:bg-emerald-950/30 text-emerald-700 dark:text-emerald-400 border border-emerald-100 dark:border-emerald-900/30" 
+                            stat.diff >= 0
+                              ? "bg-emerald-50 dark:bg-emerald-950/30 text-emerald-700 dark:text-emerald-400 border border-emerald-100 dark:border-emerald-900/30"
                               : "bg-rose-50 dark:bg-rose-950/30 text-rose-700 dark:text-rose-400 border border-rose-100 dark:border-rose-900/30"
                           }`}>
                             {stat.diff >= 0 ? `+${stat.diff}` : stat.diff}
@@ -799,7 +830,7 @@ function LocalPoliticsContent() {
                         </div>
                       </div>{" "}
                       <div className="h-2.5 w-full bg-muted dark:bg-slate-800/80 rounded-full overflow-hidden">
-                        <motion.div 
+                        <motion.div
                           initial={{ width: 0 }}
                           animate={{ width: `${(stat.count / stat.total) * 100}%` }}
                           transition={{ duration: 1, delay: 0.2 + (idx * 0.05) }}
@@ -821,12 +852,12 @@ function LocalPoliticsContent() {
                 </div>
               </div>
             )}{" "}
-            
+
             {/* Premium Teaser / Comparator Access */}
             {(() => {
               const config = teaserConfigs[activeTab];
               return (
-                <div id="comparateur" className="scroll-mt-24 bg-gradient-to-br from-amber-400 to-orange-500 rounded-[2.5rem] p-8 text-foreground space-y-6 shadow-xl shadow-orange-200">
+                <div id="comparateur" className="scroll-mt-32 bg-gradient-to-br from-amber-400 to-orange-500 rounded-[2rem] p-6 md:rounded-[2.5rem] md:p-8 text-foreground space-y-6 shadow-xl shadow-orange-200">
                   {pLoading ? (
                     <div className="flex flex-col items-center justify-center py-12 gap-4">
                       <Loader2 className="animate-spin text-foreground" size={32} />{" "}
@@ -851,7 +882,7 @@ function LocalPoliticsContent() {
                       <div className="space-y-2">
                         <h3 className="text-3xl font-staatliches uppercase tracking-wide leading-none">{config.title}</h3>{" "}
                         <p className="text-xs font-semibold opacity-95 leading-relaxed">
-                          {isPremium 
+                          {isPremium
                             ? "Comparez deux territoires indicateur par indicateur, à partir des chiffres officiels datés."
                             : config.description}
                         </p>
@@ -916,7 +947,7 @@ function LocalPoliticsContent() {
                       </div>{" "}
 
                       {isPremium ? (
-                        <Link 
+                        <Link
                           href={`/local/comparateur/app?type=${activeTab === 'departement' ? 'department' : activeTab}`}
                           className="w-full py-4 bg-slate-900 hover:bg-slate-800 text-white rounded-2xl font-staatliches uppercase tracking-wider text-sm flex items-center justify-center gap-2 transition-colors shadow-lg active:scale-[0.98] duration-150"
                         >
@@ -924,7 +955,7 @@ function LocalPoliticsContent() {
                           <ArrowRight size={16} />
                         </Link>
                       ) : (
-                        <AwardBadge 
+                        <AwardBadge
                           titleText="Découvrir l'offre Premium"
                           subtitleText="Accès Premium"
                           link={getPremiumUrl()}
@@ -940,11 +971,11 @@ function LocalPoliticsContent() {
         </div>
       </div>
     </main>{" "}
-    
-    <CommuneDetailPanel 
+
+    <CommuneDetailPanel
       commune={selectedCommune}
       mayor={selectedCommune ? communeSearch.getMayor(selectedCommune.code) : null}
-      onClose={() => setSelectedCommune(null)} 
+      onClose={() => setSelectedCommune(null)}
     />
 
     <TerritoryDetailPanel

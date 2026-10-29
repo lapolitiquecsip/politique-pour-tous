@@ -143,6 +143,7 @@ export default function Header() {
                             espace de travail. */}
                         <span className="lbl-offre">{link.label}</span>
                         <span className="lbl-pro">Mon espace Pro</span>
+                        <span className="lbl-premium">Mon espace Premium</span>
                       </>
                     ) : link.label}
                   </span>{" "}
@@ -250,6 +251,7 @@ export default function Header() {
                     <>
                       <span className="lbl-offre">{link.label}</span>
                       <span className="lbl-pro">Mon espace Pro</span>
+                        <span className="lbl-premium">Mon espace Premium</span>
                     </>
                   ) : link.label}
                 </span>{" "}

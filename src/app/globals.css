@@ -327,9 +327,11 @@ html[data-abonnement="pro"]   .btn-tdb { --lueur-offre: 168 85 247; background: 
    plus d'offre à découvrir, la page est devenue son espace de travail. Le choix se
    fait en CSS, depuis l'attribut posé sur <html> avant le premier rendu, pour qu'aucun
    libellé ne saute d'un mot à l'autre sous les yeux du lecteur. */
-.lbl-pro { display: none; }
+.lbl-pro, .lbl-premium { display: none; }
 html[data-abonnement="pro"] .lbl-pro   { display: inline; }
-html[data-abonnement="pro"] .lbl-offre { display: none; }
+html[data-abonnement="elite"] .lbl-premium { display: inline; }
+html[data-abonnement="pro"] .lbl-offre,
+html[data-abonnement="elite"] .lbl-offre { display: none; }
 
 /* ── Habillage de l'offre Pro ─────────────────────────────────────────
    Le tableau de bord et le bouton d'en-tête sont dessinés en doré, couleur de l'offre

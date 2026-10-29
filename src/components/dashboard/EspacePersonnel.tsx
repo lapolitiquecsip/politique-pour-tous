@@ -18,6 +18,7 @@ import TopicBrief from "@/components/pro/TopicBrief";
 import AmendementsAN from "@/components/pro/AmendementsAN";
 import FilActualitePro from "@/components/pro/FilActualitePro";
 import EspacePro from "@/components/pro/EspacePro";
+import EspacePremium from "@/components/premium/EspacePremium";
 import TutorielPro, { tutorielProDejaVu } from "@/components/pro/TutorielPro";
 import EncartPremium from "@/components/dashboard/EncartPremium";
 import IdentifiantsForm from "@/components/dashboard/IdentifiantsForm";
@@ -175,8 +176,9 @@ export default function EspacePersonnel({ mode = "tout" }: { mode?: ModeEspace }
   //     ouvrirait des rubriques payantes à qui n'y a pas droit.
   const isPremium = tierAffiche === "elite" || tierAffiche === "pro";
   const isPro = tierAffiche === "pro";
-  // Abonné Pro dans son espace : une rubrique à la fois, en onglets (voir EspacePro).
-  const vueOnglets = mode === "espace" && isPro;
+  // Abonné dans son espace (/premium) : une rubrique à la fois, en onglets — EspacePro pour
+  // le Pro, EspacePremium pour le Premium (31/10/2026).
+  const vueOnglets = mode === "espace" && isPremium;
   const [loading, setLoading] = useState(true);
   // Tutoriel d'accueil Pro : ouvert de lui-même à la première visite de l'espace (ou au
   // retour du paiement, ?bienvenue=1), puis seulement à la demande.
@@ -185,7 +187,7 @@ export default function EspacePersonnel({ mode = "tout" }: { mode?: ModeEspace }
   const [followedDeputies, setFollowedDeputies] = useState<any[]>([]);
   const [savedItems, setSavedItems] = useState<any[]>([]);
   // Dans l'espace Pro, ce panneau devient l'onglet « Mes suivis » : on l'ouvre sur les élus.
-  const [activeTab, setActiveTab] = useState<IdOnglet>(mode === "espace" ? "deputies" : "votes");
+  const [activeTab, setActiveTab] = useState<IdOnglet>(mode === "espace" && isPro ? "deputies" : "votes");
   // Un lien « /dashboard#parrainage » (bouton cadeau de l'en-tête) ouvre directement
   // l'onglet, y compris quand on est déjà sur la page.
   useEffect(() => {
@@ -380,7 +382,7 @@ export default function EspacePersonnel({ mode = "tout" }: { mode?: ModeEspace }
           serraient sur deux ou trois lignes dès que les onglets étaient nombreux. */}
       <div className="border-b border-white/10 px-3 pt-4 md:px-6 md:pt-6">
         <div className="-mx-1 flex gap-2 overflow-x-auto px-1 pb-4 [scrollbar-width:none] md:flex-wrap md:overflow-visible [&::-webkit-scrollbar]:hidden">
-          {ONGLETS.filter(o => (!o.premium || isPremium) && !(vueOnglets && o.id === "votes")).map(o => {
+          {ONGLETS.filter(o => (!o.premium || isPremium) && !(vueOnglets && isPro && o.id === "votes")).map(o => {
             const actif = activeTab === o.id;
             const Icone = o.icone;
             return (
@@ -816,7 +818,7 @@ export default function EspacePersonnel({ mode = "tout" }: { mode?: ModeEspace }
                   <span className="text-white drop-shadow-[0_2px_20px_rgba(255,255,255,0.15)]">{mode === "compte" ? "Mon" : "Mon Espace"}</span>{" "}
                   {isPremium ? (
                     <span className="sword-shine bg-gradient-to-r from-amber-300 via-amber-500 to-yellow-600 text-white px-4 pt-1.5 pb-0.5 md:pt-3 md:pb-1 rounded-xl md:rounded-2xl shadow-[0_8px_30px_rgb(var(--lueur-offre)/0.4)]">
-                      {mode === "compte" ? "Compte" : mode === "espace" ? "Pro" : "Personnel"}
+                      {mode === "compte" ? "Compte" : mode === "espace" ? (isPro ? "Pro" : "Premium") : "Personnel"}
                     </span>
                   ) : (
                     // Compte classique : un bleu clair tout simple, sans éclat ni lueur.
@@ -829,8 +831,10 @@ export default function EspacePersonnel({ mode = "tout" }: { mode?: ModeEspace }
                 <p className="text-slate-400 text-sm mt-3 font-medium">
                   {mode === "compte"
                     ? "Vos identifiants et les réglages de votre abonnement."
-                    : mode === "espace"
+                    : mode === "espace" && isPro
                       ? "Votre poste de travail parlementaire : tout ce qui a bougé, et ce qui vous concerne."
+                    : mode === "espace"
+                      ? "Vos alertes, vos élus, vos lois et votre territoire, au même endroit."
                       : "Gérez votre activité citoyenne et vos députés favoris."}
                 </p>{" "}
                 {/* Le niveau du compte, dit clairement, avec la porte de sortie vers les offres. */}
@@ -891,9 +895,11 @@ export default function EspacePersonnel({ mode = "tout" }: { mode?: ModeEspace }
         </div>
       )}{" "}
 
-      {vueOnglets && (proVerifie && userId
+      {vueOnglets && (isPro && proVerifie && userId
         ? <EspacePro userId={userId} nbSuivis={followedDeputies.length} suivis={panneau} onTutoriel={() => setTutoriel(true)} />
-        : <div className="container mx-auto max-w-6xl space-y-3 px-4">{[0, 1, 2].map(i => <div key={i} className="h-24 animate-pulse rounded-3xl bg-white/[0.05]" />)}</div>)}{" "}
+        : !isPro && premiumVerifie && userId
+          ? <EspacePremium userId={userId} activite={panneau} />
+          : <div className="container mx-auto max-w-6xl space-y-3 px-4">{[0, 1, 2].map(i => <div key={i} className="h-24 animate-pulse rounded-3xl bg-white/[0.05]" />)}</div>)}{" "}
 
       {mode === "compte" && <ParametresCompte />}
       {userId && <TutorielPro userId={userId} ouvert={tutoriel} onFermer={() => setTutoriel(false)} />}{" "}

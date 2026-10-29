@@ -272,9 +272,9 @@ function NotifDemoModal({ open, onClose }: { open: boolean; onClose: () => void 
 /**
  * La page /premium sert deux publics opposés.
  *
- * Pour un visiteur ou un abonné Premium, c'est la page d'offre : elle vend.
- * Pour un abonné Pro, elle n'a plus rien à vendre — il a tout souscrit — et elle
- * devient son espace de travail, sous le titre « Mon espace Pro ». Le lien du menu
+ * Pour un visiteur, c'est la page d'offre : elle vend. Pour un abonné, elle devient son
+ * espace — « Mon espace Pro » (EspacePro) ou, depuis le 31/10/2026, « Mon espace Premium »
+ * (EspacePremium) ; un Premium rouvre les offres par /premium/?offres=1. Le lien du menu
  * ne change donc jamais de place : il mène toujours là où le lecteur a affaire.
  */
 export default function PremiumPage() {
@@ -283,8 +283,11 @@ export default function PremiumPage() {
   // passage du tableau de bord à l'espace Pro repassait par un écran d'attente. Il ne
   // sert qu'à choisir quelle page dessiner, jamais à ouvrir un accès : l'espace lui-même
   // ne montre de contenu réservé qu'une fois le niveau vérifié.
+  // Un abonné (Premium ou Pro) trouve ici son espace ; « ?offres=1 » rouvre la page des
+  // formules (un Premium qui envisage le Pro).
+  const offres = typeof window !== "undefined" && new URLSearchParams(window.location.search).has("offres");
   if (aboEnCours && !niveauMemorise) return <div className="min-h-screen bg-slate-950" />;
-  if (tierAffiche === "pro") return <EspacePersonnel mode="espace" />;
+  if (!offres && (tierAffiche === "pro" || tierAffiche === "elite")) return <EspacePersonnel mode="espace" />;
   return <PageOffre />;
 }
 

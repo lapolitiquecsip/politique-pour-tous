@@ -11,7 +11,6 @@ import LegalStatusModal from "@/components/deputies/LegalStatusModal";
 import ThemesView from "@/components/presidentielles/ThemesView";
 import DynamiquesView from "@/components/presidentielles/dynamiques/DynamiquesView";
 import PrimaryDebates from "@/components/presidentielles/PrimaryDebates";
-import PrimaireResultat from "@/components/presidentielles/PrimaireResultat";
 import { resultatsPrimaires } from "@/lib/primaires";
 import DragScroller from "@/components/ui/DragScroller";
 import { usePremium } from "@/lib/hooks/usePremium";
@@ -182,7 +181,15 @@ function formatDate(value?: string | null) {
   return new Intl.DateTimeFormat("fr-FR", { dateStyle: "long" }).format(new Date(value));
 }
 
-function CandidateModal({ candidate, onClose }: { candidate: Candidate; onClose: () => void }) {
+// Fiche d'un candidat (29/10/2026, d'après une vidéo d'utilisateur sur téléphone) : la page
+// derrière défilait avec la fiche (on la refermait ailleurs que là où on l'avait ouverte), la
+// croix était hors d'atteinte au bout de la lecture, et le programme venait après neuf panneaux
+// de biographie. Désormais : page figée dessous, barre collante (rubriques + fermer), programme
+// d'abord, et passage au candidat précédent / suivant en bas de fiche.
+type Voisins = { precedent: Candidate; suivant: Candidate } | null;
+const RUBRIQUES_FICHE = [["fiche-programme", "Programme"], ["fiche-actu", "Actualité"], ["fiche-parcours", "Parcours"]] as const;
+
+function CandidateModal({ candidate, onClose, voisins = null, onOuvrir }: { candidate: Candidate; onClose: () => void; voisins?: Voisins; onOuvrir?: (c: Candidate) => void }) {
   const side = sideOf(candidate);
   const { isPremium, isPro } = usePremium() || { isPremium: false, isPro: false };
   const [following, setFollowing] = useState(false);
@@ -203,7 +210,7 @@ function CandidateModal({ candidate, onClose }: { candidate: Candidate; onClose:
   const [videos, setVideos] = useState<any[]>([]);              // vidéos YouTube officielles
   const [debatsFil, setDebatsFil] = useState<any[]>([]);         // débats et émissions télé (vidéo jouable)
   const [selectedVideo, setSelectedVideo] = useState<any | null>(null); // lecteur vidéo ouvert
-  const [proposals, setProposals] = useState<any[]>([]);
+  const [proposals, setProposals] = useState<any[] | null>(null);   // null : pas encore chargé
   const [sourcesProgramme, setSourcesProgramme] = useState<SourceProgramme[]>([]);
   const [openPanels, setOpenPanels] = useState<Set<string>>(new Set());   // panneaux bio dépliés
   const togglePanel = (k: string) => setOpenPanels(p => { const n = new Set(p); n.has(k) ? n.delete(k) : n.add(k); return n; });
@@ -216,7 +223,7 @@ function CandidateModal({ candidate, onClose }: { candidate: Candidate; onClose:
     api.getCandidateNews(candidate.id).then(rows => { if (active) setNews(rows); }).catch(() => setNews([]));
     api.getCandidateVideos(candidate.id, 20).then(rows => { if (active) setVideos(rows as any[]); }).catch(() => {});
     api.getCandidateDebates(candidate.id).then(rows => { if (active) setDebatsFil((rows as any[]).filter(d => d.video_id && !d.a_venir)); }).catch(() => {});
-    api.getCandidateProposals(candidate.id).then(rows => { if (active) setProposals(rows as any[]); }).catch(() => {});
+    api.getCandidateProposals(candidate.id).then(rows => { if (active) setProposals(rows as any[]); }).catch(() => { if (active) setProposals([]); });
     api.getSourcesProgramme(candidate.id).then(rows => { if (active) setSourcesProgramme(rows); }).catch(() => {});
     api.findMandateByName(candidate.full_name).then(m => { if (active) setMandate(m); }).catch(() => {});
     api.findPartyByAlias(candidate.party).then(p => { if (active) setPartyLink(p); }).catch(() => {});
@@ -229,6 +236,20 @@ function CandidateModal({ candidate, onClose }: { candidate: Candidate; onClose:
     window.addEventListener("keydown", onKey);
     return () => window.removeEventListener("keydown", onKey);
   }, [onClose]);
+
+  // Page figée sous la fiche : sans cela, au bout du défilement de la fiche, c'est la page
+  // derrière qui défilait, et l'on se retrouvait ailleurs en refermant.
+  useEffect(() => {
+    const html = document.documentElement, body = document.body;
+    const avant = [html.style.overflow, body.style.overflow];
+    html.style.overflow = "hidden"; body.style.overflow = "hidden";
+    return () => { html.style.overflow = avant[0]; body.style.overflow = avant[1]; };
+  }, []);
+  const fiche = useRef<HTMLDivElement>(null);
+  const allerA = (id: string) => {
+    const el = document.getElementById(id), boite = fiche.current;
+    if (el && boite) boite.scrollTo({ top: el.getBoundingClientRect().top - boite.getBoundingClientRect().top + boite.scrollTop - 64, behavior: "smooth" });
+  };
 
   const issues = (candidate.legal_issues || "").trim();
   // 3 états : inconnu (pas encore renseigné) / vierge / affaires à consulter.
@@ -246,13 +267,13 @@ function CandidateModal({ candidate, onClose }: { candidate: Candidate; onClose:
 
   return (
     <>
-    <div className="fixed inset-0 z-50 overflow-y-auto bg-slate-950/70 p-4 md:p-10" role="dialog" aria-modal="true" onClick={onClose}>
-      <div className="mx-auto max-w-4xl overflow-hidden rounded-[2rem] bg-card shadow-2xl" onClick={e => e.stopPropagation()}>
+    <div ref={fiche} className="fixed inset-0 z-50 overflow-y-auto overscroll-contain bg-slate-950/70 md:p-10" role="dialog" aria-modal="true" aria-label={`Fiche de ${candidate.full_name}`} onClick={onClose}>
+      <div className="mx-auto min-h-full max-w-4xl overflow-clip bg-card shadow-2xl md:min-h-0 md:rounded-[2rem]" onClick={e => e.stopPropagation()}>
         {/* En-tête coloré */}
-        <div className={`relative bg-gradient-to-br ${side.from} ${side.to} p-6 md:p-8`}>
+        <div className={`relative bg-gradient-to-br ${side.from} ${side.to} p-5 pt-6 md:p-8`}>
           <button onClick={onClose} className="absolute right-4 top-4 rounded-full bg-white/20 p-2 text-white transition hover:bg-white/30" aria-label="Fermer"><X /></button>{" "}
           <div className="flex flex-col items-center gap-5 text-center text-white md:flex-row md:items-end md:text-left">
-            <CandidateAvatar c={candidate} taille={128} className="h-32 w-32 shrink-0 rounded-full border-4 border-white/80 shadow-xl text-3xl" />{" "}
+            <CandidateAvatar c={candidate} taille={128} className="h-24 w-24 shrink-0 rounded-full border-4 border-white/80 shadow-xl text-3xl md:h-32 md:w-32" />{" "}
             <div>
               <div className="flex flex-wrap items-center justify-center gap-2 md:justify-start">
                 <span className="rounded-full bg-white/25 px-3 py-1 text-[11px] font-black uppercase tracking-widest">{side.label}{candidate.party ? ` · ${candidate.party}` : ""}</span>{" "}
@@ -277,8 +298,22 @@ function CandidateModal({ candidate, onClose }: { candidate: Candidate; onClose:
           </div>
         </div>{" "}
 
-        <div className="p-6 md:p-8">
-          {candidate.summary && <p className="mb-4 text-lg leading-7 text-slate-700 dark:text-slate-200">{candidate.summary}</p>}{" "}
+        {/* Barre collante : les trois rubriques de la fiche, et la croix toujours à portée. */}
+        <div className="sticky top-0 z-20 flex items-center gap-1 border-b border-border bg-card/95 px-2 py-1.5 backdrop-blur md:px-4">
+          <div className="flex min-w-0 flex-1 gap-1 overflow-x-auto [scrollbar-width:none] [&::-webkit-scrollbar]:hidden">
+            {RUBRIQUES_FICHE.map(([id, nom]) => (
+              <button key={id} type="button" onClick={() => allerA(id)}
+                className="min-h-[40px] shrink-0 rounded-full px-3.5 text-[13px] font-bold text-muted-foreground transition hover:bg-muted hover:text-foreground">
+                {nom}
+              </button>
+            ))}
+          </div>{" "}
+          <button type="button" onClick={onClose} aria-label="Fermer la fiche"
+            className="flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-muted text-foreground transition hover:bg-slate-200 dark:hover:bg-slate-700"><X size={20} /></button>
+        </div>{" "}
+
+        <div className="p-5 md:p-8">
+          {candidate.summary && <p className="mb-4 text-[16px] leading-7 text-slate-700 dark:text-slate-200 md:text-lg">{candidate.summary}</p>}{" "}
 
           {/* Fil conducteur : fiche du parti */}
           {partyLink && (
@@ -305,6 +340,110 @@ function CandidateModal({ candidate, onClose }: { candidate: Candidate; onClose:
 
           <FactChips candidate={candidate} />{" "}
 
+          {/* PROGRAMME — ce que les lecteurs viennent chercher, donc en premier. */}
+          <div id="fiche-programme">
+          {candidate.program && (
+            <section className="mt-6 rounded-2xl border border-amber-200 dark:border-amber-500/25 bg-amber-50 dark:bg-amber-500/10 p-5">
+              <h3 className="text-sm font-black uppercase tracking-widest text-amber-800 dark:text-amber-300">Programme</h3>{" "}
+              <p className="mt-2 whitespace-pre-line text-sm leading-6 text-amber-950">{candidate.program}</p>
+            </section>
+          )}{" "}
+
+          <ProgrammeCandidat proposals={proposals ?? []} sources={sourcesProgramme} />{" "}
+
+          {proposals !== null && proposals.length === 0 && !candidate.program && (
+            <section className="mt-8 rounded-2xl border border-dashed border-border bg-muted/50 p-5">
+              <h3 className="text-2xl font-staatliches uppercase text-foreground">Son programme</h3>{" "}
+              <p className="mt-1 text-sm leading-6 text-muted-foreground">
+                {candidate.full_name} n&apos;a pas encore publié de programme. Le site de son mouvement est relu chaque jour :
+                il s&apos;affichera ici, par thème, dès sa parution.
+              </p>{" "}
+              {!following && (
+                <button type="button" onClick={onToggleFollow}
+                  className="mt-3 inline-flex min-h-[44px] items-center gap-2 rounded-full bg-slate-900 px-5 text-[13px] font-black text-white transition hover:bg-slate-700 dark:bg-white dark:text-slate-900">
+                  <Bell size={15} /> {isPremium ? "Être prévenu de sa parution" : "Être prévenu (Premium)"}
+                </button>
+              )}
+            </section>
+          )}
+          </div>{" "}
+
+          {/* ACTUALITÉ — débats de primaire éventuels, puis le fil presse et vidéos. */}
+          <div id="fiche-actu" className="mt-8">
+          {/* Ses débats de primaire — rubrique à part, avant le fil général : un débat
+              se cherche, il ne se croise pas au fil du défilement. La rubrique s'efface
+              d'elle-même pour un candidat qui n'est engagé dans aucune primaire. */}
+          <div className="-mx-4">
+            <PrimaryDebates candidateSlug={candidate.slug} />
+          </div>{" "}
+
+          {/* Fil d'actu quotidien */}
+          {/* FIL UNIFIÉ : actualités de presse + vidéos YouTube officielles, en un seul défilement. */}
+          {(() => {
+            // Débats et vidéos d'abord visibles : jamais plus de deux articles d'affilée tant
+            // qu'une vidéo attend (sinon la presse, plus abondante, repoussait toutes les vidéos).
+            const parDate = (a: any, b: any) => new Date(b.when || 0).getTime() - new Date(a.when || 0).getTime();
+            const articles = (news || []).map((n: any) => ({ kind: "news" as const, when: n.date, data: n })).sort(parDate);
+            const medias = [
+              ...debatsFil.map((d: any) => ({ kind: "video" as const, when: d.date, data: { ...d, published_at: d.date, debat: true } })),
+              ...videos.map((v: any) => ({ kind: "video" as const, when: v.published_at, data: v })),
+            ].sort(parDate);
+            const feed: { kind: "news" | "video"; when: any; data: any }[] = [];
+            let suite = 0;
+            while (articles.length || medias.length) {
+              const prendreMedia = medias.length && (!articles.length || suite >= 2 || parDate(medias[0], articles[0]) <= 0);
+              if (prendreMedia) { feed.push(medias.shift()!); suite = 0; } else { feed.push(articles.shift()!); suite++; }
+            }
+            return (
+              <section className="mt-4">
+                <h3 className="text-2xl font-staatliches uppercase text-foreground">Actualités &amp; <span className="text-amber-700 dark:text-amber-400">vidéos</span></h3>{" "}
+                <p className="mt-1 text-xs text-muted-foreground">Le fil du candidat — articles de presse, débats télévisés et vidéos de sa chaîne YouTube officielle, lisibles ici, actualisés plusieurs fois par jour. Faites défiler →</p>{" "}
+                {news === null ? (
+                  <p className="mt-3 text-sm text-muted-foreground">Chargement…</p>
+                ) : feed.length === 0 ? (
+                  <p className="mt-3 text-sm text-muted-foreground">Aucune actualité ni vidéo recensée pour l'instant — le fil se met à jour chaque jour.</p>
+                ) : (
+                  // Rail commun du site : sans barre grise ni ancrage, glisser au doigt ou à la souris.
+                  <div className="mt-4">
+                  <DragScroller ariaLabel="Actualité et vidéos du candidat" className="items-start gap-3 pb-3 pt-0 md:gap-3">
+                    {feed.map(it => it.kind === "video" ? (
+                      <button key={`v${it.data.video_id}${it.data.debat ? "d" : ""}`} onClick={() => setSelectedVideo(it.data)} className="group flex w-[280px] shrink-0 select-none flex-col overflow-hidden rounded-2xl border border-border text-left transition hover:border-slate-300 hover:shadow-sm">
+                        <div className="relative aspect-video overflow-hidden bg-slate-900">
+                          {/* eslint-disable-next-line @next/next/no-img-element */}
+                          {it.data.thumbnail_url && <img src={it.data.thumbnail_url} alt={it.data.title} loading="lazy" className="h-full w-full object-cover transition group-hover:scale-105" />}{" "}
+                          <span className="absolute inset-0 flex items-center justify-center"><span className="flex h-11 w-11 items-center justify-center rounded-full bg-white/90 text-foreground shadow-lg"><Play size={20} className="ml-0.5 fill-current" /></span></span>{" "}
+                          <span className={`absolute left-2 top-2 inline-flex items-center gap-1 rounded-full px-2 py-0.5 text-[9px] font-black uppercase tracking-widest text-white ${it.data.debat ? "bg-indigo-700" : "bg-red-600"}`}><Play size={10} className="fill-current" /> {it.data.debat ? `Débat${it.data.broadcaster ? ` · ${it.data.broadcaster}` : ""}` : "Vidéo"}</span>
+                        </div>{" "}
+                        <div className="flex flex-1 flex-col p-4">
+                          <span className="text-xs font-bold text-muted-foreground"><CalendarDays className="mr-1 inline" size={13} />{formatDate(it.data.published_at)}</span>{" "}
+                          <p className="mt-1.5 font-bold text-foreground">{it.data.title}</p>{" "}
+                          {it.data.resume_ia && <p className="mt-1 line-clamp-5 text-[13px] leading-5 text-muted-foreground">{it.data.resume_ia}</p>}{" "}
+                          <span className="mt-auto pt-2 text-xs font-bold text-muted-foreground">{it.data.resume_ia ? "YouTube · résumé IA de ce qui est dit" : "YouTube"}</span>
+                        </div>{" "}
+                      </button>
+                    ) : (
+                      <button key={`n${it.data.id}`} onClick={() => setSelectedNews(it.data)} className="flex w-[280px] shrink-0 select-none flex-col rounded-2xl border border-border p-4 text-left transition hover:border-slate-300 hover:shadow-sm">
+                        <div className="flex items-center justify-between gap-3 text-xs font-bold text-muted-foreground">
+                          <span className="rounded-full bg-slate-100 dark:bg-slate-500/10 px-2 py-0.5 uppercase tracking-widest">{it.data.news_type || "actu"}</span>{" "}
+                          <span><CalendarDays className="mr-1 inline" size={13} />{formatDate(it.data.date)}</span>
+                        </div>{" "}
+                        <p className="mt-2 font-bold text-foreground">{it.data.title}</p>{" "}
+                        {it.data.summary && <p className="mt-1 line-clamp-5 text-sm leading-6 text-muted-foreground">{it.data.summary}</p>}{" "}
+                        {it.data.source_name && <p className="mt-auto pt-2 text-xs font-bold text-muted-foreground">{it.data.source_name}</p>}{" "}
+                      </button>
+                    ))}
+                  </DragScroller>
+                  </div>
+                )}{" "}
+              </section>
+            );
+          })()}
+
+          </div>{" "}
+
+          {/* PARCOURS — situation judiciaire et biographie, panneaux repliés. */}
+          <div id="fiche-parcours" className="mt-10">
+            <h3 className="mb-3 text-2xl font-staatliches uppercase text-foreground">Son parcours</h3>{" "}
           {/* Situation juridique — suivi en temps réel des affaires judiciaires */}
           <div className="mb-6 rounded-3xl border border-border bg-card p-5 shadow-sm relative overflow-hidden">
             <div className={`absolute top-0 left-0 h-full w-2 ${legalStyle.bar}`} />{" "}
@@ -379,84 +518,7 @@ function CandidateModal({ candidate, onClose }: { candidate: Candidate; onClose:
           </div>{" "}
           <MentionIA texte="Fiche synthétisée par IA à partir de Wikipédia, des sites officiels et de la presse — signalez toute erreur via la page Contact." className="mt-3" />{" "}
 
-          {candidate.program && (
-            <section className="mt-6 rounded-2xl border border-amber-200 dark:border-amber-500/25 bg-amber-50 dark:bg-amber-500/10 p-5">
-              <h3 className="text-sm font-black uppercase tracking-widest text-amber-800 dark:text-amber-300">Programme</h3>{" "}
-              <p className="mt-2 whitespace-pre-line text-sm leading-6 text-amber-950">{candidate.program}</p>
-            </section>
-          )}{" "}
-
-          <ProgrammeCandidat proposals={proposals} sources={sourcesProgramme} />{" "}
-
-          {/* Ses débats de primaire — rubrique à part, avant le fil général : un débat
-              se cherche, il ne se croise pas au fil du défilement. La rubrique s'efface
-              d'elle-même pour un candidat qui n'est engagé dans aucune primaire. */}
-          <div className="-mx-4">
-            <PrimaryDebates candidateSlug={candidate.slug} />
           </div>{" "}
-
-          {/* Fil d'actu quotidien */}
-          {/* FIL UNIFIÉ : actualités de presse + vidéos YouTube officielles, en un seul défilement. */}
-          {(() => {
-            // Débats et vidéos d'abord visibles : jamais plus de deux articles d'affilée tant
-            // qu'une vidéo attend (sinon la presse, plus abondante, repoussait toutes les vidéos).
-            const parDate = (a: any, b: any) => new Date(b.when || 0).getTime() - new Date(a.when || 0).getTime();
-            const articles = (news || []).map((n: any) => ({ kind: "news" as const, when: n.date, data: n })).sort(parDate);
-            const medias = [
-              ...debatsFil.map((d: any) => ({ kind: "video" as const, when: d.date, data: { ...d, published_at: d.date, debat: true } })),
-              ...videos.map((v: any) => ({ kind: "video" as const, when: v.published_at, data: v })),
-            ].sort(parDate);
-            const feed: { kind: "news" | "video"; when: any; data: any }[] = [];
-            let suite = 0;
-            while (articles.length || medias.length) {
-              const prendreMedia = medias.length && (!articles.length || suite >= 2 || parDate(medias[0], articles[0]) <= 0);
-              if (prendreMedia) { feed.push(medias.shift()!); suite = 0; } else { feed.push(articles.shift()!); suite++; }
-            }
-            return (
-              <section className="mt-8">
-                <h3 className="text-2xl font-staatliches uppercase text-foreground">Actualités &amp; <span className="text-amber-700 dark:text-amber-400">vidéos</span></h3>{" "}
-                <p className="mt-1 text-xs text-muted-foreground">Le fil du candidat — articles de presse, débats télévisés et vidéos de sa chaîne YouTube officielle, lisibles ici, actualisés plusieurs fois par jour. Faites défiler →</p>{" "}
-                {news === null ? (
-                  <p className="mt-3 text-sm text-muted-foreground">Chargement…</p>
-                ) : feed.length === 0 ? (
-                  <p className="mt-3 text-sm text-muted-foreground">Aucune actualité ni vidéo recensée pour l'instant — le fil se met à jour chaque jour.</p>
-                ) : (
-                  // Rail commun du site : sans barre grise ni ancrage, glisser au doigt ou à la souris.
-                  <div className="mt-4">
-                  <DragScroller ariaLabel="Actualité et vidéos du candidat" className="gap-3 pb-3 pt-0 md:gap-3">
-                    {feed.map(it => it.kind === "video" ? (
-                      <button key={`v${it.data.video_id}${it.data.debat ? "d" : ""}`} onClick={() => setSelectedVideo(it.data)} className="group flex w-[280px] shrink-0 select-none flex-col overflow-hidden rounded-2xl border border-border text-left transition hover:border-slate-300 hover:shadow-sm">
-                        <div className="relative aspect-video overflow-hidden bg-slate-900">
-                          {/* eslint-disable-next-line @next/next/no-img-element */}
-                          {it.data.thumbnail_url && <img src={it.data.thumbnail_url} alt={it.data.title} loading="lazy" className="h-full w-full object-cover transition group-hover:scale-105" />}{" "}
-                          <span className="absolute inset-0 flex items-center justify-center"><span className="flex h-11 w-11 items-center justify-center rounded-full bg-white/90 text-foreground shadow-lg"><Play size={20} className="ml-0.5 fill-current" /></span></span>{" "}
-                          <span className={`absolute left-2 top-2 inline-flex items-center gap-1 rounded-full px-2 py-0.5 text-[9px] font-black uppercase tracking-widest text-white ${it.data.debat ? "bg-indigo-700" : "bg-red-600"}`}><Play size={10} className="fill-current" /> {it.data.debat ? `Débat${it.data.broadcaster ? ` · ${it.data.broadcaster}` : ""}` : "Vidéo"}</span>
-                        </div>{" "}
-                        <div className="flex flex-1 flex-col p-4">
-                          <span className="text-xs font-bold text-muted-foreground"><CalendarDays className="mr-1 inline" size={13} />{formatDate(it.data.published_at)}</span>{" "}
-                          <p className="mt-1.5 font-bold text-foreground">{it.data.title}</p>{" "}
-                          {it.data.resume_ia && <p className="mt-1 text-[13px] leading-5 text-muted-foreground">{it.data.resume_ia}</p>}{" "}
-                          <span className="mt-auto pt-2 text-xs font-bold text-muted-foreground">{it.data.resume_ia ? "YouTube · résumé IA de ce qui est dit" : "YouTube"}</span>
-                        </div>{" "}
-                      </button>
-                    ) : (
-                      <button key={`n${it.data.id}`} onClick={() => setSelectedNews(it.data)} className="flex w-[280px] shrink-0 select-none flex-col rounded-2xl border border-border p-4 text-left transition hover:border-slate-300 hover:shadow-sm">
-                        <div className="flex items-center justify-between gap-3 text-xs font-bold text-muted-foreground">
-                          <span className="rounded-full bg-slate-100 dark:bg-slate-500/10 px-2 py-0.5 uppercase tracking-widest">{it.data.news_type || "actu"}</span>{" "}
-                          <span><CalendarDays className="mr-1 inline" size={13} />{formatDate(it.data.date)}</span>
-                        </div>{" "}
-                        <p className="mt-2 font-bold text-foreground">{it.data.title}</p>{" "}
-                        {it.data.summary && <p className="mt-1 text-sm leading-6 text-muted-foreground">{it.data.summary}</p>}{" "}
-                        {it.data.source_name && <p className="mt-auto pt-2 text-xs font-bold text-muted-foreground">{it.data.source_name}</p>}{" "}
-                      </button>
-                    ))}
-                  </DragScroller>
-                  </div>
-                )}{" "}
-                <p className="mt-2 text-[11px] italic leading-snug text-muted-foreground">Vidéos : chaîne YouTube officielle du candidat. Instagram, TikTok et X ne sont pas repris automatiquement (ces plateformes n'autorisent pas la récupération de leurs contenus).</p>
-              </section>
-            );
-          })()}
 
           {/* Récap de l'actu EN SITE (comme les fiches de parti) : l'utilisateur lit l'essentiel
               sans quitter le site ; « Lire l'article » reste dispo en discret. */}
@@ -524,6 +586,25 @@ function CandidateModal({ candidate, onClose }: { candidate: Candidate; onClose:
               </div>
             </section>
           )}
+          {/* Bas de fiche : candidat précédent / suivant (dans la liste affichée), ou fermer. */}
+          <nav aria-label="Autres candidats" className="mt-10 grid grid-cols-[1fr_auto_1fr] items-stretch gap-2 border-t border-border pt-5">
+            {voisins && onOuvrir ? (
+              <button type="button" onClick={() => onOuvrir(voisins.precedent)}
+                className="flex min-h-[48px] min-w-0 items-center gap-2 rounded-2xl border border-border px-3 text-left transition hover:bg-muted">
+                <ArrowRight size={16} className="shrink-0 rotate-180 text-muted-foreground" />{" "}
+                <span className="min-w-0"><span className="block text-[10px] font-black uppercase tracking-widest text-muted-foreground">Précédent</span>{" "}<span className="block truncate text-[13px] font-bold text-foreground">{voisins.precedent.full_name}</span></span>
+              </button>
+            ) : <span />}{" "}
+            <button type="button" onClick={onClose}
+              className="min-h-[48px] rounded-2xl bg-slate-900 px-4 text-[13px] font-black text-white transition hover:bg-slate-700 dark:bg-white dark:text-slate-900">Fermer</button>{" "}
+            {voisins && onOuvrir ? (
+              <button type="button" onClick={() => onOuvrir(voisins.suivant)}
+                className="flex min-h-[48px] min-w-0 items-center justify-end gap-2 rounded-2xl border border-border px-3 text-right transition hover:bg-muted">
+                <span className="min-w-0"><span className="block text-[10px] font-black uppercase tracking-widest text-muted-foreground">Suivant</span>{" "}<span className="block truncate text-[13px] font-bold text-foreground">{voisins.suivant.full_name}</span></span>{" "}
+                <ArrowRight size={16} className="shrink-0 text-muted-foreground" />
+              </button>
+            ) : <span />}
+          </nav>
         </div>
       </div>
     </div>{" "}
@@ -713,29 +794,50 @@ function CandidatesContent() {
   // sans revenir d'abord sur la liste. (router.replace provoquait ce flash en export statique.)
   const open = (c: Candidate) => { setSelectedSlug(c.slug); try { window.history.replaceState(null, "", `/presidentielles-2027/?candidat=${c.slug}`); } catch {} };
   const close = () => { setSelectedSlug(null); try { window.history.replaceState(null, "", "/presidentielles-2027/"); } catch {} };
+  // Fiche suivante / précédente dans la liste affichée (filtre et recherche compris) : on
+  // passe d'un candidat à l'autre sans refermer, rouvrir et retrouver sa place dans la grille.
+  const rang = selectedSlug ? filtered.findIndex(c => c.slug === selectedSlug) : -1;
+  const voisins = rang >= 0 && filtered.length > 1
+    ? { precedent: filtered[(rang - 1 + filtered.length) % filtered.length], suivant: filtered[(rang + 1) % filtered.length] }
+    : null;
+
+  // « Trouver un candidat » : le champ de recherche, juste sous l'en-tête, clavier ouvert. Le
+  // focus est donné tout de suite (dans le geste) : iOS n'ouvre pas le clavier après un délai.
+  const trouverCandidat = () => {
+    const champ = document.getElementById("recherche-elu") as HTMLInputElement | null;
+    if (!champ) return;
+    champ.focus({ preventScroll: true });
+    window.scrollTo({ top: champ.getBoundingClientRect().top + window.scrollY - 140, behavior: "smooth" });
+  };
 
   return (
     <div className="min-h-screen bg-background">
       {/* Hero */}
-      <div className="relative overflow-hidden px-4 py-24 text-center">
+      {/* Sur téléphone (29/10/2026) : le titre géant et ses marges remplissaient tout le premier
+          écran, et les onglets débordaient (« Enjeux » coupé, « Dynamiques » invisible). Hero
+          resserré, onglets sur toute la largeur, et une action : trouver un candidat. */}
+      <div className="relative overflow-hidden px-4 pb-6 pt-8 text-center md:py-24">
         <div className="absolute left-1/4 top-0 h-96 w-96 -translate-x-1/2 rounded-full bg-blue-500/10 blur-[120px]" />{" "}
         <div className="absolute right-1/4 top-10 h-96 w-96 translate-x-1/2 rounded-full bg-red-500/10 blur-[120px]" />{" "}
         <div className="relative mx-auto max-w-5xl">
-          <span className="rounded-full border border-border bg-card px-4 py-1.5 text-[11px] font-black uppercase tracking-[0.25em] text-muted-foreground shadow-sm">Mis à jour chaque jour</span>{" "}
-          <h1 className="mt-6 text-6xl font-staatliches uppercase leading-none tracking-tight text-foreground md:text-8xl">
+          <span className="hidden rounded-full border border-border bg-card px-4 py-1.5 text-[11px] font-black uppercase tracking-[0.25em] text-muted-foreground shadow-sm md:inline">Mis à jour chaque jour</span>{" "}
+          <h1 className="text-5xl font-staatliches uppercase leading-none tracking-tight text-foreground md:mt-6 md:text-8xl">
             Présidentielles <span className="bg-gradient-to-r from-blue-600 to-red-600 bg-clip-text text-transparent">2027</span>
           </h1>{" "}
-          <div className="mx-auto mt-6 h-1.5 w-40 rounded-full bg-gradient-to-r from-blue-600 to-red-600" />{" "}
-          <p className="mx-auto mt-6 max-w-2xl text-lg font-medium italic tracking-tight text-muted-foreground md:text-xl">
+          <div className="mx-auto mt-6 hidden h-1.5 w-40 rounded-full bg-gradient-to-r from-blue-600 to-red-600 md:block" />{" "}
+          <p className="mx-auto mt-3 max-w-md text-[15px] leading-snug text-muted-foreground md:hidden">
+            Les candidats, leur programme et leur actualité, mis à jour chaque jour.
+          </p>{" "}
+          <p className="mx-auto mt-6 hidden max-w-2xl text-lg font-medium italic tracking-tight text-muted-foreground md:block md:text-xl">
             Tous les candidats officiellement déclarés, leur parcours détaillé et l'actualité de la campagne, actualisés automatiquement.
           </p>{" "}
-          {/* Onglets Candidats / Positions */}
-          <div className="mt-8 inline-flex rounded-full border border-border bg-card p-1 shadow-sm">
+          {/* Onglets Candidats / Positions / Enjeux / Dynamiques */}
+          <div className="mx-auto mt-5 grid max-w-md grid-cols-4 gap-1 rounded-2xl border border-border bg-card p-1 shadow-sm md:mt-8 md:inline-flex md:max-w-none md:rounded-full">
             {([["candidats", "Candidats"], ["positions", "Positions"], ["enjeux", "Enjeux"], ["dynamiques", "Dynamiques"]] as const).map(([key, label]) => (
               // « Dynamiques » est un outil de l'abonnement Pro : il porte donc les
               // couleurs du Pro, actif comme inactif, pour se distinguer des autres onglets.
-              <button key={key} onClick={() => setView(key)}
-                className={`rounded-full px-6 py-2 text-sm font-black uppercase tracking-widest transition ${
+              <button key={key} onClick={() => setView(key)} aria-pressed={view === key}
+                className={`min-h-[40px] rounded-xl px-1 text-[10.5px] font-black uppercase tracking-wide transition md:rounded-full md:px-6 md:py-2 md:text-sm md:tracking-widest ${
                   key === "dynamiques"
                     ? view === key
                       ? "bg-gradient-to-r from-fuchsia-500 to-purple-600 text-white shadow-[0_0_18px_-2px_rgba(217,70,239,0.7)]"
@@ -747,7 +849,13 @@ function CandidatesContent() {
                 {label}{" "}
               </button>
             ))}
-          </div>
+          </div>{" "}
+          {view === "candidats" && (
+            <button type="button" onClick={trouverCandidat}
+              className="mx-auto mt-4 flex min-h-[48px] w-full max-w-md items-center justify-center gap-2 rounded-2xl bg-slate-900 text-[15px] font-black text-white shadow-lg transition active:scale-[0.98] dark:bg-white dark:text-slate-900 md:hidden">
+              <Search size={18} /> Trouver un candidat
+            </button>
+          )}
         </div>
       </div>{" "}
 
@@ -760,28 +868,37 @@ function CandidatesContent() {
         <PositionsView candidates={candidates} />
       ) : (
       <>
-      {issues.map(r => (
-        <PrimaireResultat key={r.primaire} r={r}
-          onOuvrir={slug => { const c = candidates.find(x => x.slug === slug); if (c) open(c); }} />
-      ))}
-      {/* Les débats d une primaire tranchée sont rangés dans son bandeau de résultat. */}
+      {/* Le bandeau de la primaire « Choisir 2027 » (résultat du 11/10/2026, détail du vote,
+          débats) a été retiré à la demande de l'éditeur le 29/10/2026 : il passait avant la liste
+          des candidats. La carte du vainqueur garde sa pastille, sa fiche garde les débats.
+          Les débats d'une primaire encore à venir s'affichent toujours ici. */}
       <PrimaryDebates sauf={primairesTranchees} />{" "}
       <div className="mx-auto max-w-6xl px-4 pb-24">
-        <div className="mb-10 flex flex-col items-start justify-between gap-5 md:flex-row md:items-center">
-          <div className="flex flex-wrap gap-2">
+        {/* Recherche et bords : une seule ligne collante, toujours à portée de pouce (ils étaient
+            sous le bandeau de la primaire, sur trois lignes de pastilles). */}
+        <div className="sticky top-16 z-20 -mx-4 mb-5 border-b border-border bg-background/95 px-4 py-2.5 backdrop-blur md:static md:mx-0 md:mb-10 md:flex md:flex-row-reverse md:items-center md:justify-between md:gap-5 md:border-0 md:bg-transparent md:p-0 md:backdrop-blur-none">
+          <div className="relative w-full md:w-72">
+            <Search className="pointer-events-none absolute left-3 top-1/2 -translate-y-1/2 h-5 w-5 text-slate-400" />
+            <input id="recherche-elu" type="search" value={search} onChange={e => setSearch(e.target.value)} placeholder="Rechercher un candidat…" enterKeyHint="search"
+              className="w-full rounded-full border border-border bg-card py-2.5 pl-10 pr-4 text-[16px] text-foreground shadow-sm placeholder:text-slate-400 focus:outline-none focus:ring-2 focus:ring-blue-500/40 md:py-3" />
+          </div>{" "}
+          <div className="-mx-4 mt-2 flex gap-1.5 overflow-x-auto px-4 [scrollbar-width:none] md:mx-0 md:mt-0 md:flex-wrap md:gap-2 md:overflow-visible md:px-0 [&::-webkit-scrollbar]:hidden">
             {sideTabs.map(tab => (
-              <button key={tab} onClick={() => setSide(tab)}
-                className={`rounded-full px-4 py-2 text-sm font-bold transition ${side === tab ? "bg-slate-900 text-white" : "border border-border bg-card text-muted-foreground hover:bg-slate-100"}`}>
+              <button key={tab} onClick={() => setSide(tab)} aria-pressed={side === tab}
+                className={`min-h-[36px] shrink-0 rounded-full px-3.5 text-[13px] font-bold transition md:px-4 md:py-2 md:text-sm ${side === tab ? "bg-slate-900 text-white dark:bg-white dark:text-slate-900" : "border border-border bg-card text-muted-foreground hover:bg-muted"}`}>
                 {tab === "Tous" ? "Tous" : SIDES[tab].label}{" "}
               </button>
             ))}
-          </div>{" "}
-          <div className="relative w-full md:w-72">
-            <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-5 w-5 text-slate-400" />
-            <input value={search} onChange={e => setSearch(e.target.value)} placeholder="Rechercher un candidat…"
-              className="w-full rounded-full border border-border bg-card py-3 pl-10 pr-4 text-foreground shadow-sm placeholder:text-slate-400 focus:outline-none focus:ring-2 focus:ring-blue-500/40" />
           </div>
         </div>{" "}
+        {!loading && (
+          <p className="mb-3 text-[13px] font-bold text-muted-foreground">
+            {filtered.length} candidat{filtered.length > 1 ? "s" : ""}{side !== "Tous" ? ` · ${SIDES[side]?.label}` : ""}{search ? ` · « ${search} »` : ""}
+            {(side !== "Tous" || search) && (
+              <button type="button" onClick={() => { setSide("Tous"); setSearch(""); }} className="ml-2 font-black text-blue-700 underline-offset-2 hover:underline dark:text-blue-300">Tout afficher</button>
+            )}
+          </p>
+        )}
 
         {loading ? (
           <div className="flex flex-col items-center py-24 text-muted-foreground"><Loader2 className="mb-4 h-12 w-12 animate-spin" />{" "}<p>Chargement des candidats…</p></div>
@@ -824,9 +941,11 @@ function CandidatesContent() {
                     <h3 className="text-lg font-staatliches uppercase leading-none drop-shadow-sm">{c.full_name}</h3>{" "}
                     {c.party && <p className="mt-0.5 text-xs font-bold text-white/85">{c.party}</p>}
                   </div>{" "}
-                  <div className="p-3.5">
-                    {c.summary && <p className="line-clamp-2 text-xs leading-5 text-muted-foreground">{c.summary}</p>}{" "}
-                    <span className={`mt-3 inline-flex items-center gap-1 rounded-full bg-gradient-to-r ${s.from} ${s.to} px-3 py-1.5 text-[10px] font-black uppercase tracking-widest text-white shadow-md transition-transform group-hover:translate-x-0.5`}>Voir la fiche →</span>
+                  {/* Sur téléphone, le résumé (deux lignes coupées au milieu) alourdissait chaque carte :
+                      la carte entière ouvre la fiche, le bouton suffit à le dire. */}
+                  <div className="p-2.5 md:p-3.5">
+                    {c.summary && <p className="line-clamp-2 text-xs leading-5 text-muted-foreground max-md:hidden">{c.summary}</p>}{" "}
+                    <span className={`inline-flex items-center gap-1 rounded-full bg-gradient-to-r ${s.from} ${s.to} px-3 py-1.5 text-[10px] font-black uppercase tracking-widest text-white shadow-md transition-transform group-hover:translate-x-0.5 md:mt-3`}>Voir la fiche →</span>
                   </div>{" "}
                 </button>
               );
@@ -837,7 +956,7 @@ function CandidatesContent() {
       </>
       )}
 
-      {selected && <CandidateModal candidate={selected} onClose={close} />}
+      {selected && <CandidateModal key={selected.slug} candidate={selected} onClose={close} voisins={voisins} onOuvrir={open} />}
     </div>
   );
 }

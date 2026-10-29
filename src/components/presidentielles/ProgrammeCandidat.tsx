@@ -37,6 +37,23 @@ export function themeStyle(name: string): { Icon: any; c: string; bg: string; do
 
 const estVideo = (u: string | null) => !!u && /youtube\.com|youtu\.be/.test(u);
 
+// Intitulés des plans connus ; sinon, le dernier segment de l'adresse, remis en clair.
+const PLANS_CONNUS: Record<string, string> = {
+  esr: "Enseignement supérieur, recherche et formation continue",
+  ruralite: "Ruralités",
+  "btp-logement": "BTP et logement",
+  automobile: "Automobile",
+};
+function nomDuPlan(u: string, sources: SourceProgramme[]): string {
+  const s = sources.find(x => x.source_url === u);
+  if (s?.titre) return s.titre;
+  const segments = new URL(u).pathname.split("/").filter(Boolean);
+  const dernier = segments[segments.length - 1] || "";
+  const genre = segments.includes("plans-investissement") ? "Plan d'investissement" : segments.includes("plans-thematiques") ? "Plan thématique" : "";
+  const nom = PLANS_CONNUS[dernier] ?? (dernier.replace(/[-_]+/g, " ").replace(/^./, c => c.toUpperCase()) || "Programme");
+  return genre ? `${genre} · ${nom}` : nom;
+}
+
 /** Programme d'un candidat par thème (contexte + propositions + « ? »), avec sa source exacte. */
 export default function ProgrammeCandidat({ proposals, sources = [], titre = "Son programme", nomCandidat }: {
   proposals: Proposition[]; sources?: SourceProgramme[]; titre?: string; nomCandidat?: string;
@@ -59,64 +76,102 @@ export default function ProgrammeCandidat({ proposals, sources = [], titre = "So
     return "Programme officiel (site du mouvement)";
   };
 
+  // Programme publié en plusieurs plans (J.-L. Mélenchon : 4 plans, 55 thèmes en octobre 2026) :
+  // cinquante thèmes à plat se parcouraient sans fin. Les thèmes sont alors rangés sous leur
+  // plan, replié : quelques lignes d'abord, les thèmes du plan ouvert ensuite.
+  const parPlan = urls.length > 1 && Object.keys(groups).length > 12;
+  const plans = parPlan ? urls.map(u => ({
+    url: u, nom: nomDuPlan(u, sources),
+    themes: [...new Set(proposals.filter(p => p.source_url === u).map(p => p.theme || "Propositions"))],
+    n: proposals.filter(p => p.source_url === u && p.subsection !== "__contexte__").length,
+  })) : [];
+  const unTheme = (theme: string, g: { ctx: string | null; items: Proposition[] }) => {
+    const { Icon, c, bg, dot } = themeStyle(theme);
+    const isOpen = openTheme.has(theme);
+    return (
+      <div key={theme} className="overflow-hidden rounded-2xl border border-border">
+        <button onClick={() => setOpenTheme(s => bascule(s, theme))} aria-expanded={isOpen}
+          className={`flex w-full items-center gap-2.5 ${bg} px-4 py-3 text-left transition hover:brightness-95`}>
+          <span className={`flex h-8 w-8 shrink-0 items-center justify-center rounded-xl bg-card ${c} shadow-sm`}><Icon size={16} /></span>{" "}
+          {/* Intitulé long (titres de section d'un plan) : casse normale, sinon trois lignes en capitales. */}
+          <p className={`min-w-0 font-black ${theme.length > 38 ? "text-[14px] leading-snug" : "text-sm uppercase tracking-widest"} ${c}`}>{theme}</p>{" "}
+          <span className="shrink-0 whitespace-nowrap text-[10px] font-black text-muted-foreground">· {g.items.length}</span>{" "}
+          <ChevronDown size={18} className={`ml-auto shrink-0 ${c} transition-transform ${isOpen ? "rotate-180" : ""}`} />
+        </button>{" "}
+        <AnimatePresence initial={false}>
+          {isOpen && (
+            <motion.div initial={{ height: 0, opacity: 0 }} animate={{ height: "auto", opacity: 1 }} exit={{ height: 0, opacity: 0 }} className="overflow-hidden">
+              {g.ctx && <p className="border-b border-border bg-muted px-4 py-3 text-sm italic leading-6 text-muted-foreground">💡 {g.ctx}</p>}{" "}
+              <ul className="divide-y divide-slate-50 bg-card dark:divide-slate-800">
+                {g.items.map((p, i) => {
+                  const exKey = `${theme}#${i}`;
+                  const exOpen = openExpl.has(exKey);
+                  return (
+                    <li key={i} className="px-4 py-2.5 text-sm leading-6 text-slate-700 dark:text-slate-200">
+                      <div className="flex items-start gap-2.5">
+                        <span className={`mt-2 h-1.5 w-1.5 shrink-0 rounded-full ${dot}`} />{" "}
+                        <span className="flex-1">{p.text}</span>{" "}
+                        {p.explanation && (
+                          <button onClick={() => setOpenExpl(s => bascule(s, exKey))} title="Comprendre cette proposition"
+                            className={`mt-0.5 flex h-6 w-6 shrink-0 items-center justify-center rounded-full border transition ${exOpen ? "border-violet-300 bg-violet-100 text-violet-700 dark:bg-violet-500/10 dark:text-violet-300" : "border-violet-200 bg-card text-violet-500 hover:bg-violet-50 dark:border-violet-500/25"}`}>
+                            <HelpCircle size={14} />
+                          </button>
+                        )}
+                      </div>{" "}
+                      <AnimatePresence initial={false}>
+                        {exOpen && p.explanation && (
+                          <motion.div initial={{ height: 0, opacity: 0 }} animate={{ height: "auto", opacity: 1 }} exit={{ height: 0, opacity: 0 }} className="overflow-hidden">
+                            <p className="ml-4 mt-2 rounded-xl border-l-2 border-violet-300 bg-violet-50/70 px-3 py-2.5 text-[13px] leading-6 text-muted-foreground dark:bg-violet-500/10">{p.explanation}</p>
+                          </motion.div>
+                        )}
+                      </AnimatePresence>{" "}
+                    </li>
+                  );
+                })}
+              </ul>
+            </motion.div>
+          )}
+        </AnimatePresence>{" "}
+      </div>
+    );
+  };
+
   return (
     <section className="mt-8">
       <h3 className="text-2xl font-staatliches uppercase text-foreground">{titre}</h3>{" "}
       <p className="mt-1 text-xs text-muted-foreground">
-        Toutes {nomCandidat ? `les idées de ${nomCandidat}` : "ses idées"}, par thème — issues {urls.some(estVideo) && !urls.every(estVideo) ? "du programme officiel et de ses présentations" : urls.every(estVideo) ? "de sa présentation officielle" : "du programme officiel"}.
+        Toutes {nomCandidat ? `les idées de ${nomCandidat}` : "ses idées"}, par {parPlan ? "plan puis par thème" : "thème"} — issues {urls.some(estVideo) && !urls.every(estVideo) ? "du programme officiel et de ses présentations" : urls.every(estVideo) ? "de sa présentation officielle" : "du programme officiel"}.
         Cliquez sur <HelpCircle size={12} className="inline -mt-0.5" /> pour comprendre pourquoi.
       </p>{" "}
-      <div className="mt-4 space-y-4">
-        {Object.entries(groups).map(([theme, g]) => {
-          const { Icon, c, bg, dot } = themeStyle(theme);
-          const isOpen = openTheme.has(theme);
-          return (
-            <div key={theme} className="overflow-hidden rounded-2xl border border-border">
-              <button onClick={() => setOpenTheme(s => bascule(s, theme))} aria-expanded={isOpen}
-                className={`flex w-full items-center gap-2.5 ${bg} px-4 py-3 text-left transition hover:brightness-95`}>
-                <span className={`flex h-8 w-8 shrink-0 items-center justify-center rounded-xl bg-card ${c} shadow-sm`}><Icon size={16} /></span>{" "}
-                <p className={`text-sm font-black uppercase tracking-widest ${c}`}>{theme}</p>{" "}
-                <span className="text-[10px] font-black text-muted-foreground">· {g.items.length}</span>{" "}
-                <ChevronDown size={18} className={`ml-auto shrink-0 ${c} transition-transform ${isOpen ? "rotate-180" : ""}`} />
-              </button>{" "}
-              <AnimatePresence initial={false}>
-                {isOpen && (
-                  <motion.div initial={{ height: 0, opacity: 0 }} animate={{ height: "auto", opacity: 1 }} exit={{ height: 0, opacity: 0 }} className="overflow-hidden">
-                    {g.ctx && <p className="border-b border-border bg-muted px-4 py-3 text-sm italic leading-6 text-muted-foreground">💡 {g.ctx}</p>}{" "}
-                    <ul className="divide-y divide-slate-50 bg-card dark:divide-slate-800">
-                      {g.items.map((p, i) => {
-                        const exKey = `${theme}#${i}`;
-                        const exOpen = openExpl.has(exKey);
-                        return (
-                          <li key={i} className="px-4 py-2.5 text-sm leading-6 text-slate-700 dark:text-slate-200">
-                            <div className="flex items-start gap-2.5">
-                              <span className={`mt-2 h-1.5 w-1.5 shrink-0 rounded-full ${dot}`} />{" "}
-                              <span className="flex-1">{p.text}</span>{" "}
-                              {p.explanation && (
-                                <button onClick={() => setOpenExpl(s => bascule(s, exKey))} title="Comprendre cette proposition"
-                                  className={`mt-0.5 flex h-6 w-6 shrink-0 items-center justify-center rounded-full border transition ${exOpen ? "border-violet-300 bg-violet-100 text-violet-700 dark:bg-violet-500/10 dark:text-violet-300" : "border-violet-200 bg-card text-violet-500 hover:bg-violet-50 dark:border-violet-500/25"}`}>
-                                  <HelpCircle size={14} />
-                                </button>
-                              )}
-                            </div>{" "}
-                            <AnimatePresence initial={false}>
-                              {exOpen && p.explanation && (
-                                <motion.div initial={{ height: 0, opacity: 0 }} animate={{ height: "auto", opacity: 1 }} exit={{ height: 0, opacity: 0 }} className="overflow-hidden">
-                                  <p className="ml-4 mt-2 rounded-xl border-l-2 border-violet-300 bg-violet-50/70 px-3 py-2.5 text-[13px] leading-6 text-muted-foreground dark:bg-violet-500/10">{p.explanation}</p>
-                                </motion.div>
-                              )}
-                            </AnimatePresence>{" "}
-                          </li>
-                        );
-                      })}
-                    </ul>
-                  </motion.div>
+      {parPlan ? (
+        <div className="mt-4 space-y-3">
+          {plans.map(pl => {
+            const ouvert = openTheme.has(`plan:${pl.url}`);
+            return (
+              <div key={pl.url} className="overflow-hidden rounded-2xl border border-border bg-card">
+                <button onClick={() => setOpenTheme(s => bascule(s, `plan:${pl.url}`))} aria-expanded={ouvert}
+                  className="flex min-h-[56px] w-full items-center gap-3 px-4 py-3 text-left transition hover:bg-muted">
+                  <span className="flex h-9 w-9 shrink-0 items-center justify-center rounded-xl bg-slate-900 text-white dark:bg-white dark:text-slate-900">{estVideo(pl.url) ? <PlayCircle size={17} /> : <FileText size={17} />}</span>{" "}
+                  <span className="min-w-0 flex-1">
+                    <span className="block text-[15px] font-black leading-snug text-foreground">{pl.nom}</span>{" "}
+                    <span className="block text-[12px] font-bold text-muted-foreground">{pl.n} proposition{pl.n > 1 ? "s" : ""} · {pl.themes.length} thème{pl.themes.length > 1 ? "s" : ""}</span>
+                  </span>{" "}
+                  <ChevronDown size={18} className={`shrink-0 text-muted-foreground transition-transform ${ouvert ? "rotate-180" : ""}`} />
+                </button>{" "}
+                {ouvert && (
+                  <div className="space-y-2.5 border-t border-border p-3">
+                    {pl.themes.filter(t => groups[t]).map(t => unTheme(t, groups[t]))}
+                  </div>
                 )}
-              </AnimatePresence>{" "}
-            </div>
-          );
-        })}
-      </div>{" "}
+              </div>
+            );
+          })}
+        </div>
+      ) : (
+        <div className="mt-4 space-y-4">
+          {Object.entries(groups).map(([t, g]) => unTheme(t, g))}
+        </div>
+      )}{" "}
       <div className="mt-3 flex flex-col gap-1.5">
         {urls.map(u => (
           <a key={u} href={u} target="_blank" rel="noreferrer" className="inline-flex items-center gap-1.5 text-[11px] font-black uppercase tracking-widest text-blue-700 hover:underline dark:text-blue-300">

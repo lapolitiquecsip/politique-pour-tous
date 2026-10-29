@@ -280,7 +280,14 @@ async function fetchRSSFeed(url: string): Promise<string | null> {
       return null;
     }
 
-    return await response.text();
+    // Le flux est décodé selon SON encodage : en-tête HTTP, sinon prologue XML. response.text()
+    // lit toujours de l'UTF-8 ; les flux du Sénat, en iso-8859-15, perdaient alors tous leurs
+    // accents (« D�lits routiers », « d�pos� »), irrécupérables une fois enregistrés.
+    const octets = Buffer.from(await response.arrayBuffer());
+    const encodage = (/charset=([\w-]+)/i.exec(response.headers.get('content-type') || '')?.[1]
+      || /^<\?xml[^>]*encoding=["']([\w-]+)["']/i.exec(octets.subarray(0, 200).toString('latin1'))?.[1]
+      || 'utf-8').toLowerCase();
+    try { return new TextDecoder(encodage).decode(octets); } catch { return octets.toString('utf-8'); }
   } catch (err: any) {
     console.warn(`[Scraper] Erreur fetch ${url}:`, err.message);
     return null;

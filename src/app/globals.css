@@ -343,7 +343,10 @@ html[data-abonnement="pro"] .lbl-offre { display: none; }
    `rgb(var(--lueur-offre)/.4)`, y compris dans une valeur Tailwind entre crochets. */
 :root { --lueur-offre: 251 191 36; }
 
-[data-offre="pro"] {
+/* Le lien « Mon espace Pro » du menu prend aussi la palette violette (30/10/2026 : il restait
+   doré, couleur du Premium). */
+[data-offre="pro"],
+html[data-abonnement="pro"] .lien-offre {
   --lueur-offre: 168 85 247;
   --color-amber-50:  #faf5ff;
   --color-amber-100: #f3e8ff;

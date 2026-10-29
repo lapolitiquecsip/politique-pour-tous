@@ -49,6 +49,7 @@ import ParallelRoles from "@/components/shared/ParallelRoles";
 import StructuredBio, { hasStructuredBio } from "@/components/shared/StructuredBio";
 import InstitutionalRoleBanner from "@/components/shared/InstitutionalRoleBanner";
 import InitiativeRank from "@/components/shared/InitiativeRank";
+import AmendementsDepute from "@/components/deputies/AmendementsDepute";
 import { useGlossary } from "@/components/providers/GlossaryProvider";
 import { deputyPhotoSources } from "@/lib/initiators";
 
@@ -797,6 +798,9 @@ export default function DeputyDetailPage({ params, embedded, initialDeputy }: { 
                 </div>
               )}
             </div>{" "}
+
+            {/* Ses amendements : chaque amendement relevé (toutes les heures) apparaît ici tout seul. */}
+            {deputy && <AmendementsDepute slug={slug} nom={`${deputy.first_name} ${deputy.last_name}`} />}{" "}
 
             {/* REORDERED: Positions sur les scrutins Section (moved here) */}
             <div className="pt-8">

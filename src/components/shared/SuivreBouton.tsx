@@ -7,11 +7,13 @@ import { api } from "@/lib/api";
 import { usePremium } from "@/lib/hooks/usePremium";
 
 /**
- * Suivre un parti, un ministère, un candidat ou une commission (alertes Pro).
- * Les élus ont leur propre bouton (FollowButton) : leurs votes passent par une autre table.
+ * Suivre un parti, un ministère, un candidat, une commission, ou les amendements d'un texte ou
+ * d'un groupe (alertes Pro). Les élus ont leur propre bouton (FollowButton) : leurs votes passent
+ * par une autre table. `libelles` remplace « Suivre / Suivi » (ex. « M'alerter / Alertes activées »).
  */
-export default function SuivreBouton({ kind, refId, label, className = "" }: {
-  kind: "parti" | "ministere" | "candidat" | "commission"; refId: string; label: string; className?: string;
+export default function SuivreBouton({ kind, refId, label, className = "", libelles }: {
+  kind: "parti" | "ministere" | "candidat" | "commission" | "amdt_texte" | "amdt_groupe"; refId: string; label: string; className?: string;
+  libelles?: [string, string];
 }) {
   const { isPro, loading } = usePremium();
   const [suivi, setSuivi] = useState<boolean | null>(null);
@@ -30,7 +32,8 @@ export default function SuivreBouton({ kind, refId, label, className = "" }: {
       </Link>
     );
   }
-  const sensible = kind === "parti" || kind === "candidat";
+  // Suivre un parti, un candidat ou les amendements d'un groupe peut révéler une opinion politique.
+  const sensible = kind === "parti" || kind === "candidat" || kind === "amdt_groupe";
   const basculer = async () => {
     const avant = suivi;
     if (!avant && sensible && !(await api.consentementSuivis())) { setDemande(true); return; }
@@ -41,7 +44,7 @@ export default function SuivreBouton({ kind, refId, label, className = "" }: {
   if (demande) {
     return (
       <span className={`inline-flex max-w-md flex-col gap-2 rounded-2xl border border-fuchsia-400/40 bg-slate-950/90 p-3 text-left text-xs leading-relaxed text-white ${className}`}>
-        Suivre un parti ou un candidat peut laisser deviner une opinion politique. Nous ne l&apos;utilisons que pour vous envoyer
+        Suivre un parti, un candidat ou un groupe politique peut laisser deviner une opinion politique. Nous ne l&apos;utilisons que pour vous envoyer
         les informations qui les concernent, sans la partager ; vous pouvez retirer votre accord à tout moment depuis votre espace.{" "}
         <span className="flex gap-2">
           <button onClick={async () => { await api.donnerConsentementSuivis(); setDemande(false); setSuivi(true); await api.ajouterSuivi(kind, refId, label); }}
@@ -56,7 +59,7 @@ export default function SuivreBouton({ kind, refId, label, className = "" }: {
       className={`inline-flex items-center gap-2 rounded-full px-4 py-2 text-[11px] font-black uppercase tracking-widest transition ${suivi
         ? "bg-gradient-to-r from-fuchsia-600 to-purple-700 text-white shadow-lg shadow-fuchsia-500/25"
         : "border border-border bg-card text-foreground hover:border-fuchsia-400"} ${className}`}>
-      {suivi ? <><BellRing size={14} /> Suivi</> : <><BellPlus size={14} /> Suivre</>}
+      {suivi ? <><BellRing size={14} /> {libelles?.[1] ?? "Suivi"}</> : <><BellPlus size={14} /> {libelles?.[0] ?? "Suivre"}</>}
     </button>
   );
 }

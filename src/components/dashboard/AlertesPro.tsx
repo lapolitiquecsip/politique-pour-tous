@@ -14,10 +14,10 @@ import { api } from "@/lib/api";
  * ou pas du tout — rien n'est coché d'office (user_preferences.abonnements_pro).
  */
 
-type Kind = "parti" | "ministere" | "candidat" | "commission";
+type Kind = "parti" | "ministere" | "candidat" | "commission" | "amdt_texte" | "amdt_groupe";
 type Option = { ref: string; label: string };
 
-const KINDS: [Kind, string][] = [["parti", "Partis"], ["ministere", "Ministères"], ["candidat", "Candidats 2027"], ["commission", "Commissions"]];
+const KINDS: [Kind, string][] = [["parti", "Partis"], ["ministere", "Ministères"], ["candidat", "Candidats 2027"], ["commission", "Commissions"], ["amdt_texte", "Amendements · textes"], ["amdt_groupe", "Amendements · groupes"]];
 const PERIMETRES: [string, string][] = [["commune", "Ma commune"], ["departement", "Mon département"], ["region", "Ma région"], ["national", "Rien de local"]];
 const SECTEURS: [string, string][] = [
   ["", "Non précisé"], ["sante", "Santé"], ["education", "Éducation"], ["agriculture", "Agriculture, pêche"], ["btp_logement", "BTP, immobilier"],
@@ -29,7 +29,7 @@ const LOGEMENTS: [string, string][] = [["", "Non précisé"], ["locataire", "Loc
 const ENFANTS: [string, string][] = [["", "Non précisé"], ["aucun", "Pas d'enfant à charge"], ["petits", "Enfants de moins de 6 ans"], ["scolarises", "Enfants scolarisés"], ["etudiants", "Enfants étudiants"]];
 // Suivre un parti ou un candidat peut révéler une opinion politique (RGPD, art. 9) :
 // consentement explicite avant le premier suivi de ce type.
-const SENSIBLES: Kind[] = ["parti", "candidat"];
+const SENSIBLES: Kind[] = ["parti", "candidat", "amdt_groupe"];
 
 type Rythme = "aucun" | "quotidien" | "hebdo";
 const RUBRIQUES: { code: string; Icone: LucideIcon; titre: string; texte: string }[] = [

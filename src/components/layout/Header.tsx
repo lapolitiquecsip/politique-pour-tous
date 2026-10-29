@@ -131,7 +131,7 @@ export default function Header() {
                 <Link 
                   key={link.href}
                   href={link.href} 
-                  className={`flex items-center gap-1 group transition-all duration-300 whitespace-nowrap ${link.isSpecial ? 'underline decoration-yellow-400 decoration-2 underline-offset-4' : ''}`}
+                  className={`flex items-center gap-1 group transition-all duration-300 whitespace-nowrap ${link.isSpecial ? 'lien-offre underline decoration-yellow-400 decoration-2 underline-offset-4' : ''}`}
                 >
                   <Icon size={14} className={`${link.iconColor} group-hover:scale-110 transition-transform`} />{" "}
                   <span className={`font-staatliches text-lg uppercase tracking-wide ${link.color} pt-0.5 group-hover:opacity-80 transition-all`}>
@@ -241,7 +241,7 @@ export default function Header() {
               <Link
                 key={link.href}
                 href={link.href}
-                className={`flex items-center gap-3 group ${link.isSpecial ? "rounded-2xl bg-gradient-to-r from-amber-300 via-amber-400 to-yellow-500 px-4 py-3 shadow-lg shadow-amber-500/30" : ""}`}
+                className={`flex items-center gap-3 group ${link.isSpecial ? "lien-offre rounded-2xl bg-gradient-to-r from-amber-300 via-amber-400 to-yellow-500 px-4 py-3 shadow-lg shadow-amber-500/30" : ""}`}
                 onClick={() => setIsMenuOpen(false)}
               >
                 <Icon className={link.isSpecial ? "text-white" : link.iconColor} size={link.isSpecial ? 22 : 20} fill={link.isSpecial ? "currentColor" : "none"} />{" "}

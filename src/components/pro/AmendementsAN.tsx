@@ -3,6 +3,7 @@
 import { useEffect, useMemo, useState } from "react";
 import { ChevronDown, ExternalLink, FilePenLine, Loader2, Search, Users, X } from "lucide-react";
 import { supabase } from "@/lib/supabase";
+import SuivreBouton from "@/components/shared/SuivreBouton";
 
 /**
  * Amendements de l'Assemblée nationale en temps réel — réservé aux membres Pro.
@@ -14,6 +15,8 @@ import { supabase } from "@/lib/supabase";
  *
  * Filtres : texte, groupe, sort, recherche (auteur, numéro, contenu). « Nouveau » :
  * repéré depuis la dernière visite (mémorisée dans le navigateur).
+ * Alertes (30/10/2026) : le texte ou le groupe choisi se suit d'un clic ; chaque nouvel
+ * amendement arrive alors par e-mail et dans la cloche, dès le relevé (backend alertes-amendements).
  */
 
 type Amendement = {
@@ -100,6 +103,8 @@ export default function AmendementsAN() {
   const [groupes, setGroupes] = useState<string[]>([]);
   const [texte, setTexte] = useState("");
   const [groupe, setGroupe] = useState("");
+  // Lien depuis la fiche d'un député (« Ses amendements ») : ses seuls amendements.
+  const [depute, setDepute] = useState("");
   const [sort, setSort] = useState("");
   const [saisie, setSaisie] = useState("");
   const [recherche, setRecherche] = useState("");
@@ -116,8 +121,10 @@ export default function AmendementsAN() {
   // Lien depuis l'e-mail Pro (« Voir les amendements ») : /premium/?amdt-texte=…&amdt-q=…#amendements.
   useEffect(() => {
     const p = new URLSearchParams(window.location.search);
-    if (!p.get("amdt-texte") && !p.get("amdt-q")) return;
+    if (!p.get("amdt-texte") && !p.get("amdt-q") && !p.get("amdt-groupe") && !p.get("amdt-depute")) return;
+    setDepute(p.get("amdt-depute") || "");
     setTexte(p.get("amdt-texte") || "");
+    setGroupe(p.get("amdt-groupe") || "");
     setSort(p.get("amdt-sort") || "");
     setSaisie(p.get("amdt-q") || "");
     setViser(true);
@@ -140,7 +147,7 @@ export default function AmendementsAN() {
 
   // Recherche : on attend que la frappe s'arrête.
   useEffect(() => { const t = setTimeout(() => setRecherche(nettoyer(saisie)), 350); return () => clearTimeout(t); }, [saisie]);
-  useEffect(() => { setPage(0); }, [texte, groupe, sort, recherche]);
+  useEffect(() => { setPage(0); }, [texte, groupe, sort, recherche, depute]);
 
   useEffect(() => {
     let actif = true;
@@ -149,6 +156,7 @@ export default function AmendementsAN() {
       .order("vu_le", { ascending: false }).order("ordre", { ascending: true }).range(page * PAR_PAGE, page * PAR_PAGE + PAR_PAGE - 1);
     if (texte) q = q.eq("texte_uid", texte);
     if (groupe) q = q.eq("groupe", groupe);
+    if (depute) q = q.eq("depute_slug", depute);
     if (sort === "attente") q = q.is("sort", null); else if (sort) q = q.eq("sort", sort);
     if (recherche) q = q.or(`auteur.ilike.%${recherche}%,numero.ilike.%${recherche}%,expose.ilike.%${recherche}%,dispositif.ilike.%${recherche}%`);
     q.then(({ data, count, error }) => {
@@ -159,10 +167,10 @@ export default function AmendementsAN() {
       setCharge(false);
     });
     return () => { actif = false; };
-  }, [texte, groupe, sort, recherche, page]);
+  }, [texte, groupe, sort, recherche, depute, page]);
 
   const derniere = useMemo(() => textes.reduce((m, t) => (t.dernier > m ? t.dernier : m), ""), [textes]);
-  const filtres = !!(texte || groupe || sort || recherche);
+  const filtres = !!(texte || groupe || sort || recherche || depute);
   const select = "w-full min-h-[44px] appearance-none rounded-xl border border-white/10 bg-white/5 px-3.5 text-sm font-medium text-white focus:border-fuchsia-400/50 focus:outline-none [&>option]:bg-slate-900";
 
   return (
@@ -207,9 +215,22 @@ export default function AmendementsAN() {
         </div>
       </div>{" "}
 
+      {/* Être alerté : le texte ou le groupe choisi, d'un clic. */}
+      <div className="mt-3 flex flex-wrap items-center gap-2 rounded-2xl bg-fuchsia-500/[0.07] p-3 ring-1 ring-fuchsia-400/20">
+        {texte || groupe ? (
+          <>
+            {texte && <SuivreBouton kind="amdt_texte" refId={texte} label={textes.find(t => t.texte_uid === texte)?.texte_titre || texte} libelles={["M'alerter sur ce texte", "Alertes activées : ce texte"]} className="!normal-case !tracking-normal text-[12px]" />}{" "}
+            {groupe && <SuivreBouton kind="amdt_groupe" refId={groupe} label={groupe} libelles={[`M'alerter des amendements ${groupe}`, `Alertes activées : ${groupe}`]} className="!normal-case !tracking-normal text-[12px]" />}{" "}
+            <span className="text-[12px] leading-snug text-white/55">Chaque nouvel amendement vous arrive par e-mail et dans vos alertes, dès le relevé horaire.</span>
+          </>
+        ) : (
+          <span className="text-[13px] leading-snug text-white/70"><strong className="text-white">Soyez alerté en temps réel :</strong> choisissez un texte ou un groupe ci-dessus, puis activez l&apos;alerte.</span>
+        )}
+      </div>{" "}
+
       <div className="mt-4 flex flex-wrap items-center justify-between gap-2 text-[13px] text-white/60">
         <span>{total != null ? <><strong className="font-bold text-white">{total.toLocaleString("fr-FR")}</strong> amendement{total > 1 ? "s" : ""}{filtres ? " correspondant à vos filtres" : ""}</> : " "}</span>{" "}
-        {filtres && <button type="button" onClick={() => { setTexte(""); setGroupe(""); setSort(""); setSaisie(""); }} className="font-bold text-fuchsia-300 hover:text-fuchsia-200">Effacer les filtres</button>}
+        {filtres && <button type="button" onClick={() => { setTexte(""); setGroupe(""); setSort(""); setSaisie(""); setDepute(""); }} className="font-bold text-fuchsia-300 hover:text-fuchsia-200">Effacer les filtres</button>}
       </div>{" "}
 
       {erreur ? (

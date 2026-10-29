@@ -3,10 +3,9 @@
 import { useState, useEffect, useTransition } from "react";
 import Link from "next/link";
 // ... (imports lucide-react)
-import { User, Star, Vote, Users, ChevronRight, Bell, MapPin, Lock, CheckCircle2, XCircle, MinusCircle, Loader2, Calendar, LayoutDashboard, LogOut, Settings, ArrowRight, Bookmark, FileText, Search, Clock, Globe, Layers, UserMinus, Building2, Scale, Gift } from "lucide-react";
+import { User, Star, Vote, Users, ChevronRight, Bell, MapPin, Lock, Loader2, Calendar, Settings, ArrowRight, Bookmark, Globe, Layers, UserMinus, Building2, Scale, Gift } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
 import { api } from "@/lib/api";
-import { BallotBox, BallotChip } from "@/components/dashboard/BallotVote";
 import NotificationsFeed from "@/components/dashboard/NotificationsFeed";
 import PremiumPreferences from "@/components/dashboard/PremiumPreferences";
 import AlertesPro from "@/components/dashboard/AlertesPro";
@@ -61,12 +60,8 @@ const REFERENCE_PERDUE = "Loi retirée de la base";
  * produirait aucune règle. Le dégradé de l'onglet actif est plus clair que celui
  * au repos, ce qui suffit à le désigner sans compter sur la seule couleur.
  */
+// « Mon historique de vote » retiré pour tous les abonnements le 31/10/2026 (jugé inutile par l'éditeur).
 const ONGLETS = [
-  {
-    id: "votes", label: "Mon historique de vote", icone: Vote, premium: false,
-    actif: "bg-gradient-to-br from-blue-400 to-blue-600 shadow-blue-500/50",
-    repos: "bg-gradient-to-br from-blue-500 to-blue-700 hover:from-blue-400 hover:to-blue-600",
-  },
   {
     id: "deputies", label: "Mes élus suivis", icone: Users, premium: false,
     actif: "bg-gradient-to-br from-emerald-400 to-emerald-600 shadow-emerald-500/50",
@@ -183,11 +178,10 @@ export default function EspacePersonnel({ mode = "tout" }: { mode?: ModeEspace }
   // Tutoriel d'accueil Pro : ouvert de lui-même à la première visite de l'espace (ou au
   // retour du paiement, ?bienvenue=1), puis seulement à la demande.
   const [tutoriel, setTutoriel] = useState(false);
-  const [userVotes, setUserVotes] = useState<any[]>([]);
   const [followedDeputies, setFollowedDeputies] = useState<any[]>([]);
   const [savedItems, setSavedItems] = useState<any[]>([]);
   // Dans l'espace Pro, ce panneau devient l'onglet « Mes suivis » : on l'ouvre sur les élus.
-  const [activeTab, setActiveTab] = useState<IdOnglet>(mode === "espace" && isPro ? "deputies" : "votes");
+  const [activeTab, setActiveTab] = useState<IdOnglet>("deputies");
   // Un lien « /dashboard#parrainage » (bouton cadeau de l'en-tête) ouvre directement
   // l'onglet, y compris quand on est déjà sur la page.
   useEffect(() => {
@@ -213,37 +207,12 @@ export default function EspacePersonnel({ mode = "tout" }: { mode?: ModeEspace }
 
     const loadDashboardData = async () => {
       try {
-        const [votes, follows, saved] = await Promise.all([
-          api.getUserVotes(userId),
+        const [follows, saved] = await Promise.all([
           api.getUserFollows(userId),
           isPremium ? api.getUserSavedItems(userId) : Promise.resolve([])
         ]);
-        setUserVotes(votes);
         setFollowedDeputies(follows);
-        
-        // Enrich votes with law/scrutin titles in the background if not already present
-        const enrichVotes = async () => {
-          const fullVotes = await Promise.all(votes.map(async (v: any) => {
-            if (v.laws || v.scrutins) return v; // Already has relation info
-            
-            // Resolve the canonical legislative record; never fall back to demo facts.
-            try {
-              let lawData = await api.getLaw(v.law_id);
-              if (lawData) return { ...v, laws: lawData };
-              
-              // Legacy citizen votes may still point at an old scrutin.
-              const scrutinData = await api.getScrutin(v.law_id);
-              if (scrutinData) return { ...v, scrutins: scrutinData };
-              
-              return v;
-            } catch (e) {
-              return v;
-            }
-          }));
-          setUserVotes(fullVotes);
-        };
-        enrichVotes();
-        
+
         // Render raw saved items immediately so counts are correct and fast
         setSavedItems(saved.map((item: any) => ({ ...item, data: { title: `Chargement... (${item.item_id})` } })));
         setLoading(false); // Stop main loading state here
@@ -337,8 +306,6 @@ export default function EspacePersonnel({ mode = "tout" }: { mode?: ModeEspace }
   // On masque les favoris dont la loi n'existe plus (titre irrécupérable) : ils affichaient
   // « Loi retirée de la base ». L'utilisateur a demandé à ne plus les voir sur son profil.
   const savedLaws = savedLawsAll.filter(item => !!titreOuNull(item.data));
-  // Idem pour l'historique de vote : on ne garde que les votes dont la loi est résolue.
-  const resolvedVotes = userVotes.filter(v => !!titreOuNull(v.laws || v.scrutins));
   const savedGeos = savedItems.filter(item => ['commune', 'region', 'department'].includes(item.item_type));
 
   // Un méga-octet de tracés pour un décor à 25 % d'opacité : on ne le charge
@@ -382,7 +349,7 @@ export default function EspacePersonnel({ mode = "tout" }: { mode?: ModeEspace }
           serraient sur deux ou trois lignes dès que les onglets étaient nombreux. */}
       <div className="border-b border-white/10 px-3 pt-4 md:px-6 md:pt-6">
         <div className="-mx-1 flex gap-2 overflow-x-auto px-1 pb-4 [scrollbar-width:none] md:flex-wrap md:overflow-visible [&::-webkit-scrollbar]:hidden">
-          {ONGLETS.filter(o => (!o.premium || isPremium) && !(vueOnglets && isPro && o.id === "votes")).map(o => {
+          {ONGLETS.filter(o => (!o.premium || isPremium) && true).map(o => {
             const actif = activeTab === o.id;
             const Icone = o.icone;
             return (
@@ -437,7 +404,7 @@ export default function EspacePersonnel({ mode = "tout" }: { mode?: ModeEspace }
         {/* Quelques lignes grisées tiennent la place, plutôt qu'un « chargement de
             votre compte » qui remplace tout l'écran : le panneau garde sa forme,
             et rien ne saute quand les données arrivent. */}
-        {loading && !userVotes.length && !followedDeputies.length ? (
+        {loading && !followedDeputies.length ? (
           <div className="space-y-3 py-6">
             {[0, 1, 2].map(i => (
               <div key={i} className="h-16 animate-pulse rounded-2xl bg-white/[0.05]" style={{ animationDelay: `${i * 90}ms` }} />
@@ -445,63 +412,7 @@ export default function EspacePersonnel({ mode = "tout" }: { mode?: ModeEspace }
           </div>
         ) : (
           <AnimatePresence mode="wait">
-            {activeTab === "votes" ? (
-              <motion.div 
-                key="votes"
-                initial={{ opacity: 0, y: 10 }}
-                animate={{ opacity: 1, y: 0 }}
-                exit={{ opacity: 0, y: -10 }}
-                className="space-y-6"
-              >
-                {resolvedVotes.length === 0 ? (
-                  <div className="text-center py-20 bg-white/[0.03] rounded-[2rem] border border-dashed border-white/15">
-                    <Vote className="mx-auto mb-4 text-white/25" size={48} />{" "}
-                    <h3 className="text-xl font-bold mb-2">Aucun vote enregistré</h3>{" "}
-                    <p className="text-slate-400 mb-8 max-w-sm mx-auto">Votez sur les prochaines lois pour voir apparaître vos positions ici.</p>{" "}
-                    <Link href="/lois" className="text-amber-400 font-black uppercase text-xs tracking-widest hover:underline">Voir les lois &rarr;</Link>
-                  </div>
-                ) : (
-                  resolvedVotes.map((v) => {
-                    const lawInfo = v.laws || v.scrutins;
-
-                    return (
-                      <div key={v.id} className="group flex flex-col md:flex-row md:items-center gap-4 md:gap-6 p-4 md:p-6 rounded-3xl border border-white/10 hover:border-white/25 hover:shadow-xl transition-all gold-sheen-hover bg-white/[0.04] relative">
-                        <div className="w-14 h-14 rounded-2xl bg-white/5 flex items-center justify-center shrink-0 transition-transform group-hover:scale-105">
-                          <BallotBox vote={v.vote} size={34} />
-                        </div>{" "}
-                        <div className="flex-1 min-w-0">
-                          <div className="flex items-center gap-3 mb-1">
-                            <span className="text-[10px] font-black uppercase tracking-widest text-slate-400 bg-white/5 px-2 py-0.5 rounded border border-white/10">
-                              {lawInfo?.category || "Législation"}
-                            </span>{" "}
-                            <div className="flex items-center gap-1.5 text-[10px] font-bold text-slate-400">
-                              <Calendar size={10} />{" "}
-                              {formatDateSafe(v.created_at) || "Date inconnue"}
-                            </div>
-                          </div>{" "}
-                          {titreOuNull(lawInfo) ? (
-                            <h3 className="text-lg font-bold text-white truncate">
-                              {titreOuNull(lawInfo)}
-                            </h3>
-                          ) : (
-                            <h3 className="text-lg font-bold text-slate-400 truncate">
-                              {REFERENCE_PERDUE}
-                            </h3>
-                          )}
-                        </div>{" "}
-                        <BallotChip vote={v.vote} />{" "}
-                        <Link 
-                          href={`/lois`}
-                          className="w-10 h-10 rounded-full border border-white/10 flex items-center justify-center text-slate-400 hover:bg-slate-950 hover:text-white hover:border-slate-950 transition-all shrink-0"
-                        >
-                          <ArrowRight size={18} />
-                        </Link>{" "}
-                      </div>
-                    );
-                  })
-                )}{" "}
-              </motion.div>
-            ) : activeTab === "deputies" ? (
+            {activeTab === "deputies" ? (
               <motion.div 
                 key="deputies"
                 initial={{ opacity: 0, y: 10 }}

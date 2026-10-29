@@ -1,156 +1,80 @@
 "use client";
 
-import { useState, useRef } from "react";
-import { motion, AnimatePresence, useInView, useReducedMotion } from "framer-motion";
+import { useState } from "react";
+import { motion, AnimatePresence } from "framer-motion";
 import { usePremium } from "@/lib/hooks/usePremium";
 import { lienPaiementStripe } from "@/lib/utils";
 import AccordAchat from "@/components/premium/AccordAchat";
-import { CheckCircle2, Star, FileText, ArrowRight, Quote, Scale, LayoutDashboard, BellRing, Bookmark, Building2, Sliders, X, Sparkles, Vote, MapPin, AlertTriangle, Target, GitBranch, Pencil, HelpCircle, Mic, Radio, Search, Download, LineChart, FilePenLine, MailCheck } from "lucide-react";
+import { CheckCircle2, Check, Minus, Star, FileText, ArrowRight, Scale, BellRing, X, Sparkles, Vote, MapPin, AlertTriangle, Target, GitBranch, Pencil, HelpCircle, LineChart, ChevronDown, ShieldCheck, Lock } from "lucide-react";
 import { PLANS, SALES_OPEN } from "@/lib/constants";
 import Link from "next/link";
 import EspacePersonnel from "@/components/dashboard/EspacePersonnel";
 
-
-/* ── Fade-in wrapper ── */
-function FadeIn({ children, delay = 0, className = "" }: { children: React.ReactNode; delay?: number; className?: string }) {
-  const ref = useRef<HTMLDivElement>(null);
-  const isInView = useInView(ref, { once: true, margin: "-50px" });
-  return (
-    <motion.div ref={ref} initial={{ opacity: 0, y: 30 }} animate={isInView ? { opacity: 1, y: 0 } : { opacity: 0, y: 30 }}
-      transition={{ duration: 0.6, delay, ease: [0.22, 1, 0.36, 1] }} className={className}>
-      {children}
-    </motion.div>
-  );
-}
-
-
-/* ── Avantages premium : chacun renvoie vers la vraie fonctionnalité ; deux ouvrent une démo. ── */
-type Feature = { icon: any; title: string; desc: string; color: string; href: string; demo?: "law" | "notif"; cta: string };
-const FEATURES: Feature[] = [
-  { icon: FileText, title: "Décryptages de lois illimités", desc: "Chaque loi expliquée : ce qu'elle change concrètement, avant / après, qui a voté quoi. Sans jargon.", color: "from-red-500 to-rose-600", href: "/lois", demo: "law", cta: "Voir un exemple d'analyse" },
-  { icon: BellRing, title: "Suivi des élus & notifications", desc: "Abonnez-vous à vos députés et sénateurs : soyez prévenu à chaque vote important, dans votre fil.", color: "from-purple-500 to-fuchsia-600", href: "/dashboard", demo: "notif", cta: "Voir le fil en action" },
-  { icon: Sliders, title: "Alertes 100% personnalisées", desc: "Choisissez vos centres d'intérêt et votre territoire : ne recevez QUE ce qui vous concerne vraiment.", color: "from-amber-400 to-orange-500", href: "/dashboard", cta: "Personnaliser mon profil" },
-  { icon: Building2, title: "Budgets locaux expliqués", desc: "Les finances réelles de votre commune, département et région : recettes, dépenses, dette, fiscalité.", color: "from-emerald-500 to-teal-600", href: "/local", cta: "Explorer les budgets" },
-  { icon: Bookmark, title: "Favoris : lois & territoires", desc: "Enregistrez lois, communes et régions pour les suivre et les retrouver d'un clic sur votre profil.", color: "from-sky-500 to-indigo-600", href: "/dashboard", cta: "Voir mon espace" },
-  { icon: LayoutDashboard, title: "Espace personnel complet", desc: "Historique de vote, élus suivis, lois favorites, territoires : tout au même endroit, à jour.", color: "from-slate-500 to-slate-700", href: "/dashboard", cta: "Ouvrir mon tableau de bord" },
-];
-
-/**
- * Particules qui tombent sur la carte Pro.
- *
- * Positions, tailles et délais sont FIXES et non tirés au hasard : un Math.random()
- * au rendu donnerait des valeurs différentes côté serveur et côté navigateur, ce qui
- * provoque une erreur d'hydratation. Une liste écrite à la main règle le problème et
- * reste parfaitement lisible.
- */
-const PARTICLES = [
-  { x: 8, size: 3, delay: 0, dur: 7.5, opacity: 0.7 },
-  { x: 21, size: 2, delay: 1.8, dur: 9.2, opacity: 0.5 },
-  { x: 34, size: 4, delay: 0.6, dur: 6.4, opacity: 0.8 },
-  { x: 47, size: 2, delay: 3.1, dur: 8.8, opacity: 0.45 },
-  { x: 58, size: 3, delay: 1.2, dur: 7.1, opacity: 0.65 },
-  { x: 69, size: 2, delay: 4.2, dur: 9.6, opacity: 0.4 },
-  { x: 78, size: 4, delay: 2.4, dur: 6.9, opacity: 0.75 },
-  { x: 88, size: 2, delay: 0.9, dur: 8.3, opacity: 0.55 },
-  { x: 95, size: 3, delay: 3.7, dur: 7.8, opacity: 0.6 },
-  { x: 15, size: 2, delay: 5.1, dur: 9.0, opacity: 0.5 },
-  { x: 41, size: 3, delay: 2.9, dur: 8.1, opacity: 0.6 },
-  { x: 63, size: 2, delay: 5.8, dur: 7.3, opacity: 0.45 },
-];
-
-function FallingParticles() {
-  const reduce = useReducedMotion();
-  if (reduce) return null;   // rien qui bouge si le système demande des animations réduites
-  return (
-    <div aria-hidden className="pointer-events-none absolute inset-0 overflow-hidden rounded-[2.5rem]">
-      {PARTICLES.map((p, i) => (
-        <motion.span
-          key={i}
-          className="absolute top-0 rounded-full bg-fuchsia-300"
-          style={{ left: `${p.x}%`, width: p.size, height: p.size }}
-          initial={{ y: -8, opacity: 0 }}
-          animate={{ y: 620, opacity: [0, p.opacity, p.opacity, 0] }}
-          transition={{ duration: p.dur, delay: p.delay, repeat: Infinity, ease: "linear", times: [0, 0.1, 0.8, 1] }}
-        />
-      ))}
-    </div>
-  );
-}
-
-
-/**
- * Sur mobile, les avis défilent d'eux-mêmes de droite à gauche.
- *
- * La liste est affichée DEUX FOIS : quand le défilement atteint la moitié du rail, on
- * revient au début sans transition visible — l'œil ne voit pas la couture, ce qui donne
- * une boucle continue plutôt qu'un aller-retour.
- *
- * Le défilement automatique se met en pause dès que l'utilisateur touche le rail, et
- * reprend deux secondes après qu'il l'a lâché : on n'arrache jamais le geste en cours.
- * Respecte « animations réduites » du système.
- */
-
 /* ── Prix à la française : 3,99 € ── */
 const fmtPrice = (n: number) => `${n.toFixed(2).replace(".", ",").replace(",00", "")} €`;
 
-/* ── Ce que l'abonnement Pro ajoute par-dessus le Premium. ── */
-const PRO_FEATURES = [
+/*
+ * Le comparatif des formules (30/10/2026, d'après une vidéo d'utilisateur sur téléphone) :
+ * une colonne par formule, de plus en plus de cases cochées. Chaque ligne correspond à un
+ * verrou RÉEL du site (usePremium / isPro dans le composant cité en commentaire) : n'ajouter
+ * une ligne que si la fonctionnalité existe et est bien réservée à cette formule.
+ *
+ * Valeur d'une case : true (inclus), false (non inclus) ou un court texte (inclus en partie).
+ */
+type Case = boolean | string;
+type Ligne = { t: string; d?: string; g: Case; p: Case; x: Case; demo?: "law" | "notif"; href?: string; lien?: string };
+type Groupe = { titre: string; icone: any; pro?: boolean; lignes: Ligne[] };
+
+const COMPARATIF: Groupe[] = [
   {
-    icon: Scale,
-    title: "Tout sur un sujet",
-    desc: "Tapez « apprentissage » ou « panneau solaire » : les montants en vigueur, les textes de loi précis avec leur lien Légifrance, le détail des aides et ce qui est en discussion — chaque point sourcé.",
-    color: "from-violet-500 to-fuchsia-600",
-    // L'outil vit dans l'espace Pro, que cette même adresse ouvre pour un abonné.
-    href: "/premium",
-    cta: "Ouvrir mon espace Pro",
+    titre: "Comprendre les lois", icone: Scale, lignes: [
+      { t: "Toutes les lois et tous les votes, résumés simplement", g: true, p: true, x: true },
+      // UniversalLawModal, AnalyseApprofondie
+      { t: "L'analyse détaillée de chaque loi", d: "Ce qu'elle change, avant / après, qui a voté quoi, lue dans le texte officiel", g: false, p: true, x: true, demo: "law", lien: "Voir un exemple" },
+      // VoteDetailsModal
+      { t: "Chaque vote d'élu expliqué", g: false, p: true, x: true },
+      // PlfExplorer, executif/budget
+      { t: "Le budget de l'État, mission par mission", d: "Budget 2027 décrypté et comparé aux années précédentes", g: false, p: true, x: true, href: "/executif/plf", lien: "Voir le budget" },
+      // SaveLawButton
+      { t: "Vos lois favorites, suivies jusqu'au Journal officiel", g: false, p: true, x: true },
+    ],
   },
   {
-    icon: Mic,
-    title: "Suivi des commissions parlementaires",
-    desc: "Assemblée ET Sénat : chaque réunion de commission, avec l'analyse détaillée de ce qui s'y est dit — positions défendues, chiffres avancés, arbitrages, suites annoncées.",
-    color: "from-emerald-500 to-teal-600",
-    href: "/deputes#commissions",
-    cta: "Voir les commissions",
+    titre: "Vos élus et votre territoire", icone: MapPin, lignes: [
+      { t: "Fiches des élus, candidats, Europe et collectivités", g: true, p: true, x: true },
+      // FollowButton, DeputyClient
+      { t: "Suivre vos députés, sénateurs et eurodéputés", d: "Une alerte à chacun de leurs votes, expliqué", g: false, p: true, x: true, demo: "notif", lien: "Voir le fil d'alertes" },
+      // EspacePersonnel (verrou « alertes »)
+      { t: "Alertes personnalisées, aussi par e-mail", d: "Selon vos centres d'intérêt, votre commune et votre département", g: false, p: true, x: true },
+      // local/budget, CommuneDetailPanel
+      { t: "Les budgets de votre commune, département et région", d: "Recettes, dépenses, dette et fiscalité expliquées (DGFiP)", g: false, p: true, x: true, href: "/local", lien: "Explorer" },
+      // local/comparateur, local/radar
+      { t: "Comparateur de communes et radar des grands travaux", g: false, p: true, x: true },
+      // SenatorClient
+      { t: "La liste complète et la carte des sénateurs", g: false, p: true, x: true },
+      // presidentielles-2027 (cloche)
+      { t: "Suivre les candidats à la présidentielle", g: false, p: true, x: true },
+      // CommissionAuditions, AuditionsParMois
+      { t: "Les auditions des ministres et des commissions", g: false, p: "Résumé", x: "Analyse complète" },
+    ],
   },
   {
-    icon: FilePenLine,
-    title: "Amendements en temps réel",
-    desc: "Tous les amendements déposés à l'Assemblée sur les textes en discussion, en séance et en commission, relevés toutes les heures : auteur, groupe, article visé, dispositif, exposé et sort. Filtres par texte, groupe, sort et député.",
-    color: "from-sky-500 to-indigo-600",
-    href: "/premium",
-    cta: "Ouvrir mon espace Pro",
-  },
-  {
-    icon: MailCheck,
-    title: "E-mails à la carte",
-    desc: "Choisissez vos rubriques et leur rythme, chaque jour ou chaque semaine : auditions et commissions, nouvelles lois et textes déposés, Journal officiel, élus suivis, votes européens, votre commune, votre département, votre région.",
-    color: "from-rose-500 to-pink-600",
-    href: "/premium",
-    cta: "Ouvrir mon espace Pro",
-  },
-  {
-    icon: Radio,
-    title: "Veille réseaux sociaux des candidats",
-    desc: "Comptes personnels et comptes de soutien de chaque candidat à la présidentielle : audience, vues par semaine et par mois, dynamiques comparées.",
-    color: "from-fuchsia-500 to-purple-600",
-    href: "/presidentielles-2027#veille",
-    cta: "Voir les dynamiques",
-  },
-  {
-    icon: Search,
-    title: "Recherche plein texte",
-    desc: "Retrouvez une prise de parole, un chiffre ou un amendement dans l'ensemble des comptes rendus de commission indexés.",
-    color: "from-sky-500 to-blue-600",
-    href: "/deputes#commissions",
-    cta: "Chercher dans les comptes rendus",
-  },
-  {
-    icon: Download,
-    title: "Export des données",
-    desc: "Sortez en CSV ce que vous consultez — suivi de commission ou séries d'audience — pour vos notes, vos revues de presse et vos tableaux de bord.",
-    color: "from-amber-400 to-orange-500",
-    href: "/presidentielles-2027#veille",
-    cta: "Essayer un export",
+    titre: "Veille professionnelle", icone: LineChart, pro: true, lignes: [
+      { t: "« Tout sur un sujet »", d: "Tapez « apprentissage » : montants en vigueur, textes précis avec leur lien Légifrance, aides, débats en cours", g: false, p: false, x: true },
+      // CommissionsRegistre, CommissionTracker
+      { t: "Les commissions de l'Assemblée et du Sénat, réunion par réunion", d: "Compte rendu intégral et analyse : positions, chiffres avancés, suites annoncées", g: false, p: false, x: true },
+      // AmendementsAN
+      { t: "Les amendements de l'Assemblée en temps réel", d: "Auteur, groupe, article visé, sort — relevés toutes les heures", g: false, p: false, x: true },
+      // JournalOfficielDuJour, JorfSearch
+      { t: "Le Journal officiel du jour, expliqué et cherchable", g: false, p: false, x: true },
+      { t: "Des e-mails à la carte, chaque jour ou chaque semaine", d: "Enrichis et vérifiés : l'essentiel, les chiffres clés, le rapport de force, la suite", g: false, p: false, x: true },
+      // SuivreBouton
+      { t: "Suivre partis, ministères, candidats et commissions", d: "Le vote de chaque parti suivi, à chaque scrutin", g: false, p: false, x: true },
+      // DynamiquesView, CandidateSocialTracker, PrimaryDebates
+      { t: "Veille presse, temps de parole et réseaux sociaux des candidats", d: "Avec le compte rendu écrit des débats télévisés", g: false, p: false, x: true },
+      { t: "Recherche plein texte dans les comptes rendus", g: false, p: false, x: true },
+      { t: "Export des données (CSV)", g: false, p: false, x: true },
+    ],
   },
 ];
 
@@ -327,26 +251,63 @@ export default function PremiumPage() {
   return <PageOffre />;
 }
 
+/* ── Une case du comparatif ── */
+function CaseFormule({ v, ton }: { v: Case; ton: "g" | "p" | "x" }) {
+  if (v === false) return <Minus size={16} className="mx-auto text-slate-300 dark:text-slate-600" aria-label="Non inclus" />;
+  const couleur = ton === "p" ? "bg-amber-400 text-slate-950" : ton === "x" ? "bg-gradient-to-br from-fuchsia-500 to-purple-600 text-white" : "bg-slate-200 text-slate-700 dark:bg-slate-700 dark:text-slate-200";
+  if (v === true) return <span className={`mx-auto flex h-6 w-6 items-center justify-center rounded-full ${couleur}`} aria-label="Inclus"><Check size={14} strokeWidth={3} /></span>;
+  return (
+    <span className="mx-auto flex flex-col items-center gap-1">
+      <span className={`flex h-6 w-6 items-center justify-center rounded-full ${couleur}`} aria-hidden><Check size={14} strokeWidth={3} /></span>
+      <span className={`text-center text-[10px] font-bold leading-tight ${ton === "x" ? "text-fuchsia-700 dark:text-fuchsia-300" : "text-amber-800 dark:text-amber-300"}`}>{v}</span>
+    </span>
+  );
+}
+
+const FAQ: { q: string; r: string }[] = [
+  { q: "Quelle différence entre Premium et Pro ?", r: "Premium vous fait comprendre en détail : chaque loi analysée, vos élus et votre territoire suivis, des alertes sur ce qui vous concerne. Pro ajoute les outils de veille des professionnels : commissions réunion par réunion, amendements en temps réel, Journal officiel, « Tout sur un sujet » et des e-mails à la carte." },
+  { q: "Puis-je résilier à tout moment ?", r: "Oui, les deux formules sont sans engagement. La résiliation prend effet à la fin de la période payée, sans frais, et un e-mail la confirme." },
+  { q: "Le paiement est-il sécurisé ?", r: "Le paiement passe par Stripe : nous ne voyons jamais votre numéro de carte." },
+  { q: "D'où viennent les informations ?", r: "Des sources officielles : Assemblée nationale, Sénat, Journal officiel, Parlement européen, DGFiP, INSEE. Les textes rédigés par intelligence artificielle sont vérifiés contre ces sources, et chaque information renvoie à son origine." },
+];
+
 function PageOffre() {
-  const { userId } = usePremium();
-  const reduceMotion = useReducedMotion();
-  const [billingCycle, setBillingCycle] = useState<"monthly" | "annually">("monthly");
+  const { userId, tierAffiche } = usePremium();
+  const [annuel, setAnnuel] = useState(false);
   const [lawOpen, setLawOpen] = useState(false);
   const [notifOpen, setNotifOpen] = useState(false);
+  const [question, setQuestion] = useState<number | null>(0);
 
-  // Mobile : un sélecteur fixe choisit l'offre affichée. Le rail glissant d'avant
-  // « flottait » sous le doigt, et l'on ne devinait pas qu'une offre Pro attendait à droite.
-  const [offreMobile, setOffreMobile] = useState<"elite" | "pro">("elite");
-
-  const plan = PLANS.elite;
-  // Chaque carte lance son propre paiement : le clic porte l'offre choisie.
-  // Le Premium est mensuel uniquement — seule l'offre Pro suit la bascule de périodicité.
-  // Le clic ouvre d'abord le récapitulatif et l'accord (CGV, accès immédiat) ; Stripe ensuite.
+  // Chaque bouton lance son propre paiement : le clic porte l'offre choisie. Le Premium est
+  // mensuel uniquement ; seule l'offre Pro suit la bascule de périodicité. Le clic ouvre d'abord
+  // le récapitulatif et l'accord (CGV, accès immédiat) ; Stripe ensuite.
   const [commande, setCommande] = useState<{ key: "elite" | "pro"; cycle: "monthly" | "annually" } | null>(null);
-  const goPremium = (key: "elite" | "pro" = "elite") => setCommande({ key, cycle: key === "pro" ? billingCycle : "monthly" });
+  const choisir = (key: "elite" | "pro") => setCommande({ key, cycle: key === "pro" && annuel ? "annually" : "monthly" });
+  const aller = (id: string) => document.getElementById(id)?.scrollIntoView({ behavior: "smooth", block: "start" });
+
+  const prixPro = annuel ? PLANS.pro.annually : PLANS.pro.monthly;
+  const estPremium = tierAffiche === "elite";
+
+  // Le bouton d'une formule : acheter si la vente est ouverte, sinon l'annonce d'ouverture.
+  const BoutonFormule = ({ cle, plein = false }: { cle: "elite" | "pro"; plein?: boolean }) => {
+    const pro = cle === "pro";
+    if (!pro && estPremium) return <span className={`flex min-h-[48px] items-center justify-center rounded-2xl border-2 border-amber-400 px-4 text-[13px] font-black text-amber-800 dark:text-amber-300 ${plein ? "w-full" : ""}`}>Votre formule actuelle</span>;
+    if (!SALES_OPEN) return (
+      <span className={`flex min-h-[48px] items-center justify-center gap-1.5 rounded-2xl border border-dashed px-4 text-[12px] font-black uppercase tracking-widest ${pro ? "border-fuchsia-400/60 text-fuchsia-700 dark:text-fuchsia-300" : "border-amber-400 text-amber-800 dark:text-amber-300"} ${plein ? "w-full" : ""}`}>
+        Bientôt disponible
+      </span>
+    );
+    return (
+      <button type="button" onClick={() => choisir(cle)}
+        className={`flex min-h-[48px] items-center justify-center gap-2 rounded-2xl px-5 text-[14px] font-black shadow-lg transition hover:brightness-110 active:scale-[0.99] ${plein ? "w-full" : ""} ${pro ? "bg-gradient-to-r from-fuchsia-500 to-purple-600 text-white shadow-fuchsia-500/30" : "bg-gradient-to-r from-amber-400 to-yellow-500 text-slate-950 shadow-amber-500/25"}`}>
+        {pro ? <LineChart size={16} /> : <Star size={16} className="fill-current" />}
+        {pro ? (estPremium ? "Passer au Pro" : "Choisir Pro") : "Devenir Premium"}
+      </button>
+    );
+  };
 
   return (
-    <div className="min-h-screen bg-background pb-20">
+    <div className="min-h-screen bg-background pb-24">
       {commande && (
         <AccordAchat
           offre={PLANS[commande.key].name}
@@ -357,206 +318,199 @@ function PageOffre() {
           onContinuer={() => { window.location.href = lienPaiementStripe(userId, commande.key, commande.cycle); }}
         />
       )}{" "}
-      {/* ══════ HERO ══════ */}
-      <section className="relative overflow-hidden bg-gradient-to-br from-slate-950 via-slate-900 to-amber-950 text-white py-28 px-4">
-        <div className="absolute inset-0 opacity-20">
-          <div className="absolute top-20 left-[10%] w-72 h-72 bg-amber-500 rounded-full blur-[120px] animate-pulse" />{" "}
-          <div className="absolute bottom-10 right-[15%] w-60 h-60 bg-yellow-600 rounded-full blur-[100px] animate-pulse" />
+
+      {/* ══════ HERO : la promesse, les deux prix, une action ══════ */}
+      <section className="relative overflow-hidden bg-gradient-to-br from-slate-950 via-slate-900 to-amber-950 px-4 pb-12 pt-10 text-white md:py-24">
+        <div aria-hidden className="absolute inset-0 opacity-20">
+          <div className="absolute left-[10%] top-10 h-72 w-72 rounded-full bg-amber-500 blur-[120px]" />{" "}
+          <div className="absolute bottom-0 right-[10%] h-60 w-60 rounded-full bg-fuchsia-600 blur-[110px]" />
         </div>{" "}
-        <div className="relative z-10 max-w-4xl mx-auto text-center">
-          <motion.h1 initial={{ opacity: 0, y: 40 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.8, delay: 0.15 }}
-            className="mt-4 text-6xl md:text-8xl font-staatliches uppercase tracking-tight leading-[0.9] mb-6">
+        <div className="relative z-10 mx-auto max-w-4xl text-center">
+          <motion.h1 initial={{ opacity: 0, y: 24 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.6 }}
+            className="font-staatliches text-[3.4rem] uppercase leading-[0.9] tracking-tight md:text-8xl">
             <span className="text-white">La politique,</span>{" "}
-            <span className="bg-gradient-to-b from-amber-200 via-amber-400 to-amber-600 bg-clip-text text-transparent drop-shadow-[0_0_15px_rgba(251,191,36,0.4)]">en premium.</span>
+            <span className="bg-gradient-to-b from-amber-200 via-amber-400 to-amber-600 bg-clip-text text-transparent">en premium.</span>
           </motion.h1>{" "}
-          <motion.p initial={{ opacity: 0, y: 30 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.7, delay: 0.3 }}
-            className="text-xl md:text-2xl text-white/70 max-w-2xl mx-auto mb-10 leading-relaxed">
-            Décryptages de lois illimités, suivi de vos élus et notifications personnalisées sur tout ce qui vous concerne. L&apos;essentiel, sans le bruit.
+          <motion.p initial={{ opacity: 0, y: 16 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.6, delay: 0.1 }}
+            className="mx-auto mt-5 max-w-xl text-[16px] leading-relaxed text-white/75 md:text-xl">
+            Chaque loi analysée, vos élus et votre territoire suivis, et des alertes sur ce qui vous concerne. Sans le bruit.
           </motion.p>{" "}
-          <motion.button initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.6, delay: 0.45 }}
-            onClick={() => SALES_OPEN ? goPremium("elite") : document.getElementById("offres")?.scrollIntoView({ behavior: "smooth" })}
-            className="inline-flex items-center gap-2 rounded-2xl bg-gradient-to-r from-amber-400 to-yellow-500 px-8 py-4 text-slate-900 font-black uppercase tracking-widest text-sm shadow-[0_10px_40px_rgba(251,191,36,0.35)] hover:brightness-110 transition">
-            {SALES_OPEN ? <>Devenir Premium — dès {fmtPrice(plan.monthly)}/mois</> : <>Découvrir les formules</>} {" "}<ArrowRight size={18} />
-          </motion.button>
-          {/* Pas de compteur d'abonnés : les chiffres affichés ici (302 et 47) étaient
-              inventés, alors même que les abonnements ne sont pas ouverts. */}
+          {/* Les deux formules d'un coup d'œil, chacune mène à sa colonne du comparatif. */}
+          <motion.div initial={{ opacity: 0, y: 16 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.6, delay: 0.2 }}
+            className="mx-auto mt-7 grid max-w-md grid-cols-2 gap-3">
+            <button type="button" onClick={() => aller("tableau")}
+              className="rounded-2xl border border-amber-400/60 bg-amber-400/10 px-3 py-3 text-left transition hover:bg-amber-400/20">
+              <span className="block text-[10px] font-black uppercase tracking-widest text-amber-300">Citoyens</span>{" "}
+              <span className="mt-0.5 block font-staatliches text-2xl uppercase leading-none">Premium</span>{" "}
+              <span className="mt-1 block text-[13px] font-bold text-white/85">{fmtPrice(PLANS.elite.monthly)} <span className="font-medium text-white/50">/ mois</span></span>
+            </button>{" "}
+            <button type="button" onClick={() => aller("tableau")}
+              className="rounded-2xl border border-fuchsia-400/60 bg-fuchsia-500/10 px-3 py-3 text-left transition hover:bg-fuchsia-500/20">
+              <span className="block text-[10px] font-black uppercase tracking-widest text-fuchsia-300">Professionnels</span>{" "}
+              <span className="mt-0.5 block font-staatliches text-2xl uppercase leading-none">Pro</span>{" "}
+              <span className="mt-1 block text-[13px] font-bold text-white/85">{fmtPrice(PLANS.pro.monthly)} <span className="font-medium text-white/50">/ mois</span></span>
+            </button>
+          </motion.div>{" "}
+          <motion.button initial={{ opacity: 0, y: 12 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.6, delay: 0.3 }}
+            type="button" onClick={() => aller("tableau")}
+            className="mx-auto mt-4 flex min-h-[52px] w-full max-w-md items-center justify-center gap-2 rounded-2xl bg-gradient-to-r from-amber-400 to-yellow-500 px-6 text-[15px] font-black text-slate-950 shadow-[0_10px_40px_rgba(251,191,36,0.35)] transition hover:brightness-110">
+            Comparer les formules <ArrowRight size={18} />
+          </motion.button>{" "}
+          <p className="mt-3 flex items-center justify-center gap-1.5 text-[12px] font-bold text-white/55">
+            <ShieldCheck size={14} /> Sans engagement · résiliable à tout moment
+          </p>
         </div>
       </section>{" "}
 
-      {/* Les vitrines de fonctionnalités ont été retirées : chaque fonctionnalité est
-          désormais listée — et cliquable — directement dans sa carte d'offre ci-dessous.
-          Les répéter en amont rallongeait la page sans rien ajouter, surtout sur mobile. */}
+      {/* ══════ COMPARATIF ══════ */}
+      <section id="comparatif" className="scroll-mt-16 px-3 pt-10 md:px-4 md:pt-20">
+        <div className="mx-auto max-w-5xl">
+          <div className="mb-6 text-center md:mb-10">
+            <h2 className="font-staatliches text-4xl uppercase tracking-tight text-foreground md:text-6xl">
+              Comparez <span className="text-amber-700 dark:text-amber-400">les formules</span>
+            </h2>{" "}
+            <p className="mx-auto mt-2 max-w-lg text-[15px] text-muted-foreground">Le site reste gratuit. Premium et Pro ajoutent, chacun, de quoi aller plus loin.</p>
+          </div>{" "}
 
-      {/* ══════ OFFRES & CTA ══════ */}
-      <section id="offres" className="scroll-mt-24 py-24 px-4 bg-white dark:bg-slate-900">
-        <div className="max-w-5xl mx-auto">
-          <FadeIn className="text-center mb-12">
-            <h2 className="text-4xl md:text-6xl font-staatliches uppercase tracking-tighter text-slate-900 dark:text-white">
-              Deux formules, <span className="text-amber-700 dark:text-amber-400">un seul site</span>
-            </h2>
-            <p className="mt-3 text-slate-500 dark:text-slate-300 text-lg">Choisissez selon l&apos;usage que vous en faites.</p>
-          </FadeIn>{" "}
+          {/* Pour qui : une phrase par formule payante. */}
+          <div className="mb-5 grid gap-2.5 sm:grid-cols-2">
+            <div className="rounded-2xl border border-amber-300/70 bg-amber-50/70 p-4 dark:border-amber-500/30 dark:bg-amber-500/[0.06]">
+              <p className="flex items-center gap-1.5 text-[11px] font-black uppercase tracking-widest text-amber-800 dark:text-amber-300"><Star size={12} className="fill-current" /> Premium · pour qui ?</p>{" "}
+              <p className="mt-1 text-[14px] leading-snug text-foreground">Les citoyens qui veulent comprendre en détail ce qui se décide, pour eux et près de chez eux.</p>
+            </div>{" "}
+            <div className="rounded-2xl border border-fuchsia-300/70 bg-fuchsia-50/70 p-4 dark:border-fuchsia-500/30 dark:bg-fuchsia-500/[0.06]">
+              <p className="flex items-center gap-1.5 text-[11px] font-black uppercase tracking-widest text-fuchsia-700 dark:text-fuchsia-300"><LineChart size={12} /> Pro · pour qui ?</p>{" "}
+              <p className="mt-1 text-[14px] leading-snug text-foreground">Collaborateurs parlementaires, élus, journalistes, affaires publiques, juristes : la veille au jour le jour.</p>
+            </div>
+          </div>{" "}
 
-          {/* Mobile : les deux offres côte à côte dans un sélecteur fixe, prix compris. */}
-          <div className="mx-auto mb-6 grid max-w-sm grid-cols-2 gap-1 rounded-2xl bg-slate-100 p-1 dark:bg-slate-800 md:hidden">
-            {([["elite", PLANS.elite.name, fmtPrice(PLANS.elite.monthly)], ["pro", PLANS.pro.name, fmtPrice(PLANS.pro.monthly)]] as const).map(([cle, nom, prix]) => {
-              const actif = offreMobile === cle;
-              return (
-                <button key={cle} onClick={() => setOffreMobile(cle)} aria-pressed={actif}
-                  className={`rounded-xl px-3 py-2.5 text-center transition ${actif
-                    ? cle === "pro" ? "bg-gradient-to-br from-fuchsia-500 to-purple-600 text-white shadow-md" : "bg-gradient-to-br from-amber-300 to-yellow-500 text-slate-950 shadow-md"
-                    : "text-slate-500 dark:text-slate-400"}`}>
-                  <span className="block font-staatliches text-xl uppercase leading-none">{nom}</span>{" "}
-                  <span className="mt-0.5 block text-[11px] font-bold opacity-80">{prix} / mois</span>{" "}
+          {/* Périodicité du Pro (seule formule annuelle) : au-dessus du tableau, pas dans une carte. */}
+          <div id="tableau" className="mb-8 flex scroll-mt-20 justify-center">
+            <div role="group" aria-label="Périodicité de l'offre Pro" className="inline-flex items-center gap-1 rounded-full bg-muted p-1">
+              {([[false, "Pro au mois"], [true, "Pro à l'année"]] as const).map(([v, nom]) => (
+                <button key={nom} type="button" onClick={() => setAnnuel(v)} aria-pressed={annuel === v}
+                  className={`flex min-h-[36px] items-center gap-1.5 rounded-full px-4 text-[13px] font-bold transition ${annuel === v ? "bg-card text-foreground shadow-sm" : "text-muted-foreground"}`}>
+                  {nom}{v && <span className="rounded-full bg-emerald-600 px-1.5 py-0.5 text-[10px] font-black text-white">−20 %</span>}
                 </button>
+              ))}
+            </div>
+          </div>{" "}
+
+          {/* Le tableau. En-tête collant : on garde le nom et le prix des formules sous les yeux. */}
+          <div className="rounded-3xl border border-border bg-card shadow-sm">
+            <div className="sticky top-16 z-20 grid grid-cols-[minmax(0,1fr)_54px_68px_68px] items-end rounded-t-3xl border-b border-border bg-card/95 backdrop-blur md:grid-cols-[minmax(0,1fr)_130px_170px_170px]">
+              <div className="px-3 pb-3 pt-4 text-[11px] font-black uppercase tracking-widest text-muted-foreground md:px-6">Ce qui est inclus</div>{" "}
+              <div className="px-1 pb-3 pt-4 text-center">
+                <p className="text-[10px] font-black uppercase text-muted-foreground md:text-xs md:tracking-wide">Gratuit</p>{" "}
+                <p className="mt-0.5 text-[13px] font-black text-foreground md:text-base">0 €</p>
+              </div>{" "}
+              <div className="relative -mt-3 rounded-t-2xl bg-gradient-to-b from-amber-300 to-amber-400 px-1 pb-3 pt-4 text-center text-slate-950">
+                <span className="absolute -top-2.5 left-1/2 -translate-x-1/2 whitespace-nowrap rounded-full bg-slate-950 px-2 py-0.5 text-[8px] font-black uppercase tracking-widest text-amber-300 md:text-[9px]">Recommandé</span>{" "}
+                <p className="font-staatliches text-[19px] uppercase leading-none md:text-2xl">Premium</p>{" "}
+                <p className="mt-1 text-[12px] font-black leading-none md:text-base">{fmtPrice(PLANS.elite.monthly)}<span className="block text-[9px] font-bold opacity-70 md:inline md:text-[11px]"> / mois</span></p>
+              </div>{" "}
+              <div className="relative -mt-3 rounded-t-2xl bg-gradient-to-b from-fuchsia-500 to-purple-600 px-1 pb-3 pt-4 text-center text-white">
+                <p className="font-staatliches text-[19px] uppercase leading-none md:text-2xl">Pro</p>{" "}
+                <p className="mt-1 text-[12px] font-black leading-none md:text-base">{fmtPrice(prixPro)}<span className="block text-[9px] font-bold opacity-80 md:inline md:text-[11px]"> / {annuel ? "an" : "mois"}</span></p>
+              </div>
+            </div>{" "}
+
+            {COMPARATIF.map(gr => (
+              <div key={gr.titre}>
+                <div className={`flex items-center gap-2 border-b border-border px-3 py-3 md:px-6 ${gr.pro ? "bg-fuchsia-500/[0.07]" : "bg-muted/60"}`}>
+                  <gr.icone size={16} className={gr.pro ? "text-fuchsia-600 dark:text-fuchsia-300" : "text-amber-700 dark:text-amber-400"} />{" "}
+                  <h3 className="text-[12px] font-black uppercase tracking-widest text-foreground">{gr.titre}</h3>{" "}
+                  {gr.pro && <span className="rounded-full bg-gradient-to-r from-fuchsia-500 to-purple-600 px-2 py-0.5 text-[9px] font-black uppercase tracking-widest text-white">Pro</span>}
+                </div>{" "}
+                {gr.lignes.map(l => (
+                  <div key={l.t} className="grid grid-cols-[minmax(0,1fr)_54px_68px_68px] items-stretch border-b border-border last:border-b-0 md:grid-cols-[minmax(0,1fr)_130px_170px_170px]">
+                    <div className="px-3 py-3.5 md:px-6">
+                      <p className="text-[14px] font-semibold leading-snug text-foreground">{l.t}</p>{" "}
+                      {l.d && <p className="mt-0.5 text-[12.5px] leading-snug text-muted-foreground">{l.d}</p>}{" "}
+                      {l.lien && (l.demo
+                        ? <button type="button" onClick={() => (l.demo === "law" ? setLawOpen(true) : setNotifOpen(true))} className="mt-1.5 inline-flex min-h-[28px] items-center gap-1 text-[12.5px] font-black text-amber-800 underline-offset-2 hover:underline dark:text-amber-300">{l.lien} <ArrowRight size={13} /></button>
+                        : <Link href={l.href!} className="mt-1.5 inline-flex min-h-[28px] items-center gap-1 text-[12.5px] font-black text-amber-800 underline-offset-2 hover:underline dark:text-amber-300">{l.lien} <ArrowRight size={13} /></Link>)}
+                    </div>{" "}
+                    <div className="flex items-center justify-center px-1"><CaseFormule v={l.g} ton="g" /></div>{" "}
+                    <div className="flex items-center justify-center bg-amber-400/[0.09] px-1"><CaseFormule v={l.p} ton="p" /></div>{" "}
+                    <div className="flex items-center justify-center bg-fuchsia-500/[0.08] px-1"><CaseFormule v={l.x} ton="x" /></div>
+                  </div>
+                ))}
+              </div>
+            ))}{" "}
+
+            {/* Pied du tableau, sur ordinateur : un bouton sous chaque colonne. */}
+            <div className="hidden grid-cols-[minmax(0,1fr)_130px_170px_170px] items-center rounded-b-3xl border-t border-border md:grid">
+              <div className="px-6 py-5 text-[13px] font-bold text-muted-foreground">Sans engagement, résiliable à tout moment.</div>{" "}
+              <div className="px-2 py-5 text-center">
+                {userId ? <span className="text-[12px] font-bold text-muted-foreground">{tierAffiche === "free" ? "Votre formule" : "Inclus"}</span>
+                  : <Link href="/login?inscription=1" className="text-[13px] font-black text-blue-700 underline-offset-2 hover:underline dark:text-blue-300">Créer un compte</Link>}
+              </div>{" "}
+              <div className="bg-amber-400/[0.09] px-3 py-5"><BoutonFormule cle="elite" plein /></div>{" "}
+              <div className="rounded-br-3xl bg-fuchsia-500/[0.08] px-3 py-5"><BoutonFormule cle="pro" plein /></div>
+            </div>
+          </div>{" "}
+
+          {/* Sur téléphone : les deux actions, en grand, sous le tableau. */}
+          <div className="mt-5 space-y-2.5 md:hidden">
+            <BoutonFormule cle="elite" plein />{" "}
+            <BoutonFormule cle="pro" plein />
+          </div>{" "}
+
+          {annuel && <p className="mt-3 text-center text-[13px] font-bold text-emerald-700 dark:text-emerald-400">Pro à l&apos;année : {fmtPrice(PLANS.pro.annually)}, soit {fmtPrice(PLANS.pro.annually / 12)} par mois — deux mois offerts.</p>}{" "}
+
+          {!SALES_OPEN && (
+            <div className="mt-6 rounded-2xl border border-border bg-muted/50 p-5 text-center">
+              <p className="text-[15px] font-black text-foreground">Les abonnements ouvrent très prochainement.</p>{" "}
+              <p className="mx-auto mt-1 max-w-md text-[14px] leading-snug text-muted-foreground">
+                {userId ? "Votre compte est prêt : vous pourrez passer à Premium ou à Pro en un clic dès l'ouverture." : "Créez votre compte gratuit dès maintenant : vous pourrez passer à Premium ou à Pro en un clic dès l'ouverture."}
+              </p>{" "}
+              {!userId && (
+                <Link href="/login?inscription=1" className="mx-auto mt-4 flex min-h-[48px] max-w-xs items-center justify-center gap-2 rounded-2xl bg-slate-900 px-5 text-[14px] font-black text-white transition hover:bg-slate-700 dark:bg-white dark:text-slate-900">
+                  Créer mon compte gratuit <ArrowRight size={16} />
+                </Link>
+              )}
+            </div>
+          )}{" "}
+          {SALES_OPEN && <p className="mt-4 flex items-center justify-center gap-1.5 text-center text-[12px] font-bold text-muted-foreground"><Lock size={13} /> Paiement sécurisé par Stripe · résiliable à tout moment</p>}
+        </div>
+      </section>{" "}
+
+      {/* ══════ QUESTIONS ══════ */}
+      <section className="px-4 pt-14 md:pt-20">
+        <div className="mx-auto max-w-2xl">
+          <h2 className="text-center font-staatliches text-3xl uppercase tracking-tight text-foreground md:text-5xl">Vos questions</h2>{" "}
+          <div className="mt-5 divide-y divide-border rounded-3xl border border-border bg-card">
+            {FAQ.map((f, i) => {
+              const ouvert = question === i;
+              return (
+                <div key={f.q}>
+                  <button type="button" onClick={() => setQuestion(ouvert ? null : i)} aria-expanded={ouvert}
+                    className="flex min-h-[56px] w-full items-center justify-between gap-3 px-5 py-3 text-left">
+                    <span className="text-[15px] font-bold text-foreground">{f.q}</span>{" "}
+                    <ChevronDown size={18} className={`shrink-0 text-muted-foreground transition-transform ${ouvert ? "rotate-180" : ""}`} />
+                  </button>{" "}
+                  <AnimatePresence initial={false}>
+                    {ouvert && (
+                      <motion.div initial={{ height: 0, opacity: 0 }} animate={{ height: "auto", opacity: 1 }} exit={{ height: 0, opacity: 0 }} className="overflow-hidden">
+                        <p className="px-5 pb-4 text-[14px] leading-relaxed text-muted-foreground">{f.r}</p>
+                      </motion.div>
+                    )}
+                  </AnimatePresence>
+                </div>
               );
             })}
           </div>{" "}
-
-          {/*
-            Mobile : les deux offres sont côte à côte dans un rail qui défile au doigt,
-            avec accrochage par carte. Le débord négatif laisse la carte suivante
-            dépasser du bord, ce qui signale qu'il y en a une autre à droite.
-            À partir de md, le rail redevient une grille classique à deux colonnes.
-          */}
-          <div className="grid items-stretch gap-6 md:grid-cols-2 md:gap-8 md:pt-4">
-            {/* ─── Premium ─── */}
-            <FadeIn className={`[&>div]:h-full ${offreMobile === "elite" ? "" : "hidden md:block"}`}>
-              <div className="relative flex h-full flex-col rounded-[2.5rem] border-2 border-amber-400 bg-gradient-to-b from-amber-50/60 to-white dark:from-amber-500/5 dark:to-slate-900 p-6 shadow-2xl shadow-amber-500/10 md:p-8">
-                <div className="absolute top-0 left-1/2 -translate-x-1/2 -translate-y-1/2 whitespace-nowrap bg-slate-900 text-white px-4 py-1.5 rounded-full text-[10px] font-black uppercase tracking-widest shadow-lg">Offre la plus populaire</div>{" "}
-
-                <p className="text-[10px] font-black uppercase tracking-widest text-amber-700 dark:text-amber-400">{PLANS.elite.audience}</p>{" "}
-                <h3 className="mt-1 font-staatliches text-4xl uppercase tracking-tight text-slate-900 dark:text-white">{PLANS.elite.name}</h3>{" "}
-                <p className="mt-1 text-sm text-slate-500">{PLANS.elite.tagline}</p>{" "}
-
-                {/* Formule mensuelle uniquement : aucun choix de périodicité à proposer. */}
-                <div className="mt-6 mb-8">
-                  <div className="flex items-baseline gap-1">
-                    <span className="text-5xl font-black text-slate-900 dark:text-white">{fmtPrice(PLANS.elite.monthly)}</span>{" "}
-                    <span className="text-slate-400 font-bold">/mois</span>
-                  </div>{" "}
-                  <p className="mt-2 text-xs font-bold italic text-slate-400">Sans engagement, résiliable à tout moment.</p>
-                </div>{" "}
-
-                {/* Les fonctionnalités sont listées ICI, et chacune mène à la vraie page
-                    ou ouvre sa démo : on décide et on essaie au même endroit. */}
-                <div className="mb-8 flex-1 space-y-1">
-                  {FEATURES.map(f => {
-                    const inner = (
-                      <>
-                        <span className="flex h-7 w-7 shrink-0 items-center justify-center rounded-lg bg-emerald-50 text-emerald-600 dark:bg-emerald-500/15">
-                          <f.icon size={14} />
-                        </span>{" "}
-                        <span className="min-w-0 flex-1 text-[13px] font-medium leading-snug text-slate-700 dark:text-slate-200">{f.title}</span>
-                        <ArrowRight size={13} className="shrink-0 text-slate-300 transition-transform group-hover/f:translate-x-0.5" />
-                      </>
-                    );
-                    const cls = "group/f -mx-2 flex w-[calc(100%+1rem)] items-center gap-2.5 rounded-xl px-2 py-1.5 text-left transition hover:bg-slate-50 dark:hover:bg-slate-800/60";
-                    return f.demo
-                      ? <button key={f.title} onClick={() => (f.demo === "law" ? setLawOpen(true) : setNotifOpen(true))} className={cls}>{inner}</button>
-                      : <Link key={f.title} href={f.href} className={cls}>{inner}</Link>;
-                  })}
-                </div>{" "}
-
-                {SALES_OPEN ? (
-                  <button onClick={() => goPremium("elite")}
-                    className="w-full inline-flex items-center justify-center gap-2 rounded-2xl bg-gradient-to-r from-amber-400 to-yellow-500 px-6 py-4 text-slate-900 font-black uppercase tracking-widest text-sm shadow-lg shadow-amber-500/20 hover:brightness-110 transition active:scale-[0.99]">
-                    <Star size={16} className="fill-current" /> Devenir Premium
-                  </button>
-                ) : (
-                  <div className="mx-auto w-full max-w-xs rounded-xl border border-dashed border-amber-300 px-4 py-2.5 text-center text-xs font-black uppercase tracking-widest text-amber-700 dark:text-amber-400">
-                    Bientôt disponible
-                  </div>
-                )}
-              </div>
-            </FadeIn>{" "}
-
-            {/* ─── Pro ─── */}
-            <FadeIn delay={0.1} className={`[&>div]:h-full ${offreMobile === "pro" ? "" : "hidden md:block"}`}>
-              <div className="group relative flex h-full flex-col rounded-[2.5rem] border-2 border-fuchsia-400/70 bg-gradient-to-b from-slate-950 to-slate-900 p-6 text-white md:p-8 shadow-[0_0_45px_-8px_rgba(217,70,239,0.55)]">
-                {/* Halo qui respire le long du contour — l'offre Pro doit accrocher l'œil. */}
-                <motion.div
-                  aria-hidden
-                  className="pointer-events-none absolute -inset-px rounded-[2.5rem] ring-2 ring-fuchsia-400/60"
-                  animate={reduceMotion ? undefined : { opacity: [0.35, 1, 0.35], boxShadow: [
-                    "0 0 18px 0 rgba(217,70,239,0.25) inset",
-                    "0 0 34px 0 rgba(217,70,239,0.55) inset",
-                    "0 0 18px 0 rgba(217,70,239,0.25) inset",
-                  ] }}
-                  transition={{ duration: 3.4, repeat: Infinity, ease: "easeInOut" }}
-                />{" "}
-                <FallingParticles />{" "}
-                <div className="absolute top-0 left-1/2 -translate-x-1/2 -translate-y-1/2 whitespace-nowrap bg-gradient-to-r from-fuchsia-500 to-purple-600 text-white px-4 py-1.5 rounded-full text-[10px] font-black uppercase tracking-widest shadow-lg">Professionnels</div>{" "}
-
-                <h3 className="mt-1 font-staatliches text-4xl uppercase tracking-tight">{PLANS.pro.name}</h3>{" "}
-                <p className="mt-1 text-sm text-white/60">{PLANS.pro.tagline}</p>{" "}
-
-                {/* Le Pro est la seule formule à proposer l'annuel : la bascule vit donc ici. */}
-                <div className="mt-5 inline-flex items-center gap-3 rounded-full bg-white/10 p-1 pr-3">
-                  <button onClick={() => setBillingCycle(billingCycle === "monthly" ? "annually" : "monthly")}
-                    aria-label="Basculer entre facturation mensuelle et annuelle"
-                    className="relative h-7 w-12 rounded-full bg-slate-950/60 p-1">
-                    <motion.div animate={{ x: billingCycle === "monthly" ? 0 : 20 }} className="h-5 w-5 rounded-full bg-fuchsia-400 shadow-lg" />
-                  </button>{" "}
-                  <span className="text-[11px] font-black uppercase tracking-widest">
-                    {billingCycle === "monthly"
-                      ? <span className="text-white/50">Passer à l&apos;annuel <span className="ml-1 rounded-full bg-emerald-700 px-1.5 py-0.5 text-white">-20%</span></span>
-                      : <span className="text-emerald-700 dark:text-emerald-400">Facturation annuelle</span>}
-                  </span>
-                </div>{" "}
-
-                <div className="mt-4 mb-8">
-                  <div className="flex items-baseline gap-1">
-                    <span className="text-5xl font-black">{fmtPrice(billingCycle === "monthly" ? PLANS.pro.monthly : PLANS.pro.annually)}</span>{" "}
-                    <span className="text-white/40 font-bold">/{billingCycle === "monthly" ? "mois" : "an"}</span>
-                  </div>{" "}
-                  {billingCycle === "annually" && <p className="mt-2 text-xs font-bold italic text-emerald-400">Soit {fmtPrice(PLANS.pro.annually / 12)}/mois — deux mois offerts</p>}
-                </div>{" "}
-
-                {/* Même principe côté Pro : tout le Premium, puis les outils de veille, cliquables. */}
-                <div className="mb-8 flex-1 space-y-1">
-                  <div className="-mx-2 flex items-center gap-2.5 rounded-xl px-2 py-1.5">
-                    <span className="flex h-7 w-7 shrink-0 items-center justify-center rounded-lg bg-amber-400/20 text-amber-300">
-                      <Sparkles size={14} />
-                    </span>{" "}
-                    <span className="text-[13px] font-bold text-white">Tous les avantages premium</span>
-                  </div>{" "}
-                  {PRO_FEATURES.map(f => (
-                    <Link key={f.title} href={f.href}
-                      className="group/f -mx-2 flex w-[calc(100%+1rem)] items-center gap-2.5 rounded-xl px-2 py-1.5 transition hover:bg-white/10">
-                      <span className="flex h-7 w-7 shrink-0 items-center justify-center rounded-lg bg-fuchsia-500/20 text-fuchsia-300">
-                        <f.icon size={14} />
-                      </span>{" "}
-                      <span className="min-w-0 flex-1 text-[13px] font-medium leading-snug text-white/90">{f.title}</span>{" "}
-                      <ArrowRight size={13} className="shrink-0 text-white/30 transition-transform group-hover/f:translate-x-0.5" />{" "}
-                    </Link>
-                  ))}
-                </div>{" "}
-
-                {SALES_OPEN ? (
-                  <button onClick={() => goPremium("pro")}
-                    className="w-full inline-flex items-center justify-center gap-2 rounded-2xl bg-gradient-to-r from-fuchsia-500 to-purple-600 px-6 py-4 font-black uppercase tracking-widest text-sm shadow-lg shadow-fuchsia-500/30 hover:brightness-110 transition active:scale-[0.99]">
-                    <LineChart size={16} /> Passer au Pro
-                  </button>
-                ) : (
-                  <div className="mx-auto w-full max-w-xs rounded-xl border border-dashed border-fuchsia-400/50 px-4 py-2.5 text-center text-xs font-black uppercase tracking-widest text-fuchsia-300">
-                    Bientôt disponible
-                  </div>
-                )}
-              </div>
-            </FadeIn>
-          </div>{" "}
-
-          <p className="text-center text-[10px] text-muted-foreground font-bold uppercase tracking-widest mt-6 md:mt-8">
-            {SALES_OPEN ? "Sécurisé par Stripe • Résiliable à tout moment" : "Ouverture des abonnements très prochainement"}
-          </p>
+          <button type="button" onClick={() => aller("tableau")}
+            className="mx-auto mt-6 flex min-h-[48px] items-center justify-center gap-2 rounded-2xl px-5 text-[14px] font-black text-amber-800 underline-offset-2 hover:underline dark:text-amber-300">
+            Revoir le comparatif <ArrowRight size={16} className="-rotate-90" />
+          </button>
         </div>
       </section>{" "}
 
       {/* Section « témoignages » retirée : les trois avis (Camille D., Marc T., Sophie L.)
           étaient inventés. De faux avis présentés comme réels sont une pratique commerciale
           trompeuse ; à remplacer par de vrais retours d'abonnés, avec leur accord. */}
-
 
       <LawExampleModal open={lawOpen} onClose={() => setLawOpen(false)} />
       <NotifDemoModal open={notifOpen} onClose={() => setNotifOpen(false)} />

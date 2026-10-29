@@ -7,7 +7,8 @@ Tout est repris des deux pages officielles ; aucun chiffre n'est ajouté.
 
 Usage : python scripts/programmes/melenchon-plans.py   (lit .env.local ; remplace les lignes du candidat)
 """
-import hashlib, json, os, re, sys, unicodedata, urllib.request
+import hashlib
+import urllib.parse, json, os, re, sys, unicodedata, urllib.request
 from datetime import datetime, timezone
 
 RURAL = "https://melenchon2027.fr/programme/plans-thematiques/ruralite/"
@@ -300,7 +301,10 @@ if __name__ == "__main__":
             rows.append({"id": hashlib.md5(f"{cid}|{norm(text)}".encode()).hexdigest(), "candidate_id": cid, "theme": theme,
                          "subsection": None, "text": text, "source_url": src, "sort_order": order, "updated_at": now, "explanation": expl}); order += 1
     assert len({r["id"] for r in rows}) == len(rows), "identifiants en double"
-    api("DELETE", f"candidate_proposals?candidate_id=eq.{cid}")
+    # Seulement les lignes des plans saisis ici : depuis le 29/10/2026, les plans « Automobile » et
+    # « Enseignement supérieur » sont publiés par le cycle d'agents (backend) et ne doivent pas tomber.
+    for src in sorted({t[1] for t in THEMES}):
+        api("DELETE", f"candidate_proposals?candidate_id=eq.{cid}&source_url=eq.{urllib.parse.quote(src, safe='')}")
     api("POST", "candidate_proposals", rows, prefer="return=minimal")
     n = len([r for r in rows if r["subsection"] is None])
     print(f"{len(THEMES)} thèmes, {n} propositions insérées pour {SLUG}")

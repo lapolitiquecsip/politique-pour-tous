@@ -5,7 +5,7 @@ import { motion, AnimatePresence } from "framer-motion";
 import { usePremium } from "@/lib/hooks/usePremium";
 import { lienPaiementStripe } from "@/lib/utils";
 import AccordAchat from "@/components/premium/AccordAchat";
-import { CheckCircle2, Check, Minus, Star, FileText, ArrowRight, Scale, BellRing, X, Sparkles, Vote, MapPin, AlertTriangle, Target, GitBranch, Pencil, HelpCircle, LineChart, ChevronDown, ShieldCheck, Lock } from "lucide-react";
+import { CheckCircle2, Check, Minus, Gift, Star, FileText, ArrowRight, Scale, BellRing, X, Sparkles, Vote, MapPin, AlertTriangle, Target, GitBranch, Pencil, HelpCircle, LineChart, ChevronDown, ShieldCheck, Lock } from "lucide-react";
 import { PLANS, SALES_OPEN } from "@/lib/constants";
 import Link from "next/link";
 import EspacePersonnel from "@/components/dashboard/EspacePersonnel";
@@ -77,6 +77,43 @@ const COMPARATIF: Groupe[] = [
     ],
   },
 ];
+
+/*
+ * Le comparatif par défaut, en neuf lignes (31/10/2026) : les 22 lignes d'affilée faisaient
+ * un tableau interminable sur téléphone. Chaque ligne résume des lignes de COMPARATIF, qui
+ * reste affiché en entier d'un clic (« Voir le détail »).
+ */
+const ESSENTIEL: Groupe[] = [
+  {
+    titre: "Comprendre", icone: Scale, lignes: [
+      { t: "Lois et votes résumés simplement", g: true, p: true, x: true },
+      { t: "Analyse détaillée de chaque loi et de chaque vote", g: false, p: true, x: true, demo: "law", lien: "Voir un exemple" },
+      { t: "Budgets de l'État et de votre commune décryptés", g: false, p: true, x: true },
+    ],
+  },
+  {
+    titre: "Suivre", icone: MapPin, lignes: [
+      { t: "Vos élus suivis, une alerte à chacun de leurs votes", g: false, p: true, x: true, demo: "notif", lien: "Voir le fil" },
+      { t: "Alertes sur votre territoire, aussi par e-mail", g: false, p: true, x: true },
+      { t: "Auditions des ministres et des commissions", g: false, p: "Résumé", x: "Analyse" },
+    ],
+  },
+  {
+    titre: "Veille professionnelle", icone: LineChart, pro: true, lignes: [
+      { t: "Commissions et amendements en temps réel", g: false, p: false, x: true },
+      { t: "Journal officiel du jour et « Tout sur un sujet »", g: false, p: false, x: true },
+      { t: "E-mails à la carte et veille presse des candidats", g: false, p: false, x: true },
+    ],
+  },
+];
+const NB_DETAIL = COMPARATIF.reduce((n, g) => n + g.lignes.length, 0);
+
+/*
+ * Parrainage (règles générales de parrainage_reglages : 20 % de chaque paiement du filleul,
+ * pendant 12 mois, validé après 30 jours, versé dès 20 €). Ouvert à tous les comptes, même
+ * gratuits. Si ces réglages changent en base, changer ces deux nombres.
+ */
+const PARRAINAGE = { taux: 0.2, dureeMois: 12, validationJours: 30, seuil: 20 };
 
 /* ══════════ Démo 1 : une VRAIE analyse détaillée, rendue avec le VRAI design du site ══════════ */
 // Analyse réelle (report des élections en Nouvelle-Calédonie) — telle qu'affichée aux membres
@@ -268,6 +305,7 @@ const FAQ: { q: string; r: string }[] = [
   { q: "Quelle différence entre Premium et Pro ?", r: "Premium vous fait comprendre en détail : chaque loi analysée, vos élus et votre territoire suivis, des alertes sur ce qui vous concerne. Pro ajoute les outils de veille des professionnels : commissions réunion par réunion, amendements en temps réel, Journal officiel, « Tout sur un sujet » et des e-mails à la carte." },
   { q: "Puis-je résilier à tout moment ?", r: "Oui, les deux formules sont sans engagement. La résiliation prend effet à la fin de la période payée, sans frais, et un e-mail la confirme." },
   { q: "Le paiement est-il sécurisé ?", r: "Le paiement passe par Stripe : nous ne voyons jamais votre numéro de carte." },
+  { q: "Comment fonctionne le parrainage ?", r: `Chaque compte, même gratuit, a son lien de parrainage. Quand une personne s'abonne après l'avoir suivi, vous recevez ${Math.round(PARRAINAGE.taux * 100)} % de chacun de ses paiements pendant ${PARRAINAGE.dureeMois} mois, versés sur votre compte bancaire après ${PARRAINAGE.validationJours} jours (délai de rétractation), dès ${PARRAINAGE.seuil} € cumulés.` },
   { q: "D'où viennent les informations ?", r: "Des sources officielles : Assemblée nationale, Sénat, Journal officiel, Parlement européen, DGFiP, INSEE. Les textes rédigés par intelligence artificielle sont vérifiés contre ces sources, et chaque information renvoie à son origine." },
 ];
 
@@ -277,6 +315,10 @@ function PageOffre() {
   const [lawOpen, setLawOpen] = useState(false);
   const [notifOpen, setNotifOpen] = useState(false);
   const [question, setQuestion] = useState<number | null>(0);
+  const [detail, setDetail] = useState(false);
+  const [filleuls, setFilleuls] = useState(5);
+  const [formuleFilleuls, setFormuleFilleuls] = useState<"elite" | "pro">("elite");
+  const gainMois = filleuls * PLANS[formuleFilleuls].monthly * PARRAINAGE.taux;
 
   // Chaque bouton lance son propre paiement : le clic porte l'offre choisie. Le Premium est
   // mensuel uniquement ; seule l'offre Pro suit la bascule de périodicité. Le clic ouvre d'abord
@@ -358,7 +400,11 @@ function PageOffre() {
           </motion.button>{" "}
           <p className="mt-3 flex items-center justify-center gap-1.5 text-[12px] font-bold text-white/55">
             <ShieldCheck size={14} /> Sans engagement · résiliable à tout moment
-          </p>
+          </p>{" "}
+          <button type="button" onClick={() => aller("parrainage")}
+            className="mx-auto mt-4 flex min-h-[40px] items-center gap-2 rounded-full border border-teal-300/40 bg-teal-400/10 px-4 text-[13px] font-bold text-teal-200 transition hover:bg-teal-400/20">
+            <Gift size={15} /> Parrainez : votre abonnement peut devenir gratuit
+          </button>
         </div>
       </section>{" "}
 
@@ -369,23 +415,14 @@ function PageOffre() {
             <h2 className="font-staatliches text-4xl uppercase tracking-tight text-foreground md:text-6xl">
               Comparez <span className="text-amber-700 dark:text-amber-400">les formules</span>
             </h2>{" "}
-            <p className="mx-auto mt-2 max-w-lg text-[15px] text-muted-foreground">Le site reste gratuit. Premium et Pro ajoutent, chacun, de quoi aller plus loin.</p>
-          </div>{" "}
-
-          {/* Pour qui : une phrase par formule payante. */}
-          <div className="mb-5 grid gap-2.5 sm:grid-cols-2">
-            <div className="rounded-2xl border border-amber-300/70 bg-amber-50/70 p-4 dark:border-amber-500/30 dark:bg-amber-500/[0.06]">
-              <p className="flex items-center gap-1.5 text-[11px] font-black uppercase tracking-widest text-amber-800 dark:text-amber-300"><Star size={12} className="fill-current" /> Premium · pour qui ?</p>{" "}
-              <p className="mt-1 text-[14px] leading-snug text-foreground">Les citoyens qui veulent comprendre en détail ce qui se décide, pour eux et près de chez eux.</p>
-            </div>{" "}
-            <div className="rounded-2xl border border-fuchsia-300/70 bg-fuchsia-50/70 p-4 dark:border-fuchsia-500/30 dark:bg-fuchsia-500/[0.06]">
-              <p className="flex items-center gap-1.5 text-[11px] font-black uppercase tracking-widest text-fuchsia-700 dark:text-fuchsia-300"><LineChart size={12} /> Pro · pour qui ?</p>{" "}
-              <p className="mt-1 text-[14px] leading-snug text-foreground">Collaborateurs parlementaires, élus, journalistes, affaires publiques, juristes : la veille au jour le jour.</p>
-            </div>
+            <p className="mx-auto mt-2 max-w-lg text-[15px] text-muted-foreground">
+              Le site reste gratuit. <strong className="text-amber-800 dark:text-amber-300">Premium</strong> pour tout comprendre,{" "}
+              <strong className="text-fuchsia-700 dark:text-fuchsia-300">Pro</strong> pour la veille des professionnels.
+            </p>
           </div>{" "}
 
           {/* Périodicité du Pro (seule formule annuelle) : au-dessus du tableau, pas dans une carte. */}
-          <div id="tableau" className="mb-8 flex scroll-mt-20 justify-center">
+          <div id="tableau" className="mb-7 flex scroll-mt-20 justify-center">
             <div role="group" aria-label="Périodicité de l'offre Pro" className="inline-flex items-center gap-1 rounded-full bg-muted p-1">
               {([[false, "Pro au mois"], [true, "Pro à l'année"]] as const).map(([v, nom]) => (
                 <button key={nom} type="button" onClick={() => setAnnuel(v)} aria-pressed={annuel === v}
@@ -415,20 +452,20 @@ function PageOffre() {
               </div>
             </div>{" "}
 
-            {COMPARATIF.map(gr => (
+            {(detail ? COMPARATIF : ESSENTIEL).map(gr => (
               <div key={gr.titre}>
-                <div className={`flex items-center gap-2 border-b border-border px-3 py-3 md:px-6 ${gr.pro ? "bg-fuchsia-500/[0.07]" : "bg-muted/60"}`}>
+                <div className={`flex items-center gap-2 border-b border-border px-3 md:px-6 ${detail ? "py-3" : "py-2"} ${gr.pro ? "bg-fuchsia-500/[0.07]" : "bg-muted/60"}`}>
                   <gr.icone size={16} className={gr.pro ? "text-fuchsia-600 dark:text-fuchsia-300" : "text-amber-700 dark:text-amber-400"} />{" "}
                   <h3 className="text-[12px] font-black uppercase tracking-widest text-foreground">{gr.titre}</h3>{" "}
                   {gr.pro && <span className="rounded-full bg-gradient-to-r from-fuchsia-500 to-purple-600 px-2 py-0.5 text-[9px] font-black uppercase tracking-widest text-white">Pro</span>}
                 </div>{" "}
                 {gr.lignes.map(l => (
                   <div key={l.t} className="grid grid-cols-[minmax(0,1fr)_54px_68px_68px] items-stretch border-b border-border last:border-b-0 md:grid-cols-[minmax(0,1fr)_130px_170px_170px]">
-                    <div className="px-3 py-3.5 md:px-6">
+                    <div className={`px-3 md:px-6 ${detail ? "py-3.5" : "py-3"}`}>
                       <p className="text-[14px] font-semibold leading-snug text-foreground">{l.t}</p>{" "}
                       {l.d && <p className="mt-0.5 text-[12.5px] leading-snug text-muted-foreground">{l.d}</p>}{" "}
                       {l.lien && (l.demo
-                        ? <button type="button" onClick={() => (l.demo === "law" ? setLawOpen(true) : setNotifOpen(true))} className="mt-1.5 inline-flex min-h-[28px] items-center gap-1 text-[12.5px] font-black text-amber-800 underline-offset-2 hover:underline dark:text-amber-300">{l.lien} <ArrowRight size={13} /></button>
+                        ? <button type="button" onClick={() => (l.demo === "law" ? setLawOpen(true) : setNotifOpen(true))} className="mt-1 inline-flex min-h-[26px] items-center gap-1 text-[12.5px] font-black text-amber-800 underline-offset-2 hover:underline dark:text-amber-300">{l.lien} <ArrowRight size={13} /></button>
                         : <Link href={l.href!} className="mt-1.5 inline-flex min-h-[28px] items-center gap-1 text-[12.5px] font-black text-amber-800 underline-offset-2 hover:underline dark:text-amber-300">{l.lien} <ArrowRight size={13} /></Link>)}
                     </div>{" "}
                     <div className="flex items-center justify-center px-1"><CaseFormule v={l.g} ton="g" /></div>{" "}
@@ -438,6 +475,13 @@ function PageOffre() {
                 ))}
               </div>
             ))}{" "}
+
+            {/* L'essentiel d'abord ; le détail complet à la demande. */}
+            <button type="button" aria-expanded={detail}
+              onClick={() => { const fermer = detail; setDetail(!detail); if (fermer) setTimeout(() => aller("tableau"), 50); }}
+              className="flex min-h-[52px] w-full items-center justify-center gap-2 border-t border-border text-[14px] font-black text-foreground transition hover:bg-muted">
+              {detail ? <>Revenir à l&apos;essentiel <ChevronDown size={17} className="rotate-180" /></> : <>Voir le détail des {NB_DETAIL} fonctionnalités <ChevronDown size={17} /></>}
+            </button>{" "}
 
             {/* Pied du tableau, sur ordinateur : un bouton sous chaque colonne. */}
             <div className="hidden grid-cols-[minmax(0,1fr)_130px_170px_170px] items-center rounded-b-3xl border-t border-border md:grid">
@@ -473,6 +517,65 @@ function PageOffre() {
             </div>
           )}{" "}
           {SALES_OPEN && <p className="mt-4 flex items-center justify-center gap-1.5 text-center text-[12px] font-bold text-muted-foreground"><Lock size={13} /> Paiement sécurisé par Stripe · résiliable à tout moment</p>}
+        </div>
+      </section>{" "}
+
+      {/* ══════ PARRAINAGE : l'abonnement qui se rembourse ══════ */}
+      {/* Le calcul se fait sous les yeux du lecteur : cinq filleuls Premium couvrent exactement un
+          Premium (5 × 3,99 € × 20 %). Un curseur, pas un formulaire : aucun effort à fournir. */}
+      <section id="parrainage" className="scroll-mt-20 px-3 pt-12 md:px-4 md:pt-20">
+        <div className="relative mx-auto max-w-3xl overflow-hidden rounded-[2rem] bg-gradient-to-br from-teal-600 via-emerald-700 to-slate-900 p-5 text-white shadow-xl md:p-10">
+          <div aria-hidden className="absolute -right-16 -top-16 h-56 w-56 rounded-full bg-teal-300/20 blur-3xl" />{" "}
+          <div className="relative">
+            <p className="flex items-center gap-1.5 text-[11px] font-black uppercase tracking-widest text-teal-200"><Gift size={14} /> Parrainage · ouvert à tous</p>{" "}
+            <h2 className="mt-2 font-staatliches text-[2.5rem] uppercase leading-[0.95] tracking-tight md:text-6xl">Votre abonnement<br />peut devenir gratuit</h2>{" "}
+            <p className="mt-3 max-w-xl text-[15px] leading-relaxed text-white/80">
+              Partagez votre lien. Chaque proche qui s&apos;abonne vous reverse <strong className="text-white">{Math.round(PARRAINAGE.taux * 100)} % de son abonnement, chaque mois pendant {PARRAINAGE.dureeMois} mois</strong>.
+            </p>{" "}
+
+            {/* Le simulateur */}
+            <div className="mt-6 rounded-3xl bg-white/10 p-4 ring-1 ring-white/15 backdrop-blur md:p-6">
+              <div className="flex flex-wrap items-center justify-between gap-2">
+                <label htmlFor="filleuls" className="text-[14px] font-bold text-white/90">
+                  <span className="font-black text-white">{filleuls}</span> proche{filleuls > 1 ? "s" : ""} abonné{filleuls > 1 ? "s" : ""} en
+                </label>{" "}
+                <div role="group" aria-label="Formule de vos filleuls" className="inline-flex rounded-full bg-black/25 p-0.5">
+                  {(["elite", "pro"] as const).map(k => (
+                    <button key={k} type="button" onClick={() => setFormuleFilleuls(k)} aria-pressed={formuleFilleuls === k}
+                      className={`min-h-[34px] rounded-full px-3.5 text-[13px] font-black transition ${formuleFilleuls === k ? "bg-white text-slate-900" : "text-white/70"}`}>{PLANS[k].name}</button>
+                  ))}
+                </div>
+              </div>{" "}
+              <input id="filleuls" type="range" min={1} max={10} step={1} value={filleuls} onChange={e => setFilleuls(Number(e.target.value))}
+                className="mt-4 h-2 w-full cursor-pointer accent-teal-300" />{" "}
+              <div className="mt-4">
+                <p className="text-[12px] font-bold uppercase tracking-widest text-teal-100/80">Vous recevez</p>{" "}
+                <p className="mt-1 flex items-baseline gap-2 whitespace-nowrap">
+                  <span className="font-staatliches text-5xl leading-none md:text-6xl">{fmtPrice(gainMois)}</span>{" "}
+                  <span className="text-[15px] font-bold normal-case text-white/70">par mois</span>
+                </p>{" "}
+                <p className="mt-1 text-[13px] text-white/70">soit {fmtPrice(gainMois * PARRAINAGE.dureeMois)} sur {PARRAINAGE.dureeMois} mois</p>{" "}
+                <div className="mt-3 flex flex-wrap gap-1.5">
+                  {(["elite", "pro"] as const).map(k => {
+                    const couvert = gainMois >= PLANS[k].monthly - 0.005;
+                    return (
+                      <span key={k} className={`inline-flex items-center gap-1 whitespace-nowrap rounded-full px-2.5 py-1 text-[12px] font-black ${couvert ? "bg-white text-emerald-800" : "bg-black/20 text-white/60"}`}>
+                        {couvert ? <Check size={12} strokeWidth={3} /> : null}
+                        {PLANS[k].name} {couvert ? "remboursé" : `${Math.min(99, Math.round(gainMois / PLANS[k].monthly * 100))} %`}
+                      </span>
+                    );
+                  })}
+                </div>
+              </div>
+            </div>{" "}
+
+            <Link href="/parrainage" className="mt-5 flex min-h-[52px] w-full items-center justify-center gap-2 rounded-2xl bg-white px-6 text-[15px] font-black text-emerald-900 shadow-lg transition hover:bg-teal-50 md:w-auto md:inline-flex">
+              <Gift size={18} /> Obtenir mon lien de parrainage
+            </Link>{" "}
+            <p className="mt-3 text-[12px] leading-snug text-white/60">
+              Même avec un compte gratuit. Versé sur votre compte bancaire après {PARRAINAGE.validationJours} jours (délai de rétractation), dès {PARRAINAGE.seuil} € cumulés.
+            </p>
+          </div>
         </div>
       </section>{" "}
 

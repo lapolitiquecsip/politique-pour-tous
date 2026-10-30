@@ -2090,6 +2090,8 @@ export const api = {
       .from('candidate_news')
       .select('*')
       .eq('candidate_id', candidateId)
+      // Seulement les articles lus et contrôlés avant publication (voir verification-article.ts).
+      .not('verifie_le', 'is', null)
       .order('date', { ascending: false })
       .limit(50);
     if (error) { console.error(error); return []; }

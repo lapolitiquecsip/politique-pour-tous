@@ -32,7 +32,30 @@ type Candidate = {
   program: string | null;
   source_urls: string[] | null;
   legal_issues: string | null;
+  candidature_preuve: { statut: string; phrase?: string | null; citation?: string; source?: string; url?: string; date?: string; contradiction?: string | null; verifie_le?: string } | null;
 };
+
+/* Où en est la candidature : ce qu'en disent des articles lus, avec la phrase exacte et son média. */
+function PreuveCandidature({ preuve }: { preuve: Candidate["candidature_preuve"] }) {
+  if (!preuve) return null;
+  const etat: Record<string, [string, string]> = {
+    declare: ["Candidature annoncée", "border-emerald-300 bg-emerald-500/5 dark:border-emerald-500/30"],
+    pressenti: ["Candidature non confirmée", "border-amber-300 bg-amber-500/5 dark:border-amber-500/30"],
+    non_candidat: ["N'est plus candidat·e, selon la presse", "border-rose-300 bg-rose-500/5 dark:border-rose-500/30"],
+    non_etablie: ["Candidature non établie", "border-amber-300 bg-amber-500/5 dark:border-amber-500/30"],
+  };
+  const [titre, ton] = etat[preuve.statut] ?? etat.non_etablie;
+  return (
+    <section className={`mt-5 rounded-2xl border p-4 ${ton}`}>
+      <h3 className="flex items-center gap-1.5 text-[13px] font-black text-foreground"><ShieldCheck size={15} /> {titre}</h3>{" "}
+      {preuve.phrase && <p className="mt-1.5 text-[14px] leading-relaxed text-foreground">{preuve.phrase}</p>}{" "}
+      {preuve.citation && <blockquote className="mt-2 border-l-2 border-border pl-3 text-[13px] italic leading-relaxed text-muted-foreground">« {preuve.citation} »</blockquote>}{" "}
+      {preuve.url && <a href={preuve.url} target="_blank" rel="noopener noreferrer" className="mt-2 inline-flex items-center gap-1 text-[12px] font-bold text-foreground underline">{preuve.source}{preuve.date ? `, ${formatDate(preuve.date)}` : ""} <ExternalLink size={11} /></a>}{" "}
+      {preuve.contradiction && <p className="mt-2 text-[12px] leading-relaxed text-muted-foreground">À noter : {preuve.contradiction}</p>}{" "}
+      <p className="mt-2 text-[11px] leading-relaxed text-muted-foreground">Contrôlé dans la presse{preuve.verifie_le ? ` le ${formatDate(preuve.verifie_le)}` : ""}. Personne n&apos;est officiellement candidat avant la liste du Conseil constitutionnel, publiée après les parrainages.</p>
+    </section>
+  );
+}
 
 // Couleurs par bord politique — dans l'esprit coloré du site.
 const SIDES: Record<string, { label: string; from: string; to: string; badge: string; borderb: string }> = {
@@ -284,7 +307,7 @@ function CandidateModal({ candidate, onClose, voisins = null, onOuvrir }: { cand
                 )}
               </div>{" "}
               <h2 className="mt-3 text-4xl font-staatliches uppercase leading-none md:text-5xl">{candidate.full_name}</h2>{" "}
-              {candidate.declared_at
+              {candidate.declared_at && (!candidate.candidature_preuve || candidate.candidature_preuve.statut === "declare")
                 ? <p className="mt-2 text-sm font-bold text-white/80">Candidature déclarée le {formatDate(candidate.declared_at)}</p>
                 : candidate.category?.startsWith("Primaire") && <p className="mt-2 text-sm font-bold text-white/80">Candidat·e à la {candidate.category.replace(/^Primaire/, "primaire")}</p>}{" "}
               {/* Cloche dorée : suivre ce candidat (membres premium) → son fil arrive sur le profil. */}
@@ -339,6 +362,8 @@ function CandidateModal({ candidate, onClose, voisins = null, onOuvrir }: { cand
           )}{" "}
 
           <FactChips candidate={candidate} />{" "}
+
+          <PreuveCandidature preuve={candidate.candidature_preuve} />{" "}
 
           {/* PROGRAMME — ce que les lecteurs viennent chercher, donc en premier. */}
           <div id="fiche-programme">
@@ -397,7 +422,7 @@ function CandidateModal({ candidate, onClose, voisins = null, onOuvrir }: { cand
             return (
               <section className="mt-4">
                 <h3 className="text-2xl font-staatliches uppercase text-foreground">Actualités &amp; <span className="text-amber-700 dark:text-amber-400">vidéos</span></h3>{" "}
-                <p className="mt-1 text-xs text-muted-foreground">Le fil du candidat — articles de presse, débats télévisés et vidéos de sa chaîne YouTube officielle, lisibles ici, actualisés plusieurs fois par jour. Faites défiler →</p>{" "}
+                <p className="mt-1 text-xs text-muted-foreground">Le fil du candidat — articles de presse, débats télévisés et vidéos de sa chaîne YouTube officielle, lisibles ici. Chaque article est lu avant publication : média reconnu, date vérifiée, citation retrouvée dans le texte. Faites défiler →</p>{" "}
                 {news === null ? (
                   <p className="mt-3 text-sm text-muted-foreground">Chargement…</p>
                 ) : feed.length === 0 ? (
@@ -542,6 +567,7 @@ function CandidateModal({ candidate, onClose, voisins = null, onOuvrir }: { cand
                   <p className="text-[11px] font-bold uppercase tracking-widest text-muted-foreground">{formatDate(selectedNews.date)}</p>{" "}
                   <h3 className="mt-1 text-xl font-black leading-snug text-foreground">{selectedNews.title}</h3>{" "}
                   {selectedNews.summary && <p className="mt-3 leading-7 text-muted-foreground">{selectedNews.summary}</p>}{" "}
+                  {selectedNews.citation && <blockquote className="mt-3 border-l-2 border-border pl-3 text-[14px] italic leading-relaxed text-muted-foreground">« {selectedNews.citation} »</blockquote>}{" "}
                   <div className="mt-5 flex items-center justify-between gap-3 border-t border-border pt-4">
                     <span className="text-[11px] font-bold uppercase tracking-widest text-muted-foreground">Source : {selectedNews.source_name || "—"}</span>{" "}
                     {selectedNews.source_url && (

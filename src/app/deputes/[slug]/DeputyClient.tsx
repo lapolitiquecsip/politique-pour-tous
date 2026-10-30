@@ -51,6 +51,7 @@ import InstitutionalRoleBanner from "@/components/shared/InstitutionalRoleBanner
 import InitiativeRank from "@/components/shared/InitiativeRank";
 import AmendementsDepute from "@/components/deputies/AmendementsDepute";
 import VotesAmendementsElu from "@/components/votes/VotesAmendementsElu";
+import QuandVisible from "@/components/shared/QuandVisible";
 import { useGlossary } from "@/components/providers/GlossaryProvider";
 import { deputyPhotoSources } from "@/lib/initiators";
 
@@ -637,7 +638,7 @@ export default function DeputyDetailPage({ params, embedded, initialDeputy }: { 
             {name && <InstitutionalRoleBanner fullName={name} bio={deputy?.bio} />}
 
             {/* Toutes les fonctions de la personne (député, PM, candidat, parti…). */}
-            {name && <ParallelRoles fullName={name} selfHref={`/deputes/${deputy?.slug || ""}`} />}{" "}
+            {name && <QuandVisible apres={!loadingVotes}><ParallelRoles fullName={name} selfHref={`/deputes/${deputy?.slug || ""}`} /></QuandVisible>}{" "}
 
             {/* NEW: Biography / Background Section (Collapsible Editorial Style) */}
             {(deputy?.biography || hasStructuredBio(deputy?.bio)) && (
@@ -726,11 +727,13 @@ export default function DeputyDetailPage({ params, embedded, initialDeputy }: { 
 
             {/* Présence aux votes — comparaison entre députés. */}
             {deputy && (
+              <QuandVisible apres={!loadingVotes}>
               <ActivityRank
                 kind="deputy" rate={deputy.participation_rate} selfId={String(deputy.id)}
                 peerLabel="députés"
                 note="Taux de participation aux scrutins publics de l'Assemblée nationale. Comparaison entre députés pour situer l'assiduité de chacun·e. Source : Assemblée nationale."
               />
+              </QuandVisible>
             )}{" "}
 
             {/* Loyauté au groupe — déplacée ici (auparavant dans le panneau « Activité parlementaire »). */}
@@ -762,7 +765,7 @@ export default function DeputyDetailPage({ params, embedded, initialDeputy }: { 
 
               {deputy && (
                 <div className="mb-8 rounded-[2rem] border border-border dark:border-slate-800 bg-card dark:bg-slate-900 p-6 md:p-8">
-                  <InitiativeRank kind="deputy" selfId={String(deputy.id)} primary={deputy.initiative_primary_count} cosigned={deputy.initiative_count} peerLabel="députés" embedded />
+                  <QuandVisible apres={!loadingVotes}><InitiativeRank kind="deputy" selfId={String(deputy.id)} primary={deputy.initiative_primary_count} cosigned={deputy.initiative_count} peerLabel="députés" embedded /></QuandVisible>
                 </div>
               )}{" "}
 

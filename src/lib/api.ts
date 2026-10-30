@@ -565,12 +565,20 @@ export const api = {
   // d'où le rapprochement par nom insensible à la casse + filtre chambre = SENAT.
   // Votes du Sénat d'un·e sénateur·rice. Correspondance par MATRICULE officiel du Sénat
   // (voter_official_id) — fiable à 100 %, contrairement au nom. Repli sur le nom si besoin.
-  getSenatorVotes: async (matricule: string | null, firstName?: string, lastName?: string, limit = 500) => {
+  // `type` (30/10/2026) : « lois » écarte côté serveur les scrutins sur des amendements (≈ 70 %
+  // des votes, et l'essentiel du poids) ; « amendements » ne garde qu'eux, sans l'explication.
+  getSenatorVotes: async (matricule: string | null, firstName?: string, lastName?: string, limit = 500, type: 'tout' | 'lois' | 'amendements' = 'tout') => {
+    const AMDT = ["sur l'amendement%", 'sur l’amendement%', 'sur les amendements%', 'sur le sous-amendement%', 'sur les sous-amendements%'];
+    const COLS = type === 'amendements'
+      ? 'id, position, legislative_scrutins!inner(id, official_id, title, voted_at, chamber)'
+      : 'id, position, legislative_scrutins!inner(id, official_id, title, explanation, voted_at, chamber)';
     let base = supabase
       .from('legislative_votes')
-      .select('id, position, legislative_scrutins!inner(id, official_id, title, explanation, voted_at, chamber)')
+      .select(COLS)
       .eq('legislative_scrutins.chamber', 'SENAT')
       .limit(1000);
+    if (type === 'lois') for (const m of AMDT) base = base.not('legislative_scrutins.title', 'ilike', m);
+    if (type === 'amendements') base = base.ilike('legislative_scrutins.title', 'sur %amendement%');
     let data: any[] | null = null;
     if (matricule) {
       const res = await base.eq('voter_official_id', matricule);

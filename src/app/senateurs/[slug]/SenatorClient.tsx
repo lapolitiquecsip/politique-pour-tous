@@ -22,6 +22,7 @@ import {
 import { motion, AnimatePresence } from "framer-motion";
 import { usePremium } from "@/lib/hooks/usePremium";
 import VotesAmendementsElu from "@/components/votes/VotesAmendementsElu";
+import QuandVisible from "@/components/shared/QuandVisible";
 import { getFullPartyName } from "@/lib/party-utils";
 import { api } from "@/lib/api";
 import { useBioFraiche } from "@/lib/hooks/useBioFraiche";
@@ -91,7 +92,7 @@ export default function SenatorClient({ senator, embedded }: { senator: any; emb
   const [positions, setPositions] = useState<Record<string, any>>({}); // "ce qu'il dit" par enjeu
   const [voteCible, setVoteCible] = useState<string | null>(null);     // vote ouvert depuis une alerte
   useEffect(() => {
-    api.getSenatorVotes(senator.senate_matricule || null, senator.first_name, senator.last_name, 1000)
+    api.getSenatorVotes(senator.senate_matricule || null, senator.first_name, senator.last_name, 1000, "lois")
       .then((v: any[]) => {
         setVotes(v);
         setChargeVotes(false);
@@ -103,6 +104,7 @@ export default function SenatorClient({ senator, embedded }: { senator: any; emb
         const cible = voulu && v.find(x => String(x.official_id) === voulu || String(x.scrutin_id) === voulu);
         if (cible) {
           setVoteCible(String(cible.id));
+          setNbLoisVisibles(1000);   // le vote visé peut être au-delà des vingt premiers
           setTimeout(() => document.getElementById(`vote-${cible.id}`)?.scrollIntoView({ behavior: "smooth", block: "center" }), 400);
         }
       })
@@ -123,10 +125,18 @@ export default function SenatorClient({ senator, embedded }: { senator: any; emb
   // amendements identiques… », « sur l'ensemble du projet de loi… ».
   const estAmendement = (t: string) => /^\s*sur\s+(?:l['’]\s*|les\s+)?(?:sous-)?amendements?\b/i.test(t || "");
   const votesLois = useMemo(() => votes.filter(v => !estAmendement(v.title)), [votes]);
-  const votesAmendements = useMemo(() => votes.filter(v => estAmendement(v.title)).map(v => ({
+  // Les votes sur les amendements ne se chargent qu'à l'ouverture de l'onglet, pour un abonné.
+  const [brutsAmdt, setBrutsAmdt] = useState<any[] | null>(null);
+  useEffect(() => {
+    if (typeVotes !== "amendements" || !isPremium || brutsAmdt) return;
+    api.getSenatorVotes(senator.senate_matricule || null, senator.first_name, senator.last_name, 1000, "amendements")
+      .then(v => setBrutsAmdt(v)).catch(() => setBrutsAmdt([]));
+  }, [typeVotes, isPremium, brutsAmdt, senator.senate_matricule, senator.first_name, senator.last_name]);
+  const [nbLoisVisibles, setNbLoisVisibles] = useState(20);
+  const votesAmendements = useMemo(() => (brutsAmdt || []).filter(v => estAmendement(v.title)).map(v => ({
     id: String(v.id), titre: String(v.title || "").replace(/^\s*sur\s+/i, "").replace(/^./, (c: string) => c.toUpperCase()),
     date: v._ts ? new Date(v._ts).toISOString() : null, position: v.vote, resultat: null,
-  })), [votes]);
+  })), [brutsAmdt]);
   const presentIssues = useMemo(() => {
     const count: Record<string, number> = {};
     for (const v of votesLois) for (const s of scrutinIssues[String(v.scrutin_id)] || []) count[s] = (count[s] || 0) + 1;
@@ -354,15 +364,17 @@ export default function SenatorClient({ senator, embedded }: { senator: any; emb
             {/* Fonction institutionnelle (Président·e / Vice-président·e / président·e de commission). */}
             <InstitutionalRoleBanner fullName={name} bio={bioFraiche} />
 
-            <InitiativeRank kind="senator" selfId={String(senator.id)} primary={senator.initiative_primary_count} cosigned={senator.initiative_count} peerLabel="sénateurs" />
+            <QuandVisible apres={!chargeVotes}><InitiativeRank kind="senator" selfId={String(senator.id)} primary={senator.initiative_primary_count} cosigned={senator.initiative_count} peerLabel="sénateurs" /></QuandVisible>
 
             {/* Présence aux votes — comparaison entre sénateurs (scrutins publics du Sénat). */}
+            <QuandVisible apres={!chargeVotes}>
             <ActivityRank
               kind="senator" rate={senator.participation_rate} selfId={String(senator.id)}
               peerLabel="sénateurs"
               participated={senator.votes_participated} total={senator.votes_total}
               note="Participation aux scrutins publics du Sénat (position exprimée). Comparaison entre sénateurs pour situer l'assiduité de chacun·e. Source : Sénat (open data)."
-            />{" "}
+            />
+            </QuandVisible>{" "}
 
             {/* Biography Section */}
             <div className="bg-card dark:bg-slate-900 rounded-3xl md:rounded-[3rem] border border-border dark:border-slate-800 shadow-xl relative overflow-hidden group pb-2">
@@ -424,7 +436,7 @@ export default function SenatorClient({ senator, embedded }: { senator: any; emb
             </div>{" "}
 
             {/* Toutes les fonctions de la personne — juste sous « Portrait & Engagement ». */}
-            <ParallelRoles fullName={name} selfHref={`/senateurs/${senator.slug}`} />{" "}
+            <QuandVisible apres={!chargeVotes}><ParallelRoles fullName={name} selfHref={`/senateurs/${senator.slug}`} /></QuandVisible>{" "}
 
             {/* Votes Section */}
             <div>
@@ -439,7 +451,7 @@ export default function SenatorClient({ senator, embedded }: { senator: any; emb
                   </button>
                 ))}
               </div>{" "}
-              {typeVotes === "amendements" && (chargeVotes
+              {typeVotes === "amendements" && (isPremium && brutsAmdt === null
                 ? <p className="flex items-center gap-2 py-8 text-sm text-muted-foreground"><Loader2 className="h-4 w-4 animate-spin" /> Chargement des votes…</p>
                 : <VotesAmendementsElu liste={votesAmendements} nom={name} />)}{" "}
               <div className={typeVotes === "amendements" ? "hidden" : ""}>
@@ -520,7 +532,7 @@ export default function SenatorClient({ senator, embedded }: { senator: any; emb
                 {votesLois.length > 0 && filteredVotes.length === 0 && (
                   <div className="rounded-[2rem] border border-border bg-card p-8 text-center text-sm text-muted-foreground">Aucun vote sur ce sujet.</div>
                 )}{" "}
-                {filteredVotes.map((vote: any) => (
+                {filteredVotes.slice(0, nbLoisVisibles).map((vote: any) => (
                   <div
                     key={vote.id}
                     id={`vote-${vote.id}`}
@@ -553,6 +565,12 @@ export default function SenatorClient({ senator, embedded }: { senator: any; emb
                     )}{" "}
                   </div>
                 ))}
+                {filteredVotes.length > nbLoisVisibles && (
+                  <button type="button" onClick={() => setNbLoisVisibles(n => n + 30)}
+                    className="flex min-h-[48px] w-full items-center justify-center rounded-2xl border border-border bg-card text-sm font-bold text-foreground transition hover:bg-muted dark:border-slate-800 dark:bg-slate-900">
+                    Voir plus de votes <span className="ml-1 font-normal text-muted-foreground">({filteredVotes.length - nbLoisVisibles} autres)</span>
+                  </button>
+                )}
               </div>
               </div>
             </div>

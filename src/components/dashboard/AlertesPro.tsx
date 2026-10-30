@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect, useMemo, useState } from "react";
-import { BellRing, Check, Loader2, MapPin, Plus, Search, X, Newspaper, Scale, ShieldCheck, UserRound, Mail, Mic, ScrollText, BookOpen, Star, Globe2, type LucideIcon } from "lucide-react";
+import { BellRing, Check, Loader2, MapPin, Plus, Search, X, Newspaper, Scale, ShieldCheck, UserRound, Mail, Mic, ScrollText, BookOpen, Star, Globe2, Vote, type LucideIcon } from "lucide-react";
 import { api } from "@/lib/api";
 
 /**
@@ -37,6 +37,7 @@ const RUBRIQUES: { code: string; Icone: LucideIcon; titre: string; texte: string
   { code: "textes", Icone: ScrollText, titre: "Lois, projets et propositions de loi", texte: "Les lois promulguées et chaque nouveau projet ou proposition de loi déposé." },
   { code: "jo", Icone: BookOpen, titre: "Journal officiel", texte: "La synthèse de chaque numéro, puis les lois, ordonnances et décrets expliqués." },
   { code: "elus", Icone: Star, titre: "Mes élus suivis", texte: "Leurs votes et l'actualité qui les cite, avec vos partis, ministères et candidats suivis." },
+  { code: "amendements_elus", Icone: Vote, titre: "Votes de mes élus sur les amendements", texte: "Pour chaque député et sénateur suivi : ses votes sur les amendements en scrutin public — pour, contre, abstention, et ce qui a été adopté." },
   { code: "europe", Icone: Globe2, titre: "Votes européens", texte: "Les votes du Parlement européen expliqués, et ce qu'ont voté vos eurodéputés suivis." },
   { code: "territoire", Icone: MapPin, titre: "Mon territoire", texte: "L'actualité de votre commune, de votre département ou de votre région (périmètre plus bas)." },
 ];

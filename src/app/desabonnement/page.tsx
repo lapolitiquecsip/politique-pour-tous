@@ -9,7 +9,7 @@ import { supabase } from "@/lib/supabase";
 /** Rubriques des e-mails Pro à la carte (paramètre « c » du lien). */
 const RUBRIQUES: Record<string, string> = {
   commissions: "les résumés des auditions et commissions", textes: "les lois, projets et propositions de loi",
-  jo: "le Journal officiel", elus: "les actualités de vos élus suivis", europe: "les votes européens",
+  jo: "le Journal officiel", elus: "les actualités de vos élus suivis", amendements_elus: "les votes de vos élus sur les amendements", europe: "les votes européens",
   territoire: "les actualités de votre territoire", tout: "les e-mails Pro à la carte (toutes rubriques)",
 };
 

@@ -3,6 +3,8 @@ import { supabase } from "./supabase";
 /** Version des CGV acceptée au paiement (à changer à chaque modification des CGV). */
 export const CGV_VERSION = '2026-10-06';
 export type AbonnementEnCours = { id?: string; nom: string; montant: string; periode: string; fin: number; fin_texte: string; resilie?: boolean };
+/** Un résultat de api.rechercherLois. */
+export type LoiTrouvee = { id: string; titre: string; type: string | null; statut: string | null; date: string | null };
 
 // Commissions permanentes qu'on peut suivre (intitulés tels que dans les comptes rendus).
 const COMMISSIONS_SUIVIES: [string, string][] = [
@@ -2293,6 +2295,41 @@ export const api = {
       ...(cands.data || []).map((d: any) => ({ label: d.full_name, sub: 'Candidat·e 2027', href: `/presidentielles-2027/?candidat=${d.slug}`, type: 'candidate', img: d.photo_url, cat: 'Élus' })),
       ...(parties.data || []).map((p: any) => ({ label: p.name, sub: 'Parti politique', href: `/partis/${p.slug}`, type: 'party', img: null, cat: 'Partis' })),
     ];
+  },
+
+  /**
+   * Trouver une loi par mots-clés (RechercheLois, ouvert à tous). Chaque mot doit figurer dans
+   * le titre (ou le titre court), sans tenir compte des accents : « ecole » trouve « école ».
+   * Les mots vides (« loi », « la », « de »…) sont ignorés. Si aucun texte ne contient TOUS les
+   * mots (« aide à mourir » alors que le titre dit « assistance médicale à mourir »), on rend les
+   * textes qui en contiennent le plus (`approchant`). Les rapports d'information sont écartés.
+   */
+  rechercherLois: async (q: string): Promise<{ lois: LoiTrouvee[]; approchant: boolean }> => {
+    const VIDES = new Set(['le', 'la', 'les', 'de', 'des', 'du', 'un', 'une', 'et', 'ou', 'en', 'au', 'aux', 'pour', 'par', 'sur', 'dans', 'avec', 'sans', 'loi', 'lois', 'projet', 'proposition', 'texte', 'visant', 'relative', 'relatif', 'portant']);
+    const sansAccent = (t: string) => t.toLowerCase().normalize('NFD').replace(/[̀-ͯ]/g, '');
+    const mots = [...new Set(sansAccent(q).replace(/[’']/g, ' ').split(/[^a-z0-9]+/).filter(m => m.length > 1 && !VIDES.has(m)))].slice(0, 6);
+    if (!mots.length) return { lois: [], approchant: false };
+    // Motif insensible aux accents pour l'opérateur imatch (expression régulière de Postgres).
+    const motif = (m: string) => m.replace(/a/g, '[aàâä]').replace(/e/g, '[eéèêë]').replace(/i/g, '[iîï]').replace(/o/g, '[oôö]').replace(/u/g, '[uùûü]').replace(/c/g, '[cç]');
+    const COLS = 'id, title, short_title, text_type, status_label, latest_step_at, deposited_at';
+    const base = () => supabase.from('legislative_dossiers').select(COLS).not('title', 'ilike', 'DOSSIER :%').not('title', 'ilike', '%rapport d%information%');
+    const enLoi = (d: any): LoiTrouvee => ({ id: d.id, titre: d.short_title || d.title, type: d.text_type, statut: d.status_label, date: d.latest_step_at || d.deposited_at });
+
+    let tous = base();
+    for (const m of mots) tous = tous.or(`title.imatch.${motif(m)},short_title.imatch.${motif(m)}`);
+    const { data } = await tous.order('latest_step_at', { ascending: false, nullsFirst: false }).limit(40);
+    if (data?.length || mots.length === 1) return { lois: (data || []).map(enLoi), approchant: false };
+
+    // Aucun texte n'a tous les mots : chaque mot cherché à part, puis les textes classés par les
+    // mots qu'ils contiennent, un mot rare pesant plus qu'un mot courant (« mourir » > « aide »).
+    const parMot = await Promise.all(mots.map(m => base().or(`title.imatch.${motif(m)},short_title.imatch.${motif(m)}`)
+      .order('latest_step_at', { ascending: false, nullsFirst: false }).limit(60)));
+    const vus = new Map<string, any>();
+    const frequence = new Map<string, number>();
+    mots.forEach((m, i) => { const l = parMot[i].data || []; frequence.set(m, l.length); for (const d of l) vus.set(d.id, d); });
+    const score = (d: any) => { const t = sansAccent(`${d.title} ${d.short_title || ''}`); return mots.reduce((s, m) => s + (t.includes(m) ? 1 / Math.max(1, frequence.get(m) || 1) : 0), 0); };
+    const tries = [...vus.values()].map(d => ({ d, s: score(d) })).filter(x => x.s > 0).sort((a, b) => b.s - a.s).slice(0, 20);
+    return { lois: tries.map(x => enLoi(x.d)), approchant: tries.length > 0 };
   },
 
   // Recherche serveur pour les grandes tables : communes (34k) + textes de loi. Insensible à

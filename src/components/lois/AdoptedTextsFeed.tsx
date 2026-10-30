@@ -8,6 +8,7 @@ import { api } from "@/lib/api";
 import { groupLabel } from "@/lib/legislative-groups";
 import DragScroller from "@/components/ui/DragScroller";
 import AnalyseApprofondie from "@/components/lois/AnalyseApprofondie";
+import RechercheLois from "@/components/lois/RechercheLois";
 
 // Surligne les chiffres (%, €, quantités, votes, dates) dans un texte d'analyse.
 const NUM_RE = /(\d[\d  .]*\s?(?:%|€|Md€|M€|milliards?|millions?)|\d{1,4}\s?(?:pour|contre|abstentions?|voix|sièges)|\d+(?:[.,]\d+)?)/gi;
@@ -119,6 +120,8 @@ export default function AdoptedTextsFeed() {
           Derniers textes <span className="text-blue-700 dark:text-blue-400">adoptés par l'Assemblée</span>
         </h2>{" "}
         <p className="mt-1 text-muted-foreground">Chaque vote solennel sur l'ensemble d'un texte : l'issue, le vote de chaque parti, et ce qui se passe ensuite.</p>{" "}
+        {/* Retrouver n'importe quelle loi, pas seulement les dernières adoptées (30/10/2026). */}
+        <RechercheLois />{" "}
         {horsSession && (
           // Sans cette phrase, une date vieille de deux mois passe pour une
           // panne d'alimentation. Elle n'en est pas une : l'Assemblee ne tient

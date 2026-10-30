@@ -994,17 +994,41 @@ export const api = {
    * Les tendances (7 j / 30 j) sont calculées côté interface à partir de ces séries :
    * aucune tendance n'est figée en base, donc aucune ne peut devenir fausse.
    */
+  // Publications récentes des comptes suivis (vues, j'aime, commentaires, partages).
+  getCandidateSocialPosts: async (accountIds: string[], days = 35) => {
+    if (!accountIds.length) return [];
+    const since = new Date(Date.now() - days * 864e5).toISOString();
+    const { data, error } = await supabase
+      .from('candidate_social_posts')
+      .select('account_id, candidate_id, platform, post_id, url, texte, publie_le, vues, likes, commentaires, partages, est_video, releve_le')
+      .in('account_id', accountIds)
+      .gte('publie_le', since)
+      .order('publie_le', { ascending: false })
+      .limit(3000);
+    if (error || !data) return [];
+    return data;
+  },
+
   getCandidateSocialSnapshots: async (accountIds: string[], days = 90) => {
     if (!accountIds.length) return [];
     const since = new Date(Date.now() - days * 864e5).toISOString().slice(0, 10);
-    const { data, error } = await supabase
-      .from('candidate_social_snapshots')
-      .select('account_id, captured_on, followers, total_views, posts, period_views, period_posts, engagement, status, source')
-      .in('account_id', accountIds)
-      .gte('captured_on', since)
-      .order('captured_on', { ascending: true });
-    if (error || !data) return [];
-    return data;
+    // Par pages, du plus récent au plus ancien : la base rend 1 000 lignes au plus par requête. Lue en
+    // une fois et en ordre croissant, la liste s'arrêtait à des relevés vieux de plusieurs semaines.
+    const lignes: any[] = [];
+    for (let de = 0; ; de += 1000) {
+      const { data, error } = await supabase
+        .from('candidate_social_snapshots')
+        .select('account_id, captured_on, followers, total_views, posts, period_views, period_posts, engagement, status, source')
+        .in('account_id', accountIds)
+        .gte('captured_on', since)
+        .order('captured_on', { ascending: false })
+        .order('account_id')
+        .range(de, de + 999);
+      if (error || !data) break;
+      lignes.push(...data);
+      if (data.length < 1000) break;
+    }
+    return lignes.reverse();
   },
 
   /**

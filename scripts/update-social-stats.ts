@@ -15,18 +15,25 @@
  *             très largement suffisant. Seule source qui donne les VUES cumulées, donc les
  *             vraies vues gagnées par semaine et par mois. Sans clé : plateforme ignorée.
  *   bluesky   API publique AT Protocol, sans clé ni quota gênant. Stable.
- *   tiktok    Lecture de la page publique du profil. Fonctionne, mais dépend de la structure
- *             de la page : à surveiller, d'où le statut par plateforme.
+ *   tiktok    Via Agentik : abonnés exacts (la page publique les arrondit : 3 200 000 pour
+ *             3 255 184) et vidéos récentes des comptes officiels. Sans clé : page publique.
  *   instagram Via Agentik (ScrapeCreators, 0,00188 $ par compte) — l'endpoint web public, bloqué
  *             depuis les serveurs (429), ne sert plus que sans clé AGENTIK_API_KEY.
  *   x         Via Agentik (ScrapeCreators, 0,00188 $ par compte). Sans clé : « unavailable ».
- *             TikTok reste gratuit ; Agentik ne le relaie que si la lecture de la page échoue.
  *             Plafond : MAX_APPELS_AGENTIK par relevé ; dépense inscrite dans ia_depenses.
+ *
+ * PUBLICATIONS (30/10/2026) : chaque relevé enregistre aussi les publications récentes de
+ * chaque compte dans `candidate_social_posts` (vues, j'aime, commentaires, partages réels, avec
+ * leur date). Elles s'accumulent de jour en jour ; purge après 90 jours.
+ *
+ * ERREUR CORRIGÉE : le total de j'aime de TikTok était rangé dans `total_views`, et affiché comme
+ * des « vues ». TikTok n'a pas de compteur de vues cumulées : ce champ reste vide désormais.
  *
  * Usage :
  *   npx tsx scripts/update-social-stats.ts            # relevé du jour
  *   npx tsx scripts/update-social-stats.ts --seed     # (ré)injecte les comptes suivis
  *   npx tsx scripts/update-social-stats.ts --dry-run  # affiche sans rien écrire
+ *   npx tsx scripts/update-social-stats.ts --plateformes=x,instagram,tiktok   # ces plateformes seules
  *
  * Variables : NEXT_PUBLIC_SUPABASE_URL, SUPABASE_SERVICE_ROLE_KEY (requises),
  *             YOUTUBE_API_KEY (optionnelle mais vivement conseillée).
@@ -50,6 +57,20 @@ type Account = {
   handle: string;
   url: string | null;
   external_id: string | null;
+  kind: "official" | "support";
+};
+
+/** Une publication, avec ses chiffres publics au moment du relevé. */
+type Publication = {
+  post_id: string;
+  url: string;
+  texte: string | null;
+  publie_le: string;
+  vues: number | null;
+  likes: number | null;
+  commentaires: number | null;
+  partages: number | null;
+  est_video: boolean;
 };
 
 /** Ce qu'un adaptateur sait dire d'un compte à l'instant T. */
@@ -62,6 +83,7 @@ type Reading = {
   week_views: number | null;
   status: "ok" | "unavailable";
   source: string;
+  publications?: Publication[];
 };
 
 const UNAVAILABLE = (source: string): Reading =>
@@ -80,7 +102,15 @@ const MAX_APPELS_AGENTIK = 100;
 let appelsAgentik = 0;
 let depenseAgentik = 0;
 
-async function agentik(outil: string, handle: string): Promise<any | null> {
+// Un compte de parti est rattaché à plusieurs candidats : il n'est payé qu'une fois par relevé.
+const dejaLus = new Map<string, Promise<any | null>>();
+function agentik(outil: string, handle: string): Promise<any | null> {
+  const cle = `${outil}|${handle.toLowerCase()}`;
+  if (!dejaLus.has(cle)) dejaLus.set(cle, appelAgentik(outil, handle));
+  return dejaLus.get(cle)!;
+}
+
+async function appelAgentik(outil: string, handle: string): Promise<any | null> {
   if (!process.env.AGENTIK_API_KEY || appelsAgentik >= MAX_APPELS_AGENTIK) return null;
   appelsAgentik++;
   try {
@@ -101,6 +131,14 @@ async function agentik(outil: string, handle: string): Promise<any | null> {
     return null;
   }
 }
+
+const SEMAINE = 7 * 864e5;
+/** Publications de la semaine, seulement si l'échantillon remonte au-delà des 7 jours. */
+function postsSemaine(p: Publication[], plusAncienne: number | null): number | null {
+  if (plusAncienne == null || Date.now() - plusAncienne < SEMAINE) return null;
+  return p.filter(x => Date.now() - Date.parse(x.publie_le) < SEMAINE).length;
+}
+const court = (t: unknown) => (typeof t === "string" && t.trim() ? t.replace(/\s+/g, " ").trim().slice(0, 280) : null);
 
 /* ═══════════════════════════════ Adaptateurs ═══════════════════════════════ */
 
@@ -129,7 +167,7 @@ async function agentik(outil: string, handle: string): Promise<any | null> {
  * Renvoie des nuls — et non des zéros — quand la lecture échoue : un « 0 publication »
  * inexact se lirait comme un candidat inactif, ce qui est une information, fausse.
  */
-async function activiteSemaine(playlist: string | undefined, key: string): Promise<{ posts: number | null; views: number | null }> {
+async function activiteSemaine(playlist: string | undefined, key: string): Promise<{ posts: number | null; views: number | null; publications?: Publication[] }> {
   if (!playlist) return { posts: null, views: null };
   const depuis = Date.now() - 7 * 24 * 3600 * 1000;
   try {
@@ -151,12 +189,23 @@ async function activiteSemaine(playlist: string | undefined, key: string): Promi
     if (!ids.length) return { posts: 0, views: 0 };
 
     const v = await fetch(
-      `https://www.googleapis.com/youtube/v3/videos?part=statistics&id=${ids.join(",")}&key=${key}`,
+      `https://www.googleapis.com/youtube/v3/videos?part=statistics,snippet&id=${ids.join(",")}&key=${key}`,
     );
     if (!v.ok) throw new Error(`HTTP ${v.status}`);
     const vj: any = await v.json();
     const vues = (vj.items ?? []).reduce((t: number, it: any) => t + (num(it.statistics?.viewCount) ?? 0), 0);
-    return { posts: ids.length, views: vues };
+    const publications: Publication[] = (vj.items ?? []).filter((it: any) => it.snippet?.publishedAt).map((it: any) => ({
+      post_id: it.id,
+      url: `https://www.youtube.com/watch?v=${it.id}`,
+      texte: court(it.snippet.title),
+      publie_le: it.snippet.publishedAt,
+      vues: num(it.statistics?.viewCount),
+      likes: num(it.statistics?.likeCount),
+      commentaires: num(it.statistics?.commentCount),
+      partages: null,
+      est_video: true,
+    }));
+    return { posts: ids.length, views: vues, publications };
   } catch {
     return { posts: null, views: null };
   }
@@ -221,6 +270,7 @@ async function readYouTube(accounts: Account[]): Promise<Map<string, Reading>> {
           week_views: semaine.views,
           status: "ok",
           source: "youtube_api",
+          publications: semaine.publications,
         });
       }
     } catch (e) {
@@ -273,13 +323,11 @@ async function readTikTok(account: Account): Promise<Reading> {
     const html = await res.text();
     const followers = html.match(/"followerCount":(\d+)/)?.[1];
     const videos = html.match(/"videoCount":(\d+)/)?.[1];
-    const hearts = html.match(/"heartCount":(\d+)/)?.[1];
     if (!followers) return UNAVAILABLE("tiktok_page_structure_inconnue");
     return {
       followers: num(followers),
-      // TikTok n'expose pas les vues cumulées ; le total de « j'aime » est le seul
-      // compteur cumulé disponible et sert de proxy d'engagement.
-      total_views: num(hearts),
+      // TikTok n'expose pas de vues cumulées (et `heartCount` compte des j'aime, pas des vues).
+      total_views: null,
       posts: num(videos),
       week_posts: null,
       week_views: null,
@@ -297,14 +345,28 @@ async function readInstagram(account: Account): Promise<Reading> {
   if (process.env.AGENTIK_API_KEY) {
     const u = (await agentik("scrapecreators/get-v1-instagram-profile", handle))?.data?.user;
     if (!u || num(u.edge_followed_by?.count) === null) return UNAVAILABLE("instagram_agentik");
+    const noeuds: any[] = (u.edge_owner_to_timeline_media?.edges ?? []).map((e: any) => e.node).filter((n: any) => n?.shortcode && n?.taken_at_timestamp);
+    const publications: Publication[] = noeuds.map(n => ({
+      post_id: n.shortcode,
+      url: `https://www.instagram.com/p/${n.shortcode}/`,
+      texte: court(n.edge_media_to_caption?.edges?.[0]?.node?.text),
+      publie_le: new Date(n.taken_at_timestamp * 1000).toISOString(),
+      vues: n.is_video ? num(n.video_view_count ?? null) : null,
+      likes: n.like_and_view_counts_disabled ? null : num(n.edge_media_preview_like?.count ?? null),
+      commentaires: num(n.comment_count ?? n.edge_media_to_comment?.count ?? null),
+      partages: null,
+      est_video: !!n.is_video,
+    }));
+    const plusAncienne = noeuds.length ? Math.min(...noeuds.map(n => n.taken_at_timestamp * 1000)) : null;
     return {
       followers: num(u.edge_followed_by.count),
       total_views: null,
       posts: num(u.edge_owner_to_timeline_media?.count),
-      week_posts: null,
+      week_posts: postsSemaine(publications, plusAncienne),
       week_views: null,
       status: "ok",
       source: "instagram_agentik",
+      publications,
     };
   }
   try {
@@ -332,23 +394,75 @@ async function readInstagram(account: Account): Promise<Reading> {
 
 /** X — l'API publique est fermée et sans repli gratuit : lecture via Agentik, sinon rien. */
 async function readX(account: Account): Promise<Reading> {
-  const u = (await agentik("scrapecreators/get-v1-twitter-profile", account.handle.replace(/^@/, "")))?.legacy;
+  const handle = account.handle.replace(/^@/, "");
+  const u = (await agentik("scrapecreators/get-v1-twitter-profile", handle))?.legacy;
   if (!u || num(u.followers_count) === null) return UNAVAILABLE("x_agentik");
+  const brut: any[] = (await agentik("scrapecreators/get-v1-twitter-user-tweets", handle))?.tweets ?? [];
+  const dates = brut.map(t => Date.parse(t?.legacy?.created_at)).filter(Number.isFinite);
+  // Ni repartages ni réponses : seulement ce que le compte publie lui-même.
+  const publications: Publication[] = brut
+    .filter(t => t?.rest_id && t?.legacy?.created_at && !t.legacy.retweeted_status_result && !t.legacy.in_reply_to_status_id_str && !/^RT @/.test(t.legacy.full_text || ""))
+    .map(t => ({
+      post_id: t.rest_id,
+      url: t.url || `https://x.com/${handle}/status/${t.rest_id}`,
+      texte: court(t.note_tweet?.note_tweet_results?.result?.text || t.legacy.full_text),
+      publie_le: new Date(t.legacy.created_at).toISOString(),
+      vues: num(t.views?.count ?? null),
+      likes: num(t.legacy.favorite_count ?? null),
+      commentaires: num(t.legacy.reply_count ?? null),
+      partages: (num(t.legacy.retweet_count ?? 0) ?? 0) + (num(t.legacy.quote_count ?? 0) ?? 0),
+      est_video: false,
+    }));
   return {
     followers: num(u.followers_count),
     total_views: null,
     posts: num(u.statuses_count),
-    week_posts: null,
+    week_posts: null,   // le compteur total (`posts`) inclut réponses et repartages : mesuré par écart
     week_views: null,
     status: "ok",
     source: "x_agentik",
+    publications,
+  };
+}
+
+/** TikTok — abonnés exacts via Agentik (vidéos pour les comptes officiels), sinon page publique. */
+async function readTikTokAgentik(account: Account): Promise<Reading> {
+  const handle = account.handle.replace(/^@/, "");
+  if (!process.env.AGENTIK_API_KEY) return readTikTok(account);
+  const o = await agentik("scrapecreators/get-v1-tiktok-profile", handle);
+  const st = o?.statsV2 ?? o?.stats;
+  if (!st || num(st.followerCount) === null) return readTikTok(account);
+  let publications: Publication[] = [];
+  if (account.kind === "official") {
+    const videos: any[] = (await agentik("scrapecreators/get-v3-tiktok-profile-videos", handle))?.aweme_list ?? [];
+    publications = videos.filter(v => v?.aweme_id && v?.create_time).map(v => ({
+      post_id: v.aweme_id,
+      url: `https://www.tiktok.com/@${handle}/video/${v.aweme_id}`,
+      texte: court(v.desc),
+      publie_le: new Date(v.create_time * 1000).toISOString(),
+      vues: num(v.statistics?.play_count ?? null),
+      likes: num(v.statistics?.digg_count ?? null),
+      commentaires: num(v.statistics?.comment_count ?? null),
+      partages: num(v.statistics?.share_count ?? null),
+      est_video: true,
+    }));
+  }
+  return {
+    followers: num(st.followerCount),
+    total_views: null,
+    posts: num(st.videoCount),
+    week_posts: null,
+    week_views: null,
+    status: "ok",
+    source: "tiktok_agentik",
+    publications,
   };
 }
 
 async function readAccount(account: Account): Promise<Reading> {
   switch (account.platform) {
     case "bluesky": return readBluesky(account);
-    case "tiktok": return readTikTok(account);
+    case "tiktok": return readTikTokAgentik(account);
     case "instagram": return readInstagram(account);
     case "x": return readX(account);
     case "facebook": return UNAVAILABLE("facebook_aucune_source_gratuite");
@@ -406,11 +520,12 @@ async function capture(supabase: any, dryRun: boolean) {
   console.log("\n📈 Relevé du jour");
   const { data, error } = await supabase
     .from("candidate_social_accounts")
-    .select("id, candidate_id, platform, handle, url, external_id")
+    .select("id, candidate_id, platform, handle, url, external_id, kind")
     .eq("active", true);
 
   if (error) { console.error(`  ✗ ${error.message}`); return; }
-  const accounts = (data ?? []) as Account[];
+  const filtre = process.argv.find(a => a.startsWith("--plateformes="))?.split("=")[1]?.split(",");
+  const accounts = ((data ?? []) as Account[]).filter(a => !filtre || filtre.includes(a.platform));
   if (!accounts.length) {
     console.log("  Aucun compte suivi. Lancez d'abord --seed.");
     return;
@@ -474,6 +589,18 @@ async function capture(supabase: any, dryRun: boolean) {
     .upsert(rows, { onConflict: "account_id,captured_on" });
   if (upErr) console.error(`  ✗ écriture : ${upErr.message}`);
   else console.log(`  ✓ ${rows.length} relevé(s) enregistré(s) au ${today}`);
+
+  // Publications : une ligne par compte et par publication, chiffres remis à jour tant qu'elle
+  // reste dans l'échantillon lu.
+  const posts = accounts.flatMap(a => (readings.get(a.id)?.publications ?? []).map(p => ({
+    ...p, account_id: a.id, candidate_id: a.candidate_id, platform: a.platform, releve_le: today,
+  })));
+  for (let i = 0; i < posts.length; i += 500) {
+    const { error: e } = await supabase.from("candidate_social_posts").upsert(posts.slice(i, i + 500), { onConflict: "account_id,post_id" });
+    if (e) { console.error(`  ✗ publications : ${e.message}`); break; }
+  }
+  console.log(`  ✓ ${posts.length} publication(s) relevée(s)`);
+  await supabase.from("candidate_social_posts").delete().lt("publie_le", new Date(Date.now() - 90 * 864e5).toISOString());
 }
 
 /* ───────────────────────────────── Entrée ───────────────────────────────── */

@@ -17,10 +17,11 @@
  *   bluesky   API publique AT Protocol, sans clé ni quota gênant. Stable.
  *   tiktok    Lecture de la page publique du profil. Fonctionne, mais dépend de la structure
  *             de la page : à surveiller, d'où le statut par plateforme.
- *   instagram Lecture de l'endpoint web public. Souvent bloqué depuis une IP de datacentre
- *             (429) — dans ce cas, statut « unavailable », et rien n'est affiché.
- *   x         Plus aucune source gratuite depuis la fermeture de l'API publique. Reste en
- *             « unavailable » tant qu'aucun fournisseur payant n'est configuré.
+ *   instagram Via Agentik (ScrapeCreators, 0,00188 $ par compte) — l'endpoint web public, bloqué
+ *             depuis les serveurs (429), ne sert plus que sans clé AGENTIK_API_KEY.
+ *   x         Via Agentik (ScrapeCreators, 0,00188 $ par compte). Sans clé : « unavailable ».
+ *             TikTok reste gratuit ; Agentik ne le relaie que si la lecture de la page échoue.
+ *             Plafond : MAX_APPELS_AGENTIK par relevé ; dépense inscrite dans ia_depenses.
  *
  * Usage :
  *   npx tsx scripts/update-social-stats.ts            # relevé du jour
@@ -30,6 +31,7 @@
  * Variables : NEXT_PUBLIC_SUPABASE_URL, SUPABASE_SERVICE_ROLE_KEY (requises),
  *             YOUTUBE_API_KEY (optionnelle mais vivement conseillée).
  */
+import { randomUUID } from "node:crypto";
 import { createClient } from "@supabase/supabase-js";
 import fs from "fs";
 import path from "path";
@@ -70,6 +72,35 @@ const num = (v: unknown): number | null => {
   const n = Number(v);
   return Number.isFinite(n) ? n : null;
 };
+
+/* ═══════════════════════════════ Agentik ═══════════════════════════════ */
+
+// Filet : 100 appels ≈ 0,19 $ par relevé quotidien, soit moins de 6 $ par mois.
+const MAX_APPELS_AGENTIK = 100;
+let appelsAgentik = 0;
+let depenseAgentik = 0;
+
+async function agentik(outil: string, handle: string): Promise<any | null> {
+  if (!process.env.AGENTIK_API_KEY || appelsAgentik >= MAX_APPELS_AGENTIK) return null;
+  appelsAgentik++;
+  try {
+    const res = await fetch("https://api.agentik.cc/v1/run", {
+      method: "POST",
+      headers: { Authorization: `Bearer ${process.env.AGENTIK_API_KEY}`, "Content-Type": "application/json", "Idempotency-Key": randomUUID() },
+      body: JSON.stringify({ tool_id: outil, input: { handle } }),
+      signal: AbortSignal.timeout(60_000),
+    });
+    const json: any = await res.json().catch(() => null);
+    depenseAgentik += Number(json?.price_billed_usd || 0);
+    if (!res.ok || json?.status !== "COMPLETED") {
+      console.warn(`  ⚠ Agentik ${outil} ${handle} : ${json?.error?.message ?? json?.status ?? res.status}`);
+      return null;
+    }
+    return json.output;
+  } catch {
+    return null;
+  }
+}
 
 /* ═══════════════════════════════ Adaptateurs ═══════════════════════════════ */
 
@@ -263,6 +294,19 @@ async function readTikTok(account: Account): Promise<Reading> {
 /** Instagram — endpoint web public, fréquemment bloqué depuis un runner CI. */
 async function readInstagram(account: Account): Promise<Reading> {
   const handle = account.handle.replace(/^@/, "");
+  if (process.env.AGENTIK_API_KEY) {
+    const u = (await agentik("scrapecreators/get-v1-instagram-profile", handle))?.data?.user;
+    if (!u || num(u.edge_followed_by?.count) === null) return UNAVAILABLE("instagram_agentik");
+    return {
+      followers: num(u.edge_followed_by.count),
+      total_views: null,
+      posts: num(u.edge_owner_to_timeline_media?.count),
+      week_posts: null,
+      week_views: null,
+      status: "ok",
+      source: "instagram_agentik",
+    };
+  }
   try {
     const res = await fetch(
       `https://www.instagram.com/api/v1/users/web_profile_info/?username=${encodeURIComponent(handle)}`,
@@ -286,13 +330,19 @@ async function readInstagram(account: Account): Promise<Reading> {
   }
 }
 
-/**
- * X — l'API publique a été fermée et l'endpoint de syndication qui servait de repli
- * ne renvoie plus rien. Aucune source gratuite fiable à ce jour : on l'assume plutôt
- * que d'afficher un chiffre faux. Brancher ici un fournisseur payant le cas échéant.
- */
-async function readX(_account: Account): Promise<Reading> {
-  return UNAVAILABLE("x_aucune_source_gratuite");
+/** X — l'API publique est fermée et sans repli gratuit : lecture via Agentik, sinon rien. */
+async function readX(account: Account): Promise<Reading> {
+  const u = (await agentik("scrapecreators/get-v1-twitter-profile", account.handle.replace(/^@/, "")))?.legacy;
+  if (!u || num(u.followers_count) === null) return UNAVAILABLE("x_agentik");
+  return {
+    followers: num(u.followers_count),
+    total_views: null,
+    posts: num(u.statuses_count),
+    week_posts: null,
+    week_views: null,
+    status: "ok",
+    source: "x_agentik",
+  };
 }
 
 async function readAccount(account: Account): Promise<Reading> {
@@ -411,7 +461,13 @@ async function capture(supabase: any, dryRun: boolean) {
     console.log(`  ${t.ko === 0 ? "✓" : t.ok === 0 ? "✗" : "~"} ${p.padEnd(10)} ${t.ok} relevé(s), ${t.ko} indisponible(s)`);
   }
 
+  console.log(`  Agentik : ${appelsAgentik} appel(s), ${depenseAgentik.toFixed(4)} $`);
   if (dryRun) { console.log("  (--dry-run : rien n'est écrit)"); return; }
+
+  if (depenseAgentik > 0) {
+    const { error: e } = await supabase.from("ia_depenses").insert({ poste: "agentik", modele: "agentik", usd: Number(depenseAgentik.toFixed(5)), detail: `relevé réseaux sociaux, ${appelsAgentik} appels` });
+    if (e) console.warn(`  ⚠ dépense Agentik non inscrite : ${e.message}`);
+  }
 
   const { error: upErr } = await supabase
     .from("candidate_social_snapshots")

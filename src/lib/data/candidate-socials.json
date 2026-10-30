@@ -16,6 +16,20 @@
         "url": "https://www.tiktok.com/@revpermanente",
         "kind": "support",
         "label": "Révolution permanente"
+      },
+      {
+        "platform": "x",
+        "handle": "@AnasseKazib",
+        "external_id": null,
+        "url": "https://x.com/AnasseKazib",
+        "kind": "official"
+      },
+      {
+        "platform": "instagram",
+        "handle": "@anassekazib",
+        "external_id": null,
+        "url": "https://www.instagram.com/anassekazib/",
+        "kind": "official"
       }
     ]
   },
@@ -44,6 +58,20 @@
         "url": "https://www.youtube.com/@lesrepublicains",
         "kind": "support",
         "label": "Les Républicains"
+      },
+      {
+        "platform": "x",
+        "handle": "@BrunoRetailleau",
+        "external_id": null,
+        "url": "https://x.com/BrunoRetailleau",
+        "kind": "official"
+      },
+      {
+        "platform": "instagram",
+        "handle": "@bruno_retailleau",
+        "external_id": null,
+        "url": "https://www.instagram.com/bruno_retailleau/",
+        "kind": "official"
       }
     ]
   },
@@ -87,6 +115,20 @@
         "url": "https://www.instagram.com/nouv_energie/",
         "kind": "support",
         "label": "Nouvelle Énergie"
+      },
+      {
+        "platform": "x",
+        "handle": "@davidlisnard",
+        "external_id": null,
+        "url": "https://x.com/davidlisnard",
+        "kind": "official"
+      },
+      {
+        "platform": "instagram",
+        "handle": "@davidlisnard",
+        "external_id": null,
+        "url": "https://www.instagram.com/davidlisnard/",
+        "kind": "official"
       }
     ]
   },
@@ -99,6 +141,20 @@
         "external_id": "UCjTbZBXEw-gplUAnMXLYHpg",
         "url": "https://www.youtube.com/@ericzemmouroff",
         "kind": "official"
+      },
+      {
+        "platform": "x",
+        "handle": "@ZemmourEric",
+        "external_id": null,
+        "url": "https://x.com/ZemmourEric",
+        "kind": "official"
+      },
+      {
+        "platform": "instagram",
+        "handle": "@ericzemmour_",
+        "external_id": null,
+        "url": "https://www.instagram.com/ericzemmour_/",
+        "kind": "official"
       }
     ]
   },
@@ -110,6 +166,20 @@
         "handle": "@fabien_roussel",
         "external_id": null,
         "url": "https://www.tiktok.com/@fabien_roussel",
+        "kind": "official"
+      },
+      {
+        "platform": "x",
+        "handle": "@Fabien_Roussel",
+        "external_id": null,
+        "url": "https://x.com/Fabien_Roussel",
+        "kind": "official"
+      },
+      {
+        "platform": "instagram",
+        "handle": "@fabien_roussel",
+        "external_id": null,
+        "url": "https://www.instagram.com/fabien_roussel/",
         "kind": "official"
       }
     ]
@@ -138,6 +208,13 @@
         "url": "https://www.youtube.com/@lespatriotes",
         "kind": "support",
         "label": "Les Patriotes"
+      },
+      {
+        "platform": "x",
+        "handle": "@f_philippot",
+        "external_id": null,
+        "url": "https://x.com/f_philippot",
+        "kind": "official"
       }
     ]
   },
@@ -195,6 +272,20 @@
         "external_id": "did:plc:e3tbauupqe4xf7qrnyv7rlkt",
         "url": "https://bsky.app/profile/francoisruffin.fr",
         "kind": "official"
+      },
+      {
+        "platform": "x",
+        "handle": "@Francois_Ruffin",
+        "external_id": null,
+        "url": "https://x.com/Francois_Ruffin",
+        "kind": "official"
+      },
+      {
+        "platform": "instagram",
+        "handle": "@francois_ruffin",
+        "external_id": null,
+        "url": "https://www.instagram.com/francois_ruffin/",
+        "kind": "official"
       }
     ]
   },
@@ -222,6 +313,20 @@
         "url": "https://www.youtube.com/@renaissance",
         "kind": "support",
         "label": "Renaissance"
+      },
+      {
+        "platform": "x",
+        "handle": "@GabrielAttal",
+        "external_id": null,
+        "url": "https://x.com/GabrielAttal",
+        "kind": "official"
+      },
+      {
+        "platform": "instagram",
+        "handle": "@gabrielattal",
+        "external_id": null,
+        "url": "https://www.instagram.com/gabrielattal/",
+        "kind": "official"
       }
     ]
   },
@@ -264,6 +369,20 @@
         "url": "https://www.youtube.com/@franceinsoumise",
         "kind": "support",
         "label": "La France insoumise"
+      },
+      {
+        "platform": "x",
+        "handle": "@JLMelenchon",
+        "external_id": null,
+        "url": "https://x.com/JLMelenchon",
+        "kind": "official"
+      },
+      {
+        "platform": "instagram",
+        "handle": "@jlmelenchon",
+        "external_id": null,
+        "url": "https://www.instagram.com/jlmelenchon/",
+        "kind": "official"
       }
     ]
   },
@@ -338,6 +457,13 @@
         "external_id": null,
         "url": "https://www.tiktok.com/@brancojuan",
         "kind": "official"
+      },
+      {
+        "platform": "x",
+        "handle": "@anatolium",
+        "external_id": null,
+        "url": "https://x.com/anatolium",
+        "kind": "official"
       }
     ]
   },
@@ -358,6 +484,20 @@
         "url": "https://www.tiktok.com/@rnational_off",
         "kind": "support",
         "label": "Rassemblement national"
+      },
+      {
+        "platform": "x",
+        "handle": "@MLP_officiel",
+        "external_id": null,
+        "url": "https://x.com/MLP_officiel",
+        "kind": "official"
+      },
+      {
+        "platform": "instagram",
+        "handle": "@marine_lepen",
+        "external_id": null,
+        "url": "https://www.instagram.com/marine_lepen/",
+        "kind": "official"
       }
     ]
   },
@@ -385,6 +525,20 @@
         "url": "https://www.youtube.com/@lesecologistes",
         "kind": "support",
         "label": "Les Écologistes"
+      },
+      {
+        "platform": "x",
+        "handle": "@marinetondelier",
+        "external_id": null,
+        "url": "https://x.com/marinetondelier",
+        "kind": "official"
+      },
+      {
+        "platform": "instagram",
+        "handle": "@marinetondelier",
+        "external_id": null,
+        "url": "https://www.instagram.com/marinetondelier/",
+        "kind": "official"
       }
     ]
   },
@@ -412,6 +566,13 @@
         "url": "https://www.youtube.com/@lutteouvriere",
         "kind": "support",
         "label": "Lutte ouvrière"
+      },
+      {
+        "platform": "x",
+        "handle": "@n_arthaud",
+        "external_id": null,
+        "url": "https://x.com/n_arthaud",
+        "kind": "official"
       }
     ]
   },
@@ -423,6 +584,20 @@
         "handle": "@dupontaignannicolas",
         "external_id": "UCfA5DnCDX3Ixy5QOAMGtBlA",
         "url": "https://www.youtube.com/@dupontaignannicolas",
+        "kind": "official"
+      },
+      {
+        "platform": "x",
+        "handle": "@dupontaignan",
+        "external_id": null,
+        "url": "https://x.com/dupontaignan",
+        "kind": "official"
+      },
+      {
+        "platform": "instagram",
+        "handle": "@dupontaignan",
+        "external_id": null,
+        "url": "https://www.instagram.com/dupontaignan/",
         "kind": "official"
       }
     ]
@@ -514,6 +689,20 @@
         "url": "https://www.youtube.com/@placepublique",
         "kind": "support",
         "label": "Place publique"
+      },
+      {
+        "platform": "x",
+        "handle": "@rglucks1",
+        "external_id": null,
+        "url": "https://x.com/rglucks1",
+        "kind": "official"
+      },
+      {
+        "platform": "instagram",
+        "handle": "@raphaelglucksmann",
+        "external_id": null,
+        "url": "https://www.instagram.com/raphaelglucksmann/",
+        "kind": "official"
       }
     ]
   },
@@ -554,6 +743,94 @@
         "url": "https://www.youtube.com/@lesrepublicains",
         "kind": "support",
         "label": "Les Républicains"
+      },
+      {
+        "platform": "x",
+        "handle": "@xavierbertrand",
+        "external_id": null,
+        "url": "https://x.com/xavierbertrand",
+        "kind": "official"
+      },
+      {
+        "platform": "instagram",
+        "handle": "@xavier.bertrand",
+        "external_id": null,
+        "url": "https://www.instagram.com/xavier.bertrand/",
+        "kind": "official"
+      }
+    ]
+  },
+  {
+    "candidate_slug": "bernard-cazeneuve",
+    "accounts": [
+      {
+        "platform": "x",
+        "handle": "@BCazeneuve",
+        "external_id": null,
+        "url": "https://x.com/BCazeneuve",
+        "kind": "official"
+      }
+    ]
+  },
+  {
+    "candidate_slug": "delphine-batho",
+    "accounts": [
+      {
+        "platform": "x",
+        "handle": "@delphinebatho",
+        "external_id": null,
+        "url": "https://x.com/delphinebatho",
+        "kind": "official"
+      },
+      {
+        "platform": "instagram",
+        "handle": "@delphine_batho",
+        "external_id": null,
+        "url": "https://www.instagram.com/delphine_batho/",
+        "kind": "official"
+      }
+    ]
+  },
+  {
+    "candidate_slug": "edouard-philippe",
+    "accounts": [
+      {
+        "platform": "x",
+        "handle": "@EPhilippe_LH",
+        "external_id": null,
+        "url": "https://x.com/EPhilippe_LH",
+        "kind": "official"
+      }
+    ]
+  },
+  {
+    "candidate_slug": "natacha-polony",
+    "accounts": [
+      {
+        "platform": "x",
+        "handle": "@NPolony",
+        "external_id": null,
+        "url": "https://x.com/NPolony",
+        "kind": "official"
+      },
+      {
+        "platform": "instagram",
+        "handle": "@natachapolony",
+        "external_id": null,
+        "url": "https://www.instagram.com/natachapolony/",
+        "kind": "official"
+      }
+    ]
+  },
+  {
+    "candidate_slug": "karim-bouamrane",
+    "accounts": [
+      {
+        "platform": "instagram",
+        "handle": "@karimbouamrane",
+        "external_id": null,
+        "url": "https://www.instagram.com/karimbouamrane/",
+        "kind": "official"
       }
     ]
   }

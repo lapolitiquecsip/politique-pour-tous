@@ -47,6 +47,8 @@ jobs:
           # Optionnelle mais déterminante : sans elle, aucune donnée YouTube, donc
           # aucune vue. Clé gratuite sur console.cloud.google.com (API YouTube Data v3).
           YOUTUBE_API_KEY: ${{ secrets.YOUTUBE_API_KEY }}
+          # X et Instagram (payant à l'appel, 0,00188 $ par compte). Sans elle : X indisponible.
+          AGENTIK_API_KEY: ${{ secrets.AGENTIK_API_KEY }}
         run: >
           npx --yes tsx scripts/update-social-stats.ts
           ${{ github.event.inputs.seed == 'true' && '--seed' || '' }}

@@ -151,7 +151,7 @@ export function signed(n: number | null | undefined): string {
 
 export const PLATFORM_META: Record<Platform, { label: string; color: string; hasViews: boolean }> = {
   youtube:   { label: "YouTube",   color: "#ff0033", hasViews: true },
-  x:         { label: "X",         color: "#0f172a", hasViews: true },
+  x:         { label: "X",         color: "#0f172a", hasViews: false },
   tiktok:    { label: "TikTok",    color: "#00c2cb", hasViews: true },
   instagram: { label: "Instagram", color: "#d62976", hasViews: false },
   bluesky:   { label: "Bluesky",   color: "#0085ff", hasViews: false },

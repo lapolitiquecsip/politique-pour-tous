@@ -77,6 +77,9 @@ export default function RootLayout({
       */}
       {/* Dans <head> : un <script> enfant direct de <html> est du HTML invalide (erreur d'hydratation). */}
       <head>
+        {/* Connexion à la base ouverte pendant le chargement du JavaScript (DNS + TLS, ~0,5 s
+            sur mobile) : les premières requêtes de la page partent sur une liaison prête. */}
+        {process.env.NEXT_PUBLIC_SUPABASE_URL && <link rel="preconnect" href={process.env.NEXT_PUBLIC_SUPABASE_URL} crossOrigin="anonymous" />}
         <script
           dangerouslySetInnerHTML={{
             __html: `try{var d=document.documentElement.dataset,t=localStorage.getItem("lpcs.tier");if(t==="pro"||t==="elite")d.abonnement=t;if(localStorage.getItem("lpcs.connecte")==="1")d.connecte="1";}catch(e){}`,

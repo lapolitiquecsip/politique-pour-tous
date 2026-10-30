@@ -2,6 +2,7 @@
 
 import { use, useState, useEffect, useMemo, useRef } from "react";
 import Link from "next/link";
+import { vignetteWikimedia } from "@/lib/wikimedia";
 import { 
   ChevronLeft, 
   MapPin, 
@@ -36,6 +37,7 @@ import {
 import { motion, AnimatePresence } from "framer-motion";
 import { api } from "@/lib/api";
 import { usePremium } from "@/lib/hooks/usePremium";
+import { enjeuxDesScrutins, fichierEnjeux } from "@/lib/enjeux-statiques";
 import { AwardBadge } from "@/components/ui/award-badge";
 import FollowButton from "@/components/shared/FollowButton";
 import ShareButtons from "@/components/shared/ShareButtons";
@@ -239,23 +241,48 @@ export default function DeputyDetailPage({ params, embedded, initialDeputy }: { 
   const issueChip = (active: boolean) =>
     `px-4 py-2 rounded-xl text-[10px] font-black uppercase tracking-widest transition-all border ${active ? "bg-red-600 text-white border-red-600 shadow-lg" : "bg-card dark:bg-slate-900 text-muted-foreground border-border dark:border-slate-800 hover:border-red-500"}`;
 
-  // Load real deputy and follow status
+  // État « suivi » : à part, pour que l'arrivée de la session (userId) ne relance pas tout
+  // le chargement de la fiche — c'était une seconde série complète de requêtes.
+  useEffect(() => {
+    if (!userId || !deputy?.id) { if (!userId) setCheckingFollow(false); return; }
+    let actif = true;
+    api.getUserFollows(userId).then(follows => {
+      if (actif) setIsFollowing(follows.some((f: any) => f.deputy_id === deputy.id));
+    }).catch(() => {}).finally(() => { if (actif) setCheckingFollow(false); });
+    return () => { actif = false; };
+  }, [userId, deputy?.id]);
+
+  // Load real deputy, votes and the rest
   useEffect(() => {
     const loadDeputyData = async () => {
-      // Les votes partent sans attendre : l'identifiant AN est déjà dans la page pré-générée.
-      // Avant, ils attendaient la relecture du député PUIS l'état « suivi » (deux allers-retours).
+      // Tout part sans attendre (30/10/2026) : la fiche pré-générée a déjà l'identifiant AN,
+      // le nom et le parti. Seuls les votes et la relecture du député précèdent le reste ;
+      // les enjeux des scrutins arrivent du fichier statique en même temps que les votes.
       const anIdInitial = initialDeputy?.an_id;
       if (anIdInitial) setLoadingVotes(true);
       const votesAnticipes = anIdInitial ? api.getVotesByDeputy(anIdInitial) : null;
+      fichierEnjeux();
+      const lancerAnnexes = (d: any) => {
+        // "Ce qu'il dit" : positions déclaratives (questions écrites) par enjeu.
+        if (d?.slug) api.getEntityPositions("deputy", d.slug).then(setPositions).catch(() => {});
+        if (d?.first_name) {
+          const fullName = `${d.first_name} ${d.last_name}`;
+          setLoadingAuthoredLaws(true);
+          // Après les votes : ~100 Ko qui, partis ensemble, ralentissaient les votes en 4G.
+          Promise.resolve(votesAnticipes).catch(() => null)
+            .then(() => api.getLawsByAuthor(fullName)).then(setAuthoredLaws).catch(() => {}).finally(() => setLoadingAuthoredLaws(false));
+          // Fil conducteur : cette personne est-elle candidate à la présidentielle ?
+          api.findCandidateByName(fullName).then(c => setCandidateLink(c)).catch(() => {});
+        }
+        // Fil conducteur : fiche du parti/groupe.
+        if (d?.party) api.findPartyByAlias(d.party).then(p => setPartyLink(p)).catch(() => {});
+      };
+      if (initialDeputy) lancerAnnexes(initialDeputy);
       let dbDeputy = (await api.getDeputyBySlug(slug).catch(() => null)) ?? initialDeputy ?? null;
-      
-      setDeputy(dbDeputy);
 
-      if (dbDeputy && userId) {
-        api.getUserFollows(userId).then(follows => {
-          setIsFollowing(follows.some((f: any) => f.deputy_id === dbDeputy.id));
-        }).catch(() => {}).finally(() => setCheckingFollow(false));
-      } else setCheckingFollow(false);
+      setDeputy(dbDeputy);
+      if (!initialDeputy) lancerAnnexes(dbDeputy);
+      if (!dbDeputy) setLoadingAuthoredLaws(false);
 
       // Load real votes
       if (dbDeputy?.an_id) {
@@ -263,6 +290,12 @@ export default function DeputyDetailPage({ params, embedded, initialDeputy }: { 
         const realVotes = votesAnticipes && dbDeputy.an_id === anIdInitial ? await votesAnticipes : await api.getVotesByDeputy(dbDeputy.an_id);
         setVotes(realVotes);
         setLoadingVotes(false);
+        // Enjeux : du fichier statique, déjà en route (mesuré en 4G : les attendre avant
+        // d'afficher retardait les votes plus que la seconde vague d'avant).
+        enjeuxDesScrutins(realVotes.map((v: any) => ({ id: v?.scrutins?.id, date: v?.scrutins?.date_scrutin || v?.date_scrutin }))).then(e => {
+          setIssues(e.enjeux); setScrutinIssues(e.tags);
+          e.complement?.then(m => setScrutinIssues(t => ({ ...t, ...m }))).catch(() => {});
+        }).catch(() => {});
         // Arrivée depuis une alerte de vote (« ?vote=… ») : la fenêtre qui explique
         // ce vote s'ouvre d'elle-même. Hors de la liste (qui ne garde que lois et
         // articles), le vote est lu directement.
@@ -272,33 +305,10 @@ export default function DeputyDetailPage({ params, embedded, initialDeputy }: { 
             ?? await api.getDeputyVote(dbDeputy.an_id, voulu).catch(() => null);
           if (v) setSelectedVoteForModal(v);
         }
-        // Tags d'enjeux des scrutins votés (les "actes" par sujet) + référentiel des enjeux.
-        const ids = realVotes.map((v: any) => v?.scrutins?.id).filter(Boolean);
-        api.getScrutinIssues(ids).then(setScrutinIssues).catch(() => {});
-        api.getIssues().then(setIssues).catch(() => {});
-      }
-      // "Ce qu'il dit" : positions déclaratives (questions écrites) par enjeu.
-      if (dbDeputy?.slug) api.getEntityPositions("deputy", dbDeputy.slug).then(setPositions).catch(() => {});
-
-      // Load authored laws
-      if (dbDeputy?.first_name) {
-        setLoadingAuthoredLaws(true);
-        const fullName = `${dbDeputy.first_name} ${dbDeputy.last_name}`;
-        const laws = await api.getLawsByAuthor(fullName);
-        setAuthoredLaws(laws);
-        setLoadingAuthoredLaws(false);
-
-        // Fil conducteur : cette personne est-elle candidate à la présidentielle ?
-        api.findCandidateByName(fullName).then(c => setCandidateLink(c)).catch(() => {});
-      }
-
-      // Fil conducteur : fiche du parti/groupe.
-      if (dbDeputy?.party) {
-        api.findPartyByAlias(dbDeputy.party).then(p => setPartyLink(p)).catch(() => {});
-      }
+      } else setLoadingVotes(false);
     };
     loadDeputyData();
-  }, [slug, userId]);
+  }, [slug]);
 
   const handleFollow = async () => {
     if (!userId) {
@@ -360,6 +370,11 @@ export default function DeputyDetailPage({ params, embedded, initialDeputy }: { 
 
   const sources = useMemo(
     () => deputyPhotoSources(deputy?.an_id ?? null, slug, deputy?.photo_url ?? null),
+    [deputy?.an_id, slug, deputy?.photo_url]
+  );
+  // Grande photo (ordinateur) : même cascade, en 500 px.
+  const sourcesGrandes = useMemo(
+    () => deputyPhotoSources(deputy?.an_id ?? null, slug, deputy?.photo_url ?? null, 250),
     [deputy?.an_id, slug, deputy?.photo_url]
   );
 
@@ -434,7 +449,7 @@ export default function DeputyDetailPage({ params, embedded, initialDeputy }: { 
               {/* MOBILE : photo ronde compacte cadrée sur le visage + nom. */}
               <div className="flex items-center gap-4 p-5 md:hidden">
                 {!imgError ? (
-                  <img src={sources[srcIndex]} alt={name} onError={handleImgError} className="h-20 w-20 shrink-0 rounded-full object-cover object-top ring-2 ring-red-300 dark:ring-slate-700" />
+                  <img src={sources[srcIndex]} alt={name} onError={handleImgError} fetchPriority="high" width={80} height={80} className="h-20 w-20 shrink-0 rounded-full object-cover object-top ring-2 ring-red-300 dark:ring-slate-700" />
                 ) : (
                   <div className="flex h-20 w-20 shrink-0 items-center justify-center rounded-full bg-slate-200 text-2xl font-black text-slate-400 dark:bg-slate-800">
                     {deputy?.first_name?.charAt(0)}{deputy?.last_name?.charAt(0)}
@@ -451,10 +466,12 @@ export default function DeputyDetailPage({ params, embedded, initialDeputy }: { 
               {/* DESKTOP : grande photo immersive (inchangée). */}
               <div className="relative hidden aspect-[4/5] bg-slate-200 dark:bg-slate-800 md:flex items-center justify-center overflow-hidden">
                 {!imgError ? (
+                  // « lazy » : masquée sur mobile, elle n'y est pas téléchargée.
                   <img
-                    src={sources[srcIndex]}
+                    src={sourcesGrandes[srcIndex]}
                     alt={name}
                     onError={handleImgError}
+                    loading="lazy"
                     className="w-full h-full object-cover"
                   />
                 ) : (
@@ -487,7 +504,7 @@ export default function DeputyDetailPage({ params, embedded, initialDeputy }: { 
                     <>
                       {partyLink?.logo_url ? (
                         // eslint-disable-next-line @next/next/no-img-element
-                        <img src={partyLink.logo_url} alt={partyLink.name} className="w-12 h-12 rounded-2xl object-contain bg-white p-1 shrink-0 shadow-lg ring-1 ring-slate-200 dark:ring-slate-700" />
+                        <img src={vignetteWikimedia(partyLink.logo_url, 48) || partyLink.logo_url} alt={partyLink.name} className="w-12 h-12 rounded-2xl object-contain bg-white p-1 shrink-0 shadow-lg ring-1 ring-slate-200 dark:ring-slate-700" />
                       ) : (
                         <div className="w-12 h-12 rounded-2xl bg-red-600 flex items-center justify-center text-white shrink-0 shadow-lg shadow-red-500/20">
                           <Landmark className="w-6 h-6" />

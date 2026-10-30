@@ -2,6 +2,7 @@
 
 import { useState, useMemo, useEffect } from "react";
 import Link from "next/link";
+import { vignetteWikimedia } from "@/lib/wikimedia";
 import {
   ChevronLeft,
   MapPin,
@@ -25,6 +26,7 @@ import VotesAmendementsElu from "@/components/votes/VotesAmendementsElu";
 import QuandVisible from "@/components/shared/QuandVisible";
 import { getFullPartyName } from "@/lib/party-utils";
 import { api } from "@/lib/api";
+import { enjeuxDesScrutins, fichierEnjeux } from "@/lib/enjeux-statiques";
 import { useBioFraiche } from "@/lib/hooks/useBioFraiche";
 import LegalStatusModal from "@/components/deputies/LegalStatusModal";
 import ActivityRank from "@/components/shared/ActivityRank";
@@ -92,11 +94,16 @@ export default function SenatorClient({ senator, embedded }: { senator: any; emb
   const [positions, setPositions] = useState<Record<string, any>>({}); // "ce qu'il dit" par enjeu
   const [voteCible, setVoteCible] = useState<string | null>(null);     // vote ouvert depuis une alerte
   useEffect(() => {
+    fichierEnjeux();
     api.getSenatorVotes(senator.senate_matricule || null, senator.first_name, senator.last_name, 1000, "lois")
       .then((v: any[]) => {
         setVotes(v);
         setChargeVotes(false);
-        api.getScrutinIssues(v.map(x => x?.scrutin_id).filter(Boolean)).then(setScrutinIssues).catch(() => {});
+        // Enjeux : du fichier statique, parti en même temps que les votes.
+        enjeuxDesScrutins(v.map(x => ({ id: x?.scrutin_id, date: x?._ts || null }))).then(e => {
+          setIssues(e.enjeux); setScrutinIssues(e.tags);
+          e.complement?.then(m => setScrutinIssues(t => ({ ...t, ...m }))).catch(() => {});
+        }).catch(() => {});
         // Arrivée depuis une alerte de vote (« ?vote=… », numéro officiel ou
         // identifiant) : on descend jusqu'au vote, dont l'explication est déjà
         // affichée dans sa carte, et on le met en évidence.
@@ -109,7 +116,6 @@ export default function SenatorClient({ senator, embedded }: { senator: any; emb
         }
       })
       .catch(() => { setVotes([]); setChargeVotes(false); });
-    api.getIssues().then(setIssues).catch(() => {});
     if (senator.slug) api.getEntityPositions("senator", senator.slug).then(setPositions).catch(() => {});
   }, [senator.senate_matricule, senator.first_name, senator.last_name, senator.slug]);
 
@@ -232,7 +238,7 @@ export default function SenatorClient({ senator, embedded }: { senator: any; emb
                      <>
                        {partyLink?.logo_url ? (
                          // eslint-disable-next-line @next/next/no-img-element
-                         <img src={partyLink.logo_url} alt={partyLink.name} className="w-12 h-12 rounded-2xl object-contain bg-white p-1 shrink-0 shadow-lg ring-1 ring-slate-200 dark:ring-slate-700" />
+                         <img src={vignetteWikimedia(partyLink.logo_url, 48) || partyLink.logo_url} alt={partyLink.name} className="w-12 h-12 rounded-2xl object-contain bg-white p-1 shrink-0 shadow-lg ring-1 ring-slate-200 dark:ring-slate-700" />
                        ) : (
                          <div className="w-12 h-12 rounded-2xl bg-amber-700 flex items-center justify-center text-white shrink-0 shadow-lg shadow-amber-500/20">
                            <Users className="w-6 h-6" />

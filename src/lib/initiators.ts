@@ -1,4 +1,5 @@
 import { supabase } from "@/lib/supabase";
+import { vignetteWikimedia } from "@/lib/wikimedia";
 
 export type InitiatorPerson = {
   slug: string;
@@ -10,15 +11,16 @@ export type InitiatorPerson = {
 };
 
 // Sources photo d'un député, dans l'ordre d'essai (cascade en cas d'échec de chargement) :
-// 1) photo Wikimedia Commons HD si disponible (photo_url enrichi, ~800 px, net) ;
+// 1) photo Wikimedia Commons si disponible, en miniature directe à la taille affichée
+//    (`px`, pixels CSS — vignetteWikimedia : ni redirection ni 960 px pour une vignette) ;
 // 2) image officielle AN via an_id (miniature carrée ~240 px, repli propre) ;
 // 3) tout autre photo_url stocké.
 // NB : nosdeputes.fr est écarté — il ne renvoie plus qu'un placeholder vide (cercle noir).
 const isHdPhoto = (u: string | null): u is string => !!u && /wikimedia\.org|wikipedia\.org|commons/i.test(u);
 
-export function deputyPhotoSources(anId: string | null, slug: string, photoUrl: string | null): string[] {
+export function deputyPhotoSources(anId: string | null, slug: string, photoUrl: string | null, px = 125): string[] {
   const out: string[] = [];
-  if (isHdPhoto(photoUrl)) out.push(photoUrl);
+  if (isHdPhoto(photoUrl)) out.push(vignetteWikimedia(photoUrl, px) || photoUrl);
   if (anId) {
     const id = anId.replace("PA", "");
     out.push(`https://www.assemblee-nationale.fr/dyn/static/tribun/17/photos/carre/${id}.jpg`);

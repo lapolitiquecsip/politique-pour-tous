@@ -18,9 +18,10 @@ import {
   Users,
   ArrowRight,
   Search
-} from "lucide-react";
+, Lock, Loader2 } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
 import { usePremium } from "@/lib/hooks/usePremium";
+import VotesAmendementsElu from "@/components/votes/VotesAmendementsElu";
 import { getFullPartyName } from "@/lib/party-utils";
 import { api } from "@/lib/api";
 import { useBioFraiche } from "@/lib/hooks/useBioFraiche";
@@ -77,6 +78,11 @@ export default function SenatorClient({ senator, embedded }: { senator: any; emb
   const headerMeta = [professionShort, frBirth ? `né(e) le ${frBirth}` : null].filter(Boolean).join(" · ");
   // Vrais votes du Sénat (rapprochés par nom + chambre), plus de données factices.
   const [votes, setVotes] = useState<any[]>([]);
+  // Tant que les votes n'arrivent pas, on le dit : la fiche affichait sinon « Aucun scrutin
+  // public récent » pendant le chargement (30/10/2026).
+  const [chargeVotes, setChargeVotes] = useState(true);
+  // Lois ou amendements (Premium et Pro), séparés (30/10/2026).
+  const [typeVotes, setTypeVotes] = useState<"lois" | "amendements">("lois");
   // Brique #3 — filtre thématique des votes du Sénat ("ce qu'il fait" par enjeu).
   const [issues, setIssues] = useState<any[]>([]);
   const [scrutinIssues, setScrutinIssues] = useState<Record<string, string[]>>({});
@@ -88,6 +94,7 @@ export default function SenatorClient({ senator, embedded }: { senator: any; emb
     api.getSenatorVotes(senator.senate_matricule || null, senator.first_name, senator.last_name, 1000)
       .then((v: any[]) => {
         setVotes(v);
+        setChargeVotes(false);
         api.getScrutinIssues(v.map(x => x?.scrutin_id).filter(Boolean)).then(setScrutinIssues).catch(() => {});
         // Arrivée depuis une alerte de vote (« ?vote=… », numéro officiel ou
         // identifiant) : on descend jusqu'au vote, dont l'explication est déjà
@@ -99,7 +106,7 @@ export default function SenatorClient({ senator, embedded }: { senator: any; emb
           setTimeout(() => document.getElementById(`vote-${cible.id}`)?.scrollIntoView({ behavior: "smooth", block: "center" }), 400);
         }
       })
-      .catch(() => setVotes([]));
+      .catch(() => { setVotes([]); setChargeVotes(false); });
     api.getIssues().then(setIssues).catch(() => {});
     if (senator.slug) api.getEntityPositions("senator", senator.slug).then(setPositions).catch(() => {});
   }, [senator.senate_matricule, senator.first_name, senator.last_name, senator.slug]);
@@ -112,14 +119,22 @@ export default function SenatorClient({ senator, embedded }: { senator: any; emb
   };
   const issueChip = (active: boolean) =>
     `px-4 py-2 rounded-xl text-[10px] font-black uppercase tracking-widest transition-all border ${active ? "bg-amber-700 text-white border-amber-600 shadow-lg" : "bg-card dark:bg-slate-900 text-muted-foreground border-border dark:border-slate-800 hover:border-amber-500"}`;
+  // Au Sénat, l'objet du scrutin dit ce qui est voté : « sur l'amendement n° 75… », « sur les
+  // amendements identiques… », « sur l'ensemble du projet de loi… ».
+  const estAmendement = (t: string) => /^\s*sur\s+(?:l['’]\s*|les\s+)?(?:sous-)?amendements?\b/i.test(t || "");
+  const votesLois = useMemo(() => votes.filter(v => !estAmendement(v.title)), [votes]);
+  const votesAmendements = useMemo(() => votes.filter(v => estAmendement(v.title)).map(v => ({
+    id: String(v.id), titre: String(v.title || "").replace(/^\s*sur\s+/i, "").replace(/^./, (c: string) => c.toUpperCase()),
+    date: v._ts ? new Date(v._ts).toISOString() : null, position: v.vote, resultat: null,
+  })), [votes]);
   const presentIssues = useMemo(() => {
     const count: Record<string, number> = {};
-    for (const v of votes) for (const s of scrutinIssues[String(v.scrutin_id)] || []) count[s] = (count[s] || 0) + 1;
+    for (const v of votesLois) for (const s of scrutinIssues[String(v.scrutin_id)] || []) count[s] = (count[s] || 0) + 1;
     return issues.filter(i => count[i.slug]).map(i => ({ ...i, count: count[i.slug] })).sort((a, b) => b.count - a.count);
-  }, [votes, scrutinIssues, issues]);
+  }, [votesLois, scrutinIssues, issues]);
   const filteredVotes = useMemo(
-    () => votes.filter(v => !selectedIssue || (scrutinIssues[String(v.scrutin_id)] || []).includes(selectedIssue)),
-    [votes, scrutinIssues, selectedIssue]
+    () => votesLois.filter(v => !selectedIssue || (scrutinIssues[String(v.scrutin_id)] || []).includes(selectedIssue)),
+    [votesLois, scrutinIssues, selectedIssue]
   );
   // Pré-sélection d'un sujet par défaut → parole vs actes visible sans action.
   const [autoPicked, setAutoPicked] = useState(false);
@@ -416,6 +431,18 @@ export default function SenatorClient({ senator, embedded }: { senator: any; emb
               <h2 className="text-4xl font-staatliches uppercase tracking-tight text-foreground dark:text-white mb-6">
                 <span className="text-amber-700 dark:text-amber-400">Votes</span>
               </h2>{" "}
+              <div role="tablist" aria-label="Type de votes" className="mb-6 inline-flex rounded-2xl bg-muted p-1 dark:bg-slate-800">
+                {([["lois", "Lois et articles"], ["amendements", "Amendements"]] as const).map(([v, nom]) => (
+                  <button key={v} type="button" role="tab" aria-selected={typeVotes === v} onClick={() => setTypeVotes(v)}
+                    className={`flex min-h-[40px] items-center gap-1.5 rounded-xl px-4 text-[13px] font-bold transition ${typeVotes === v ? "bg-card text-foreground shadow-sm dark:bg-slate-900" : "text-muted-foreground hover:text-foreground"}`}>
+                    {nom}{v === "amendements" && !isPremium && <Lock size={12} className="text-amber-600" />}
+                  </button>
+                ))}
+              </div>{" "}
+              {typeVotes === "amendements" && (chargeVotes
+                ? <p className="flex items-center gap-2 py-8 text-sm text-muted-foreground"><Loader2 className="h-4 w-4 animate-spin" /> Chargement des votes…</p>
+                : <VotesAmendementsElu liste={votesAmendements} nom={name} />)}{" "}
+              <div className={typeVotes === "amendements" ? "hidden" : ""}>
 
               {/* FILTRE THÉMATIQUE — "ce qu'il fait" par sujet (via scrutin_issues) */}
               {presentIssues.length > 0 && (
@@ -482,12 +509,15 @@ export default function SenatorClient({ senator, embedded }: { senator: any; emb
               })()}{" "}
 
               <div className="space-y-4">
-                {votes.length === 0 && (
+                {chargeVotes && (
+                  <p className="flex items-center gap-2 py-8 text-sm text-muted-foreground"><Loader2 className="h-4 w-4 animate-spin" /> Chargement des votes…</p>
+                )}{" "}
+                {!chargeVotes && votesLois.length === 0 && (
                   <div className="rounded-[2rem] border border-dashed border-border bg-card p-8 text-center text-sm italic text-muted-foreground">
                     Aucun scrutin public récent au Sénat pour cet élu, ou vote non encore synchronisé.
                   </div>
                 )}{" "}
-                {votes.length > 0 && filteredVotes.length === 0 && (
+                {votesLois.length > 0 && filteredVotes.length === 0 && (
                   <div className="rounded-[2rem] border border-border bg-card p-8 text-center text-sm text-muted-foreground">Aucun vote sur ce sujet.</div>
                 )}{" "}
                 {filteredVotes.map((vote: any) => (
@@ -523,6 +553,7 @@ export default function SenatorClient({ senator, embedded }: { senator: any; emb
                     )}{" "}
                   </div>
                 ))}
+              </div>
               </div>
             </div>
           </motion.div>

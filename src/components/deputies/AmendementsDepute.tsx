@@ -5,6 +5,7 @@ import Link from "next/link";
 import { ChevronDown, ExternalLink, FilePenLine, Loader2, Lock } from "lucide-react";
 import { supabase } from "@/lib/supabase";
 import { usePremium } from "@/lib/hooks/usePremium";
+import VoteAmendement from "@/components/votes/VoteAmendement";
 
 /**
  * Les amendements d'un député, sur sa fiche (30/10/2026, demande de l'user).
@@ -15,7 +16,7 @@ import { usePremium } from "@/lib/hooks/usePremium";
  */
 type Amdt = {
   uid: string; numero: string; texte_uid: string; texte_titre: string | null; organe: string | null; division: string | null;
-  sort: string | null; expose: string | null; dispositif: string | null; url: string | null; vu_le: string;
+  sort: string | null; expose: string | null; dispositif: string | null; url: string | null; vu_le: string; scrutin_id: string | null; vote_mode: string | null;
 };
 const PAR_PAGE = 8;
 const FILTRES: [string, string][] = [["", "Tous"], ["attente", "En attente"], ["Adopté", "Adoptés"], ["Rejeté", "Rejetés"]];
@@ -43,6 +44,7 @@ function Ligne({ a }: { a: Amdt }) {
           {ouvert ? "Replier" : "Lire l'amendement"} <ChevronDown size={14} className={`transition ${ouvert ? "rotate-180" : ""}`} />
         </span>
       </button>{" "}
+      <div className="-mt-1 px-4 pb-3"><VoteAmendement scrutinId={a.scrutin_id} mode={a.vote_mode} sort={a.sort} /></div>
       {ouvert && (
         <div className="space-y-3 border-t border-border px-4 pb-4 pt-3 text-[14px] leading-relaxed text-slate-700 dark:border-slate-800 dark:text-slate-200">
           {a.dispositif && <div><h4 className="mb-1 text-[11px] font-black uppercase tracking-[0.18em] text-muted-foreground">Dispositif</h4><p className="whitespace-pre-line">{propre(a.dispositif)}</p></div>}{" "}
@@ -71,7 +73,7 @@ export default function AmendementsDepute({ slug, nom }: { slug: string; nom: st
     if (!isPro) return;
     let actif = true;
     setCharge(true);
-    let q = supabase.from("amendements_an").select("uid, numero, texte_uid, texte_titre, organe, division, sort, expose, dispositif, url, vu_le", { count: page === 0 ? "exact" : undefined })
+    let q = supabase.from("amendements_an").select("uid, numero, texte_uid, texte_titre, organe, division, sort, expose, dispositif, url, vu_le, scrutin_id, vote_mode", { count: page === 0 ? "exact" : undefined })
       .eq("depute_slug", slug).order("vu_le", { ascending: false }).order("ordre", { ascending: true }).range(page * PAR_PAGE, page * PAR_PAGE + PAR_PAGE - 1);
     if (filtre === "attente") q = q.is("sort", null); else if (filtre) q = q.eq("sort", filtre);
     q.then(({ data, count }) => {

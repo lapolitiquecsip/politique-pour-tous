@@ -4,6 +4,7 @@ import { useEffect, useMemo, useState } from "react";
 import { ChevronDown, ExternalLink, FilePenLine, Loader2, Search, Users, X } from "lucide-react";
 import { supabase } from "@/lib/supabase";
 import SuivreBouton from "@/components/shared/SuivreBouton";
+import VoteAmendement from "@/components/votes/VoteAmendement";
 
 /**
  * Amendements de l'Assemblée nationale en temps réel — réservé aux membres Pro.
@@ -23,14 +24,14 @@ type Amendement = {
   uid: string; numero: string; texte_uid: string; texte_titre: string | null; organe: string | null; division: string | null;
   sort: string | null; auteur: string | null; auteur_type: string | null; groupe: string | null; depute_slug: string | null;
   cosignataires: string | null; nb_cosignataires: number | null; sous_amendement: boolean; dispositif: string | null; expose: string | null;
-  url: string | null; vu_le: string; sort_le: string | null;
+  url: string | null; vu_le: string; sort_le: string | null; scrutin_id: string | null; vote_mode: string | null;
 };
 type Texte = { texte_uid: string; texte_titre: string | null; nb: number; dernier: string };
 
 const PAR_PAGE = 25;
 const SORTS: [string, string][] = [["", "Tous"], ["attente", "Pas encore examinés"], ["Adopté", "Adoptés"], ["Rejeté", "Rejetés"], ["Tombé", "Tombés"], ["Retiré", "Retirés"], ["Non soutenu", "Non soutenus"]];
 const CLE_VISITE = "lpcs_amendements_visite";
-const COLONNES = "uid, numero, texte_uid, texte_titre, organe, division, sort, auteur, auteur_type, groupe, depute_slug, cosignataires, nb_cosignataires, sous_amendement, dispositif, expose, url, vu_le, sort_le";
+const COLONNES = "uid, numero, texte_uid, texte_titre, organe, division, sort, auteur, auteur_type, groupe, depute_slug, cosignataires, nb_cosignataires, sous_amendement, dispositif, expose, url, vu_le, sort_le, scrutin_id, vote_mode";
 
 const tonSort = (s: string | null) =>
   s === "Adopté" ? "bg-emerald-500/15 text-emerald-300 ring-emerald-400/30"
@@ -44,6 +45,9 @@ const quand = (iso: string) => {
   if (min < 24 * 60) return `il y a ${Math.round(min / 60)} h`;
   return d.toLocaleDateString("fr-FR", { day: "numeric", month: "short" });
 };
+
+// Exposés et dispositifs relevés avec leurs entités HTML (« &nbsp; » s'affichait en clair).
+const propre = (t: string | null) => (t || "").replace(/&nbsp;|&#160;/g, " ").replace(/&amp;/g, "&").replace(/&#0?39;|&rsquo;/g, "’").replace(/&quot;/g, "\"").replace(/&lt;/g, "<").replace(/&gt;/g, ">").replace(/[ 	]+/g, " ").trim();
 
 // PostgREST : virgules et parenthèses cassent un filtre « or ».
 const nettoyer = (q: string) => q.replace(/[,()*%\\]/g, " ").trim();
@@ -67,23 +71,25 @@ function Carte({ a, nouveau }: { a: Amendement; nouveau: boolean }) {
         </p>{" "}
         <p className="mt-1 line-clamp-2 text-[13px] leading-snug text-white/60">{[a.division, a.organe].filter(Boolean).join(" · ")}</p>{" "}
         {a.texte_titre && <p className="mt-0.5 truncate text-[13px] text-white/45" title={a.texte_titre}>{a.texte_titre}</p>}{" "}
-        {!ouvert && a.expose && <p className="mt-2 line-clamp-2 text-[13px] leading-relaxed text-white/70">{a.expose}</p>}{" "}
+        {!ouvert && a.expose && <p className="mt-2 line-clamp-2 text-[13px] leading-relaxed text-white/70">{propre(a.expose)}</p>}{" "}
         <span className="mt-2 inline-flex items-center gap-1 text-xs font-bold text-fuchsia-300">
           {ouvert ? "Replier" : "Lire l'amendement"} <ChevronDown size={14} className={`transition ${ouvert ? "rotate-180" : ""}`} />
         </span>
       </button>{" "}
+      {/* Le vote : scrutin public (totaux, groupes, députés), main levée ou commission. */}
+      <div className="px-4 pb-3 -mt-1"><VoteAmendement scrutinId={a.scrutin_id} mode={a.vote_mode} sort={a.sort} /></div>
       {ouvert && (
         <div className="space-y-4 border-t border-white/10 px-4 pb-4 pt-3 text-[14px] leading-relaxed text-white/85">
           {a.dispositif ? (
             <div>
               <h4 className="mb-1 text-[11px] font-black uppercase tracking-[0.18em] text-white/50">Dispositif</h4>{" "}
-              <p className="whitespace-pre-line">{a.dispositif}</p>
+              <p className="whitespace-pre-line">{propre(a.dispositif)}</p>
             </div>
           ) : <p className="text-white/55">Le texte de l&apos;amendement sera disponible au prochain relevé.</p>}{" "}
           {a.expose && (
             <div>
               <h4 className="mb-1 text-[11px] font-black uppercase tracking-[0.18em] text-white/50">Exposé sommaire</h4>{" "}
-              <p className="whitespace-pre-line text-white/75">{a.expose}</p>
+              <p className="whitespace-pre-line text-white/75">{propre(a.expose)}</p>
             </div>
           )}{" "}
           {a.cosignataires && a.nb_cosignataires ? <p className="text-xs text-white/55"><Users size={12} className="mr-1 inline" />{a.cosignataires}</p> : null}{" "}

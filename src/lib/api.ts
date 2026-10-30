@@ -576,7 +576,9 @@ export const api = {
       const res = await base.eq('voter_official_id', matricule);
       if (!res.error) data = res.data as any[];
     }
-    if ((!data || data.length === 0) && (firstName || lastName)) {
+    // Le nom ne sert qu'à défaut de matricule : un sénateur qui n'a encore voté aucun scrutin (élu
+    // en septembre) déclenchait sinon une recherche par nom sur 1,35 million de lignes, sans index.
+    if (!matricule && (!data || data.length === 0) && (firstName || lastName)) {
       const name = `${firstName || ''} ${lastName || ''}`.trim();
       const res = await supabase
         .from('legislative_votes')
@@ -2487,6 +2489,38 @@ export const api = {
       .maybeSingle();
     if (error) { console.warn('getScrutinDetail:', error.message); return null; }
     return data;
+  },
+
+  /** Le scrutin public qui a tranché un amendement : totaux, résultat et vote de chaque groupe. */
+  getScrutinAmendement: async (scrutinId: string) => {
+    const { data } = await supabase.from('scrutins').select('id, numero, date_scrutin, resultat, pour, contre, abstention, group_results').eq('id', scrutinId).maybeSingle();
+    return data as { id: string; numero: number; date_scrutin: string; resultat: string | null; pour: number; contre: number; abstention: number; group_results: any[] | null } | null;
+  },
+
+  /** Le vote de chaque député sur un scrutin, nom et groupe compris (pour « qui a voté quoi »). */
+  getVotantsScrutin: async (scrutinId: string) => {
+    const { data: votes } = await supabase.from('deputy_votes').select('deputy_an_id, position').eq('scrutin_id', scrutinId).limit(700);
+    const ids = [...new Set((votes || []).map((v: any) => v.deputy_an_id))];
+    const deputes = new Map<string, any>();
+    for (let i = 0; i < ids.length; i += 200) {
+      const { data } = await supabase.from('deputies').select('an_id, slug, first_name, last_name, party').in('an_id', ids.slice(i, i + 200));
+      for (const d of data || []) deputes.set(d.an_id, d);
+    }
+    return (votes || []).map((v: any) => ({ position: String(v.position || '').toUpperCase(), ...(deputes.get(v.deputy_an_id) || {}) }))
+      .filter((v: any) => v.last_name)
+      .sort((a: any, b: any) => String(a.last_name).localeCompare(String(b.last_name), 'fr'));
+  },
+
+  /**
+   * Les votes d'un député sur les AMENDEMENTS (scrutins publics), par pages de 20 — la liste des
+   * lois (getVotesByDeputy) les écarte. Réservé à l'affichage Premium et Pro (choix de l'éditeur).
+   */
+  getVotesAmendementsDepute: async (anId: string, page = 0) => {
+    const { data, count } = await supabase.from('deputy_votes')
+      .select('id, position, scrutin_id, date_scrutin, scrutins!inner(id, numero, date_scrutin, objet, resultat, pour, contre, abstention, type)', { count: page === 0 ? 'exact' : undefined })
+      .eq('deputy_an_id', anId).eq('scrutins.type', 'AMENDEMENT')
+      .order('date_scrutin', { ascending: false }).range(page * 20, page * 20 + 19);
+    return { votes: (data || []) as any[], total: count ?? null };
   },
 
   getUserSavedItems: async (userId: string) => {

@@ -32,7 +32,7 @@ import {
   Users,
   ArrowRight,
   Search
-} from "lucide-react";
+, Lock } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
 import { api } from "@/lib/api";
 import { usePremium } from "@/lib/hooks/usePremium";
@@ -50,6 +50,7 @@ import StructuredBio, { hasStructuredBio } from "@/components/shared/StructuredB
 import InstitutionalRoleBanner from "@/components/shared/InstitutionalRoleBanner";
 import InitiativeRank from "@/components/shared/InitiativeRank";
 import AmendementsDepute from "@/components/deputies/AmendementsDepute";
+import VotesAmendementsElu from "@/components/votes/VotesAmendementsElu";
 import { useGlossary } from "@/components/providers/GlossaryProvider";
 import { deputyPhotoSources } from "@/lib/initiators";
 
@@ -91,6 +92,8 @@ export default function DeputyDetailPage({ params, embedded, initialDeputy }: { 
   const [partyLink, setPartyLink] = useState<{ slug: string; name: string; logo_url?: string | null; color?: string | null } | null>(null);
 
   const [votes, setVotes] = useState<any[]>([]);
+  // Votes sur les lois (tous) ou sur les amendements (Premium et Pro), séparés (30/10/2026).
+  const [typeVotes, setTypeVotes] = useState<"lois" | "amendements">("lois");
   const [authoredLaws, setAuthoredLaws] = useState<any[]>([]);
   const [loadingVotes, setLoadingVotes] = useState(true);
   const [loadingAuthoredLaws, setLoadingAuthoredLaws] = useState(true);
@@ -238,21 +241,25 @@ export default function DeputyDetailPage({ params, embedded, initialDeputy }: { 
   // Load real deputy and follow status
   useEffect(() => {
     const loadDeputyData = async () => {
+      // Les votes partent sans attendre : l'identifiant AN est déjà dans la page pré-générée.
+      // Avant, ils attendaient la relecture du député PUIS l'état « suivi » (deux allers-retours).
+      const anIdInitial = initialDeputy?.an_id;
+      if (anIdInitial) setLoadingVotes(true);
+      const votesAnticipes = anIdInitial ? api.getVotesByDeputy(anIdInitial) : null;
       let dbDeputy = (await api.getDeputyBySlug(slug).catch(() => null)) ?? initialDeputy ?? null;
       
       setDeputy(dbDeputy);
 
       if (dbDeputy && userId) {
-        const follows = await api.getUserFollows(userId);
-        const following = follows.some((f: any) => f.deputy_id === dbDeputy.id);
-        setIsFollowing(following);
-      }
-      setCheckingFollow(false);
+        api.getUserFollows(userId).then(follows => {
+          setIsFollowing(follows.some((f: any) => f.deputy_id === dbDeputy.id));
+        }).catch(() => {}).finally(() => setCheckingFollow(false));
+      } else setCheckingFollow(false);
 
       // Load real votes
       if (dbDeputy?.an_id) {
         setLoadingVotes(true);
-        const realVotes = await api.getVotesByDeputy(dbDeputy.an_id);
+        const realVotes = votesAnticipes && dbDeputy.an_id === anIdInitial ? await votesAnticipes : await api.getVotesByDeputy(dbDeputy.an_id);
         setVotes(realVotes);
         setLoadingVotes(false);
         // Arrivée depuis une alerte de vote (« ?vote=… ») : la fenêtre qui explique
@@ -810,6 +817,18 @@ export default function DeputyDetailPage({ params, embedded, initialDeputy }: { 
               <p className="text-muted-foreground font-medium max-w-xl mb-8">
                 Retrouvez comment cet élu s&apos;est positionné sur l&apos;intégralité des textes législatifs de la législature actuelle.
               </p>{" "}
+              <div role="tablist" aria-label="Type de votes" className="mb-8 inline-flex rounded-2xl bg-muted p-1 dark:bg-slate-800">
+                {([["lois", "Lois et articles"], ["amendements", "Amendements"]] as const).map(([v, nom]) => (
+                  <button key={v} type="button" role="tab" aria-selected={typeVotes === v} onClick={() => setTypeVotes(v)}
+                    className={`flex min-h-[40px] items-center gap-1.5 rounded-xl px-4 text-[13px] font-bold transition ${typeVotes === v ? "bg-card text-foreground shadow-sm dark:bg-slate-900" : "text-muted-foreground hover:text-foreground"}`}>
+                    {nom}{v === "amendements" && !isPremium && <Lock size={12} className="text-amber-600" />}
+                  </button>
+                ))}
+              </div>{" "}
+              {typeVotes === "amendements" && deputy?.an_id && (
+                <VotesAmendementsElu anId={deputy.an_id} nom={`${deputy.first_name} ${deputy.last_name}`} />
+              )}{" "}
+              <div className={typeVotes === "amendements" ? "hidden" : ""}>
 
               {/* FILTRE THÉMATIQUE — "ce qu'il fait" par sujet (recherche + enjeux, via scrutin_issues) */}
               {!loadingVotes && votes.length > 0 && presentIssues.length > 0 && (
@@ -879,9 +898,10 @@ export default function DeputyDetailPage({ params, embedded, initialDeputy }: { 
                   </div>
                 );
               })()}
+              </div>
             </div>{" "}
 
-            <div className="space-y-4">
+            <div className={`space-y-4 ${typeVotes === "amendements" ? "hidden" : ""}`}>
               {loadingVotes && (
                 <div className="flex flex-col items-center py-20 text-slate-400">
                   <Loader2 className="w-10 h-10 animate-spin mb-4" />{" "}

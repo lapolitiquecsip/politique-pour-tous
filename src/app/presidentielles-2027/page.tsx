@@ -37,14 +37,14 @@ type Candidate = {
 
 /* Où en est la candidature : ce qu'en disent des articles lus, avec la phrase exacte et son média. */
 function PreuveCandidature({ preuve }: { preuve: Candidate["candidature_preuve"] }) {
-  if (!preuve) return null;
+  // « Non établie » dit que notre recherche n'a pas abouti, rien sur la personne : pas d'encadré.
+  if (!preuve || preuve.statut === "non_etablie") return null;
   const etat: Record<string, [string, string]> = {
     declare: ["Candidature annoncée", "border-emerald-300 bg-emerald-500/5 dark:border-emerald-500/30"],
     pressenti: ["Candidature non confirmée", "border-amber-300 bg-amber-500/5 dark:border-amber-500/30"],
     non_candidat: ["N'est plus candidat·e, selon la presse", "border-rose-300 bg-rose-500/5 dark:border-rose-500/30"],
-    non_etablie: ["Candidature non établie", "border-amber-300 bg-amber-500/5 dark:border-amber-500/30"],
   };
-  const [titre, ton] = etat[preuve.statut] ?? etat.non_etablie;
+  const [titre, ton] = etat[preuve.statut] ?? etat.pressenti;
   return (
     <section className={`mt-5 rounded-2xl border p-4 ${ton}`}>
       <h3 className="flex items-center gap-1.5 text-[13px] font-black text-foreground"><ShieldCheck size={15} /> {titre}</h3>{" "}

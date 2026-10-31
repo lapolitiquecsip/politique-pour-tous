@@ -29,7 +29,7 @@ type Amendement = {
 type Texte = { texte_uid: string; texte_titre: string | null; nb: number; dernier: string };
 
 const PAR_PAGE = 25;
-const SORTS: [string, string][] = [["", "Tous"], ["attente", "Pas encore examinés"], ["Adopté", "Adoptés"], ["Rejeté", "Rejetés"], ["Tombé", "Tombés"], ["Retiré", "Retirés"], ["Non soutenu", "Non soutenus"]];
+const SORTS: [string, string][] = [["", "Tous"], ["attente", "Pas encore examinés"], ["Adopté", "Adoptés"], ["Rejeté", "Rejetés"], ["Tombé", "Tombés"], ["Retiré", "Retirés"], ["Non soutenu", "Non soutenus"], ["vote_public", "Vote par député disponible"]];
 const CLE_VISITE = "lpcs_amendements_visite";
 const COLONNES = "uid, numero, texte_uid, texte_titre, organe, division, sort, auteur, auteur_type, groupe, depute_slug, cosignataires, nb_cosignataires, sous_amendement, dispositif, expose, url, vu_le, sort_le, scrutin_id, vote_mode";
 
@@ -120,6 +120,7 @@ export default function AmendementsAN() {
   const [charge, setCharge] = useState(true);
   const [erreur, setErreur] = useState(false);
   const [viser, setViser] = useState(false);
+  const [scrutin, setScrutin] = useState("");
   // Dernière visite : lue une fois, avant d'être remplacée par celle-ci.
   const [visite] = useState<string | null>(() => { try { return localStorage.getItem(CLE_VISITE); } catch { return null; } });
   useEffect(() => { try { localStorage.setItem(CLE_VISITE, new Date().toISOString()); } catch { /* navigation privée */ } }, []);
@@ -127,7 +128,8 @@ export default function AmendementsAN() {
   // Lien depuis l'e-mail Pro (« Voir les amendements ») : /premium/?amdt-texte=…&amdt-q=…#amendements.
   useEffect(() => {
     const p = new URLSearchParams(window.location.search);
-    if (!p.get("amdt-texte") && !p.get("amdt-q") && !p.get("amdt-groupe") && !p.get("amdt-depute")) return;
+    if (!p.get("amdt-texte") && !p.get("amdt-q") && !p.get("amdt-groupe") && !p.get("amdt-depute") && !p.get("amdt-scrutin")) return;
+    setScrutin(p.get("amdt-scrutin") || "");
     setDepute(p.get("amdt-depute") || "");
     setTexte(p.get("amdt-texte") || "");
     setGroupe(p.get("amdt-groupe") || "");
@@ -153,7 +155,7 @@ export default function AmendementsAN() {
 
   // Recherche : on attend que la frappe s'arrête.
   useEffect(() => { const t = setTimeout(() => setRecherche(nettoyer(saisie)), 350); return () => clearTimeout(t); }, [saisie]);
-  useEffect(() => { setPage(0); }, [texte, groupe, sort, recherche, depute]);
+  useEffect(() => { setPage(0); }, [texte, groupe, sort, recherche, depute, scrutin]);
 
   useEffect(() => {
     let actif = true;
@@ -163,7 +165,8 @@ export default function AmendementsAN() {
     if (texte) q = q.eq("texte_uid", texte);
     if (groupe) q = q.eq("groupe", groupe);
     if (depute) q = q.eq("depute_slug", depute);
-    if (sort === "attente") q = q.is("sort", null); else if (sort) q = q.eq("sort", sort);
+    if (scrutin) q = q.eq("scrutin_id", scrutin);
+    if (sort === "attente") q = q.is("sort", null); else if (sort === "vote_public") q = q.eq("vote_mode", "scrutin_public"); else if (sort) q = q.eq("sort", sort);
     if (recherche) q = q.or(`auteur.ilike.%${recherche}%,numero.ilike.%${recherche}%,expose.ilike.%${recherche}%,dispositif.ilike.%${recherche}%`);
     q.then(({ data, count, error }) => {
       if (!actif) return;
@@ -173,10 +176,10 @@ export default function AmendementsAN() {
       setCharge(false);
     });
     return () => { actif = false; };
-  }, [texte, groupe, sort, recherche, depute, page]);
+  }, [texte, groupe, sort, recherche, depute, scrutin, page]);
 
   const derniere = useMemo(() => textes.reduce((m, t) => (t.dernier > m ? t.dernier : m), ""), [textes]);
-  const filtres = !!(texte || groupe || sort || recherche || depute);
+  const filtres = !!(texte || groupe || sort || recherche || depute || scrutin);
   const select = "w-full min-h-[44px] appearance-none rounded-xl border border-white/10 bg-white/5 px-3.5 text-sm font-medium text-white focus:border-fuchsia-400/50 focus:outline-none [&>option]:bg-slate-900";
 
   return (
@@ -236,7 +239,7 @@ export default function AmendementsAN() {
 
       <div className="mt-4 flex flex-wrap items-center justify-between gap-2 text-[13px] text-white/60">
         <span>{total != null ? <><strong className="font-bold text-white">{total.toLocaleString("fr-FR")}</strong> amendement{total > 1 ? "s" : ""}{filtres ? " correspondant à vos filtres" : ""}</> : " "}</span>{" "}
-        {filtres && <button type="button" onClick={() => { setTexte(""); setGroupe(""); setSort(""); setSaisie(""); setDepute(""); }} className="font-bold text-fuchsia-300 hover:text-fuchsia-200">Effacer les filtres</button>}
+        {filtres && <button type="button" onClick={() => { setTexte(""); setGroupe(""); setSort(""); setSaisie(""); setDepute(""); setScrutin(""); }} className="font-bold text-fuchsia-300 hover:text-fuchsia-200">Effacer les filtres</button>}
       </div>{" "}
 
       {erreur ? (

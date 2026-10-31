@@ -35,7 +35,7 @@ export default function VoteAmendement({ scrutinId, mode, sort }: { scrutinId: s
     </p>
   );
   if (mode === "commission") return (
-    <p className="mt-2 text-[12.5px] leading-snug text-muted-foreground">Examiné en commission : pas de scrutin public, donc pas de vote par député.</p>
+    <p className="mt-2 text-[12.5px] leading-snug text-muted-foreground">Voté en commission : l&apos;Assemblée ne publie pas le vote de chaque député.</p>
   );
   if (!scrutinId || !s) return null;
 

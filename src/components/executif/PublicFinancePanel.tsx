@@ -79,7 +79,7 @@ export default function PublicFinancePanel() {
             <div><p className="text-lg font-black tabular-nums text-rose-700 dark:text-rose-300">{ratio.value.toLocaleString("fr-FR", { minimumFractionDigits: 1 })} %</p>{" "}<p className="text-[10px] font-black uppercase tracking-widest text-muted-foreground">du PIB ({ratio.period})</p></div>{" "}
             <div><p className="text-lg font-black tabular-nums text-rose-700 dark:text-rose-300">+{Math.round(DEBT_PER_SECOND).toLocaleString("fr-FR")} €</p>{" "}<p className="text-[10px] font-black uppercase tracking-widest text-muted-foreground">par seconde</p></div>
           </div>{" "}
-          <a href={DEBT_SOURCE_URL} target="_blank" rel="noopener noreferrer" className="mt-2.5 inline-flex items-center gap-1 text-[10px] text-muted-foreground hover:text-rose-600"><ExternalLink size={10} /> Extrapolé de la dernière donnée officielle INSEE (fin 2025)</a>
+          <a href={DEBT_SOURCE_URL} target="_blank" rel="noopener noreferrer" className="mt-2.5 inline-flex items-center gap-1 text-[10px] text-muted-foreground hover:text-rose-600"><ExternalLink size={10} /> Extrapolé de la dernière donnée officielle INSEE ({ratio.period})</a>
         </div>{" "}
 
         {/* Dépenses publiques */}

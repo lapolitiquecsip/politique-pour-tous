@@ -169,20 +169,13 @@ export default function ThemesView() {
     return () => { active = false; };
   }, []);
 
-  /**
-   * Les indicateurs relevés automatiquement REMPLACENT ceux écrits à la main, thème par
-   * thème. Un thème sans indicateur en base garde ses chiffres d'origine : la bascule se
-   * fait donc thème par thème, à mesure qu'on en automatise, sans jamais vider une carte.
-   */
+  /** Tous les chiffres viennent de la base : aucun chiffre écrit à la main, même au chargement. */
   const themes = useMemo(() => {
-    if (!live?.length) return CAMPAIGN_THEMES;
     const byTheme = new Map<string, LiveIndicator[]>();
-    for (const i of live) byTheme.set(i.theme, [...(byTheme.get(i.theme) ?? []), i]);
-    return CAMPAIGN_THEMES.map(t => {
-      const rows = byTheme.get(t.slug);
-      if (!rows?.length) return t;
-      return { ...t, stats: rows.sort((a, b) => a.sort_order - b.sort_order).map(toStat) };
-    });
+    for (const i of live ?? []) byTheme.set(i.theme, [...(byTheme.get(i.theme) ?? []), i]);
+    return CAMPAIGN_THEMES
+      .map(t => ({ ...t, stats: (byTheme.get(t.slug) ?? []).sort((a, b) => a.sort_order - b.sort_order).map(toStat) }))
+      .filter(t => t.stats.length);
   }, [live]);
 
   // Date de publication la plus récente parmi les sources : preuve de fraîcheur.
@@ -206,6 +199,8 @@ export default function ThemesView() {
         <div className="mx-auto mt-5 h-px w-24 bg-gradient-to-r from-transparent via-slate-300 to-transparent" />
       </div>{" "}
       <div className="space-y-3">
+        {live === null && <p className="py-10 text-center text-sm text-muted-foreground">Chargement des derniers chiffres officiels…</p>}
+        {live !== null && !themes.length && <p className="py-10 text-center text-sm text-muted-foreground">Les chiffres sont momentanément indisponibles : nous préférons n&apos;en afficher aucun plutôt que d&apos;anciens.</p>}
         {themes.map((t, i) => <ThemeCard key={t.slug} theme={t} index={i} />)}
       </div>
     </div>

@@ -5,14 +5,17 @@ import Link from "next/link";
 import { TrendingUp, Users, Wallet, ExternalLink, Landmark, Coins, Percent } from "lucide-react";
 import { api } from "@/lib/api";
 import {
-  DEBT_BASE_EUR, DEBT_BASE_DATE, DEBT_PER_SECOND, POPULATION, DEBT_RATIO_GDP, DEBT_SOURCE, DEBT_SOURCE_URL,
+  DEBT_BASE_EUR, DEBT_BASE_DATE, DEBT_PER_SECOND, POPULATION, DEBT_RATIO_GDP, DEBT_RATIO_PERIOD, DEBT_SOURCE, DEBT_SOURCE_URL,
   DEBT_BY_PRESIDENT, DEBT_BY_PRESIDENT_NOTE, PUBLIC_SPENDING, GOVERNANCE, BORROWING_RATES, SPENDING_BREAKDOWN,
   FINANCE_LAST_VERIFIED,
 } from "@/lib/data/publicFinance";
 
 const eur0 = (n: number) => Math.round(n).toLocaleString("fr-FR") + " €";
 const fmtMd = (n: number) => (n / 1e9).toLocaleString("fr-FR", { maximumFractionDigits: 0 }) + " Md€";
-const liveDebt = (now: number) => DEBT_BASE_EUR + DEBT_PER_SECOND * ((now - new Date(DEBT_BASE_DATE).getTime()) / 1000);
+// Base du compteur : la dernière dette publiée (table `indicators`), sinon le repli du fichier.
+const liveDebt = (now: number, base = { eur: DEBT_BASE_EUR, date: DEBT_BASE_DATE }) => base.eur + DEBT_PER_SECOND * ((now - new Date(base.date).getTime()) / 1000);
+// « 2026-Q2 » → fin du trimestre.
+const finTrimestre = (p: string) => { const m = String(p).match(/^(\d{4})-Q([1-4])$/); return m ? new Date(Date.UTC(+m[1], +m[2] * 3, 0)).toISOString() : null; };
 
 // Avatar président : photo (Wikipédia) ou initiales en repli.
 function PresAvatar({ name, photo, color }: { name: string; photo?: string; color: string }) {
@@ -28,12 +31,21 @@ export default function PublicFinancePanel() {
   // Taux d'emprunt : live (Eurostat, cron mensuel) avec repli sur les valeurs codées.
   const [liveRates, setLiveRates] = useState<typeof BORROWING_RATES | null>(null);
   const raf = useRef<number | null>(null);
+  const baseDette = useRef({ eur: DEBT_BASE_EUR, date: DEBT_BASE_DATE });
+  const [ratio, setRatio] = useState({ value: DEBT_RATIO_GDP, period: DEBT_RATIO_PERIOD });
   const rates = liveRates ?? BORROWING_RATES;
 
   useEffect(() => {
     let mounted = true;
-    const tick = () => { if (!mounted) return; setDebt(liveDebt(Date.now())); raf.current = window.setTimeout(tick, 100) as unknown as number; };
+    const tick = () => { if (!mounted) return; setDebt(liveDebt(Date.now(), baseDette.current)); raf.current = window.setTimeout(tick, 100) as unknown as number; };
     tick();
+    api.getIndicators().then((rows: any[]) => {
+      if (!mounted) return;
+      const md = rows.find(r => r.code === "fin_dette_md"), pct = rows.find(r => r.code === "eco_dette");
+      const date = md && finTrimestre(md.period);
+      if (md && date) baseDette.current = { eur: Number(md.value) * 1e9, date };
+      if (pct) setRatio({ value: Number(pct.value), period: pct.period_label || DEBT_RATIO_PERIOD });
+    }).catch(() => {});
     api.getBorrowingRates().then((r: any) => { if (mounted && r?.rows?.length) setLiveRates(r); }).catch(() => {});
     api.getPresidents().then((list: any[]) => { if (mounted) setPhotos(Object.fromEntries(list.map(p => [p.slug, p.photo_url]).filter(x => x[1]))); }).catch(() => {});
     return () => { mounted = false; if (raf.current) clearTimeout(raf.current); };
@@ -64,7 +76,7 @@ export default function PublicFinancePanel() {
           <p className="mt-1.5 font-staatliches text-3xl tabular-nums leading-none text-foreground dark:text-white md:text-4xl" suppressHydrationWarning>{eur0(debt)}</p>{" "}
           <div className="mt-3 flex flex-wrap gap-x-6 gap-y-2">
             <div><p className="text-lg font-black tabular-nums text-rose-700 dark:text-rose-300">{eur0(perHab)}</p>{" "}<p className="text-[10px] font-black uppercase tracking-widest text-muted-foreground">par habitant</p></div>{" "}
-            <div><p className="text-lg font-black tabular-nums text-rose-700 dark:text-rose-300">{DEBT_RATIO_GDP.toLocaleString("fr-FR")} %</p>{" "}<p className="text-[10px] font-black uppercase tracking-widest text-muted-foreground">du PIB (2025)</p></div>{" "}
+            <div><p className="text-lg font-black tabular-nums text-rose-700 dark:text-rose-300">{ratio.value.toLocaleString("fr-FR", { minimumFractionDigits: 1 })} %</p>{" "}<p className="text-[10px] font-black uppercase tracking-widest text-muted-foreground">du PIB ({ratio.period})</p></div>{" "}
             <div><p className="text-lg font-black tabular-nums text-rose-700 dark:text-rose-300">+{Math.round(DEBT_PER_SECOND).toLocaleString("fr-FR")} €</p>{" "}<p className="text-[10px] font-black uppercase tracking-widest text-muted-foreground">par seconde</p></div>
           </div>{" "}
           <a href={DEBT_SOURCE_URL} target="_blank" rel="noopener noreferrer" className="mt-2.5 inline-flex items-center gap-1 text-[10px] text-muted-foreground hover:text-rose-600"><ExternalLink size={10} /> Extrapolé de la dernière donnée officielle INSEE (fin 2025)</a>

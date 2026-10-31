@@ -1,21 +1,23 @@
 // Finances publiques & administration — DATA 100 % OFFICIELLE ET SOURCÉE.
 // Le compteur de dette « en direct » n'est PAS un scraping d'un site tiers (impossible en export
 // statique, et ces horloges sont elles-mêmes des extrapolations) : il EXTRAPOLE, seconde par
-// seconde, à partir de la DERNIÈRE donnée officielle INSEE (dette fin 2025) et du déficit 2025.
+// seconde, à partir de la DERNIÈRE dette publiée par l'INSEE, lue dans la table `indicators`
+// (fin_dette_md, eco_dette), et du déficit 2025. Les valeurs ci-dessous ne sont qu'un repli.
 
 // Date de dernière vérification manuelle des chiffres annuels (dette, déficit, population,
 // dépenses). Les taux d'emprunt à 10 ans, eux, se rafraîchissent seuls TOUS LES JOURS
 // (cron CNBC + BCE → voir BORROWING_RATES plus bas). À mettre à jour à chaque revue INSEE.
-export const FINANCE_LAST_VERIFIED = "août 2026";
+export const FINANCE_LAST_VERIFIED = "31 octobre 2026";
 
 // --- Base du compteur (dernière donnée officielle INSEE) ---------------------------------
-export const DEBT_BASE_EUR = 3_460_500_000_000;      // dette publique fin 2025 (INSEE)
-export const DEBT_BASE_DATE = "2025-12-31T00:00:00Z";
+export const DEBT_BASE_EUR = 3_595_500_000_000;      // dette publique fin juin 2026 (INSEE)
+export const DEBT_BASE_DATE = "2026-06-30T00:00:00Z";
 export const DEBT_ANNUAL_INCREASE_EUR = 152_500_000_000; // déficit public 2025 ≈ hausse annuelle (INSEE)
 export const POPULATION = 69_082_000;                // population France au 1er janv. 2026 (INSEE, bilan démographique 2025 : 69,1 M)
-export const DEBT_RATIO_GDP = 115.6;                 // % du PIB, fin 2025 (INSEE)
-export const DEBT_SOURCE = "INSEE — dette publique fin 2025 (3 460,5 Md€, 115,6 % du PIB) ; déficit 2025 (152,5 Md€). Compteur extrapolé à partir de ces données officielles.";
-export const DEBT_SOURCE_URL = "https://www.insee.fr/fr/statistiques/8955019";
+export const DEBT_RATIO_GDP = 119.0;                 // % du PIB, fin juin 2026 (INSEE)
+export const DEBT_RATIO_PERIOD = "T2 2026";
+export const DEBT_SOURCE = "INSEE — dernière dette publiée ; rythme d'après le déficit 2025 (152,5 Md€). Compteur extrapolé à partir de ces données officielles.";
+export const DEBT_SOURCE_URL = "https://www.insee.fr/fr/statistiques/serie/010777616";
 
 // Rythme d'augmentation par seconde (dérivé du déficit annuel officiel).
 export const DEBT_PER_SECOND = DEBT_ANNUAL_INCREASE_EUR / (365.25 * 24 * 3600); // ≈ 4 831 €/s

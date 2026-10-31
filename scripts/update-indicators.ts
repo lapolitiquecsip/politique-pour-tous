@@ -24,6 +24,23 @@ import { createClient } from "@supabase/supabase-js";
 
 const SDMX = "https://bdm.insee.fr/series/sdmx/data/SERIES_BDM/";
 
+/**
+ * Chiffres officiels déjà publiés, mais pas encore sur le portail de données ouvertes. Écartés d'eux-mêmes
+ * dès que le portail a le même millésime. À compléter quand l'alarme de fin de script le signale.
+ */
+const PUBLICATIONS_RECENTES = [
+  { code: "sante_medecins", value: 242200, period: "2026", period_label: "1er janvier 2026", sub: "5 000 de plus en un an (chiffre arrondi par la DREES)",
+    source: "DREES", published_at: "2026-07-02", source_url: "https://drees.solidarites-sante.gouv.fr/communique-de-presse-jeux-de-donnees/jeux-de-donnees/260702-medecins-supplementaires-en-activite-en-france-au-1er-janvier-2026" },
+  { code: "sante_generalistes", value: 101000, period: "2026", period_label: "1er janvier 2026", sub: "42 % des médecins, +1,0 % en un an (chiffre arrondi par la DREES)",
+    source: "DREES", published_at: "2026-07-02", source_url: "https://drees.solidarites-sante.gouv.fr/communique-de-presse-jeux-de-donnees/jeux-de-donnees/260702-medecins-supplementaires-en-activite-en-france-au-1er-janvier-2026" },
+  { code: "edu_bac_taux", value: 91.4, period: "2026", period_label: "session 2026", sub: "taux définitif après le rattrapage",
+    source: "Ministère de l'Éducation nationale", published_at: "2026-07-11", source_url: "https://www.education.gouv.fr/les-resultats-du-baccalaureat-1124" },
+  { code: "edu_bacheliers", value: 680600, period: "2026", period_label: "session 2026", sub: "admis après le rattrapage",
+    source: "Ministère de l'Éducation nationale", published_at: "2026-07-11", source_url: "https://www.education.gouv.fr/les-resultats-du-baccalaureat-1124" },
+  { code: "retr_age_depart", value: 62.9, period: "2024", period_label: "fin 2024", sub: "soit 62 ans et 11 mois : hommes 62 ans et 7 mois, femmes 63 ans et 3 mois — ne reflète qu'en partie la réforme de 2023",
+    source: "DREES — Panorama des retraités, édition 2026", published_at: "2026-10-14", source_url: "https://www.drees.solidarites-sante.gouv.fr/age-et-conditions-de-depart-la-retraite" },
+];
+
 type Serie = {
   code: string;
   theme: string;
@@ -64,6 +81,12 @@ const SERIES: Serie[] = [
     label: "Dette publique", idBank: "010777608", unit: "% du PIB", betterWhen: "down",
     sourceUrl: "https://www.insee.fr/fr/statistiques/serie/010777608",
   },
+  // Montant de la dette : base du compteur de la page Exécutif (pas d'affichage dans « Enjeux »).
+  {
+    code: "fin_dette_md", theme: "finances", sortOrder: 1,
+    label: "Dette publique (montant)", idBank: "010777616", unit: "Md€", betterWhen: "down",
+    sourceUrl: "https://www.insee.fr/fr/statistiques/serie/010777616",
+  },
 ];
 
 /** Mots que le titre renvoyé par l'INSEE doit contenir — garde-fou anti-réaffectation. */
@@ -72,6 +95,7 @@ const EXPECTED: Record<string, RegExp> = {
   eco_inflation: /prix à la consommation/i,
   eco_chomage: /taux de chômage/i,
   eco_dette: /dette/i,
+  fin_dette_md: /dette/i,
 };
 
 /* ─────────────────────────────── Lecture SDMX ─────────────────────────────── */
@@ -269,7 +293,7 @@ type EuroDef = {
 };
 
 const EUROPE: EuroDef[] = [
-  { code: "eu_dette", label: "Dette publique", dataset: "gov_10dd_edpt1", sortOrder: 1,
+  { code: "eu_dette", label: "Dette publique, comparée à l'UE", dataset: "gov_10dd_edpt1", sortOrder: 1,
     filters: "na_item=GD&sector=S13&unit=PC_GDP", unit: "% du PIB", betterWhen: "down",
     rangSuffixe: "le plus endetté", hautEnTete: true },
   { code: "eu_depense", label: "Dépense publique", dataset: "gov_10a_main", sortOrder: 2,
@@ -1256,6 +1280,27 @@ async function main() {
   }
 
   if (!rows.length) { console.error("Aucun indicateur exploitable."); return; }
+
+  // Les portails de données ouvertes ont parfois un an de retard sur la publication officielle :
+  // « 237 214 médecins » (2025) quand la DREES publiait 242 200 (2026). Le chiffre publié prend le
+  // dessus, tant que le portail n'a pas rattrapé son millésime.
+  for (const c of PUBLICATIONS_RECENTES) {
+    const r = rows.find(x => x.code === c.code);
+    if (!r || String(r.period) >= c.period) continue;
+    const history = [...(r.history ?? []).filter((h: any) => String(h.period) !== c.period), { period: c.period, value: c.value }];
+    Object.assign(r, { ...c, history, updated_at: new Date().toISOString() });
+  }
+
+  // Dette comparée à l'UE : l'année complète, seule comparable entre pays. On dit où en est la France.
+  const dette = rows.find(x => x.code === "eco_dette"), euDette = rows.find(x => x.code === "eu_dette");
+  if (dette && euDette) euDette.sub = `${euDette.sub ?? ""} — dernier chiffre pour la France : ${fr(dette.value, dette.unit)} (${dette.period_label}, INSEE)`.replace(/^ — /, "");
+
+  // Alarme : publié il y a plus de 13 mois, pour un chiffre annuel, c'est qu'une édition plus récente
+  // existe sans doute. Lisible dans les annotations de la tâche.
+  for (const r of rows) {
+    if (r.published_at && Date.now() - Date.parse(r.published_at) > 13 * 30.5 * 864e5) console.log(`::warning::Indicateur peut-être dépassé : ${r.code} (${r.period_label}, publié le ${r.published_at}, ${r.source}). Vérifier s'il existe une publication plus récente.`);
+  }
+
   if (dryRun) { console.log("  (--dry-run : rien n'est écrit)"); return; }
 
   const { error } = await supabase.from("indicators").upsert(rows, { onConflict: "code" });

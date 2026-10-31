@@ -360,16 +360,22 @@ export const api = {
   // n'existe pas encore ou est vide (composant masqué côté front).
   getEntityFeed: async (entityType: string, entityId: string, limit = 12) => {
     try {
-      const { data, error } = await supabase
+      let q = supabase
         .from('entity_feed')
         .select('*')
         .eq('entity_type', entityType)
-        .eq('entity_id', entityId)
+        .eq('entity_id', entityId);
+      // Partis : seulement les articles lus et contrôlés (voir verification-article.ts côté backend).
+      if (entityType === 'party') q = q.not('verifie_le', 'is', null);
+      const { data, error } = await q
         .order('published_at', { ascending: false, nullsFirst: false })
         .order('created_at', { ascending: false })
         .limit(limit);
       if (error) { console.warn('API Warning (EntityFeed):', error.message); return []; }
-      return data || [];
+      // Presse non lue : le résumé avait été écrit sur le seul titre. On montre le titre du journal.
+      return (data || []).map((r: any) => r.source_kind === 'google_news' && !r.verifie_le
+        ? { ...r, title: r.titre_origine || r.title, summary: null }
+        : r);
     } catch (e) {
       console.error('API Error (EntityFeed):', e);
       return [];

@@ -233,8 +233,9 @@ export default function ProgramSection() {
                         </div>
                       )}{" "}
 
-                      {/* Synthèse IA — encart ambré distinct. */}
-                      {i.justification && (
+                      {/* Synthèse IA — encart ambré distinct. Jamais sans source : un texte écrit de mémoire
+                          reste une affirmation, même sous « Faites-vous votre propre avis ». */}
+                      {i.justification && effectiveStatus(i) !== "non_verifie" && (
                         <div className="rounded-xl border border-amber-200 bg-gradient-to-br from-amber-50 to-white p-3">
                           <p className="flex items-center gap-1.5 text-[10px] font-black uppercase tracking-widest text-amber-700 dark:text-amber-400"><Sparkles size={12} /> Synthèse</p>{" "}
                           <p className="mt-1 text-xs leading-relaxed text-muted-foreground">{i.justification}</p>

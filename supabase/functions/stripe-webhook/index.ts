@@ -16,21 +16,43 @@ const stripe = new Stripe(Deno.env.get('STRIPE_SECRET_KEY') as string, {
  * rien d'autre. Le seuil de 15 € les sépare donc sans ambiguïté possible.
  */
 async function resolveTier(session: any): Promise<'elite' | 'pro'> {
-  const proPrices = (Deno.env.get('STRIPE_PRICE_PRO') ?? '')
+  // Identifiants `price_…` ou `prod_…` des offres Pro, séparés par des virgules.
+  const proIds = (Deno.env.get('STRIPE_PRICE_PRO') ?? '')
     .split(',').map(s => s.trim()).filter(Boolean)
 
-  if (proPrices.length) {
-    try {
-      const items = await stripe.checkout.sessions.listLineItems(session.id, { limit: 10 })
-      if (items.data.some(i => proPrices.includes(i.price?.id ?? ''))) return 'pro'
-      return 'elite'
-    } catch (e) {
-      console.warn(`Lecture des line items impossible (${e.message}) — repli sur le montant.`)
+  try {
+    const items = await stripe.checkout.sessions.listLineItems(session.id, { limit: 10 })
+    if (proIds.length) {
+      const produit = (i: any) => typeof i.price?.product === 'string' ? i.price.product : i.price?.product?.id
+      return items.data.some(i => proIds.includes(i.price?.id ?? '') || proIds.includes(produit(i) ?? '')) ? 'pro' : 'elite'
     }
+    // Sans identifiants : le prix en euros de l'offre, jamais le montant payé (conversion de devise).
+    const euros = items.data.reduce((t, i) => t + (i.price?.unit_amount ?? 0) * (i.quantity ?? 1), 0)
+    if (euros > 0) return euros >= 1500 ? 'pro' : 'elite'
+  } catch (e) {
+    console.warn(`Lecture des line items impossible (${e.message}) — repli sur le montant.`)
   }
 
-  // amount_total est en centimes. 1500 = 15 €.
+  // amount_total est en centimes, dans la devise payée : ce repli ne vaut que pour l'euro.
   return (session.amount_total ?? 0) >= 1500 ? 'pro' : 'elite'
+}
+
+/**
+ * Ce que l'acheteur doit, en euros, quelle que soit la devise dans laquelle il a payé : les liens
+ * de paiement proposent la conversion automatique (Adaptive Pricing, non désactivable sur eux), et
+ * `amount_total` serait alors en bahts, dollars… Le prix de l'offre, lui, reste en euros.
+ */
+async function offreEnEuros(session: any): Promise<{ montant: number; annuel: boolean }> {
+  try {
+    const items = await stripe.checkout.sessions.listLineItems(session.id, { limit: 10 })
+    const lignes = items.data.filter(i => i.price?.currency === 'eur')
+    if (lignes.length) {
+      const montant = lignes.reduce((t, i) => t + (i.price?.unit_amount ?? 0) * (i.quantity ?? 1), 0) / 100
+      return { montant, annuel: lignes.some(i => i.price?.recurring?.interval === 'year') }
+    }
+  } catch (e) { console.warn(`Prix de l'offre illisible (${e.message}) — repli sur le montant payé.`) }
+  const montant = (session.amount_total ?? 0) / 100
+  return { montant, annuel: montant >= 200 }
 }
 
 const admin = () => createClient(
@@ -63,12 +85,12 @@ async function commissionner(supabase: any, filleul: string, facture: string, mo
  * la reconduction, la résiliation, et l'exécution immédiate demandée avant la fin du
  * délai de rétractation (L221-25 : rétractation possible, au prorata du temps écoulé).
  */
-async function confirmerCommande(session: any, tier: 'elite' | 'pro') {
+async function confirmerCommande(session: any, tier: 'elite' | 'pro', offre: { montant: number; annuel: boolean }) {
   const cle = Deno.env.get('RESEND_API_KEY')
   const to = session.customer_details?.email
   if (!cle || !to) return
-  const montant = ((session.amount_total ?? 0) / 100).toFixed(2).replace('.', ',') + ' €'
-  const annuel = (session.amount_total ?? 0) >= 20000
+  const montant = offre.montant.toFixed(2).replace('.', ',') + ' €'
+  const annuel = offre.annuel
   const nom = tier === 'pro' ? 'Pro' : 'Premium'
   const jour = new Date().toLocaleDateString('fr-FR', { day: 'numeric', month: 'long', year: 'numeric', timeZone: 'Europe/Paris' })
   const points = [
@@ -175,8 +197,9 @@ serve(async (req) => {
         await supabase.from('profiles').update({ stripe_customer_id: session.customer }).eq('id', targetId)
       }
       // Parrainage : commission sur ce premier paiement (une seule par facture).
-      await commissionner(supabase, targetId, session.invoice ?? session.id, (session.amount_total ?? 0) / 100)
-      await confirmerCommande(session, tier)
+      const offre = await offreEnEuros(session)
+      await commissionner(supabase, targetId, session.invoice ?? session.id, offre.montant)
+      await confirmerCommande(session, tier, offre)
     }
 
     // Renouvellement (et tout paiement d'abonnement) : commission du parrain.
@@ -185,7 +208,14 @@ serve(async (req) => {
       const supabase = admin()
       const profil = await profilDuClient(supabase, invoice.customer)
       if (profil && (invoice.amount_paid ?? 0) > 0) {
-        await commissionner(supabase, profil, invoice.id, invoice.amount_paid / 100)
+        let euros = invoice.amount_paid / 100
+        if ((invoice.currency ?? 'eur') !== 'eur') {
+          // Payée dans une autre devise : on retient le prix en euros des lignes, pas le montant converti.
+          const lignes = (invoice.lines?.data ?? []).filter((l: any) => l.price?.currency === 'eur')
+          euros = lignes.reduce((t: number, l: any) => t + (l.price?.unit_amount ?? 0) * (l.quantity ?? 1), 0) / 100
+        }
+        if (euros > 0) await commissionner(supabase, profil, invoice.id, euros)
+        else console.warn(`Commission non calculée (${invoice.id}) : prix en euros introuvable, facture en ${invoice.currency}.`)
       }
     }
 

@@ -19,6 +19,7 @@ import FilActualitePro from "@/components/pro/FilActualitePro";
 import EspacePro from "@/components/pro/EspacePro";
 import EspacePremium from "@/components/premium/EspacePremium";
 import TutorielPro, { tutorielProDejaVu } from "@/components/pro/TutorielPro";
+import TutorielPremium, { tutorielPremiumDejaVu } from "@/components/premium/TutorielPremium";
 import EncartPremium from "@/components/dashboard/EncartPremium";
 import IdentifiantsForm from "@/components/dashboard/IdentifiantsForm";
 import ParametresCompte from "@/components/dashboard/ParametresCompte";
@@ -175,7 +176,7 @@ export default function EspacePersonnel({ mode = "tout" }: { mode?: ModeEspace }
   // le Pro, EspacePremium pour le Premium (31/10/2026).
   const vueOnglets = mode === "espace" && isPremium;
   const [loading, setLoading] = useState(true);
-  // Tutoriel d'accueil Pro : ouvert de lui-même à la première visite de l'espace (ou au
+  // Guide d'accueil Pro ou Premium : ouvert de lui-même à la première visite de l'espace (ou au
   // retour du paiement, ?bienvenue=1), puis seulement à la demande.
   const [tutoriel, setTutoriel] = useState(false);
   const [followedDeputies, setFollowedDeputies] = useState<any[]>([]);
@@ -195,10 +196,10 @@ export default function EspacePersonnel({ mode = "tout" }: { mode?: ModeEspace }
   const verrouActif = VERROUS.find(v => activeTab === `verrou-${v.id}`);
   const [isPending, startTransition] = useTransition();
   useEffect(() => {
-    if (mode !== "espace" || !proVerifie || !userId) return;
+    if (mode !== "espace" || !premiumVerifie || !userId) return;
     const retourPaiement = new URLSearchParams(window.location.search).has("bienvenue");
-    if (retourPaiement || !tutorielProDejaVu()) setTutoriel(true);
-  }, [mode, proVerifie, userId]);
+    if (retourPaiement || !(proVerifie ? tutorielProDejaVu() : tutorielPremiumDejaVu())) setTutoriel(true);
+  }, [mode, premiumVerifie, proVerifie, userId]);
 
   useEffect(() => {
     // En mode « compte », rien de tout cela n'est affiché : on ne va pas chercher
@@ -809,11 +810,12 @@ export default function EspacePersonnel({ mode = "tout" }: { mode?: ModeEspace }
       {vueOnglets && (isPro && proVerifie && userId
         ? <EspacePro userId={userId} nbSuivis={followedDeputies.length} suivis={panneau} onTutoriel={() => setTutoriel(true)} />
         : !isPro && premiumVerifie && userId
-          ? <EspacePremium userId={userId} activite={panneau} />
+          ? <EspacePremium userId={userId} activite={panneau} onTutoriel={() => setTutoriel(true)} />
           : <div className="container mx-auto max-w-6xl space-y-3 px-4">{[0, 1, 2].map(i => <div key={i} className="h-24 animate-pulse rounded-3xl bg-white/[0.05]" />)}</div>)}{" "}
 
       {mode === "compte" && <ParametresCompte />}
-      {userId && <TutorielPro userId={userId} ouvert={tutoriel} onFermer={() => setTutoriel(false)} />}{" "}
+      {userId && proVerifie && <TutorielPro userId={userId} ouvert={tutoriel} onFermer={() => setTutoriel(false)} />}{" "}
+      {userId && premiumVerifie && !proVerifie && <TutorielPremium userId={userId} ouvert={tutoriel} onFermer={() => setTutoriel(false)} />}{" "}
 
       {/* relative z-20 : pour un compte classique, ce panneau remonte sous le hero
           (-mt-16) dont le contenu (z-10) avalait les clics sur les onglets. */}

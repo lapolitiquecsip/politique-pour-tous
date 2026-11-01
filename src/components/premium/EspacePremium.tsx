@@ -32,7 +32,7 @@ const ongletDeLAncre = (h: string): IdOnglet | null => {
   return ONGLETS.find(o => o.id === a || o.ancres.includes(a))?.id ?? null;
 };
 
-export default function EspacePremium({ userId, activite }: { userId: string; activite: ReactNode }) {
+export default function EspacePremium({ userId, activite, onTutoriel }: { userId: string; activite: ReactNode; onTutoriel: () => void }) {
   const [onglet, setOnglet] = useState<IdOnglet>("aujourdhui");
   const repere = useRef<HTMLDivElement>(null);
 
@@ -97,6 +97,7 @@ export default function EspacePremium({ userId, activite }: { userId: string; ac
               <div className="space-y-6">
                 <div id="profil" className="scroll-mt-32"><PremiumPreferences userId={userId} /></div>{" "}
                 <p className="flex flex-wrap items-center gap-x-4 gap-y-2 px-2 text-[13px] text-white/55">
+                  <button type="button" onClick={onTutoriel} className="font-bold text-amber-300 hover:text-amber-200">Revoir le guide pas à pas</button>{" "}
                   <Link href="/dashboard" className="font-bold text-white/70 hover:text-white">Mon compte : adresse, mot de passe, abonnement →</Link>{" "}
                   <Link href="/premium/?offres=1" className="font-bold text-fuchsia-300 hover:text-fuchsia-200">Comparer avec l&apos;offre Pro →</Link>
                 </p>

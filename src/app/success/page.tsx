@@ -9,8 +9,8 @@ import { usePremium } from "@/lib/hooks/usePremium";
  *
  * La page disait « Premium » à tout le monde et renvoyait à l'accueil : un abonné Pro qui
  * venait de payer se retrouvait sur la page publique, sans savoir par où commencer. Elle
- * nomme maintenant l'offre souscrite et mène à l'endroit utile — pour un Pro, le tutoriel
- * qui règle ses alertes.
+ * nomme maintenant l'offre souscrite et mène à l'endroit utile : le guide d'accueil de cette
+ * offre, qui règle ses alertes.
  */
 export default function SuccessPage() {
   const { isPro, loading } = usePremium();
@@ -34,7 +34,7 @@ export default function SuccessPage() {
             {loading
               ? "Votre abonnement est en cours d'activation."
               : <>Votre compte est désormais <strong className="text-amber-700 dark:text-amber-400">{offre}</strong>.</>}
-            {isPro && " Il reste trois minutes de réglages pour que vos alertes vous correspondent."}
+            {` Il reste ${isPro ? "trois" : "deux"} minutes de réglages pour que vos alertes vous correspondent.`}
           </p>{" "}
 
           <div className="mb-10 inline-flex items-center justify-center gap-2 rounded-xl bg-amber-100 px-4 py-2 text-sm font-bold text-amber-700 dark:bg-amber-900/30 dark:text-amber-400">
@@ -43,10 +43,10 @@ export default function SuccessPage() {
           </div>{" "}
 
           <Link
-            href={isPro ? "/premium/?bienvenue=1" : "/dashboard/"}
+            href="/premium/?bienvenue=1"
             className="group flex w-full items-center justify-center gap-3 rounded-2xl bg-slate-900 py-4 text-lg font-bold text-white shadow-xl shadow-slate-900/10 transition-all hover:opacity-90 dark:bg-white dark:text-slate-900"
           >
-            {isPro ? "Régler mes alertes" : "Ouvrir mon espace"}{" "}
+            Régler mes alertes{" "}
             <ArrowRight className="h-5 w-5 transition-transform group-hover:translate-x-1" />
           </Link>{" "}
           <Link href="/" className="mt-4 inline-block text-sm font-bold text-muted-foreground underline-offset-4 hover:underline">

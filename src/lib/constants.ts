@@ -52,7 +52,13 @@ export const EDITEUR = {
  * Médiateur de la consommation (C. conso. L612-1) : adhésion obligatoire avant de vendre
  * à des particuliers (ex. CM2C, Medicys, AME Conso…). À renseigner après adhésion.
  */
-export const MEDIATEUR = { nom: "", site: "", adresse: "" };
+// Adhésion payée le 01/11/2026 (e-mail de confirmation CM2C). Nom et adresse relevés sur cm2c.net ;
+// la mention exacte à reprendre est dans l'espace professionnel CM2C : la comparer avant d'ouvrir la vente.
+export const MEDIATEUR = {
+  nom: "Centre de médiation de la consommation de conciliateurs de justice (CM2C)",
+  site: "https://www.cm2c.net",
+  adresse: "49 rue de Ponthieu, 75008 Paris",
+};
 
 /** Dernière mise à jour des textes juridiques (affichée ; ne pas calculer à la volée). */
 export const MAJ_TEXTES_JURIDIQUES = "18 octobre 2026";

@@ -38,7 +38,7 @@ const RUBRIQUES: { code: string; Icone: LucideIcon; titre: string; texte: string
   { code: "jo", Icone: BookOpen, titre: "Journal officiel", texte: "La synthèse de chaque numéro, puis les lois, ordonnances et décrets expliqués." },
   { code: "elus", Icone: Star, titre: "Mes élus suivis", texte: "Leurs votes et l'actualité qui les cite, avec vos partis, ministères et candidats suivis." },
   { code: "amendements_elus", Icone: Vote, titre: "Votes de mes élus sur les amendements", texte: "Pour chaque député et sénateur suivi : ses votes sur les amendements en scrutin public — pour, contre, abstention, et ce qui a été adopté." },
-  { code: "votes_amendements", Icone: Vote, titre: "Résultats des votes sur les amendements", texte: "Chaque amendement voté en scrutin public : le décompte, la position de chaque groupe, et le vote de chaque député à un clic." },
+  { code: "votes_amendements", Icone: Vote, titre: "Résultats des votes sur les amendements", texte: "Chaque amendement voté en scrutin public, à l'Assemblée et au Sénat : le décompte, la position de chaque groupe, et le vote de chaque élu à un clic." },
   { code: "europe", Icone: Globe2, titre: "Votes européens", texte: "Les votes du Parlement européen expliqués, et ce qu'ont voté vos eurodéputés suivis." },
   { code: "territoire", Icone: MapPin, titre: "Mon territoire", texte: "L'actualité de votre commune, de votre département ou de votre région (périmètre plus bas)." },
 ];

@@ -23,6 +23,7 @@ import {
 import { motion, AnimatePresence } from "framer-motion";
 import { usePremium } from "@/lib/hooks/usePremium";
 import VotesAmendementsElu from "@/components/votes/VotesAmendementsElu";
+import AmendementsDepute from "@/components/deputies/AmendementsDepute";
 import QuandVisible from "@/components/shared/QuandVisible";
 import { getFullPartyName } from "@/lib/party-utils";
 import { api } from "@/lib/api";
@@ -443,6 +444,8 @@ export default function SenatorClient({ senator, embedded }: { senator: any; emb
 
             {/* Toutes les fonctions de la personne — juste sous « Portrait & Engagement ». */}
             <QuandVisible apres={!chargeVotes}><ParallelRoles fullName={name} selfHref={`/senateurs/${senator.slug}`} /></QuandVisible>{" "}
+            {/* Ses amendements : relevés chaque jour dans AMELI ; le contenu est réservé au Pro. */}
+            <AmendementsDepute slug={senator.slug} nom={name} chambre="senat" />{" "}
 
             {/* Votes Section */}
             <div>

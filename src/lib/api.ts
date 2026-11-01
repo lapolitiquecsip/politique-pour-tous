@@ -2537,6 +2537,35 @@ export const api = {
     return data as { id: string; numero: number; date_scrutin: string; resultat: string | null; pour: number; contre: number; abstention: number; group_results: any[] | null } | null;
   },
 
+  /** Un scrutin d'amendement du Sénat, aux mêmes champs que celui de l'Assemblée. */
+  getScrutinAmendementSenat: async (scrutinId: string) => {
+    const { data } = await supabase.from('legislative_scrutins').select('id, official_id, voted_at, result_label, for_count, against_count, abstain_count, group_results, source_url').eq('id', scrutinId).maybeSingle();
+    if (!data) return null;
+    const d = data as any;
+    return {
+      id: d.id as string, numero: Number(/(\d+)$/.exec(d.official_id || '')?.[1] || 0), date_scrutin: d.voted_at as string, resultat: d.result_label as string | null,
+      pour: d.for_count as number, contre: d.against_count as number, abstention: d.abstain_count as number, group_results: d.group_results as any[] | null, source_url: d.source_url as string | null,
+    };
+  },
+
+  /** Le vote de chaque sénateur sur un scrutin ; son groupe est celui du jour du vote (page officielle). */
+  getVotantsSenat: async (scrutinId: string, groupes: any[] | null) => {
+    const { data: votes } = await supabase.from('legislative_votes').select('voter_official_id, voter_name, position, group_code').eq('scrutin_id', scrutinId).limit(400);
+    const ids = [...new Set((votes || []).map((v: any) => v.voter_official_id).filter(Boolean))];
+    const slugs = new Map<string, string>();
+    for (let i = 0; i < ids.length; i += 200) {
+      const { data } = await supabase.from('senators').select('slug, senate_matricule').in('senate_matricule', ids.slice(i, i + 200));
+      for (const d of data || []) slugs.set((d as any).senate_matricule, (d as any).slug);
+    }
+    const libelles = new Map((groupes || []).map((g: any) => [g.group_id, g.group_label]));
+    const POSITIONS: Record<string, string> = { for: 'POUR', against: 'CONTRE', abstain: 'ABSTENTION' };
+    const nom = (t: string) => t.toLowerCase().replace(/(^|[\s'’-])(\p{L})/gu, (_, a, b) => a + b.toUpperCase());
+    return (votes || []).map((v: any) => ({
+      position: POSITIONS[v.position] || 'NON_VOTANT', slug: slugs.get(v.voter_official_id) || null, first_name: '', last_name: nom(v.voter_name || ''),
+      party: libelles.get(v.group_code) || '',
+    })).sort((a: any, b: any) => a.last_name.split(' ').pop().localeCompare(b.last_name.split(' ').pop(), 'fr'));
+  },
+
   /** Le vote de chaque député sur un scrutin, nom et groupe compris (pour « qui a voté quoi »). */
   getVotantsScrutin: async (scrutinId: string) => {
     const { data: votes } = await supabase.from('deputy_votes').select('deputy_an_id, position').eq('scrutin_id', scrutinId).limit(700);

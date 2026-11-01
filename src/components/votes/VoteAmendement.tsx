@@ -28,12 +28,14 @@ const SANS_VOTE: Record<string, string> = {
   "Tombé": "Tombé : cet amendement n'a pas été mis aux voix, un vote précédent l'a rendu sans objet.",
   "Retiré": "Retiré par son auteur : pas de vote.",
   "Non soutenu": "Non soutenu en séance : pas de vote.",
+  "Irrecevable": "Déclaré irrecevable : pas de vote.",
 };
 
-export default function VoteAmendement({ scrutinId, mode, sort, sombre = false, deplie = false }: {
-  scrutinId: string | null; mode: string | null; sort: string | null; sombre?: boolean; deplie?: boolean;
+export default function VoteAmendement({ scrutinId, mode, sort, sombre = false, deplie = false, chambre = "an" }: {
+  scrutinId: string | null; mode: string | null; sort: string | null; sombre?: boolean; deplie?: boolean; chambre?: "an" | "senat";
 }) {
-  const [s, setS] = useState<Awaited<ReturnType<typeof api.getScrutinAmendement>>>(null);
+  const senat = chambre === "senat";
+  const [s, setS] = useState<(NonNullable<Awaited<ReturnType<typeof api.getScrutinAmendement>>> & { source_url?: string | null }) | null>(null);
   const [charge, setCharge] = useState(!!scrutinId);
   const [ouvert, setOuvert] = useState(deplie);
   const [deputes, setDeputes] = useState<any[] | null>(null);
@@ -41,8 +43,8 @@ export default function VoteAmendement({ scrutinId, mode, sort, sombre = false, 
 
   useEffect(() => {
     if (!scrutinId) return;
-    api.getScrutinAmendement(scrutinId).then(setS).catch(() => {}).finally(() => setCharge(false));
-  }, [scrutinId]);
+    (senat ? api.getScrutinAmendementSenat(scrutinId) : api.getScrutinAmendement(scrutinId)).then(setS).catch(() => {}).finally(() => setCharge(false));
+  }, [scrutinId, senat]);
 
   const t = sombre
     ? { cadre: "border-white/10 bg-white/[0.05]", fort: "text-white", doux: "text-white/60", trait: "border-white/10", piste: "bg-white/10", lien: "text-sky-300" }
@@ -59,8 +61,10 @@ export default function VoteAmendement({ scrutinId, mode, sort, sombre = false, 
   if (sort !== "Adopté" && sort !== "Rejeté") return null;
 
   if (!scrutinId) {
-    if (mode === "main_levee") return encart(<Hand size={14} />, <><strong className={t.fort}>{sort} à main levée.</strong> L&apos;Assemblée ne publie ni décompte ni vote par député pour ce type de vote.</>);
-    if (mode === "commission") return encart(<Hand size={14} />, <><strong className={t.fort}>{sort} en commission.</strong> L&apos;Assemblée ne publie pas le vote de chaque député.</>);
+    if (mode === "main_levee") return encart(<Hand size={14} />, senat
+      ? <><strong className={t.fort}>{sort} sans scrutin public.</strong> Le Sénat ne publie ni décompte ni vote par sénateur pour ce type de vote.</>
+      : <><strong className={t.fort}>{sort} à main levée.</strong> L&apos;Assemblée ne publie ni décompte ni vote par député pour ce type de vote.</>);
+    if (mode === "commission") return encart(<Hand size={14} />, <><strong className={t.fort}>{sort} en commission.</strong> {senat ? "Le Sénat ne publie pas le vote de chaque sénateur." : <>L&apos;Assemblée ne publie pas le vote de chaque député.</>}</>);
     return encart(<Clock size={14} />, <><strong className={t.fort}>{sort}, détail du vote en cours de relevé.</strong> S&apos;il y a eu un scrutin public, le vote de chaque groupe et de chaque député s&apos;affiche ici au plus tard sous 48 h.</>);
   }
   if (!s) return charge ? encart(<Loader2 size={14} className="animate-spin" />, "Chargement du vote…") : null;
@@ -72,7 +76,7 @@ export default function VoteAmendement({ scrutinId, mode, sort, sombre = false, 
   const voirDeputes = () => {
     if (deputes || chargeDeputes) return;
     setChargeDeputes(true);
-    api.getVotantsScrutin(s.id).then(d => { setDeputes(d); setChargeDeputes(false); }).catch(() => setChargeDeputes(false));
+    (senat ? api.getVotantsSenat(s.id, s.group_results) : api.getVotantsScrutin(s.id)).then(d => { setDeputes(d); setChargeDeputes(false); }).catch(() => setChargeDeputes(false));
   };
 
   return (
@@ -107,7 +111,7 @@ export default function VoteAmendement({ scrutinId, mode, sort, sombre = false, 
           </table>{" "}
           {!deputes ? (
             <button type="button" onClick={voirDeputes} className={`inline-flex min-h-[32px] items-center gap-1.5 text-[12.5px] font-black ${t.lien}`}>
-              {chargeDeputes ? <Loader2 size={14} className="animate-spin" /> : <Users size={14} />} Voir le vote de chaque député
+              {chargeDeputes ? <Loader2 size={14} className="animate-spin" /> : <Users size={14} />} Voir le vote de chaque {senat ? "sénateur" : "député"}
             </button>
           ) : (
             <div className="grid gap-3 sm:grid-cols-3">
@@ -117,7 +121,7 @@ export default function VoteAmendement({ scrutinId, mode, sort, sombre = false, 
                   <div key={p}>
                     <p className={`text-[11px] font-black uppercase tracking-wider ${ton(p)}`}>{POS[p].mot} · {liste.length}</p>
                     <ul className="mt-1 max-h-48 space-y-0.5 overflow-y-auto pr-1 text-[12.5px]">
-                      {liste.map(d => <li key={d.slug || d.last_name}><Link href={`/deputes/${d.slug}/`} className={`${t.fort} hover:underline`}>{d.first_name} {d.last_name}</Link> <span className={t.doux}>· {d.party}</span></li>)}
+                      {liste.map(d => <li key={d.slug || d.last_name}>{d.slug ? <Link href={`/${senat ? "senateurs" : "deputes"}/${d.slug}/`} className={`${t.fort} hover:underline`}>{d.first_name} {d.last_name}</Link> : <span className={t.fort}>{d.last_name}</span>}{d.party && <span className={t.doux}> · {d.party}</span>}</li>)}
                       {!liste.length && <li className={t.doux}>—</li>}
                     </ul>
                   </div>
@@ -125,8 +129,8 @@ export default function VoteAmendement({ scrutinId, mode, sort, sombre = false, 
               })}
             </div>
           )}{" "}
-          <a href={`https://www.assemblee-nationale.fr/dyn/17/scrutins/${s.numero}`} target="_blank" rel="noopener noreferrer" className={`inline-flex items-center gap-1 text-[11.5px] ${t.doux} hover:underline`}>
-            Source : Assemblée nationale <ExternalLink size={11} />
+          <a href={s.source_url || `https://www.assemblee-nationale.fr/dyn/17/scrutins/${s.numero}`} target="_blank" rel="noopener noreferrer" className={`inline-flex items-center gap-1 text-[11.5px] ${t.doux} hover:underline`}>
+            Source : {senat ? "Sénat" : "Assemblée nationale"} <ExternalLink size={11} />
           </a>
         </div>
       )}

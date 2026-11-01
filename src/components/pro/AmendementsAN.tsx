@@ -16,6 +16,7 @@ import VoteAmendement from "@/components/votes/VoteAmendement";
  *
  * Filtres : texte, groupe, sort, recherche (auteur, numéro, contenu). « Nouveau » :
  * repéré depuis la dernière visite (mémorisée dans le navigateur).
+ * Sénat (01/11/2026) : même outil sur amendements_senat (AMELI, relevé quotidien), bascule en haut.
  * Alertes (30/10/2026) : le texte ou le groupe choisi se suit d'un clic ; chaque nouvel
  * amendement arrive alors par e-mail et dans la cloche, dès le relevé (backend alertes-amendements).
  */
@@ -32,6 +33,10 @@ const PAR_PAGE = 25;
 const SORTS: [string, string][] = [["", "Tous"], ["attente", "Pas encore examinés"], ["Adopté", "Adoptés"], ["Rejeté", "Rejetés"], ["Tombé", "Tombés"], ["Retiré", "Retirés"], ["Non soutenu", "Non soutenus"], ["vote_public", "Vote par député disponible"]];
 const CLE_VISITE = "lpcs_amendements_visite";
 const COLONNES = "uid, numero, texte_uid, texte_titre, organe, division, sort, auteur, auteur_type, groupe, depute_slug, cosignataires, nb_cosignataires, sous_amendement, dispositif, expose, url, vu_le, sort_le, scrutin_id, vote_mode";
+
+// Au Sénat, le slug s'appelle senateur_slug : alias pour garder le même type.
+const COLONNES_SENAT = COLONNES.replace("depute_slug", "depute_slug:senateur_slug");
+type Chambre = "an" | "senat";
 
 const tonSort = (s: string | null) =>
   s === "Adopté" ? "bg-emerald-500/15 text-emerald-300 ring-emerald-400/30"
@@ -52,7 +57,7 @@ const propre = (t: string | null) => (t || "").replace(/&nbsp;|&#160;/g, " ").re
 // PostgREST : virgules et parenthèses cassent un filtre « or ».
 const nettoyer = (q: string) => q.replace(/[,()*%\\]/g, " ").trim();
 
-function Carte({ a, nouveau }: { a: Amendement; nouveau: boolean }) {
+function Carte({ a, nouveau, chambre }: { a: Amendement; nouveau: boolean; chambre: Chambre }) {
   const [ouvert, setOuvert] = useState(false);
   return (
     <li className="rounded-2xl bg-white/[0.04] ring-1 ring-white/10">
@@ -77,7 +82,7 @@ function Carte({ a, nouveau }: { a: Amendement; nouveau: boolean }) {
         </span>
       </button>{" "}
       {/* Le vote : scrutin public (totaux, groupes, députés), main levée ou commission. */}
-      <div className="px-4 pb-3 -mt-1"><VoteAmendement scrutinId={a.scrutin_id} mode={a.vote_mode} sort={a.sort} sombre deplie /></div>
+      <div className="px-4 pb-3 -mt-1"><VoteAmendement scrutinId={a.scrutin_id} mode={a.vote_mode} sort={a.sort} sombre deplie chambre={chambre} /></div>
       {ouvert && (
         <div className="space-y-4 border-t border-white/10 px-4 pb-4 pt-3 text-[14px] leading-relaxed text-white/85">
           {a.dispositif ? (
@@ -95,7 +100,7 @@ function Carte({ a, nouveau }: { a: Amendement; nouveau: boolean }) {
           {a.cosignataires && a.nb_cosignataires ? <p className="text-xs text-white/55"><Users size={12} className="mr-1 inline" />{a.cosignataires}</p> : null}{" "}
           {a.url && (
             <a href={a.url} target="_blank" rel="noopener noreferrer" className="inline-flex items-center gap-1.5 text-xs font-bold text-white underline decoration-fuchsia-400 underline-offset-4">
-              L&apos;amendement sur le site de l&apos;Assemblée <ExternalLink size={12} />
+              L&apos;amendement sur le site {chambre === "senat" ? "du Sénat" : <>de l&apos;Assemblée</>} <ExternalLink size={12} />
             </a>
           )}
         </div>
@@ -105,6 +110,8 @@ function Carte({ a, nouveau }: { a: Amendement; nouveau: boolean }) {
 }
 
 export default function AmendementsAN() {
+  const [chambre, setChambre] = useState<Chambre>("an");
+  const senat = chambre === "senat";
   const [textes, setTextes] = useState<Texte[]>([]);
   const [groupes, setGroupes] = useState<string[]>([]);
   const [texte, setTexte] = useState("");
@@ -128,8 +135,9 @@ export default function AmendementsAN() {
   // Lien depuis l'e-mail Pro (« Voir les amendements ») : /premium/?amdt-texte=…&amdt-q=…#amendements.
   useEffect(() => {
     const p = new URLSearchParams(window.location.search);
-    if (!p.get("amdt-texte") && !p.get("amdt-q") && !p.get("amdt-groupe") && !p.get("amdt-depute") && !p.get("amdt-scrutin") && !p.get("amdt-sort")) return;
+    if (!p.get("amdt-texte") && !p.get("amdt-q") && !p.get("amdt-groupe") && !p.get("amdt-depute") && !p.get("amdt-scrutin") && !p.get("amdt-sort") && !p.get("chambre")) return;
     setScrutin(p.get("amdt-scrutin") || "");
+    if (p.get("chambre") === "senat") setChambre("senat");
     setDepute(p.get("amdt-depute") || "");
     setTexte(p.get("amdt-texte") || "");
     setGroupe(p.get("amdt-groupe") || "");
@@ -147,36 +155,42 @@ export default function AmendementsAN() {
   }, [viser, liste.length]);
 
   useEffect(() => {
-    supabase.from("amendements_an_textes").select("texte_uid, texte_titre, nb, dernier").order("dernier", { ascending: false })
+    supabase.from(senat ? "amendements_senat_textes" : "amendements_an_textes").select("texte_uid, texte_titre, nb, dernier").order("dernier", { ascending: false })
       .then(({ data }) => setTextes((data as Texte[]) || []));
-    supabase.from("deputies").select("party").eq("sitting", true)
+    if (senat) supabase.from("amendements_senat_groupes").select("groupe")
+      .then(({ data }) => setGroupes((data || []).map((d: any) => d.groupe).sort((a, b) => a.localeCompare(b, "fr"))));
+    else supabase.from("deputies").select("party").eq("sitting", true)
       .then(({ data }) => setGroupes([...new Set((data || []).map((d: any) => d.party).filter(Boolean))].sort((a, b) => a.localeCompare(b, "fr"))));
-  }, []);
+  }, [senat]);
 
   // Recherche : on attend que la frappe s'arrête.
   useEffect(() => { const t = setTimeout(() => setRecherche(nettoyer(saisie)), 350); return () => clearTimeout(t); }, [saisie]);
-  useEffect(() => { setPage(0); }, [texte, groupe, sort, recherche, depute, scrutin]);
+  useEffect(() => { setPage(0); }, [texte, groupe, sort, recherche, depute, scrutin, chambre]);
+  const basculer = (c: Chambre) => {
+    if (c === chambre) return;
+    setChambre(c); setTexte(""); setGroupe(""); setSaisie(""); setDepute(""); setScrutin(""); setListe([]);
+  };
 
   useEffect(() => {
     let actif = true;
     setCharge(true); setErreur(false);
-    let q = supabase.from("amendements_an").select(COLONNES, { count: page === 0 ? "exact" : undefined })
+    let q = supabase.from(senat ? "amendements_senat" : "amendements_an").select(senat ? COLONNES_SENAT : COLONNES, { count: page === 0 ? "exact" : undefined })
       .order("vu_le", { ascending: false }).order("ordre", { ascending: true }).range(page * PAR_PAGE, page * PAR_PAGE + PAR_PAGE - 1);
     if (texte) q = q.eq("texte_uid", texte);
     if (groupe) q = q.eq("groupe", groupe);
-    if (depute) q = q.eq("depute_slug", depute);
+    if (depute) q = q.eq(senat ? "senateur_slug" : "depute_slug", depute);
     if (scrutin) q = q.eq("scrutin_id", scrutin);
     if (sort === "attente") q = q.is("sort", null); else if (sort === "vote_public") q = q.eq("vote_mode", "scrutin_public"); else if (sort) q = q.eq("sort", sort);
     if (recherche) q = q.or(`auteur.ilike.%${recherche}%,numero.ilike.%${recherche}%,expose.ilike.%${recherche}%,dispositif.ilike.%${recherche}%`);
     q.then(({ data, count, error }) => {
       if (!actif) return;
       if (error) { setErreur(true); setCharge(false); return; }
-      setListe(l => (page === 0 ? (data as Amendement[]) || [] : [...l, ...((data as Amendement[]) || [])]));
+      setListe(l => (page === 0 ? (data as unknown as Amendement[]) || [] : [...l, ...((data as unknown as Amendement[]) || [])]));
       if (page === 0) setTotal(count ?? null);
       setCharge(false);
     });
     return () => { actif = false; };
-  }, [texte, groupe, sort, recherche, depute, scrutin, page]);
+  }, [texte, groupe, sort, recherche, depute, scrutin, page, senat]);
 
   const derniere = useMemo(() => textes.reduce((m, t) => (t.dernier > m ? t.dernier : m), ""), [textes]);
   const filtres = !!(texte || groupe || sort || recherche || depute || scrutin);
@@ -189,13 +203,22 @@ export default function AmendementsAN() {
         <div className="min-w-0 flex-1">
           <h2 className="font-staatliches text-3xl uppercase leading-none tracking-tight text-white">Amendements <span className="text-sky-300">en temps réel</span></h2>{" "}
           <p className="mt-1 text-sm leading-relaxed text-white/65">
-            Tous les amendements déposés à l&apos;Assemblée sur les textes en discussion, en séance et en commission, avec leur sort. Relevés toutes les heures.
+            {senat
+              ? "Les amendements déposés au Sénat, en séance et en commission, avec leur sort et le vote quand il y a eu un scrutin public. Relevés chaque jour dans la base officielle du Sénat."
+              : <>Tous les amendements déposés à l&apos;Assemblée sur les textes en discussion, en séance et en commission, avec leur sort. Relevés toutes les heures.</>}
             {derniere && <span className="text-white/50"> Dernier relevé : {quand(derniere)}.</span>}
           </p>
         </div>
       </div>{" "}
 
-      <div className="mt-6 grid grid-cols-2 gap-2.5 lg:grid-cols-4">
+      <div className="mt-6 inline-flex gap-1 rounded-2xl border border-white/10 bg-black/20 p-1" role="group" aria-label="Chambre">
+        {([["an", "Assemblée nationale"], ["senat", "Sénat"]] as [Chambre, string][]).map(([c, l]) => (
+          <button key={c} type="button" onClick={() => basculer(c)} aria-pressed={chambre === c}
+            className={`min-h-[40px] rounded-xl px-4 text-[13px] font-black transition ${chambre === c ? "bg-gradient-to-r from-sky-500 to-indigo-600 text-white" : "text-white/60 hover:text-white"}`}>{l}</button>
+        ))}
+      </div>{" "}
+
+      <div className="mt-3 grid grid-cols-2 gap-2.5 lg:grid-cols-4">
         <label className="col-span-2 block">
           <span className="sr-only">Texte</span>
           <select value={texte} onChange={e => setTexte(e.target.value)} className={select}>
@@ -213,7 +236,7 @@ export default function AmendementsAN() {
         <label className="block">
           <span className="sr-only">Sort</span>
           <select value={sort} onChange={e => setSort(e.target.value)} className={select}>
-            {SORTS.map(([v, l]) => <option key={v} value={v}>{l}</option>)}
+            {[...SORTS, ...(senat ? [["Irrecevable", "Irrecevables"]] as [string, string][] : [])].map(([v, l]) => <option key={v} value={v}>{l}</option>)}
           </select>
         </label>{" "}
         <div className="relative col-span-2 lg:col-span-4">
@@ -245,10 +268,10 @@ export default function AmendementsAN() {
       {erreur ? (
         <p className="mt-4 rounded-2xl bg-rose-500/10 p-4 text-sm text-rose-200">Les amendements n&apos;ont pas pu être chargés. Réessayez dans un instant.</p>
       ) : !charge && !liste.length ? (
-        <p className="mt-4 rounded-2xl bg-white/[0.04] p-6 text-center text-sm text-white/60">{filtres ? "Aucun amendement ne correspond à ces filtres." : "Le premier relevé est en cours : les amendements apparaîtront ici dans l'heure."}</p>
+        <p className="mt-4 rounded-2xl bg-white/[0.04] p-6 text-center text-sm text-white/60">{filtres ? "Aucun amendement ne correspond à ces filtres." : "Le relevé est en cours : les amendements apparaîtront ici sous peu."}</p>
       ) : (
         <ul className="mt-3 space-y-2.5">
-          {liste.map(a => <Carte key={a.uid} a={a} nouveau={!!visite && a.vu_le > visite} />)}
+          {liste.map(a => <Carte key={a.uid} a={a} nouveau={!!visite && a.vu_le > visite} chambre={chambre} />)}
         </ul>
       )}{" "}
 

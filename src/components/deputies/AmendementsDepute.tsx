@@ -27,7 +27,7 @@ const tonSort = (s: string | null) =>
   : s ? "bg-slate-500/15 text-slate-600 dark:text-slate-300"
   : "bg-fuchsia-500/15 text-fuchsia-700 dark:text-fuchsia-300";
 
-function Ligne({ a }: { a: Amdt }) {
+function Ligne({ a, chambre }: { a: Amdt; chambre: "an" | "senat" }) {
   const [ouvert, setOuvert] = useState(false);
   return (
     <li className="rounded-2xl border border-border bg-card dark:border-slate-800 dark:bg-slate-900">
@@ -44,7 +44,7 @@ function Ligne({ a }: { a: Amdt }) {
           {ouvert ? "Replier" : "Lire l'amendement"} <ChevronDown size={14} className={`transition ${ouvert ? "rotate-180" : ""}`} />
         </span>
       </button>{" "}
-      <div className="-mt-1 px-4 pb-3"><VoteAmendement scrutinId={a.scrutin_id} mode={a.vote_mode} sort={a.sort} /></div>
+      <div className="-mt-1 px-4 pb-3"><VoteAmendement scrutinId={a.scrutin_id} mode={a.vote_mode} sort={a.sort} chambre={chambre} /></div>
       {ouvert && (
         <div className="space-y-3 border-t border-border px-4 pb-4 pt-3 text-[14px] leading-relaxed text-slate-700 dark:border-slate-800 dark:text-slate-200">
           {a.dispositif && <div><h4 className="mb-1 text-[11px] font-black uppercase tracking-[0.18em] text-muted-foreground">Dispositif</h4><p className="whitespace-pre-line">{propre(a.dispositif)}</p></div>}{" "}
@@ -56,7 +56,8 @@ function Ligne({ a }: { a: Amdt }) {
   );
 }
 
-export default function AmendementsDepute({ slug, nom }: { slug: string; nom: string }) {
+export default function AmendementsDepute({ slug, nom, chambre = "an" }: { slug: string; nom: string; chambre?: "an" | "senat" }) {
+  const senat = chambre === "senat";
   const { isPro, loading } = usePremium();
   const [nb, setNb] = useState<number | null>(null);
   const [filtre, setFiltre] = useState("");
@@ -66,15 +67,15 @@ export default function AmendementsDepute({ slug, nom }: { slug: string; nom: st
   const [charge, setCharge] = useState(false);
 
   useEffect(() => {
-    supabase.rpc("nb_amendements_depute", { p_slug: slug }).then(({ data }) => setNb(typeof data === "number" ? data : 0));
-  }, [slug]);
+    supabase.rpc(senat ? "nb_amendements_senateur" : "nb_amendements_depute", { p_slug: slug }).then(({ data }) => setNb(typeof data === "number" ? data : 0));
+  }, [slug, senat]);
   useEffect(() => { setPage(0); }, [filtre]);
   useEffect(() => {
     if (!isPro) return;
     let actif = true;
     setCharge(true);
-    let q = supabase.from("amendements_an").select("uid, numero, texte_uid, texte_titre, organe, division, sort, expose, dispositif, url, vu_le, scrutin_id, vote_mode", { count: page === 0 ? "exact" : undefined })
-      .eq("depute_slug", slug).order("vu_le", { ascending: false }).order("ordre", { ascending: true }).range(page * PAR_PAGE, page * PAR_PAGE + PAR_PAGE - 1);
+    let q = supabase.from(senat ? "amendements_senat" : "amendements_an").select("uid, numero, texte_uid, texte_titre, organe, division, sort, expose, dispositif, url, vu_le, scrutin_id, vote_mode", { count: page === 0 ? "exact" : undefined })
+      .eq(senat ? "senateur_slug" : "depute_slug", slug).order("vu_le", { ascending: false }).order("ordre", { ascending: true }).range(page * PAR_PAGE, page * PAR_PAGE + PAR_PAGE - 1);
     if (filtre === "attente") q = q.is("sort", null); else if (filtre) q = q.eq("sort", filtre);
     q.then(({ data, count }) => {
       if (!actif) return;
@@ -83,7 +84,7 @@ export default function AmendementsDepute({ slug, nom }: { slug: string; nom: st
       setCharge(false);
     });
     return () => { actif = false; };
-  }, [isPro, slug, filtre, page]);
+  }, [isPro, slug, filtre, page, senat]);
 
   if (loading || nb === null) return null;
 
@@ -93,8 +94,8 @@ export default function AmendementsDepute({ slug, nom }: { slug: string; nom: st
         Ses <span className="text-fuchsia-700 dark:text-fuchsia-400">amendements</span>
       </h2>{" "}
       <p className="mb-6 max-w-xl font-medium text-muted-foreground">
-        {nb ? <><strong className="text-foreground dark:text-white">{nb.toLocaleString("fr-FR")}</strong> amendement{nb > 1 ? "s" : ""} déposé{nb > 1 ? "s" : ""} sur les textes en discussion, mis à jour toutes les heures.</>
-          : "Aucun amendement relevé pour l'instant sur les textes en discussion. La liste se met à jour toutes les heures."}
+        {nb ? <><strong className="text-foreground dark:text-white">{nb.toLocaleString("fr-FR")}</strong> amendement{nb > 1 ? "s" : ""} déposé{nb > 1 ? "s" : ""} {senat ? "au Sénat depuis octobre 2025, mis à jour chaque jour." : "sur les textes en discussion, mis à jour toutes les heures."}</>
+          : senat ? "Aucun amendement relevé pour l'instant. La liste se met à jour chaque jour." : "Aucun amendement relevé pour l'instant sur les textes en discussion. La liste se met à jour toutes les heures."}
       </p>{" "}
 
       {!nb ? null : !isPro ? (
@@ -118,7 +119,7 @@ export default function AmendementsDepute({ slug, nom }: { slug: string; nom: st
           {!charge && !liste.length ? (
             <p className="rounded-2xl bg-muted p-5 text-center text-sm text-muted-foreground dark:bg-slate-800/50">Aucun amendement pour ce filtre.</p>
           ) : (
-            <ul className="space-y-2.5">{liste.map(a => <Ligne key={a.uid} a={a} />)}</ul>
+            <ul className="space-y-2.5">{liste.map(a => <Ligne key={a.uid} a={a} chambre={chambre} />)}</ul>
           )}{" "}
           {charge ? <div className="flex justify-center py-5"><Loader2 className="animate-spin text-fuchsia-500" /></div>
             : total != null && liste.length < total && (
@@ -127,7 +128,7 @@ export default function AmendementsDepute({ slug, nom }: { slug: string; nom: st
                 Voir plus <span className="font-normal text-muted-foreground">({(total - liste.length).toLocaleString("fr-FR")} autres)</span> <ChevronDown size={16} />
               </button>
             )}{" "}
-          <Link href={`/premium/?amdt-depute=${encodeURIComponent(slug)}#amendements`} className="mt-3 inline-flex items-center gap-1.5 text-[13px] font-black text-fuchsia-700 underline-offset-2 hover:underline dark:text-fuchsia-300">
+          <Link href={`/premium/?amdt-depute=${encodeURIComponent(slug)}${senat ? "&chambre=senat" : ""}#amendements`} className="mt-3 inline-flex items-center gap-1.5 text-[13px] font-black text-fuchsia-700 underline-offset-2 hover:underline dark:text-fuchsia-300">
             Les ouvrir dans l&apos;outil Amendements de votre espace Pro →
           </Link>
         </>

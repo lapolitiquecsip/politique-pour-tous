@@ -12,8 +12,10 @@
  *    parlementaires (Assemblée + Sénat) et suivi des dynamiques réseaux sociaux des
  *    candidats à la présidentielle.
  *
- * ⚠️ Ces liens sont en MODE TEST (préfixe « test_ ») : aucun paiement réel n'est encaissé.
- * Pour encaisser, recréer les liens en mode Live et remplacer les URL ci-dessous.
+ * ⚠️ Les liens Premium et Pro sont des liens RÉELS (compte Stripe de production, 01/11/2026) : tout
+ * paiement est encaissé. Ils ne sont proposés que si SALES_OPEN vaut true. Les codes sont les mêmes que
+ * ceux des anciens liens de test (numérotés par ordre de création, par compte) mais pointent vers d'autres
+ * offres : ne jamais « retrouver » un lien en retirant ou ajoutant « test_ ».
  *
  * « student » et « institution » sont des reliquats non commercialisés : ils sont
  * conservés parce que getPremiumUrl() accepte encore ces clés.
@@ -70,11 +72,11 @@ export const STRIPE_LINKS: Record<string, { monthly: string; annually?: string }
   },
   elite: {
     // Pas de clé « annually » : c'est ce qui retire l'option annuelle de cette formule.
-    monthly: "https://buy.stripe.com/test_dRmaEWfLW6443jdeOofMA02", // 3,99 €/mois
+    monthly: "https://buy.stripe.com/fZu4gy7fqdww1b55dOfMA00", // 3,99 €/mois — lien RÉEL (01/11/2026)
   },
   pro: {
-    monthly: "https://buy.stripe.com/test_fZu4gy7fqdww1b55dOfMA00", // 24,99 €/mois
-    annually: "https://buy.stripe.com/test_6oU7sKfLW5003jd6hSfMA01" // 239 €/an
+    monthly: "https://buy.stripe.com/dRmaEWfLW6443jdeOofMA02", // 24,99 €/mois — lien RÉEL
+    annually: "https://buy.stripe.com/6oU7sKfLW5003jd6hSfMA01" // 239 €/an — lien RÉEL
   },
   institution: {
     monthly: "https://buy.stripe.com/test_institution_monthly", // 7.99€

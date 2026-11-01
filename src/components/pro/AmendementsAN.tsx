@@ -128,7 +128,7 @@ export default function AmendementsAN() {
   // Lien depuis l'e-mail Pro (« Voir les amendements ») : /premium/?amdt-texte=…&amdt-q=…#amendements.
   useEffect(() => {
     const p = new URLSearchParams(window.location.search);
-    if (!p.get("amdt-texte") && !p.get("amdt-q") && !p.get("amdt-groupe") && !p.get("amdt-depute") && !p.get("amdt-scrutin")) return;
+    if (!p.get("amdt-texte") && !p.get("amdt-q") && !p.get("amdt-groupe") && !p.get("amdt-depute") && !p.get("amdt-scrutin") && !p.get("amdt-sort")) return;
     setScrutin(p.get("amdt-scrutin") || "");
     setDepute(p.get("amdt-depute") || "");
     setTexte(p.get("amdt-texte") || "");

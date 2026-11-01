@@ -77,7 +77,7 @@ function Carte({ a, nouveau }: { a: Amendement; nouveau: boolean }) {
         </span>
       </button>{" "}
       {/* Le vote : scrutin public (totaux, groupes, députés), main levée ou commission. */}
-      <div className="px-4 pb-3 -mt-1"><VoteAmendement scrutinId={a.scrutin_id} mode={a.vote_mode} sort={a.sort} /></div>
+      <div className="px-4 pb-3 -mt-1"><VoteAmendement scrutinId={a.scrutin_id} mode={a.vote_mode} sort={a.sort} sombre deplie /></div>
       {ouvert && (
         <div className="space-y-4 border-t border-white/10 px-4 pb-4 pt-3 text-[14px] leading-relaxed text-white/85">
           {a.dispositif ? (

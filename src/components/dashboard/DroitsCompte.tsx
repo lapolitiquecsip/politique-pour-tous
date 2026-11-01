@@ -1,7 +1,7 @@
 "use client";
 
-import { useState } from "react";
-import { Download, Trash2, Loader2, AlertTriangle, Check, XCircle } from "lucide-react";
+import { useEffect, useState } from "react";
+import { CalendarClock, Download, Trash2, Loader2, AlertTriangle, Check, XCircle } from "lucide-react";
 import { api, type AbonnementEnCours } from "@/lib/api";
 import { supabase } from "@/lib/supabase";
 
@@ -13,6 +13,7 @@ const titre = "flex items-center gap-2 text-[10px] font-black uppercase tracking
  * un écran de confirmation qui dit ce qui va se passer, puis l'accusé par e-mail.
  */
 export function ResiliationAbonnement() {
+  const [adresse, setAdresse] = useState("");
   const [etape, setEtape] = useState<"repos" | "chargement" | "confirmer" | "fait" | "aucun" | "erreur">("repos");
   const [subs, setSubs] = useState<AbonnementEnCours[]>([]);
   const [erreur, setErreur] = useState("");
@@ -27,6 +28,7 @@ export function ResiliationAbonnement() {
   };
   const confirmer = async () => {
     setEtape("chargement");
+    supabase.auth.getUser().then(({ data }) => setAdresse(data.user?.email ?? "")).catch(() => {});
     try { setSubs(await api.resilierAbonnement()); setEtape("fait"); }
     catch (e) { setErreur((e as Error).message); setEtape("erreur"); }
   };
@@ -61,7 +63,7 @@ export function ResiliationAbonnement() {
       )}{" "}
       {etape === "fait" && (
         <p className="flex items-start gap-2 text-emerald-300"><Check size={15} className="mt-0.5 shrink-0" />{" "}
-          Résiliation enregistrée{subs[0] ? ` : fin le ${subs[0].fin_texte}` : ""}. Un e-mail de confirmation vient de vous être envoyé.</p>
+          Résiliation enregistrée{subs[0] ? ` : vous gardez votre accès jusqu'au ${subs[0].fin_texte}, sans nouveau prélèvement` : ""}. Une confirmation part à {adresse || "l'adresse de votre compte"} : pensez à regarder vos courriers indésirables.</p>
       )}{" "}
       {etape === "aucun" && (
         <p>Aucun abonnement payant n&apos;est en cours sur ce compte (accès offert, ou déjà terminé) : il n&apos;y a rien à résilier.</p>
@@ -152,6 +154,31 @@ export function MesDonnees() {
           continue. Vous pourrez ensuite supprimer le compte.</p>
       )}{" "}
       {suppr === "erreur" && <p className="mt-3 text-[13px] text-rose-300">La suppression a échoué. Réessayez, ou écrivez-nous depuis la page Contact.</p>}
+    </div>
+  );
+}
+
+/**
+ * Un abonnement résilié reste actif jusqu'à la fin de la période payée : on le rappelle en tête de
+ * l'espace à chaque visite, pour que le membre n'ait pas à retrouver l'e-mail de confirmation.
+ */
+export function BandeauFinAbonnement() {
+  const [fins, setFins] = useState<{ nom: string; fin_texte: string }[]>([]);
+  useEffect(() => {
+    let vivant = true;
+    api.etatAbonnement().then((l: any[]) => { if (vivant) setFins((l || []).filter(x => x.resilie)); }).catch(() => {});
+    return () => { vivant = false; };
+  }, []);
+  if (!fins.length) return null;
+  return (
+    <div className="container relative z-20 mx-auto mb-4 max-w-6xl px-4">
+      <p role="status" className="flex items-start gap-2.5 rounded-2xl border border-amber-400/40 bg-amber-400/10 px-4 py-3 text-[14px] leading-snug text-slate-900 dark:text-white">
+        <CalendarClock size={17} className="mt-0.5 shrink-0 text-amber-600 dark:text-amber-300" />{" "}
+        <span>
+          <strong>Votre abonnement {fins[0].nom} est résilié : il prend fin le {fins[0].fin_texte}.</strong>{" "}
+          Vous gardez tous vos avantages jusqu&apos;à cette date, sans nouveau prélèvement.
+        </span>
+      </p>
     </div>
   );
 }

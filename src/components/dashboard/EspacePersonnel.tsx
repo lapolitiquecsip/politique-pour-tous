@@ -23,6 +23,7 @@ import TutorielPremium, { tutorielPremiumDejaVu } from "@/components/premium/Tut
 import EncartPremium from "@/components/dashboard/EncartPremium";
 import IdentifiantsForm from "@/components/dashboard/IdentifiantsForm";
 import ParametresCompte from "@/components/dashboard/ParametresCompte";
+import { BandeauFinAbonnement } from "@/components/dashboard/DroitsCompte";
 import Parrainage from "@/components/dashboard/Parrainage";
 import { usePremium } from "@/lib/hooks/usePremium";
 import { departmentPaths } from "@/lib/data/departmentPaths";
@@ -807,6 +808,7 @@ export default function EspacePersonnel({ mode = "tout" }: { mode?: ModeEspace }
         </div>
       )}{" "}
 
+      {premiumVerifie && userId && <BandeauFinAbonnement />}{" "}
       {vueOnglets && (isPro && proVerifie && userId
         ? <EspacePro userId={userId} nbSuivis={followedDeputies.length} suivis={panneau} onTutoriel={() => setTutoriel(true)} />
         : !isPro && premiumVerifie && userId

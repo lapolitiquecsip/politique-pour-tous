@@ -98,6 +98,26 @@ function expandLawSearch(q?: string | null): string | null {
   return SEARCH_SYNONYMS[raw.toLowerCase()] || raw;
 }
 
+export type LoiApplication = {
+  jorf_id: string; titre: string; publiee_le: string | null; commission: string | null; sans_echeancier?: boolean; application_directe?: boolean;
+  nb_mesures: number; nb_appliquees: number; nb_attente: number; nb_retard: number; maj_le: string;
+};
+export type MesureApplication = {
+  loi_jorf_id: string; ordre: number; articles: string | null; objet: string | null; observation: string | null; decret_id: string | null;
+  echeance: string | null; eventuelle: boolean; etat: "applique" | "attente" | "sans_objet"; delai_jours: number | null;
+};
+export type FiltresApplication = { vue: "attente" | "retard" | "toutes"; depuis: string | null; commission: string; recherche: string; jorfId: string };
+const filtrerApplication = (q: any, f: FiltresApplication) => {
+  if (f.jorfId) return q.eq('jorf_id', f.jorfId);
+  q = q.gt('nb_mesures', 0);
+  if (f.vue === 'attente') q = q.gt('nb_attente', 0);
+  if (f.vue === 'retard') q = q.gt('nb_retard', 0);
+  if (f.depuis) q = q.gte('publiee_le', f.depuis);
+  if (f.commission) q = q.eq('commission', f.commission);
+  if (f.recherche) q = q.ilike('titre', `%${f.recherche}%`);
+  return q;
+};
+
 export const api = {
   health: async () => ({ status: 'ok', source: 'supabase-direct' }),
 
@@ -1266,13 +1286,15 @@ export const api = {
   /** Ce qu'on peut suivre, par type (libellé lisible + référence stockée). */
   getOptionsSuivi: async () => {
     const slug = (t: string) => t.normalize('NFD').replace(/[̀-ͯ]/g, '').toLowerCase().replace(/[’']/g, ' ').replace(/[^a-z0-9]+/g, '-').replace(/(^-|-$)/g, '');
-    const [partis, ministeres, candidats, textesAmdt, groupesAmdt] = await Promise.all([
+    const [partis, ministeres, candidats, textesAmdt, groupesAmdt, loisApp] = await Promise.all([
       supabase.from('political_parties').select('slug, name, abbrev').order('name'),
       supabase.from('ministries').select('name').order('name'),
       supabase.from('presidential_candidates').select('id, full_name').eq('status', 'declared').order('full_name'),
       // Amendements (Pro) : les textes en discussion, et les groupes tels qu'écrits dans amendements_an.groupe.
       supabase.from('amendements_an_textes').select('texte_uid, texte_titre').order('dernier', { ascending: false }),
       supabase.from('deputies').select('party').eq('sitting', true),
+      // Décrets d'application (Pro) : les lois qui attendent encore des mesures, les plus récentes d'abord.
+      supabase.from('application_lois').select('jorf_id, titre').gt('nb_attente', 0).gte('publiee_le', '2024-07-18').order('publiee_le', { ascending: false }),
     ]);
     const cap = (t: string) => t.charAt(0).toUpperCase() + t.slice(1);
     return {
@@ -1280,6 +1302,7 @@ export const api = {
       ministere: (ministeres.data || []).map((m: any) => ({ ref: slug(m.name), label: cap(m.name) })),
       candidat: (candidats.data || []).map((c: any) => ({ ref: String(c.id), label: c.full_name })),
       commission: COMMISSIONS_SUIVIES.map(([ch, nom]) => ({ ref: `${ch}|${nom}`, label: `${nom} (${ch === 'AN' ? 'Assemblée' : 'Sénat'})` })),
+      app_loi: ((loisApp as any).data || []).map((l: any) => ({ ref: l.jorf_id, label: l.titre })),
       amdt_texte: (textesAmdt.data || []).map((t: any) => ({ ref: t.texte_uid, label: t.texte_titre || t.texte_uid })),
       amdt_groupe: [...new Set((groupesAmdt.data || []).map((d: any) => d.party).filter(Boolean))].sort((a: any, b: any) => a.localeCompare(b, 'fr')).map((g: any) => ({ ref: g, label: g })),
     };
@@ -2535,6 +2558,57 @@ export const api = {
   getScrutinAmendement: async (scrutinId: string) => {
     const { data } = await supabase.from('scrutins').select('id, numero, date_scrutin, resultat, pour, contre, abstention, group_results').eq('id', scrutinId).maybeSingle();
     return data as { id: string; numero: number; date_scrutin: string; resultat: string | null; pour: number; contre: number; abstention: number; group_results: any[] | null } | null;
+  },
+
+  /** Application d'une loi : sa fiche et ses mesures (baromètre de l'Assemblée nationale). */
+  getApplicationLoi: async (jorfId: string) => {
+    const { data: loi } = await supabase.from('application_lois').select('*').eq('jorf_id', jorfId).maybeSingle();
+    if (!loi) return null;
+    const { data: mesures } = await supabase.from('application_mesures').select('*').eq('loi_jorf_id', jorfId).order('ordre').limit(500);
+    return { loi: loi as LoiApplication, mesures: (mesures || []) as MesureApplication[] };
+  },
+
+  /** Les lois de l'outil Pro, filtrées ; les plus récentes d'abord, seulement celles qui attendent des mesures. */
+  getLoisApplication: async (f: FiltresApplication, page: number, parPage: number) => {
+    const { data, count, error } = await filtrerApplication(supabase.from('application_lois').select('*', { count: page === 0 ? 'exact' : undefined }), f)
+      .order('publiee_le', { ascending: false, nullsFirst: false }).order('jorf_id').range(page * parPage, page * parPage + parPage - 1);
+    if (error) throw error;
+    return { lois: (data || []) as LoiApplication[], total: count ?? null };
+  },
+
+  /** Le bilan chiffré depuis une date (moins de mille lois sur une législature). */
+  getLoisApplicationBilan: async (depuis: string) => {
+    const { data, error } = await supabase.from('application_lois')
+      .select('jorf_id, titre, publiee_le, commission, nb_mesures, nb_appliquees, nb_attente, nb_retard, maj_le').gte('publiee_le', depuis).limit(1000);
+    if (error) throw error;
+    return (data || []) as LoiApplication[];
+  },
+
+  /** Les mesures des lois filtrées, pour l'export CSV. */
+  getMesuresExport: async (f: FiltresApplication) => {
+    const lois: LoiApplication[] = [];
+    for (let de = 0; ; de += 1000) {
+      const { data, error } = await filtrerApplication(supabase.from('application_lois').select('jorf_id, titre, publiee_le, commission'), f)
+        .order('publiee_le', { ascending: false, nullsFirst: false }).order('jorf_id').range(de, de + 999);
+      if (error) throw error;
+      lois.push(...((data || []) as LoiApplication[]));
+      if (!data || data.length < 1000) break;
+    }
+    const parLoi = new Map(lois.map(l => [l.jorf_id, l]));
+    const lignes: (MesureApplication & { loi_titre: string; publiee_le: string | null; commission: string | null })[] = [];
+    for (let i = 0; i < lois.length; i += 100) {
+      const ids = lois.slice(i, i + 100).map(l => l.jorf_id);
+      for (let de = 0; ; de += 1000) {
+        const { data, error } = await supabase.from('application_mesures').select('*').in('loi_jorf_id', ids).order('loi_jorf_id').order('ordre').range(de, de + 999);
+        if (error) throw error;
+        for (const m of (data || []) as MesureApplication[]) {
+          const l = parLoi.get(m.loi_jorf_id)!;
+          lignes.push({ ...m, loi_titre: l.titre, publiee_le: l.publiee_le, commission: l.commission });
+        }
+        if (!data || data.length < 1000) break;
+      }
+    }
+    return lignes;
   },
 
   /** Un scrutin d'amendement du Sénat, aux mêmes champs que celui de l'Assemblée. */

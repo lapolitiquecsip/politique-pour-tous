@@ -12,7 +12,7 @@ import { usePremium } from "@/lib/hooks/usePremium";
  * par une autre table. `libelles` remplace « Suivre / Suivi » (ex. « M'alerter / Alertes activées »).
  */
 export default function SuivreBouton({ kind, refId, label, className = "", libelles }: {
-  kind: "parti" | "ministere" | "candidat" | "commission" | "amdt_texte" | "amdt_groupe"; refId: string; label: string; className?: string;
+  kind: "parti" | "ministere" | "candidat" | "commission" | "amdt_texte" | "amdt_groupe" | "app_loi"; refId: string; label: string; className?: string;
   libelles?: [string, string];
 }) {
   const { isPro, loading } = usePremium();

@@ -14,6 +14,7 @@ import { parseInitiators, loadPeopleIndex, personHref, normalizeName, type Initi
 import { categoryLabel, type LegislativeDossierDetail } from "@/lib/legislative";
 import { lockScroll, unlockScroll } from "@/lib/scroll-lock";
 import AnalyseApprofondie from "@/components/lois/AnalyseApprofondie";
+import ApplicationLoi from "@/components/lois/ApplicationLoi";
 
 // Panneau de détail d'une loi (fiche complète : résumé, analyse premium, navette, amendements,
 // scrutins, sources). Partagé entre la page « Lois » et la home (livre du Journal Officiel).
@@ -552,6 +553,7 @@ export default function DossierModal({
                       <p className="mt-3 text-sm font-bold text-muted-foreground">Publiée au Journal officiel le {formatDate(f.promulgated_at)}{f.nor ? ` · NOR ${f.nor}` : ""}</p>
                     </div>
                   )}{" "}
+                  {promulgated && <ApplicationLoi jorfId={f.jorf_id} titre={f.display_title || f.title || undefined} />}{" "}
                   {reprise === "echec" ? (
                     <div className="mt-6 rounded-3xl border border-rose-200 bg-rose-50 p-5 dark:border-rose-500/25 dark:bg-rose-500/10">
                       <p className="flex items-center gap-2 font-bold text-rose-700 dark:text-rose-300"><AlertTriangle size={17} /> La fiche n&apos;a pas pu être chargée.</p>{" "}
@@ -600,6 +602,7 @@ export default function DossierModal({
                 </div>
               );
             })()}{" "}
+            {detail.promulgation && <ApplicationLoi jorfId={detail.promulgation.jorf_id} titre={detail.dossier.title} />}{" "}
 
             <section className="mt-8"><h3 className="text-2xl font-staatliches uppercase text-foreground">Résumé</h3>{" "}<p className="mt-3 text-[16px] leading-7 text-slate-700 dark:text-slate-200">{detail.summary?.summary || "Analyse indisponible."}</p></section>{" "}
             {/* Lecture progressive : le résumé d'abord, puis l'accès direct à chaque détail. */}

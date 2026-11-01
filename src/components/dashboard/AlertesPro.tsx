@@ -14,10 +14,10 @@ import { api } from "@/lib/api";
  * ou pas du tout — rien n'est coché d'office (user_preferences.abonnements_pro).
  */
 
-type Kind = "parti" | "ministere" | "candidat" | "commission" | "amdt_texte" | "amdt_groupe";
+type Kind = "parti" | "ministere" | "candidat" | "commission" | "amdt_texte" | "amdt_groupe" | "app_loi";
 type Option = { ref: string; label: string };
 
-const KINDS: [Kind, string][] = [["parti", "Partis"], ["ministere", "Ministères"], ["candidat", "Candidats 2027"], ["commission", "Commissions"], ["amdt_texte", "Amendements · textes"], ["amdt_groupe", "Amendements · groupes"]];
+const KINDS: [Kind, string][] = [["parti", "Partis"], ["ministere", "Ministères"], ["candidat", "Candidats 2027"], ["commission", "Commissions"], ["amdt_texte", "Amendements · textes"], ["amdt_groupe", "Amendements · groupes"], ["app_loi", "Décrets d'application"]];
 const PERIMETRES: [string, string][] = [["commune", "Ma commune"], ["departement", "Mon département"], ["region", "Ma région"], ["national", "Rien de local"]];
 const SECTEURS: [string, string][] = [
   ["", "Non précisé"], ["sante", "Santé"], ["education", "Éducation"], ["agriculture", "Agriculture, pêche"], ["btp_logement", "BTP, immobilier"],

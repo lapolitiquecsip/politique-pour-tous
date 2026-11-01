@@ -3,7 +3,7 @@
 import { useCallback, useEffect, useRef, useState, type ReactNode } from "react";
 import Link from "next/link";
 import { motion, AnimatePresence } from "framer-motion";
-import { ArrowRight, Bell, Check, FilePenLine, Landmark, LayoutDashboard, Mail, MapPin, Newspaper, Rss, Settings, Star, Users } from "lucide-react";
+import { ArrowRight, Bell, Check, FileCheck2, FilePenLine, Landmark, LayoutDashboard, Mail, MapPin, Newspaper, Rss, Settings, Star, Users } from "lucide-react";
 import { supabase } from "@/lib/supabase";
 import { api } from "@/lib/api";
 import NotificationsFeed from "@/components/dashboard/NotificationsFeed";
@@ -16,6 +16,7 @@ import JournalOfficielDuJour from "@/components/home/JournalOfficielDuJour";
 import TopicBrief from "@/components/pro/TopicBrief";
 import AmendementsAN from "@/components/pro/AmendementsAN";
 import FilActualitePro from "@/components/pro/FilActualitePro";
+import DecretsApplication from "@/components/pro/DecretsApplication";
 
 /**
  * L'espace de travail d'un abonné Pro, en onglets.
@@ -28,12 +29,13 @@ import FilActualitePro from "@/components/pro/FilActualitePro";
  * L'onglet suit l'ancre de l'adresse : les liens des e-mails (/premium#journal-officiel,
  * #amendements, #preferences, #emails-pro…) ouvrent directement le bon.
  */
-type IdOnglet = "aujourdhui" | "journal-officiel" | "commissions" | "amendements" | "fil-actualite" | "suivis" | "preferences";
+type IdOnglet = "aujourdhui" | "journal-officiel" | "commissions" | "amendements" | "decrets" | "fil-actualite" | "suivis" | "preferences";
 const ONGLETS: { id: IdOnglet; label: string; court: string; Icone: typeof Bell; ancres: string[] }[] = [
   { id: "aujourdhui", label: "Aujourd'hui", court: "Aujourd'hui", Icone: LayoutDashboard, ancres: ["", "alertes", "tout-sur-un-sujet"] },
   { id: "journal-officiel", label: "Journal officiel", court: "JO", Icone: Newspaper, ancres: [] },
   { id: "commissions", label: "Commissions", court: "Commissions", Icone: Landmark, ancres: [] },
   { id: "amendements", label: "Amendements", court: "Amendements", Icone: FilePenLine, ancres: [] },
+  { id: "decrets", label: "Décrets d'application", court: "Décrets", Icone: FileCheck2, ancres: [] },
   { id: "fil-actualite", label: "Actualité", court: "Actualité", Icone: Rss, ancres: [] },
   { id: "suivis", label: "Mes suivis", court: "Suivis", Icone: Star, ancres: ["parrainage"] },
   { id: "preferences", label: "E-mails & réglages", court: "Réglages", Icone: Settings, ancres: ["emails-pro"] },
@@ -109,6 +111,7 @@ export default function EspacePro({ userId, nbSuivis, suivis, onTutoriel }: {
             {onglet === "journal-officiel" && <JournalOfficielDuJour direct />}
             {onglet === "commissions" && <CommissionsRegistre direct />}
             {onglet === "amendements" && <AmendementsAN />}
+            {onglet === "decrets" && <DecretsApplication />}
             {onglet === "fil-actualite" && <FilActualitePro userId={userId} />}
             {onglet === "suivis" && (
               <div className="space-y-6">

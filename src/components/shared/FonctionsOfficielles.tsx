@@ -69,7 +69,7 @@ export default function FonctionsOfficielles({ kind, slug }: { kind: EluKind; sl
 
       {reste > 0 && (
         <button type="button" onClick={() => setTout(t => !t)} aria-expanded={tout} className="mt-3 inline-flex min-h-[40px] items-center gap-1 text-[13px] font-bold text-blue-700 dark:text-sky-300">
-          {tout ? "Réduire" : `Voir les ${reste} autres`} <ChevronDown size={14} className={`transition ${tout ? "rotate-180" : ""}`} />
+          {tout ? "Réduire" : reste > 1 ? `Voir les ${reste} autres` : "Voir l'autre"} <ChevronDown size={14} className={`transition ${tout ? "rotate-180" : ""}`} />
         </button>
       )}{" "}
 

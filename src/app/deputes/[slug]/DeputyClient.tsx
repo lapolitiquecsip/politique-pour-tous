@@ -50,6 +50,8 @@ import ActivityRank from "@/components/shared/ActivityRank";
 import ParallelRoles from "@/components/shared/ParallelRoles";
 import StructuredBio, { hasStructuredBio } from "@/components/shared/StructuredBio";
 import InstitutionalRoleBanner from "@/components/shared/InstitutionalRoleBanner";
+import FonctionsOfficielles from "@/components/shared/FonctionsOfficielles";
+import { useBioFraiche } from "@/lib/hooks/useBioFraiche";
 import InitiativeRank from "@/components/shared/InitiativeRank";
 import AmendementsDepute from "@/components/deputies/AmendementsDepute";
 import VotesAmendementsElu from "@/components/votes/VotesAmendementsElu";
@@ -344,6 +346,7 @@ export default function DeputyDetailPage({ params, embedded, initialDeputy }: { 
 
   // Sanctions du Conseil constitutionnel : le badge n'affiche plus « casier vierge » s'il y en a.
   const [nbSanctionsCC, setNbSanctionsCC] = useState(0);
+  const bioFraiche = useBioFraiche("deputies", deputy?.slug, deputy?.bio);
   useEffect(() => {
     if (!deputy?.slug) return;
     api.getSanctionsConstit("deputy", deputy.slug).then(l => setNbSanctionsCC(l.length)).catch(() => {});
@@ -652,13 +655,14 @@ export default function DeputyDetailPage({ params, embedded, initialDeputy }: { 
             </div>{" "}
 
             {/* Fonction institutionnelle (Président·e / Vice-président·e / président·e de commission). */}
-            {name && <InstitutionalRoleBanner fullName={name} bio={deputy?.bio} />}
+            <InstitutionalRoleBanner kind="depute" slug={deputy?.slug} />
 
             {/* Toutes les fonctions de la personne (député, PM, candidat, parti…). */}
+            {deputy?.slug && <FonctionsOfficielles kind="depute" slug={deputy.slug} />}{" "}
             {name && <QuandVisible apres={!loadingVotes}><ParallelRoles fullName={name} selfHref={`/deputes/${deputy?.slug || ""}`} /></QuandVisible>}{" "}
 
             {/* NEW: Biography / Background Section (Collapsible Editorial Style) */}
-            {(deputy?.biography || hasStructuredBio(deputy?.bio)) && (
+            {(deputy?.biography || hasStructuredBio(bioFraiche)) && (
               <div className="bg-card dark:bg-slate-900 rounded-[3rem] border border-border dark:border-slate-800 shadow-xl relative overflow-hidden group pb-2">
                 {(() => {
                   const displayBio = (deputy?.biography || "").split('<!-- INTEGRITY_START -->')[0] || '';
@@ -696,8 +700,8 @@ export default function DeputyDetailPage({ params, embedded, initialDeputy }: { 
                             className="overflow-hidden"
                           >
                             <div className="px-5 pb-6 md:px-12 md:pb-12 relative z-10 space-y-4">
-                              {hasStructuredBio(deputy?.bio) && <StructuredBio bio={deputy.bio} />}{" "}
-                              {!hasStructuredBio(deputy?.bio) && displayBio.split('\n\n').filter(Boolean).map((paragraph: string, pIdx: number) => {
+                              {hasStructuredBio(bioFraiche) && <StructuredBio bio={bioFraiche} />}{" "}
+                              {!hasStructuredBio(bioFraiche) && displayBio.split('\n\n').filter(Boolean).map((paragraph: string, pIdx: number) => {
                                 let Icon = History;
                                 const pLower = paragraph.toLowerCase();
                                 if (pLower.includes('profession')) Icon = Briefcase;

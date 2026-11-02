@@ -1,16 +1,27 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { Landmark, ChevronDown } from "lucide-react";
-import { resolveInstitutionalRole } from "@/lib/data/institutionalRoles";
+import { api, type EluKind } from "@/lib/api";
+import { rolesInstitutionnels, type InstRole } from "@/lib/data/institutionalRoles";
 
 // Bannière mise en avant quand un·e élu·e occupe une fonction institutionnelle (Président·e ou
-// Vice-président·e d'une chambre, président·e de commission), avec l'explication des pouvoirs.
-export default function InstitutionalRoleBanner({ fullName, bio }: { fullName: string; bio?: any }) {
-  const role = resolveInstitutionalRole(fullName, bio);
-  const [open, setOpen] = useState(false);
-  if (!role) return null;
+// Vice-président·e d'une chambre, questeur, président·e de commission ou de groupe), avec
+// l'explication des pouvoirs. D'après les données officielles relevées chaque semaine (elus_fonctions).
+export default function InstitutionalRoleBanner({ kind, slug }: { kind: EluKind; slug: string | null | undefined }) {
+  const [roles, setRoles] = useState<InstRole[]>([]);
+  useEffect(() => {
+    if (!slug) return;
+    let vivant = true;
+    api.getFonctionsElu(kind, slug).then(r => { if (vivant) setRoles(rolesInstitutionnels(r.fonctions)); }).catch(() => {});
+    return () => { vivant = false; };
+  }, [kind, slug]);
+  if (!roles.length) return null;
+  return <div className="space-y-3">{roles.map(r => <CarteRole key={r.role} role={r} />)}</div>;
+}
 
+function CarteRole({ role }: { role: InstRole }) {
+  const [open, setOpen] = useState(false);
   return (
     <div className="rounded-[2rem] border border-amber-300/60 bg-gradient-to-br from-amber-50 to-white p-5 shadow-sm dark:border-amber-500/30 dark:from-amber-500/10 dark:to-slate-900">
       <button onClick={() => setOpen(o => !o)} className="flex w-full items-center gap-3 text-left">

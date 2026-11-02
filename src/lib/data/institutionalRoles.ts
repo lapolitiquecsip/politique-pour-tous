@@ -1,11 +1,11 @@
 // Rôles institutionnels (Président·e / Vice-président·e d'une chambre, président·e de commission…)
-// et ce qu'ils confèrent comme pouvoirs. Deux sources :
-//  1) une liste CURÉE et vérifiée des titulaires stables (source officielle AN/Sénat),
-//  2) un détecteur de secours à partir de la bio structurée (Wikipédia) quand elle existe.
+// et ce qu'ils confèrent comme pouvoirs. QUI occupe quoi vient de la table elus_fonctions, relevée
+// chaque semaine dans les données officielles : ni liste écrite ici, ni lecture de la biographie,
+// qui ont toutes deux affiché des fonctions perdues après le renouvellement d'octobre 2026.
 
 export type InstRole = { role: string; institution: string; since?: string; powers: string[] };
 
-const norm = (s: string) => (s || "").toLowerCase().normalize("NFD").replace(/[̀-ͯ]/g, "").replace(/[^a-z0-9]+/g, " ").trim();
+const plat = (s: string | null | undefined) => (s || "").toLowerCase().normalize("NFD").replace(/[̀-ͯ]/g, "");
 
 // Bibliothèque des pouvoirs par TYPE de rôle (réutilisée par le détecteur bio).
 const POWERS = {
@@ -39,57 +39,43 @@ const POWERS = {
     "Organise l'ordre du jour de la commission et rythme l'examen des projets et propositions de loi.",
     "Rôle central dans la fabrique de la loi, en amont des débats en séance.",
   ],
+  questeur: [
+    "Membre du Bureau, chargé·e avec les autres questeurs des finances et de l'administration de l'assemblée.",
+    "Prépare et exécute son budget, veille au bon fonctionnement de ses services.",
+  ],
+  secretaire: [
+    "Membre du Bureau, organe qui dirige l'assemblée.",
+    "Veille à la régularité des votes et contrôle le procès-verbal des séances.",
+  ],
+  presidentGroupe: [
+    "Dirige un groupe politique et parle en son nom, notamment à la conférence des présidents.",
+    "Participe à la fixation de l'ordre du jour de l'assemblée.",
+  ],
+  bureauPE: [
+    "Membre du Bureau du Parlement européen, qui en règle l'organisation et le budget.",
+    "Peut présider les séances plénières en remplacement du·de la président·e.",
+  ],
 };
 
-// 1) Titulaires curés (stables sur la législature). Clé = nom normalisé.
-const commissionAN = (nom: string): InstRole => ({ role: `Président·e de la ${nom}`, institution: "Assemblée nationale", powers: POWERS.presidentCommission });
-const commissionSenat = (nom: string): InstRole => ({ role: `Président·e de la ${nom}`, institution: "Sénat", powers: POWERS.presidentCommission });
-const CURATED: Record<string, InstRole> = {
-  "yael braun pivet": { role: "Présidente de l'Assemblée nationale", institution: "Assemblée nationale", since: "2022", powers: POWERS.presidentAN },
-  "gerard larcher": { role: "Président du Sénat", institution: "Sénat", since: "2014", powers: POWERS.presidentSenat },
-  // Président·e·s des huit commissions permanentes de l'Assemblée nationale (source : vie-publique.fr).
-  "alexandre portier": commissionAN("Commission des Affaires culturelles et de l'Éducation"),
-  "stephane travert": commissionAN("Commission des Affaires économiques"),
-  "bruno fuchs": commissionAN("Commission des Affaires étrangères"),
-  "frederic valletoux": commissionAN("Commission des Affaires sociales"),
-  "jean michel jacques": commissionAN("Commission de la Défense nationale et des Forces armées"),
-  "sandrine le feur": commissionAN("Commission du Développement durable et de l'Aménagement du territoire"),
-  "eric coquerel": commissionAN("Commission des Finances, de l'Économie générale et du Contrôle budgétaire"),
-  "florent boudie": commissionAN("Commission des Lois constitutionnelles, de la Législation et de l'Administration générale"),
-  // Président·e·s des sept commissions permanentes du Sénat (source : senat.fr).
-  "claude raynal": commissionSenat("Commission des Finances"),
-  "muriel jourda": commissionSenat("Commission des Lois"),
-  "cedric perrin": commissionSenat("Commission des Affaires étrangères, de la Défense et des Forces armées"),
-  "philippe mouiller": commissionSenat("Commission des Affaires sociales"),
-  "dominique estrosi sassone": commissionSenat("Commission des Affaires économiques"),
-  "laurent lafon": commissionSenat("Commission de la Culture, de l'Éducation, de la Communication et du Sport"),
-  "jean francois longeot": commissionSenat("Commission de l'Aménagement du territoire et du Développement durable"),
-};
+export type FonctionElu = { categorie: string; libelle: string; qualite: string | null; organe: string | null; depuis: string | null; important: boolean };
 
-// 2) Détecteur de secours depuis la bio structurée (parcours + summary), pour les rôles que la
-// bio mentionne explicitement comme ACTUELS (« depuis … » ou fonction en cours).
-function detectFromBio(bio: any): InstRole | null {
-  if (!bio) return null;
-  const lines: string[] = [bio.summary || "", ...(Array.isArray(bio.parcours) ? bio.parcours : [])].filter(Boolean);
-  const current = (l: string) => /depuis|en cours|actuel/i.test(l) || !/\b(19|20)\d{2}\s*[-–]\s*(19|20)\d{2}\b/.test(l);
-  for (const l of lines) {
-    const nl = norm(l);
-    if (/ancien|ancienne/.test(nl)) continue;
-    // Formulation EXACTE exigée : « président·e de l'Assemblée nationale / du Sénat ». On n'utilise
-    // PAS de `.*` entre les mots, sinon « président du GROUPE … à l'Assemblée nationale » (chef de
-    // groupe) ou « président de la commission … » seraient faussement pris pour la présidence de la
-    // chambre. `presidente?` couvre président / présidente ; le `·e` est déjà normalisé en espace.
-    // Vice-président·e d'abord (sinon « vice-président » matcherait la règle « président »).
-    if (/\bvice presidente? de l assemblee nationale\b/.test(nl) && current(l)) return { role: "Vice-président·e de l'Assemblée nationale", institution: "Assemblée nationale", powers: POWERS.vicePresidentAN };
-    if (/\bvice presidente? du senat\b/.test(nl) && current(l)) return { role: "Vice-président·e du Sénat", institution: "Sénat", powers: POWERS.vicePresidentSenat };
-    if (/\bpresidente? de l assemblee nationale\b/.test(nl) && !/vice|groupe|commission/.test(nl) && current(l)) return { role: "Président·e de l'Assemblée nationale", institution: "Assemblée nationale", powers: POWERS.presidentAN };
-    if (/\bpresidente? du senat\b/.test(nl) && !/vice|groupe|commission/.test(nl) && current(l)) return { role: "Président·e du Sénat", institution: "Sénat", powers: POWERS.presidentSenat };
-    const com = l.match(/pr[ée]sident[·e]*\s+de\s+la\s+(commission[^,.;(]+)/i);
-    if (com && current(l)) return { role: `Président·e de la ${com[1].trim()}`, institution: "Commission permanente", powers: POWERS.presidentCommission };
+/** Les fonctions à mettre en avant, la plus haute d'abord, avec ce qu'elles confèrent. */
+export function rolesInstitutionnels(fonctions: FonctionElu[]): InstRole[] {
+  const roles: (InstRole & { rang: number })[] = [];
+  for (const f of fonctions) {
+    const q = plat(f.qualite), lib = plat(f.libelle);
+    const since = f.depuis ? f.depuis.slice(0, 4) : undefined;
+    const de = (rang: number, powers: string[], institution: string) => roles.push({ rang, role: f.libelle, institution, since, powers });
+    if (f.categorie === "bureau") {
+      if (lib.includes("parlement europeen")) de(q.startsWith("president") ? 0 : 1, q.startsWith("president") ? POWERS.bureauPE : POWERS.bureauPE, "Parlement européen");
+      else if (q.startsWith("president") && lib.includes("assemblee")) de(0, POWERS.presidentAN, "Assemblée nationale");
+      else if (q.startsWith("president")) de(0, POWERS.presidentSenat, "Sénat");
+      else if (q.includes("vice") && lib.includes("assemblee")) de(1, POWERS.vicePresidentAN, "Assemblée nationale");
+      else if (q.includes("vice")) de(1, POWERS.vicePresidentSenat, "Sénat");
+      else if (q.includes("questeur")) de(2, POWERS.questeur, f.organe || "");
+      else if (q.includes("secretaire")) de(4, POWERS.secretaire, f.organe || "");
+    } else if (f.categorie === "groupe" && /^(co)?president/.test(q)) de(3, POWERS.presidentGroupe, f.organe || "");
+    else if (f.categorie === "commission" && /^president/.test(q)) de(3, POWERS.presidentCommission, f.organe || "");
   }
-  return null;
-}
-
-export function resolveInstitutionalRole(fullName: string, bio?: any): InstRole | null {
-  return CURATED[norm(fullName)] || detectFromBio(bio);
+  return roles.sort((a, b) => a.rang - b.rang).map(({ rang: _rang, ...x }) => x);
 }

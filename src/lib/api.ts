@@ -1,3 +1,4 @@
+import type { FonctionElu } from "@/lib/data/institutionalRoles";
 import { supabase } from "./supabase";
 
 /** Version des CGV acceptée au paiement (à changer à chaque modification des CGV). */
@@ -97,6 +98,10 @@ function expandLawSearch(q?: string | null): string | null {
   if (!raw) return null;
   return SEARCH_SYNONYMS[raw.toLowerCase()] || raw;
 }
+
+export type EluKind = "depute" | "senateur" | "eurodepute";
+export type ChangementElu = { nature: "ajout" | "retrait" | "modification"; categorie: string | null; avant: string | null; apres: string | null; detecte_le: string };
+const lecturesFonctions = new Map<string, Promise<{ fonctions: (FonctionElu & { source_url: string | null })[]; changements: ChangementElu[]; verifieLe: string | null }>>();
 
 export type LoiApplication = {
   jorf_id: string; titre: string; publiee_le: string | null; commission: string | null; sans_echeancier?: boolean; application_directe?: boolean;
@@ -2558,6 +2563,21 @@ export const api = {
   getScrutinAmendement: async (scrutinId: string) => {
     const { data } = await supabase.from('scrutins').select('id, numero, date_scrutin, resultat, pour, contre, abstention, group_results').eq('id', scrutinId).maybeSingle();
     return data as { id: string; numero: number; date_scrutin: string; resultat: string | null; pour: number; contre: number; abstention: number; group_results: any[] | null } | null;
+  },
+
+  /** Les fonctions officielles d'un élu, le journal de ce qui a changé et la date du dernier contrôle. */
+  getFonctionsElu: (kind: EluKind, slug: string) => {
+    const cle = `${kind}|${slug}`;
+    let lecture = lecturesFonctions.get(cle);
+    if (!lecture) {
+      lecture = Promise.all([
+        supabase.from('elus_fonctions').select('categorie, libelle, qualite, organe, depuis, important, source_url').eq('elu_kind', kind).eq('elu_slug', slug),
+        supabase.from('elus_changements').select('nature, categorie, avant, apres, detecte_le').eq('elu_kind', kind).eq('elu_slug', slug).neq('nature', 'bio_corrigee').order('detecte_le', { ascending: false }).limit(6),
+        supabase.from('elus_verification').select('verifie_le').eq('elu_kind', kind).maybeSingle(),
+      ]).then(([f, c, v]) => ({ fonctions: (f.data || []) as (FonctionElu & { source_url: string | null })[], changements: (c.data || []) as ChangementElu[], verifieLe: (v.data?.verifie_le as string | undefined) ?? null }));
+      lecturesFonctions.set(cle, lecture);
+    }
+    return lecture;
   },
 
   /** Application d'une loi : sa fiche et ses mesures (baromètre de l'Assemblée nationale). */

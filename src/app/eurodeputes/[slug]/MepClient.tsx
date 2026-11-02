@@ -9,6 +9,8 @@ import LegalStatusModal from "@/components/deputies/LegalStatusModal";
 import ActivityRank from "@/components/shared/ActivityRank";
 import FollowButton from "@/components/shared/FollowButton";
 import ParallelRoles from "@/components/shared/ParallelRoles";
+import InstitutionalRoleBanner from "@/components/shared/InstitutionalRoleBanner";
+import FonctionsOfficielles from "@/components/shared/FonctionsOfficielles";
 import { api } from "@/lib/api";
 import { useBioFraiche } from "@/lib/hooks/useBioFraiche";
 import { groupByCode } from "@/lib/data/epGroups";
@@ -149,6 +151,8 @@ export default function MepClient({ mep, initialVotes, embedded }: { mep: any; i
 
       {/* Toutes les fonctions de la personne. */}
       <div className="container mx-auto max-w-5xl px-4 pt-6">
+        <InstitutionalRoleBanner kind="eurodepute" slug={mep.slug} />{" "}
+        <FonctionsOfficielles kind="eurodepute" slug={mep.slug} />{" "}
         <ParallelRoles fullName={mep.full_name || `${mep.first_name} ${mep.last_name}`} selfHref={`/eurodeputes/${mep.slug}`} />
       </div>{" "}
 

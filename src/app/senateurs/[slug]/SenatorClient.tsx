@@ -39,6 +39,7 @@ import ParallelRoles from "@/components/shared/ParallelRoles";
 import StructuredBio from "@/components/shared/StructuredBio";
 import { groupeSenat } from "@/lib/senate-groups";
 import InstitutionalRoleBanner from "@/components/shared/InstitutionalRoleBanner";
+import FonctionsOfficielles from "@/components/shared/FonctionsOfficielles";
 import InitiativeRank from "@/components/shared/InitiativeRank";
 
 // Extrait d'evidence lisible sur le site : ellipse si le texte a été tronqué (extraits courts).
@@ -369,7 +370,7 @@ export default function SenatorClient({ senator, embedded }: { senator: any; emb
             </div>{" "}
 
             {/* Fonction institutionnelle (Président·e / Vice-président·e / président·e de commission). */}
-            <InstitutionalRoleBanner fullName={name} bio={bioFraiche} />
+            <InstitutionalRoleBanner kind="senateur" slug={senator.slug} />
 
             <QuandVisible apres={!chargeVotes}><InitiativeRank kind="senator" selfId={String(senator.id)} primary={senator.initiative_primary_count} cosigned={senator.initiative_count} peerLabel="sénateurs" /></QuandVisible>
 
@@ -443,6 +444,7 @@ export default function SenatorClient({ senator, embedded }: { senator: any; emb
             </div>{" "}
 
             {/* Toutes les fonctions de la personne — juste sous « Portrait & Engagement ». */}
+            <FonctionsOfficielles kind="senateur" slug={senator.slug} />{" "}
             <QuandVisible apres={!chargeVotes}><ParallelRoles fullName={name} selfHref={`/senateurs/${senator.slug}`} /></QuandVisible>{" "}
             {/* Ses amendements : relevés chaque jour dans AMELI ; le contenu est réservé au Pro. */}
             <AmendementsDepute slug={senator.slug} nom={name} chambre="senat" />{" "}

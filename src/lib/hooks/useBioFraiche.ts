@@ -10,7 +10,7 @@ import { supabase } from "@/lib/supabase";
  * une controverse ajoutée par la veille n'apparaissait qu'au prochain envoi de code.
  * La bio du build s'affiche d'abord, la version du jour la remplace dès qu'elle arrive.
  */
-export function useBioFraiche(table: "meps" | "senators" | "department_presidents", slug: string | undefined, initiale: any) {
+export function useBioFraiche(table: "meps" | "senators" | "deputies" | "department_presidents", slug: string | undefined, initiale: any) {
   const [bio, setBio] = useState(initiale);
   useEffect(() => {
     if (!slug) return;

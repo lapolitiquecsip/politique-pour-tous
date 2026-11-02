@@ -34,6 +34,14 @@ export default function FonctionsOfficielles({ kind, slug }: { kind: EluKind; sl
 
   if (!donnees) return null;
   const lignes = donnees.fonctions.filter(f => f.categorie !== "mandat");
+  // Eurodéputés : la table n'a pas de colonne « en fonction ». Aucune ligne alors que la revue est passée : il n'est plus dans la liste.
+  if (kind === "eurodepute" && donnees.verifieLe && !donnees.fonctions.length) {
+    return (
+      <p role="status" className="rounded-2xl border border-amber-300/60 bg-amber-50 p-4 text-[14px] font-bold leading-snug text-amber-900 dark:border-amber-500/30 dark:bg-amber-500/10 dark:text-amber-200">
+        N&apos;apparaît plus dans la liste officielle des députés européens (vérifié le {dateFr(donnees.verifieLe)}). Les informations de cette fiche peuvent ne plus être à jour.
+      </p>
+    );
+  }
   if (!lignes.length && !donnees.changements.length) return null;
 
   const responsabilite = (f: FonctionElu) => !/^membre|suppl[ée]ant|titulaire/i.test(f.qualite ?? "");

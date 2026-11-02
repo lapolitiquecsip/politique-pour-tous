@@ -4,7 +4,7 @@ import { useEffect, useMemo, useState } from "react";
 import { ChevronDown, Download, FileCheck2, Loader2, Search, X } from "lucide-react";
 import { api, type LoiApplication, type MesureApplication } from "@/lib/api";
 import SuivreBouton from "@/components/shared/SuivreBouton";
-import { LigneMesure, SOURCE_APPLICATION, dateCourte } from "@/components/lois/ApplicationLoi";
+import { LigneMesure, SOURCE_APPLICATION, dateCourte, echeanceDepassee } from "@/components/lois/ApplicationLoi";
 
 /**
  * Suivi des décrets d'application, pour les membres Pro (01/11/2026, demande d'un collaborateur
@@ -104,10 +104,11 @@ export default function DecretsApplication() {
   const exporter = async () => {
     setExportEnCours(true);
     try {
-      const lignes = await api.getMesuresExport(filtres);
+      // L'export suit la vue : « Échéance dépassée » ne sort que les mesures concernées, pas toute la loi.
+      const lignes = (await api.getMesuresExport(filtres)).filter(m => (vue === "retard" ? echeanceDepassee(m) : vue === "attente" ? m.etat === "attente" : true));
       const cellule = (v: unknown) => `"${String(v ?? "").replace(/"/g, '""').replace(/^([=+\-@])/, "'$1")}"`;
       const entete = ["Loi", "Publiée le", "Commission", "Article", "Objet", "État", "Échéance", "Observation", "Texte d'application"];
-      const corps = lignes.map(m => [m.loi_titre, m.publiee_le, m.commission, m.articles, m.objet, ETATS_CSV[m.etat] || m.etat, m.echeance, m.observation,
+      const corps = lignes.map(m => [m.loi_titre, m.publiee_le, m.commission, m.articles, m.objet, echeanceDepassee(m) ? "Échéance dépassée" : ETATS_CSV[m.etat] || m.etat, m.echeance, m.observation,
         m.decret_id ? `https://www.legifrance.gouv.fr/jorf/id/${m.decret_id}` : ""].map(cellule).join(";"));
       const url = URL.createObjectURL(new Blob([`﻿${entete.join(";")}\n${corps.join("\n")}`], { type: "text/csv;charset=utf-8" }));
       const a = document.createElement("a");
@@ -148,27 +149,27 @@ export default function DecretsApplication() {
 
       <div className="mt-5 inline-flex flex-wrap gap-1 rounded-2xl border border-white/10 bg-black/20 p-1" role="group" aria-label="Vue">
         {VUES.map(([v, l]) => (
-          <button key={v} type="button" onClick={() => setVue(v)} aria-pressed={vue === v}
+          <button key={v} type="button" onClick={() => { setCible(""); setVue(v); }} aria-pressed={vue === v}
             className={`min-h-[40px] rounded-xl px-4 text-[13px] font-black transition ${vue === v ? "bg-gradient-to-r from-emerald-500 to-teal-600 text-white" : "text-white/60 hover:text-white"}`}>{l}</button>
         ))}
       </div>{" "}
 
       <div className="mt-3 grid gap-2.5 md:grid-cols-2">
         <label className="block"><span className="sr-only">Commission</span>
-          <select value={commission} onChange={e => setCommission(e.target.value)} className={select}>
+          <select value={commission} onChange={e => { setCible(""); setCommission(e.target.value); }} className={select}>
             <option value="">Toutes les commissions</option>
             {commissions.map(c => <option key={c} value={c}>{c.slice(0, 80)}</option>)}
           </select>
         </label>{" "}
         <label className="block"><span className="sr-only">Période</span>
-          <select value={toutes ? "toutes" : "17e"} onChange={e => setToutes(e.target.value === "toutes")} className={select}>
+          <select value={toutes ? "toutes" : "17e"} onChange={e => { setCible(""); setToutes(e.target.value === "toutes"); }} className={select}>
             <option value="17e">Législature en cours (depuis juillet 2024)</option>
             <option value="toutes">Toutes les lois depuis 2002</option>
           </select>
         </label>{" "}
         <div className="relative md:col-span-2">
           <Search size={16} className="absolute left-3.5 top-1/2 -translate-y-1/2 text-white/50" />
-          <input value={saisie} onChange={e => setSaisie(e.target.value)} placeholder="Un mot du titre de la loi…" enterKeyHint="search"
+          <input value={saisie} onChange={e => { setCible(""); setSaisie(e.target.value); }} placeholder="Un mot du titre de la loi…" enterKeyHint="search"
             className="w-full min-h-[44px] rounded-xl border border-white/10 bg-white/5 pl-10 pr-10 text-[15px] text-white placeholder-white/45 focus:border-fuchsia-400/50 focus:outline-none" />
           {saisie && <button type="button" onClick={() => setSaisie("")} aria-label="Effacer la recherche" className="absolute right-1 top-1/2 flex h-10 w-10 -translate-y-1/2 items-center justify-center text-white/60"><X size={16} /></button>}
         </div>

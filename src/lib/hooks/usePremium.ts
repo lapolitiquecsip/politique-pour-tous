@@ -74,6 +74,48 @@ function tierMemorise(): Tier | null {
 }
 const lire = (cle: string) => { try { return localStorage.getItem(cle); } catch { return null; } };
 
+type LigneProfil = { is_premium: boolean | null; subscription_tier?: string | null };
+type LectureProfil = { data: LigneProfil | null; error: { message: string } | null };
+
+/**
+ * Une seule lecture du profil, partagée par tous les composants de la page.
+ *
+ * Le hook est monté dans chaque carte (bouton de suivi…), et lit deux fois (au montage, puis à
+ * l'événement d'authentification). Sur /lois, un compte connecté envoyait plus de cent fois la même
+ * requête : elles passaient à la file, les dernières tombaient sur le délai de 15 s, et un abonné
+ * Pro voyait « Suivre · Pro » pendant près de 30 s. Une lecture en échec n'est jamais gardée.
+ */
+const DUREE_LECTURE = 30_000;
+let lectureProfil: { userId: string; quand: number; promesse: Promise<LectureProfil> } | null = null;
+
+function lireProfil(userId: string): Promise<LectureProfil> {
+  if (lectureProfil && lectureProfil.userId === userId && Date.now() - lectureProfil.quand < DUREE_LECTURE) return lectureProfil.promesse;
+  const promesse = (async (): Promise<LectureProfil> => {
+    // Tentative avec la colonne subscription_tier…
+    const res: LectureProfil = await supabase
+      .from("profiles")
+      .select("is_premium, subscription_tier")
+      .eq("id", userId)
+      .single();
+
+    // …repli SEULEMENT si la colonne n'est pas encore en base (erreur 42703).
+    //
+    // Ce repli se déclenchait sur n'importe quelle erreur — y compris une coupure de
+    // réseau d'une demi-seconde en changeant de page. L'ancien indicateur `is_premium`
+    // vaut vrai pour un abonné Pro : il se retrouvait alors affiché « Premium », en
+    // doré, et ce niveau faux était retenu pour les pages suivantes. D'où l'en-tête qui
+    // alternait entre Pro et Premium.
+    const colonneAbsente = !!res.error && /42703|column .* does not exist/i.test(`${(res.error as any).code ?? ""} ${res.error.message}`);
+    if (colonneAbsente) return supabase.from("profiles").select("is_premium").eq("id", userId).single();
+    return res;
+  })();
+  const lecture = { userId, quand: Date.now(), promesse };
+  lectureProfil = lecture;
+  const oublierLecture = () => { if (lectureProfil === lecture) lectureProfil = null; };
+  promesse.then(res => { if (res.error) oublierLecture(); }, oublierLecture);
+  return promesse;
+}
+
 export function usePremium() {
   const [tier, setTier] = useState<Tier>("free");
   const [hint, setHint] = useState<Tier | null>(null);
@@ -130,29 +172,7 @@ export function usePremium() {
 
         setUserId(user.id);
 
-        // Tentative avec la colonne subscription_tier…
-        type Row = { is_premium: boolean | null; subscription_tier?: string | null };
-        let res: { data: Row | null; error: { message: string } | null } = await supabase
-          .from("profiles")
-          .select("is_premium, subscription_tier")
-          .eq("id", user.id)
-          .single();
-
-        // …repli SEULEMENT si la colonne n'est pas encore en base (erreur 42703).
-        //
-        // Ce repli se déclenchait sur n'importe quelle erreur — y compris une coupure de
-        // réseau d'une demi-seconde en changeant de page. L'ancien indicateur `is_premium`
-        // vaut vrai pour un abonné Pro : il se retrouvait alors affiché « Premium », en
-        // doré, et ce niveau faux était retenu pour les pages suivantes. D'où l'en-tête qui
-        // alternait entre Pro et Premium.
-        const colonneAbsente = !!res.error && /42703|column .* does not exist/i.test(`${(res.error as any).code ?? ""} ${res.error.message}`);
-        if (colonneAbsente) {
-          res = await supabase
-            .from("profiles")
-            .select("is_premium")
-            .eq("id", user.id)
-            .single();
-        }
+        const res = await lireProfil(user.id);
 
         if (res.error) {
           // Lecture en échec : on ne conclut RIEN. Le niveau déjà connu (vérifié plus tôt
@@ -191,6 +211,7 @@ export function usePremium() {
         checkPremium();
       } else if (_event === "SIGNED_OUT") {
         // Déconnexion explicite : là, on oublie pour de bon.
+        lectureProfil = null;
         setUserId(null);
         setTier("free");
         setHint("free");

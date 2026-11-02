@@ -45,8 +45,10 @@ export default function ApplicationLoi({ jorfId, titre }: { jorfId: string | nul
       </div>{" "}
       {loi.nb_mesures === 0 ? (
         <p className="mt-2 text-sm leading-relaxed text-muted-foreground">
-          {loi.application_directe ? "Loi d'application directe : elle n'appelle pas de décret d'application."
-            : loi.sans_echeancier ? "Aucun échéancier d'application n'est publié pour cette loi à ce jour."
+          {/* « Application directe » veut seulement dire « aucune mesure recensée » : toute loi qui vient de paraître l'est, avant son échéancier. */}
+          {loi.sans_echeancier ? "Aucun échéancier d'application n'est publié pour cette loi à ce jour."
+            : !!loi.publiee_le && Date.now() - Date.parse(loi.publiee_le) < 183 * 864e5 ? "Aucune mesure d'application n'est recensée à ce jour. L'échéancier d'une loi récente peut paraître plusieurs semaines après sa promulgation."
+            : loi.application_directe ? "Aucun décret d'application n'est recensé : le baromètre classe cette loi en application directe."
             : "L'échéancier officiel ne recense aucune mesure réglementaire à prendre à ce jour."}
         </p>
       ) : (

@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { supabase } from "@/lib/supabase";
 import { motion } from "framer-motion";
 import { 
@@ -19,6 +19,9 @@ import { codeParrain, mesurerAction } from "@/lib/mesure";
 
 export default function LoginPage() {
   // « ?inscription=1 » (invitation à créer un compte) : le formulaire s'ouvre en mode inscription.
+  // Lu après le premier rendu : la page est pré-générée, sans connaître l'adresse.
+  const [retourPaiement, setRetourPaiement] = useState(false);
+  useEffect(() => { setRetourPaiement(new URLSearchParams(window.location.search).has("retour_paiement")); }, []);
   const [isLogin, setIsLogin] = useState(() => typeof window === "undefined" || !new URLSearchParams(window.location.search).has("inscription"));
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
@@ -176,6 +179,7 @@ export default function LoginPage() {
           <p className="text-muted-foreground">
             {success 
               ? "Un lien de confirmation vous a été envoyé." 
+              : retourPaiement ? "Votre abonnement est actif. Connectez-vous pour régler vos alertes."
               : "Accédez à votre espace Politique, C'est Simple."}
           </p>
         </div>{" "}

@@ -31,7 +31,7 @@ export default function HelpBubble() {
   // Ni sur la page d'offre, ni dans l'espace personnel : ce sont des pages où
   // l'abonné vient gérer son compte, pas apprendre à lire le site.
   const hidden = pathname === "/" || pathname.startsWith("/premium")
-    || pathname.startsWith("/dashboard") || isFiche;
+    || pathname.startsWith("/dashboard") || pathname.startsWith("/success") || isFiche;
   const parcours = useMemo(() => parcoursForPath(pathname), [pathname]);
 
   // La croix n'était pas la seule sortie — le fond réagissait déjà au clic — mais sur

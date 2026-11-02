@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { usePremium } from "@/lib/hooks/usePremium";
 import { lienPaiementStripe } from "@/lib/utils";
@@ -280,7 +280,7 @@ function NotifDemoModal({ open, onClose }: { open: boolean; onClose: () => void 
  * ne change donc jamais de place : il mène toujours là où le lecteur a affaire.
  */
 export default function PremiumPage() {
-  const { tierAffiche, loading: aboEnCours, niveauMemorise } = usePremium();
+  const { tierAffiche, loading: aboEnCours, niveauMemorise, userId: membre } = usePremium();
   // Le niveau retenu de la visite précédente décide tout de suite : sans lui, chaque
   // passage du tableau de bord à l'espace Pro repassait par un écran d'attente. Il ne
   // sert qu'à choisir quelle page dessiner, jamais à ouvrir un accès : l'espace lui-même
@@ -288,7 +288,13 @@ export default function PremiumPage() {
   // Un abonné (Premium ou Pro) trouve ici son espace ; « ?offres=1 » rouvre la page des
   // formules (un Premium qui envisage le Pro).
   const offres = typeof window !== "undefined" && new URLSearchParams(window.location.search).has("offres");
-  if (aboEnCours && !niveauMemorise) return <div className="min-h-screen bg-slate-950" />;
+  // « ?bienvenue » vient du paiement : sans session, c'est la connexion qui est attendue, pas la page de vente.
+  const bienvenue = typeof window !== "undefined" && new URLSearchParams(window.location.search).has("bienvenue");
+  const aConnecter = bienvenue && !aboEnCours && !membre;
+  useEffect(() => {
+    if (aConnecter) window.location.replace(`/login/?suite=${encodeURIComponent("/premium/?bienvenue=1")}&retour_paiement=1`);
+  }, [aConnecter]);
+  if ((aboEnCours && (!niveauMemorise || bienvenue)) || aConnecter) return <div className="min-h-screen bg-slate-950" />;
   if (!offres && (tierAffiche === "pro" || tierAffiche === "elite")) return <EspacePersonnel mode="espace" />;
   return <PageOffre />;
 }

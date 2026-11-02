@@ -13,9 +13,11 @@ import { quasiDoublon } from "../../../src/lib/quasi-doublon.ts";
  * hashtags, une idée de visuel et les points de vigilance.
  *
  * Rien n'est envoyé dans la journée (demande de l'équipe : pas d'alertes en
- * continu). Le soir, un seul e-mail récapitule toutes les idées de post DU JOUR :
- * seules comptent les infos datées de ce jour-là (heure de Paris) ; une dépêche
- * collectée aujourd'hui mais datée d'avant-hier n'en fait pas partie.
+ * continu). Le soir, un seul e-mail : les meilleures idées en détail, puis TOUT ce
+ * qui est apparu sur le site depuis le dernier récap (02/11/2026). Les votes d'hier,
+ * relevés cette nuit, sont du nouveau contenu : seules les sources dont la collecte
+ * remonte de vieux articles (candidats, fil, partis, débats) restent filtrées sur
+ * la date de l'événement.
  *
  * La note vient d'une règle quand l'événement parle de lui-même (une loi
  * promulguée, une pétition à 500 000 signatures), sinon de l'IA, par lots, sur
@@ -456,6 +458,172 @@ async function veilleIndicateurs(db: SupabaseClient, e?: Etat): Promise<Releve> 
   return { signaux, etat: { curseur: null, instantane: apres } };
 }
 
+/* ── Les votes, source par source ──
+ * Le fond d'un post « vote » : ce qui était proposé, le résultat, et qui a voté quoi. */
+
+const lignesGroupes = (groupes: any[] | null) => [...(groupes ?? [])]
+  .sort((a, b) => ((b.pour ?? 0) + (b.contre ?? 0)) - ((a.pour ?? 0) + (a.contre ?? 0)))
+  .map(g => `${g.group_label ?? g.group_id} : ${g.pour ?? 0} pour, ${g.contre ?? 0} contre, ${g.abstention ?? 0} abstention`).join("\n");
+
+/** Une note de règle : on ne dépense pas d'IA sur 40 scrutins par jour de budget. */
+function noteVote(pour: number, contre: number, adopte: boolean, amendement: boolean, objet: string): { importance: number; raison: string } {
+  if (/ensemble d[ue]|l'ensemble/i.test(objet)) return { importance: 5, raison: "Vote sur l'ensemble d'un texte" };
+  const exprimes = pour + contre;
+  if (exprimes && Math.abs(pour - contre) / exprimes <= 0.1) return { importance: 4, raison: "Vote très serré" };
+  if (amendement && adopte) return { importance: 4, raison: "Amendement adopté en scrutin public" };
+  return { importance: 3, raison: amendement ? "Amendement rejeté" : "Scrutin public" };
+}
+
+function signalVote(v: { cle: string; chambre: string; objet: string; adopte: boolean; resultat: string; pour: number; contre: number; abstention: number; date: string; groupes: any[] | null; url: string | null }, a: any | undefined): Signal {
+  const texte = a?.texte_titre ? court(a.texte_titre, 90) : null;
+  return {
+    cle: v.cle, source: `${a ? "Amendement voté" : "Vote"} · ${v.chambre}`,
+    titre: a ? `Amendement ${a.numero}${texte ? ` (${texte})` : ""} : ${a.sort ?? v.resultat}, ${v.pour} pour, ${v.contre} contre` : `${court(v.objet, 150)} : ${v.pour} pour, ${v.contre} contre`,
+    url: a?.url ?? v.url, lien_site: `${SITE}/lois`, date_objet: v.date,
+    faits: [`Vote du ${v.date.slice(0, 10)}, ${v.chambre} : ${court(v.objet, 300)}.`, `Résultat : ${v.resultat}. ${v.pour} pour, ${v.abstention} abstention, ${v.contre} contre.`,
+      lignesGroupes(v.groupes) ? `Par groupe :\n${lignesGroupes(v.groupes)}` : "",
+      a ? `Déposé par ${a.auteur ?? "?"}${a.groupe ? ` (${a.groupe})` : ""}.` : "",
+      a?.expose ? `Ce que défend l'auteur : ${court(String(a.expose).replace(/<[^>]+>/g, " "), 700)}` : "",
+      a?.dispositif ? `Texte de l'amendement : ${court(String(a.dispositif).replace(/<[^>]+>/g, " "), 500)}` : ""].filter(Boolean).join("\n"),
+    ...noteVote(v.pour, v.contre, v.adopte, !!a, v.objet), methode: "regle",
+  };
+}
+
+async function veilleVotesAN(db: SupabaseClient, e?: Etat): Promise<Releve> {
+  const de = depuis(e);
+  const { data } = await db.from("scrutins").select("id, numero, date_scrutin, objet, resultat, pour, contre, abstention, group_results, created_at, institution")
+    .gt("created_at", de).eq("institution", "AN").order("created_at").limit(150);
+  const ids = (data ?? []).map(v => v.id);
+  const { data: amdts } = ids.length ? await db.from("amendements_an").select("scrutin_id, numero, texte_titre, sort, auteur, groupe, expose, dispositif, url").in("scrutin_id", ids) : { data: [] as any[] };
+  const parScrutin = new Map((amdts ?? []).map(a => [a.scrutin_id, a]));
+  const signaux = (data ?? []).map(v => signalVote({
+    cle: `vote:AN:${v.id}`, chambre: "Assemblée nationale", objet: v.objet ?? "", adopte: !/n'a pas adopt/i.test(v.resultat ?? ""), resultat: v.resultat ?? "?",
+    pour: v.pour ?? 0, contre: v.contre ?? 0, abstention: v.abstention ?? 0, date: v.date_scrutin, groupes: v.group_results,
+    url: `https://www.assemblee-nationale.fr/dyn/17/scrutins/${v.numero}`,
+  }, parScrutin.get(v.id)));
+
+  // « Focus parti » : ce qu'a voté chaque groupe sur l'ensemble des scrutins d'une journée.
+  const parJour = new Map<string, any[]>();
+  for (const v of data ?? []) parJour.set(String(v.date_scrutin).slice(0, 10), [...(parJour.get(String(v.date_scrutin).slice(0, 10)) ?? []), v]);
+  for (const [jour, votes] of parJour) {
+    if (votes.length < 5) continue;
+    const bilan = new Map<string, { pour: number; contre: number; abstention: number }>();
+    for (const v of votes) for (const g of (v.group_results ?? []) as any[]) {
+      const b = bilan.get(g.group_label) ?? { pour: 0, contre: 0, abstention: 0 };
+      const max = Math.max(g.pour ?? 0, g.contre ?? 0, g.abstention ?? 0);
+      if (!max) continue;
+      if ((g.pour ?? 0) === max) b.pour++; else if ((g.contre ?? 0) === max) b.contre++; else b.abstention++;
+      bilan.set(g.group_label, b);
+    }
+    signaux.push({
+      cle: `groupes:AN:${jour}`, source: "Votes des partis · Assemblée nationale", titre: `Comment chaque groupe a voté sur les ${votes.length} scrutins du ${jour}`,
+      url: null, lien_site: `${SITE}/deputes`, date_objet: jour,
+      faits: [`${votes.length} scrutins publics à l'Assemblée nationale le ${jour}. Position majoritaire de chaque groupe :`, ...[...bilan].map(([g, b]) => `${g} : pour sur ${b.pour} scrutins, contre sur ${b.contre}, abstention sur ${b.abstention}`)].join("\n"),
+      importance: 4, raison: "Bilan de vote par parti", methode: "regle",
+    });
+  }
+  return { signaux, etat: { curseur: plusRecent((data ?? []).map(v => v.created_at), de), instantane: null } };
+}
+
+async function veilleVotesSenat(db: SupabaseClient, e?: Etat): Promise<Releve> {
+  // Ni date d'ajout ni date fiable : on compare aux scrutins déjà vus, sur les 45 derniers jours.
+  const { data } = await db.from("legislative_scrutins").select("id, official_id, title, result_label, for_count, against_count, abstain_count, voted_at, group_results, source_url")
+    .eq("chamber", "SENAT").gte("voted_at", new Date(Date.now() - 45 * 24 * HEURE).toISOString()).limit(800);
+  const connus = e?.instantane ? new Set<string>(e.instantane as string[]) : null;
+  const nouveaux = connus ? (data ?? []).filter(v => !connus.has(v.id)).slice(0, 80) : [];
+  const ids = nouveaux.map(v => v.id);
+  const { data: amdts } = ids.length ? await db.from("amendements_senat").select("scrutin_id, numero, texte_titre, sort, auteur, groupe, expose, dispositif, url").in("scrutin_id", ids) : { data: [] as any[] };
+  const parScrutin = new Map((amdts ?? []).map(a => [a.scrutin_id, a]));
+  return {
+    signaux: nouveaux.map(v => signalVote({
+      cle: `vote:SENAT:${v.id}`, chambre: "Sénat", objet: v.title ?? "", adopte: !/n'a pas adopt/i.test(v.result_label ?? ""), resultat: v.result_label ?? "?",
+      pour: v.for_count ?? 0, contre: v.against_count ?? 0, abstention: v.abstain_count ?? 0, date: v.voted_at, groupes: v.group_results, url: v.source_url,
+    }, parScrutin.get(v.id))),
+    etat: { curseur: null, instantane: (data ?? []).map(v => v.id) },
+  };
+}
+
+async function veilleAnnonces(db: SupabaseClient, e?: Etat): Promise<Releve> {
+  const de = depuis(e);
+  const { data } = await db.from("executif_annonces").select("id, titre, chapo, ministere, porteur, date_annonce, montants, analyse_detail, sources, verifie, cree_le")
+    .gt("cree_le", de).eq("publie", true).order("cree_le").limit(30);
+  return {
+    signaux: (data ?? []).map(a => ({
+      cle: `annonce:${a.id}`, source: `Annonce du gouvernement${a.ministere ? ` · ${court(a.ministere, 50)}` : ""}`, titre: a.titre,
+      url: ((a.sources ?? []) as any[])[0]?.url ?? null, lien_site: `${SITE}/executif`, date_objet: a.date_annonce,
+      faits: [a.titre, court(a.chapo, 700), a.porteur ? `Porté par : ${a.porteur}.` : "", a.montants ? `Montants : ${court(JSON.stringify(a.montants), 300)}` : "", court(a.analyse_detail, 1500),
+        a.verifie ? "" : "Attention : cette analyse n'a pas été relue par le second agent, à vérifier à la source."].filter(Boolean).join("\n"),
+    })),
+    etat: { curseur: plusRecent((data ?? []).map(a => a.cree_le), de), instantane: null },
+  };
+}
+
+async function veilleDecretsApplication(db: SupabaseClient, e?: Etat): Promise<Releve> {
+  const de = depuis(e);
+  const { data } = await db.from("application_mesures").select("loi_jorf_id, objet, articles, decret_id, applique_vu_le").gt("applique_vu_le", de).order("applique_vu_le").limit(60);
+  const parLoi = new Map<string, any[]>();
+  for (const m of data ?? []) parLoi.set(m.loi_jorf_id, [...(parLoi.get(m.loi_jorf_id) ?? []), m]);
+  const ids = [...parLoi.keys()];
+  const { data: lois } = ids.length ? await db.from("application_lois").select("jorf_id, titre, nb_mesures, nb_appliquees").in("jorf_id", ids) : { data: [] as any[] };
+  const titres = new Map((lois ?? []).map(l => [l.jorf_id, l]));
+  return {
+    signaux: [...parLoi].map(([id, ms]) => {
+      const l = titres.get(id);
+      return {
+        cle: `decret:${id}:${ms.at(-1).applique_vu_le}`, source: "Décret d'application", titre: `${ms.length > 1 ? `${ms.length} textes d'application parus` : "Texte d'application paru"} : ${court(l?.titre ?? id, 130)}`,
+        url: ms[0].decret_id ? `https://www.legifrance.gouv.fr/jorf/id/${ms[0].decret_id}` : null, lien_site: `${SITE}/lois`,
+        faits: [`Loi : ${l?.titre ?? id}.`, l ? `${l.nb_appliquees} mesures prises sur ${l.nb_mesures}.` : "", ...ms.slice(0, 6).map(m => `- ${m.articles ? `${m.articles} : ` : ""}${court(m.objet, 220)}`)].filter(Boolean).join("\n"),
+        importance: 4, raison: "Une loi devient applicable", methode: "regle",
+      };
+    }),
+    etat: { curseur: plusRecent((data ?? []).map(m => m.applique_vu_le), de), instantane: null },
+  };
+}
+
+async function veilleElus(db: SupabaseClient, e?: Etat): Promise<Releve> {
+  const de = depuis(e);
+  const { data } = await db.from("elus_changements").select("id, elu_kind, elu_slug, nom, nature, categorie, avant, apres, source_url, detecte_le")
+    .gt("detecte_le", de).neq("nature", "bio_corrigee").order("detecte_le").limit(60);
+  const PAGES: Record<string, string> = { depute: "deputes", senateur: "senateurs", eurodepute: "eurodeputes", maire: "maires" };
+  return {
+    signaux: (data ?? []).map(c => {
+      const majeur = c.categorie === "bureau" || c.categorie === "groupe" || c.categorie === "mandat";
+      const quoi = c.nature === "retrait" ? `n'est plus ${c.avant}` : c.nature === "modification" ? `${c.avant} → ${c.apres}` : c.apres;
+      return {
+        cle: `elu:${c.id}`, source: `Élu · ${c.elu_kind}`, titre: `${c.nom} : ${quoi}`, url: c.source_url, lien_site: `${SITE}/${PAGES[c.elu_kind] ?? "deputes"}/${c.elu_slug}`,
+        faits: `${c.nom} : ${quoi}. Relevé dans les données officielles le ${String(c.detecte_le).slice(0, 10)}.`,
+        importance: majeur ? 4 : 3, raison: "Changement dans les données officielles", methode: "regle",
+      };
+    }),
+    etat: { curseur: plusRecent((data ?? []).map(c => c.detecte_le), de), instantane: null },
+  };
+}
+
+async function veilleCommissions(db: SupabaseClient, e?: Etat): Promise<Releve> {
+  const de = depuis(e);
+  const { data } = await db.from("commission_reports").select("ref, commission, title, meeting_date, cr_url, summary, chamber, analyzed_at")
+    .gt("analyzed_at", de).order("analyzed_at").limit(30);
+  return {
+    signaux: (data ?? []).map(c => ({
+      cle: `commission:${c.ref}`, source: `Commission · ${c.chamber ?? ""}`.trim(), titre: `${court(c.commission, 70)} : ${court(c.title, 130)}`,
+      url: c.cr_url, lien_site: SITE, date_objet: c.meeting_date, faits: [c.title, `${c.commission}, réunion du ${c.meeting_date}.`, court(c.summary, 1800)].filter(Boolean).join("\n"),
+    })),
+    etat: { curseur: plusRecent((data ?? []).map(c => c.analyzed_at), de), instantane: null },
+  };
+}
+
+async function veilleEurope(db: SupabaseClient, e?: Etat): Promise<Releve> {
+  const { data } = await db.from("eu_france_decisions").select("id, title, summary, url, published_at, institution").order("published_at", { ascending: false }).limit(300);
+  const connus = e?.instantane ? new Set<string>((e.instantane as any[]).map(String)) : null;
+  return {
+    signaux: (connus ? (data ?? []).filter(d => !connus.has(String(d.id))) : []).slice(0, 20).map(d => ({
+      cle: `europe:${d.id}`, source: `Décision européenne${d.institution ? ` · ${court(d.institution, 40)}` : ""}`, titre: d.title, url: d.url, lien_site: `${SITE}/europe`, date_objet: d.published_at,
+      faits: [d.title, court(d.summary, 1500)].filter(Boolean).join("\n"),
+    })),
+    etat: { curseur: null, instantane: (data ?? []).map(d => d.id) },
+  };
+}
+
 /* ─────────────────────────── La note de l'IA ─────────────────────────── */
 
 const GRILLE = `Tu es rédacteur en chef de « La Politique C'est Simple », média pédagogique et NON PARTISAN qui explique la politique française sur Instagram et LinkedIn. Pour chaque info, dis si elle mérite un post.
@@ -551,6 +719,8 @@ function promptInstagram(p: any): string {
     extrait(p.faits, 900),
     ``,
     `Ce que j'attends :`,
+    /^vote:/.test(p.cle) ? `- Format « vote » : la slide 1 dit en une phrase simple ce qui était en jeu (jamais le numéro d'amendement), avec la date et le résultat Pour / Abstention / Contre. Les suivantes : ce que proposait le texte, qui a voté quoi groupe par groupe, ce que ça change et ce qui se passe maintenant.` : null,
+    /^groupes:/.test(p.cle) ? `- Format « focus parti » : un groupe par slide, ce qu'il a soutenu et rejeté, sans commentaire sur ses choix.` : null,
     `- 6 slides. Slide 1 : une accroche de 10 mots maximum qui donne envie de faire défiler. Slides 2 à 5 : une idée par slide, 25 mots maximum, avec le chiffre ou le fait le plus parlant. Slide 6 : « Tout comprendre : lien en bio » et une invitation à s'abonner.`,
     `- Une légende de 400 caractères maximum, puis 6 à 8 hashtags.`,
     `- Ton : clair, neutre, compréhensible par un lycéen. Pas d'opinion, pas de caricature.`,
@@ -631,29 +801,52 @@ const jourEnClair = (j: string) => { const d = new Date(`${j}T12:00:00Z`); retur
 
 /** Au-delà, Gmail coupe le message (« Message tronqué ») : les suivantes passent en liste. */
 // Avec les deux prompts, une fiche pèse ~8 Ko : 11 fiches restent sous la coupure de Gmail.
-const FICHES_MAX = 11;
+const FICHES_MAX = 8;       // ~8 Ko par fiche, et l'inventaire doit tenir sous la coupure de Gmail
+const INVENTAIRE_MAX = 150;
+const PAR_FAMILLE_MAX = 2;   // des idées variées : pas huit fiches sur le même programme
+const famille = (source: string) => source.split(/ · | \(/)[0];
 
-function recapitulatif(jour: string, idees: any[], aSurveiller: any[]): { sujet: string; html: string; texte: string } {
+/** Les idées détaillées : les plus fortes, deux au plus par famille tant qu'il reste de la variété. */
+function choisirFiches(idees: any[]): any[] {
+  const vus = new Map<string, number>();
+  const choisies = idees.filter(p => {
+    const f = famille(p.source), n = vus.get(f) ?? 0;
+    if (n >= PAR_FAMILLE_MAX) return false;
+    vus.set(f, n + 1);
+    return true;
+  }).slice(0, FICHES_MAX);
+  const reste = idees.filter(p => !choisies.includes(p));
+  return [...choisies, ...reste.slice(0, FICHES_MAX - choisies.length)];
+}
+
+/** Tout ce qui est apparu sur le site : une ligne par contenu, rangée par rubrique. */
+function blocInventaire(lignes: any[]): string {
+  const rubriques = new Map<string, any[]>();
+  for (const p of lignes.slice(0, INVENTAIRE_MAX)) rubriques.set(famille(p.source), [...(rubriques.get(famille(p.source)) ?? []), p]);
+  const html = [...rubriques].map(([f, l]) => `<div style="margin:12px 0 4px;font:800 13px/1.3 ${POLICE};color:#0f172a">${esc(f)} (${l.length})</div>
+<ul style="margin:0;padding-left:18px;font:13.5px/1.45 ${POLICE};color:#334155">${l.map(p => `<li style="margin-bottom:3px">${p.lien_site || p.url ? `<a href="${esc(p.url || p.lien_site)}" style="color:#334155">${esc(court(p.titre, 150))}</a>` : esc(court(p.titre, 150))}</li>`).join("")}</ul>`).join("");
+  const plus = lignes.length > INVENTAIRE_MAX ? `<p style="margin:10px 0 0;font:13px ${POLICE};color:#64748b">Et ${lignes.length - INVENTAIRE_MAX} autres contenus.</p>` : "";
+  return `<tr><td style="padding:0 20px 18px">${bloc(`Tout le nouveau contenu du site (${lignes.length})`, html + plus, "#f8fafc")}</td></tr>`;
+}
+
+function recapitulatif(jour: string, toutesIdees: any[], autres: any[]): { sujet: string; html: string; texte: string } {
   const quand = jourEnClair(jour);
+  const idees = choisirFiches(toutesIdees);
+  const inventaire = [...toutesIdees.filter(p => !idees.includes(p)), ...autres];
   const lignes: string[] = [];
   lignes.push(`<tr><td style="background:#0b1020;padding:24px 22px;border-radius:18px 18px 0 0">
 <div style="font:800 11px/1 ${POLICE};letter-spacing:.16em;text-transform:uppercase;color:#fbbf24">Récap du jour · idées de post</div>
 <div style="margin-top:10px;font:800 24px/1.25 ${POLICE};color:#ffffff">${idees.length ? `${idees.length} idée${idees.length > 1 ? "s" : ""} de post pour ce ${esc(quand)}` : `Rien de marquant ce ${esc(quand)}`}</div>
-<div style="margin-top:8px;font:14px/1.45 ${POLICE};color:#cbd5e1">Uniquement des infos sorties aujourd'hui, de la plus importante à la moins importante.</div></td></tr><tr><td style="height:16px"></td></tr>`);
+<div style="margin-top:8px;font:14px/1.45 ${POLICE};color:#cbd5e1">Les meilleures idées en détail, puis tout ce qui est apparu sur le site depuis le dernier récap.</div></td></tr><tr><td style="height:16px"></td></tr>`);
   if (idees.length) {
     lignes.push(`<tr><td style="padding:0 20px 18px"><div style="background:#ffffff;border-radius:16px;padding:16px 18px;border:1px solid #e7e2d6">
 <div style="font:800 10px/1 ${POLICE};letter-spacing:.14em;text-transform:uppercase;color:#64748b;margin-bottom:8px">Au sommaire</div>
 <ol style="margin:0;padding-left:22px;font:15px/1.6 ${POLICE};color:#0f172a">${idees.map((p, i) => `<li><a href="#idee-${i + 1}" style="color:#0f172a;text-decoration:none"><span style="color:#d97706">${etoiles(p.importance ?? SEUIL)}</span> ${esc(p.brief?.accroche || p.titre)}</a> <span style="color:#94a3b8">· ${esc(p.source)}</span></li>`).join("")}</ol></div></td></tr>`);
-    idees.slice(0, FICHES_MAX).forEach((p, i) => lignes.push(fiche(p, i + 1)));
-    if (idees.length > FICHES_MAX) {
-      lignes.push(`<tr><td style="padding:0 20px 18px">${bloc("Et aussi", liste(idees.slice(FICHES_MAX).map(p => `${p.titre} (${p.source})`)))}</td></tr>`);
-    }
+    idees.forEach((p, i) => lignes.push(fiche(p, i + 1)));
   } else {
     lignes.push(`<tr><td style="padding:0 20px 18px">${bloc("Aujourd'hui", para("Aucune info du jour n'a été jugée assez forte pour un post (4/5 ou plus)."))}</td></tr>`);
   }
-  if (aSurveiller.length) {
-    lignes.push(`<tr><td style="padding:0 20px 18px">${bloc("À surveiller (3/5 : pas encore un post, peut le devenir)", liste(aSurveiller.map(p => `${p.titre} — ${p.source}`)), "#f8fafc")}</td></tr>`);
-  }
+  if (inventaire.length) lignes.push(blocInventaire(inventaire));
   lignes.push(`<tr><td style="padding:4px 22px 28px;font:12px/1.5 ${POLICE};color:#94a3b8">Veille automatique de La Politique C'est Simple. Chaque prompt ne contient que les faits relevés sur le site : relisez le post de ChatGPT avant de publier.</td></tr>`);
   const html = `<!doctype html><html lang="fr"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"></head>
 <body style="margin:0;background:#f4f1ea"><table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="background:#f4f1ea;padding:20px 0"><tr><td align="center">
@@ -720,6 +913,13 @@ async function passage(db: SupabaseClient, essai: boolean) {
     ["programmes", () => veilleProgrammes(db, etats.get("programmes"), cand)],
     ["primaires", () => veillePrimaires(db, etats.get("primaires"))],
     ["indicateurs", () => veilleIndicateurs(db, etats.get("indicateurs"))],
+    ["votes_an", () => veilleVotesAN(db, etats.get("votes_an"))],
+    ["votes_senat", () => veilleVotesSenat(db, etats.get("votes_senat"))],
+    ["annonces", () => veilleAnnonces(db, etats.get("annonces"))],
+    ["decrets_application", () => veilleDecretsApplication(db, etats.get("decrets_application"))],
+    ["elus", () => veilleElus(db, etats.get("elus"))],
+    ["commissions", () => veilleCommissions(db, etats.get("commissions"))],
+    ["europe", () => veilleEurope(db, etats.get("europe"))],
   ];
   const nouveaux: Signal[] = [];
   const nouveauxEtats: { source: string; curseur: string | null; instantane: any; maj_le: string }[] = [];
@@ -743,11 +943,13 @@ async function passage(db: SupabaseClient, essai: boolean) {
   for (const s of nouveaux.sort((a, b) => (b.importance ?? 0) - (a.importance ?? 0))) {
     if (vus.has(s.cle)) continue;
     vus.add(s.cle);
-    if ([...titres, ...retenus.map(r => r.titre)].some(t => quasiDoublon(t, s.titre))) continue;
+    // Deux votes sur un même texte ont des titres voisins sans être le même événement.
+    if (!/^(vote|groupes|elu|decret):/.test(s.cle) && [...titres, ...retenus.map(r => r.titre)].some(t => quasiDoublon(t, s.titre))) continue;
     retenus.push(s);
   }
   // Le jour de l'info, et non celui de la collecte : seules les infos du jour font le récap.
-  const jourDe = (s: Signal) => jourParis(s.jour ?? s.date_objet ?? Date.now());
+  // Ces collectes ramènent de vieux articles : leur date compte. Le reste est nouveau le jour où il paraît sur le site.
+  const jourDe = (s: Signal) => /^(candidat|fil|suivi|debat):/.test(s.cle) ? jourParis(s.jour ?? s.date_objet ?? Date.now()) : jourParis();
 
   if (essai) return { journal, retenus: retenus.map(s => ({ ...s, jour: jourDe(s), du_jour: jourDe(s) === aujourdhui })) };
 
@@ -799,6 +1001,18 @@ async function passage(db: SupabaseClient, essai: boolean) {
 
 /* ─────────────────────────────── Le récap du soir ─────────────────────────────── */
 
+/** Tout ce qui n'a pas encore été dans un récap, depuis la veille : ce qui arrive après 21 h n'est plus perdu. */
+async function contenuDuRecap(db: SupabaseClient, jour: string): Promise<{ idees: any[]; autres: any[] }> {
+  const hier = jourParis(new Date(`${jour}T12:00:00Z`).getTime() - 24 * HEURE);
+  const { data } = await db.from("veille_posts").select("*").in("jour", [hier, jour]).is("recap_le", null)
+    .not("statut", "eq", "hors_jour").order("importance", { ascending: false, nullsFirst: false }).order("detecte_le", { ascending: false }).limit(400);
+  const lignes = data ?? [];
+  return {
+    idees: lignes.filter(p => (p.importance ?? 0) >= SEUIL && ["pret", "a_preparer", "a_envoyer", "envoye"].includes(p.statut)),
+    autres: lignes.filter(p => (p.importance ?? 0) < SEUIL),
+  };
+}
+
 async function recap(db: SupabaseClient, force: boolean): Promise<string> {
   const jour = jourParis();
   // pg_cron tourne en UTC : il frappe à deux heures (hiver / été) et seule celle qui tombe
@@ -807,20 +1021,18 @@ async function recap(db: SupabaseClient, force: boolean): Promise<string> {
   const { data: etat } = await db.from("veille_posts_etat").select("curseur").eq("source", "recap").maybeSingle();
   if (!force && etat?.curseur && jourParis(etat.curseur) === jour) return "récap déjà envoyé aujourd'hui";
 
-  const { data: idees } = await db.from("veille_posts").select("*").eq("jour", jour).gte("importance", SEUIL)
-    .in("statut", ["pret", "a_preparer", "a_envoyer", "envoye"]).order("importance", { ascending: false }).order("date_objet", { ascending: false });
+  const { idees, autres } = await contenuDuRecap(db, jour);
   // Dernière chance pour les brouillons manquants ; sinon, les faits seuls.
   let essais = 0;
-  for (const p of idees ?? []) if (!p.brief && essais++ < 4) await preparer(db, p);
-  const { data: aSurveiller } = await db.from("veille_posts").select("titre, source").eq("jour", jour).eq("importance", SEUIL - 1)
-    .order("detecte_le", { ascending: false }).limit(8);
+  for (const p of choisirFiches(idees)) if (!p.brief && essais++ < 4) await preparer(db, p);
 
-  const { sujet, html, texte } = recapitulatif(jour, idees ?? [], aSurveiller ?? []);
+  const { sujet, html, texte } = recapitulatif(jour, idees, autres);
   await envoyer(sujet, html, texte);
   const maintenant = new Date().toISOString();
-  if (idees?.length) await db.from("veille_posts").update({ recap_le: maintenant }).in("cle", idees.map(p => p.cle));
+  const dejaVues = [...idees, ...autres].map(p => p.cle);
+  for (let i = 0; i < dejaVues.length; i += 200) await db.from("veille_posts").update({ recap_le: maintenant }).in("cle", dejaVues.slice(i, i + 200));
   await db.from("veille_posts_etat").upsert({ source: "recap", curseur: maintenant, maj_le: maintenant });
-  return `récap envoyé : ${idees?.length ?? 0} idée(s), ${Math.round(html.length / 1024)} Ko`;
+  return `récap envoyé : ${idees.length} idée(s), ${autres.length} autres contenus, ${Math.round(html.length / 1024)} Ko`;
 }
 
 Deno.serve(async (req) => {
@@ -832,11 +1044,10 @@ Deno.serve(async (req) => {
   // Récap d'un jour donné, envoyé tel quel pour voir la mise en forme ; l'envoi du soir n'en sait rien.
   if (params.get("essai_recap") === "1") {
     const jour = params.get("jour") || jourParis();
-    const { data: idees } = await db.from("veille_posts").select("*").eq("jour", jour).gte("importance", SEUIL)
-      .in("statut", ["pret", "a_preparer", "a_envoyer", "envoye"]).order("importance", { ascending: false }).limit(FICHES_MAX);
-    const { sujet, html, texte } = recapitulatif(jour, idees ?? [], []);
+    const { idees, autres } = await contenuDuRecap(db, jour);
+    const { sujet, html, texte } = recapitulatif(jour, idees, autres);
     if (params.get("envoyer") === "1") await envoyer(`[Essai] ${sujet}`, html, texte);
-    return Response.json({ jour, idees: idees?.length ?? 0, ko: Math.round(html.length / 1024), envoye: params.get("envoyer") === "1", ...(params.get("voir") === "1" ? { texte } : {}) });
+    return Response.json({ jour, idees: idees.length, autres: autres.length, ko: Math.round(html.length / 1024), envoye: params.get("envoyer") === "1", ...(params.get("voir") === "1" ? { texte } : {}) });
   }
   if (params.get("recap") === "1") {
     const lancer = recap(db, params.get("force") === "1")

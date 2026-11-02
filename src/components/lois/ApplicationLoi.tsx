@@ -45,7 +45,9 @@ export default function ApplicationLoi({ jorfId, titre }: { jorfId: string | nul
       </div>{" "}
       {loi.nb_mesures === 0 ? (
         <p className="mt-2 text-sm leading-relaxed text-muted-foreground">
-          {loi.sans_echeancier ? "Aucun échéancier d'application n'est publié pour cette loi à ce jour." : "L'échéancier officiel ne recense aucune mesure réglementaire à prendre à ce jour."}
+          {loi.application_directe ? "Loi d'application directe : elle n'appelle pas de décret d'application."
+            : loi.sans_echeancier ? "Aucun échéancier d'application n'est publié pour cette loi à ce jour."
+            : "L'échéancier officiel ne recense aucune mesure réglementaire à prendre à ce jour."}
         </p>
       ) : (
         <>
@@ -80,7 +82,7 @@ export function LigneMesure({ m, sombre = false }: { m: MesureApplication; sombr
     : depassee ? (sombre ? "bg-rose-500/15 text-rose-300" : "bg-rose-500/15 text-rose-700 dark:text-rose-300")
     : m.etat === "sans_objet" ? (sombre ? "bg-white/10 text-white/60" : "bg-slate-500/15 text-slate-600 dark:text-slate-300")
     : (sombre ? "bg-amber-500/15 text-amber-200" : "bg-amber-500/15 text-amber-700 dark:text-amber-300");
-  const etat = m.etat === "applique" ? "Décret paru" : depassee ? "Échéance dépassée" : m.etat === "sans_objet" ? "Sans objet" : "En attente";
+  const etat = m.etat === "applique" ? "Texte paru" : depassee ? "Échéance dépassée" : m.etat === "sans_objet" ? "Sans objet" : "En attente";
   return (
     <li className="py-3">
       <div className="flex flex-wrap items-center gap-x-2 gap-y-1">
@@ -90,13 +92,13 @@ export function LigneMesure({ m, sombre = false }: { m: MesureApplication; sombr
       {m.objet && <p className={`mt-1.5 text-[14px] leading-snug ${fort}`}>{m.objet}</p>}{" "}
       <p className={`mt-1 text-[12.5px] leading-snug ${doux}`}>
         {m.etat === "attente" && (m.observation || (m.echeance ? `Échéance : ${dateCourte(m.echeance)}` : "Aucune date annoncée"))}
-        {m.etat === "applique" && m.delai_jours != null && `Paru ${m.delai_jours} jours après la loi.`}
+        {m.etat === "applique" && m.delai_jours != null && (m.delai_jours < 1 ? "Paru le jour même de la loi." : `Paru ${m.delai_jours} jour${m.delai_jours > 1 ? "s" : ""} après la loi.`)}
         {m.etat === "sans_objet" && m.observation}
       </p>{" "}
       {m.decret_id && (
         <a href={`https://www.legifrance.gouv.fr/jorf/id/${m.decret_id}`} target="_blank" rel="noopener noreferrer"
           className={`mt-1 inline-flex items-center gap-1 text-[12.5px] font-bold ${sombre ? "text-sky-300" : "text-blue-700 dark:text-sky-300"}`}>
-          Lire le décret sur Légifrance <ExternalLink size={12} />
+          Lire le texte sur Légifrance <ExternalLink size={12} />
         </a>
       )}
     </li>

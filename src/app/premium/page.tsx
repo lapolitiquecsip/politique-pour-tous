@@ -66,7 +66,7 @@ const COMPARATIF: Groupe[] = [
       // AmendementsAN
       { t: "Les amendements de l'Assemblée en temps réel", d: "Auteur, groupe, article visé, sort — relevés toutes les heures", g: false, p: false, x: true },
       // DecretsApplication
-      { t: "Le suivi des décrets d'application, loi par loi", d: "Mesures en attente, échéances dépassées, export CSV et alerte à chaque décret paru", g: false, p: false, x: true },
+      { t: "Le suivi des décrets d'application, loi par loi", d: "Mesures en attente, échéances dépassées, export CSV et alerte à chaque texte paru", g: false, p: false, x: true },
       // JournalOfficielDuJour, JorfSearch
       { t: "Le Journal officiel du jour, expliqué et cherchable", g: false, p: false, x: true },
       { t: "Des e-mails à la carte, chaque jour ou chaque semaine", d: "Enrichis et vérifiés : l'essentiel, les chiffres clés, le rapport de force, la suite", g: false, p: false, x: true },

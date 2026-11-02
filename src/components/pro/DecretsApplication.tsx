@@ -9,16 +9,16 @@ import { LigneMesure, SOURCE_APPLICATION, dateCourte } from "@/components/lois/A
 /**
  * Suivi des décrets d'application, pour les membres Pro (01/11/2026, demande d'un collaborateur
  * parlementaire). Les données sont publiques ; ce que l'outil ajoute : toutes les lois au même
- * endroit, les échéances dépassées, l'export pour un dossier et l'alerte à la parution d'un décret.
+ * endroit, les échéances dépassées, l'export pour un dossier et l'alerte à la parution d'un texte.
  *
  * « Échéance dépassée » reste factuel : la date annoncée par le Gouvernement est passée et le
- * baromètre ne recense pas de décret. Une publication « éventuelle » n'est jamais comptée.
+ * baromètre ne recense pas de texte. Une publication « éventuelle » n'est jamais comptée.
  */
 const PAR_PAGE = 20;
 const DEBUT_17E = "2024-07-18";
 type Vue = "attente" | "retard" | "toutes";
 const VUES: [Vue, string][] = [["attente", "En attente"], ["retard", "Échéance dépassée"], ["toutes", "Toutes"]];
-const ETATS_CSV: Record<string, string> = { applique: "Décret paru", attente: "En attente", sans_objet: "Sans objet" };
+const ETATS_CSV: Record<string, string> = { applique: "Texte paru", attente: "En attente", sans_objet: "Sans objet" };
 const nettoyer = (q: string) => q.replace(/[,()*%\\]/g, " ").trim();
 
 function CarteLoi({ loi, ouvertDEmblee }: { loi: LoiApplication; ouvertDEmblee: boolean }) {
@@ -106,7 +106,7 @@ export default function DecretsApplication() {
     try {
       const lignes = await api.getMesuresExport(filtres);
       const cellule = (v: unknown) => `"${String(v ?? "").replace(/"/g, '""').replace(/^([=+\-@])/, "'$1")}"`;
-      const entete = ["Loi", "Publiée le", "Commission", "Article", "Objet", "État", "Échéance", "Observation", "Décret"];
+      const entete = ["Loi", "Publiée le", "Commission", "Article", "Objet", "État", "Échéance", "Observation", "Texte d'application"];
       const corps = lignes.map(m => [m.loi_titre, m.publiee_le, m.commission, m.articles, m.objet, ETATS_CSV[m.etat] || m.etat, m.echeance, m.observation,
         m.decret_id ? `https://www.legifrance.gouv.fr/jorf/id/${m.decret_id}` : ""].map(cellule).join(";"));
       const url = URL.createObjectURL(new Blob([`﻿${entete.join(";")}\n${corps.join("\n")}`], { type: "text/csv;charset=utf-8" }));
@@ -126,7 +126,7 @@ export default function DecretsApplication() {
         <div className="min-w-0 flex-1">
           <h2 className="font-staatliches text-3xl uppercase leading-none tracking-tight text-white">Décrets <span className="text-emerald-300">d&apos;application</span></h2>{" "}
           <p className="mt-1 text-sm leading-relaxed text-white/65">
-            Ce que chaque loi attend encore, et ce qui est paru. Suivez une loi pour être alerté par e-mail dès qu&apos;un décret paraît ou qu&apos;une échéance passe.
+            Ce que chaque loi attend encore, et ce qui est paru. Suivez une loi pour être alerté par e-mail dès qu&apos;un texte d&apos;application paraît ou qu&apos;une échéance passe.
             {derniere && <span className="text-white/50"> Relevé le {dateCourte(derniere)}.</span>}
           </p>
         </div>

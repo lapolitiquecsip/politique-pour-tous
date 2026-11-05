@@ -6,6 +6,7 @@ import { Sliders, Check, Loader2, ChevronDown, Mail, Bell, User, Briefcase, MapP
 import { api } from "@/lib/api";
 import { usePremium } from "@/lib/hooks/usePremium";
 import ChaqueTexteVote from "@/components/dashboard/ChaqueTexteVote";
+import { useCommuneAuto, PropositionsCommune } from "@/lib/hooks/useCommuneAuto";
 import { INTEREST_DOMAINS, interestByCode } from "@/lib/data/interestDomains";
 
 const AGES: [string, string][] = [
@@ -47,6 +48,13 @@ export default function PremiumPreferences({ userId }: { userId: string }) {
   const [postal, setPostal] = useState("");
   const [notifyEmail, setNotifyEmail] = useState(true);
   const [minImportance, setMinImportance] = useState(3);
+  // Ville ou code postal saisis : département et région se remplissent seuls.
+  const commune = useCommuneAuto(city, postal, c => {
+    if (!city.trim()) setCity(c.nom);
+    if (!/^\d{5}$/.test(postal.trim()) && c.codesPostaux.length === 1) setPostal(c.codesPostaux[0]);
+    if (c.nomDep) setDepartment(c.nomDep);
+    if (REGIONS.includes(c.region)) setRegion(c.region);
+  });
 
   useEffect(() => {
     let active = true;
@@ -225,7 +233,8 @@ export default function PremiumPreferences({ userId }: { userId: string }) {
                   </div>{" "}
                   <input value={department} onChange={e => setDepartment(e.target.value)} placeholder="Département (ex. Rhône)" className={fieldCls} />{" "}
                   <input value={city} onChange={e => setCity(e.target.value)} placeholder="Ma ville" className={fieldCls} />{" "}
-                  <input value={postal} onChange={e => setPostal(e.target.value.replace(/[^0-9]/g, "").slice(0, 5))} placeholder="Code postal" className={fieldCls} />
+                  <input value={postal} onChange={e => setPostal(e.target.value.replace(/[^0-9]/g, "").slice(0, 5))} placeholder="Code postal" className={fieldCls} />{" "}
+                  <PropositionsCommune {...commune} />
                 </div>
               </div>{" "}
 

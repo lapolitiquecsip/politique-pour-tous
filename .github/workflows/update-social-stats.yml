@@ -52,7 +52,9 @@ jobs:
           # aucune vue. Clé gratuite sur console.cloud.google.com (API YouTube Data v3).
           YOUTUBE_API_KEY: ${{ secrets.YOUTUBE_API_KEY }}
           # X, Instagram, Facebook et TikTok des candidats (payant à l'appel, 0,00188 $ par compte).
-          # Clé dédiée « Site - réseaux sociaux », plafonnée à 0,25 $ par jour côté Agentik.
+          # Clé dédiée « Site - réseaux sociaux », limite Agentik de 1 $ par jour : Agentik réserve plus
+          # que le prix de chaque appel avant de rendre le surplus ; à 0,25 $, il bloquait au 7e appel.
+          # La dépense réelle reste bornée par MAX_APPELS_AGENTIK (environ 0,24 $ par jour).
           AGENTIK_API_KEY: ${{ secrets.AGENTIK_API_KEY }}
         run: >
           npx --yes tsx scripts/update-social-stats.ts

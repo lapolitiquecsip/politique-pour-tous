@@ -11,6 +11,7 @@ import { api } from "@/lib/api";
 import { supabase } from "@/lib/supabase";
 import { INTEREST_DOMAINS } from "@/lib/data/interestDomains";
 import { DEPARTMENTS } from "@/lib/data/territories";
+import { useCommuneAuto, PropositionsCommune } from "@/lib/hooks/useCommuneAuto";
 import { getFollowedCandidates, toggleFollowCandidate, type FollowedCandidate } from "@/lib/candidateFollows";
 import { acteIndividuel, importanceDe, sujetsDuProfil, sujetsTouches } from "@/lib/alertesPremium";
 
@@ -143,6 +144,13 @@ export default function TutorielPremium({ userId, ouvert, onFermer }: { userId: 
   }, [ouvert]);
 
   const nomDept = DEPTS.find(d => d.id === departement)?.name || "";
+  // Ville ou code postal saisis : département et région se remplissent seuls.
+  const commune = useCommuneAuto(ville, codePostal, c => {
+    if (!ville.trim()) setVille(c.nom);
+    if (!/^\d{5}$/.test(codePostal.trim()) && c.codesPostaux.length === 1) setCodePostal(c.codesPostaux[0]);
+    const d = DEPTS.find(x => x.id.toUpperCase() === c.codeDep.toUpperCase())?.id; if (d) setDepartement(d);
+    if (REGIONS.includes(c.region)) setRegion(c.region);
+  });
 
   // Les élus du département choisi : le premier suivi utile, sans avoir à connaître leur nom.
   useEffect(() => {
@@ -318,7 +326,8 @@ export default function TutorielPremium({ userId, ouvert, onFermer }: { userId: 
                           <label className="block"><span className="mb-1.5 block text-[10px] font-black uppercase tracking-widest text-white/55">Ville</span>{" "}
                             <input value={ville} onChange={x => setVille(x.target.value)} placeholder="Nantes" className={champ} autoComplete="address-level2" /></label>{" "}
                           <label className="block"><span className="mb-1.5 block text-[10px] font-black uppercase tracking-widest text-white/55">Code postal</span>{" "}
-                            <input value={codePostal} onChange={x => setCodePostal(x.target.value)} placeholder="44000" inputMode="numeric" className={champ} autoComplete="postal-code" /></label>{" "}
+                            <input value={codePostal} onChange={x => setCodePostal(x.target.value.replace(/[^0-9]/g, "").slice(0, 5))} placeholder="44000" inputMode="numeric" className={champ} autoComplete="postal-code" /></label>{" "}
+                          <PropositionsCommune {...commune} />{" "}
                           <label className="block"><span className="mb-1.5 block text-[10px] font-black uppercase tracking-widest text-white/55">Département</span>{" "}
                             <select value={departement} onChange={x => setDepartement(x.target.value)} className={champ}>
                               <option value="">Non précisé</option>

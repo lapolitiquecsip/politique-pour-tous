@@ -8,6 +8,7 @@ import {
   Scale, Search, ShieldCheck, Sparkles, UserRound, Users, X, BookOpenCheck, ScrollText, Landmark,
 } from "lucide-react";
 import { api } from "@/lib/api";
+import { useCommuneAuto, PropositionsCommune } from "@/lib/hooks/useCommuneAuto";
 import { supabase } from "@/lib/supabase";
 import { INTEREST_DOMAINS } from "@/lib/data/interestDomains";
 import { raisons, type TexteAnalyse } from "@/lib/alertesTextes";
@@ -102,6 +103,13 @@ export default function TutorielPro({ userId, ouvert, onFermer }: { userId: stri
   const [secteur, setSecteur] = useState(""); const [logement, setLogement] = useState(""); const [enfants, setEnfants] = useState("");
   const [ville, setVille] = useState(""); const [departement, setDepartement] = useState(""); const [region, setRegion] = useState("");
   const [codePostal, setCodePostal] = useState(""); const [perimetre, setPerimetre] = useState("departement");
+  // Ville ou code postal saisis : département et région se remplissent seuls.
+  const commune = useCommuneAuto(ville, codePostal, c => {
+    if (!ville.trim()) setVille(c.nom);
+    if (!/^\d{5}$/.test(codePostal.trim()) && c.codesPostaux.length === 1) setCodePostal(c.codesPostaux[0]);
+    if (c.codeDep) setDepartement(c.codeDep);
+    if (REGIONS.includes(c.region)) setRegion(c.region);
+  });
   const [sujets, setSujets] = useState<string[]>([]);
   const [alertesTextes, setAlertesTextes] = useState(true); const [recap, setRecap] = useState(true);
   const [consentement, setConsentement] = useState<string | null>(null);
@@ -283,7 +291,8 @@ export default function TutorielPro({ userId, ouvert, onFermer }: { userId: stri
                           <label className="block"><span className="mb-1.5 block text-[10px] font-black uppercase tracking-widest text-white/55">Ville</span>{" "}
                             <input value={ville} onChange={x => setVille(x.target.value)} placeholder="Nantes" className={champ} autoComplete="address-level2" /></label>{" "}
                           <label className="block"><span className="mb-1.5 block text-[10px] font-black uppercase tracking-widest text-white/55">Code postal</span>{" "}
-                            <input value={codePostal} onChange={x => setCodePostal(x.target.value)} placeholder="44000" inputMode="numeric" className={champ} autoComplete="postal-code" /></label>{" "}
+                            <input value={codePostal} onChange={x => setCodePostal(x.target.value.replace(/[^0-9]/g, "").slice(0, 5))} placeholder="44000" inputMode="numeric" className={champ} autoComplete="postal-code" /></label>{" "}
+                          <PropositionsCommune {...commune} />{" "}
                           <label className="block"><span className="mb-1.5 block text-[10px] font-black uppercase tracking-widest text-white/55">Département (numéro)</span>{" "}
                             <input value={departement} onChange={x => setDepartement(x.target.value)} placeholder="44" className={champ} /></label>{" "}
                           <label className="block"><span className="mb-1.5 block text-[10px] font-black uppercase tracking-widest text-white/55">Région</span>{" "}

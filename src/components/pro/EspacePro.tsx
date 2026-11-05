@@ -3,7 +3,7 @@
 import { useCallback, useEffect, useRef, useState, type ReactNode } from "react";
 import Link from "next/link";
 import { motion, AnimatePresence } from "framer-motion";
-import { ArrowRight, Bell, Check, MessageSquareQuote, Search, FileCheck2, FilePenLine, Landmark, LayoutDashboard, Mail, MapPin, Newspaper, Rss, Settings, Star, Users } from "lucide-react";
+import { ArrowRight, Bell, Check, MessageSquareQuote, Network, Search, FileCheck2, FilePenLine, Landmark, LayoutDashboard, Mail, MapPin, Newspaper, Rss, Settings, Star, Users } from "lucide-react";
 import { supabase } from "@/lib/supabase";
 import { api } from "@/lib/api";
 import NotificationsFeed from "@/components/dashboard/NotificationsFeed";
@@ -19,6 +19,7 @@ import FilActualitePro from "@/components/pro/FilActualitePro";
 import DecretsApplication from "@/components/pro/DecretsApplication";
 import Veilles from "@/components/pro/Veilles";
 import DebatsSeance from "@/components/pro/DebatsSeance";
+import Cartographie from "@/components/pro/Cartographie";
 
 /**
  * L'espace de travail d'un abonné Pro, en onglets.
@@ -31,11 +32,12 @@ import DebatsSeance from "@/components/pro/DebatsSeance";
  * L'onglet suit l'ancre de l'adresse : les liens des e-mails (/premium#journal-officiel,
  * #amendements, #preferences, #emails-pro…) ouvrent directement le bon.
  */
-type IdOnglet = "aujourdhui" | "veilles" | "debats" | "journal-officiel" | "commissions" | "amendements" | "decrets" | "fil-actualite" | "suivis" | "preferences";
+type IdOnglet = "aujourdhui" | "veilles" | "debats" | "cartographie" | "journal-officiel" | "commissions" | "amendements" | "decrets" | "fil-actualite" | "suivis" | "preferences";
 const ONGLETS: { id: IdOnglet; label: string; court: string; Icone: typeof Bell; ancres: string[] }[] = [
   { id: "aujourdhui", label: "Aujourd'hui", court: "Aujourd'hui", Icone: LayoutDashboard, ancres: ["", "alertes", "tout-sur-un-sujet"] },
   { id: "veilles", label: "Mes veilles", court: "Veilles", Icone: Search, ancres: [] },
   { id: "debats", label: "Débats en séance", court: "Débats", Icone: MessageSquareQuote, ancres: [] },
+  { id: "cartographie", label: "Qui pèse", court: "Qui pèse", Icone: Network, ancres: [] },
   { id: "journal-officiel", label: "Journal officiel", court: "JO", Icone: Newspaper, ancres: [] },
   { id: "commissions", label: "Commissions", court: "Commissions", Icone: Landmark, ancres: [] },
   { id: "amendements", label: "Amendements", court: "Amendements", Icone: FilePenLine, ancres: [] },
@@ -114,6 +116,7 @@ export default function EspacePro({ userId, nbSuivis, suivis, onTutoriel }: {
             {onglet === "aujourdhui" && <Aujourdhui userId={userId} nbSuivis={nbSuivis} ouvrir={ouvrir} />}
             {onglet === "veilles" && <Veilles />}
             {onglet === "debats" && <DebatsSeance />}
+            {onglet === "cartographie" && <Cartographie />}
             {onglet === "journal-officiel" && <JournalOfficielDuJour direct />}
             {onglet === "commissions" && <CommissionsRegistre direct />}
             {onglet === "amendements" && <AmendementsAN />}

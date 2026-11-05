@@ -13,7 +13,7 @@ import { supabase } from "@/lib/supabase";
  * sujet. Tout est recalculé à la demande sur les données officielles (RPC cartographie_sujet).
  */
 
-type Acteur = { chambre: "AN" | "SENAT"; slug: string; nom: string; groupe: string | null; interventions: number; amendements: number; adoptes: number; score: number };
+type Acteur = { chambre: "AN" | "SENAT"; slug: string; nom: string; groupe: string | null; interventions: number; questions: number; amendements: number; adoptes: number; score: number };
 type Cosignature = { chambre: string; slug: string; groupe: string | null; cosignataires: string | null; sort: string | null };
 const PERIODES: [string, string][] = [["90", "3 mois"], ["365", "12 mois"], ["", "Depuis 2024"]];
 const plat = (s: string) => s.normalize("NFD").replace(/[̀-ͯ]/g, "").toLowerCase();
@@ -76,8 +76,8 @@ export default function Cartographie() {
     <section className="rounded-[2rem] border border-border bg-card p-5 md:p-7">
       <h2 className="flex items-center gap-2 font-staatliches text-3xl uppercase leading-none tracking-tight text-foreground"><Network size={22} className="text-violet-600" /> Qui pèse sur ce sujet</h2>{" "}
       <p className="mt-2 max-w-3xl text-sm leading-relaxed text-muted-foreground">
-        Les parlementaires les plus actifs sur un sujet, d&apos;après leurs actes : interventions en séance, amendements déposés, amendements adoptés.
-        Score : 1 point par intervention, 2 par amendement, 5 par amendement adopté. Puis le poids de chaque groupe, et qui cosigne avec qui.
+        Les parlementaires les plus actifs sur un sujet, d&apos;après leurs actes : interventions en séance, questions au Gouvernement, amendements déposés et adoptés.
+        Score : 1 point par intervention ou question, 2 par amendement, 5 par amendement adopté. Puis le poids de chaque groupe, et qui cosigne avec qui.
       </p>{" "}
 
       <div className="mt-5 flex flex-col gap-2 sm:flex-row">
@@ -114,10 +114,10 @@ export default function Cartographie() {
                   </div>{" "}
                   {/* Barre : interventions, amendements, adoptés. */}
                   <div className="ml-8 mt-1.5 flex h-2 overflow-hidden rounded-full bg-muted" style={{ width: `${Math.max(8, (a.score / max) * 100)}%` }} aria-hidden>
-                    <span className="bg-amber-500" style={{ flex: a.interventions }} /><span className="bg-sky-500" style={{ flex: 2 * (a.amendements - a.adoptes) }} /><span className="bg-emerald-500" style={{ flex: 7 * a.adoptes }} />
+                    <span className="bg-amber-500" style={{ flex: a.interventions }} /><span className="bg-rose-400" style={{ flex: a.questions }} /><span className="bg-sky-500" style={{ flex: 2 * (a.amendements - a.adoptes) }} /><span className="bg-emerald-500" style={{ flex: 7 * a.adoptes }} />
                   </div>{" "}
                   <p className="ml-8 mt-1.5 text-[12px] text-muted-foreground">
-                    {a.interventions} intervention{a.interventions > 1 ? "s" : ""} · {a.amendements} amendement{a.amendements > 1 ? "s" : ""} dont <strong className="text-emerald-700 dark:text-emerald-400">{a.adoptes} adopté{a.adoptes > 1 ? "s" : ""}</strong>
+                    {a.interventions} intervention{a.interventions > 1 ? "s" : ""} · {a.questions} question{a.questions > 1 ? "s" : ""} · {a.amendements} amendement{a.amendements > 1 ? "s" : ""} dont <strong className="text-emerald-700 dark:text-emerald-400">{a.adoptes} adopté{a.adoptes > 1 ? "s" : ""}</strong>
                     {al.length > 0 && <> · cosigne avec {al.map(x => `${x.nom} (${x.n})`).join(", ")}</>}
                   </p>
                 </li>
@@ -137,8 +137,8 @@ export default function Cartographie() {
               </ul>
             </div>{" "}
             <p className="text-[11.5px] leading-relaxed text-muted-foreground">
-              <span className="mr-1 inline-block h-2 w-2 rounded-full bg-amber-500" />interventions · <span className="mx-1 inline-block h-2 w-2 rounded-full bg-sky-500" />amendements · <span className="mx-1 inline-block h-2 w-2 rounded-full bg-emerald-500" />adoptés.
-              Les interventions en séance ne concernent que l&apos;Assemblée ; au Sénat, seuls les amendements comptent pour l&apos;instant.
+              <span className="mr-1 inline-block h-2 w-2 rounded-full bg-amber-500" />interventions · <span className="mx-1 inline-block h-2 w-2 rounded-full bg-rose-400" />questions · <span className="mx-1 inline-block h-2 w-2 rounded-full bg-sky-500" />amendements · <span className="mx-1 inline-block h-2 w-2 rounded-full bg-emerald-500" />adoptés.
+              Interventions et questions : Assemblée seulement pour l&apos;instant ; au Sénat, les amendements.
             </p>
           </aside>
         </div>

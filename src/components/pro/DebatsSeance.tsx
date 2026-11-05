@@ -16,6 +16,8 @@ import { supabase } from "@/lib/supabase";
 type Resultat = { id: string; seance_uid: string; date_seance: string; point: string | null; acteur_ref: string | null; orateur: string | null; qualite: string | null; extrait: string; url: string | null };
 type Orateur = { acteur_ref: string; orateur: string | null; qualite: string | null; interventions: number; derniere: string };
 type Depute = { an_id: string; slug: string; party: string | null; first_name: string; last_name: string };
+type Question = { uid: string; type: string; numero: string; analyse: string | null; acteur_ref: string | null; groupe: string | null; ministere: string | null; date_question: string | null; date_reponse: string | null; statut: string; extrait: string; url: string };
+const STATUTS: [string, string][] = [["", "Toutes"], ["repondue", "Avec réponse"], ["attente", "Sans réponse"]];
 const PERIODES: [string, string][] = [["30", "30 jours"], ["365", "12 mois"], ["", "Depuis 2024"]];
 const PAR_PAGE = 30;
 
@@ -37,14 +39,34 @@ export default function DebatsSeance() {
   const [fin, setFin] = useState(false);
   const [charge, setCharge] = useState(false);
   const [erreur, setErreur] = useState(false);
+  // Séance publique, ou questions écrites et au Gouvernement (avec la réponse du ministre).
+  const [mode, setMode] = useState<"seance" | "questions">("seance");
+  const [statut, setStatut] = useState("");
+  const [questions, setQuestions] = useState<Question[] | null>(null);
 
   useEffect(() => { const t = setTimeout(() => setQ(saisie.trim()), 450); return () => clearTimeout(t); }, [saisie]);
   /** Début de la période choisie (calculé au moment de la requête). */
   const debut = (p: string) => (p ? new Date(Date.now() - Number(p) * 864e5).toISOString().slice(0, 10) : null);
 
+  // Questions : même recherche, autre corpus.
+  useEffect(() => {
+    if (q.length < 3 || mode !== "questions") return;
+    let actif = true;
+    (async () => {
+      setCharge(true); setErreur(false);
+      const { data, error } = await supabase.rpc("chercher_questions", { p_q: q, p_depuis: debut(periode), p_statut: statut || null, p_limite: PAR_PAGE, p_decalage: page * PAR_PAGE });
+      if (!actif) return;
+      if (error) { setErreur(true); setCharge(false); return; }
+      const l = (data as Question[]) || [];
+      setQuestions(r => (page === 0 ? l : [...(r || []), ...l]));
+      setFin(l.length < PAR_PAGE); setCharge(false);
+    })();
+    return () => { actif = false; };
+  }, [q, periode, statut, page, mode]);
+
   // Résultats (et pages suivantes).
   useEffect(() => {
-    if (q.length < 3) return;
+    if (q.length < 3 || mode !== "seance") return;
     let actif = true;
     (async () => {
       setCharge(true); setErreur(false);
@@ -57,7 +79,7 @@ export default function DebatsSeance() {
       setCharge(false);
     })();
     return () => { actif = false; };
-  }, [q, periode, acteur, page]);
+  }, [q, periode, acteur, page, mode]);
 
   // Qui en parle le plus (sans le filtre d'orateur).
   useEffect(() => {
@@ -69,12 +91,12 @@ export default function DebatsSeance() {
 
   // Groupe et fiche des députés cités (les ministres n'en ont pas).
   useEffect(() => {
-    const refs = [...new Set([...(resultats || []).map(r => r.acteur_ref), ...orateurs.map(o => o.acteur_ref)].filter((x): x is string => !!x && !deputes.has(x)))];
+    const refs = [...new Set([...(resultats || []).map(r => r.acteur_ref), ...orateurs.map(o => o.acteur_ref), ...(questions || []).map(x => x.acteur_ref)].filter((x): x is string => !!x && !deputes.has(x)))];
     if (!refs.length) return;
     supabase.from("deputies").select("an_id, slug, party, first_name, last_name").in("an_id", refs).then(({ data }) => {
       setDeputes(m => { const n = new Map(m); for (const d of (data as Depute[]) || []) n.set(d.an_id, d); return n; });
     });
-  }, [resultats, orateurs]); // eslint-disable-line react-hooks/exhaustive-deps
+  }, [resultats, orateurs, questions]); // eslint-disable-line react-hooks/exhaustive-deps
 
   const changer = (f: () => void) => { f(); setPage(0); setResultats(null); };
   const nom = (ref: string | null, defaut: string | null) => { const d = ref ? deputes.get(ref) : null; return d ? `${d.first_name} ${d.last_name}` : (defaut || "").replace(/\s*\([^)]*\)\s*$/, ""); };
@@ -88,7 +110,13 @@ export default function DebatsSeance() {
         entre guillemets ou plusieurs mots ; « or » pour l&apos;un ou l&apos;autre, « - » pour exclure (ex. : <em>&quot;titre-restaurant&quot; or tickets -cantine</em>).
       </p>{" "}
 
-      <div className="mt-5 flex flex-col gap-2 sm:flex-row">
+      <div className="mt-5 inline-flex gap-1 rounded-xl border border-border bg-background p-1" role="group" aria-label="Corpus">
+        {([["seance", "Débats en séance"], ["questions", "Questions au Gouvernement"]] as const).map(([v, l]) => (
+          <button key={v} type="button" onClick={() => changer(() => { setMode(v); setQuestions(null); })} aria-pressed={mode === v}
+            className={`min-h-[36px] rounded-lg px-3 text-[12px] font-black transition ${mode === v ? "bg-amber-600 text-white" : "text-muted-foreground hover:text-foreground"}`}>{l}</button>
+        ))}
+      </div>{" "}
+      <div className="mt-3 flex flex-col gap-2 sm:flex-row">
         <div className="relative flex-1">
           <Search size={16} className="absolute left-3.5 top-1/2 -translate-y-1/2 text-muted-foreground" />
           <input value={saisie} onChange={e => { setSaisie(e.target.value); setPage(0); }} placeholder="Ex. : éolien en mer, agrivoltaïsme, « zéro artificialisation nette »…"
@@ -103,7 +131,44 @@ export default function DebatsSeance() {
         </div>
       </div>{" "}
 
-      {q.length < 3 ? (
+      {q.length >= 3 && mode === "questions" ? (
+        <div className="mt-6">
+          <div className="mb-3 flex flex-wrap gap-1">
+            {STATUTS.map(([v, l]) => (
+              <button key={v} type="button" onClick={() => changer(() => { setStatut(v); setQuestions(null); })} aria-pressed={statut === v}
+                className={`min-h-[34px] rounded-full px-3 text-[12px] font-bold ${statut === v ? "bg-foreground text-background" : "bg-muted text-muted-foreground"}`}>{l}</button>
+            ))}
+          </div>{" "}
+          {erreur ? <p className="rounded-2xl bg-rose-500/10 p-4 text-sm text-rose-700 dark:text-rose-200">La recherche n&apos;a pas abouti. Vérifiez la formulation et réessayez.</p>
+            : questions && !questions.length && !charge ? <p className="rounded-2xl bg-muted p-6 text-center text-sm text-muted-foreground">Aucune question sur ce sujet pendant la période.</p>
+            : (
+            <ul className="space-y-2.5">
+              {(questions || []).map(x => {
+                const d = x.acteur_ref ? deputes.get(x.acteur_ref) : null;
+                return (
+                  <li key={x.uid} className="rounded-2xl border border-border bg-background p-4">
+                    <p className="flex flex-wrap items-baseline gap-x-2 gap-y-1 text-[13px]">
+                      <span className="font-black text-foreground">{x.type === "QG" ? "Question au Gouvernement" : `Question écrite n° ${x.numero}`}</span>{" "}
+                      <span className="text-muted-foreground">de {d ? <Link href={`/deputes/${d.slug}`} className="font-bold text-foreground hover:underline">{d.first_name} {d.last_name}</Link> : "un député"}{x.groupe ? ` (${x.groupe})` : ""}</span>{" "}
+                      <span className="ml-auto text-[12px] text-muted-foreground">{x.date_question ? new Date(x.date_question).toLocaleDateString("fr-FR", { day: "numeric", month: "short", year: "numeric" }) : ""}</span>
+                    </p>{" "}
+                    <p className="mt-1 text-[12px] font-bold uppercase tracking-wide text-amber-700 dark:text-amber-400">{x.analyse} · {x.ministere}</p>{" "}
+                    <p className="mt-1.5 text-[14px] leading-relaxed text-foreground/85"><Extrait texte={x.extrait} /></p>{" "}
+                    <p className="mt-2 flex flex-wrap items-center gap-3 text-[12px]">
+                      <span className={`rounded-full px-2 py-0.5 font-bold ${x.statut === "repondue" ? "bg-emerald-500/15 text-emerald-700 dark:text-emerald-300" : "bg-muted text-muted-foreground"}`}>
+                        {x.statut === "repondue" ? `Réponse publiée le ${x.date_reponse ? new Date(x.date_reponse).toLocaleDateString("fr-FR", { day: "numeric", month: "short", year: "numeric" }) : ""}` : x.statut === "en attente" ? "Sans réponse à ce jour" : x.statut}
+                      </span>{" "}
+                      <a href={x.url} target="_blank" rel="noopener noreferrer" className="inline-flex items-center gap-1 font-bold text-muted-foreground hover:text-foreground">Question et réponse officielles <ExternalLink size={11} /></a>
+                    </p>
+                  </li>
+                );
+              })}
+            </ul>
+          )}{" "}
+          {charge ? <div className="flex justify-center py-6"><Loader2 className="animate-spin text-amber-600" /></div>
+            : questions && questions.length > 0 && !fin && <button type="button" onClick={() => setPage(p => p + 1)} className="mt-3 w-full min-h-[44px] rounded-xl border border-border text-sm font-bold text-foreground hover:bg-muted">Voir plus</button>}
+        </div>
+      ) : q.length < 3 ? (
         <p className="mt-6 rounded-2xl bg-muted p-6 text-center text-sm text-muted-foreground">Tapez au moins trois lettres pour chercher dans les débats.</p>
       ) : (
         <div className="mt-6 grid gap-6 lg:grid-cols-[1fr_280px]">

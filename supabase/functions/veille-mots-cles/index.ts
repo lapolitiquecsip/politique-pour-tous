@@ -104,7 +104,7 @@ N'invente aucun sigle : n'en donne que si tu es certain qu'il existe.`;
 
 /* ───────────────────────────── Entrée ───────────────────────────── */
 
-const SOURCES = ["amendements", "comptes_rendus", "debats", "journal_officiel", "agenda", "textes"];
+const SOURCES = ["amendements", "comptes_rendus", "debats", "questions", "journal_officiel", "agenda", "textes"];
 
 serve(async (req) => {
   if (req.method === "OPTIONS") return new Response("ok", { headers: CORS });
@@ -183,6 +183,13 @@ serve(async (req) => {
           garder("debats", (data || []).map((i: any) => ({ titre: `${i.orateur ?? ""}${i.qualite ? `, ${i.qualite}` : ""} · ${i.point ?? ""}`, texte: i.texte ?? "", url: `https://www.assemblee-nationale.fr/dyn/17/comptes-rendus/seance/${i.seance_uid}` })));
           // Le décompte vient de l'index ; les exemples sont vérifiés mot pour mot.
           if ((count ?? 0) > res.debats.n) { res.debats.n = count ?? res.debats.n; res.debats.approche = excl.length > 0; }
+        })(),
+        sources.includes("questions") && (async () => {
+          const plat = (t: string) => t.normalize("NFD").replace(/[̀-ͯ]/g, "").replace(/"/g, " ");
+          const { data, count } = await admin.from("questions_parlement").select("type, numero, analyse, groupe, ministere, texte_question, url", { count: "exact" })
+            .gte("date_question", depuis.slice(0, 10)).textSearch("recherche", mots.map(m => `"${plat(m)}"`).join(" or "), { type: "websearch", config: "french" }).order("date_question", { ascending: false }).limit(60);
+          garder("questions", (data || []).map((x: any) => ({ titre: `${x.type === "QG" ? "Question au Gouvernement" : `Question écrite n° ${x.numero}`}${x.groupe ? ` (${x.groupe})` : ""} · ${x.analyse ?? ""} · ${x.ministere ?? ""}`, texte: `${x.analyse ?? ""}. ${x.texte_question ?? ""}`, url: x.url })));
+          if ((count ?? 0) > res.questions.n) { res.questions.n = count ?? res.questions.n; res.questions.approche = excl.length > 0; }
         })(),
         sources.includes("journal_officiel") && (async () => {
           const { data } = await admin.from("jorf_texts").select("id, titre, explication").gte("edition_date", depuis.slice(0, 10)).or(ou(["titre", "explication"])).limit(500);

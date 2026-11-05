@@ -17,7 +17,7 @@ type Veille = { id: number; intitule: string; mots_cles: string[]; exclusions: s
 type Apercu = { jours: number; sources: Record<string, { n: number; approche?: boolean; plus?: boolean; exemples: { titre: string; extrait: string; url: string | null }[] }> };
 
 const SOURCES: [string, string][] = [
-  ["amendements", "Amendements (Assemblée, Sénat)"], ["comptes_rendus", "Commissions (comptes rendus intégraux)"], ["debats", "Débats en séance (Assemblée)"],
+  ["amendements", "Amendements (Assemblée, Sénat)"], ["comptes_rendus", "Commissions (comptes rendus intégraux)"], ["debats", "Débats en séance (Assemblée)"], ["questions", "Questions au Gouvernement et réponses"],
   ["journal_officiel", "Journal officiel"], ["agenda", "Agenda des deux chambres"], ["textes", "Nouveaux textes déposés"],
 ];
 const RYTHMES: [Rythme, string][] = [["immediat", "Dès que ça sort"], ["quotidien", "Chaque soir"], ["hebdo", "Chaque dimanche"]];

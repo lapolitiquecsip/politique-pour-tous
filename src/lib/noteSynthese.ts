@@ -26,7 +26,7 @@ async function voletParlementaire(sujet: string) {
     supabase.rpc("chercher_debats", { p_q: sujet, p_depuis: depuis, p_limite: 5 }),
   ]);
   return {
-    qui: (qui.data as { nom: string; groupe: string | null; chambre: string; interventions: number; amendements: number; adoptes: number }[]) || [],
+    qui: (qui.data as { nom: string; groupe: string | null; chambre: string; interventions: number; questions?: number; amendements: number; adoptes: number }[]) || [],
     debats: (debats.data as { orateur: string | null; qualite: string | null; date_seance: string; point: string | null; extrait: string; url: string | null }[]) || [],
   };
 }
@@ -44,7 +44,7 @@ export async function construireNote(brief: BriefNote, sources: SourceNote[], mo
     points("Ce que dit le droit", brief.regles),
     brief.aides?.length ? `<h2>Aides et dispositifs</h2>` + brief.aides.map(a => `<h3>${esc(a.titre)}${renvois(a.sources)}</h3>${a.pour_qui ? `<p><i>Pour qui :</i> ${esc(a.pour_qui)}</p>` : ""}${a.detail ? `<p>${esc(a.detail)}</p>` : ""}${a.montants?.length ? `<ul>${a.montants.map(m => `<li>${esc(m.cas)} : <b>${esc(m.montant)}</b></li>`).join("")}</ul>` : ""}`).join("") : "",
     points("En discussion", brief.en_cours),
-    p.qui.length ? `<h2>Qui pèse au Parlement (12 derniers mois)</h2><table><tr><th>Parlementaire</th><th>Groupe</th><th>Interventions</th><th>Amendements</th><th>Adoptés</th></tr>${p.qui.map(a => `<tr><td>${esc(a.nom)}</td><td>${esc(a.groupe)}${a.chambre === "SENAT" ? " (Sénat)" : ""}</td><td>${a.interventions}</td><td>${a.amendements}</td><td>${a.adoptes}</td></tr>`).join("")}</table>` : "",
+    p.qui.length ? `<h2>Qui pèse au Parlement (12 derniers mois)</h2><table><tr><th>Parlementaire</th><th>Groupe</th><th>Interventions</th><th>Questions</th><th>Amendements</th><th>Adoptés</th></tr>${p.qui.map(a => `<tr><td>${esc(a.nom)}</td><td>${esc(a.groupe)}${a.chambre === "SENAT" ? " (Sénat)" : ""}</td><td>${a.interventions}</td><td>${a.questions ?? 0}</td><td>${a.amendements}</td><td>${a.adoptes}</td></tr>`).join("")}</table>` : "",
     p.debats.length ? `<h2>Dernières prises de parole en séance</h2>` + p.debats.map(d => `<p><b>${esc(d.orateur)}</b>${d.qualite ? `, ${esc(d.qualite)}` : ""} — ${jour(d.date_seance)}${d.point ? `, « ${esc(d.point)} »` : ""} :<br>« ${esc(d.extrait.replace(/\[\[|\]\]/g, ""))} »${d.url ? ` <a href="${esc(d.url)}">compte rendu</a>` : ""}</p>`).join("") : "",
     brief.a_savoir?.length ? `<h2>À savoir</h2><ul>${brief.a_savoir.map(x => `<li>${esc(x)}</li>`).join("")}</ul>` : "",
     brief.limites ? `<p class="meta"><i>Limites :</i> ${esc(brief.limites)}</p>` : "",

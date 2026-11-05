@@ -16,7 +16,7 @@ import { supabase } from "@/lib/supabase";
 type Resultat = { id: string; seance_uid: string; date_seance: string; point: string | null; acteur_ref: string | null; orateur: string | null; qualite: string | null; extrait: string; url: string | null };
 type Orateur = { acteur_ref: string; orateur: string | null; qualite: string | null; interventions: number; derniere: string };
 type Depute = { an_id: string; slug: string; party: string | null; first_name: string; last_name: string };
-type Question = { uid: string; type: string; numero: string; analyse: string | null; acteur_ref: string | null; groupe: string | null; ministere: string | null; date_question: string | null; date_reponse: string | null; statut: string; extrait: string; url: string };
+type Question = { uid: string; type: string; numero: string; objet: string | null; acteur_ref: string | null; groupe: string | null; ministere: string | null; date_question: string | null; date_reponse: string | null; statut: string; extrait: string; url: string };
 const STATUTS: [string, string][] = [["", "Toutes"], ["repondue", "Avec réponse"], ["attente", "Sans réponse"]];
 const PERIODES: [string, string][] = [["30", "30 jours"], ["365", "12 mois"], ["", "Depuis 2024"]];
 const PAR_PAGE = 30;
@@ -152,7 +152,7 @@ export default function DebatsSeance() {
                       <span className="text-muted-foreground">de {d ? <Link href={`/deputes/${d.slug}`} className="font-bold text-foreground hover:underline">{d.first_name} {d.last_name}</Link> : "un député"}{x.groupe ? ` (${x.groupe})` : ""}</span>{" "}
                       <span className="ml-auto text-[12px] text-muted-foreground">{x.date_question ? new Date(x.date_question).toLocaleDateString("fr-FR", { day: "numeric", month: "short", year: "numeric" }) : ""}</span>
                     </p>{" "}
-                    <p className="mt-1 text-[12px] font-bold uppercase tracking-wide text-amber-700 dark:text-amber-400">{x.analyse} · {x.ministere}</p>{" "}
+                    <p className="mt-1 text-[12px] font-bold uppercase tracking-wide text-amber-700 dark:text-amber-400">{x.objet} · {x.ministere}</p>{" "}
                     <p className="mt-1.5 text-[14px] leading-relaxed text-foreground/85"><Extrait texte={x.extrait} /></p>{" "}
                     <p className="mt-2 flex flex-wrap items-center gap-3 text-[12px]">
                       <span className={`rounded-full px-2 py-0.5 font-bold ${x.statut === "repondue" ? "bg-emerald-500/15 text-emerald-700 dark:text-emerald-300" : "bg-muted text-muted-foreground"}`}>

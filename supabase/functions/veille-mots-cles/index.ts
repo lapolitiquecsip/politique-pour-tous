@@ -186,9 +186,9 @@ serve(async (req) => {
         })(),
         sources.includes("questions") && (async () => {
           const plat = (t: string) => t.normalize("NFD").replace(/[̀-ͯ]/g, "").replace(/"/g, " ");
-          const { data, count } = await admin.from("questions_parlement").select("type, numero, analyse, groupe, ministere, texte_question, url", { count: "exact" })
+          const { data, count } = await admin.from("questions_parlement").select("type, numero, objet, groupe, ministere, texte_question, url", { count: "exact" })
             .gte("date_question", depuis.slice(0, 10)).textSearch("recherche", mots.map(m => `"${plat(m)}"`).join(" or "), { type: "websearch", config: "french" }).order("date_question", { ascending: false }).limit(60);
-          garder("questions", (data || []).map((x: any) => ({ titre: `${x.type === "QG" ? "Question au Gouvernement" : `Question écrite n° ${x.numero}`}${x.groupe ? ` (${x.groupe})` : ""} · ${x.analyse ?? ""} · ${x.ministere ?? ""}`, texte: `${x.analyse ?? ""}. ${x.texte_question ?? ""}`, url: x.url })));
+          garder("questions", (data || []).map((x: any) => ({ titre: `${x.type === "QG" ? "Question au Gouvernement" : `Question écrite n° ${x.numero}`}${x.groupe ? ` (${x.groupe})` : ""} · ${x.objet ?? ""} · ${x.ministere ?? ""}`, texte: `${x.objet ?? ""}. ${x.texte_question ?? ""}`, url: x.url })));
           if ((count ?? 0) > res.questions.n) { res.questions.n = count ?? res.questions.n; res.questions.approche = excl.length > 0; }
         })(),
         sources.includes("journal_officiel") && (async () => {

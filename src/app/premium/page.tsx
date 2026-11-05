@@ -44,6 +44,8 @@ const COMPARATIF: Groupe[] = [
       { t: "Fiches des élus, candidats, Europe et collectivités", g: true, p: true, x: true },
       // FollowButton, DeputyClient
       { t: "Suivre vos députés, sénateurs et eurodéputés", d: "Une alerte à chacun de leurs votes, expliqué", g: false, p: true, x: true, demo: "notif", lien: "Voir le fil d'alertes" },
+      // ChaqueTexteVote, alertes-textes (données)
+      { t: "Un e-mail à chaque texte voté, Assemblée et Sénat", d: "Le résultat, le vote de chaque groupe, de vos élus et des partis que vous suivez", g: false, p: true, x: true },
       // EspacePersonnel (verrou « alertes »)
       { t: "Alertes personnalisées, aussi par e-mail", d: "Selon vos centres d'intérêt, votre commune et votre département", g: false, p: true, x: true },
       // local/budget, CommuneDetailPanel
@@ -71,7 +73,7 @@ const COMPARATIF: Groupe[] = [
       { t: "Le Journal officiel du jour, expliqué et cherchable", g: false, p: false, x: true },
       { t: "Des e-mails à la carte, chaque jour ou chaque semaine", d: "Enrichis et vérifiés : l'essentiel, les chiffres clés, le rapport de force, la suite", g: false, p: false, x: true },
       // SuivreBouton
-      { t: "Suivre partis, ministères, candidats et commissions", d: "Le vote de chaque parti suivi, à chaque scrutin", g: false, p: false, x: true },
+      { t: "Suivre l'actualité des partis, ministères, candidats et commissions", d: "Et le vote de chaque parti suivi à chaque scrutin, amendements compris", g: false, p: false, x: true },
       // DynamiquesView, CandidateSocialTracker, PrimaryDebates
       { t: "Veille presse, temps de parole et réseaux sociaux des candidats", d: "Avec le compte rendu écrit des débats télévisés", g: false, p: false, x: true },
       { t: "Recherche plein texte dans les comptes rendus", g: false, p: false, x: true },
@@ -81,7 +83,7 @@ const COMPARATIF: Groupe[] = [
 ];
 
 /*
- * Le comparatif par défaut, en neuf lignes (31/10/2026) : les 22 lignes d'affilée faisaient
+ * Le comparatif par défaut, en dix lignes (31/10/2026, 05/11 : chaque texte voté) : les 22 lignes d'affilée faisaient
  * un tableau interminable sur téléphone. Chaque ligne résume des lignes de COMPARATIF, qui
  * reste affiché en entier d'un clic (« Voir le détail »).
  */
@@ -96,6 +98,7 @@ const ESSENTIEL: Groupe[] = [
   {
     titre: "Suivre", icone: MapPin, lignes: [
       { t: "Vos élus suivis, une alerte à chacun de leurs votes", g: false, p: true, x: true, demo: "notif", lien: "Voir le fil" },
+      { t: "Un e-mail à chaque texte voté, avec le vote de vos élus et partis", g: false, p: true, x: true },
       { t: "Alertes sur votre territoire, aussi par e-mail", g: false, p: true, x: true },
       { t: "Auditions des ministres et des commissions", g: false, p: "Résumé", x: "Analyse" },
     ],

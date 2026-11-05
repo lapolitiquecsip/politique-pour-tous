@@ -4,6 +4,8 @@ import { useEffect, useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { Sliders, Check, Loader2, ChevronDown, Mail, Bell, User, Briefcase, MapPin, Pencil, Sparkles } from "lucide-react";
 import { api } from "@/lib/api";
+import { usePremium } from "@/lib/hooks/usePremium";
+import ChaqueTexteVote from "@/components/dashboard/ChaqueTexteVote";
 import { INTEREST_DOMAINS, interestByCode } from "@/lib/data/interestDomains";
 
 const AGES: [string, string][] = [
@@ -31,6 +33,8 @@ const fieldCls = "w-full appearance-none rounded-xl border border-white/10 bg-wh
 export default function PremiumPreferences({ userId }: { userId: string }) {
   const [open, setOpen] = useState(false);
   const [loading, setLoading] = useState(true);
+  // Le Pro règle « chaque texte voté » dans ses e-mails Pro (AlertesPro) : une seule case par membre.
+  const { isPremium, isPro } = usePremium();
   const [saving, setSaving] = useState(false);
   const [saved, setSaved] = useState(false);
 
@@ -114,6 +118,8 @@ export default function PremiumPreferences({ userId }: { userId: string }) {
           </span>
         </div>
       </button>{" "}
+
+      {isPremium && !isPro && <div className="px-6 pb-6 md:px-8"><ChaqueTexteVote userId={userId} /></div>}{" "}
 
       {/* RÉSUMÉ (menu fermé + profil rempli) : toutes les infos avec icônes. */}
       {!open && hasData && !loading && (

@@ -3,6 +3,7 @@
 import { useEffect, useMemo, useState } from "react";
 import { BellRing, Check, Loader2, MapPin, Plus, Search, X, Newspaper, Scale, ShieldCheck, UserRound, Mail, Mic, ScrollText, BookOpen, Star, Globe2, Vote, type LucideIcon } from "lucide-react";
 import { api } from "@/lib/api";
+import ChaqueTexteVote from "@/components/dashboard/ChaqueTexteVote";
 
 /**
  * Réglages des alertes Pro.
@@ -187,8 +188,9 @@ export default function AlertesPro({ userId }: { userId: string }) {
         </ul>
       </div>{" "}
 
-      {/* Les deux envois automatiques, après le choix des rubriques. */}
-      <div className="mt-8 grid gap-3 md:grid-cols-2">
+      {/* Chaque texte voté (case à cocher), puis les deux envois automatiques. */}
+      <div className="mt-8"><ChaqueTexteVote userId={userId} variante="pro" /></div>{" "}
+      <div className="mt-3 grid gap-3 md:grid-cols-2">
         <div className="flex items-start justify-between gap-4 rounded-3xl border border-white/10 bg-black/20 p-5">
           <span className="flex items-start gap-3">
             <span className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-white/10 text-fuchsia-200"><Scale size={18} /></span>{" "}

@@ -10,25 +10,27 @@ import { usePremium } from "@/lib/hooks/usePremium";
  * Suivre un parti, un ministère, un candidat, une commission, ou les amendements d'un texte ou
  * d'un groupe (alertes Pro). Les élus ont leur propre bouton (FollowButton) : leurs votes passent
  * par une autre table. `libelles` remplace « Suivre / Suivi » (ex. « M'alerter / Alertes activées »).
+ * Un parti se suit dès le Premium (son vote à chaque texte, dans « Chaque texte voté ») ; le reste est Pro.
  */
 export default function SuivreBouton({ kind, refId, label, className = "", libelles }: {
   kind: "parti" | "ministere" | "candidat" | "commission" | "amdt_texte" | "amdt_groupe" | "app_loi"; refId: string; label: string; className?: string;
   libelles?: [string, string];
 }) {
-  const { isPro, loading } = usePremium();
+  const { isPro, isPremium, loading } = usePremium();
+  const ouvert = kind === "parti" ? isPremium : isPro;
   const [suivi, setSuivi] = useState<boolean | null>(null);
   const [demande, setDemande] = useState(false);   // accord RGPD affiché
 
   useEffect(() => {
-    if (!isPro) return;
+    if (!ouvert) return;
     api.getSuivis().then(l => setSuivi(l.some(s => s.kind === kind && s.ref === refId))).catch(() => setSuivi(false));
-  }, [isPro, kind, refId]);
+  }, [ouvert, kind, refId]);
 
   if (loading) return null;
-  if (!isPro) {
+  if (!ouvert) {
     return (
       <Link href="/premium" className={`inline-flex items-center gap-2 rounded-full border border-fuchsia-400/40 bg-fuchsia-500/10 px-4 py-2 text-[11px] font-black uppercase tracking-widest text-fuchsia-700 transition hover:bg-fuchsia-500/20 dark:text-fuchsia-300 ${className}`}>
-        <Lock size={13} /> Suivre · Pro
+        <Lock size={13} /> Suivre · {kind === "parti" ? "Premium" : "Pro"}
       </Link>
     );
   }

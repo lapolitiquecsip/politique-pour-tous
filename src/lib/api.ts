@@ -1289,6 +1289,11 @@ export const api = {
     if (error) throw error;
   },
   /** Ce qu'on peut suivre, par type (libellé lisible + référence stockée). */
+  /** Partis dont le vote est donné dans les e-mails (ceux qui ont un groupe à l'Assemblée), libellés comme les suivis. */
+  getPartisSuivables: async (slugs: string[]) => {
+    const { data } = await supabase.from('political_parties').select('slug, name, abbrev').in('slug', slugs);
+    return (data || []).map((p: any) => ({ ref: p.slug as string, label: (p.abbrev && p.abbrev !== p.name ? `${p.name} (${p.abbrev})` : p.name) as string, sigle: (p.abbrev || p.name) as string }));
+  },
   getOptionsSuivi: async () => {
     const slug = (t: string) => t.normalize('NFD').replace(/[̀-ͯ]/g, '').toLowerCase().replace(/[’']/g, ' ').replace(/[^a-z0-9]+/g, '-').replace(/(^-|-$)/g, '');
     const [partis, ministeres, candidats, textesAmdt, groupesAmdt, loisApp] = await Promise.all([

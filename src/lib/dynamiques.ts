@@ -153,3 +153,24 @@ export const heures = (s: number) => {
   const h = Math.floor(s / 3600), m = Math.round((s % 3600) / 60);
   return h ? `${h} h ${String(m).padStart(2, "0")}` : `${m} min`;
 };
+
+/**
+ * Évolution lisible d'une période à l'autre. Un pourcentage sur une petite base est trompeur
+ * (1 h 24 en juillet → 10 h 30 en août = « +650 % » ; 3 articles → 26 = « +767 % ») :
+ *   • base sous le seuil : l'écart en valeur (« +23 articles », « +9 h 06 ») ;
+ *   • au moins doublé : le multiple (« ×2,5 ») ;
+ *   • sinon : le pourcentage.
+ * `unite` met en forme un écart (nombre d'articles, durée…).
+ */
+export function evolution(actuel: number, avant: number | null | undefined, seuil: number, unite: (ecart: number) => string): { texte: string; hausse: boolean } | null {
+  if (avant == null) return null;
+  const ecart = actuel - avant;
+  if (!ecart) return { texte: "stable", hausse: true };
+  const hausse = ecart > 0;
+  if (avant < seuil) return { texte: `${hausse ? "+" : "−"}${unite(Math.abs(ecart))}`, hausse };
+  const ratio = actuel / avant;
+  if (ratio >= 2) return { texte: `×${ratio.toLocaleString("fr-FR", { maximumFractionDigits: 1 })}`, hausse };
+  const p = Math.round((ecart / avant) * 100);
+  if (!p) return { texte: "stable", hausse: true };
+  return { texte: `${p > 0 ? "+" : "−"}${Math.abs(p)} %`, hausse };
+}

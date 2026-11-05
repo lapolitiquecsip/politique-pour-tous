@@ -11,6 +11,10 @@ on:
     # 04:40 UTC ≈ 06:40 Paris. Une heure fixe est importante : les tendances comparent
     # des relevés espacés d'exactement 24 h.
     - cron: '40 4 * * *'
+  # Un changement du relevé ou de ses comptes se vérifie tout de suite, sans attendre le lendemain.
+  push:
+    branches: [main]
+    paths: ['scripts/update-social-stats.ts', '.github/workflows/update-social-stats.yml']
   workflow_dispatch:
     inputs:
       seed:

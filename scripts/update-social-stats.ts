@@ -20,7 +20,10 @@
  *   instagram Via Agentik (ScrapeCreators, 0,00188 $ par compte) — l'endpoint web public, bloqué
  *             depuis les serveurs (429), ne sert plus que sans clé AGENTIK_API_KEY.
  *   x         Via Agentik (ScrapeCreators, 0,00188 $ par compte). Sans clé : « unavailable ».
- *             Plafond : MAX_APPELS_AGENTIK par relevé ; dépense inscrite dans ia_depenses.
+ *   facebook  Via Agentik, par l'adresse de la page (abonnés ARRONDIS par Facebook : 2 100 000).
+ *             Plafond : MAX_APPELS_AGENTIK par relevé ; dépense inscrite dans ia_depenses. Les
+ *             abonnés passent d'abord : les publications (2e appel X, vidéos TikTok) ne prennent
+ *             que ce qui reste du plafond, pour qu'aucun compte ne perde son chiffre du jour.
  *
  * PUBLICATIONS (30/10/2026) : chaque relevé enregistre aussi les publications récentes de
  * chaque compte dans `candidate_social_posts` (vues, j'aime, commentaires, partages réels, avec
@@ -97,27 +100,33 @@ const num = (v: unknown): number | null => {
 
 /* ═══════════════════════════════ Agentik ═══════════════════════════════ */
 
-// Filet : 100 appels ≈ 0,19 $ par relevé quotidien, soit moins de 6 $ par mois.
-const MAX_APPELS_AGENTIK = 100;
+// Filet : 125 appels ≈ 0,24 $ par relevé quotidien (clé Agentik du site plafonnée à 0,25 $ par jour).
+const MAX_APPELS_AGENTIK = 125;
 let appelsAgentik = 0;
 let depenseAgentik = 0;
+// Appels réservés aux abonnés (un par compte payant), fixés au début du relevé.
+let reserveProfils = 0;
+const resteProfils = () => { reserveProfils = Math.max(0, reserveProfils - 1); };
+/** Un appel de publications ne passe que s'il laisse la place aux abonnés des comptes restants. */
+const publicationsPermises = () => appelsAgentik + reserveProfils < MAX_APPELS_AGENTIK;
 
 // Un compte de parti est rattaché à plusieurs candidats : il n'est payé qu'une fois par relevé.
 const dejaLus = new Map<string, Promise<any | null>>();
-function agentik(outil: string, handle: string): Promise<any | null> {
+function agentik(outil: string, handle: string, input: Record<string, string> = { handle }): Promise<any | null> {
   const cle = `${outil}|${handle.toLowerCase()}`;
-  if (!dejaLus.has(cle)) dejaLus.set(cle, appelAgentik(outil, handle));
+  if (!dejaLus.has(cle)) dejaLus.set(cle, appelAgentik(outil, handle, input));
   return dejaLus.get(cle)!;
 }
 
-async function appelAgentik(outil: string, handle: string): Promise<any | null> {
+async function appelAgentik(outil: string, handle: string, input: Record<string, string>): Promise<any | null> {
   if (!process.env.AGENTIK_API_KEY || appelsAgentik >= MAX_APPELS_AGENTIK) return null;
   appelsAgentik++;
+  if (/-profile$/.test(outil)) resteProfils();   // appel réel d'abonnés (un compte partagé n'est lu qu'une fois)
   try {
     const res = await fetch("https://api.agentik.cc/v1/run", {
       method: "POST",
       headers: { Authorization: `Bearer ${process.env.AGENTIK_API_KEY}`, "Content-Type": "application/json", "Idempotency-Key": randomUUID() },
-      body: JSON.stringify({ tool_id: outil, input: { handle } }),
+      body: JSON.stringify({ tool_id: outil, input }),
       signal: AbortSignal.timeout(60_000),
     });
     const json: any = await res.json().catch(() => null);
@@ -344,7 +353,7 @@ async function readInstagram(account: Account): Promise<Reading> {
   const handle = account.handle.replace(/^@/, "");
   if (process.env.AGENTIK_API_KEY) {
     const u = (await agentik("scrapecreators/get-v1-instagram-profile", handle))?.data?.user;
-    if (!u || num(u.edge_followed_by?.count) === null) return UNAVAILABLE("instagram_agentik");
+      if (!u || num(u.edge_followed_by?.count) === null) return UNAVAILABLE("instagram_agentik");
     const noeuds: any[] = (u.edge_owner_to_timeline_media?.edges ?? []).map((e: any) => e.node).filter((n: any) => n?.shortcode && n?.taken_at_timestamp);
     const publications: Publication[] = noeuds.map(n => ({
       post_id: n.shortcode,
@@ -397,7 +406,7 @@ async function readX(account: Account): Promise<Reading> {
   const handle = account.handle.replace(/^@/, "");
   const u = (await agentik("scrapecreators/get-v1-twitter-profile", handle))?.legacy;
   if (!u || num(u.followers_count) === null) return UNAVAILABLE("x_agentik");
-  const brut: any[] = (await agentik("scrapecreators/get-v1-twitter-user-tweets", handle))?.tweets ?? [];
+  const brut: any[] = account.kind === "official" && publicationsPermises() ? (await agentik("scrapecreators/get-v1-twitter-user-tweets", handle))?.tweets ?? [] : [];
   const dates = brut.map(t => Date.parse(t?.legacy?.created_at)).filter(Number.isFinite);
   // Ni repartages ni réponses : seulement ce que le compte publie lui-même.
   const publications: Publication[] = brut
@@ -428,12 +437,13 @@ async function readX(account: Account): Promise<Reading> {
 /** TikTok — abonnés exacts via Agentik (vidéos pour les comptes officiels), sinon page publique. */
 async function readTikTokAgentik(account: Account): Promise<Reading> {
   const handle = account.handle.replace(/^@/, "");
-  if (!process.env.AGENTIK_API_KEY) return readTikTok(account);
+  // Comptes de parti : la page publique suffit (gratuite), le plafond Agentik va aux candidats.
+  if (!process.env.AGENTIK_API_KEY || account.kind !== "official") return readTikTok(account);
   const o = await agentik("scrapecreators/get-v1-tiktok-profile", handle);
   const st = o?.statsV2 ?? o?.stats;
   if (!st || num(st.followerCount) === null) return readTikTok(account);
   let publications: Publication[] = [];
-  if (account.kind === "official") {
+  if (publicationsPermises()) {
     const videos: any[] = (await agentik("scrapecreators/get-v3-tiktok-profile-videos", handle))?.aweme_list ?? [];
     publications = videos.filter(v => v?.aweme_id && v?.create_time).map(v => ({
       post_id: v.aweme_id,
@@ -459,13 +469,21 @@ async function readTikTokAgentik(account: Account): Promise<Reading> {
   };
 }
 
+/** Facebook — page publique via Agentik, par son adresse. Abonnés arrondis par Facebook. */
+async function readFacebook(account: Account): Promise<Reading> {
+  const handle = account.handle.replace(/^@/, "");
+  const o = await agentik("scrapecreators/get-v1-facebook-profile", handle, { url: account.url || `https://www.facebook.com/${handle}` });
+  if (!o || num(o.followerCount) === null) return UNAVAILABLE("facebook_agentik");
+  return { followers: num(o.followerCount), total_views: null, posts: null, week_posts: null, week_views: null, status: "ok", source: "facebook_agentik" };
+}
+
 async function readAccount(account: Account): Promise<Reading> {
   switch (account.platform) {
     case "bluesky": return readBluesky(account);
     case "tiktok": return readTikTokAgentik(account);
     case "instagram": return readInstagram(account);
     case "x": return readX(account);
-    case "facebook": return UNAVAILABLE("facebook_aucune_source_gratuite");
+    case "facebook": return process.env.AGENTIK_API_KEY ? readFacebook(account) : UNAVAILABLE("facebook_sans_cle");
     default: return UNAVAILABLE("plateforme_inconnue");
   }
 }
@@ -533,6 +551,11 @@ async function capture(supabase: any, dryRun: boolean) {
   console.log(`  ${accounts.length} compte(s) à relever`);
 
   const readings = new Map<string, Reading>();
+  // Un appel d'abonnés par compte payant distinct (un compte de parti partagé ne compte qu'une fois).
+  if (process.env.AGENTIK_API_KEY) {
+    reserveProfils = new Set(accounts.filter(a => ["x", "instagram", "facebook"].includes(a.platform) || (a.platform === "tiktok" && a.kind === "official"))
+      .map(a => `${a.platform}|${a.handle.toLowerCase()}`)).size;
+  }
 
   // YouTube se traite en lot pour économiser le quota.
   const yt = accounts.filter(a => a.platform === "youtube");

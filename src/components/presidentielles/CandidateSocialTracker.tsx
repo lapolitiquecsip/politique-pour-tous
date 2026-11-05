@@ -4,14 +4,15 @@ import { useEffect, useMemo, useState } from "react";
 import Link from "next/link";
 import {
   Loader2, Radio, Download, ChevronDown, TrendingUp, TrendingDown, AlertTriangle, ExternalLink,
-  Minus, Eye, Users2, Clapperboard, ShieldCheck, Heart, MessageCircle, Repeat2, Flame, Rocket, Target, Zap,
+  Minus, Eye, Users2, Clapperboard, ShieldCheck, Heart, MessageCircle, Repeat2, Flame, Rocket, Target, Zap, Trophy, ChevronUp,
 } from "lucide-react";
+import CourbeMulti, { type Serie } from "./dynamiques/CourbeMulti";
 import { api } from "@/lib/api";
 import { usePremium } from "@/lib/hooks/usePremium";
 import { EnTete, ZonePro } from "./dynamiques/VerrouPro";
 import { vignetteWikimedia } from "@/lib/wikimedia";
 import {
-  computeMetrics, sumMetric, compact, signed, bilanPublications, tauxEngagement, courbeConstante,
+  computeMetrics, sumMetric, compact, signed, bilanPublications, tauxEngagement, courbeConstante, courbeDatee,
   interactions, PLATFORM_META, SOURCES,
   type Metrics, type Platform, type SocialAccount, type SocialPost, type Snapshot,
 } from "@/lib/socialStats";
@@ -32,7 +33,8 @@ const TRIS: [Tri, string][] = [
   ["audience", "Audience"], ["croissance", "Progression"], ["vues", "Vues"],
   ["interactions", "Interactions"], ["engagement", "Engagement"], ["publications", "Publications"],
 ];
-const PLATEFORMES: Platform[] = ["x", "instagram", "tiktok", "youtube", "bluesky"];
+const PLATEFORMES: Platform[] = ["x", "instagram", "tiktok", "facebook", "youtube", "bluesky"];
+const COULEURS_COURBES = ["#7c3aed", "#e11d48", "#0284c7", "#059669", "#d97706", "#0f172a"];
 
 const nombre = (n: number | null | undefined) => (n == null ? "—" : n.toLocaleString("fr-FR"));
 const pourcent = (n: number | null | undefined, signe = false) =>
@@ -165,6 +167,8 @@ export default function CandidateSocialTracker({ candidates }: { candidates: Can
   const [tri, setTri] = useState<Tri>("audience");
   const [openId, setOpenId] = useState<string | null>(null);
   const [methode, setMethode] = useState(false);
+  // Candidats, ou partis (comptes de mouvement, chacun compté une fois même s'il soutient plusieurs candidats).
+  const [vue, setVue] = useState<"candidats" | "partis">("candidats");
 
   useEffect(() => {
     let active = true;
@@ -222,14 +226,66 @@ export default function CandidateSocialTracker({ candidates }: { candidates: Can
       };
     }).filter((r): r is NonNullable<typeof r> => r !== null);
 
-    const valeur = (r: (typeof lignes)[number]) => ({
+    // Place à la date de référence : audience d'alors (audience actuelle moins le gain mesuré à
+    // périmètre constant), pour afficher les places gagnées ou perdues dans le classement.
+    const avant = [...lignes].sort((a, b) => ((b.followers ?? 0) - (b.gain ?? 0)) - ((a.followers ?? 0) - (a.gain ?? 0)));
+    const lignesRang = lignes.map(l => ({ ...l, rangAvant: avant.indexOf(l) + 1 }));
+    const valeur = (r: (typeof lignesRang)[number]) => ({
       audience: r.followers, croissance: r.croissance, vues: r.vues,
       interactions: r.interactions, engagement: r.engagement, publications: r.publications,
     })[tri];
-    return lignes.sort((a, b) => (valeur(b) ?? -Infinity) - (valeur(a) ?? -Infinity) || (b.followers ?? 0) - (a.followers ?? 0));
+    return lignesRang.sort((a, b) => (valeur(b) ?? -Infinity) - (valeur(a) ?? -Infinity) || (b.followers ?? 0) - (a.followers ?? 0));
   }, [accounts, snapshots, postsParCompte, candidates, scope, plateforme, period, tri]);
 
   const nomDe = useMemo(() => new Map(candidates.map(c => [c.id, c.full_name])), [candidates]);
+
+  /* Partis : un compte de mouvement suivi pour plusieurs candidats ne compte qu'une fois. */
+  const partis = useMemo(() => {
+    if (!accounts?.length) return [];
+    const partiDe = new Map(candidates.map(c => [c.id, c.party]));
+    const vus = new Map<string, SocialAccount>();
+    for (const a of accounts) if (a.kind === "support" && (plateforme === "toutes" || a.platform === plateforme)) vus.set(`${a.platform}|${a.handle.toLowerCase()}`, vus.get(`${a.platform}|${a.handle.toLowerCase()}`) ?? a);
+    // Regroupés sans tenir compte des majuscules (« La France Insoumise » / « La France insoumise »).
+    const parParti = new Map<string, { nom: string; metrics: Metrics[] }>();
+    for (const a of vus.values()) {
+      const nom = a.label || partiDe.get(a.candidate_id) || a.handle;
+      const k = nom.toLocaleLowerCase("fr");
+      parParti.set(k, { nom: parParti.get(k)?.nom ?? nom, metrics: [...(parParti.get(k)?.metrics ?? []), computeMetrics(a, snapshots)] });
+    }
+    return [...parParti.values()].map(({ nom, metrics }) => {
+      const comparables = metrics.filter(m => !m.anomalie && (period === 7 ? m.followersDelta7 : m.followersDelta30) != null);
+      const gain = comparables.reduce((t, m) => t + ((period === 7 ? m.followersDelta7 : m.followersDelta30) ?? 0), 0);
+      const base = comparables.reduce((t, m) => t + ((period === 7 ? m.followersRef7 : m.followersRef30) ?? 0), 0);
+      return { nom, metrics, followers: sumMetric(metrics, "followers"), gain: comparables.length ? gain : null, croissance: comparables.length && base ? (gain / base) * 100 : null,
+        plateformes: [...new Set(metrics.map(m => m.account.platform))], mesures: metrics.filter(m => m.status !== "unavailable").length };
+    }).filter(p => p.followers != null).sort((a, b) => tri === "croissance" ? (b.croissance ?? -Infinity) - (a.croissance ?? -Infinity) : (b.followers ?? 0) - (a.followers ?? 0));
+  }, [accounts, snapshots, candidates, plateforme, period, tri]);
+
+  /* Le podium : les trois plus fortes hausses d'abonnés de la période (en nombre, à périmètre constant). */
+  const podium = useMemo(() => [...rows].filter(r => (r.gain ?? 0) > 0).sort((a, b) => (b.gain ?? 0) - (a.gain ?? 0)).slice(0, 3), [rows]);
+
+  /* Courbes comparées : évolution en % depuis le premier relevé commun, six plus grosses audiences. */
+  const courbes = useMemo(() => {
+    const series: Serie[] = [...rows].sort((a, b) => (b.followers ?? 0) - (a.followers ?? 0)).slice(0, 6).map((r, i) => {
+      const pts = courbeDatee(r.metrics, snapshots, period === 7 ? 8 : 31);
+      const base = pts[0]?.total;
+      return { id: r.candidate.id, label: r.candidate.full_name.split(" ").slice(-1)[0], couleur: COULEURS_COURBES[i],
+        points: base ? pts.map(p => ({ x: new Date(p.date + "T12:00:00Z").getTime(), y: ((p.total - base) / base) * 100 })) : [] };
+    }).filter(s => s.points.length >= 3);
+    const xs = series.flatMap(s => s.points.map(p => p.x)), ys = series.flatMap(s => s.points.map(p => p.y));
+    return { series, debut: xs.length ? Math.min(...xs) : 0, fin: xs.length ? Math.max(...xs) : 0, min: ys.length ? Math.min(0, ...ys) : 0 };
+  }, [rows, snapshots, period]);
+
+  /* Dernier relevé réussi, réseau par réseau. */
+  const derniersParReseau = useMemo(() => {
+    const plat = new Map((accounts ?? []).map(a => [a.id, a.platform]));
+    const m = new Map<Platform, string>();
+    for (const s of snapshots) {
+      const p = plat.get(s.account_id); if (!p || s.status !== "ok") continue;
+      if (!m.get(p) || s.captured_on > m.get(p)!) m.set(p, s.captured_on);
+    }
+    return PLATEFORMES.filter(p => m.has(p)).map(p => [p, m.get(p)!] as const);
+  }, [accounts, snapshots]);
 
   /* Vérifications : ce qui a été relevé, quand, et ce qui manque. */
   const controle = useMemo(() => {
@@ -319,6 +375,11 @@ export default function CandidateSocialTracker({ candidates }: { candidates: Can
               <span className="flex items-center gap-1.5 font-black"><ShieldCheck size={15} className="text-emerald-600 dark:text-emerald-400" /> Contrôle des données</span>{" "}
               <span><strong className="tabular-nums">{controle.frais}/{controle.comptes}</strong> comptes relevés depuis hier</span>{" "}
               {controle.dernier && <span>dernier relevé : <strong>{jourCourt(controle.dernier)}</strong></span>}{" "}
+              {derniersParReseau.length > 0 && (
+                <span className="flex flex-wrap gap-x-2.5 gap-y-1 text-[11px] text-muted-foreground">
+                  {derniersParReseau.map(([p, d]) => <span key={p} className="inline-flex items-center gap-1"><span className="h-1.5 w-1.5 rounded-full" style={{ backgroundColor: PLATFORM_META[p].color }} />{PLATFORM_META[p].label} {jourCourt(d)}</span>)}
+                </span>
+              )}{" "}
               {controle.manquants > 0 && <span className="text-amber-700 dark:text-amber-300">{controle.manquants} sans relevé pour l&apos;instant</span>}{" "}
               {controle.anomalies > 0 && <span className="text-amber-700 dark:text-amber-300">{controle.anomalies} variation{controle.anomalies > 1 ? "s" : ""} à vérifier, hors progression</span>}{" "}
               <button onClick={() => setMethode(v => !v)} aria-expanded={methode} className="ml-auto min-h-[32px] font-bold text-emerald-700 underline dark:text-emerald-400">
@@ -331,7 +392,8 @@ export default function CandidateSocialTracker({ candidates }: { candidates: Can
                 <li><strong className="text-foreground">Progression :</strong> calculée à périmètre constant, entre deux relevés d&apos;une même source. Un compte tout juste ajouté ou un changement de source ne crée donc pas de faux gain.</li>
                 <li><strong className="text-foreground">Variations suspectes :</strong> un saut de plus de 10 % en un jour est signalé et écarté de la progression.</li>
                 <li><strong className="text-foreground">Vues :</strong> ce sont celles des publications de la période, chacune datée et reliée à l&apos;original. Instagram ne les rend pas publiques sur les photos : le total d&apos;un candidat peut donc les sous-estimer.</li>
-                <li><strong className="text-foreground">Arrondis :</strong> YouTube arrondit ses abonnés (1 310 000), donc une variation peut n&apos;être qu&apos;un effet d&apos;arrondi. X, Instagram, TikTok et Bluesky donnent le chiffre exact.</li>
+                <li><strong className="text-foreground">Arrondis :</strong> YouTube et Facebook arrondissent leurs abonnés (1 310 000), donc une variation peut n&apos;être qu&apos;un effet d&apos;arrondi. X, Instagram, TikTok et Bluesky donnent le chiffre exact.</li>
+                <li><strong className="text-foreground">Partis :</strong> un compte de parti qui soutient plusieurs candidats n&apos;est compté qu&apos;une fois dans la vue « Partis ». Dans la vue « Candidats », seuls les comptes personnels comptent par défaut.</li>
                 <li><strong className="text-foreground">Publications :</strong> X ne montre qu&apos;une sélection de publications aux visiteurs sans compte : leur nombre y est un minimum, et les réponses et repartages sont exclus. Le total se complète à chaque relevé.</li>
                 <li><strong className="text-foreground">Engagement :</strong> j&apos;aime, commentaires et partages par publication, rapportés aux abonnés du compte. Les petits comptes ont mécaniquement des taux plus élevés.</li>
                 <li><strong className="text-foreground">Absence :</strong> un compte sans relevé affiche « — », jamais un ancien chiffre présenté comme frais. Un relevé de plus de 3 jours est signalé.</li>
@@ -339,6 +401,32 @@ export default function CandidateSocialTracker({ candidates }: { candidates: Can
               </ul>
             )}
           </div>{" "}
+
+          {/* Le podium de la période */}
+          {podium.length > 0 && (
+            <div className="mb-6 rounded-[2rem] border border-border bg-gradient-to-b from-fuchsia-500/[0.07] to-transparent p-5 md:p-6">
+              <p className="flex items-center gap-1.5 text-[11px] font-black uppercase tracking-[0.2em] text-fuchsia-700 dark:text-fuchsia-400"><Trophy size={14} /> Le podium des {period} derniers jours</p>{" "}
+              <p className="mt-1 text-[12px] text-muted-foreground">Les plus fortes hausses d&apos;abonnés, en nombre, sur les comptes mesurés aux deux dates.</p>{" "}
+              <div className="mt-5 grid grid-cols-3 items-end gap-2 sm:gap-4">
+                {[podium[1], podium[0], podium[2]].map((r, i) => {
+                  if (!r) return <span key={i} />;
+                  const place = r === podium[0] ? 1 : r === podium[1] ? 2 : 3;
+                  return (
+                    <div key={r.candidate.id} className="flex flex-col items-center text-center">
+                      {r.candidate.photo_url
+                        // eslint-disable-next-line @next/next/no-img-element
+                        ? <img src={vignetteWikimedia(r.candidate.photo_url, 120)!} alt="" className={`rounded-full object-cover ring-4 ${place === 1 ? "h-20 w-20 ring-amber-400" : "h-14 w-14 ring-slate-300 dark:ring-slate-600"}`} />
+                        : <span className="flex h-14 w-14 items-center justify-center rounded-full bg-muted font-black">{r.candidate.full_name.charAt(0)}</span>}{" "}
+                      <span className="mt-2 line-clamp-1 text-[13px] font-black text-foreground">{r.candidate.full_name.split(" ").slice(-1)[0]}</span>{" "}
+                      <span className="text-[13px] font-black tabular-nums text-emerald-700 dark:text-emerald-400"><Masked isPro={isPro}>{signed(r.gain)}</Masked></span>{" "}
+                      <span className="text-[11px] tabular-nums text-muted-foreground"><Masked isPro={isPro}>{pourcent(r.croissance, true)}</Masked></span>{" "}
+                      <span className={`mt-2 flex w-full items-center justify-center rounded-t-xl font-staatliches text-2xl text-white ${place === 1 ? "h-20 bg-amber-400" : place === 2 ? "h-14 bg-slate-400" : "h-10 bg-orange-400"}`}>{place}</span>
+                    </div>
+                  );
+                })}
+              </div>
+            </div>
+          )}{" "}
 
           {/* Faits marquants */}
           <div className="mb-6 grid gap-3 sm:grid-cols-2 lg:grid-cols-4">
@@ -355,15 +443,22 @@ export default function CandidateSocialTracker({ candidates }: { candidates: Can
           {/* Réglages */}
           <div className="mb-4 flex flex-wrap items-center gap-2.5">
             <div className="inline-flex rounded-full border border-border bg-card p-1">
+              {([["candidats", "Candidats"], ["partis", "Partis"]] as const).map(([v, label]) => (
+                <button key={v} onClick={() => setVue(v)} className={bouton(vue === v)}>{label}</button>
+              ))}
+            </div>{" "}
+            <div className="inline-flex rounded-full border border-border bg-card p-1">
               {([[7, "7 jours"], [30, "30 jours"]] as const).map(([v, label]) => (
                 <button key={v} onClick={() => setPeriod(v)} className={bouton(period === v)}>{label}</button>
               ))}
             </div>{" "}
+            {vue === "candidats" && (
             <div className="inline-flex rounded-full border border-border bg-card p-1">
-              {([["official", "Personnels"], ["support", "De soutien"], ["all", "Les deux"]] as const).map(([v, label]) => (
+              {([["official", "Personnels"], ["support", "De soutien"], ["all", "Candidat + parti"]] as const).map(([v, label]) => (
                 <button key={v} onClick={() => setScope(v)} className={bouton(scope === v)}>{label}</button>
               ))}
-            </div>{" "}
+            </div>
+            )}{" "}
             <div className="inline-flex max-w-full overflow-x-auto rounded-full border border-border bg-card p-1">
               <button onClick={() => setPlateforme("toutes")} className={bouton(plateforme === "toutes")}>Toutes</button>{" "}
               {PLATEFORMES.map(p => <button key={p} onClick={() => setPlateforme(p)} className={bouton(plateforme === p)}>{PLATFORM_META[p].label}</button>)}
@@ -379,8 +474,30 @@ export default function CandidateSocialTracker({ candidates }: { candidates: Can
             ))}
           </div>{" "}
 
+          {/* Classement des partis */}
+          {vue === "partis" && (
+            <div className="space-y-2.5">
+              {partis.map((pa, rang) => (
+                <div key={pa.nom} className="flex flex-wrap items-center gap-x-4 gap-y-2 rounded-2xl border border-border bg-card p-4">
+                  <span className="w-6 shrink-0 text-center font-staatliches text-xl text-muted-foreground">{rang + 1}</span>{" "}
+                  <span className="min-w-0 flex-1 basis-40">
+                    <span className="block truncate text-sm font-black text-foreground">{pa.nom}</span>{" "}
+                    <span className="block truncate text-[11px] text-muted-foreground">{pa.plateformes.map(pf => PLATFORM_META[pf].label).join(", ")}{pa.mesures < pa.metrics.length ? ` · ${pa.mesures}/${pa.metrics.length} relevés` : ""}</span>
+                  </span>{" "}
+                  {[["Audience", compact(pa.followers)], [`Gain ${period} j`, signed(pa.gain)], [`${period} j`, pourcent(pa.croissance, true)]].map(([k, v]) => (
+                    <span key={k} className="min-w-[72px]">
+                      <span className="block text-[9px] font-black uppercase tracking-wider text-muted-foreground">{k}</span>{" "}
+                      <span className="block text-sm font-black tabular-nums text-foreground"><Masked isPro={isPro}>{v}</Masked></span>
+                    </span>
+                  ))}
+                </div>
+              ))}
+              {!partis.length && <p className="rounded-2xl border border-dashed border-border p-6 text-center text-sm text-muted-foreground">Aucun compte de parti relevé sur ce réseau.</p>}
+            </div>
+          )}{" "}
+
           {/* Classement */}
-          <div className="space-y-2.5">
+          {vue === "candidats" && <div className="space-y-2.5">
             {rows.map((r, rank) => {
               const open = openId === r.candidate.id;
               const meilleures = [...r.pubs].sort((a, b) => (b.vues ?? 0) - (a.vues ?? 0) || interactions(b) - interactions(a)).slice(0, 3);
@@ -388,7 +505,14 @@ export default function CandidateSocialTracker({ candidates }: { candidates: Can
                 <div key={r.candidate.id} className="overflow-hidden rounded-2xl border border-border bg-card transition hover:border-fuchsia-300">
                   <button onClick={() => setOpenId(open ? null : r.candidate.id)} aria-expanded={open}
                     className="flex w-full flex-wrap items-center gap-x-4 gap-y-3 p-4 text-left lg:flex-nowrap">
-                    <span className="w-6 shrink-0 text-center font-staatliches text-xl text-muted-foreground">{rank + 1}</span>{" "}
+                    <span className="flex w-7 shrink-0 flex-col items-center leading-none">
+                      <span className="font-staatliches text-xl text-muted-foreground">{rank + 1}</span>
+                      {tri === "audience" && r.gain != null && r.rangAvant !== rank + 1 && (
+                        <span title={`${r.rangAvant}e il y a ${period} jours`} className={`mt-0.5 inline-flex items-center text-[10px] font-black ${r.rangAvant > rank + 1 ? "text-emerald-600" : "text-rose-600"}`}>
+                          {r.rangAvant > rank + 1 ? <ChevronUp size={11} /> : <ChevronDown size={11} />}{Math.abs(r.rangAvant - rank - 1)}
+                        </span>
+                      )}
+                    </span>{" "}
                     {r.candidate.photo_url
                       ? <img src={vignetteWikimedia(r.candidate.photo_url, 44)!} loading="lazy" decoding="async" alt="" className="h-11 w-11 shrink-0 rounded-full object-cover" />
                       : <span className="flex h-11 w-11 shrink-0 items-center justify-center rounded-full bg-slate-100 text-sm font-black text-muted-foreground dark:bg-slate-500/10">{r.candidate.full_name.charAt(0)}</span>}{" "}
@@ -439,7 +563,18 @@ export default function CandidateSocialTracker({ candidates }: { candidates: Can
                 </div>
               );
             })}
-          </div>{" "}
+          </div>}{" "}
+
+          {/* Courbes comparées */}
+          {vue === "candidats" && courbes.series.length >= 2 && (
+            <section className="mt-10 rounded-[2rem] border border-border bg-card p-5 md:p-6">
+              <h3 className="text-xl font-black text-foreground">Les courbes</h3>{" "}
+              <p className="mb-4 mt-1 text-[13px] text-muted-foreground">Évolution des abonnés depuis le début de la période, en %, pour les six plus grosses audiences (comptes mesurés tout du long).</p>{" "}
+              <Masked isPro={isPro}>
+                <CourbeMulti series={courbes.series} debut={courbes.debut} fin={courbes.fin} hauteur={280} unite=" %" decimales={2} yMin={courbes.min} pasJour />
+              </Masked>
+            </section>
+          )}{" "}
 
           {/* Top des publications */}
           {top.length > 0 && (

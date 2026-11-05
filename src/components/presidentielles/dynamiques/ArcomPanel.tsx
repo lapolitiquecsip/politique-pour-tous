@@ -4,11 +4,14 @@ import { useEffect, useMemo, useState } from "react";
 import { Loader2, ChevronDown, TrendingUp, TrendingDown } from "lucide-react";
 import { api } from "@/lib/api";
 import { EnTete, ZonePro, Methode } from "./VerrouPro";
-import { couleur, heures } from "@/lib/dynamiques";
+import { couleur, heures, evolution } from "@/lib/dynamiques";
 
 type Candidat = { slug: string; full_name: string; photo_url: string | null; party: string | null };
 type Releve = Awaited<ReturnType<typeof api.getArcomTempsParole>>[number];
 
+// L'Arcom distingue la chaîne franceinfo (« franceinfo: ») et la radio (« France Info »).
+const CHAINES: Record<string, string> = { "franceinfo:": "franceinfo (télé)", "franceinfo": "franceinfo (télé)", "France Info": "franceinfo (radio)" };
+const chaine = (c: string) => CHAINES[c] ?? CHAINES[c.replace(/:$/, "")] ?? c;
 const nomMois = (iso: string, long = true) => new Date(iso + "T12:00:00Z").toLocaleDateString("fr-FR", long ? { month: "long", year: "numeric" } : { month: "short" });
 
 function Barres({ valeurs, couleur: col }: { valeurs: number[]; couleur: string }) {
@@ -69,7 +72,8 @@ export default function ArcomPanel({ candidats }: { candidats: Candidat[] }) {
           <div className="space-y-2">
             {lignes.map((l, i) => {
               const c = parSlug.get(l.slug)!; const col = couleur(l.slug); const open = ouvert === l.slug;
-              const evol = l.avant ? ((l.secondes - l.avant) / l.avant) * 100 : null;
+              // Sous 2 h le mois précédent, un pourcentage ne veut rien dire : on donne l'écart en heures.
+              const evol = evolution(l.secondes, l.avant, 7200, heures);
               const chaines = Object.entries(l.detail).sort((a, b) => b[1] - a[1]).slice(0, 8);
               return (
                 <div key={l.slug} className="rounded-2xl border border-transparent transition hover:border-border">
@@ -86,19 +90,27 @@ export default function ArcomPanel({ candidats }: { candidats: Candidat[] }) {
                     </span>{" "}
                     <span className="hidden sm:block"><Barres valeurs={l.histo} couleur={col} /></span>{" "}
                     <span className="hidden w-16 shrink-0 text-right text-[11px] font-black sm:block">
-                      {evol != null && <span className={`inline-flex items-center gap-0.5 ${evol >= 0 ? "text-emerald-700 dark:text-emerald-400" : "text-rose-700 dark:text-rose-400"}`}>{evol >= 0 ? <TrendingUp size={11} /> : <TrendingDown size={11} />}{" "}{evol >= 0 ? "+" : ""}{Math.round(evol)} %</span>}
+                      {evol && <span title={l.avant != null ? `${nomMois(precedent)} : ${heures(l.avant)}` : undefined} className={`inline-flex items-center gap-0.5 ${evol.texte === "stable" ? "text-muted-foreground" : evol.hausse ? "text-emerald-700 dark:text-emerald-400" : "text-rose-700 dark:text-rose-400"}`}>{evol.texte !== "stable" && (evol.hausse ? <TrendingUp size={11} /> : <TrendingDown size={11} />)}{" "}{evol.texte}</span>}
                     </span>{" "}
                     <ChevronDown size={16} className={`shrink-0 text-muted-foreground transition-transform ${open ? "rotate-180" : ""}`} />
                   </button>{" "}
                   {open && (
-                    <div className={`grid gap-x-6 gap-y-1.5 px-10 pb-3 sm:grid-cols-2`}>
+                    <div className="px-10 pb-3">
+                    {precedent && (
+                      <p className="mb-2 text-[11px] text-muted-foreground">
+                        {nomMois(precedent)} : {l.avant != null ? heures(l.avant) : "sous le seuil de publication"} → {nomMois(courant)} : <strong className="text-foreground">{heures(l.secondes)}</strong>
+                        {evol && evol.texte !== "stable" && <> ({evol.texte})</>}
+                      </p>
+                    )}{" "}
+                    <div className="grid gap-x-6 gap-y-1.5 sm:grid-cols-2">
                       {chaines.map(([ch, s]) => (
                         <div key={ch} className="flex items-center gap-2 text-xs">
-                          <span className="w-28 shrink-0 truncate font-bold text-foreground">{ch}</span>{" "}
+                          <span className="w-32 shrink-0 truncate font-bold text-foreground">{chaine(ch)}</span>{" "}
                           <span className="h-1.5 min-w-0 flex-1 overflow-hidden rounded-full bg-slate-100 dark:bg-slate-800"><span className="block h-full rounded-full" style={{ width: `${(s / chaines[0][1]) * 100}%`, background: col }} /></span>{" "}
                           <span className="w-14 shrink-0 text-right tabular-nums text-muted-foreground">{heures(s)}</span>{" "}
                         </div>
                       ))}
+                    </div>
                     </div>
                   )}{" "}
                 </div>
@@ -110,7 +122,9 @@ export default function ArcomPanel({ candidats }: { candidats: Candidat[] }) {
         <Methode>
             Source : Arcom, relevés « hors période électorale » (journaux, magazines et autres émissions). Temps de parole de la personne
             elle-même, hors soutiens. Un candidat sous le seuil de publication de l&apos;Arcom n&apos;apparaît pas. Les barres résument les douze
-            derniers mois publiés ; chaque nouvelle publication de l&apos;Arcom est reprise automatiquement.
+            derniers mois publiés ; chaque nouvelle publication de l&apos;Arcom est reprise automatiquement. L&apos;évolution compare au mois
+            précédent : en heures quand ce mois comptait moins de 2 h (un pourcentage serait trompeur), en multiple (×2, ×3…) quand le temps a
+            au moins doublé. Les mois d&apos;été, plus creux, gonflent mécaniquement les hausses de la rentrée.
         </Methode>
         </ZonePro>
       )}

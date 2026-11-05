@@ -195,6 +195,11 @@ export function tauxEngagement(lignes: { followers: number | null; posts: Social
  * TikTok fait une chute, et l'arrivée d'un nouveau compte un bond, qui n'ont jamais eu lieu.
  */
 export function courbeConstante(metrics: Metrics[], snapshots: Snapshot[], jours = 30): number[] {
+  return courbeDatee(metrics, snapshots, jours).map(p => p.total);
+}
+
+/** La même courbe, avec la date de chaque point (courbes comparées entre candidats). */
+export function courbeDatee(metrics: Metrics[], snapshots: Snapshot[], jours = 30): { date: string; total: number }[] {
   const parCompte = metrics.filter(m => m.latest).map(m => ({
     points: new Map(snapshots
       .filter(s => s.account_id === m.account.id && s.status !== "unavailable" && s.followers != null && s.source === m.latest!.source)
@@ -204,10 +209,10 @@ export function courbeConstante(metrics: Metrics[], snapshots: Snapshot[], jours
   const dates = [...new Set(parCompte.flatMap(c => [...c.points.keys()]))].sort().slice(-jours);
   const retenus = parCompte.filter(c => [...c.points.keys()].some(d => d <= dates[0]));
   const dernier = retenus.map(() => null as number | null);
-  return dates.map(d => retenus.reduce((t, c, i) => {
+  return dates.map(d => ({ date: d, total: retenus.reduce((t, c, i) => {
     dernier[i] = c.points.get(d) ?? dernier[i];
     return t + (dernier[i] ?? 0);
-  }, 0));
+  }, 0) }));
 }
 
 /** Somme d'un indicateur sur plusieurs comptes ; null si aucun compte ne le fournit. */
@@ -241,6 +246,7 @@ export const SOURCES: Record<string, string> = {
   instagram_agentik: "Profil public Instagram (ScrapeCreators via Agentik)",
   tiktok_agentik: "Profil public TikTok (ScrapeCreators via Agentik)",
   tiktok_page: "Page publique TikTok (chiffre arrondi)",
+  facebook_agentik: "Page publique Facebook (ScrapeCreators via Agentik ; abonnés arrondis par Facebook)",
 };
 
 export const PLATFORM_META: Record<Platform, { label: string; color: string; hasViews: boolean }> = {

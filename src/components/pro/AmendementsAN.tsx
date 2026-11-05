@@ -5,6 +5,7 @@ import { ChevronDown, ExternalLink, FilePenLine, Loader2, Search, Users, X } fro
 import { supabase } from "@/lib/supabase";
 import SuivreBouton from "@/components/shared/SuivreBouton";
 import VoteAmendement from "@/components/votes/VoteAmendement";
+import AmendementsParArticle from "@/components/pro/AmendementsParArticle";
 
 /**
  * Amendements de l'Assemblée nationale en temps réel — réservé aux membres Pro.
@@ -19,6 +20,8 @@ import VoteAmendement from "@/components/votes/VoteAmendement";
  * Sénat (01/11/2026) : même outil sur amendements_senat (AMELI, relevé quotidien), bascule en haut.
  * Alertes (30/10/2026) : le texte ou le groupe choisi se suit d'un clic ; chaque nouvel
  * amendement arrive alors par e-mail et dans la cloche, dès le relevé (backend alertes-amendements).
+ * Par article (05/11/2026) : un texte choisi se lit aussi article par article, amendements
+ * identiques regroupés, export Excel et Word (AmendementsParArticle).
  */
 
 type Amendement = {
@@ -128,6 +131,8 @@ export default function AmendementsAN() {
   const [erreur, setErreur] = useState(false);
   const [viser, setViser] = useState(false);
   const [scrutin, setScrutin] = useState("");
+  // Un texte choisi : liste chronologique, ou lecture article par article.
+  const [vue, setVue] = useState<"liste" | "article">("liste");
   // Dernière visite : lue une fois, avant d'être remplacée par celle-ci.
   const [visite] = useState<string | null>(() => { try { return localStorage.getItem(CLE_VISITE); } catch { return null; } });
   useEffect(() => { try { localStorage.setItem(CLE_VISITE, new Date().toISOString()); } catch { /* navigation privée */ } }, []);
@@ -260,6 +265,18 @@ export default function AmendementsAN() {
         )}
       </div>{" "}
 
+      {texte && (
+        <div className="mt-4 inline-flex gap-1 rounded-2xl border border-white/10 bg-black/20 p-1" role="group" aria-label="Présentation">
+          {([["liste", "Liste"], ["article", "Par article, avec exports"]] as const).map(([v, l]) => (
+            <button key={v} type="button" onClick={() => setVue(v)} aria-pressed={vue === v}
+              className={`min-h-[38px] rounded-xl px-4 text-[12px] font-black transition ${vue === v ? "bg-white text-slate-900" : "text-white/60 hover:text-white"}`}>{l}</button>
+          ))}
+        </div>
+      )}{" "}
+
+      {texte && vue === "article" ? (
+        <AmendementsParArticle chambre={chambre} texte={texte} titre={textes.find(t => t.texte_uid === texte)?.texte_titre || texte} />
+      ) : (<>
       <div className="mt-4 flex flex-wrap items-center justify-between gap-2 text-[13px] text-white/60">
         <span>{total != null ? <><strong className="font-bold text-white">{total.toLocaleString("fr-FR")}</strong> amendement{total > 1 ? "s" : ""}{filtres ? " correspondant à vos filtres" : ""}</> : " "}</span>{" "}
         {filtres && <button type="button" onClick={() => { setTexte(""); setGroupe(""); setSort(""); setSaisie(""); setDepute(""); setScrutin(""); }} className="font-bold text-fuchsia-300 hover:text-fuchsia-200">Effacer les filtres</button>}
@@ -283,6 +300,7 @@ export default function AmendementsAN() {
           Voir plus <span className="font-normal text-white/55">({(total - liste.length).toLocaleString("fr-FR")} autres)</span> <ChevronDown size={16} />
         </button>
       )}
+      </>)}
     </section>
   );
 }

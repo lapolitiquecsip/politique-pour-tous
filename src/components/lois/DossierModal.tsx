@@ -2,6 +2,7 @@
 
 import { useEffect, useRef, useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
+import { createPortal } from "react-dom";
 import Link from "next/link";
 import {
   ExternalLink, FileText, Loader2, Scale, X, ChevronDown, ChevronLeft, ChevronRight,
@@ -462,7 +463,10 @@ export default function DossierModal({
   }, [ouvert]);
 
   if (!detail && !loading && !showFallback) return null;
-  return (
+  // Rendue à la racine de la page : ouverte depuis un bloc animé (fiche d'un député…), la fiche
+  // restait prise dans ce bloc, sous l'en-tête du site qui masquait le bouton de fermeture.
+  if (typeof document === "undefined") return null;
+  return createPortal(
     <div className="fixed inset-0 z-[90] flex items-end justify-center bg-slate-950/70 sm:items-start sm:p-4 md:p-10" role="dialog" aria-modal="true" aria-label="Fiche de la loi" onClick={onClose}>
       <div
         onClick={e => e.stopPropagation()}
@@ -577,8 +581,11 @@ export default function DossierModal({
             <div className="mt-5 space-y-2.5 text-sm font-bold">
               <InitiatorField authorName={detail.dossier.author_name} />{" "}
               <div className="flex flex-wrap items-baseline gap-x-2 gap-y-1 text-slate-700 dark:text-slate-200">
-                <span className="shrink-0 text-muted-foreground">Mise à jour :</span>{" "}
-                <span>{formatDate(detail.dossier.source_updated_at)}</span>
+                {/* « Mise à jour : 14 avril » faisait croire à un suivi abandonné : c'est la date de la
+                    dernière étape (rien ne s'est passé depuis), alors que nous relisons les sources chaque jour. */}
+                <span className="shrink-0 text-muted-foreground">Dernière étape :</span>{" "}
+                <span>{formatDate(detail.dossier.latest_step_at || detail.dossier.source_updated_at)}{detail.dossier.status_label ? ` · ${detail.dossier.status_label}` : ""}</span>{" "}
+                {detail.dossier.updated_at && <span className="font-normal text-muted-foreground">(suivi vérifié le {formatDate(detail.dossier.updated_at)})</span>}
               </div>
             </div>{" "}
 
@@ -676,5 +683,5 @@ export default function DossierModal({
         )}
       </div>
     </div>
-  );
+  , document.body);
 }

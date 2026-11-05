@@ -1,6 +1,7 @@
 "use client";
 
 import { motion, AnimatePresence } from "framer-motion";
+import Portail from "@/components/shared/Portail";
 import { X, CheckCircle2, Users, Info, ExternalLink, ChevronLeft, ChevronRight } from "lucide-react";
 import { useEffect } from "react";
 import HemicycleVisual from "./HemicycleVisual";
@@ -30,7 +31,7 @@ export default function LawDetailModal({ law, isOpen, onClose, onNext, onPreviou
   if (!law) return null;
 
   return (
-    <AnimatePresence>
+    <Portail><AnimatePresence>
       {isOpen && (
         <div className="fixed inset-0 z-[100] flex items-center justify-center p-4">
           {/* Backdrop */}
@@ -219,6 +220,6 @@ export default function LawDetailModal({ law, isOpen, onClose, onNext, onPreviou
           </motion.div>
         </div>
       )}
-    </AnimatePresence>
+    </AnimatePresence></Portail>
   );
 }

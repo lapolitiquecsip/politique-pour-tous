@@ -1,6 +1,7 @@
 "use client";
 
 import { motion, AnimatePresence } from "framer-motion";
+import Portail from "@/components/shared/Portail";
 import { X, CheckCircle2, UserCheck, Info, ExternalLink, ChevronLeft, ChevronRight, FileText, Zap, ArrowRight, Calendar, Bookmark, BookmarkCheck, Loader2 } from "lucide-react";
 import { useEffect, useState } from "react";
 import Link from "next/link";
@@ -76,7 +77,7 @@ export default function UniversalLawModal({ law, isOpen, onClose, onNext, onPrev
   const isProposal = !isScrutin;
 
   return (
-    <AnimatePresence>
+    <Portail><AnimatePresence>
       {isOpen && (
         <div className="fixed inset-0 z-[100] flex items-center justify-center p-4 sm:p-6 md:p-10">
           {/* Backdrop */}
@@ -418,6 +419,6 @@ export default function UniversalLawModal({ law, isOpen, onClose, onNext, onPrev
           </motion.div>
         </div>
       )}
-    </AnimatePresence>
+    </AnimatePresence></Portail>
   );
 }

@@ -45,6 +45,8 @@ export interface LegislativeDossierDetail {
     id: string; title: string; category: LegislativeCategory; status_label: string;
     author_name: string | null; source_updated_at: string; source_urls: string[];
     current_chamber?: string | null; text_type?: string | null; status_code?: string | null;
+    /** Date de la dernière étape du parcours ; date de notre dernière relecture des sources. */
+    latest_step_at?: string | null; updated_at?: string | null;
   };
   promulgation: { jorf_id: string; nor: string; promulgated_at: string; source_url: string } | null;
   summary: { summary: string; source_urls: string[] } | null;

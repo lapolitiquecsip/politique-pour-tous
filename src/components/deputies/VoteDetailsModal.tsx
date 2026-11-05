@@ -1,6 +1,7 @@
 
 import React, { useEffect, useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
+import Portail from '@/components/shared/Portail';
 import { X, Landmark, ExternalLink, Info, CheckCircle2, XCircle, MinusCircle, AlertCircle, Layers, Lock, Star } from 'lucide-react';
 import { usePremium } from "@/lib/hooks/usePremium";
 import { groupLabel } from "@/lib/legislative-groups";
@@ -71,7 +72,7 @@ const VoteDetailsModal: React.FC<VoteDetailsModalProps> = ({ vote, onClose }) =>
   }
 
   return (
-    <AnimatePresence>
+    <Portail><AnimatePresence>
       <div className="fixed inset-0 z-[100] flex items-center justify-center p-4 md:p-6">
         {/* Backdrop */}
         <motion.div 
@@ -334,7 +335,7 @@ const VoteDetailsModal: React.FC<VoteDetailsModalProps> = ({ vote, onClose }) =>
           </div>
         </motion.div>
       </div>
-    </AnimatePresence>
+    </AnimatePresence></Portail>
   );
 };
 

@@ -2,6 +2,7 @@
 
 import React, { useEffect, useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
+import Portail from '@/components/shared/Portail';
 import { api } from '@/lib/api';
 import {
   X,
@@ -64,7 +65,7 @@ export default function LegalStatusModal({ isOpen, onClose, deputy, cible }: Leg
   }, [isOpen, isClean, rawIssues]);
 
   return (
-    <AnimatePresence>
+    <Portail><AnimatePresence>
       {isOpen && (
         <div className="fixed inset-0 z-[100] flex items-center justify-center p-4">
           <motion.div 
@@ -292,6 +293,6 @@ export default function LegalStatusModal({ isOpen, onClose, deputy, cible }: Leg
           </motion.div>
         </div>
       )}
-    </AnimatePresence>
+    </AnimatePresence></Portail>
   );
 }

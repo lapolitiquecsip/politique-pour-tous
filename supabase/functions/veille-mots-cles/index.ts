@@ -104,7 +104,7 @@ N'invente aucun sigle : n'en donne que si tu es certain qu'il existe.`;
 
 /* ───────────────────────────── Entrée ───────────────────────────── */
 
-const SOURCES = ["amendements", "comptes_rendus", "journal_officiel", "agenda", "textes"];
+const SOURCES = ["amendements", "comptes_rendus", "debats", "journal_officiel", "agenda", "textes"];
 
 serve(async (req) => {
   if (req.method === "OPTIONS") return new Response("ok", { headers: CORS });
@@ -173,6 +173,16 @@ serve(async (req) => {
           // Au-delà des huit lus en entier, le décompte vient du filtre de la base (même règle) : il est
           // exact, sauf s'il y a des exclusions, que la base n'applique pas.
           if (candidats.length > 8) { res.comptes_rendus.n += candidats.length - 8; res.comptes_rendus.approche = excl.length > 0; }
+        })(),
+        sources.includes("debats") && (async () => {
+          // Index plein texte des interventions en séance (sans accents) : « mot1 » or « mot2 »…
+          const plat = (t: string) => t.normalize("NFD").replace(/[̀-ͯ]/g, "").replace(/"/g, " ");
+          const requete = mots.map(m => `"${plat(m)}"`).join(" or ");
+          const { data, count } = await admin.from("seance_interventions").select("orateur, qualite, point, texte, seance_uid, date_seance", { count: "exact" })
+            .gte("date_seance", depuis).textSearch("recherche", requete, { type: "websearch", config: "french" }).order("date_seance", { ascending: false }).limit(60);
+          garder("debats", (data || []).map((i: any) => ({ titre: `${i.orateur ?? ""}${i.qualite ? `, ${i.qualite}` : ""} · ${i.point ?? ""}`, texte: i.texte ?? "", url: `https://www.assemblee-nationale.fr/dyn/17/comptes-rendus/seance/${i.seance_uid}` })));
+          // Le décompte vient de l'index ; les exemples sont vérifiés mot pour mot.
+          if ((count ?? 0) > res.debats.n) { res.debats.n = count ?? res.debats.n; res.debats.approche = excl.length > 0; }
         })(),
         sources.includes("journal_officiel") && (async () => {
           const { data } = await admin.from("jorf_texts").select("id, titre, explication").gte("edition_date", depuis.slice(0, 10)).or(ou(["titre", "explication"])).limit(500);

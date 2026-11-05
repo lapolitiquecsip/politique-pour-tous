@@ -17,7 +17,7 @@ type Veille = { id: number; intitule: string; mots_cles: string[]; exclusions: s
 type Apercu = { jours: number; sources: Record<string, { n: number; approche?: boolean; plus?: boolean; exemples: { titre: string; extrait: string; url: string | null }[] }> };
 
 const SOURCES: [string, string][] = [
-  ["amendements", "Amendements (Assemblée, Sénat)"], ["comptes_rendus", "Commissions (comptes rendus intégraux)"],
+  ["amendements", "Amendements (Assemblée, Sénat)"], ["comptes_rendus", "Commissions (comptes rendus intégraux)"], ["debats", "Débats en séance (Assemblée)"],
   ["journal_officiel", "Journal officiel"], ["agenda", "Agenda des deux chambres"], ["textes", "Nouveaux textes déposés"],
 ];
 const RYTHMES: [Rythme, string][] = [["immediat", "Dès que ça sort"], ["quotidien", "Chaque soir"], ["hebdo", "Chaque dimanche"]];
@@ -97,7 +97,7 @@ export default function Veilles() {
       <div className="rounded-[2rem] border border-border bg-card p-5 md:p-7">
         <h2 className="flex items-center gap-2 font-staatliches text-3xl uppercase leading-none tracking-tight text-foreground"><Search size={22} className="text-cyan-600" /> Mes veilles</h2>{" "}
         <p className="mt-2 max-w-3xl text-sm leading-relaxed text-muted-foreground">
-          Décrivez un sujet en une phrase : chaque heure, nous le cherchons dans les amendements de l&apos;Assemblée et du Sénat, les comptes rendus intégraux des commissions,
+          Décrivez un sujet en une phrase : chaque heure, nous le cherchons dans les amendements de l&apos;Assemblée et du Sénat, les comptes rendus intégraux des commissions, les débats en séance,
           le Journal officiel, l&apos;agenda des deux chambres et les nouveaux textes. Chaque alerte cite l&apos;extrait exact et renvoie au document officiel.
         </p>{" "}
 

@@ -123,6 +123,40 @@ const filtrerApplication = (q: any, f: FiltresApplication) => {
   return q;
 };
 
+/**
+ * Fusionne dans `d` le dossier de l'autre chambre pour le même texte : étapes et scrutins des
+ * deux chambres (sans doublon, dans l'ordre du temps), adresses officielles des deux, et le
+ * statut de celui dont la dernière étape est la plus récente (le texte est chez lui).
+ */
+function fusionnerNavette(d: LegislativeDossierDetail, autre: LegislativeDossierDetail, autreMeta: { current_chamber?: string | null; status_code?: string | null } | null) {
+  // Une même étape, nommée autrement par l'autre chambre (« Adoption en séance » / « Texte adopté ») :
+  // même jour, même chambre, même nature (dépôt, adoption, transmission…) = une seule étape.
+  const NATURES = ['depot', 'adopt', 'transmis', 'rapport', 'commission', 'promulg', 'rejet', 'cmp', 'saisine', 'decision'];
+  const cle = (s: { step_label: string; chamber: string; occurred_at: string | null }) => {
+    const l = s.step_label.normalize('NFD').replace(/[̀-ͯ]/g, '').toLowerCase();
+    return `${(s.occurred_at || '').slice(0, 10)}|${String(s.chamber || '').toUpperCase()}|${NATURES.find(n => l.includes(n)) ?? l}`;
+  };
+  const vus = new Set(d.steps.map(cle)); const ids = new Set(d.steps.map(s => s.official_id));
+  // Les grandes phases sans date (« 1ère lecture ») restent celles du dossier ouvert, en tête comme avant.
+  const ajouts = autre.steps.filter(s => s.occurred_at && !vus.has(cle(s)) && !ids.has(s.official_id));
+  d.steps = [...d.steps.filter(s => !s.occurred_at), ...[...d.steps.filter(s => s.occurred_at), ...ajouts]
+    .sort((a, b) => String(a.occurred_at).localeCompare(String(b.occurred_at)))];
+  const scrutins = new Set((d.scrutins || []).map((s: any) => s.official_id));
+  d.scrutins = [...(d.scrutins || []), ...(autre.scrutins || []).filter((s: any) => !scrutins.has(s.official_id))];
+  d.dossier.source_urls = [...new Set([...(d.dossier.source_urls || []), ...(autre.dossier.source_urls || [])])];
+  d.summary ??= autre.summary;
+  d.premium_analysis ??= autre.premium_analysis;
+  d.promulgation ??= autre.promulgation;
+  const moi = Date.parse(d.dossier.latest_step_at || '') || 0, lui = Date.parse(autre.dossier.latest_step_at || '') || 0;
+  if (lui > moi) {
+    d.dossier.status_label = autre.dossier.status_label;
+    d.dossier.latest_step_at = autre.dossier.latest_step_at;
+    if (autreMeta?.current_chamber) d.dossier.current_chamber = autreMeta.current_chamber;
+    if (autreMeta?.status_code) d.dossier.status_code = autreMeta.status_code;
+  }
+  d.dossier.updated_at = [d.dossier.updated_at, autre.dossier.updated_at].filter(Boolean).sort().pop() ?? null;
+}
+
 export const api = {
   health: async () => ({ status: 'ok', source: 'supabase-direct' }),
 
@@ -1483,17 +1517,33 @@ export const api = {
       p_limit: filters.limit || 20,
     });
     if (error) throw error;
-    const items = (data || []) as LegislativeListItem[];
+    let items = (data || []) as LegislativeListItem[];
     // Enrichissement (le RPC ne les renvoie pas) : type de texte + titre synthétisé.
     if (items.length) {
       const ids = items.map(i => i.id);
       const [types, titles] = await Promise.all([
-        supabase.from('legislative_dossiers').select('id, text_type').in('id', ids),
+        supabase.from('legislative_dossiers').select('id, text_type, companion_dossier_id').in('id', ids),
         supabase.from('dossier_display_title').select('dossier_id, display_title').in('dossier_id', ids),
       ]);
       const typeById = new Map((types.data || []).map((t: any) => [t.id, t.text_type]));
       const titleById = new Map((titles.data || []).map((t: any) => [t.dossier_id, t.display_title]));
       for (const it of items) { (it as any).text_type = typeById.get(it.id) || null; it.display_title = titleById.get(it.id) || null; }
+      // Un même texte a un dossier par chambre (relié par companion_dossier_id) : sans filtre de
+      // chambre, on ne montre que le plus avancé des deux. La règle ne dépend que de la paire,
+      // donc le texte n'apparaît qu'une fois, quelle que soit la page où tombe chacun des dossiers.
+      if (!filters.chamber) {
+        const compagnon = new Map((types.data || []).filter((t: any) => t.companion_dossier_id).map((t: any) => [t.id, t.companion_dossier_id as string]));
+        if (compagnon.size) {
+          const { data: autres } = await supabase.from('legislative_dossiers').select('id, latest_step_at').in('id', [...compagnon.values()]);
+          const etapeDe = new Map((autres || []).map((a: any) => [a.id, a.latest_step_at as string | null]));
+          const plusAvance = (it: LegislativeListItem) => {
+            const c = compagnon.get(it.id); if (!c || !etapeDe.has(c)) return true;
+            const moi = Date.parse(it.latest_step_at || '') || 0, lui = Date.parse(etapeDe.get(c) || '') || 0;
+            return moi > lui || (moi === lui && it.id < c);
+          };
+          items = items.filter(plusAvance);
+        }
+      }
     }
     return items;
   },
@@ -1661,7 +1711,7 @@ export const api = {
     return (data as string | null) || null;
   },
 
-  getLegislativeDossier: async (id: string) => {
+  getLegislativeDossier: async (id: string): Promise<LegislativeDossierDetail | null> => {
     // Un second essai : sous charge, la base peut refuser un appel isolé, et la
     // fiche passerait à tort pour « en cours de consolidation ».
     let { data, error } = await supabase.rpc('public_legislative_dossier', { p_id: id });
@@ -1673,8 +1723,16 @@ export const api = {
     const detail = data as LegislativeDossierDetail | null;
     // Enrichit la fiche avec la chambre saisie, le type et l'étape (non portés par le RPC).
     if (detail?.dossier?.id) {
-      const { data: meta } = await supabase.from('legislative_dossiers').select('current_chamber, text_type, status_code').eq('id', detail.dossier.id).maybeSingle();
+      const { data: meta } = await supabase.from('legislative_dossiers').select('current_chamber, text_type, status_code, companion_dossier_id').eq('id', detail.dossier.id).maybeSingle();
       if (meta) Object.assign(detail.dossier, meta);
+      // Le dossier de l'autre chambre (même texte) : parcours complet, et statut le plus récent.
+      if (meta?.companion_dossier_id) {
+        const [{ data: autre }, { data: autreMeta }] = await Promise.all([
+          supabase.rpc('public_legislative_dossier', { p_id: meta.companion_dossier_id }),
+          supabase.from('legislative_dossiers').select('current_chamber, status_code').eq('id', meta.companion_dossier_id).maybeSingle(),
+        ]);
+        if (autre?.dossier) fusionnerNavette(detail, autre as LegislativeDossierDetail, autreMeta);
+      }
     }
     return detail;
   },

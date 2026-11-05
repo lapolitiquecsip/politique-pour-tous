@@ -4,9 +4,10 @@ import { useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import {
   Search, Loader2, Sparkles, Scale, HandCoins, Hourglass, Info, ExternalLink, AlertTriangle, RotateCw,
-  Crown, Landmark, Calculator, ChevronDown, Lightbulb, ShieldCheck,
+  Crown, Landmark, Calculator, ChevronDown, Lightbulb, ShieldCheck, FileText, Printer,
 } from "lucide-react";
 import { supabase } from "@/lib/supabase";
+import { construireNote, telechargerWord, imprimerPdf } from "@/lib/noteSynthese";
 
 /**
  * « Tout sur un sujet » — le récap thématique de l'offre Pro.
@@ -239,6 +240,17 @@ export default function TopicBrief() {
   const [erreur, setErreur] = useState<string | null>(null);
   const [docsOuverts, setDocsOuverts] = useState(false);
   const [tousLesTextes, setTousLesTextes] = useState(false);
+  const [note, setNote] = useState<"" | "word" | "pdf">("");
+
+  /** La note prête à envoyer : la synthèse + le volet parlementaire du moment, sources numérotées. */
+  async function exporterNote(format: "word" | "pdf") {
+    if (!res?.brief || note) return;
+    setNote(format);
+    try {
+      const { titre, html } = await construireNote(res.brief, res.sources ?? [], res.keyword || mot, res.verifie_le);
+      if (format === "word") telechargerWord(titre, html); else imprimerPdf(html);
+    } finally { setNote(""); }
+  }
 
   async function chercher(sujet?: string, refaire = false) {
     const q = (sujet ?? mot).trim();
@@ -410,7 +422,17 @@ export default function TopicBrief() {
                       <p className="text-[10px] font-black uppercase tracking-widest text-white/35">
                         Synthèse du {dateCourte(res.generated_at)}
                       </p>
-                    )}
+                    )}{" "}
+                    <span className="flex w-full flex-wrap gap-2 sm:w-auto">
+                      <button type="button" onClick={() => exporterNote("word")} disabled={!!note}
+                        className="inline-flex min-h-[36px] items-center gap-1.5 rounded-xl bg-white/10 px-3 text-[12px] font-bold text-white ring-1 ring-white/15 transition hover:bg-white/20 disabled:opacity-50">
+                        {note === "word" ? <Loader2 size={13} className="animate-spin" /> : <FileText size={13} />} Note Word
+                      </button>{" "}
+                      <button type="button" onClick={() => exporterNote("pdf")} disabled={!!note}
+                        className="inline-flex min-h-[36px] items-center gap-1.5 rounded-xl bg-white/10 px-3 text-[12px] font-bold text-white ring-1 ring-white/15 transition hover:bg-white/20 disabled:opacity-50">
+                        {note === "pdf" ? <Loader2 size={13} className="animate-spin" /> : <Printer size={13} />} PDF
+                      </button>
+                    </span>
                   </div>{" "}
 
                   {/* La garantie de fraîcheur, dite au lecteur : les sources sont

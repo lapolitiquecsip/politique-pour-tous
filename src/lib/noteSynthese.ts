@@ -21,19 +21,21 @@ const jour = (d: string | null) => (d ? new Date(d).toLocaleDateString("fr-FR", 
 
 async function voletParlementaire(sujet: string) {
   const depuis = new Date(Date.now() - 365 * 864e5).toISOString().slice(0, 10);
-  const [qui, debats] = await Promise.all([
+  const [qui, debats, lobby] = await Promise.all([
     supabase.rpc("cartographie_sujet", { p_q: sujet, p_depuis: depuis, p_limite: 10 }),
     supabase.rpc("chercher_debats", { p_q: sujet, p_depuis: depuis, p_limite: 5 }),
+    supabase.rpc("lobbying_sujet", { p_q: sujet, p_depuis: new Date(Date.now() - 730 * 864e5).toISOString().slice(0, 10), p_limite: 8 }),
   ]);
   return {
     qui: (qui.data as { nom: string; groupe: string | null; chambre: string; interventions: number; questions?: number; amendements: number; adoptes: number }[]) || [],
     debats: (debats.data as { orateur: string | null; qualite: string | null; date_seance: string; point: string | null; extrait: string; url: string | null }[]) || [],
+    lobby: (lobby.data as { organisation: string; activites: number; objets: string[] | null; url: string | null }[]) || [],
   };
 }
 
 export async function construireNote(brief: BriefNote, sources: SourceNote[], motCle: string, verifieLe?: string | null): Promise<{ titre: string; html: string }> {
   const titre = brief.sujet || motCle;
-  const p = await voletParlementaire(motCle).catch(() => ({ qui: [], debats: [] }));
+  const p = await voletParlementaire(motCle).catch(() => ({ qui: [], debats: [], lobby: [] }));
   const points = (titreSection: string, l?: Point[]) => (l?.length ? `<h2>${esc(titreSection)}</h2>` + l.map(x =>
     `<h3>${esc(x.titre)}${renvois(x.sources)}</h3>${x.detail ? `<p>${esc(x.detail)}</p>` : ""}${x.points?.length ? `<ul>${x.points.map(y => `<li>${esc(y)}</li>`).join("")}</ul>` : ""}`).join("") : "");
   const corps = [
@@ -46,6 +48,7 @@ export async function construireNote(brief: BriefNote, sources: SourceNote[], mo
     points("En discussion", brief.en_cours),
     p.qui.length ? `<h2>Qui pèse au Parlement (12 derniers mois)</h2><table><tr><th>Parlementaire</th><th>Groupe</th><th>Interventions</th><th>Questions</th><th>Amendements</th><th>Adoptés</th></tr>${p.qui.map(a => `<tr><td>${esc(a.nom)}</td><td>${esc(a.groupe)}${a.chambre === "SENAT" ? " (Sénat)" : ""}</td><td>${a.interventions}</td><td>${a.questions ?? 0}</td><td>${a.amendements}</td><td>${a.adoptes}</td></tr>`).join("")}</table>` : "",
     p.debats.length ? `<h2>Dernières prises de parole en séance</h2>` + p.debats.map(d => `<p><b>${esc(d.orateur)}</b>${d.qualite ? `, ${esc(d.qualite)}` : ""} — ${jour(d.date_seance)}${d.point ? `, « ${esc(d.point)} »` : ""} :<br>« ${esc(d.extrait.replace(/\[\[|\]\]/g, ""))} »${d.url ? ` <a href="${esc(d.url)}">compte rendu</a>` : ""}</p>`).join("") : "",
+    p.lobby.length ? `<h2>Représentants d'intérêts actifs (répertoire HATVP, 2 ans)</h2><ul>${p.lobby.map(o => `<li><b>${esc(o.organisation)}</b> — ${o.activites} activité${o.activites > 1 ? "s" : ""} déclarée${o.activites > 1 ? "s" : ""}${o.objets?.[0] ? ` ; dernière : « ${esc(o.objets[0])} »` : ""}${o.url ? ` (<a href="${esc(o.url)}">fiche HATVP</a>)` : ""}</li>`).join("")}</ul>` : "",
     brief.a_savoir?.length ? `<h2>À savoir</h2><ul>${brief.a_savoir.map(x => `<li>${esc(x)}</li>`).join("")}</ul>` : "",
     brief.limites ? `<p class="meta"><i>Limites :</i> ${esc(brief.limites)}</p>` : "",
     sources.length ? `<h2>Sources</h2><ol>${sources.map(s => `<li>${esc(s.title)}${s.date ? ` (${jour(s.date)})` : ""}${s.url ? ` — <a href="${esc(s.url)}">${esc(s.url)}</a>` : ""}</li>`).join("")}</ol>` : "",

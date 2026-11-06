@@ -2,7 +2,7 @@
 
 import { useEffect, useMemo, useState } from "react";
 import Link from "next/link";
-import { Loader2, Network, Search, X } from "lucide-react";
+import { Briefcase, ExternalLink, Loader2, Network, Search, X } from "lucide-react";
 import { supabase } from "@/lib/supabase";
 
 /**
@@ -14,6 +14,7 @@ import { supabase } from "@/lib/supabase";
  */
 
 type Acteur = { chambre: "AN" | "SENAT"; slug: string; nom: string; groupe: string | null; interventions: number; questions: number; amendements: number; adoptes: number; score: number };
+type Lobby = { organisation: string; categorie: string | null; url: string | null; activites: number; derniere: string | null; objets: string[] | null; cibles: string[] | null };
 type Cosignature = { chambre: string; slug: string; groupe: string | null; cosignataires: string | null; sort: string | null };
 const PERIODES: [string, string][] = [["90", "3 mois"], ["365", "12 mois"], ["", "Depuis 2024"]];
 const plat = (s: string) => s.normalize("NFD").replace(/[̀-ͯ]/g, "").toLowerCase();
@@ -24,6 +25,7 @@ export default function Cartographie() {
   const [periode, setPeriode] = useState("365");
   const [acteurs, setActeurs] = useState<Acteur[] | null>(null);
   const [cosig, setCosig] = useState<Cosignature[]>([]);
+  const [lobbies, setLobbies] = useState<Lobby[]>([]);
   const [charge, setCharge] = useState(false);
   const [erreur, setErreur] = useState(false);
 
@@ -35,13 +37,15 @@ export default function Cartographie() {
     (async () => {
       setCharge(true); setErreur(false);
       const depuis = periode ? new Date(Date.now() - Number(periode) * 864e5).toISOString().slice(0, 10) : null;
-      const [a, c] = await Promise.all([
+      const [a, c, l] = await Promise.all([
         supabase.rpc("cartographie_sujet", { p_q: q, p_depuis: depuis, p_limite: 60 }),
         supabase.rpc("cosignatures_sujet", { p_q: q, p_depuis: depuis }),
+        // Le lobbying se déclare par exercice annuel : au moins deux ans de recul.
+        supabase.rpc("lobbying_sujet", { p_q: q, p_depuis: new Date(Date.now() - Math.max(Number(periode || 1000), 730) * 864e5).toISOString().slice(0, 10), p_limite: 12 }),
       ]);
       if (!actif) return;
       if (a.error) { setErreur(true); setCharge(false); return; }
-      setActeurs((a.data as Acteur[]) || []); setCosig((c.data as Cosignature[]) || []); setCharge(false);
+      setActeurs((a.data as Acteur[]) || []); setCosig((c.data as Cosignature[]) || []); setLobbies((l.data as Lobby[]) || []); setCharge(false);
     })();
     return () => { actif = false; };
   }, [q, periode]);
@@ -136,6 +140,24 @@ export default function Cartographie() {
                 ))}
               </ul>
             </div>{" "}
+            {lobbies.length > 0 && (
+              <div>
+                <h3 className="flex items-center gap-1.5 text-[11px] font-black uppercase tracking-widest text-muted-foreground"><Briefcase size={13} /> Qui fait du lobbying</h3>{" "}
+                <p className="mt-1 text-[11.5px] leading-snug text-muted-foreground">Activités déclarées au répertoire de la HATVP (deux dernières années au moins).</p>{" "}
+                <ul className="mt-2 space-y-2.5">
+                  {lobbies.map(o => (
+                    <li key={o.organisation} className="text-[12.5px] leading-snug">
+                      <p className="flex items-baseline justify-between gap-2">
+                        {o.url ? <a href={o.url} target="_blank" rel="noopener noreferrer" className="font-bold text-foreground hover:underline">{o.organisation} <ExternalLink size={10} className="inline" /></a> : <span className="font-bold text-foreground">{o.organisation}</span>}{" "}
+                        <span className="shrink-0 font-black tabular-nums text-foreground">{o.activites}</span>
+                      </p>{" "}
+                      {o.objets?.[0] && <p className="mt-0.5 line-clamp-2 text-muted-foreground">« {o.objets[0]} »</p>}{" "}
+                      {o.cibles?.length ? <p className="mt-0.5 text-[11px] text-muted-foreground">Cible : {o.cibles.slice(0, 2).join(" ; ")}</p> : null}
+                    </li>
+                  ))}
+                </ul>
+              </div>
+            )}{" "}
             <p className="text-[11.5px] leading-relaxed text-muted-foreground">
               <span className="mr-1 inline-block h-2 w-2 rounded-full bg-amber-500" />interventions · <span className="mx-1 inline-block h-2 w-2 rounded-full bg-rose-400" />questions · <span className="mx-1 inline-block h-2 w-2 rounded-full bg-sky-500" />amendements · <span className="mx-1 inline-block h-2 w-2 rounded-full bg-emerald-500" />adoptés.
               Interventions et questions : Assemblée seulement pour l&apos;instant ; au Sénat, les amendements.

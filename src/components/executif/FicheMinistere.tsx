@@ -276,9 +276,10 @@ function BlocQuestions({ q, sources, maj }: { q: Questions; sources: Source[]; m
 
 // ── Actualités et Journal officiel ─────────────────────────────────────────────────
 
+// « Publication de … » au JO = entrée en vigueur en France d'un accord ou d'une décision internationale.
 const categorieJO = (t: string) =>
-  /^nominations?\b|^nomination|cessation de fonctions|^d[ée]cret du .* portant nomination/i.test(t) ? "Nominations"
-  : /accord|convention|avenant|protocole|r[ée]solution|trait[ée]|amendements? [àa] l/i.test(t) ? "Accords internationaux"
+  /nomination|cessation de fonctions|nomm[ée]/i.test(t) ? "Nominations"
+  : /^publication|accord|convention|avenant|protocole|r[ée]solution|trait[ée]/i.test(t) ? "Accords internationaux"
   : "Décrets et arrêtés";
 
 function BlocActualites({ actus }: { actus: Actu[] }) {

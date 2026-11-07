@@ -5,6 +5,7 @@ import { Loader2, ChevronDown, TrendingUp, TrendingDown } from "lucide-react";
 import { api } from "@/lib/api";
 import { EnTete, ZonePro, Methode } from "./VerrouPro";
 import { couleur, heures, evolution } from "@/lib/dynamiques";
+import AntennePanel from "./AntennePanel";
 
 type Candidat = { slug: string; full_name: string; photo_url: string | null; party: string | null };
 type Releve = Awaited<ReturnType<typeof api.getArcomTempsParole>>[number];
@@ -45,21 +46,27 @@ export default function ArcomPanel({ candidats }: { candidats: Candidat[] }) {
     })).sort((a, b) => b.secondes - a.secondes);
   }, [rel, courant, precedent, tousMois, parSlug]);
   const total = lignes.reduce((a, x) => a + x.secondes, 0);
+  // Le mois le plus récent publié, quand il a été relevé, et le suivant attendu (~6 semaines après sa fin).
+  const dernierMois = tousMois[tousMois.length - 1];
+  const releve = (rel || []).filter(r => r.mois === dernierMois).map(r => r.maj_le).filter(Boolean).sort().pop() ?? null;
+  const attendu = dernierMois ? (() => { const d = new Date(dernierMois + "T12:00:00Z"); d.setUTCMonth(d.getUTCMonth() + 1); const pub = new Date(d); pub.setUTCMonth(pub.getUTCMonth() + 2); return { mois: nomMois(d.toISOString().slice(0, 10)), vers: pub.toLocaleDateString("fr-FR", { month: "long", year: "numeric" }) }; })() : null;
 
   return (
     <section id="temps-de-parole" className="scroll-mt-36">
       <EnTete numero="03" rubrique="Télé et radio" pro titre="Temps de" accent="parole" degrade="from-sky-500 to-cyan-500"
-        chapeau="Chiffres officiels de l'Arcom : le temps pendant lequel chaque candidat a lui-même pris la parole sur une trentaine de chaînes et de radios, mois par mois. L'Arcom les publie avec environ deux mois de décalage." />
+        chapeau="Deux mesures complémentaires. En direct : chaque heure, les entretiens, débats et prises de parole des candidats diffusés par 19 chaînes de télé et de radio. Officiel : le temps de parole décompté par l'Arcom sur une trentaine d'antennes, publié mois par mois avec environ six semaines de retard." />
 
       {!rel ? <div className="flex justify-center py-16"><Loader2 className="animate-spin text-sky-500" /></div>
         : !lignes.length ? <p className="rounded-3xl border border-dashed border-border p-8 text-center text-sm text-muted-foreground">Aucune donnée Arcom disponible pour l&apos;instant.</p>
         : (
-        <ZonePro titre="Le temps de parole" points={["Heures d'antenne de chaque candidat", "Évolution mois par mois", "Détail chaîne par chaîne"]}>
-        <div className="rounded-[2rem] border border-border bg-card p-5 md:p-6">
+        <ZonePro titre="Le temps de parole" points={["Passages télé et radio relevés chaque heure", "Temps de parole officiel de l'Arcom, mois par mois", "Détail chaîne par chaîne, avec les liens"]}>
+        <AntennePanel candidats={candidats} />
+        <div className="mt-4 rounded-[2rem] border border-border bg-card p-5 md:p-6">
           <div className="mb-4 flex flex-wrap items-center justify-between gap-3">
             <div>
+              <p className="text-[10px] font-black uppercase tracking-widest text-sky-700 dark:text-sky-400">Officiel · Arcom</p>
               <h3 className="text-sm font-black uppercase tracking-widest text-foreground">{nomMois(courant)}</h3>{" "}
-              <p className="text-[11px] text-muted-foreground">{heures(total)} de parole au total pour les candidats déclarés</p>
+              <p className="text-[11px] text-muted-foreground">{heures(total)} de parole au total pour les candidats suivis (déclarés ou pressentis)</p>
             </div>{" "}
             <div className="flex flex-wrap gap-1">
               {tousMois.slice(-6).map(m => (
@@ -69,6 +76,12 @@ export default function ArcomPanel({ candidats }: { candidats: Candidat[] }) {
             </div>
           </div>{" "}
 
+          {attendu && (
+            <p className="mb-4 rounded-xl bg-sky-500/[0.07] px-3 py-2 text-[12px] leading-snug text-foreground">
+              Dernier mois publié par l&apos;Arcom : <strong>{nomMois(dernierMois)}</strong>{releve ? `, relevé le ${new Date(releve).toLocaleDateString("fr-FR", { day: "numeric", month: "long" })}` : ""}.
+              {" "}{attendu.mois.replace(/^./, x => x.toUpperCase())} est attendu vers {attendu.vers} ; il apparaîtra ici le jour même de sa publication.
+            </p>
+          )}
           <div className="space-y-2">
             {lignes.map((l, i) => {
               const c = parSlug.get(l.slug)!; const col = couleur(l.slug); const open = ouvert === l.slug;
@@ -120,7 +133,14 @@ export default function ArcomPanel({ candidats }: { candidats: Candidat[] }) {
 
         </div>
         <Methode>
-            Source : Arcom, relevés « hors période électorale » (journaux, magazines et autres émissions). Temps de parole de la personne
+            En direct : vidéos mises en ligne par les chaînes officielles de France Inter, franceinfo, RTL, BFMTV, LCI, RMC, Europe 1, CNews,
+            TF1 Info, Public Sénat, LCP, France Culture, Quotidien, C à vous, Télématin, Sud Radio, BFM Business, Radio J et ici, relevées
+            chaque heure. Un passage compte quand le titre montre le candidat parler (invité, entretien, débat, citation dont il est l&apos;auteur) ;
+            un sujet sur lui ne compte pas. La durée des entretiens et débats est comptée (partagée entre les candidats d&apos;un débat ; une
+            émission complète compte au plus 30 min) ; un extrait de moins de 6 min est compté en nombre, pas en temps. C&apos;est du temps
+            d&apos;antenne questions comprises, une estimation et non le décompte officiel.
+            <br /><br />
+            Officiel : Arcom, relevés « hors période électorale » (journaux, magazines et autres émissions). Temps de parole de la personne
             elle-même, hors soutiens. Un candidat sous le seuil de publication de l&apos;Arcom n&apos;apparaît pas. Les barres résument les douze
             derniers mois publiés ; chaque nouvelle publication de l&apos;Arcom est reprise automatiquement. L&apos;évolution compare au mois
             précédent : en heures quand ce mois comptait moins de 2 h (un pourcentage serait trompeur), en multiple (×2, ×3…) quand le temps a

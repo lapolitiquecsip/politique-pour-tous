@@ -1035,9 +1035,18 @@ export const api = {
     };
   },
   getArcomTempsParole: async () => {
-    const { data, error } = await supabase.from('arcom_temps_parole').select('slug, mois, secondes, detail').order('mois');
+    const { data, error } = await supabase.from('arcom_temps_parole').select('slug, mois, secondes, detail, maj_le').order('mois');
     if (error) throw error;
-    return (data || []) as { slug: string; mois: string; secondes: number; detail: Record<string, number> }[];
+    return (data || []) as { slug: string; mois: string; secondes: number; detail: Record<string, number>; maj_le: string | null }[];
+  },
+  /** Passages des candidats dans les émissions mises en ligne par les chaînes (relevé horaire, 30 derniers jours). */
+  getAntennePassages: async (jours = 30) => {
+    const depuis = new Date(Date.now() - jours * 86400000).toISOString();
+    const { data, error } = await supabase.from('antenne_passages')
+      .select('video_id, slug, media, type_media, titre, url, publie_le, duree_s, format, secondes_attribuees, releve_le')
+      .gte('publie_le', depuis).order('publie_le', { ascending: false }).limit(2000);
+    if (error) throw error;
+    return (data || []) as { video_id: string; slug: string; media: string; type_media: string; titre: string; url: string; publie_le: string; duree_s: number; format: 'entretien' | 'debat' | 'extrait'; secondes_attribuees: number; releve_le: string }[];
   },
 
   /* ════════ VEILLE RÉSEAUX SOCIAUX DES CANDIDATS (abonnement Pro) ════════ */

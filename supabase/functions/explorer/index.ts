@@ -36,11 +36,15 @@ async function budgetDisponible(admin: any): Promise<boolean> {
 // deno-lint-ignore no-explicit-any
 async function modele(admin: any, systeme: string, utilisateur: string, json_: boolean): Promise<{ texte: string; modele: string; cout: number }> {
   const cle = Deno.env.get("LLM_FREE_API_KEY");
+  // Gemini saturé : 15 s par modèle, 35 s en tout, puis le secours — sinon la fonction dépassait sa
+  // durée maximale avant d'arriver à DeepSeek, et l'abonné recevait une erreur.
+  const debut = Date.now();
   if (cle) for (const m of MODELES) {
+    if (Date.now() - debut > 35000) break;
     for (const reflexion of [true, false]) {
       try {
         const r = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/${m}:generateContent?key=${cle}`, {
-          method: "POST", headers: { "Content-Type": "application/json" }, signal: AbortSignal.timeout(40000),
+          method: "POST", headers: { "Content-Type": "application/json" }, signal: AbortSignal.timeout(15000),
           body: JSON.stringify({ systemInstruction: { parts: [{ text: systeme }] }, contents: [{ role: "user", parts: [{ text: utilisateur }] }],
             generationConfig: { temperature: 0.1, maxOutputTokens: 2048, ...(json_ ? { responseMimeType: "application/json" } : {}), ...(reflexion ? { thinkingConfig: { thinkingBudget: 0 } } : {}) } }),
         });
@@ -90,6 +94,18 @@ serve(async (req) => {
     const { data: profil } = await admin.from("profiles").select("subscription_tier").eq("id", user.id).single();
     if (String(profil?.subscription_tier ?? "").toLowerCase() !== "pro") return json({ error: "réservé aux abonnés Pro" }, 403);
     const corps = await req.json().catch(() => ({}));
+
+    // Diagnostic (administrateurs) : le secours DeepSeek répond-il ? Un appel minuscule, sans Gemini.
+    if (corps.action === "diagnostic") {
+      const { data: adm } = await admin.from("administrateurs").select("user_id").eq("user_id", user.id).maybeSingle();
+      if (!adm) return json({ error: "réservé aux administrateurs" }, 403);
+      const ds = Deno.env.get("DEEPSEEK_API_KEY");
+      if (!ds) return json({ deepseek: "absente" });
+      const r = await fetch("https://api.deepseek.com/chat/completions", { method: "POST", headers: { Authorization: `Bearer ${ds}`, "Content-Type": "application/json" }, signal: AbortSignal.timeout(30000),
+        body: JSON.stringify({ model: "deepseek-chat", max_tokens: 5, messages: [{ role: "user", content: "Réponds seulement : OK" }] }) }).catch(() => null);
+      const d = r?.ok ? await r.json() : null;
+      return json({ deepseek: r?.ok ? "ok" : `refus ${r?.status ?? "réseau"}`, reponse: d?.choices?.[0]?.message?.content ?? null, budget_disponible: await budgetDisponible(admin), gemini: !!Deno.env.get("LLM_FREE_API_KEY") });
+    }
 
     // ── Connecteur MCP : clés personnelles ──
     if (corps.action === "cle_mcp") {

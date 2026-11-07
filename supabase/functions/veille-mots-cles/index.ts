@@ -73,7 +73,7 @@ async function demander(systeme: string, utilisateur: string): Promise<string> {
   const appeler = (modele: string, avecReflexion: boolean) => fetch(
     `https://generativelanguage.googleapis.com/v1beta/models/${modele}:generateContent?key=${cle}`,
     {
-      method: "POST", headers: { "Content-Type": "application/json" }, signal: AbortSignal.timeout(30000),
+      method: "POST", headers: { "Content-Type": "application/json" }, signal: AbortSignal.timeout(12000),
       body: JSON.stringify({
         systemInstruction: { parts: [{ text: systeme }] },
         contents: [{ role: "user", parts: [{ text: utilisateur }] }],
@@ -82,7 +82,9 @@ async function demander(systeme: string, utilisateur: string): Promise<string> {
     },
   );
   let derniere = "";
+  const debut = Date.now();
   for (const modele of MODELES) {
+    if (Date.now() - debut > 25000) break;
     try {
       let r = await appeler(modele, true);
       if (r.status === 400) r = await appeler(modele, false);
@@ -91,6 +93,14 @@ async function demander(systeme: string, utilisateur: string): Promise<string> {
       const t = d?.candidates?.[0]?.content?.parts?.map((p: { text?: string }) => p.text ?? "").join("") ?? "";
       if (t.trim()) return t;
     } catch (e) { derniere = (e as Error).message; }
+  }
+  // Secours payant (≈ 0,0005 $ l'appel) quand la clé est configurée.
+  const ds = Deno.env.get("DEEPSEEK_API_KEY");
+  if (ds) {
+    const r = await fetch("https://api.deepseek.com/chat/completions", { method: "POST", headers: { Authorization: `Bearer ${ds}`, "Content-Type": "application/json" }, signal: AbortSignal.timeout(30000),
+      body: JSON.stringify({ model: "deepseek-chat", temperature: 0.2, max_tokens: 800, response_format: { type: "json_object" }, messages: [{ role: "system", content: systeme }, { role: "user", content: utilisateur }] }) }).catch(() => null);
+    const t = r?.ok ? (await r.json())?.choices?.[0]?.message?.content ?? "" : "";
+    if (t.trim()) return t;
   }
   throw new Error(`aucun modèle disponible (${derniere})`);
 }
@@ -130,7 +140,7 @@ serve(async (req) => {
         if (mots.length) return json({ intitule: String(r.intitule || phrase).slice(0, 80), mots_cles: mots, exclusions: liste(r.exclusions, 5) });
       } catch { /* quota du modèle gratuit épuisé : secours ci-dessous */ }
       // Secours sans IA : les mots porteurs de la phrase, à compléter par le membre.
-      const VIDES = new Set(["le", "la", "les", "un", "une", "des", "du", "de", "d", "l", "et", "ou", "en", "au", "aux", "sur", "pour", "par", "avec", "sans", "dans", "son", "sa", "ses", "leur", "leurs", "ce", "cette", "ces", "qui", "que", "dont", "est", "sont", "impact", "developpement", "question", "sujet", "loi", "lois", "projet", "texte", "mesure", "mesures"]);
+      const VIDES = new Set(["le", "la", "les", "un", "une", "des", "du", "de", "d", "l", "et", "ou", "en", "au", "aux", "sur", "pour", "par", "avec", "sans", "dans", "son", "sa", "ses", "leur", "leurs", "ce", "cette", "ces", "qui", "que", "dont", "est", "sont", "impact", "developpement", "question", "sujet", "loi", "lois", "projet", "texte", "mesure", "mesures", "reforme", "reformes", "evolution", "politique", "situation", "avenir", "place", "role", "acces"]);
       const mots = [...new Set(phrase.split(/[^\p{L}\p{N}-]+/u).filter(m => m.length >= 3 && !VIDES.has(m.normalize("NFD").replace(/[̀-ͯ]/g, "").toLowerCase())))].slice(0, 8);
       return json({ intitule: phrase.slice(0, 80), mots_cles: mots, exclusions: [], secours: true });
     }

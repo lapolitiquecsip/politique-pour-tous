@@ -94,7 +94,8 @@ export const STRIPE_LINKS: Record<string, { monthly: string; annually?: string }
  * À passer à `true` le jour où les liens sont recréés en mode Live — c'est le seul
  * interrupteur à actionner, tout le reste du parcours est déjà en place.
  */
-export const SALES_OPEN = false;
+// Vente ouverte le 07/11/2026 à la demande de l'éditeur (3 liens réels vérifiés actifs, webhook signé).
+export const SALES_OPEN = true;
 
 /** Niveaux d'accès, du plus faible au plus fort. L'ordre sert aux comparaisons. */
 export const TIER_ORDER = ["free", "elite", "pro"] as const;

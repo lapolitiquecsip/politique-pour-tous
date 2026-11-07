@@ -355,9 +355,14 @@ function PageOffre() {
     );
     return (
       <button type="button" onClick={() => choisir(cle)}
-        className={`flex min-h-[48px] items-center justify-center gap-2 rounded-2xl px-5 text-[14px] font-black shadow-lg transition hover:brightness-110 active:scale-[0.99] ${plein ? "w-full" : ""} ${pro ? "bg-gradient-to-r from-fuchsia-500 to-purple-600 text-white shadow-fuchsia-500/30" : "bg-gradient-to-r from-amber-400 to-yellow-500 text-slate-950 shadow-amber-500/25"}`}>
-        {pro ? <LineChart size={16} /> : <Star size={16} className="fill-current" />}
-        {pro ? (estPremium ? "Passer au Pro" : "Choisir Pro") : "Devenir Premium"}
+        className={`group relative flex min-h-[50px] items-center justify-center gap-2 overflow-hidden whitespace-nowrap rounded-xl px-4 text-[14px] font-black tracking-tight shadow-lg ring-1 ring-inset transition duration-200 hover:-translate-y-0.5 hover:shadow-xl active:translate-y-0 active:scale-[0.98] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-offset-2 ${plein ? "w-full" : ""} ${pro
+          ? "bg-gradient-to-br from-fuchsia-500 via-purple-600 to-violet-700 text-white shadow-purple-600/30 ring-white/20 hover:shadow-purple-600/40 focus-visible:ring-purple-500"
+          : "bg-gradient-to-br from-amber-300 via-amber-400 to-orange-400 text-slate-950 shadow-amber-500/30 ring-white/40 hover:shadow-amber-500/40 focus-visible:ring-amber-500"}`}>
+        {/* reflet en haut du bouton */}
+        <span aria-hidden className="pointer-events-none absolute inset-x-0 top-0 h-1/2 bg-gradient-to-b from-white/25 to-transparent" />
+        {pro ? <LineChart size={16} className="relative" /> : <Star size={16} className="relative fill-current" />}
+        <span className="relative">{pro ? (estPremium ? "Passer au Pro" : "Choisir Pro") : "Devenir Premium"}</span>
+        <ArrowRight size={15} className="relative -ml-0.5 opacity-70 transition-transform duration-200 group-hover:translate-x-0.5 group-hover:opacity-100" />
       </button>
     );
   };
@@ -449,7 +454,7 @@ function PageOffre() {
 
           {/* Le tableau. En-tête collant : on garde le nom et le prix des formules sous les yeux. */}
           <div className="rounded-3xl border border-border bg-card shadow-sm">
-            <div className="sticky top-16 z-20 grid grid-cols-[minmax(0,1fr)_54px_68px_68px] items-end rounded-t-3xl border-b border-border bg-card/95 backdrop-blur md:grid-cols-[minmax(0,1fr)_130px_170px_170px]">
+            <div className="sticky top-16 z-20 grid grid-cols-[minmax(0,1fr)_54px_68px_68px] items-end rounded-t-3xl border-b border-border bg-card/95 backdrop-blur md:grid-cols-[minmax(0,1fr)_130px_180px_180px]">
               <div className="px-3 pb-3 pt-4 text-[11px] font-black uppercase tracking-widest text-muted-foreground md:px-6">Ce qui est inclus</div>{" "}
               <div className="px-1 pb-3 pt-4 text-center">
                 <p className="text-[10px] font-black uppercase text-muted-foreground md:text-xs md:tracking-wide">Gratuit</p>{" "}
@@ -474,7 +479,7 @@ function PageOffre() {
                   {gr.pro && <span className="rounded-full bg-gradient-to-r from-fuchsia-500 to-purple-600 px-2 py-0.5 text-[9px] font-black uppercase tracking-widest text-white">Pro</span>}
                 </div>{" "}
                 {gr.lignes.map(l => (
-                  <div key={l.t} className="grid grid-cols-[minmax(0,1fr)_54px_68px_68px] items-stretch border-b border-border last:border-b-0 md:grid-cols-[minmax(0,1fr)_130px_170px_170px]">
+                  <div key={l.t} className="grid grid-cols-[minmax(0,1fr)_54px_68px_68px] items-stretch border-b border-border last:border-b-0 md:grid-cols-[minmax(0,1fr)_130px_180px_180px]">
                     <div className={`px-3 md:px-6 ${detail ? "py-3.5" : "py-3"}`}>
                       <p className="text-[14px] font-semibold leading-snug text-foreground">{l.t}</p>{" "}
                       {l.d && <p className="mt-0.5 text-[12.5px] leading-snug text-muted-foreground">{l.d}</p>}{" "}
@@ -498,11 +503,11 @@ function PageOffre() {
             </button>{" "}
 
             {/* Pied du tableau, sur ordinateur : un bouton sous chaque colonne. */}
-            <div className="hidden grid-cols-[minmax(0,1fr)_130px_170px_170px] items-center rounded-b-3xl border-t border-border md:grid">
+            <div className="hidden grid-cols-[minmax(0,1fr)_130px_180px_180px] items-center rounded-b-3xl border-t border-border md:grid">
               <div className="px-6 py-5 text-[13px] font-bold text-muted-foreground">Sans engagement, résiliable à tout moment.</div>{" "}
               <div className="px-2 py-5 text-center">
                 {userId ? <span className="text-[12px] font-bold text-muted-foreground">{tierAffiche === "free" ? "Votre formule" : "Inclus"}</span>
-                  : <Link href="/login?inscription=1" className="text-[13px] font-black text-blue-700 underline-offset-2 hover:underline dark:text-blue-300">Créer un compte</Link>}
+                  : <Link href="/login?inscription=1" className="inline-flex min-h-[44px] items-center justify-center whitespace-nowrap rounded-xl border-2 border-border px-3 text-[13px] font-black text-foreground transition hover:-translate-y-0.5 hover:border-slate-400 hover:bg-muted">Créer un compte</Link>}
               </div>{" "}
               <div className="bg-amber-400/[0.09] px-3 py-5"><BoutonFormule cle="elite" plein /></div>{" "}
               <div className="rounded-br-3xl bg-fuchsia-500/[0.08] px-3 py-5"><BoutonFormule cle="pro" plein /></div>

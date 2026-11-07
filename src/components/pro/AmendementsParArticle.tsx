@@ -1,8 +1,9 @@
 "use client";
 
 import { useEffect, useMemo, useState } from "react";
-import { ChevronDown, Copy, ExternalLink, FileSpreadsheet, FileText, Loader2 } from "lucide-react";
+import { ChevronDown, Copy, Download, ExternalLink, FileSpreadsheet, FileText, Loader2 } from "lucide-react";
 import { supabase } from "@/lib/supabase";
+import { telechargerCsv } from "@/lib/csv";
 
 /**
  * Les amendements d'un texte, article par article (Pro) — comme on travaille une liasse.
@@ -59,8 +60,15 @@ async function toutLire<T>(chambre: Chambre, texte: string, colonnes: string): P
 
 const telecharger = (blob: Blob, nom: string) => {
   const url = URL.createObjectURL(blob); const a = document.createElement("a");
-  a.href = url; a.download = nom; a.click(); setTimeout(() => URL.revokeObjectURL(url), 2000);
+  // Dans la page, sinon Firefox ignore le clic sur un lien détaché.
+  a.href = url; a.download = nom; document.body.appendChild(a); a.click(); a.remove(); setTimeout(() => URL.revokeObjectURL(url), 10000);
 };
+
+function exporterCsv(titre: string, chambre: Chambre, lignes: (Ligne & Partial<Contenu>)[], identiques: Map<string, string>) {
+  const nom = nomFichier(`${chambre}-${titre}`, "csv").replace(/-\d{4}-\d{2}-\d{2}\.csv$/, "");
+  telechargerCsv(nom, ["Article", "N°", "Sort", "Auteur", "Groupe", "Cosignataires", "Identique à", "Dispositif", "Exposé sommaire", "Lien officiel"],
+    lignes.map(a => [a.division, a.numero, a.sort || "Pas encore examiné", a.auteur, a.groupe, a.nb_cosignataires || 0, identiques.get(a.uid) || "", propre(a.dispositif ?? null), propre(a.expose ?? null), a.url]));
+}
 const nomFichier = (titre: string, ext: string) => `amendements-${titre.normalize("NFD").replace(/[̀-ͯ]/g, "").toLowerCase().replace(/[^a-z0-9]+/g, "-").slice(0, 60)}-${new Date().toISOString().slice(0, 10)}.${ext}`;
 
 async function exporterExcel(titre: string, chambre: Chambre, lignes: (Ligne & Partial<Contenu>)[], identiques: Map<string, string>) {
@@ -116,7 +124,7 @@ export default function AmendementsParArticle({ chambre, texte, titre }: { chamb
   const [ouvert, setOuvert] = useState<string | null>(null);
   const [contenus, setContenus] = useState<Map<string, Contenu>>(new Map());
   const [lecture, setLecture] = useState<string | null>(null);
-  const [export_, setExport] = useState<"" | "excel" | "word">("");
+  const [export_, setExport] = useState<"" | "excel" | "word" | "csv">("");
 
   useEffect(() => {
     let actif = true;
@@ -150,13 +158,15 @@ export default function AmendementsParArticle({ chambre, texte, titre }: { chamb
     await lireContenu(l.map(a => a.uid)).catch(() => {});
     setLecture(null);
   };
-  const exporter = async (format: "excel" | "word", l: Ligne[], nom: string) => {
+  const exporter = async (format: "excel" | "word" | "csv", l: Ligne[], nom: string) => {
     setExport(format);
     try {
       const c = await lireContenu(l.map(a => a.uid));
       const complets = l.map(a => ({ ...a, ...(c.get(a.uid) || {}) }));
       const { map } = calculerIdentiques(complets);
-      if (format === "excel") await exporterExcel(nom, chambre, complets, map); else exporterWord(nom, chambre, complets, map);
+      if (format === "excel") await exporterExcel(nom, chambre, complets, map);
+      else if (format === "csv") exporterCsv(nom, chambre, complets, map);
+      else exporterWord(nom, chambre, complets, map);
     } finally { setExport(""); }
   };
 
@@ -178,6 +188,9 @@ export default function AmendementsParArticle({ chambre, texte, titre }: { chamb
           </button>{" "}
           <button type="button" disabled={!!export_} onClick={() => exporter("word", lignes, titre)} className={bouton}>
             {export_ === "word" ? <Loader2 size={14} className="animate-spin" /> : <FileText size={14} />} Word
+          </button>{" "}
+          <button type="button" disabled={!!export_} onClick={() => exporter("csv", lignes, titre)} className={bouton}>
+            {export_ === "csv" ? <Loader2 size={14} className="animate-spin" /> : <Download size={14} />} CSV
           </button>
         </div>
       </div>{" "}

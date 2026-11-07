@@ -22,12 +22,12 @@ export function versCsv(entete: string[], lignes: Cellule[][]): string {
   return "﻿" + [entete.map(cellule).join(";"), ...lignes.map(l => l.map(cellule).join(";"))].join("\r\n");
 }
 
-/** Télécharge le fichier « nom-AAAA-MM-JJ.csv ». */
-export function telechargerCsv(nom: string, entete: string[], lignes: Cellule[][]) {
+/** Télécharge le fichier « nom-AAAA-MM-JJ.csv » (sans la date du jour si le nom porte déjà la sienne). */
+export function telechargerCsv(nom: string, entete: string[], lignes: Cellule[][], { dater = true }: { dater?: boolean } = {}) {
   const url = URL.createObjectURL(new Blob([versCsv(entete, lignes)], { type: "text/csv;charset=utf-8" }));
   const a = document.createElement("a");
   a.href = url;
-  a.download = `${nom}-${new Date().toISOString().slice(0, 10)}.csv`;
+  a.download = `${nom}${dater ? `-${new Date().toISOString().slice(0, 10)}` : ""}.csv`;
   // Dans la page, et libéré plus tard : Firefox et Safari annulent un téléchargement dont le lien
   // est détaché ou révoqué dans la foulée du clic.
   document.body.appendChild(a);

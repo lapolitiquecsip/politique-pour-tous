@@ -5,9 +5,10 @@ import Link from "next/link";
 import { motion, AnimatePresence, useReducedMotion } from "framer-motion";
 import {
   Landmark, Loader2, ChevronDown, ChevronUp, Lock, Check, ArrowRight,
-  ExternalLink, FileText, Video, Search, X,
+  ExternalLink, FileText, Video, Search, X, Download,
 } from "lucide-react";
 import { api } from "@/lib/api";
+import { telechargerCsv } from "@/lib/csv";
 import { usePremium } from "@/lib/hooks/usePremium";
 import { CommissionAnalysis, ACCENTS } from "@/components/commissions/CommissionAnalysis";
 import DragScroller from "@/components/ui/DragScroller";
@@ -427,6 +428,23 @@ export default function CommissionsRegistre({ direct = false }: { direct?: boole
     [reunions, chambre],
   );
 
+  // Export : les réunions des 30 dernières journées de séance, les deux chambres.
+  const [exportEnCours, setExportEnCours] = useState(false);
+  const exporter = async () => {
+    if (!jours?.length) return;
+    setExportEnCours(true);
+    try {
+      const dates = jours.slice(0, 30).map(x => x.date);
+      const lignes: Reunion[] = [];
+      for (let i = 0; i < dates.length; i += 6) {
+        const lots = await Promise.all(dates.slice(i, i + 6).map(d => api.getCommissionsOfDay(d).catch(() => [])));
+        for (const l of lots) lignes.push(...(l as Reunion[]));
+      }
+      telechargerCsv("commissions-30-journees", ["Date", "Chambre", "Commission", "Objet", "Compte rendu", "Vidéo"],
+        lignes.map(m => [m.meeting_date?.slice(0, 10), m.chamber === "SENAT" ? "Sénat" : "Assemblée nationale", m.commission, m.title, m.cr_url, m.video_url]));
+    } finally { setExportEnCours(false); }
+  };
+
   if (jours === null || aboEnCours) {
     return <div className="flex justify-center py-10"><Loader2 className="animate-spin text-emerald-500" /></div>;
   }
@@ -533,6 +551,14 @@ export default function CommissionsRegistre({ direct = false }: { direct?: boole
                     }`}
                   >
                     <Search size={13} /> {" "}<span className="hidden sm:inline">Rechercher</span>
+                  </button>{" "}
+                  <button
+                    onClick={exporter}
+                    disabled={exportEnCours}
+                    aria-label="Exporter en CSV les réunions des 30 dernières journées"
+                    className="inline-flex items-center gap-1.5 rounded-full bg-white/10 px-3 py-1.5 text-[10px] font-black uppercase tracking-widest text-white/80 ring-1 ring-white/15 transition hover:bg-white/20 hover:text-white disabled:opacity-50"
+                  >
+                    {exportEnCours ? <Loader2 size={13} className="animate-spin" /> : <Download size={13} />} {" "}<span className="hidden sm:inline">Export CSV</span>
                   </button>{" "}
                   {!direct && (<button
                     onClick={() => { setOuvert(false); setRecherche(false); }}

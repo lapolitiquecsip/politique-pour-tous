@@ -1,13 +1,12 @@
 import { fetchGovernmentComposition } from '@/lib/services/governmentService';
 import ministersBios from '@/lib/data/ministersBios.json';
 import { api } from '@/lib/api';
-import FeedItemCard from '@/components/home/FeedItemCard';
-import { Building2, ArrowLeft, BookOpen, ChevronRight } from 'lucide-react';
+import { Building2, ArrowLeft, ChevronRight } from 'lucide-react';
 import Link from 'next/link';
 import MinisterImage from '@/components/executif/MinisterImage';
 import { cleanMinistryName, findMinistryBudget } from '@/lib/executif-utils';
 import { CircleDollarSign, ExternalLink } from 'lucide-react';
-import EntityNewsFeed from '@/components/shared/EntityNewsFeed';
+import FicheMinistere from '@/components/executif/FicheMinistere';
 
 const ministerSlug = (name: string) =>
   (name || "").normalize("NFD").replace(/[̀-ͯ]/g, "").toLowerCase().replace(/^(m\.|mme\.?)\s*/, "").replace(/[^a-z0-9]+/g, "-").replace(/(^-|-$)/g, "");
@@ -66,18 +65,6 @@ export default async function MinistryPage({ params }: { params: Promise<{ slug:
   const ministryBudget = findMinistryBudget(ministryData.ministryName, missions);
   const programmes = ministryBudget ? await api.getMinistryProgrammes(ministryBudget.name).catch(() => []) : [];
 
-  // 4. Fetch News specifically for this ministry (fallback to 'gouvernement')
-  const news = await api.getContent(10, "gouvernement");
-  // Simple filter based on minister name or ministry name
-  const filteredNews = (news || []).filter(n => {
-    if (!n || !n.title) return false;
-    const title = n.title.toLowerCase();
-    const ministerLastName = ministryData.ministerName.toLowerCase().split(' ').pop() || '';
-    
-    return title.includes(ministerLastName) ||
-           title.includes('ministre') ||
-           title.includes('gouvernement');
-  }).slice(0, 4);
 
   return (
     <main className="min-h-screen bg-muted pb-20">
@@ -133,11 +120,11 @@ export default async function MinistryPage({ params }: { params: Promise<{ slug:
           </div>
         </Link>{" "}
 
-        {/* FIL D'ACTUALITÉ DE L'INSTITUTION (#4) — masqué tant qu'il n'y a pas d'actu */}
-        <EntityNewsFeed entityType="ministry" entityId={slug} />{" "}
-
-        {/* BUDGET OFFICIEL DU MINISTÈRE */}
-        {ministryBudget && (
+        {/* FICHE COMPLÈTE : chiffres clés, actualité, budget (dépensé / voté / proposé), effectifs, résultats,
+            Journal officiel, questions des députés. Ancien bloc budget en secours si la fiche n'existe pas encore. */}
+        <FicheMinistere
+          slug={slug}
+          secours={ministryBudget ? (
           <div className="bg-card rounded-[2.5rem] p-8 md:p-10 border border-border shadow-sm">
             <div className="flex items-center gap-3 border-b border-border pb-6 mb-6">
               <div className="w-10 h-10 bg-amber-50 dark:bg-amber-500/10 text-amber-600 dark:text-amber-300 rounded-xl flex items-center justify-center">
@@ -188,38 +175,9 @@ export default async function MinistryPage({ params }: { params: Promise<{ slug:
               Montant de la mission budgétaire principale rattachée à ce ministère (budget de l'État, hors Sécurité sociale). Un ministère peut recouvrir plusieurs missions. Source : PLF 2026 (data.economie.gouv).
             </p>
           </div>
-        )}{" "}
-
-        {/* NEWS FEED */}
-        <div className="bg-card rounded-[2.5rem] p-8 md:p-12 border border-border shadow-sm mb-20">
-           <div className="flex items-center gap-3 border-b border-border pb-6 mb-6">
-             <div className="w-10 h-10 bg-amber-50 dark:bg-amber-500/10 text-amber-600 dark:text-amber-300 rounded-xl flex items-center justify-center">
-               <BookOpen size={20} />
-             </div>{" "}
-             <h3 className="text-2xl font-staatliches uppercase tracking-wider text-foreground">
-               Actualité du Ministère
-             </h3>
-           </div>{" "}
-           
-           {filteredNews.length > 0 ? (
-             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-               {filteredNews.map(item => (
-                 <FeedItemCard key={item.id} item={item} />
-               ))}
-             </div>
-           ) : (
-             <div className="text-center py-12 bg-muted rounded-2xl border border-dashed border-border">
-               <p className="text-muted-foreground font-medium italic">Aucune actualité récente spécifique à ce ministère aujourd'hui.</p>
-             </div>
-           )}{" "}
-           
-           <div className="mt-8 text-center">
-             <Link href="/" className="inline-flex items-center gap-2 text-xs font-black uppercase tracking-widest text-amber-700 dark:text-amber-400 hover:text-amber-700 hover:gap-3 transition-all">
-               Voir tout le fil d'actualité <ChevronRight size={14} />
-             </Link>
-           </div>
-        </div>
-
+          ) : null}
+        />{" "}
+        <div className="mb-20" />
       </div>
     </main>
   );

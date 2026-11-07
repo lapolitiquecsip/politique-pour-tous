@@ -18,7 +18,7 @@ type Emplois = {
 };
 type Indicateur = {
   programme: string; objectif: string; indicateur: string; sous_indicateur: string | null; unite: string | null;
-  realise: Record<string, string | null>; cible: string | null; atteinte: string | null;
+  realise: Record<string, string | null>; cible: string | null; atteinte: string | null; public?: string | null;
 };
 type Performance = { annee: number; source: string; indicateurs: Indicateur[] };
 type Questions = {
@@ -55,7 +55,7 @@ function Carte({ icone, titre, children, id }: { icone: ReactNode; titre: string
   );
 }
 
-function Sources({ sources, maj }: { sources: Source[]; maj?: string }) {
+function Sources({ sources, maj, mention = "Chiffres lus dans les documents officiels et vérifiés par leurs propres totaux, sans IA." }: { sources: Source[]; maj?: string; mention?: string }) {
   if (!sources.length) return null;
   return (
     <p className="mt-5 text-[11.5px] leading-relaxed text-muted-foreground">
@@ -63,7 +63,7 @@ function Sources({ sources, maj }: { sources: Source[]; maj?: string }) {
       {sources.map((s, i) => (
         <span key={s.url}>{i > 0 && " · "}<a href={s.url} target="_blank" rel="noopener noreferrer" className="underline decoration-dotted hover:text-foreground">{s.titre}</a></span>
       ))}
-      . Chiffres lus dans les documents officiels et vérifiés par leurs propres totaux, sans IA.{maj && ` Relevé le ${date(maj)}.`}
+      . {mention}{maj && ` Relevé le ${date(maj)}.`}
     </p>
   );
 }
@@ -125,7 +125,9 @@ function BlocBudget({ b, sources, maj }: { b: Budget; sources: Source[]; maj: st
           <div key={p.nom}>
             <div className="flex items-baseline justify-between gap-3 text-sm">
               <span className="font-medium leading-tight text-foreground">{p.nom}</span>
-              <span className="whitespace-nowrap font-black text-foreground">{p.cp != null ? euros(p.cp) : "—"}</span>
+              <span className="whitespace-nowrap text-right font-black text-foreground">
+                {p.cp == null ? "—" : p.cp === 0 && p.ae ? <>0 €<span className="block text-[11px] font-bold text-muted-foreground">{euros(p.ae)} engagés</span></> : euros(p.cp)}
+              </span>
             </div>
             <div className="mt-1 h-1.5 w-full overflow-hidden rounded-full bg-muted">
               <div className="h-full rounded-full bg-amber-500" style={{ width: `${Math.max(((p.cp ?? 0) / max) * 100, 1)}%` }} />
@@ -191,13 +193,16 @@ const ATTEINTE: Record<string, { label: string; cls: string }> = {
   "absence amélioration": { label: "Pas de progrès", cls: "bg-rose-500/15 text-rose-800 dark:text-rose-300" },
 };
 const unite = (u: string | null) => (!u || /^nb$/i.test(u) ? "" : u === "%" ? " %" : u === "jours" ? " jours" : ` ${u}`);
-const valeur = (v: string | null | undefined, u: string | null) => (v == null || v === "" ? "—" : /sans objet/i.test(v) ? "—" : `${v}${unite(u)}`);
+const valeur = (v: string | null | undefined, u: string | null) => (v == null || /^\s*-?\s*$/.test(v) || /sans objet|^na$/i.test(v) ? "—" : `${v}${unite(u)}`);
+// Les services rendus aux usagers d'abord (passeports, visas…), puis ce qui concerne tous les citoyens.
+const RANG_PUBLIC: Record<string, number> = { Usager: 0, Citoyen: 1, Contribuable: 2 };
 
 function BlocPerformance({ p, sources, maj }: { p: Performance; sources: Source[]; maj: string }) {
   const [filtre, setFiltre] = useState<string>("tous");
   const [tout, setTout] = useState(false);
   const an = String(p.annee);
-  const utiles = p.indicateurs.filter(i => i.atteinte && ATTEINTE[i.atteinte] && i.realise[an] && !/sans objet/i.test(i.realise[an] ?? ""));
+  const utiles = p.indicateurs.filter(i => i.atteinte && ATTEINTE[i.atteinte] && i.realise[an] && !/sans objet/i.test(i.realise[an] ?? ""))
+    .map((i, k) => ({ i, k })).sort((a, b) => (RANG_PUBLIC[a.i.public ?? ""] ?? 3) - (RANG_PUBLIC[b.i.public ?? ""] ?? 3) || a.k - b.k).map(x => x.i);
   const compte = (k: string) => utiles.filter(i => i.atteinte === k).length;
   const liste = utiles.filter(i => filtre === "tous" || i.atteinte === filtre);
   const vus = tout ? liste : liste.slice(0, 8);
@@ -234,7 +239,7 @@ function BlocPerformance({ p, sources, maj }: { p: Performance; sources: Source[
           {tout ? "Réduire" : `Voir les ${liste.length} indicateurs`}
         </button>
       )}
-      <Sources sources={sources} maj={maj} />
+      <Sources sources={sources} maj={maj} mention="Indicateurs publiés par Bercy, repris tels quels, sans IA." />
     </Carte>
   );
 }
@@ -264,7 +269,7 @@ function BlocQuestions({ q, sources, maj }: { q: Questions; sources: Source[]; m
         </>
       )}
       <p className="mt-3 text-[11.5px] text-muted-foreground">Questions écrites adressées au ministre et à ses ministres délégués (Assemblée nationale).</p>
-      <Sources sources={sources} maj={maj} />
+      <Sources sources={sources} maj={maj} mention="Calculs faits sur les questions publiées par l'Assemblée, sans IA." />
     </Carte>
   );
 }

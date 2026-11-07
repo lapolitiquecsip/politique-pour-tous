@@ -34,17 +34,18 @@ async function budgetDisponible(admin: any): Promise<boolean> {
 }
 
 // deno-lint-ignore no-explicit-any
-async function modele(admin: any, systeme: string, utilisateur: string, json_: boolean): Promise<{ texte: string; modele: string; cout: number }> {
-  const cle = Deno.env.get("LLM_FREE_API_KEY");
-  // Gemini saturé : 15 s par modèle, 35 s en tout, puis le secours — sinon la fonction dépassait sa
-  // durée maximale avant d'arriver à DeepSeek, et l'abonné recevait une erreur.
+async function modele(admin: any, systeme: string, utilisateur: string, json_: boolean, etat: { geminiKo: boolean }): Promise<{ texte: string; modele: string; cout: number }> {
+  const cle = etat.geminiKo ? null : Deno.env.get("LLM_FREE_API_KEY");
+  // Gemini saturé : 12 s par modèle, 25 s en tout, puis le secours — sinon la fonction dépassait sa
+  // durée maximale avant d'arriver à DeepSeek, et l'abonné recevait une erreur. Saturé au premier
+  // appel, Gemini n'est pas retenté au second (même requête).
   const debut = Date.now();
   if (cle) for (const m of MODELES) {
-    if (Date.now() - debut > 35000) break;
+    if (Date.now() - debut > 25000) break;
     for (const reflexion of [true, false]) {
       try {
         const r = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/${m}:generateContent?key=${cle}`, {
-          method: "POST", headers: { "Content-Type": "application/json" }, signal: AbortSignal.timeout(15000),
+          method: "POST", headers: { "Content-Type": "application/json" }, signal: AbortSignal.timeout(12000),
           body: JSON.stringify({ systemInstruction: { parts: [{ text: systeme }] }, contents: [{ role: "user", parts: [{ text: utilisateur }] }],
             generationConfig: { temperature: 0.1, maxOutputTokens: 2048, ...(json_ ? { responseMimeType: "application/json" } : {}), ...(reflexion ? { thinkingConfig: { thinkingBudget: 0 } } : {}) } }),
         });
@@ -57,10 +58,11 @@ async function modele(admin: any, systeme: string, utilisateur: string, json_: b
       } catch { break; }
     }
   }
+  etat.geminiKo = true;
   const ds = Deno.env.get("DEEPSEEK_API_KEY");
   if (!ds || !(await budgetDisponible(admin))) throw new Error("satur");
   const r = await fetch("https://api.deepseek.com/chat/completions", {
-    method: "POST", headers: { Authorization: `Bearer ${ds}`, "Content-Type": "application/json" }, signal: AbortSignal.timeout(60000),
+    method: "POST", headers: { Authorization: `Bearer ${ds}`, "Content-Type": "application/json" }, signal: AbortSignal.timeout(45000),
     body: JSON.stringify({ model: "deepseek-chat", temperature: 0.1, max_tokens: 1500, ...(json_ ? { response_format: { type: "json_object" } } : {}),
       messages: [{ role: "system", content: systeme }, { role: "user", content: utilisateur }] }),
   });
@@ -129,10 +131,10 @@ serve(async (req) => {
     const { count: posees } = await admin.from("explorer_questions").select("id", { count: "exact", head: true }).eq("user_id", user.id).gte("cree_le", new Date(Date.now() - 864e5).toISOString());
     if ((posees ?? 0) >= QUOTA_JOUR) return json({ error: `Vous avez posé ${QUOTA_JOUR} questions ces dernières 24 heures : l'Explorer sera de nouveau disponible demain.` }, 429);
 
-    let cout = 0; let nomModele = "";
+    let cout = 0; let nomModele = ""; const etat = { geminiKo: false };
     let plan: { requete?: string; depuis?: string | null; qui?: boolean } = {};
     try {
-      const p = await modele(admin, PLAN, question, true); cout += p.cout; nomModele = p.modele;
+      const p = await modele(admin, PLAN, question, true, etat); cout += p.cout; nomModele = p.modele;
       plan = JSON.parse(p.texte.match(/\{[\s\S]*\}/)?.[0] ?? "{}");
     } catch (e) {
       if ((e as Error).message === "satur") return json({ error: "Les modèles d'IA sont saturés pour le moment. Réessayez dans quelques minutes." }, 503);
@@ -155,7 +157,7 @@ serve(async (req) => {
 
     let reponse = "";
     try {
-      const r = await modele(admin, REDACTION, `Question : ${question}\n\nSources :\n${D.enSources(sources)}`, false); cout += r.cout; nomModele = r.modele;
+      const r = await modele(admin, REDACTION, `Question : ${question}\n\nSources :\n${D.enSources(sources)}`, false, etat); cout += r.cout; nomModele = r.modele;
       reponse = r.texte.trim();
     } catch { return json({ error: "Les modèles d'IA sont saturés pour le moment. Réessayez dans quelques minutes." }, 503); }
     // Garde-fou : un renvoi vers une source qui n'existe pas est retiré.

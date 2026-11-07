@@ -83,7 +83,8 @@ Règles :
 - chaque phrase se termine par la ou les sources qui la justifient : [1], [2][5] ;
 - n'invente rien, aucun chiffre ni nom absent des sources ; si les sources ne suffisent pas, dis-le clairement et dis ce qu'elles montrent quand même ;
 - distingue ce qui a été adopté, rejeté ou seulement proposé ;
-- style direct, sans titre ni formule de politesse.`;
+- style direct, sans titre ni formule de politesse ;
+- texte simple, SANS Markdown (ni astérisques, ni tirets, ni listes) : 2 à 4 paragraphes séparés par une ligne vide ; pour distinguer les chambres, commence le paragraphe par « À l'Assemblée nationale, » ou « Au Sénat, ».`;
 
 serve(async (req) => {
   if (req.method === "OPTIONS") return new Response("ok", { headers: CORS });

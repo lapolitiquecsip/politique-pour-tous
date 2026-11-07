@@ -22,14 +22,29 @@ const EXEMPLES = [
 ];
 
 /** « … décidé [2][5]. » → texte, les renvois devenant des liens vers la source. */
-function AvecRenvois({ texte, sources }: { texte: string; sources: Source[] }) {
-  return <>{texte.split(/(\[\d+\])/g).map((m, i) => {
+function Ligne({ texte, sources }: { texte: string; sources: Source[] }) {
+  // Renvois consécutifs « [14], [15] » collés en « 14 15 » ; **gras** du modèle rendu en gras.
+  const propre = texte.replace(/\]\s*,\s*\[/g, "][");
+  return <>{propre.split(/(\[\d+\]|\*\*[^*]+\*\*)/g).map((m, i) => {
+    if (m.startsWith("**") && m.endsWith("**") && m.length > 4) return <strong key={i} className="font-bold">{m.slice(2, -2)}</strong>;
     const n = m.match(/^\[(\d+)\]$/)?.[1];
-    if (!n) return <span key={i}>{m}</span>;
+    if (!n) return <span key={i}>{m.replace(/\*\*/g, "")}</span>;
     const s = sources[Number(n) - 1];
     return s?.url ? <a key={i} href={s.url} target="_blank" rel="noopener noreferrer" title={s.titre} className="mx-0.5 rounded bg-indigo-500/15 px-1 text-[11px] font-black text-indigo-700 no-underline hover:bg-indigo-500/25 dark:text-indigo-300">{n}</a>
       : <sup key={i} className="mx-0.5 text-[11px] font-black text-indigo-700 dark:text-indigo-300">{n}</sup>;
   })}</>;
+}
+
+// La réponse en paragraphes : les listes « - **Sénat :** … » (parfois sur une seule ligne) deviennent
+// des paragraphes précédés d'un intitulé discret, sans astérisques ni tirets visibles.
+function AvecRenvois({ texte, sources }: { texte: string; sources: Source[] }) {
+  const blocs = texte.replace(/\s+[-*•]\s+(?=\*\*)/g, "\n").replace(/^#+\s*/gm, "")
+    .split(/\n+/).map(l => l.replace(/^\s*[-*•]\s+/, "").trim()).filter(Boolean);
+  return <div className="space-y-2.5">{blocs.map((l, i) => {
+    const intitule = l.match(/^\*\*([^*]{1,60}?)\s*:?\s*\*\*\s*:?\s*/);
+    return <p key={i}>{intitule && <span className="mr-1.5 inline-block rounded-md bg-indigo-500/10 px-1.5 py-0.5 text-[11px] font-black uppercase tracking-wide text-indigo-700 dark:text-indigo-300">{intitule[1].replace(/\s*:$/, "")}</span>}
+      <Ligne texte={intitule ? l.slice(intitule[0].length) : l} sources={sources} /></p>;
+  })}</div>;
 }
 
 export default function Explorer() {

@@ -3,8 +3,9 @@
 import { useEffect, useMemo, useState } from "react";
 import Link from "next/link";
 import { motion, AnimatePresence, useReducedMotion } from "framer-motion";
-import { Newspaper, ExternalLink, ChevronDown, Loader2, Sparkles, Lock, Check, ArrowRight, Search, ChevronUp } from "lucide-react";
+import { Newspaper, ExternalLink, ChevronDown, Loader2, Sparkles, Lock, Check, ArrowRight, Search, ChevronUp, Download } from "lucide-react";
 import { api } from "@/lib/api";
+import { telechargerCsv } from "@/lib/csv";
 import { usePremium } from "@/lib/hooks/usePremium";
 import JorfSearch from "@/components/home/JorfSearch";
 import JournalCouverture from "@/components/home/JournalCouverture";
@@ -355,6 +356,15 @@ export default function JournalOfficielDuJour({ direct = false }: { direct?: boo
               className="ml-2 inline-flex items-center gap-1 text-[10px] font-black uppercase tracking-widest text-fuchsia-300 hover:text-fuchsia-200">
               Légifrance <ExternalLink size={9} />
             </a>
+          )}
+          {sections && sectionsPour === edition.date && (
+            <button type="button"
+              onClick={() => telechargerCsv(`journal-officiel-${edition.date}`, ["Rubrique", "Ministère ou autorité", "Nature", "Titre", "Ce que le texte fait", "Origine de l'explication", "Texte sur Légifrance"],
+                sections.flatMap(r => r.groupes.flatMap(g => g.textes.map(t => [r.titre, g.titre, nat(t.nature).un, t.titre, t.explication,
+                  t.source_explication === "notice" ? "Notice officielle" : t.source_explication === "ia" ? "Résumé IA" : "", `https://www.legifrance.gouv.fr/jorf/id/${t.id}`]))))}
+              className="ml-3 inline-flex items-center gap-1 text-[10px] font-black uppercase tracking-widest text-fuchsia-300 hover:text-fuchsia-200">
+              <Download size={10} /> Export CSV
+            </button>
           )}
         </p>{" "}
 

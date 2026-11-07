@@ -8,6 +8,7 @@ import {
 } from "lucide-react";
 import CourbeMulti, { type Serie } from "./dynamiques/CourbeMulti";
 import { api } from "@/lib/api";
+import { telechargerCsv, type Cellule } from "@/lib/csv";
 import { usePremium } from "@/lib/hooks/usePremium";
 import { EnTete, ZonePro } from "./dynamiques/VerrouPro";
 import { vignetteWikimedia } from "@/lib/wikimedia";
@@ -320,9 +321,8 @@ export default function CandidateSocialTracker({ candidates }: { candidates: Can
 
   const exportCsv = () => {
     if (!rows.length) return;
-    const esc = (v: unknown) => `"${String(v ?? "").replace(/"/g, '""')}"`;
     const head = ["Candidat", "Parti", "Plateforme", "Compte", "Type", "Abonnés", `Abonnés +/- ${period}j`, `Publications ${period}j`, `Vues des publications ${period}j`, `Interactions ${period}j`, "Engagement %", "Source", "Variation à vérifier", "Dernier relevé", "Lien"];
-    const lines: string[] = [];
+    const lines: Cellule[][] = [];
     for (const r of rows) {
       for (const m of r.metrics) {
         const bilan = bilanPublications(postsParCompte.get(m.account.id) ?? [], period);
@@ -331,18 +331,12 @@ export default function CandidateSocialTracker({ candidates }: { candidates: Can
           r.candidate.full_name, r.candidate.party ?? "", PLATFORM_META[m.account.platform].label, m.account.handle,
           m.account.kind === "official" ? "Officiel" : "Soutien", m.followers ?? "",
           period === 7 ? m.followersDelta7 ?? "" : m.followersDelta30 ?? "", bilan.nb, bilan.vues ?? "", bilan.interactions ?? "",
-          taux == null ? "" : taux.toFixed(2).replace(".", ","), SOURCES[m.latest?.source ?? ""] ?? m.latest?.source ?? "",
+          taux == null ? "" : Math.round(taux * 100) / 100, SOURCES[m.latest?.source ?? ""] ?? m.latest?.source ?? "",
           m.anomalie ? "oui" : "", m.latest?.captured_on ?? "", m.account.url ?? "",
-        ].map(esc).join(";"));
+        ]);
       }
     }
-    const blob = new Blob(["﻿" + [head.map(esc).join(";"), ...lines].join("\r\n")], { type: "text/csv;charset=utf-8" });
-    const url = URL.createObjectURL(blob);
-    const link = document.createElement("a");
-    link.href = url;
-    link.download = `veille-reseaux-candidats-${new Date().toISOString().slice(0, 10)}.csv`;
-    link.click();
-    URL.revokeObjectURL(url);
+    telechargerCsv("veille-reseaux-candidats", head, lines);
   };
 
   const bouton = (actif: boolean) => `shrink-0 rounded-full px-3.5 py-1.5 text-[11px] font-black uppercase tracking-wider transition ${actif ? "bg-slate-900 text-white dark:bg-white dark:text-slate-900" : "text-muted-foreground hover:text-foreground"}`;

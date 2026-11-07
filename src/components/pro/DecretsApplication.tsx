@@ -4,6 +4,7 @@ import { useEffect, useMemo, useState } from "react";
 import { ChevronDown, Download, FileCheck2, Loader2, Search, X } from "lucide-react";
 import { api, type LoiApplication, type MesureApplication } from "@/lib/api";
 import SuivreBouton from "@/components/shared/SuivreBouton";
+import { telechargerCsv } from "@/lib/csv";
 import { LigneMesure, SOURCE_APPLICATION, dateCourte, echeanceDepassee } from "@/components/lois/ApplicationLoi";
 
 /**
@@ -106,14 +107,9 @@ export default function DecretsApplication() {
     try {
       // L'export suit la vue : « Échéance dépassée » ne sort que les mesures concernées, pas toute la loi.
       const lignes = (await api.getMesuresExport(filtres)).filter(m => (vue === "retard" ? echeanceDepassee(m) : vue === "attente" ? m.etat === "attente" : true));
-      const cellule = (v: unknown) => `"${String(v ?? "").replace(/"/g, '""').replace(/^([=+\-@])/, "'$1")}"`;
-      const entete = ["Loi", "Publiée le", "Commission", "Article", "Objet", "État", "Échéance", "Observation", "Texte d'application"];
-      const corps = lignes.map(m => [m.loi_titre, m.publiee_le, m.commission, m.articles, m.objet, echeanceDepassee(m) ? "Échéance dépassée" : ETATS_CSV[m.etat] || m.etat, m.echeance, m.observation,
-        m.decret_id ? `https://www.legifrance.gouv.fr/jorf/id/${m.decret_id}` : ""].map(cellule).join(";"));
-      const url = URL.createObjectURL(new Blob([`﻿${entete.join(";")}\n${corps.join("\n")}`], { type: "text/csv;charset=utf-8" }));
-      const a = document.createElement("a");
-      a.href = url; a.download = `decrets-application-${new Date().toISOString().slice(0, 10)}.csv`; a.click();
-      URL.revokeObjectURL(url);
+      telechargerCsv("decrets-application", ["Loi", "Publiée le", "Commission", "Article", "Objet", "État", "Échéance", "Observation", "Texte d'application"],
+        lignes.map(m => [m.loi_titre, m.publiee_le, m.commission, m.articles, m.objet, echeanceDepassee(m) ? "Échéance dépassée" : ETATS_CSV[m.etat] || m.etat, m.echeance, m.observation,
+          m.decret_id ? `https://www.legifrance.gouv.fr/jorf/id/${m.decret_id}` : ""]));
     } catch { setErreur(true); }
     setExportEnCours(false);
   };

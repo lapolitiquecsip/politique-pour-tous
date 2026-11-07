@@ -4,6 +4,8 @@ import { useEffect, useMemo, useState } from "react";
 import Link from "next/link";
 import { Briefcase, ExternalLink, Loader2, Network, Search, X } from "lucide-react";
 import { supabase } from "@/lib/supabase";
+import { telechargerCsv } from "@/lib/csv";
+import BoutonCsv from "./BoutonCsv";
 
 /**
  * Qui pèse sur ce sujet (Pro) : les parlementaires les plus actifs sur un sujet, d'après ce qu'ils
@@ -104,7 +106,18 @@ export default function Cartographie() {
         : erreur ? <p className="mt-6 rounded-2xl bg-rose-500/10 p-4 text-sm text-rose-700 dark:text-rose-200">Le calcul n&apos;a pas abouti. Vérifiez la formulation et réessayez.</p>
         : acteurs && !acteurs.length ? <p className="mt-6 rounded-2xl bg-muted p-6 text-center text-sm text-muted-foreground">Aucun parlementaire n&apos;a agi sur ce sujet pendant la période.</p>
         : acteurs && (
-        <div className="mt-6 grid gap-6 lg:grid-cols-[1fr_300px]">
+        <>
+        <div className="mt-5 flex flex-wrap gap-2">
+          <BoutonCsv libelle="CSV des parlementaires" onClick={() => telechargerCsv(`qui-pese-${q.slice(0, 30)}`,
+            ["Rang", "Parlementaire", "Chambre", "Groupe", "Interventions en séance", "Questions", "Amendements déposés", "Amendements adoptés", "Score", "Cosigne le plus avec", "Fiche"],
+            acteurs.map((a, i) => [i + 1, a.nom, a.chambre === "SENAT" ? "Sénat" : "Assemblée", a.groupe, a.interventions, a.questions, a.amendements, a.adoptes, a.score,
+              (allies.get(a.slug) || []).map(x => `${x.nom} (${x.n})`).join(", "),
+              `https://lapolitiquecestsimple.fr/${a.chambre === "SENAT" ? "senateurs" : "deputes"}/${a.slug}`]))} />
+          <BoutonCsv libelle="CSV du lobbying" disabled={!lobbies.length} onClick={() => telechargerCsv(`lobbying-${q.slice(0, 30)}`,
+            ["Organisation", "Catégorie", "Activités déclarées", "Dernière déclaration", "Objets", "Responsables visés", "Fiche HATVP"],
+            lobbies.map(l => [l.organisation, l.categorie, l.activites, l.derniere, (l.objets || []).join(" | "), (l.cibles || []).join(" | "), l.url]))} />
+        </div>
+        <div className="mt-4 grid gap-6 lg:grid-cols-[1fr_300px]">
           <ol className="space-y-2">
             {acteurs.slice(0, 30).map((a, i) => {
               const al = allies.get(a.slug) || [];
@@ -164,6 +177,7 @@ export default function Cartographie() {
             </p>
           </aside>
         </div>
+        </>
       )}
     </section>
   );

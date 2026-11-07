@@ -4,7 +4,8 @@ import { useEffect, useMemo, useState } from "react";
 import { Loader2, TrendingUp, TrendingDown, Minus, ExternalLink, ChevronDown, Info, Swords } from "lucide-react";
 import { api } from "@/lib/api";
 import CourbeMulti, { type Serie } from "./CourbeMulti";
-import { EnTete, Methode } from "./VerrouPro";
+import { EnTete, Methode, CsvPro } from "./VerrouPro";
+import { telechargerCsv } from "@/lib/csv";
 import {
   parSondage, serie, moyenne, couleur, idDe, marge, pct, periode, dateCourte, t, vignette, court, silenceSondages,
   type Sondage, type SondageAgrege,
@@ -132,9 +133,14 @@ export default function SondagesPanel({ candidats }: { candidats: Candidat[] }) 
         chapeau={<>Tous les sondages publiés, relevés automatiquement dès leur parution, et leur moyenne. Dernier en date :{" "}
           <strong className="font-black text-foreground">{dernier.institut}</strong>, {periode(dernier.date_debut, dernier.date_fin)}.</>}
         actions={
+          <span className="flex flex-wrap items-center gap-2">
           <span className="inline-flex items-center gap-2 rounded-full border border-emerald-500/30 bg-emerald-500/10 px-3.5 py-1.5 text-[10px] font-black uppercase tracking-widest text-emerald-700 dark:text-emerald-400">
             <span className="relative flex h-2 w-2"><span className="absolute inline-flex h-full w-full animate-ping rounded-full bg-emerald-500 opacity-60" />{" "}<span className="relative inline-flex h-2 w-2 rounded-full bg-emerald-500" /></span>{" "}
             Mise à jour continue
+          </span>
+          <CsvPro disabled={!brut?.length} onClick={() => telechargerCsv("sondages-presidentielle-2027",
+            ["Institut", "Commanditaire", "Début du terrain", "Fin du terrain", "Échantillon", "Tour", "Hypothèse", "Candidat", "Intentions de vote (%)", "Source", "Notice (Commission des sondages)"],
+            (brut || []).flatMap(s => s.resultats.map(r => [s.institut, s.commanditaire && s.commanditaire !== "—" ? s.commanditaire : "", s.date_debut, s.date_fin, s.echantillon, s.tour, s.hypothese, r.complet || r.nom, r.pct, s.source_url, s.notice_url])))} />
           </span>
         } />{" "}
 

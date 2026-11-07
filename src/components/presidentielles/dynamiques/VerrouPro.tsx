@@ -3,6 +3,7 @@
 import Link from "next/link";
 import { Lock, Check, Sparkles } from "lucide-react";
 import { usePremium } from "@/lib/hooks/usePremium";
+import BoutonCsv from "@/components/pro/BoutonCsv";
 
 /**
  * Habillage commun des sections de l'onglet Dynamiques : en-tête éditorial et
@@ -76,6 +77,13 @@ export function ZonePro({ titre, points, children }: { titre: string; points: st
       )}
     </div>
   );
+}
+
+/** Bouton d'export CSV, montré aux seuls membres Pro (l'export fait partie de l'offre). */
+export function CsvPro({ onClick, disabled }: { onClick: () => void; disabled?: boolean }) {
+  const { isPro } = usePremium();
+  if (!isPro) return null;
+  return <BoutonCsv onClick={onClick} disabled={disabled} />;
 }
 
 /** Note de méthode repliée : présente pour qui la cherche, discrète pour les autres. */

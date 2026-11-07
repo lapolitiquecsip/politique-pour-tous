@@ -4,6 +4,8 @@ import { useEffect, useState } from "react";
 import Link from "next/link";
 import { ExternalLink, Loader2, MessageSquareQuote, Search, Users, X } from "lucide-react";
 import { supabase } from "@/lib/supabase";
+import { telechargerCsv } from "@/lib/csv";
+import BoutonCsv from "./BoutonCsv";
 
 /**
  * Qui a dit quoi en séance (Pro) : chaque prise de parole de l'Assemblée nationale, cherchable
@@ -99,6 +101,47 @@ export default function DebatsSeance() {
   }, [resultats, orateurs, questions]); // eslint-disable-line react-hooks/exhaustive-deps
 
   const changer = (f: () => void) => { f(); setPage(0); setResultats(null); };
+
+  // Export : toute la recherche (1 000 lignes au plus), pas seulement les pages affichées.
+  const [exportEnCours, setExportEnCours] = useState(false);
+  const exporter = async () => {
+    setExportEnCours(true);
+    try {
+      const propre = (t: string | null) => (t || "").replace(/\[\[|\]\]/g, "");
+      const auteurs = async (refs: (string | null)[]) => {
+        const ids = [...new Set(refs.filter((x): x is string => !!x))];
+        const m = new Map<string, Depute>();
+        for (let i = 0; i < ids.length; i += 200) {
+          const { data } = await supabase.from("deputies").select("an_id, slug, party, first_name, last_name").in("an_id", ids.slice(i, i + 200));
+          for (const d of (data as Depute[]) || []) m.set(d.an_id, d);
+        }
+        return m;
+      };
+      // La base rend 100 lignes par appel au plus : on enchaîne les pages.
+      const tout = async <T,>(fn: string, args: Record<string, unknown>) => {
+        const l: T[] = [];
+        for (let dec = 0; dec < 1000; dec += 100) {
+          const { data, error } = await supabase.rpc(fn, { ...args, p_limite: 100, p_decalage: dec });
+          if (error) throw error;
+          l.push(...((data as T[]) || []));
+          if (!data || (data as T[]).length < 100) break;
+        }
+        return l;
+      };
+      if (mode === "questions") {
+        const l = await tout<Question>("chercher_questions", { p_q: q, p_depuis: debut(periode), p_statut: statut || null });
+        const dep = await auteurs(l.map(x => x.acteur_ref));
+        telechargerCsv(`questions-${q.slice(0, 30)}`, ["Type", "Numéro", "Date", "Député", "Parti", "Groupe", "Ministère", "Objet", "Statut", "Date de réponse", "Extrait", "Question et réponse"],
+          l.map(x => { const d = x.acteur_ref ? dep.get(x.acteur_ref) : null; return [x.type === "QG" ? "Question au Gouvernement" : "Question écrite", x.numero, x.date_question, d ? `${d.first_name} ${d.last_name}` : "", d?.party, x.groupe, x.ministere, x.objet, x.statut === "repondue" ? "Avec réponse" : "Sans réponse", x.date_reponse, propre(x.extrait), x.url]; }));
+      } else {
+        const l = await tout<Resultat>("chercher_debats", { p_q: q, p_depuis: debut(periode), p_acteur: acteur });
+        const dep = await auteurs(l.map(x => x.acteur_ref));
+        telechargerCsv(`debats-${q.slice(0, 30)}`, ["Date de la séance", "Orateur", "Qualité", "Parti", "Point de l'ordre du jour", "Extrait", "Compte rendu officiel"],
+          l.map(x => { const d = x.acteur_ref ? dep.get(x.acteur_ref) : null; return [x.date_seance?.slice(0, 10), d ? `${d.first_name} ${d.last_name}` : nom(x.acteur_ref, x.orateur), x.qualite, d?.party, x.point, propre(x.extrait), x.url]; }));
+      }
+    } catch { setErreur(true); }
+    setExportEnCours(false);
+  };
   const nom = (ref: string | null, defaut: string | null) => { const d = ref ? deputes.get(ref) : null; return d ? `${d.first_name} ${d.last_name}` : (defaut || "").replace(/\s*\([^)]*\)\s*$/, ""); };
   const choisi = acteur ? orateurs.find(o => o.acteur_ref === acteur) : null;
 
@@ -110,11 +153,14 @@ export default function DebatsSeance() {
         entre guillemets ou plusieurs mots ; « or » pour l&apos;un ou l&apos;autre, « - » pour exclure (ex. : <em>&quot;titre-restaurant&quot; or tickets -cantine</em>).
       </p>{" "}
 
-      <div className="mt-5 inline-flex gap-1 rounded-xl border border-border bg-background p-1" role="group" aria-label="Corpus">
+      <div className="mt-5 flex flex-wrap items-center justify-between gap-2">
+      <div className="inline-flex gap-1 rounded-xl border border-border bg-background p-1" role="group" aria-label="Corpus">
         {([["seance", "Débats en séance"], ["questions", "Questions au Gouvernement"]] as const).map(([v, l]) => (
           <button key={v} type="button" onClick={() => changer(() => { setMode(v); setQuestions(null); })} aria-pressed={mode === v}
             className={`min-h-[36px] rounded-lg px-3 text-[12px] font-black transition ${mode === v ? "bg-amber-600 text-white" : "text-muted-foreground hover:text-foreground"}`}>{l}</button>
         ))}
+      </div>
+      <BoutonCsv onClick={exporter} disabled={q.length < 3 || exportEnCours || !(mode === "questions" ? questions?.length : resultats?.length)} libelle={exportEnCours ? "Export…" : "Export CSV"} />
       </div>{" "}
       <div className="mt-3 flex flex-col gap-2 sm:flex-row">
         <div className="relative flex-1">

@@ -4,6 +4,8 @@ import { useEffect, useMemo, useState } from "react";
 import { ChevronDown, ExternalLink, Loader2, Radio, Tv } from "lucide-react";
 import { api } from "@/lib/api";
 import { couleur, heures } from "@/lib/dynamiques";
+import { telechargerCsv } from "@/lib/csv";
+import { CsvPro } from "./VerrouPro";
 
 type Candidat = { slug: string; full_name: string; photo_url: string | null; party: string | null };
 type Passage = Awaited<ReturnType<typeof api.getAntennePassages>>[number];
@@ -53,7 +55,10 @@ export default function AntennePanel({ candidats }: { candidats: Candidat[] }) {
           </h3>
           <p className="mt-0.5 text-[11px] text-muted-foreground">Entretiens, débats et prises de parole diffusés par 19 chaînes de télé et de radio{dernier ? ` · relevé ${ilYa(dernier)}` : ""}</p>
         </div>
-        <div className="flex gap-1">
+        <div className="flex flex-wrap items-center gap-1">
+          <CsvPro disabled={!lignes.length} onClick={() => telechargerCsv(`temps-antenne-${jours}-jours`,
+            ["Date", "Candidat", "Média", "Télé ou radio", "Format", "Durée de la vidéo (min)", "Minutes comptées", "Titre", "Lien"],
+            lignes.flatMap(l => l.liste.map(p => [p.publie_le.slice(0, 10), parSlug.get(p.slug)?.full_name ?? p.slug, p.media, p.type_media === "radio" ? "Radio" : "Télé", FORMAT[p.format], Math.round(p.duree_s / 60), Math.round(p.secondes_attribuees / 60), p.titre, p.url])))} />
           {([7, 30] as const).map(j => (
             <button key={j} type="button" onClick={() => setJours(j)}
               className={`rounded-lg px-2.5 py-1 text-[10px] font-black uppercase tracking-wider transition ${j === jours ? "bg-rose-600 text-white" : "bg-muted text-muted-foreground hover:text-foreground"}`}>{j} jours</button>

@@ -3,8 +3,9 @@
 import { useEffect, useMemo, useState } from "react";
 import { Loader2, ChevronDown, TrendingUp, TrendingDown } from "lucide-react";
 import { api } from "@/lib/api";
-import { EnTete, ZonePro, Methode } from "./VerrouPro";
+import { EnTete, ZonePro, Methode, CsvPro } from "./VerrouPro";
 import { couleur, heures, evolution } from "@/lib/dynamiques";
+import { telechargerCsv } from "@/lib/csv";
 import AntennePanel from "./AntennePanel";
 
 type Candidat = { slug: string; full_name: string; photo_url: string | null; party: string | null };
@@ -68,7 +69,13 @@ export default function ArcomPanel({ candidats }: { candidats: Candidat[] }) {
               <h3 className="text-sm font-black uppercase tracking-widest text-foreground">{nomMois(courant)}</h3>{" "}
               <p className="text-[11px] text-muted-foreground">{heures(total)} de parole au total pour les candidats suivis (déclarés ou pressentis)</p>
             </div>{" "}
-            <div className="flex flex-wrap gap-1">
+            <div className="flex flex-wrap items-center gap-1">
+              <CsvPro disabled={!rel?.length} onClick={() => telechargerCsv("temps-de-parole-arcom",
+                ["Candidat", "Mois", "Chaîne ou radio", "Temps de parole (secondes)", "Temps de parole"],
+                (rel || []).filter(r => parSlug.has(r.slug)).flatMap(r => [
+                  [parSlug.get(r.slug)!.full_name, r.mois.slice(0, 7), "Total", r.secondes, heures(r.secondes)],
+                  ...Object.entries(r.detail).sort((a, b) => b[1] - a[1]).map(([ch, s]) => [parSlug.get(r.slug)!.full_name, r.mois.slice(0, 7), chaine(ch), s, heures(s)]),
+                ]))} />
               {tousMois.slice(-6).map(m => (
                 <button key={m} onClick={() => setMois(m)}
                   className={`rounded-lg px-2.5 py-1 text-[10px] font-black uppercase tracking-wider transition ${m === courant ? "bg-sky-700 text-white" : "bg-muted text-muted-foreground hover:text-foreground"}`}>{nomMois(m, false)}{" "}</button>

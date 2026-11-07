@@ -7,6 +7,7 @@ import {
 } from "lucide-react";
 import { api } from "@/lib/api";
 import { usePremium } from "@/lib/hooks/usePremium";
+import { telechargerCsv } from "@/lib/csv";
 import LockedSection from "@/components/premium/LockedSection";
 import { CommissionAnalysis as Analysis, ACCENTS } from "./CommissionAnalysis";
 import AuditionsParMois from "./AuditionsParMois";
@@ -168,23 +169,13 @@ export default function CommissionTracker({ chamber, chamberLabel, accent = "eme
   /** Export CSV de ce qui est affiché — un des arguments de l'offre Pro. */
   const exportCsv = () => {
     if (!meetings?.length) return;
-    const esc = (v: unknown) => `"${String(v ?? "").replace(/"/g, '""')}"`;
-    const head = ["Date", "Commission", "Objet", "Points clés", "Compte rendu"];
-    const lines = meetings.map(m => [
+    telechargerCsv(`commissions-${chamber.toLowerCase()}`, ["Date", "Commission", "Objet", "Points clés", "Compte rendu"], meetings.map(m => [
       m.meeting_date ?? "",
       decode(m.commission || ""),
       cleanTitle(m.title || ""),
       (m.analysis?.points_cles ?? []).join(" • ") || (m.summary ?? "").replace(/\s+/g, " "),
       m.cr_url ?? "",
-    ].map(esc).join(";"));
-    // BOM pour qu'Excel ouvre l'UTF-8 correctement.
-    const blob = new Blob(["﻿" + [head.map(esc).join(";"), ...lines].join("\r\n")], { type: "text/csv;charset=utf-8" });
-    const url = URL.createObjectURL(blob);
-    const link = document.createElement("a");
-    link.href = url;
-    link.download = `commissions-${chamber.toLowerCase()}-${new Date().toISOString().slice(0, 10)}.csv`;
-    link.click();
-    URL.revokeObjectURL(url);
+    ]));
   };
 
   const total = useMemo(() => commissions.reduce((n, c) => n + c.count, 0), [commissions]);

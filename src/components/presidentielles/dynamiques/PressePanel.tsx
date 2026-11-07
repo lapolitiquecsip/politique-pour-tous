@@ -4,7 +4,8 @@ import { useEffect, useMemo, useState } from "react";
 import { Loader2, TrendingUp, TrendingDown, Info, ExternalLink } from "lucide-react";
 import { api } from "@/lib/api";
 import CourbeMulti, { type Serie } from "./CourbeMulti";
-import { EnTete, ZonePro, Methode } from "./VerrouPro";
+import { EnTete, ZonePro, Methode, CsvPro } from "./VerrouPro";
+import { telechargerCsv } from "@/lib/csv";
 import { couleur, court, vignette, evolution } from "@/lib/dynamiques";
 
 type Candidat = { slug: string; full_name: string; photo_url: string | null; party: string | null };
@@ -53,12 +54,20 @@ export default function PressePanel({ candidats }: { candidats: Candidat[] }) {
     return { tete, medias, val, max };
   }, [d]);
 
+  const exporter = () => d && telechargerCsv(`veille-presse-${jours}-jours`, ["Candidat", "Média", `Articles (${jours} derniers jours)`, `Articles (${jours} jours précédents)`, "Médias différents"], [
+    ...d.totaux.map(x => [nom(x.slug), "Tous médias", x.n, comparable ? x.n_prec : "", x.nb_medias]),
+    ...d.par_media.map(p => [nom(p.slug), p.media, p.n, "", ""]),
+  ]);
+
   const reglage = (
+    <div className="flex flex-wrap items-center gap-2">
+    <CsvPro disabled={!d?.totaux.length} onClick={exporter} />
     <div className="inline-flex rounded-full border border-border bg-card p-1 shadow-sm">
       {([[7, "7 jours"], [30, "30 jours"]] as const).map(([v, l]) => (
         <button key={v} onClick={() => setJours(v)}
           className={`rounded-full px-4 py-1.5 text-[10px] font-black uppercase tracking-widest transition ${jours === v ? "bg-slate-900 text-white dark:bg-white dark:text-slate-900" : "text-muted-foreground hover:text-foreground"}`}>{l}{" "}</button>
       ))}
+    </div>
     </div>
   );
 

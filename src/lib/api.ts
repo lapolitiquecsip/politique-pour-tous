@@ -1,4 +1,5 @@
 import type { FonctionElu } from "@/lib/data/institutionalRoles";
+import { mediaBanni } from './medias-bannis';
 import { supabase } from "./supabase";
 
 /** Version des CGV acceptée au paiement (à changer à chaque modification des CGV). */
@@ -432,7 +433,7 @@ export const api = {
         .limit(limit);
       if (error) { console.warn('API Warning (EntityFeed):', error.message); return []; }
       // Presse non lue : le résumé avait été écrit sur le seul titre. On montre le titre du journal.
-      return (data || []).map((r: any) => r.source_kind === 'google_news' && !r.verifie_le
+      return (data || []).filter((r: any) => !mediaBanni(r.media, r.url, r.source_url)).map((r: any) => r.source_kind === 'google_news' && !r.verifie_le
         ? { ...r, title: r.titre_origine || r.title, summary: null }
         : r);
     } catch (e) {
@@ -454,7 +455,7 @@ export const api = {
         console.warn('API Warning (Content):', error.message); 
         return []; 
       }
-      return data || [];
+      return (data || []).filter((r: any) => !mediaBanni(r.source_name, r.source_url));
     } catch (e) {
       console.error('API Error (Content):', e);
       return [];
@@ -1024,8 +1025,11 @@ export const api = {
     return (data || []) as import('./dynamiques').Sondage[];
   },
   getVeillePresse: async (jours: number) => {
-    const { data, error } = await supabase.rpc('veille_presse', { p_jours: jours });
+    const { data: brut, error } = await supabase.rpc('veille_presse', { p_jours: jours });
     if (error) throw error;
+    const data = brut ? { ...brut,
+      par_media: (brut.par_media || []).filter((m: any) => !mediaBanni(m.media)),
+      derniers: (brut.derniers || []).filter((m: any) => !mediaBanni(m.media, m.url)) } : brut;
     return data as {
       depuis: string | null; medias: number; articles: number;
       totaux: { slug: string; n: number; nb_medias: number; n_prec: number }[];
@@ -2210,7 +2214,7 @@ export const api = {
       .order('date', { ascending: false })
       .limit(50);
     if (error) { console.error(error); return []; }
-    return data || [];
+    return (data || []).filter((r: any) => !mediaBanni(r.source_name, r.source_url));
   },
 
   getLawsByAuthor: async (authorName: string) => {

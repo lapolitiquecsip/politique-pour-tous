@@ -3,6 +3,7 @@
 import { useEffect, useMemo, useState, type ReactNode } from "react";
 import { BookOpen, CircleDollarSign, ExternalLink, FileText, Gauge, Landmark, MessageSquareText, Newspaper, Users } from "lucide-react";
 import { supabase } from "@/lib/supabase";
+import { mediaBanni } from "@/lib/medias-bannis";
 
 // Fiche complète d'un ministère. Budget, emplois, résultats et questions viennent de la table
 // ministere_fiches, remplie chaque semaine par python/fiches_ministeres.py (backend) à partir des
@@ -362,7 +363,7 @@ export default function FicheMinistere({ slug, secours }: { slug: string; secour
       .then(({ data }) => { if (actif) setLignes((data as Ligne[]) || []); });
     supabase.from("entity_feed").select(champs).eq("entity_type", "ministry").eq("entity_id", slug).neq("source_kind", "jorf")
       .order("published_at", { ascending: false, nullsFirst: false }).limit(10)
-      .then(({ data }) => { if (actif) setActus((data as Actu[]) || []); });
+      .then(({ data }) => { if (actif) setActus(((data as Actu[]) || []).filter((a: any) => !mediaBanni(a.media, a.url))); });
     supabase.from("entity_feed").select(champs).eq("entity_type", "ministry").eq("entity_id", slug).eq("source_kind", "jorf")
       .order("published_at", { ascending: false, nullsFirst: false }).limit(120)
       .then(({ data }) => { if (actif) setJo((data as Actu[]) || []); });

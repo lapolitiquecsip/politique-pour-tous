@@ -6,6 +6,7 @@ import { supabase } from "@/lib/supabase";
 import { api } from "@/lib/api";
 import { regrouperParEvenement } from "@/lib/feed-events";
 import FeedItemCard from "@/components/home/FeedItemCard";
+import { mediaBanni } from "@/lib/medias-bannis";
 
 /**
  * Fil d'actualité politique de l'espace Pro.
@@ -46,7 +47,7 @@ export default function FilActualitePro({ userId }: { userId: string }) {
     if (vue === "elus" && !(noms || []).length) { setFil([]); setCharge(false); return; }
     if (vue === "elus") q = q.or((noms || []).slice(0, 25).flatMap(n => [`titre_simplifie.ilike.%${nettoyer(n)}%`, `resume_flash.ilike.%${nettoyer(n)}%`]).join(","));
     if (recherche) q = q.or(`titre_simplifie.ilike.%${recherche}%,resume_flash.ilike.%${recherche}%,titre_original.ilike.%${recherche}%`);
-    q.then(({ data }) => { if (actif) { setFil(regrouperParEvenement((data as any[]) || [])); setCharge(false); } });
+    q.then(({ data }) => { if (actif) { setFil(regrouperParEvenement(((data as any[]) || []).filter(r => !mediaBanni(r.source_name, r.source_url)))); setCharge(false); } });
     return () => { actif = false; };
   }, [vue, noms, recherche, limite]);
 

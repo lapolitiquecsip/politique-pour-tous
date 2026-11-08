@@ -3,6 +3,7 @@
 import { useEffect, useMemo, useState } from "react";
 import { AlertTriangle, CalendarClock, ChevronDown, ExternalLink, Landmark, Megaphone, ShieldCheck, Users, Wallet } from "lucide-react";
 import { supabase } from "@/lib/supabase";
+import { mediaBanni } from "@/lib/medias-bannis";
 
 /**
  * « Ce que le gouvernement annonce » — en tête de la page Exécutif.
@@ -44,7 +45,7 @@ export default function AnnoncesGouvernement() {
       .select("id, titre, chapo, ministere, porteur, type, importance, date_annonce, montants, sources, verifie, nb_sources, analyse_le, analyse_detail")
       .gte("date_annonce", new Date(Date.now() - 45 * 864e5).toISOString().slice(0, 10))
       .order("date_annonce", { ascending: false }).order("importance", { ascending: false }).limit(80)
-      .then(({ data }) => setAnnonces((data as Annonce[]) || []));
+      .then(({ data }) => setAnnonces(((data as Annonce[]) || []).map(a => ({ ...a, sources: (a.sources || []).filter(s => !mediaBanni(s.media, s.url)) }))));
   }, []);
 
   // À la une : les annonces majeures de la semaine d'abord (la plus importante en tête), puis le fil daté.

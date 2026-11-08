@@ -17,6 +17,7 @@ import { usePremium } from "@/lib/hooks/usePremium";
 import { isFollowingCandidate, toggleFollowCandidate } from "@/lib/candidateFollows";
 import MentionIA from "@/components/shared/MentionIA";
 import ProgrammeCandidat, { type SourceProgramme } from "@/components/presidentielles/ProgrammeCandidat";
+import { mediaBanni } from "@/lib/medias-bannis";
 
 type Candidate = {
   id: string;
@@ -39,6 +40,8 @@ type Candidate = {
 function PreuveCandidature({ preuve }: { preuve: Candidate["candidature_preuve"] }) {
   // « Non établie » dit que notre recherche n'a pas abouti, rien sur la personne : pas d'encadré.
   if (!preuve || preuve.statut === "non_etablie") return null;
+  // Preuve tirée d'un média retiré du site (08/11/2026) : rien plutôt que cette source.
+  if (mediaBanni(preuve.source, preuve.url)) return null;
   const etat: Record<string, [string, string]> = {
     declare: ["Candidature annoncée", "border-emerald-300 bg-emerald-500/5 dark:border-emerald-500/30"],
     pressenti: ["Candidature non confirmée", "border-amber-300 bg-amber-500/5 dark:border-amber-500/30"],

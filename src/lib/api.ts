@@ -1429,13 +1429,22 @@ export const api = {
 
   // Propositions/idées d'un candidat (scrapées verbatim du site officiel de son mouvement).
   getCandidateProposals: async (candidateId: string) => {
-    const { data, error } = await supabase
-      .from('candidate_proposals')
-      .select('theme, subsection, text, source_url, explanation')
-      .eq('candidate_id', candidateId)
-      .order('sort_order', { ascending: true });
-    if (error || !data) return [];
-    return data;
+    // Lu par tranches : Supabase s'arrête à 1 000 lignes par requête, et J.-L. Mélenchon en a
+    // plus de 1 800 depuis « L'Avenir en commun » (1 069 mesures, novembre 2026).
+    const out: any[] = [];
+    for (let de = 0; de < 20000; de += 1000) {
+      const { data, error } = await supabase
+        .from('candidate_proposals')
+        .select('theme, subsection, text, source_url, explanation')
+        .eq('candidate_id', candidateId)
+        .order('sort_order', { ascending: true })
+        .order('id', { ascending: true })
+        .range(de, de + 999);
+      if (error || !data) break;
+      out.push(...data);
+      if (data.length < 1000) break;
+    }
+    return out;
   },
 
   /** Sanctions du Conseil constitutionnel (juge électoral) rattachées à une fiche. */

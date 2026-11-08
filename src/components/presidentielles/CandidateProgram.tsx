@@ -4,6 +4,7 @@ import { useEffect, useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { api } from "@/lib/api";
 import { Globe2, GraduationCap, ShieldCheck, HeartPulse, Wheat, Leaf, Flag, TrendingUp, Landmark, FileText, HelpCircle, ExternalLink, Loader2 } from "lucide-react";
+import ProgrammeCandidat, { type SourceProgramme } from "@/components/presidentielles/ProgrammeCandidat";
 
 // Style (icône + couleurs) par thème du programme. Partagé entre la fiche candidat et la fiche parti.
 export function themeStyle(name: string): { Icon: any; c: string; bg: string; dot: string } {
@@ -24,6 +25,7 @@ export function themeStyle(name: string): { Icon: any; c: string; bg: string; do
 // « ? » par proposition. Rendu null si le candidat n'a pas de programme scrapé. Auto-chargé.
 export default function CandidateProgram({ candidateId, title = true, heading, className = "", emptyMessage }: { candidateId: string; title?: boolean; heading?: string; className?: string; emptyMessage?: string }) {
   const [proposals, setProposals] = useState<any[] | null>(null);
+  const [sources, setSources] = useState<SourceProgramme[]>([]);
   const [openContext, setOpenContext] = useState<Set<string>>(new Set());
   const [openExpl, setOpenExpl] = useState<Set<string>>(new Set());
   const toggleContext = (k: string) => setOpenContext(p => { const n = new Set(p); n.has(k) ? n.delete(k) : n.add(k); return n; });
@@ -32,11 +34,17 @@ export default function CandidateProgram({ candidateId, title = true, heading, c
   useEffect(() => {
     let active = true;
     api.getCandidateProposals(candidateId).then(r => { if (active) setProposals(r as any[]); }).catch(() => { if (active) setProposals([]); });
+    api.getSourcesProgramme(candidateId).then(r => { if (active) setSources(r); }).catch(() => {});
     return () => { active = false; };
   }, [candidateId]);
 
   if (proposals === null) return <div className="flex justify-center py-8"><Loader2 className="animate-spin text-muted-foreground" size={22} /></div>;
   if (proposals.length === 0) return emptyMessage ? <p className="py-4 text-center text-sm italic text-muted-foreground">{emptyMessage}</p> : null;
+
+  // Programme en plusieurs sources (J.-L. Mélenchon : livre-programme + plans, 160+ thèmes) :
+  // même affichage que la fiche candidat, rangé par plan / partie, au lieu d'une liste à plat.
+  if (new Set(proposals.map(p => p.source_url).filter(Boolean)).size > 1)
+    return <div className={className}><ProgrammeCandidat proposals={proposals} sources={sources} titre={heading || "Son programme"} /></div>;
 
   const groups: Record<string, { ctx: string | null; items: any[] }> = {};
   for (const p of proposals) {

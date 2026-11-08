@@ -43,7 +43,21 @@ const PLANS_CONNUS: Record<string, string> = {
   ruralite: "Ruralités",
   "btp-logement": "BTP et logement",
   automobile: "Automobile",
+  sante: "Santé",
 };
+// Livre-programme « L'Avenir en commun » (melenchon2027.fr/programme/livre/<partie>/chapitreN) :
+// une source par chapitre, rangée sous sa partie.
+const LIVRE = /\/programme\/livre\/([^/]+)\/chapitre\d+\/?$/;
+const PARTIES_LIVRE: Record<string, string> = {
+  "pour-une-bifurcation-ecologique-et-sociale": "Partie 1 · Pour une bifurcation écologique et sociale",
+  "une-economie-au-service-des-besoins": "Partie 2 · Une économie au service des besoins",
+  "mettre-en-securite-sociale": "Partie 3 · Mettre en sécurité sociale",
+  "le-gout-du-futur-aux-nouvelles-frontieres-de-l-humanite": "Partie 4 · Le goût du futur : aux nouvelles frontières de l'humanité",
+  "fonder-la-6e-republique": "Partie 5 · Fonder la 6e République",
+  "un-monde-ordonne": "Partie 6 · Un monde ordonné",
+};
+const partieDuLivre = (u: string) => u.match(LIVRE)?.[1] ?? null;
+const sommaireDuLivre = (u: string) => u.replace(/\/programme\/livre\/.*$/, "/programme/livre/");
 function nomDuPlan(u: string, sources: SourceProgramme[]): string {
   const s = sources.find(x => x.source_url === u);
   if (s?.titre) return s.titre;
@@ -70,9 +84,12 @@ export default function ProgrammeCandidat({ proposals, sources = [], titre = "So
     if (p.subsection === "__contexte__") groups[k].ctx = p.text; else groups[k].items.push(p);
   }
   const urls = [...new Set(proposals.map(p => p.source_url).filter(Boolean) as string[])];
+  // Sources affichées en bas : le livre une seule fois (son sommaire), pas ses 23 chapitres.
+  const urlsAffichees = [...new Set(urls.map(u => partieDuLivre(u) ? sommaireDuLivre(u) : u))];
   const libelleSource = (u: string) => {
     const s = sources.find(x => x.source_url === u);
     if (estVideo(u)) return `${s?.titre || "Présentation officielle"} — vidéo de la chaîne officielle${s ? `, analysée le ${new Date(s.traite_le).toLocaleDateString("fr-FR", { day: "numeric", month: "long", year: "numeric" })}` : ""}`;
+    if (/\/programme\/livre\/$/.test(u)) return "L'Avenir en commun, livre-programme (texte officiel, chapitre par chapitre)";
     return "Programme officiel (site du mouvement)";
   };
 
@@ -80,11 +97,31 @@ export default function ProgrammeCandidat({ proposals, sources = [], titre = "So
   // cinquante thèmes à plat se parcouraient sans fin. Les thèmes sont alors rangés sous leur
   // plan, replié : quelques lignes d'abord, les thèmes du plan ouvert ensuite.
   const parPlan = urls.length > 1 && Object.keys(groups).length > 12;
-  const plans = parPlan ? urls.map(u => ({
-    url: u, nom: nomDuPlan(u, sources),
-    themes: [...new Set(proposals.filter(p => p.source_url === u).map(p => p.theme || "Propositions"))],
-    n: proposals.filter(p => p.source_url === u && p.subsection !== "__contexte__").length,
-  })) : [];
+  // Les chapitres d'un livre-programme sont regroupés par partie (6 lignes au lieu de 23) ;
+  // à l'intérieur, chaque chapitre a son intertitre.
+  type Plan = { url: string; nom: string; livre: boolean; chapitres: { url: string; titre: string; themes: string[] }[]; n: number };
+  const plans: Plan[] = [];
+  if (parPlan) {
+    for (const u of urls) {
+      const partie = partieDuLivre(u);
+      const cle = partie ? `livre:${partie}` : u;
+      let pl = plans.find(x => x.url === cle);
+      if (!pl) {
+        pl = { url: cle, nom: partie ? (PARTIES_LIVRE[partie] ?? partie.replace(/-/g, " ")) : nomDuPlan(u, sources), livre: !!partie, chapitres: [], n: 0 };
+        plans.push(pl);
+      }
+      pl.chapitres.push({
+        url: u, titre: partie ? nomDuPlan(u, sources) : "",
+        themes: [...new Set(proposals.filter(p => p.source_url === u).map(p => p.theme || "Propositions"))],
+      });
+      const lignes = proposals.filter(p => p.source_url === u && p.subsection !== "__contexte__");
+      // Une mesure qui chapeaute des sous-mesures compte pour une (décompte officiel du livre : 1 069).
+      pl.n += lignes.length + new Set(lignes.map(p => p.subsection).filter(s => s && !s.startsWith("__"))).size;
+    }
+    // Le livre-programme d'abord (c'est le programme), les plans détaillés ensuite.
+    plans.sort((a, b) => Number(b.livre) - Number(a.livre));
+  }
+  const nLivre = plans.filter(p => p.livre).reduce((s, p) => s + p.n, 0);
   const unTheme = (theme: string, g: { ctx: string | null; items: Proposition[] }) => {
     const { Icon, c, bg, dot } = themeStyle(theme);
     const isOpen = openTheme.has(theme);
@@ -106,11 +143,18 @@ export default function ProgrammeCandidat({ proposals, sources = [], titre = "So
                 {g.items.map((p, i) => {
                   const exKey = `${theme}#${i}`;
                   const exOpen = openExpl.has(exKey);
+                  const cle = p.subsection === "__mesure_cle__";
+                  // Sous-mesure : son intitulé (la mesure qui la chapeaute) s'affiche une fois, au-dessus.
+                  const chapeau = p.subsection && !p.subsection.startsWith("__") ? p.subsection : null;
+                  const nouveauChapeau = chapeau && g.items[i - 1]?.subsection !== chapeau;
                   return (
-                    <li key={i} className="px-4 py-2.5 text-sm leading-6 text-slate-700 dark:text-slate-200">
-                      <div className="flex items-start gap-2.5">
-                        <span className={`mt-2 h-1.5 w-1.5 shrink-0 rounded-full ${dot}`} />{" "}
-                        <span className="flex-1">{p.text}</span>{" "}
+                    <li key={i} className={`px-4 py-2.5 text-sm leading-6 text-slate-700 dark:text-slate-200 ${cle ? "bg-amber-50/70 dark:bg-amber-500/10" : ""}`}>
+                      {nouveauChapeau && <p className="mb-1.5 flex items-start gap-2.5 font-bold text-foreground"><span className={`mt-2 h-1.5 w-1.5 shrink-0 rounded-full ${dot}`} />{" "}{chapeau} :</p>}{" "}
+                      <div className={`flex items-start gap-2.5 ${chapeau ? "pl-4" : ""}`}>
+                        {cle
+                          ? <span className="mt-0.5 shrink-0 rounded-full bg-amber-500 px-2 py-0.5 text-[10px] font-black uppercase tracking-wider text-white dark:bg-amber-400 dark:text-slate-900">Mesure clé</span>
+                          : <span className={`mt-2 shrink-0 rounded-full ${chapeau ? "h-1 w-1 bg-slate-400" : `h-1.5 w-1.5 ${dot}`}`} />}{" "}
+                        <span className={`flex-1 ${cle ? "font-bold text-foreground" : ""}`}>{p.text}</span>{" "}
                         {p.explanation && (
                           <button onClick={() => setOpenExpl(s => bascule(s, exKey))} title="Comprendre cette proposition"
                             className={`mt-0.5 flex h-6 w-6 shrink-0 items-center justify-center rounded-full border transition ${exOpen ? "border-violet-300 bg-violet-100 text-violet-700 dark:bg-violet-500/10 dark:text-violet-300" : "border-violet-200 bg-card text-violet-500 hover:bg-violet-50 dark:border-violet-500/25"}`}>
@@ -145,26 +189,41 @@ export default function ProgrammeCandidat({ proposals, sources = [], titre = "So
       </p>{" "}
       {parPlan ? (
         <div className="mt-4 space-y-3">
-          {plans.map(pl => {
+          {plans.map((pl, iPlan) => {
             const ouvert = openTheme.has(`plan:${pl.url}`);
-            return (
+            const nThemes = pl.chapitres.reduce((s, ch) => s + ch.themes.length, 0);
+            // Intertitres de groupe : le livre-programme, puis les plans qui le détaillent.
+            const entete = pl.livre && iPlan === 0
+              ? <p key={`t:${pl.url}`} className="px-1 pt-1 text-[11px] font-black uppercase tracking-widest text-muted-foreground">L&apos;Avenir en commun · livre-programme ({nLivre.toLocaleString("fr-FR")} mesures)</p>
+              : !pl.livre && plans[iPlan - 1]?.livre
+                ? <p key={`t:${pl.url}`} className="px-1 pt-3 text-[11px] font-black uppercase tracking-widest text-muted-foreground">Plans thématiques et d&apos;investissement</p>
+                : null;
+            return [entete, (
               <div key={pl.url} className="overflow-hidden rounded-2xl border border-border bg-card">
                 <button onClick={() => setOpenTheme(s => bascule(s, `plan:${pl.url}`))} aria-expanded={ouvert}
                   className="flex min-h-[56px] w-full items-center gap-3 px-4 py-3 text-left transition hover:bg-muted">
                   <span className="flex h-9 w-9 shrink-0 items-center justify-center rounded-xl bg-slate-900 text-white dark:bg-white dark:text-slate-900">{estVideo(pl.url) ? <PlayCircle size={17} /> : <FileText size={17} />}</span>{" "}
                   <span className="min-w-0 flex-1">
                     <span className="block text-[15px] font-black leading-snug text-foreground">{pl.nom}</span>{" "}
-                    <span className="block text-[12px] font-bold text-muted-foreground">{pl.n} proposition{pl.n > 1 ? "s" : ""} · {pl.themes.length} thème{pl.themes.length > 1 ? "s" : ""}</span>
+                    <span className="block text-[12px] font-bold text-muted-foreground">{pl.n} {pl.livre ? "mesure" : "proposition"}{pl.n > 1 ? "s" : ""} · {pl.livre ? `${pl.chapitres.length} chapitre${pl.chapitres.length > 1 ? "s" : ""}, ` : ""}{nThemes} thème{nThemes > 1 ? "s" : ""}</span>
                   </span>{" "}
                   <ChevronDown size={18} className={`shrink-0 text-muted-foreground transition-transform ${ouvert ? "rotate-180" : ""}`} />
                 </button>{" "}
                 {ouvert && (
                   <div className="space-y-2.5 border-t border-border p-3">
-                    {pl.themes.filter(t => groups[t]).map(t => unTheme(t, groups[t]))}
+                    {pl.chapitres.map(ch => [
+                      ch.titre && (
+                        <a key={`ch:${ch.url}`} href={ch.url} target="_blank" rel="noreferrer"
+                          className="flex items-center gap-1.5 px-1 pt-2 text-[13px] font-black leading-snug text-foreground hover:underline first:pt-0">
+                          {ch.titre} <ExternalLink size={11} className="shrink-0 text-muted-foreground" />
+                        </a>
+                      ),
+                      ...ch.themes.filter(t => groups[t]).map(t => unTheme(t, groups[t])),
+                    ])}
                   </div>
                 )}
               </div>
-            );
+            )];
           })}
         </div>
       ) : (
@@ -173,13 +232,15 @@ export default function ProgrammeCandidat({ proposals, sources = [], titre = "So
         </div>
       )}{" "}
       <div className="mt-3 flex flex-col gap-1.5">
-        {urls.map(u => (
+        {urlsAffichees.map(u => (
           <a key={u} href={u} target="_blank" rel="noreferrer" className="inline-flex items-center gap-1.5 text-[11px] font-black uppercase tracking-widest text-blue-700 hover:underline dark:text-blue-300">
             {estVideo(u) ? <PlayCircle size={12} /> : <ExternalLink size={12} />} {libelleSource(u)}{" "}
           </a>
         ))}
       </div>{" "}
-      <MentionIA texte="Propositions restructurées par IA à partir des sources officielles citées (chiffres vérifiés contre le texte ou le discours) ; les explications « ? » sont rédigées par IA. Seule la source officielle fait foi." />
+      <MentionIA texte={nLivre
+        ? "Mesures de « L'Avenir en commun » reprises mot pour mot du texte officiel ; propositions des plans restructurées par IA à partir des sources citées (chiffres vérifiés contre le texte) ; les explications « ? » sont rédigées par IA. Seule la source officielle fait foi."
+        : "Propositions restructurées par IA à partir des sources officielles citées (chiffres vérifiés contre le texte ou le discours) ; les explications « ? » sont rédigées par IA. Seule la source officielle fait foi."} />
     </section>
   );
 }

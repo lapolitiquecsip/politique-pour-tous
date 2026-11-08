@@ -8,6 +8,7 @@ import { categoryLabel } from "@/lib/legislative";
 import { lawTypeMeta } from "@/components/lois/LawCard";
 import MentionIA from "@/components/shared/MentionIA";
 import { extrait } from "@/lib/seo-donnees";
+import ResumeLoi, { resumeEnTexte } from "@/components/lois/ResumeLoi";
 
 /**
  * Une page par texte de loi, construite avec le site : titre, résumé, ce qui change,
@@ -81,7 +82,7 @@ export async function generateMetadata({ params }: { params: Promise<{ id: strin
   const t = await lireTexte(id);
   if (!t) return { title: "Texte de loi", robots: { index: false } };
   const titre = titreDe(t);
-  const description = extrait(t.impact || t.resume || t.dossier.title);
+  const description = extrait(t.impact || (t.resume ? resumeEnTexte(t.resume) : null) || t.dossier.title);
   return {
     title: titre,
     description,
@@ -135,7 +136,7 @@ export default async function PageTexte({ params }: { params: Promise<{ id: stri
     legislationIdentifier: p?.nor || d.official_id || undefined,
     legislationDate: p?.promulgated_at || undefined,
     datePublished: d.deposited_at || undefined,
-    abstract: t.resume || undefined,
+    abstract: t.resume ? resumeEnTexte(t.resume) : undefined,
     url: `https://lapolitiquecestsimple.fr/lois/texte/${id}/`,
     sameAs: p?.eli_url || undefined,
   };
@@ -207,10 +208,8 @@ export default async function PageTexte({ params }: { params: Promise<{ id: stri
 
           {t.resume && (
             <section className="mt-8">
-              <h2 className="font-staatliches text-2xl uppercase tracking-wide text-foreground dark:text-white">En bref</h2>{" "}
-              {t.resume.split(/\n{2,}/).map((para, i) => (
-                <p key={i} className="mt-2 text-[15px] leading-relaxed text-foreground/90 dark:text-slate-200">{para}{" "}</p>
-              ))}{" "}
+              <h2 className="font-staatliches text-2xl uppercase tracking-wide text-foreground dark:text-white">Résumé</h2>{" "}
+              <ResumeLoi texte={t.resume} className="mt-2" />{" "}
               <MentionIA source={{ libelle: "documents officiels du Parlement", url: sources[0] ?? null }} className="mt-3" />
             </section>
           )}{" "}

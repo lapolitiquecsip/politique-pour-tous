@@ -16,6 +16,7 @@ import { categoryLabel, type LegislativeDossierDetail } from "@/lib/legislative"
 import { lockScroll, unlockScroll } from "@/lib/scroll-lock";
 import AnalyseApprofondie from "@/components/lois/AnalyseApprofondie";
 import ApplicationLoi from "@/components/lois/ApplicationLoi";
+import ResumeLoi from "@/components/lois/ResumeLoi";
 
 // Panneau de détail d'une loi (fiche complète : résumé, analyse premium, navette, amendements,
 // scrutins, sources). Partagé entre la page « Lois » et la home (livre du Journal Officiel).
@@ -533,7 +534,7 @@ export default function DossierModal({
             {fallback?.summary && (
               <section className="mt-6">
                 <h3 className="text-lg font-bold text-foreground">Résumé</h3>{" "}
-                <p className="mt-2 text-[16px] leading-7 text-slate-700 dark:text-slate-200">{fallback.summary}</p>
+                <ResumeLoi texte={fallback.summary} className="mt-2" />
               </section>
             )}{" "}
             <p className="mt-6 flex items-center gap-2 text-sm font-semibold text-muted-foreground">
@@ -611,7 +612,7 @@ export default function DossierModal({
             })()}{" "}
             {detail.promulgation && <ApplicationLoi jorfId={detail.promulgation.jorf_id} titre={detail.dossier.title} />}{" "}
 
-            <section className="mt-8"><h3 className="text-2xl font-staatliches uppercase text-foreground">Résumé</h3>{" "}<p className="mt-3 text-[16px] leading-7 text-slate-700 dark:text-slate-200">{detail.summary?.summary || "Analyse indisponible."}</p></section>{" "}
+            <section className="mt-8"><h3 className="text-2xl font-staatliches uppercase text-foreground">Résumé</h3>{" "}{detail.summary?.summary ? <ResumeLoi texte={detail.summary.summary} className="mt-3" /> : <p className="mt-3 text-[16px] leading-7 text-slate-700 dark:text-slate-200">Analyse indisponible.</p>}</section>{" "}
             {/* Lecture progressive : le résumé d'abord, puis l'accès direct à chaque détail. */}
             <nav aria-label="Dans cette fiche" className="mt-6 flex flex-wrap gap-2">
               {[["fiche-analyse", "Analyse détaillée"], ["fiche-navette", "Parcours"], ["fiche-amendements", "Amendements"], ["fiche-scrutins", "Votes"], ["fiche-sources", "Sources"]].map(([id, libelle]) => (

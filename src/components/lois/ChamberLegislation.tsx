@@ -47,20 +47,40 @@ export default function ChamberLegislation({ chamber, chamberLabel }: { chamber:
     try { setDetail(await api.getLegislativeDossier(item.id)); } finally { setDetailLoading(false); }
   };
 
+  // Le filtre « Type » se faisait sur les 40 derniers textes chargés : les projets de loi,
+  // rares parmi les propositions et rapports, n'y figuraient souvent pas. Avec un type
+  // choisi, on lit donc des pages entières jusqu'à en avoir assez (6 pages de 100 au plus).
+  const lirePages = useCallback(async (depuis: LegislativeListItem | null) => {
+    const lus: LegislativeListItem[] = [];
+    let curseur = depuis, fin = false;
+    for (let n = 0; n < (textType ? 6 : 1); n++) {
+      const taille = textType ? 100 : 40;
+      const rows = await api.getLegislativeDossiers({ chamber, status: stage || undefined, limit: taille,
+        cursorDate: curseur?.cursor_date || undefined, cursorId: curseur?.official_id });
+      lus.push(...rows);
+      if (rows.length < taille) { fin = true; break; }
+      curseur = rows.at(-1)!;
+      if (!textType || lus.filter(i => (i as any).text_type === textType).length >= 20) break;
+    }
+    return { lus, fin };
+  }, [chamber, stage, textType]);
+
   const load = useCallback(async () => {
     setLoading(true);
     try {
-      const rows = await api.getLegislativeDossiers({ chamber, status: stage || undefined, limit: 40 });
-      setItems(rows); setHasMore(rows.length === 40);
+      const { lus, fin } = await lirePages(null);
+      setItems(lus); setHasMore(!fin);
     } catch { setItems([]); } finally { setLoading(false); }
-  }, [chamber, stage]);
+  }, [lirePages]);
   useEffect(() => { void load(); }, [load]);
 
   const loadMore = async () => {
     const last = items.at(-1); if (!last) return;
     setLoading(true);
-    const rows = await api.getLegislativeDossiers({ chamber, status: stage || undefined, cursorDate: last.cursor_date || undefined, cursorId: last.official_id, limit: 40 });
-    setItems(cur => [...cur, ...rows]); setHasMore(rows.length === 40); setLoading(false);
+    try {
+      const { lus, fin } = await lirePages(last);
+      setItems(cur => [...cur, ...lus]); setHasMore(!fin);
+    } finally { setLoading(false); }
   };
 
   const visible = textType ? items.filter(i => (i as any).text_type === textType) : items;

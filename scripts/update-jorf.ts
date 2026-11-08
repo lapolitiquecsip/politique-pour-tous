@@ -531,7 +531,13 @@ async function main() {
   console.log("=== Journal officiel — flux DILA ===");
   console.log(`  voie de rédaction : ${llmVoie()}`);
   const archives = (await listerArchives()).slice(0, NB_FICHIERS);
-  if (!archives.length) { console.error("Aucune archive listée."); process.exit(1); }
+  if (!archives.length) {
+    // Le 08/11/2026, la DILA a purgé le répertoire et n'y a laissé que le stock complet
+    // (« Freemium_jorf_global_… », plusieurs Go) : aucune archive quotidienne à lire, ce
+    // n'est pas une panne. Les quotidiens reprennent ensuite ; le passage suivant les lira.
+    console.log("::warning::DILA ne publie aucune archive JORF quotidienne pour l'instant (stock complet seul) : rien de nouveau.");
+    return;
+  }
   console.log(`  ${archives.length} archive(s) à lire, de ${archives[archives.length - 1]} à ${archives[0]}`);
   console.log(`  éditions retenues : à partir du ${DEPUIS}`);
 

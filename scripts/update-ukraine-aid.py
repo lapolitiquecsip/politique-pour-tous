@@ -11,11 +11,13 @@ le fichier s'il a changé → le site se redéploie avec les chiffres à jour.
 Dépendances : requests, openpyxl.
 """
 import re, json, sys, datetime, io
+from urllib.parse import urljoin
 import requests
 import openpyxl
 
-PAGE = "https://www.ifw-kiel.de/topics/war-against-ukraine/ukraine-support-tracker/"
-BASE = "https://www.ifw-kiel.de"
+# L'Institut a quitté ifw-kiel.de pour kielinstitut.de (automne 2026) : les liens relatifs sont
+# résolus sur l'adresse finale de la page, quelle qu'elle soit.
+PAGE = "https://www.kielinstitut.de/research/topics/war-against-ukraine/ukraine-support-tracker/"
 OUT = "src/lib/data/ukraine-aid.json"
 UA = {"User-Agent": "Mozilla/5.0 (compatible; lapolitiquecestsimple-bot/1.0)"}
 
@@ -23,16 +25,17 @@ FR = {'United States': 'États-Unis', 'United Kingdom': 'Royaume-Uni', 'Germany'
 
 
 def latest_xlsx_url():
-    html = requests.get(PAGE, headers=UA, timeout=60).text
-    links = re.findall(r'href="([^"]*Ukraine_Support_Tracker_Release_[^"]*\.xlsx)"', html)
+    page = requests.get(PAGE, headers=UA, timeout=60)
+    html = page.text
+    # « …Tracker_Release_30.xlsx » puis « …Tracker__Release_31.xlsx » (double tiret bas).
+    links = re.findall(r'href="([^"]*Ukraine_Support_Tracker_+Release_[^"]*\.xlsx)"', html)
     if not links:
         raise RuntimeError("Aucun lien Excel trouvé sur la page Kiel")
     def relnum(u):
         m = re.search(r'Release_(\d+)', u)
         return int(m.group(1)) if m else 0
     best = sorted(links, key=relnum)[-1]
-    if best.startswith("/"):
-        best = BASE + best
+    best = urljoin(page.url, best)
     return best, relnum(best)
 
 

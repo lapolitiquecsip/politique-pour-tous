@@ -266,8 +266,9 @@ async function telecharger(flux: string): Promise<Buffer> {
       if (!r.ok) throw new Error(`HTTP ${r.status}`);
       return Buffer.from(await r.arrayBuffer());
     } catch (e) {
-      if (essai >= 3) throw new Error(`flux ${flux} : ${(e as Error).message}`);
-      await new Promise(res => setTimeout(res, 5000 * essai));
+      // Coupures du serveur DILA de plusieurs secondes (échec du 07/11/2026) : 4 essais espacés.
+      if (essai >= 4) throw new Error(`flux ${flux} : ${(e as Error).message}`);
+      await new Promise(res => setTimeout(res, 30000 * essai));
     }
   }
 }

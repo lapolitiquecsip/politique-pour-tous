@@ -1,10 +1,10 @@
 {
   "source": "Ukraine Support Tracker — Institut de Kiel (IfW)",
-  "sourceUrl": "https://www.ifw-kiel.de/topics/war-against-ukraine/ukraine-support-tracker/",
+  "sourceUrl": "https://www.kielinstitut.de/research/topics/war-against-ukraine/ukraine-support-tracker/",
   "release": "Release 31",
   "unit": "Md€",
   "metric": "Aide bilatérale allouée, cumul depuis janvier 2022",
-  "updatedAt": "2026-10-12",
+  "updatedAt": "2026-11-08",
   "france": {
     "financial": 0.8,
     "humanitarian": 0.88,
@@ -17,11 +17,11 @@
     "en": "EU (Commission and Council)",
     "financial": 87.61,
     "humanitarian": 3.28,
-    "military": 9.84,
-    "total": 100.74,
+    "military": 8.87,
+    "total": 99.77,
     "euMember": false
   },
-  "totalAll": 383.86,
+  "totalAll": 382.89,
   "donors": [
     {
       "name": "États-Unis",
@@ -33,8 +33,8 @@
     },
     {
       "name": "Union européenne",
-      "total": 100.74,
-      "military": 9.84,
+      "total": 99.77,
+      "military": 8.87,
       "financial": 87.61,
       "humanitarian": 3.28,
       "isEU": true

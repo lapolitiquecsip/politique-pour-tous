@@ -1,9 +1,9 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import { Target, ListChecks, Quote, ArrowRight, Megaphone, MessagesSquare, Swords, Vote, Hourglass, Sparkles } from "lucide-react";
+import { Target, ListChecks, Quote, ArrowRight, Megaphone, MessagesSquare, Swords, Vote, Hourglass, Sparkles, ListOrdered, Play } from "lucide-react";
 import { api } from "@/lib/api";
-import type { CommissionMeeting } from "@/lib/commissions";
+import { fmtInstant, lienInstant, type CommissionMeeting } from "@/lib/commissions";
 import MentionIA from "@/components/shared/MentionIA";
 
 /**
@@ -125,6 +125,32 @@ export function CommissionAnalysis({ m, accent, sombre = false }: {
             <Target size={12} /> Contexte
           </p>{" "}
           <p className={`text-sm leading-relaxed ${corps}`}>{a.contexte}</p>
+        </div>
+      )}{" "}
+
+      {/* Réunions transcrites : le déroulé en chapitres, chacun ouvrant la vidéo au bon moment. */}
+      {!!a.sommaire?.length && (
+        <div>
+          <p className={`mb-2 flex items-center gap-1.5 text-[10px] font-black uppercase tracking-widest ${accent.text}`}>
+            <ListOrdered size={12} /> Sommaire de la réunion
+          </p>{" "}
+          <ol className="space-y-2">
+            {a.sommaire.map((c, i) => {
+              const video = a.video || m.video_url;
+              return (
+                <li key={i} className={bloc}>
+                  <div className="flex items-baseline gap-2">
+                    {video
+                      ? <a href={lienInstant(video, c.t)} target="_blank" rel="noopener noreferrer" title="Voir ce passage dans la vidéo officielle"
+                          className={`inline-flex shrink-0 items-center gap-1 text-[11px] font-black tabular-nums ${accent.text} hover:underline`}><Play size={10} />{fmtInstant(c.t)}</a>
+                      : <span className={`shrink-0 text-[11px] font-black tabular-nums ${appui}`}>{fmtInstant(c.t)}</span>}{" "}
+                    <p className={`text-[13px] font-bold leading-snug ${fort}`}>{c.titre}</p>
+                  </div>{" "}
+                  {c.resume && <p className={`mt-1 text-[13px] leading-snug ${appui}`}>{c.resume}</p>}
+                </li>
+              );
+            })}
+          </ol>
         </div>
       )}{" "}
 

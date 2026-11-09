@@ -85,7 +85,35 @@ export type CommissionAnalysis = {
   positions?: { orateur: string; groupe?: string; position: string }[];
   suites?: string[];
   citations?: { orateur: string; texte: string }[];
+  /** Réunion transcrite depuis sa vidéo : chaque propos est rangé sous l'orateur indexé par l'Assemblée. */
+  orateurs?: boolean;
+  /** Page de la vidéo transcrite. */
+  video?: string;
+  /** Déroulé en chapitres (réunions transcrites) : instant de début en secondes dans la vidéo. */
+  sommaire?: { t: number; titre: string; resume: string }[];
 };
+
+/**
+ * Lien vers la vidéo d'une réunion de l'Assemblée, ouverte à un instant précis.
+ *
+ * Le lecteur de l'Assemblée n'accepte pas un nombre de secondes mais l'identifiant d'un de ses
+ * repères (`?timecode=<repère>`) : chaque prise de parole en a un, et il en existe un par minute,
+ * formé du numéro de la vidéo suivi des secondes sur cinq chiffres (19678322 + 01500).
+ */
+export function lienInstant(page: string, t: number, repere?: string | null): string {
+  const base = page.split(/[?#]/)[0];
+  if (repere) return `${base}?timecode=${repere}`;
+  const numero = base.match(/\/video\.(\d+)_/)?.[1];
+  if (!numero) return base;
+  return `${base}?timecode=${numero}${String(Math.max(0, Math.floor(t / 60) * 60)).padStart(5, "0")}`;
+}
+
+/** 4 523 s → « 1:15:23 » ; 523 s → « 8:43 ». */
+export function fmtInstant(t: number): string {
+  const s = Math.max(0, Math.round(t));
+  const h = Math.floor(s / 3600), m = Math.floor((s % 3600) / 60), sec = s % 60;
+  return h ? `${h}:${String(m).padStart(2, "0")}:${String(sec).padStart(2, "0")}` : `${m}:${String(sec).padStart(2, "0")}`;
+}
 
 export type CommissionMeeting = {
   ref: string;

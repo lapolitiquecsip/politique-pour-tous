@@ -2,9 +2,9 @@
 
 import { useEffect, useMemo, useRef, useState } from "react";
 import { createPortal } from "react-dom";
-import { X, Search, Loader2, ExternalLink, FileText, ChevronUp, ChevronDown, Video } from "lucide-react";
+import { X, Search, Loader2, ExternalLink, FileText, ChevronUp, ChevronDown, Video, Play } from "lucide-react";
 import { api } from "@/lib/api";
-import { cleanTitle, fmtMeetingDate, shortCommission, type CommissionMeeting } from "@/lib/commissions";
+import { cleanTitle, fmtInstant, fmtMeetingDate, lienInstant, shortCommission, type CommissionMeeting } from "@/lib/commissions";
 
 /**
  * Le compte rendu intégral d'une réunion, lu SUR LE SITE.
@@ -21,9 +21,44 @@ type Transcrit = { texte: string; mots: number; source: string } | null;
 /** Début d'une prise de parole : « M. Jean Dupont, rapporteur. » ou « Mme la présidente Anne Durand. » */
 const ORATEUR = /^((?:M\.|Mme|MM\.|Mmes)\s(?:l[ea]\s)?[^.:]{2,90}?)\s?[.:]\s+(?=\S)/;
 
-type Bloc = { orateur: string | null; texte: string };
+type Bloc = {
+  orateur: string | null;
+  texte: string;
+  /** Transcription d'une vidéo : instant (s), fonction, groupe, fiche et repère du lecteur de l'Assemblée. */
+  t?: number;
+  fonction?: string;
+  parti?: string;
+  slug?: string;
+  repere?: string;
+  /** Intertitre (« Questions des représentants des groupes »). */
+  section?: boolean;
+};
+
+/**
+ * Transcription rangée par orateur (scripts/transcribe-auditions.ts) :
+ *   @@§ 3530 | Questions des représentants des groupes
+ *   @@ 3530 | M. Robert Le Bourgeois | | RN | robert-le-bourgeois | 19678380
+ *   un paragraphe par ligne…
+ */
+function decouperParOrateur(texte: string): Bloc[] {
+  const blocs: Bloc[] = [];
+  for (const ligne of texte.split("\n")) {
+    if (ligne.startsWith("@@§ ")) {
+      const [t, titre] = ligne.slice(4).split(" | ");
+      blocs.push({ orateur: null, texte: titre ?? "", t: Number(t), section: true });
+    } else if (ligne.startsWith("@@ ")) {
+      const [t, nom, fonction, parti, slug, repere] = ligne.slice(3).split(" | ").map(x => (x ?? "").trim());
+      blocs.push({ orateur: nom || "Orateur non indexé", texte: "", t: Number(t), fonction, parti, slug, repere });
+    } else if (ligne.trim() && blocs.length && !blocs[blocs.length - 1].section) {
+      const b = blocs[blocs.length - 1];
+      b.texte = b.texte ? `${b.texte}\n${ligne.trim()}` : ligne.trim();
+    }
+  }
+  return blocs.filter(b => b.section || b.texte);
+}
 
 function decouper(texte: string): Bloc[] {
+  if (texte.startsWith("@@")) return decouperParOrateur(texte);
   // Une transcription automatique arrive d'un seul tenant : on la rend en paragraphes de
   // cinq phrases, faute de quoi elle formerait un mur de texte illisible.
   if (!/\n/.test(texte.trim()) && texte.length > 1500) {
@@ -96,6 +131,8 @@ export default function CompteRendu({ m, onFermer }: { m: CommissionMeeting; onF
   useEffect(() => { setCourant(0); if (trouves.length) corps.current?.querySelector(`[data-bloc="${trouves[0]}"]`)?.scrollIntoView({ block: "center" }); }, [trouves]);
 
   const transcription = t?.source === "transcription";
+  const parOrateur = !!t?.texte.startsWith("@@");
+  const video = (m.analysis as any)?.video || m.video_url || null;
   const minutes = t ? Math.max(1, Math.round(t.mots / 230)) : 0;
 
   return createPortal(
@@ -161,15 +198,42 @@ export default function CompteRendu({ m, onFermer }: { m: CommissionMeeting; onF
             <div className="space-y-3.5">
               {transcription && (
                 <p className="rounded-2xl bg-amber-50 px-4 py-3 text-[13px] leading-snug text-amber-900 dark:bg-amber-500/10 dark:text-amber-200">
-                  L&apos;Assemblée n&apos;a pas rédigé de compte rendu de cette réunion : ce texte est la transcription automatique de son enregistrement vidéo. Les noms propres et les chiffres peuvent y être mal orthographiés.
+                  {parOrateur
+                    ? "L'Assemblée n'a pas rédigé de compte rendu de cette réunion : ce texte est la transcription automatique de son enregistrement vidéo. Les orateurs sont ceux que l'Assemblée a indexés dans sa vidéo ; les noms propres cités et les chiffres peuvent être mal transcrits."
+                    : "L'Assemblée n'a pas rédigé de compte rendu de cette réunion : ce texte est la transcription automatique de son enregistrement vidéo. Les noms propres et les chiffres peuvent y être mal orthographiés."}
                 </p>
               )}{" "}
               {blocs.map((b, i) => {
                 const vise = trouves.length > 0 && trouves[courant] === i;
+                if (b.section) {
+                  return (
+                    <div key={i} data-bloc={i} className="flex items-center gap-3 pt-4">
+                      <span className="h-px flex-1 bg-border dark:bg-slate-800" />{" "}
+                      <p className="text-center text-[11px] font-black uppercase tracking-widest text-muted-foreground"><Surligne texte={b.texte} terme={terme.trim()} /></p>{" "}
+                      <span className="h-px flex-1 bg-border dark:bg-slate-800" />
+                    </div>
+                  );
+                }
                 return (
                   <div key={i} data-bloc={i} className={`rounded-xl transition-colors ${vise ? "bg-violet-50 px-3 py-2 dark:bg-violet-500/10" : ""}`}>
-                    {b.orateur && <p className="text-[12px] font-black text-violet-700 dark:text-violet-300"><Surligne texte={b.orateur} terme={terme.trim()} /></p>}{" "}
-                    <p className={`text-[15px] leading-relaxed text-foreground/90 dark:text-slate-200 ${b.orateur ? "mt-0.5" : ""}`}><Surligne texte={b.texte} terme={terme.trim()} /></p>{" "}
+                    {b.orateur && (
+                      <div className="flex flex-wrap items-center gap-x-2 gap-y-1">
+                        {b.slug
+                          ? <a href={`/deputes/${b.slug}`} className="text-[12px] font-black text-violet-700 hover:underline dark:text-violet-300"><Surligne texte={b.orateur} terme={terme.trim()} /></a>
+                          : <p className="text-[12px] font-black text-violet-700 dark:text-violet-300"><Surligne texte={b.orateur} terme={terme.trim()} /></p>}{" "}
+                        {b.parti && <span className="rounded-full bg-violet-100 px-2 py-0.5 text-[9px] font-black uppercase tracking-wider text-violet-700 dark:bg-violet-500/20 dark:text-violet-300">{b.parti}</span>}{" "}
+                        {b.fonction && <span className="text-[11px] font-semibold text-muted-foreground">{b.fonction}</span>}{" "}
+                        {b.t !== undefined && Number.isFinite(b.t) && video && (
+                          <a href={lienInstant(video, b.t, b.repere)} target="_blank" rel="noopener noreferrer" title="Voir ce passage dans la vidéo officielle"
+                            className="ml-auto inline-flex items-center gap-1 rounded-full bg-muted px-2 py-0.5 text-[10px] font-black tabular-nums text-muted-foreground transition hover:text-foreground">
+                            <Play size={10} /> {fmtInstant(b.t)}
+                          </a>
+                        )}
+                      </div>
+                    )}{" "}
+                    {b.texte.split("\n").map((p, k) => (
+                      <p key={k} className={`text-[15px] leading-relaxed text-foreground/90 dark:text-slate-200 ${k ? "mt-2.5" : b.orateur ? "mt-1" : ""}`}><Surligne texte={p} terme={terme.trim()} /></p>
+                    ))}
                   </div>
                 );
               })}
@@ -180,8 +244,8 @@ export default function CompteRendu({ m, onFermer }: { m: CommissionMeeting; onF
         {/* Pied : la source fait foi */}
         <div className="flex shrink-0 flex-wrap items-center justify-between gap-x-4 gap-y-2 border-t border-border px-5 py-3 text-[11px] text-muted-foreground dark:border-slate-800 sm:px-7">
           <span>{transcription ? "Seul l'enregistrement officiel fait foi." : "Texte repris du compte rendu officiel, qui seul fait foi."}</span>{" "}
-          {m.cr_url && (
-            <a href={m.cr_url} target="_blank" rel="noopener noreferrer" className="inline-flex items-center gap-1.5 font-black uppercase tracking-widest hover:text-foreground">
+          {(transcription ? video || m.cr_url : m.cr_url) && (
+            <a href={(transcription ? video || m.cr_url : m.cr_url)!} target="_blank" rel="noopener noreferrer" className="inline-flex items-center gap-1.5 font-black uppercase tracking-widest hover:text-foreground">
               <ExternalLink size={12} /> {transcription ? "Vidéo officielle" : "Source officielle"}
             </a>
           )}

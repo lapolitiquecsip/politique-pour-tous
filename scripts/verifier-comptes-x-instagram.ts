@@ -40,6 +40,7 @@ const CANDIDATS: Record<string, [string, string[], string[]]> = {
   "nathalie-arthaud": ["Nathalie Arthaud", ["n_arthaud"], ["nathaliearthaud", "nathalie_arthaud"]],
   "nicolas-dupont-aignan": ["Nicolas Dupont-Aignan", ["dupontaignan"], ["nicolasdupontaignan", "dupontaignan"]],
   "selma-labib": ["Selma Labib", ["SelmaLabib"], ["selmalabib", "selma_labib"]],
+  "teddy-riner": ["Teddy Riner", ["teddyriner"], ["teddyriner"]],
   "karim-bouamrane": ["Karim Bouamrane", ["KBouamrane", "KarimBouamrane"], ["karimbouamrane", "karim_bouamrane"]],
   "raphael-glucksmann": ["Raphaël Glucksmann", ["rglucks1"], ["rglucks", "raphaelglucksmann", "raphael.glucksmann"]],
 };

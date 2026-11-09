@@ -47,7 +47,7 @@ const COULEURS: Record<string, string> = {
   "xavier-bertrand": "#60a5fa", "david-lisnard": "#1d6fd8", "florian-philippot": "#6d5bd0",
   "francois-asselineau": "#0f766e", "delphine-batho": "#4ade80", "karim-bouamrane": "#e879f9",
   "emmanuel-maurel": "#dc2626", "bernard-cazeneuve": "#fb7185", "anasse-kazib": "#7f1d1d",
-  "juan-branco": "#a3a3a3", "selma-labib": "#991b1b", "lydie-massard": "#facc15",
+  "juan-branco": "#a3a3a3", "selma-labib": "#991b1b", "teddy-riner": "#0ea5e9", "lydie-massard": "#facc15",
 };
 const RESERVE = ["#a855f7", "#64748b", "#84cc16", "#06b6d4", "#f59e0b", "#ef4444", "#10b981", "#6366f1"];
 export function couleur(id: string): string {

@@ -833,5 +833,31 @@
         "kind": "official"
       }
     ]
+  },
+  {
+    "candidate_slug": "teddy-riner",
+    "accounts": [
+      {
+        "platform": "youtube",
+        "handle": "@teddyriner",
+        "external_id": "UCmpEDKyH2H2Byq40kx8N0RA",
+        "url": "https://www.youtube.com/@teddyriner",
+        "kind": "official"
+      },
+      {
+        "platform": "x",
+        "handle": "@teddyriner",
+        "external_id": null,
+        "url": "https://x.com/teddyriner",
+        "kind": "official"
+      },
+      {
+        "platform": "instagram",
+        "handle": "@teddyriner",
+        "external_id": null,
+        "url": "https://www.instagram.com/teddyriner/",
+        "kind": "official"
+      }
+    ]
   }
 ]

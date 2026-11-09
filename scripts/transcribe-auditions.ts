@@ -45,7 +45,7 @@ import { request as requeteHttps } from "node:https";
 import { rootCertificates } from "node:tls";
 import { SYSTEM, SHAPE, dropInventedQuotes, VERSION_ANALYSE, type Analysis } from "./lib/commission-prompt";
 import { demanderJSON, llmDisponible, llmVoie } from "./lib/llm";
-import { indexVideo, type IndexVideo } from "./lib/video-an";
+import { indexVideo, restreindre, transcriptionSenat, type IndexVideo } from "./lib/video-an";
 
 const execFileP = promisify(execFile);
 
@@ -211,7 +211,7 @@ async function transcrire(mp4: string, debut: number, fin: number, etiquette: st
 
 /* ───────────────────────── Mettre en forme ───────────────────────── */
 
-type Depute = { slug: string; party: string | null };
+type Elu = { slug: string; party: string | null };
 
 function hms(t: number): string {
   const s = Math.max(0, Math.round(t));
@@ -235,7 +235,7 @@ function paragraphes(texte: string): string[] {
 type Mise = { texte: string; pourAnalyse: string; mots: number };
 
 /** Range chaque segment sous la prise de parole en cours à son milieu. */
-function mettreEnForme(idx: IndexVideo, segs: Segment[], deputes: Map<string, Depute>): Mise {
+function mettreEnForme(idx: IndexVideo, segs: Segment[], elus: Map<string, Elu>): Mise {
   const prises = idx.interventions;
   const blocs: { t: number; entete: string; lisible: string; textes: string[] }[] = [];
   let k = -2;
@@ -247,7 +247,7 @@ function mettreEnForme(idx: IndexVideo, segs: Segment[], deputes: Map<string, De
     if (j !== k) {
       k = j;
       const p = j >= 0 ? prises[j] : undefined;
-      const d = p?.an_id ? deputes.get(p.an_id) : undefined;
+      const d = p?.ident ? elus.get(p.ident) : undefined;
       const nom = (p?.nom ?? "").replace(/\|/g, "/");
       const fonction = (p?.fonction ?? "").replace(/\|/g, "/");
       const t = p?.t ?? s.start;
@@ -283,8 +283,8 @@ function mettreEnForme(idx: IndexVideo, segs: Segment[], deputes: Map<string, De
 /* ───────────────────────── Analyser ───────────────────────── */
 
 const AVERTISSEMENT = `
-ATTENTION : le texte ci-dessous est une TRANSCRIPTION AUTOMATIQUE de l'enregistrement vidéo, l'Assemblée n'ayant pas rédigé de compte rendu.
-Les ORATEURS sont fiables : chaque intervention est rangée sous le nom indexé par les services de l'Assemblée, avec l'instant [h:mm:ss] où elle commence.
+ATTENTION : le texte ci-dessous est une TRANSCRIPTION AUTOMATIQUE de l'enregistrement vidéo, faute de compte rendu écrit publié.
+Les ORATEURS sont fiables : chaque intervention est rangée sous le nom indexé par les services de l'assemblée, avec l'instant [h:mm:ss] où elle commence.
 Les MOTS peuvent comporter des erreurs de transcription, surtout sur les noms propres cités et les chiffres : ne reprends un chiffre que s'il est énoncé sans ambiguïté, et recopie les citations telles qu'elles figurent dans le texte.
 Une audition transcrite est longue et riche : sois exhaustif — au moins 10 points clés, une position par orateur qui s'exprime sur le fond, et chaque question substantielle dans "echanges".`;
 
@@ -306,9 +306,20 @@ async function analyser(texte: string, titre: string, date: string): Promise<{ a
     `Réunion du ${date}.\nObjet : ${titre}\n\n--- TRANSCRIPTION AUTOMATIQUE, PAR ORATEUR ---\n${texte}`,
     { maxJetons: 24000 },
   );
-  const sommaire: Sommaire = (brut.sommaire ?? [])
+  const lireSommaire = (liste: any[] | undefined): Sommaire => (liste ?? [])
     .map((c: any) => ({ t: enSecondes(c.debut), titre: String(c.titre ?? "").trim(), resume: String(c.resume ?? "").trim() }))
     .filter(c => Number.isFinite(c.t) && c.titre);
+  let sommaire = lireSommaire(brut.sommaire);
+  // Les modèles « lite » (repli quand le quota du modèle principal est atteint) laissent souvent
+  // tomber le champ supplémentaire : on le demande alors seul.
+  if (sommaire.length < 3) {
+    const seul = await demanderJSON<{ sommaire?: any[] }>(
+      `Tu découpes la transcription d'une réunion parlementaire en chapitres, sans rien ajouter qui n'y figure.\nRéponds UNIQUEMENT par un objet JSON {"sommaire": [...]}.${SOMMAIRE}`,
+      `Réunion du ${date}.\nObjet : ${titre}\n\n${texte}`,
+      { maxJetons: 8000 },
+    ).catch(() => ({ sommaire: [] }));
+    sommaire = lireSommaire(seul.sommaire);
+  }
   const { analysis, dropped } = dropInventedQuotes({ ...brut, sommaire: undefined } as Analysis, texte);
   return { analysis: { ...analysis, sommaire }, dropped };
 }
@@ -316,6 +327,9 @@ async function analyser(texte: string, titre: string, date: string): Promise<{ a
 /* ───────────────────────── Traitement ───────────────────────── */
 
 type Cible = { ref: string; title: string; meeting_date: string; page: string; ligne: boolean; organe_ref?: string | null; commission?: string };
+
+/** Le Sénat met en ligne sa transcription quelques heures après la réunion ; l'Assemblée jamais. */
+const sourceAudio = (idx: IndexVideo) => idx.chambre === "SENAT" ? "transcription du Sénat si publiée" : ASR_MODEL;
 
 async function main() {
   const url = process.env.NEXT_PUBLIC_SUPABASE_URL;
@@ -336,47 +350,70 @@ async function main() {
   console.log(`   Transcription ${ASR_MODEL} · analyse via ${llmVoie()} · plafond ${MAX_HEURES} h d'audio`);
   const supabase = createClient(url, key);
 
-  // Les députés, pour donner à chaque orateur son groupe et le lien vers sa fiche.
-  const deputes = new Map<string, Depute>();
+  // Les élus, pour donner à chaque orateur son groupe et le lien vers sa fiche : un député par
+  // son identifiant (PA607395), un sénateur par son matricule (20070A).
+  const elus = new Map<string, Elu>();
   for (let de = 0; ; de += 1000) {
     const { data } = await supabase.from("deputies").select("an_id, slug, party").range(de, de + 999);
-    for (const d of data ?? []) if (d.an_id) deputes.set(d.an_id, { slug: d.slug, party: d.party });
+    for (const d of data ?? []) if (d.an_id) elus.set(d.an_id, { slug: d.slug, party: d.party });
+    if (!data || data.length < 1000) break;
+  }
+  for (let de = 0; ; de += 1000) {
+    const { data } = await supabase.from("senators").select("senate_matricule, slug, senate_group, party").range(de, de + 999);
+    for (const d of data ?? []) if (d.senate_matricule) elus.set(String(d.senate_matricule).toUpperCase(), { slug: d.slug, party: d.senate_group || d.party });
     if (!data || data.length < 1000) break;
   }
 
-  // 1. Réunions de l'Assemblée dont le compte rendu écrit est court.
+  // 1. Réunions dont le compte rendu écrit est court : à l'Assemblée, un renvoi à la vidéo ;
+  //    au Sénat, « sera publié ultérieurement » (le compte rendu arrive une à deux semaines
+  //    plus tard et remplace alors la transcription — scripts/update-commissions.ts).
   let q = supabase.from("commission_reports")
-    .select("ref, title, meeting_date, cr_url, video_url, word_count, analysis")
-    .eq("chamber", "AN").not("cr_url", "is", null)
-    .order("meeting_date", { ascending: false }).limit(400);
-  q = REF ? q.eq("ref", REF) : q.gte("meeting_date", DEPUIS).or(`word_count.lt.${MOTS_COMPTE_RENDU},word_count.is.null,analysis->>a_transcrire.eq.true`);
+    .select("ref, chamber, title, meeting_date, cr_url, video_url, word_count, analysis")
+    .not("cr_url", "is", null)
+    .order("meeting_date", { ascending: false }).limit(600);
+  q = REF ? q.eq("ref", REF) : q.gte("meeting_date", DEPUIS).or(`word_count.lt.${MOTS_COMPTE_RENDU},word_count.is.null,analysis->>a_transcrire.eq.true,analysis->>attente.eq.true`);
   const { data, error } = await q;
   if (error) { console.error(`❌ lecture : ${error.message}`); process.exit(1); }
-  const aFaire = (data ?? []).filter((r: any) => REF || !(r.analysis?.source === "transcription" && r.analysis?.orateurs));
+  const aFaire = (data ?? []).filter((r: any) => REF || (
+    !(r.analysis?.source === "transcription" && r.analysis?.orateurs)
+    // Au Sénat, seulement une réunion dont la vidéo est déjà repérée (auditions-videos, backend).
+    && (r.chamber !== "SENAT" || /videos\.senat\.fr\/video\./.test(r.video_url ?? ""))
+  ));
   console.log(`=== ${aFaire.length} réunion(s) à compte rendu court depuis le ${DEPUIS} ===`);
 
   let secondes = 0, faites = 0, sansVideo = 0, courtes = 0;
   const parVideo = new Map<string, { texte: string; mots: number; analysis: any; summary: string }>();
 
   const traiter = async (c: Cible): Promise<boolean> => {
-    const idx = await indexVideo(c.page);
-    if (!idx.mp4) throw new Error("aucun fichier vidéo sur la page");
-    const debut = Math.max(0, (idx.interventions[0]?.t ?? 0) - 3);
+    const entier = await indexVideo(c.page);
+    // Une vidéo qui couvre plusieurs points de l'ordre du jour : seulement celui de la réunion.
+    // À l'Assemblée, le compte rendu couvre la séance entière : à défaut, on garde tout.
+    const idx = restreindre(entier, c.title) ?? (entier.chambre === "AN" ? entier : null);
+    if (!idx) { console.log("    point de l'ordre du jour introuvable dans la vidéo"); return false; }
+    const debut = Math.max(0, (idx.interventions[0]?.t ?? idx.debutLecture) - 3);
     const fin = idx.fin || 0;
     const duree = (fin || debut + 3 * 3600) - debut;
-    if (idx.interventions.length && duree < PAROLE_MINIMUM) { courtes++; return false; }
+    if (idx.interventions.length && duree < PAROLE_MINIMUM) { courtes++; console.log("    réunion trop courte pour une transcription"); return false; }
     if (!idx.interventions.length) console.warn("    ⚠ vidéo sans index des orateurs : transcription sans attribution");
 
-    let fait = parVideo.get(idx.uid);
+    const cle = `${idx.uid}:${Math.round(debut)}`;
+    let fait = parVideo.get(cle);
     if (!fait) {
-      if (secondes > 0 && secondes + duree > MAX_HEURES * 3600) throw Object.assign(new Error("plafond d'audio du passage atteint"), { arret: true });
-      // Les noms des orateurs, donnés à Whisper : ils sont alors bien orthographiés.
-      const noms = [...new Set(idx.interventions.map(p => p.nom.replace(/^(M\.|Mme)\s/, "")))];
-      const consigne = `Réunion de commission de l'Assemblée nationale. ${c.title.slice(0, 200)} Intervenants : ${noms.join(", ")}.`.slice(0, 850);
-      console.log(`    audio ${hms(debut)} → ${hms(fin)} (${Math.round(duree / 60)} min), ${idx.interventions.length} prises de parole`);
-      const segs = await transcrire(idx.mp4, debut, fin, c.ref, consigne);
-      secondes += duree;
-      const mise = mettreEnForme(idx, segs, deputes);
+      console.log(`    ${idx.chambre} · ${hms(debut)} → ${hms(fin)} (${Math.round(duree / 60)} min), ${idx.interventions.length} prises de parole · ${sourceAudio(idx)}`);
+      // Le Sénat publie sa transcription : gratuite, et calée sur ses propres sous-titres.
+      let segs: Segment[] = (await transcriptionSenat(idx)).filter(s => s.start >= debut - 1 && (!fin || s.start < fin));
+      if (segs.length) console.log(`    transcription du Sénat : ${segs.length} segments`);
+      else {
+        if (!idx.mp4) throw new Error("aucun fichier vidéo sur la page");
+        if (secondes > 0 && secondes + duree > MAX_HEURES * 3600) throw Object.assign(new Error("plafond d'audio du passage atteint"), { arret: true });
+        // Les noms des orateurs, donnés à Whisper : ils sont alors bien orthographiés.
+        const noms = [...new Set(idx.interventions.map(p => p.nom.replace(/^(M\.|Mme)\s/, "")))];
+        const assemblee = idx.chambre === "SENAT" ? "du Sénat" : "de l'Assemblée nationale";
+        const consigne = `Réunion de commission ${assemblee}. ${c.title.slice(0, 200)} Intervenants : ${noms.join(", ")}.`.slice(0, 850);
+        segs = await transcrire(idx.mp4, debut, fin, c.ref, consigne);
+        secondes += duree;
+      }
+      const mise = mettreEnForme(idx, segs, elus);
       console.log(`    transcription : ${mise.mots.toLocaleString("fr-FR")} mots`);
       if (mise.mots < 200) throw new Error("transcription trop courte");
       const { analysis, dropped } = await analyser(mise.pourAnalyse, c.title, c.meeting_date);
@@ -387,12 +424,19 @@ async function main() {
         texte: mise.texte, mots: mise.mots, summary,
         analysis: { ...analysis, v: VERSION_ANALYSE, source: "transcription", orateurs: idx.interventions.length > 0, video: idx.page },
       };
-      parVideo.set(idx.uid, fait);
+      parVideo.set(cle, fait);
     } else {
       console.log("    même vidéo qu'une réunion déjà transcrite (réunion conjointe) : reprise");
     }
 
-    if (DRY) { console.log("    (--dry-run : rien n'est écrit)"); return true; }
+    if (DRY) {
+      if (args.includes("--montrer")) {
+        console.log(fait.texte.slice(0, 2500));
+        console.log(JSON.stringify({ a_retenir: fait.analysis.a_retenir, sommaire: fait.analysis.sommaire, positions: fait.analysis.positions?.slice(0, 4) }, null, 1));
+      }
+      console.log("    (--dry-run : rien n'est écrit)");
+      return true;
+    }
     const maintenant = new Date().toISOString();
     const ligne = { analysis: fait.analysis, summary: fait.summary, word_count: fait.mots, analyzed_at: maintenant, video_url: idx.page };
     const { error: err } = c.ligne
@@ -414,13 +458,12 @@ async function main() {
     if (faites >= LIMITE) break;
     console.log(`\n  ${r.meeting_date} — ${String(r.title).slice(0, 80)}`);
     try {
-      const page = r.video_url && /\/video\.\d+_/.test(r.video_url) ? r.video_url : await pageVideo(r.cr_url);
+      const page = r.video_url && /\/video\.\d+_/.test(r.video_url) ? r.video_url : r.chamber === "AN" ? await pageVideo(r.cr_url) : null;
       if (!page) { sansVideo++; console.log("    pas de vidéo liée au compte rendu"); continue; }
       if (await traiter({ ref: r.ref, title: r.title ?? "", meeting_date: r.meeting_date, page, ligne: true })) faites++;
-      else console.log("    réunion trop courte pour une transcription");
     } catch (e) {
       const err = e as any;
-      console.warn(`    ⚠ ${err.message}`);
+      console.warn(`    ⚠ ${err.message}${err.cause ? ` (${err.cause.code ?? ""} ${err.cause.message ?? ""})` : ""}`);
       if (err.arret || /quota|429|ENOENT/i.test(err.message)) break;
     }
   }

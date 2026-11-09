@@ -198,7 +198,9 @@ export default function CompteRendu({ m, onFermer }: { m: CommissionMeeting; onF
             <div className="space-y-3.5">
               {transcription && (
                 <p className="rounded-2xl bg-amber-50 px-4 py-3 text-[13px] leading-snug text-amber-900 dark:bg-amber-500/10 dark:text-amber-200">
-                  {parOrateur
+                  {m.chamber === "SENAT"
+                    ? "Le Sénat n'a pas encore publié le compte rendu de cette réunion : ce texte est la transcription automatique qu'il diffuse avec sa vidéo, rangée sous les orateurs qu'il a indexés. Les noms propres et les chiffres peuvent être mal transcrits. Le compte rendu officiel remplacera ce texte dès sa parution."
+                    : parOrateur
                     ? "L'Assemblée n'a pas rédigé de compte rendu de cette réunion : ce texte est la transcription automatique de son enregistrement vidéo. Les orateurs sont ceux que l'Assemblée a indexés dans sa vidéo ; les noms propres cités et les chiffres peuvent être mal transcrits."
                     : "L'Assemblée n'a pas rédigé de compte rendu de cette réunion : ce texte est la transcription automatique de son enregistrement vidéo. Les noms propres et les chiffres peuvent y être mal orthographiés."}
                 </p>
@@ -219,7 +221,7 @@ export default function CompteRendu({ m, onFermer }: { m: CommissionMeeting; onF
                     {b.orateur && (
                       <div className="flex flex-wrap items-center gap-x-2 gap-y-1">
                         {b.slug
-                          ? <a href={`/deputes/${b.slug}`} className="text-[12px] font-black text-violet-700 hover:underline dark:text-violet-300"><Surligne texte={b.orateur} terme={terme.trim()} /></a>
+                          ? <a href={`/${m.chamber === "SENAT" ? "senateurs" : "deputes"}/${b.slug}`} className="text-[12px] font-black text-violet-700 hover:underline dark:text-violet-300"><Surligne texte={b.orateur} terme={terme.trim()} /></a>
                           : <p className="text-[12px] font-black text-violet-700 dark:text-violet-300"><Surligne texte={b.orateur} terme={terme.trim()} /></p>}{" "}
                         {b.parti && <span className="rounded-full bg-violet-100 px-2 py-0.5 text-[9px] font-black uppercase tracking-wider text-violet-700 dark:bg-violet-500/20 dark:text-violet-300">{b.parti}</span>}{" "}
                         {b.fonction && <span className="text-[11px] font-semibold text-muted-foreground">{b.fonction}</span>}{" "}

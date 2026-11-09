@@ -145,25 +145,36 @@ class ErreurLLM extends Error {
  */
 async function appelGoogleSur(modele: string, systeme: string, utilisateur: string, maxJetons: number): Promise<string> {
   await attendreSonTour(modele);
-  const r = await fetch(`${GOOGLE}/${modele}:generateContent?key=${CLE_GRATUITE}`, {
-    method: "POST",
-    headers: { "Content-Type": "application/json" },
-    body: JSON.stringify({
-      systemInstruction: { parts: [{ text: systeme }] },
-      contents: [{ role: "user", parts: [{ text: utilisateur }] }],
-      generationConfig: {
-        responseMimeType: "application/json",
-        maxOutputTokens: maxJetons,
-        temperature: 0.2,
-        // Voir le piège 1 en tête de fichier. Réservé aux modèles qui raisonnent :
-        // Gemma refuse le champ d'un franc 400 « Thinking budget is not supported ».
-        ...(modele.startsWith("gemini") ? { thinkingConfig: { thinkingBudget: 0 } } : {}),
-      },
-    }),
-  });
+  // En flux (SSE) : la réponse commence dès le premier jeton. En appel simple, une longue
+  // génération (analyse d'une audition de deux heures sur un modèle de repli) dépassait les
+  // 300 s qu'attend Node avant les en-têtes, et l'appel tombait en « fetch failed »
+  // (UND_ERR_HEADERS_TIMEOUT) sans passer au modèle suivant.
+  let r: Response;
+  try {
+    r = await fetch(`${GOOGLE}/${modele}:streamGenerateContent?alt=sse&key=${CLE_GRATUITE}`, {
+      signal: AbortSignal.timeout(10 * 60_000),
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({
+        systemInstruction: { parts: [{ text: systeme }] },
+        contents: [{ role: "user", parts: [{ text: utilisateur }] }],
+        generationConfig: {
+          responseMimeType: "application/json",
+          maxOutputTokens: maxJetons,
+          temperature: 0.2,
+          // Voir le piège 1 en tête de fichier. Réservé aux modèles qui raisonnent :
+          // Gemma refuse le champ d'un franc 400 « Thinking budget is not supported ».
+          ...(modele.startsWith("gemini") ? { thinkingConfig: { thinkingBudget: 0 } } : {}),
+        },
+      }),
+    });
+  } catch (e) {
+    // Coupure réseau ou délai dépassé : passagers, le modèle suivant prend le relais.
+    throw new ErreurLLM(`réseau — ${(e as any)?.cause?.code ?? (e as Error).message}`, true);
+  }
 
-  const corps: any = await r.json().catch(() => ({}));
   if (!r.ok) {
+    const corps: any = await r.json().catch(() => ({}));
     const msg = corps?.error?.message || `HTTP ${r.status}`;
     // 429 : quota, par minute ou par jour — l'API ne le dit pas. On écarte le
     // modèle quelques minutes plutôt que de le rejouer à chaque lot.
@@ -172,8 +183,26 @@ async function appelGoogleSur(modele: string, systeme: string, utilisateur: stri
     throw new ErreurLLM(`${r.status} — ${String(msg).slice(0, 180)}`, r.status === 429 || r.status >= 500);
   }
 
-  const candidat = corps?.candidates?.[0];
-  const texte = (candidat?.content?.parts ?? []).map((p: any) => p?.text ?? "").join("").trim();
+  // Chaque évènement « data: {…} » porte un morceau du texte ; le dernier, la cause d'arrêt.
+  let brut: string;
+  try {
+    brut = await r.text();
+  } catch (e) {
+    throw new ErreurLLM(`réseau (flux interrompu) — ${(e as any)?.cause?.code ?? (e as Error).message}`, true);
+  }
+  let texte = "";
+  let raisonArret: string | undefined;
+  for (const ligne of brut.split(/\r?\n/)) {
+    if (!ligne.startsWith("data:")) continue;
+    let morceau: any;
+    try { morceau = JSON.parse(ligne.slice(5).trim()); } catch { continue; }
+    if (morceau?.error) throw new ErreurLLM(`flux — ${String(morceau.error.message ?? "erreur").slice(0, 180)}`, true);
+    const c = morceau?.candidates?.[0];
+    texte += (c?.content?.parts ?? []).map((p: any) => p?.text ?? "").join("");
+    if (c?.finishReason) raisonArret = c.finishReason;
+  }
+  texte = texte.trim();
+  const candidat = { finishReason: raisonArret };
   if (!texte) {
     const raison = candidat?.finishReason || "inconnue";
     // MAX_TOKENS signale ici un budget mangé sans qu'un texte sorte : réessayer à

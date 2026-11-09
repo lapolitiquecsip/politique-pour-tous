@@ -257,10 +257,22 @@ async function ingestSenate(supabase: any, weeks: number) {
     if (error) { console.warn(`  ⚠ insertion ${url} : ${error.message}`); continue; }
 
     // Une réunion dont le texte a nettement grossi depuis son analyse est à refaire.
-    const { data: gardes } = await supabase.from("commission_transcripts").select("ref, mots").in("ref", meetings.map(m => m.ref));
+    const { data: gardes } = await supabase.from("commission_transcripts").select("ref, mots, source").in("ref", meetings.map(m => m.ref));
     const avant = new Map<string, number>((gardes ?? []).map((g: any) => [g.ref as string, g.mots as number]));
+    const transcrites = new Set<string>((gardes ?? []).filter((g: any) => g.source === "transcription").map((g: any) => g.ref as string));
     for (const m of meetings) {
       const mots = m.text.split(/\s+/).length;
+      // Réunion analysée depuis la transcription de sa vidéo (scripts/transcribe-auditions.ts),
+      // en attendant le compte rendu : quand le Sénat le publie, c'est lui qui fait foi. On efface
+      // la transcription et l'analyse, que la suite de ce passage refait sur le texte officiel.
+      if (transcrites.has(m.ref)) {
+        if (mots >= 1500 && !ANNONCE_ATTENTE.test(m.text)) {
+          await supabase.from("commission_transcripts").delete().eq("ref", m.ref);
+          await supabase.from("commission_reports").update({ analysis: null, summary: null, analyzed_at: null }).eq("ref", m.ref);
+          console.log(`  ↻ ${m.ref} : compte rendu officiel paru (${mots} mots), il remplace la transcription`);
+        }
+        continue;
+      }
       const ancien = avant.get(m.ref);
       if (ancien !== undefined && mots > ancien * 1.5 + 100) {
         await supabase.from("commission_reports").update({ analysis: null, summary: null, analyzed_at: null }).eq("ref", m.ref);

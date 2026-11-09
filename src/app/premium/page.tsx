@@ -76,8 +76,11 @@ const COMPARATIF: Groupe[] = [
       { t: "Suivre l'actualité des partis, ministères, candidats et commissions", d: "Et le vote de chaque parti suivi à chaque scrutin, amendements compris", g: false, p: false, x: true },
       // DynamiquesView, CandidateSocialTracker, PrimaryDebates
       { t: "Veille presse, temps de parole et réseaux sociaux des candidats", d: "Avec le compte rendu écrit des débats télévisés", g: false, p: false, x: true },
-      { t: "Recherche plein texte dans les comptes rendus", g: false, p: false, x: true },
-      { t: "Export des données (CSV)", g: false, p: false, x: true },
+      { t: "Amendements classés par article et « Qui pèse » sur chaque texte", d: "Qui influence vraiment la rédaction, avec vos notes personnelles sur les textes", g: false, p: false, x: true },
+      { t: "Questions écrites au Gouvernement et déclarations HATVP", g: false, p: false, x: true },
+      { t: "Un récap vérifié chaque samedi", d: "Et des alertes seulement quand un texte concerne votre profil", g: false, p: false, x: true },
+      { t: "Explorer IA et accès MCP", d: "Interrogez toutes les données du site, aussi depuis votre propre assistant IA", g: false, p: false, x: true },
+      { t: "Recherche plein texte et export des données (CSV)", g: false, p: false, x: true },
     ],
   },
 ];

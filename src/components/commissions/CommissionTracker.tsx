@@ -229,8 +229,9 @@ export default function CommissionTracker({ chamber, chamberLabel, accent = "eme
       {/* Le suivi des commissions relève de l'offre Pro : la section entière est
           remplacée par son argumentaire tant que l'abonnement n'est pas Pro — y
           compris pour un abonné Premium, à qui on dit alors ce qui lui manque.
-          Un contenu flouté frustre sans informer et sous-vend ce qu'on protège. */}
-      {(isPremium || isPro) && (
+          Un contenu flouté frustre sans informer et sous-vend ce qu'on protège.
+          Les auditions aussi : elles étaient ouvertes au Premium, à tort (12/11/2026). */}
+      {isPro && (
         <div className="relative mb-5 inline-flex rounded-full border border-border bg-muted/60 p-1 dark:border-slate-800">
           {([["auditions", "Auditions", Mic], ["reunions", "Toutes les réunions", ListChecks]] as const).map(([cle, label, Icone]) => (
             <button key={cle} type="button" onClick={() => setVue(cle)} aria-pressed={vue === cle}
@@ -243,7 +244,7 @@ export default function CommissionTracker({ chamber, chamberLabel, accent = "eme
         </div>
       )}
 
-      {(isPremium || isPro) && vue === "auditions" ? (
+      {isPro && vue === "auditions" ? (
         <AuditionsParMois chamber={chamber} accent={accent} isPro={isPro} />
       ) : !isPro ? (
         <LockedSection

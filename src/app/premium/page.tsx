@@ -56,8 +56,9 @@ const COMPARATIF: Groupe[] = [
       { t: "La liste complète et la carte des sénateurs", g: false, p: true, x: true },
       // presidentielles-2027 (cloche)
       { t: "Suivre les candidats à la présidentielle", g: false, p: true, x: true },
-      // CommissionAuditions, AuditionsParMois
-      { t: "Les auditions des ministres et des commissions", g: false, p: "Résumé", x: "Analyse complète" },
+      // CommissionAuditions (Exécutif). Les auditions de commission (AuditionsParMois) sont
+      // Pro seul depuis le 12/11/2026 : elles relèvent du suivi des commissions, plus bas.
+      { t: "Les auditions des ministres résumées", g: false, p: true, x: true },
     ],
   },
   {
@@ -103,12 +104,12 @@ const ESSENTIEL: Groupe[] = [
       { t: "Vos élus suivis, une alerte à chacun de leurs votes", g: false, p: true, x: true, demo: "notif", lien: "Voir le fil" },
       { t: "Un e-mail à chaque texte voté, avec le vote de vos élus et partis", g: false, p: true, x: true },
       { t: "Alertes sur votre territoire, aussi par e-mail", g: false, p: true, x: true },
-      { t: "Auditions des ministres et des commissions", g: false, p: "Résumé", x: "Analyse" },
+      { t: "Auditions des ministres résumées", g: false, p: true, x: true },
     ],
   },
   {
     titre: "Veille professionnelle", icone: LineChart, pro: true, lignes: [
-      { t: "Commissions et amendements en temps réel", g: false, p: false, x: true },
+      { t: "Commissions, auditions et amendements en temps réel", g: false, p: false, x: true },
       { t: "Journal officiel du jour et « Tout sur un sujet »", g: false, p: false, x: true },
       { t: "E-mails à la carte et veille presse des candidats", g: false, p: false, x: true },
     ],

@@ -468,7 +468,7 @@ export default function TutorielPremium({ userId, ouvert, onFermer }: { userId: 
                               [Building2, "Budget de votre commune", "/local"],
                               [MapPin, "Comparateur de communes", "/local/comparateur"],
                               [Landmark, "Tous les sénateurs", "/senateurs"],
-                              [Mic, "Auditions et commissions", "/deputes"],
+                              [Mic, "Auditions des ministres", "/executif"],
                             ].map(([Icone, label, href]: any) => (
                               <Link key={href} href={href} onClick={terminer}
                                 className="group flex items-center gap-3 rounded-2xl border border-white/10 bg-white/[0.04] px-3.5 py-3 text-sm font-bold text-white transition hover:border-amber-400/40 hover:bg-white/[0.08]">

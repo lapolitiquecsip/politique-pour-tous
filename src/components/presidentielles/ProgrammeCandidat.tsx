@@ -5,6 +5,7 @@ import { motion, AnimatePresence } from "framer-motion";
 import {
   ChevronDown, HelpCircle, ExternalLink, Globe2, GraduationCap, ShieldCheck, HeartPulse, Wheat, Leaf, Flag,
   TrendingUp, Landmark, FileText, Coins, Building2, Home, FlaskConical, Briefcase, PlayCircle, TrainFront, Palette, Scale, Mountain,
+  Baby, Cpu, Factory, Palmtree, ThermometerSun,
 } from "lucide-react";
 import MentionIA from "@/components/shared/MentionIA";
 
@@ -14,6 +15,13 @@ export type SourceProgramme = { source_url: string; titre: string | null; traite
 // Icône + couleur d'un thème de programme (différenciation visuelle).
 export function themeStyle(name: string): { Icon: any; c: string; bg: string; dot: string } {
   const h = (name || "").toLowerCase();
+  // Thèmes d'É. Philippe (edouardphilippe.fr) que les règles suivantes ne reconnaissaient pas.
+  if (/outre-mer|ultramarin/.test(h)) return { Icon: Palmtree, c: "text-cyan-700 dark:text-cyan-300", bg: "bg-cyan-50 dark:bg-cyan-500/10", dot: "bg-cyan-500" };
+  if (/famille|enfance/.test(h)) return { Icon: Baby, c: "text-rose-500 dark:text-rose-300", bg: "bg-rose-50 dark:bg-rose-500/10", dot: "bg-rose-400" };
+  if (/intelligence artificielle/.test(h)) return { Icon: Cpu, c: "text-indigo-700 dark:text-indigo-300", bg: "bg-indigo-50 dark:bg-indigo-500/10", dot: "bg-indigo-500" };
+  if (/climat/.test(h)) return { Icon: ThermometerSun, c: "text-orange-600 dark:text-orange-300", bg: "bg-orange-50 dark:bg-orange-500/10", dot: "bg-orange-500" };
+  if (/entreprise|industri/.test(h)) return { Icon: Factory, c: "text-violet-600 dark:text-violet-300", bg: "bg-violet-50 dark:bg-violet-500/10", dot: "bg-violet-500" };
+  if (/finances publiques|comptes publics|dette/.test(h)) return { Icon: Coins, c: "text-yellow-700 dark:text-yellow-300", bg: "bg-yellow-50 dark:bg-yellow-500/10", dot: "bg-yellow-500" };
   if (/immigr/.test(h)) return { Icon: Globe2, c: "text-amber-600 dark:text-amber-300", bg: "bg-amber-50 dark:bg-amber-500/10", dot: "bg-amber-500" };
   if (/éduc|educ|école|ecole/.test(h)) return { Icon: GraduationCap, c: "text-sky-600 dark:text-sky-300", bg: "bg-sky-50 dark:bg-sky-500/10", dot: "bg-sky-500" };
   if (/recherche|innovation/.test(h)) return { Icon: FlaskConical, c: "text-cyan-700 dark:text-cyan-300", bg: "bg-cyan-50 dark:bg-cyan-500/10", dot: "bg-cyan-500" };
@@ -58,6 +66,10 @@ const PARTIES_LIVRE: Record<string, string> = {
 };
 const partieDuLivre = (u: string) => u.match(LIVRE)?.[1] ?? null;
 const sommaireDuLivre = (u: string) => u.replace(/\/programme\/livre\/.*$/, "/programme/livre/");
+// Programme d'É. Philippe : une page par thème (edouardphilippe.fr/programme/<thème>) ;
+// accroche et propositions phares reprises telles quelles, mesures tirées des questions-réponses.
+const PHILIPPE = /^https:\/\/www\.edouardphilippe\.fr\/programme\/[^/]+\/?$/;
+const PHILIPPE_SOMMAIRE = "https://www.edouardphilippe.fr/programme";
 function nomDuPlan(u: string, sources: SourceProgramme[]): string {
   const s = sources.find(x => x.source_url === u);
   if (s?.titre) return s.titre;
@@ -85,18 +97,22 @@ export default function ProgrammeCandidat({ proposals, sources = [], titre = "So
   }
   const urls = [...new Set(proposals.map(p => p.source_url).filter(Boolean) as string[])];
   // Sources affichées en bas : le livre une seule fois (son sommaire), pas ses 23 chapitres.
-  const urlsAffichees = [...new Set(urls.map(u => partieDuLivre(u) ? sommaireDuLivre(u) : u))];
+  // Idem pour les 15 pages thématiques d'É. Philippe : un lien vers son sommaire.
+  const urlsAffichees = [...new Set(urls.map(u => partieDuLivre(u) ? sommaireDuLivre(u) : PHILIPPE.test(u) ? PHILIPPE_SOMMAIRE : u))];
+  const philippe = urls.some(u => PHILIPPE.test(u));
   const libelleSource = (u: string) => {
     const s = sources.find(x => x.source_url === u);
     if (estVideo(u)) return `${s?.titre || "Présentation officielle"} — vidéo de la chaîne officielle${s ? `, analysée le ${new Date(s.traite_le).toLocaleDateString("fr-FR", { day: "numeric", month: "long", year: "numeric" })}` : ""}`;
     if (/\/programme\/livre\/$/.test(u)) return "L'Avenir en commun, livre-programme (texte officiel, chapitre par chapitre)";
+    if (u === PHILIPPE_SOMMAIRE) return "Programme officiel (edouardphilippe.fr, thème par thème)";
     return "Programme officiel (site du mouvement)";
   };
 
   // Programme publié en plusieurs plans (J.-L. Mélenchon : 4 plans, 55 thèmes en octobre 2026) :
   // cinquante thèmes à plat se parcouraient sans fin. Les thèmes sont alors rangés sous leur
   // plan, replié : quelques lignes d'abord, les thèmes du plan ouvert ensuite.
-  const parPlan = urls.length > 1 && Object.keys(groups).length > 12;
+  // Une page par thème (É. Philippe : 15 pages, 15 thèmes) : rien à regrouper, thèmes à plat.
+  const parPlan = urls.length > 1 && Object.keys(groups).length > 12 && urls.length < Object.keys(groups).length;
   // Les chapitres d'un livre-programme sont regroupés par partie (6 lignes au lieu de 23) ;
   // à l'intérieur, chaque chapitre a son intertitre.
   type Plan = { url: string; nom: string; livre: boolean; chapitres: { url: string; titre: string; themes: string[] }[]; n: number };
@@ -240,6 +256,8 @@ export default function ProgrammeCandidat({ proposals, sources = [], titre = "So
       </div>{" "}
       <MentionIA texte={nLivre
         ? "Mesures de « L'Avenir en commun » reprises mot pour mot du texte officiel ; propositions des plans restructurées par IA à partir des sources citées (chiffres vérifiés contre le texte) ; les explications « ? » sont rédigées par IA. Seule la source officielle fait foi."
+        : philippe
+        ? "Présentations des thèmes et propositions phares (« Mesure clé ») reprises mot pour mot du site officiel ; les autres mesures sont tirées des questions-réponses du site, une par ligne, reformulées par IA (chiffres et termes vérifiés contre la page) ; les explications « ? » sont rédigées par IA. Seule la source officielle fait foi."
         : "Propositions restructurées par IA à partir des sources officielles citées (chiffres vérifiés contre le texte ou le discours) ; les explications « ? » sont rédigées par IA. Seule la source officielle fait foi."} />
     </section>
   );

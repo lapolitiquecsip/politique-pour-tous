@@ -80,8 +80,11 @@ function Ligne({ m }: { m: Reunion }) {
 
   // L'analyse pèse plusieurs kilo-octets et n'est lue qu'au dépliage : on la
   // demande alors, et une seule fois.
+  // `chargeant` n'est PAS une dépendance : le passer à true relançait l'effet, dont le
+  // nettoyage marquait la requête en cours comme périmée → réponse ignorée, « Chargement du
+  // compte rendu… » affiché pour toujours (constaté le 17/11/2026).
   useEffect(() => {
-    if (!ouvert || detail || chargeant) return;
+    if (!ouvert || detail) return;
     let vivant = true;
     setChargeant(true);
     api.getCommissionAnalysis(m.ref)
@@ -89,7 +92,7 @@ function Ligne({ m }: { m: Reunion }) {
       .catch(() => { if (vivant) setDetail({ analysis: null, summary: null }); })
       .finally(() => { if (vivant) setChargeant(false); });
     return () => { vivant = false; };
-  }, [ouvert, detail, chargeant, m.ref]);
+  }, [ouvert, detail, m.ref]);
 
   const c = ch(m.chamber);
 

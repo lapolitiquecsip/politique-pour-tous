@@ -21,7 +21,13 @@ const PERIODES = [1, 7, 30, 90] as const;
 const ACTIONS: Record<string, string> = {
   inscription: "Inscriptions",
   clic_offres: "Clics vers les offres",
-  clic_paiement: "Clics vers le paiement",
+  clic_paiement: "Départs vers le paiement (accord donné)",
+  achat_choix_elite: "Bouton « Devenir Premium »",
+  achat_choix_pro: "Bouton « Choisir Pro »",
+  achat_connexion: "Achat : « Connectez-vous d'abord »",
+  achat_reprise: "Achat repris après connexion",
+  invitation_compte_vue: "Invitation au compte gratuit vue",
+  invitation_compte_clic: "Invitation au compte gratuit cliquée",
   paiement_reussi: "Paiements réussis",
   arrivee_parrainage: "Arrivées par un lien de parrainage",
   parrainage_rattache: "Filleuls rattachés",
@@ -352,6 +358,7 @@ export default function StatistiquesPage() {
               </div>
             )}
           </Bloc>
+          <Parcours actions={actions} />
           <Bloc titre="Actions" Icone={MousePointerClick}>
             {actions.length === 0 ? <p className="text-sm text-slate-400">Aucune action sur la période.</p> : actions.map(a => (
               <Ligne key={a.name} libelle={ACTIONS[a.name] ?? a.name} valeur={a.n} max={actions[0].n} teinte="bg-amber-500" />
@@ -461,5 +468,39 @@ export default function StatistiquesPage() {
         </Bloc>
       )}
     </div>
+  );
+}
+
+/**
+ * Parcours d'achat (18/11/2026) : chaque étape, de l'intérêt au paiement, et la part qui passe
+ * à la suivante. Ce sont des nombres d'actions sur la période (un visiteur peut cliquer deux fois).
+ */
+function Parcours({ actions }: { actions: { name: string; n: number }[] }) {
+  const n = (...noms: string[]) => actions.filter(a => noms.includes(a.name)).reduce((t, a) => t + a.n, 0);
+  const etapes: [string, number][] = [
+    ["Clics vers les offres", n("clic_offres")],
+    ["Formule choisie", n("achat_choix_elite", "achat_choix_pro", "achat_reprise")],
+    ["Départs vers Stripe", n("clic_paiement")],
+    ["Paiements réussis", n("paiement_reussi")],
+  ];
+  if (etapes.every(([, v]) => !v)) return null;
+  const max = Math.max(...etapes.map(([, v]) => v), 1);
+  return (
+    <Bloc titre="Parcours d'achat" Icone={MousePointerClick}>
+      <div className="space-y-2.5">
+        {etapes.map(([nom, v], i) => {
+          const avant = i ? etapes[i - 1][1] : 0;
+          return (
+            <div key={nom} className="text-sm">
+              <div className="flex justify-between gap-3">
+                <span className="font-semibold text-slate-700">{nom}</span>{" "}
+                <span className="tabular-nums text-slate-700"><strong>{v}</strong>{i > 0 && avant > 0 && <span className="ml-1.5 text-xs text-slate-400">{Math.round((v / avant) * 100)} %</span>}</span>
+              </div>
+              <div className="mt-1 h-2 overflow-hidden rounded-full bg-slate-100"><div className="h-full rounded-full bg-emerald-500" style={{ width: `${(v / max) * 100}%` }} /></div>
+            </div>
+          );
+        })}
+      </div>
+    </Bloc>
   );
 }

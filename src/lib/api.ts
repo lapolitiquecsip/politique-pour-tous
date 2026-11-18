@@ -4,6 +4,8 @@ import { supabase } from "./supabase";
 
 /** Version des CGV acceptée au paiement (à changer à chaque modification des CGV). */
 export const CGV_VERSION = '2026-10-06';
+/** Accord d'achat donné sans compte, en attente d'être versé au compte que le paiement crée. */
+const CLE_ACCORD_ATTENTE = 'lpcs.accord-achat-attente';
 export type AbonnementEnCours = { id?: string; nom: string; montant: string; periode: string; fin: number; fin_texte: string; resilie?: boolean };
 /** Un résultat de api.rechercherLois. */
 export type LoiTrouvee = { id: string; titre: string; type: string | null; statut: string | null; date: string | null };
@@ -1282,14 +1284,37 @@ export const api = {
     await supabase.from('preuves_consentement').insert({ user_id: u.user.id, objet: 'suivis_politiques', version: '2026-10', details: { texte: 'Suivre un parti ou un candidat peut laisser deviner une opinion politique ; usage limité à l’envoi des informations qui les concernent.' } });
   },
   /** Accord donné juste avant le paiement : CGV acceptées + exécution immédiate demandée (C. conso. L221-25). */
+  //  Sans compte (achat direct, le compte est créé par le paiement) : l'accord est gardé dans
+  //  le navigateur, daté, puis versé au compte à la première connexion (verserAccordEnAttente).
   enregistrerAccordAchat: async (offre: string, periodicite: string) => {
     const { data: u } = await supabase.auth.getUser();
-    if (!u.user) throw new Error('Connexion requise');
+    if (!u.user) {
+      try { window.localStorage.setItem(CLE_ACCORD_ATTENTE, JSON.stringify({ offre, periodicite, version: CGV_VERSION, accepte_le: new Date().toISOString() })); }
+      catch { /* navigation privée : l'achat n'est pas bloqué pour autant */ }
+      return;
+    }
     const { error } = await supabase.from('preuves_consentement').insert({
       user_id: u.user.id, objet: 'achat', version: CGV_VERSION,
       details: { offre, periodicite, cgv_acceptees: true, execution_immediate_demandee: true },
     });
     if (error) throw error;
+  },
+  /** L'accord donné sans compte, versé au compte créé par le paiement. Seulement s'il a moins
+   *  de 48 h : au-delà, rien ne dit qu'il se rapporte à ce paiement. */
+  verserAccordEnAttente: async () => {
+    if (typeof window === 'undefined') return;
+    let attente: { offre: string; periodicite: string; version: string; accepte_le: string } | null = null;
+    try { attente = JSON.parse(window.localStorage.getItem(CLE_ACCORD_ATTENTE) || 'null'); } catch { return; }
+    if (!attente) return;
+    const oublier = () => { try { window.localStorage.removeItem(CLE_ACCORD_ATTENTE); } catch { /* rien */ } };
+    if (!(Date.now() - new Date(attente.accepte_le).getTime() < 48 * 3600e3)) return oublier();
+    const { data: u } = await supabase.auth.getUser();
+    if (!u.user) return;
+    const { error } = await supabase.from('preuves_consentement').insert({
+      user_id: u.user.id, objet: 'achat', version: attente.version,
+      details: { offre: attente.offre, periodicite: attente.periodicite, cgv_acceptees: true, execution_immediate_demandee: true, accepte_le: attente.accepte_le, avant_creation_du_compte: true },
+    });
+    if (!error) oublier();
   },
   /** RGPD art. 15 et 20 : toutes les données du compte, en un fichier JSON. */
   exporterMesDonnees: async () => {

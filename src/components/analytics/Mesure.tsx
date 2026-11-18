@@ -34,9 +34,16 @@ export default function Mesure() {
   }, [chemin]);
 
   useEffect(() => {
+    // Achat fait sans compte : l'accord (CGV, accès immédiat) rejoint le compte créé par le paiement.
+    // Import différé : rien de plus à charger sur les pages tant qu'aucun accord n'attend.
+    const verserAccord = () => {
+      try { if (!window.localStorage.getItem("lpcs.accord-achat-attente")) return; } catch { return; }
+      void import("@/lib/api").then(m => m.api.verserAccordEnAttente()).catch(() => {});
+    };
     void rattacherParrainSiBesoin();
+    verserAccord();
     const { data } = supabase.auth.onAuthStateChange((evenement) => {
-      if (evenement === "SIGNED_IN") void rattacherParrainSiBesoin();
+      if (evenement === "SIGNED_IN") { void rattacherParrainSiBesoin(); verserAccord(); }
     });
 
     // Les clics qui disent l'intérêt pour les offres, repérés à un seul endroit.

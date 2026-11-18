@@ -94,9 +94,17 @@ async function envoyer(kind: "vue" | "action", name: string | null, path: string
 
 export function mesurerVue(path: string) { void envoyer("vue", null, path); }
 
-/** Une action qui compte : inscription, clic vers le paiement, partage… */
-export function mesurerAction(nom: string, path?: string) {
-  void envoyer("action", nom, path ?? (typeof window !== "undefined" ? window.location.pathname : "/"));
+/** Une action qui compte : inscription, clic vers le paiement, partage…
+ *  Renvoie la promesse de l'envoi : avant de quitter le site (Stripe), passer par
+ *  `mesurerPuisPartir`, sinon la navigation coupe la requête et l'action n'est jamais comptée. */
+export function mesurerAction(nom: string, path?: string): Promise<void> {
+  return envoyer("action", nom, path ?? (typeof window !== "undefined" ? window.location.pathname : "/"));
+}
+
+/** Compte l'action puis quitte la page : 800 ms d'attente au plus, le visiteur passe avant la mesure. */
+export async function mesurerPuisPartir(nom: string, url: string) {
+  await Promise.race([mesurerAction(nom), new Promise(r => setTimeout(r, 800))]);
+  window.location.href = url;
 }
 
 /**

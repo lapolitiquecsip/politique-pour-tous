@@ -1,10 +1,11 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { usePremium } from "@/lib/hooks/usePremium";
 import { lienPaiementStripe } from "@/lib/utils";
 import AccordAchat from "@/components/premium/AccordAchat";
+import { mesurerAction, mesurerPuisPartir } from "@/lib/mesure";
 import { CheckCircle2, Check, Minus, Gift, Star, FileText, ArrowRight, Scale, BellRing, X, Sparkles, Vote, MapPin, AlertTriangle, Target, GitBranch, Pencil, HelpCircle, LineChart, ChevronDown, ShieldCheck, Lock } from "lucide-react";
 import { PLANS, SALES_OPEN } from "@/lib/constants";
 import Link from "next/link";
@@ -294,7 +295,8 @@ export default function PremiumPage() {
   // ne montre de contenu réservé qu'une fois le niveau vérifié.
   // Un abonné (Premium ou Pro) trouve ici son espace ; « ?offres=1 » rouvre la page des
   // formules (un Premium qui envisage le Pro).
-  const offres = typeof window !== "undefined" && new URLSearchParams(window.location.search).has("offres");
+  // « ?commande=pro » (retour de connexion au milieu d'un achat) rouvre aussi les formules.
+  const offres = typeof window !== "undefined" && /[?&](offres|commande)=/.test(window.location.search);
   // « ?bienvenue » vient du paiement : sans session, c'est la connexion qui est attendue, pas la page de vente.
   const bienvenue = typeof window !== "undefined" && new URLSearchParams(window.location.search).has("bienvenue");
   const aConnecter = bienvenue && !aboEnCours && !membre;
@@ -342,11 +344,29 @@ function PageOffre() {
   // mensuel uniquement ; seule l'offre Pro suit la bascule de périodicité. Le clic ouvre d'abord
   // le récapitulatif et l'accord (CGV, accès immédiat) ; Stripe ensuite.
   const [commande, setCommande] = useState<{ key: "elite" | "pro"; cycle: "monthly" | "annually" } | null>(null);
-  const choisir = (key: "elite" | "pro") => setCommande({ key, cycle: key === "pro" && annuel ? "annually" : "monthly" });
+  const estPremium = tierAffiche === "elite";
+  const repris = useRef(false);
+  const choisir = (key: "elite" | "pro") => {
+    void mesurerAction(`achat_choix_${key}`);
+    setCommande({ key, cycle: key === "pro" && annuel ? "annually" : "monthly" });
+  };
+  // Retour de connexion au milieu d'un achat (« ?commande=elite », « &annuel=1 ») : la fenêtre
+  // d'achat se rouvre d'elle-même, le membre n'a pas à retrouver le bouton.
+  useEffect(() => {
+    const q = new URLSearchParams(window.location.search);
+    const c = q.get("commande");
+    if (!SALES_OPEN || (c !== "elite" && c !== "pro")) return;
+    if (repris.current || (c === "elite" && estPremium)) return;
+    repris.current = true;
+    const an = c === "pro" && q.get("annuel") === "1";
+    setAnnuel(an);
+    setCommande({ key: c, cycle: an ? "annually" : "monthly" });
+    void mesurerAction("achat_reprise");
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [estPremium]);
   const aller = (id: string) => document.getElementById(id)?.scrollIntoView({ behavior: "smooth", block: "start" });
 
   const prixPro = annuel ? PLANS.pro.annually : PLANS.pro.monthly;
-  const estPremium = tierAffiche === "elite";
 
   // Le bouton d'une formule : acheter si la vente est ouverte, sinon l'annonce d'ouverture.
   const BoutonFormule = ({ cle, plein = false, compact = false }: { cle: "elite" | "pro"; plein?: boolean; compact?: boolean }) => {
@@ -375,12 +395,13 @@ function PageOffre() {
     <div className="min-h-screen bg-background pb-24">
       {commande && (
         <AccordAchat
+          cle={commande.key}
           offre={PLANS[commande.key].name}
           prix={fmtPrice(commande.cycle === "annually" ? (PLANS[commande.key].annually ?? PLANS[commande.key].monthly) : PLANS[commande.key].monthly)}
           periode={commande.cycle === "annually" ? "an" : "mois"}
           userId={userId}
           onFermer={() => setCommande(null)}
-          onContinuer={() => { window.location.href = lienPaiementStripe(userId, commande.key, commande.cycle); }}
+          onContinuer={() => { void mesurerPuisPartir("clic_paiement", lienPaiementStripe(userId, commande.key, commande.cycle)); }}
         />
       )}{" "}
 

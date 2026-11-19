@@ -4,6 +4,7 @@ import { motion, AnimatePresence } from "framer-motion";
 import { X, ChevronRight, ChevronLeft, Landmark, CalendarDays, Clock, MousePointerClick } from "lucide-react";
 
 import Link from "next/link";
+import { useRouter } from "next/navigation";
 import { api } from "@/lib/api";
 import { Marquee } from "@/components/ui/marquee";
 import { lockScroll, unlockScroll } from "@/lib/scroll-lock";
@@ -98,12 +99,34 @@ function etatDuJour(evenements: any[], institution: string): Etat {
   return { nombre: liste.length, enCours };
 }
 
-function Badge({ etat, clair = false }: { etat: Etat | undefined; clair?: boolean }) {
+/**
+ * Jour creux : « Rien de prévu aujourd'hui » sonnait comme un site à l'arrêt (retour de
+ * l'éditeur, 19/11/2026). La carte renvoie alors vers ce qui vit : l'activité de l'exécutif
+ * pour le Gouvernement, l'agenda de la semaine pour les deux chambres.
+ */
+type Renvoi = { href: string; badge: string; action: string };
+function renvoiJourCreux(inst: Institution, etat: Etat | undefined): Renvoi | null {
+  if (!etat || etat.nombre || etat.enCours) return null;
+  return inst.id === "gouvernement"
+    ? { href: "/executif", badge: "L'activité de l'exécutif", action: "Voir l'activité de l'exécutif" }
+    : { href: "/calendrier", badge: "À venir cette semaine", action: "Voir l'agenda de la semaine" };
+}
+
+function Badge({ etat, clair = false, renvoi = null }: { etat: Etat | undefined; clair?: boolean; renvoi?: Renvoi | null }) {
   if (!etat) return <span className="inline-block h-6 w-28 animate-pulse rounded-full bg-white/15" />;
   if (etat.enCours) {
     return (
       <span className="inline-flex items-center gap-1.5 rounded-full bg-red-600 px-2.5 py-1 text-[11px] font-black uppercase tracking-wider text-white">
         <span className="h-1.5 w-1.5 animate-pulse rounded-full bg-white" />{" "}En cours
+      </span>
+    );
+  }
+  if (renvoi) {
+    return (
+      <span className={`inline-flex items-center gap-1 rounded-full px-2.5 py-1 text-[11px] font-bold ${clair
+        ? "bg-emerald-100 text-emerald-800 dark:bg-emerald-500/15 dark:text-emerald-200"
+        : "bg-emerald-500 text-white"}`}>
+        <CalendarDays size={12} /> {renvoi.badge} <ChevronRight size={12} />
       </span>
     );
   }
@@ -119,6 +142,7 @@ function Badge({ etat, clair = false }: { etat: Etat | undefined; clair?: boolea
 
 // Carte grand écran (défilement automatique).
 const InstitutionCard = memo(({ inst, index, etat, onClick }: { inst: Institution; index: number; etat?: Etat; onClick: () => void }) => {
+  const renvoi = renvoiJourCreux(inst, etat);
   return (
     <motion.button
       key={inst.id}
@@ -126,7 +150,7 @@ const InstitutionCard = memo(({ inst, index, etat, onClick }: { inst: Institutio
       animate={{ opacity: 1, y: 0 }}
       transition={{ delay: index * 0.1 }}
       onClick={onClick}
-      aria-label={`${inst.name} : voir le programme du jour`}
+      aria-label={renvoi ? `${inst.name} : ${renvoi.action.toLowerCase()}` : `${inst.name} : voir le programme du jour`}
       style={{ willChange: "transform, opacity", transform: "translateZ(0)" }}
       className={`group relative h-[420px] rounded-[2rem] overflow-hidden shadow-sm hover:shadow-2xl ${inst.id === 'assemblee' ? 'hover:shadow-red-500/50' : inst.id === 'senat' ? 'hover:shadow-blue-500/50' : 'hover:shadow-purple-500/50'} transition-all duration-500 cursor-pointer text-left w-full border border-border/50`}
     >
@@ -141,12 +165,12 @@ const InstitutionCard = memo(({ inst, index, etat, onClick }: { inst: Institutio
         </div>
       </div>{" "}
       <div className="relative z-10 flex flex-col justify-end h-full p-10">
-        <div className="mb-3"><Badge etat={etat} /></div>{" "}
+        <div className="mb-3"><Badge etat={etat} renvoi={renvoi} /></div>{" "}
         <h3 className="text-4xl font-staatliches uppercase tracking-tighter text-white mb-6 group-hover:text-blue-400 transition-colors">
           {inst.name}
         </h3>{" "}
         <div className="flex items-center gap-3 text-white font-bold text-xs uppercase tracking-widest self-start transition-all group-hover:translate-x-2">
-          Que se passe-t-il aujourd&apos;hui ? <ChevronRight className="w-4 h-4 text-blue-500" />
+          {renvoi ? renvoi.action : "Que se passe-t-il aujourd'hui ?"} <ChevronRight className="w-4 h-4 text-blue-500" />
         </div>
       </div>{" "}
       <div className="absolute bottom-0 left-0 w-full h-1.5 bg-blue-600 transform scale-x-0 group-hover:scale-x-100 transition-transform origin-left duration-500" />
@@ -160,6 +184,7 @@ export default function InstitutionsGrid() {
   const [selectedEvent, setSelectedEvent] = useState<any | null>(null);
   const [evenementsDuJour, setEvenementsDuJour] = useState<any[] | null>(null);
   const fermer = useRef<HTMLButtonElement>(null);
+  const router = useRouter();
 
   // Retire les liens Markdown [libellé](url) en gardant le libellé lisible, et les URLs nues.
   // → l'utilisateur voit « Déplacement au Royaume des Pays-Bas. » et non l'URL Élysée brute.
@@ -224,6 +249,11 @@ export default function InstitutionsGrid() {
   }, [ouverte]);
   // Changer d'institution (ou fermer) referme toujours le détail d'événement ouvert.
   const choisir = (inst: Institution | null) => { setSelectedEvent(null); setSelectedInst(inst); };
+  // Depuis l'accueil : un jour creux mène à la page qui a de l'activité, pas à une fenêtre vide.
+  const ouvrir = (inst: Institution) => {
+    const r = renvoiJourCreux(inst, etats?.[inst.id]);
+    if (r) router.push(r.href); else choisir(inst);
+  };
 
   const handleNext = () => {
     if (!selectedInst) return;
@@ -259,13 +289,13 @@ export default function InstitutionsGrid() {
         {INSTITUTIONS.map(inst => (
           <li key={inst.id}>
             <button
-              onClick={() => choisir(inst)}
+              onClick={() => ouvrir(inst)}
               className="group flex w-full items-center gap-3.5 rounded-2xl border border-border bg-card p-2.5 pr-3 text-left transition active:scale-[0.99] dark:border-slate-800 dark:bg-slate-900"
             >
               <span className="h-16 w-16 shrink-0 rounded-xl bg-cover bg-center" style={{ backgroundImage: `url(${imageDe(inst)})` }} aria-hidden="true" />{" "}
               <span className="min-w-0 flex-1">
                 <span className="block text-lg font-bold leading-tight text-foreground dark:text-white">{inst.name}</span>{" "}
-                <span className="mt-1.5 block"><Badge etat={etats?.[inst.id]} clair /></span>
+                <span className="mt-1.5 block"><Badge etat={etats?.[inst.id]} clair renvoi={renvoiJourCreux(inst, etats?.[inst.id])} /></span>
               </span>{" "}
               <ChevronRight size={20} className="shrink-0 text-muted-foreground transition group-active:translate-x-0.5" />
             </button>
@@ -280,7 +310,7 @@ export default function InstitutionsGrid() {
         <Marquee className="[--gap:1.5rem]" pauseOnHover>
           {INSTITUTIONS.map((inst, index) => (
             <div key={inst.id} className="w-[380px] shrink-0">
-              <InstitutionCard inst={inst} index={index} etat={etats?.[inst.id]} onClick={() => choisir(inst)} />{" "}
+              <InstitutionCard inst={inst} index={index} etat={etats?.[inst.id]} onClick={() => ouvrir(inst)} />{" "}
             </div>
           ))}
         </Marquee>
@@ -376,7 +406,7 @@ export default function InstitutionsGrid() {
                       <span className="inline-block rounded-full border border-blue-200 bg-blue-100 px-3 py-1 text-[11px] font-bold uppercase tracking-wider text-blue-700 dark:border-blue-500/25 dark:bg-blue-500/10 dark:text-blue-300">
                         Institution officielle
                       </span>{" "}
-                      <Badge etat={etats?.[selectedInst.id]} clair />
+                      <Badge etat={etats?.[selectedInst.id]} clair renvoi={renvoiJourCreux(selectedInst, etats?.[selectedInst.id])} />
                     </div>{" "}
                     {(dailySummary || selectedInst.summary) && (
                       <p className="text-pretty text-[15px] font-medium leading-relaxed text-slate-700 dark:text-slate-300 md:text-base">
@@ -450,11 +480,11 @@ export default function InstitutionsGrid() {
                               <p className="mt-1 text-lg font-bold leading-tight md:text-2xl">Comprendre {selectedInst.shortName}</p>{" "}
                               <span className="mt-2 inline-flex items-center gap-1 text-xs font-bold">Découvrir <ChevronRight size={14} /></span>
                             </Link>{" "}
-                            <Link href="/calendrier" className="group relative overflow-hidden rounded-2xl bg-slate-900 p-4 text-white shadow-lg shadow-slate-900/20 md:rounded-[2rem] md:p-8">
+                            <Link href={selectedInst.id === "gouvernement" ? "/executif" : "/calendrier"} className="group relative overflow-hidden rounded-2xl bg-slate-900 p-4 text-white shadow-lg shadow-slate-900/20 md:rounded-[2rem] md:p-8">
                               <CalendarDays className="absolute -bottom-5 -right-5 h-24 w-24 rotate-12 text-white/10" />{" "}
-                              <p className="text-[11px] font-bold uppercase tracking-wider text-slate-300">Agenda complet</p>{" "}
-                              <p className="mt-1 text-lg font-bold leading-tight md:text-2xl">Prochaines séances</p>{" "}
-                              <span className="mt-2 inline-flex items-center gap-1 text-xs font-bold">Calendrier <ChevronRight size={14} /></span>
+                              <p className="text-[11px] font-bold uppercase tracking-wider text-slate-300">{selectedInst.id === "gouvernement" ? "Exécutif" : "Agenda complet"}</p>{" "}
+                              <p className="mt-1 text-lg font-bold leading-tight md:text-2xl">{selectedInst.id === "gouvernement" ? "Son activité" : "À venir cette semaine"}</p>{" "}
+                              <span className="mt-2 inline-flex items-center gap-1 text-xs font-bold">{selectedInst.id === "gouvernement" ? "Voir" : "Calendrier"} <ChevronRight size={14} /></span>
                             </Link>
                           </div>
                         </div>

@@ -63,7 +63,7 @@ export const MEDIATEUR = {
 };
 
 /** Dernière mise à jour des textes juridiques (affichée ; ne pas calculer à la volée). */
-export const MAJ_TEXTES_JURIDIQUES = "18 octobre 2026";
+export const MAJ_TEXTES_JURIDIQUES = "19 novembre 2026";
 
 export const STRIPE_LINKS: Record<string, { monthly: string; annually?: string }> = {
   student: {

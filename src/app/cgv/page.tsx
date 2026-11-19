@@ -49,7 +49,10 @@ export default function CGV() {
               <p>La commande se passe depuis un compte connecté : choix de l&apos;offre, récapitulatif, acceptation des présentes CGV et demande
                 d&apos;accès immédiat, puis paiement sur la page sécurisée de notre prestataire <strong>Stripe</strong>{" "}(carte bancaire). Le site ne voit ni
                 ne conserve vos coordonnées bancaires.</p>{" "}
-              <p>Le paiement est prélevé à la souscription, puis à chaque échéance. Le contrat est confirmé par un e-mail récapitulant l&apos;offre,
+              <p><strong>Essai gratuit du Premium :</strong> l&apos;abonnement Premium commence par 7 jours d&apos;essai gratuit, une seule fois
+                par abonné. Une carte bancaire est demandée à la souscription, mais rien n&apos;est prélevé pendant l&apos;essai ; le premier paiement a
+                lieu à la fin des 7 jours, sauf résiliation avant cette date, auquel cas aucune somme n&apos;est due.</p>{" "}
+              <p>Hors essai gratuit, le paiement est prélevé à la souscription, puis à chaque échéance. Le contrat est confirmé par un e-mail récapitulant l&apos;offre,
                 son prix, ses conditions de renouvellement, de résiliation et de rétractation. Un reçu est envoyé par e-mail à chaque paiement ; une
                 facture vous est adressée sur simple demande.</p>
             </>

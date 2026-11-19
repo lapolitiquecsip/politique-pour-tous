@@ -3,7 +3,7 @@ import { mediaBanni } from './medias-bannis';
 import { supabase } from "./supabase";
 
 /** Version des CGV acceptée au paiement (à changer à chaque modification des CGV). */
-export const CGV_VERSION = '2026-10-06';
+export const CGV_VERSION = '2026-11-19';
 /** Accord d'achat donné sans compte, en attente d'être versé au compte que le paiement crée. */
 const CLE_ACCORD_ATTENTE = 'lpcs.accord-achat-attente';
 export type AbonnementEnCours = { id?: string; nom: string; montant: string; periode: string; fin: number; fin_texte: string; resilie?: boolean };

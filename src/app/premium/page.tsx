@@ -385,7 +385,7 @@ function PageOffre() {
         {/* reflet en haut du bouton */}
         <span aria-hidden className="pointer-events-none absolute inset-x-0 top-0 h-1/2 bg-gradient-to-b from-white/25 to-transparent" />
         {pro ? <LineChart size={16} className="relative" /> : <Star size={16} className="relative fill-current" />}
-        <span className="relative">{pro ? (estPremium ? "Passer au Pro" : "Choisir Pro") : "Devenir Premium"}</span>
+        <span className="relative">{pro ? (estPremium ? "Passer au Pro" : "Choisir Pro") : "Essai gratuit 7 jours"}</span>
         <ArrowRight size={15} className={`relative -ml-0.5 ${compact ? "hidden" : ""} opacity-70 transition-transform duration-200 group-hover:translate-x-0.5 group-hover:opacity-100`} />
       </button>
     );
@@ -428,7 +428,8 @@ function PageOffre() {
               className="rounded-2xl border border-amber-400/60 bg-amber-400/10 px-3 py-3 text-left transition hover:bg-amber-400/20">
               <span className="block text-[10px] font-black uppercase tracking-widest text-amber-300">Citoyens</span>{" "}
               <span className="mt-0.5 block font-staatliches text-2xl uppercase leading-none">Premium</span>{" "}
-              <span className="mt-1 block text-[13px] font-bold text-white/85">{fmtPrice(PLANS.elite.monthly)} <span className="font-medium text-white/50">/ mois</span></span>
+              <span className="mt-1 block text-[13px] font-bold text-white/85">{fmtPrice(PLANS.elite.monthly)} <span className="font-medium text-white/50">/ mois</span></span>{" "}
+              <span className="mt-0.5 block text-[11px] font-bold text-emerald-300">7 jours gratuits</span>
             </button>{" "}
             <button type="button" onClick={() => aller("tableau")}
               className="rounded-2xl border border-fuchsia-400/60 bg-fuchsia-500/10 px-3 py-3 text-left transition hover:bg-fuchsia-500/20">
@@ -443,7 +444,7 @@ function PageOffre() {
             Comparer les formules <ArrowRight size={18} />
           </motion.button>{" "}
           <p className="mt-3 flex items-center justify-center gap-1.5 text-[12px] font-bold text-white/55">
-            <ShieldCheck size={14} /> Sans engagement · résiliable à tout moment
+            <ShieldCheck size={14} /> Premium : 7 jours gratuits · sans engagement
           </p>{" "}
           <button type="button" onClick={() => aller("parrainage")}
             className="mx-auto mt-4 flex min-h-[40px] items-center gap-2 rounded-full border border-teal-300/40 bg-teal-400/10 px-4 text-[13px] font-bold text-teal-200 transition hover:bg-teal-400/20">

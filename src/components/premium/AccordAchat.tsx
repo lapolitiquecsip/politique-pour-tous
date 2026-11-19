@@ -43,7 +43,9 @@ export default function AccordAchat({ cle, offre, prix, periode, userId, onFerme
         </div>{" "}
 
         <ul className="mt-3 space-y-1.5 text-sm leading-relaxed">
-          <li><strong>{prix} TTC par {periode}</strong>, prélevé à la souscription puis à chaque échéance.</li>{" "}
+          {cle === "elite"
+            ? <li><strong>7 jours d&apos;essai gratuit</strong>, puis <strong>{prix} TTC par {periode}</strong>. Rien n&apos;est prélevé si vous résiliez pendant l&apos;essai.</li>
+            : <li><strong>{prix} TTC par {periode}</strong>, prélevé à la souscription puis à chaque échéance.</li>}{" "}
           <li>Renouvellement automatique chaque {periode === "an" ? "année" : "mois"}, au même prix, jusqu&apos;à résiliation.</li>{" "}
           <li>Résiliable à tout moment en ligne, depuis votre espace ; effet à la fin de la période payée.</li>{" "}
           {!userId && <li>Pas besoin de compte : il est créé avec l&apos;adresse e-mail saisie au paiement.</li>}
@@ -63,7 +65,7 @@ export default function AccordAchat({ cle, offre, prix, periode, userId, onFerme
 
         <button onClick={continuer} disabled={!cgv || !immediat || envoi}
           className="mt-5 inline-flex w-full items-center justify-center gap-2 rounded-2xl bg-gradient-to-r from-amber-400 to-yellow-500 px-6 py-4 text-sm font-black uppercase tracking-widest text-slate-900 transition hover:brightness-110 disabled:cursor-not-allowed disabled:opacity-40">
-          {envoi ? <Loader2 size={16} className="animate-spin" /> : <ShieldCheck size={16} />} Continuer vers le paiement
+          {envoi ? <Loader2 size={16} className="animate-spin" /> : <ShieldCheck size={16} />} {cle === "elite" ? "Démarrer l'essai gratuit" : "Continuer vers le paiement"}
         </button>{" "}
         <p className="mt-2 text-center text-[11px] text-slate-500 dark:text-slate-400">
           Vous validerez la commande, avec obligation de paiement, sur la page sécurisée de Stripe.

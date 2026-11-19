@@ -56,7 +56,7 @@ async function commissionner(supabase: any, filleul: string, facture: string, mo
  * la reconduction, la résiliation, et l'exécution immédiate demandée avant la fin du
  * délai de rétractation (L221-25 : rétractation possible, au prorata du temps écoulé).
  */
-async function confirmerCommande(session: any, tier: 'elite' | 'pro', offre: { montant: number; annuel: boolean }) {
+async function confirmerCommande(session: any, tier: 'elite' | 'pro', offre: { montant: number; annuel: boolean }, finEssai: number | null = null) {
   const cle = Deno.env.get('RESEND_API_KEY')
   const to = session.customer_details?.email
   if (!cle || !to) return
@@ -66,11 +66,14 @@ async function confirmerCommande(session: any, tier: 'elite' | 'pro', offre: { m
   // La page de retour du paiement : elle reconnecte l'acheteur s'il l'a quittée trop tôt.
   const acces = `https://lapolitiquecestsimple.fr/success/?session_id=${session.id}`
   const jour = new Date().toLocaleDateString('fr-FR', { day: 'numeric', month: 'long', year: 'numeric', timeZone: 'Europe/Paris' })
+  // Essai gratuit (Premium, 7 jours) : rien n'est prélevé avant sa fin, il faut le dire.
+  const finEssaiTexte = finEssai ? new Date(finEssai * 1000).toLocaleDateString('fr-FR', { day: 'numeric', month: 'long', year: 'numeric', timeZone: 'Europe/Paris' }) : null
   const points = [
     `Offre : ${nom}, ${montant} TTC par ${annuel ? 'an' : 'mois'}, souscrite le ${jour}.`,
+    ...(finEssaiTexte ? [`Essai gratuit : aucun prélèvement jusqu'au ${finEssaiTexte}. Le premier paiement de ${montant} aura lieu ce jour-là, sauf si vous résiliez avant ; dans ce cas, rien ne vous sera prélevé.`] : []),
     `Reconduction : l'abonnement se renouvelle automatiquement chaque ${annuel ? 'année' : 'mois'} au même prix, sauf résiliation.`,
     `Résiliation : à tout moment, en ligne depuis votre espace (« Résilier mon abonnement ») ; elle prend effet à la fin de la période payée.`,
-    `Rétractation : vous avez demandé à accéder à l'offre immédiatement. Vous pouvez toutefois vous rétracter dans les 14 jours suivant la souscription, en nous écrivant via la page Contact ; vous serez remboursé, déduction faite du montant correspondant aux jours déjà écoulés.`,
+    finEssaiTexte ? `Rétractation : pendant l'essai, il suffit de résilier, sans frais. Après le premier paiement, vous pouvez encore vous rétracter dans les 14 jours suivant la souscription, en nous écrivant via la page Contact ; vous serez remboursé, déduction faite du montant correspondant aux jours payés déjà écoulés.` : `Rétractation : vous avez demandé à accéder à l'offre immédiatement. Vous pouvez toutefois vous rétracter dans les 14 jours suivant la souscription, en nous écrivant via la page Contact ; vous serez remboursé, déduction faite du montant correspondant aux jours déjà écoulés.`,
   ]
   try {
     const r = await fetch('https://api.resend.com/emails', {
@@ -159,7 +162,15 @@ serve(async (req) => {
       // Parrainage : commission sur ce premier paiement (une seule par facture).
       const offre = await offreEnEuros(session)
       await commissionner(supabase, targetId, session.invoice ?? session.id, offre.montant)
-      await confirmerCommande(session, tier, offre)
+      // Fin de l'essai gratuit, s'il y en a un (statut « trialing ») : annoncée dans la confirmation.
+      let finEssai: number | null = null
+      try {
+        if (session.subscription) {
+          const sub: any = await stripe.subscriptions.retrieve(session.subscription)
+          if (sub.status === 'trialing' && sub.trial_end) finEssai = sub.trial_end
+        }
+      } catch (e) { console.warn(`Essai non lu : ${(e as Error).message}`) }
+      await confirmerCommande(session, tier, offre, finEssai)
     }
 
     // Renouvellement (et tout paiement d'abonnement) : commission du parrain.
@@ -186,8 +197,9 @@ serve(async (req) => {
       const supabase = admin()
       const profil = await profilDuClient(supabase, sub.customer)
       if (profil) {
-        const actifs = await stripe.subscriptions.list({ customer: sub.customer, status: 'active', limit: 10 })
-        const montants = actifs.data.flatMap((s: any) => s.items.data.map((i: any) => i.price?.unit_amount ?? 0))
+        // « all » puis filtre : un abonnement encore en essai gratuit (trialing) garde aussi l'accès.
+        const actifs = await stripe.subscriptions.list({ customer: sub.customer, status: 'all', limit: 10 })
+        const montants = actifs.data.filter((s: any) => s.id !== sub.id && ['active', 'trialing', 'past_due'].includes(s.status)).flatMap((s: any) => s.items.data.map((i: any) => i.price?.unit_amount ?? 0))
         const reste: 'free' | 'elite' | 'pro' = !montants.length ? 'free' : Math.max(...montants) >= 1500 ? 'pro' : 'elite'
         await supabase.from('profiles')
           .update({ subscription_tier: reste, is_premium: reste !== 'free' })

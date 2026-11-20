@@ -63,9 +63,22 @@ const PARTIES_LIVRE: Record<string, string> = {
   "le-gout-du-futur-aux-nouvelles-frontieres-de-l-humanite": "Partie 4 · Le goût du futur : aux nouvelles frontières de l'humanité",
   "fonder-la-6e-republique": "Partie 5 · Fonder la 6e République",
   "un-monde-ordonne": "Partie 6 · Un monde ordonné",
+  // « Réussir à nouveau » (D. de Villepin)
+  "villepin-1": "Partie 1 · Dire la vérité",
+  "villepin-2": "Partie 2 · Redresser l'État",
+  "villepin-3": "Partie 3 · Vivre ensemble",
+  "villepin-4": "Partie 4 · Continuer la France",
 };
-const partieDuLivre = (u: string) => u.match(LIVRE)?.[1] ?? null;
-const sommaireDuLivre = (u: string) => u.replace(/\/programme\/livre\/.*$/, "/programme/livre/");
+// Programme « Réussir à nouveau » de D. de Villepin (lafrancehumaniste.fr) : 25 chapitres en 4 parties,
+// une source par chapitre, rangée sous sa partie comme le livre de Mélenchon (chapitres 1-3, 4-11, 12-18, 19-25).
+const VILLEPIN = /^https:\/\/lafrancehumaniste\.fr\/programme\/reussir-a-nouveau\/chapitre-(\d+)\.html$/;
+const VILLEPIN_SOMMAIRE = "https://lafrancehumaniste.fr/programme/reussir-a-nouveau/";
+const villepinPartie = (ch: number) => (ch <= 3 ? 1 : ch <= 11 ? 2 : ch <= 18 ? 3 : 4);
+const partieDuLivre = (u: string) => {
+  const v = u.match(VILLEPIN);
+  return v ? `villepin-${villepinPartie(Number(v[1]))}` : u.match(LIVRE)?.[1] ?? null;
+};
+const sommaireDuLivre = (u: string) => (VILLEPIN.test(u) ? VILLEPIN_SOMMAIRE : u.replace(/\/programme\/livre\/.*$/, "/programme/livre/"));
 // Programme d'É. Philippe : une page par thème (edouardphilippe.fr/programme/<thème>) ;
 // accroche et propositions phares reprises telles quelles, mesures tirées des questions-réponses.
 const PHILIPPE = /^https:\/\/www\.edouardphilippe\.fr\/programme\/[^/]+\/?$/;
@@ -100,9 +113,11 @@ export default function ProgrammeCandidat({ proposals, sources = [], titre = "So
   // Idem pour les 15 pages thématiques d'É. Philippe : un lien vers son sommaire.
   const urlsAffichees = [...new Set(urls.map(u => partieDuLivre(u) ? sommaireDuLivre(u) : PHILIPPE.test(u) ? PHILIPPE_SOMMAIRE : u))];
   const philippe = urls.some(u => PHILIPPE.test(u));
+  const villepin = urls.some(u => VILLEPIN.test(u));
   const libelleSource = (u: string) => {
     const s = sources.find(x => x.source_url === u);
     if (estVideo(u)) return `${s?.titre || "Présentation officielle"} — vidéo de la chaîne officielle${s ? `, analysée le ${new Date(s.traite_le).toLocaleDateString("fr-FR", { day: "numeric", month: "long", year: "numeric" })}` : ""}`;
+    if (u === VILLEPIN_SOMMAIRE) return "« Réussir à nouveau », programme officiel (texte repris chapitre par chapitre)";
     if (/\/programme\/livre\/$/.test(u)) return "L'Avenir en commun, livre-programme (texte officiel, chapitre par chapitre)";
     if (u === PHILIPPE_SOMMAIRE) return "Programme officiel (edouardphilippe.fr, thème par thème)";
     return "Programme officiel (site du mouvement)";
@@ -200,7 +215,7 @@ export default function ProgrammeCandidat({ proposals, sources = [], titre = "So
     <section className="mt-8">
       <h3 className="text-2xl font-staatliches uppercase text-foreground">{titre}</h3>{" "}
       <p className="mt-1 text-xs text-muted-foreground">
-        Toutes {nomCandidat ? `les idées de ${nomCandidat}` : "ses idées"}, par {parPlan ? "plan puis par thème" : "thème"} — issues {urls.some(estVideo) && !urls.every(estVideo) ? "du programme officiel et de ses présentations" : urls.every(estVideo) ? "de sa présentation officielle" : "du programme officiel"}.
+        Toutes {nomCandidat ? `les idées de ${nomCandidat}` : "ses idées"}, par {villepin ? "partie, chapitre puis thème" : parPlan ? "plan puis par thème" : "thème"} — issues {urls.some(estVideo) && !urls.every(estVideo) ? "du programme officiel et de ses présentations" : urls.every(estVideo) ? "de sa présentation officielle" : "du programme officiel"}.
         Cliquez sur <HelpCircle size={12} className="inline -mt-0.5" /> pour comprendre pourquoi.
       </p>{" "}
       {parPlan ? (
@@ -210,7 +225,7 @@ export default function ProgrammeCandidat({ proposals, sources = [], titre = "So
             const nThemes = pl.chapitres.reduce((s, ch) => s + ch.themes.length, 0);
             // Intertitres de groupe : le livre-programme, puis les plans qui le détaillent.
             const entete = pl.livre && iPlan === 0
-              ? <p key={`t:${pl.url}`} className="px-1 pt-1 text-[11px] font-black uppercase tracking-widest text-muted-foreground">L&apos;Avenir en commun · livre-programme ({nLivre.toLocaleString("fr-FR")} mesures)</p>
+              ? <p key={`t:${pl.url}`} className="px-1 pt-1 text-[11px] font-black uppercase tracking-widest text-muted-foreground">{villepin ? `Réussir à nouveau · programme (${nLivre.toLocaleString("fr-FR")} propositions)` : `L'Avenir en commun · livre-programme (${nLivre.toLocaleString("fr-FR")} mesures)`}</p>
               : !pl.livre && plans[iPlan - 1]?.livre
                 ? <p key={`t:${pl.url}`} className="px-1 pt-3 text-[11px] font-black uppercase tracking-widest text-muted-foreground">Plans thématiques et d&apos;investissement</p>
                 : null;
@@ -221,7 +236,7 @@ export default function ProgrammeCandidat({ proposals, sources = [], titre = "So
                   <span className="flex h-9 w-9 shrink-0 items-center justify-center rounded-xl bg-slate-900 text-white dark:bg-white dark:text-slate-900">{estVideo(pl.url) ? <PlayCircle size={17} /> : <FileText size={17} />}</span>{" "}
                   <span className="min-w-0 flex-1">
                     <span className="block text-[15px] font-black leading-snug text-foreground">{pl.nom}</span>{" "}
-                    <span className="block text-[12px] font-bold text-muted-foreground">{pl.n} {pl.livre ? "mesure" : "proposition"}{pl.n > 1 ? "s" : ""} · {pl.livre ? `${pl.chapitres.length} chapitre${pl.chapitres.length > 1 ? "s" : ""}, ` : ""}{nThemes} thème{nThemes > 1 ? "s" : ""}</span>
+                    <span className="block text-[12px] font-bold text-muted-foreground">{pl.n} {pl.livre && !villepin ? "mesure" : "proposition"}{pl.n > 1 ? "s" : ""} · {pl.livre ? `${pl.chapitres.length} chapitre${pl.chapitres.length > 1 ? "s" : ""}, ` : ""}{nThemes} thème{nThemes > 1 ? "s" : ""}</span>
                   </span>{" "}
                   <ChevronDown size={18} className={`shrink-0 text-muted-foreground transition-transform ${ouvert ? "rotate-180" : ""}`} />
                 </button>{" "}
@@ -254,7 +269,9 @@ export default function ProgrammeCandidat({ proposals, sources = [], titre = "So
           </a>
         ))}
       </div>{" "}
-      <MentionIA texte={nLivre
+      <MentionIA texte={villepin
+        ? "Propositions de « Réussir à nouveau » et présentations des thèmes reprises mot pour mot du programme officiel ; les explications « ? » sont rédigées par IA. Seule la source officielle fait foi."
+        : nLivre
         ? "Mesures de « L'Avenir en commun » reprises mot pour mot du texte officiel ; propositions des plans restructurées par IA à partir des sources citées (chiffres vérifiés contre le texte) ; les explications « ? » sont rédigées par IA. Seule la source officielle fait foi."
         : philippe
         ? "Présentations des thèmes et propositions phares (« Mesure clé ») reprises mot pour mot du site officiel ; les autres mesures sont tirées des questions-réponses du site, une par ligne, reformulées par IA (chiffres et termes vérifiés contre la page) ; les explications « ? » sont rédigées par IA. Seule la source officielle fait foi."

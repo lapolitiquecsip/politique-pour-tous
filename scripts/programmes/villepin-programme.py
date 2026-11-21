@@ -7,7 +7,8 @@ Le texte officiel est repris TEL QUEL, sans IA. Chaque chapitre est rangé en se
   - section            → thème (candidate_proposals.theme), lettre « A. » retirée
   - texte de la section → ligne de contexte (subsection = "__contexte__"), « Comment ? » retiré ;
                           une section sans proposition passe son texte à la suivante
-  - proposition         → subsection = NULL, texte intégral (l'accroche en gras sur le site en est le début)
+  - proposition         → texte intégral ; son accroche (en gras sur le site, c'est le début du texte) et son
+                          numéro vont dans subsection = "__titre__<n>__<accroche>" : la fiche en fait le titre de la carte
 Une source par chapitre (source_url = page du chapitre), intitulé « Chapitre N · … » dans
 programmes_sources ; la fiche range les chapitres sous leur partie (ProgrammeCandidat, VILLEPIN).
 Les explications « ? » restent vides : explain-proposals (cron backend) les remplit.
@@ -98,7 +99,8 @@ def lire_chapitre(n, titre_chap):
             for li in re.finditer(r'<li class="prj-prop"[^>]*data-num="(\d+)"[^>]*>(.*?)</li>', m.group(3), re.S):
                 t = re.search(r'<p class="prj-prop-texte">(.*?)</p>', li.group(2), re.S).group(1)
                 t = re.sub(r'<span class="sr-only">.*?</span>', "", t, flags=re.S)
-                cur["props"].append((int(li.group(1)), propre(t)))
+                acc = re.search(r'<span class="prj-accroche">(.*?)</span>', t, re.S)
+                cur["props"].append((int(li.group(1)), propre(t), propre(acc.group(1)) if acc else ""))
     # Une section sans proposition (« A. … » qui ne fait qu'annoncer ses axes) passe son texte à la suivante.
     out, report = [], []
     for sec in sections:
@@ -164,7 +166,7 @@ if __name__ == "__main__":
             order += 1
         for th, ctx, props in secs:
             if ctx: ligne("__contexte__", th, ctx)
-            for _, t in props: ligne(None, th, t)
+            for num, t, acc in props: ligne(f"__titre__{num}__{acc if acc and t.startswith(acc) else ''}", th, t)
         sources.append({"source_url": url, "candidate_id": cid, "titre": f"Chapitre {n} · {titre}", "statut": "programme",
                         "nb_propositions": sum(len(s[2]) for s in secs),
                         "methode": "texte officiel repris tel quel (« Réussir à nouveau », chapitre par chapitre)", "traite_le": now})
@@ -177,10 +179,10 @@ if __name__ == "__main__":
         json.dump(rows, open(os.path.join(os.environ.get("TEMP", "."), "villepin-rows.json"), "w", encoding="utf-8"), ensure_ascii=False, indent=1)
         sys.exit(0)
 
-    # Garde les explications « ? » déjà rédigées pour une proposition inchangée (même identifiant).
-    anciennes = {r["id"]: r["explanation"] for r in api("GET", f"candidate_proposals?select=id,explanation&candidate_id=eq.{cid}&limit=1000") if r["explanation"]}
+    # Garde les explications « ? » déjà rédigées pour une proposition au texte inchangé.
+    anciennes = {norm(r["text"]): r["explanation"] for r in api("GET", f"candidate_proposals?select=text,explanation&candidate_id=eq.{cid}&limit=1000") if r["explanation"]}
     for r in rows:
-        r["explanation"] = anciennes.get(r["id"])
+        r["explanation"] = anciennes.get(norm(r["text"]))
     api("DELETE", f"candidate_proposals?candidate_id=eq.{cid}&source_url=like.{urllib.parse.quote(SOMMAIRE, safe='')}*")
     api("POST", "candidate_proposals", rows, prefer="return=minimal")
     api("POST", "programmes_sources?on_conflict=source_url", sources, prefer="resolution=merge-duplicates,return=minimal")

@@ -1,11 +1,11 @@
 "use client";
 
-import { useState } from "react";
+import { useState, type CSSProperties } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import {
   ChevronDown, HelpCircle, ExternalLink, Globe2, GraduationCap, ShieldCheck, HeartPulse, Wheat, Leaf, Flag,
   TrendingUp, Landmark, FileText, Coins, Building2, Home, FlaskConical, Briefcase, PlayCircle, TrainFront, Palette, Scale, Mountain,
-  Baby, Cpu, Factory, Palmtree, ThermometerSun,
+  Baby, Cpu, Factory, Palmtree, ThermometerSun, Search, X,
 } from "lucide-react";
 import MentionIA from "@/components/shared/MentionIA";
 
@@ -93,14 +93,125 @@ function nomDuPlan(u: string, sources: SourceProgramme[]): string {
   return genre ? `${genre} · ${nom}` : nom;
 }
 
+// ---------------------------------------------------------------- lecture d'une proposition
+// Accroche officielle (D. de Villepin : le début de chaque proposition, en gras sur son site) rangée par le
+// script dans subsection = "__titre__<numéro>__<accroche>". Sinon, un texte long dont la première phrase
+// est courte prend cette phrase pour titre. Le reste est le détail, replié au-delà de trois lignes.
+const TITRE = /^__titre__(\d*)__([\s\S]*)$/;
+const CLAMP: CSSProperties = { display: "-webkit-box", WebkitLineClamp: 3, WebkitBoxOrient: "vertical", overflow: "hidden" };
+export function decoupe(p: Proposition): { n: string | null; titre: string | null; corps: string } {
+  const m = p.subsection?.match(TITRE);
+  const n = m?.[1] || null;
+  if (m && m[2].trim()) {
+    const titre = m[2].trim();
+    let corps = p.text.startsWith(titre) ? p.text.slice(titre.length) : p.text;
+    corps = corps.replace(/^[\s.,;:]+/, "").trim();
+    // L'accroche coupe souvent une phrase : le détail la continue (« … pour les déficits »).
+    if (corps && /^[a-zà-ÿ(«]/.test(corps)) corps = "… " + corps;
+    return { n, titre, corps };
+  }
+  if (p.text.length > 220) {
+    const i = p.text.search(/[.!?](\s|$)/);
+    if (i > 20 && i < 170) return { n, titre: p.text.slice(0, i + 1), corps: p.text.slice(i + 1).trim() };
+  }
+  return { n, titre: null, corps: p.text };
+}
+
+/** Texte d'introduction d'un thème : trois lignes, puis « Lire l'introduction ». */
+function Constat({ texte, dot }: { texte: string; dot: string }) {
+  const [ouvert, setOuvert] = useState(false);
+  const long = texte.length > 260;
+  return (
+    <div className="mx-3 mb-3 mt-1 flex gap-3 rounded-xl bg-muted/70 px-4 py-3">
+      <span className={`w-1 shrink-0 rounded-full ${dot}`} />
+      <div className="min-w-0">
+        <p className="text-[11px] font-black uppercase tracking-widest text-muted-foreground">Le constat</p>
+        <p className="mt-1 text-[13.5px] leading-6 text-slate-600 dark:text-slate-300" style={long && !ouvert ? CLAMP : undefined}>{texte}</p>
+        {long && (
+          <button onClick={() => setOuvert(o => !o)} className="mt-1 text-[12px] font-black text-blue-700 hover:underline dark:text-blue-300">
+            {ouvert ? "Réduire" : "Lire l'introduction"}
+          </button>
+        )}
+      </div>
+    </div>
+  );
+}
+
+/** Une proposition : numéro, accroche en titre, détail replié, explication « ? ». */
+function PropositionCarte({ p, dot, retrait, etiquette, surligne }: { p: Proposition; dot: string; retrait?: boolean; etiquette?: string; surligne?: string[] }) {
+  const [detail, setDetail] = useState(false);
+  const [expl, setExpl] = useState(false);
+  const cle = p.subsection === "__mesure_cle__";
+  const { n, titre, corps } = decoupe(p);
+  const long = corps.length > 240;
+  const marque = (t: string) => {
+    if (!surligne?.length) return t;
+    const re = new RegExp(`(${surligne.map(s => s.replace(/[.*+?^${}()|[\]\\]/g, "\\$&")).join("|")})`, "gi");
+    return t.split(re).map((x, i) => (i % 2 ? <mark key={i} className="rounded bg-amber-200/80 px-0.5 text-inherit dark:bg-amber-400/30">{x}</mark> : x));
+  };
+  return (
+    <li className={`rounded-xl border px-4 py-3.5 ${cle ? "border-amber-300 bg-amber-50/70 dark:border-amber-500/40 dark:bg-amber-500/10" : "border-border bg-card"} ${retrait ? "ml-4" : ""}`}>
+      {etiquette && <p className="mb-1.5 text-[11px] font-black uppercase tracking-wider text-muted-foreground">{etiquette}</p>}
+      <div className="flex items-start gap-3">
+        {n
+          ? <span className={`mt-0.5 shrink-0 rounded-lg px-1.5 py-0.5 font-mono text-[11px] font-black text-white ${dot}`}>{n.padStart(3, "0")}</span>
+          : cle
+            ? <span className="mt-0.5 shrink-0 rounded-full bg-amber-500 px-2 py-0.5 text-[10px] font-black uppercase tracking-wider text-white dark:bg-amber-400 dark:text-slate-900">Mesure clé</span>
+            : <span className={`mt-2.5 h-1.5 w-1.5 shrink-0 rounded-full ${dot}`} />}{" "}
+        <div className="min-w-0 flex-1">
+          {titre && <p className="text-[15px] font-black leading-snug text-foreground">{marque(titre)}</p>}
+          {corps && (
+            <p className={`${titre ? "mt-1.5 text-[14px] text-slate-600 dark:text-slate-300" : `text-[14.5px] text-slate-700 dark:text-slate-200 ${cle ? "font-bold" : ""}`} leading-6`}
+              style={long && !detail ? CLAMP : undefined}>{marque(corps)}</p>
+          )}
+          {(long || p.explanation) && (
+            <div className="mt-2 flex flex-wrap items-center gap-2">
+              {long && (
+                <button onClick={() => setDetail(d => !d)} className="text-[12px] font-black text-blue-700 hover:underline dark:text-blue-300">
+                  {detail ? "Réduire" : "Lire le détail"}
+                </button>
+              )}
+              {p.explanation && (
+                <button onClick={() => setExpl(e => !e)}
+                  className={`inline-flex items-center gap-1 rounded-full border px-2.5 py-1 text-[12px] font-black transition ${expl ? "border-violet-300 bg-violet-100 text-violet-700 dark:bg-violet-500/10 dark:text-violet-300" : "border-violet-200 text-violet-600 hover:bg-violet-50 dark:border-violet-500/25 dark:text-violet-300"}`}>
+                  <HelpCircle size={13} /> Comprendre
+                </button>
+              )}
+            </div>
+          )}
+          <AnimatePresence initial={false}>
+            {expl && p.explanation && (
+              <motion.div initial={{ height: 0, opacity: 0 }} animate={{ height: "auto", opacity: 1 }} exit={{ height: 0, opacity: 0 }} className="overflow-hidden">
+                <p className="mt-2 rounded-xl border-l-2 border-violet-300 bg-violet-50/70 px-3 py-2.5 text-[13px] leading-6 text-muted-foreground dark:bg-violet-500/10">{p.explanation}</p>
+              </motion.div>
+            )}
+          </AnimatePresence>
+        </div>
+      </div>
+    </li>
+  );
+}
+
+const sansAccent = (s: string) => s.normalize("NFD").replace(/[̀-ͯ]/g, "").toLowerCase();
+
 /** Programme d'un candidat par thème (contexte + propositions + « ? »), avec sa source exacte. */
 export default function ProgrammeCandidat({ proposals, sources = [], titre = "Son programme", nomCandidat }: {
   proposals: Proposition[]; sources?: SourceProgramme[]; titre?: string; nomCandidat?: string;
 }) {
   const [openTheme, setOpenTheme] = useState<Set<string>>(new Set());
-  const [openExpl, setOpenExpl] = useState<Set<string>>(new Set());
+  const [recherche, setRecherche] = useState("");
   const bascule = (set: Set<string>, k: string) => { const n = new Set(set); n.has(k) ? n.delete(k) : n.add(k); return n; };
   if (!proposals.length) return null;
+  const toutes = proposals.filter(p => p.subsection !== "__contexte__");
+  // Recherche dans tout le programme (au-delà de 25 propositions) : mots sans accents, tous présents.
+  const mots = sansAccent(recherche).split(/\s+/).filter(m => m.length >= 2);
+  const trouvees = mots.length
+    ? toutes
+        .filter(p => { const t = sansAccent(`${p.theme} ${p.subsection?.match(TITRE)?.[2] ?? ""} ${p.text}`); return mots.every(m => t.includes(m)); })
+        // D'abord celles dont le thème ou le titre parle du sujet, ensuite celles qui le citent en passant.
+        .map(p => ({ p, rang: mots.every(m => sansAccent(`${p.theme} ${decoupe(p).titre ?? ""}`).includes(m)) ? 0 : 1 }))
+        .sort((a, b) => a.rang - b.rang).map(x => x.p)
+    : [];
 
   const groups: Record<string, { ctx: string | null; items: Proposition[] }> = {};
   for (const p of proposals) {
@@ -157,53 +268,31 @@ export default function ProgrammeCandidat({ proposals, sources = [], titre = "So
     const { Icon, c, bg, dot } = themeStyle(theme);
     const isOpen = openTheme.has(theme);
     return (
-      <div key={theme} className="overflow-hidden rounded-2xl border border-border">
+      <div key={theme} className={`overflow-hidden rounded-2xl border bg-card transition ${isOpen ? "border-slate-300 shadow-sm dark:border-slate-600" : "border-border"}`}>
         <button onClick={() => setOpenTheme(s => bascule(s, theme))} aria-expanded={isOpen}
-          className={`flex w-full items-center gap-2.5 ${bg} px-4 py-3 text-left transition hover:brightness-95`}>
-          <span className={`flex h-8 w-8 shrink-0 items-center justify-center rounded-xl bg-card ${c} shadow-sm`}><Icon size={16} /></span>{" "}
-          {/* Intitulé long (titres de section d'un plan) : casse normale, sinon trois lignes en capitales. */}
-          <p className={`min-w-0 font-black ${theme.length > 38 ? "text-[14px] leading-snug" : "text-sm uppercase tracking-widest"} ${c}`}>{theme}</p>{" "}
-          <span className="shrink-0 whitespace-nowrap text-[10px] font-black text-muted-foreground">· {g.items.length}</span>{" "}
-          <ChevronDown size={18} className={`ml-auto shrink-0 ${c} transition-transform ${isOpen ? "rotate-180" : ""}`} />
+          className="flex min-h-[60px] w-full items-center gap-3 px-4 py-3 text-left transition hover:bg-muted/60">
+          <span className={`flex h-10 w-10 shrink-0 items-center justify-center rounded-xl ${bg} ${c}`}><Icon size={18} /></span>{" "}
+          <span className="min-w-0 flex-1">
+            <span className="block text-[15px] font-black leading-snug text-foreground">{theme}</span>{" "}
+            <span className="mt-0.5 block text-[12px] font-bold text-muted-foreground">{g.items.length} proposition{g.items.length > 1 ? "s" : ""}</span>
+          </span>{" "}
+          <ChevronDown size={18} className={`shrink-0 text-muted-foreground transition-transform ${isOpen ? "rotate-180" : ""}`} />
         </button>{" "}
         <AnimatePresence initial={false}>
           {isOpen && (
             <motion.div initial={{ height: 0, opacity: 0 }} animate={{ height: "auto", opacity: 1 }} exit={{ height: 0, opacity: 0 }} className="overflow-hidden">
-              {g.ctx && <p className="border-b border-border bg-muted px-4 py-3 text-sm italic leading-6 text-muted-foreground">💡 {g.ctx}</p>}{" "}
-              <ul className="divide-y divide-slate-50 bg-card dark:divide-slate-800">
+              {g.ctx && <Constat texte={g.ctx} dot={dot} />}{" "}
+              <ol className="space-y-2.5 px-3 pb-3 pt-1">
                 {g.items.map((p, i) => {
-                  const exKey = `${theme}#${i}`;
-                  const exOpen = openExpl.has(exKey);
-                  const cle = p.subsection === "__mesure_cle__";
                   // Sous-mesure : son intitulé (la mesure qui la chapeaute) s'affiche une fois, au-dessus.
                   const chapeau = p.subsection && !p.subsection.startsWith("__") ? p.subsection : null;
                   const nouveauChapeau = chapeau && g.items[i - 1]?.subsection !== chapeau;
-                  return (
-                    <li key={i} className={`px-4 py-2.5 text-sm leading-6 text-slate-700 dark:text-slate-200 ${cle ? "bg-amber-50/70 dark:bg-amber-500/10" : ""}`}>
-                      {nouveauChapeau && <p className="mb-1.5 flex items-start gap-2.5 font-bold text-foreground"><span className={`mt-2 h-1.5 w-1.5 shrink-0 rounded-full ${dot}`} />{" "}{chapeau} :</p>}{" "}
-                      <div className={`flex items-start gap-2.5 ${chapeau ? "pl-4" : ""}`}>
-                        {cle
-                          ? <span className="mt-0.5 shrink-0 rounded-full bg-amber-500 px-2 py-0.5 text-[10px] font-black uppercase tracking-wider text-white dark:bg-amber-400 dark:text-slate-900">Mesure clé</span>
-                          : <span className={`mt-2 shrink-0 rounded-full ${chapeau ? "h-1 w-1 bg-slate-400" : `h-1.5 w-1.5 ${dot}`}`} />}{" "}
-                        <span className={`flex-1 ${cle ? "font-bold text-foreground" : ""}`}>{p.text}</span>{" "}
-                        {p.explanation && (
-                          <button onClick={() => setOpenExpl(s => bascule(s, exKey))} title="Comprendre cette proposition"
-                            className={`mt-0.5 flex h-6 w-6 shrink-0 items-center justify-center rounded-full border transition ${exOpen ? "border-violet-300 bg-violet-100 text-violet-700 dark:bg-violet-500/10 dark:text-violet-300" : "border-violet-200 bg-card text-violet-500 hover:bg-violet-50 dark:border-violet-500/25"}`}>
-                            <HelpCircle size={14} />
-                          </button>
-                        )}
-                      </div>{" "}
-                      <AnimatePresence initial={false}>
-                        {exOpen && p.explanation && (
-                          <motion.div initial={{ height: 0, opacity: 0 }} animate={{ height: "auto", opacity: 1 }} exit={{ height: 0, opacity: 0 }} className="overflow-hidden">
-                            <p className="ml-4 mt-2 rounded-xl border-l-2 border-violet-300 bg-violet-50/70 px-3 py-2.5 text-[13px] leading-6 text-muted-foreground dark:bg-violet-500/10">{p.explanation}</p>
-                          </motion.div>
-                        )}
-                      </AnimatePresence>{" "}
-                    </li>
-                  );
+                  return [
+                    nouveauChapeau && <li key={`c${i}`} className="px-1 pt-2 text-[14px] font-black leading-snug text-foreground">{chapeau}</li>,
+                    <PropositionCarte key={i} p={p} dot={dot} retrait={!!chapeau} />,
+                  ];
                 })}
-              </ul>
+              </ol>
             </motion.div>
           )}
         </AnimatePresence>{" "}
@@ -216,9 +305,39 @@ export default function ProgrammeCandidat({ proposals, sources = [], titre = "So
       <h3 className="text-2xl font-staatliches uppercase text-foreground">{titre}</h3>{" "}
       <p className="mt-1 text-xs text-muted-foreground">
         Toutes {nomCandidat ? `les idées de ${nomCandidat}` : "ses idées"}, par {villepin ? "partie, chapitre puis thème" : parPlan ? "plan puis par thème" : "thème"} — issues {urls.some(estVideo) && !urls.every(estVideo) ? "du programme officiel et de ses présentations" : urls.every(estVideo) ? "de sa présentation officielle" : "du programme officiel"}.
-        Cliquez sur <HelpCircle size={12} className="inline -mt-0.5" /> pour comprendre pourquoi.
+        Touchez « Comprendre » sous une proposition pour savoir ce qu&apos;elle change.
       </p>{" "}
-      {parPlan ? (
+      {toutes.length > 25 && (
+        <div className="mt-4">
+          <label className="flex items-center gap-2.5 rounded-2xl border border-border bg-card px-4 py-3 shadow-sm focus-within:border-blue-400">
+            <Search size={18} className="shrink-0 text-muted-foreground" />
+            <input type="text" inputMode="search" enterKeyHint="search" value={recherche} onChange={e => setRecherche(e.target.value)}
+              placeholder="Chercher un sujet : retraites, impôts…"
+              className="min-w-0 flex-1 bg-transparent text-[15px] text-foreground outline-none placeholder:text-muted-foreground" />
+            {recherche && <button onClick={() => setRecherche("")} aria-label="Effacer" className="text-muted-foreground hover:text-foreground"><X size={16} /></button>}
+          </label>
+          {!mots.length && (
+            <div className="mt-2.5 flex flex-wrap gap-2">
+              {["retraites", "impôts", "école", "santé", "immigration", "écologie", "Europe"].map(m => (
+                <button key={m} onClick={() => setRecherche(m)} className="rounded-full border border-border bg-card px-3 py-1 text-[12.5px] font-bold text-muted-foreground transition hover:border-slate-400 hover:text-foreground">{m}</button>
+              ))}
+            </div>
+          )}
+        </div>
+      )}{" "}
+      {mots.length ? (
+        <div className="mt-4">
+          <p className="px-1 text-[12px] font-black uppercase tracking-widest text-muted-foreground">
+            {trouvees.length ? `${trouvees.length} proposition${trouvees.length > 1 ? "s" : ""} sur « ${recherche.trim()} »` : `Aucune proposition ne parle de « ${recherche.trim()} »`}
+          </p>
+          <ol className="mt-2.5 space-y-2.5">
+            {trouvees.slice(0, 60).map((p, i) => (
+              <PropositionCarte key={i} p={p} dot={themeStyle(p.theme || "").dot} etiquette={p.theme || undefined} surligne={recherche.trim().split(/\s+/).filter(m => m.length >= 2)} />
+            ))}
+          </ol>
+          {trouvees.length > 60 && <p className="mt-2 px-1 text-[12px] text-muted-foreground">Les 60 premières sont affichées : précisez la recherche.</p>}
+        </div>
+      ) : parPlan ? (
         <div className="mt-4 space-y-3">
           {plans.map((pl, iPlan) => {
             const ouvert = openTheme.has(`plan:${pl.url}`);

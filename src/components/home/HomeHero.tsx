@@ -1,12 +1,16 @@
 "use client";
 
+import { useState } from "react";
 import { motion } from "framer-motion";
 import { ArrowRight, CalendarClock, Crown, MapPin, ScrollText, Sparkles, Users, type LucideIcon } from "lucide-react";
 import { MarkerHighlight } from "@/components/ui/marker-highlight";
 import Link from "next/link";
 import { useTheme } from "@/components/providers";
 import { usePremium } from "@/lib/hooks/usePremium";
-import { mesurerAction } from "@/lib/mesure";
+import { mesurerAction, mesurerPuisPartir } from "@/lib/mesure";
+import AccordAchat from "@/components/premium/AccordAchat";
+import { PLANS, SALES_OPEN } from "@/lib/constants";
+import { lienPaiementStripe } from "@/lib/utils";
 
 // Premier écran. Un nouveau venu (souvent arrivé depuis Instagram, sur téléphone) doit
 // comprendre en une phrase ce que fait le site et trouver tout de suite une première
@@ -29,11 +33,27 @@ const PARLEMENT = { href: "#institutions", Icone: CalendarClock, titre: "Aujourd
   texte: "Séances, auditions et Conseil des ministres du jour", ton: "from-amber-500 to-orange-600" };
 
 // La carte dorée : fond or poli, reflet qui passe en boucle, pastille « 7 jours offerts ».
+// Elle ouvre directement la fenêtre d'essai (vitrine + accord, AccordAchat), sans passer par
+// la page /premium (22/11/2026, demande de l'éditeur). Vente fermée : lien vers /premium.
 function CarteEssai({ href, titre, texte }: { href: string; titre: string; texte: string }) {
+  const { userId } = usePremium();
+  const [ouverte, setOuverte] = useState(false);
   return (
+    <>
+    {ouverte && (
+      <AccordAchat cle="elite" offre={PLANS.elite.name} prix={`${PLANS.elite.monthly.toFixed(2).replace(".", ",")} €`} periode="mois" userId={userId}
+        onFermer={() => setOuverte(false)}
+        onContinuer={() => { void mesurerPuisPartir("clic_paiement", lienPaiementStripe(userId, "elite", "monthly")); }} />
+    )}
     <Link
       href={href}
-      onClick={() => { void mesurerAction("accueil_essai_premium"); }}
+      onClick={e => {
+        void mesurerAction("accueil_essai_premium");
+        if (!SALES_OPEN) return;
+        e.preventDefault();
+        void mesurerAction("achat_choix_elite");
+        setOuverte(true);
+      }}
       className="group relative isolate flex h-full flex-col gap-2 overflow-hidden rounded-2xl border border-amber-300 bg-[linear-gradient(135deg,#fde68a_0%,#fbbf24_28%,#f59e0b_52%,#fcd34d_74%,#b45309_100%)] p-3.5 shadow-[0_8px_30px_-8px_rgba(217,119,6,0.65)] ring-1 ring-inset ring-white/40 transition hover:-translate-y-0.5 hover:shadow-[0_14px_40px_-8px_rgba(217,119,6,0.8)] focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-amber-500 active:scale-[0.98] dark:border-amber-400/70 md:p-5"
     >
       {/* Reflet qui balaie la carte toutes les quelques secondes (coupé si l'appareil demande moins d'animations). */}
@@ -58,6 +78,7 @@ function CarteEssai({ href, titre, texte }: { href: string; titre: string; texte
       </span>{" "}
       <span className="relative z-10 text-[13px] font-semibold leading-snug text-amber-950/85 max-[359px]:hidden md:text-sm">{texte}</span>
     </Link>
+    </>
   );
 }
 

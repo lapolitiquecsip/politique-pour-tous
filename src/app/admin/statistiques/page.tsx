@@ -21,6 +21,7 @@ const PERIODES = [1, 7, 30, 90] as const;
 const ACTIONS: Record<string, string> = {
   inscription: "Inscriptions",
   clic_offres: "Clics vers les offres",
+  accueil_essai_premium: "Carte dorée « Essai gratuit Premium » de l'accueil",
   clic_paiement: "Départs vers le paiement (accord donné)",
   achat_choix_elite: "Bouton « Devenir Premium »",
   achat_choix_pro: "Bouton « Choisir Pro »",
@@ -478,7 +479,7 @@ export default function StatistiquesPage() {
 function Parcours({ actions }: { actions: { name: string; n: number }[] }) {
   const n = (...noms: string[]) => actions.filter(a => noms.includes(a.name)).reduce((t, a) => t + a.n, 0);
   const etapes: [string, number][] = [
-    ["Clics vers les offres", n("clic_offres")],
+    ["Clics vers les offres", n("clic_offres", "accueil_essai_premium")],
     ["Formule choisie", n("achat_choix_elite", "achat_choix_pro", "achat_reprise")],
     ["Départs vers Stripe", n("clic_paiement")],
     ["Paiements réussis", n("paiement_reussi")],

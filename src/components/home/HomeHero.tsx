@@ -1,10 +1,12 @@
 "use client";
 
 import { motion } from "framer-motion";
-import { ArrowRight, CalendarClock, MapPin, ScrollText, Users, type LucideIcon } from "lucide-react";
+import { ArrowRight, CalendarClock, Crown, MapPin, ScrollText, Sparkles, Users, type LucideIcon } from "lucide-react";
 import { MarkerHighlight } from "@/components/ui/marker-highlight";
 import Link from "next/link";
 import { useTheme } from "@/components/providers";
+import { usePremium } from "@/lib/hooks/usePremium";
+import { mesurerAction } from "@/lib/mesure";
 
 // Premier écran. Un nouveau venu (souvent arrivé depuis Instagram, sur téléphone) doit
 // comprendre en une phrase ce que fait le site et trouver tout de suite une première
@@ -15,16 +17,57 @@ const ACTIONS: { href: string; Icone: LucideIcon; titre: string; texte: string; 
     ton: "from-blue-500 to-indigo-600" },
   { href: "/lois", Icone: ScrollText, titre: "Comprendre une loi", texte: "Résumé, parcours et votes de chaque texte",
     ton: "from-rose-500 to-red-600" },
-  { href: "#institutions", Icone: CalendarClock, titre: "Aujourd'hui au Parlement", texte: "Séances, auditions et Conseil des ministres du jour",
-    ton: "from-amber-500 to-orange-600" },
+  // Troisième case : l'essai gratuit du Premium pour un visiteur (22/11/2026), remplacée
+  // par « Aujourd'hui au Parlement » chez un abonné, à qui il n'y a rien à vendre.
+  { href: "/premium", Icone: Crown, titre: "Essai gratuit Premium", texte: "7 jours offerts, sans engagement",
+    ton: "dore" },
   { href: "/local", Icone: MapPin, titre: "Mes élus locaux", texte: "Maire, département, région et leurs budgets",
     ton: "from-emerald-500 to-teal-600" },
 ];
+
+const PARLEMENT = { href: "#institutions", Icone: CalendarClock, titre: "Aujourd'hui au Parlement",
+  texte: "Séances, auditions et Conseil des ministres du jour", ton: "from-amber-500 to-orange-600" };
+
+// La carte dorée : fond or poli, reflet qui passe en boucle, pastille « 7 jours offerts ».
+function CarteEssai({ href, titre, texte }: { href: string; titre: string; texte: string }) {
+  return (
+    <Link
+      href={href}
+      onClick={() => { void mesurerAction("accueil_essai_premium"); }}
+      className="group relative isolate flex h-full flex-col gap-2 overflow-hidden rounded-2xl border border-amber-300 bg-[linear-gradient(135deg,#fde68a_0%,#fbbf24_28%,#f59e0b_52%,#fcd34d_74%,#b45309_100%)] p-3.5 shadow-[0_8px_30px_-8px_rgba(217,119,6,0.65)] ring-1 ring-inset ring-white/40 transition hover:-translate-y-0.5 hover:shadow-[0_14px_40px_-8px_rgba(217,119,6,0.8)] focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-amber-500 active:scale-[0.98] dark:border-amber-400/70 md:p-5"
+    >
+      {/* Reflet qui balaie la carte toutes les quelques secondes (coupé si l'appareil demande moins d'animations). */}
+      <motion.span
+        aria-hidden
+        className="pointer-events-none absolute inset-y-0 -left-1/2 z-0 w-1/2 -skew-x-12 bg-gradient-to-r from-transparent via-white/60 to-transparent motion-reduce:hidden"
+        animate={{ x: ["0%", "400%"] }}
+        transition={{ duration: 1.6, repeat: Infinity, repeatDelay: 2.8, ease: "easeInOut" }}
+      />
+      <span aria-hidden className="pointer-events-none absolute -right-6 -top-6 z-0 h-20 w-20 rounded-full bg-white/30 blur-2xl" />
+      <span className="relative z-10 flex items-start justify-between gap-1">
+        <span className="flex h-10 w-10 items-center justify-center rounded-xl bg-gradient-to-br from-amber-900 to-yellow-950 text-amber-300 shadow-md ring-1 ring-amber-200/50 md:h-11 md:w-11">
+          <Crown size={20} />
+        </span>
+        <span className="flex items-center gap-1 rounded-full bg-amber-950 px-2 py-0.5 text-[10px] font-black uppercase tracking-wider text-amber-200 shadow-sm md:text-[11px]">
+          <Sparkles size={11} /> Offert
+        </span>
+      </span>{" "}
+      <span className="relative z-10 flex items-start justify-between gap-1 text-[15px] font-black uppercase leading-snug tracking-tight text-amber-950 md:text-base">
+        {titre}
+        <ArrowRight size={16} className="mt-0.5 shrink-0 text-amber-900 transition group-hover:translate-x-0.5" />
+      </span>{" "}
+      <span className="relative z-10 text-[13px] font-semibold leading-snug text-amber-950/85 max-[359px]:hidden md:text-sm">{texte}</span>
+    </Link>
+  );
+}
 
 export default function HomeHero() {
   // Entre deux passages du marqueur, « simple. » reprend sa couleur de base : un
   // bleu nuit fixe le rendait invisible sur le fond du thème sombre.
   const { resolvedTheme } = useTheme();
+  // Habillage seulement : un abonné (même d'après la visite précédente) ne voit pas l'offre d'essai.
+  const { tierAffiche } = usePremium();
+  const actions = tierAffiche === "free" ? ACTIONS : ACTIONS.map(a => (a.ton === "dore" ? PARLEMENT : a));
   return (
     <div className="relative w-full bg-card pb-8 pt-4 dark:bg-slate-900/10 md:pb-12 md:pt-8">
       <div className="mx-auto flex w-full max-w-5xl flex-col items-center px-4">
@@ -75,13 +118,14 @@ export default function HomeHero() {
         <nav aria-label="Par où commencer" className="w-full">
           <p className="mb-2.5 text-center text-xs font-bold uppercase tracking-[0.18em] text-muted-foreground">Par où commencer ?</p>{" "}
           <ul className="grid w-full grid-cols-2 gap-2.5 md:grid-cols-4 md:gap-4">
-            {ACTIONS.map(({ href, Icone, titre, texte, ton }, i) => (
+            {actions.map(({ href, Icone, titre, texte, ton }, i) => (
               <motion.li
                 key={href}
                 initial={{ opacity: 0, y: 12 }}
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ duration: 0.5, delay: 0.4 + i * 0.08 }}
               >
+                {ton === "dore" ? <CarteEssai href={href} titre={titre} texte={texte} /> : (
                 <Link
                   href={href}
                   className="group flex h-full flex-col gap-2 rounded-2xl border border-border bg-card p-3.5 transition hover:border-slate-300 hover:shadow-lg focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-blue-500 active:scale-[0.98] dark:border-slate-800 dark:bg-slate-900/60 dark:hover:border-slate-600 md:p-5"
@@ -97,6 +141,7 @@ export default function HomeHero() {
                       actions tiennent ainsi dans le premier écran d'un petit téléphone. */}
                   <span className="text-[13px] leading-snug text-muted-foreground dark:text-slate-400 max-[359px]:hidden md:text-sm">{texte}</span>
                 </Link>
+                )}
               </motion.li>
             ))}
           </ul>

@@ -1746,6 +1746,26 @@ export const api = {
     return data as { analyse_loi: any; cadre: any; sources: { titre: string; url: string }[]; texte_version: string | null; generated_at: string } | null;
   },
   // Ce qu'un non-abonné peut en savoir : qu'elle existe et son ampleur, jamais son contenu.
+  /* ════════ NICHES PARLEMENTAIRES (page Assemblée, 22/11/2026) ════════ */
+  // Les niches repérées dans l'agenda officiel (publiques). [] tant que la table n'existe pas :
+  // la section se masque d'elle-même.
+  getNiches: async () => {
+    const { data, error } = await supabase.from('niches_parlementaires').select('jour, session, groupe, textes').order('jour');
+    if (error) return [];
+    return (data || []) as { jour: string; session: string; groupe: string; textes: any[] }[];
+  },
+  // L'analyse détaillée : la base ne la rend qu'aux abonnés Premium et Pro.
+  getNicheAnalyse: async (jour: string) => {
+    const { data, error } = await supabase.from('niches_analyses').select('analyse, sources, verifie, generated_at').eq('jour', jour).maybeSingle();
+    if (error) return null;
+    return data as { analyse: any; sources: { titre: string; url: string }[]; verifie: boolean; generated_at: string } | null;
+  },
+  // Pour les autres : qu'elle existe et son ampleur, jamais son contenu.
+  getNicheApercu: async (jour: string) => {
+    const { data, error } = await supabase.rpc('public_niche_apercu', { p_jour: jour });
+    if (error) return null;
+    return data as { textes: number; arguments: number; par_texte: { pour: number; contre: number }[]; verifie: boolean; mots: number; generated_at: string } | null;
+  },
   getAnalyseApercu: async (dossierId: string) => {
     const { data, error } = await supabase.rpc('public_analyse_apercu', { p_dossier_id: dossierId });
     if (error) return null;

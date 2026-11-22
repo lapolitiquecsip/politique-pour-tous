@@ -22,6 +22,8 @@ const ACTIONS: Record<string, string> = {
   inscription: "Inscriptions",
   clic_offres: "Clics vers les offres",
   accueil_essai_premium: "Carte dorée « Essai gratuit Premium » de l'accueil",
+  niche_verrou_vu: "Verrou « analyse de la niche » vu (page Assemblée)",
+  niche_verrou_clic: "Verrou « analyse de la niche » cliqué",
   clic_paiement: "Départs vers le paiement (accord donné)",
   achat_choix_elite: "Bouton « Devenir Premium »",
   achat_choix_pro: "Bouton « Choisir Pro »",

@@ -10,6 +10,7 @@ import CommissionTracker from "@/components/commissions/CommissionTracker";
 import PresidentPhoto from "@/components/shared/PresidentPhoto";
 import SectionNav from "@/components/lois/SectionNav";
 import PartisMenu from "@/components/lois/PartisMenu";
+import NichesParlementaires from "@/components/lois/NichesParlementaires";
 import Link from "next/link";
 import { ChevronRight } from "lucide-react";
 
@@ -54,6 +55,7 @@ export default async function DeputesPage() {
           { label: "Les derniers votes", href: "#adoptes" },
         ]}
         links={[
+          { label: "À la une : les niches parlementaires", href: "#niches" },
           { label: "Les députés & leurs votes", href: "#membres" },
           { label: "Derniers textes adoptés", href: "#adoptes" },
           { label: "Textes en cours", href: "#textes" },
@@ -63,6 +65,7 @@ export default async function DeputesPage() {
         ]}
       />{" "}
       <SectionNav items={[
+        { id: "niches", label: "À la une" },
         { id: "membres", label: "Mon député" },
         { id: "adoptes", label: "Derniers votes" },
         { id: "textes", label: "Textes en cours" },
@@ -70,6 +73,10 @@ export default async function DeputesPage() {
         { id: "commissions", label: "Commissions" },
         { id: "videos", label: "Vidéos" },
       ]} extra={<PartisMenu />} />{" "}
+      {/* À la une (22/11/2026) : les niches parlementaires — se masque tant qu'il n'y a rien à montrer. */}
+      <section id="niches" className="scroll-mt-32">
+        <NichesParlementaires />
+      </section>{" "}
       <section id="membres" className="scroll-mt-32">
         <MemberFinderIntro role="député" roleShort="député" accent="text-emerald-700 dark:text-emerald-400" />
         <Suspense fallback={<div className="h-64 flex items-center justify-center">Chargement...</div>}>

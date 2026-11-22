@@ -1756,9 +1756,9 @@ export const api = {
   },
   // L'analyse détaillée : la base ne la rend qu'aux abonnés Premium et Pro.
   getNicheAnalyse: async (jour: string) => {
-    const { data, error } = await supabase.from('niches_analyses').select('analyse, sources, verifie, generated_at').eq('jour', jour).maybeSingle();
-    if (error) return null;
-    return data as { analyse: any; sources: { titre: string; url: string }[]; verifie: boolean; generated_at: string } | null;
+    const { data, error } = await supabase.from('niches_analyses').select('analyse_niche, sources, verifie, generated_at').eq('jour', jour).maybeSingle();
+    if (error || !data) return null;
+    return { ...data, analyse: data.analyse_niche } as { analyse: any; sources: { titre: string; url: string }[]; verifie: boolean; generated_at: string };
   },
   // Pour les autres : qu'elle existe et son ampleur, jamais son contenu.
   getNicheApercu: async (jour: string) => {

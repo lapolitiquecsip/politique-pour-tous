@@ -3,7 +3,7 @@
 import { useEffect, useRef, useState } from "react";
 import Link from "next/link";
 import { AnimatePresence, motion } from "framer-motion";
-import { X, Loader2, ShieldCheck, Crown, ScrollText, Vote, BellRing, Mail, Landmark, Sparkles, Check, Lock, ArrowRight, type LucideIcon } from "lucide-react";
+import { X, Loader2, ShieldCheck, Crown, ScrollText, Vote, BellRing, Mail, Landmark, Sparkles, Check, ArrowRight, type LucideIcon } from "lucide-react";
 import { api } from "@/lib/api";
 import { mesurerAction } from "@/lib/mesure";
 
@@ -138,16 +138,32 @@ const ATOUTS: { id: string; court: string; Icone: LucideIcon; titre: string; tex
 const AUSSI = ["Les coulisses des niches parlementaires", "Les auditions des ministres résumées", "Des alertes sur votre territoire"];
 const ROTATION_MS = 4500;
 
+/**
+ * Publicité Premium (23/11/2026) : film de 20 s, sans son, en 16:9 pour ce cadre (ordinateur et
+ * téléphone), tourné avec de vraies captures du site (projet motion-lpcs, composition PubPremiumSite).
+ * Les pastilles suivent le film ; un clic sur une pastille y saute. En cas d'échec de lecture,
+ * on revient au diaporama de captures.
+ */
+const VIDEO = { src: "/premium-apercu/pub-premium.mp4", affiche: "/premium-apercu/pub-premium.jpg" };
+const DEBUTS = [2.1, 5.0, 8.0, 11.0, 14.0];   // secondes : Lois, Votes, Élus suivis, E-mails, Budget
+const atoutAuTemps = (t: number) => (t < 5 ? 0 : t < 8 ? 1 : t < 11 ? 2 : t < 14 ? 3 : 4);
+
 function FenetrePremium(props: Props) {
   const { onFermer, prix } = props;
   const [actif, setActif] = useState(0);
   const [auto, setAuto] = useState(true);
+  const video = useRef<HTMLVideoElement>(null);
+  const [videoOk, setVideoOk] = useState(true);
   useEffect(() => {
-    if (!auto) return;
+    if (!auto || videoOk) return;
     const t = setTimeout(() => setActif(a => (a + 1) % ATOUTS.length), ROTATION_MS);
     return () => clearTimeout(t);
-  }, [actif, auto]);
-  const choisir = (i: number) => { setAuto(false); setActif(i); };
+  }, [actif, auto, videoOk]);
+  const choisir = (i: number) => {
+    setAuto(false); setActif(i);
+    const v = video.current;
+    if (videoOk && v) { v.currentTime = DEBUTS[i] + 0.2; void v.play().catch(() => {}); }
+  };
   const a = ATOUTS[actif];
   const offre = useRef<HTMLElement>(null);
   const [offreVue, setOffreVue] = useState(false);
@@ -193,7 +209,7 @@ function FenetrePremium(props: Props) {
                   <button key={x.id} type="button" role="tab" aria-selected={on} onClick={() => choisir(i)}
                     className={`relative inline-flex items-center gap-1.5 overflow-hidden rounded-full px-3 py-1.5 text-[12.5px] font-bold transition ${on ? "bg-gradient-to-r from-amber-300 to-yellow-500 text-slate-950 shadow-[0_0_18px_rgba(251,191,36,0.4)]" : "bg-white/[0.06] text-slate-200 ring-1 ring-inset ring-white/10 hover:bg-white/[0.1]"}`}>
                     <x.Icone size={14} /> {x.court}
-                    {on && auto && (
+                    {on && auto && !videoOk && (
                       <motion.span key={`p${actif}`} aria-hidden className="absolute bottom-0 left-0 h-[2px] bg-slate-950/40"
                         initial={{ width: "0%" }} animate={{ width: "100%" }} transition={{ duration: ROTATION_MS / 1000, ease: "linear" }} />
                     )}
@@ -202,21 +218,24 @@ function FenetrePremium(props: Props) {
               })}
             </div>
 
-            {/* L'aperçu : une vraie capture, dans un cadre de navigateur, et sa légende */}
+            {/* Le film Premium (16:9), et sa légende synchronisée */}
             <div className="relative mt-4">
               <div aria-hidden className="absolute -inset-3 rounded-[22px] bg-gradient-to-br from-amber-300/30 via-amber-500/10 to-transparent blur-xl" />
-              <div className="relative overflow-hidden rounded-2xl border border-white/15 bg-[#11182c] shadow-2xl">
-                <div className="flex items-center gap-1.5 border-b border-white/10 bg-white/[0.04] px-3 py-2">
-                  <span className="h-2 w-2 rounded-full bg-rose-400/70" /><span className="h-2 w-2 rounded-full bg-amber-300/70" /><span className="h-2 w-2 rounded-full bg-emerald-400/70" />
-                  <span className="ml-2 truncate rounded-md bg-white/[0.06] px-2 py-0.5 text-[10px] text-slate-400">lapolitiquecestsimple.fr</span>
-                  <span className="ml-auto inline-flex items-center gap-1 text-[10px] font-bold text-amber-300"><Lock size={10} /> Premium</span>
-                </div>
-                <div className="relative aspect-[16/9] bg-white">
-                  <AnimatePresence mode="wait">
-                    <motion.img key={a.id} src={a.image} alt={a.alt} loading="eager"
-                      initial={{ opacity: 0, scale: 1.03 }} animate={{ opacity: 1, scale: 1 }} exit={{ opacity: 0 }} transition={{ duration: 0.35 }}
-                      className="absolute inset-0 h-full w-full object-cover object-top" />
-                  </AnimatePresence>
+              <div className="relative overflow-hidden rounded-2xl border border-amber-300/25 bg-[#0a0f1f] shadow-2xl">
+                <div className="relative aspect-[16/9]">
+                  {videoOk ? (
+                    <video ref={video} src={VIDEO.src} poster={VIDEO.affiche} autoPlay muted loop playsInline preload="auto"
+                      aria-label="Ce que débloque Premium : analyses des lois, votes décryptés, élus suivis, alertes par e-mail, budget de l'État"
+                      onTimeUpdate={e => setActif(atoutAuTemps(e.currentTarget.currentTime))}
+                      onError={() => setVideoOk(false)}
+                      className="absolute inset-0 h-full w-full object-cover" />
+                  ) : (
+                    <AnimatePresence mode="wait">
+                      <motion.img key={a.id} src={a.image} alt={a.alt} loading="eager"
+                        initial={{ opacity: 0, scale: 1.03 }} animate={{ opacity: 1, scale: 1 }} exit={{ opacity: 0 }} transition={{ duration: 0.35 }}
+                        className="absolute inset-0 h-full w-full bg-white object-cover object-top" />
+                    </AnimatePresence>
+                  )}
                 </div>
               </div>
             </div>

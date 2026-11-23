@@ -182,15 +182,19 @@ function FenetrePremium(props: Props) {
     <div role="dialog" aria-modal="true" aria-labelledby="accord-titre"
       className="fixed inset-0 z-[200] flex items-end justify-center bg-slate-950/75 backdrop-blur-md sm:items-center sm:p-4" onClick={onFermer}>
       <motion.div initial={{ opacity: 0, y: 24, scale: 0.98 }} animate={{ opacity: 1, y: 0, scale: 1 }} transition={{ duration: 0.28, ease: "easeOut" }}
-        className="relative grid max-h-[94dvh] w-full max-w-5xl overflow-y-auto rounded-t-[28px] bg-white shadow-[0_40px_120px_-20px_rgba(0,0,0,0.6)] ring-1 ring-amber-300/40 dark:bg-slate-900 sm:rounded-[28px] md:grid-cols-[1.3fr_1fr] md:overflow-hidden"
+        className="relative w-full max-w-5xl overflow-hidden rounded-t-[28px] bg-white shadow-[0_40px_120px_-20px_rgba(0,0,0,0.6)] ring-1 ring-amber-300/40 dark:bg-slate-900 sm:rounded-[28px]"
         onClick={e => e.stopPropagation()}>
+        {/* La croix reste en place : elle est hors de la zone qui défile. */}
         <button onClick={onFermer} aria-label="Fermer"
-          className="absolute right-3 top-3 z-20 rounded-full bg-white/10 p-1.5 text-white/80 backdrop-blur transition hover:bg-white/20 hover:text-white md:bg-slate-900/5 md:text-slate-500 md:hover:bg-slate-900/10 md:hover:text-slate-800 dark:md:text-slate-400">
+          className="absolute right-3 top-3 z-30 rounded-full bg-slate-900/40 p-1.5 text-white/90 backdrop-blur transition hover:bg-slate-900/60 hover:text-white md:bg-slate-900/5 md:text-slate-500 md:hover:bg-slate-900/10 md:hover:text-slate-800 dark:md:text-slate-400">
           <X size={18} />
         </button>
+        {/* Un seul défilement pour toute la fenêtre (23/11/2026) : avant, chaque colonne défilait
+            seule dans une hauteur bloquée, et le bas du formulaire devenait inaccessible. */}
+        <div className="grid max-h-[94dvh] overflow-y-auto overscroll-contain scroll-smooth scrollbar-hide md:grid-cols-[1.3fr_1fr]">
 
         {/* ═════ La vitrine ═════ */}
-        <section className="relative overflow-hidden bg-[#0a0f1f] px-5 pb-6 pt-6 text-white md:overflow-y-auto md:px-8 md:py-8">
+        <section className="relative overflow-hidden bg-[#0a0f1f] px-5 pb-6 pt-6 text-white md:px-8 md:py-8">
           <div aria-hidden className="pointer-events-none absolute -left-24 -top-24 h-72 w-72 rounded-full bg-amber-500/25 blur-[90px]" />
           <div aria-hidden className="pointer-events-none absolute -bottom-32 right-0 h-72 w-72 rounded-full bg-yellow-300/10 blur-[100px]" />
           <div aria-hidden className="pointer-events-none absolute inset-0 bg-[linear-gradient(rgba(255,255,255,0.025)_1px,transparent_1px),linear-gradient(90deg,rgba(255,255,255,0.025)_1px,transparent_1px)] bg-[size:32px_32px]" />
@@ -260,7 +264,7 @@ function FenetrePremium(props: Props) {
         </section>
 
         {/* ═════ L'offre et l'accord ═════ */}
-        <section ref={offre} className="flex flex-col p-6 md:overflow-y-auto md:p-8">
+        <section ref={offre} className="flex flex-col p-6 md:p-8">
           <p className="text-[11px] font-black uppercase tracking-[0.18em] text-amber-700 dark:text-amber-300">Votre essai Premium</p>
           <div className="mt-3 rounded-2xl border border-amber-200 bg-gradient-to-br from-amber-50 to-yellow-50/40 p-4 dark:border-amber-400/30 dark:from-amber-400/10 dark:to-transparent">
             <div className="flex items-end justify-between gap-3">
@@ -292,6 +296,7 @@ function FenetrePremium(props: Props) {
             </button>
           </div>
         )}
+        </div>
       </motion.div>
     </div>
   );

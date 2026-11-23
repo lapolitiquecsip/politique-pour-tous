@@ -146,7 +146,10 @@ const ROTATION_MS = 4500;
  */
 const VIDEO = { src: "/premium-apercu/pub-premium.mp4", affiche: "/premium-apercu/pub-premium.jpg" };
 const DEBUTS = [2.1, 5.0, 8.0, 11.0, 14.0];   // secondes : Lois, Votes, Élus suivis, E-mails, Budget
-const atoutAuTemps = (t: number) => (t < 5 ? 0 : t < 8 ? 1 : t < 11 ? 2 : t < 14 ? 3 : 4);
+// À partir de 17 s : la scène « espace Premium » puis la conclusion — aucune pastille, légende dédiée.
+const atoutAuTemps = (t: number) => (t < 5 ? 0 : t < 8 ? 1 : t < 11 ? 2 : t < 14 ? 3 : t < 17 ? 4 : -1);
+const ESPACE = { id: "espace", court: "Espace", Icone: Crown, titre: "Tout, centralisé dans votre espace Premium",
+  texte: "Vos alertes, vos élus, vos lois et votre territoire, au même endroit.", image: "/premium-apercu/alertes.webp", alt: "Mon espace Premium" };
 
 function FenetrePremium(props: Props) {
   const { onFermer, prix } = props;
@@ -164,7 +167,7 @@ function FenetrePremium(props: Props) {
     const v = video.current;
     if (videoOk && v) { v.currentTime = DEBUTS[i] + 0.2; void v.play().catch(() => {}); }
   };
-  const a = ATOUTS[actif];
+  const a = actif >= 0 ? ATOUTS[actif] : ESPACE;
   const offre = useRef<HTMLElement>(null);
   const [offreVue, setOffreVue] = useState(false);
   useEffect(() => {

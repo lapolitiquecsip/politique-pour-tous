@@ -1,5 +1,5 @@
 import type { Metadata, Viewport } from "next";
-import { DM_Sans, Staatliches, Playfair_Display } from "next/font/google";
+import { DM_Sans, Staatliches, Playfair_Display, Bebas_Neue } from "next/font/google";
 import "./globals.css";
 import Header from "@/components/layout/Header";
 import Footer from "@/components/layout/Footer";
@@ -17,6 +17,13 @@ const dmSans = DM_Sans({
 
 const staatliches = Staatliches({
   variable: "--font-staatliches",
+  subsets: ["latin"],
+  weight: ["400"],
+});
+
+// Boutons des formules Premium / Pro (23/11/2026).
+const bebasNeue = Bebas_Neue({
+  variable: "--font-bebas-neue",
   subsets: ["latin"],
   weight: ["400"],
 });
@@ -65,7 +72,7 @@ export default function RootLayout({
   return (
     <html
       lang="fr"
-      className={`${dmSans.variable} ${staatliches.variable} ${playfairDisplay.variable} antialiased scroll-smooth`}
+      className={`${dmSans.variable} ${staatliches.variable} ${bebasNeue.variable} ${playfairDisplay.variable} antialiased scroll-smooth`}
       suppressHydrationWarning
     >
       {/*

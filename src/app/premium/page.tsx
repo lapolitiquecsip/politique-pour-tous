@@ -379,7 +379,7 @@ function PageOffre() {
     );
     return (
       <button type="button" onClick={() => choisir(cle)}
-        className={`group relative flex min-h-[50px] items-center justify-center gap-2 overflow-hidden whitespace-nowrap rounded-xl ${compact ? "px-3" : "px-4"} text-[14px] font-black tracking-tight shadow-lg ring-1 ring-inset transition duration-200 hover:-translate-y-0.5 hover:shadow-xl active:translate-y-0 active:scale-[0.98] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-offset-2 ${plein ? "w-full" : ""} ${pro
+        className={`group relative flex min-h-[50px] items-center justify-center gap-2 overflow-hidden whitespace-nowrap rounded-xl ${compact ? "px-3" : "px-4"} font-bebas ${compact ? "text-[18px] tracking-[0.02em]" : "text-[21px] tracking-[0.03em]"} font-normal leading-none shadow-lg ring-1 ring-inset transition duration-200 hover:-translate-y-0.5 hover:shadow-xl active:translate-y-0 active:scale-[0.98] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-offset-2 ${plein ? "w-full" : ""} ${pro
           ? "bg-gradient-to-br from-fuchsia-500 via-purple-600 to-violet-700 text-white shadow-purple-600/30 ring-white/20 hover:shadow-purple-600/40 focus-visible:ring-purple-500"
           : "bg-gradient-to-br from-amber-300 via-amber-400 to-orange-400 text-slate-950 shadow-amber-500/30 ring-white/40 hover:shadow-amber-500/40 focus-visible:ring-amber-500"}`}>
         {/* reflet en haut du bouton */}

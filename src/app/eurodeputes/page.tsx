@@ -9,6 +9,7 @@ import UkraineAidTracker from "@/components/lois/UkraineAidTracker";
 import SectionNav from "@/components/lois/SectionNav";
 
 export const metadata = {
+  alternates: { canonical: "/eurodeputes/" },
   title: "Les eurodéputés français",
   description: "Les 81 députés européens élus en France : leurs votes au Parlement européen, leur groupe politique et leur parcours.",
 };

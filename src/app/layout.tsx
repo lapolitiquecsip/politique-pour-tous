@@ -65,6 +65,8 @@ import GlossaryProvider from "@/components/providers/GlossaryProvider";
 import HelpBubble from "@/components/help/HelpBubble";
 import LecteurVideo from "@/components/video/LecteurVideo";
 import EssaiPremium from "@/components/premium/EssaiPremium";
+import DonneesStructurees from "@/components/seo/DonneesStructurees";
+import { organisationEtSite } from "@/lib/geo";
 
 export default function RootLayout({
   children,
@@ -96,6 +98,7 @@ export default function RootLayout({
         />
       </head>
       <body className="min-h-screen flex flex-col font-sans bg-background text-foreground transition-colors duration-300">
+        <DonneesStructurees donnees={organisationEtSite()} />
         <ThemeProvider>
           <GlossaryProvider>
             <Header />

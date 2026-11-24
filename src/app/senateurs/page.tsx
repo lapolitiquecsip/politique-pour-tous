@@ -14,6 +14,7 @@ import SectionNav from "@/components/lois/SectionNav";
 import SectionRepliable from "@/components/lois/SectionRepliable";
 
 export const metadata = {
+  alternates: { canonical: "/senateurs/" },
   title: "Les sénateurs : votes, positions, parcours",
   description: "Retrouvez les sénateurs de votre département : leurs votes, leurs propositions de loi et leur parcours, d'après les données du Sénat.",
 };

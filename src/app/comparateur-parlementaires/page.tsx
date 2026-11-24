@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import ParliamentComparator from "@/components/compare/ParliamentComparator";
 
 export const metadata: Metadata = {
+  alternates: { canonical: "/comparateur-parlementaires/" },
   title: "Comparateur de parlementaires",
   description: "Comparez deux député·e·s ou sénateur·rice·s côte à côte : participation, amendements, loyauté au groupe.",
 };

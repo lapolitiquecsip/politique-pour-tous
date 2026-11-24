@@ -4,6 +4,7 @@ import RefusMesure from "@/components/analytics/RefusMesure";
 import { EDITEUR, CONTACT_EMAIL } from "@/lib/constants";
 
 export const metadata = {
+  alternates: { canonical: "/mentions-legales/" },
   title: "Mentions légales",
   description: "Éditeur, hébergement, sources des données et droit de réponse.",
 };

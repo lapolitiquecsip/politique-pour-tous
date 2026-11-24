@@ -3,6 +3,8 @@ import Link from "next/link";
 import SenatorClient from "./SenatorClient";
 import { Metadata } from "next";
 import { senateurParSlug, extrait } from "@/lib/seo-donnees";
+import DonneesStructurees from "@/components/seo/DonneesStructurees";
+import { filAriane, personnePolitique } from "@/lib/geo";
 
 export async function generateMetadata({ params }: { params: Promise<{ slug: string }> }): Promise<Metadata> {
   const { slug } = await params;
@@ -32,7 +34,23 @@ export default async function SenatorDetailPage({ params }: { params: Promise<{ 
     );
   }
 
-  return <SenatorClient senator={senator} />;
+  const s: any = senator;
+  const nom = `${s.first_name} ${s.last_name}`;
+  return (
+    <>
+      {/* Données structurées (GEO) : qui est cette personne, pour les moteurs de recherche et génératifs. */}
+      <DonneesStructurees donnees={[
+        personnePolitique({
+          nom, chemin: `/senateurs/${slug}/`,
+          fonction: s.sitting === false ? "Ancien membre du Sénat" : "Membre du Sénat (sénatrice ou sénateur)",
+          description: extrait(s.bio, 600) || extrait(s.biography, 600) || undefined, image: s.photo_url, parti: s.senate_group || s.party,
+          lieu: s.department, source: s.senate_url || s.source_url, liens: [s.twitter, s.facebook, s.website], maj: s.updated_at,
+        }),
+        filAriane([["Accueil", "/"], ["Sénat", "/senateurs/"], [nom, `/senateurs/${slug}/`]]),
+      ]} />
+      <SenatorClient senator={senator} />
+    </>
+  );
 }
 
 export async function generateStaticParams() {

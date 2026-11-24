@@ -17,6 +17,7 @@ import { ChevronRight } from "lucide-react";
 import { Suspense } from "react";
 
 export const metadata = {
+  alternates: { canonical: "/deputes/" },
   title: "Les 577 députés : votes, positions, parcours",
   description: "Retrouvez votre député : ses votes sur chaque loi, ses prises de position, ses propositions de loi et son parcours, d'après les données de l'Assemblée nationale.",
 };

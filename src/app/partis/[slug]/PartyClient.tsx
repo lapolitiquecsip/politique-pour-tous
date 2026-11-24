@@ -115,11 +115,13 @@ function Avatar({ name, anId, photo, color }: { name: string; anId?: string | nu
   return <img src={src} alt={name} onError={() => setFailed(true)} className="h-10 w-10 shrink-0 rounded-full object-cover object-top" />;
 }
 
-export default function PartyClient({ params }: { params: Promise<{ slug: string }> }) {
+export default function PartyClient({ params, initialParty = null }: { params: Promise<{ slug: string }>; initialParty?: Party | null }) {
   const { slug } = use(params);
-  const [party, setParty] = useState<Party | null>(null);
+  // La fiche arrive remplie dans le HTML (construite avec le site) : lisible sans JavaScript,
+  // donc par les moteurs de recherche et génératifs. Élus et historique se chargent ensuite.
+  const [party, setParty] = useState<Party | null>(initialParty);
   const [members, setMembers] = useState<{ deputies: any[]; senators: any[]; candidates: any[]; meps: any[] }>({ deputies: [], senators: [], candidates: [], meps: [] });
-  const [loading, setLoading] = useState(true);
+  const [loading, setLoading] = useState(!initialParty);
   const [tab, setTab] = useState<"deputies" | "senators" | "meps">("deputies");
   const [openProgram, setOpenProgram] = useState<Set<string>>(new Set());   // « Voir le programme » par candidat
   const toggleProgram = (k: string) => setOpenProgram(p => { const n = new Set(p); n.has(k) ? n.delete(k) : n.add(k); return n; });

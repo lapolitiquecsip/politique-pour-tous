@@ -3,6 +3,7 @@ import CalendarClient from "./CalendarClient";
 import { CalendarEvent } from '@/components/calendar/EventItem';
 
 export const metadata = {
+  alternates: { canonical: "/calendrier/" },
   title: "L'agenda politique",
   description: "Séances, commissions, élections et rendez-vous politiques à venir : l'agenda de l'Assemblée, du Sénat et du gouvernement.",
 };

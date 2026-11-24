@@ -2,6 +2,7 @@ import { api } from "@/lib/api";
 import VocabularyClient from "./VocabularyClient";
 
 export const metadata = {
+  alternates: { canonical: "/vocabulaire/" },
   title: "Le lexique de la politique",
   description: "Les mots de la politique et des institutions expliqués simplement : de « 49.3 » à « navette parlementaire ».",
 };

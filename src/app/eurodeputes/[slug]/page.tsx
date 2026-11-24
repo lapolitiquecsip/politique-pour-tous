@@ -2,6 +2,8 @@ import { api } from "@/lib/api";
 import type { Metadata } from "next";
 import { eurodeputeParSlug, extrait } from "@/lib/seo-donnees";
 import MepClient from "./MepClient";
+import DonneesStructurees from "@/components/seo/DonneesStructurees";
+import { filAriane, personnePolitique } from "@/lib/geo";
 
 export const dynamic = "force-static";
 
@@ -40,5 +42,20 @@ export default async function MepPage({ params }: { params: Promise<{ slug: stri
     );
   }
   const votes = await api.getMepVotes(String(mep.id), { limit: 20, onlyMain: true });
-  return <MepClient mep={mep} initialVotes={votes as any[]} />;
+  const m: any = mep;
+  const nom = m.full_name || `${m.first_name} ${m.last_name}`;
+  return (
+    <>
+      {/* Données structurées (GEO) : qui est cette personne, pour les moteurs de recherche et génératifs. */}
+      <DonneesStructurees donnees={[
+        personnePolitique({
+          nom, chemin: `/eurodeputes/${slug}/`, fonction: "Membre du Parlement européen élu en France",
+          description: extrait(m.bio, 600) || undefined, image: m.photo_url, parti: m.national_party || m.ep_group,
+          lieu: "Parlement européen", source: m.ep_url || m.source_url, maj: m.updated_at,
+        }),
+        filAriane([["Accueil", "/"], ["Eurodéputés", "/eurodeputes/"], [nom, `/eurodeputes/${slug}/`]]),
+      ]} />
+      <MepClient mep={mep} initialVotes={votes as any[]} />
+    </>
+  );
 }

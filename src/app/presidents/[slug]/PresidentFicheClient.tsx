@@ -6,16 +6,18 @@ import { ChevronLeft, Loader2, ExternalLink, Landmark } from "lucide-react";
 import { api } from "@/lib/api";
 import StructuredBio from "@/components/shared/StructuredBio";
 
-export default function PresidentFicheClient({ params }: { params: Promise<{ slug: string }> }) {
+export default function PresidentFicheClient({ params, initial }: { params: Promise<{ slug: string }>; initial?: any }) {
   const { slug } = use(params);
-  const [p, setP] = useState<any | null | undefined>(undefined);
+  // Fiche remplie dès le HTML quand la page la reçoit à la construction (lisible sans JavaScript).
+  const [p, setP] = useState<any | null | undefined>(initial ?? undefined);
   const [failed, setFailed] = useState(false);
 
   useEffect(() => {
+    if (initial) return;
     let active = true;
     api.getPresidentBySlug(slug).then(d => { if (active) setP(d); }).catch(() => setP(null));
     return () => { active = false; };
-  }, [slug]);
+  }, [slug, initial]);
 
   if (p === undefined) return <div className="flex min-h-[60vh] items-center justify-center"><Loader2 className="animate-spin text-blue-700 dark:text-blue-400" size={40} /></div>;
   if (!p) return (

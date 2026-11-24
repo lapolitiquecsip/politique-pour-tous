@@ -3,6 +3,7 @@ import PageJuridique, { ou } from "@/components/legal/PageJuridique";
 import { EDITEUR } from "@/lib/constants";
 
 export const metadata = {
+  alternates: { canonical: "/cgu/" },
   title: "Conditions générales d'utilisation",
   description: "Règles d'accès et d'utilisation du site et des comptes.",
 };

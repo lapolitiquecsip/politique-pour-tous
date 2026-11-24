@@ -36,15 +36,17 @@ function toPoints(v: any): string[] {
   return (Array.isArray(v) ? v : [v]).filter(Boolean);
 }
 
-export default function MinisterFicheClient({ params, embedded }: { params: Promise<{ slug: string }>; embedded?: boolean }) {
+export default function MinisterFicheClient({ params, embedded, initial = null }: { params: Promise<{ slug: string }>; embedded?: boolean; initial?: any }) {
   const { slug } = use(params);
-  const [m, setM] = useState<any>(null);
-  const [loading, setLoading] = useState(true);
+  // Fiche remplie dès le HTML quand la page la reçoit à la construction (lisible sans JavaScript).
+  const [m, setM] = useState<any>(initial);
+  const [loading, setLoading] = useState(!initial);
   const [showLegal, setShowLegal] = useState(false);
 
   useEffect(() => {
+    if (initial) return;
     api.getMinisterBySlug(slug).then(setM).finally(() => setLoading(false));
-  }, [slug]);
+  }, [slug, initial]);
 
   if (loading) return <div className="flex min-h-screen items-center justify-center bg-muted"><Loader2 className="h-10 w-10 animate-spin text-slate-300" /></div>;
   if (!m) return (

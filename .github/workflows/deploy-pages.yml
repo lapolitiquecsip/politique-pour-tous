@@ -51,6 +51,11 @@ jobs:
         run: npm run typecheck
       - name: Clean previous build output
         run: rm -rf .next out
+      # IndexNow (GEO) : le plan du site actuellement en ligne, pour ne signaler aux moteurs que
+      # les pages nouvelles ou modifiées par ce déploiement.
+      - name: Plan du site en ligne (avant)
+        continue-on-error: true
+        run: curl -fsS --max-time 60 https://lapolitiquecestsimple.fr/sitemap.xml -o ancien-sitemap.xml || true
       - name: Build with Next.js
         run: npm run build
         env:
@@ -63,6 +68,15 @@ jobs:
         uses: actions/upload-pages-artifact@v3
         with:
           path: ./out
+      - name: Pages à signaler (IndexNow)
+        continue-on-error: true
+        run: node scripts/indexnow.mjs --avant=ancien-sitemap.xml --apres=out/sitemap.xml --liste=indexnow.json
+      - uses: actions/upload-artifact@v4
+        continue-on-error: true
+        with:
+          name: indexnow
+          path: indexnow.json
+          retention-days: 2
 
   deploy:
     environment:
@@ -74,3 +88,19 @@ jobs:
       - name: Deploy to GitHub Pages
         id: deployment
         uses: actions/deploy-pages@v4
+
+  # Une fois les pages en ligne : Bing et les moteurs IndexNow sont prévenus des pages nouvelles
+  # ou modifiées (la recherche de ChatGPT et de Copilot s'appuie sur l'index de Bing).
+  indexnow:
+    runs-on: ubuntu-latest
+    needs: deploy
+    continue-on-error: true
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          sparse-checkout: scripts
+      - uses: actions/download-artifact@v4
+        with:
+          name: indexnow
+      - name: Signaler les pages (IndexNow)
+        run: node scripts/indexnow.mjs --envoyer=indexnow.json

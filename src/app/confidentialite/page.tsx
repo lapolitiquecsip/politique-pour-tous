@@ -4,6 +4,7 @@ import RefusMesure from "@/components/analytics/RefusMesure";
 import { EDITEUR, CONTACT_EMAIL } from "@/lib/constants";
 
 export const metadata = {
+  alternates: { canonical: "/confidentialite/" },
   title: "Confidentialité et cookies",
   description: "Quelles données, pourquoi, combien de temps, chez qui, et comment exercer vos droits.",
 };

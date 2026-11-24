@@ -3,6 +3,7 @@ import PageJuridique, { ou } from "@/components/legal/PageJuridique";
 import { EDITEUR, MEDIATEUR, CONTACT_EMAIL, PLANS } from "@/lib/constants";
 
 export const metadata = {
+  alternates: { canonical: "/cgv/" },
   title: "Conditions générales de vente",
   description: "Abonnements Premium et Pro : prix, durée, résiliation, rétractation, garanties.",
 };

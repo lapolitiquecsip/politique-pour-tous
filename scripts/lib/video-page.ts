@@ -151,3 +151,98 @@ export function trouverVideoParSujet(videos: VideoPortail[], date: string, commi
   if (!notes.length || (notes[1] && notes[1].note === notes[0].note)) return null;
   return notes[0].v;
 }
+
+/* ───── Sénat : son portail range les vidéos par commission ───── */
+
+const PORTAIL_SENAT = "https://videos.senat.fr";
+export type VideoSenat = VideoPortail & { organe: string };
+
+/**
+ * Les vidéos du Sénat, commission par commission (« commission.FINC », pages « .p2 », « .p3 »…),
+ * jusqu'à la date demandée. Chaque carte donne l'adresse de la vidéo et sa date en toutes lettres.
+ * Le portail coupe la connexion quand on va vite : une demande toutes les secondes et demie.
+ */
+export async function indexPortailSenat(jusqua: string, maxPages = 40): Promise<VideoSenat[]> {
+  const lire = async (chemin: string): Promise<string | null> => {
+    for (let essai = 0; essai < 3; essai++) {
+      try {
+        const r = await fetch(`${PORTAIL_SENAT}/${chemin}`, { headers: { "User-Agent": NAVIGATEUR }, signal: AbortSignal.timeout(30_000) });
+        if (r.ok) return await r.text();
+        if (r.status === 404) return null;
+      } catch { /* nouvelle tentative après une pause */ }
+      await new Promise(x => setTimeout(x, 8000));
+    }
+    return null;
+  };
+  const accueil = await lire("");
+  if (!accueil) return [];
+  const organes = new Map<string, string>();
+  for (const m of accueil.matchAll(/href="commission\.([A-Za-z]+)"[^>]*>([\s\S]{0,200}?)<\/a>/g)) {
+    const nom = m[2].replace(/<[^>]+>/g, " ").replace(/\s+/g, " ").trim();
+    if (nom && !/toutes les vid/i.test(nom) && !organes.has(m[1])) organes.set(m[1], nom);
+  }
+  const videos = new Map<string, VideoSenat>();
+  for (const [code, organe] of organes) {
+    for (let page = 1; page <= maxPages; page++) {
+      await new Promise(x => setTimeout(x, 1500));
+      const html = await lire(page === 1 ? `commission.${code}` : `commission.${code}.p${page}`);
+      if (!html) break;
+      let plusAncienne = "9999", trouvees = 0;
+      for (const m of html.matchAll(/href="(video\.[\w.]+?\.([a-z0-9-]+))"[\s\S]{0,500}?card-time">\s*[A-Za-zéû]+\s+(\d{1,2})(?:er)?\s+([a-zéèû]+)\s+(\d{4})/g)) {
+        const mois = MOIS_FR.indexOf(sansAccent(m[4]));
+        if (mois < 0) continue;
+        const date = `${m[5]}-${String(mois + 1).padStart(2, "0")}-${m[3].padStart(2, "0")}`;
+        if (date < plusAncienne) plusAncienne = date;
+        trouvees++;
+        if (!videos.has(m[1])) videos.set(m[1], { url: `${PORTAIL_SENAT}/${m[1]}`, date, slug: m[2], organe, mots: new Set(m[2].split("-").filter(x => x.length >= 3)) });
+      }
+      if (!trouvees || plusAncienne < jusqua) break;
+    }
+  }
+  return [...videos.values()];
+}
+
+/**
+ * Preuve qu'une vidéo est bien celle de la réunion : un de ses chapitres (point de l'ordre du jour ou
+ * orateur) porte le nom d'une personne entendue, ou partage au moins deux mots du sujet avec
+ * l'intitulé. Sert quand la vidéo n'a été retenue que parce qu'elle était la seule du jour.
+ */
+export function videoCorrespond(idx: { sections: { titre: string }[]; interventions: { nom: string }[] }, intitule: string): boolean {
+  const noms = reperes(intitule);
+  const titre = motsDe(intitule);
+  for (const s of idx.sections) {
+    const mots = motsDe(s.titre);
+    if ([...noms].some(n => mots.has(n) || sansAccent(s.titre).split(/[^a-z]+/).includes(n))) return true;
+    // Le même point de l'ordre du jour, pas seulement le même vocabulaire (« parlement européen,
+    // conseil » se retrouvent dans tous les règlements européens) : trois mots et 60 % au moins.
+    const communs = [...mots].filter(w => titre.has(w)).length;
+    if (communs >= 3 && communs / Math.min(mots.size, titre.size) >= 0.6) return true;
+  }
+  return idx.interventions.some(i => [...noms].some(n => sansAccent(i.nom).split(/[^a-z]+/).includes(n)));
+}
+
+/** Deux noms d'organe désignent-ils la même commission ? (« …de la communication et du sport » ≈ « …et de la communication ») */
+function memeOrgane(a: string, b: string): boolean {
+  const x = motsDe(a), y = motsDe(b);
+  if (!x.size || !y.size) return false;
+  const communs = [...x].filter(w => y.has(w)).length;
+  return communs / Math.min(x.size, y.size) >= 0.6;
+}
+
+/**
+ * La vidéo d'une réunion du Sénat : même date, même commission, puis le nom d'une personne entendue
+ * ou au moins deux mots du sujet en commun, avec un meilleur candidat net (`sur`). À défaut, s'il n'y a
+ * qu'UNE vidéo de cette commission ce jour-là, elle est rendue avec `sur: false` : l'appelant ne la
+ * garde que si la réunion figure dans le sommaire de la vidéo (restreindre).
+ */
+export function trouverVideoSenat(videos: VideoSenat[], date: string, commission: string, intitule: string): { video: VideoSenat; sur: boolean } | null {
+  const candidates = videos.filter(v => v.date === date && memeOrgane(v.organe, commission));
+  if (!candidates.length) return null;
+  const noms = reperes(intitule);
+  const titre = motsDe(intitule);
+  const notes = candidates.map(v => ({
+    v, note: [...noms].filter(n => v.mots.has(n)).length * 3 + [...motsDe(v.slug.replace(/-/g, " "))].filter(w => titre.has(w)).length,
+  })).filter(x => x.note >= 2).sort((a, b) => b.note - a.note);
+  if (notes.length && !(notes[1] && notes[1].note === notes[0].note)) return { video: notes[0].v, sur: true };
+  return candidates.length === 1 ? { video: candidates[0], sur: false } : null;
+}

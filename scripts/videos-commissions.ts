@@ -18,7 +18,7 @@
  */
 import { createClient } from "@supabase/supabase-js";
 import { indexVideo, restreindre } from "./lib/video-an";
-import { indexPortail, pageVideo, trouverVideo, trouverVideoParSujet, type VideoPortail } from "./lib/video-page";
+import { indexPortail, indexPortailSenat, pageVideo, trouverVideo, trouverVideoParSujet, trouverVideoSenat, videoCorrespond, type VideoPortail, type VideoSenat } from "./lib/video-page";
 
 const args = process.argv.slice(2);
 const option = (nom: string) => args.find(x => x.startsWith(`--${nom}=`))?.split("=")[1];
@@ -53,33 +53,45 @@ async function main() {
     console.error(`❌ lecture : ${error.message}`); process.exit(1);
   }
   // Une réunion sans page vidéo connue ni compte rendu de l'Assemblée n'a aucune piste : on la saute.
-  const file = (data ?? []).filter((r: any) => REF || /\/video\.\d+_/.test(r.video_url ?? "") || (r.chamber !== "SENAT" && r.cr_url))
+  const file = (data ?? []).filter((r: any) => REF || /\/video\.\d+_/.test(r.video_url ?? "") || (r.chamber !== "SENAT" && r.cr_url) || (r.chamber === "SENAT" && r.meeting_date))
     .slice(0, MAX);
   console.log(`=== ${file.length} réunion(s) à vérifier ===`);
 
-  // Le portail de l'Assemblée, lu une fois et seulement si un compte rendu ne cite pas sa vidéo.
+  // Les portails, lus une fois chacun et seulement si une réunion n'a pas déjà sa vidéo.
   let portail: VideoPortail[] | null = null;
+  let portailSenat: VideoSenat[] | null = null;
   const plusAncienne = (file as any[]).reduce((m, r) => (r.meeting_date && r.meeting_date < m ? r.meeting_date : m), "9999");
-  const parLePortail = async (r: any): Promise<string | null> => {
-    if (r.chamber === "SENAT" || !r.meeting_date) return null;
+  /** `aVerifier` : seule vidéo de la commission ce jour-là, sans mot commun — gardée seulement si la réunion figure dans son sommaire. */
+  const parLePortail = async (r: any): Promise<{ url: string; aVerifier: boolean } | null> => {
+    if (!r.meeting_date) return null;
+    const jour = String(r.meeting_date).slice(0, 10);
+    if (r.chamber === "SENAT") {
+      if (!portailSenat) {
+        portailSenat = await indexPortailSenat(plusAncienne).catch(() => []);
+        console.log(`  (portail du Sénat : ${portailSenat.length} vidéos indexées jusqu'au ${plusAncienne})`);
+      }
+      const t = trouverVideoSenat(portailSenat, jour, r.commission ?? "", r.title ?? "");
+      return t ? { url: t.video.url, aVerifier: !t.sur } : null;
+    }
     if (!portail) {
       portail = await indexPortail(plusAncienne).catch(() => []);
       console.log(`  (portail de l'Assemblée : ${portail.length} vidéos indexées jusqu'au ${plusAncienne})`);
     }
-    const jour = String(r.meeting_date).slice(0, 10);
-    return (trouverVideo(portail, jour, r.title ?? "") ?? trouverVideoParSujet(portail, jour, r.commission ?? "", r.title ?? ""))?.url ?? null;
+    const v = trouverVideo(portail, jour, r.title ?? "") ?? trouverVideoParSujet(portail, jour, r.commission ?? "", r.title ?? "");
+    return v ? { url: v.url, aVerifier: false } : null;
   };
 
-  let trouvees = 0, sans = 0, erreurs = 0, viaPortail = 0;
+  let trouvees = 0, sans = 0, erreurs = 0, viaPortail = 0, ecartees = 0;
   for (const r of file as any[]) {
     const maintenant = new Date().toISOString();
     try {
+      let aVerifier = false;
       let page = /\/video\.\d+_/.test(r.video_url ?? "")
         ? r.video_url
         : r.chamber !== "SENAT" && r.cr_url ? await pageVideo(r.cr_url).catch(() => null) : null;
       if (!page) {
-        page = await parLePortail(r);
-        if (page) viaPortail++;
+        const p = await parLePortail(r);
+        if (p) { page = p.url; aVerifier = p.aVerifier; viaPortail++; }
       }
       if (!page) {
         sans++;
@@ -94,7 +106,14 @@ async function main() {
         continue;
       }
       // Le point de l'ordre du jour de CETTE réunion, quand la vidéo en couvre plusieurs.
-      const idx = restreindre(entier, r.title ?? "") ?? entier;
+      const point = restreindre(entier, r.title ?? "");
+      if (aVerifier && !videoCorrespond(entier, r.title ?? "")) {
+        // Rien ne relie la réunion à la seule vidéo du jour : dans le doute, pas de vidéo.
+        ecartees++; sans++; viaPortail--;
+        if (!DRY) await supabase.from("commission_reports").update({ video_verifie_at: maintenant }).eq("ref", r.ref);
+        continue;
+      }
+      const idx = point ?? entier;
       const debut = Math.max(0, Math.floor((idx.interventions[0]?.t ?? idx.sections[0]?.t ?? entier.debutLecture) - 3));
       const ligne = { video_url: page, video_mp4: entier.mp4, video_debut: debut, video_verifie_at: maintenant };
       console.log(`  ✓ ${r.meeting_date} ${r.ref} → ${entier.mp4.split("/").pop()} @ ${debut} s`);
@@ -110,7 +129,7 @@ async function main() {
     }
     await attendre(PAUSE_MS);
   }
-  console.log(`\n=== ${trouvees} vidéo(s) lisibles sur le site (dont ${viaPortail} page(s) retrouvée(s) sur le portail) · ${sans} sans vidéo · ${erreurs} erreur(s) ===`);
+  console.log(`\n=== ${trouvees} vidéo(s) lisibles sur le site (dont ${viaPortail} page(s) retrouvée(s) sur un portail) · ${sans} sans vidéo (dont ${ecartees} écartée(s) faute de preuve) · ${erreurs} erreur(s) ===`);
 }
 
 main().catch(e => { console.error(e); process.exit(1); });

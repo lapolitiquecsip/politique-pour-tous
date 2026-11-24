@@ -4,6 +4,7 @@ import { useEffect, useState } from "react";
 import { Target, ListChecks, Quote, ArrowRight, Megaphone, MessagesSquare, Swords, Vote, Hourglass, Sparkles, ListOrdered, Play } from "lucide-react";
 import { api } from "@/lib/api";
 import { fmtInstant, lienInstant, type CommissionMeeting } from "@/lib/commissions";
+import { ouvrirVideo, videoDe } from "@/lib/lecteur-video";
 import MentionIA from "@/components/shared/MentionIA";
 
 /**
@@ -140,7 +141,10 @@ export function CommissionAnalysis({ m, accent, sombre = false }: {
               return (
                 <li key={i} className={bloc}>
                   <div className="flex items-baseline gap-2">
-                    {video
+                    {videoDe(m)
+                      ? <button type="button" onClick={() => ouvrirVideo(videoDe(m, c.t)!)} title="Regarder ce passage"
+                          className={`inline-flex shrink-0 items-center gap-1 text-[11px] font-black tabular-nums ${accent.text} hover:underline`}><Play size={10} fill="currentColor" />{fmtInstant(c.t)}</button>
+                      : video
                       ? <a href={lienInstant(video, c.t)} target="_blank" rel="noopener noreferrer" title="Voir ce passage dans la vidéo officielle"
                           className={`inline-flex shrink-0 items-center gap-1 text-[11px] font-black tabular-nums ${accent.text} hover:underline`}><Play size={10} />{fmtInstant(c.t)}</a>
                       : <span className={`shrink-0 text-[11px] font-black tabular-nums ${appui}`}>{fmtInstant(c.t)}</span>}{" "}

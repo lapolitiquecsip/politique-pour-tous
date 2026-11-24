@@ -123,6 +123,10 @@ export type CommissionMeeting = {
   meeting_date: string | null;
   cr_url: string | null;
   video_url: string | null;
+  /** Fichier MP4 officiel, lu par le lecteur du site (migration 2026112401). */
+  video_mp4?: string | null;
+  /** Instant (s) où commence la réunion dans ce fichier. */
+  video_debut?: number | null;
   summary: string | null;
   analysis?: CommissionAnalysis | null;
   speakers?: { name: string; role?: string; turns?: number }[] | null;

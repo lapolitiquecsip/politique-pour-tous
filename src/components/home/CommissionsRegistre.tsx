@@ -9,6 +9,7 @@ import {
 } from "lucide-react";
 import { api } from "@/lib/api";
 import { telechargerCsv } from "@/lib/csv";
+import { ouvrirVideo, videoDe } from "@/lib/lecteur-video";
 import { usePremium } from "@/lib/hooks/usePremium";
 import { CommissionAnalysis, ACCENTS } from "@/components/commissions/CommissionAnalysis";
 import DragScroller from "@/components/ui/DragScroller";
@@ -45,6 +46,8 @@ type Reunion = {
   meeting_date: string;
   cr_url: string | null;
   video_url: string | null;
+  video_mp4?: string | null;
+  video_debut?: number | null;
   analyzed_at: string | null;
 };
 
@@ -149,7 +152,12 @@ function Ligne({ m }: { m: Reunion }) {
                     <FileText size={12} /> Compte rendu officiel <ExternalLink size={10} />
                   </a>
                 )}{" "}
-                {m.video_url && (
+                {videoDe(m) ? (
+                  <button type="button" onClick={() => ouvrirVideo(videoDe(m)!)}
+                    className="inline-flex items-center gap-1.5 text-[10px] font-black uppercase tracking-widest text-white/50 transition hover:text-white">
+                    <Video size={12} /> Regarder
+                  </button>
+                ) : m.video_url && (
                   <a href={m.video_url} target="_blank" rel="noopener noreferrer"
                     className="inline-flex items-center gap-1.5 text-[10px] font-black uppercase tracking-widest text-white/50 transition hover:text-white">
                     <Video size={12} /> Vidéo <ExternalLink size={10} />

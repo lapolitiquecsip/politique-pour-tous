@@ -160,6 +160,21 @@ function fusionnerNavette(d: LegislativeDossierDetail, autre: LegislativeDossier
   d.dossier.updated_at = [d.dossier.updated_at, autre.dossier.updated_at].filter(Boolean).sort().pop() ?? null;
 }
 
+/**
+ * Le fichier vidéo des réunions de commission (lu par le lecteur du site), colonnes ajoutées par
+ * la migration 2026112401. Tant qu'elles manquent (code 42703), on lit sans : les boutons vidéo
+ * retombent alors sur le lien officiel.
+ */
+let videoEnBase = true;
+async function lireAvecVideo(requete: (video: string) => PromiseLike<{ data: any; error: any }>): Promise<{ data: any; error: any }> {
+  if (videoEnBase) {
+    const r = await requete(', video_mp4, video_debut');
+    if (!r.error || r.error.code !== '42703') return r;
+    videoEnBase = false;
+  }
+  return requete('');
+}
+
 export const api = {
   health: async () => ({ status: 'ok', source: 'supabase-direct' }),
 
@@ -906,8 +921,8 @@ export const api = {
     // filtre. On neutralise ces caractères ainsi que les jokers de `ilike`.
     const safeSearch = search?.replace(/[,()*%\\]/g, " ").replace(/\s+/g, " ").trim();
 
-    const build = (withChamber: boolean) => {
-      let q = supabase.from('commission_reports').select(withChamber ? COLS : COLS.replace('chamber, ', ''));
+    const build = (withChamber: boolean, video = '') => {
+      let q = supabase.from('commission_reports').select((withChamber ? COLS : COLS.replace('chamber, ', '')) + video);
       if (withChamber && chamber) q = q.eq('chamber', chamber);
       if (commission) q = q.eq('commission', commission);
       // Recherche plein texte simple sur le titre ET le résumé (avantage Pro).
@@ -915,7 +930,7 @@ export const api = {
       return q.order('meeting_date', { ascending: false }).range(offset, offset + limit - 1);
     };
 
-    let res: any = await build(true);
+    let res: any = await lireAvecVideo(v => build(true, v));
     if (res.error) res = await build(false); // migration non appliquée
     if (res.error) { console.error(res.error); return []; }
     return res.data ?? [];
@@ -960,11 +975,11 @@ export const api = {
 
   /** Les réunions d'une journée, sans leur analyse — elle est lue au dépliage. */
   getCommissionsOfDay: async (date: string) => {
-    const { data, error } = await supabase
+    const { data, error } = await lireAvecVideo(v => supabase
       .from('commission_reports')
-      .select('ref, chamber, commission, title, meeting_date, cr_url, video_url, analyzed_at')
+      .select('ref, chamber, commission, title, meeting_date, cr_url, video_url, analyzed_at' + v)
       .eq('meeting_date', date)
-      .order('commission', { ascending: true });
+      .order('commission', { ascending: true }));
     if (error) return [];
     return data ?? [];
   },
@@ -1119,14 +1134,14 @@ export const api = {
     const [annee, numero] = mois.split('-').map(Number);
     const debut = `${mois}-01`;
     const suivant = numero === 12 ? `${annee + 1}-01-01` : `${annee}-${String(numero + 1).padStart(2, '0')}-01`;
-    const { data, error } = await supabase
+    const { data, error } = await lireAvecVideo(v => supabase
       .from('commission_reports')
-      .select('ref, chamber, commission, title, meeting_date, cr_url, video_url, summary, speakers, topics')
+      .select('ref, chamber, commission, title, meeting_date, cr_url, video_url, summary, speakers, topics' + v)
       .eq('chamber', chamber)
       .gte('meeting_date', debut).lt('meeting_date', suivant)
       .or('title.ilike.%audition%,title.ilike.%table ronde%')
       .order('meeting_date', { ascending: false })
-      .limit(200);
+      .limit(200));
     if (error) { console.warn('API Warning (getAuditionsDuMois):', error.message); return []; }
     return data ?? [];
   },
@@ -1139,11 +1154,11 @@ export const api = {
     return data?.[0]?.meeting_date ? String(data[0].meeting_date).slice(0, 7) : null;
   },
   getCommissionReports: async (limit = 12) => {
-    const { data, error } = await supabase
+    const { data, error } = await lireAvecVideo(v => supabase
       .from('commission_reports')
-      .select('ref, commission, title, meeting_date, cr_url, video_url, summary')
+      .select('ref, chamber, commission, title, meeting_date, cr_url, video_url, summary' + v)
       .order('meeting_date', { ascending: false })
-      .limit(limit);
+      .limit(limit));
     if (error) { console.error(error); return []; }
     return data ?? [];
   },

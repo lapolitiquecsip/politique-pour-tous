@@ -7,6 +7,7 @@ import { api } from "@/lib/api";
 import { CommissionAnalysis as Analysis, ACCENTS } from "./CommissionAnalysis";
 import CompteRendu from "./CompteRendu";
 import { cleanTitle, decode, extractPeople, shortCommission, type CommissionMeeting } from "@/lib/commissions";
+import { ouvrirVideo, videoDe } from "@/lib/lecteur-video";
 
 /**
  * Les auditions d'une chambre, mois par mois.
@@ -100,7 +101,13 @@ function Carte({ a, accent, isPro }: { a: Audition; accent: typeof ACCENTS.emera
               <Sparkles size={12} /> {isPro ? "Analyse" : "Résumé"}{" "}
               <ChevronDown size={12} className={`transition-transform ${ouvert ? "rotate-180" : ""}`} />
             </button>{" "}
-            {a.video_url && (
+            {/* La vidéo se regarde SUR LE SITE dès que son fichier est connu ; sinon, page officielle. */}
+            {videoDe(a) ? (
+              <button type="button" onClick={() => ouvrirVideo(videoDe(a)!)}
+                className="inline-flex items-center gap-1.5 rounded-full bg-red-600 px-3.5 py-1.5 text-[10px] font-black uppercase tracking-widest text-white transition hover:bg-red-500">
+                <Play size={11} fill="currentColor" /> Regarder
+              </button>
+            ) : a.video_url && (
               <a href={a.video_url} target="_blank" rel="noopener noreferrer"
                 className="inline-flex items-center gap-1.5 rounded-full bg-red-600 px-3.5 py-1.5 text-[10px] font-black uppercase tracking-widest text-white transition hover:bg-red-500">
                 <Play size={11} fill="currentColor" /> Vidéo
@@ -170,7 +177,7 @@ export default function AuditionsParMois({
   const peutAvancer = mois < courant;
   const [annee, numero] = mois.split("-").map(Number);
   const commissions = useMemo(() => new Set((auditions ?? []).map(x => shortCommission(x.commission))).size, [auditions]);
-  const avecVideo = (auditions ?? []).filter(x => x.video_url).length;
+  const avecVideo = (auditions ?? []).filter(x => x.video_url || x.video_mp4).length;
 
   const Fleche = ({ dir, actif }: { dir: -1 | 1; actif: boolean }) => (
     <button type="button" onClick={() => aller(dir)} disabled={!actif}

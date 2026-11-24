@@ -63,6 +63,7 @@ export const viewport: Viewport = {
 
 import GlossaryProvider from "@/components/providers/GlossaryProvider";
 import HelpBubble from "@/components/help/HelpBubble";
+import LecteurVideo from "@/components/video/LecteurVideo";
 
 export default function RootLayout({
   children,
@@ -106,6 +107,7 @@ export default function RootLayout({
             <PwaProvider />
             <Mesure />
             <InvitationCompte />
+            <LecteurVideo />
           </GlossaryProvider>
         </ThemeProvider>
       </body>

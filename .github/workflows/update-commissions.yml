@@ -72,3 +72,14 @@ jobs:
           --analyses=${{ github.event.inputs.analyses || '40' }}
           --concurrency=4
           --offpeak-only
+
+      # Les vidéos se regardent SUR LE SITE : adresse du fichier MP4 officiel de chaque réunion et
+      # instant où elle commence (scripts/videos-commissions.ts, gratuit, sans IA). Après
+      # l'ingestion, pour couvrir les réunions arrivées à ce passage ; un échec ne bloque rien.
+      - name: Fichiers vidéo des réunions
+        if: always()
+        continue-on-error: true
+        env:
+          NEXT_PUBLIC_SUPABASE_URL: ${{ secrets.NEXT_PUBLIC_SUPABASE_URL }}
+          SUPABASE_SERVICE_ROLE_KEY: ${{ secrets.SUPABASE_SERVICE_ROLE_KEY }}
+        run: npx --yes tsx scripts/videos-commissions.ts --max=80

@@ -5,6 +5,7 @@ import { createPortal } from "react-dom";
 import { X, Search, Loader2, ExternalLink, FileText, ChevronUp, ChevronDown, Video, Play } from "lucide-react";
 import { api } from "@/lib/api";
 import { cleanTitle, fmtInstant, fmtMeetingDate, lienInstant, shortCommission, type CommissionMeeting } from "@/lib/commissions";
+import { ouvrirVideo, videoDe } from "@/lib/lecteur-video";
 
 /**
  * Le compte rendu intégral d'une réunion, lu SUR LE SITE.
@@ -134,6 +135,8 @@ export default function CompteRendu({ m, onFermer }: { m: CommissionMeeting; onF
   const parOrateur = !!t?.texte.startsWith("@@");
   const video = (m.analysis as any)?.video || m.video_url || null;
   const minutes = t ? Math.max(1, Math.round(t.mots / 230)) : 0;
+  // La vidéo se lit sur le site : chaque horodatage y saute, en gardant le texte sous les yeux.
+  const surSite = !!videoDe(m);
 
   return createPortal(
     <div className="fixed inset-0 z-[130] flex items-end justify-center bg-slate-950/80 backdrop-blur-sm sm:items-center sm:p-6" role="dialog" aria-modal="true" aria-label="Compte rendu de la réunion" onClick={onFermer}>
@@ -152,6 +155,12 @@ export default function CompteRendu({ m, onFermer }: { m: CommissionMeeting; onF
               <h3 className="mt-1.5 line-clamp-2 text-base font-bold leading-snug text-foreground dark:text-white sm:text-lg">{cleanTitle(m.title || "")}</h3>{" "}
               {t && <p className="mt-1 text-[11px] font-semibold text-muted-foreground">{t.mots.toLocaleString("fr-FR")} mots · environ {minutes} min de lecture</p>}
             </div>{" "}
+            {surSite && (
+              <button type="button" onClick={() => ouvrirVideo(videoDe(m)!)}
+                className="inline-flex shrink-0 items-center gap-1.5 rounded-full bg-red-600 px-3.5 py-2 text-[10px] font-black uppercase tracking-widest text-white transition hover:bg-red-500">
+                <Play size={11} fill="currentColor" /> Regarder
+              </button>
+            )}{" "}
             <button type="button" onClick={onFermer} aria-label="Fermer le compte rendu"
               className="shrink-0 rounded-full bg-muted p-2 text-muted-foreground transition hover:text-foreground"><X size={18} /></button>
           </div>{" "}
@@ -225,12 +234,17 @@ export default function CompteRendu({ m, onFermer }: { m: CommissionMeeting; onF
                           : <p className="text-[12px] font-black text-violet-700 dark:text-violet-300"><Surligne texte={b.orateur} terme={terme.trim()} /></p>}{" "}
                         {b.parti && <span className="rounded-full bg-violet-100 px-2 py-0.5 text-[9px] font-black uppercase tracking-wider text-violet-700 dark:bg-violet-500/20 dark:text-violet-300">{b.parti}</span>}{" "}
                         {b.fonction && <span className="text-[11px] font-semibold text-muted-foreground">{b.fonction}</span>}{" "}
-                        {b.t !== undefined && Number.isFinite(b.t) && video && (
+                        {b.t !== undefined && Number.isFinite(b.t) && (surSite ? (
+                          <button type="button" onClick={() => ouvrirVideo(videoDe(m, b.t)!)} title="Regarder ce passage"
+                            className="ml-auto inline-flex items-center gap-1 rounded-full bg-red-50 px-2 py-0.5 text-[10px] font-black tabular-nums text-red-700 transition hover:bg-red-100 dark:bg-red-500/10 dark:text-red-300">
+                            <Play size={10} fill="currentColor" /> {fmtInstant(b.t)}
+                          </button>
+                        ) : video && (
                           <a href={lienInstant(video, b.t, b.repere)} target="_blank" rel="noopener noreferrer" title="Voir ce passage dans la vidéo officielle"
                             className="ml-auto inline-flex items-center gap-1 rounded-full bg-muted px-2 py-0.5 text-[10px] font-black tabular-nums text-muted-foreground transition hover:text-foreground">
                             <Play size={10} /> {fmtInstant(b.t)}
                           </a>
-                        )}
+                        ))}
                       </div>
                     )}{" "}
                     {b.texte.split("\n").map((p, k) => (

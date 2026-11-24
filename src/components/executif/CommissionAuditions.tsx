@@ -1,7 +1,8 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import { Loader2, ExternalLink, Lock, Sparkles, Mic, ChevronDown, Users } from "lucide-react";
+import { Loader2, ExternalLink, Lock, Sparkles, Mic, ChevronDown, Users, Play } from "lucide-react";
+import { ouvrirVideo, videoDe } from "@/lib/lecteur-video";
 import Link from "next/link";
 import { api } from "@/lib/api";
 import { usePremium } from "@/lib/hooks/usePremium";
@@ -11,6 +12,7 @@ import LockedSection from "@/components/premium/LockedSection";
 type Report = {
   ref: string; commission: string | null; title: string | null;
   meeting_date: string | null; cr_url: string | null; video_url: string | null; summary: string | null;
+  chamber?: "AN" | "SENAT" | null; video_mp4?: string | null; video_debut?: number | null;
 };
 
 const fmtDate = (d: string | null) =>
@@ -83,7 +85,9 @@ function AuditionCard({ r, isPremium }: { r: Report; isPremium: boolean }) {
           )}{" "}
           <div className="mt-4 flex flex-wrap gap-3">
             {r.cr_url && <a href={r.cr_url} target="_blank" rel="noopener noreferrer" className="inline-flex items-center gap-1.5 text-[10px] font-black uppercase tracking-widest text-muted-foreground hover:text-emerald-600"><ExternalLink size={12} /> Compte rendu officiel</a>}{" "}
-            {r.video_url && <a href={r.video_url} target="_blank" rel="noopener noreferrer" className="inline-flex items-center gap-1.5 text-[10px] font-black uppercase tracking-widest text-muted-foreground hover:text-emerald-600"><ExternalLink size={12} /> Vidéo</a>}
+            {videoDe(r)
+              ? <button type="button" onClick={() => ouvrirVideo(videoDe(r)!)} className="inline-flex items-center gap-1.5 text-[10px] font-black uppercase tracking-widest text-red-600 hover:text-red-500"><Play size={12} fill="currentColor" /> Regarder</button>
+              : r.video_url && <a href={r.video_url} target="_blank" rel="noopener noreferrer" className="inline-flex items-center gap-1.5 text-[10px] font-black uppercase tracking-widest text-muted-foreground hover:text-emerald-600"><ExternalLink size={12} /> Vidéo</a>}
           </div>
         </div>
       )}

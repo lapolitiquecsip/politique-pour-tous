@@ -3,7 +3,7 @@
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import {
   Loader2, Search, ChevronDown, Users, ExternalLink, Download,
-  Mic, Target, Quote, ListChecks, ArrowRight, Briefcase, X, CalendarDays, Crown, Sparkles,
+  Mic, Target, Quote, ListChecks, ArrowRight, Briefcase, X, CalendarDays, Crown, Sparkles, Play,
 } from "lucide-react";
 import { api } from "@/lib/api";
 import { usePremium } from "@/lib/hooks/usePremium";
@@ -12,6 +12,7 @@ import LockedSection from "@/components/premium/LockedSection";
 import { CommissionAnalysis as Analysis, ACCENTS } from "./CommissionAnalysis";
 import AuditionsParMois from "./AuditionsParMois";
 import CompteRendu from "./CompteRendu";
+import { ouvrirVideo, videoDe } from "@/lib/lecteur-video";
 import {
   cleanTitle, decode, extractPeople, shortCommission, fmtMeetingDate,
   type CommissionMeeting,
@@ -90,7 +91,12 @@ function MeetingCard({ m, accent }: { m: CommissionMeeting; accent: typeof ACCEN
               className={`inline-flex items-center gap-1.5 text-[10px] font-black uppercase tracking-widest text-muted-foreground ${accent.hover}`}>
               <ListChecks size={12} /> Compte rendu intégral
             </button>{" "}
-            {m.video_url && (
+            {videoDe(m) ? (
+              <button type="button" onClick={() => ouvrirVideo(videoDe(m)!)}
+                className={`inline-flex items-center gap-1.5 text-[10px] font-black uppercase tracking-widest text-muted-foreground ${accent.hover}`}>
+                <Play size={12} /> Regarder la réunion
+              </button>
+            ) : m.video_url && (
               <a href={m.video_url} target="_blank" rel="noopener noreferrer"
                 className={`inline-flex items-center gap-1.5 text-[10px] font-black uppercase tracking-widest text-muted-foreground ${accent.hover}`}>
                 <ExternalLink size={12} /> Vidéo de la réunion

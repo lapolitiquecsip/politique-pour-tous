@@ -10,6 +10,7 @@ import { usePathname } from "next/navigation";
 import { usePremium } from "@/lib/hooks/usePremium";
 import { SALES_OPEN } from "@/lib/constants";
 import { getPremiumUrl } from "@/lib/utils";
+import { ouvrirEssaiPremium } from "@/lib/essai-premium";
 
 export default function PremiumButton() {
   const pathname = usePathname();
@@ -88,16 +89,9 @@ export default function PremiumButton() {
       return;
     }
 
-    if (!userId) {
-      setError("auth_required");
-      return;
-    }
-
-    setLoading(true);
-
-    // Jamais de paiement direct : la page des offres recueille d'abord l'accord sur les
-    // CGV et la demande d'accès immédiat (C. conso. L221-25).
-    window.location.href = "/premium#offres";
+    // La fenêtre d'essai gratuit (vitrine + film + accord sur les CGV et l'accès immédiat,
+    // C. conso. L221-25) ; pas besoin d'être connecté, le compte se crée au paiement.
+    ouvrirEssaiPremium("bouton_flottant");
   };
 
   // Ne pas afficher si :

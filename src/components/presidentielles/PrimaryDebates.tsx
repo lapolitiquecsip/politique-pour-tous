@@ -253,7 +253,7 @@ function Detail({ e, isPro, onFermer }: { e: Evenement; isPro: boolean; onFermer
               <p className="min-w-0 flex-1 text-[13px] leading-snug text-muted-foreground">
                 Le compte rendu écrit de ce débat est réservé à l&apos;abonnement Pro.
               </p>{" "}
-              <Link href="/premium"
+              <Link data-offre-lien="pro" href="/premium"
                 className="shrink-0 rounded-xl bg-gradient-to-r from-fuchsia-500 to-purple-600 px-4 py-2 text-[10px] font-black uppercase tracking-widest text-white">
                 Découvrir le Pro
               </Link>

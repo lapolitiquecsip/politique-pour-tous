@@ -18,6 +18,7 @@ import { isFollowingCandidate, toggleFollowCandidate } from "@/lib/candidateFoll
 import MentionIA from "@/components/shared/MentionIA";
 import ProgrammeCandidat, { type SourceProgramme } from "@/components/presidentielles/ProgrammeCandidat";
 import { mediaBanni } from "@/lib/medias-bannis";
+import { ouvrirEssaiPremium } from "@/lib/essai-premium";
 
 type Candidate = {
   id: string;
@@ -221,7 +222,7 @@ function CandidateModal({ candidate, onClose, voisins = null, onOuvrir }: { cand
   const [following, setFollowing] = useState(false);
   useEffect(() => { setFollowing(isFollowingCandidate(candidate.id)); }, [candidate.id]);
   const onToggleFollow = () => {
-    if (!isPremium) { window.location.href = "/premium"; return; }
+    if (!isPremium) { ouvrirEssaiPremium("suivre_candidat"); return; }
     const suit = toggleFollowCandidate({ id: candidate.id, slug: (candidate as any).slug, name: candidate.full_name, photo_url: (candidate as any).photo_url, party: candidate.party });
     setFollowing(suit);
     // Membre Pro : le suivi alimente aussi ses alertes e-mail et son récap du samedi.

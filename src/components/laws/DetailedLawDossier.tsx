@@ -19,6 +19,7 @@ import { usePremium } from "@/lib/hooks/usePremium";
 import { api } from "@/lib/api";
 import { useGlossary } from "@/components/providers/GlossaryProvider";
 import MentionIA from "@/components/shared/MentionIA";
+import { ouvrirEssaiPremium } from "@/lib/essai-premium";
 
 interface DetailedLawDossierProps {
   law: LawDossier;
@@ -611,7 +612,7 @@ export default function DetailedLawDossier({ law }: DetailedLawDossierProps) {
                     onClick={() => {
                       const el = document.getElementById('premium-section');
                       if (el) el.scrollIntoView({ behavior: 'smooth' });
-                      else window.location.href = '/premium';
+                      else ouvrirEssaiPremium("dossier_loi");
                     }}
                     className="relative z-10 w-full md:w-auto px-8 py-4 bg-gradient-to-r from-amber-500 via-yellow-400 to-amber-500 text-amber-950 font-black uppercase tracking-widest rounded-full hover:scale-105 transition-transform shadow-[0_0_20px_rgba(245,158,11,0.4)] whitespace-nowrap overflow-hidden group-hover:shadow-[0_0_30px_rgba(245,158,11,0.6)]"
                   >

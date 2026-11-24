@@ -22,6 +22,13 @@ const ACTIONS: Record<string, string> = {
   inscription: "Inscriptions",
   clic_offres: "Clics vers les offres",
   accueil_essai_premium: "Carte dorée « Essai gratuit Premium » de l'accueil",
+  essai_premium_lien: "Fenêtre d'essai ouverte depuis un bouton Premium du site",
+  essai_premium_bouton_flottant: "Fenêtre d'essai ouverte depuis le bouton flottant",
+  essai_premium_budget_communal: "Fenêtre d'essai ouverte depuis le budget communal",
+  essai_premium_budget_commune: "Fenêtre d'essai ouverte depuis la fiche d'une commune",
+  essai_premium_suivre_commune: "Fenêtre d'essai ouverte en voulant suivre une commune",
+  essai_premium_suivre_candidat: "Fenêtre d'essai ouverte en voulant suivre un candidat",
+  essai_premium_dossier_loi: "Fenêtre d'essai ouverte depuis un dossier de loi",
   niche_verrou_vu: "Verrou « analyse de la niche » vu (page Assemblée)",
   niche_verrou_clic: "Verrou « analyse de la niche » cliqué",
   clic_paiement: "Départs vers le paiement (accord donné)",
@@ -481,7 +488,7 @@ export default function StatistiquesPage() {
 function Parcours({ actions }: { actions: { name: string; n: number }[] }) {
   const n = (...noms: string[]) => actions.filter(a => noms.includes(a.name)).reduce((t, a) => t + a.n, 0);
   const etapes: [string, number][] = [
-    ["Clics vers les offres", n("clic_offres", "accueil_essai_premium")],
+    ["Clics vers les offres", n("clic_offres", "accueil_essai_premium", "essai_premium_lien", "essai_premium_bouton_flottant", "essai_premium_budget_communal", "essai_premium_budget_commune", "essai_premium_suivre_commune", "essai_premium_suivre_candidat", "essai_premium_dossier_loi")],
     ["Formule choisie", n("achat_choix_elite", "achat_choix_pro", "achat_reprise")],
     ["Départs vers Stripe", n("clic_paiement")],
     ["Paiements réussis", n("paiement_reussi")],

@@ -549,7 +549,7 @@ export default function CandidateSocialTracker({ candidates }: { candidates: Can
                       </p>{" "}
                       {!isPro && (
                         <div className="mt-4 text-center">
-                          <Link href="/premium" className="text-[11px] font-black uppercase tracking-widest text-fuchsia-700 hover:underline dark:text-fuchsia-400">Débloquer les chiffres avec l&apos;abonnement Pro →</Link>
+                          <Link data-offre-lien="pro" href="/premium" className="text-[11px] font-black uppercase tracking-widest text-fuchsia-700 hover:underline dark:text-fuchsia-400">Débloquer les chiffres avec l&apos;abonnement Pro →</Link>
                         </div>
                       )}
                     </div>

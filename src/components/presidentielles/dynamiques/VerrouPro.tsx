@@ -65,7 +65,7 @@ export function ZonePro({ titre, points, children }: { titre: string; points: st
                   </li>
                 ))}
               </ul>{" "}
-              <Link href="/premium" className="mt-6 block rounded-2xl bg-gradient-to-r from-fuchsia-600 to-purple-700 py-3.5 text-xs font-black uppercase tracking-[0.18em] text-white shadow-lg transition hover:brightness-110">
+              <Link data-offre-lien="pro" href="/premium" className="mt-6 block rounded-2xl bg-gradient-to-r from-fuchsia-600 to-purple-700 py-3.5 text-xs font-black uppercase tracking-[0.18em] text-white shadow-lg transition hover:brightness-110">
                 Passer au Pro
               </Link>{" "}
               <Link href="/login?suite=/presidentielles-2027/%23dynamiques" className="mt-3 inline-block text-xs font-bold text-muted-foreground hover:text-foreground">

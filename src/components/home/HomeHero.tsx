@@ -46,6 +46,7 @@ function CarteEssai({ href, titre, texte }: { href: string; titre: string; texte
         onContinuer={() => { void mesurerPuisPartir("clic_paiement", lienPaiementStripe(userId, "elite", "monthly")); }} />
     )}
     <Link
+      data-offre-lien="accueil"
       href={href}
       onClick={e => {
         void mesurerAction("accueil_essai_premium");

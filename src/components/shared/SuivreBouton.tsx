@@ -29,7 +29,7 @@ export default function SuivreBouton({ kind, refId, label, className = "", libel
   if (loading) return null;
   if (!ouvert) {
     return (
-      <Link href="/premium" className={`inline-flex items-center gap-2 rounded-full border border-fuchsia-400/40 bg-fuchsia-500/10 px-4 py-2 text-[11px] font-black uppercase tracking-widest text-fuchsia-700 transition hover:bg-fuchsia-500/20 dark:text-fuchsia-300 ${className}`}>
+      <Link data-offre-lien={kind === "parti" ? undefined : "pro"} href="/premium" className={`inline-flex items-center gap-2 rounded-full border border-fuchsia-400/40 bg-fuchsia-500/10 px-4 py-2 text-[11px] font-black uppercase tracking-widest text-fuchsia-700 transition hover:bg-fuchsia-500/20 dark:text-fuchsia-300 ${className}`}>
         <Lock size={13} /> Suivre · {kind === "parti" ? "Premium" : "Pro"}
       </Link>
     );

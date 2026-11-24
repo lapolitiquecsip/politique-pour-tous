@@ -10,6 +10,7 @@ import {
 } from "lucide-react";
 import { usePremium } from "@/lib/hooks/usePremium";
 import { api } from "@/lib/api";
+import { ouvrirEssaiPremium } from "@/lib/essai-premium";
 
 const MONTH_ORDER: Record<string, number> = {
   "janvier": 1, "février": 2, "mars": 3, "avril": 4, "mai": 5, "juin": 6,
@@ -112,7 +113,7 @@ function LocalBudgetContent() {
           <div className="h-px bg-white/10 w-full" />{" "}
 
           <button
-            onClick={() => router.push("/premium")}
+            onClick={() => ouvrirEssaiPremium("budget_communal")}
             className="w-full py-4 bg-gradient-to-r from-amber-400 to-orange-500 hover:from-amber-300 hover:to-orange-400 text-slate-950 font-black text-sm uppercase tracking-wider rounded-2xl transition-all shadow-lg shadow-orange-500/20 active:scale-98"
           >
             Débloquer l'offre Premium

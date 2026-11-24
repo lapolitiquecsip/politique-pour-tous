@@ -104,7 +104,7 @@ export default function AmendementsDepute({ slug, nom, chambre = "an" }: { slug:
           <p className="flex-1 text-[14px] leading-relaxed text-foreground dark:text-slate-200">
             Lisez chacun des amendements de {nom} — ce qu&apos;il change, pourquoi, et son sort — et soyez alerté des nouveaux, avec l&apos;offre Pro.
           </p>{" "}
-          <Link href="/premium" className="inline-flex min-h-[44px] shrink-0 items-center gap-2 rounded-2xl bg-gradient-to-r from-fuchsia-500 to-purple-600 px-5 text-[13px] font-black text-white shadow-lg shadow-fuchsia-500/25">
+          <Link data-offre-lien="pro" href="/premium" className="inline-flex min-h-[44px] shrink-0 items-center gap-2 rounded-2xl bg-gradient-to-r from-fuchsia-500 to-purple-600 px-5 text-[13px] font-black text-white shadow-lg shadow-fuchsia-500/25">
             <Lock size={14} /> Découvrir l&apos;offre Pro
           </Link>
         </div>

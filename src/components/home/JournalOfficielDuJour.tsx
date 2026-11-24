@@ -241,7 +241,7 @@ export default function JournalOfficielDuJour({ direct = false }: { direct?: boo
           </div>{" "}
 
           <div className="mt-6 flex flex-col gap-2 sm:flex-row sm:items-center sm:gap-3">
-            <Link href="/premium"
+            <Link data-offre-lien="pro" href="/premium"
               className="inline-flex items-center justify-center gap-2 rounded-2xl bg-gradient-to-r from-fuchsia-500 to-purple-600 px-6 py-3.5 text-[12px] font-black uppercase tracking-widest text-white shadow-lg shadow-fuchsia-500/30 transition hover:brightness-110">
               {isPremium ? "Passer à l'offre Pro" : "Découvrir l'offre Pro"} {" "}<ArrowRight size={15} />
             </Link>{" "}

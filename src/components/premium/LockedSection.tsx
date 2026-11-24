@@ -84,7 +84,7 @@ export default function LockedSection({
         </ul>{" "}
 
         <div className="mt-6 flex flex-col gap-2 sm:flex-row sm:items-center sm:gap-3">
-          <Link href="/premium"
+          <Link data-offre-lien={proOnly ? "pro" : undefined} href="/premium"
             className={`inline-flex items-center justify-center gap-2 rounded-2xl px-6 py-3.5 text-[12px] font-black uppercase tracking-widest shadow-lg transition hover:brightness-110 ${
               proOnly
                 ? "bg-gradient-to-r from-fuchsia-500 to-purple-600 text-white shadow-fuchsia-500/30"

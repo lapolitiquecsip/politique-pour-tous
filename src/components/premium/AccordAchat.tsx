@@ -284,6 +284,11 @@ function FenetrePremium(props: Props) {
             </div>
           </div>
           <Formulaire {...props} premium />
+          {/* Tous les boutons d'abonnement ouvrent cette fenêtre : l'offre Pro reste à un clic. */}
+          <a data-offre-lien="page" href="/premium/?offres=1"
+            className="mt-4 text-center text-[12px] font-bold text-slate-500 underline-offset-2 hover:text-slate-900 hover:underline dark:text-slate-400 dark:hover:text-white">
+            Comparer avec l&apos;offre Pro →
+          </a>
         </section>
 
         {/* Téléphone : la vitrine est longue, l'essai reste à portée de pouce jusqu'à l'offre. */}

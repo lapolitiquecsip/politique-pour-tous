@@ -36,7 +36,7 @@ export default function CGV() {
                 <li><strong>Pro</strong> — {euros(PLANS.pro.monthly)} TTC par mois, ou {euros(PLANS.pro.annually!)} TTC par an : en plus, suivi des
                   commissions, Journal officiel du jour expliqué, alertes sur les textes qui vous concernent, récapitulatif hebdomadaire, veille des candidats.</li>
               </ul>{" "}
-              <p>Le détail de chaque offre figure sur la <Link href="/premium">page des offres</Link>. Les prix sont indiqués en euros, toutes taxes
+              <p>Le détail de chaque offre figure sur la <Link data-offre-lien="page" href="/premium/?offres=1">page des offres</Link>. Les prix sont indiqués en euros, toutes taxes
                 comprises ; ils peuvent évoluer, mais un changement de prix ne s&apos;applique à un abonnement en cours qu&apos;après en avoir
                 informé l&apos;abonné au moins un mois avant l&apos;échéance concernée, l&apos;abonné restant libre de résilier.</p>
             </>

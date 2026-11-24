@@ -13,6 +13,7 @@ import { useState, useEffect } from "react";
 import { usePremium } from "@/lib/hooks/usePremium";
 import { api } from "@/lib/api";
 import { useRouter } from "next/navigation";
+import { ouvrirEssaiPremium } from "@/lib/essai-premium";
 
 const PARTY_COLORS: Record<string, string> = {
   PS: "bg-rose-500",
@@ -391,8 +392,7 @@ export default function CommuneDetailPanel({
   const handleOpenBudget = () => {
     if (!commune) return;
     if (!isPremium) {
-      alert("Cette fonctionnalité est réservée aux abonnés PREMIUM. Veuillez passer à l'offre Premium pour accéder aux budgets expliqués des communes de France.");
-      router.push("/premium");
+      ouvrirEssaiPremium("budget_commune");
     } else {
       router.push(`/local/budget?code=${commune.code}`);
     }
@@ -436,7 +436,7 @@ export default function CommuneDetailPanel({
     }
 
     if (!isPremium) {
-      alert("Cette fonctionnalité est réservée aux membres PREMIUM. Passez à l'offre Premium pour suivre vos territoires !");
+      ouvrirEssaiPremium("suivre_commune");
       return;
     }
 

@@ -68,7 +68,8 @@ export default function ChaqueTexteVote({ userId, variante = "premium" }: { user
           <span>
             <span className="block font-bold text-white">Chaque texte voté, par e-mail</span>{" "}
             <span className="mt-0.5 block text-[13px] leading-snug text-white/65">
-              Dès qu&apos;un texte est voté à l&apos;Assemblée ou au Sénat : le résultat, le vote de chaque groupe, de vos élus suivis et de vos partis suivis.
+              Dès qu&apos;un texte est voté à l&apos;Assemblée ou au Sénat : le résultat, le vote de chaque groupe, de vos élus suivis et de vos partis suivis
+              {pro ? <>, <strong className="text-white">et l&apos;analyse détaillée complète du texte</strong>, mesure par mesure (si elle n&apos;est pas encore rédigée, elle vous arrive dans un second e-mail dès qu&apos;elle est prête)</> : null}.
               Il part dès que le scrutin officiel est publié : en général la nuit qui suit pour l&apos;Assemblée, quelques jours après pour le Sénat.
             </span>
           </span>

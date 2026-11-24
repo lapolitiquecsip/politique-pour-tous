@@ -282,7 +282,8 @@ async function creerModeles() {
     },
     {
       name: env("QG_MODELE_MESSAGE", "qg_message"), language: "fr", category: "UTILITY",
-      components: [{ type: "BODY", text: "Point du co-CEO de tes agents : {{1}}", example: { body_text: [["3 actions réussies aujourd'hui, 1 décision en attente."]] } }],
+      // Meta refuse une variable au début ou à la fin du texte.
+      components: [{ type: "BODY", text: "Point du co-CEO de tes agents : {{1}}. Tout le détail est dans le QG.", example: { body_text: [["3 actions réussies aujourd'hui, 1 décision en attente"]] } }],
     },
   ];
   const resultats = [];

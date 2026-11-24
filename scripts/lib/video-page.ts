@@ -62,3 +62,92 @@ export async function pageVideo(crUrl: string): Promise<string | null> {
   if (!page || !/^https?:\/\/videos\.assemblee-nationale\.fr\/video\.\d+_/.test(page)) return null;
   return page.replace(/^http:/, "https:");
 }
+
+/* ───── Retrouver la vidéo sur le portail quand le compte rendu ne la cite pas ───── */
+
+/**
+ * Le portail de l'Assemblée liste les réunions filmées par ordre chronologique. On apparie une
+ * réunion à sa vidéo par la même date ET un nom ou un sigle de l'intitulé en commun, sans second
+ * candidat. Dans le doute, rien.
+ */
+const PORTAIL = "https://videos.assemblee-nationale.fr";
+const MOIS_FR = ["janvier", "fevrier", "mars", "avril", "mai", "juin", "juillet", "aout", "septembre", "octobre", "novembre", "decembre"];
+const sansAccent = (s: string) => s.normalize("NFD").replace(/[̀-ͯ]/g, "").toLowerCase();
+const NAVIGATEUR = "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/126 Safari/537.36";
+
+const BANALS = new Set(["commission", "commissions", "audition", "auditions", "representants", "representantes", "nationale",
+  "national", "presse", "ouverte", "madame", "monsieur", "president", "presidente", "directeur", "directrice", "general",
+  "generale", "mission", "information", "enquete", "table", "ronde", "ministre", "conjointe", "membres", "france", "francaise"]);
+
+export type VideoPortail = { url: string; date: string; slug: string; mots: Set<string> };
+
+export async function indexPortail(jusqua: string): Promise<VideoPortail[]> {
+  const videos = new Map<string, VideoPortail>();
+  for (let page = 1; page <= 80; page++) {
+    let html: string;
+    try {
+      const r = await fetch(`${PORTAIL}/commissions.p${page}`, { headers: { "User-Agent": NAVIGATEUR }, signal: AbortSignal.timeout(90_000) });
+      if (!r.ok) break;
+      html = await r.text();
+    } catch { break; }
+    let plusAncienne = "9999";
+    for (const m of html.matchAll(/href="(video\.[\w.]+?\.([a-z0-9-]+?)-(\d{1,2})(?:er)?-([a-z]+)-(\d{4}))"/g)) {
+      const mois = MOIS_FR.indexOf(m[4]);
+      if (mois < 0) continue;
+      const date = `${m[5]}-${String(mois + 1).padStart(2, "0")}-${m[3].padStart(2, "0")}`;
+      if (date < plusAncienne) plusAncienne = date;
+      videos.set(m[1], { url: `${PORTAIL}/${m[1]}`, date, slug: m[2], mots: new Set(m[2].split("-").filter(x => x.length >= 3)) });
+    }
+    if (plusAncienne < jusqua) break;
+    await new Promise(x => setTimeout(x, 350));
+  }
+  return [...videos.values()];
+}
+
+function reperes(intitule: string): Set<string> {
+  const out = new Set<string>();
+  for (const m of intitule.matchAll(/(?:\bMM?\.|\bMmes?|\bDr|\bMe)\s+((?:[A-ZÀ-Ý][\wÀ-ÿ'’-]*\s+){0,3}[A-ZÀ-Ý][\wÀ-ÿ'’-]*)/g)) {
+    const dernier = m[1].trim().split(/\s+/).pop() ?? "";
+    for (const part of sansAccent(dernier).split(/[^a-z]+/)) if (part.length >= 4 && !BANALS.has(part)) out.add(part);
+  }
+  for (const m of intitule.matchAll(/\(([A-Z]{3,8})\)/g)) out.add(m[1].toLowerCase());
+  return out;
+}
+
+export function trouverVideo(videos: VideoPortail[], date: string, intitule: string): VideoPortail | null {
+  const noms = reperes(intitule);
+  if (!noms.size) return null;
+  const candidates = videos.filter(v => v.date === date && [...noms].some(n => v.mots.has(n)));
+  return candidates.length === 1 ? candidates[0] : null;
+}
+
+const MOTS_OUTILS = new Set(["dans", "pour", "avec", "sans", "sous", "entre", "cadre", "suite", "visant", "relative", "relatif",
+  "portant", "projet", "proposition", "examen", "article", "amendements", "rapporteur", "rapporteure", "nomination",
+  "travaux", "application", "reglement", "adoptee", "adopte", "senat", "assemblee", "procedure", "acceleree", "lecture"]);
+const motsDe = (s: string) => new Set(sansAccent(s).split(/[^a-z0-9]+/).filter(w => w.length >= 5 && !BANALS.has(w) && !MOTS_OUTILS.has(w)));
+
+/**
+ * Quand l'intitulé ne cite personne (examen d'un texte, table ronde…), on apparie par le SUJET :
+ * même date, même organe (« commission-des-lois--… » doit correspondre à la commission de la
+ * réunion), et des mots du sujet de la vidéo présents dans l'intitulé. Il faut au moins deux mots
+ * communs et un meilleur candidat net ; sinon, rien.
+ */
+export function trouverVideoParSujet(videos: VideoPortail[], date: string, commission: string, intitule: string): VideoPortail | null {
+  const organe = motsDe(commission);
+  const titre = motsDe(intitule);
+  const notes = videos
+    .filter(v => v.date === date)
+    .map(v => {
+      const [tete, ...reste] = v.slug.split("--");
+      const sujet = reste.join("-") || tete;
+      // L'organe de la vidéo (« commission-des-lois ») doit se retrouver dans le nom de la commission.
+      const motsOrgane = [...motsDe(tete.replace(/-/g, " "))];
+      const memeOrgane = reste.length === 0 || motsOrgane.every(w => organe.has(w) || titre.has(w));
+      const communs = [...motsDe(sujet.replace(/-/g, " "))].filter(w => titre.has(w)).length;
+      return { v, note: memeOrgane ? communs : 0 };
+    })
+    .filter(x => x.note >= 2)
+    .sort((a, b) => b.note - a.note);
+  if (!notes.length || (notes[1] && notes[1].note === notes[0].note)) return null;
+  return notes[0].v;
+}

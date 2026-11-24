@@ -44,7 +44,7 @@ import { join } from "node:path";
 import { SYSTEM, SHAPE, dropInventedQuotes, VERSION_ANALYSE, type Analysis } from "./lib/commission-prompt";
 import { demanderJSON, llmDisponible, llmVoie } from "./lib/llm";
 import { indexVideo, restreindre, transcriptionSenat, type IndexVideo } from "./lib/video-an";
-import { pageVideo } from "./lib/video-page";
+import { indexPortail, pageVideo, trouverVideo } from "./lib/video-page";
 
 const execFileP = promisify(execFile);
 
@@ -425,56 +425,6 @@ async function main() {
  * réunions par ordre chronologique : même date ET un nom ou un sigle de l'intitulé en commun,
  * sans second candidat. Dans le doute, on ne transcrit pas.
  */
-const PORTAIL = "https://videos.assemblee-nationale.fr";
-const MOIS_FR = ["janvier", "fevrier", "mars", "avril", "mai", "juin", "juillet", "aout", "septembre", "octobre", "novembre", "decembre"];
-const sansAccent = (s: string) => s.normalize("NFD").replace(/[̀-ͯ]/g, "").toLowerCase();
-const NAVIGATEUR = "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/126 Safari/537.36";
-
-const BANALS = new Set(["commission", "commissions", "audition", "auditions", "representants", "representantes", "nationale",
-  "national", "presse", "ouverte", "madame", "monsieur", "president", "presidente", "directeur", "directrice", "general",
-  "generale", "mission", "information", "enquete", "table", "ronde", "ministre", "conjointe", "membres", "france", "francaise"]);
-
-type Video = { url: string; date: string; mots: Set<string> };
-
-async function indexPortail(jusqua: string): Promise<Video[]> {
-  const videos = new Map<string, Video>();
-  for (let page = 1; page <= 80; page++) {
-    let html: string;
-    try {
-      const r = await fetch(`${PORTAIL}/commissions.p${page}`, { headers: { "User-Agent": NAVIGATEUR }, signal: AbortSignal.timeout(90_000) });
-      if (!r.ok) break;
-      html = await r.text();
-    } catch { break; }
-    let plusAncienne = "9999";
-    for (const m of html.matchAll(/href="(video\.[\w.]+?\.([a-z0-9-]+?)-(\d{1,2})(?:er)?-([a-z]+)-(\d{4}))"/g)) {
-      const mois = MOIS_FR.indexOf(m[4]);
-      if (mois < 0) continue;
-      const date = `${m[5]}-${String(mois + 1).padStart(2, "0")}-${m[3].padStart(2, "0")}`;
-      if (date < plusAncienne) plusAncienne = date;
-      videos.set(m[1], { url: `${PORTAIL}/${m[1]}`, date, mots: new Set(m[2].split("-").filter(x => x.length >= 3)) });
-    }
-    if (plusAncienne < jusqua) break;
-    await attendre(350);
-  }
-  return [...videos.values()];
-}
-
-function reperes(intitule: string): Set<string> {
-  const out = new Set<string>();
-  for (const m of intitule.matchAll(/(?:\bMM?\.|\bMmes?|\bDr|\bMe)\s+((?:[A-ZÀ-Ý][\wÀ-ÿ'’-]*\s+){0,3}[A-ZÀ-Ý][\wÀ-ÿ'’-]*)/g)) {
-    const dernier = m[1].trim().split(/\s+/).pop() ?? "";
-    for (const part of sansAccent(dernier).split(/[^a-z]+/)) if (part.length >= 4 && !BANALS.has(part)) out.add(part);
-  }
-  for (const m of intitule.matchAll(/\(([A-Z]{3,8})\)/g)) out.add(m[1].toLowerCase());
-  return out;
-}
-
-function trouverVideo(videos: Video[], date: string, intitule: string): Video | null {
-  const noms = reperes(intitule);
-  if (!noms.size) return null;
-  const candidates = videos.filter(v => v.date === date && [...noms].some(n => v.mots.has(n)));
-  return candidates.length === 1 ? candidates[0] : null;
-}
 
 async function depuisLeJournal(supabase: any, reste: number, traiter: (c: Cible) => Promise<boolean>): Promise<number> {
   const { data: file, error } = await supabase.from("cycle_items")

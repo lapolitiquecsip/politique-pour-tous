@@ -18,13 +18,15 @@
  */
 import { createClient } from "@supabase/supabase-js";
 import { indexVideo, restreindre } from "./lib/video-an";
-import { pageVideo } from "./lib/video-page";
+import { indexPortail, pageVideo, trouverVideo, trouverVideoParSujet, type VideoPortail } from "./lib/video-page";
 
 const args = process.argv.slice(2);
 const option = (nom: string) => args.find(x => x.startsWith(`--${nom}=`))?.split("=")[1];
 const MAX = Number(option("max")) || 80;
 const REF = option("ref") ?? null;
 const DRY = args.includes("--dry-run");
+/** Revoir aussi les réunions déjà vérifiées sans succès, quel que soit leur âge (rattrapage). */
+const REVOIR = args.includes("--revoir");
 const PAUSE_MS = 1500; // l'Assemblée répond 503 quand on va vite
 
 const attendre = (ms: number) => new Promise(r => setTimeout(r, ms));
@@ -35,9 +37,10 @@ async function main() {
   if (!url || !key) { console.error("❌ NEXT_PUBLIC_SUPABASE_URL / SUPABASE_SERVICE_ROLE_KEY manquants"); process.exit(1); }
   const supabase = createClient(url, key);
 
-  const colonnes = "ref, chamber, title, meeting_date, cr_url, video_url, video_mp4, video_verifie_at";
+  const colonnes = "ref, chamber, commission, title, meeting_date, cr_url, video_url, video_mp4, video_verifie_at";
   let q = supabase.from("commission_reports").select(colonnes).order("meeting_date", { ascending: false });
   if (REF) q = q.eq("ref", REF);
+  else if (REVOIR) q = q.is("video_mp4", null).limit(MAX * 3);
   else q = q.is("video_mp4", null)
     .or(`video_verifie_at.is.null,and(video_verifie_at.lt.${jours(1)},meeting_date.gte.${jours(21).slice(0, 10)})`)
     .limit(MAX * 3);
@@ -54,13 +57,30 @@ async function main() {
     .slice(0, MAX);
   console.log(`=== ${file.length} réunion(s) à vérifier ===`);
 
-  let trouvees = 0, sans = 0, erreurs = 0;
+  // Le portail de l'Assemblée, lu une fois et seulement si un compte rendu ne cite pas sa vidéo.
+  let portail: VideoPortail[] | null = null;
+  const plusAncienne = (file as any[]).reduce((m, r) => (r.meeting_date && r.meeting_date < m ? r.meeting_date : m), "9999");
+  const parLePortail = async (r: any): Promise<string | null> => {
+    if (r.chamber === "SENAT" || !r.meeting_date) return null;
+    if (!portail) {
+      portail = await indexPortail(plusAncienne).catch(() => []);
+      console.log(`  (portail de l'Assemblée : ${portail.length} vidéos indexées jusqu'au ${plusAncienne})`);
+    }
+    const jour = String(r.meeting_date).slice(0, 10);
+    return (trouverVideo(portail, jour, r.title ?? "") ?? trouverVideoParSujet(portail, jour, r.commission ?? "", r.title ?? ""))?.url ?? null;
+  };
+
+  let trouvees = 0, sans = 0, erreurs = 0, viaPortail = 0;
   for (const r of file as any[]) {
     const maintenant = new Date().toISOString();
     try {
-      const page = /\/video\.\d+_/.test(r.video_url ?? "")
+      let page = /\/video\.\d+_/.test(r.video_url ?? "")
         ? r.video_url
         : r.chamber !== "SENAT" && r.cr_url ? await pageVideo(r.cr_url).catch(() => null) : null;
+      if (!page) {
+        page = await parLePortail(r);
+        if (page) viaPortail++;
+      }
       if (!page) {
         sans++;
         if (!DRY) await supabase.from("commission_reports").update({ video_verifie_at: maintenant }).eq("ref", r.ref);
@@ -90,7 +110,7 @@ async function main() {
     }
     await attendre(PAUSE_MS);
   }
-  console.log(`\n=== ${trouvees} vidéo(s) lisibles sur le site · ${sans} sans vidéo · ${erreurs} erreur(s) ===`);
+  console.log(`\n=== ${trouvees} vidéo(s) lisibles sur le site (dont ${viaPortail} page(s) retrouvée(s) sur le portail) · ${sans} sans vidéo · ${erreurs} erreur(s) ===`);
 }
 
 main().catch(e => { console.error(e); process.exit(1); });

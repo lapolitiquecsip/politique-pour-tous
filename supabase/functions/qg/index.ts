@@ -220,6 +220,31 @@ async function decider(s: SupabaseClient, id: string, statut: string, commentair
   return d as Demande;
 }
 
+/**
+ * Télécharge une image ou un fichier reçu sur WhatsApp (l'URL de Meta expire en quelques minutes
+ * et exige le jeton) et le range dans le stockage, sous un chemin impossible à deviner. Renvoie
+ * son adresse publique, ou null.
+ */
+async function mediaRecu(s: SupabaseClient, m: any): Promise<string | null> {
+  const media = m.image ?? m.document;
+  if (!media?.id) return null;
+  const auth = { Authorization: `Bearer ${env("WHATSAPP_TOKEN")}` };
+  try {
+    const info = await fetch(`${GRAPH}/${media.id}`, { headers: auth }).then((r) => r.json());
+    if (!info?.url) return null;
+    const contenu = await fetch(info.url, { headers: auth }).then((r) => (r.ok ? r.arrayBuffer() : null));
+    if (!contenu) return null;
+    const type = String(info.mime_type || media.mime_type || "image/jpeg").split(";")[0];
+    const ext = ({ "image/jpeg": "jpg", "image/png": "png", "image/webp": "webp", "application/pdf": "pdf" } as Record<string, string>)[type] ?? "bin";
+    const chemin = `qg/recus/${new Date().toISOString().slice(0, 10)}/${crypto.randomUUID()}.${ext}`;
+    const { error } = await s.storage.from("publications").upload(chemin, contenu, { contentType: type, upsert: false });
+    if (error) return null;
+    return s.storage.from("publications").getPublicUrl(chemin).data.publicUrl;
+  } catch {
+    return null;
+  }
+}
+
 async function recevoir(s: SupabaseClient, m: any) {
   if (String(m.from || "").replace(/\D/g, "") !== NUMERO) return;   // un inconnu : ignoré
   await ecrireEtat(s, "fenetre", { dernier_recu: new Date().toISOString() });
@@ -240,14 +265,39 @@ async function recevoir(s: SupabaseClient, m: any) {
     return;
   }
 
-  const corps: string = (m.text?.body ?? "").trim();
-  if (!corps) return;
-  // Consigne attendue après « Modifier » (pendant une heure).
+  // Une image (ou un fichier) : un exemple à suivre, une maquette… Elle rejoint la consigne.
+  const image = m.type === "image" || m.type === "document" ? await mediaRecu(s, m) : null;
+  const corps: string = (m.text?.body ?? m.image?.caption ?? m.document?.caption ?? "").trim();
+  if (m.type === "image" || m.type === "document") {
+    if (!image) { await texte("Je n'ai pas pu récupérer ce fichier, renvoie-le stp."); return; }
+  } else if (!corps) return;
+  // Consigne attendue après « Modifier » (pendant une heure) ; les images reçues entre-temps la suivent.
   const modif = await lireEtat(s, "modification");
   if (modif?.demande && Date.now() - Date.parse(modif.depuis) < 3600e3) {
+    const images: string[] = [...(modif.images ?? []), ...(image ? [image] : [])];
+    if (!corps) {
+      await ecrireEtat(s, "modification", { ...modif, images });
+      await texte("📎 Image reçue. Écris maintenant ta consigne (ou envoie d'autres images).");
+      return;
+    }
     await ecrireEtat(s, "modification", {});
-    const d = await decider(s, modif.demande, "a_modifier", corps);
-    await texte(d ? `Noté. L'agent reprend avec ta consigne : « ${coupe(corps, 200)} »` : "Cette demande est déjà décidée.");
+    const consigne = [corps, ...images.map((u) => `📎 ${u}`)].join("\n");
+    const d = await decider(s, modif.demande, "a_modifier", consigne);
+    await texte(d ? `Noté. L'agent reprend avec ta consigne : « ${coupe(corps, 200)} »${images.length ? ` (+ ${images.length} image${images.length > 1 ? "s" : ""})` : ""}` : "Cette demande est déjà décidée.");
+    return;
+  }
+  // Image envoyée APRÈS la consigne : jointe à la dernière demande renvoyée à un agent (24 h).
+  if (image) {
+    const { data: der } = await s.from("qg_demandes").select("id, titre, commentaire, agent, equipe, societe").eq("statut", "a_modifier")
+      .gte("decide_le", new Date(Date.now() - 24 * 3600e3).toISOString()).order("decide_le", { ascending: false }).limit(1).maybeSingle();
+    if (der) {
+      await s.from("qg_demandes").update({ commentaire: [der.commentaire, `📎 ${image}${corps ? ` — ${corps}` : ""}`].filter(Boolean).join("\n") }).eq("id", der.id);
+      await activite(s, { societe: der.societe, equipe: der.equipe, agent: der.agent, genre: "decision", demande: der.id, message: `Image jointe à la consigne : ${der.titre}`, lien: image });
+      await texte(`📎 Image jointe à ta consigne : ${coupe(der.titre, 120)}`);
+      return;
+    }
+    await activite(s, { societe: "lpcs", equipe: "direction", agent: "co-ceo", genre: "info", message: `Image reçue${corps ? ` : ${corps}` : ""}`, lien: image });
+    await texte("📎 Image rangée dans le QG (onglet Activité). Pour la joindre à une demande, appuie d'abord sur ✏️ Modifier.");
     return;
   }
   // Petites commandes.

@@ -268,6 +268,28 @@ async function recevoir(s: SupabaseClient, m: any) {
   // Une image pour la bibliothèque de Rose (26/11) : légende « objet <nom> » (ex. « objet sante »).
   // Envoyée en FICHIER (document), un PNG garde sa transparence ; en photo, WhatsApp le convertit en JPEG.
   const legende: string = (m.image?.caption ?? m.document?.caption ?? "").trim();
+  // « portrait <nom> » : une VRAIE photo d'un candidat (jamais retouchée par une IA), que Rose détoure
+  // et passe en noir et blanc au prochain passage d'Iris (detourer.py --recus, sur GitHub).
+  const portrait = /^portrait\s+(.+)/iu.exec(legende);
+  if (portrait && (m.type === "image" || m.type === "document")) {
+    const cherche = portrait[1].trim();
+    const plat = cherche.toLowerCase().normalize("NFD").replace(/[̀-ͯ]/g, "").replace(/[^a-z0-9]+/g, "-");
+    const { data: gens } = await s.from("presidential_candidates").select("slug, full_name").or(`slug.ilike.%${plat}%,full_name.ilike.%${cherche.replace(/[,()]/g, " ")}%`).limit(5);
+    if (!gens?.length || gens.length > 1) {
+      await texte(gens?.length ? `Plusieurs candidats correspondent (${gens.map((g: any) => g.full_name).join(", ")}) : précise le nom en légende.` : `Je ne trouve aucun candidat « ${cherche} » : écris son nom complet en légende (ex. « portrait Dominique de Villepin »).`);
+      return;
+    }
+    const url = await mediaRecu(s, m);
+    if (!url) { await texte("Je n'ai pas pu récupérer cette photo, renvoie-la stp."); return; }
+    const g = gens[0] as { slug: string; full_name: string };
+    await s.from("qg_demandes").insert({
+      agent: "tache:back:publications-reseaux.yml", equipe: "marketing", action: "choisir_portrait", statut: "annulee",
+      titre: `Portrait de ${g.full_name} : ta photo`, apercu: { slug: g.slug, image: url }, resultat: { a_detourer: url },
+      cle: `portrait-envoye-${g.slug}-${Date.now()}`, decide_par: "whatsapp", decide_le: new Date().toISOString(),
+    });
+    await texte(`📸 Photo reçue pour ${g.full_name}. Rose la détoure en noir et blanc au prochain passage (6 h au plus) ; le résultat sera dans le QG.`);
+    return;
+  }
   const objet = /^(objet|image)\s+([\p{L}\d-]+)/iu.exec(legende);
   if (objet && (m.type === "image" || m.type === "document")) {
     const nom = objet[2].toLowerCase().normalize("NFD").replace(/[̀-ͯ]/g, "").replace(/[^a-z0-9-]/g, "");

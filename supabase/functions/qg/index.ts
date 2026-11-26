@@ -265,6 +265,32 @@ async function recevoir(s: SupabaseClient, m: any) {
     return;
   }
 
+  // Une image pour la bibliothèque de Rose (26/11) : légende « objet <nom> » (ex. « objet sante »).
+  // Envoyée en FICHIER (document), un PNG garde sa transparence ; en photo, WhatsApp le convertit en JPEG.
+  const legende: string = (m.image?.caption ?? m.document?.caption ?? "").trim();
+  const objet = /^(objet|image)\s+([\p{L}\d-]+)/iu.exec(legende);
+  if (objet && (m.type === "image" || m.type === "document")) {
+    const nom = objet[2].toLowerCase().normalize("NFD").replace(/[̀-ͯ]/g, "").replace(/[^a-z0-9-]/g, "");
+    const media = m.image ?? m.document;
+    const auth = { Authorization: `Bearer ${env("WHATSAPP_TOKEN")}` };
+    try {
+      const info = await fetch(`${GRAPH}/${media.id}`, { headers: auth }).then((r) => r.json());
+      const contenu = await fetch(info.url, { headers: auth }).then((r) => r.arrayBuffer());
+      const type = String(info.mime_type || media.mime_type || "").split(";")[0];
+      if (type !== "image/png") {
+        await texte("⚠️ Reçu en photo : WhatsApp l'a convertie en JPEG et la transparence est perdue. Renvoie le PNG en *Fichier* (trombone → Document), avec la même légende.");
+        return;
+      }
+      const { error } = await s.storage.from("publications").upload(`objets/${nom}.png`, contenu, { contentType: "image/png", upsert: true });
+      if (error) throw error;
+      await activite(s, { societe: "lpcs", equipe: "marketing", agent: "co-ceo", genre: "succes", message: `Nouvelle image pour Rose : ${nom}`, lien: s.storage.from("publications").getPublicUrl(`objets/${nom}.png`).data.publicUrl });
+      await texte(`🎨 Image « ${nom} » ajoutée à la bibliothèque de Rose.`);
+    } catch {
+      await texte("Je n'ai pas pu ranger cette image, renvoie-la stp.");
+    }
+    return;
+  }
+
   // Une image (ou un fichier) : un exemple à suivre, une maquette… Elle rejoint la consigne.
   const image = m.type === "image" || m.type === "document" ? await mediaRecu(s, m) : null;
   const corps: string = (m.text?.body ?? m.image?.caption ?? m.document?.caption ?? "").trim();

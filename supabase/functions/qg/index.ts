@@ -334,6 +334,17 @@ async function recevoir(s: SupabaseClient, m: any) {
     await texte(d ? `Noté. L'agent reprend avec ta consigne : « ${coupe(corps, 200)} »${images.length ? ` (+ ${images.length} image${images.length > 1 ? "s" : ""})` : ""}` : "Cette demande est déjà décidée.");
     return;
   }
+  // Rose attend une illustration pour un post (28/11) : une image envoyée seule va à sa demande la plus
+  // ancienne encore ouverte (36 h). Pas besoin d'appuyer sur ✏️.
+  if (image) {
+    const { data: att } = await s.from("qg_demandes").select("id, titre").eq("action", "publier_instagram").eq("statut", "a_valider")
+      .eq("apercu->>etape", "image").gte("cree_le", new Date(Date.now() - 36 * 3600e3).toISOString()).order("cree_le").limit(1).maybeSingle();
+    if (att) {
+      const d = await decider(s, att.id, "a_modifier", [`📎 ${image}`, corps].filter(Boolean).join("\n"));
+      await texte(d ? `🖼️ Image reçue. Rose prépare le post avec (quelques minutes) : ${coupe(att.titre, 120)}` : "Cette demande est déjà décidée.");
+      return;
+    }
+  }
   // Image envoyée APRÈS la consigne : jointe à la dernière demande renvoyée à un agent (24 h).
   if (image) {
     const { data: der } = await s.from("qg_demandes").select("id, titre, commentaire, agent, equipe, societe").eq("statut", "a_modifier")
